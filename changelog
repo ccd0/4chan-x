@@ -1,8 +1,12 @@
 master
 - Zixaphir
-  Removed Quote Threading and Markdown
+  Removed Quote Threading and Markdown.
   -- I didn't want to, but both are broken and I can't fix them right now.
      Might bring them back when I can.
+  Removed "Always Sage on /jp/".
+  -- I don't care about this board, but "always sage" just for a board is stupid.
+  New Option: Remember Sage.
+  -- My concession.
 
 0.9.2beta
 - Zixaphir

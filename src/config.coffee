@@ -54,7 +54,7 @@ Config =
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
       'Hide Original Post Form':      [true,  'Replace the normal post form with a shortcut to open the QR. <span class=disabledwarning><code>Style</code> is enabled. This option will be disabled regardless of this setting\'s value.</span>']
-      'Sage on /jp/':                 [true,  'Uses sage by default on /jp/']
+      'Remember Sage':                [false, 'Remember email even if it contains sage.']
     Quoting:
       'Quote Backlinks':              [true,  'Add quote backlinks']
       'OP Backlinks':                 [false, 'Add backlinks to the OP']

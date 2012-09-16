@@ -210,9 +210,9 @@ QR =
       prev     = QR.replies[QR.replies.length-1]
       persona  = $.get 'QR.persona', {}
       @name    = if prev then prev.name else persona.name or null
-      @email   = if prev and !/^sage$/.test prev.email then prev.email   else if Conf['Sage on /jp/'] and g.BOARD is 'jp' then 'sage' else persona.email or null
-      @sub     = if prev and Conf['Remember Subject']  then prev.sub     else if Conf['Remember Subject'] then persona.sub else null
-      @spoiler = if prev and Conf['Remember Spoiler']  then prev.spoiler else false
+      @email   = if prev and (Conf["Remember Sage"] or !/^sage$/.test prev.email) then prev.email else persona.email or null
+      @sub     = if prev and Conf['Remember Subject'] then prev.sub else if Conf['Remember Subject'] then persona.sub else null
+      @spoiler = if prev and Conf['Remember Spoiler'] then prev.spoiler else false
       @com = null
 
       @el = $.el 'a',
@@ -675,7 +675,14 @@ QR =
     persona = $.get 'QR.persona', {}
     persona =
       name:  reply.name
-      email: if /^sage$/.test reply.email then persona.email else reply.email
+      email: 
+        if !Conf["Remember Sage"] and /^sage$/.test reply.email
+          if /^sage$/.test persona.email
+            null
+          else
+            persona.email
+        else
+          reply.email
       sub:   if Conf['Remember Subject']  then reply.sub     else null
     $.set 'QR.persona', persona
 

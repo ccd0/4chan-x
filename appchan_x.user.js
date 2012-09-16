@@ -156,7 +156,7 @@
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
         'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR. <span class=disabledwarning><code>Style</code> is enabled. This option will be disabled regardless of this setting\'s value.</span>'],
-        'Sage on /jp/': [true, 'Uses sage by default on /jp/']
+        'Remember Sage': [false, 'Remember email even if it contains sage.']
       },
       Quoting: {
         'Quote Backlinks': [true, 'Add quote backlinks'],
@@ -6435,7 +6435,7 @@
         prev = QR.replies[QR.replies.length - 1];
         persona = $.get('QR.persona', {});
         this.name = prev ? prev.name : persona.name || null;
-        this.email = prev && !/^sage$/.test(prev.email) ? prev.email : Conf['Sage on /jp/'] && g.BOARD === 'jp' ? 'sage' : persona.email || null;
+        this.email = prev && (Conf["Remember Sage"] || !/^sage$/.test(prev.email)) ? prev.email : persona.email || null;
         this.sub = prev && Conf['Remember Subject'] ? prev.sub : Conf['Remember Subject'] ? persona.sub : null;
         this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
         this.com = null;
@@ -7016,7 +7016,7 @@
       persona = $.get('QR.persona', {});
       persona = {
         name: reply.name,
-        email: /^sage$/.test(reply.email) ? persona.email : reply.email,
+        email: !Conf["Remember Sage"] && /^sage$/.test(reply.email) ? /^sage$/.test(persona.email) ? null : persona.email : reply.email,
         sub: Conf['Remember Subject'] ? reply.sub : null
       };
       $.set('QR.persona', persona);
