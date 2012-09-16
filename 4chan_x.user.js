@@ -222,68 +222,157 @@
     posts: {}
   };
 
-  UI = {
-    dialog: function(id, position, html) {
-      var el;
+  UI = (function() {
+    var dialog, drag, dragend, dragstart, hover, hoverend, hoverstart, touchmove;
+    dialog = function(id, position, html) {
+      var el, move;
       el = d.createElement('div');
       el.className = 'reply dialog';
       el.innerHTML = html;
       el.id = id;
       el.style.cssText = localStorage.getItem("" + g.NAMESPACE + id + ".position") || position;
-      el.querySelector('.move').addEventListener('mousedown', UI.dragstart, false);
+      move = el.querySelector('.move');
+      move.addEventListener('touchstart', dragstart, false);
+      move.addEventListener('mousedown', dragstart, false);
       return el;
-    },
-    dragstart: function(e) {
-      var el, rect;
+    };
+    dragstart = function(e) {
+      var el, isTouching, o, rect, screenHeight, screenWidth;
       e.preventDefault();
-      UI.el = el = this.parentNode;
-      d.addEventListener('mousemove', UI.drag, false);
-      d.addEventListener('mouseup', UI.dragend, false);
-      rect = el.getBoundingClientRect();
-      UI.dx = e.clientX - rect.left;
-      UI.dy = e.clientY - rect.top;
-      UI.width = d.documentElement.clientWidth - rect.width;
-      return UI.height = d.documentElement.clientHeight - rect.height;
-    },
-    drag: function(e) {
-      var left, style, top;
-      left = e.clientX - UI.dx;
-      top = e.clientY - UI.dy;
-      left = left < 10 ? '0px' : UI.width - left < 10 ? null : left + 'px';
-      top = top < 10 ? '0px' : UI.height - top < 10 ? null : top + 'px';
-      style = UI.el.style;
-      style.left = left;
-      style.top = top;
-      style.right = left ? null : '0px';
-      return style.bottom = top ? null : '0px';
-    },
-    dragend: function() {
-      localStorage.setItem("" + g.NAMESPACE + UI.el.id + ".position", UI.el.style.cssText);
-      d.removeEventListener('mousemove', UI.drag, false);
-      d.removeEventListener('mouseup', UI.dragend, false);
-      return delete UI.el;
-    },
-    hover: function(e) {
-      var clientHeight, clientWidth, clientX, clientY, height, style, top, _ref;
-      clientX = e.clientX, clientY = e.clientY;
-      style = UI.el.style;
-      _ref = d.documentElement, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
-      height = UI.el.offsetHeight;
-      top = clientY - 120;
-      style.top = clientHeight <= height || top <= 0 ? '0px' : top + height >= clientHeight ? clientHeight - height + 'px' : top + 'px';
-      if (clientX <= clientWidth - 400) {
-        style.left = clientX + 45 + 'px';
-        return style.right = null;
-      } else {
-        style.left = null;
-        return style.right = clientWidth - clientX + 45 + 'px';
+      el = this.parentNode;
+      if (isTouching = e.type === 'touchstart') {
+        e = e.changedTouches[e.changedTouches.length - 1];
       }
-    },
-    hoverend: function() {
-      $.rm(UI.el);
-      return delete UI.el;
-    }
-  };
+      rect = el.getBoundingClientRect();
+      screenHeight = d.documentElement.clientHeight;
+      screenWidth = d.documentElement.clientWidth;
+      o = {
+        id: el.id,
+        style: el.style,
+        dx: e.clientX - rect.left,
+        dy: e.clientY - rect.top,
+        height: screenHeight - rect.height,
+        width: screenWidth - rect.width,
+        screenHeight: screenHeight,
+        screenWidth: screenWidth
+      };
+      if (isTouching) {
+        o.identifier = e.identifier;
+        o.move = touchmove.bind(o);
+        o.up = dragend.bind(o);
+        d.addEventListener('touchmove', o.move, false);
+        d.addEventListener('touchend', o.up, false);
+        return d.addEventListener('touchcancel', o.up, false);
+      } else {
+        o.move = drag.bind(o);
+        o.up = dragend.bind(o);
+        d.addEventListener('mousemove', o.move, false);
+        return d.addEventListener('mouseup', o.up, false);
+      }
+    };
+    touchmove = function(e) {
+      var touch, _i, _len, _ref;
+      _ref = e.changedTouches;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        touch = _ref[_i];
+        if (touch.identifier === this.identifier) {
+          drag.call(this, touch);
+          return;
+        }
+      }
+    };
+    drag = function(e) {
+      var left, top;
+      left = e.clientX - this.dx;
+      top = e.clientY - this.dy;
+      if (left < 10) {
+        left = 0;
+      } else if (this.width - left < 10) {
+        left = null;
+      }
+      if (top < 10) {
+        top = 0;
+      } else if (this.height - top < 10) {
+        top = null;
+      }
+      if (left === null) {
+        this.style.left = null;
+        this.style.right = '0%';
+      } else {
+        this.style.left = left / this.screenWidth * 100 + '%';
+        this.style.right = null;
+      }
+      if (top === null) {
+        this.style.top = null;
+        return this.style.bottom = '0%';
+      } else {
+        this.style.top = top / this.screenHeight * 100 + '%';
+        return this.style.bottom = null;
+      }
+    };
+    dragend = function(e) {
+      if (e.type === 'mouseup') {
+        d.removeEventListener('mousemove', this.move, false);
+        d.removeEventListener('mouseup', this.up, false);
+      } else {
+        d.removeEventListener('touchmove', this.move, false);
+        d.removeEventListener('touchend', this.up, false);
+        d.removeEventListener('touchcancel', this.up, false);
+      }
+      return localStorage.setItem("" + g.NAMESPACE + this.id + ".position", this.style.cssText);
+    };
+    hoverstart = function(root, el, events, cb) {
+      var event, o, _i, _len, _ref;
+      o = {
+        root: root,
+        el: el,
+        style: el.style,
+        cb: cb,
+        events: events.split(' '),
+        clientHeight: d.documentElement.clientHeight,
+        clientWidth: d.documentElement.clientWidth
+      };
+      o.hover = hover.bind(o);
+      o.hoverend = hoverend.bind(o);
+      _ref = o.events;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        event = _ref[_i];
+        root.addEventListener(event, o.hoverend, false);
+      }
+      return root.addEventListener('mousemove', o.hover, false);
+    };
+    hover = function(e) {
+      var clientX, height, top;
+      height = this.el.offsetHeight;
+      top = e.clientY - height / 2;
+      this.style.top = this.clientHeight <= height || top <= 0 ? '0px' : top + height >= this.clientHeight ? this.clientHeight - height + 'px' : top + 'px';
+      clientX = e.clientX;
+      if (clientX <= this.clientWidth - 400) {
+        this.style.left = clientX + 45 + 'px';
+        return this.style.right = null;
+      } else {
+        this.style.left = null;
+        return this.style.right = this.clientWidth - clientX + 45 + 'px';
+      }
+    };
+    hoverend = function() {
+      var event, _i, _len, _ref;
+      this.el.parentNode.removeChild(this.el);
+      _ref = this.events;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        event = _ref[_i];
+        this.root.removeEventListener(event, this.hoverend, false);
+      }
+      this.root.removeEventListener('mousemove', this.hover, false);
+      if (this.cb) {
+        return this.cb.call(this);
+      }
+    };
+    return {
+      dialog: dialog,
+      hover: hoverstart
+    };
+  })();
 
   /*
   loosely follows the jquery api:
@@ -1830,20 +1919,15 @@
       if ($.hasClass(this, 'inlined')) {
         return;
       }
-      if (UI.el) {
-        return;
-      }
       _ref = Get.postDataFromLink(this), board = _ref.board, threadID = _ref.threadID, postID = _ref.postID;
-      qp = UI.el = $.el('div', {
+      qp = $.el('div', {
         id: 'qp',
         className: 'reply dialog'
       });
-      UI.hover(e);
       context = Get.postFromRoot($.x('ancestor::div[parent::div[@class="thread"]][1]', this));
       $.add(d.body, qp);
       Get.postClone(board, threadID, postID, qp, context);
-      $.on(this, 'mousemove', UI.hover);
-      $.on(this, 'mouseout click', QuotePreview.mouseout);
+      UI.hover(this, qp, 'mouseout click', QuotePreview.mouseout);
       if (!(origin = g.posts["" + board + "." + postID])) {
         return;
       }
@@ -1872,12 +1956,9 @@
         }
       }
     },
-    mouseout: function(e) {
+    mouseout: function() {
       var clone, post, root, _i, _len, _ref;
-      root = UI.el.firstElementChild;
-      UI.hoverend();
-      $.off(this, 'mousemove', UI.hover);
-      $.off(this, 'mouseout click', QuotePreview.mouseout);
+      root = this.el.firstElementChild;
       if (!root) {
         return;
       }
@@ -2357,30 +2438,29 @@
       return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover);
     },
     mouseover: function() {
-      var el;
-      if (UI.el) {
-        return;
-      }
-      el = UI.el = $.el('img', {
+      var el,
+        _this = this;
+      el = $.el('img', {
         id: 'ihover',
         src: this.parentNode.href
       });
       $.add(d.body, el);
-      $.on(el, 'load', ImageHover.load);
+      $.on(el, 'load', function() {
+        return ImageHover.load(_this, el);
+      });
       $.on(el, 'error', ImageHover.error);
-      $.on(this, 'mousemove', UI.hover);
-      return $.on(this, 'mouseout', ImageHover.mouseout);
+      return UI.hover(this, el, 'mouseout');
     },
-    load: function() {
-      var style;
-      if (!this.parentNode) {
+    load: function(root, el) {
+      var e, style;
+      if (!el.parentNode) {
         return;
       }
-      style = this.style;
-      return UI.hover({
-        clientX: -45 + parseInt(style.left),
-        clientY: 120 + parseInt(style.top)
-      });
+      style = el.style;
+      e = new Event('mousemove');
+      e.clientX = -45 + parseInt(style.left);
+      e.clientY = 120 + parseInt(style.top);
+      return root.dispatchEvent(e);
     },
     error: function() {
       var src, timeoutID, url,
@@ -2413,11 +2493,6 @@
       }, {
         type: 'head'
       });
-    },
-    mouseout: function() {
-      UI.hoverend();
-      $.off(this, 'mousemove', UI.hover);
-      return $.off(this, 'mouseout', ImageHover.mouseout);
     }
   };
 

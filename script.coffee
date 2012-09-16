@@ -175,72 +175,129 @@ g =
   threads: {}
   posts:   {}
 
-UI =
-  dialog: (id, position, html) ->
+UI = (->
+  dialog = (id, position, html) ->
     el = d.createElement 'div'
     el.className = 'reply dialog'
     el.innerHTML = html
     el.id        = id
     el.style.cssText = localStorage.getItem("#{g.NAMESPACE}#{id}.position") or position
-    el.querySelector('.move').addEventListener 'mousedown', UI.dragstart, false
+    move = el.querySelector '.move'
+    move.addEventListener 'touchstart', dragstart, false
+    move.addEventListener 'mousedown',  dragstart, false
     el
-  dragstart: (e) ->
+
+  dragstart = (e) ->
     # prevent text selection
     e.preventDefault()
-    UI.el = el = @parentNode
-    d.addEventListener 'mousemove', UI.drag,    false
-    d.addEventListener 'mouseup',   UI.dragend, false
+    el = @parentNode
+    if isTouching = e.type is 'touchstart'
+      e = e.changedTouches[e.changedTouches.length - 1]
     # distance from pointer to el edge is constant; calculate it here.
-    rect      = el.getBoundingClientRect()
-    UI.dx     = e.clientX - rect.left
-    UI.dy     = e.clientY - rect.top
-    UI.width  = d.documentElement.clientWidth  - rect.width
-    UI.height = d.documentElement.clientHeight - rect.height
-  drag: (e) ->
-    left = e.clientX - UI.dx
-    top  = e.clientY - UI.dy
-    left =
-      if left < 10 then '0px'
-      else if UI.width - left < 10 then null
-      else left + 'px'
-    top =
-      if top < 10 then '0px'
-      else if UI.height - top < 10 then null
-      else top + 'px'
-    {style} = UI.el
-    style.left   = left
-    style.top    = top
-    style.right  = if left then null else '0px'
-    style.bottom = if top  then null else '0px'
-  dragend: ->
-    localStorage.setItem "#{g.NAMESPACE}#{UI.el.id}.position", UI.el.style.cssText
-    d.removeEventListener 'mousemove', UI.drag,    false
-    d.removeEventListener 'mouseup',   UI.dragend, false
-    delete UI.el
-  hover: (e) ->
-    {clientX, clientY} = e
-    {style} = UI.el
-    {clientHeight, clientWidth} = d.documentElement
-    height = UI.el.offsetHeight
+    rect = el.getBoundingClientRect()
+    screenHeight = d.documentElement.clientHeight
+    screenWidth  = d.documentElement.clientWidth
+    o = {
+      id:     el.id
+      style:  el.style
+      dx:     e.clientX - rect.left
+      dy:     e.clientY - rect.top
+      height: screenHeight - rect.height
+      width:  screenWidth  - rect.width
+      screenHeight: screenHeight
+      screenWidth:  screenWidth
+    }
+    if isTouching
+      o.identifier = e.identifier
+      o.move = touchmove.bind o
+      o.up   = dragend.bind   o
+      d.addEventListener 'touchmove',   o.move, false
+      d.addEventListener 'touchend',    o.up,   false
+      d.addEventListener 'touchcancel', o.up,   false
+    else # mousedown
+      o.move = drag.bind    o
+      o.up   = dragend.bind o
+      d.addEventListener 'mousemove', o.move, false
+      d.addEventListener 'mouseup',   o.up,   false
+  touchmove = (e) ->
+    for touch in e.changedTouches
+      if touch.identifier is @identifier
+        drag.call @, touch
+        return
+  drag = (e) ->
+    left = e.clientX - @dx
+    top  = e.clientY - @dy
+    if left < 10 then left = 0
+    else if @width - left < 10 then left = null
+    if top < 10 then top = 0
+    else if @height - top < 10 then top = null
+    if left is null
+      @style.left  = null
+      @style.right = '0%'
+    else
+      @style.left  = left / @screenWidth * 100 + '%'
+      @style.right = null
+    if top is null
+      @style.top    = null
+      @style.bottom = '0%'
+    else
+      @style.top    = top / @screenHeight * 100 + '%'
+      @style.bottom = null
+  dragend = (e) ->
+    if e.type is 'mouseup'
+      d.removeEventListener 'mousemove', @move, false
+      d.removeEventListener 'mouseup',   @up,   false
+    else # touchend or touchcancel
+      d.removeEventListener 'touchmove',   @move, false
+      d.removeEventListener 'touchend',    @up,   false
+      d.removeEventListener 'touchcancel', @up,   false
+    localStorage.setItem "#{g.NAMESPACE}#{@id}.position", @style.cssText
 
-    top = clientY - 120
-    style.top =
-      if clientHeight <= height or top <= 0
+  hoverstart = (root, el, events, cb) ->
+    o = {
+      root:   root
+      el:     el
+      style:  el.style
+      cb:     cb
+      events: events.split ' '
+      clientHeight: d.documentElement.clientHeight
+      clientWidth:  d.documentElement.clientWidth
+    }
+    o.hover    = hover.bind    o
+    o.hoverend = hoverend.bind o
+    for event in o.events
+      root.addEventListener event,     o.hoverend, false
+    root.addEventListener 'mousemove', o.hover,    false
+  hover = (e) ->
+    height = @el.offsetHeight
+    top = e.clientY - height / 2
+    @style.top =
+      if @clientHeight <= height or top <= 0
         '0px'
-      else if top + height >= clientHeight
-        clientHeight - height + 'px'
+      else if top + height >= @clientHeight
+        @clientHeight - height + 'px'
       else
         top + 'px'
 
-    if clientX <= clientWidth - 400
-      style.left  = clientX + 45 + 'px'
-      style.right = null
+    {clientX} = e
+    if clientX <= @clientWidth - 400
+      @style.left  = clientX + 45 + 'px'
+      @style.right = null
     else
-      style.left  = null
-      style.right = clientWidth - clientX + 45 + 'px'
-  hoverend: ->
-    $.rm UI.el
-    delete UI.el
+      @style.left  = null
+      @style.right = @clientWidth - clientX + 45 + 'px'
+  hoverend = ->
+    @el.parentNode.removeChild @el
+    for event in @events
+      @root.removeEventListener event,     @hoverend, false
+    @root.removeEventListener 'mousemove', @hover,    false
+    @cb.call @ if @cb
+
+  return {
+    dialog: dialog
+    hover:  hoverstart
+  }
+)()
 
 ###
 loosely follows the jquery api:
@@ -1790,21 +1847,16 @@ QuotePreview =
   mouseover: (e) ->
     return if $.hasClass @, 'inlined'
 
-    # Don't stop other elements from dragging
-    return if UI.el
-
     {board, threadID, postID} = Get.postDataFromLink @
 
-    qp = UI.el = $.el 'div',
+    qp = $.el 'div',
       id: 'qp'
       className: 'reply dialog'
-    UI.hover e
     context = Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', @
     $.add d.body, qp
     Get.postClone board, threadID, postID, qp, context
 
-    $.on @, 'mousemove',      UI.hover
-    $.on @, 'mouseout click', QuotePreview.mouseout
+    UI.hover @, qp, 'mouseout click', QuotePreview.mouseout
 
     return unless origin = g.posts["#{board}.#{postID}"]
 
@@ -1824,11 +1876,8 @@ QuotePreview =
       if quote.hash[2..] is quoterID
         $.addClass quote, 'forwardlink'
     return
-  mouseout: (e) ->
-    root = UI.el.firstElementChild
-    UI.hoverend()
-    $.off @, 'mousemove',      UI.hover
-    $.off @, 'mouseout click', QuotePreview.mouseout
+  mouseout: ->
+    root = @el.firstElementChild
 
     # Stop if it only contains text.
     return unless root
@@ -2141,23 +2190,21 @@ ImageHover =
     return unless @file?.isImage
     $.on @file.thumb, 'mouseover', ImageHover.mouseover
   mouseover: ->
-    # Don't stop other elements from dragging
-    return if UI.el
-    el = UI.el = $.el 'img'
+    el = $.el 'img'
       id: 'ihover'
       src: @parentNode.href
     $.add d.body, el
-    $.on el, 'load',      ImageHover.load
-    $.on el, 'error',     ImageHover.error
-    $.on @,  'mousemove', UI.hover
-    $.on @,  'mouseout',  ImageHover.mouseout
-  load: ->
-    return unless @parentNode
+    $.on el, 'load', => ImageHover.load @, el
+    $.on el, 'error', ImageHover.error
+    UI.hover @, el, 'mouseout'
+  load: (root, el) ->
+    return unless el.parentNode
     # 'Fake' mousemove event by giving required values.
-    {style} = @
-    UI.hover
-      clientX: - 45 + parseInt style.left
-      clientY:  120 + parseInt style.top
+    {style} = el
+    e = new Event 'mousemove'
+    e.clientX = - 45 + parseInt style.left
+    e.clientY =  120 + parseInt style.top
+    root.dispatchEvent e
   error: ->
     return unless @parentNode
     src = @src.split '/'
@@ -2171,10 +2218,6 @@ ImageHover =
     return if $.engine isnt 'webkit' or url.split('/')[2] isnt 'images.4chan.org'
     $.ajax url, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
       type: 'head'
-  mouseout: ->
-    UI.hoverend()
-    $.off @, 'mousemove', UI.hover
-    $.off @, 'mouseout',  ImageHover.mouseout
 
 ThreadUpdater =
   init: ->
