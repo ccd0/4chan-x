@@ -9511,7 +9511,7 @@ div.subMenu,\
   border: 1px solid ' + theme["Input Border"] + ';\
 }\
 .warning {\
-  color: ' + theme["Warnings"] + ';\
+  color: ' + theme["Warnings"] + ' !important;\
 }\
 a,\
 #dump,\
@@ -9527,6 +9527,9 @@ div.postContainer span.postNum > .replylink {\
 .subject {\
   color: ' + theme["Subjects"] + ' !important;\
   font-weight: 600;\
+}\
+.dateTime {\
+  color: ' + theme["Timestamps"] + ' !important;\
 }\
 #updater:not(:hover),\
 #updater:not(:hover) #count:not(.new)::after,\
@@ -9946,6 +9949,7 @@ body > a[style="cursor: pointer; float: right;"]::after {\
   position: absolute;\
   right: 0px;\
   height: 10px;\
+  padding-top: 1px;\
 }\
 div.postInfo {\
   margin: 1px 0 0;\
@@ -9955,13 +9959,9 @@ div.postInfo {\
 .sideArrows a,\
 .sideArrows span {\
   position: static;\
-  width: 20px;\
   font-size: 9px;\
   height: 10px;\
-}\
-.sideArrows {\
   width: 20px;\
-  padding-top: 1px;\
 }\
 div.reply .report_button,\
 .sideArrows,\
@@ -10058,11 +10058,9 @@ div.reply {\
 }\
 .sideArrows {\
   margin-right: 5px;\
-  width: 20px;\
   float: left;\
 }\
 .sideArrows a {\
-  width: 20px;\
   font-size: 12px;\
 }\
 .hide_thread_button {\
@@ -10089,23 +10087,19 @@ div.post:not(#qp):not([hidden]) {\
 .sideArrows span {\
   font-size: 9px;\
 }\
-.sideArrows {\
-  width: 20px;\
-}\
 .sideArrows a {\
   right: 27px;\
- }\
+}\
 div.reply .report_button,\
 div.reply .menu_button {\
   right: 13px;\
- }\
+}\
 div.reply {\
   padding-top: 6px;\
   padding-left: 8px;\
 }\
 .sideArrows {\
   margin-right: 2px;\
-  width: 20px;\
 }\
 form .postContainer blockquote {\
   margin-left: 30px;\
@@ -10535,7 +10529,7 @@ a.useremail[href*="SAGE"]:last-of-type::after {\
         switch (Conf["Checkboxes"]) {
           case "show":
             css += '\
-.rice {\
+input[type=checkbox] {\
   display: none;\
 }\
 ';
