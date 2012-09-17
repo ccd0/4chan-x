@@ -254,7 +254,7 @@ Options =
           MascotTools.dialog @name
           Options.close()
         $.on $('a.delete', li), 'click', ->
-          container = @.parentElement
+          container = @.parentElement.parentElement
           if confirm "Are you sure you want to delete \"#{@name}\"?"
             if enabledmascots[@name]
               enabledmascots[@name] = false

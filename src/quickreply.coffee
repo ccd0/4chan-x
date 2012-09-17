@@ -445,14 +445,6 @@ QR =
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>
   <div class=warning></div>
 </form>'
-      qrFile = $("[type=file]", QR.el)
-      riceFile = $("#file", QR.el)
-      $.on riceFile, 'click', ->
-        qrFile.click()
-      $.on $("#browse", QR.el), 'click', ->
-        qrFile.click()
-      $.on qrFile, 'change', ->
-        riceFile.textContent = qrFile.value
 
     if Conf['Remember QR size'] and $.engine is 'gecko'
       $.on ta = $('textarea', QR.el), 'mouseup', ->
@@ -499,18 +491,23 @@ QR =
           innerHTML: threads
           title: 'Create a new thread / Reply to a thread'
       $.on $('select',  QR.el), 'mousedown', (e) -> e.stopPropagation()
-    unless Conf['Style']
+    if Conf['Style']
+      riceFile = $("#file", QR.el)
+      $.on $("#browse", QR.el),   'click',     -> fileInput.click()
+      $.on riceFile,              'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else fileInput.click()
+      $.on fileInput,             'change',    -> riceFile.textContent = fileInput.value
+    else
       $.on $('#autohide', QR.el), 'change',    QR.toggleHide
       $.on $('.close',    QR.el), 'click',     QR.close
-    $.on $('#dump',     QR.el), 'click',     -> QR.el.classList.toggle 'dump'
-    $.on $('#addReply', QR.el), 'click',     -> new QR.reply().select()
-    $.on $('form',      QR.el), 'submit',    QR.submit
-    $.on ta,                    'input',     -> QR.selected.el.lastChild.textContent = @value
-    $.on ta,                    'input',     QR.characterCount
-    $.on fileInput,             'change',    QR.fileInput
-    $.on fileInput,             'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
-    $.on spoiler.firstChild,    'change',    -> $('input', QR.selected.el).click()
-    $.on $('.warning',  QR.el), 'click',     QR.cleanError
+    $.on $('#dump',     QR.el),   'click',     -> QR.el.classList.toggle 'dump'
+    $.on $('#addReply', QR.el),   'click',     -> new QR.reply().select()
+    $.on $('form',      QR.el),   'submit',    QR.submit
+    $.on ta,                      'input',     -> QR.selected.el.lastChild.textContent = @value
+    $.on ta,                      'input',     QR.characterCount
+    $.on fileInput,               'change',    QR.fileInput
+    $.on fileInput,               'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
+    $.on spoiler.firstChild,      'change',    -> $('input', QR.selected.el).click()
+    $.on $('.warning',  QR.el),   'click',     QR.cleanError
 
     new QR.reply().select()
     # save selected reply's data
@@ -609,7 +606,7 @@ QR =
       name:     reply.name
       email:    reply.email
       sub:      reply.sub
-      com:      reply.com
+      com:      if Conf['Markdown'] then Markdown.format reply.com else reply.com
       upfile:   reply.file
       spoiler:  reply.spoiler
       textonly: textOnly

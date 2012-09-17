@@ -30,8 +30,6 @@ UI =
       if top < 10 then '0px'
       else if UI.height - top < 10 then null
       else top + 'px'
-    #using null instead of '' is 4% faster
-    #these 4 statements are 40% faster than 1 style.cssText
     {style} = UI.el
     style.left   = left
     style.top    = top
