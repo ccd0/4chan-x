@@ -2748,6 +2748,7 @@
     | <label for=sauces_tab>Sauce</label>\
     | <label for=rice_tab>Rice</label>\
     | <label for=keybinds_tab>Keybinds</label>\
+    | <label onClick="document.location.reload(true)">Refresh</label>\
   </div>\
 </div>\
 <hr>\
@@ -2785,7 +2786,6 @@
       <option value=filesize>Filesize</option>\
       <option value=md5>Image MD5 (uses exact string matching, not regular expressions)</option>\
     </select>\
-    <div><input type="button" value="Refresh" onClick="document.location.reload(true)"></div>\
   </div>\
   <input type=radio name=tab hidden id=rice_tab>\
   <div>\
