@@ -1493,7 +1493,7 @@ QR =
       el.innerHTML = null
       $.add el, err
     QR.open()
-    if /captcha|verification/i.test el.textContent
+    if qr.captchaIsEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
     if Conf['Focus on Alert'] 
@@ -2065,7 +2065,7 @@ QR =
     if err
       if /captcha|verification/i.test(err.textContent) or err is 'Connection error with sys.4chan.org.'
         # Enable auto-post if we have some cached captchas.
-        QR.cooldown.auto = !!$.get('captchas', []).length
+        QR.cooldown.auto = if qr.captchaIsEnabled then !!$.get('captchas', []).length else true
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
         QR.cooldown.set 2
