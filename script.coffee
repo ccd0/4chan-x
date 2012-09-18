@@ -1392,7 +1392,7 @@ QR =
       el.innerHTML = null
       $.add el, err
     QR.open()
-    if qr.captchaIsEnabled and /captcha|verification/i.test el.textContent
+    if QR.captchaIsEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
     alert el.textContent if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
