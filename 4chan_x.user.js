@@ -2173,6 +2173,9 @@
     captcha: {
       init: function() {
         var _this = this;
+        if (-1 !== d.cookie.indexOf('pass_enabled=')) {
+          return;
+        }
         if (!(QR.captchaIsEnabled = !!$.id('captchaFormPart'))) {
           return;
         }

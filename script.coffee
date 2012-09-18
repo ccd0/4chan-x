@@ -1672,6 +1672,7 @@ QR =
 
   captcha:
     init: ->
+      return if -1 isnt d.cookie.indexOf 'pass_enabled='
       return unless QR.captchaIsEnabled = !!$.id 'captchaFormPart'
       if $.id 'recaptcha_challenge_field_holder'
         @ready()
