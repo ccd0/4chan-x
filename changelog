@@ -1,8 +1,11 @@
 master
-- Mayhem
-  Use 4chan's API to fetch posts for Thread Updater.
 
 2.35.2
+- Mayhem
+  Use 4chan's API to fetch posts for Thread Updater.
+  Minor fixes.
+- noface
+  Break Quote Threading.
 
 2.35.1
 - Mayhem
