@@ -365,6 +365,9 @@
       }
       $.extend(r, callbacks);
       $.extend(r.upload, upCallbacks);
+      if (type === 'post') {
+        r.withCredentials = true;
+      }
       r.send(form);
       return r;
     },
