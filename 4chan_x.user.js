@@ -1931,7 +1931,7 @@
         $.add(el, err);
       }
       QR.open();
-      if (qr.captchaIsEnabled && /captcha|verification/i.test(el.textContent)) {
+      if (QR.captchaIsEnabled && /captcha|verification/i.test(el.textContent)) {
         $('[autocomplete]', QR.el).focus();
       }
       if (Conf['Focus on Alert']) {

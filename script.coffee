@@ -1493,7 +1493,7 @@ QR =
       el.innerHTML = null
       $.add el, err
     QR.open()
-    if qr.captchaIsEnabled and /captcha|verification/i.test el.textContent
+    if QR.captchaIsEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
     if Conf['Focus on Alert'] 
