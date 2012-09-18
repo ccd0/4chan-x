@@ -1632,6 +1632,8 @@
         switch (kc = e.keyCode) {
           case 8:
             return '';
+          case 13:
+            return 'Enter';
           case 27:
             return 'Esc';
           case 37:
