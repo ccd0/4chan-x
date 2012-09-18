@@ -2187,6 +2187,7 @@ Options =
       <option value=filesize>Filesize</option>
       <option value=md5>Image MD5 (uses exact string matching, not regular expressions)</option>
     </select>
+    <div><input type="button" value="Refresh" onClick="document.location.reload(true)"></div>
   </div>
   <input type=radio name=tab hidden id=rice_tab>
   <div>
