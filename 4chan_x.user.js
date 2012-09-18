@@ -1803,7 +1803,7 @@
         $.add(el, err);
       }
       QR.open();
-      if (/captcha|verification/i.test(el.textContent)) {
+      if (qr.captchaIsEnabled && /captcha|verification/i.test(el.textContent)) {
         $('[autocomplete]', QR.el).focus();
       }
       if (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) {
@@ -2511,7 +2511,7 @@
       }
       if (err) {
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
-          QR.cooldown.auto = !!$.get('captchas', []).length;
+          QR.cooldown.auto = qr.captchaIsEnabled ? !!$.get('captchas', []).length : true;
           QR.cooldown.set(2);
         } else {
           QR.cooldown.auto = false;
