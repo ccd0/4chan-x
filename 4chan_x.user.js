@@ -134,7 +134,8 @@
       },
       Posting: {
         'Quick Reply': [true, 'Reply without leaving the page.'],
-        'Focus on Alert': [true, 'Switch to tab if an error occurs'],
+        '4chan Pass': [false, 'Don\'t throw an error when posting without captcha.'],
+        'Focus on Alert': [true, 'Switch to tab if an error occurs.'],
         'Cooldown': [true, 'Prevent "flood detected" errors.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
@@ -2548,6 +2549,9 @@
         }
         $.set('captchas', captchas);
         QR.captcha.count(captchas.length);
+        if (Conf['4chan Pass'] === true) {
+          return;
+        }
         if (!response) {
           err = 'No valid captcha.';
         } else {
