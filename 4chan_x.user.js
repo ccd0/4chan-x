@@ -5003,7 +5003,7 @@
 
   Main = {
     init: function() {
-      var cutoff, hiddenThreads, id, key, now, path, pathname, temp, timestamp, val, _ref;
+      var cutoff, hiddenThreads, id, key, now, path, pathname, settings, temp, timestamp, val, _ref;
       Main.flatten(null, Config);
       path = location.pathname;
       pathname = path.slice(1).split('/');
@@ -5054,7 +5054,9 @@
           return;
       }
       if (Conf['Disable 4chan\'s extension']) {
-        localStorage.setItem('4chan-settings', '{"disableAll":true}');
+        settings = JSON.parse(localStorage.getItem('4chan-settings')) || {};
+        settings.disableAll = true;
+        localStorage.setItem('4chan-settings', JSON.stringify(settings));
       }
       Options.init();
       if (Conf['Quick Reply'] && Conf['Hide Original Post Form']) {
