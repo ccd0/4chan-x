@@ -4171,7 +4171,9 @@ Main =
         return
 
     if Conf['Disable 4chan\'s extension']
-      localStorage.setItem '4chan-settings', '{"disableAll":true}'
+      settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
+      settings.disableAll = true
+      localStorage.setItem '4chan-settings', JSON.stringify settings
 
     Options.init()
 
