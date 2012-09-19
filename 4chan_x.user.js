@@ -2331,6 +2331,7 @@
         } else {
           return;
         }
+        $.addClass(QR.el, 'captcha');
         $.after($('.textarea', QR.el), $.el('div', {
           className: 'captchaimg',
           title: 'Reload',
@@ -5792,8 +5793,11 @@ h1 {\
 }\
 #qr textarea.field {\
   display: -webkit-box;\
-  min-height: 120px;\
+  min-height: 160px;\
   min-width: 100%;\
+}\
+#qr.captcha textarea.field {\
+  min-height: 120px;\
 }\
 .textarea {\
   position: relative;\
