@@ -5978,7 +5978,7 @@ body.unscroll {\
   max-width: 500px;\
 }\
 .qphl {\
-  outline: 2px solid rgba(216, 94, 49, .7);\
+  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\
 }\
 .quotelink.deadlink {\
   text-decoration: underline !important;\
@@ -6006,10 +6006,18 @@ div.opContainer {\
   display: block !important;\
 }\
 .opContainer.filter_highlight {\
-  box-shadow: inset 5px 0 rgba(255,0,0,0.5);\
+  box-shadow: inset 5px 0 rgba(255, 0, 0, .5);\
+}\
+.opContainer.filter_highlight.qphl {\
+  box-shadow: inset 5px 0 rgba(255, 0, 0, .5),\
+              0 0 0 2px rgba(216, 94, 49, .7);\
 }\
 .filter_highlight > .reply {\
-  box-shadow: -5px 0 rgba(255,0,0,0.5);\
+  box-shadow: -5px 0 rgba(255, 0, 0, .5);\
+}\
+.filter_highlight > .reply.qphl {\
+  box-shadow: -5px 0 rgba(255, 0, 0, .5),\
+              0 0 0 2px rgba(216, 94, 49, .7)\
 }\
 .filtered,\
 .quotelink.filtered {\
