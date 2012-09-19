@@ -5805,9 +5805,12 @@ h1 {\
 #charCount {\
   color: #000;\
   background: hsla(0, 0%, 100%, .5);\
+  font-size: 8pt;\
+  margin: 1px;\
   position: absolute;\
-  top: 100%;\
+  bottom: 0;\
   right: 0;\
+  pointer-events: none;\
 }\
 #charCount.warning {\
   color: red;\
