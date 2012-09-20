@@ -60,7 +60,7 @@ QR =
       el.innerHTML = null
       $.add el, err
     QR.open()
-    if /captcha|verification/i.test el.textContent
+    if QR.captchaIsEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
     alert el.textContent if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
@@ -345,6 +345,7 @@ QR =
 
   captcha:
     init: ->
+      return if -1 isnt d.cookie.indexOf 'pass_enabled='
       return unless QR.captchaIsEnabled = !!$.id 'captchaFormPart'
       if $.id 'recaptcha_challenge_field_holder'
         @ready()
@@ -357,6 +358,7 @@ QR =
         delete @onready
       else
         return
+      $.addClass QR.el, 'captcha'
       $.after $('.textarea', QR.el), $.el 'div',
         className: 'captchaimg'
         title: 'Reload'

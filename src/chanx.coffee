@@ -842,6 +842,8 @@ Keybinds =
     key = switch kc = e.keyCode
       when 8
         ''
+      when 13
+        'Enter'
       when 27
         'Esc'
       when 37

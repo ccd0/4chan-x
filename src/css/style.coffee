@@ -252,15 +252,22 @@ h1,
 }
 #qr textarea.field {
   display: -webkit-box;
-  min-height: 120px;
+  min-height: 160px;
   min-width: 100%;
+}
+#qr.captcha textarea.field {
+  min-height: 120px;
 }
 #charCount {
   color: #000;
   background: hsla(0, 0%, 100%, .5);
   position: absolute;
-  top: 100%;
+  margin: 1px;
+  font-size: 8pt;
   right: 0;
+  top: 100%;
+  bottom: 0;
+  pointer-events: none;
 }
 #charCount.warning {
   color: red;
@@ -562,10 +569,20 @@ div.opContainer {
   display: block !important;
 }
 .opContainer.filter_highlight {
-  box-shadow: inset 5px 0 rgba(255,0,0,0.5);
+  box-shadow: inset 5px 0 rgba(255,0,0,.5);
+}
+.opContainer.filter_highlight.qphl {
+  box-shadow: 
+    inset 5px 0 rgba(255,0,0,.5),
+    0 0 0 2px rgba(216,94,49,.7);
 }
 .filter_highlight > .reply {
   box-shadow: -5px 0 rgba(255,0,0,0.5);
+}
+.filter_highlight > .reply.qphl {
+  box-shadow:
+    -5px 0 rgba(255,0,0,.5),
+    0 0 0 2px rgba(216,94,49,.7)
 }
 .filtered,
 .quotelink.filtered {
@@ -1597,6 +1614,7 @@ textarea {
   background-color: transparent !important;
 }
 /* Width and height of all #qr elements (excluding some captcha elements) */
+#qr.captcha textarea,
 #qr textarea {
   min-height: 0 !important;
 }
@@ -1689,12 +1707,6 @@ html body span[style="left: 5px; position: absolute;"] a {
   height: 14px;
   padding-top: 3px;
   width: 56px;
-}
-#qr textarea.field {
-  height: 88px !important;
-}
-.textarea {
-  height: 89px;
 }
 hr {
   position: relative;
@@ -2481,9 +2493,15 @@ body {
       if Conf["Compact Post Form Inputs"]
         css += """
 #qr textarea.field {
+  height: 161px !important;
+}
+#qr.captcha textarea.field {
   height: 114px !important;
 }
 .textarea {
+  height: 162px;
+}
+#qr.captcha .textarea {
   height: 115px;
 }
 #qr .field[name="name"],
@@ -2495,6 +2513,18 @@ body {
 """
       else
         css += """
+#qr textarea.field {
+  height: 135px !important;
+}
+#qr.captcha textarea.field {
+  height: 88px !important;
+}
+#qr .textarea {
+  height: 89px;
+}
+#qr.captcha .textarea {
+  height: 136px;
+}
 #qr .field[name="email"],
 #qr .field[name="sub"] {
   width: """ + (248 + sidebarOffsetW) + """px !important;
