@@ -93,7 +93,7 @@
 * Thank you.
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, MascotTools, Mascots, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, enabledmascots, g, newTheme, userMascots, userThemes;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, MascotTools, Mascots, Menu, Nav, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, g, newTheme, userMascots, userThemes;
 
   Config = {
     main: {
@@ -283,8 +283,6 @@
   editMode = false;
 
   newTheme = false;
-
-  enabledmascots = {};
 
   d = document;
 
@@ -2371,12 +2369,16 @@
       });
       for (name in userMascots) {
         mascot = userMascots[name];
+        console.log(mascot);
         if (!mascot["Deleted"]) {
-          description = name;
           li = $.el('li', {
             className: 'mascot',
             innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + mascot.image + ");'></div><span class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a> / <a class=delete name='" + name + "' href='javascript:;'>Delete</a></span>"
           });
+          div = $('div', li);
+          if (mascot["Enabled"]) {
+            $.addClass(div, 'enabled');
+          }
           $.on($('a.edit', li), 'click', function() {
             if (!Conf["Style"]) {
               alert("Please enable Style Options and reload the page to use Mascot Tools.");
@@ -2389,28 +2391,21 @@
             var container;
             container = this.parentElement.parentElement;
             if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
-              if (enabledmascots[this.name]) {
-                enabledmascots[this.name] = false;
-                $.set(this.name, false);
-              }
+              userMascots[this.name]["Enabled"] = false;
               userMascots[this.name]["Deleted"] = true;
               $.set("userMascots", userMascots);
               return $.rm(container);
             }
           });
-          div = $('div', li);
-          if (enabledmascots[name] === true) {
-            $.addClass(div, 'enabled');
-          }
           $.on(div, 'click', function() {
-            if (enabledmascots[this.id] === true) {
+            if (userMascots[this.id]["Enabled"]) {
               $.rmClass(this, 'enabled');
-              $.set(this.id, false);
-              return enabledmascots[this.id] = false;
+              userMascots[this.id]["Enabled"] = false;
+              return $.set("userMascots", userMascots);
             } else {
               $.addClass(this, 'enabled');
-              $.set(this.id, true);
-              return enabledmascots[this.id] = true;
+              userMascots[this.id]["Enabled"] = true;
+              return $.set("userMascots", userMascots);
             }
           });
           $.add(ul, li);
@@ -2423,14 +2418,14 @@
         innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a> / <a href=\"javascript:;\" id=\"createNew\">New Mascot</a>"
       });
       $.on($('#clear', batchmascots), 'click', function() {
-        var mascotname, _results;
+        var _results;
         _results = [];
-        for (mascotname in enabledmascots) {
-          mascot = enabledmascots[mascotname];
-          if (enabledmascots[mascotname] === true) {
-            $.rmClass($('#' + mascotname, this.parentElement.parentElement), 'enabled');
-            $.set(mascotname, false);
-            _results.push(enabledmascots[mascotname] = false);
+        for (name in userMascots) {
+          mascot = userMascots[name];
+          if (mascot["Enabled"]) {
+            $.rmClass($('#' + name, this.parentElement.parentElement), 'enabled');
+            userMascots[name]["Enabled"] = false;
+            _results.push($.set("userMascots", userMascots));
           } else {
             _results.push(void 0);
           }
@@ -2438,14 +2433,14 @@
         return _results;
       });
       $.on($('#selectAll', batchmascots), 'click', function() {
-        var mascotname, _results;
+        var _results;
         _results = [];
-        for (mascotname in enabledmascots) {
-          mascot = enabledmascots[mascotname];
-          if ($.get(mascotname, false) === false && !userMascots[mascotname]["Deleted"]) {
-            $.addClass($('#' + mascotname, this.parentElement.parentElement), 'enabled');
-            $.set(mascotname, true);
-            _results.push(enabledmascots[mascotname] = true);
+        for (name in userMascots) {
+          mascot = userMascots[name];
+          if (!(mascot["Enabled"] || mascot["Deleted"] || mascot["Hidden"])) {
+            $.addClass($('#' + name, this.parentElement.parentElement), 'enabled');
+            userMascots[name]["Enabled"] = true;
+            _results.push($.set("userMascots", true));
           } else {
             _results.push(void 0);
           }
@@ -7229,7 +7224,7 @@
         mascotnames = [];
         for (name in userMascots) {
           mascot = userMascots[name];
-          if (enabledmascots[name] === true) {
+          if (mascot["Enabled"]) {
             mascotnames.push(name);
           }
         }
@@ -7695,7 +7690,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
 
   Main = {
     init: function() {
-      var key, mascot, name, now, path, pathname, temp, val;
+      var customMascots, customThemes, key, mascot, name, now, path, pathname, temp, val;
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
@@ -7703,18 +7698,18 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
       userThemes = $.get("userThemes", Themes);
       userMascots = $.get("userMascots", Mascots);
+      customMascots = $.get("customMascots", false);
+      customThemes = $.get("customThemes", false);
       for (name in userMascots) {
         mascot = userMascots[name];
-        if (!userMascots[name]["Deleted"]) {
-          enabledmascots[name] = $.get(name, function() {
+        if (!(mascot["Deleted"] || (mascot["Enabled"] != null))) {
+          userMascots[name]["Enabled"] = $.get(name, function() {
             if (mascot.category === 'SFW') {
               return true;
             } else {
               return false;
             }
           });
-        } else {
-          enabledmascots[name] = $.get(name, false);
         }
       }
       path = location.pathname;

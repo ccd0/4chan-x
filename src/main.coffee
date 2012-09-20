@@ -6,15 +6,15 @@ Main =
     for key, val of Conf
       Conf[key] = $.get key, val
 
-    userThemes  = $.get "userThemes",  Themes
-    userMascots = $.get "userMascots", Mascots
+    userThemes    = $.get "userThemes",    Themes
+    userMascots   = $.get "userMascots",   Mascots
+    customMascots = $.get "customMascots", false
+    customThemes  = $.get "customThemes",  false
 
     for name, mascot of userMascots
-      unless userMascots[name]["Deleted"]
-        enabledmascots[name] = $.get name, ->
+      unless mascot["Deleted"] or mascot["Enabled"]?
+        userMascots[name]["Enabled"] = $.get name, ->
           if mascot.category == 'SFW' then true else false
-      else
-        enabledmascots[name] = $.get name, false
       
 
     path = location.pathname

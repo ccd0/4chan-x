@@ -240,13 +240,15 @@ Options =
       className:   'mascots'
     for name, mascot of userMascots
       unless mascot["Deleted"]
-        description = name
         li = $.el 'li',
           className: 'mascot'
           innerHTML: "
 <div id='#{name}' class='#{mascot.category}' style='background-image: url(#{mascot.image});'></div>
 <span class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a></span>
 "
+        div = $('div', li)
+        if mascot["Enabled"]
+          $.addClass div, 'enabled'
         $.on $('a.edit', li), 'click', ->
           unless Conf["Style"]
             alert "Please enable Style Options and reload the page to use Mascot Tools."
@@ -256,24 +258,19 @@ Options =
         $.on $('a.delete', li), 'click', ->
           container = @.parentElement.parentElement
           if confirm "Are you sure you want to delete \"#{@name}\"?"
-            if enabledmascots[@name]
-              enabledmascots[@name] = false
-              $.set @name, false
+            userMascots[@name]["Enabled"] = false
             userMascots[@name]["Deleted"] = true
             $.set "userMascots", userMascots
             $.rm container
-        div = $('div', li)
-        if enabledmascots[name] == true
-          $.addClass div, 'enabled'
         $.on div, 'click', ->
-          if enabledmascots[@.id] == true
+          if userMascots[@.id]["Enabled"]
             $.rmClass @, 'enabled'
-            $.set @.id, false
-            enabledmascots[@.id] = false
+            userMascots[@.id]["Enabled"] = false
+            $.set "userMascots", userMascots
           else
             $.addClass @, 'enabled'
-            $.set @.id, true
-            enabledmascots[@.id] = true
+            userMascots[@.id]["Enabled"] = true
+            $.set "userMascots", userMascots
         $.add ul, li
         $.add parentdiv, ul
     $.add $('#mascot_tab + div', dialog), parentdiv
@@ -281,17 +278,17 @@ Options =
       id:        "mascots_batch"
       innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a> / <a href=\"javascript:;\" id=\"createNew\">New Mascot</a>"
     $.on $('#clear', batchmascots), 'click', ->
-      for mascotname, mascot of enabledmascots
-        if enabledmascots[mascotname] == true
-          $.rmClass $('#' + mascotname, @parentElement.parentElement), 'enabled'
-          $.set mascotname, false
-          enabledmascots[mascotname] = false
+      for name, mascot of userMascots
+        if mascot["Enabled"]
+          $.rmClass $('#' + name, @parentElement.parentElement), 'enabled'
+          userMascots[name]["Enabled"] = false
+          $.set "userMascots", userMascots
     $.on $('#selectAll', batchmascots), 'click', ->
-      for mascotname, mascot of enabledmascots
-        if $.get(mascotname, false) == false and not userMascots[mascotname]["Deleted"]
-          $.addClass $('#' + mascotname, @parentElement.parentElement), 'enabled'
-          $.set mascotname, true
-          enabledmascots[mascotname] = true
+      for name, mascot of userMascots
+        unless mascot["Enabled"] or mascot["Deleted"] or mascot["Hidden"]
+          $.addClass $('#' + name, @parentElement.parentElement), 'enabled'
+          userMascots[name]["Enabled"] = true
+          $.set "userMascots", true
     $.on $('#createNew', batchmascots), 'click', ->
       unless Conf["Style"]
         alert "Please enable Style Options and reload the page to use Mascot Tools."

@@ -4,7 +4,7 @@ MascotTools =
     unless editMode 
       mascotnames = []
       for name, mascot of userMascots
-        if enabledmascots[name] == true
+        if mascot["Enabled"]
           mascotnames.push name
       unless Conf["mascot"] = mascotnames[Math.floor(Math.random() * mascotnames.length)]
         return
