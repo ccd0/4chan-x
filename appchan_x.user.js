@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           AppChan x
-// @version        0.9.2beta
+// @version        0.9.3beta
 // @namespace      zixaphir
 // @description    Adds various features and stylings.
 // @copyright      4chan x - 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -8085,7 +8085,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '0.9.2beta',
+    version: '0.9.3beta',
     callbacks: []
   };
 
