@@ -254,7 +254,8 @@
         height: screenHeight - rect.height,
         width: screenWidth - rect.width,
         screenHeight: screenHeight,
-        screenWidth: screenWidth
+        screenWidth: screenWidth,
+        isTouching: isTouching
       };
       if (isTouching) {
         o.identifier = e.identifier;
@@ -277,6 +278,7 @@
         touch = _ref[_i];
         if (touch.identifier === this.identifier) {
           drag.call(this, touch);
+          return;
         }
       }
     };
@@ -315,18 +317,19 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         touch = _ref[_i];
         if (touch.identifier === this.identifier) {
-          dragend.call(this, touch);
+          dragend.call(this);
+          return;
         }
       }
     };
-    dragend = function(e) {
-      if (e.type === 'mouseup') {
-        d.removeEventListener('mousemove', this.move, false);
-        d.removeEventListener('mouseup', this.up, false);
-      } else {
+    dragend = function() {
+      if (this.isTouching) {
         d.removeEventListener('touchmove', this.move, false);
         d.removeEventListener('touchend', this.up, false);
         d.removeEventListener('touchcancel', this.up, false);
+      } else {
+        d.removeEventListener('mousemove', this.move, false);
+        d.removeEventListener('mouseup', this.up, false);
       }
       return localStorage.setItem("" + g.NAMESPACE + this.id + ".position", this.style.cssText);
     };

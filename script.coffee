@@ -206,6 +206,7 @@ UI = (->
       width:  screenWidth  - rect.width
       screenHeight: screenHeight
       screenWidth:  screenWidth
+      isTouching:   isTouching
     }
     if isTouching
       o.identifier = e.identifier
@@ -223,7 +224,7 @@ UI = (->
     for touch in e.changedTouches
       if touch.identifier is @identifier
         drag.call @, touch
-    return
+        return
   drag = (e) ->
     left = e.clientX - @dx
     top  = e.clientY - @dy
@@ -246,16 +247,16 @@ UI = (->
   touchend = (e) ->
     for touch in e.changedTouches
       if touch.identifier is @identifier
-        dragend.call @, touch
-    return
-  dragend = (e) ->
-    if e.type is 'mouseup'
-      d.removeEventListener 'mousemove', @move, false
-      d.removeEventListener 'mouseup',   @up,   false
-    else # touchend or touchcancel
+        dragend.call @
+        return
+  dragend = ->
+    if @isTouching
       d.removeEventListener 'touchmove',   @move, false
       d.removeEventListener 'touchend',    @up,   false
       d.removeEventListener 'touchcancel', @up,   false
+    else # mouseup
+      d.removeEventListener 'mousemove', @move, false
+      d.removeEventListener 'mouseup',   @up,   false
     localStorage.setItem "#{g.NAMESPACE}#{@id}.position", @style.cssText
 
   hoverstart = (root, el, events, cb) ->
