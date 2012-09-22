@@ -1844,7 +1844,8 @@ div.reply {
   background: """ + theme["Reply Background"] + """;
   border: 1px solid """ + theme["Reply Border"]  + """;
 }
-.reply.highlight {
+.reply.highlight,
+.reply:target {
   background: """ + theme["Highlighted Reply Background"] + """;
   border: 1px solid """ + theme["Highlighted Reply Border"]  + """;
 }
