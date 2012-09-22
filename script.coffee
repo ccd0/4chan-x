@@ -357,6 +357,7 @@ $.extend $,
       r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
+    r.withCredentials = type is 'post'
     r.send form
     r
   cache: (->
@@ -387,8 +388,16 @@ $.extend $,
   addStyle: (css) ->
     style = $.el 'style',
       textContent: css
-    # XXX Only Chrome has no d.head on document-start.
-    $.add d.head or d.documentElement, style
+    # That's terrible.
+    # XXX tmp fix for scriptish:
+    # https://github.com/scriptish/scriptish/issues/16
+    f = ->
+      # XXX Only Chrome has no d.head on document-start.
+      if root = d.head or d.documentElement
+        $.add root, style
+      else
+        setTimeout f, 20
+    f()
     style
   x: (path, root=d.body) ->
     # XPathResult.ANY_UNORDERED_NODE_TYPE === 8
@@ -847,7 +856,9 @@ Main =
 
   initFeatures: ->
     if Conf['Disable 4chan\'s extension']
-      localStorage.setItem '4chan-settings', '{"disableAll":true}'
+      settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
+      settings.disableAll = true
+      localStorage.setItem '4chan-settings', JSON.stringify settings
 
     if Conf['Resurrect Quotes']
       try
@@ -1127,7 +1138,7 @@ body.fourchan_x {
   max-width: 500px;
 }
 .qphl {
-  outline: 2px solid rgba(216, 94, 49, .7);
+  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);
 }
 
 /* file */
@@ -1450,7 +1461,7 @@ Build =
           "<span class='postNum desktop'>" +
             "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
             "<a href='#{
-              if g.REPLY and g.THREAD_ID is threadID
+              if g.REPLY and +g.THREAD_ID is threadID
                 "javascript:quote(#{postID})"
               else
                 "/#{board}/res/#{threadID}#q#{postID}"

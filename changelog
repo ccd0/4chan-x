@@ -8,6 +8,19 @@ alpha
 
 master
 
+2.35.3
+- Mayhem
+  Larger Comment text input by default for 4chan Pass users and on /f/ (no captcha).
+
+2.35.2
+- Mayhem
+  Fix 4chan Pass with QR on Firefox.
+
+2.35.1
+- Mayhem
+  Add support for 4chan Pass.
+  You can now use 'Enter' in keybind combinations.
+
 2.35.0
 - Mayhem
   Use 4chan's API to fetch posts for:
