@@ -374,6 +374,9 @@ h1,
   overflow: auto;
   padding: 0 5px 0 7px;
 }
+#options .optionlabel {
+  text-decoration: underline;
+}
 #options input:checked + .optionlabel,
 #options input:checked + .rice + .optionlabel {
   font-weight: 800;
@@ -393,6 +396,16 @@ h1,
 }
 #options label {
   text-decoration: underline;
+}
+#options .styleoption label {
+  text-decoration: none;
+}
+#options .option {
+  width: 50%;
+  display: inline-block;
+}
+#options .styleoption {
+  padding: 1px 5px 1px 7px;
 }
 #options .mascots {
   text-align: center;
@@ -634,6 +647,9 @@ div.opContainer {
 }
 body {
   padding: 16px 0 16px;
+}
+body > script + hr + div {
+  display: none;
 }
 @media only screen and (max-width: 1100px) {
   body {
@@ -2000,6 +2016,9 @@ a.forwardlink {
 #options ul {
   border-color: """ + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)") + """;
 }
+#options .styleoption {
+  border-top: 1px solid """ + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.05)" else "rgba(0,0,0,0.05)") + """;
+}
 """ + theme["Custom CSS"]
       if theme["Dark Theme"] == "1"
         css += """
@@ -2613,6 +2632,7 @@ h2,
   width: """ + (246 + sidebarOffsetW) + """px;
   padding-bottom: 4px;
   z-index: 96;
+  top: """ + ( 100 + logoOffset) + """px !important;
 }
 """
       if Conf["Underline Links"]

@@ -47,7 +47,7 @@ ThemeTools =
         editTheme[item] = ""
         div = $.el "div",
           className: "themevar"
-          innerHTML: "<div class=optionname>#{item}</div><div class=option><input class=field name='#{item}' placeholder='#{item}'>"
+          innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input class=field name='#{item}' placeholder='#{item}'>"
         $.on $('input', div), 'blur', ->
           editTheme[@name] = @value
           Style.addStyle(editTheme)
@@ -56,7 +56,7 @@ ThemeTools =
       for item in layout
         div = $.el "div",
           className: "themevar"
-          innerHTML: "<div class=optionname>#{item}</div><div class=option><input type=text class=field name='#{item}' placeholder='#{item}' value='#{editTheme[item]}'>"
+          innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input type=text class=field name='#{item}' placeholder='#{item}' value='#{editTheme[item]}'>"
         $.on $('input', div), 'blur', ->
           depth = 0
           for i in [0..@value.length - 1]

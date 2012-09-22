@@ -202,19 +202,21 @@ Options =
         description = arr[1]
         if arr[2] == 'text'
           li = $.el 'li',
-          innerHTML: "<label><span class=\"optionlabel\">#{optionname}</span></label><span class=description>: #{description}</span><input name=\"#{optionname}\" style=\"width: 100%\"><br>"
+            className: "styleoption"
+            innerHTML: "<div class=\"option\"><span class=\"optionlabel\">#{optionname}</span>: <span class=\"description\">#{description}</span></div><div class =\"option\"><input name=\"#{optionname}\" style=\"width: 100%\"></div>"
           styleSetting = $ "input[name='#{optionname}']", li
           styleSetting.value = $.get optionname, Conf[optionname]
           $.on styleSetting, 'change', $.cb.value
           $.on styleSetting, 'change', Options.style
         else if arr[2]
           liHTML = "
-          <label><span class=\"optionlabel\">#{optionname}</span></label><span class=description>: #{description}</span><select name=\"#{optionname}\"><br>"
+          <div class=\"option\"><span class=\"optionlabel\">#{optionname}</span>: <span class=\"description\">#{description}</span></div><div class =\"option\"><select name=\"#{optionname}\"></div>"
           for selectoption, optionvalue in arr[2]
             liHTML = liHTML + "<option value=\"#{selectoption}\">#{selectoption}</option>"
           liHTML = liHTML + "</select>"
           li = $.el 'li',
             innerHTML: liHTML
+            className: "styleoption"
           styleSetting = $ "select[name='#{optionname}']", li
           styleSetting.value = $.get optionname, Conf[optionname]
           $.on styleSetting, 'change', $.cb.value
@@ -222,7 +224,8 @@ Options =
         else
           checked = if $.get(optionname, Conf[optionname]) then 'checked' else ''
           li = $.el 'li',
-            innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}><span class=\"optionlabel\">#{optionname}<span></label><span class=description>: #{description}</span>"
+            className: "styleoption"
+            innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}><span class=\"optionlabel\">#{optionname}</span><span class=description>: #{description}</span></label>"
           $.on $('input', li), 'click', $.cb.checked
         $.add ul, li
       $.add div, ul
