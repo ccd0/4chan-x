@@ -919,10 +919,12 @@
     };
 
     Post.prototype.rmClone = function(index) {
-      var i, _i, _ref;
+      var clone, _i, _len, _ref;
       this.clones.splice(index, 1);
-      for (i = _i = index, _ref = this.clones.length; index <= _ref ? _i < _ref : _i > _ref; i = index <= _ref ? ++_i : --_i) {
-        this.clones[i].nodes.root.setAttribute('data-clone', i);
+      _ref = this.clones.slice(index);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        clone = _ref[_i];
+        clone.nodes.root.setAttribute('data-clone', index++);
       }
     };
 

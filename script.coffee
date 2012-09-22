@@ -718,8 +718,8 @@ class Post
     new Clone @, context
   rmClone: (index) ->
     @clones.splice index, 1
-    for i in [index...@clones.length]
-      @clones[i].nodes.root.setAttribute 'data-clone', i
+    for clone in @clones[index..]
+      clone.nodes.root.setAttribute 'data-clone', index++
     return
 
 class Clone extends Post
