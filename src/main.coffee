@@ -8,14 +8,11 @@ Main =
 
     userThemes    = $.get "userThemes",    Themes
     userMascots   = $.get "userMascots",   Mascots
-    customMascots = $.get "customMascots", false
-    customThemes  = $.get "customThemes",  false
 
     for name, mascot of userMascots
       unless mascot["Deleted"] or mascot["Enabled"]?
         userMascots[name]["Enabled"] = $.get name, ->
           if mascot.category == 'SFW' then true else false
-      
 
     path = location.pathname
     pathname = path[1..].split '/'
@@ -62,7 +59,7 @@ Main =
 
     if Conf['Disable inline 4chan addon'] or Conf['Style']
       localStorage.setItem '4chan-settings', '{"disableAll":true}'
-      
+
     if Conf['Filter']
       Filter.init()
 
