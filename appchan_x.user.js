@@ -7190,6 +7190,32 @@
       }
       return $.add(d.body, dialog);
     },
+    color: function(hex) {
+      this.hex = "#" + hex;
+      this.private_rgb = function(hex) {
+        var rgb;
+        rgb = [];
+        hex = parseInt(hex, 16);
+        rgb[0] = (hex >> 16) & 0xFF;
+        rgb[1] = (hex >> 8) & 0xFF;
+        rgb[2] = hex & 0xFF;
+        return rgb;
+      };
+      this.rgb = this.private_rgb.join(",");
+      this.isLight = function(rgb) {
+        return rgb[0] + rgb[1] + rgb[2] >= 400;
+      };
+      this.shiftRGB = function(shift, smart) {
+        var rgb;
+        rgb = this.private_rgb.slice(0);
+        shift = smart ? this.isLight ? shift < 0 ? shift : -shift : Math.abs(shift) : shift;
+        rgb[0] = Math.min(Math.max(rgb[0] + shift, 0), 255);
+        rgb[1] = Math.min(Math.max(rgb[1] + shift, 0), 255);
+        rgb[2] = Math.min(Math.max(rgb[2] + shift, 0), 255);
+        return rgb.join(",");
+      };
+      return this.hover = this.shiftRGB(16, true);
+    },
     save: function(theme) {
       var name;
       name = theme["Theme"];

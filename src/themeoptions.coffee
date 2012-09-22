@@ -76,6 +76,36 @@ ThemeTools =
     if newTheme then Style.addStyle(editTheme)
     $.add d.body, dialog
 
+  color: (hex) ->
+    @hex = "#" + hex
+    @private_rgb = (hex) ->
+      rgb = []
+      hex = parseInt hex, 16
+      rgb[0] = (hex >> 16) & 0xFF
+      rgb[1] = (hex >> 8) & 0xFF
+      rgb[2] = hex & 0xFF
+      return rgb;
+    @rgb = @private_rgb.join ","
+    @isLight = (rgb) ->
+      rgb[0] + rgb[1] + rgb[2] >= 400
+    @shiftRGB = (shift, smart) ->
+      rgb = @private_rgb.slice 0
+      shift = if smart
+        if @isLight
+          if shift < 0 
+            shift
+          else
+            -shift
+        else
+          Math.abs shift
+      else
+        shift;
+      rgb[0] = Math.min Math.max(rgb[0] + shift, 0), 255
+      rgb[1] = Math.min Math.max(rgb[1] + shift, 0), 255
+      rgb[2] = Math.min Math.max(rgb[2] + shift, 0), 255
+      return rgb.join ","
+    @hover = @shiftRGB 16, true
+
   save: (theme) ->
     name = theme["Theme"]
     delete theme["Theme"]
