@@ -316,5 +316,5 @@ Main =
     $.globalEval "#{code}".replace '_id_', bq.id
 
   namespace: 'appchan_x.'
-  version: '0.9.3beta'
+  version: '0.9.4beta'
   callbacks: []
