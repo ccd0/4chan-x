@@ -994,6 +994,7 @@ Main =
 
   settings: ->
     alert 'Here be settings'
+
   css: """
 /* general */
 .dialog.reply {
@@ -1159,6 +1160,7 @@ body.fourchan_x {
 
 Redirect =
   image: (board, filename) ->
+    # XXX need to differentiate between thumbnail only and full_image for img src=
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg'
@@ -1167,8 +1169,8 @@ Redirect =
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
       when 'ck', 'lit'
         "//fuuka.warosu.org/#{board}/full_image/#{filename}"
-      # when 'diy', 'sci'
-      #   "//archive.installgentoo.net/#{board}/full_image/#{filename}"
+      when 'diy', 'sci'
+        "//archive.installgentoo.net/#{board}/full_image/#{filename}"
       when 'cgl', 'g', 'mu', 'soc', 'w'
         "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
@@ -1505,6 +1507,8 @@ Get =
       threadID: threadID
       postID:   postID
     }
+  contextFromLink: (quotelink) ->
+    Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', quotelink
   postClone: (board, threadID, postID, root, context) ->
     if post = g.posts["#{board}.#{postID}"]
       Get.insert post, root, context
@@ -1536,6 +1540,7 @@ Get =
     if post = g.posts["#{board}.#{postID}"]
       Get.insert post, root, context
       return
+
     {status} = req
     if status isnt 200
       # The thread can die by the time we check a quote.
@@ -1552,9 +1557,7 @@ Get =
       return
 
     posts = JSON.parse(req.response).posts
-    if spoilerRange = posts[0].custom_spoiler
-      Build.spoilerRange[board] = spoilerRange
-    postID = +postID
+    Build.spoilerRange[board] = posts[0].custom_spoiler
     for post in posts
       break if post.no is postID # we found it!
       if post.no > postID
@@ -1580,6 +1583,7 @@ Get =
     if post = g.posts["#{board}.#{postID}"]
       Get.insert post, root, context
       return
+
     data = JSON.parse req.response
     if data.error
       $.addClass root, 'warning'
@@ -1770,21 +1774,21 @@ QuoteInline =
       QuoteInline.add @, board, threadID, postID
     @classList.toggle 'inlined'
 
+  findRoot: (quotelink, isBacklink) ->
+    if isBacklink
+      quotelink.parentNode.parentNode
+    else
+      $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
   add: (quotelink, board, threadID, postID) ->
+    isBacklink = $.hasClass quotelink, 'backlink'
     inline = $.el 'div',
       id: "i#{postID}"
       className: 'inline'
-
-    root =
-      if isBacklink = $.hasClass quotelink, 'backlink'
-        quotelink.parentNode.parentNode
-      else
-        $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
-    context = Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', quotelink
-    $.after root, inline
+    context = Get.contextFromLink quotelink
+    $.after QuoteInline.findRoot(quotelink, isBacklink), inline
     Get.postClone board, threadID, postID, inline, context
 
-    return unless board is g.BOARD.ID and $.x "ancestor::div[@id='t#{threadID}']", quotelink
+    return unless context.thread is g.threads["#{board}.#{threadID}"]
     post = g.posts["#{board}.#{postID}"]
 
     # Hide forward post if it's a backlink of a post in this thread.
@@ -1801,11 +1805,7 @@ QuoteInline =
 
   rm: (quotelink, board, threadID, postID) ->
     # Select the corresponding inlined quote, and remove it.
-    root =
-      if $.hasClass quotelink, 'backlink'
-        quotelink.parentNode.parentNode
-      else
-        $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
+    root = QuoteInline.findRoot quotelink, $.hasClass quotelink, 'backlink'
     root = $.x "following-sibling::div[@id='i#{postID}'][1]", root
     $.rm root
 
@@ -1816,38 +1816,31 @@ QuoteInline =
     post = g.posts["#{board}.#{postID}"]
     post.rmClone el.dataset.clone
 
-    inThreadID = +$.x('ancestor::div[@class="thread"]', quotelink).id[1..]
+    context = Get.contextFromLink quotelink
 
     # Decrease forward count and unhide.
     if Conf['Forward Hiding'] and
-      board is g.BOARD.ID and
-      threadID is inThreadID and
-      $.hasClass quotelink, 'backlink'
-        unless --post.forwarded
-          delete post.forwarded
-          $.rmClass post.nodes.root, 'forwarded'
+      context.thread is g.threads["#{board}.#{threadID}"] and
+      $.hasClass(quotelink, 'backlink') and
+      not --post.forwarded
+        delete post.forwarded
+        $.rmClass post.nodes.root, 'forwarded'
 
     # Repeat.
-    inlines = $$ '.inlined', el
-    for inline in inlines
+    for inline in $$ '.inlined', el
       {board, threadID, postID} = Get.postDataFromLink inline
-      root =
-        if $.hasClass inline, 'backlink'
-          inline.parentNode.parentNode
-        else
-          $.x 'ancestor-or-self::*[parent::blockquote][1]', inline
+      root = QuoteInline.findRoot inline, $.hasClass inline, 'backlink'
       root = $.x "following-sibling::div[@id='i#{postID}'][1]", root
       continue unless el = root.firstElementChild
       post = g.posts["#{board}.#{postID}"]
       post.rmClone el.dataset.clone
 
       if Conf['Forward Hiding'] and
-        board is g.BOARD.ID and
-        threadID is inThreadID and
-        $.hasClass inline, 'backlink'
-          unless --post.forwarded
-            delete post.forwarded
-            $.rmClass post.nodes.root, 'forwarded'
+        context.thread is g.threads["#{board}.#{threadID}"] and
+        $.hasClass(inline, 'backlink') and
+        not --post.forwarded
+          delete post.forwarded
+          $.rmClass post.nodes.root, 'forwarded'
     return
 
 QuotePreview =
@@ -1869,9 +1862,8 @@ QuotePreview =
     qp = $.el 'div',
       id: 'qp'
       className: 'reply dialog'
-    context = Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', @
     $.add d.body, qp
-    Get.postClone board, threadID, postID, qp, context
+    Get.postClone board, threadID, postID, qp, Get.contextFromLink @
 
     UI.hover @, qp, 'mouseout click', QuotePreview.mouseout
 
@@ -1894,10 +1886,8 @@ QuotePreview =
         $.addClass quote, 'forwardlink'
     return
   mouseout: ->
-    root = @el.firstElementChild
-
     # Stop if it only contains text.
-    return unless root
+    return unless root = @el.firstElementChild
 
     clone = Get.postFromRoot root
     post  = clone.origin
