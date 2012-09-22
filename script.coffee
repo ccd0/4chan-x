@@ -1958,7 +1958,11 @@ QR =
     if err
       if /captcha|verification/i.test(err.textContent) or err is 'Connection error with sys.4chan.org.'
         # Enable auto-post if we have some cached captchas.
-        QR.cooldown.auto = !!$.get('captchas', []).length
+        QR.cooldown.auto =
+          if QR.captchaIsEnabled
+            !!$.get('captchas', []).length
+          else
+            true
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
         QR.cooldown.set 2
