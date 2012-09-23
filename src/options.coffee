@@ -299,11 +299,11 @@ Options =
       MascotTools.dialog()
       Options.close()
     $.add $('#mascot_tab + div', dialog), batchmascots
-        
+
     Options.applyStyle(dialog, 'mascot_tab')
 
     Options.indicators dialog
-    
+
     if tab
       $("#main_tab", dialog).checked = false
       $("#" + tab + "_tab", dialog).checked = true
@@ -320,7 +320,7 @@ Options =
     Options.time.call     time
     Options.fileInfo.call fileInfo
     Options.favicon.call  favicon
-    
+
 
   indicators: (dialog) ->
     indicators = {}
@@ -337,7 +337,7 @@ Options =
       $.on $("[name='#{key}']", dialog), 'click', ->
         Options.indicators dialog
 
-        
+
   themeTab: (dialog) ->
     unless dialog
       dialog = $("#options", d.body)
@@ -353,7 +353,7 @@ Options =
           innerHTML: "
 <div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
   <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:#{theme['Checkbox Background']};border: 1px solid #{theme['Checkbox Border']};'></div>
-  <span style='color:#{theme['Subjects']}!important; font-weight: 700 !important'> #{themename}</span> 
+  <span style='color:#{theme['Subjects']}!important; font-weight: 700 !important'> #{themename}</span>
   <span style='color:#{theme['Names']}!important; font-weight: 700 !important'> #{theme['Author']}</span>
   <span style='color:#{theme['Sage']}!important'> (SAGE)</span>
   <span style='color:#{theme['Tripcodes']}!important'> #{theme['Author Tripcode']}</span>
@@ -403,9 +403,7 @@ Options =
         $.add parentdiv, div
     div = $.el 'div',
       id:        'addthemes'
-      innerHTML: "<a id=import href='javascript:;'>Import Theme</a><input type=file hidden> / <a id=newtheme href='javascript:;'>New Theme</a>"
-    $.on $("#import", div), 'click', ->
-      @nextSibling.click()
+      innerHTML: "<a id=newtheme href='javascript:;'>New Theme</a> / <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> / <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> / <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>"
     $.on $("#newtheme", div), 'click', ->
       unless Conf["Style"]
         alert "Please enable Style Options and reload the page to use Theme Tools."
@@ -413,31 +411,19 @@ Options =
       newTheme = true
       ThemeTools.init "untitled"
       Options.close()
-    $.on $("input", div), 'change', (evt) ->
-      file = evt.target.files[0]
-      reader = new FileReader()
-      reader.onload = (e) ->
-        try
-          theme = JSON.parse e.target.result
-        catch err
-          alert err
-          return
-        unless theme["Author Tripcode"]
-          alert "Theme file is invalid."
-          return
-        name = theme["Theme"]
-        delete theme["Theme"]
-        if userThemes[name] and not userThemes[name]["Deleted"]
-          if confirm "A theme with this name already exists. Would you like to over-write?"
-            delete userThemes[name]
-          else
-            return
-        userThemes[name] = theme
-        $.set 'userThemes', userThemes
-        alert "Theme \"#{name}\" imported!"
-        $.rm $("#themes", d.body)
-        Options.themeTab()
-      reader.readAsText(file);
+    $.on $("#import", div), 'click', ->
+      @.nextSibling.click()
+    $.on $("#OCimport", div), 'click', ->
+      @.nextSibling.click()
+    $.on $("#SSimport", div), 'click', ->
+      @.nextSibling.click()
+    $.on $("#importbutton", div), 'change', (evt) ->
+      ThemeTools.importtheme "appchan", evt
+    $.on $("#OCimportbutton", div), 'change', (evt) ->
+      ThemeTools.importtheme "oneechan", evt
+    $.on $("#SSimportbutton", div), 'change', (evt) ->
+      ThemeTools.importtheme "SS", evt
+
     $.add $('#theme_tab + div', dialog), parentdiv
     $.add $('#theme_tab + div', dialog), div
     Options.applyStyle(dialog, 'theme_tab')
@@ -529,8 +515,8 @@ Options =
       $.on $('a', save), 'click', ->
         Style.addStyle()
       $.add $('#' + tab + ' + div', dialog), save
-  
-  selectTheme: ->  
+
+  selectTheme: ->
     container = @.parentElement.parentElement
     if currentTheme = $.id(Conf['theme'])
       $.rmClass currentTheme, 'selectedtheme'

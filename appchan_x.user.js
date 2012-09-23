@@ -2520,7 +2520,7 @@
           div = $.el('div', {
             className: themename === Conf['theme'] ? 'selectedtheme replyContainer' : 'replyContainer',
             id: themename,
-            innerHTML: "<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div>  <span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + themename + "</span>   <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'> " + theme['Author'] + "</span>  <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>  <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>  <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  <a class=edit name='" + themename + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit</a>  <a class=export name='" + themename + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;export</a>  <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;delete</a>  <br>  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>    <a style='color:" + theme['Quotelinks'] + "!important; font-weight: 800;'>&gt;&gt;27582902</a>    <br>    Post content is right here.  </blockquote>  <h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
+            innerHTML: "<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div>  <span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + themename + "</span>  <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'> " + theme['Author'] + "</span>  <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>  <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>  <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  <a class=edit name='" + themename + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit</a>  <a class=export name='" + themename + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;export</a>  <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;delete</a>  <br>  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>    <a style='color:" + theme['Quotelinks'] + "!important; font-weight: 800;'>&gt;&gt;27582902</a>    <br>    Post content is right here.  </blockquote>  <h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
           });
           $.on($('a.edit', div), 'click', function() {
             if (!Conf["Style"]) {
@@ -2568,10 +2568,7 @@
       }
       div = $.el('div', {
         id: 'addthemes',
-        innerHTML: "<a id=import href='javascript:;'>Import Theme</a><input type=file hidden> / <a id=newtheme href='javascript:;'>New Theme</a>"
-      });
-      $.on($("#import", div), 'click', function() {
-        return this.nextSibling.click();
+        innerHTML: "<a id=newtheme href='javascript:;'>New Theme</a> / <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> / <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> / <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>"
       });
       $.on($("#newtheme", div), 'click', function() {
         if (!Conf["Style"]) {
@@ -2582,38 +2579,23 @@
         ThemeTools.init("untitled");
         return Options.close();
       });
-      $.on($("input", div), 'change', function(evt) {
-        var file, reader;
-        file = evt.target.files[0];
-        reader = new FileReader();
-        reader.onload = function(e) {
-          var name;
-          try {
-            theme = JSON.parse(e.target.result);
-          } catch (err) {
-            alert(err);
-            return;
-          }
-          if (!theme["Author Tripcode"]) {
-            alert("Theme file is invalid.");
-            return;
-          }
-          name = theme["Theme"];
-          delete theme["Theme"];
-          if (userThemes[name] && !userThemes[name]["Deleted"]) {
-            if (confirm("A theme with this name already exists. Would you like to over-write?")) {
-              delete userThemes[name];
-            } else {
-              return;
-            }
-          }
-          userThemes[name] = theme;
-          $.set('userThemes', userThemes);
-          alert("Theme \"" + name + "\" imported!");
-          $.rm($("#themes", d.body));
-          return Options.themeTab();
-        };
-        return reader.readAsText(file);
+      $.on($("#import", div), 'click', function() {
+        return this.nextSibling.click();
+      });
+      $.on($("#OCimport", div), 'click', function() {
+        return this.nextSibling.click();
+      });
+      $.on($("#SSimport", div), 'click', function() {
+        return this.nextSibling.click();
+      });
+      $.on($("#importbutton", div), 'change', function(evt) {
+        return ThemeTools.importtheme("appchan", evt);
+      });
+      $.on($("#OCimportbutton", div), 'change', function(evt) {
+        return ThemeTools.importtheme("oneechan", evt);
+      });
+      $.on($("#SSimportbutton", div), 'change', function(evt) {
+        return ThemeTools.importtheme("SS", evt);
       });
       $.add($('#theme_tab + div', dialog), parentdiv);
       $.add($('#theme_tab + div', dialog), div);
@@ -7194,8 +7176,7 @@
       return $.add(d.body, dialog);
     },
     color: function(hex) {
-      this.hex = "#" + hex;
-      this.private_rgb = function(hex) {
+      this.calc_rgb = function(hex) {
         var rgb;
         rgb = [];
         hex = parseInt(hex, 16);
@@ -7204,6 +7185,8 @@
         rgb[2] = hex & 0xFF;
         return rgb;
       };
+      this.hex = "#" + hex;
+      this.private_rgb = this.calc_rgb(hex);
       this.rgb = this.private_rgb.join(",");
       this.isLight = function(rgb) {
         return rgb[0] + rgb[1] + rgb[2] >= 400;
@@ -7219,12 +7202,169 @@
       };
       return this.hover = this.shiftRGB(16, true);
     },
+    importtheme: function(origin, evt) {
+      var file, reader;
+      file = evt.target.files[0];
+      reader = new FileReader();
+      reader.onload = function(e) {
+        var bgColor, blinkColor, brderColor, imported, inputColor, inputbColor, jlinkColor, linkColor, linkHColor, mainColor, name, nameColor, quoteColor, sageColor, textColor, timeColor, titleColor, tripColor;
+        try {
+          imported = JSON.parse(e.target.result);
+        } catch (err) {
+          alert(err);
+          return;
+        }
+        if (!((origin !== 'appchan' && imported.mainColor) || (origin === 'appchan' && imported["Author Tripcode"]))) {
+          alert("Theme file is invalid.");
+          return;
+        }
+        name = imported.name || imported["Theme"];
+        delete imported.name;
+        if (userThemes[name] && !userThemes[name]["Deleted"]) {
+          if (confirm("A theme with this name already exists. Would you like to over-write?")) {
+            delete userThemes[name];
+          } else {
+            return;
+          }
+        }
+        if (origin === "oneechan" || origin === "SS") {
+          bgColor = new ThemeTools.color(imported.bgColor);
+          mainColor = new ThemeTools.color(imported.mainColor);
+          brderColor = new ThemeTools.color(imported.brderColor);
+          inputColor = new ThemeTools.color(imported.inputColor);
+          inputbColor = new ThemeTools.color(imported.inputbColor);
+          blinkColor = new ThemeTools.color(imported.blinkColor);
+          jlinkColor = new ThemeTools.color(imported.jlinkColor);
+          linkColor = new ThemeTools.color(imported.linkColor);
+          linkHColor = new ThemeTools.color(imported.linkHColor);
+          nameColor = new ThemeTools.color(imported.nameColor);
+          quoteColor = new ThemeTools.color(imported.quoteColor);
+          sageColor = new ThemeTools.color(imported.sageColor);
+          textColor = new ThemeTools.color(imported.textColor);
+          titleColor = new ThemeTools.color(imported.titleColor);
+          tripColor = new ThemeTools.color(imported.tripColor);
+          timeColor = new ThemeTools.color(imported.timeColor || imported.textColor);
+          if (origin === "oneechan") {
+            userThemes[name] = {
+              'Author': "Author",
+              'Author Tripcode': "'!TRip.C0d3'",
+              'Background Image': imported.bgImg,
+              'Background Attachment': imported.bgA,
+              'Background Position': imported.bgPY + " " + imported.bgPX,
+              'Background Repeat': imported.bgR,
+              'Background Color': bgColor.hex,
+              'Dialog Background': 'rgba(' + mainColor.rgb + ',.98)',
+              'Dialog Border': brderColor.hex,
+              'Thread Wrapper Background': 'rgba(0,0,0,0)',
+              'Thread Wrapper Border': 'rgba(0,0,0,0)',
+              'Reply Background': 'rgba(' + mainColor.rgb + ',' + imported.replyOp + ')',
+              'Reply Border': brderColor.hex,
+              'Highlighted Reply Background': 'rgba(' + mainColor.shiftRGB(4, true) + ',' + imported.replyOp + ')',
+              'Highlighted Reply Border': linkColor.hex,
+              'Backlinked Reply Outline': linkColor.hex,
+              'Checkbox Background': 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')',
+              'Checkbox Border': inputbColor.hex,
+              'Checkbox Checked Background': inputColor.hex,
+              'Input Background': 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')',
+              'Input Border': inputbColor.hex,
+              'Hovered Input Background': 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')',
+              'Hovered Input Border': inputbColor.hex,
+              'Focused Input Background': 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')',
+              'Focused Input Border': inputbColor.hex,
+              'Buttons Background': 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')',
+              'Buttons Border': inputbColor.hex,
+              'Navigation Background': 'rgba(' + bgColor.rgb + ',0.8)',
+              'Navigation Border': mainColor.hex,
+              'Links': linkColor.hex,
+              'Hovered Links': linkHColor.hex,
+              'Navigation Links': textColor.hex,
+              'Hovered Navigation Links': linkHColor.hex,
+              'Subjects': titleColor.hex,
+              'Names': nameColor.hex,
+              'Sage': sageColor.hex,
+              'Tripcodes': tripColor.hex,
+              'Emails': linkColor.hex,
+              'Post Numbers': linkColor.hex,
+              'Text': textColor.hex,
+              'Backlinks': linkColor.hex,
+              'Greentext': quoteColor.hex,
+              'Board Title': textColor.hex,
+              'Timestamps': timeColor.hex,
+              'Inputs': textColor.hex,
+              'Warnings': sageColor.hex,
+              'Shadow Color': 'rgba(' + mainColor.shiftRGB(16) + ',.9)',
+              'Dark Theme': mainColor.isLight ? '1' : '0',
+              'Custom CSS': "input[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + imported.customCSS
+            };
+          } else if (origin === "SS") {
+            userThemes[name] = {
+              'Author': "Author",
+              'Author Tripcode': "'!TRip.C0d3'",
+              'Background Image': imported.bgImg,
+              'Background Attachment': imported.bgA,
+              'Background Position': imported.bgPY + " " + imported.bgPX,
+              'Background Repeat': imported.bgR,
+              'Background Color': bgColor.hex,
+              'Dialog Background': 'rgba(' + mainColor.rgb + ',.98)',
+              'Dialog Border': brderColor.hex,
+              'Thread Wrapper Background': 'rgba(' + mainColor.rgb + ',.5)',
+              'Thread Wrapper Border': 'rgba(' + brderColor.rgb + ',.9)',
+              'Reply Background': 'rgba(' + mainColor.rgb + ',' + imported.replyOp + ')',
+              'Reply Border': brderColor.hex,
+              'Highlighted Reply Background': 'rgba(' + mainColor.shiftRGB(4, true) + ',' + imported.replyOp + ')',
+              'Highlighted Reply Border': linkColor.hex,
+              'Backlinked Reply Outline': linkColor.hex,
+              'Checkbox Background': 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')',
+              'Checkbox Border': inputbColor.hex,
+              'Checkbox Checked Background': inputColor.hex,
+              'Input Background': 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')',
+              'Input Border': inputbColor.hex,
+              'Hovered Input Background': 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')',
+              'Hovered Input Border': inputbColor.hex,
+              'Focused Input Background': 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')',
+              'Focused Input Border': inputbColor.hex,
+              'Buttons Background': 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')',
+              'Buttons Border': inputbColor.hex,
+              'Navigation Background': 'rgba(' + bgColor.rgb + ',0.8)',
+              'Navigation Border': mainColor.hex,
+              'Links': linkColor.hex,
+              'Hovered Links': linkHColor.hex,
+              'Navigation Links': textColor.hex,
+              'Hovered Navigation Links': linkHColor.hex,
+              'Subjects': titleColor.hex,
+              'Names': nameColor.hex,
+              'Sage': sageColor.hex,
+              'Tripcodes': tripColor.hex,
+              'Emails': linkColor.hex,
+              'Post Numbers': linkColor.hex,
+              'Text': textColor.hex,
+              'Backlinks': linkColor.hex,
+              'Greentext': quoteColor.hex,
+              'Board Title': textColor.hex,
+              'Timestamps': timeColor.hex,
+              'Inputs': textColor.hex,
+              'Warnings': sageColor.hex,
+              'Shadow Color': 'rgba(' + mainColor.shiftRGB(16) + ',.9)',
+              'Dark Theme': mainColor.isLight ? '1' : '0',
+              'Custom CSS': "#delform {\n  padding: 1px 2px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + imported.customCSS
+            };
+          }
+        } else if (origin === 'appchan') {
+          userThemes[name] = imported;
+        }
+        $.set('userThemes', userThemes);
+        alert("Theme \"" + name + "\" imported!");
+        $.rm($("#themes", d.body));
+        return Options.themeTab();
+      };
+      return reader.readAsText(file);
+    },
     save: function(theme) {
       var name;
       name = theme["Theme"];
       delete theme["Theme"];
-      if (userThemes[name] && !userThemes[name]["Deleted"]) {
-        if (confirm("A theme with this name already exists. Would you like to over-write?")) {
+      if (userThemes[name] && !userThemes[na(me)]["Deleted"]) {
+        if (confirm("A theme with this name alre  ady exists. Would you like to over-write?")) {
           delete userThemes[name];
         } else {
           return;

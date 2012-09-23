@@ -77,14 +77,15 @@ ThemeTools =
     $.add d.body, dialog
 
   color: (hex) ->
-    @hex = "#" + hex
-    @private_rgb = (hex) ->
+    @calc_rgb = (hex) ->
       rgb = []
       hex = parseInt hex, 16
       rgb[0] = (hex >> 16) & 0xFF
       rgb[1] = (hex >> 8) & 0xFF
       rgb[2] = hex & 0xFF
       return rgb;
+    @hex = "#" + hex
+    @private_rgb = @calc_rgb(hex)
     @rgb = @private_rgb.join ","
     @isLight = (rgb) ->
       rgb[0] + rgb[1] + rgb[2] >= 400
@@ -92,7 +93,7 @@ ThemeTools =
       rgb = @private_rgb.slice 0
       shift = if smart
         if @isLight
-          if shift < 0 
+          if shift < 0
             shift
           else
             -shift
@@ -106,11 +107,208 @@ ThemeTools =
       return rgb.join ","
     @hover = @shiftRGB 16, true
 
+  importtheme: (origin, evt) ->
+    file = evt.target.files[0]
+    reader = new FileReader()
+    reader.onload = (e) ->
+      try
+        imported = JSON.parse e.target.result
+      catch err
+        alert err
+        return
+      unless (origin != 'appchan' and imported.mainColor) or (origin == 'appchan' and imported["Author Tripcode"])
+        alert "Theme file is invalid."
+        return
+      name = imported.name or imported["Theme"]
+      delete imported.name
+      if userThemes[name] and not userThemes[name]["Deleted"]
+        if confirm "A theme with this name already exists. Would you like to over-write?"
+          delete userThemes[name]
+        else
+          return
+      if origin == "oneechan" or origin == "SS"
+        bgColor     = new ThemeTools.color(imported.bgColor);
+        mainColor   = new ThemeTools.color(imported.mainColor);
+        brderColor  = new ThemeTools.color(imported.brderColor);
+        inputColor  = new ThemeTools.color(imported.inputColor);
+        inputbColor = new ThemeTools.color(imported.inputbColor);
+        blinkColor  = new ThemeTools.color(imported.blinkColor);
+        jlinkColor  = new ThemeTools.color(imported.jlinkColor);
+        linkColor   = new ThemeTools.color(imported.linkColor);
+        linkHColor  = new ThemeTools.color(imported.linkHColor);
+        nameColor   = new ThemeTools.color(imported.nameColor);
+        quoteColor  = new ThemeTools.color(imported.quoteColor);
+        sageColor   = new ThemeTools.color(imported.sageColor);
+        textColor   = new ThemeTools.color(imported.textColor);
+        titleColor  = new ThemeTools.color(imported.titleColor);
+        tripColor   = new ThemeTools.color(imported.tripColor);
+        timeColor   = new ThemeTools.color(imported.timeColor || imported.textColor);
+        if origin == "oneechan"
+          userThemes[name] = {
+            'Author'                      : "Author"
+            'Author Tripcode'             : "'!TRip.C0d3'"
+            'Background Image'            : imported.bgImg
+            'Background Attachment'       : imported.bgA
+            'Background Position'         : imported.bgPY + " " + imported.bgPX
+            'Background Repeat'           : imported.bgR
+            'Background Color'            : bgColor.hex
+            'Dialog Background'           : 'rgba(' + mainColor.rgb + ',.98)'
+            'Dialog Border'               : brderColor.hex
+            'Thread Wrapper Background'   : 'rgba(0,0,0,0)'
+            'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
+            'Reply Background'            : 'rgba(' + mainColor.rgb + ',' + imported.replyOp + ')'
+            'Reply Border'                : brderColor.hex
+            'Highlighted Reply Background': 'rgba(' + mainColor.shiftRGB(4, true) + ',' + imported.replyOp + ')'
+            'Highlighted Reply Border'    : linkColor.hex
+            'Backlinked Reply Outline'    : linkColor.hex
+            'Checkbox Background'         : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
+            'Checkbox Border'             : inputbColor.hex
+            'Checkbox Checked Background' : inputColor.hex
+            'Input Background'            : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
+            'Input Border'                : inputbColor.hex
+            'Hovered Input Background'    : 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')'
+            'Hovered Input Border'        : inputbColor.hex
+            'Focused Input Background'    : 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')'
+            'Focused Input Border'        : inputbColor.hex
+            'Buttons Background'          : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
+            'Buttons Border'              : inputbColor.hex
+            'Navigation Background'       : 'rgba(' + bgColor.rgb + ',0.8)'
+            'Navigation Border'           : mainColor.hex
+            'Links'                       : linkColor.hex
+            'Hovered Links'               : linkHColor.hex
+            'Navigation Links'            : textColor.hex
+            'Hovered Navigation Links'    : linkHColor.hex
+            'Subjects'                    : titleColor.hex
+            'Names'                       : nameColor.hex
+            'Sage'                        : sageColor.hex
+            'Tripcodes'                   : tripColor.hex
+            'Emails'                      : linkColor.hex
+            'Post Numbers'                : linkColor.hex
+            'Text'                        : textColor.hex
+            'Backlinks'                   : linkColor.hex
+            'Greentext'                   : quoteColor.hex
+            'Board Title'                 : textColor.hex
+            'Timestamps'                  : timeColor.hex
+            'Inputs'                      : textColor.hex
+            'Warnings'                    : sageColor.hex
+            'Shadow Color'                : 'rgba(' + mainColor.shiftRGB(16) + ',.9)'
+            'Dark Theme'                  : if mainColor.isLight then '1' else '0'
+            'Custom CSS'                  : """
+input[type=password]:hover,
+input[type=text]:not([disabled]):hover,
+input#fs_search:hover,
+input.field:hover,
+.webkit select:hover,
+textarea:hover,
+#options input:not[type=checkbox]:hover {
+  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
+}
+input[type=password]:focus,
+input[type=text]:focus,
+input#fs_search:focus,
+input.field:focus,
+.webkit select:focus,
+textarea:focus,
+#options input:focus {
+  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
+}
+button,
+input:not(.jsColor),
+textarea,
+.rice {
+  transition:background .2s,box-shadow .2s;
+}""" + imported.customCSS }
+        else if origin == "SS"
+          userThemes[name] = {
+            'Author'                      : "Author"
+            'Author Tripcode'             : "'!TRip.C0d3'"
+            'Background Image'            : imported.bgImg
+            'Background Attachment'       : imported.bgA
+            'Background Position'         : imported.bgPY + " " + imported.bgPX
+            'Background Repeat'           : imported.bgR
+            'Background Color'            : bgColor.hex
+            'Dialog Background'           : 'rgba(' + mainColor.rgb + ',.98)'
+            'Dialog Border'               : brderColor.hex
+            'Thread Wrapper Background'   : 'rgba(' + mainColor.rgb + ',.5)'
+            'Thread Wrapper Border'       : 'rgba(' + brderColor.rgb + ',.9)'
+            'Reply Background'            : 'rgba(' + mainColor.rgb + ',' + imported.replyOp + ')'
+            'Reply Border'                : brderColor.hex
+            'Highlighted Reply Background': 'rgba(' + mainColor.shiftRGB(4, true) + ',' + imported.replyOp + ')'
+            'Highlighted Reply Border'    : linkColor.hex
+            'Backlinked Reply Outline'    : linkColor.hex
+            'Checkbox Background'         : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
+            'Checkbox Border'             : inputbColor.hex
+            'Checkbox Checked Background' : inputColor.hex
+            'Input Background'            : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
+            'Input Border'                : inputbColor.hex
+            'Hovered Input Background'    : 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')'
+            'Hovered Input Border'        : inputbColor.hex
+            'Focused Input Background'    : 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')'
+            'Focused Input Border'        : inputbColor.hex
+            'Buttons Background'          : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
+            'Buttons Border'              : inputbColor.hex
+            'Navigation Background'       : 'rgba(' + bgColor.rgb + ',0.8)'
+            'Navigation Border'           : mainColor.hex
+            'Links'                       : linkColor.hex
+            'Hovered Links'               : linkHColor.hex
+            'Navigation Links'            : textColor.hex
+            'Hovered Navigation Links'    : linkHColor.hex
+            'Subjects'                    : titleColor.hex
+            'Names'                       : nameColor.hex
+            'Sage'                        : sageColor.hex
+            'Tripcodes'                   : tripColor.hex
+            'Emails'                      : linkColor.hex
+            'Post Numbers'                : linkColor.hex
+            'Text'                        : textColor.hex
+            'Backlinks'                   : linkColor.hex
+            'Greentext'                   : quoteColor.hex
+            'Board Title'                 : textColor.hex
+            'Timestamps'                  : timeColor.hex
+            'Inputs'                      : textColor.hex
+            'Warnings'                    : sageColor.hex
+            'Shadow Color'                : 'rgba(' + mainColor.shiftRGB(16) + ',.9)'
+            'Dark Theme'                  : if mainColor.isLight then '1' else '0'
+            'Custom CSS'                  : """
+#delform {
+  padding: 1px 2px;
+}
+input[type=password]:hover,
+input[type=text]:not([disabled]):hover,
+input#fs_search:hover,
+input.field:hover,
+.webkit select:hover,
+textarea:hover,
+#options input:not[type=checkbox]:hover {
+  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
+}
+input[type=password]:focus,
+input[type=text]:focus,
+input#fs_search:focus,
+input.field:focus,
+.webkit select:focus,
+textarea:focus,
+#options input:focus {
+  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
+}
+button,
+input:not(.jsColor),
+textarea,
+.rice {
+  transition:background .2s,box-shadow .2s;
+}""" + imported.customCSS }
+      else if origin == 'appchan'
+        userThemes[name] = imported
+      $.set 'userThemes', userThemes
+      alert "Theme \"#{name}\" imported!"
+      $.rm $("#themes", d.body)
+      Options.themeTab()
+    reader.readAsText(file)
+
   save: (theme) ->
     name = theme["Theme"]
     delete theme["Theme"]
-    if userThemes[name] and not userThemes[name]["Deleted"]
-      if confirm "A theme with this name already exists. Would you like to over-write?"
+    if userThemes[name] and not userThemes[na  me]["Deleted"]
+      if confirm "A theme with this name alre  ady exists. Would you like to over-write?"
         delete userThemes[name]
       else
         return
