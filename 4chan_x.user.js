@@ -2647,6 +2647,9 @@
           innerHTML: /^You were issued a warning/.test($('.boxcontent', doc).textContent.trim()) ? "You were issued a warning on " + bs[0].innerHTML + " as " + bs[3].innerHTML + ".<br>Warning reason: " + bs[1].innerHTML : "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
         });
       } else if (err = doc.getElementById('errmsg')) {
+        if (/4chan Pass/.test(err.textContent)) {
+          err.textContent = 'You seem to have mistyped the CAPTCHA. Please try again.';
+        }
         if ((_ref = $('a', err)) != null) {
           _ref.target = '_blank';
         }
