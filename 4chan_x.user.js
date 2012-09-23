@@ -760,7 +760,7 @@
     };
 
     function Post(root, thread, board, that) {
-      var alt, anchor, bq, capcode, data, date, email, file, flag, i, info, name, node, nodes, post, quotelink, quotes, size, subject, text, thumb, tripcode, uniqueID, unit, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2;
+      var alt, anchor, bq, capcode, data, date, email, file, fileInfo, flag, i, info, name, node, nodes, post, quotelink, quotes, size, subject, text, thumb, tripcode, uniqueID, unit, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2;
       this.thread = thread;
       this.board = board;
       if (that == null) {
@@ -838,9 +838,10 @@
       if ((file = $('.file', post)) && (thumb = $('img[data-md5]', file))) {
         alt = thumb.alt;
         anchor = thumb.parentNode;
+        fileInfo = file.firstElementChild;
         this.file = {
-          info: $('.fileInfo', file),
-          text: $('.fileText', file),
+          info: fileInfo,
+          text: fileInfo.firstElementChild,
           thumb: thumb,
           URL: anchor.href,
           MD5: thumb.dataset.md5,
@@ -853,7 +854,7 @@
         }
         this.file.size = size;
         this.file.thumbURL = that.isArchived ? thumb.src : "" + location.protocol + "//thumbs.4chan.org/" + board + "/thumb/" + (this.file.URL.match(/(\d+)\./)[1]) + "s.jpg";
-        this.file.name = $('span[title]', this.file.info).title.replace(/%22/g, '"');
+        this.file.name = $('span[title]', fileInfo).title.replace(/%22/g, '"');
         if (this.file.isImage = /(jpg|png|gif)$/i.test(this.file.name)) {
           this.file.dimensions = this.file.text.textContent.match(/\d+x\d+/)[0];
         }
@@ -1007,8 +1008,8 @@
           this.file[key] = val;
         }
         file = $('.file', post);
-        this.file.info = $('.fileInfo', file);
-        this.file.text = $('.fileText', file);
+        this.file.info = file.firstElementChild;
+        this.file.text = this.file.info.firstElementChild;
         this.file.thumb = $('img[data-md5]', file);
       }
       if (origin.isDead) {
@@ -1495,7 +1496,7 @@
       }
       flag = flagCode ? (" <img src='" + staticPath + "/image/country/" + (board === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
       if (file != null ? file.isDeleted : void 0) {
-        fileHTML = isOP ? ("<div class=file id=f" + postID + "><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted.gif' alt='File deleted.'>") + "</span></div>" : ("<div id=f" + postID + " class=file><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted-res.gif' alt='File deleted.'>") + "</span></div>";
+        fileHTML = isOP ? ("<div id=f" + postID + " class=file><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted.gif' alt='File deleted.'>") + "</span></div>" : ("<div id=f" + postID + " class=file><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted-res.gif' alt='File deleted.'>") + "</span></div>";
       } else if (file) {
         ext = file.name.slice(-3);
         if (!file.twidth && !file.theight && ext === 'gif') {
@@ -1570,17 +1571,17 @@
       if (link.host === 'boards.4chan.org') {
         path = link.pathname.split('/');
         board = path[1];
-        threadID = +path[3];
-        postID = +link.hash.slice(2);
+        threadID = path[3];
+        postID = link.hash.slice(2);
       } else {
         board = link.dataset.board;
-        threadID = +link.dataset.threadid || '';
-        postID = +link.dataset.postid;
+        threadID = link.dataset.threadid || 0;
+        postID = link.dataset.postid;
       }
       return {
         board: board,
-        threadID: threadID,
-        postID: postID
+        threadID: +threadID,
+        postID: +postID
       };
     },
     contextFromLink: function(quotelink) {
@@ -2135,13 +2136,13 @@
       for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
         quote = quotelinks[_i];
         data = Get.postDataFromLink(quote);
-        if (data.threadID === '') {
+        if (!data.threadID) {
           continue;
         }
         if (this.isClone) {
           quote.textContent = quote.textContent.replace(QuoteCT.text, '');
         }
-        if (data.board === board.ID && data.threadID !== thread.ID) {
+        if (data.board === this.board.ID && data.threadID !== thread.ID) {
           $.add(quote, $.tn(QuoteCT.text));
         }
       }

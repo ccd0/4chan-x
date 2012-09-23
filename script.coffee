@@ -643,9 +643,10 @@ class Post
       # Flash files are not supported.
       alt    = thumb.alt
       anchor = thumb.parentNode
+      fileInfo = file.firstElementChild
       @file  =
-        info:  $ '.fileInfo', file
-        text:  $ '.fileText', file
+        info:  fileInfo
+        text:  fileInfo.firstElementChild
         thumb: thumb
         URL:   anchor.href
         MD5:   thumb.dataset.md5
@@ -665,7 +666,7 @@ class Post
       # webk.it/62107
       # https://www.w3.org/Bugs/Public/show_bug.cgi?id=16909
       # http://www.whatwg.org/specs/web-apps/current-work/#multipart-form-data
-      @file.name = $('span[title]', @file.info).title.replace /%22/g, '"'
+      @file.name = $('span[title]', fileInfo).title.replace /%22/g, '"'
       if @file.isImage = /(jpg|png|gif)$/i.test @file.name
         @file.dimensions = @file.text.textContent.match(/\d+x\d+/)[0]
 
@@ -779,8 +780,8 @@ class Clone extends Post
       for key, val of origin.file
         @file[key] = val
       file = $ '.file', post
-      @file.info  = $ '.fileInfo',     file
-      @file.text  = $ '.fileText',     file
+      @file.info  = file.firstElementChild
+      @file.text  = @file.info.firstElementChild
       @file.thumb = $ 'img[data-md5]', file
 
     @isDead  = true if origin.isDead
@@ -1348,7 +1349,7 @@ Build =
     if file?.isDeleted
       fileHTML =
         if isOP
-          "<div class=file id=f#{postID}><div class=fileInfo></div><span class=fileThumb>" +
+          "<div id=f#{postID} class=file><div class=fileInfo></div><span class=fileThumb>" +
               "<img src='#{staticPath}/image/filedeleted.gif' alt='File deleted.'>" +
           "</span></div>"
         else
@@ -1496,16 +1497,16 @@ Get =
     if link.host is 'boards.4chan.org'
       path     = link.pathname.split '/'
       board    = path[1]
-      threadID = +path[3]
-      postID   = +link.hash[2..]
+      threadID = path[3]
+      postID   = link.hash[2..]
     else # resurrected quote
       board    = link.dataset.board
-      threadID = +link.dataset.threadid or ''
-      postID   = +link.dataset.postid
+      threadID = link.dataset.threadid or 0
+      postID   = link.dataset.postid
     return {
       board:    board
-      threadID: threadID
-      postID:   postID
+      threadID: +threadID
+      postID:   +postID
     }
   contextFromLink: (quotelink) ->
     Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', quotelink
@@ -1999,10 +2000,10 @@ QuoteCT =
     {board, thread} = if @isClone then @context else @
     for quote in quotelinks
       data = Get.postDataFromLink quote
-      continue if data.threadID is '' # deadlink
+      continue unless data.threadID # deadlink
       if @isClone
         quote.textContent = quote.textContent.replace QuoteCT.text, ''
-      if data.board is board.ID and data.threadID isnt thread.ID
+      if data.board is @board.ID and data.threadID isnt thread.ID
         $.add quote, $.tn QuoteCT.text
     return
 
