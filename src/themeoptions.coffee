@@ -4,8 +4,6 @@ ThemeTools =
       alert "Please enable Style Options and reload the page to use Theme Tools."
       return
     editMode = true
-    unless newTheme
-      Style.addStyle userThemes[key]
     if newTheme
       editTheme = {}
       editTheme["Theme"] = "Untitled"
@@ -14,7 +12,7 @@ ThemeTools =
     else
       editTheme = userThemes[key]
       editTheme["Theme"] = key
-    layout = ["Background Image", "Background Attachment", "Background Position", "Background Repeat", "Background Color", "Thread Wrapper Background", "Thread Wrapper Border", "Dialog Background", "Dialog Border", "Reply Background", "Reply Border", "Highlighted Reply Background", "Highlighted Reply Border", "Backlinked Reply Outline", "Input Background", "Input Border", "Checkbox Background", "Checkbox Border", "Checkbox Checked Background", "Buttons Background", "Buttons Border", "Focused Input Background", "Focused Input Border", "Hovered Input Background", "Hovered Input Border", "Navigation Background", "Navigation Border", "Links", "Hovered Links", "Quotelinks", "Backlinks", "Navigation Links", "Hovered Navigation Links", "Names", "Tripcodes", "Emails", "Subjects", "Text", "Inputs", "Post Numbers", "Greentext", "Sage", "Board Title", "Timestamps", "Warnings", "Shadow Color", "Dark Theme", "Custom CSS"]
+    layout = ["Background Image", "Background Attachment", "Background Position", "Background Repeat", "Background Color", "Thread Wrapper Background", "Thread Wrapper Border", "Dialog Background", "Dialog Border", "Reply Background", "Reply Border", "Highlighted Reply Background", "Highlighted Reply Border", "Backlinked Reply Outline", "Input Background", "Input Border", "Checkbox Background", "Checkbox Border", "Checkbox Checked Background", "Buttons Background", "Buttons Border", "Focused Input Background", "Focused Input Border", "Hovered Input Background", "Hovered Input Border", "Navigation Background", "Navigation Border", "Links", "Hovered Links", "Quotelinks", "Backlinks", "Navigation Links", "Hovered Navigation Links", "Names", "Tripcodes", "Emails", "Subjects", "Text", "Inputs", "Post Numbers", "Greentext", "Sage", "Board Title", "Timestamps", "Warnings", "Shadow Color"]
 
     dialog = $.el "div",
       id: "themeConf"
@@ -42,39 +40,40 @@ ThemeTools =
       $.on input, 'blur', ->
         editTheme[@name] = @value
     $.add $("#themebar", dialog), header
+    themecontent = $("#themecontent", dialog)
+    for item in layout
+      if newTheme
+        editTheme[item] = ''
+      div = $.el "div",
+        className: "themevar"
+        innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input class=field name='#{item}' placeholder='#{item}' value='#{editTheme[item]}'>"
+      $.on $('input', div), 'blur', ->
+        depth = 0
+        for i in [0..@value.length - 1]
+          switch @value[i]
+            when '(' then depth++
+            when ')' then depth--
+            when '"' then toggle1 = not toggle1
+            when "'" then toggle2 = not toggle2
+        if depth != 0 or toggle1 or toggle2
+          return alert "Syntax error on #{@name}."
+        editTheme[@name] = @value
+        Style.addStyle(editTheme)
+      $.add themecontent, div
     if newTheme
-      for item in layout
-        editTheme[item] = ""
-        div = $.el "div",
-          className: "themevar"
-          innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input class=field name='#{item}' placeholder='#{item}'>"
-        $.on $('input', div), 'blur', ->
-          editTheme[@name] = @value
-          Style.addStyle(editTheme)
-        $.add $("#themecontent", dialog), div
-    else
-      for item in layout
-        div = $.el "div",
-          className: "themevar"
-          innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input type=text class=field name='#{item}' placeholder='#{item}' value='#{editTheme[item]}'>"
-        $.on $('input', div), 'blur', ->
-          depth = 0
-          for i in [0..@value.length - 1]
-            switch @value[i]
-              when '(' then depth++
-              when ')' then depth--
-              when '"' then toggle1 = not toggle1
-              when "'" then toggle2 = not toggle2
-          if depth != 0 or toggle1 or toggle2
-            return alert "Syntax error on #{@name}."
-          editTheme[@name] = @value
-          Style.addStyle(editTheme)
-        $.add $("#themecontent", dialog), div
+      editTheme["Custom CSS"] = ""
+    div = $.el "div",
+      className: "themevar"
+      innerHTML: "<div class=optionname><b>Custom CSS</b></div><div class=option><textarea name='Custom CSS' placeholder='Custom CSS' style='height: 100px;'>#{editTheme['Custom CSS']}</textarea>"
+    $.on $('textarea', div), 'blur', ->
+      editTheme["Custom CSS"] = @value
+      Style.addStyle(editTheme)
+    $.add themecontent, div
     $.on $('#save > a', dialog), 'click', ->
       ThemeTools.save editTheme
     $.on  $('#cancel > a', dialog), 'click', ThemeTools.close
-    if newTheme then Style.addStyle(editTheme)
     $.add d.body, dialog
+    Style.addStyle(editTheme)
 
   color: (hex) ->
     @calc_rgb = (hex) ->

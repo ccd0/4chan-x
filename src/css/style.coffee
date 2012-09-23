@@ -1116,12 +1116,12 @@ input[type=checkbox] {
 #file,
 input,
 input.field,
-input[type="submit"],
-textarea {
-  border-width: 1px !important;
-  border-style: solid !important;
+input[type="submit"] {
   padding: 1px !important;
   height: 20px !important;
+}
+textarea {
+  padding: 1px !important;
 }
 #browse,
 #file,
@@ -1615,7 +1615,7 @@ html .subMenu {
   border: none;
   background: none;
 }
-textarea {
+textarea.field {
   resize: none;
 }
 /* Position and Dimensions of the #qr */

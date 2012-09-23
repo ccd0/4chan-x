@@ -32,12 +32,12 @@ HEADER = """
 
 /* LICENSE
 *
+* Appchan X Copyright (c) 2012 Zixaphir <zixaphirmodnar@gmail.com>
+* http://zixaphir.github.com/appchan-x/
 * 4chan x Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
 * http://aeosynth.github.com/4chan-x/
 * 4chan x Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
 * http://mayhemydg.github.com/4chan-x/
-* Appchan X Copyright (c) 2012 Zixaphir <zixaphirmodnar@gmail.com>
-* http://zixaphir.github.com/appchan-x/
 * OneeChan Copyright (c) 2012 Jordan Bates
 * http://seaweedchan.github.com/oneechan/
 * 4chan SS Copyright (c) 2012 Ahodesuka
