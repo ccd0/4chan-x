@@ -414,9 +414,9 @@ h1,
 #options .mascot {
   display: inline;
   padding: 0;
-  position: relative;
 }
-#options .mascot div {
+#options .mascot > div {
+  position: relative;
   border: 2px solid rgba(0,0,0,0);
   width: 200px;
   height: 250px;
@@ -426,6 +426,7 @@ h1,
   background-position: top center;
   background-repeat: no-repeat;
   background-size: 200px auto;
+  text-align: center;
 }
 #options .mascot div.enabled {
   border: 2px solid rgba(0,0,0,0.5);
@@ -486,12 +487,18 @@ h1,
   left: 10px;
   bottom: 0;
 }
+.mascotname,
 .mascotoptions {
-  position: absolute;
-  left: 27%;
-  right: 27%;
-  bottom: 10px;
+  margin: 5px;
   border-radius: 10px;
+  padding: 1px 5px;
+}
+.mascotmetadata {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
 }
 #cancel,
 #mascots_batch {
@@ -1858,11 +1865,14 @@ div.reply {
 #watcher,
 #watcher:hover,
 .deleteform,
-.mascotoptions,
 div.subMenu,
 #menu {
   background: """ + theme["Dialog Background"] + """;
   border: 1px solid """ + theme["Dialog Border"]  + """;
+}
+.mascotname,
+.mascotoptions {
+  background: """ + theme["Dialog Background"] + """;
 }
 .inline div.reply {
   /* Inline Quotes */
