@@ -241,7 +241,10 @@ Options =
       innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div>"
     ul = $.el 'ul',
       className:   'mascots'
-    for name, mascot of userMascots
+    keys = Object.keys(userMascots)
+    keys.sort()
+    for name in keys
+      mascot = userMascots[name]
       unless mascot["Deleted"]
         li = $.el 'li',
           className: 'mascot'
@@ -345,22 +348,25 @@ Options =
       className: "suboptions"
       id:        "themes"
       innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use theming options.</div>"
-    for themename, theme of userThemes
+    keys = Object.keys(userThemes)
+    keys.sort()
+    for name in keys
+      theme = userThemes[name]
       unless theme["Deleted"]
         div = $.el 'div',
-          className: if themename == Conf['theme'] then 'selectedtheme replyContainer' else 'replyContainer'
-          id:        themename
+          className: if name == Conf['theme'] then 'selectedtheme replyContainer' else 'replyContainer'
+          id:        name
           innerHTML: "
 <div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
   <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:#{theme['Checkbox Background']};border: 1px solid #{theme['Checkbox Border']};'></div>
-  <span style='color:#{theme['Subjects']}!important; font-weight: 700 !important'> #{themename}</span>
+  <span style='color:#{theme['Subjects']}!important; font-weight: 700 !important'> #{name}</span>
   <span style='color:#{theme['Names']}!important; font-weight: 700 !important'> #{theme['Author']}</span>
   <span style='color:#{theme['Sage']}!important'> (SAGE)</span>
   <span style='color:#{theme['Tripcodes']}!important'> #{theme['Author Tripcode']}</span>
   <time style='color:#{theme['Timestamps']}'> 20XX.01.01 12:00 </time>
   <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important;' href='javascript:;'>No.27583594</a>
-  <a class=edit name='#{themename}' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit</a>
-  <a class=export name='#{themename}' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important; font-weight: 800;&quot;)' style='color:#{theme['Backlinks']}!important; font-weight: 800;' href='javascript:;'> &gt;&gt;export</a>
+  <a class=edit name='#{name}' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit</a>
+  <a class=export name='#{name}' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important; font-weight: 800;&quot;)' style='color:#{theme['Backlinks']}!important; font-weight: 800;' href='javascript:;'> &gt;&gt;export</a>
   <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important; font-weight: 800;&quot;)' style='color:#{theme['Backlinks']}!important; font-weight: 800;' href='javascript:;'> &gt;&gt;delete</a>
   <br>
   <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>
