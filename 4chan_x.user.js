@@ -3183,6 +3183,9 @@
         scroll = Conf['Scrolling'] && Updater.scrollBG() && lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
         $.add(Updater.thread, nodes.reverse());
         if (scroll) {
+          if (nodes[0] === void 0) {
+            return;
+          }
           return nodes[0].scrollIntoView();
         }
       }

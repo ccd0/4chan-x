@@ -2533,6 +2533,7 @@ Updater =
         lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
       $.add Updater.thread, nodes.reverse()
       if scroll
+        return if nodes[0] is undefined
         nodes[0].scrollIntoView()
 
   set: (name, text) ->
