@@ -10,9 +10,9 @@ HEADER = """
 // @version        #{VERSION}
 // @namespace      zixaphir
 // @description    Adds various features and stylings.
+// @copyright      Appchan x - 2012 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright      4chan x - 2009-2011 James Campos <james.r.campos@gmail.com>
 // @copyright      4chan x - 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
-// @copyright      Appchan x - 2012 Zixaphir <zixaphirmoxphar@gmail.com>
 // @license        MIT; http://en.wikipedia.org/wiki/Mit_license
 // @include        http://boards.4chan.org/*
 // @include        https://boards.4chan.org/*

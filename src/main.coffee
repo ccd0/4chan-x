@@ -11,8 +11,7 @@ Main =
 
     for name, mascot of userMascots
       unless mascot["Deleted"] or mascot["Enabled"]?
-        userMascots[name]["Enabled"] = $.get name, ->
-          if mascot.category == 'SFW' then true else false
+        userMascots[name]["Enabled"] = if mascot.category == 'SFW' then true else false
 
     path = location.pathname
     pathname = path[1..].split '/'
