@@ -14,7 +14,7 @@ ThemeTools =
     else
       editTheme = userThemes[key]
       editTheme["Theme"] = key
-    layout = ["Background Image", "Background Attachment", "Background Position", "Background Repeat", "Background Color", "Thread Wrapper Background", "Thread Wrapper Border", "Dialog Background", "Dialog Border", "Reply Background", "Reply Border", "Highlighted Reply Background", "Highlighted Reply Border", "Backlinked Reply Outline", "Input Background", "Input Border", "Checkbox Background", "Checkbox Border", "Checkbox Checked Background", "Buttons Background", "Buttons Border", "Focused Input Background", "Focused Input Border", "Hovered Input Background", "Hovered Input Border", "Navigation Background", "Navigation Border", "Quotelinks", "Backlinks", "Links", "Hovered Links", "Navigation Links", "Hovered Navigation Links", "Names", "Tripcodes", "Emails", "Subjects", "Text", "Inputs", "Post Numbers", "Greentext", "Sage", "Board Title", "Timestamps", "Warnings", "Shadow Color", "Dark Theme", "Custom CSS"]
+    layout = ["Background Image", "Background Attachment", "Background Position", "Background Repeat", "Background Color", "Thread Wrapper Background", "Thread Wrapper Border", "Dialog Background", "Dialog Border", "Reply Background", "Reply Border", "Highlighted Reply Background", "Highlighted Reply Border", "Backlinked Reply Outline", "Input Background", "Input Border", "Checkbox Background", "Checkbox Border", "Checkbox Checked Background", "Buttons Background", "Buttons Border", "Focused Input Background", "Focused Input Border", "Hovered Input Background", "Hovered Input Border", "Navigation Background", "Navigation Border", "Links", "Hovered Links", "Quotelinks", "Backlinks", "Navigation Links", "Hovered Navigation Links", "Names", "Tripcodes", "Emails", "Subjects", "Text", "Inputs", "Post Numbers", "Greentext", "Sage", "Board Title", "Timestamps", "Warnings", "Shadow Color", "Dark Theme", "Custom CSS"]
 
     dialog = $.el "div",
       id: "themeConf"
@@ -147,50 +147,51 @@ ThemeTools =
           userThemes[name] = {
             'Author'                      : "Author"
             'Author Tripcode'             : "'!TRip.C0d3'"
-            'Background Image'            : imported.bgImg
-            'Background Attachment'       : imported.bgA
-            'Background Position'         : imported.bgPY + " " + imported.bgPX
-            'Background Repeat'           : imported.bgR
-            'Background Color'            : bgColor.hex
+            'Background Image'            : imported.bgImg or ''
+            'Background Attachment'       : imported.bgA or ''
+            'Background Position'         : (imported.bgPY + " " or '') + (imported.bgPX or '')
+            'Background Repeat'           : imported.bgR or ''
+            'Background Color'            : 'rgb(' + bgColor.rgb + ')'
             'Dialog Background'           : 'rgba(' + mainColor.rgb + ',.98)'
-            'Dialog Border'               : brderColor.hex
+            'Dialog Border'               : 'rgb(' + brderColor.rgb + ')'
             'Thread Wrapper Background'   : 'rgba(0,0,0,0)'
             'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
             'Reply Background'            : 'rgba(' + mainColor.rgb + ',' + imported.replyOp + ')'
-            'Reply Border'                : brderColor.hex
+            'Reply Border'                : 'rgb(' + brderColor.rgb + ')'
             'Highlighted Reply Background': 'rgba(' + mainColor.shiftRGB(4, true) + ',' + imported.replyOp + ')'
-            'Highlighted Reply Border'    : linkColor.hex
-            'Backlinked Reply Outline'    : linkColor.hex
+            'Highlighted Reply Border'    : 'rgb(' + linkColor.rgb + ')'
+            'Backlinked Reply Outline'    : 'rgb(' + linkColor.rgb + ')'
             'Checkbox Background'         : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
-            'Checkbox Border'             : inputbColor.hex
-            'Checkbox Checked Background' : inputColor.hex
+            'Checkbox Border'             : 'rgb(' + inputbColor.rgb + ')'
+            'Checkbox Checked Background' : 'rgb(' + inputColor.rgb + ')'
             'Input Background'            : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
-            'Input Border'                : inputbColor.hex
+            'Input Border'                : 'rgb(' + inputbColor.rgb + ')'
             'Hovered Input Background'    : 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')'
-            'Hovered Input Border'        : inputbColor.hex
+            'Hovered Input Border'        : 'rgb(' + inputbColor.rgb + ')'
             'Focused Input Background'    : 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')'
-            'Focused Input Border'        : inputbColor.hex
+            'Focused Input Border'        : 'rgb(' + inputbColor.rgb + ')'
             'Buttons Background'          : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
-            'Buttons Border'              : inputbColor.hex
+            'Buttons Border'              : 'rgb(' + inputbColor.rgb + ')'
             'Navigation Background'       : 'rgba(' + bgColor.rgb + ',0.8)'
-            'Navigation Border'           : mainColor.hex
-            'Links'                       : linkColor.hex
-            'Hovered Links'               : linkHColor.hex
-            'Navigation Links'            : textColor.hex
-            'Hovered Navigation Links'    : linkHColor.hex
-            'Subjects'                    : titleColor.hex
-            'Names'                       : nameColor.hex
-            'Sage'                        : sageColor.hex
-            'Tripcodes'                   : tripColor.hex
-            'Emails'                      : linkColor.hex
-            'Post Numbers'                : linkColor.hex
-            'Text'                        : textColor.hex
-            'Backlinks'                   : linkColor.hex
-            'Greentext'                   : quoteColor.hex
-            'Board Title'                 : textColor.hex
-            'Timestamps'                  : timeColor.hex
-            'Inputs'                      : textColor.hex
-            'Warnings'                    : sageColor.hex
+            'Navigation Border'           : 'rgb(' + mainColor.rgb + ')'
+            'Quotelinks'                  : 'rgb(' + linkColor.rgb + ')'
+            'Links'                       : 'rgb(' + linkColor.rgb + ')'
+            'Hovered Links'               : 'rgb(' + linkHColor.rgb + ')'
+            'Navigation Links'            : 'rgb(' + textColor.rgb + ')'
+            'Hovered Navigation Links'    : 'rgb(' + linkHColor.rgb + ')'
+            'Subjects'                    : 'rgb(' + titleColor.rgb + ')'
+            'Names'                       : 'rgb(' + nameColor.rgb + ')'
+            'Sage'                        : 'rgb(' + sageColor.rgb + ')'
+            'Tripcodes'                   : 'rgb(' + tripColor.rgb + ')'
+            'Emails'                      : 'rgb(' + linkColor.rgb + ')'
+            'Post Numbers'                : 'rgb(' + linkColor.rgb + ')'
+            'Text'                        : 'rgb(' + textColor.rgb + ')'
+            'Backlinks'                   : 'rgb(' + linkColor.rgb + ')'
+            'Greentext'                   : 'rgb(' + quoteColor.rgb + ')'
+            'Board Title'                 : 'rgb(' + textColor.rgb + ')'
+            'Timestamps'                  : 'rgb(' + timeColor.rgb + ')'
+            'Inputs'                      : 'rgb(' + textColor.rgb + ')'
+            'Warnings'                    : 'rgb(' + sageColor.rgb + ')'
             'Shadow Color'                : 'rgba(' + mainColor.shiftRGB(16) + ',.9)'
             'Dark Theme'                  : if mainColor.isLight then '1' else '0'
             'Custom CSS'                  : """
@@ -222,50 +223,51 @@ textarea,
           userThemes[name] = {
             'Author'                      : "Author"
             'Author Tripcode'             : "'!TRip.C0d3'"
-            'Background Image'            : imported.bgImg
-            'Background Attachment'       : imported.bgA
-            'Background Position'         : imported.bgPY + " " + imported.bgPX
-            'Background Repeat'           : imported.bgR
-            'Background Color'            : bgColor.hex
+            'Background Image'            : imported.bgImg or ''
+            'Background Attachment'       : imported.bgA or ''
+            'Background Position'         : (imported.bgPY + " " or '') + (imported.bgPX or '')
+            'Background Repeat'           : imported.bgR or ''
+            'Background Color'            : 'rgb(' + bgColor.rgb + ')'
             'Dialog Background'           : 'rgba(' + mainColor.rgb + ',.98)'
-            'Dialog Border'               : brderColor.hex
+            'Dialog Border'               : 'rgb(' + brderColor.rgb + ')'
             'Thread Wrapper Background'   : 'rgba(' + mainColor.rgb + ',.5)'
             'Thread Wrapper Border'       : 'rgba(' + brderColor.rgb + ',.9)'
             'Reply Background'            : 'rgba(' + mainColor.rgb + ',' + imported.replyOp + ')'
-            'Reply Border'                : brderColor.hex
+            'Reply Border'                : 'rgb(' + brderColor.rgb + ')'
             'Highlighted Reply Background': 'rgba(' + mainColor.shiftRGB(4, true) + ',' + imported.replyOp + ')'
-            'Highlighted Reply Border'    : linkColor.hex
-            'Backlinked Reply Outline'    : linkColor.hex
+            'Highlighted Reply Border'    : 'rgb(' + linkColor.rgb + ')'
+            'Backlinked Reply Outline'    : 'rgb(' + linkColor.rgb + ')'
             'Checkbox Background'         : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
-            'Checkbox Border'             : inputbColor.hex
-            'Checkbox Checked Background' : inputColor.hex
+            'Checkbox Border'             : 'rgb(' + inputbColor.rgb + ')'
+            'Checkbox Checked Background' : 'rgb(' + inputColor.rgb + ')'
             'Input Background'            : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
-            'Input Border'                : inputbColor.hex
+            'Input Border'                : 'rgb(' + inputbColor.rgb + ')'
             'Hovered Input Background'    : 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')'
-            'Hovered Input Border'        : inputbColor.hex
+            'Hovered Input Border'        : 'rgb(' + inputbColor.rgb + ')'
             'Focused Input Background'    : 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')'
-            'Focused Input Border'        : inputbColor.hex
+            'Focused Input Border'        : 'rgb(' + inputbColor.rgb + ')'
             'Buttons Background'          : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
-            'Buttons Border'              : inputbColor.hex
+            'Buttons Border'              : 'rgb(' + inputbColor.rgb + ')'
             'Navigation Background'       : 'rgba(' + bgColor.rgb + ',0.8)'
-            'Navigation Border'           : mainColor.hex
-            'Links'                       : linkColor.hex
-            'Hovered Links'               : linkHColor.hex
-            'Navigation Links'            : textColor.hex
-            'Hovered Navigation Links'    : linkHColor.hex
-            'Subjects'                    : titleColor.hex
-            'Names'                       : nameColor.hex
-            'Sage'                        : sageColor.hex
-            'Tripcodes'                   : tripColor.hex
-            'Emails'                      : linkColor.hex
-            'Post Numbers'                : linkColor.hex
-            'Text'                        : textColor.hex
-            'Backlinks'                   : linkColor.hex
-            'Greentext'                   : quoteColor.hex
-            'Board Title'                 : textColor.hex
-            'Timestamps'                  : timeColor.hex
-            'Inputs'                      : textColor.hex
-            'Warnings'                    : sageColor.hex
+            'Navigation Border'           : 'rgb(' + mainColor.rgb + ')'
+            'Quotelinks'                  : 'rgb(' + linkColor.rgb + ')'
+            'Links'                       : 'rgb(' + linkColor.rgb + ')'
+            'Hovered Links'               : 'rgb(' + linkHColor.rgb + ')'
+            'Navigation Links'            : 'rgb(' + textColor.rgb + ')'
+            'Hovered Navigation Links'    : 'rgb(' + linkHColor.rgb + ')'
+            'Subjects'                    : 'rgb(' + titleColor.rgb + ')'
+            'Names'                       : 'rgb(' + nameColor.rgb + ')'
+            'Sage'                        : 'rgb(' + sageColor.rgb + ')'
+            'Tripcodes'                   : 'rgb(' + tripColor.rgb + ')'
+            'Emails'                      : 'rgb(' + linkColor.rgb + ')'
+            'Post Numbers'                : 'rgb(' + linkColor.rgb + ')'
+            'Text'                        : 'rgb(' + textColor.rgb + ')'
+            'Backlinks'                   : 'rgb(' + linkColor.rgb + ')'
+            'Greentext'                   : 'rgb(' + quoteColor.rgb + ')'
+            'Board Title'                 : 'rgb(' + textColor.rgb + ')'
+            'Timestamps'                  : 'rgb(' + timeColor.rgb + ')'
+            'Inputs'                      : 'rgb(' + textColor.rgb + ')'
+            'Warnings'                    : 'rgb(' + sageColor.rgb + ')'
             'Shadow Color'                : 'rgba(' + mainColor.shiftRGB(16) + ',.9)'
             'Dark Theme'                  : if mainColor.isLight then '1' else '0'
             'Custom CSS'                  : """

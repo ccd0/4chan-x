@@ -1396,15 +1396,9 @@ div.navLinks > a {
 /* Appchan x options */
 #options ul {
   margin: 0;
+  margin-bottom: 6px;
+  padding: 3px;
 }
-#options ul {
-  margin-bottom: 5px;
-  padding-bottom: 7px;
-}
-#options ul:first-of-type {
-  padding-top: 5px;
-}
-/* End of Appchan x options */
 #stats,
 #navlinks {
   top: 0 !important;
@@ -1927,6 +1921,7 @@ span.pln {
 }
 #options ul {
   border-bottom: 1px solid """ + theme["Reply Border"] + """;
+  box-shadow: inset """+ theme["Shadow Color"] + """ 0 0 5px;
 }
 .quote {
   color: """ + theme["Greentext"] + """;
@@ -2583,19 +2578,20 @@ body {
 .rice {
   border-radius: 2px;
 }
+#boardNavDesktopFoot,
+#content,
+#options ul,
+#options,
+#qp,
+#watcher,
+.deleteform,
+.globalMessage,
+.inline div.reply,
 div.reply,
 div.reply.highlight,
-#content,
-#options,
-#watcher,
-#qp,
-td[style="border: 1px dashed;"],
 div.reply > tr > div.reply,
-.inline div.reply,
 h2,
-.deleteform,
-#boardNavDesktopFoot,
-.globalMessage {
+td[style="border: 1px dashed;"] {
   border-radius: 3px;
 }
 #qr::before {
