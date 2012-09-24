@@ -7035,7 +7035,7 @@
       }
       if (err) {
         if (/captcha|verification/i.test(err) || err === 'Connection error with sys.4chan.org.') {
-          QR.cooldown.auto = !!$.get('captchas', []).length;
+          QR.cooldown.auto = QR.captchaIsEnabled ? !!$.get('captchas', []).length : true;
           QR.cooldown.set(2);
         } else {
           QR.cooldown.auto = false;

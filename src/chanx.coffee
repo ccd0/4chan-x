@@ -2734,3 +2734,4 @@ ImageExpand =
 
   resize: ->
     ImageExpand.style.textContent = ".fitheight img[data-md5] + img {max-height:#{d.documentElement.clientHeight}px;}"
+

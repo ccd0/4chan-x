@@ -1,8 +1,21 @@
 master
+- Mayhem
+  Larger Comment text input by default for 4chan Pass users and on /f/ (no captcha).
+- Zixaphir
+  Trying to step it up on the interface.
 
 0.9.5beta
-
+- Zixaphir
+  Theme importing from 4chan SS and Oneechan.
+    ( As 4chan SS is significantly different than Appchan X compared to Oneechan, )
+    ( 4chan SS themes may import weirdly. Any themes using custom CSS that depend )
+    ( on color variables from either will not work properly.                      )
+  Themes and Mascots are now automatically alphabetized.
+  
 0.9.4beta
+- Zixaphir
+  Slightly snazzier interface.
+  Block blocked ads warning.
 
 0.9.3beta
 - Zixaphir
