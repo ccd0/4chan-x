@@ -413,8 +413,8 @@ Options =
             return
 
           if confirm "Are you sure you want to delete \"#{container.id}\"?"
+          
             if container.id == Conf['theme']
-
               if settheme = container.previousSibling or container.nextSibling
                 Conf['theme'] = settheme.id
                 $.addClass settheme, 'selectedtheme'
@@ -431,10 +431,10 @@ Options =
     div = $.el 'div',
       id:        'addthemes'
       innerHTML: "
-<a id=newtheme href='javascript:;'>New Theme</a> /
-<a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> /
-<a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> /
-<a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>"
+ <a id=newtheme href='javascript:;'>New Theme</a> /
+ <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> /
+ <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> /
+ <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>"
 
     $.on $("#newtheme", div), 'click', ->
       unless Conf["Style"]
@@ -473,6 +473,7 @@ Options =
     $.delete "hiddenThreads/#{g.BOARD}/"
     @textContent = "hidden: 0"
     g.hiddenReplies = {}
+
   keybind: (e) ->
     return if e.keyCode is 9
     e.preventDefault()
@@ -480,6 +481,7 @@ Options =
     return unless (key = Keybinds.keyCode e)?
     @value = key
     $.cb.value.call @
+
   filter: ->
     el = @nextSibling
 
@@ -493,6 +495,7 @@ Options =
       return
 
     $.rm el if el
+
     $.after @, $.el 'article',
       innerHTML: '<p>Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
   Lines starting with a <code>#</code> will be ignored.<br>
@@ -519,12 +522,15 @@ Options =
       For example: <code>top:yes;</code> or <code>top:no;</code>.
     </li>
   </ul>'
+
   time: ->
     Time.foo()
     Time.date = new Date()
     $.id('timePreview').textContent = Time.funk Time
+
   backlink: ->
     $.id('backlinkPreview').textContent = Conf['backlink'].replace /%id/, '123456789'
+
   fileInfo: ->
     FileInfo.data =
       link:       'javascript:;'
@@ -536,6 +542,7 @@ Options =
       shortname:  'd9bb2efc98dd0df141a94399ff5880(...).jpg'
     FileInfo.setFormats()
     $.id('fileInfoPreview').innerHTML = FileInfo.funk FileInfo
+
   favicon: ->
     Favicon.switch()
     Unread.update true

@@ -2574,7 +2574,7 @@
       }
       div = $.el('div', {
         id: 'addthemes',
-        innerHTML: "<a id=newtheme href='javascript:;'>New Theme</a> /<a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> /<a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> /<a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>"
+        innerHTML: " <a id=newtheme href='javascript:;'>New Theme</a> / <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> / <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> / <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>"
       });
       $.on($("#newtheme", div), 'click', function() {
         if (!Conf["Style"]) {
@@ -7393,9 +7393,9 @@
     init: function() {
       var mascot, mascotnames, mascotposition, name, result;
       if (Conf['Post Form Style'] === "fixed" || Conf['Post Form Style'] === "transparent fade") {
-        mascotposition = '264';
+        mascotposition = 264;
       } else {
-        mascotposition = '0';
+        mascotposition = 0;
       }
       if (!editMode) {
         mascotnames = [];
@@ -7415,7 +7415,7 @@
           return;
         }
       }
-      result = "#mascot img {  position: fixed;  z-index:  " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";  bottom:   " + (mascot.position === 'bottom' ? 0 + (mascot.vOffset || 0) + "px" : mascot.position === 'top' ? "auto" : (mascotposition + (mascot.vOffset || 0)) + "px") + ";  right:    " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;  top:      " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";  left:     auto;  pointer-events: none;}";
+      result = "#mascot img {  position: fixed;  z-index:  " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";  bottom:   " + (mascot.position === 'bottom' ? (mascot.vOffset || 0) + 0 + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + mascotposition) + "px") + ";  right:    " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;  top:      " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";  left:     auto;  pointer-events: none;}";
       return result;
     },
     dialog: function(key) {

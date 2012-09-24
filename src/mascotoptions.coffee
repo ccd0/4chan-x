@@ -2,9 +2,9 @@ MascotTools =
   init: ->
 
     if Conf['Post Form Style'] == "fixed" or Conf['Post Form Style'] == "transparent fade"
-      mascotposition = '264'
+      mascotposition = 264
     else
-      mascotposition = '0'
+      mascotposition = 0
 
     #If we're editting anything, let's not change mascots any time we change a value.
     unless editMode
@@ -28,7 +28,7 @@ MascotTools =
 #mascot img {
   position: fixed;
   z-index:  " + (if Conf['Mascots Overlap Posts'] then '3' else '-1') + ";
-  bottom:   " + (if mascot.position == 'bottom' then (0 + (mascot.vOffset or 0) + "px") else if mascot.position == 'top' then "auto" else (mascotposition + (mascot.vOffset or 0)) + "px") + ";
+  bottom:   " + (if mascot.position == 'bottom' then ( (mascot.vOffset or 0) + 0 + "px") else if mascot.position == 'top' then "auto" else ((mascot.vOffset or 0) + mascotposition) + "px") + ";
   right:    " + ((mascot.hOffset or 0) + (if (Conf['Sidebar'] == 'large' and mascot.center) then 25 else 0)) + "px;
   top:      " + (if mascot.position == 'top' then (mascot.vOffset or 0) + "px" else 'auto') + ";
   left:     auto;
