@@ -500,7 +500,7 @@ h1,
   bottom: 0;
   text-align: center;
 }
-#cancel,
+#close,
 #mascots_batch {
   position: absolute;
   left: 10px;
@@ -706,6 +706,7 @@ textarea,
 .subjectm
 .summary,
 a,
+big,
 blockquote,
 div.post > blockquote .chanlinkify.YTLT-link.YTLT-text,
 div.reply,
@@ -713,14 +714,6 @@ fieldset,
 textarea,
 time + span {
   font-size: """ + Conf["Font Size"] + """;
-}
-.globalMessage {
-  bottom: auto;
-  padding: 10px 5px 10px 5px;
-  position: fixed;
-  left: auto;
-  right: 2px;
-  top: -1000px;
 }
 .globalMessage b {
   font-weight: 100;
@@ -816,7 +809,6 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {
 }
 #autoPagerBorderPaging,
 #boardNavDesktop,
-#boardNavDesktopFoot:hover,
 #ihover,
 #menu.reply.dialog,
 #navlinks,
@@ -911,8 +903,8 @@ div.navLinks > a:first-of-type::after {
   cursor: pointer;
   """ + agent + """transform: scale(.8);
   opacity: 0.4;
-  bottom: 1px;
   top: auto;
+  visibility: visible;
 }
 div.navLinks > a:first-of-type:hover::after {
   opacity: 1;
@@ -1054,26 +1046,32 @@ a.yuimenuitemlabel {
   padding-bottom: 3px;
 }
 #boardNavDesktopFoot {
+  z-index: 98 !important;
   visibility: visible;
   position: fixed;
-  top: -1000px;
   right: 2px !important;
   bottom: auto;
   width: """ + (226 + sidebarOffsetW) + """px;
   color: transparent;
   font-size: 0;
-  padding: 3px 10px 35px 10px;
   border-width: 1px;
   text-align: center;
-  word-spacing: -3px;
+  height: 0;
+  width: """ + (246 + sidebarOffsetW) + """px !important;
+  overflow: hidden;
+  """ + agent + """transition: height .5s linear;
+}
+#boardNavDesktopFoot:hover {
+
 }
 .center {
   text-align: center;
+  clear: both;
 }
 img.topad, 
 img.middlead,
 img.bottomad {
-  opacity: 0.5;
+  opacity: 0.3;
   """ + agent + """transition: opacity .3s ease-in-out .3s;
 }
 img.topad:hover, 
@@ -1395,13 +1393,9 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
 div.navLinks {
   font-size: 0;
   visibility: hidden;
-}
-div.navLinks > a {
-  position: fixed;
-  top: auto;
-  right: -192px;
-  bottom: -1000px;
-  visibility: visible;
+  height: 0;
+  width: 0;
+  overflow: hidden;
 }
 /* File Clearer support */
 .clearbutton {
@@ -1832,7 +1826,6 @@ textarea.field {
 }
 #browse:hover,
 #file:hover,
-div.navLinks > a:first-of-type:hover,
 .deleteform input:hover,
 input:hover,
 input.field:hover,
@@ -1895,10 +1888,11 @@ div.subMenu,
   border: 1px solid """ + theme["Reply Border"] + """;
   box-shadow: 5px 5px 5px """+ theme["Shadow Color"] + """;
 }
-[id^="q"] .warning {
+#qr .warning {
   background: """ + theme["Input Background"] + """;
   border: 1px solid """ + theme["Input Border"]  + """;
 }
+[style='color: red !important;'] *,
 .warning {
   color: """ + theme["Warnings"] + """ !important;
 }
@@ -2088,7 +2082,7 @@ div.navLinks > a:first-of-type::after {
 }
 /* Announcement */
 .globalMessage::before {
-   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAK5JREFUGNN1kF0RxCAMhCMBCZVQCUhAwkmohDhAAhKQEAPfDBKQUAm5B3qU3s3t425mfyJygUTBMIzMLivYaTiGoigNpxJu8aSxLeeRTiOICIGOXfQLH8aT5eD8GKE4cTo4UTDKND1uWYRGFpzXkrnKGROc9JDnKBQTjDyJjbr0b+RnteO3WpgbhYSN/QQabX1L/HqLzyA2DKdTUCodx/E7dHgoFaOgJMo4kP8gEt+mlap7ZbvCVgAAAABJRU5ErkJggg==");
+  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAK5JREFUGNN1kF0RxCAMhCMBCZVQCUhAwkmohDhAAhKQEAPfDBKQUAm5B3qU3s3t425mfyJygUTBMIzMLivYaTiGoigNpxJu8aSxLeeRTiOICIGOXfQLH8aT5eD8GKE4cTo4UTDKND1uWYRGFpzXkrnKGROc9JDnKBQTjDyJjbr0b+RnteO3WpgbhYSN/QQabX1L/HqLzyA2DKdTUCodx/E7dHgoFaOgJMo4kP8gEt+mlap7ZbvCVgAAAABJRU5ErkJggg==");
 }
 /* Slideout nav */
 #boardNavDesktopFoot::after {
@@ -2187,36 +2181,25 @@ body > a[style="cursor: pointer; float: right;"]::after {
 """
 
       css += """
-#watcher::before {
-	top: """ + (20 + logoOffset) + """px;
-}
-#watcher:hover {
-	top: """ + (34 + logoOffset) + """px;
-}
+.globalMessage,
+#watcher,
+#boardNavDesktopFoot,
 #watcher {
-	position: fixed;
-	top: """ + (34 + logoOffset) + """px;
+  position: fixed;
+  top: """ + (34 + logoOffset) + """px;
 }
-#boardNavDesktopFoot::after {
-	top: """ + (19 + logoOffset) + """px;
+#boardNavDesktopFoot::after,
+#navtopright .settingsWindowLink::after,
+.globalMessage::before ,
+div.navLinks > a:first-of-type::after,
+body > a[style="cursor: pointer; float: right;"]::after {
+  top: """ + (19 + logoOffset) + """px;
 }
-#boardNavDesktopFoot:hover {
-	top: """ + (34 + logoOffset) + """px;
-}
-#navtopright .settingsWindowLink::after {
-	top: """ + (19 + logoOffset) + """px;
+#watcher::before {
+  top: """ + (20 + logoOffset) + """px;
 }
 #settingsBox {
-	top: """ + (25 + logoOffset) + """px;
-}
-body > a[style="cursor: pointer; float: right;"]::after {
-	top: """ + (19 + logoOffset) + """px;
-}
-.globalMessage::before {
-	top: """ + (19 + logoOffset) + """px;
-}
-.globalMessage:hover {
-	top: """ + (34 + logoOffset) + """px;
+  top: """ + (25 + logoOffset) + """px;
 }
 """
 
@@ -2349,8 +2332,8 @@ div.postInfo {
   height: 10px;
   width: 20px;
 }
-div.reply .report_button,
 .sideArrows,
+div.reply .report_button,
 div.reply .postInfo input,
 div.reply .postInfo .rice,
 div.reply .menu_button {
@@ -2371,7 +2354,8 @@ form .replyContainer:hover .sideArrows,
   opacity: 1;
   """ + agent + """transition: opacity .3s ease-in 0s;
 }
- div.reply input:checked {
+div.reply .postInfo input:checked,
+div.reply .postInfo input:checked + .rice {
   opacity: 1;
 }
 form .postContainer blockquote {
@@ -2381,8 +2365,8 @@ div.reply {
   padding-top: 6px;
   padding-left: 10px;
 }
-.postInfo input,
-.postInfo .rice {
+div.reply .postInfo input,
+div.reply .postInfo .rice {
   position: absolute;
   top: -3px;
   right: 5px;
@@ -2399,10 +2383,12 @@ div.reply .menu_button {
   right: 40px;
   top: 7px;
 }
-.inline .sideArrows,
-.inline .sideArrows a,
-.inline .rice {
+div.reply .inline .menu_button,
+div.reply .inline .sideArrows,
+div.reply .inline .sideArrows a,
+div.reply .inline .rice {
   position: static;
+  opacity: 1;
 }
 .sideArrows a {
   font-size: 9px;
@@ -2636,16 +2622,20 @@ td[style="border: 1px dashed;"] {
         css += """
 #watcher {
   position: fixed;
-  top: -1000px !important;
+  z-index: 98 !important;
+  top: """ + ( 34 + logoOffset) + """px !important;
   right: 2px !important;
   left: auto !important;
   bottom: auto !important;
+  height: 0;
   width: """ + (246 + sidebarOffsetW) + """px !important;
-  padding-bottom: 4px;
+  overflow: hidden;
+  """ + agent + """transition: height .5s linear;
 }
 #watcher:hover {
   z-index: 99 !important;
-  top: """ + ( 34 + logoOffset) + """px !important;
+  height: 400px;
+  padding-bottom: 4px;
 }
 """
       else
@@ -2687,10 +2677,9 @@ div.postContainer span.postNum > .replylink {
       switch Conf["Slideout Navigation"]
         when "compact"
           css += """
-#boardNavDesktopFoot {
+#boardNavDesktopFoot:hover {
+  z-index: 99 !important;
   height: 84px;
-  padding-bottom: 0px;
-  padding-top: 0px;
   word-spacing: 3px;
 }
 #navbotright {
@@ -2703,11 +2692,10 @@ div.postContainer span.postNum > .replylink {
   z-index: 1;
   display: block;
 }
-#boardNavDesktopFoot {
+#boardNavDesktopFoot:hover {
+  z-index: 99 !important;
   height: 300px;
   overflow-y: scroll;
-  padding-bottom: 0px;
-  padding-top: 0px;
   word-spacing: 0px;
 }
 #boardNavDesktopFoot a::after{
@@ -2805,20 +2793,26 @@ a.useremail[href*="SAGE"]:last-of-type::after {
 .globalMessage::before {
   display: none;
 }
-.globalMessage:hover {
-  top: 0px;
-}
 """
         when "slideout"
           css += """
-.globalMessage:hover {
-  position: fixed;
-  z-index: 99;
-}
+
 .globalMessage {
+  bottom: auto;
+  position: fixed;
+  left: auto;
+  right: 2px;
   width: """ + (236 + sidebarOffsetW) + """px;
   background: """ + theme["Dialog Background"] + """;
   border: 1px solid """ + theme["Dialog Border"]  + """;
+  z-index: 98;
+  height: 0px;
+  overflow: hidden;
+  """ + agent + """transition: height .5s linear;
+}
+.globalMessage:hover {
+  height: 500px;
+  z-index: 99 !important;
 }
 """
         when "hide"

@@ -26,8 +26,8 @@ ThemeTools =
 <div id=save>
   <a href='javascript:;'>Save Theme</a>
 </div>
-<div id=cancel>
-  <a href='javascript:;'>Cancel</a>
+<div id=close>
+  <a href='javascript:;'>Close</a>
 </div>
 "
 
@@ -71,7 +71,7 @@ ThemeTools =
     $.add themecontent, div
     $.on $('#save > a', dialog), 'click', ->
       ThemeTools.save editTheme
-    $.on  $('#cancel > a', dialog), 'click', ThemeTools.close
+    $.on  $('#close > a', dialog), 'click', ThemeTools.close
     $.add d.body, dialog
     Style.addStyle(editTheme)
 
@@ -314,16 +314,16 @@ textarea,
   save: (theme) ->
     name = theme["Theme"]
     delete theme["Theme"]
-    if userThemes[name] and not userThemes[na  me]["Deleted"]
-      if confirm "A theme with this name alre  ady exists. Would you like to over-write?"
+    if userThemes[name] and not userThemes[name]["Deleted"]
+      if confirm "A theme with this name already exists. Would you like to over-write?"
         delete userThemes[name]
       else
         return
+    theme["Customized"] = true
     userThemes[name] = theme
     $.set 'userThemes', userThemes
     $.set "Style", name
     Conf["Style"] = name
-    ThemeTools.close()
     alert "Theme \"#{name}\" saved."
 
   close: ->

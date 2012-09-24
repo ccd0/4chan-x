@@ -3,6 +3,7 @@ master
   Larger Comment text input by default for 4chan Pass users and on /f/ (no captcha).
 - Zixaphir
   Trying to step it up on the interface.
+  Theme customization interface no longer closes on save.
 
 0.9.5beta
 - Zixaphir

@@ -85,8 +85,8 @@ MascotTools =
 <div id=save>
   <a href='javascript:;'>Save Mascot</a>
 </div>
-<div id=cancel>
-  <a href='javascript:;'>Cancel</a>
+<div id=close>
+  <a href='javascript:;'>Close</a>
 </div>
 "
     for name, item of layout
@@ -130,7 +130,7 @@ MascotTools =
       $.add $("#mascotcontent", dialog), div
     $.on $('#save > a', dialog), 'click', ->
       MascotTools.save editMascot
-    $.on  $('#cancel > a', dialog), 'click', MascotTools.close
+    $.on  $('#close > a', dialog), 'click', MascotTools.close
     $.add d.body, dialog
     Style.allrice()
 
@@ -163,11 +163,11 @@ MascotTools =
       else
         alert "#{aname} aborted."
         return
+    mascot["Customized"] = true;
     userMascots[aname] = mascot
     $.set 'userMascots', userMascots
     Conf["mascot"] = aname
     alert "Mascot \"#{aname}\" saved."
-    MascotTools.close()
 
   close: ->
     editMode   = false
