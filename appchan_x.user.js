@@ -992,10 +992,6 @@
       image: 'http://i.imgur.com/B3h3c.png',
       center: true
     },
-    'Anime_Girl_in_Bondage_2': {
-      category: 'NSFW',
-      image: 'http://i.imgur.com/1TUjP.png'
-    },
     'Applejack': {
       category: 'MLP',
       image: 'http://i.imgur.com/1ufSL.png',
@@ -1162,11 +1158,6 @@
       category: 'SFW',
       image: 'http://i.imgur.com/Nnsrf.png'
     },
-    'Golden_Darkness': {
-      category: 'NSFW',
-      image: 'http://i.imgur.com/lYGo4.png',
-      position: 'bottom'
-    },
     'Hanako': {
       category: 'SFW',
       image: 'http://i.imgur.com/G3iN7.png',
@@ -1221,37 +1212,6 @@
     'Homura_Akemi': {
       category: 'SFW',
       image: 'http://i.imgur.com/b9KmB.png'
-    },
-    'Horo': {
-      category: 'NSFW',
-      image: 'http://i.imgur.com/6f8wd.png',
-      position: 'bottom',
-      center: true
-    },
-    'Horo_2': {
-      category: 'NSFW',
-      image: 'http://i.imgur.com/KJLui.png',
-      center: true
-    },
-    'Horo_3': {
-      category: 'Silhouette',
-      image: 'http://i.imgur.com/HMpug.png',
-      center: true
-    },
-    'Horo_4': {
-      category: 'Silhouette',
-      image: 'http://i.imgur.com/PKfl4.png',
-      center: true
-    },
-    'Horo_5': {
-      category: 'Silhouette',
-      image: 'http://i.imgur.com/BjV3U.png',
-      center: true
-    },
-    'Horo_6': {
-      category: 'Silhouette',
-      image: 'http://i.imgur.com/8fcrD.png',
-      center: true
     },
     'Ika_Musume': {
       category: 'SFW',
@@ -1457,32 +1417,6 @@
       image: 'http://i.imgur.com/atnqf.png',
       center: true
     },
-    'Nagato_Yuki_5': {
-      category: 'NSFW',
-      image: 'http://i.imgur.com/2BUww.png',
-      position: 'bottom',
-      center: true
-    },
-    'Nagato_Yuki_6': {
-      category: 'Silhouette',
-      image: 'http://i.imgur.com/uR35P.png',
-      center: true
-    },
-    'Nagato_Yuki_7': {
-      category: 'Silhouette',
-      image: 'http://i.imgur.com/aGFCl.png',
-      center: true
-    },
-    'Nagato_Yuki_8': {
-      category: 'Silhouette',
-      image: 'http://i.imgur.com/L9ZAT.png',
-      center: true
-    },
-    'Nagato_Yuki_9': {
-      category: 'Silhouette',
-      image: 'http://i.imgur.com/MwoI9.png',
-      center: true
-    },
     'Nakano_Azusa': {
       category: 'SFW',
       image: 'http://i.imgur.com/6c3p3.png'
@@ -1659,11 +1593,6 @@
     'Tardis': {
       category: 'SFW',
       image: 'http://goput.it/vig.png',
-      center: true
-    },
-    'Three_Wet_Girls': {
-      category: 'NSFW',
-      image: 'http://i.imgur.com/AbU8b.png',
       center: true
     },
     'Tifa': {
