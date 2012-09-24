@@ -2,6 +2,7 @@ QR =
   init: ->
     return unless $.id 'postForm'
     Main.callbacks.push @node
+
     if Conf['Hide Original Post Form'] or Conf['Style']
       unless Conf['Style']
         link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
@@ -14,6 +15,7 @@ QR =
     if Conf['Persistent QR'] or Conf['Style']
       QR.dialog()
       QR.hide() if Conf['Auto Hide QR'] and not Conf['Style']
+
     $.on d, 'dragover',          QR.dragOver
     $.on d, 'drop',              QR.dropFile
     $.on d, 'dragstart dragend', QR.drag
@@ -352,6 +354,7 @@ QR =
       else
         @onready = => @ready()
         $.on $.id('recaptcha_widget_div'), 'DOMNodeInserted', @onready
+
     ready: ->
       if @challenge = $.id 'recaptcha_challenge_field_holder'
         $.off $.id('recaptcha_widget_div'), 'DOMNodeInserted', @onready
@@ -375,6 +378,7 @@ QR =
       @count $.get('captchas', []).length
       # start with an uncached captcha
       @reload()
+
     save: ->
       return unless response = @input.value
       captchas = $.get 'captchas', []
@@ -388,6 +392,7 @@ QR =
       $.set 'captchas', captchas
       @count captchas.length
       @reload()
+
     load: ->
       # Timeout is available at RecaptchaState.timeout in seconds.
       # We use 5-1 minutes to give upload some time.
@@ -481,23 +486,29 @@ QR =
     unless g.REPLY
       # Make a list with visible threads and an option to create a new one.
       threads = '<option value=new>New thread</option>'
+
       for thread in $$ '.thread'
         id = thread.id[1..]
         threads += "<option value=#{id}>Thread #{id}</option>"
-      unless Conf["Style"]
-        $.prepend $('.move > span', QR.el), $.el 'select'
-          innerHTML: threads
-          title: 'Create a new thread / Reply to a thread'
-      else
+
+      if Conf["Style"]
         $.prepend $('#threadselect', QR.el), $.el 'select'
           innerHTML: threads
           title: 'Create a new thread / Reply to a thread'
+
+      else
+        $.prepend $('.move > span', QR.el), $.el 'select'
+          innerHTML: threads
+          title: 'Create a new thread / Reply to a thread'
+
       $.on $('select',  QR.el), 'mousedown', (e) -> e.stopPropagation()
+
     if Conf['Style']
       riceFile = $("#file", QR.el)
       $.on $("#browse", QR.el),   'click',     -> fileInput.click()
       $.on riceFile,              'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else fileInput.click()
       $.on fileInput,             'change',    -> riceFile.textContent = fileInput.value
+
     else
       $.on $('#autohide', QR.el), 'change',    QR.toggleHide
       $.on $('.close',    QR.el), 'click',     QR.close
@@ -512,6 +523,7 @@ QR =
     $.on $('.warning',  QR.el),   'click',     QR.cleanError
 
     new QR.reply().select()
+
     # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
       if Conf['Style']
@@ -529,6 +541,7 @@ QR =
     QR.status()
     QR.cooldown.init()
     QR.captcha.init()
+
     if Conf['Style']
       $.on $(".captchainput .field", QR.el), 'focus', -> QR.el.classList.add 'focus'
       $.on $(".captchainput .field", QR.el), 'blur',  -> QR.el.classList.remove 'focus'
@@ -678,7 +691,7 @@ QR =
     persona = $.get 'QR.persona', {}
     persona =
       name:  reply.name
-      email: 
+      email:
         if !Conf["Remember Sage"] and /^sage$/.test reply.email
           if /^sage$/.test persona.email
             null

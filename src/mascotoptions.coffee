@@ -1,15 +1,25 @@
 MascotTools =
   init: ->
-    if Conf['Post Form Style'] == "fixed" or Conf['Post Form Style'] == "transparent fade" then mascotposition = '264' else mascotposition = '0'
-    unless editMode 
+
+    if Conf['Post Form Style'] == "fixed" or Conf['Post Form Style'] == "transparent fade"
+      mascotposition = '264'
+    else
+      mascotposition = '0'
+
+    #If we're editting anything, let's not change mascots any time we change a value.
+    unless editMode
       mascotnames = []
+
       for name, mascot of userMascots
         if mascot["Enabled"]
           mascotnames.push name
+
       unless Conf["mascot"] = mascotnames[Math.floor(Math.random() * mascotnames.length)]
         return
+
       mascot = userMascots[Conf["mascot"]]
       @addMascot mascot
+
     else
       unless mascot = editMascot or mascot = userMascots[Conf["mascot"]]
         return
@@ -25,6 +35,7 @@ MascotTools =
   pointer-events: none;
 }
 "
+
     return result
 
 
@@ -90,7 +101,9 @@ MascotTools =
 </div>
 "
     for name, item of layout
+
       switch item[3]
+
         when "text"
           div = @input item, name
           if name == 'image'
@@ -102,11 +115,13 @@ MascotTools =
             $.on $('input', div), 'blur', ->
               editMascot[@name] = @value
               Style.addStyle Conf["theme"]
+
         when "number"
           div = @input item, name
           $.on $('input', div), 'blur', ->
             editMascot[@name] = parseInt @value, 10
             Style.addStyle Conf["theme"]
+
         when "select"
           optionHTML = "<h2>#{item[0]}</h2><span class=description>#{item[2]}</span><div class=option><select name='#{name}'><br>"
           for option in item[4]
@@ -118,6 +133,7 @@ MascotTools =
           $.on $('select', div), 'change', ->
             editMascot[@name] = @value
             Style.addStyle Conf["theme"]
+
         when "checkbox"
           value = editMascot[name] or item[1]
           console.log value
@@ -127,42 +143,55 @@ MascotTools =
           $.on $('input', div), 'click', ->
             editMascot[@name] = if @checked then true else false
             Style.addStyle Conf["theme"]
+
       $.add $("#mascotcontent", dialog), div
+
     $.on $('#save > a', dialog), 'click', ->
       MascotTools.save editMascot
+
     $.on  $('#close > a', dialog), 'click', MascotTools.close
     $.add d.body, dialog
     Style.allrice()
 
   input: (item, name) ->
     value = editMascot[name] or item[1]
+
     div = $.el "div",
       className: "mascotvar"
       innerHTML: "<h2>#{item[0]}</h2><span class=description>#{item[2]}</span><div class=option><input type=#{item[3]} class=field name='#{name}' placeholder='#{item[0]}' value='#{value}'></div>"
     return div
 
   addMascot: (mascot) ->
+
     try
       $.rm $('#mascot', d.body)
+
     div = $.el 'div',
       id: "mascot"
+
     div.innerHTML = "<img src='#{mascot.image}'>"
+
     $.ready ->
       $.add d.body, div
 
   save: (mascot) ->
     aname = mascot.name
+
     if typeof aname == "undefined" or aname == ""
       alert "Please name your mascot."
       return
+
     mascot["Deleted"] = false
     delete mascot.name
+
     if userMascots[aname] and not userMascots[aname]["Deleted"]
+
       if confirm "A mascot named #{aname} already exists. Would you like to over-write?"
         delete userMascots[aname]
       else
         alert "#{aname} aborted."
         return
+
     mascot["Customized"] = true;
     userMascots[aname] = mascot
     $.set 'userMascots', userMascots
@@ -175,4 +204,3 @@ MascotTools =
     $.rm $("#mascotConf", d.body)
     Style.addStyle Conf["Style"]
     Options.dialog("mascot")
-    

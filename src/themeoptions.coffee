@@ -1,9 +1,12 @@
 ThemeTools =
   init: (key) ->
+    #ThemeTools do not work without Style enabled.
     unless Conf["Style"]
       alert "Please enable Style Options and reload the page to use Theme Tools."
       return
+
     editMode = true
+
     if newTheme
       editTheme = {}
       editTheme["Theme"] = "Untitled"
@@ -12,7 +15,57 @@ ThemeTools =
     else
       editTheme = userThemes[key]
       editTheme["Theme"] = key
-    layout = ["Background Image", "Background Attachment", "Background Position", "Background Repeat", "Background Color", "Thread Wrapper Background", "Thread Wrapper Border", "Dialog Background", "Dialog Border", "Reply Background", "Reply Border", "Highlighted Reply Background", "Highlighted Reply Border", "Backlinked Reply Outline", "Input Background", "Input Border", "Checkbox Background", "Checkbox Border", "Checkbox Checked Background", "Buttons Background", "Buttons Border", "Focused Input Background", "Focused Input Border", "Hovered Input Background", "Hovered Input Border", "Navigation Background", "Navigation Border", "Links", "Hovered Links", "Quotelinks", "Backlinks", "Navigation Links", "Hovered Navigation Links", "Names", "Tripcodes", "Emails", "Subjects", "Text", "Inputs", "Post Numbers", "Greentext", "Sage", "Board Title", "Timestamps", "Warnings", "Shadow Color"]
+
+    #Objects are not guaranteed to have any type of arrangement, so we use a presorted
+    #array to generate the layout of of the theme editor.
+    layout = [
+      "Background Image"
+      "Background Attachment"
+      "Background Position"
+      "Background Repeat"
+      "Background Color"
+      "Thread Wrapper Background"
+      "Thread Wrapper Border"
+      "Dialog Background"
+      "Dialog Border"
+      "Reply Background"
+      "Reply Border"
+      "Highlighted Reply Background"
+      "Highlighted Reply Border"
+      "Backlinked Reply Outline"
+      "Input Background"
+      "Input Border"
+      "Hovered Input Background"
+      "Hovered Input Border"
+      "Focused Input Background"
+      "Focused Input Border"
+      "Checkbox Background"
+      "Checkbox Border"
+      "Checkbox Checked Background"
+      "Buttons Background"
+      "Buttons Border"
+      "Navigation Background"
+      "Navigation Border"
+      "Links"
+      "Hovered Links"
+      "Quotelinks"
+      "Backlinks"
+      "Navigation Links"
+      "Hovered Navigation Links"
+      "Names"
+      "Tripcodes"
+      "Emails"
+      "Subjects"
+      "Text"
+      "Inputs"
+      "Post Numbers"
+      "Greentext"
+      "Sage"
+      "Board Title"
+      "Timestamps"
+      "Warnings"
+      "Shadow Color"
+    ]
 
     dialog = $.el "div",
       id: "themeConf"
@@ -36,46 +89,64 @@ ThemeTools =
 <input class='field subject' name='Theme' placeholder='Theme' value='#{key}'> by
 <input class='field name' name='Author' placeholder='Author' value='#{editTheme['Author']}'>
 <input class='field postertrip' name='Author Tripcode' placeholder='Author Tripcode' value='#{editTheme['Author Tripcode']}'>"
+
+    #Setup inputs that are not generated from the layout variable.
     for input in $$("input", header)
       $.on input, 'blur', ->
         editTheme[@name] = @value
     $.add $("#themebar", dialog), header
     themecontent = $("#themecontent", dialog)
+
     for item in layout
       if newTheme
         editTheme[item] = ''
+
       div = $.el "div",
         className: "themevar"
         innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input class=field name='#{item}' placeholder='#{item}' value='#{editTheme[item]}'>"
+
       $.on $('input', div), 'blur', ->
         depth = 0
+
         for i in [0..@value.length - 1]
           switch @value[i]
             when '(' then depth++
             when ')' then depth--
             when '"' then toggle1 = not toggle1
             when "'" then toggle2 = not toggle2
+
         if depth != 0 or toggle1 or toggle2
           return alert "Syntax error on #{@name}."
+
         editTheme[@name] = @value
         Style.addStyle(editTheme)
       $.add themecontent, div
+
     if newTheme
       editTheme["Custom CSS"] = ""
+
     div = $.el "div",
       className: "themevar"
       innerHTML: "<div class=optionname><b>Custom CSS</b></div><div class=option><textarea name='Custom CSS' placeholder='Custom CSS' style='height: 100px;'>#{editTheme['Custom CSS']}</textarea>"
+
     $.on $('textarea', div), 'blur', ->
       editTheme["Custom CSS"] = @value
       Style.addStyle(editTheme)
     $.add themecontent, div
+
     $.on $('#save > a', dialog), 'click', ->
       ThemeTools.save editTheme
+
     $.on  $('#close > a', dialog), 'click', ThemeTools.close
     $.add d.body, dialog
     Style.addStyle(editTheme)
 
   color: (hex) ->
+
+    @hex = "#" + hex
+    @private_rgb = @calc_rgb(hex)
+    @rgb = @private_rgb.join ","
+
     @calc_rgb = (hex) ->
       rgb = []
       hex = parseInt hex, 16
@@ -83,11 +154,10 @@ ThemeTools =
       rgb[1] = (hex >> 8) & 0xFF
       rgb[2] = hex & 0xFF
       return rgb;
-    @hex = "#" + hex
-    @private_rgb = @calc_rgb(hex)
-    @rgb = @private_rgb.join ","
+
     @isLight = (rgb) ->
       rgb[0] + rgb[1] + rgb[2] >= 400
+
     @shiftRGB = (shift, smart) ->
       rgb = @private_rgb.slice 0
       shift = if smart
@@ -98,33 +168,41 @@ ThemeTools =
             -shift
         else
           Math.abs shift
+
       else
         shift;
+
       rgb[0] = Math.min Math.max(rgb[0] + shift, 0), 255
       rgb[1] = Math.min Math.max(rgb[1] + shift, 0), 255
       rgb[2] = Math.min Math.max(rgb[2] + shift, 0), 255
       return rgb.join ","
+
     @hover = @shiftRGB 16, true
 
   importtheme: (origin, evt) ->
     file = evt.target.files[0]
     reader = new FileReader()
+
     reader.onload = (e) ->
+
       try
         imported = JSON.parse e.target.result
       catch err
         alert err
         return
+
       unless (origin != 'appchan' and imported.mainColor) or (origin == 'appchan' and imported["Author Tripcode"])
         alert "Theme file is invalid."
         return
       name = imported.name or imported["Theme"]
       delete imported.name
+
       if userThemes[name] and not userThemes[name]["Deleted"]
         if confirm "A theme with this name already exists. Would you like to over-write?"
           delete userThemes[name]
         else
           return
+
       if origin == "oneechan" or origin == "SS"
         bgColor     = new ThemeTools.color(imported.bgColor);
         mainColor   = new ThemeTools.color(imported.mainColor);
@@ -142,6 +220,7 @@ ThemeTools =
         titleColor  = new ThemeTools.color(imported.titleColor);
         tripColor   = new ThemeTools.color(imported.tripColor);
         timeColor   = new ThemeTools.color(imported.timeColor || imported.textColor);
+
         if origin == "oneechan"
           userThemes[name] = {
             'Author'                      : "Author"
@@ -221,6 +300,7 @@ textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
 }""" + imported.customCSS }
+
         else if origin == "SS"
           userThemes[name] = {
             'Author'                      : "Author"
@@ -303,22 +383,27 @@ textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
 }""" + imported.customCSS }
+
       else if origin == 'appchan'
         userThemes[name] = imported
+
       $.set 'userThemes', userThemes
       alert "Theme \"#{name}\" imported!"
       $.rm $("#themes", d.body)
       Options.themeTab()
+
     reader.readAsText(file)
 
   save: (theme) ->
     name = theme["Theme"]
     delete theme["Theme"]
+
     if userThemes[name] and not userThemes[name]["Deleted"]
       if confirm "A theme with this name already exists. Would you like to over-write?"
         delete userThemes[name]
       else
         return
+
     theme["Customized"] = true
     userThemes[name] = theme
     $.set 'userThemes', userThemes

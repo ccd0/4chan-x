@@ -12,7 +12,7 @@ master
     ( 4chan SS themes may import weirdly. Any themes using custom CSS that depend )
     ( on color variables from either will not work properly.                      )
   Themes and Mascots are now automatically alphabetized.
-  
+
 0.9.4beta
 - Zixaphir
   Slightly snazzier interface.

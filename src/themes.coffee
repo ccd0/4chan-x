@@ -31,667 +31,667 @@ Emoji = [
 
 Themes =
   'AppChan':
-    'Author'                      : 'Zixaphir',
-    'Author Tripcode'             : '!..NoTrip..',
-    'Background Image'            : '',
-    'Background Attachment'       : '',
-    'Background Position'         : '',
-    'Background Repeat'           : '',
-    'Background Color'            : 'rgba(44,44,44,1)',
-    'Thread Wrapper Background'   : 'rgba(0,0,0,0)',
-    'Thread Wrapper Border'       : 'rgba(0,0,0,0)',
-    'Dialog Background'           : 'rgba(44,44,44,1)',
-    'Dialog Border'               : 'rgba(44,44,44,1)',
-    'Reply Background'            : 'rgba(51,51,51,1)',
-    'Reply Border'                : 'rgba(51,51,51,1)',
-    'Highlighted Reply Background': 'rgba(57,57,57,1)',
-    'Highlighted Reply Border'    : 'rgba(57,57,57,1)',
-    'Backlinked Reply Outline'    : 'rgba(98,124,141)',
-    'Input Background'            : 'rgba(51,51,51,1)',
-    'Input Border'                : 'rgba(51,51,51,1)',
-    'Checkbox Background'         : 'rgba(68,68,68,1)',
-    'Checkbox Border'             : 'rgba(68,68,68,1)',
-    'Checkbox Checked Background' : 'rgba(17,17,17,1)',
-    'Buttons Background'          : 'rgba(48,48,48,1)',
-    'Buttons Border'              : 'rgba(48,48,48,1)',
-    'Focused Input Background'    : 'rgba(63,63,63,1)',
-    'Focused Input Border'        : 'rgba(63,63,63,1)',
-    'Hovered Input Background'    : 'rgba(57,57,57,1)',
-    'Hovered Input Border'        : 'rgba(57,57,57,1)',
-    'Navigation Background'       : 'rgba(44,44,44,0.9)',
-    'Navigation Border'           : 'rgba(44,44,44,0.9)',
-    'Quotelinks'                  : 'rgb(79,95,143)',
-    'Backlinks'                   : 'rgb(79,95,143)',
-    'Links'                       : 'rgb(102,136,170)',
-    'Hovered Links'               : 'rgb(78,110,142)',
-    'Navigation Links'            : 'rgb(170,170,170)',
-    'Hovered Navigation Links'    : 'rgb(78,110,142)',
-    'Names'                       : 'rgb(170,170,170)',
-    'Tripcodes'                   : 'rgb(170,170,170)',
-    'Emails'                      : 'rgb(102,136,170)',
-    'Subjects'                    : 'rgb(144,144,144)',
-    'Text'                        : 'rgb(170,170,170)',
-    'Inputs'                      : 'rgb(170,170,170)',
-    'Post Numbers'                : 'rgb(102,136,170)',
-    'Greentext'                   : 'rgb(120,153,34)',
-    'Sage'                        : 'rgb(150,150,150)',
-    'Board Title'                 : 'rgb(170,170,170)',
-    'Timestamps'                  : 'rgb(170,170,170)',
-    'Warnings'                    : 'rgb(102,136,170)',
-    'Shadow Color'                : 'rgba(44,44,44,0.4)',
-    'Dark Theme'                  : '1',
+    'Author'                      : 'Zixaphir'
+    'Author Tripcode'             : '!..NoTrip..'
+    'Background Image'            : ''
+    'Background Attachment'       : ''
+    'Background Position'         : ''
+    'Background Repeat'           : ''
+    'Background Color'            : 'rgba(44,44,44,1)'
+    'Thread Wrapper Background'   : 'rgba(0,0,0,0)'
+    'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
+    'Dialog Background'           : 'rgba(44,44,44,1)'
+    'Dialog Border'               : 'rgba(44,44,44,1)'
+    'Reply Background'            : 'rgba(51,51,51,1)'
+    'Reply Border'                : 'rgba(51,51,51,1)'
+    'Highlighted Reply Background': 'rgba(57,57,57,1)'
+    'Highlighted Reply Border'    : 'rgba(57,57,57,1)'
+    'Backlinked Reply Outline'    : 'rgba(98,124,141)'
+    'Input Background'            : 'rgba(51,51,51,1)'
+    'Input Border'                : 'rgba(51,51,51,1)'
+    'Checkbox Background'         : 'rgba(68,68,68,1)'
+    'Checkbox Border'             : 'rgba(68,68,68,1)'
+    'Checkbox Checked Background' : 'rgba(17,17,17,1)'
+    'Buttons Background'          : 'rgba(48,48,48,1)'
+    'Buttons Border'              : 'rgba(48,48,48,1)'
+    'Focused Input Background'    : 'rgba(63,63,63,1)'
+    'Focused Input Border'        : 'rgba(63,63,63,1)'
+    'Hovered Input Background'    : 'rgba(57,57,57,1)'
+    'Hovered Input Border'        : 'rgba(57,57,57,1)'
+    'Navigation Background'       : 'rgba(44,44,44,0.9)'
+    'Navigation Border'           : 'rgba(44,44,44,0.9)'
+    'Quotelinks'                  : 'rgb(79,95,143)'
+    'Backlinks'                   : 'rgb(79,95,143)'
+    'Links'                       : 'rgb(102,136,170)'
+    'Hovered Links'               : 'rgb(78,110,142)'
+    'Navigation Links'            : 'rgb(170,170,170)'
+    'Hovered Navigation Links'    : 'rgb(78,110,142)'
+    'Names'                       : 'rgb(170,170,170)'
+    'Tripcodes'                   : 'rgb(170,170,170)'
+    'Emails'                      : 'rgb(102,136,170)'
+    'Subjects'                    : 'rgb(144,144,144)'
+    'Text'                        : 'rgb(170,170,170)'
+    'Inputs'                      : 'rgb(170,170,170)'
+    'Post Numbers'                : 'rgb(102,136,170)'
+    'Greentext'                   : 'rgb(120,153,34)'
+    'Sage'                        : 'rgb(150,150,150)'
+    'Board Title'                 : 'rgb(170,170,170)'
+    'Timestamps'                  : 'rgb(170,170,170)'
+    'Warnings'                    : 'rgb(102,136,170)'
+    'Shadow Color'                : 'rgba(44,44,44,0.4)'
+    'Dark Theme'                  : '1'
     'Custom CSS'                  : ''
   'BakaBT':
-    'Author'                      : 'seaweed-chan',
-    'Author Tripcode'             : '!POMF.9waa',
-    'Background Image'            : 'url("http://i.imgur.com/rTkxi.jpg")',
-    'Background Attachment'       : 'fixed',
-    'Background Position'         : '20px 20px',
-    'Background Repeat'           : 'repeat',
-    'Background Color'            : 'rgba(238,238,238,1)',
-    'Thread Wrapper Background'   : 'rgba(255,255,255,1)',
-    'Thread Wrapper Border'       : 'rgba(204,204,204,1)',
-    'Dialog Background'           : 'rgba(238,221,255,1)',
-    'Dialog Border'               : 'rgba(238,221,255,1)',
-    'Reply Background'            : 'rgba(238,221,255,1)',
-    'Reply Border'                : 'rgba(209,162,255,1)',
-    'Highlighted Reply Background': 'rgba(238,221,255,1)',
-    'Highlighted Reply Border'    : 'rgba(209,162,255,1)',
-    'Backlinked Reply Outline'    : 'rgba(204,101,99,1)',
-    'Input Background'            : 'rgba(255,255,255,1)',
-    'Input Border'                : 'rgba(204,204,204,1)',
-    'Checkbox Background'         : 'rgba(255,255,238,1)',
-    'Checkbox Border'             : 'rgba(204,204,204,1)',
-    'Checkbox Checked Background' : 'rgba(188,192,212,1)',
-    'Buttons Background'          : 'rgba(255,255,255,1)',
-    'Buttons Border'              : 'rgba(204,204,204,1)',
-    'Focused Input Background'    : 'rgba(255,255,255,1)',
-    'Focused Input Border'        : 'rgba(209,162,255,1)',
-    'Hovered Input Background'    : 'rgba(238,221,255,1)',
-    'Hovered Input Border'        : 'rgba(204,204,204,1)',
-    'Navigation Background'       : 'rgba(255,255,255,0.8)',
-    'Navigation Border'           : 'rgba(255,255,255,0.8)',
-    'Quotelinks'                  : 'rgb(146,92,141)',
-    'Backlinks'                   : 'rgb(146,92,141)',
-    'Links'                       : 'rgb(133,76,158)',
-    'Hovered Links'               : 'rgb(198,23,230)',
-    'Navigation Links'            : 'rgb(17,17,17)',
-    'Hovered Navigation Links'    : 'rgb(198,23,230)',
-    'Names'                       : 'rgb(133,76,158)',
-    'Tripcodes'                   : 'rgb(146,92,141)',
-    'Emails'                      : 'rgb(133,76,158)',
-    'Subjects'                    : 'rgb(17,17,17)',
-    'Text'                        : 'rgb(0,0,0)',
-    'Inputs'                      : 'rgb(0,0,0)',
-    'Post Numbers'                : 'rgb(146,92,141)',
-    'Greentext'                   : 'rgb(129,153,65)',
-    'Sage'                        : 'rgb(146,92,141)',
-    'Board Title'                 : 'rgb(133,76,158)',
-    'Timestamps'                  : 'rgb(0,0,0)',
-    'Warnings'                    : 'rgb(133,76,158)',
-    'Shadow Color'                : 'rgba(128,128,128,0.5)',
-    'Dark Theme'                  : '0',
+    'Author'                      : 'seaweed-chan'
+    'Author Tripcode'             : '!POMF.9waa'
+    'Background Image'            : 'url("http://i.imgur.com/rTkxi.jpg")'
+    'Background Attachment'       : 'fixed'
+    'Background Position'         : '20px 20px'
+    'Background Repeat'           : 'repeat'
+    'Background Color'            : 'rgba(238,238,238,1)'
+    'Thread Wrapper Background'   : 'rgba(255,255,255,1)'
+    'Thread Wrapper Border'       : 'rgba(204,204,204,1)'
+    'Dialog Background'           : 'rgba(238,221,255,1)'
+    'Dialog Border'               : 'rgba(238,221,255,1)'
+    'Reply Background'            : 'rgba(238,221,255,1)'
+    'Reply Border'                : 'rgba(209,162,255,1)'
+    'Highlighted Reply Background': 'rgba(238,221,255,1)'
+    'Highlighted Reply Border'    : 'rgba(209,162,255,1)'
+    'Backlinked Reply Outline'    : 'rgba(204,101,99,1)'
+    'Input Background'            : 'rgba(255,255,255,1)'
+    'Input Border'                : 'rgba(204,204,204,1)'
+    'Checkbox Background'         : 'rgba(255,255,238,1)'
+    'Checkbox Border'             : 'rgba(204,204,204,1)'
+    'Checkbox Checked Background' : 'rgba(188,192,212,1)'
+    'Buttons Background'          : 'rgba(255,255,255,1)'
+    'Buttons Border'              : 'rgba(204,204,204,1)'
+    'Focused Input Background'    : 'rgba(255,255,255,1)'
+    'Focused Input Border'        : 'rgba(209,162,255,1)'
+    'Hovered Input Background'    : 'rgba(238,221,255,1)'
+    'Hovered Input Border'        : 'rgba(204,204,204,1)'
+    'Navigation Background'       : 'rgba(255,255,255,0.8)'
+    'Navigation Border'           : 'rgba(255,255,255,0.8)'
+    'Quotelinks'                  : 'rgb(146,92,141)'
+    'Backlinks'                   : 'rgb(146,92,141)'
+    'Links'                       : 'rgb(133,76,158)'
+    'Hovered Links'               : 'rgb(198,23,230)'
+    'Navigation Links'            : 'rgb(17,17,17)'
+    'Hovered Navigation Links'    : 'rgb(198,23,230)'
+    'Names'                       : 'rgb(133,76,158)'
+    'Tripcodes'                   : 'rgb(146,92,141)'
+    'Emails'                      : 'rgb(133,76,158)'
+    'Subjects'                    : 'rgb(17,17,17)'
+    'Text'                        : 'rgb(0,0,0)'
+    'Inputs'                      : 'rgb(0,0,0)'
+    'Post Numbers'                : 'rgb(146,92,141)'
+    'Greentext'                   : 'rgb(129,153,65)'
+    'Sage'                        : 'rgb(146,92,141)'
+    'Board Title'                 : 'rgb(133,76,158)'
+    'Timestamps'                  : 'rgb(0,0,0)'
+    'Warnings'                    : 'rgb(133,76,158)'
+    'Shadow Color'                : 'rgba(128,128,128,0.5)'
+    'Dark Theme'                  : '0'
     'Custom CSS'                  : '#delform{ box-shadow: 0px 10px 10px 2px rgba(128,128,128,0.5); border-radius: 3px;padding:10px;}#options.reply.dialog,#options .dialog{background-color:#FFF;color:#000;border:2px solid #CCC;border-radius:6px;}#options ul{border-bottom:1px solid #DBD8D2;border-radius: 0px;}#options ul:last-of-type{border:none;}#qp div.post{background-color:rgba(255,255,255,0.9);border:1px solid #D1A2FF;color:#000;}'
   'Blackberry Jam':
-    'Author'                      : 'seaweed-chan',
-    'Author Tripcode'             : '!POMF.9waa',
-    'Background Image'            : '',
-    'Background Attachment'       : '',
-    'Background Position'         : '',
-    'Background Repeat'           : '',
-    'Dialog Background'           : 'rgba(27,27,27,1)',
-    'Dialog Border'               : 'rgba(27,27,27,1)',
-    'Background Color'            : 'rgba(45,45,45,1)',
-    'Thread Wrapper Background'   : 'rgba(0,0,0,0)',
-    'Thread Wrapper Border'       : 'rgba(0,0,0,0)',
-    'Reply Background'            : 'rgba(27,27,27,1)',
-    'Reply Border'                : 'rgba(38,38,38,1)',
-    'Highlighted Reply Background': 'rgba(17,17,17,1)',
-    'Highlighted Reply Border'    : 'rgba(17,17,17,1)',
-    'Backlinked Reply Outline'    : 'rgba(103,204,232,1)',
-    'Checkbox Background'         : 'rgba(51,51,51,1)',
-    'Checkbox Border'             : 'rgba(51,51,51,1)',
-    'Input Background'            : 'rgba(27,27,27,1)',
-    'Input Border'                : 'rgba(27,27,27,1)',
-    'Focused Input Background'    : 'rgba(27,27,27,1)',
-    'Focused Input Border'        : 'rgba(27,27,27,1)',
-    'Hovered Input Background'    : 'rgba(17,17,17,1)',
-    'Hovered Input Border'        : 'rgba(17,17,17,1)',
-    'Checkbox Checked Background' : 'rgba(17,17,17,1)',
-    'Buttons Background'          : 'rgba(27,27,27,1)',
-    'Buttons Border'              : 'rgba(27,27,27,1)',
-    'Navigation Background'       : 'rgba(45,45,45,0.9)',
-    'Navigation Border'           : 'rgba(45,45,45,0.9)',
-    'Links'                       : 'rgb(218,105,224)',
-    'Hovered Links'               : 'rgb(255,0,255)',
-    'Navigation Links'            : 'rgb(241,241,241)',
-    'Hovered Navigation Links'    : 'rgb(255,0,255)',
-    'Subjects'                    : 'rgb(241,241,241)',
-    'Names'                       : 'rgb(103,204,232)',
-    'Sage'                        : 'rgb(103,204,232)',
-    'Tripcodes'                   : 'rgb(103,204,232)',
-    'Emails'                      : 'rgb(218,105,224)',
-    'Post Numbers'                : 'rgb(218,105,224)',
-    'Text'                        : 'rgb(241,241,241)',
-    'Quotelinks'                  : 'rgb(223,153,247)',
-    'Backlinks'                   : 'rgb(223,153,247)',
-    'Greentext'                   : 'rgb(108,204,102)',
-    'Board Title'                 : 'rgb(103,204,232)',
-    'Timestamps'                  : 'rgb(218,105,224)',
-    'Inputs'                      : 'rgb(218,105,224)',
-    'Warnings'                    : 'rgb(103,204,232)',
-    'Shadow Color'                : 'rgba(29,31,33,1)',
-    'Dark Theme'                  : '1',
+    'Author'                      : 'seaweed-chan'
+    'Author Tripcode'             : '!POMF.9waa'
+    'Background Image'            : ''
+    'Background Attachment'       : ''
+    'Background Position'         : ''
+    'Background Repeat'           : ''
+    'Dialog Background'           : 'rgba(27,27,27,1)'
+    'Dialog Border'               : 'rgba(27,27,27,1)'
+    'Background Color'            : 'rgba(45,45,45,1)'
+    'Thread Wrapper Background'   : 'rgba(0,0,0,0)'
+    'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
+    'Reply Background'            : 'rgba(27,27,27,1)'
+    'Reply Border'                : 'rgba(38,38,38,1)'
+    'Highlighted Reply Background': 'rgba(17,17,17,1)'
+    'Highlighted Reply Border'    : 'rgba(17,17,17,1)'
+    'Backlinked Reply Outline'    : 'rgba(103,204,232,1)'
+    'Checkbox Background'         : 'rgba(51,51,51,1)'
+    'Checkbox Border'             : 'rgba(51,51,51,1)'
+    'Input Background'            : 'rgba(27,27,27,1)'
+    'Input Border'                : 'rgba(27,27,27,1)'
+    'Focused Input Background'    : 'rgba(27,27,27,1)'
+    'Focused Input Border'        : 'rgba(27,27,27,1)'
+    'Hovered Input Background'    : 'rgba(17,17,17,1)'
+    'Hovered Input Border'        : 'rgba(17,17,17,1)'
+    'Checkbox Checked Background' : 'rgba(17,17,17,1)'
+    'Buttons Background'          : 'rgba(27,27,27,1)'
+    'Buttons Border'              : 'rgba(27,27,27,1)'
+    'Navigation Background'       : 'rgba(45,45,45,0.9)'
+    'Navigation Border'           : 'rgba(45,45,45,0.9)'
+    'Links'                       : 'rgb(218,105,224)'
+    'Hovered Links'               : 'rgb(255,0,255)'
+    'Navigation Links'            : 'rgb(241,241,241)'
+    'Hovered Navigation Links'    : 'rgb(255,0,255)'
+    'Subjects'                    : 'rgb(241,241,241)'
+    'Names'                       : 'rgb(103,204,232)'
+    'Sage'                        : 'rgb(103,204,232)'
+    'Tripcodes'                   : 'rgb(103,204,232)'
+    'Emails'                      : 'rgb(218,105,224)'
+    'Post Numbers'                : 'rgb(218,105,224)'
+    'Text'                        : 'rgb(241,241,241)'
+    'Quotelinks'                  : 'rgb(223,153,247)'
+    'Backlinks'                   : 'rgb(223,153,247)'
+    'Greentext'                   : 'rgb(108,204,102)'
+    'Board Title'                 : 'rgb(103,204,232)'
+    'Timestamps'                  : 'rgb(218,105,224)'
+    'Inputs'                      : 'rgb(218,105,224)'
+    'Warnings'                    : 'rgb(103,204,232)'
+    'Shadow Color'                : 'rgba(29,31,33,1)'
+    'Dark Theme'                  : '1'
     'Custom CSS'                  : 'div.reply {box-shadow: inset 0px 1px 2px 1px #111;}#qr {box-shadow: none;}#qr textarea, #qr input[name="name"], #qr input[name="email"], #qr input[name="sub"], #qr input[title="Verification"] {box-shadow: inset 0px 1px 2px 0px #111;}#qp div.post {background-color: rgba(29,29,33,1); border: 1px solid rgba(95,137,172,0.4);}input:checked .rice { background: url("http://i.imgur.com/CAewG.png"); }'
   'Midnight Caek':
-    'Author'                      : 'Zixaphir',
-    'Author Tripcode'             : '!M.........',
-    'Background Image'            : '',
-    'Background Attachment'       : '',
-    'Background Position'         : '',
-    'Background Repeat'           : '',
-    'Background Color'            : 'rgba(16,16,16,1)',
-    'Thread Wrapper Background'   : 'rgba(0,0,0,0)',
-    'Thread Wrapper Border'       : 'rgba(0,0,0,0)',
-    'Dialog Background'           : 'rgba(28,28,28,1)',
-    'Dialog Border'               : 'rgba(28,28,28,1)',
-    'Reply Background'            : 'rgba(28,28,28,1)',
-    'Reply Border'                : 'rgba(28,28,28,1)',
-    'Highlighted Reply Background': 'rgba(24,24,24,1)',
-    'Highlighted Reply Border'    : 'rgba(24,24,24,1)',
-    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)',
-    'Input Background'            : 'rgba(28,28,28,1)',
-    'Input Border'                : 'rgba(28,28,28,1)',
-    'Hovered Input Background'    : 'rgba(24,24,24,1)',
-    'Hovered Input Border'        : 'rgba(24,24,24,1)',
-    'Focused Input Background'    : 'rgba(16,16,16,1)',
-    'Focused Input Border'        : 'rgba(28,28,28,1)',
-    'Checkbox Background'         : 'rgba(0,0,0,1)',
-    'Checkbox Border'             : 'rgba(60,60,60,1)',
-    'Checkbox Checked Background' : 'rgba(60,60,60,1)',
-    'Buttons Background'          : 'rgba(24,24,24,1)',
-    'Buttons Border'              : 'rgba(24,24,24,1)',
-    'Navigation Background'       : 'rgba(16,16,16,0.9)',
-    'Navigation Border'           : 'rgba(16,16,16,0.9)',
-    'Quotelinks'                  : 'rgb(71,71,91)',
-    'Backlinks'                   : 'rgb(66,66,71)',
-    'Links'                       : 'rgb(87,87,123)',
-    'Hovered Links'               : 'rgb(71,71,91)',
-    'Navigation Links'            : 'rgb(144,144,144)',
-    'Hovered Navigation Links'    : 'rgb(71,71,91)',
-    'Names'                       : 'rgb(124,45,45)',
-    'Tripcodes'                   : 'rgb(62,113,87)',
-    'Emails'                      : 'rgb(68,68,68)',
-    'Subjects'                    : 'rgb(170,170,170)',
-    'Text'                        : 'rgb(144,144,144)',
-    'Inputs'                      : 'rgb(144,144,144)',
-    'Post Numbers'                : 'rgb(144,144,144)',
-    'Greentext'                   : 'rgb(113,121,62)',
-    'Sage'                        : 'rgb(68,68,68)',
-    'Board Title'                 : 'rgb(144,144,144)',
-    'Timestamps'                  : 'rgb(144,144,144)',
-    'Warnings'                    : 'rgb(87,87,123)',
-    'Shadow Color'                : 'rgba(16,16,16,0.4)',
-    'Dark Theme'                  : '1',
+    'Author'                      : 'Zixaphir'
+    'Author Tripcode'             : '!M.........'
+    'Background Image'            : ''
+    'Background Attachment'       : ''
+    'Background Position'         : ''
+    'Background Repeat'           : ''
+    'Background Color'            : 'rgba(16,16,16,1)'
+    'Thread Wrapper Background'   : 'rgba(0,0,0,0)'
+    'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
+    'Dialog Background'           : 'rgba(28,28,28,1)'
+    'Dialog Border'               : 'rgba(28,28,28,1)'
+    'Reply Background'            : 'rgba(28,28,28,1)'
+    'Reply Border'                : 'rgba(28,28,28,1)'
+    'Highlighted Reply Background': 'rgba(24,24,24,1)'
+    'Highlighted Reply Border'    : 'rgba(24,24,24,1)'
+    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
+    'Input Background'            : 'rgba(28,28,28,1)'
+    'Input Border'                : 'rgba(28,28,28,1)'
+    'Hovered Input Background'    : 'rgba(24,24,24,1)'
+    'Hovered Input Border'        : 'rgba(24,24,24,1)'
+    'Focused Input Background'    : 'rgba(16,16,16,1)'
+    'Focused Input Border'        : 'rgba(28,28,28,1)'
+    'Checkbox Background'         : 'rgba(0,0,0,1)'
+    'Checkbox Border'             : 'rgba(60,60,60,1)'
+    'Checkbox Checked Background' : 'rgba(60,60,60,1)'
+    'Buttons Background'          : 'rgba(24,24,24,1)'
+    'Buttons Border'              : 'rgba(24,24,24,1)'
+    'Navigation Background'       : 'rgba(16,16,16,0.9)'
+    'Navigation Border'           : 'rgba(16,16,16,0.9)'
+    'Quotelinks'                  : 'rgb(71,71,91)'
+    'Backlinks'                   : 'rgb(66,66,71)'
+    'Links'                       : 'rgb(87,87,123)'
+    'Hovered Links'               : 'rgb(71,71,91)'
+    'Navigation Links'            : 'rgb(144,144,144)'
+    'Hovered Navigation Links'    : 'rgb(71,71,91)'
+    'Names'                       : 'rgb(124,45,45)'
+    'Tripcodes'                   : 'rgb(62,113,87)'
+    'Emails'                      : 'rgb(68,68,68)'
+    'Subjects'                    : 'rgb(170,170,170)'
+    'Text'                        : 'rgb(144,144,144)'
+    'Inputs'                      : 'rgb(144,144,144)'
+    'Post Numbers'                : 'rgb(144,144,144)'
+    'Greentext'                   : 'rgb(113,121,62)'
+    'Sage'                        : 'rgb(68,68,68)'
+    'Board Title'                 : 'rgb(144,144,144)'
+    'Timestamps'                  : 'rgb(144,144,144)'
+    'Warnings'                    : 'rgb(87,87,123)'
+    'Shadow Color'                : 'rgba(16,16,16,0.4)'
+    'Dark Theme'                  : '1'
     'Custom CSS'                  : ''
   'Minimalistic Mayhem':
-    'Author'                      : 'Mayhem',
-    'Author Tripcode'             : '!MayhemYDG.',
-    'Background Image'            : 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAAAXNSR0IArs4c6QAAACdJREFUCNdNxzEBADAMwzCnOMwfWYDs2JNPCgCoH9m0zQa4jXob4AGJFwxchPNwQAAAAABJRU5ErkJggg==")',
-    'Background Attachment'       : '',
-    'Background Position'         : '',
-    'Background Repeat'           : '',
-    'Background Color'            : 'rgba(25,25,25,1)',
-    'Dialog Background'           : 'rgba(34,34,34,1)',
-    'Dialog Border'               : 'rgba(41,41,41,1)',
-    'Thread Wrapper Background'   : 'rgba(34,34,34,1)',
-    'Thread Wrapper Border'       : 'rgba(0,0,0,1)',
-    'Reply Background'            : 'rgba(51,51,51,1)',
-    'Reply Border'                : 'rgba(17,17,17,1)',
-    'Highlighted Reply Background': 'rgba(37,38,42,1)',
-    'Highlighted Reply Border'    : 'rgba(85,85,85,1)',
-    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)',
-    'Checkbox Background'         : 'rgba(57,57,57,1)',
-    'Checkbox Border'             : 'rgba(25,25,25,1)',
-    'Input Background'            : 'rgba(34,34,34,1)',
-    'Input Border'                : 'rgba(21,21,21,1)',
-    'Focused Input Background'    : 'rgba(32,32,32,1)',
-    'Focused Input Border'        : 'rgba(102,102,102,1)',
-    'Hovered Input Background'    : 'rgba(24,24,24,1)',
-    'Hovered Input Border'        : 'rgba(21,21,21,1)',
-    'Checkbox Checked Background' : 'rgba(57,57,57,1)',
-    'Buttons Background'          : 'rgba(32,32,32,1)',
-    'Buttons Border'              : 'rgba(16,16,16,1)',
-    'Navigation Background'       : 'rgba(26,26,26,0.9)',
-    'Navigation Border'           : 'rgba(26,26,26,0.9)',
-    'Links'                       : 'rgb(85,156,122)',
-    'Hovered Links'               : 'rgb(199,222,26)',
-    'Navigation Links'            : 'rgb(144,144,144)',
-    'Hovered Navigation Links'    : 'rgb(198,23,230)',
-    'Subjects'                    : 'rgb(72,98,115)',
-    'Names'                       : 'rgb(46,136,166)',
-    'Sage'                        : 'rgb(124,45,45)',
-    'Tripcodes'                   : 'rgb(140,93,42)',
-    'Emails'                      : 'rgb(174,43,41)',
-    'Post Numbers'                : 'rgb(137,115,153)',
-    'Text'                        : 'rgb(221,221,221)',
-    'Quotelinks'                  : 'rgb(139,164,70)',
-    'Backlinks'                   : 'rgb(139,164,70)',
-    'Greentext'                   : 'rgb(139,164,70)',
-    'Board Title'                 : 'rgb(187,187,187)',
-    'Timestamps'                  : 'rgb(221,221,221)',
-    'Inputs'                      : 'rgb(187,187,187)',
-    'Warnings'                    : 'rgb(87,87,123)',
-    'Shadow Color'                : 'rgba(16,16,16,0.4)',
-    'Dark Theme'                  : '1',
+    'Author'                      : 'Mayhem'
+    'Author Tripcode'             : '!MayhemYDG.'
+    'Background Image'            : 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAAAXNSR0IArs4c6QAAACdJREFUCNdNxzEBADAMwzCnOMwfWYDs2JNPCgCoH9m0zQa4jXob4AGJFwxchPNwQAAAAABJRU5ErkJggg==")'
+    'Background Attachment'       : ''
+    'Background Position'         : ''
+    'Background Repeat'           : ''
+    'Background Color'            : 'rgba(25,25,25,1)'
+    'Dialog Background'           : 'rgba(34,34,34,1)'
+    'Dialog Border'               : 'rgba(41,41,41,1)'
+    'Thread Wrapper Background'   : 'rgba(34,34,34,1)'
+    'Thread Wrapper Border'       : 'rgba(0,0,0,1)'
+    'Reply Background'            : 'rgba(51,51,51,1)'
+    'Reply Border'                : 'rgba(17,17,17,1)'
+    'Highlighted Reply Background': 'rgba(37,38,42,1)'
+    'Highlighted Reply Border'    : 'rgba(85,85,85,1)'
+    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
+    'Checkbox Background'         : 'rgba(57,57,57,1)'
+    'Checkbox Border'             : 'rgba(25,25,25,1)'
+    'Input Background'            : 'rgba(34,34,34,1)'
+    'Input Border'                : 'rgba(21,21,21,1)'
+    'Focused Input Background'    : 'rgba(32,32,32,1)'
+    'Focused Input Border'        : 'rgba(102,102,102,1)'
+    'Hovered Input Background'    : 'rgba(24,24,24,1)'
+    'Hovered Input Border'        : 'rgba(21,21,21,1)'
+    'Checkbox Checked Background' : 'rgba(57,57,57,1)'
+    'Buttons Background'          : 'rgba(32,32,32,1)'
+    'Buttons Border'              : 'rgba(16,16,16,1)'
+    'Navigation Background'       : 'rgba(26,26,26,0.9)'
+    'Navigation Border'           : 'rgba(26,26,26,0.9)'
+    'Links'                       : 'rgb(85,156,122)'
+    'Hovered Links'               : 'rgb(199,222,26)'
+    'Navigation Links'            : 'rgb(144,144,144)'
+    'Hovered Navigation Links'    : 'rgb(198,23,230)'
+    'Subjects'                    : 'rgb(72,98,115)'
+    'Names'                       : 'rgb(46,136,166)'
+    'Sage'                        : 'rgb(124,45,45)'
+    'Tripcodes'                   : 'rgb(140,93,42)'
+    'Emails'                      : 'rgb(174,43,41)'
+    'Post Numbers'                : 'rgb(137,115,153)'
+    'Text'                        : 'rgb(221,221,221)'
+    'Quotelinks'                  : 'rgb(139,164,70)'
+    'Backlinks'                   : 'rgb(139,164,70)'
+    'Greentext'                   : 'rgb(139,164,70)'
+    'Board Title'                 : 'rgb(187,187,187)'
+    'Timestamps'                  : 'rgb(221,221,221)'
+    'Inputs'                      : 'rgb(187,187,187)'
+    'Warnings'                    : 'rgb(87,87,123)'
+    'Shadow Color'                : 'rgba(16,16,16,0.4)'
+    'Dark Theme'                  : '1'
     'Custom CSS'                  : '.nameBlock>.useremail>postertrip{color: rgb(137,115,153);}a.backlink:hover{color: rgb(198,23,230);}.reply:target,.reply.highlight:target{background:rgb(37,38,42);}[alt="sticky"]+a{color: rgb(242,141,0);}[alt="closed"]+a{color: rgb(178,171,130);}input:checked .rice{border-color:rgb(21,21,21)}}input[type="submit"], input[type="button"], button {background: linear-gradient(#393939, #292929);border: 1px solid #191919;color: #AAA;text-shadow: 0 1px 1px #191919;}input[type="checkbox"], input[type="radio"] {background-color: #393939;border: 1px solid #191919;}input[type="checkbox"]:checked, input[type="radio"]:checked {background: linear-gradient(#595959, #393939);border: 1px solid #151515;} #delform { padding: 7px; }.subject:hover,div.post:hover .subject{color: #3F8DBF !important;}.postertrip:hover,div.post:hover .postertrip{color:#CC7212 !important;}.name:hover, div.post:hover .name {  color: #0AAEE7 !important;}.name,.subject,.postertrip {-webkit-transition:color .3s ease-in-out;-moz-transition:color .3s ease-in-out;}'
   'ObsidianChan':
-    'Author'                      : 'seaweed-chan',
-    'Author Tripcode'             : '!POMF.9waa',
-    'Background Image'            : 'url("http://i.imgur.com/sbi8u.png")',
-    'Background Attachment'       : 'fixed',
-    'Background Position'         : '',
-    'Background Repeat'           : '',
-    'Dialog Background'           : 'rgba(0,0,0,0.7)',
-    'Dialog Border'               : 'rgba(0,0,0,0.7)',
-    'Background Color'            : 'rgba(0,0,0,1)',
-    'Thread Wrapper Background'   : 'rgba(0,0,0,0.3)',
-    'Thread Wrapper Border'       : 'rgba(51,51,51,1)',
-    'Reply Background'            : 'rgba(0,0,0,0.6)',
-    'Reply Border'                : 'rgba(0,0,0,0.6)',
-    'Highlighted Reply Background': 'rgba(0,0,0,0.4)',
-    'Highlighted Reply Border'    : 'rgba(0,0,0,0.4)',
-    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)',
-    'Checkbox Background'         : 'rgba(68,68,68,1)',
-    'Checkbox Border'             : 'rgba(68,68,68,1)',
-    'Input Background'            : 'rgba(0,0,0,0.6)',
-    'Input Border'                : 'rgba(0,0,0,0.6)',
-    'Hovered Input Background'    : 'rgba(0,0,0,0.4)',
-    'Hovered Input Border'        : 'rgba(0,0,0,0.4)',
-    'Focused Input Background'    : 'rgba(0,0,0,0.4)',
-    'Focused Input Border'        : 'rgba(0,0,0,0.4)',
-    'Checkbox Checked Background' : 'rgba(255,0,127,1)',
-    'Buttons Background'          : 'rgba(0,0,0,0.4)',
-    'Buttons Border'              : 'rgba(0,0,0,0.4)',
-    'Navigation Background'       : 'rgba(0,0,0,0.7)',
-    'Navigation Border'           : 'rgba(0,0,0,0.7)',
-    'Links'                       : 'rgb(0,255,255)',
-    'Hovered Links'               : 'rgb(0,255,255)',
-    'Navigation Links'            : 'rgb(253,254,255)',
-    'Hovered Navigation Links'    : 'rgb(253,254,255)',
-    'Subjects'                    : 'rgb(144,144,144)',
-    'Names'                       : 'rgb(253,254,255)',
-    'Sage'                        : 'rgb(253,254,255)',
-    'Tripcodes'                   : 'rgb(255,82,203)',
-    'Emails'                      : 'rgb(0,255,255)',
-    'Post Numbers'                : 'rgb(253,254,255)',
-    'Text'                        : 'rgb(253,254,255)',
-    'Quotelinks'                  : 'rgb(212,212,212)',
-    'Backlinks'                   : 'rgb(0,255,255)',
-    'Greentext'                   : 'rgb(67,204,103)',
-    'Board Title'                 : 'rgb(253,254,255)',
-    'Timestamps'                  : 'rgb(253,254,255)',
-    'Inputs'                      : 'rgb(253,254,255)',
-    'Warnings'                    : 'rgb(0,255,255)',
-    'Shadow Color'                : 'rgba(44,44,44,0.4)',
-    'Dark Theme'                  : '1',
+    'Author'                      : 'seaweed-chan'
+    'Author Tripcode'             : '!POMF.9waa'
+    'Background Image'            : 'url("http://i.imgur.com/sbi8u.png")'
+    'Background Attachment'       : 'fixed'
+    'Background Position'         : ''
+    'Background Repeat'           : ''
+    'Dialog Background'           : 'rgba(0,0,0,0.7)'
+    'Dialog Border'               : 'rgba(0,0,0,0.7)'
+    'Background Color'            : 'rgba(0,0,0,1)'
+    'Thread Wrapper Background'   : 'rgba(0,0,0,0.3)'
+    'Thread Wrapper Border'       : 'rgba(51,51,51,1)'
+    'Reply Background'            : 'rgba(0,0,0,0.6)'
+    'Reply Border'                : 'rgba(0,0,0,0.6)'
+    'Highlighted Reply Background': 'rgba(0,0,0,0.4)'
+    'Highlighted Reply Border'    : 'rgba(0,0,0,0.4)'
+    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
+    'Checkbox Background'         : 'rgba(68,68,68,1)'
+    'Checkbox Border'             : 'rgba(68,68,68,1)'
+    'Input Background'            : 'rgba(0,0,0,0.6)'
+    'Input Border'                : 'rgba(0,0,0,0.6)'
+    'Hovered Input Background'    : 'rgba(0,0,0,0.4)'
+    'Hovered Input Border'        : 'rgba(0,0,0,0.4)'
+    'Focused Input Background'    : 'rgba(0,0,0,0.4)'
+    'Focused Input Border'        : 'rgba(0,0,0,0.4)'
+    'Checkbox Checked Background' : 'rgba(255,0,127,1)'
+    'Buttons Background'          : 'rgba(0,0,0,0.4)'
+    'Buttons Border'              : 'rgba(0,0,0,0.4)'
+    'Navigation Background'       : 'rgba(0,0,0,0.7)'
+    'Navigation Border'           : 'rgba(0,0,0,0.7)'
+    'Links'                       : 'rgb(0,255,255)'
+    'Hovered Links'               : 'rgb(0,255,255)'
+    'Navigation Links'            : 'rgb(253,254,255)'
+    'Hovered Navigation Links'    : 'rgb(253,254,255)'
+    'Subjects'                    : 'rgb(144,144,144)'
+    'Names'                       : 'rgb(253,254,255)'
+    'Sage'                        : 'rgb(253,254,255)'
+    'Tripcodes'                   : 'rgb(255,82,203)'
+    'Emails'                      : 'rgb(0,255,255)'
+    'Post Numbers'                : 'rgb(253,254,255)'
+    'Text'                        : 'rgb(253,254,255)'
+    'Quotelinks'                  : 'rgb(212,212,212)'
+    'Backlinks'                   : 'rgb(0,255,255)'
+    'Greentext'                   : 'rgb(67,204,103)'
+    'Board Title'                 : 'rgb(253,254,255)'
+    'Timestamps'                  : 'rgb(253,254,255)'
+    'Inputs'                      : 'rgb(253,254,255)'
+    'Warnings'                    : 'rgb(0,255,255)'
+    'Shadow Color'                : 'rgba(44,44,44,0.4)'
+    'Dark Theme'                  : '1'
     'Custom CSS'                  : '#qp div.post{background-color:rgba(0,0,0,0.8);border-radius:4px;border: 1px solid #333;}#qr {background-color: rgba(0,0,0,0.7);border: 1px solid #333;}'
   'PaisleyChan':
-    'Author'                      : 'Ubuntufriend',
-    'Author Tripcode'             : '!TRip.C0d3',
-    'Background Image'            : 'url(http://i.imgur.com/DRaZf.jpg)',
-    'Background Attachment'       : 'fixed',
-    'Background Position'         : '',
-    'Background Repeat'           : 'repeat',
-    'Background Color'            : 'rgba(19,19,19,1)',
-    'Dialog Background'           : 'rgba(16,16,16,1)',
-    'Dialog Border'               : 'rgba(16,16,16,1)',
-    'Thread Wrapper Background'   : 'rgba(52,56,56,0.3)',
-    'Thread Wrapper Border'       : 'rgba(52,56,56,0.3)',
-    'Reply Background'            : 'rgba(52,56,56,1)',
-    'Reply Border'                : 'rgba(0,0,0,0)',
-    'Highlighted Reply Background': 'rgba(0,0,0,0)',
-    'Highlighted Reply Border'    : 'rgba(0,0,0,0)',
-    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)',
-    'Checkbox Background'         : 'rgba(34,34,34,1)',
-    'Checkbox Border'             : 'rgba(60,60,60,1)',
-    'Input Background'            : 'rgba(28,28,28,1)',
-    'Input Border'                : 'rgba(28,28,28,1)',
-    'Hovered Input Background'    : 'rgba(24,24,24,1)',
-    'Hovered Input Border'        : 'rgba(24,24,24,1)',
-    'Focused Input Background'    : 'rgba(32,32,32,1)',
-    'Focused Input Border'        : 'rgba(32,32,32,1)',
-    'Checkbox Checked Background' : 'rgba(34,34,34,1)',
-    'Buttons Background'          : 'rgba(32,32,32,1)',
-    'Buttons Border'              : 'rgba(32,32,32,1)',
-    'Navigation Background'       : 'rgba(16,16,16,0.9)',
-    'Navigation Border'           : 'rgba(16,16,16,0.9)',
-    'Links'                       : 'rgb(187,187,187)',
-    'Hovered Links'               : 'rgb(0,223,252)',
-    'Navigation Links'            : 'rgb(153,153,153)',
-    'Hovered Navigation Links'    : 'rgb(0,223,252)',
-    'Subjects'                    : 'rgb(170,170,170)',
-    'Names'                       : 'rgb(128,172,206)',
-    'Sage'                        : 'rgb(153,153,153)',
-    'Tripcodes'                   : 'rgb(128,172,206)',
-    'Emails'                      : 'rgb(187,187,187)',
-    'Post Numbers'                : 'rgb(153,153,153)',
-    'Text'                        : 'rgb(153,153,153)',
-    'Quotelinks'                  : 'rgb(212,212,212)',
-    'Backlinks'                   : 'rgb(212,212,212)',
-    'Greentext'                   : 'rgb(152,185,98)',
-    'Board Title'                 : 'rgb(153,153,153)',
-    'Timestamps'                  : 'rgb(153,153,153)',
-    'Inputs'                      : 'rgb(153,153,153)',
-    'Warnings'                    : 'rgb(187,187,187)',
-    'Shadow Color'                : 'rgba(20,20,20,0.9)',
-    'Dark Theme'                  : '1',
+    'Author'                      : 'Ubuntufriend'
+    'Author Tripcode'             : '!TRip.C0d3'
+    'Background Image'            : 'url(http://i.imgur.com/DRaZf.jpg)'
+    'Background Attachment'       : 'fixed'
+    'Background Position'         : ''
+    'Background Repeat'           : 'repeat'
+    'Background Color'            : 'rgba(19,19,19,1)'
+    'Dialog Background'           : 'rgba(16,16,16,1)'
+    'Dialog Border'               : 'rgba(16,16,16,1)'
+    'Thread Wrapper Background'   : 'rgba(52,56,56,0.3)'
+    'Thread Wrapper Border'       : 'rgba(52,56,56,0.3)'
+    'Reply Background'            : 'rgba(52,56,56,1)'
+    'Reply Border'                : 'rgba(0,0,0,0)'
+    'Highlighted Reply Background': 'rgba(0,0,0,0)'
+    'Highlighted Reply Border'    : 'rgba(0,0,0,0)'
+    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
+    'Checkbox Background'         : 'rgba(34,34,34,1)'
+    'Checkbox Border'             : 'rgba(60,60,60,1)'
+    'Input Background'            : 'rgba(28,28,28,1)'
+    'Input Border'                : 'rgba(28,28,28,1)'
+    'Hovered Input Background'    : 'rgba(24,24,24,1)'
+    'Hovered Input Border'        : 'rgba(24,24,24,1)'
+    'Focused Input Background'    : 'rgba(32,32,32,1)'
+    'Focused Input Border'        : 'rgba(32,32,32,1)'
+    'Checkbox Checked Background' : 'rgba(34,34,34,1)'
+    'Buttons Background'          : 'rgba(32,32,32,1)'
+    'Buttons Border'              : 'rgba(32,32,32,1)'
+    'Navigation Background'       : 'rgba(16,16,16,0.9)'
+    'Navigation Border'           : 'rgba(16,16,16,0.9)'
+    'Links'                       : 'rgb(187,187,187)'
+    'Hovered Links'               : 'rgb(0,223,252)'
+    'Navigation Links'            : 'rgb(153,153,153)'
+    'Hovered Navigation Links'    : 'rgb(0,223,252)'
+    'Subjects'                    : 'rgb(170,170,170)'
+    'Names'                       : 'rgb(128,172,206)'
+    'Sage'                        : 'rgb(153,153,153)'
+    'Tripcodes'                   : 'rgb(128,172,206)'
+    'Emails'                      : 'rgb(187,187,187)'
+    'Post Numbers'                : 'rgb(153,153,153)'
+    'Text'                        : 'rgb(153,153,153)'
+    'Quotelinks'                  : 'rgb(212,212,212)'
+    'Backlinks'                   : 'rgb(212,212,212)'
+    'Greentext'                   : 'rgb(152,185,98)'
+    'Board Title'                 : 'rgb(153,153,153)'
+    'Timestamps'                  : 'rgb(153,153,153)'
+    'Inputs'                      : 'rgb(153,153,153)'
+    'Warnings'                    : 'rgb(187,187,187)'
+    'Shadow Color'                : 'rgba(20,20,20,0.9)'
+    'Dark Theme'                  : '1'
     'Custom CSS'                  : '#options{background-color: rgba(16,16,16,1) !important;}#delform blockquote {border-radius:3px;color:#bbb;background:#343838;padding:8px;box-shadow:0px 0px 20px rgba(25,25,25,0.6);border:1px solid #343838;border-bottom:2px solid #444848;border-radius:0px 6px 6px 6px;padding-top:15px;}.name {font-weight:800;}.nameBlock > .useremail > .name:hover,.nameBlock> .useremail> .postertrip:hover {color:#00dffc;}a.forwardlink {color:#608cae;font-weight:800;}div.reply,.reply.highlight{padding:0;}#qp div.post{border:1px solid rgba(128,172,206,0.5) !important;background-color:rgba(24,24,24,0.9) !important;}.name,.postertrip {text-shadow:0px 0px 6px rgba(20,20,20,0.9);font-weight:bold;background:#343838;border:1px solid #343838;border-radius:5px 5px 0px 0px;padding:4px 6px;padding-top:2px;}#delform,#delform blockquote {margin:0 10px 15px 0 !important;padding:0px;}a{-moz-transition:all 0.5s ease;-webkit-transition:all 0.5s ease;-o-transition:all 0.5s ease;}a.pointer{font-weight:bold;font-weight:normal;color:#777;padding-right:5px;}#delform .opContainer,#delform .replyContainer {opacity:0.45;-moz-transition:all 0.5s ease;-webkit-transition:all 0.5s ease;-o-transition:all 0.5s ease;}#delform .opContainer:hover,#delform .replyContainer:hover{opacity:1;}.reply,.reply.highlight{background:transparent;border:0px;padding:0px;padding-bottom:0px;border-radius:6px;}#delform blockquote{padding:5px;background:#343838;margin-top:0px;min-height:20px;padding-top:10px;clear:none;}#delform .file + blockquote{margin-top:-16px !important;padding-left:150px !important;}.file{margin-top: 2px;}a.backlink{border:1px solid #343838;border-radius:5px 5px 0px 0px;background:#343838;padding:2px 4px 2px;text-decoration:none;}a.forwardlink{color:#608CAE;text-shadow:0 0 6px rgba(96,140,174,0.8);}.subject{font-weight: bold;letter-spacing: 3px;background: transparent;}div.reply,div.reply.highlight {background-color: rgba(0,0,0,0) !important;border: none !important;}#qp div.post .name,#qp div.post a.backlink,#qp div.post blockquote {background:none !important;border:none !important;box-shadow:none !important;border-radius:0px; !important}'
   'Photon':
-    'Author'                      : 'seaweed-chan',
-    'Author Tripcode'             : '!POMF.9waa',
-    'Background Image'            : '',
-    'Background Attachment'       : '',
-    'Background Position'         : '',
-    'Background Repeat'           : '',
-    'Background Color'            : 'rgba(238,238,238,1)',
-    'Dialog Background'           : 'rgba(238,238,238,1)',
-    'Dialog Border'               : 'rgba(204,204,204,1)',
-    'Thread Wrapper Background'   : 'rgba(0,0,0,0)',
-    'Thread Wrapper Border'       : 'rgba(0,0,0,0)',
-    'Reply Background'            : 'rgba(221,221,221,1)',
-    'Reply Border'                : 'rgba(204,204,204,1)',
-    'Highlighted Reply Background': 'rgba(204,204,204,1)',
-    'Highlighted Reply Border'    : 'rgba(204,204,204,1)',
-    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)',
-    'Checkbox Background'         : 'rgba(255,255,238)',
-    'Checkbox Border'             : 'rgba(255,255,238)',
-    'Checkbox Checked Background' : 'rgba(188,192,212)',
-    'Input Background'            : 'rgba(255,255,255,1)',
-    'Input Border'                : 'rgba(204,204,204,1)',
-    'Hovered Input Background'    : 'rgba(204,204,204,1)',
-    'Hovered Input Border'        : 'rgba(204,204,204,1)',
-    'Focused Input Background'    : 'rgba(255,255,255,1)',
-    'Focused Input Border'        : 'rgba(0,74,153,1)',
-    'Buttons Background'          : 'rgba(255,255,238,1)',
-    'Buttons Border'              : 'rgba(204,204,204,1)',
-    'Navigation Background'       : 'rgba(238,238,238,0.9)',
-    'Navigation Border'           : 'rgba(238,238,238,0.9)',
-    'Links'                       : 'rgb(255,102,0)',
-    'Hovered Links'               : 'rgb(255,51,0)',
-    'Navigation Links'            : 'rgb(17,17,17)',
-    'Hovered Navigation Links'    : 'rgb(255,51,0)',
-    'Subjects'                    : 'rgb(17,17,17)',
-    'Names'                       : 'rgb(0,74,153)',
-    'Sage'                        : 'rgb(51,51,51)',
-    'Tripcodes'                   : 'rgb(255,51,0)',
-    'Emails'                      : 'rgb(255,102,0)',
-    'Post Numbers'                : 'rgb(51,51,51)',
-    'Text'                        : 'rgb(51,51,51)',
-    'Quotelinks'                  : 'rgb(17,17,17)',
-    'Backlinks'                   : 'rgb(17,17,17)',
-    'Greentext'                   : 'rgb(120,153,34)',
-    'Board Title'                 : 'rgb(0,74,153)',
-    'Timestamps'                  : 'rgb(51,51,51)',
-    'Inputs'                      : 'rgb(0,0,0)',
-    'Warnings'                    : 'rgb(51,51,51)',
-    'Shadow Color'                : 'rgba(128,128,128,0.5)',
-    'Dark Theme'                  : '0',
+    'Author'                      : 'seaweed-chan'
+    'Author Tripcode'             : '!POMF.9waa'
+    'Background Image'            : ''
+    'Background Attachment'       : ''
+    'Background Position'         : ''
+    'Background Repeat'           : ''
+    'Background Color'            : 'rgba(238,238,238,1)'
+    'Dialog Background'           : 'rgba(238,238,238,1)'
+    'Dialog Border'               : 'rgba(204,204,204,1)'
+    'Thread Wrapper Background'   : 'rgba(0,0,0,0)'
+    'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
+    'Reply Background'            : 'rgba(221,221,221,1)'
+    'Reply Border'                : 'rgba(204,204,204,1)'
+    'Highlighted Reply Background': 'rgba(204,204,204,1)'
+    'Highlighted Reply Border'    : 'rgba(204,204,204,1)'
+    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
+    'Checkbox Background'         : 'rgba(255,255,238)'
+    'Checkbox Border'             : 'rgba(255,255,238)'
+    'Checkbox Checked Background' : 'rgba(188,192,212)'
+    'Input Background'            : 'rgba(255,255,255,1)'
+    'Input Border'                : 'rgba(204,204,204,1)'
+    'Hovered Input Background'    : 'rgba(204,204,204,1)'
+    'Hovered Input Border'        : 'rgba(204,204,204,1)'
+    'Focused Input Background'    : 'rgba(255,255,255,1)'
+    'Focused Input Border'        : 'rgba(0,74,153,1)'
+    'Buttons Background'          : 'rgba(255,255,238,1)'
+    'Buttons Border'              : 'rgba(204,204,204,1)'
+    'Navigation Background'       : 'rgba(238,238,238,0.9)'
+    'Navigation Border'           : 'rgba(238,238,238,0.9)'
+    'Links'                       : 'rgb(255,102,0)'
+    'Hovered Links'               : 'rgb(255,51,0)'
+    'Navigation Links'            : 'rgb(17,17,17)'
+    'Hovered Navigation Links'    : 'rgb(255,51,0)'
+    'Subjects'                    : 'rgb(17,17,17)'
+    'Names'                       : 'rgb(0,74,153)'
+    'Sage'                        : 'rgb(51,51,51)'
+    'Tripcodes'                   : 'rgb(255,51,0)'
+    'Emails'                      : 'rgb(255,102,0)'
+    'Post Numbers'                : 'rgb(51,51,51)'
+    'Text'                        : 'rgb(51,51,51)'
+    'Quotelinks'                  : 'rgb(17,17,17)'
+    'Backlinks'                   : 'rgb(17,17,17)'
+    'Greentext'                   : 'rgb(120,153,34)'
+    'Board Title'                 : 'rgb(0,74,153)'
+    'Timestamps'                  : 'rgb(51,51,51)'
+    'Inputs'                      : 'rgb(0,0,0)'
+    'Warnings'                    : 'rgb(51,51,51)'
+    'Shadow Color'                : 'rgba(128,128,128,0.5)'
+    'Dark Theme'                  : '0'
     'Custom CSS'                  : '.fileText{color: rgb(102,102,102);}#qp div.post{background-color:rgba(21,21,21,0.8);color:#FFF;border:1px solid rgba(0,0,0,1);}#qp div.post .subject,#qp div.post .name,#qp div.post .container a,#qp div.post .postNum a{color:#FFF;}#qp div.post .postertrip{color:#999;}#qp div.post .fileText{color:#999;}span.quote > a.quotelink{color: #ff6600;}'
   'RedUX':
-    'Author'                      : 'Zixaphir',
-    'Author Tripcode'             : '!VGsTHECURE',
-    'Background Image'            : 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), radial-gradient(rgb(190,0,0), rgb(15,0,0))',
-    'Background Attachment'       : 'scroll, fixed',
-    'Background Position'         : 'center, center',
-    'Background Repeat'           : 'repeat, no-repeat',
-    'Background Color'            : 'rgba(238,242,255,1)',
-    'Thread Wrapper Background'   : 'linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px, rgb(240,240,240))',
-    'Thread Wrapper Border'       : 'rgba(0,0,0,0)',
-    'Dialog Background'           : 'rgba(238,242,255,1)',
-    'Dialog Border'               : 'rgba(238,242,255,1)',
-    'Reply Background'            : 'rgba(240,240,240,1)',
-    'Reply Border'                : 'rgba(204,204,204,1)',
-    'Highlighted Reply Background': 'rgba(219,219,219,1)',
-    'Highlighted Reply Border'    : 'rgba(219,219,219,1)',
-    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)',
-    'Input Background'            : 'rgba(255,255,255,1)',
-    'Input Border'                : 'rgba(255,255,255,1)',
-    'Hovered Input Background'    : 'rgba(214,186,208,1)',
-    'Hovered Input Border'        : 'rgba(214,186,208,1)',
-    'Focused Input Background'    : 'rgba(255,255,255,1)',
-    'Focused Input Border'        : 'rgba(153,136,238,1)',
-    'Checkbox Background'         : 'rgba(238,242,255,1)',
-    'Checkbox Checked Background' : 'rgba(188,192,212,1)',
-    'Checkbox Border'             : 'rgba(153,51,51,1)',
-    'Buttons Background'          : 'rgba(255,255,255,1)',
-    'Buttons Border'              : 'rgba(255,255,255,1)',
-    'Navigation Background'       : 'rgba(0,0,0,0.7)',
-    'Navigation Border'           : 'rgba(0,0,0,0.7)',
-    'Quotelinks'                  : 'rgb(153,51,51)',
-    'Backlinks'                   : 'rgb(153,51,51)',
-    'Links'                       : 'rgb(87,87,123)',
-    'Hovered Links'               : 'rgb(221,0,0)',
-    'Navigation Links'            : 'rgb(238,187,204)',
-    'Hovered Navigation Links'    : 'rgb(255,119,119)',
-    'Names'                       : 'rgb(119,51,51)',
-    'Tripcodes'                   : 'rgb(119,51,51)',
-    'Emails'                      : 'rgb(87,87,123)',
-    'Subjects'                    : 'rgb(15,12,93)',
-    'Text'                        : 'rgb(0,0,0)',
-    'Inputs'                      : 'rgb(0,0,0)',
-    'Post Numbers'                : 'rgb(0,0,0)',
-    'Greentext'                   : 'rgb(120,153,34)',
-    'Sage'                        : 'rgb(87,87,123)',
-    'Board Title'                 : 'rgb(238,187,204)',
-    'Timestamps'                  : 'rgb(0,0,0)',
-    'Warnings'                    : 'rgb(87,87,123)',
-    'Shadow Color'                : 'rgba(60,60,60,0.6)',
-    'Dark Theme'                  : '1',
+    'Author'                      : 'Zixaphir'
+    'Author Tripcode'             : '!VGsTHECURE'
+    'Background Image'            : 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), radial-gradient(rgb(190,0,0), rgb(15,0,0))'
+    'Background Attachment'       : 'scroll, fixed'
+    'Background Position'         : 'center, center'
+    'Background Repeat'           : 'repeat, no-repeat'
+    'Background Color'            : 'rgba(238,242,255,1)'
+    'Thread Wrapper Background'   : 'linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px, rgb(240,240,240))'
+    'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
+    'Dialog Background'           : 'rgba(238,242,255,1)'
+    'Dialog Border'               : 'rgba(238,242,255,1)'
+    'Reply Background'            : 'rgba(240,240,240,1)'
+    'Reply Border'                : 'rgba(204,204,204,1)'
+    'Highlighted Reply Background': 'rgba(219,219,219,1)'
+    'Highlighted Reply Border'    : 'rgba(219,219,219,1)'
+    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
+    'Input Background'            : 'rgba(255,255,255,1)'
+    'Input Border'                : 'rgba(255,255,255,1)'
+    'Hovered Input Background'    : 'rgba(214,186,208,1)'
+    'Hovered Input Border'        : 'rgba(214,186,208,1)'
+    'Focused Input Background'    : 'rgba(255,255,255,1)'
+    'Focused Input Border'        : 'rgba(153,136,238,1)'
+    'Checkbox Background'         : 'rgba(238,242,255,1)'
+    'Checkbox Checked Background' : 'rgba(188,192,212,1)'
+    'Checkbox Border'             : 'rgba(153,51,51,1)'
+    'Buttons Background'          : 'rgba(255,255,255,1)'
+    'Buttons Border'              : 'rgba(255,255,255,1)'
+    'Navigation Background'       : 'rgba(0,0,0,0.7)'
+    'Navigation Border'           : 'rgba(0,0,0,0.7)'
+    'Quotelinks'                  : 'rgb(153,51,51)'
+    'Backlinks'                   : 'rgb(153,51,51)'
+    'Links'                       : 'rgb(87,87,123)'
+    'Hovered Links'               : 'rgb(221,0,0)'
+    'Navigation Links'            : 'rgb(238,187,204)'
+    'Hovered Navigation Links'    : 'rgb(255,119,119)'
+    'Names'                       : 'rgb(119,51,51)'
+    'Tripcodes'                   : 'rgb(119,51,51)'
+    'Emails'                      : 'rgb(87,87,123)'
+    'Subjects'                    : 'rgb(15,12,93)'
+    'Text'                        : 'rgb(0,0,0)'
+    'Inputs'                      : 'rgb(0,0,0)'
+    'Post Numbers'                : 'rgb(0,0,0)'
+    'Greentext'                   : 'rgb(120,153,34)'
+    'Sage'                        : 'rgb(87,87,123)'
+    'Board Title'                 : 'rgb(238,187,204)'
+    'Timestamps'                  : 'rgb(0,0,0)'
+    'Warnings'                    : 'rgb(87,87,123)'
+    'Shadow Color'                : 'rgba(60,60,60,0.6)'
+    'Dark Theme'                  : '1'
     'Custom CSS'                  : '.replyContainer > .reply {background-color: transparent; border: 0; border-bottom: 1px #ccc solid;} #qp div.post { background-color: rgba(0,0,0,0.7); border-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0 !important; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: rgb(255,255,255); } #updater:not(:hover), #updater:not(:hover) #count:not(.new)::after, #stats { color: rgb(123,123,123); } .boardBanner {color: rgb(238,187,204)} .boardTitle { text-shadow: 1px 1px 1px #222; } #delform { padding: 1px 15px 2px 15px; box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7); border-radius: 4px; }'
   'Solarized':
-    'Author'                      : 'ubuntufriend',
-    'Author Tripcode'             : '!TRip.C0d',
-    'Background Image'            : '',
-    'Background Attachment'       : '',
-    'Background Position'         : '',
-    'Background Repeat'           : '',
-    'Background Color'            : 'rgba(7,54,66,1)',
-    'Dialog Background'           : 'rgba(0,43,54,1)',
-    'Dialog Border'               : 'rgba(0,43,54,1)',
-    'Thread Wrapper Background'   : 'rgba(0,0,0,0)',
-    'Thread Wrapper Border'       : 'rgba(0,0,0,0)',
-    'Reply Background'            : 'rgba(0,43,54,1)',
-    'Reply Border'                : 'rgba(0,43,54,1)',
-    'Highlighted Reply Background': 'rgba(7,54,66,1)',
-    'Highlighted Reply Border'    : 'rgba(7,54,66,1)',
-    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)',
-    'Checkbox Background'         : 'rgba(88,110,117,1)',
-    'Checkbox Border'             : 'rgba(88,110,117,1)',
-    'Checkbox Checked Background' : 'rgba(17,17,17,1)',
-    'Input Background'            : 'rgba(0,43,54,1)',
-    'Input Border'                : 'rgba(0,43,54,1)',
-    'Hovered Input Background'    : 'rgba(7,54,66,1)',
-    'Hovered Input Border'        : 'rgba(7,54,66,1)',
-    'Focused Input Background'    : 'rgba(7,54,66,1)',
-    'Focused Input Border'        : 'rgba(7,54,66,1)',
-    'Buttons Background'          : 'rgba(0,43,54,1)',
-    'Buttons Border'              : 'rgba(0,43,54,1)',
-    'Navigation Background'       : 'rgba(7,54,66,1)',
-    'Navigation Border'           : 'rgba(7,54,66,1)',
-    'Links'                       : 'rgb(108,113,196)',
-    'Hovered Links'               : 'rgb(211,54,130)',
-    'Navigation Links'            : 'rgb(147,161,161)',
-    'Hovered Navigation Links'    : 'rgb(211,54,130)',
-    'Subjects'                    : 'rgb(203,75,22)',
-    'Names'                       : 'rgb(88,110,117)',
-    'Sage'                        : 'rgb(108,113,196)',
-    'Tripcodes'                   : 'rgb(42,161,152)',
-    'Emails'                      : 'rgb(108,113,196)',
-    'Post Numbers'                : 'rgb(147,161,161)',
-    'Text'                        : 'rgb(147,161,161)',
-    'Quotelinks'                  : 'rgb(79,95,143)',
-    'Backlinks'                   : 'rgb(79,95,143)',
-    'Greentext'                   : 'rgb(133,153,0)',
-    'Board Title'                 : 'rgb(147,161,161)',
-    'Timestamps'                  : 'rgb(147,161,161)',
-    'Inputs'                      : 'rgb(147,161,161)',
-    'Warnings'                    : 'rgb(108,113,196)',
-    'Shadow Color'                : 'rgba(0,0,0,0.4)',
-    'Dark Theme'                  : '1',
+    'Author'                      : 'ubuntufriend'
+    'Author Tripcode'             : '!TRip.C0d'
+    'Background Image'            : ''
+    'Background Attachment'       : ''
+    'Background Position'         : ''
+    'Background Repeat'           : ''
+    'Background Color'            : 'rgba(7,54,66,1)'
+    'Dialog Background'           : 'rgba(0,43,54,1)'
+    'Dialog Border'               : 'rgba(0,43,54,1)'
+    'Thread Wrapper Background'   : 'rgba(0,0,0,0)'
+    'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
+    'Reply Background'            : 'rgba(0,43,54,1)'
+    'Reply Border'                : 'rgba(0,43,54,1)'
+    'Highlighted Reply Background': 'rgba(7,54,66,1)'
+    'Highlighted Reply Border'    : 'rgba(7,54,66,1)'
+    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
+    'Checkbox Background'         : 'rgba(88,110,117,1)'
+    'Checkbox Border'             : 'rgba(88,110,117,1)'
+    'Checkbox Checked Background' : 'rgba(17,17,17,1)'
+    'Input Background'            : 'rgba(0,43,54,1)'
+    'Input Border'                : 'rgba(0,43,54,1)'
+    'Hovered Input Background'    : 'rgba(7,54,66,1)'
+    'Hovered Input Border'        : 'rgba(7,54,66,1)'
+    'Focused Input Background'    : 'rgba(7,54,66,1)'
+    'Focused Input Border'        : 'rgba(7,54,66,1)'
+    'Buttons Background'          : 'rgba(0,43,54,1)'
+    'Buttons Border'              : 'rgba(0,43,54,1)'
+    'Navigation Background'       : 'rgba(7,54,66,1)'
+    'Navigation Border'           : 'rgba(7,54,66,1)'
+    'Links'                       : 'rgb(108,113,196)'
+    'Hovered Links'               : 'rgb(211,54,130)'
+    'Navigation Links'            : 'rgb(147,161,161)'
+    'Hovered Navigation Links'    : 'rgb(211,54,130)'
+    'Subjects'                    : 'rgb(203,75,22)'
+    'Names'                       : 'rgb(88,110,117)'
+    'Sage'                        : 'rgb(108,113,196)'
+    'Tripcodes'                   : 'rgb(42,161,152)'
+    'Emails'                      : 'rgb(108,113,196)'
+    'Post Numbers'                : 'rgb(147,161,161)'
+    'Text'                        : 'rgb(147,161,161)'
+    'Quotelinks'                  : 'rgb(79,95,143)'
+    'Backlinks'                   : 'rgb(79,95,143)'
+    'Greentext'                   : 'rgb(133,153,0)'
+    'Board Title'                 : 'rgb(147,161,161)'
+    'Timestamps'                  : 'rgb(147,161,161)'
+    'Inputs'                      : 'rgb(147,161,161)'
+    'Warnings'                    : 'rgb(108,113,196)'
+    'Shadow Color'                : 'rgba(0,0,0,0.4)'
+    'Dark Theme'                  : '1'
     'Custom CSS'                  : '#qp div.post{background-color:rgba(7,54,66,0.9);border:1px solid rgba(79,95,143,0.9);}'
   'Yotsuba':
-    'Author'                      : 'moot',
-    'Author Tripcode'             : '!Ep8pui8Vw2',
-    'Background Image'            : 'linear-gradient(rgb(254,214,175), rgb(255,255,238) 200px, rgb(255,255,238))',
-    'Background Attachment'       : '',
-    'Background Position'         : '',
-    'Background Repeat'           : '',
-    'Background Color'            : 'rgba(255,255,238,1)',
-    'Dialog Background'           : 'rgba(240,224,214,1)',
-    'Dialog Border'               : 'rgba(217,191,183,1)',
-    'Thread Wrapper Background'   : 'rgba(0,0,0,0)',
-    'Thread Wrapper Border'       : 'rgba(0,0,0,0)',
-    'Reply Background'            : 'rgba(240,224,214,1)',
-    'Reply Border'                : 'rgba(217,191,183,1)',
-    'Highlighted Reply Background': 'rgba(240,192,176,1)',
-    'Highlighted Reply Border'    : 'rgba(217,191,183,1)',
-    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)',
-    'Checkbox Background'         : 'rgba(255,255,238,1)',
-    'Checkbox Border'             : 'rgba(217,191,183,1)',
-    'Checkbox Checked Background' : 'rgba(255,255,238,1)',
-    'Input Background'            : 'rgba(240,224,214,1)',
-    'Input Border'                : 'rgba(217,191,183,1)',
-    'Hovered Input Background'    : 'rgba(240,224,214,1)',
-    'Hovered Input Border'        : 'rgba(217,191,183,1)',
-    'Focused Input Background'    : 'rgba(255,255,255,1)',
-    'Focused Input Border'        : 'rgba(128,0,0,1)',
-    'Buttons Background'          : 'rgba(240,192,176,1)',
-    'Buttons Border'              : 'rgba(217,191,183,1)',
-    'Navigation Background'       : 'rgba(240,192,176,0.7)',
-    'Navigation Border'           : 'rgba(217,191,183,1)',
-    'Links'                       : 'rgb(186,0,0)',
-    'Hovered Links'               : 'rgb(221,0,0)',
-    'Navigation Links'            : 'rgb(128,0,0)',
-    'Hovered Navigation Links'    : 'rgb(221,0,0)',
-    'Subjects'                    : 'rgb(204,17,5)',
-    'Names'                       : 'rgb(17,119,67)',
-    'Sage'                        : 'rgb(204,17,17)',
-    'Tripcodes'                   : 'rgb(34,136,84)',
-    'Emails'                      : 'rgb(186,0,0)',
-    'Post Numbers'                : 'rgb(128,0,0)',
-    'Text'                        : 'rgb(128,0,0)',
-    'Quotelinks'                  : 'rgb(221,0,0)',
-    'Backlinks'                   : 'rgb(220,0,0)',
-    'Greentext'                   : 'rgb(120,153,34)',
-    'Board Title'                 : 'rgb(204,17,5)',
-    'Timestamps'                  : 'rgb(186,0,0)',
-    'Inputs'                      : 'rgb(0,0,0)',
-    'Warnings'                    : 'rgb(128,0,0)',
-    'Shadow Color'                : 'rgba(119,46,40,1)',
-    'Dark Theme'                  : '0',
+    'Author'                      : 'moot'
+    'Author Tripcode'             : '!Ep8pui8Vw2'
+    'Background Image'            : 'linear-gradient(rgb(254,214,175), rgb(255,255,238) 200px, rgb(255,255,238))'
+    'Background Attachment'       : ''
+    'Background Position'         : ''
+    'Background Repeat'           : ''
+    'Background Color'            : 'rgba(255,255,238,1)'
+    'Dialog Background'           : 'rgba(240,224,214,1)'
+    'Dialog Border'               : 'rgba(217,191,183,1)'
+    'Thread Wrapper Background'   : 'rgba(0,0,0,0)'
+    'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
+    'Reply Background'            : 'rgba(240,224,214,1)'
+    'Reply Border'                : 'rgba(217,191,183,1)'
+    'Highlighted Reply Background': 'rgba(240,192,176,1)'
+    'Highlighted Reply Border'    : 'rgba(217,191,183,1)'
+    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
+    'Checkbox Background'         : 'rgba(255,255,238,1)'
+    'Checkbox Border'             : 'rgba(217,191,183,1)'
+    'Checkbox Checked Background' : 'rgba(255,255,238,1)'
+    'Input Background'            : 'rgba(240,224,214,1)'
+    'Input Border'                : 'rgba(217,191,183,1)'
+    'Hovered Input Background'    : 'rgba(240,224,214,1)'
+    'Hovered Input Border'        : 'rgba(217,191,183,1)'
+    'Focused Input Background'    : 'rgba(255,255,255,1)'
+    'Focused Input Border'        : 'rgba(128,0,0,1)'
+    'Buttons Background'          : 'rgba(240,192,176,1)'
+    'Buttons Border'              : 'rgba(217,191,183,1)'
+    'Navigation Background'       : 'rgba(240,192,176,0.7)'
+    'Navigation Border'           : 'rgba(217,191,183,1)'
+    'Links'                       : 'rgb(186,0,0)'
+    'Hovered Links'               : 'rgb(221,0,0)'
+    'Navigation Links'            : 'rgb(128,0,0)'
+    'Hovered Navigation Links'    : 'rgb(221,0,0)'
+    'Subjects'                    : 'rgb(204,17,5)'
+    'Names'                       : 'rgb(17,119,67)'
+    'Sage'                        : 'rgb(204,17,17)'
+    'Tripcodes'                   : 'rgb(34,136,84)'
+    'Emails'                      : 'rgb(186,0,0)'
+    'Post Numbers'                : 'rgb(128,0,0)'
+    'Text'                        : 'rgb(128,0,0)'
+    'Quotelinks'                  : 'rgb(221,0,0)'
+    'Backlinks'                   : 'rgb(220,0,0)'
+    'Greentext'                   : 'rgb(120,153,34)'
+    'Board Title'                 : 'rgb(204,17,5)'
+    'Timestamps'                  : 'rgb(186,0,0)'
+    'Inputs'                      : 'rgb(0,0,0)'
+    'Warnings'                    : 'rgb(128,0,0)'
+    'Shadow Color'                : 'rgba(119,46,40,1)'
+    'Dark Theme'                  : '0'
     'Custom CSS'                  : '#qp div.post{background-color:rgba(240,192,176,1);box-shadow:5px 5px 5px rgba(128,128,128,0.5);}'
   'Yotsuba B':
-    'Author'                      : 'moot',
-    'Author Tripcode'             : '!Ep8pui8Vw2',
-    'Background Image'            : 'linear-gradient(rgb(209,213,238), rgb(238,242,255) 200px, rgb(255,255,238))',
-    'Background Attachment'       : '',
-    'Background Position'         : '',
-    'Background Repeat'           : '',
-    'Background Color'            : 'rgba(238,242,255,1)',
-    'Dialog Background'           : 'rgba(214,218,240,1)',
-    'Dialog Border'               : 'rgba(183,197,217,1)',
-    'Thread Wrapper Background'   : 'rgba(0,0,0,0)',
-    'Thread Wrapper Border'       : 'rgba(0,0,0,0)',
-    'Reply Background'            : 'rgba(214,218,240,1)',
-    'Reply Border'                : 'rgba(183,197,217,1)',
-    'Highlighted Reply Background': 'rgba(214,186,208,1)',
-    'Highlighted Reply Border'    : 'rgba(183,197,217,1)',
-    'Backlinked Reply Outline'    : 'rgba(98,124,141)',
-    'Checkbox Background'         : 'rgba(238,242,255,1)',
-    'Checkbox Border'             : 'rgba(183,197,217,1)',
-    'Checkbox Checked Background' : 'rgba(188,192,212,1)',
-    'Input Background'            : 'rgba(238,242,255,1)',
-    'Input Border'                : 'rgba(183,197,217,1)',
-    'Hovered Input Background'    : 'rgba(214,186,208,1)',
-    'Hovered Input Border'        : 'rgba(183,197,217,1)',
-    'Focused Input Background'    : 'rgba(214,218,240,1)',
-    'Focused Input Border'        : 'rgba(153,136,238,1)',
-    'Buttons Background'          : 'rgba(214,218,240,1)',
-    'Buttons Border'              : 'rgba(183,197,217,1)',
-    'Navigation Background'       : 'rgba(211,215,238,0.7)',
-    'Navigation Border'           : 'rgba(183,197,217,1)',
-    'Links'                       : 'rgb(52,52,92)',
-    'Hovered Links'               : 'rgb(221,0,0)',
-    'Navigation Links'            : 'rgb(0,0,0)',
-    'Hovered Navigation Links'    : 'rgb(221,0,0)',
-    'Subjects'                    : 'rgb(15,12,93)',
-    'Names'                       : 'rgb(17,119,67)',
-    'Sage'                        : 'rgb(153,0,0)',
-    'Tripcodes'                   : 'rgb(34,136,84)',
-    'Emails'                      : 'rgb(87,87,123)',
-    'Post Numbers'                : 'rgb(0,0,0)',
-    'Text'                        : 'rgb(0,0,0)',
-    'Quotelinks'                  : 'rgb(221,0,0)',
-    'Backlinks'                   : 'rgb(52,52,92)',
-    'Greentext'                   : 'rgb(120,153,34)',
-    'Board Title'                 : 'rgb(175,10,15)',
-    'Timestamps'                  : 'rgb(0,0,0)',
-    'Inputs'                      : 'rgb(0,0,0)',
-    'Warnings'                    : 'rgb(87,87,123)',
-    'Shadow Color'                : 'rgba(128,128,128,0.5)',
-    'Dark Theme'                  : '0',
+    'Author'                      : 'moot'
+    'Author Tripcode'             : '!Ep8pui8Vw2'
+    'Background Image'            : 'linear-gradient(rgb(209,213,238), rgb(238,242,255) 200px, rgb(255,255,238))'
+    'Background Attachment'       : ''
+    'Background Position'         : ''
+    'Background Repeat'           : ''
+    'Background Color'            : 'rgba(238,242,255,1)'
+    'Dialog Background'           : 'rgba(214,218,240,1)'
+    'Dialog Border'               : 'rgba(183,197,217,1)'
+    'Thread Wrapper Background'   : 'rgba(0,0,0,0)'
+    'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
+    'Reply Background'            : 'rgba(214,218,240,1)'
+    'Reply Border'                : 'rgba(183,197,217,1)'
+    'Highlighted Reply Background': 'rgba(214,186,208,1)'
+    'Highlighted Reply Border'    : 'rgba(183,197,217,1)'
+    'Backlinked Reply Outline'    : 'rgba(98,124,141)'
+    'Checkbox Background'         : 'rgba(238,242,255,1)'
+    'Checkbox Border'             : 'rgba(183,197,217,1)'
+    'Checkbox Checked Background' : 'rgba(188,192,212,1)'
+    'Input Background'            : 'rgba(238,242,255,1)'
+    'Input Border'                : 'rgba(183,197,217,1)'
+    'Hovered Input Background'    : 'rgba(214,186,208,1)'
+    'Hovered Input Border'        : 'rgba(183,197,217,1)'
+    'Focused Input Background'    : 'rgba(214,218,240,1)'
+    'Focused Input Border'        : 'rgba(153,136,238,1)'
+    'Buttons Background'          : 'rgba(214,218,240,1)'
+    'Buttons Border'              : 'rgba(183,197,217,1)'
+    'Navigation Background'       : 'rgba(211,215,238,0.7)'
+    'Navigation Border'           : 'rgba(183,197,217,1)'
+    'Links'                       : 'rgb(52,52,92)'
+    'Hovered Links'               : 'rgb(221,0,0)'
+    'Navigation Links'            : 'rgb(0,0,0)'
+    'Hovered Navigation Links'    : 'rgb(221,0,0)'
+    'Subjects'                    : 'rgb(15,12,93)'
+    'Names'                       : 'rgb(17,119,67)'
+    'Sage'                        : 'rgb(153,0,0)'
+    'Tripcodes'                   : 'rgb(34,136,84)'
+    'Emails'                      : 'rgb(87,87,123)'
+    'Post Numbers'                : 'rgb(0,0,0)'
+    'Text'                        : 'rgb(0,0,0)'
+    'Quotelinks'                  : 'rgb(221,0,0)'
+    'Backlinks'                   : 'rgb(52,52,92)'
+    'Greentext'                   : 'rgb(120,153,34)'
+    'Board Title'                 : 'rgb(175,10,15)'
+    'Timestamps'                  : 'rgb(0,0,0)'
+    'Inputs'                      : 'rgb(0,0,0)'
+    'Warnings'                    : 'rgb(87,87,123)'
+    'Shadow Color'                : 'rgba(128,128,128,0.5)'
+    'Dark Theme'                  : '0'
     'Custom CSS'                  : '#qp div.post{background-color:rgba(214,186,208,1);box-shadow:5px 5px 5px rgba(128,128,128,0.5);}'
   'Zenburned':
-    'Author'                      : 'lazy',
-    'Author Tripcode'             : '!HONKYn7h1.',
-    'Background Image'            : '',
-    'Background Attachment'       : '',
-    'Background Position'         : '',
-    'Background Repeat'           : '',
-    'Background Color'            : 'rgba(63,63,63,1)',
-    'Dialog Background'           : 'rgba(87,87,87,1)',
-    'Dialog Border'               : 'rgba(87,87,87,1)',
-    'Thread Wrapper Background'   : 'rgba(0,0,0,0)',
-    'Thread Wrapper Border'       : 'rgba(0,0,0,0)',
-    'Reply Background'            : 'rgba(87,87,87,1)',
-    'Reply Border'                : 'rgba(87,87,87,1)',
-    'Highlighted Reply Background': 'rgba(38,38,38,1)',
-    'Highlighted Reply Border'    : 'rgba(38,38,38,1)',
-    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)',
-    'Checkbox Background'         : 'rgba(63,63,63,1)',
-    'Checkbox Border'             : 'rgba(136,136,136,1)',
-    'Checkbox Checked Background' : 'rgba(17,17,17,1)',
-    'Input Background'            : 'rgba(87,87,87,1)',
-    'Input Border'                : 'rgba(136,136,136,1)',
-    'Hovered Input Background'    : 'rgba(38,38,38,1)',
-    'Hovered Input Border'        : 'rgba(38,38,38,1)',
-    'Focused Input Background'    : 'rgba(38,38,38,1)',
-    'Focused Input Border'        : 'rgba(153,136,238,1)',
-    'Buttons Background'          : 'rgba(49,60,54,1)',
-    'Buttons Border'              : 'rgba(136,136,136,1)',
-    'Navigation Background'       : 'rgba(63,63,63,0.9)',
-    'Navigation Border'           : 'rgba(63,63,63,0.9)',
-    'Links'                       : 'rgb(239,220,188)',
-    'Hovered Links'               : 'rgb(248,248,147)',
-    'Navigation Links'            : 'rgb(220,220,204)',
-    'Hovered Navigation Links'    : 'rgb(248,248,147)',
-    'Subjects'                    : 'rgb(170,170,170)',
-    'Names'                       : 'rgb(192,190,209)',
-    'Sage'                        : 'rgb(220,220,204)',
-    'Tripcodes'                   : 'rgb(140,208,211)',
-    'Emails'                      : 'rgb(239,220,188)',
-    'Post Numbers'                : 'rgb(220,220,204)',
-    'Text'                        : 'rgb(220,220,204)',
-    'Quotelinks'                  : 'rgb(220,163,163)',
-    'Backlinks'                   : 'rgb(220,163,163)',
-    'Greentext'                   : 'rgb(127,159,127)',
-    'Board Title'                 : 'rgb(220,220,204)',
-    'Timestamps'                  : 'rgb(220,220,204)',
-    'Inputs'                      : 'rgb(220,220,204)',
-    'Warnings'                    : 'rgb(239,220,188)',
-    'Shadow Color'                : 'rgba(63,63,63,0.4)',
-    'Dark Theme'                  : '1',
+    'Author'                      : 'lazy'
+    'Author Tripcode'             : '!HONKYn7h1.'
+    'Background Image'            : ''
+    'Background Attachment'       : ''
+    'Background Position'         : ''
+    'Background Repeat'           : ''
+    'Background Color'            : 'rgba(63,63,63,1)'
+    'Dialog Background'           : 'rgba(87,87,87,1)'
+    'Dialog Border'               : 'rgba(87,87,87,1)'
+    'Thread Wrapper Background'   : 'rgba(0,0,0,0)'
+    'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
+    'Reply Background'            : 'rgba(87,87,87,1)'
+    'Reply Border'                : 'rgba(87,87,87,1)'
+    'Highlighted Reply Background': 'rgba(38,38,38,1)'
+    'Highlighted Reply Border'    : 'rgba(38,38,38,1)'
+    'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
+    'Checkbox Background'         : 'rgba(63,63,63,1)'
+    'Checkbox Border'             : 'rgba(136,136,136,1)'
+    'Checkbox Checked Background' : 'rgba(17,17,17,1)'
+    'Input Background'            : 'rgba(87,87,87,1)'
+    'Input Border'                : 'rgba(136,136,136,1)'
+    'Hovered Input Background'    : 'rgba(38,38,38,1)'
+    'Hovered Input Border'        : 'rgba(38,38,38,1)'
+    'Focused Input Background'    : 'rgba(38,38,38,1)'
+    'Focused Input Border'        : 'rgba(153,136,238,1)'
+    'Buttons Background'          : 'rgba(49,60,54,1)'
+    'Buttons Border'              : 'rgba(136,136,136,1)'
+    'Navigation Background'       : 'rgba(63,63,63,0.9)'
+    'Navigation Border'           : 'rgba(63,63,63,0.9)'
+    'Links'                       : 'rgb(239,220,188)'
+    'Hovered Links'               : 'rgb(248,248,147)'
+    'Navigation Links'            : 'rgb(220,220,204)'
+    'Hovered Navigation Links'    : 'rgb(248,248,147)'
+    'Subjects'                    : 'rgb(170,170,170)'
+    'Names'                       : 'rgb(192,190,209)'
+    'Sage'                        : 'rgb(220,220,204)'
+    'Tripcodes'                   : 'rgb(140,208,211)'
+    'Emails'                      : 'rgb(239,220,188)'
+    'Post Numbers'                : 'rgb(220,220,204)'
+    'Text'                        : 'rgb(220,220,204)'
+    'Quotelinks'                  : 'rgb(220,163,163)'
+    'Backlinks'                   : 'rgb(220,163,163)'
+    'Greentext'                   : 'rgb(127,159,127)'
+    'Board Title'                 : 'rgb(220,220,204)'
+    'Timestamps'                  : 'rgb(220,220,204)'
+    'Inputs'                      : 'rgb(220,220,204)'
+    'Warnings'                    : 'rgb(239,220,188)'
+    'Shadow Color'                : 'rgba(63,63,63,0.4)'
+    'Dark Theme'                  : '1'
     'Custom CSS'                  : ''
 
 Mascots =

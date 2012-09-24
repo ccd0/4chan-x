@@ -592,7 +592,7 @@ div.opContainer {
   box-shadow: inset 5px 0 rgba(255,0,0,.5);
 }
 .opContainer.filter_highlight.qphl {
-  box-shadow: 
+  box-shadow:
     inset 5px 0 rgba(255,0,0,.5),
     0 0 0 2px rgba(216,94,49,.7);
 }
@@ -1064,13 +1064,13 @@ a.yuimenuitemlabel {
   text-align: center;
   clear: both;
 }
-img.topad, 
+img.topad,
 img.middlead,
 img.bottomad {
   opacity: 0.3;
   """ + agent + """transition: opacity .3s ease-in-out .3s;
 }
-img.topad:hover, 
+img.topad:hover,
 img.middlead:hover,
 img.bottomad:hover {
   opacity: 1;

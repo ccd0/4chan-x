@@ -346,17 +346,22 @@ Options =
 
 
   themeTab: (dialog) ->
+
     unless dialog
       dialog = $("#options", d.body)
+
     parentdiv = $.el 'div',
       className: "suboptions"
       id:        "themes"
       innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use theming options.</div>"
     keys = Object.keys(userThemes)
     keys.sort()
+
     for name in keys
       theme = userThemes[name]
+
       unless theme["Deleted"]
+
         div = $.el 'div',
           className: if name == Conf['theme'] then 'selectedtheme replyContainer' else 'replyContainer'
           id:        name
@@ -380,57 +385,76 @@ Options =
   </blockquote>
   <h1 style='color: #{theme['Text']}'>Selected</h1>
 </div>"
+
         $.on $('a.edit', div), 'click', ->
+
           unless Conf["Style"]
             alert "Please enable Style Options and reload the page to use Theme Tools."
             return
+
           ThemeTools.init @.name
           Options.close()
+
         $.on $('a.export', div), 'click', ->
           exportTheme = userThemes[@.name]
           exportTheme['Theme'] = @.name
           exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme))
+
           if window.open exportedTheme, "_blank"
             return
           else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
             window.location exportedTheme
+
         $.on $('a.delete', div), 'click', ->
           container = @.parentElement.parentElement
+
           unless container.previousSibling or container.nextSibling
             alert "Cannot delete theme (No other themes available)."
             return
+
           if confirm "Are you sure you want to delete \"#{container.id}\"?"
             if container.id == Conf['theme']
+
               if settheme = container.previousSibling or container.nextSibling
                 Conf['theme'] = settheme.id
                 $.addClass settheme, 'selectedtheme'
                 $.set 'theme', Conf['theme']
+
             userThemes[container.id]["Deleted"] = true
             $.set 'userThemes', userThemes
             $.rm container
+
         $.on $('.rice', div), 'click', Options.selectTheme
         $.on $('blockquote', div), 'click', Options.selectTheme
         $.add parentdiv, div
+
     div = $.el 'div',
       id:        'addthemes'
-      innerHTML: "<a id=newtheme href='javascript:;'>New Theme</a> / <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> / <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> / <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>"
+      innerHTML: "
+<a id=newtheme href='javascript:;'>New Theme</a> /
+<a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> /
+<a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> /
+<a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>"
+
     $.on $("#newtheme", div), 'click', ->
       unless Conf["Style"]
         alert "Please enable Style Options and reload the page to use Theme Tools."
         return
+
       newTheme = true
       ThemeTools.init "untitled"
       Options.close()
-    $.on $("#import", div), 'click', ->
-      @.nextSibling.click()
-    $.on $("#OCimport", div), 'click', ->
-      @.nextSibling.click()
-    $.on $("#SSimport", div), 'click', ->
-      @.nextSibling.click()
+
+    $.on $("#import", div), 'click', -> @.nextSibling.click
+    $.on $("#OCimport", div), 'click', -> @.nextSibling.click
+    $.on $("#SSimport", div), 'click', -> @.nextSibling.click
+
     $.on $("#importbutton", div), 'change', (evt) ->
       ThemeTools.importtheme "appchan", evt
+
     $.on $("#OCimportbutton", div), 'change', (evt) ->
       ThemeTools.importtheme "oneechan", evt
+
     $.on $("#SSimportbutton", div), 'change', (evt) ->
       ThemeTools.importtheme "SS", evt
 
@@ -528,8 +552,10 @@ Options =
 
   selectTheme: ->
     container = @.parentElement.parentElement
+
     if currentTheme = $.id(Conf['theme'])
       $.rmClass currentTheme, 'selectedtheme'
+
     $.set 'theme', container.id
     Conf['theme'] = container.id
     $.addClass container, 'selectedtheme'
