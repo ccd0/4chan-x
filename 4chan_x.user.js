@@ -30,7 +30,8 @@
  *
  * Contributors:
  * https://github.com/MayhemYDG/4chan-x/graphs/contributors
- * ferongr, xat-, Ongpot, thisisanon and Anonymous - cooldown sanity check
+ * Non-GitHub contributors:
+ * ferongr, xat-, Ongpot, thisisanon and Anonymous - favicon contributions
  * e000 - cooldown sanity check
  * Seiba - chrome quick reply focusing
  * herpaderpderp - recaptcha fixes
