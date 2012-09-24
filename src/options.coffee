@@ -238,7 +238,7 @@ Options =
     #mascots
     parentdiv = $.el 'div',
       className: "suboptions"
-      innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div>"
+      innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div><div class=warning><code>Mascots</code> are currently disabled. Please enable them in the Style tab to use mascot options.</div>"
     ul = $.el 'ul',
       className:   'mascots'
     keys = Object.keys(userMascots)
@@ -445,9 +445,12 @@ Options =
       ThemeTools.init "untitled"
       Options.close()
 
-    $.on $("#import", div), 'click', -> @.nextSibling.click
-    $.on $("#OCimport", div), 'click', -> @.nextSibling.click
-    $.on $("#SSimport", div), 'click', -> @.nextSibling.click
+    $.on $("#import", div), 'click', -> 
+      @.nextSibling.click()
+    $.on $("#OCimport", div), 'click', -> 
+      @.nextSibling.click()
+    $.on $("#SSimport", div), 'click', -> 
+      @.nextSibling.click()
 
     $.on $("#importbutton", div), 'change', (evt) ->
       ThemeTools.importtheme "appchan", evt

@@ -144,8 +144,6 @@ ThemeTools =
   color: (hex) ->
 
     @hex = "#" + hex
-    @private_rgb = @calc_rgb(hex)
-    @rgb = @private_rgb.join ","
 
     @calc_rgb = (hex) ->
       rgb = []
@@ -154,6 +152,10 @@ ThemeTools =
       rgb[1] = (hex >> 8) & 0xFF
       rgb[2] = hex & 0xFF
       return rgb;
+
+    @private_rgb = @calc_rgb(hex)
+    @rgb = @private_rgb.join ","
+
 
     @isLight = (rgb) ->
       rgb[0] + rgb[1] + rgb[2] >= 400

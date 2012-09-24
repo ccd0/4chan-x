@@ -1886,6 +1886,7 @@ div.subMenu,
   border: 1px solid """ + theme["Input Border"]  + """;
 }
 [style='color: red !important;'] *,
+.disabledwarning,
 .warning {
   color: """ + theme["Warnings"] + """ !important;
 }
