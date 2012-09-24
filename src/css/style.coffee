@@ -1067,6 +1067,21 @@ a.yuimenuitemlabel {
   text-align: center;
   word-spacing: -3px;
 }
+.center {
+  text-align: center;
+}
+img.topad, 
+img.middlead,
+img.bottomad {
+  opacity: 0.5;
+  """ + agent + """transition: opacity .3s ease-in-out .3s;
+}
+img.topad:hover, 
+img.middlead:hover,
+img.bottomad:hover {
+  opacity: 1;
+  """ + agent + """transition: opacity .3s linear;
+}
 .fileThumb {
   position: relative;
 }
