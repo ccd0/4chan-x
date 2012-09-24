@@ -965,8 +965,7 @@ div.navLinks > a:first-of-type:hover::after {
   font-size: 12px;
   position: fixed;
   right: 42px;
-  min-width: 30px;
-  max-width: 30px;
+  width: 30px;
   opacity: 0.4;
 }
 #watcher:hover::before {
@@ -1060,9 +1059,6 @@ a.yuimenuitemlabel {
   width: """ + (246 + sidebarOffsetW) + """px !important;
   overflow: hidden;
   """ + agent + """transition: height .5s linear;
-}
-#boardNavDesktopFoot:hover {
-
 }
 .center {
   text-align: center;
@@ -1469,14 +1465,12 @@ div.navLinks {
   top: 2px;
 }
 #watcher {
-  padding-left: 0px;
-}
-#watcher {
   padding: 1px 0;
   border-radius: 0;
 }
-#updater .move,
 #options .move,
+#updater .move,
+#watcher .move,
 #stats .move {
   cursor: default !important;
 }
@@ -1806,8 +1800,7 @@ html body span[style="left: 5px; position: absolute;"] a,
 input[type="submit"],
 #options.reply.dialog,
 .deleteform input[value=Delete],
-input[value="Report"],
-#qr.autohide .move {
+input[value="Report"] {
   background: """ + theme["Buttons Background"] + """;
   border: 1px solid """ + theme["Buttons Border"]  + """;
 }
@@ -1934,7 +1927,6 @@ textarea,
 #boardNavDesktop::after,
 #updater #count:not(.new)::after,
 #qr > form > label::after,
-#qr.autohide .move,
 span.pln {
   color: """ + theme["Text"] + """;
 }
@@ -2620,6 +2612,10 @@ td[style="border: 1px dashed;"] {
 
       if Conf["Slideout Watcher"]
         css += """
+#watcher:not(:hover) {
+  border: 0 none;
+  padding: 0;
+}
 #watcher {
   position: fixed;
   z-index: 98 !important;
@@ -2628,7 +2624,7 @@ td[style="border: 1px dashed;"] {
   left: auto !important;
   bottom: auto !important;
   height: 0;
-  width: """ + (246 + sidebarOffsetW) + """px !important;
+  width: """ + (248 + sidebarOffsetW) + """px !important;
   overflow: hidden;
   """ + agent + """transition: height .5s linear;
 }
@@ -2677,6 +2673,9 @@ div.postContainer span.postNum > .replylink {
       switch Conf["Slideout Navigation"]
         when "compact"
           css += """
+#boardNavDesktopFoot:not(:hover) {
+  border: 0 none !important;
+}
 #boardNavDesktopFoot:hover {
   z-index: 99 !important;
   height: 84px;
@@ -2688,6 +2687,9 @@ div.postContainer span.postNum > .replylink {
 """
         when "list"
           css += """
+#boardNavDesktopFoot:not(:hover) {
+  border: 0 none !important;
+}
 #boardNavDesktopFoot a {
   z-index: 1;
   display: block;
@@ -2796,13 +2798,15 @@ a.useremail[href*="SAGE"]:last-of-type::after {
 """
         when "slideout"
           css += """
-
+.globalMessage:not(:hover) {
+  border: 0 none;
+}
 .globalMessage {
   bottom: auto;
   position: fixed;
   left: auto;
   right: 2px;
-  width: """ + (236 + sidebarOffsetW) + """px;
+  width: """ + (246 + sidebarOffsetW) + """px;
   background: """ + theme["Dialog Background"] + """;
   border: 1px solid """ + theme["Dialog Border"]  + """;
   z-index: 98;
