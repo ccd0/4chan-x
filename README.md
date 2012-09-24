@@ -2,8 +2,5 @@
 
 ***
 
-## [MIT License](/4chan-x/blob/master/LICENSE)
-
-***
-
-## [Contribute](/4chan-x/blob/master/LICENSE)
+### [MIT License](/4chan-x/blob/master/LICENSE)
+### [Contribute](/4chan-x/blob/master/CONTRIBUTING.md)

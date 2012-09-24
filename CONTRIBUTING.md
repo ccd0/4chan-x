@@ -11,8 +11,6 @@ Open your console with:
 - `Ctrl + Shift + J` on Chrome & Firefox
 - `Ctrl + Shift + O` on Opera.
 
-***
-
 ## Development & Contribution
 
 ### Get started
