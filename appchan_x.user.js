@@ -2735,7 +2735,7 @@
         code: /(`)(?=\S)([^\r\n]*?\S)\1/g,
         ds: /(\|\||__)(?=\S)([^\r\n]*?\S)\1/g
       };
-      if (text == null) {
+      if (text !== null) {
         for (tag in tag_patterns) {
           pattern = tag_patterns[tag];
           text = text.replace(pattern, Markdown.unicode_convert);
@@ -7869,7 +7869,6 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     init: function() {
       var key, mascot, name, now, path, pathname, temp, val;
       Main.flatten(null, Config);
-      console.log(console);
       for (key in Conf) {
         val = Conf[key];
         Conf[key] = $.get(key, val);

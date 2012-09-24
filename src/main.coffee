@@ -1,8 +1,6 @@
 Main =
   init: ->
     Main.flatten null, Config
-    
-    console.log console
 
     # Load values from localStorage.
     for key, val of Conf
