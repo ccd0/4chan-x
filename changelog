@@ -1,6 +1,7 @@
 master
-
-0.9.7beta
+- Zixaphir
+  Fix post form tabbed slideout on everything that isn't Gecko-based.
+  
 
 0.9.6beta
 - Mayhem

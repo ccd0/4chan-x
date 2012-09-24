@@ -442,6 +442,7 @@ QR =
 </form>'
     else
       QR.el = UI.dialog 'qr', '', '
+<div id=qrtab>- Post Form -</div>
 <form>
   <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>

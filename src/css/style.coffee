@@ -1788,7 +1788,7 @@ body {
 #ft li,
 #ft ul,
 #options .dialog,
-#qr::before,
+#qrtab,
 #watcher,
 #updater:hover,
 .box-outer,
@@ -2221,6 +2221,9 @@ body > a[style="cursor: pointer; float: right;"]::after {
       switch Conf["Post Form Style"]
         when "fixed"
           css += """
+#qrtab {
+  display: none;
+}
 #qr {
   right: 2px !important;
   left: auto !important;
@@ -2228,6 +2231,9 @@ body > a[style="cursor: pointer; float: right;"]::after {
 """
         when "slideout"
           css += """
+#qrtab {
+  display: none;
+}
 #qr {
   right: -""" + (233 + sidebarOffsetW) + """px !important;
   left: auto !important;
@@ -2255,33 +2261,37 @@ body > a[style="cursor: pointer; float: right;"]::after {
   left: auto !important;
   """ + agent + """transition: right .3s linear, left .3s linear;
 }
-#qr::before {
+#qrtab {
+  z-index: -1;
   """ + agent + """transform: rotate(-90deg);
   """ + agent + """transform-origin: bottom right;
-  margin-left: -210px;
-  margin-right: 264px;
-  margin-bottom: -20px;
+  position: fixed;
+  bottom: 250px;
+  right: 0;
   width: 210px;
   display: inline-block;
   font-size: 12px;
   opacity: 0.8;
   height: 18px;
   text-align: center;
-  content: "Post Form";
   padding-top: 3px;
   vertical-align: middle;
   color: """ + theme["Text"] + """;
-  """ + agent + """transition: opacity .3s ease-in-out 1s;
+  """ + agent + """transition: opacity .3s ease-in-out 1s,right .3s ease-in-out 1s, left .3s ease-in-out 1s;
 }
-#qr:hover::before,
-#qr.focus::before,
-#qr.dump::before {
+#qr:hover #qrtab,
+#qr.focus #qrtab,
+#qr.dump #qrtab {
   opacity: 0;
-  """ + agent + """transition: opacity .3s linear;
+  right: """ + (252 + sidebarOffsetW) + """px;
+  """ + agent + """transition: opacity .3s linear, right .3s linear, left .3s linear;
 }
 """
         when "transparent fade"
           css += """
+#qrtab {
+  display: none;
+}
 #qr {
   right: 2px !important;
   left: auto !important;
@@ -2602,7 +2612,7 @@ h2,
 td[style="border: 1px dashed;"] {
   border-radius: 3px;
 }
-#qr::before {
+#qrtab {
   border-radius: 6px 6px 0 0;
 }
 .qphl {
