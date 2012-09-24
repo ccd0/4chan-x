@@ -4049,6 +4049,9 @@ ImageExpand =
               break
           thumbs = thumbs[i...]
         for thumb in thumbs
+          unless Conf['Reveal Spoilers']
+            if $ '.fileThumb.imgspoiler', thumb.parentNode.parentNode
+              continue
           ImageExpand.expand thumb
       else #contract
         for thumb in $$ 'img[data-md5][hidden]'

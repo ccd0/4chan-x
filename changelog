@@ -1,4 +1,6 @@
 master
+- noface
+  Don't automatically expand spoilers when using Expand Images. 
 
 2.35.5
 - Mayhem

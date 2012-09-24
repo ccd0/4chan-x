@@ -5057,6 +5057,11 @@
           }
           for (_j = 0, _len1 = thumbs.length; _j < _len1; _j++) {
             thumb = thumbs[_j];
+            if (!Conf['Reveal Spoilers']) {
+              if ($('.fileThumb.imgspoiler', thumb.parentNode.parentNode)) {
+                continue;
+              }
+            }
             ImageExpand.expand(thumb);
           }
         } else {
