@@ -873,6 +873,7 @@ div.reply,
 div.reply.highlight {
   z-index: 0 !important;
   """ + agent + """box-sizing: border-box;
+  box-sizing: border-box;
 }
 /* ICON POSITIONS */
 /* 4chan X Options / 4chan Options */
@@ -972,7 +973,6 @@ div.navLinks > a:first-of-type:hover::after {
   opacity: 1;
   cursor: pointer;
 }
-/* END OF ICON POSITIONS */
 .pageJump {
   position: fixed;
   top: -1000px;

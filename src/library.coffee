@@ -84,7 +84,7 @@ $.extend $,
   MINUTE: 1000*60
   HOUR  : 1000*60*60
   DAY   : 1000*60*60*24
-  log   : if !console then console = unsafeWindow.console else console
+  log   : if console? then console else console = window.console or unsafeWindow.console
   engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
   ready: (fc) ->
     if /interactive|complete/.test d.readyState

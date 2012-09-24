@@ -2,7 +2,7 @@ MascotTools =
   init: ->
 
     if Conf['Post Form Style'] == "fixed" or Conf['Post Form Style'] == "transparent fade"
-      mascotposition = 264
+      mascotposition = 266
     else
       mascotposition = 0
 
