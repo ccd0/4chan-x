@@ -1,0 +1,158 @@
+/* general */
+.dialog.reply {
+  display: block;
+  border: 1px solid rgba(0, 0, 0, .25);
+  padding: 0;
+}
+.move {
+  cursor: move;
+}
+label {
+  cursor: pointer;
+}
+a[href="javascript:;"] {
+  text-decoration: none;
+}
+.warning {
+  color: red;
+}
+
+/* 4chan style fixes */
+.opContainer, .op {
+  display: block !important;
+}
+.post {
+  overflow: visible !important;
+}
+
+/* fixed, z-index */
+#qp, #ihover,
+#updater, #stats,
+#boardNavDesktop.reply,
+#qr, #watcher {
+  position: fixed;
+}
+#qp, #ihover {
+  z-index: 100;
+}
+#updater, #stats {
+  z-index: 90;
+}
+#boardNavDesktop.reply:hover {
+  z-index: 80;
+}
+#qr {
+  z-index: 50;
+}
+#watcher {
+  z-index: 30;
+}
+#boardNavDesktop.reply {
+  z-index: 10;
+}
+
+
+/* header */
+body.fourchan_x {
+  margin-top: 2.5em;
+}
+#boardNavDesktop.reply {
+  border-width: 0 0 1px;
+  padding: 4px;
+  top: 0;
+  right: 0;
+  left: 0;
+  transition: opacity .1s ease-in-out;
+  -o-transition: opacity .1s ease-in-out;
+  -moz-transition: opacity .1s ease-in-out;
+  -webkit-transition: opacity .1s ease-in-out;
+}
+#boardNavDesktop.reply:not(:hover) {
+  opacity: .4;
+  transition: opacity 1.5s .5s ease-in-out;
+  -o-transition: opacity 1.5s .5s ease-in-out;
+  -moz-transition: opacity 1.5s .5s ease-in-out;
+  -webkit-transition: opacity 1.5s .5s ease-in-out;
+}
+#boardNavDesktop.reply a {
+  margin: -1px;
+}
+#settings {
+  float: right;
+}
+
+/* thread updater */
+#updater {
+  text-align: right;
+}
+#updater:not(:hover) {
+  background: none;
+  border: none;
+}
+#updater input[type=number] {
+  width: 4em;
+}
+#updater:not(:hover) > div:not(.move) {
+  display: none;
+}
+.new {
+  color: limegreen;
+}
+
+/* quote */
+.quotelink.deadlink {
+  text-decoration: underline !important;
+}
+.deadlink:not(.quotelink) {
+  text-decoration: none !important;
+}
+.inlined {
+  opacity: .5;
+}
+#qp input, .forwarded {
+  display: none;
+}
+.quotelink.forwardlink,
+.backlink.forwardlink {
+  text-decoration: none;
+  border-bottom: 1px dashed;
+}
+.inline {
+  border: 1px solid rgba(128, 128, 128, .5);
+  display: table;
+  margin: 2px 0;
+}
+.inline .post {
+  border: 0 !important;
+  display: table !important;
+  margin: 0 !important;
+  padding: 1px 2px !important;
+}
+#qp {
+  padding: 2px 2px 5px;
+}
+#qp .post {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+#qp img {
+  max-height: 300px;
+  max-width: 500px;
+}
+.qphl {
+  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);
+}
+
+/* file */
+.fileText:hover .fntrunc,
+.fileText:not(:hover) .fnfull {
+  display: none;
+}
+#ihover {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  max-height: 100%;
+  max-width: 75%;
+  padding-bottom: 16px;
+}
