@@ -2366,8 +2366,8 @@ div.reply {
   padding-top: 6px;
   padding-left: 10px;
 }
-div.reply .postInfo input,
-div.reply .postInfo .rice {
+.postInfo input,
+.postInfo .rice {
   position: absolute;
   top: -3px;
   right: 5px;
@@ -2383,6 +2383,11 @@ div.reply .menu_button {
   position: absolute;
   right: 40px;
   top: 7px;
+}
+.inline .sideArrows,
+.inline .sideArrows a,
+.inline .rice {
+  position: static;
 }
 .sideArrows a {
   font-size: 9px;
