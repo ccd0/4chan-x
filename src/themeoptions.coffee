@@ -194,6 +194,9 @@ ThemeTools =
             'Shadow Color'                : 'rgba(' + mainColor.shiftRGB(16) + ',.9)'
             'Dark Theme'                  : if mainColor.isLight then '1' else '0'
             'Custom CSS'                  : """
+.rice {
+  box-shadow:rgba(""" + mainColor.shiftRGB(32) + """,.3) 0 1px;
+}
 input[type=password]:hover,
 input[type=text]:not([disabled]):hover,
 input#fs_search:hover,
@@ -272,6 +275,9 @@ textarea,
             'Custom CSS'                  : """
 #delform {
   padding: 1px 2px;
+}
+.rice {
+  box-shadow:rgba(""" + mainColor.shiftRGB(32) + """,.3) 0 1px;
 }
 input[type=password]:hover,
 input[type=text]:not([disabled]):hover,
