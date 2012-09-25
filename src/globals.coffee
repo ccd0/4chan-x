@@ -5,8 +5,8 @@ return unless /^(boards|images|sys)\.4chan\.org$/.test location.hostname
 Conf = {}
 d = document
 g =
-  VERSION:   '<%= meta.version %>'
-  NAMESPACE: "<%= meta.name.replace(/ /g, '_') %>."
+  VERSION:   '<%= pkg.version %>'
+  NAMESPACE: "<%= pkg.name.replace(/-/g, '_') %>."
   boards:  {}
   threads: {}
   posts:   {}

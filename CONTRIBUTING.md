@@ -18,10 +18,8 @@ Open your console with:
 - Clone 4chan X.
 - `cd` into it.
 - Install [node.js](http://nodejs.org/).
-- Install [CoffeeScript](http://coffeescript.org/) with `npm install -g coffee-script`.
 - Install [Grunt](http://gruntjs.com/) with `npm install -g grunt`.
-- Install [grunt-exec](https://npmjs.org/package/grunt-exec) with `npm install grunt-exec`.
-- Install [grunt-image-embed](https://npmjs.org/package/grunt-image-embed) with `npm install grunt-image-embed`.
+- Install 4chan X dependencies with `npm install`.
 
 ### Build
 
@@ -30,7 +28,9 @@ Open your console with:
 
 ### Release
 
-- To upgrade, edit the version in `grunt.js` and run `grunt upgrade`.
+- To patch, run `grunt patch` (`0.0.x` version bump).
+- To upgrade, run `grunt upgrade` (`0.x.0` version bump).
+- Release with `grunt release`.
 
 Note: this is only used to release new 4chan X versions, and is not needed or wanted in pull requests.
 
