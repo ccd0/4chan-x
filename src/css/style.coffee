@@ -633,8 +633,8 @@ div.opContainer {
 }"""
 
     if Conf["Style"]
-      Main.callbacks.push @noderice
-      $.ready @allrice
+      $.ready ->
+        @rice d.body
 
       Conf["styleenabled"] = "1"
 
@@ -730,7 +730,7 @@ time + span {
 .autoPagerS,
 .board > hr:last-of-type,
 .closed,
-.deleteform br,
+.deleteform,
 .entry:not(.focused) > .subMenu,
 .error:empty,
 .hidden_thread > .summary,
@@ -739,6 +739,8 @@ time + span {
 .mobile,
 .navLinksBot,
 .next,
+.postinfo input,
+.postinfo .rice,
 .postingMode,
 .prev,
 .qrHeader,
@@ -822,11 +824,9 @@ html .subMenu {
   z-index: """ + (if Conf["Images Overlap Post Form"] then "100" else "1") + """ !important;
 }
 
-div.navLinks > a:first-of-type::after,
-.deleteform {
+div.navLinks > a:first-of-type::after {
   z-index: 99 !important;
 }
-#qr,
 body > form #imgControls {
   z-index: 98 !important;
 }
@@ -844,13 +844,8 @@ body > form #imgControls {
 #settingsBox {
   z-index: 9 !important;
 }
-.deleteform:hover input[type="checkbox"],
-.deleteform:hover .rice {
-  z-index: 7 !important;
-}
 #boardNavDesktopFoot::after,
 #navtopright,
-.deleteform::before,
 .qrMessage,
 #navtopright .settingsWindowLink::after {
   z-index: 6 !important;
@@ -859,8 +854,6 @@ body > form #imgControls {
 #watcher,
 #watcher::before,
 .menu_button,
-.postInfo input,
-.postInfo .rice,
 .sideArrows {
   z-index: 4 !important;
 }
@@ -909,22 +902,6 @@ div.navLinks > a:first-of-type::after {
 }
 div.navLinks > a:first-of-type:hover::after {
   opacity: 1;
-}
-/* Delete Form */
-.deleteform::before {
-  visibility: visible;
-  position: fixed;
-  right: """ + (210 + sidebarOffsetW) + """px;
-  """ + agent + """transform: scale(.9);
-  opacity: 0.4;
-  top: auto;
-  bottom: 2px;
-}
-.deleteform:hover::before {
-  opacity: 1;
-  cursor: pointer;
-  bottom: -30px;
-  visibility: hidden;
 }
 /* Expand Images */
 #imgControls label:first-of-type::after {
@@ -1123,6 +1100,7 @@ input[type=checkbox] {
 /* Formatting for all postarea elements */
 #browse,
 #file,
+#threadselect select,
 input,
 input.field,
 input[type="submit"] {
@@ -1175,7 +1153,8 @@ input[value="Report"] {
   margin: 1px 1px 0 0;
 }
 #browse,
-#file {
+#file,
+#threadselect select {
   cursor: pointer;
   """ + agent + """box-sizing: border-box;
   box-sizing: border-box;
@@ -1208,8 +1187,6 @@ input[value="Report"] {
 .boardTitle {
   background-image: none;
 }
-#delform > div:not(.thread) input,
-.deleteform input[type="checkbox"],
 .rice {
   vertical-align: middle;
 }
@@ -1236,9 +1213,6 @@ body > .postingMode ~ #delform br[clear="left"],
 #delform center {
   position: fixed;
   bottom: -500px;
-}
-.deleteform {
-  border-spacing: 0 1px;
 }
 #delform .fileText + br + a[target="_blank"] img,
 #qp div.post .fileText + br + a[target="_blank"] img  {
@@ -1347,45 +1321,6 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
   max-width: 300px;
   height: auto;
 }
-.deleteform {
-  position: fixed;
-  top: -1000px;
-}
-.deleteform  {
-  position: fixed;
-  top: -1000px;
-  right: 2px;
-  bottom: auto;
-  width: """ + (248 + sidebarOffsetW) + """px;
-  margin: 0px;
-  padding: 0px;
-  font-size: 0px;
-  height: 18px;
-}
-.deleteform:hover {
-  position: fixed;
-  right: 3px;
-}
-.deleteform input[value="Delete"],
-.deleteform input[value="Report"] {
-  float: left;
-}
-.deleteform {
-  width: """ + (246 + sidebarOffsetW) + """px;
-}
-.deleteform:hover input[type="checkbox"],
-.deleteform:hover .rice {
-  position: fixed;
-  right: """ + (130 + sidebarOffsetW) + """px;
-}
-.deleteform:hover::after {
-  visibility: visible;
-  position: fixed;
-  right: """ + (50 + sidebarOffsetW) + """px;
-  font-size: 12px;
-  content: "File Only";
-  width: 50px;
-}
 div.navLinks {
   font-size: 0;
   visibility: hidden;
@@ -1432,9 +1367,9 @@ div.navLinks {
   right: 105px !important;
 }
 #updater {
-  right: 2px !important;
+  right: 4px !important;
   top: """ + (if Conf["Updater Position"] == "top" then "0" else "auto") + """ !important;
-  bottom: """ + (if Conf["Updater Position"] == "bottom" then "0" else "auto") + """ !important;
+  bottom: """ + (if Conf["Updater Position"] == "bottom" then "2px" else "auto") + """ !important;
   left: auto !important;
   width: 58px !important;
   border: 0;
@@ -1573,9 +1508,6 @@ div.pagelist {
 a.forwardlink {
   border: none;
 }
-.deleteform {
-  border-bottom: 2px solid transparent;
-}
 .exif td {
   color: #999;
 }
@@ -1626,11 +1558,11 @@ textarea.field {
   overflow: visible;
   position: fixed;
   top: auto !important;
-  bottom: 20px !important;
+  bottom: 2px !important;
   width: """ + (248 + sidebarOffsetW) + """px;
   margin: 0;
   padding: 0;
-  z-index: 5;
+  z-index: 5 !important;
   background-color: transparent !important;
 }
 /* Width and height of all #qr elements (excluding some captcha elements) */
@@ -1659,14 +1591,12 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
 #dump:hover {
   background: none;
 }
-#qr select {
+#threadselect {
   position: absolute;
-  bottom: -18px;
-  right: 65px;
-  background: none;
-  border: none;
+  top: -20px;
+  right: 0;
   font-size: 12px;
-  width: 128px;
+  text-align: right;
 }
 #qr > form > label {
   font-size: 0px;
@@ -1700,20 +1630,6 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
   text-align: center;
   box-sizing: border-box;
   """ + agent + """box-sizing: border-box;
-}
-.deleteform:hover {
-  top: auto;
-  bottom: 0px;
-}
-.deleteform:hover input[type="checkbox"],
-.deleteform:hover .rice,
-.deleteform:hover::after {
-  top: auto;
-  bottom: 2px;
-}
-.deleteform:hover input[name="pwd"] {
-  top: auto;
-  bottom: 0px;
 }
 input[title="Verification"],
 .captchaimg img {
@@ -1793,20 +1709,19 @@ body {
 #updater:hover,
 .box-outer,
 .boxbar,
-.deleteform input[value=Delete],
 .top-box,
 .yuimenuitem-selected,
 html body span[style="left: 5px; position: absolute;"] a,
 input[type="submit"],
 #options.reply.dialog,
-.deleteform input[value=Delete],
 input[value="Report"] {
   background: """ + theme["Buttons Background"] + """;
   border: 1px solid """ + theme["Buttons Border"]  + """;
 }
-#file,
 #dump,
+#file,
 #options input,
+#threadselect select,
 input,
 input.field,
 select,
@@ -1819,7 +1734,6 @@ textarea.field {
 }
 #browse:hover,
 #file:hover,
-.deleteform input:hover,
 input:hover,
 input.field:hover,
 input[type="submit"]:hover,
@@ -1865,7 +1779,6 @@ div.reply {
 #themeConf,
 #watcher,
 #watcher:hover,
-.deleteform,
 div.subMenu,
 #menu {
   background: """ + theme["Dialog Background"] + """;
@@ -1915,7 +1828,6 @@ body > form,
 body,
 html body span[style="left: 5px; position: absolute;"] a,
 input,
-.deleteform::after,
 textarea,
 .abbr,
 .boxbar,
@@ -2061,10 +1973,6 @@ span.lit {
 #navtopright .settingsWindowLink::after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIVJREFUGNOFkVENwCAMRE8CUiYBCZOAM6Rg4CWTMAlIuH0AG9mS0f7Q67W9FmkyMoWstxGIEgljTJKIhCd59IQp9+voBHaMOUmdnqgYs41qcxLYKZhCJFCxbrZJvUfz2LCm1liappoiYUxu8AiHVw2cPIXf6sXsl/L6Vb7c++9qi5v//dgFtjLxtKnNCFwAAAAASUVORK5CYII=");
 }
-/* Delete buttons */
-.deleteform::before {
-  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAeRJREFUOE9tlM0rRFEYh0dMPiKxkWxsyEpWshCpURbWNPkvlCwYe6VJWU+zkmytZIOttZJsaHZioQkhH8+j++p0M/U0Z8597+/83o8zhUajUcjRwu8OGIAJmIFZmIJh6IHW/Ht5kXYCxmAVzuABvuAbXuAS9mAOesFDfzVSoW42FuEYXrOXFcjzyd41rMFQiIWQThS5AAP/E8jv3RO3Bf3hSHumo5MQeWZ9CjfJ3mO2d8d3pMuysQxFHVlYaxLpKLIP07ACV/AE2zAJ63CbuVbwBAYVsjsWNqzrRJE26ART3jAYdG/8bnJwk3VJIVtsd0LIdHSiiM+LYIdcKzQOR5DWsuJD5yRyVswA09GJItEQRUbgIHETh9cMctjyHbEmphNOjGuF+eyQfGfrBjixDluI2R0La00iHUVcm+4SOJipWNWHjr0P0mLbHVOJdHQSNetjvQNv2TvvfJcV8u7sJSc4J7bY7lhYa2LNdKLIApwn8T4bjdy9O469riy8c2KL7Y7zZRq61okiujDWmduEruiIRfXuOPaRYgjEb8VMJ2rzwfoQ7GRL2lovoHfHTzoO/907nShiLX9HJL39FtYL6N1x7JuJuxAzJWtiOjr5m7P8/1FMsq0vQQVqUIcqlGEUukxHJ8EPyeEKDPe5ibUAAAAASUVORK5CYII=");
-}
 /* Return button */
 div.navLinks > a:first-of-type::after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAC1QTFRFAAAA5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHkJaAqNQAAAA50Uk5TABAgQFBgcICPn6+/3+9ACPafAAAASElEQVQI15XMyxKAIAxD0eCr1ZT8/+eKDCOw07O700mBT45rrDXEXgul3sn0yCwsAaGBv/cw86xc92fbl0v7z7mBzeeudhJ/3aoUA1Vr0uhDAAAAAElFTkSuQmCC");
@@ -2122,10 +2030,6 @@ span.lit {
 /* 4chan X options */
 #navtopright .settingsWindowLink::after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIVJREFUGNOFkVERwCAMQyMBKZOAhEng69lCChImYRKQkH0AG7fdjfaHpmmbFmkyMoWstxGIEgljTJKIhCd59IQp9+voBHaMOUmdnqgYs41qcxLYKZhCJFCxbrZJvUfz2LCm1liappoiYUxu8AiHVw2cPIXf6sXsl/L6Vb7c++9qi5v//dgFAGGyWuspVmQAAAAASUVORK5CYII=");
-}
-/* Delete buttons */
-.deleteform::before {
-  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAftJREFUOE991M0rRFEYx/E7jYkRTWymycZmZCUrWYgUZTFrkub1T1Cy8LJXkrKWlWRrJZsZW+upSTZkJxbSmIzmXt/feK6O8aI+nnPOc+7vnHnB8zp+isVipFQq9SCJcUxjBpMYRj97op3Pfc1peujGKJtXUcEjfAR4RRUH7JlFQod+C7SQPmoG52gg+EOL9WusYehbmN1EIVfQxr9C3PUH9m1jsFAoeB6/Ino5dpMwpM68jBsn+MnW7qi+HXbP80uIKagHq2gggEKOMYUV5jU8M97BBNaZ39pen3qBlIKSqFhDQWVMoQtxZLChzbq97d93Dn5hPKegcTw6QTeMdZO4PhFqDAl4+XxeQWM4Q8t5ZkvNafgITItaQwax8ONVCNI4QcPZr+cOFTTTsajGMzaQcIKizOftEB0WHqx6pKBJvDqNJ8Y7SMHL5XIRtL/JzONYRBVu2J6aw9YITygzn7AAhaQxj/Z7Rh2gv4s3O7xJXVajHwdoIcAd1pHEGE5Qw6JCsIBLZ796IwqKYhbXFuRTb7GPMzTsoSp110KatrdO3URv+71kkMAaHmyDbhYGaCy68Ztzk3fGp9BL//zj1QBD2M5ms/fwEfyjTk8hei+/viLtMBoRDGIJF3j5JajJWg2bSCOGn/+atGjNFHUOWzjEEfawjBH06mA34QPkk++/bAlEMAAAAABJRU5ErkJggg==");
 }
 /* Return button */
 div.navLinks > a:first-of-type::after {
@@ -2337,29 +2241,19 @@ div.postInfo {
 }
 .sideArrows,
 div.reply .report_button,
-div.reply .postInfo input,
-div.reply .postInfo .rice,
 div.reply .menu_button {
   opacity: 0;
 }
 form .replyContainer:not(:hover) div.reply .report_button,
 form .replyContainer:not(:hover) div.reply .menu_button,
-form .replyContainer:not(:hover) .sideArrows,
-form .replyContainer:not(:hover) .postInfo input,
-.postInfo .rice {
+form .replyContainer:not(:hover) .sideArrows {
   """ + agent + """transition: opacity .3s ease-out 0s;
 }
 form .replyContainer:hover div.reply .report_button,
 form .replyContainer:hover div.reply .menu_button,
-form .replyContainer:hover .sideArrows,
-.replyContainer:hover .postInfo input,
-.replyContainer:hover .postInfo .rice {
+form .replyContainer:hover .sideArrows {
   opacity: 1;
   """ + agent + """transition: opacity .3s ease-in 0s;
-}
-div.reply .postInfo input:checked,
-div.reply .postInfo input:checked + .rice {
-  opacity: 1;
 }
 form .postContainer blockquote {
   margin-left: 30px;
@@ -2368,22 +2262,16 @@ div.reply {
   padding-top: 6px;
   padding-left: 10px;
 }
-div.reply .postInfo input,
-div.reply .postInfo .rice {
-  position: absolute;
-  top: -3px;
-  right: 5px;
-}
 div.reply .report_button,
 div.reply .menu_button {
   position: absolute;
-  right: 26px;
+  right: 6px;
   top: -1px;
   font-size: 9px;
 }
 .sideArrows a {
   position: absolute;
-  right: 40px;
+  right: 20px;
   top: 7px;
 }
 div.reply .inline .menu_button,
@@ -2466,13 +2354,6 @@ div.post:not(#qp):not([hidden]) {
 }
 .sideArrows span {
   font-size: 9px;
-}
-.sideArrows a {
-  right: 27px;
-}
-div.reply .report_button,
-div.reply .menu_button {
-  right: 13px;
 }
 div.reply {
   padding-top: 6px;
@@ -2603,7 +2484,6 @@ body {
 #options,
 #qp,
 #watcher,
-.deleteform,
 .globalMessage,
 .inline div.reply,
 div.reply,

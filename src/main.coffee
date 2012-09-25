@@ -199,7 +199,6 @@ Main =
     for node in $$ '.postContainer', board
       nodes.push Main.preParse node
     Main.node nodes, true
-    Main.prettify = Main._prettify
 
     Main.observe()
 
@@ -298,8 +297,7 @@ Main =
     if /\bpostContainer\b/.test(target.className) and target.parentNode.className isnt 'threadContainer'
       Main.node [Main.preParse target]
 
-  prettify: -> return
-  _prettify: (bq) ->
+  prettify: (bq) ->
     switch g.BOARD
       when 'g'
         code = ->

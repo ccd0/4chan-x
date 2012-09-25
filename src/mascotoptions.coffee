@@ -2,7 +2,7 @@ MascotTools =
   init: ->
 
     if Conf['Post Form Style'] == "fixed" or Conf['Post Form Style'] == "transparent fade"
-      mascotposition = 266
+      mascotposition = 248
     else
       mascotposition = 0
 
@@ -68,7 +68,7 @@ MascotTools =
       vOffset: [
         "Vertical Offset"
         ""
-        "This value moves the mascot vertically away from the anchor point, in pixels (the post form is exactly \"266\" pixels tall if you'd like to force the mascot to sit above it)."
+        "This value moves the mascot vertically away from the anchor point, in pixels (the post form is exactly \"248\" pixels tall if you'd like to force the mascot to sit above it)."
         "number"
       ]
       hOffset: [

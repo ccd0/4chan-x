@@ -12,8 +12,6 @@ Options =
         textContent: 'AppChan X Settings'
       $.on a, 'click', ->
         Options.dialog()
-        if Conf['Style']
-          Style.allrice()
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
 
   dialog: (tab) ->
@@ -319,6 +317,8 @@ Options =
     $.on overlay, 'click', Options.close
     $.add d.body, overlay
     dialog.style.visibility = 'hidden'
+    if Conf['Style']
+      Style.rice dialog
     $.add d.body, dialog
     dialog.style.visibility = 'visible'
 
