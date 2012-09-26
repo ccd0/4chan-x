@@ -1,6 +1,8 @@
 master
 - noface
   Don't automatically expand spoilers when using Expand Images. 
+- Mayhem
+  Fix 'Administrator/Moderator/Developer Replies' creating extra backlinks on /q/, again.
 
 2.35.5
 - Mayhem
