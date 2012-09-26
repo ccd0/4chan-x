@@ -2424,7 +2424,7 @@
           if (!(mascot["Enabled"] || mascot["Deleted"] || mascot["Hidden"])) {
             $.addClass($('#' + name, this.parentElement.parentElement), 'enabled');
             userMascots[name]["Enabled"] = true;
-            _results.push($.set("userMascots", true));
+            _results.push($.set("userMascots", userMascots));
           } else {
             _results.push(void 0);
           }
