@@ -16,9 +16,9 @@ module.exports = function(grunt) {
       coffee: {
         src: [
           '<file_template:src/config.coffee>',
+          '<file_template:src/globals.coffee>',
           '<file_template:lib/ui.coffee>',
           '<file_template:lib/$.coffee>',
-          '<file_template:src/globals.coffee>',
           '<file_template:src/features.coffee>',
           '<file_template:src/main.coffee>'
         ],

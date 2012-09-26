@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, ThreadUpdater, Time, UI, d, g,
+  var $, $$, Anonymize, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, ThreadUpdater, Time, UI, d, g,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -168,6 +168,22 @@
       'Interval': 30
     },
     imageFit: 'fit width'
+  };
+
+  if (!/^(boards|images|sys)\.4chan\.org$/.test(location.hostname)) {
+    return;
+  }
+
+  Conf = {};
+
+  d = document;
+
+  g = {
+    VERSION: '3.0.0',
+    NAMESPACE: "4chan_X_Alpha.",
+    boards: {},
+    threads: {},
+    posts: {}
   };
 
   UI = (function() {
@@ -655,22 +671,6 @@
       return localStorage.setItem(g.NAMESPACE + name, JSON.stringify(value));
     }
   });
-
-  if (!/^(boards|images|sys)\.4chan\.org$/.test(location.hostname)) {
-    return;
-  }
-
-  Conf = {};
-
-  d = document;
-
-  g = {
-    VERSION: '3.0.0',
-    NAMESPACE: "4chan_X_Alpha.",
-    boards: {},
-    threads: {},
-    posts: {}
-  };
 
   Redirect = {
     image: function(board, filename) {
@@ -1555,6 +1555,37 @@
         }
         if (data.board === this.board.ID && data.threadID !== thread.ID) {
           $.add(quote, $.tn(QuoteCT.text));
+        }
+      }
+    }
+  };
+
+  Anonymize = {
+    init: function() {
+      return Post.prototype.callbacks.push({
+        name: 'Anonymize',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var email, name, tripcode, _ref;
+      if (this.info.capcode || this.isClone) {
+        return;
+      }
+      _ref = this.nodes, name = _ref.name, tripcode = _ref.tripcode, email = _ref.email;
+      if (this.info.name !== 'Anonymous') {
+        name.textContent = 'Anonymous';
+      }
+      if (tripcode) {
+        $.rm(tripcode);
+        delete this.nodes.tripcode;
+      }
+      if (this.info.email) {
+        if (/sage/i.test(this.info.email)) {
+          return email.href = 'mailto:sage';
+        } else {
+          $.replace(email, name);
+          return delete this.nodes.email;
         }
       }
     }
@@ -2645,6 +2676,13 @@
           QuoteCT.init();
         } catch (err) {
           $.log(err, 'Indicate Cross-thread Quotes');
+        }
+      }
+      if (Conf['Anonymize']) {
+        try {
+          Anonymize.init();
+        } catch (e) {
+          $.log(err, 'Anonymize');
         }
       }
       if (Conf['Time Formatting']) {

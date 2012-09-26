@@ -362,6 +362,13 @@ Main =
         # XXX handle error
         $.log err, 'Indicate Cross-thread Quotes'
 
+    if Conf['Anonymize']
+      try
+        Anonymize.init()
+      catch e
+        # XXX handle error
+        $.log err, 'Anonymize'
+
     if Conf['Time Formatting']
       try
         Time.init()
