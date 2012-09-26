@@ -2515,6 +2515,9 @@
       }
       if (err) {
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
+          if (/mistyped/i.test(err.textContent)) {
+            err.textContent = 'Error: You seem to have mistyped the CAPTCHA.';
+          }
           QR.cooldown.auto = QR.captchaIsEnabled ? !!$.get('captchas', []).length : true;
           QR.cooldown.set(2);
         } else {

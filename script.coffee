@@ -1957,6 +1957,9 @@ QR =
 
     if err
       if /captcha|verification/i.test(err.textContent) or err is 'Connection error with sys.4chan.org.'
+        # Remove the obnoxious 4chan Pass ad.
+        if /mistyped/i.test err.textContent
+          err.textContent = 'Error: You seem to have mistyped the CAPTCHA.'
         # Enable auto-post if we have some cached captchas.
         QR.cooldown.auto =
           if QR.captchaIsEnabled
