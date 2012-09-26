@@ -108,22 +108,23 @@ module.exports = function(grunt) {
       push: {
         command: 'git push && git push --tags',
         stdout: true
-      },
-      clean: {
-        command: 'rm -r tmp'
       }
     },
     watch: {
       files: ['grunt.js', 'lib/**/*.coffee', 'src/**/*.coffee', 'css/**/*.css', 'img/*'],
       tasks: 'default'
+    },
+    clean: {
+      tmp:['tmp']
     }
   });
 
   grunt.loadNpmTasks('grunt-bump');
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-coffee');
   grunt.loadNpmTasks('grunt-exec');
 
-  grunt.registerTask('default', 'concat:coffee coffee concat:js exec:clean');
+  grunt.registerTask('default', 'concat:coffee coffee concat:js clean');
   grunt.registerTask('release', 'concat:meta concat:latest default exec:commit exec:push');
   grunt.registerTask('patch',   'bump');
   grunt.registerTask('upgrade', 'bump:minor');

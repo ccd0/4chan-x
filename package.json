@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "grunt-bump": "0.0.x",
+    "grunt-contrib-clean": "0.3.x",
     "grunt-contrib-coffee": "0.3.x",
     "grunt-exec": "0.3.x",
     "grunt-image-embed": "0.0.x"
