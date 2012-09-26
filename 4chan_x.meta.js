@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         4chan X Alpha
 // @version      3.0.0
-// @description  Adds various features.
+// @description  Cross-browser userscript for maximum lurking on 4chan.
 // @copyright    2009-2011 James Campos <james.r.campos@gmail.com>
 // @copyright    2012 Nicolas Stepien <stepien.nicolas@gmail.com>
 // @license      MIT; http://en.wikipedia.org/wiki/Mit_license
