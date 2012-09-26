@@ -107,7 +107,7 @@ SOURCEDIR = 'src'
 OUTFILE   = 'appchan_x.user.js'
 CHANGELOG = 'changelog'
 LATEST    = 'latest.js'
-MAIN      = 'SOURCEDIR + "/main.coffee"
+MAIN      = SOURCEDIR + "/main.coffee"
 APPFILES  = [
   'config'
   'themes'

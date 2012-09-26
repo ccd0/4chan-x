@@ -252,7 +252,7 @@ Options =
         li = $.el 'li',
           className: 'mascot'
           innerHTML: "
-<div id='#{name}' class='#{mascot.category}' style='background-image: url(#{mascot.image});'>
+<div id='#{name}' class='#{mascot.category}' style='background-image: url(#{if typeof mascot.image == 'function' then mascot.image() else mascot.image});'>
   <div class='mascotmetadata'>
     <p><span class='mascotname'>#{name.replace /_/g, " "}</span></p>
     <p><span class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a></span></p>
@@ -269,7 +269,7 @@ Options =
           MascotTools.dialog @name
           Options.close()
         $.on $('a.delete', li), 'click', ->
-          container = @.parentElement.parentElement
+          container = @.parentElement.parentElement.parentElement.parentElement.parentElement
           if confirm "Are you sure you want to delete \"#{@name}\"?"
             userMascots[@name]["Enabled"] = false
             userMascots[@name]["Deleted"] = true

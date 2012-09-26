@@ -27,6 +27,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       if div.parentElement.tagName.toLowerCase() != 'label'
         $.on div, 'click', ->
           checkbox.click()
+
   agent: ->
     switch $.engine
       when 'gecko'

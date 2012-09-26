@@ -1215,6 +1215,26 @@
       category: 'SFW',
       image: 'http://i.imgur.com/b9KmB.png'
     },
+    'Horo': {
+      category: 'Silhouette',
+      image: function() {
+        if (userThemes[Conf['Theme']]['Dark Theme'] = '1' && Conf["Style"]) {
+          return 'http://i.imgur.com/PKfl4.png';
+        } else {
+          return 'http://i.imgur.com/HMpug.png';
+        }
+      }
+    },
+    'Horo_2': {
+      category: 'Silhouette',
+      image: function() {
+        if (userThemes[Conf['Theme']]['Dark Theme'] = '1' && Conf["Style"]) {
+          return 'http://i.imgur.com/8fcrD.png';
+        } else {
+          return 'http://i.imgur.com/BjV3U.png';
+        }
+      }
+    },
     'Ika_Musume': {
       category: 'SFW',
       image: 'http://i.imgur.com/rKT7L.png',
@@ -1417,6 +1437,28 @@
     'Nagato_Yuki_4': {
       category: 'SFW',
       image: 'http://i.imgur.com/atnqf.png',
+      center: true
+    },
+    'Nagato_Yuki_5': {
+      category: 'Silhouette',
+      image: function() {
+        if (userThemes[Conf['Theme']]['Dark Theme'] = '1' && Conf["Style"]) {
+          return 'http://i.imgur.com/aGFCl.png';
+        } else {
+          return 'http://i.imgur.com/uR35P.png';
+        }
+      },
+      center: true
+    },
+    'Nagato_Yuki_6': {
+      category: 'Silhouette',
+      image: function() {
+        if (userThemes[Conf['Theme']]['Dark Theme'] = '1' && Conf["Style"]) {
+          return 'http://i.imgur.com/MwoI9.png';
+        } else {
+          return 'http://i.imgur.com/L9ZAT.png';
+        }
+      },
       center: true
     },
     'Nakano_Azusa': {
@@ -2315,7 +2357,7 @@
         if (!mascot["Deleted"]) {
           li = $.el('li', {
             className: 'mascot',
-            innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + mascot.image + ");'>  <div class='mascotmetadata'>    <p><span class='mascotname'>" + (name.replace(/_/g, " ")) + "</span></p>    <p><span class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a> / <a class=delete name='" + name + "' href='javascript:;'>Delete</a></span></p>  </div></div>"
+            innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + (typeof mascot.image === 'function' ? mascot.image() : mascot.image) + ");'>  <div class='mascotmetadata'>    <p><span class='mascotname'>" + (name.replace(/_/g, " ")) + "</span></p>    <p><span class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a> / <a class=delete name='" + name + "' href='javascript:;'>Delete</a></span></p>  </div></div>"
           });
           div = $('div', li);
           if (mascot["Enabled"]) {
@@ -2331,7 +2373,7 @@
           });
           $.on($('a.delete', li), 'click', function() {
             var container;
-            container = this.parentElement.parentElement;
+            container = this.parentElement.parentElement.parentElement.parentElement.parentElement;
             if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
               userMascots[this.name]["Enabled"] = false;
               userMascots[this.name]["Deleted"] = true;
@@ -7580,9 +7622,9 @@
         $.rm($('#mascot', d.body));
       } catch (_error) {}
       div = $.el('div', {
-        id: "mascot"
+        id: "mascot",
+        innerHTML: "<img src='" + (typeof mascot.image === 'function' ? mascot.image() : mascot.image) + "'>"
       });
-      div.innerHTML = "<img src='" + mascot.image + "'>";
       return $.ready(function() {
         return $.add(d.body, div);
       });
@@ -7954,9 +7996,12 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       if (userMascots !== Mascots) {
         for (name in Mascots) {
           mascot = Mascots[name];
-          if (userMascots[name]["Customized"] == null) {
-            userMascots[name] = mascot;
+          if (userMascots[name] != null) {
+            if (userMascots[name]["Customized"] != null) {
+              continue;
+            }
           }
+          userMascots[name] = mascot;
         }
       }
       path = location.pathname;

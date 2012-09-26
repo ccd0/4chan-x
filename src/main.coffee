@@ -12,8 +12,10 @@ Main =
     #If mascots have been updated, push them to the userMascots
     unless userMascots == Mascots
       for name, mascot of Mascots
-        unless userMascots[name]["Customized"]?
-          userMascots[name] = mascot
+        if userMascots[name]?
+          if userMascots[name]["Customized"]?
+            continue
+        userMascots[name] = mascot
 
     path = location.pathname
     pathname = path[1..].split '/'

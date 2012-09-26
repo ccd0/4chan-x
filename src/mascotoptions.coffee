@@ -167,11 +167,10 @@ MascotTools =
 
     div = $.el 'div',
       id: "mascot"
-
-    div.innerHTML = "<img src='#{mascot.image}'>"
+      innerHTML: "<img src='#{if typeof mascot.image == 'function' then mascot.image() else mascot.image}'>"
 
     $.ready ->
-      $.add d.body, div
+        $.add d.body, div
 
   save: (mascot) ->
     aname = mascot.name
