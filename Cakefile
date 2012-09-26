@@ -116,6 +116,7 @@ APPFILES  = [
   'quickreply'
   'themeoptions'
   'mascotoptions'
+  'customnavigation'
   'appchan'
   'css/style'
   'main'

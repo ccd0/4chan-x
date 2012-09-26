@@ -1012,7 +1012,7 @@ a.yuimenuitemlabel {
   padding: 0 20px;
 }
 /* Navigation */
-#boardNavDesktop, /* Top Navigation */
+""" + (if Conf["Custom Navigation"] then "" else "#boardNavDesktop,") + """
 .pages /* Bottom Navigation */ {
   text-align: center;
   font-size: 0;
@@ -1020,6 +1020,7 @@ a.yuimenuitemlabel {
   width: auto;
 }
 #boardNavDesktop{
+  text-align: center;
   width: auto;
   padding-right: 0px;
   margin-right: 0px;
@@ -1061,7 +1062,7 @@ img.bottomad:hover {
 .fileThumb {
   position: relative;
 }
-#boardNavDesktop a,
+""" + (unless Conf["Custom Navigation"] then "#boardNavDesktop a,") + """
 .pages a,
 .pages strong {
   display: inline-block;
@@ -1842,7 +1843,6 @@ textarea,
 .reply.highlight,
 #boardNavDesktop .title,
 #imgControls label::after,
-#boardNavDesktop::after,
 #updater #count:not(.new)::after,
 #qr > form > label::after,
 span.pln {

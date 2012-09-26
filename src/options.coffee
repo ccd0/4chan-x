@@ -485,11 +485,11 @@ Options =
         textContent: "delimiter: "
       input = $.el "input"
         className: "field"
+        name:      "delimiter"
       input.setAttribute "value", userNavigation.delimiter
       input.setAttribute "placeholder", "delimiter"
       input.setAttribute "type", "text"
-      input.name = "delimiter"
-      
+
       $.on input, "change", ->
         if @value == ""
           alert "Custom Navigation options cannot be blank."
@@ -503,7 +503,7 @@ Options =
       li = $.el "li"
         textContent: "Navigation Syntax: Display Name | Title / Alternate Text | URL"
       $.add ul, li
-      
+
       # Names and Placeholders for custom navigation inputs.
       navOptions = ["Display Name", "Title / Alt Text", "URL"]
 
@@ -521,10 +521,10 @@ Options =
         for itemIndex, item of link
           input = $.el "input"
             className: "field"
+            name:      itemIndex
           input.setAttribute "value", item
           input.setAttribute "placeholder", navOptions[itemIndex]
           input.setAttribute "type", "text"
-          input.name = itemIndex
 
           $.on input, "change", ->
             if @value == ""
@@ -536,11 +536,10 @@ Options =
           $.add li, input
 
         #Add Custom Link
-        
         addLink = $.el "a"
           textContent: " + "
           href: "javascript:;"
-          
+
         $.on addLink, "click", ->
           userNavigation.links.add = (at) ->
             keep = userNavigation.links.slice at
@@ -553,11 +552,10 @@ Options =
           Options.customNavigation.cleanup()
 
         #Delete Custom Link
-        
         removeLink = $.el "a"
           textContent: " x "
           href: "javascript:;"
-          
+
         $.on removeLink, "click", ->
           userNavigation.links.remove = (from) ->
             keep = userNavigation.links.slice parseInt(from) + 1
@@ -570,8 +568,8 @@ Options =
         $.add li, addLink
         $.add li, removeLink
         $.add ul, li
-        
-      #Final Addlink Button.
+
+      #Final addLink Button
       li = $.el "li"
       addLink = $.el "a"
         textContent: " + "
@@ -580,7 +578,7 @@ Options =
         blankLink = ["ex","example","http://www.example.com/"]
         userNavigation.links.push blankLink
         Options.customNavigation.cleanup()
-        
+
       $.add li, addLink
       $.add ul, li
 
