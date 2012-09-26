@@ -119,7 +119,7 @@ APPFILES  = [
   'mascotoptions'
   'customnavigation'
   'appchan'
-  'css/style'
+  'style'
   'main'
   'exec'
 ]
