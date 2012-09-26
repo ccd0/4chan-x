@@ -3190,7 +3190,7 @@ QuoteBacklink =
     quotes = {}
     for quote in post.quotes
       # Stop at 'Admin/Mod/Dev Replies:' on /q/
-      break if quote.parentNode.getAttribute('style') is 'font-size: smaller;'
+      break if quote.parentNode.parentNode.className is 'capcodeReplies'
       # Don't process >>>/b/.
       if qid = quote.hash[2..]
         # Duplicate quotes get overwritten.
