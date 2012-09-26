@@ -5,9 +5,11 @@ Main =
     # Load values from localStorage.
     for key, val of Conf
       Conf[key]    = $.get key,              val
+
     userNavigation = $.get "userNavigation", Navigation
     userThemes     = $.get "userThemes",     Themes
     userMascots    = $.get "userMascots",    Mascots
+    
 
     #If mascots have been updated, push them to the userMascots
     unless userMascots == Mascots
@@ -15,6 +17,8 @@ Main =
         if userMascots[name]?
           if userMascots[name]["Customized"]?
             continue
+        if userMascots[name]["Enabled"]
+          mascot["Enabled"] = true
         userMascots[name] = mascot
 
     path = location.pathname

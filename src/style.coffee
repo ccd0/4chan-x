@@ -2088,20 +2088,20 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #boardNavDesktopFoot,
 #watcher {
   position: fixed;
-  top: """ + (34 + logoOffset) + """px;
+  top: """ + (36 + logoOffset) + """px;
 }
 #boardNavDesktopFoot::after,
 #navtopright .settingsWindowLink::after,
 .globalMessage::before ,
 div.navLinks > a:first-of-type::after,
 body > a[style="cursor: pointer; float: right;"]::after {
-  top: """ + (19 + logoOffset) + """px;
+  top: """ + (21 + logoOffset) + """px;
 }
 #watcher::before {
-  top: """ + (20 + logoOffset) + """px;
+  top: """ + (22 + logoOffset) + """px;
 }
 #settingsBox {
-  top: """ + (25 + logoOffset) + """px;
+  top: """ + (27 + logoOffset) + """px;
 }
 """
 
@@ -2181,7 +2181,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
   width: 210px;
   display: inline-block;
   font-size: 12px;
-  opacity: 0.8;
+  opacity: 1;
   height: 18px;
   text-align: center;
   padding-top: 3px;

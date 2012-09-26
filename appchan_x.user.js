@@ -2402,34 +2402,24 @@
         innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a> / <a href=\"javascript:;\" id=\"createNew\">New Mascot</a>"
       });
       $.on($('#clear', batchmascots), 'click', function() {
-        var _results;
-        _results = [];
         for (name in userMascots) {
           mascot = userMascots[name];
           if (mascot["Enabled"]) {
             $.rmClass($('#' + name, this.parentElement.parentElement), 'enabled');
             userMascots[name]["Enabled"] = false;
-            _results.push($.set("userMascots", userMascots));
-          } else {
-            _results.push(void 0);
           }
         }
-        return _results;
+        return $.set("userMascots", userMascots);
       });
       $.on($('#selectAll', batchmascots), 'click', function() {
-        var _results;
-        _results = [];
         for (name in userMascots) {
           mascot = userMascots[name];
           if (!(mascot["Enabled"] || mascot["Deleted"] || mascot["Hidden"])) {
             $.addClass($('#' + name, this.parentElement.parentElement), 'enabled');
             userMascots[name]["Enabled"] = true;
-            _results.push($.set("userMascots", userMascots));
-          } else {
-            _results.push(void 0);
           }
         }
-        return _results;
+        return $.set("userMascots", userMascots);
       });
       $.on($('#createNew', batchmascots), 'click', function() {
         if (!Conf["Style"]) {
@@ -7814,7 +7804,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
             logoOffset = 0;
             css += ".boardBanner img {\n  display: none;\n}";
         }
-        css += ".globalMessage,\n#watcher,\n#boardNavDesktopFoot,\n#watcher {\n  position: fixed;\n  top: " + (34 + logoOffset) + "px;\n}\n#boardNavDesktopFoot::after,\n#navtopright .settingsWindowLink::after,\n.globalMessage::before ,\ndiv.navLinks > a:first-of-type::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: " + (19 + logoOffset) + "px;\n}\n#watcher::before {\n  top: " + (20 + logoOffset) + "px;\n}\n#settingsBox {\n  top: " + (25 + logoOffset) + "px;\n}";
+        css += ".globalMessage,\n#watcher,\n#boardNavDesktopFoot,\n#watcher {\n  position: fixed;\n  top: " + (36 + logoOffset) + "px;\n}\n#boardNavDesktopFoot::after,\n#navtopright .settingsWindowLink::after,\n.globalMessage::before ,\ndiv.navLinks > a:first-of-type::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: " + (21 + logoOffset) + "px;\n}\n#watcher::before {\n  top: " + (22 + logoOffset) + "px;\n}\n#settingsBox {\n  top: " + (27 + logoOffset) + "px;\n}";
         switch (Conf["Board Logo"]) {
           case "in sidebar":
             css += ".boardTitle {\n  position: fixed;\n  left: auto;\n  right: 2px;\n  top: " + (45 + logoOffset) + "px;\nz-index: 1;\nwidth: " + (248 + sidebarOffsetW) + "px;\n}\n.boardSubtitle {\n  display: none;\n}";
@@ -7830,7 +7820,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
             css += "#qrtab {\n  display: none;\n}\n#qr {\n  right: -" + (233 + sidebarOffsetW) + "px !important;\nleft: auto !important;" + agent + "transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;\n}\n#qr:hover,\n#qr.focus,\n#qr.dump {\n  right: 2px !important;\n  left: auto !important;" + agent + "transition: right .3s linear, left .3s linear;\n}";
             break;
           case "tabbed slideout":
-            css += "#qr {\n  right: -" + (249 + sidebarOffsetW) + "px !important;\nleft: auto !important;" + agent + "transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;\n}\n#qr:hover,\n#qr.focus,\n#qr.dump {\n  right: 2px !important;\n  left: auto !important;" + agent + "transition: right .3s linear, left .3s linear;\n}\n#qrtab {\n  z-index: -1;" + agent + "transform: rotate(-90deg);" + agent + "transform-origin: bottom right;\nposition: fixed;\nbottom: 250px;\nright: 0;\nwidth: 210px;\ndisplay: inline-block;\nfont-size: 12px;\nopacity: 0.8;\nheight: 18px;\ntext-align: center;\npadding-top: 3px;\nvertical-align: middle;\ncolor: " + theme["Text"] + ";" + agent + "transition: opacity .3s ease-in-out 1s,right .3s ease-in-out 1s, left .3s ease-in-out 1s;\n}\n#qr:hover #qrtab,\n#qr.focus #qrtab,\n#qr.dump #qrtab {\n  opacity: 0;\n  right: " + (252 + sidebarOffsetW) + "px;" + agent + "transition: opacity .3s linear, right .3s linear, left .3s linear;\n}";
+            css += "#qr {\n  right: -" + (249 + sidebarOffsetW) + "px !important;\nleft: auto !important;" + agent + "transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;\n}\n#qr:hover,\n#qr.focus,\n#qr.dump {\n  right: 2px !important;\n  left: auto !important;" + agent + "transition: right .3s linear, left .3s linear;\n}\n#qrtab {\n  z-index: -1;" + agent + "transform: rotate(-90deg);" + agent + "transform-origin: bottom right;\nposition: fixed;\nbottom: 250px;\nright: 0;\nwidth: 210px;\ndisplay: inline-block;\nfont-size: 12px;\nopacity: 1;\nheight: 18px;\ntext-align: center;\npadding-top: 3px;\nvertical-align: middle;\ncolor: " + theme["Text"] + ";" + agent + "transition: opacity .3s ease-in-out 1s,right .3s ease-in-out 1s, left .3s ease-in-out 1s;\n}\n#qr:hover #qrtab,\n#qr.focus #qrtab,\n#qr.dump #qrtab {\n  opacity: 0;\n  right: " + (252 + sidebarOffsetW) + "px;" + agent + "transition: opacity .3s linear, right .3s linear, left .3s linear;\n}";
             break;
           case "transparent fade":
             css += "#qrtab {\n  display: none;\n}\n#qr {\n  right: 2px !important;\n  left: auto !important;\n  opacity: 0.2;" + agent + "transition: opacity .3s ease-in-out 1s;\n}\n#qr:hover,\n#qr.focus,\n#qr.dump {\n  opacity: 1;" + agent + "transition: opacity .3s linear;\n}";
@@ -8000,6 +7990,9 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
             if (userMascots[name]["Customized"] != null) {
               continue;
             }
+          }
+          if (userMascots[name]["Enabled"]) {
+            mascot["Enabled"] = true;
           }
           userMascots[name] = mascot;
         }

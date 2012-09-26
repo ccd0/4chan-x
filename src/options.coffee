@@ -295,13 +295,13 @@ Options =
         if mascot["Enabled"]
           $.rmClass $('#' + name, @parentElement.parentElement), 'enabled'
           userMascots[name]["Enabled"] = false
-          $.set "userMascots", userMascots
+      $.set "userMascots", userMascots
     $.on $('#selectAll', batchmascots), 'click', ->
       for name, mascot of userMascots
         unless mascot["Enabled"] or mascot["Deleted"] or mascot["Hidden"]
           $.addClass $('#' + name, @parentElement.parentElement), 'enabled'
           userMascots[name]["Enabled"] = true
-          $.set "userMascots", userMascots
+      $.set "userMascots", userMascots
     $.on $('#createNew', batchmascots), 'click', ->
       unless Conf["Style"]
         alert "Please enable Style Options and reload the page to use Mascot Tools."
