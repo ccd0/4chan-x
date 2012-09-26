@@ -183,7 +183,7 @@ Options =
     $.on favicon, 'change', $.cb.value
     $.on favicon, 'change', Options.favicon
 
-    @customNavigation dialog
+    @customNavigation.dialog dialog
 
     #keybinds
     for key, arr of Config.hotkeys
@@ -470,59 +470,126 @@ Options =
     $.add $('#theme_tab + div', dialog), div
     Options.applyStyle(dialog, 'theme_tab')
 
-  customNavigation: (dialog) ->
-    div = $ "#customNavigation", dialog
-    ul = $.el "ul"
-    ul.innerHTML = """
-Custom Navigation
-<li>Syntax: Display Name | Title / Alternate Text | URL</li>
-"""
-    navOptions = ["Display Name", "Title / Alt Text", "URL"]
 
-    for index, link of userNavigation.links
+  customNavigation:
+    dialog: (dialog) ->
+      div = $ "#customNavigation", dialog
+      ul = $.el "ul"
+      ul.innerHTML = """
+  Custom Navigation
+  """
+
+      # Delimiter
       li = $.el "li"
-      li.setAttribute "name", index
+        className: "delimiter"
+        textContent: "delimiter: "
       input = $.el "input"
-        className: "hidden"
-      input.setAttribute "value", index
-      input.setAttribute "type", "hidden"
-      input.setAttribute "hidden", "hidden"
-      $.add li, input
-
-      for itemIndex, item of link
-        input = $.el "input"
-          className: "field"
-        input.setAttribute "value", item
-        input.setAttribute "placeholder", navOptions[itemIndex]
-        input.setAttribute "type", "text"
-        input.name = itemIndex
-
-        $.on input, "change", ->
-          if @value == ""
-            alert "Custom Navigation options cannot be blank."
-            return
-          userNavigation.links[@parentElement.firstChild.value][@name] = @value
-          $.set "userNavigation", userNavigation
-
-        $.add li, input
-      removeLink = $.el "a"
-        textContent: "X"
-        href: "javascript:;"
-      $.on removeLink, "click", ->
-        userNavigation.links.remove = (from) ->
-          keep = userNavigation.links.slice parseInt(from) + 1
-          console.log keep
-          userNavigation.links.length = from
-          userNavigation.links.push.apply userNavigation.links, keep
-        userNavigation.links.remove @parentElement.firstChild.value
-        delete userNavigation.links.remove
+        className: "field"
+      input.setAttribute "value", userNavigation.delimiter
+      input.setAttribute "placeholder", "delimiter"
+      input.setAttribute "type", "text"
+      input.name = "delimiter"
+      
+      $.on input, "change", ->
+        if @value == ""
+          alert "Custom Navigation options cannot be blank."
+          return
+        userNavigation.delimiter = @value
         $.set "userNavigation", userNavigation
-        $.rm $("#customNavigation > ul", d.body)
-        Options.customNavigation $("#options", d.body)
-      $.add li, removeLink
+      $.add li, input
       $.add ul, li
-    $.add div, ul
 
+      #Description of Syntax.
+      li = $.el "li"
+        textContent: "Navigation Syntax: Display Name | Title / Alternate Text | URL"
+      $.add ul, li
+      
+      # Names and Placeholders for custom navigation inputs.
+      navOptions = ["Display Name", "Title / Alt Text", "URL"]
+
+      #Generate list for custom navigation
+      for index, link of userNavigation.links
+        li = $.el "li"
+        input = $.el "input"
+          className: "hidden"
+        input.setAttribute "value", index
+        input.setAttribute "type", "hidden"
+        input.setAttribute "hidden", "hidden"
+        $.add li, input
+
+        #Generate inputs for list
+        for itemIndex, item of link
+          input = $.el "input"
+            className: "field"
+          input.setAttribute "value", item
+          input.setAttribute "placeholder", navOptions[itemIndex]
+          input.setAttribute "type", "text"
+          input.name = itemIndex
+
+          $.on input, "change", ->
+            if @value == ""
+              alert "Custom Navigation options cannot be blank."
+              return
+            userNavigation.links[@parentElement.firstChild.value][@name] = @value
+            $.set "userNavigation", userNavigation
+
+          $.add li, input
+
+        #Add Custom Link
+        
+        addLink = $.el "a"
+          textContent: " + "
+          href: "javascript:;"
+          
+        $.on addLink, "click", ->
+          userNavigation.links.add = (at) ->
+            keep = userNavigation.links.slice at
+            userNavigation.links.length = at
+            blankLink = ["ex","example","http://www.example.com/"]
+            userNavigation.links.push blankLink
+            userNavigation.links.push.apply userNavigation.links, keep
+          userNavigation.links.add @parentElement.firstChild.value
+          delete userNavigation.links.add
+          Options.customNavigation.cleanup()
+
+        #Delete Custom Link
+        
+        removeLink = $.el "a"
+          textContent: " x "
+          href: "javascript:;"
+          
+        $.on removeLink, "click", ->
+          userNavigation.links.remove = (from) ->
+            keep = userNavigation.links.slice parseInt(from) + 1
+            userNavigation.links.length = from
+            userNavigation.links.push.apply userNavigation.links, keep
+          userNavigation.links.remove @parentElement.firstChild.value
+          delete userNavigation.links.remove
+          Options.customNavigation.cleanup()
+
+        $.add li, addLink
+        $.add li, removeLink
+        $.add ul, li
+        
+      #Final Addlink Button.
+      li = $.el "li"
+      addLink = $.el "a"
+        textContent: " + "
+        href: "javascript:;"
+      $.on addLink, "click", ->
+        blankLink = ["ex","example","http://www.example.com/"]
+        userNavigation.links.push blankLink
+        Options.customNavigation.cleanup()
+        
+      $.add li, addLink
+      $.add ul, li
+
+      $.add div, ul
+
+    cleanup: ->
+      $.set "userNavigation", userNavigation
+      $.rm $("#customNavigation > ul", d.body)
+      Options.customNavigation.dialog $("#options", d.body)
 
   close: ->
     $.rm $('#options', d.body)

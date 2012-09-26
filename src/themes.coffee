@@ -1308,7 +1308,7 @@ Navigation =
     ["toy",    "Toys",                  "./toys/"]
     ["trv",    "Travel",                "./trv/"]
     ["tv",     "Television & Film",     "./tv/"]
-    ["vp",     "Pokémon",               "./vp/"]
+    ["vp",     "Pok&eacute;mon",        "./vp/"]
     ["wsg",    "Worksafe GIF",          "./wsg/"]
     ["x",      "Paranormal",            "./x/"]
     ["rs",     "Rapidshares",           "http://rs.4chan.org/"]

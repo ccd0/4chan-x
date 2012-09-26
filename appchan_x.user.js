@@ -1673,7 +1673,7 @@
 
   Navigation = {
     delimiter: "/",
-    links: [["a", "Anime & Manga", "./a/"], ["b", "Random", "./b/"], ["c", "Cute/Anime", "./c/"], ["d", "Hentai/Alternative", "./d/"], ["e", "Ecchi", "./e/"], ["f", "Flash", "./f/"], ["g", "Technology", "./g/"], ["gif", "Animated Gifs", "./gif/"], ["h", "Hentai", "./h/"], ["hr", "High Resolution", "./hr/"], ["k", "Weapons", "./k/"], ["l", "Lolicon", "http://7chan.org/cake/"], ["m", "Mecha", "./m/"], ["o", "Auto", "./o/"], ["p", "Pictures", "./p/"], ["r", "Requests", "./r/"], ["s", "Sexy Beautiful Women", "./s/"], ["t", "Torrents", "./t/"], ["u", "Yuri", "./u/"], ["v", "Video Games", "./v/"], ["vg", "Video Game Generals", "./vg/"], ["w", "Anime/Wallpapers", "./w/"], ["wg", "Wallpapers/General", "./wg/"], ["i", "Oekaki", "./i/"], ["ic", "Artwork/Critique", "./ic/"], ["r9k", "Robot 9K", "./r9k/"], ["cm", "Cute/Male", "./cm/"], ["hm", "Handsome Men", "./hm/"], ["y", "Yaoi", "./y/"], ["3", "3DCG", "./3/"], ["adv", "Advice", "./adv/"], ["an", "Animals", "./an/"], ["cgl", "Cosplay & EGL", "./cgl/"], ["ck", "Food & Cooking", "./ck/"], ["co", "Comics & Cartoons", "./co/"], ["diy", "Do It Yourself", "./diy/"], ["fa", "Fashion", "./fa/"], ["fit", "Health & Fitness", "./fit/"], ["hc", "Hardcore", "./hc/"], ["int", "International", "./int/"], ["jp", "Otaku Culture", "./jp/"], ["lit", "Literature", "./lit/"], ["mlp", "My Little Pony", "./mlp/"], ["mu", "Music", "./mu/"], ["n", "Transportation", "./n/"], ["po", "Papercraft & Origami", "./po/"], ["pol", "Politically Incorrect", "./pol/"], ["sci", "Science & Math", "./sci/"], ["soc", "Social", "./soc/"], ["sp", "Sports", "./sp/"], ["tg", "Traditional Games", "./tg/"], ["toy", "Toys", "./toys/"], ["trv", "Travel", "./trv/"], ["tv", "Television & Film", "./tv/"], ["vp", "Pok�mon", "./vp/"], ["wsg", "Worksafe GIF", "./wsg/"], ["x", "Paranormal", "./x/"], ["rs", "Rapidshares", "http://rs.4chan.org/"], ["status", "4chan Status", "http://status.4chan.org/"], ["q", "4chan Discussion", "./q/"], ["@", "4chan Twitter", "http://www.twitter.com/4chan"]]
+    links: [["a", "Anime & Manga", "./a/"], ["b", "Random", "./b/"], ["c", "Cute/Anime", "./c/"], ["d", "Hentai/Alternative", "./d/"], ["e", "Ecchi", "./e/"], ["f", "Flash", "./f/"], ["g", "Technology", "./g/"], ["gif", "Animated Gifs", "./gif/"], ["h", "Hentai", "./h/"], ["hr", "High Resolution", "./hr/"], ["k", "Weapons", "./k/"], ["l", "Lolicon", "http://7chan.org/cake/"], ["m", "Mecha", "./m/"], ["o", "Auto", "./o/"], ["p", "Pictures", "./p/"], ["r", "Requests", "./r/"], ["s", "Sexy Beautiful Women", "./s/"], ["t", "Torrents", "./t/"], ["u", "Yuri", "./u/"], ["v", "Video Games", "./v/"], ["vg", "Video Game Generals", "./vg/"], ["w", "Anime/Wallpapers", "./w/"], ["wg", "Wallpapers/General", "./wg/"], ["i", "Oekaki", "./i/"], ["ic", "Artwork/Critique", "./ic/"], ["r9k", "Robot 9K", "./r9k/"], ["cm", "Cute/Male", "./cm/"], ["hm", "Handsome Men", "./hm/"], ["y", "Yaoi", "./y/"], ["3", "3DCG", "./3/"], ["adv", "Advice", "./adv/"], ["an", "Animals", "./an/"], ["cgl", "Cosplay & EGL", "./cgl/"], ["ck", "Food & Cooking", "./ck/"], ["co", "Comics & Cartoons", "./co/"], ["diy", "Do It Yourself", "./diy/"], ["fa", "Fashion", "./fa/"], ["fit", "Health & Fitness", "./fit/"], ["hc", "Hardcore", "./hc/"], ["int", "International", "./int/"], ["jp", "Otaku Culture", "./jp/"], ["lit", "Literature", "./lit/"], ["mlp", "My Little Pony", "./mlp/"], ["mu", "Music", "./mu/"], ["n", "Transportation", "./n/"], ["po", "Papercraft & Origami", "./po/"], ["pol", "Politically Incorrect", "./pol/"], ["sci", "Science & Math", "./sci/"], ["soc", "Social", "./soc/"], ["sp", "Sports", "./sp/"], ["tg", "Traditional Games", "./tg/"], ["toy", "Toys", "./toys/"], ["trv", "Travel", "./trv/"], ["tv", "Television & Film", "./tv/"], ["vp", "Pok&eacute;mon", "./vp/"], ["wsg", "Worksafe GIF", "./wsg/"], ["x", "Paranormal", "./x/"], ["rs", "Rapidshares", "http://rs.4chan.org/"], ["status", "4chan Status", "http://status.4chan.org/"], ["q", "4chan Discussion", "./q/"], ["@", "4chan Twitter", "http://www.twitter.com/4chan"]]
   };
 
   UI = {
@@ -2235,7 +2235,7 @@
       favicon.value = $.get('favicon', Conf['favicon']);
       $.on(favicon, 'change', $.cb.value);
       $.on(favicon, 'change', Options.favicon);
-      this.customNavigation(dialog);
+      this.customNavigation.dialog(dialog);
       _ref1 = Config.hotkeys;
       for (key in _ref1) {
         arr = _ref1[key];
@@ -2547,65 +2547,124 @@
       $.add($('#theme_tab + div', dialog), div);
       return Options.applyStyle(dialog, 'theme_tab');
     },
-    customNavigation: function(dialog) {
-      var div, index, input, item, itemIndex, li, link, navOptions, removeLink, ul, _ref;
-      div = $("#customNavigation", dialog);
-      ul = $.el("ul");
-      ul.innerHTML = "Custom Navigation\n<li>Syntax: Display Name | Title / Alternate Text | URL</li>";
-      navOptions = ["Display Name", "Title / Alt Text", "URL"];
-      _ref = userNavigation.links;
-      for (index in _ref) {
-        link = _ref[index];
-        li = $.el("li");
-        li.setAttribute("name", index);
-        input = $.el("input", {
-          className: "hidden"
+    customNavigation: {
+      dialog: function(dialog) {
+        var addLink, div, index, input, item, itemIndex, li, link, navOptions, removeLink, ul, _ref;
+        div = $("#customNavigation", dialog);
+        ul = $.el("ul");
+        ul.innerHTML = "Custom Navigation";
+        li = $.el("li", {
+          className: "delimiter",
+          textContent: "delimiter: "
         });
-        input.setAttribute("value", index);
-        input.setAttribute("type", "hidden");
-        input.setAttribute("hidden", "hidden");
+        input = $.el("input", {
+          className: "field"
+        });
+        input.setAttribute("value", userNavigation.delimiter);
+        input.setAttribute("placeholder", "delimiter");
+        input.setAttribute("type", "text");
+        input.name = "delimiter";
+        $.on(input, "change", function() {
+          if (this.value === "") {
+            alert("Custom Navigation options cannot be blank.");
+            return;
+          }
+          userNavigation.delimiter = this.value;
+          return $.set("userNavigation", userNavigation);
+        });
         $.add(li, input);
-        for (itemIndex in link) {
-          item = link[itemIndex];
+        $.add(ul, li);
+        li = $.el("li", {
+          textContent: "Navigation Syntax: Display Name | Title / Alternate Text | URL"
+        });
+        $.add(ul, li);
+        navOptions = ["Display Name", "Title / Alt Text", "URL"];
+        _ref = userNavigation.links;
+        for (index in _ref) {
+          link = _ref[index];
+          li = $.el("li");
           input = $.el("input", {
-            className: "field"
+            className: "hidden"
           });
-          input.setAttribute("value", item);
-          input.setAttribute("placeholder", navOptions[itemIndex]);
-          input.setAttribute("type", "text");
-          input.name = itemIndex;
-          $.on(input, "change", function() {
-            if (this.value === "") {
-              alert("Custom Navigation options cannot be blank.");
-              return;
-            }
-            userNavigation.links[this.parentElement.firstChild.value][this.name] = this.value;
-            return $.set("userNavigation", userNavigation);
-          });
+          input.setAttribute("value", index);
+          input.setAttribute("type", "hidden");
+          input.setAttribute("hidden", "hidden");
           $.add(li, input);
+          for (itemIndex in link) {
+            item = link[itemIndex];
+            input = $.el("input", {
+              className: "field"
+            });
+            input.setAttribute("value", item);
+            input.setAttribute("placeholder", navOptions[itemIndex]);
+            input.setAttribute("type", "text");
+            input.name = itemIndex;
+            $.on(input, "change", function() {
+              if (this.value === "") {
+                alert("Custom Navigation options cannot be blank.");
+                return;
+              }
+              userNavigation.links[this.parentElement.firstChild.value][this.name] = this.value;
+              return $.set("userNavigation", userNavigation);
+            });
+            $.add(li, input);
+          }
+          addLink = $.el("a", {
+            textContent: " + ",
+            href: "javascript:;"
+          });
+          $.on(addLink, "click", function() {
+            userNavigation.links.add = function(at) {
+              var blankLink, keep;
+              keep = userNavigation.links.slice(at);
+              userNavigation.links.length = at;
+              blankLink = ["ex", "example", "http://www.example.com/"];
+              userNavigation.links.push(blankLink);
+              return userNavigation.links.push.apply(userNavigation.links, keep);
+            };
+            userNavigation.links.add(this.parentElement.firstChild.value);
+            delete userNavigation.links.add;
+            return Options.customNavigation.cleanup();
+          });
+          removeLink = $.el("a", {
+            textContent: " x ",
+            href: "javascript:;"
+          });
+          $.on(removeLink, "click", function() {
+            userNavigation.links.remove = function(from) {
+              var keep;
+              keep = userNavigation.links.slice(parseInt(from) + 1);
+              userNavigation.links.length = from;
+              return userNavigation.links.push.apply(userNavigation.links, keep);
+            };
+            userNavigation.links.remove(this.parentElement.firstChild.value);
+            delete userNavigation.links.remove;
+            return Options.customNavigation.cleanup();
+          });
+          $.add(li, addLink);
+          $.add(li, removeLink);
+          $.add(ul, li);
         }
-        removeLink = $.el("a", {
-          textContent: "X",
+        li = $.el("li");
+        addLink = $.el("a", {
+          textContent: " + ",
           href: "javascript:;"
         });
-        $.on(removeLink, "click", function() {
-          userNavigation.links.remove = function(from) {
-            var keep;
-            keep = userNavigation.links.slice(parseInt(from) + 1);
-            console.log(keep);
-            userNavigation.links.length = from;
-            return userNavigation.links.push.apply(userNavigation.links, keep);
-          };
-          userNavigation.links.remove(this.parentElement.firstChild.value);
-          delete userNavigation.links.remove;
-          $.set("userNavigation", userNavigation);
-          $.rm($("#customNavigation > ul", d.body));
-          return Options.customNavigation($("#options", d.body));
+        $.on(addLink, "click", function() {
+          var blankLink;
+          blankLink = ["ex", "example", "http://www.example.com/"];
+          userNavigation.links.push(blankLink);
+          return Options.customNavigation.cleanup();
         });
-        $.add(li, removeLink);
+        $.add(li, addLink);
         $.add(ul, li);
+        return $.add(div, ul);
+      },
+      cleanup: function() {
+        $.set("userNavigation", userNavigation);
+        $.rm($("#customNavigation > ul", d.body));
+        return Options.customNavigation.dialog($("#options", d.body));
       }
-      return $.add(div, ul);
     },
     close: function() {
       $.rm($('#options', d.body));
