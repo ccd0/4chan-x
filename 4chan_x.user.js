@@ -320,7 +320,7 @@
     hover = function(e) {
       var clientX, height, top;
       height = this.el.offsetHeight;
-      top = e.clientY - height / 2;
+      top = e.clientY - 120;
       this.style.top = this.clientHeight <= height || top <= 0 ? '0px' : top + height >= this.clientHeight ? this.clientHeight - height + 'px' : top + 'px';
       clientX = e.clientX;
       if (clientX <= this.clientWidth - 400) {

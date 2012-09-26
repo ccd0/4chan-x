@@ -99,7 +99,7 @@ UI = (->
     root.addEventListener 'mousemove', o.hover,    false
   hover = (e) ->
     height = @el.offsetHeight
-    top = e.clientY - height / 2
+    top = e.clientY - 120
     @style.top =
       if @clientHeight <= height or top <= 0
         '0px'
