@@ -2107,7 +2107,21 @@ QR =
     else
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       QR.cooldown.auto = QR.replies.length > 1
-      QR.cooldown.set if g.BOARD is 'q' or /sage/i.test reply.email then 60 else 30
+      sage    = /sage/i.test reply.email
+      seconds =
+        if g.BOARD is 'q'
+          # that makes no sense.png
+          if reply.file
+            300
+          else if sage
+            600
+          else
+            60
+        else if sage
+          60
+        else
+          30
+      QR.cooldown.set seconds
       if Conf['Open Reply in New Tab'] and !g.REPLY and !QR.cooldown.auto
         $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
 

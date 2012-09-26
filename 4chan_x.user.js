@@ -2638,7 +2638,7 @@
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(html) {
-      var bs, doc, err, msg, persona, postID, reply, threadID, _, _ref, _ref1;
+      var bs, doc, err, msg, persona, postID, reply, sage, seconds, threadID, _, _ref, _ref1;
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = html;
       if (doc.title === '4chan - Banned') {
@@ -2687,7 +2687,9 @@
         location.pathname = "/" + g.BOARD + "/res/" + postID;
       } else {
         QR.cooldown.auto = QR.replies.length > 1;
-        QR.cooldown.set(g.BOARD === 'q' || /sage/i.test(reply.email) ? 60 : 30);
+        sage = /sage/i.test(reply.email);
+        seconds = g.BOARD === 'q' ? reply.file ? 300 : sage ? 600 : 60 : sage ? 60 : 30;
+        QR.cooldown.set(seconds);
         if (Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto) {
           $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
         }
