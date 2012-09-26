@@ -107,6 +107,7 @@ SOURCEDIR = 'src'
 OUTFILE   = 'appchan_x.user.js'
 CHANGELOG = 'changelog'
 LATEST    = 'latest.js'
+MAIN      = 'SOURCEDIR + "/main.coffee"
 APPFILES  = [
   'config'
   'themes'
@@ -131,11 +132,7 @@ task 'upgrade', (options) ->
     console.warn 'Version argument not specified. Exiting.'
     return
   regexp = RegExp VERSION, 'g'
-  for file in [CAKEFILE, OUTFILE, LATEST]
-    data = fs.readFileSync file, 'utf8'
-    fs.writeFileSync file, data.replace regexp, version
-  for file in APPFILES
-    file = SOURCEDIR + "/" + file + ".coffee"
+  for file in [CAKEFILE, OUTFILE, LATEST, MAIN]
     data = fs.readFileSync file, 'utf8'
     fs.writeFileSync file, data.replace regexp, version
   data = fs.readFileSync CHANGELOG, 'utf8'
