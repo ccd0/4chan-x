@@ -83,7 +83,7 @@ class Post
     nodes = d.evaluate './/br|.//text()', bq, null, 7, null
     for i in [0...nodes.snapshotLength]
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
-    @info.comment = text.join('').replace /^\n+|\n+$| +(?=\n|$)/g, ''
+    @info.comment = text.join('').trim().replace /\s+$/gm, ''
 
     quotes = {}
     for quotelink in $$ '.quotelink', @nodes.comment
@@ -456,3 +456,5 @@ Main =
     alert 'Here be settings'
 
   css: """<%= grunt.file.read('css/style.css') %>"""
+
+Main.init()

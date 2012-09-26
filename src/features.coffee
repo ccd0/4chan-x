@@ -1288,7 +1288,3 @@ ThreadUpdater =
       $.add @threadRoot, nodes
       if scroll
         nodes[0].scrollIntoView()
-
-
-
-Main.init()
