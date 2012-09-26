@@ -4,14 +4,16 @@ Main =
 
     # Load values from localStorage.
     for key, val of Conf
-      Conf[key] = $.get key, val
+      Conf[key]    = $.get key,              val
+    userNavigation = $.get "userNavigation", Navigation
+    userThemes     = $.get "userThemes",     Themes
+    userMascots    = $.get "userMascots",    Mascots
 
-    userThemes    = $.get "userThemes",    Themes
-    userMascots   = $.get "userMascots",   Mascots
-
-    for name, mascot of userMascots
-      unless mascot["Deleted"] or mascot["Enabled"]?
-        userMascots[name]["Enabled"] = if mascot.category == 'SFW' then true else false
+    #If mascots have been updated, push them to the userMascots
+    unless userMascots == Mascots
+      for name, mascot of Mascots
+        unless userMascots[name]["Customized"]?
+          userMascots[name] = mascot
 
     path = location.pathname
     pathname = path[1..].split '/'
@@ -56,7 +58,7 @@ Main =
         $.add d.head, $.el 'script',
           src: 'https://github.com/zixaphir/appchan-x/raw/master/latest.js'
 
-    if Conf['Disable inline 4chan addon'] or Conf['Style']
+    if Conf['Disable Inline 4chan Addon'] or Conf['Style']
       localStorage.setItem '4chan-settings', '{"disableAll":true}'
 
     if Conf['Filter']

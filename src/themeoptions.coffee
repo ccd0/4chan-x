@@ -1,3 +1,6 @@
+###
+  ThemeTools.color adapted from 4chan Style Script
+###
 ThemeTools =
   init: (key) ->
     #ThemeTools do not work without Style enabled.
@@ -142,7 +145,6 @@ ThemeTools =
     Style.addStyle(editTheme)
 
   color: (hex) ->
-
     @hex = "#" + hex
 
     @calc_rgb = (hex) ->

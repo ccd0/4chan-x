@@ -108,6 +108,9 @@ Options =
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>
       <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>
     </ul>
+    <div class=warning><code>Custom Navigation</code> is disabled.</div>
+    <div id=customNavigation>
+    </div>
     <div class=warning><code>Unread Favicon</code> is disabled.</div>
     Unread favicons<br>
     <select name=favicon>
@@ -179,6 +182,8 @@ Options =
     favicon.value = $.get 'favicon', Conf['favicon']
     $.on favicon, 'change', $.cb.value
     $.on favicon, 'change', Options.favicon
+
+    @customNavigation dialog
 
     #keybinds
     for key, arr of Config.hotkeys
@@ -413,7 +418,7 @@ Options =
             return
 
           if confirm "Are you sure you want to delete \"#{container.id}\"?"
-          
+
             if container.id == Conf['theme']
               if settheme = container.previousSibling or container.nextSibling
                 Conf['theme'] = settheme.id
@@ -445,11 +450,11 @@ Options =
       ThemeTools.init "untitled"
       Options.close()
 
-    $.on $("#import", div), 'click', -> 
+    $.on $("#import", div), 'click', ->
       @.nextSibling.click()
-    $.on $("#OCimport", div), 'click', -> 
+    $.on $("#OCimport", div), 'click', ->
       @.nextSibling.click()
-    $.on $("#SSimport", div), 'click', -> 
+    $.on $("#SSimport", div), 'click', ->
       @.nextSibling.click()
 
     $.on $("#importbutton", div), 'change', (evt) ->
@@ -464,6 +469,60 @@ Options =
     $.add $('#theme_tab + div', dialog), parentdiv
     $.add $('#theme_tab + div', dialog), div
     Options.applyStyle(dialog, 'theme_tab')
+
+  customNavigation: (dialog) ->
+    div = $ "#customNavigation", dialog
+    ul = $.el "ul"
+    ul.innerHTML = """
+Custom Navigation
+<li>Syntax: Display Name | Title / Alternate Text | URL</li>
+"""
+    navOptions = ["Display Name", "Title / Alt Text", "URL"]
+
+    for index, link of userNavigation.links
+      li = $.el "li"
+      li.setAttribute "name", index
+      input = $.el "input"
+        className: "hidden"
+      input.setAttribute "value", index
+      input.setAttribute "type", "hidden"
+      input.setAttribute "hidden", "hidden"
+      $.add li, input
+
+      for itemIndex, item of link
+        input = $.el "input"
+          className: "field"
+        input.setAttribute "value", item
+        input.setAttribute "placeholder", navOptions[itemIndex]
+        input.setAttribute "type", "text"
+        input.name = itemIndex
+
+        $.on input, "change", ->
+          if @value == ""
+            alert "Custom Navigation options cannot be blank."
+            return
+          userNavigation.links[@parentElement.firstChild.value][@name] = @value
+          $.set "userNavigation", userNavigation
+
+        $.add li, input
+      removeLink = $.el "a"
+        textContent: "X"
+        href: "javascript:;"
+      $.on removeLink, "click", ->
+        userNavigation.links.remove = (from) ->
+          keep = userNavigation.links.slice parseInt(from) + 1
+          console.log keep
+          userNavigation.links.length = from
+          userNavigation.links.push.apply userNavigation.links, keep
+        userNavigation.links.remove @parentElement.firstChild.value
+        delete userNavigation.links.remove
+        $.set "userNavigation", userNavigation
+        $.rm $("#customNavigation > ul", d.body)
+        Options.customNavigation $("#options", d.body)
+      $.add li, removeLink
+      $.add ul, li
+    $.add div, ul
+
 
   close: ->
     $.rm $('#options', d.body)

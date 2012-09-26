@@ -386,6 +386,11 @@ h1,
   float: right;
   clear: left;
 }
+#options #rice_tab + div input {
+  float: none;
+  clear: none;
+  margin: 1px;
+}
 #options article li {
   margin: 10px 0 10px 2em;
 }
@@ -634,7 +639,7 @@ div.opContainer {
 
     if Conf["Style"]
       $.ready ->
-        @rice d.body
+        Style.rice d.body
 
       Conf["styleenabled"] = "1"
 
@@ -739,8 +744,8 @@ time + span {
 .mobile,
 .navLinksBot,
 .next,
-.postinfo input,
-.postinfo .rice,
+.postInfo input,
+.postInfo .rice,
 .postingMode,
 .prev,
 .qrHeader,

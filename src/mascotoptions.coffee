@@ -136,7 +136,6 @@ MascotTools =
 
         when "checkbox"
           value = editMascot[name] or item[1]
-          console.log value
           div = $.el "div",
             className: "mascotvar"
             innerHTML: "<h2><label><input type=#{item[3]} class=field name='#{name}' #{if value then 'checked'}>#{item[0]}</label></h2><span class=description>#{item[2]}</span>"

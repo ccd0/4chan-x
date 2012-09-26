@@ -2,7 +2,7 @@ Config =
   main:
 
     Enhancing:
-      'Disable inline 4chan addon':   [true,  'Avoid conflicts between 4chan X and 4chan\'s inline extension. <span class=disabledwarning><code>Style</code> is enabled. This option will be enabled regardless of this setting\'s value.</span>']
+      'Disable Inline 4chan Addon':   [true,  'Avoid conflicts between 4chan X and 4chan\'s inline extension. <span class=disabledwarning><code>Style</code> is enabled. This option will be enabled regardless of this setting\'s value.</span>']
       '404 Redirect':                 [true,  'Redirect dead threads and images']
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
@@ -13,7 +13,8 @@ Config =
       'Rollover':                     [true,  'Index navigation will fallback to page navigation.']
       'Reply Navigation':             [false, 'Navigate to top / bottom of thread']
       'Style':                        [true,  'Custom theming and styling options.']
-      'Check for Updates':            [false,  'Check for updated versions of Appchan X']
+      'Custom Navigation':            [false, 'Customize your Navigation bar.']
+      'Check for Updates':            [false, 'Check for updated versions of Appchan X']
 
     Filtering:
       'Anonymize':                    [false, 'Make everybody anonymous']
@@ -75,7 +76,6 @@ Config =
       'Forward Hiding':               [true,  'Hide original posts of inlined backlinks']
 
   filter:
-
     name: [
       '# Filter any namefags:'
       '#/^(?!Anonymous$)/'
@@ -154,71 +154,6 @@ Config =
   backlink: '>>%id'
   fileInfo: '%l (%p%s, %r)'
   favicon: 'ferongr'
-  navigation:
-    delimiter: "/"
-    links: [
-      ["a",      "Anime & Manga",         "./a/"]
-      ["b",      "Random",                "./b/"]
-      ["c",      "Cute/Anime",            "./c/"]
-      ["d",      "Hentai/Alternative",    "./d/"]
-      ["e",      "Ecchi",                 "./e/"]
-      ["f",      "Flash",                 "./f/"]
-      ["g",      "Technology",            "./g/"]
-      ["gif",    "Animated Gifs",         "./gif/"]
-      ["h",      "Hentai",                "./h/"]
-      ["hr",     "High Resolution",       "./hr/"]
-      ["k",      "Weapons",               "./k/"]
-      ["l",      "Lolicon",               "http://7chan.org/cake/"]
-      ["m",      "Mecha",                 "./m/"]
-      ["o",      "Auto",                  "./o/"]
-      ["p",      "Pictures",              "./p/"]
-      ["r",      "Requests",              "./r/"]
-      ["s",      "Sexy Beautiful Women",  "./s/"]
-      ["t",      "Torrents",              "./t/"]
-      ["u",      "Yuri",                  "./u/"]
-      ["v",      "Video Games",           "./v/"]
-      ["vg",     "Video Game Generals",   "./vg/"]
-      ["w",      "Anime/Wallpapers",      "./w/"]
-      ["wg",     "Wallpapers/General",    "./wg/"]
-      ["i",      "Oekaki",                "./i/"]
-      ["ic",     "Artwork/Critique",      "./ic/"]
-      ["r9k",    "Robot 9K",              "./r9k/"]
-      ["cm",     "Cute/Male",             "./cm/"]
-      ["hm",     "Handsome Men",          "./hm/"]
-      ["y",      "Yaoi",                  "./y/"]
-      ["3",      "3DCG",                  "./3/"]
-      ["adv",    "Advice",                "./adv/"]
-      ["an",     "Animals",               "./an/"]
-      ["cgl",    "Cosplay & EGL",         "./cgl/"]
-      ["ck",     "Food & Cooking",        "./ck/"]
-      ["co",     "Comics & Cartoons",     "./co/"]
-      ["diy",    "Do It Yourself",        "./diy/"]
-      ["fa",     "Fashion",               "./fa/"]
-      ["fit",    "Health & Fitness",      "./fit/"]
-      ["hc",     "Hardcore",              "./hc/"]
-      ["int",    "International",         "./int/"]
-      ["jp",     "Otaku Culture",         "./jp/"]
-      ["lit",    "Literature",            "./lit/"]
-      ["mlp",    "My Little Pony",        "./mlp/"]
-      ["mu",     "Music",                 "./mu/"]
-      ["n",      "Transportation",        "./n/"]
-      ["po",     "Papercraft & Origami",  "./po/"]
-      ["pol",    "Politically Incorrect", "./pol/"]
-      ["sci",    "Science & Math",        "./sci/"]
-      ["soc",    "Social",                "./soc/"]
-      ["sp",     "Sports",                "./sp/"]
-      ["tg",     "Traditional Games",     "./tg/"]
-      ["toy",    "Toys",                  "./toys/"]
-      ["trv",    "Travel",                "./trv/"]
-      ["tv",     "Television & Film",     "./tv/"]
-      ["vp",     "Pokémon",               "./vp/"]
-      ["wsg",    "Worksafe GIF",          "./wsg/"]
-      ["x",      "Paranormal",            "./x/"]
-      ["rs",     "Rapidshares",           "http://rs.4chan.org/"]
-      ["status", "4chan Status",          "http://status.4chan.org/"]
-      ["q",      "4chan Discussion",      "./q/"]
-      ["@",      "4chan Twitter",         "http://www.twitter.com/4chan"]
-    ]
 
   hotkeys:
     # QR & Options
@@ -311,6 +246,7 @@ userThemes     = {}
 editTheme      = {}
 userMascots    = {}
 editMascot     = {}
+userNavigation = {}
 editMode       = false
 newTheme       = false
 d              = document
