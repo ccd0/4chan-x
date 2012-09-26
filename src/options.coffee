@@ -252,22 +252,24 @@ Options =
         li = $.el 'li',
           className: 'mascot'
           innerHTML: "
-<div id='#{name}' class='#{mascot.category}' style='background-image: url(#{if typeof mascot.image == 'function' then mascot.image() else mascot.image});'>
-  <div class='mascotmetadata'>
-    <p><span class='mascotname'>#{name.replace /_/g, " "}</span></p>
-    <p><span class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a></span></p>
-  </div>
+<div id='#{name}' class='#{mascot.category}' style='background-image: url(#{if typeof mascot.image == 'function' then mascot.image() else mascot.image});'></div>
+<div class='mascotmetadata'>
+  <p><span class='mascotname'>#{name.replace /_/g, " "}</span></p>
+  <p><span class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a></span></p>
 </div>
 "
-        div = $('div', li)
+        div = $('div[style]', li)
         if mascot["Enabled"]
           $.addClass div, 'enabled'
+
         $.on $('a.edit', li), 'click', ->
           unless Conf["Style"]
             alert "Please enable Style Options and reload the page to use Mascot Tools."
             return
           MascotTools.dialog @name
           Options.close()
+          userMascots[@name]["Enabled"] = true
+
         $.on $('a.delete', li), 'click', ->
           container = @.parentElement.parentElement.parentElement.parentElement.parentElement
           if confirm "Are you sure you want to delete \"#{@name}\"?"
@@ -275,39 +277,47 @@ Options =
             userMascots[@name]["Deleted"] = true
             $.set "userMascots", userMascots
             $.rm container
+
         $.on div, 'click', ->
-          if userMascots[@.id]["Enabled"]
+          if userMascots[@id]["Enabled"]
             $.rmClass @, 'enabled'
-            userMascots[@.id]["Enabled"] = false
+            userMascots[@id]["Enabled"] = false
             $.set "userMascots", userMascots
           else
             $.addClass @, 'enabled'
             userMascots[@.id]["Enabled"] = true
             $.set "userMascots", userMascots
+
         $.add ul, li
         $.add parentdiv, ul
+
     $.add $('#mascot_tab + div', dialog), parentdiv
+
     batchmascots = $.el 'div',
       id:        "mascots_batch"
       innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a> / <a href=\"javascript:;\" id=\"createNew\">New Mascot</a>"
+
     $.on $('#clear', batchmascots), 'click', ->
       for name, mascot of userMascots
         if mascot["Enabled"]
           $.rmClass $('#' + name, @parentElement.parentElement), 'enabled'
           userMascots[name]["Enabled"] = false
       $.set "userMascots", userMascots
+
     $.on $('#selectAll', batchmascots), 'click', ->
       for name, mascot of userMascots
         unless mascot["Enabled"] or mascot["Deleted"] or mascot["Hidden"]
           $.addClass $('#' + name, @parentElement.parentElement), 'enabled'
           userMascots[name]["Enabled"] = true
       $.set "userMascots", userMascots
+
     $.on $('#createNew', batchmascots), 'click', ->
       unless Conf["Style"]
         alert "Please enable Style Options and reload the page to use Mascot Tools."
         return
       MascotTools.dialog()
       Options.close()
+
     $.add $('#mascot_tab + div', dialog), batchmascots
 
     Options.applyStyle(dialog, 'mascot_tab')
@@ -342,6 +352,7 @@ Options =
       indicators[key] = indicator
       $.on $("[name='#{key}']", dialog), 'click', ->
         indicators[@name].hidden = @checked
+
     for indicator in $$ '.disabledwarning', dialog
       key = indicator.firstChild.textContent
       indicator.hidden = not $.get key, Conf[key]
@@ -351,7 +362,6 @@ Options =
 
 
   themeTab: (dialog) ->
-
     unless dialog
       dialog = $("#options", d.body)
 
@@ -359,14 +369,24 @@ Options =
       className: "suboptions"
       id:        "themes"
       innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use theming options.</div>"
+
+    # Get the names of all mascots and sort them alphabetically...
     keys = Object.keys(userThemes)
     keys.sort()
 
+    # And use the sorted list to display all available themes to the user.
     for name in keys
       theme = userThemes[name]
 
+      # Themes aren't actually deleted, but are marked as such.
+      # Megaupload did something similar with illegal files and got in trouble for it.
+      # I do it like this to allow new themes to be added to the user's appchan x when
+      # I update the Themes variable. Otherwise, there would be no way to prevent deleted
+      # themes from being readded.
       unless theme["Deleted"]
 
+        # Instead of writing a style sheet for each theme, we hard-code the colors into each preview.
+        # 4chan SS / OneeChan also do this, and inspired it here.
         div = $.el 'div',
           className: if name == Conf['theme'] then 'selectedtheme replyContainer' else 'replyContainer'
           id:        name
@@ -391,15 +411,15 @@ Options =
   <h1 style='color: #{theme['Text']}'>Selected</h1>
 </div>"
 
+        # Theme Editting. themeoptions.coffee.
         $.on $('a.edit', div), 'click', ->
-
           unless Conf["Style"]
             alert "Please enable Style Options and reload the page to use Theme Tools."
             return
-
           ThemeTools.init @.name
           Options.close()
 
+        # Theme Exporting
         $.on $('a.export', div), 'click', ->
           exportTheme = userThemes[@.name]
           exportTheme['Theme'] = @.name
@@ -410,21 +430,22 @@ Options =
           else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
             window.location exportedTheme
 
+        # Delete Theme.
         $.on $('a.delete', div), 'click', ->
           container = @.parentElement.parentElement
 
+          # We don't let the user delete a theme if there is no other theme available
+          # because themes can't function without one.
           unless container.previousSibling or container.nextSibling
             alert "Cannot delete theme (No other themes available)."
             return
 
           if confirm "Are you sure you want to delete \"#{container.id}\"?"
-
             if container.id == Conf['theme']
               if settheme = container.previousSibling or container.nextSibling
                 Conf['theme'] = settheme.id
                 $.addClass settheme, 'selectedtheme'
                 $.set 'theme', Conf['theme']
-
             userThemes[container.id]["Deleted"] = true
             $.set 'userThemes', userThemes
             $.rm container
@@ -439,32 +460,37 @@ Options =
  <a id=newtheme href='javascript:;'>New Theme</a> /
  <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> /
  <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> /
- <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>"
+ <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>
+"
 
+    # Create New Theme.
     $.on $("#newtheme", div), 'click', ->
       unless Conf["Style"]
         alert "Please enable Style Options and reload the page to use Theme Tools."
         return
 
+      # We prepare ThemeTools to expect no incoming theme.
+      # themeoptions.coffee
       newTheme = true
       ThemeTools.init "untitled"
       Options.close()
 
+    # Essentially, you can't open a file dialog without a file input,
+    # but I don't want to show the user a file input.
     $.on $("#import", div), 'click', ->
       @.nextSibling.click()
-    $.on $("#OCimport", div), 'click', ->
-      @.nextSibling.click()
-    $.on $("#SSimport", div), 'click', ->
-      @.nextSibling.click()
-
     $.on $("#importbutton", div), 'change', (evt) ->
       ThemeTools.importtheme "appchan", evt
 
+    $.on $("#OCimport", div), 'click', ->
+      @.nextSibling.click()
     $.on $("#OCimportbutton", div), 'change', (evt) ->
       ThemeTools.importtheme "oneechan", evt
 
     $.on $("#SSimportbutton", div), 'change', (evt) ->
       ThemeTools.importtheme "SS", evt
+    $.on $("#SSimport", div), 'click', ->
+      @.nextSibling.click()
 
     $.add $('#theme_tab + div', dialog), parentdiv
     $.add $('#theme_tab + div', dialog), div
@@ -569,7 +595,8 @@ Options =
         $.add li, removeLink
         $.add ul, li
 
-      #Final addLink Button
+      # Final addLink Button. Allows the user to add a new item
+      # to the bottom of the list or add an item if none exist.
       li = $.el "li"
       addLink = $.el "a"
         textContent: " + "

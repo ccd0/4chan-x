@@ -40,7 +40,7 @@ MascotTools =
 
 
   dialog: (key) ->
-    editMode = true
+    editMode = "mascot"
     editMascot = userMascots[key] or {}
     editMascot.name = key or ''
     MascotTools.addMascot editMascot
@@ -149,8 +149,8 @@ MascotTools =
       MascotTools.save editMascot
 
     $.on  $('#close > a', dialog), 'click', MascotTools.close
+    Style.rice(dialog)
     $.add d.body, dialog
-    Style.allrice()
 
   input: (item, name) ->
     value = editMascot[name] or item[1]
@@ -191,9 +191,10 @@ MascotTools =
         return
 
     mascot["Customized"] = true;
-    userMascots[aname] = mascot
+    mascot["Enabled"]    = true;
+    userMascots[aname]   = mascot
+    Conf["mascot"]       = aname
     $.set 'userMascots', userMascots
-    Conf["mascot"] = aname
     alert "Mascot \"#{aname}\" saved."
 
   close: ->

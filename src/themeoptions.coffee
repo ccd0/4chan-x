@@ -8,7 +8,7 @@ ThemeTools =
       alert "Please enable Style Options and reload the page to use Theme Tools."
       return
 
-    editMode = true
+    editMode = "theme"
 
     if newTheme
       editTheme = {}

@@ -419,9 +419,9 @@ h1,
 #options .mascot {
   display: inline;
   padding: 0;
-}
-#options .mascot > div {
   position: relative;
+}
+#options .mascot > div:first-child {
   border: 2px solid rgba(0,0,0,0);
   width: 200px;
   height: 250px;
@@ -2384,7 +2384,7 @@ form .postContainer blockquote {
         when "large"
           pagemargin = "350px"
 
-      if editMode
+      if editMode == "theme"
         pagemargin = "300px"
 
       if Conf["Sidebar"] != "hide"
