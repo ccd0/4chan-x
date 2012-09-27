@@ -1900,6 +1900,9 @@ a.forwardlink {
 #options .styleoption {
   border-top: 1px solid """ + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.05)" else "rgba(0,0,0,0.05)") + """;
 }
+#mascot img {
+  """ + agent + """transform: scaleX(""" + (if sidebarLocation[0] == "left" then "-" else "") + """1);
+}
 """ + theme["Custom CSS"]
       if theme["Dark Theme"] == "1"
         css += """
