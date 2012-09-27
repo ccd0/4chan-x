@@ -7517,8 +7517,8 @@
         name: ["Mascot Name", "", "The name of the Mascot", "text"],
         image: ["Image", "", "Image of Mascot. Accepts Base64 as well as URLs.", "text"],
         position: ["Position", "default", "Where the mascot is anchored in the Sidebar. The default option places the mascot above the Post Form or on the bottom of the page, depending on the Post Form setting.", "select", ["default", "top", "bottom"]],
-        vOffset: ["Vertical Offset", "", "This value moves the mascot vertically away from the anchor point, in pixels (the post form is exactly \"248\" pixels tall if you'd like to force the mascot to sit above it).", "number"],
-        hOffset: ["Horizontal Offset", "", "This value moves the mascot further away from the edge of the screen, in pixels.", "number"],
+        vOffset: ["Vertical Offset", "0", "This value moves the mascot vertically away from the anchor point, in pixels (the post form is exactly \"248\" pixels tall if you'd like to force the mascot to sit above it).", "number"],
+        hOffset: ["Horizontal Offset", "0", "This value moves the mascot further away from the edge of the screen, in pixels.", "number"],
         center: ["Center Mascot", false, "If this is enabled, Appchan X will attempt to pad the mascot with 25 pixels of Horizontal Offset when the \"Sidebar Setting\" is set to \"large\" in an attempt to \"re-center\" the mascot. If you are having problems placing your mascot properly, ensure this is not enabled.", "checkbox"]
       };
       dialog = $.el("div", {
@@ -7547,7 +7547,7 @@
           case "number":
             div = this.input(item, name);
             $.on($('input', div), 'blur', function() {
-              editMascot[this.name] = parseInt(this.value, 10);
+              editMascot[this.name] = parseInt(this.value);
               return Style.addStyle(Conf["theme"]);
             });
             break;
@@ -7597,7 +7597,7 @@
           value = editMascot[name][1];
         }
       } else {
-        value = editMascot[name];
+        value = editMascot[name] || item[1];
       }
       div = $.el("div", {
         className: "mascotvar",

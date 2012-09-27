@@ -67,13 +67,13 @@ MascotTools =
       ]
       vOffset: [
         "Vertical Offset"
-        ""
+        "0"
         "This value moves the mascot vertically away from the anchor point, in pixels (the post form is exactly \"248\" pixels tall if you'd like to force the mascot to sit above it)."
         "number"
       ]
       hOffset: [
         "Horizontal Offset"
-        ""
+        "0"
         "This value moves the mascot further away from the edge of the screen, in pixels."
         "number"
       ]
@@ -119,7 +119,7 @@ MascotTools =
         when "number"
           div = @input item, name
           $.on $('input', div), 'blur', ->
-            editMascot[@name] = parseInt @value, 10
+            editMascot[@name] = parseInt @value
             Style.addStyle Conf["theme"]
 
         when "select"
@@ -157,7 +157,7 @@ MascotTools =
     if Array.isArray(editMascot[name])
       if userThemes and userThemes[Conf['theme']] and userThemes[Conf['theme']]['Dark Theme'] == '1' and Conf["Style"] then value = editMascot[name][0] else value = editMascot[name][1]
     else
-      value = editMascot[name]
+      value = editMascot[name] or item[1]
 
     div = $.el "div",
       className: "mascotvar"
