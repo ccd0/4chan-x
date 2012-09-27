@@ -708,7 +708,6 @@ textarea,
 .postertrip,
 .rules,
 .subject,
-.subjectm
 .summary,
 a,
 big,
