@@ -2,6 +2,12 @@ master
 - Mayhem
   Removed the obnoxious 4chan Pass ad in captcha errors when posting.
   Fix 'Administrator/Moderator/Developer Replies' creating extra backlinks on /q/, again.
+- Zixaphir
+  New Option: Sidebar Location
+  -- Move the sidebar to the other side of the window!
+  New options for board logo and banner positions.
+  Silhouettes are back and now switch between dark and light versions on-the-fly.
+  Fixed the Spoiler Image checkbox.
 
 0.10.5beta
 - Zixaphir
