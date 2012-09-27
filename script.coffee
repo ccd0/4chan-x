@@ -1418,18 +1418,21 @@ QR =
   cooldown:
     init: ->
       return unless Conf['Cooldown']
-      QR.cooldown.start $.get "/#{g.BOARD}/cooldown", 0
+      {timeout, length} = $.get "/#{g.BOARD}/cooldown", {}
+      QR.cooldown.start timeout, length if timeout
       $.sync "/#{g.BOARD}/cooldown", QR.cooldown.start
-    start: (timeout) ->
+    start: (timeout, length) ->
       seconds = Math.floor (timeout - Date.now()) / 1000
-      QR.cooldown.count seconds
+      QR.cooldown.count seconds, length
     set: (seconds) ->
       return unless Conf['Cooldown']
-      QR.cooldown.count seconds
-      $.set "/#{g.BOARD}/cooldown", Date.now() + seconds*$.SECOND
-    count: (seconds) ->
-      return unless 0 <= seconds <= 60
-      setTimeout QR.cooldown.count, 1000, seconds-1
+      QR.cooldown.count seconds, seconds
+      $.set "/#{g.BOARD}/cooldown",
+        timeout: Date.now() + seconds * $.SECOND
+        length:  seconds
+    count: (seconds, length) ->
+      return unless 0 <= seconds <= length
+      setTimeout QR.cooldown.count, 1000, seconds-1, length
       QR.cooldown.seconds = seconds
       if seconds is 0
         $.delete "/#{g.BOARD}/cooldown"
@@ -2001,12 +2004,14 @@ QR =
       QR.cooldown.auto = QR.replies.length > 1
       sage    = /sage/i.test reply.email
       seconds =
+        # 300 seconds cooldown for new threads
+        # q: 86400 seconds
+        # b soc r9k: 600 seconds
         if g.BOARD is 'q'
-          # that makes no sense.png
-          if reply.file
-            300
-          else if sage
+          if sage
             600
+          else if reply.file
+            300
           else
             60
         else if sage
@@ -3566,10 +3571,15 @@ DeleteLink =
 
   cooldown:
     start: (e) ->
-      DeleteLink.cooldown.count e.detail.postID, 30
-    count: (postID, seconds) ->
-      return unless 0 <= seconds <= 30
-      setTimeout DeleteLink.cooldown.count, 1000, postID, seconds-1
+      seconds =
+        if g.BOARD is 'q'
+          600
+        else
+          30
+      DeleteLink.cooldown.count e.detail.postID, seconds, seconds
+    count: (postID, seconds, length) ->
+      return unless 0 <= seconds <= length
+      setTimeout DeleteLink.cooldown.count, 1000, postID, seconds-1, length
       {el} = DeleteLink.cooldown
       if seconds is 0
         el?.textContent = 'Delete'
