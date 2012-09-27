@@ -437,7 +437,7 @@ QR =
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
   <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>
-  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>
+  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
   <div class=warning></div>
 </form>'
     else
@@ -450,7 +450,7 @@ QR =
   <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=browse>Browse...</div><div id=file></div></div>
   <div id=submit><input type=submit></div>
   <div id=threadselect></div>
-  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>
+  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
   <div class=warning></div>
 </form>'
 

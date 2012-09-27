@@ -1603,27 +1603,14 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
   font-size: 12px;
   text-align: right;
 }
-#qr > form > label {
-  font-size: 0px;
-  color: transparent;
-}
-#qr > form > label::after {
-  content: "Spoiler?";
-  font-size: 12px;
-}
 .dump > form > label {
   display: block;
   visibility: hidden;
 }
 #spoilerLabel {
   position: absolute;
-  bottom: -20px;
-  right: 20px;
-}
-#spoilerLabel input {
-  position: relative;
-  top: 1px;
-  left: 2px;
+  bottom: 0;
+  right: 2px;
 }
 #qr .warning {
   position: absolute;
