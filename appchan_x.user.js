@@ -1218,7 +1218,7 @@
     'Horo': {
       category: 'Silhouette',
       image: function() {
-        if (userThemes[Conf['Theme']]['Dark Theme'] = '1' && Conf["Style"]) {
+        if (userThemes && userThemes[Conf['Theme']] && (userThemes[Conf['Theme']]['Dark Theme'] = '1' && Conf["Style"])) {
           return 'http://i.imgur.com/PKfl4.png';
         } else {
           return 'http://i.imgur.com/HMpug.png';
@@ -1228,7 +1228,7 @@
     'Horo_2': {
       category: 'Silhouette',
       image: function() {
-        if (userThemes[Conf['Theme']]['Dark Theme'] = '1' && Conf["Style"]) {
+        if (userThemes && userThemes[Conf['Theme']] && userThemes[Conf['Theme']]['Dark Theme'] && Conf["Style"]) {
           return 'http://i.imgur.com/8fcrD.png';
         } else {
           return 'http://i.imgur.com/BjV3U.png';
@@ -1442,7 +1442,7 @@
     'Nagato_Yuki_5': {
       category: 'Silhouette',
       image: function() {
-        if (userThemes[Conf['Theme']]['Dark Theme'] = '1' && Conf["Style"]) {
+        if (userThemes && userThemes[Conf['Theme']] && userThemes[Conf['Theme']]['Dark Theme'] && Conf["Style"]) {
           return 'http://i.imgur.com/aGFCl.png';
         } else {
           return 'http://i.imgur.com/uR35P.png';
@@ -1453,7 +1453,7 @@
     'Nagato_Yuki_6': {
       category: 'Silhouette',
       image: function() {
-        if (userThemes[Conf['Theme']]['Dark Theme'] = '1' && Conf["Style"]) {
+        if (userThemes && userThemes[Conf['Theme']] && userThemes[Conf['Theme']]['Dark Theme'] && Conf["Style"]) {
           return 'http://i.imgur.com/MwoI9.png';
         } else {
           return 'http://i.imgur.com/L9ZAT.png';
