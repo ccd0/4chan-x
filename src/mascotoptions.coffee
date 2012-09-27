@@ -162,8 +162,8 @@ MascotTools =
 
   addMascot: (mascot) ->
 
-    try
-      $.rm $('#mascot', d.body)
+    el = $('#mascot', d.body)
+    $.rm el if el
 
     div = $.el 'div',
       id: "mascot"

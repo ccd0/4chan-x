@@ -1218,7 +1218,7 @@
     'Horo': {
       category: 'Silhouette',
       image: function() {
-        if (userThemes && userThemes[Conf['Theme']] && (userThemes[Conf['Theme']]['Dark Theme'] = '1' && Conf["Style"])) {
+        if (userThemes && userThemes[Conf['Theme']] && userThemes[Conf['Theme']]['Dark Theme'] === '1' && Conf["Style"]) {
           return 'http://i.imgur.com/PKfl4.png';
         } else {
           return 'http://i.imgur.com/HMpug.png';
@@ -1228,7 +1228,7 @@
     'Horo_2': {
       category: 'Silhouette',
       image: function() {
-        if (userThemes && userThemes[Conf['Theme']] && userThemes[Conf['Theme']]['Dark Theme'] && Conf["Style"]) {
+        if (userThemes && userThemes[Conf['Theme']] && userThemes[Conf['Theme']]['Dark Theme'] === '1' && Conf["Style"]) {
           return 'http://i.imgur.com/8fcrD.png';
         } else {
           return 'http://i.imgur.com/BjV3U.png';
@@ -1442,7 +1442,7 @@
     'Nagato_Yuki_5': {
       category: 'Silhouette',
       image: function() {
-        if (userThemes && userThemes[Conf['Theme']] && userThemes[Conf['Theme']]['Dark Theme'] && Conf["Style"]) {
+        if (userThemes && userThemes[Conf['Theme']] && userThemes[Conf['Theme']]['Dark Theme'] === '1' && Conf["Style"]) {
           return 'http://i.imgur.com/aGFCl.png';
         } else {
           return 'http://i.imgur.com/uR35P.png';
@@ -1453,7 +1453,7 @@
     'Nagato_Yuki_6': {
       category: 'Silhouette',
       image: function() {
-        if (userThemes && userThemes[Conf['Theme']] && userThemes[Conf['Theme']]['Dark Theme'] && Conf["Style"]) {
+        if (userThemes && userThemes[Conf['Theme']] && userThemes[Conf['Theme']]['Dark Theme'] === '1' && Conf["Style"]) {
           return 'http://i.imgur.com/MwoI9.png';
         } else {
           return 'http://i.imgur.com/L9ZAT.png';
@@ -5099,7 +5099,7 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (quote.parentNode.getAttribute('style') === 'font-size: smaller;') {
+        if (quote.parentNode.parentNode.className === 'capcodeReplies') {
           break;
         }
         if (qid = quote.hash.slice(2)) {
@@ -7111,7 +7111,7 @@
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(html) {
-      var bs, doc, err, msg, persona, postID, reply, threadID, _, _ref, _ref1;
+      var bs, doc, err, msg, persona, postID, reply, sage, seconds, threadID, _, _ref, _ref1;
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = html;
       if (doc.title === '4chan - Banned') {
@@ -7128,6 +7128,9 @@
       }
       if (err) {
         if (/captcha|verification/i.test(err) || err === 'Connection error with sys.4chan.org.') {
+          if (/mistyped/i.test(err.textContent)) {
+            err.textContent = 'Error: You seem to have mistyped the CAPTCHA.';
+          }
           QR.cooldown.auto = QR.captchaIsEnabled ? !!$.get('captchas', []).length : true;
           QR.cooldown.set(2);
         } else {
@@ -7157,7 +7160,9 @@
         location.pathname = "/" + g.BOARD + "/res/" + postID;
       } else {
         QR.cooldown.auto = QR.replies.length > 1;
-        QR.cooldown.set(g.BOARD === 'q' || /sage/i.test(reply.email) ? 60 : 30);
+        sage = /sage/i.test(reply.email);
+        seconds = g.BOARD === 'q' ? reply.file ? 300 : sage ? 600 : 60 : sage ? 60 : 30;
+        QR.cooldown.set(seconds);
         if (Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto) {
           $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
         }
@@ -7608,10 +7613,11 @@
       return div;
     },
     addMascot: function(mascot) {
-      var div;
-      try {
-        $.rm($('#mascot', d.body));
-      } catch (_error) {}
+      var div, el;
+      el = $('#mascot', d.body);
+      if (el) {
+        $.rm(el);
+      }
       div = $.el('div', {
         id: "mascot",
         innerHTML: "<img src='" + (typeof mascot.image === 'function' ? mascot.image() : mascot.image) + "'>"

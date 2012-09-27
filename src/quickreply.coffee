@@ -672,6 +672,9 @@ QR =
 
     if err
       if /captcha|verification/i.test(err) or err is 'Connection error with sys.4chan.org.'
+        # Remove the obnoxious 4chan Pass ad.
+        if /mistyped/i.test err.textContent
+          err.textContent = 'Error: You seem to have mistyped the CAPTCHA.'
         # Enable auto-post if we have some cached captchas.
         QR.cooldown.auto =
           if QR.captchaIsEnabled
@@ -718,7 +721,20 @@ QR =
     else
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       QR.cooldown.auto = QR.replies.length > 1
-      QR.cooldown.set if g.BOARD is 'q' or /sage/i.test reply.email then 60 else 30
+      sage    = /sage/i.test reply.email
+      seconds =
+        if g.BOARD is 'q'
+          if reply.file
+            300
+          else if sage
+            600
+          else
+            60
+        else if sage
+          60
+        else
+          30
+      QR.cooldown.set seconds
       if Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto
         $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
 

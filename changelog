@@ -1,4 +1,7 @@
 master
+- Mayhem
+  Removed the obnoxious 4chan Pass ad in captcha errors when posting.
+  Fix 'Administrator/Moderator/Developer Replies' creating extra backlinks on /q/, again.
 
 0.10.5beta
 - Zixaphir
