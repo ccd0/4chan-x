@@ -1119,8 +1119,7 @@
     },
     'Fluttershy': {
       category: 'MLP',
-      image: 'http://i.imgur.com/x88ZT.png',
-      center: true
+      image: 'http://i.imgur.com/x88ZT.png'
     },
     'Fluttershy_2': {
       category: 'MLP',
@@ -1172,8 +1171,7 @@
     },
     'Hatsune_Miku': {
       category: 'NSFW',
-      image: 'http://i.imgur.com/lKQHW.png',
-      center: true
+      image: 'http://i.imgur.com/lKQHW.png'
     },
     'Hatsune_Miku_2': {
       category: 'NSFW',
@@ -1217,23 +1215,11 @@
     },
     'Horo': {
       category: 'Silhouette',
-      image: function() {
-        if (userThemes && userThemes[Conf['Theme']] && userThemes[Conf['Theme']]['Dark Theme'] === '1' && Conf["Style"]) {
-          return 'http://i.imgur.com/PKfl4.png';
-        } else {
-          return 'http://i.imgur.com/HMpug.png';
-        }
-      }
+      image: ['http://i.imgur.com/PKfl4.png', 'http://i.imgur.com/HMpug.png']
     },
     'Horo_2': {
       category: 'Silhouette',
-      image: function() {
-        if (userThemes && userThemes[Conf['Theme']] && userThemes[Conf['Theme']]['Dark Theme'] === '1' && Conf["Style"]) {
-          return 'http://i.imgur.com/8fcrD.png';
-        } else {
-          return 'http://i.imgur.com/BjV3U.png';
-        }
-      }
+      image: ['http://i.imgur.com/8fcrD.png', 'http://i.imgur.com/BjV3U.png']
     },
     'Ika_Musume': {
       category: 'SFW',
@@ -1441,24 +1427,12 @@
     },
     'Nagato_Yuki_5': {
       category: 'Silhouette',
-      image: function() {
-        if (userThemes && userThemes[Conf['Theme']] && userThemes[Conf['Theme']]['Dark Theme'] === '1' && Conf["Style"]) {
-          return 'http://i.imgur.com/aGFCl.png';
-        } else {
-          return 'http://i.imgur.com/uR35P.png';
-        }
-      },
+      image: ['http://i.imgur.com/aGFCl.png', 'http://i.imgur.com/uR35P.png'],
       center: true
     },
     'Nagato_Yuki_6': {
       category: 'Silhouette',
-      image: function() {
-        if (userThemes && userThemes[Conf['Theme']] && userThemes[Conf['Theme']]['Dark Theme'] === '1' && Conf["Style"]) {
-          return 'http://i.imgur.com/MwoI9.png';
-        } else {
-          return 'http://i.imgur.com/L9ZAT.png';
-        }
-      },
+      image: ['http://i.imgur.com/MwoI9.png', 'http://i.imgur.com/L9ZAT.png'],
       center: true
     },
     'Nakano_Azusa': {
@@ -1500,8 +1474,7 @@
     },
     'Patchouli_Knowledge_2': {
       category: 'SFW',
-      image: 'http://i.imgur.com/dK9Pn.png',
-      center: true
+      image: 'http://i.imgur.com/dK9Pn.png'
     },
     'Pink_Doggy': {
       category: 'SFW',
@@ -2369,7 +2342,7 @@
         if (!mascot["Deleted"]) {
           li = $.el('li', {
             className: 'mascot',
-            innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + (typeof mascot.image === 'function' ? mascot.image() : mascot.image) + ");'></div><div class='mascotmetadata'>  <p><span class='mascotname'>" + (name.replace(/_/g, " ")) + "</span></p>  <p><span class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a> / <a class=delete name='" + name + "' href='javascript:;'>Delete</a></span></p></div>"
+            innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + (Array.isArray(mascot.image) ? (userThemes && userThemes[Conf['theme']] && userThemes[Conf['theme']]['Dark Theme'] === '1' && Conf["Style"] ? mascot.image[0] : mascot.image[1]) : mascot.image) + ");'></div><div class='mascotmetadata'>  <p><span class='mascotname'>" + (name.replace(/_/g, " ")) + "</span></p>  <p><span class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a> / <a class=delete name='" + name + "' href='javascript:;'>Delete</a></span></p></div>"
           });
           div = $('div[style]', li);
           if (mascot["Enabled"]) {
@@ -7632,7 +7605,7 @@
       }
       div = $.el('div', {
         id: "mascot",
-        innerHTML: "<img src='" + (typeof mascot.image === 'function' ? mascot.image() : mascot.image) + "'>"
+        innerHTML: "<img src='" + (Array.isArray(mascot.image) ? (userThemes && userThemes[Conf['theme']] && userThemes[Conf['theme']]['Dark Theme'] === '1' && Conf["Style"] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'>"
       });
       return $.ready(function() {
         return $.add(d.body, div);
@@ -8006,8 +7979,8 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       if (userMascots !== Mascots) {
         for (name in Mascots) {
           mascot = Mascots[name];
-          if (userMascots[name] != null) {
-            if (userMascots[name]["Customized"] != null) {
+          if (userMascots[name]) {
+            if (userMascots[name]["Customized"]) {
               continue;
             }
             if (userMascots[name]["Enabled"]) {

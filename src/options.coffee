@@ -252,7 +252,7 @@ Options =
         li = $.el 'li',
           className: 'mascot'
           innerHTML: "
-<div id='#{name}' class='#{mascot.category}' style='background-image: url(#{if typeof mascot.image == 'function' then mascot.image() else mascot.image});'></div>
+<div id='#{name}' class='#{mascot.category}' style='background-image: url(#{if Array.isArray(mascot.image) then (if userThemes and userThemes[Conf['theme']] and userThemes[Conf['theme']]['Dark Theme'] == '1' and Conf["Style"] then mascot.image[0] else mascot.image[1]) else mascot.image});'></div>
 <div class='mascotmetadata'>
   <p><span class='mascotname'>#{name.replace /_/g, " "}</span></p>
   <p><span class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a></span></p>

@@ -813,7 +813,6 @@ Mascots =
   'Fluttershy':
     category:   'MLP'
     image:      'http://i.imgur.com/x88ZT.png'
-    center:     true
   'Fluttershy_2':
     category:   'MLP'
     image:      'http://i.imgur.com/hokhQ.png'
@@ -855,7 +854,6 @@ Mascots =
   'Hatsune_Miku':
     category:   'NSFW'
     image:      'http://i.imgur.com/lKQHW.png'
-    center:     true
   'Hatsune_Miku_2':
     category:   'NSFW'
     image:      'http://i.imgur.com/ULksz.png'
@@ -890,10 +888,10 @@ Mascots =
     image:      'http://i.imgur.com/b9KmB.png'
   'Horo':
     category:   'Silhouette'
-    image: ->   if userThemes and userThemes[Conf['Theme']] and userThemes[Conf['Theme']]['Dark Theme'] == '1' and Conf["Style"] then 'http://i.imgur.com/PKfl4.png' else 'http://i.imgur.com/HMpug.png'
+    image:      ['http://i.imgur.com/PKfl4.png', 'http://i.imgur.com/HMpug.png']
   'Horo_2':
     category:   'Silhouette'
-    image: ->   if userThemes and userThemes[Conf['Theme']] and userThemes[Conf['Theme']]['Dark Theme'] == '1' and Conf["Style"] then 'http://i.imgur.com/8fcrD.png' else 'http://i.imgur.com/BjV3U.png'
+    image:      ['http://i.imgur.com/8fcrD.png', 'http://i.imgur.com/BjV3U.png']
   'Ika_Musume':
     category:   'SFW'
     image:      'http://i.imgur.com/rKT7L.png'
@@ -1058,11 +1056,11 @@ Mascots =
     center:     true
   'Nagato_Yuki_5':
     category:   'Silhouette'
-    image: ->   if userThemes and userThemes[Conf['Theme']] and userThemes[Conf['Theme']]['Dark Theme'] == '1' and Conf["Style"] then 'http://i.imgur.com/aGFCl.png' else 'http://i.imgur.com/uR35P.png'
+    image:      ['http://i.imgur.com/aGFCl.png', 'http://i.imgur.com/uR35P.png']
     center:     true
   'Nagato_Yuki_6':
     category:   'Silhouette'
-    image: ->   if userThemes and userThemes[Conf['Theme']] and userThemes[Conf['Theme']]['Dark Theme'] == '1' and Conf["Style"] then 'http://i.imgur.com/MwoI9.png' else 'http://i.imgur.com/L9ZAT.png'
+    image:      ['http://i.imgur.com/MwoI9.png', 'http://i.imgur.com/L9ZAT.png']
     center:     true
   'Nakano_Azusa':
     category:   'SFW'
@@ -1096,7 +1094,6 @@ Mascots =
   'Patchouli_Knowledge_2':
     category:   'SFW'
     image:      'http://i.imgur.com/dK9Pn.png'
-    center:     true
   'Pink_Doggy':
     category:   'SFW'
     image:      'http://i.imgur.com/zv5BS.png'

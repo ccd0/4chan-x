@@ -14,8 +14,8 @@ Main =
     #If mascots have been updated, push them to the userMascots
     unless userMascots == Mascots
       for name, mascot of Mascots
-        if userMascots[name]?
-          if userMascots[name]["Customized"]?
+        if userMascots[name]
+          if userMascots[name]["Customized"]
             continue
           if userMascots[name]["Enabled"]
             mascot["Enabled"] = true

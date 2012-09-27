@@ -130,6 +130,7 @@ MascotTools =
           div = $.el 'div',
             className: "mascotvar"
             innerHTML: optionHTML
+
           $.on $('select', div), 'change', ->
             editMascot[@name] = @value
             Style.addStyle Conf["theme"]
@@ -167,7 +168,7 @@ MascotTools =
 
     div = $.el 'div',
       id: "mascot"
-      innerHTML: "<img src='#{if typeof mascot.image == 'function' then mascot.image() else mascot.image}'>"
+      innerHTML: "<img src='#{if Array.isArray(mascot.image) then (if userThemes and userThemes[Conf['theme']] and userThemes[Conf['theme']]['Dark Theme'] == '1' and Conf["Style"] then mascot.image[0] else mascot.image[1]) else mascot.image}'>"
 
     $.ready ->
         $.add d.body, div
