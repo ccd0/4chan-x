@@ -24,17 +24,16 @@ MascotTools =
       unless mascot = editMascot or mascot = userMascots[Conf["mascot"]]
         return
 
-    result = "
+    result = """
 #mascot img {
   position: fixed;
-  z-index:  " + (if Conf['Mascots Overlap Posts'] then '3' else '-1') + ";
-  bottom:   " + (if mascot.position == 'bottom' then ( (mascot.vOffset or 0) + 0 + "px") else if mascot.position == 'top' then "auto" else ((mascot.vOffset or 0) + mascotposition) + "px") + ";
-  right:    " + ((mascot.hOffset or 0) + (if (Conf['Sidebar'] == 'large' and mascot.center) then 25 else 0)) + "px;
-  top:      " + (if mascot.position == 'top' then (mascot.vOffset or 0) + "px" else 'auto') + ";
-  left:     auto;
+  z-index:                              """ + (if Conf['Mascots Overlap Posts'] then '3' else '-1') + """;
+  bottom:                               """ + (if mascot.position == 'bottom' then ( (mascot.vOffset or 0) + 0 + "px") else if mascot.position == 'top' then "auto" else ((mascot.vOffset or 0) + mascotposition) + "px") + """;
+  """ + Conf["Sidebar Location"] + """: """ + ((mascot.hOffset or 0) + (if (Conf['Sidebar'] == 'large' and mascot.center) then 25 else 0)) + """px;
+  top:                                  """ + (if mascot.position == 'top' then (mascot.vOffset or 0) + "px" else 'auto') + """;
   pointer-events: none;
 }
-"
+"""
 
     return result
 

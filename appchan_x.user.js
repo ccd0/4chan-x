@@ -7508,7 +7508,7 @@
           return;
         }
       }
-      result = "#mascot img {  position: fixed;  z-index:  " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";  bottom:   " + (mascot.position === 'bottom' ? (mascot.vOffset || 0) + 0 + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + mascotposition) + "px") + ";  right:    " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;  top:      " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";  left:     auto;  pointer-events: none;}";
+      result = "#mascot img {\n  position: fixed;\n  z-index:                              " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\nbottom:                               " + (mascot.position === 'bottom' ? (mascot.vOffset || 0) + 0 + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + mascotposition) + "px") + ";" + Conf["Sidebar Location"] + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\ntop:                                  " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";\npointer-events: none;\n}";
       return result;
     },
     dialog: function(key) {
