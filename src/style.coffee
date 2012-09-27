@@ -1263,10 +1263,9 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
   padding: 0;
 }
 #navtopright {
-  visibility: hidden;
   position: fixed;
-  bottom: -100px;
-  left: -100px;
+  bottom: -1000px;
+  left: -1000px;
 }
 /* Expand Images div */
 #imgControls input {
@@ -2056,7 +2055,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #boardNavDesktopFoot,
 #watcher {
   position: fixed;
-  top: """ + (36 + logoOffset) + """px;
+  top: """ + (38 + logoOffset) + """px;
 }
 #boardNavDesktopFoot::after,
 #navtopright .settingsWindowLink::after,
