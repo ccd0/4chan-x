@@ -857,6 +857,7 @@ body > form #imgControls {
 #stats,
 #watcher,
 #watcher::before,
+.boardTitle,
 .menu_button,
 .sideArrows {
   z-index: 4 !important;
@@ -2048,13 +2049,23 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 """
       switch Conf["4chan Banner"]
-        when "in sidebar"
+        when "at sidebar top" or "in sidebar"
           logoOffset = 83 + sidebarOffsetH
           css += """
 .boardBanner img {
   position: fixed;
   width: """ + (248 + sidebarOffsetW) + """px;
   top: 19px;
+  right: 2px;
+}
+"""
+        when "at sidebar bottom"
+          logoOffset = 0
+          css += """
+.boardBanner img {
+  position: fixed;
+  width: """ + (248 + sidebarOffsetW) + """px;
+  bottom: 280px;
   right: 2px;
 }
 """
@@ -2092,13 +2103,27 @@ body > a[style="cursor: pointer; float: right;"]::after {
 """
 
       switch Conf["Board Logo"]
-        when "in sidebar"
+        when "at sidebar top" or "in sidebar"
           css += """
 .boardTitle {
   position: fixed;
   left: auto;
   right: 2px;
   top: """ + (45 + logoOffset) + """px;
+  z-index: 1;
+  width: """ + (248 + sidebarOffsetW) + """px;
+}
+.boardSubtitle {
+  display: none;
+}
+"""
+        when "at sidebar bottom"
+          css += """
+.boardTitle {
+  position: fixed;
+  left: auto;
+  right: 2px;
+  bottom: 400px;
   z-index: 1;
   width: """ + (248 + sidebarOffsetW) + """px;
 }

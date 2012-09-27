@@ -227,8 +227,8 @@ Config =
       'Underline Links':           [true,              'Put lines under hyperlinks.']
 
     Layout:
-      '4chan Banner':              ['in sidebar',      'The positioning of 4chan\'s image banner.', ['in sidebar', 'at top', 'hide']]
-      'Board Logo':                ['in sidebar',      'The positioning of the board\'s logo and subtitle.', ['in sidebar', 'at top', 'hide']]
+      '4chan Banner':              ['at sidebar top',      'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'at top', 'hide']]
+      'Board Logo':                ['at sidebar top',      'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'hide']]
       'Compact Post Form Inputs':  [true,              'Use compact inputs on the post form.']
       'Expand Post Form Textarea': [true,              'Expands the post form text area when in use.']
       'Images Overlap Post Form':  [true,              'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".']
