@@ -651,6 +651,11 @@ div.opContainer {
       else
         sidebarOffsetW = 0
         sidebarOffsetH = 0
+        
+      if Conf["Sidebar Location"] == "left"
+        sidebarLocation = ["left",  "right"]
+      else
+        sidebarLocation = ["right", "left" ]
 
       css += """
 ::""" + agent + """selection {
@@ -730,7 +735,6 @@ time + span {
 #imgControls .rice,
 #logo,
 #postPassword + span,
-#settingsBox[style*="display: none;"],
 .autoPagerS,
 .board > hr:last-of-type,
 .closed,
@@ -845,9 +849,6 @@ body > form #imgControls {
 #updater {
   z-index: 10 !important;
 }
-#settingsBox {
-  z-index: 9 !important;
-}
 #boardNavDesktopFoot::after,
 #navtopright,
 .qrMessage,
@@ -874,86 +875,77 @@ div.reply.highlight {
   box-sizing: border-box;
 }
 /* ICON POSITIONS */
-/* 4chan X Options / 4chan Options */
-#navtopright .settingsWindowLink::after {
-  position: fixed;
-  left: auto;
-  right: 17px;
-  opacity: 0.3;
-}
-#navtopright .settingsWindowLink:hover::after {
-  opacity: 1;
-  right: 16px;
-}
 /* 4sight */
 body > a[style="cursor: pointer; float: right;"]::after {
   font-size: 12px;
   position: fixed;
-  right: 0px;
-  opacity: 0.3;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (231 + sidebarOffsetW) + "px" else "right: 2px") + """;
+  opacity: 0.4;
+  visibility: visible;
 }
 body > a[style="cursor: pointer; float: right;"]:hover::after {
   opacity: 1;
 }
-/* Back */
-div.navLinks > a:first-of-type::after {
-  position: fixed;
-  right: """ + (230 + sidebarOffsetW) + """px;
-  cursor: pointer;
-  """ + agent + """transform: scale(.8);
-  opacity: 0.4;
-  top: auto;
+/* 4chan X Options / 4chan Options */
+#navtopright .settingsWindowLink::after {
   visibility: visible;
-}
-div.navLinks > a:first-of-type:hover::after {
-  opacity: 1;
-}
-/* Expand Images */
-#imgControls label:first-of-type::after {
-  opacity: 0.2;
-  position: relative;
-  top: 4px;
-}
-#imgControls label:hover:first-of-type::after {
-  opacity: 1;
-}
-/* Global Message */
-.globalMessage::before {
-  height: 9px;
   position: fixed;
-  right: 70px;
-  min-width: 30px;
-  max-width: 30px;
-  padding-bottom: 5px;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (212 + sidebarOffsetW) + "px" else "right: 21px") + """;
   opacity: 0.4;
 }
-.globalMessage:hover::before {
-  cursor: pointer;
+#navtopright .settingsWindowLink:hover::after {
   opacity: 1;
 }
 /* Slideout Navigation */
 #boardNavDesktopFoot::after {
   border: none;
   position: fixed;
-  right: 37px;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (193 + sidebarOffsetW) + "px" else "right: 40px") + """;
   opacity: 0.4;
 }
 #boardNavDesktopFoot:hover::after {
   opacity: 1;
-  cursor: pointer;
 }
 /* Watcher */
 #watcher::before {
-  height: 9px;
   font-size: 12px;
   position: fixed;
-  right: 42px;
-  width: 30px;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (175 + sidebarOffsetW) + "px" else "right: 59px") + """;
   opacity: 0.4;
 }
 #watcher:hover::before {
   opacity: 1;
   cursor: pointer;
+}
+/* Global Message */
+.globalMessage::before {
+  position: fixed;
+""" + (if sidebarLocation[0] == "left" then "left: " + (155 + sidebarOffsetW) + "px" else "right: 78px") + """;
+  opacity: 0.4;
+}
+/* Back */
+div.navLinks > a:first-of-type::after {
+  visibility: visible;
+  position: fixed;
+  cursor: pointer;
+  """ + agent + """transform: scale(.8);
+  """ + (if sidebarLocation[0] == "left" then "left: 2px" else "right: " + (228 + sidebarOffsetW) + "px") + """;
+  opacity: 0.4;
+}
+.globalMessage:hover::before {
+  opacity: 1;
+}
+div.navLinks > a:first-of-type:hover::after {
+  opacity: 1;
+}
+/* Expand Images */
+#imgControls label:first-of-type::after {
+  opacity: 0.4;
+  display: inline-block;
+  margin-top: 4px;
+}
+#imgControls label:hover:first-of-type::after {
+  opacity: 1;
 }
 .pageJump {
   position: fixed;
@@ -969,7 +961,7 @@ div.navLinks > a:first-of-type:hover::after {
 }
 .qrMessage {
   position: fixed;
-  right: 3px;
+  """ + sidebarLocation[0] + """: 2px;
   bottom: 250px;
   font-size: 11px;
   font-weight: 100;
@@ -1028,20 +1020,20 @@ a.yuimenuitemlabel {
   padding-bottom: 3px;
 }
 #boardNavDesktopFoot {
-  z-index: 98 !important;
   visibility: visible;
   position: fixed;
-  right: 2px !important;
+  """ + sidebarLocation[0] + """: 2px;
   bottom: auto;
-  width: """ + (226 + sidebarOffsetW) + """px;
   color: transparent;
   font-size: 0;
   border-width: 1px;
   text-align: center;
   height: 0;
-  width: """ + (246 + sidebarOffsetW) + """px !important;
+  width: """ + (248 + sidebarOffsetW) + """px !important;
   overflow: hidden;
-  """ + agent + """transition: height .5s linear;
+  """ + agent + """transition: height .5s linear, border 0s ease-in-out .5s;
+  """ + agent + """box-sizing: border-box;
+  box-sizing: border-box;
 }
 .center {
   text-align: center;
@@ -1271,12 +1263,10 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
   padding: 0;
 }
 #navtopright {
+  visibility: hidden;
   position: fixed;
-  right: 60px;
-  top: -100px;
-  bottom: auto;
-  font-size: 0;
-  color: transparent;
+  bottom: -100px;
+  left: -100px;
 }
 /* Expand Images div */
 #imgControls input {
@@ -1291,19 +1281,15 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
 }
 #imgControls label:first-of-type {
   position: fixed;
-  right: """ + (232 + sidebarOffsetW) + """px;
+  """ + (if sidebarLocation[0] == "left" then "left: 4px" else "right: " + (232 + sidebarOffsetW) + "px") + """;
   top: 0px;
   bottom: auto;
 }
 #imageType {
   position: fixed;
-  right: """ + (140 + sidebarOffsetW) + """px;
+  """ + (if sidebarLocation[0] == "left" then "left: 22px" else "right: " + (140 + sidebarOffsetW) + "px") + """;
   top: 1px;
   bottom: auto;
-}
-#imgControls label:nth-of-type(2)::after {
-  font-size: 12px;
-  content: "Preload?";
 }
 #imgControls select {
   float: right;
@@ -1328,17 +1314,10 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
   height: auto;
 }
 div.navLinks {
-  font-size: 0;
   visibility: hidden;
   height: 0;
   width: 0;
   overflow: hidden;
-}
-/* File Clearer support */
-.clearbutton {
-  position: fixed;
-  bottom: 45px;
-  right: 55px;
 }
 /* AutoPager */
 #autoPagerBorderPaging {
@@ -1354,29 +1333,31 @@ div.navLinks {
 }
 #stats,
 #navlinks {
-  top: 0 !important;
   left: auto !important;
   bottom: auto !important;
-  width: 96px;
   text-align: right;
   padding: 0;
   border: 0;
   border-radius: 0;
 }
 #stats {
-  right: 45px !important;
+  """ + (if sidebarLocation[0] == "left" then "left: 26px" else "right: 97px") + """ !important;
+  """ + sidebarLocation[1] + """: auto !important;
+  width: """ + (122 + sidebarOffsetW) + """px !important;
   font-size: 12px;
   position: fixed;
   cursor: default;
 }
 #navlinks {
-  right: 105px !important;
+  top: 0 !important;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (175 + sidebarOffsetW) + "px" else "right: 64px") + """ !important;
+  """ + sidebarLocation[1] + """: auto !important;
 }
 #updater {
-  right: 4px !important;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (186 + sidebarOffsetW) + "px" else "right: 4px") + """ !important;
   top: """ + (if Conf["Updater Position"] == "top" then "0" else "auto") + """ !important;
   bottom: """ + (if Conf["Updater Position"] == "bottom" then "2px" else "auto") + """ !important;
-  left: auto !important;
+  """ + sidebarLocation[1] + """: auto !important;
   width: 58px !important;
   border: 0;
   font-size: 12px;
@@ -1385,25 +1366,13 @@ div.navLinks {
 }
 #updater {
   background: none;
-  }
+  """ + (if sidebarLocation[0] == "left" then "left: " + (244 + sidebarOffsetW) + "px" else "right: 4px") + """;
+}
 #count.new {
   background-color: transparent;
 }
 #updater:hover {
   width: 150px !important;
-  right: 2px !important;
-}
-#updater #count:not(.new) {
-  font-size: 0;
-  color: transparent;
-}
-#updater #count:not(.new)::after {
-  font-size: 12px;
-  content: "+0";
-}
-.opContainer .favicon {
-  position: relative;
-  top: 2px;
 }
 #watcher {
   padding: 1px 0;
@@ -1417,18 +1386,18 @@ div.navLinks {
 }
 /* 4sight */
 body > a[style="cursor: pointer; float: right;"] {
-  position: fixed;
-  top:-119px;
-  right: 60px;
-  font-size: 0px;
+  visibility: hidden;
+  width: 0;
+  height: 0;
+  overflow: hidden;
 }
 body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] {
   display: block;
   position: fixed;
   top: 17px;
   bottom: 17px;
-  left: 4px;
-  right: """ + (252 + sidebarOffsetW) + """px;
+  """ + sidebarLocation[1] + """: 4px;
+  """ + sidebarLocation[0] + """: """ + (252 + sidebarOffsetW) + """px;
   width: auto;
   margin: 0;
 }
@@ -1478,7 +1447,7 @@ input[type="submit"]:hover {
   position: fixed;
   bottom: 252px;
   margin: 0;
-  right: 3px;
+  """ + sidebarLocation[0] + """: 3px;
   padding-right: 0;
   padding-left: 0;
   padding-top: 0;
@@ -1659,11 +1628,11 @@ table.reply[style^="clear: both"] {
 }
 #themeConf {
   position: fixed;
-  left: 2px;
-  width: 248px;
+  """ + sidebarLocation[1] + """: 2px;
+  """ + sidebarLocation[0] + """: auto;
   top: 0;
   bottom: 0;
-  right: auto;
+  width: 248px;
 }
 #themebar input {
   width: 30%;
@@ -2055,7 +2024,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 .boardBanner img {
   position: fixed;
   width: """ + (248 + sidebarOffsetW) + """px;
-  top: 19px;
+  """ + sidebarLocation[0] + """: 19px;
   right: 2px;
 }
 """
@@ -2066,7 +2035,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
   position: fixed;
   width: """ + (248 + sidebarOffsetW) + """px;
   bottom: 280px;
-  right: 2px;
+  """ + sidebarLocation[0] + """: 2px;
 }
 """
         when "at top"
@@ -2081,7 +2050,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
 
       css += """
 .globalMessage,
-#watcher,
 #boardNavDesktopFoot,
 #watcher {
   position: fixed;
@@ -2089,16 +2057,12 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 #boardNavDesktopFoot::after,
 #navtopright .settingsWindowLink::after,
+#stats,
+#watcher::before,
 .globalMessage::before ,
 div.navLinks > a:first-of-type::after,
 body > a[style="cursor: pointer; float: right;"]::after {
-  top: """ + (21 + logoOffset) + """px;
-}
-#watcher::before {
-  top: """ + (22 + logoOffset) + """px;
-}
-#settingsBox {
-  top: """ + (27 + logoOffset) + """px;
+  top: """ + (21 + logoOffset) + """px !important;
 }
 """
 
@@ -2107,8 +2071,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
           css += """
 .boardTitle {
   position: fixed;
-  left: auto;
-  right: 2px;
+  """ + sidebarLocation[0] + """: 2px;
   top: """ + (45 + logoOffset) + """px;
   z-index: 1;
   width: """ + (248 + sidebarOffsetW) + """px;
@@ -2121,8 +2084,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
           css += """
 .boardTitle {
   position: fixed;
-  left: auto;
-  right: 2px;
+  """ + sidebarLocation[0] + """: 2px;
   bottom: 400px;
   z-index: 1;
   width: """ + (248 + sidebarOffsetW) + """px;
@@ -2146,8 +2108,8 @@ body > a[style="cursor: pointer; float: right;"]::after {
   display: none;
 }
 #qr {
-  right: 2px !important;
-  left: auto !important;
+  """ + sidebarLocation[0] + """: 2px !important;
+  """ + sidebarLocation[1] + """: auto !important;
 }
 """
         when "slideout"
@@ -2156,39 +2118,39 @@ body > a[style="cursor: pointer; float: right;"]::after {
   display: none;
 }
 #qr {
-  right: -""" + (233 + sidebarOffsetW) + """px !important;
-  left: auto !important;
+  """ + sidebarLocation[0] + """: -""" + (233 + sidebarOffsetW) + """px !important;
+  """ + sidebarLocation[1] + """: auto !important;
   """ + agent + """transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
-  right: 2px !important;
-  left: auto !important;
+  """ + sidebarLocation[0] + """: 2px !important;
+  """ + sidebarLocation[1] + """: auto !important;
   """ + agent + """transition: right .3s linear, left .3s linear;
 }
 """
         when "tabbed slideout"
           css += """
 #qr {
-  right: -""" + (249 + sidebarOffsetW) + """px !important;
-  left: auto !important;
-  """ + agent + """transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;
+  """ + sidebarLocation[0] + """: -""" + (249 + sidebarOffsetW) + """px !important;
+  """ + sidebarLocation[1] + """: auto !important;
+  """ + agent + """transition: """ + sidebarLocation[0] + """ .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
-  right: 2px !important;
-  left: auto !important;
-  """ + agent + """transition: right .3s linear, left .3s linear;
+  """ + sidebarLocation[0] + """: 2px !important;
+  """ + sidebarLocation[1] + """: auto !important;
+  """ + agent + """transition: """ + sidebarLocation[0] + """ .3s linear;
 }
 #qrtab {
   z-index: -1;
-  """ + agent + """transform: rotate(-90deg);
-  """ + agent + """transform-origin: bottom right;
+  """ + agent + """transform: rotate(""" + (if sidebarLocation[0] == "left" then "" else "-") + """90deg);
+  """ + agent + """transform-origin: bottom """ + sidebarLocation[0] + """;
   position: fixed;
   bottom: 250px;
-  right: 0;
+  """ + sidebarLocation[0] + """: 0;
   width: 210px;
   display: inline-block;
   font-size: 12px;
@@ -2198,14 +2160,14 @@ body > a[style="cursor: pointer; float: right;"]::after {
   padding-top: 3px;
   vertical-align: middle;
   color: """ + theme["Text"] + """;
-  """ + agent + """transition: opacity .3s ease-in-out 1s,right .3s ease-in-out 1s, left .3s ease-in-out 1s;
+  """ + agent + """transition: opacity .3s ease-in-out 1s, """ + sidebarLocation[0] + """ .3s ease-in-out 1s;
 }
 #qr:hover #qrtab,
 #qr.focus #qrtab,
 #qr.dump #qrtab {
   opacity: 0;
-  right: """ + (252 + sidebarOffsetW) + """px;
-  """ + agent + """transition: opacity .3s linear, right .3s linear, left .3s linear;
+  """ + sidebarLocation[0] + """: """ + (252 + sidebarOffsetW) + """px;
+  """ + agent + """transition: opacity .3s linear, """ + sidebarLocation[0] + """ .3s linear;
 }
 """
         when "transparent fade"
@@ -2214,8 +2176,8 @@ body > a[style="cursor: pointer; float: right;"]::after {
   display: none;
 }
 #qr {
-  right: 2px !important;
-  left: auto !important;
+  """ + sidebarLocation[0] + """: 2px !important;
+  """ + sidebarLocation[1] + """: auto !important;
   opacity: 0.2;
   """ + agent + """transition: opacity .3s ease-in-out 1s;
 }
@@ -2391,7 +2353,7 @@ form .postContainer blockquote {
         when "medium"
           pagemargin = "150px"
         when "fully centered"
-          pagemargin = (248 + sidebarOffsetW) + "px"
+          pagemargin = (252 + sidebarOffsetW) + "px"
         when "large"
           pagemargin = "350px"
 
@@ -2401,23 +2363,26 @@ form .postContainer blockquote {
       if Conf["Sidebar"] != "hide"
         css += """
 body {
-  margin: 1px """ + (252 + sidebarOffsetW) + """px 0 """ + pagemargin + """;
+  margin-top: 1px;
+  margin-bottom: 0;
+  margin-""" + sidebarLocation[0] + ": " +(252 + sidebarOffsetW) + """px;
+  margin-""" + sidebarLocation[1] + ": " + pagemargin + """;
 }
 #boardNavDesktop,
 .pages {
-  left:  """ + pagemargin + """;
-  right: """ + (252 + sidebarOffsetW) + """px;
+  """ + sidebarLocation[0] + ": " + (252 + sidebarOffsetW) + """px;
+  """ + sidebarLocation[1] + ": " + pagemargin + """;
 }
 """
       else
         css += """
 body {
-  margin: 1px """ + pagemargin + """ 0 """ + pagemargin + """;
+  margin: 1px """ + pagemargin + " 0 " + pagemargin + """;
 }
 #boardNavDesktop,
 .pages {
-  left:  """ + pagemargin + """;
-  right: """ + pagemargin + """;
+  """ + sidebarLocation[0] + ": " + pagemargin + """;
+  """ + sidebarLocation[1] + ": " + pagemargin + """;
 }
 """
 
@@ -2475,7 +2440,7 @@ body {
 #qr textarea {
   display: block;
   """ + agent + """transition: all 0.25s ease 0s, width .3s ease-in-out .3s;
-  float: right;
+  float: """ + sidebarLocation[0] + """;
 }
 #qr textarea:focus {
   width: 400px;
@@ -2526,14 +2491,16 @@ td[style="border: 1px dashed;"] {
 #watcher {
   position: fixed;
   z-index: 98 !important;
-  top: """ + ( 34 + logoOffset) + """px !important;
-  right: 2px !important;
-  left: auto !important;
+  top: """ + (34 + logoOffset) + """px !important;
+  """ + sidebarLocation[0] + """: 2px !important;
+  """ + sidebarLocation[1] + """: auto !important;
   bottom: auto !important;
   height: 0;
   width: """ + (248 + sidebarOffsetW) + """px !important;
   overflow: hidden;
   """ + agent + """transition: height .5s linear;
+  """ + agent + """box-sizing: border-box;
+  box-sizing: border-box;
 }
 #watcher:hover {
   z-index: 99 !important;
@@ -2547,8 +2514,8 @@ td[style="border: 1px dashed;"] {
   display: none;
 }
 #watcher {
-  right: 2px !important;
-  left: auto !important;
+  """ + sidebarLocation[0] + """: 2px !important;
+  """ + sidebarLocation[1] + """: auto !important;
   width: """ + (246 + sidebarOffsetW) + """px;
   padding-bottom: 4px;
   z-index: 96;
@@ -2627,7 +2594,6 @@ div.postContainer span.postNum > .replylink {
 """
         when "hide"
           css += """
-#boardNavDesktopFoot::after,
 #boardNavDesktopFoot {
   display: none;
 }
@@ -2711,15 +2677,17 @@ a.useremail[href*="SAGE"]:last-of-type::after {
 .globalMessage {
   bottom: auto;
   position: fixed;
-  left: auto;
-  right: 2px;
-  width: """ + (246 + sidebarOffsetW) + """px;
+  """ + sidebarLocation[0] + """: 2px;
+  """ + sidebarLocation[1] + """: auto;
+  width: """ + (248 + sidebarOffsetW) + """px;
   background: """ + theme["Dialog Background"] + """;
   border: 1px solid """ + theme["Dialog Border"]  + """;
   z-index: 98;
   height: 0px;
   overflow: hidden;
   """ + agent + """transition: height .5s linear;
+  """ + agent + """box-sizing: border-box;
+  box-sizing: border-box;
 }
 .globalMessage:hover {
   height: 500px;
@@ -2798,8 +2766,8 @@ a.useremail[href*="SAGE"]:last-of-type::after {
   top: auto;
   bottom: 175px;
   width: 290px;
-  left: auto;
-  right: """ + (251 + sidebarOffsetW) + """px;
+  """ + sidebarLocation[1] + """: auto;
+  """ + (if sidebarLocation[0] == "left" then "left: -1px" else "right: " + (251 + sidebarOffsetW) + "px") + """;
   position: fixed;
   """ + agent + """transform: rotate(90deg);
   """ + agent + """transform-origin: bottom right;

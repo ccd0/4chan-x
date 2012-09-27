@@ -1,4 +1,5 @@
 Config =
+# Depending on the category, the following objects are used to store default settings, generate layouts, and hold the various settings available for appchan x.
   main:
 
     Enhancing:
@@ -227,14 +228,15 @@ Config =
       'Underline Links':           [true,              'Put lines under hyperlinks.']
 
     Layout:
-      '4chan Banner':              ['at sidebar top',      'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'at top', 'hide']]
-      'Board Logo':                ['at sidebar top',      'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'hide']]
+      '4chan Banner':              ['at sidebar top',  'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'at top', 'hide']]
+      'Board Logo':                ['at sidebar top',  'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'hide']]
       'Compact Post Form Inputs':  [true,              'Use compact inputs on the post form.']
       'Expand Post Form Textarea': [true,              'Expands the post form text area when in use.']
       'Images Overlap Post Form':  [true,              'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".']
       'Fit Width Replies':         [true,              'Replies fit the entire width of the page.']
       'Page Margin':               ['fully centered',  'Additional layout options, allowing you to center the page or use additional page margins. Disabling the sidebar will cause this option to affect both sides of the page, essentially centering the page content with all options.', ['none', 'small', 'medium', 'large', 'fully centered']]
       'Reply Spacing':             ['small',           'The amount of space between replies.', ['none', 'small', 'medium', 'large']]
+      'Sidebar Location':          ['right',           'The side of the page the sidebar content is on. It is highly recommended that you do not hide the sidebar if you change this option.', ['left', 'right']]
       'Sidebar':                   ['normal',          'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['normal', 'large', 'hide']]
 
   theme        : 'Yotsuba B'

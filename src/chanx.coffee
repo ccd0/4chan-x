@@ -1062,6 +1062,10 @@ Updater =
       if Conf['Verbose']
         Updater.set 'count', '+0'
         Updater.timer.hidden = false
+      else if Conf['Style']
+        Updater.set 'count', '+0'
+        Updater.count.className = ''
+        Updater.timer.hidden = true
       else
         Updater.set 'count', 'Thread Updater'
         Updater.count.className = ''
