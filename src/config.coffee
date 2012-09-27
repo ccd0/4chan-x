@@ -236,6 +236,7 @@ Config =
       'Fit Width Replies':         [true,              'Replies fit the entire width of the page.']
       'Page Margin':               ['fully centered',  'Additional layout options, allowing you to center the page or use additional page margins. Disabling the sidebar will cause this option to affect both sides of the page, essentially centering the page content with all options.', ['none', 'small', 'medium', 'large', 'fully centered']]
       'Reply Spacing':             ['small',           'The amount of space between replies.', ['none', 'small', 'medium', 'large']]
+      'Reply Padding':             ['normal',          'The padding around post content of replies.', ['phat', 'normal', 'slim', 'super slim', 'anorexia']]
       'Sidebar Location':          ['right',           'The side of the page the sidebar content is on. It is highly recommended that you do not hide the sidebar if you change this option.', ['left', 'right']]
       'Sidebar':                   ['normal',          'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['normal', 'large', 'hide']]
 

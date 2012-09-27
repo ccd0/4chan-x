@@ -2104,6 +2104,38 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 """
 
+      switch Conf["Reply Padding"]
+        when "phat"
+          css += """
+form .postContainer blockquotee {
+  margin: 24px 60px 24px 50px
+}
+"""
+        when "normal"
+          css += """
+form .postContainer blockquote {
+  margin: 12px 40px 12px 30px
+}
+"""
+        when "slim"
+          css += """
+form .postContainer blockquote {
+  margin: 6px 20px 6px 15px
+}
+"""
+        when "super slim"
+          css += """
+form .postContainer blockquote {
+  margin: 3px 10px 3px 7px
+}
+"""
+        when "anorexia"
+          css += """
+form .postContainer blockquote {
+  margin: 1px 5px 1px 3px
+}
+"""
+
       switch Conf["Post Form Style"]
         when "fixed"
           css += """
@@ -2236,9 +2268,6 @@ form .replyContainer:hover .sideArrows {
   opacity: 1;
   """ + agent + """transition: opacity .3s ease-in 0s;
 }
-form .postContainer blockquote {
-  margin-left: 30px;
-}
 div.reply {
   padding-top: 6px;
   padding-left: 10px;
@@ -2342,9 +2371,6 @@ div.reply {
 }
 .sideArrows {
   margin-right: 2px;
-}
-form .postContainer blockquote {
-  margin-left: 30px;
 }
 """
 

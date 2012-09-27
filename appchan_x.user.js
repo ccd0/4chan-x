@@ -262,6 +262,7 @@
         'Fit Width Replies': [true, 'Replies fit the entire width of the page.'],
         'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins. Disabling the sidebar will cause this option to affect both sides of the page, essentially centering the page content with all options.', ['none', 'small', 'medium', 'large', 'fully centered']],
         'Reply Spacing': ['small', 'The amount of space between replies.', ['none', 'small', 'medium', 'large']],
+        'Reply Padding': ['normal', 'The padding around post content of replies.', ['phat', 'normal', 'slim', 'super slim', 'anorexia']],
         'Sidebar Location': ['right', 'The side of the page the sidebar content is on. It is highly recommended that you do not hide the sidebar if you change this option.', ['left', 'right']],
         'Sidebar': ['normal', 'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['normal', 'large', 'hide']]
       }
@@ -7830,6 +7831,22 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
           case "hide":
             css += ".boardTitle,\n.boardSubtitle {\n  display: none;\n}";
         }
+        switch (Conf["Reply Padding"]) {
+          case "phat":
+            css += "form .postContainer blockquotee {\n  margin: 24px 60px 24px 50px\n}";
+            break;
+          case "normal":
+            css += "form .postContainer blockquote {\n  margin: 12px 40px 12px 30px\n}";
+            break;
+          case "slim":
+            css += "form .postContainer blockquote {\n  margin: 6px 20px 6px 15px\n}";
+            break;
+          case "super slim":
+            css += "form .postContainer blockquote {\n  margin: 3px 10px 3px 7px\n}";
+            break;
+          case "anorexia":
+            css += "form .postContainer blockquote {\n  margin: 1px 5px 1px 3px\n}";
+        }
         switch (Conf["Post Form Style"]) {
           case "fixed":
             css += "#qrtab {\n  display: none;\n}\n#qr {" + sidebarLocation[0] + ": 2px !important;" + sidebarLocation[1] + ": auto !important;\n}";
@@ -7844,9 +7861,9 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
             css += "#qrtab {\n  display: none;\n}\n#qr {" + sidebarLocation[0] + ": 2px !important;" + sidebarLocation[1] + ": auto !important;\nopacity: 0.2;" + agent + "transition: opacity .3s ease-in-out 1s;\n}\n#qr:hover,\n#qr.focus,\n#qr.dump {\n  opacity: 1;" + agent + "transition: opacity .3s linear;\n}";
         }
         if (Conf["Fit Width Replies"]) {
-          css += ".summary {\n  clear: both;\n  padding-left: 20px;\n  display: block;\n}\n.replyContainer {\n  clear: both;\n}\n.sideArrows {\n  z-index: 1;\n  position: absolute;\n  right: 0px;\n  height: 10px;\n  padding-top: 1px;\n}\ndiv.postInfo {\n  margin: 1px 0 0;\n  position: relative;\n  width: 100%;\n}\n.sideArrows a,\n.sideArrows span {\n  position: static;\n  font-size: 9px;\n  height: 10px;\n  width: 20px;\n}\n.sideArrows,\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  opacity: 0;\n}\nform .replyContainer:not(:hover) div.reply .report_button,\nform .replyContainer:not(:hover) div.reply .menu_button,\nform .replyContainer:not(:hover) .sideArrows {" + agent + "transition: opacity .3s ease-out 0s;\n}\nform .replyContainer:hover div.reply .report_button,\nform .replyContainer:hover div.reply .menu_button,\nform .replyContainer:hover .sideArrows {\n  opacity: 1;" + agent + "transition: opacity .3s ease-in 0s;\n}\nform .postContainer blockquote {\n  margin-left: 30px;\n}\ndiv.reply {\n  padding-top: 6px;\n  padding-left: 10px;\n}\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  position: absolute;\n  right: 6px;\n  top: -1px;\n  font-size: 9px;\n}\n.sideArrows a {\n  position: absolute;\n  right: 20px;\n  top: 7px;\n}\ndiv.reply .inline .menu_button,\ndiv.reply .inline .sideArrows,\ndiv.reply .inline .sideArrows a,\ndiv.reply .inline .rice {\n  position: static;\n  opacity: 1;\n}\n.sideArrows a {\n  font-size: 9px;\n}\ndiv.thread {\n  padding: 0;\n  position: relative;\n}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n  width: 100%;\n}\ndiv.reply {\n  display: table;\n  clear: both;\n}\ndiv.sideArrows {\n  float: none;\n}\n.hide_thread_button {\n  position: relative;\n  z-index: 2;\n  margin-right: 10px;\n  margin-left: 5px;\n  font-size: 9px;\n}\n.opContainer input {\n  opacity: 1;\n}\n#options.reply {\n  display: inline-block;\n}";
+          css += ".summary {\n  clear: both;\n  padding-left: 20px;\n  display: block;\n}\n.replyContainer {\n  clear: both;\n}\n.sideArrows {\n  z-index: 1;\n  position: absolute;\n  right: 0px;\n  height: 10px;\n  padding-top: 1px;\n}\ndiv.postInfo {\n  margin: 1px 0 0;\n  position: relative;\n  width: 100%;\n}\n.sideArrows a,\n.sideArrows span {\n  position: static;\n  font-size: 9px;\n  height: 10px;\n  width: 20px;\n}\n.sideArrows,\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  opacity: 0;\n}\nform .replyContainer:not(:hover) div.reply .report_button,\nform .replyContainer:not(:hover) div.reply .menu_button,\nform .replyContainer:not(:hover) .sideArrows {" + agent + "transition: opacity .3s ease-out 0s;\n}\nform .replyContainer:hover div.reply .report_button,\nform .replyContainer:hover div.reply .menu_button,\nform .replyContainer:hover .sideArrows {\n  opacity: 1;" + agent + "transition: opacity .3s ease-in 0s;\n}\ndiv.reply {\n  padding-top: 6px;\n  padding-left: 10px;\n}\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  position: absolute;\n  right: 6px;\n  top: -1px;\n  font-size: 9px;\n}\n.sideArrows a {\n  position: absolute;\n  right: 20px;\n  top: 7px;\n}\ndiv.reply .inline .menu_button,\ndiv.reply .inline .sideArrows,\ndiv.reply .inline .sideArrows a,\ndiv.reply .inline .rice {\n  position: static;\n  opacity: 1;\n}\n.sideArrows a {\n  font-size: 9px;\n}\ndiv.thread {\n  padding: 0;\n  position: relative;\n}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n  width: 100%;\n}\ndiv.reply {\n  display: table;\n  clear: both;\n}\ndiv.sideArrows {\n  float: none;\n}\n.hide_thread_button {\n  position: relative;\n  z-index: 2;\n  margin-right: 10px;\n  margin-left: 5px;\n  font-size: 9px;\n}\n.opContainer input {\n  opacity: 1;\n}\n#options.reply {\n  display: inline-block;\n}";
         } else {
-          css += ".sideArrows a {\n  font-size: 9px;\n}\n.sideArrows a {\n  position: static;\n}\ndiv.reply {\n  padding-right: 5px;\n}\n.sideArrows {\n  margin-right: 5px;\n  float: left;\n}\n.sideArrows a {\n  font-size: 12px;\n}\n.hide_thread_button {\n  position: relative;\n  z-index: 2;\n  margin-right: 5px;\n}\ndiv.reply {\n  padding-top: 5px;\n  padding-left: 2px;\n  display: table;\n}\ndiv.thread {\n  overflow: visible;\n  padding: 0;\n  position: relative;\n}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n}\n.thread > div > .post {\n  overflow: visible;\n}\n.sideArrows span {\n  font-size: 9px;\n}\ndiv.reply {\n  padding-top: 6px;\n  padding-left: 8px;\n}\n.sideArrows {\n  margin-right: 2px;\n}\nform .postContainer blockquote {\n  margin-left: 30px;\n}";
+          css += ".sideArrows a {\n  font-size: 9px;\n}\n.sideArrows a {\n  position: static;\n}\ndiv.reply {\n  padding-right: 5px;\n}\n.sideArrows {\n  margin-right: 5px;\n  float: left;\n}\n.sideArrows a {\n  font-size: 12px;\n}\n.hide_thread_button {\n  position: relative;\n  z-index: 2;\n  margin-right: 5px;\n}\ndiv.reply {\n  padding-top: 5px;\n  padding-left: 2px;\n  display: table;\n}\ndiv.thread {\n  overflow: visible;\n  padding: 0;\n  position: relative;\n}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n}\n.thread > div > .post {\n  overflow: visible;\n}\n.sideArrows span {\n  font-size: 9px;\n}\ndiv.reply {\n  padding-top: 6px;\n  padding-left: 8px;\n}\n.sideArrows {\n  margin-right: 2px;\n}";
         }
         switch (Conf["Page Margin"]) {
           case "none":
