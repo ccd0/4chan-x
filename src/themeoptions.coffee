@@ -16,7 +16,7 @@ ThemeTools =
       editTheme["Author"] = "Author"
       editTheme["Author Tripcode"] = "Unknown"
     else
-      editTheme = userThemes[key]
+      editTheme = JSON.parse(JSON.stringify(userThemes[key]))
       editTheme["Theme"] = key
 
     #Objects are not guaranteed to have any type of arrangement, so we use a presorted

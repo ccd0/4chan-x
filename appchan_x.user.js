@@ -7189,7 +7189,7 @@
         editTheme["Author"] = "Author";
         editTheme["Author Tripcode"] = "Unknown";
       } else {
-        editTheme = userThemes[key];
+        editTheme = JSON.parse(JSON.stringify(userThemes[key]));
         editTheme["Theme"] = key;
       }
       layout = ["Background Image", "Background Attachment", "Background Position", "Background Repeat", "Background Color", "Thread Wrapper Background", "Thread Wrapper Border", "Dialog Background", "Dialog Border", "Reply Background", "Reply Border", "Highlighted Reply Background", "Highlighted Reply Border", "Backlinked Reply Outline", "Input Background", "Input Border", "Hovered Input Background", "Hovered Input Border", "Focused Input Background", "Focused Input Border", "Checkbox Background", "Checkbox Border", "Checkbox Checked Background", "Buttons Background", "Buttons Border", "Navigation Background", "Navigation Border", "Links", "Hovered Links", "Quotelinks", "Backlinks", "Navigation Links", "Hovered Navigation Links", "Names", "Tripcodes", "Emails", "Subjects", "Text", "Inputs", "Post Numbers", "Greentext", "Sage", "Board Title", "Timestamps", "Warnings", "Shadow Color"];
@@ -7509,7 +7509,7 @@
     dialog: function(key) {
       var dialog, div, item, layout, name, option, optionHTML, value, _i, _len, _ref;
       editMode = "mascot";
-      editMascot = userMascots[key] || {};
+      editMascot = JSON.parse(JSON.stringify(userMascots[key])) || {};
       editMascot.name = key || '';
       MascotTools.addMascot(editMascot);
       Style.addStyle(Conf["theme"]);

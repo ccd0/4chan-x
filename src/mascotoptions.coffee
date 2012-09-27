@@ -41,7 +41,7 @@ MascotTools =
 
   dialog: (key) ->
     editMode = "mascot"
-    editMascot = userMascots[key] or {}
+    editMascot = JSON.parse(JSON.stringify(userMascots[key])) or {}
     editMascot.name = key or ''
     MascotTools.addMascot editMascot
     Style.addStyle Conf["theme"]
