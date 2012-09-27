@@ -7590,7 +7590,15 @@
     },
     input: function(item, name) {
       var div, value;
-      value = editMascot[name] || item[1];
+      if (Array.isArray(editMascot[name])) {
+        if (userThemes && userThemes[Conf['theme']] && userThemes[Conf['theme']]['Dark Theme'] === '1' && Conf["Style"]) {
+          value = editMascot[name][0];
+        } else {
+          value = editMascot[name][1];
+        }
+      } else {
+        value = editMascot[name];
+      }
       div = $.el("div", {
         className: "mascotvar",
         innerHTML: "<h2>" + item[0] + "</h2><span class=description>" + item[2] + "</span><div class=option><input type=" + item[3] + " class=field name='" + name + "' placeholder='" + item[0] + "' value='" + value + "'></div>"
