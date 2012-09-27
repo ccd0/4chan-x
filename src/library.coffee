@@ -71,7 +71,11 @@ http://api.jquery.com/
 not chainable
 ###
 $ = (selector, root=d.body) ->
-  root.querySelector selector
+  if root? and result = root.querySelector selector
+    return result
+  else
+    console.log "#{selector} @ #{root} does not exist."
+    return null
 
 $.extend = (object, properties) ->
   for key, val of properties
@@ -259,4 +263,8 @@ $.extend $,
       window.open location.protocol + url, '_blank'
 
 $$ = (selector, root=d.body) ->
-  Array::slice.call root.querySelectorAll selector
+  if root? and result = Array::slice.call root.querySelectorAll selector
+    return result
+  else
+    console.log "#{selector} @ #{root} does not exist."
+    return null

@@ -1791,10 +1791,16 @@
 
 
   $ = function(selector, root) {
+    var result;
     if (root == null) {
       root = d.body;
     }
-    return root.querySelector(selector);
+    if ((root != null) && (result = root.querySelector(selector))) {
+      return result;
+    } else {
+      console.log("" + selector + " @ " + root + " does not exist.");
+      return null;
+    }
   };
 
   $.extend = function(object, properties) {
@@ -2070,10 +2076,16 @@
   });
 
   $$ = function(selector, root) {
+    var result;
     if (root == null) {
       root = d.body;
     }
-    return Array.prototype.slice.call(root.querySelectorAll(selector));
+    if ((root != null) && (result = Array.prototype.slice.call(root.querySelectorAll(selector)))) {
+      return result;
+    } else {
+      console.log("" + selector + " @ " + root + " does not exist.");
+      return null;
+    }
   };
 
   Options = {
