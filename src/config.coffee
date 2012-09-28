@@ -61,8 +61,8 @@ Config =
       'Remember QR size':             [false, 'Remember the size of the Quick reply (Firefox only).']
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
-      'Hide Original Post Form':      [true,  'Replace the normal post form with a shortcut to open the QR. <span class=disabledwarning><code>Style</code> is enabled. This option will be disabled regardless of this setting\'s value.</span>']
       'Remember Sage':                [false, 'Remember email even if it contains sage.']
+      'Hide Original Post Form':      [true,  'Replace the normal post form with a shortcut to open the QR. <span class=disabledwarning><code>Style</code> is enabled. This option will be disabled regardless of this setting\'s value.</span>']
       'Markdown':                     [false, 'Code, italic, bold, italic bold, double struck - `, *, **, ***, ||, respectively. _ can be used instead of *. <span class=warning><code>Markdown</code> is currently blocked server-side on /g/, and using it will simply remove markdowned elements from your post.</style>']
 
     Quoting:
