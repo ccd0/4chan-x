@@ -798,6 +798,25 @@ label {
   font-size: 12px;
   text-decoration: none;
 }
+#credits a,
+.abbr a,
+.backlink:not(.filtered),
+.chanlinkify,
+.file a,
+.pages,
+.pages a,
+.quotejs,
+.quotelink:not(.filtered),
+.quotelink:not(.filtered),
+.useremail,
+a,
+a.deadlink,
+a[href*="//dis"],
+a[href*=res],
+div.post > blockquote .chanlinkify.YTLT-link.YTLT-text,
+div.postContainer span.postNum > .replylink {
+  text-decoration: """ + (if Conf["Underline Links"] then "underline" else "none") + """;
+}
 .filtered {
   text-decoration: line-through;
 }
@@ -2623,28 +2642,6 @@ td[style="border: 1px dashed;"] {
   top: """ + ( 100 + logoOffset) + """px !important;
 }
 """
-      if Conf["Underline Links"]
-        css += """
-#credits a,
-.abbr a,
-.backlink:not(.filtered),
-.chanlinkify,
-.file a,
-.pages,
-.pages a,
-.quotejs,
-.quotelink:not(.filtered),
-.quotelink:not(.filtered),
-.useremail,
-a.deadlink,
-a[href*="//dis"],
-a[href*=res],
-div.post > blockquote .chanlinkify.YTLT-link.YTLT-text,
-div.postContainer span.postNum > .replylink {
-  text-decoration: underline;
-}
-"""
-
       switch Conf["Slideout Navigation"]
         when "compact"
           css += """
