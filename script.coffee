@@ -1925,6 +1925,7 @@ QR =
       onerror: ->
         # Connection error, or
         # CORS disabled error on www.4chan.org/banned
+        QR.cooldown.auto = false
         QR.status()
         QR.error $.el 'a',
           href: '//www.4chan.org/banned',

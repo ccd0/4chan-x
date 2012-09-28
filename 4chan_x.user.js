@@ -2479,6 +2479,7 @@
           return QR.response(this.response);
         },
         onerror: function() {
+          QR.cooldown.auto = false;
           QR.status();
           return QR.error($.el('a', {
             href: '//www.4chan.org/banned',
