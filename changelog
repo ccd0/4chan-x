@@ -7,8 +7,10 @@ master
   - Sidebar Location
     * Move the sidebar to the other side of the window!
   - Reply Padding:
-    * Add or remove padding of the reply content! 
-  New options for board logo and banner positions.
+    * Add or remove padding of the reply content!
+  - Icon Orientation
+    * Set the icons to horizontal or vertical.
+  New options for board logo and banner positions, sidebar width, and margin sizes.
   Silhouettes are back and now switch between dark and light versions on-the-fly.
   Fixed the Spoiler Image checkbox.
 

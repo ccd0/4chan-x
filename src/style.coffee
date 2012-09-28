@@ -815,6 +815,14 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {
   z-index: 999 !important;
 }
 #qp {
+  z-index: 104 !important;
+}
+body > form #imgControls,
+body > form #imgControls * {
+  z-index: 103 !important;
+}
+#navtopright .settingsWindowLink::after,
+body > a[style="cursor: pointer; float: right;"]::after {
   z-index: 102 !important;
 }
 #autoPagerBorderPaging,
@@ -835,9 +843,6 @@ html .subMenu {
 div.navLinks > a:first-of-type::after {
   z-index: 99 !important;
 }
-body > form #imgControls {
-  z-index: 98 !important;
-}
 .fileText ~ a > img + img {
   z-index: 96 !important;
 }
@@ -849,10 +854,8 @@ body > form #imgControls {
 #updater {
   z-index: 10 !important;
 }
-#boardNavDesktopFoot::after,
 #navtopright,
-.qrMessage,
-#navtopright .settingsWindowLink::after {
+.qrMessage {
   z-index: 6 !important;
 }
 #stats,
@@ -874,76 +877,26 @@ div.reply.highlight {
   """ + agent + """box-sizing: border-box;
   box-sizing: border-box;
 }
-/* ICON POSITIONS */
-/* 4sight */
-body > a[style="cursor: pointer; float: right;"]::after {
-  font-size: 12px;
-  position: fixed;
-  """ + (if sidebarLocation[0] == "left" then "left: " + (231 + sidebarOffsetW) + "px" else "right: 2px") + """;
-  opacity: 0.4;
-  visibility: visible;
-}
-body > a[style="cursor: pointer; float: right;"]:hover::after {
-  opacity: 1;
-}
-/* 4chan X Options / 4chan Options */
-#navtopright .settingsWindowLink::after {
-  visibility: visible;
-  position: fixed;
-  """ + (if sidebarLocation[0] == "left" then "left: " + (212 + sidebarOffsetW) + "px" else "right: 21px") + """;
-  opacity: 0.4;
-}
-#navtopright .settingsWindowLink:hover::after {
-  opacity: 1;
-}
-/* Slideout Navigation */
-#boardNavDesktopFoot::after {
-  border: none;
-  position: fixed;
-  """ + (if sidebarLocation[0] == "left" then "left: " + (193 + sidebarOffsetW) + "px" else "right: 40px") + """;
-  opacity: 0.4;
-}
-#boardNavDesktopFoot:hover::after {
-  opacity: 1;
-}
-/* Watcher */
-#watcher::before {
-  font-size: 12px;
-  position: fixed;
-  """ + (if sidebarLocation[0] == "left" then "left: " + (175 + sidebarOffsetW) + "px" else "right: 59px") + """;
-  opacity: 0.4;
-}
-#watcher:hover::before {
-  opacity: 1;
-  cursor: pointer;
-}
-/* Global Message */
-.globalMessage::before {
-  position: fixed;
-""" + (if sidebarLocation[0] == "left" then "left: " + (155 + sidebarOffsetW) + "px" else "right: 78px") + """;
-  opacity: 0.4;
-}
-/* Back */
-div.navLinks > a:first-of-type::after {
-  visibility: visible;
-  position: fixed;
-  cursor: pointer;
-  """ + agent + """transform: scale(.8);
-  """ + (if sidebarLocation[0] == "left" then "left: 2px" else "right: " + (228 + sidebarOffsetW) + "px") + """;
-  opacity: 0.4;
-}
-.globalMessage:hover::before {
-  opacity: 1;
-}
-div.navLinks > a:first-of-type:hover::after {
-  opacity: 1;
-}
 /* Expand Images */
 #imgControls label:first-of-type::after {
-  opacity: 0.4;
   display: inline-block;
   margin-top: 4px;
 }
+body > a[style="cursor: pointer; float: right;"]::after,
+#navtopright .settingsWindowLink::after,
+#boardNavDesktopFoot::after,
+#watcher::before,
+.globalMessage::before,
+div.navLinks > a:first-of-type::after,
+#imgControls label:first-of-type::after {
+  opacity: 0.4;
+}
+body > a[style="cursor: pointer; float: right;"]:hover::after,
+#navtopright .settingsWindowLink:hover::after,
+#boardNavDesktopFoot:hover::after,
+.globalMessage:hover::before,
+div.navLinks > a:first-of-type:hover::after,
+#watcher:hover::before,
 #imgControls label:hover:first-of-type::after {
   opacity: 1;
 }
@@ -1011,13 +964,13 @@ a.yuimenuitemlabel {
   color: transparent;
   width: auto;
 }
-#boardNavDesktop{
+#boardNavDesktop {
   text-align: center;
   width: auto;
   padding-right: 0px;
   margin-right: 0px;
   padding-top: 1px;
-  padding-bottom: 3px;
+  padding-bottom: 1px;
 }
 #boardNavDesktopFoot {
   visibility: visible;
@@ -1347,11 +1300,6 @@ div.navLinks {
   position: fixed;
   cursor: default;
 }
-#navlinks {
-  top: 0 !important;
-  """ + (if sidebarLocation[0] == "left" then "left: " + (175 + sidebarOffsetW) + "px" else "right: 64px") + """ !important;
-  """ + sidebarLocation[1] + """: auto !important;
-}
 #updater {
   """ + (if sidebarLocation[0] == "left" then "left: " + (186 + sidebarOffsetW) + "px" else "right: 4px") + """ !important;
   top: """ + (if Conf["Updater Position"] == "top" then "0" else "auto") + """ !important;
@@ -1385,10 +1333,9 @@ div.navLinks {
 }
 /* 4sight */
 body > a[style="cursor: pointer; float: right;"] {
-  visibility: hidden;
-  width: 0;
-  height: 0;
-  overflow: hidden;
+  position: fixed;
+  top: -1000px;
+  left: -1000px;
 }
 body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] {
   display: block;
@@ -2050,12 +1997,47 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 """
 
-      css += """
-.globalMessage,
-#boardNavDesktopFoot,
-#watcher {
+      if Conf["Icon Orientation"] == "horizontal"
+        css += """
+/* 4chan X Options */
+#navtopright .settingsWindowLink::after {
+  visibility: visible;
   position: fixed;
-  top: """ + (38 + logoOffset) + """px;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (231 + sidebarOffsetW) + "px" else "right:  2px") + """;
+}
+/* Slideout Navigation */
+#boardNavDesktopFoot::after {
+  border: none;
+  position: fixed;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (212 + sidebarOffsetW) + "px" else "right: 21px") + """;
+}
+/* Global Message */
+.globalMessage::before {
+  position: fixed;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (193 + sidebarOffsetW) + "px" else "right: 40px") + """;
+}
+/* Watcher */
+#watcher::before {
+  position: fixed;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (175 + sidebarOffsetW) + "px" else "right: 59px") + """;
+  cursor: pointer;
+}
+/* 4sight */
+body > a[style="cursor: pointer; float: right;"]::after {
+  position: fixed;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (155 + sidebarOffsetW) + "px" else "right: 78px") + """;
+}
+/* Back */
+div.navLinks > a:first-of-type::after {
+  visibility: visible;
+  position: fixed;
+  cursor: pointer;
+  """ + (if sidebarLocation[0] == "left" then "left: 2px" else "right: " + (228 + sidebarOffsetW) + "px") + """;
+}
+#navlinks {
+  top: 0 !important;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (175 + sidebarOffsetW) + "px" else "right: 64px") + """ !important;
+  """ + sidebarLocation[1] + """: auto !important;
 }
 #boardNavDesktopFoot::after,
 #navtopright .settingsWindowLink::after,
@@ -2065,6 +2047,88 @@ body > a[style="cursor: pointer; float: right;"]::after {
 div.navLinks > a:first-of-type::after,
 body > a[style="cursor: pointer; float: right;"]::after {
   top: """ + (21 + logoOffset) + """px !important;
+}
+.globalMessage,
+#boardNavDesktopFoot,
+#watcher {
+  position: fixed;
+  top: """ + (38 + logoOffset) + """px !important;
+  z-index: 98 !important;
+}
+.globalMessage:hover,
+#boardNavDesktopFoot:hover,
+#watcher:hover {
+  z-index: 99 !important;
+}
+"""
+      else
+        css += """
+/* 4chan X Options */
+#navtopright .settingsWindowLink::after {
+  visibility: visible;
+  position: fixed;
+  top: """ + (21 + logoOffset) + """px !important;
+}
+/* Slideout Navigation */
+#boardNavDesktopFoot,
+#boardNavDesktopFoot::after {
+  border: none;
+  position: fixed;
+  top: """ + (40 + logoOffset) + """px !important;
+}
+/* Global Message */
+.globalMessage,
+.globalMessage::before {
+  position: fixed;
+  top: """ + (59 + logoOffset) + """px !important;
+}
+/* Watcher */
+#watcher,
+#watcher::before {
+  position: fixed;
+  top: """ + (78 + logoOffset) + """px !important;
+  cursor: pointer;
+}
+/* 4sight */
+body > a[style="cursor: pointer; float: right;"]::after {
+  position: fixed;
+  top: """ + (97 + logoOffset) + """px !important;
+}
+/* Back */
+div.navLinks > a:first-of-type::after {
+  visibility: visible;
+  position: fixed;
+  cursor: pointer;
+  top: """ + (116 + logoOffset) + """px !important;
+}
+#navlinks {
+  top: """ + (135 + logoOffset) + """px !important;
+  """ + sidebarLocation[1] + """: auto !important;
+}
+#navlinks a {
+  display: block;
+  clear: both;
+}
+#navlinks,
+#navtopright .settingsWindowLink::after,
+#boardNavDesktopFoot,
+#boardNavDesktopFoot::after,
+#watcher,
+#watcher::before,
+.globalMessage,
+.globalMessage::before,
+body > a[style="cursor: pointer; float: right;"]::after,
+div.navLinks > a:first-of-type::after {
+  """ + sidebarLocation[0] + """: 3px !important;
+}
+#boardNavDesktopFoot {
+  z-index: 97 !important;
+}
+.globalMessage {
+  z-index: 98 !important;
+}
+#watcher {
+  z-index: """ + (if Conf["Slideout Watcher"] then "99" else "96") + """ !important;
 }
 """
 
@@ -2255,10 +2319,6 @@ div.postInfo {
 div.reply .report_button,
 div.reply .menu_button {
   opacity: 0;
-}
-form .replyContainer:not(:hover) div.reply .report_button,
-form .replyContainer:not(:hover) div.reply .menu_button,
-form .replyContainer:not(:hover) .sideArrows {
   """ + agent + """transition: opacity .3s ease-out 0s;
 }
 form .replyContainer:hover div.reply .report_button,
@@ -2376,6 +2436,8 @@ div.reply {
       switch Conf["Page Margin"]
         when "none"
           pagemargin = "2px"
+        when "minimal"
+          pagemargin = "25px"
         when "small"
           pagemargin = "50px"
         when "medium"
@@ -2388,7 +2450,21 @@ div.reply {
       if editMode == "theme"
         pagemargin = "300px"
 
-      if Conf["Sidebar"] != "hide"
+      if Conf["Sidebar"]  == "minimal"
+        css += """
+body {
+  margin-top: 1px;
+  margin-bottom: 0;
+  margin-""" + sidebarLocation[0] + """: 25px;
+  margin-""" + sidebarLocation[1] + ": " + pagemargin + """;
+}
+#boardNavDesktop,
+.pages {
+  """ + sidebarLocation[0] + """: 25px;
+  """ + sidebarLocation[1] + ": " + pagemargin + """;
+}
+"""
+      else if Conf["Sidebar"] != "hide"
         css += """
 body {
   margin-top: 1px;
@@ -2518,8 +2594,6 @@ td[style="border: 1px dashed;"] {
 }
 #watcher {
   position: fixed;
-  z-index: 98 !important;
-  top: """ + (34 + logoOffset) + """px !important;
   """ + sidebarLocation[0] + """: 2px !important;
   """ + sidebarLocation[1] + """: auto !important;
   bottom: auto !important;
@@ -2531,7 +2605,6 @@ td[style="border: 1px dashed;"] {
   box-sizing: border-box;
 }
 #watcher:hover {
-  z-index: 99 !important;
   height: 400px;
   padding-bottom: 4px;
 }
@@ -2579,7 +2652,6 @@ div.postContainer span.postNum > .replylink {
   border: 0 none !important;
 }
 #boardNavDesktopFoot:hover {
-  z-index: 99 !important;
   height: 84px;
   word-spacing: 3px;
 }
@@ -2597,7 +2669,6 @@ div.postContainer span.postNum > .replylink {
   display: block;
 }
 #boardNavDesktopFoot:hover {
-  z-index: 99 !important;
   height: 300px;
   overflow-y: scroll;
   word-spacing: 0px;
@@ -2710,7 +2781,6 @@ a.useremail[href*="SAGE"]:last-of-type::after {
   width: """ + (248 + sidebarOffsetW) + """px;
   background: """ + theme["Dialog Background"] + """;
   border: 1px solid """ + theme["Dialog Border"]  + """;
-  z-index: 98;
   height: 0px;
   overflow: hidden;
   """ + agent + """transition: height .5s linear;
@@ -2719,7 +2789,6 @@ a.useremail[href*="SAGE"]:last-of-type::after {
 }
 .globalMessage:hover {
   height: 500px;
-  z-index: 99 !important;
 }
 """
         when "hide"
