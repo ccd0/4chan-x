@@ -3234,9 +3234,9 @@
       hidden = d.hidden || d.oHidden || d.mozHidden || d.webkitHidden;
       if (Conf['Optional Increase']) {
         if (!hidden) {
-          Math.max(i, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
+          return Math.max(i, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
         } else {
-          Math.max(bg, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
+          return Math.max(bg, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
         }
       }
       if (!hidden) {
