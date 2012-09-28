@@ -2242,10 +2242,15 @@ DeleteLink =
 
   cooldown:
     start: (e) ->
-      DeleteLink.cooldown.count e.detail.postID, 30
-    count: (postID, seconds) ->
-      return unless 0 <= seconds <= 30
-      setTimeout DeleteLink.cooldown.count, 1000, postID, seconds-1
+      seconds =
+        if g.BOARD is 'q'
+          600
+        else
+          30
+      DeleteLink.cooldown.count e.detail.postID, seconds, seconds
+    count: (postID, seconds, length) ->
+      return unless 0 <= seconds <= length
+      setTimeout DeleteLink.cooldown.count, 1000, postID, seconds-1, length
       {el} = DeleteLink.cooldown
       if seconds is 0
         el?.textContent = 'Delete'

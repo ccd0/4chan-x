@@ -5531,14 +5531,16 @@
     },
     cooldown: {
       start: function(e) {
-        return DeleteLink.cooldown.count(e.detail.postID, 30);
+        var seconds;
+        seconds = g.BOARD === 'q' ? 600 : 30;
+        return DeleteLink.cooldown.count(e.detail.postID, seconds, seconds);
       },
-      count: function(postID, seconds) {
+      count: function(postID, seconds, length) {
         var el;
-        if (!((0 <= seconds && seconds <= 30))) {
+        if (!((0 <= seconds && seconds <= length))) {
           return;
         }
-        setTimeout(DeleteLink.cooldown.count, 1000, postID, seconds - 1);
+        setTimeout(DeleteLink.cooldown.count, 1000, postID, seconds - 1, length);
         el = DeleteLink.cooldown.el;
         if (seconds === 0) {
           if (el != null) {
@@ -6382,29 +6384,36 @@
     },
     cooldown: {
       init: function() {
+        var length, timeout, _ref;
         if (!Conf['Cooldown']) {
           return;
         }
-        QR.cooldown.start($.get("/" + g.BOARD + "/cooldown", 0));
+        _ref = $.get("/" + g.BOARD + "/cooldown", {}), timeout = _ref.timeout, length = _ref.length;
+        if (timeout) {
+          QR.cooldown.start(timeout, length);
+        }
         return $.sync("/" + g.BOARD + "/cooldown", QR.cooldown.start);
       },
-      start: function(timeout) {
+      start: function(timeout, length) {
         var seconds;
         seconds = Math.floor((timeout - Date.now()) / 1000);
-        return QR.cooldown.count(seconds);
+        return QR.cooldown.count(seconds, length);
       },
       set: function(seconds) {
         if (!Conf['Cooldown']) {
           return;
         }
-        QR.cooldown.count(seconds);
-        return $.set("/" + g.BOARD + "/cooldown", Date.now() + seconds * $.SECOND);
+        QR.cooldown.count(seconds, seconds);
+        return $.set("/" + g.BOARD + "/cooldown", {
+          timeout: Date.now() + seconds * $.SECOND,
+          length: seconds
+        });
       },
-      count: function(seconds) {
-        if (!((0 <= seconds && seconds <= 60))) {
+      count: function(seconds, length) {
+        if (!((0 <= seconds && seconds <= length))) {
           return;
         }
-        setTimeout(QR.cooldown.count, 1000, seconds - 1);
+        setTimeout(QR.cooldown.count, 1000, seconds - 1, length);
         QR.cooldown.seconds = seconds;
         if (seconds === 0) {
           $["delete"]("/" + g.BOARD + "/cooldown");
@@ -7153,7 +7162,7 @@
       } else {
         QR.cooldown.auto = QR.replies.length > 1;
         sage = /sage/i.test(reply.email);
-        seconds = g.BOARD === 'q' ? reply.file ? 300 : sage ? 600 : 60 : sage ? 60 : 30;
+        seconds = g.BOARD === 'q' ? sage ? 600 : reply.file ? 300 : 60 : sage ? 60 : 30;
         QR.cooldown.set(seconds);
         if (Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto) {
           $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
