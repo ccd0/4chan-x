@@ -1,4 +1,7 @@
 master
+- noface
+  It is now possible to set a Interval for background tabs.
+  Add Optional increase value for Updater.
 
 2.35.6
 - noface

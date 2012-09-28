@@ -124,6 +124,7 @@
       },
       Monitoring: {
         'Thread Updater': [true, 'Update threads. Has more options in its own dialog.'],
+        'Optional Increase': [false, 'Increase Updater on backgroundtabs.'],
         'Unread Count': [true, 'Show unread post count in tab title'],
         'Unread Favicon': [true, 'Show a different favicon when there are unread posts'],
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
@@ -212,7 +213,8 @@
         'Verbose': [true, 'Show countdown timer, new post count'],
         'Auto Update': [true, 'Automatically fetch new posts']
       },
-      'Interval': 30
+      'Interval': 30,
+      'BGInterval': 60
     }
   };
 
@@ -3038,11 +3040,12 @@
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
       checked = Conf['Auto Update'] ? 'checked' : '';
-      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input type=number name=Interval class=field min=5></label></div>      <div><input value='Update Now' type=button name='Update Now'></div>";
+      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input type=number name=Interval class=field min=1></label></div>      <div><label>BGInterval<input type=number name=BGInterval class=field min=1></label></div>      <div><input value='Update Now' type=button name='Update Now'></div>";
       dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
       this.thread = $.id("t" + g.THREAD_ID);
+      this.unsuccessfulFetchCount = 0;
       this.lastModified = '0';
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3068,6 +3071,11 @@
             $.on(input, 'change', this.cb.interval);
             this.cb.interval.call(input);
             break;
+          case 'BGInterval':
+            input.value = Conf['BGInterval'];
+            $.on(input, 'change', this.cb.interval);
+            this.cb.interval.call(input);
+            break;
           case 'Update Now':
             $.on(input, 'click', this.update);
         }
@@ -3081,6 +3089,7 @@
         if (!Conf['Auto Update This']) {
           return;
         }
+        Updater.unsuccessfulFetchCount = 0;
         return setTimeout(Updater.update, 1000);
       },
       visibility: function() {
@@ -3089,6 +3098,7 @@
         if (state !== 'visible') {
           return;
         }
+        Updater.unsuccessfulFetchCount = 0;
         if (Updater.timer.textContent < -Conf['Interval']) {
           return Updater.set('timer', -Updater.getInterval());
         }
@@ -3148,6 +3158,7 @@
                       This saves bandwidth for both the user and the servers and avoid unnecessary computation.
             */
 
+            Updater.unsuccessfulFetchCount++;
             Updater.set('timer', -Updater.getInterval());
             if (Conf['Verbose']) {
               Updater.set('count', '+0');
@@ -3160,6 +3171,7 @@
             Updater.set('timer', -Updater.getInterval());
             break;
           default:
+            Updater.unsuccessfulFetchCount++;
             Updater.set('timer', -Updater.getInterval());
             if (Conf['Verbose']) {
               Updater.set('count', this.statusText);
@@ -3189,6 +3201,12 @@
           Updater.set('count', "+" + count);
           Updater.count.className = count ? 'new' : null;
         }
+        if (count) {
+          Updater.unsuccessfulFetchCount = 0;
+        } else {
+          Updater.unsuccessfulFetchCount++;
+          return;
+        }
         scroll = Conf['Scrolling'] && Updater.scrollBG() && lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
         $.add(Updater.thread, nodes.reverse());
         if (scroll) {
@@ -3209,8 +3227,23 @@
       }
     },
     getInterval: function() {
-      var i;
-      return i = +Conf['Interval'];
+      var bg, hidden, i, j;
+      i = +Conf['Interval'];
+      bg = +Conf['BGInterval'];
+      j = Math.min(this.unsuccessfulFetchCount, 9);
+      hidden = d.hidden || d.oHidden || d.mozHidden || d.webkitHidden;
+      if (Conf['Optional Increase']) {
+        if (!hidden) {
+          Math.max(i, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
+        } else {
+          Math.max(bg, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
+        }
+      }
+      if (!hidden) {
+        return i;
+      } else {
+        return bg;
+      }
     },
     timeout: function() {
       var n;
@@ -3219,6 +3252,7 @@
       if (n === 0) {
         return Updater.update();
       } else if (n >= Updater.getInterval()) {
+        Updater.unsuccessfulFetchCount++;
         Updater.set('count', 'Retry');
         Updater.count.className = null;
         return Updater.update();

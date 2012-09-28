@@ -35,6 +35,7 @@ Config =
       'Archive Link':                 [true,  'Add an archive link to the menu.']
     Monitoring:
       'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']
+      'Optional Increase':            [false, 'Increase Updater on backgroundtabs.']
       'Unread Count':                 [true,  'Show unread post count in tab title']
       'Unread Favicon':               [true,  'Show a different favicon when there are unread posts']
       'Post in Title':                [true,  'Show the op\'s post in the tab title']
@@ -171,6 +172,7 @@ Config =
       'Verbose':     [true,  'Show countdown timer, new post count']
       'Auto Update': [true,  'Automatically fetch new posts']
     'Interval': 30
+    'BGInterval': 60
 
 Conf = {}
 d = document
@@ -2432,7 +2434,8 @@ Updater =
     checked = if Conf['Auto Update'] then 'checked' else ''
     html += "
       <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
-      <div><label>Interval (s)<input type=number name=Interval class=field min=5></label></div>
+      <div><label>Interval (s)<input type=number name=Interval class=field min=1></label></div>
+      <div><label>BGInterval<input type=number name=BGInterval class=field min=1></label></div>
       <div><input value='Update Now' type=button name='Update Now'></div>"
 
     dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
@@ -2440,6 +2443,8 @@ Updater =
     @count  = $ '#count', dialog
     @timer  = $ '#timer', dialog
     @thread = $.id "t#{g.THREAD_ID}"
+
+    @unsuccessfulFetchCount = 0
     @lastModified = '0'
 
     for input in $$ 'input', dialog
@@ -2459,6 +2464,10 @@ Updater =
           input.value = Conf['Interval']
           $.on input, 'change', @cb.interval
           @cb.interval.call input
+        when 'BGInterval'
+          input.value = Conf['BGInterval']
+          $.on input, 'change', @cb.interval
+          @cb.interval.call input
         when 'Update Now'
           $.on input, 'click', @update
 
@@ -2470,11 +2479,13 @@ Updater =
   cb:
     post: ->
       return unless Conf['Auto Update This']
+      Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 1000
     visibility: ->
       state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
       return if state isnt 'visible'
       # Reset the counter when we focus this tab.
+      Updater.unsuccessfulFetchCount = 0
       if Updater.timer.textContent < -Conf['Interval']
         Updater.set 'timer', -Updater.getInterval()
     interval: ->
@@ -2522,6 +2533,7 @@ Updater =
           By sending the `If-Modified-Since` header we get a proper status code, and no response.
           This saves bandwidth for both the user and the servers and avoid unnecessary computation.
           ###
+          Updater.unsuccessfulFetchCount++
           Updater.set 'timer', -Updater.getInterval()
           if Conf['Verbose']
             Updater.set 'count', '+0'
@@ -2531,6 +2543,7 @@ Updater =
           Updater.cb.update JSON.parse(@response).posts
           Updater.set 'timer', -Updater.getInterval()
         else
+          Updater.unsuccessfulFetchCount++
           Updater.set 'timer', -Updater.getInterval()
           if Conf['Verbose']
             Updater.set 'count', @statusText
@@ -2552,6 +2565,12 @@ Updater =
         Updater.set 'count', "+#{count}"
         Updater.count.className = if count then 'new' else null
 
+      if count
+        Updater.unsuccessfulFetchCount = 0
+      else
+        Updater.unsuccessfulFetchCount++
+        return
+
       scroll = Conf['Scrolling'] and Updater.scrollBG() and
         lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
       $.add Updater.thread, nodes.reverse()
@@ -2569,7 +2588,17 @@ Updater =
       el.textContent = text
 
   getInterval: ->
-    i = +Conf['Interval']
+    i =  +Conf['Interval']
+    bg = +Conf['BGInterval']
+    j = Math.min @unsuccessfulFetchCount, 9
+    hidden = d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
+    if Conf['Optional Increase']
+      unless hidden 
+        Math.max i, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
+      else Math.max bg, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
+    unless hidden
+      return i
+    else bg
 
   timeout: ->
     Updater.timeoutID = setTimeout Updater.timeout, 1000
@@ -2578,6 +2607,7 @@ Updater =
     if n is 0
       Updater.update()
     else if n >= Updater.getInterval()
+      Updater.unsuccessfulFetchCount++
       Updater.set 'count', 'Retry'
       Updater.count.className = null
       Updater.update()
