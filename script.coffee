@@ -2470,7 +2470,7 @@ Updater =
   cb:
     post: ->
       return unless Conf['Auto Update This']
-      setTimeout Updater.update, 500
+      setTimeout Updater.update, 1000
     visibility: ->
       state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
       return if state isnt 'visible'

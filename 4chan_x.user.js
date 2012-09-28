@@ -3081,7 +3081,7 @@
         if (!Conf['Auto Update This']) {
           return;
         }
-        return setTimeout(Updater.update, 500);
+        return setTimeout(Updater.update, 1000);
       },
       visibility: function() {
         var state;
