@@ -6348,6 +6348,8 @@
         if (!Conf['Style']) {
           QR.el.hidden = false;
           return QR.unhide();
+        } else {
+          return QR.el.hidden = false;
         }
       } else {
         return QR.dialog();

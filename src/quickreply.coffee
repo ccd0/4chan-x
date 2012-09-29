@@ -28,6 +28,8 @@ QR =
       unless Conf['Style']
         QR.el.hidden = false
         QR.unhide()
+      else
+        QR.el.hidden = false
     else
       QR.dialog()
 
