@@ -2247,19 +2247,20 @@ Options =
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>
       <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>
     </ul>
-    <div class=warning><code>Unread Favicon</code> is disabled.</div>
-    Unread favicons<br>
-    <select name=favicon>
-      <option value=ferongr>ferongr</option>
-      <option value=xat->xat-</option>
-      <option value=Mayhem>Mayhem</option>
-      <option value=Original>Original</option>
-    </select>
-    <span></span>
-    <div>
-      <br>Test here:<br>
+    <ul>
+      <div class=warning><code>Unread Favicon</code> is disabled.</div>
+      Unread favicons<br>
+      <select name=favicon>
+        <option value=ferongr>ferongr</option>
+        <option value=xat->xat-</option>
+        <option value=Mayhem>Mayhem</option>
+        <option value=Original>Original</option>
+      </select>
+    </ul>
+    <ul>
+      Test here:<br>
       <input name=updateIncrease class=field>
-    </div>
+    </ul>
   </div>
   <input type=radio name=tab hidden id=keybinds_tab>
   <div>
