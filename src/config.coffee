@@ -45,6 +45,7 @@ Config =
 
     Monitoring:
       'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']
+      'Optional Increase':            [false, 'Increase value of Updater over time.']
       'Unread Count':                 [true,  'Show unread post count in tab title']
       'Unread Favicon':               [true,  'Show a different favicon when there are unread posts']
       'Post in Title':                [true,  'Show the op\'s post in the tab title']
@@ -195,7 +196,8 @@ Config =
       'Scroll BG':   [false,    'Scroll background tabs']
       'Verbose':     [true,     'Show countdown timer, new post count']
       'Auto Update': [true,     'Automatically fetch new posts']
-    'Interval': 30
+    'Interval':       30
+    'BGInterval':     60
 
   style:
 

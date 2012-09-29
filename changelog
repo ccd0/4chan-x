@@ -1,6 +1,10 @@
 master
 - Zixaphir
   Linkification (based off of Mayhem's LinkifyPlusfork)
+- noface
+  It is now possible to set a Interval for background tabs.
+  Add Optional increase value for Updater.
+  Don't automatically expand spoilers when using Expand Images. 
 
 0.11beta
 - Mayhem
