@@ -517,9 +517,6 @@ h1,
   resize: vertical;
   width: 100%;
 }
-#updater {
-  text-align: right;
-}
 #updater:not(:hover) {
   border: none;
   background: transparent;
@@ -836,24 +833,18 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {
 #qp {
   z-index: 104 !important;
 }
-body > form #imgControls,
-body > form #imgControls * {
-  z-index: 103 !important;
-}
 #navtopright .settingsWindowLink::after,
 body > a[style="cursor: pointer; float: right;"]::after {
   z-index: 102 !important;
 }
-#autoPagerBorderPaging,
-#boardNavDesktop,
-#ihover,
-#menu.reply.dialog,
-#navlinks,
 #overlay,
 #updater:hover,
 .exPopup,
 html .subMenu {
   z-index: 101 !important;
+}
+#imgControls {
+  z-index: 100 !important;
 }
 .fileThumb {
   z-index: """ + (if Conf["Images Overlap Post Form"] then "100" else "1") + """ !important;
@@ -865,10 +856,14 @@ div.navLinks > a:first-of-type::after {
 .fileText ~ a > img + img {
   z-index: 96 !important;
 }
+#autoPagerBorderPaging,
+#boardNavDesktop,
+#ihover,
+#menu.reply.dialog,
+#navlinks {
+  z-index: 95 !important;
+}
 #boardNavMobile,
-#imageType,
-#imgControls label:first-of-type,
-#imgControls label:first-of-type::after,
 #stats,
 #updater {
   z-index: 10 !important;
@@ -877,7 +872,6 @@ div.navLinks > a:first-of-type::after {
 .qrMessage {
   z-index: 6 !important;
 }
-#stats,
 #watcher,
 #watcher::before,
 .boardTitle,
@@ -895,11 +889,6 @@ div.reply.highlight {
   z-index: 0 !important;
   """ + agent + """box-sizing: border-box;
   box-sizing: border-box;
-}
-/* Expand Images */
-#imgControls label:first-of-type::after {
-  display: inline-block;
-  margin-top: 4px;
 }
 body > a[style="cursor: pointer; float: right;"]::after,
 #navtopright .settingsWindowLink::after,
@@ -1147,7 +1136,6 @@ input[value="Report"] {
   width: 90px;
   position: relative;
   bottom: 1px;
-  background: none;
 }
 /* #qr dimensions */
 #qr {
@@ -1239,31 +1227,32 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
   bottom: -1000px;
   left: -1000px;
 }
-/* Expand Images div */
-#imgControls input {
-  width: 10px;
-  height: 10px;
-  margin: 4px 1px;
-  vertical-align: top;
+/* Expand Images */
+#imgControls {
+  width: 15px;
+  height: 20px;
+  overflow: hidden;
+  """ + agent + """transition: width .2s linear;
+}
+#imgContainer {
+  width: 110px;
+  float: """ + sidebarLocation[0] + """;
+}
+#imgControls:hover {
+  width: 110px;
 }
 #imgControls label {
   font-size: 0;
   color: transparent;
+  float: """ + sidebarLocation[0] + """;
 }
-#imgControls label:first-of-type {
-  position: fixed;
-  """ + (if sidebarLocation[0] == "left" then "left: 4px" else "right: " + (232 + sidebarOffsetW) + "px") + """;
-  top: 0px;
-  bottom: auto;
-}
-#imageType {
-  position: fixed;
-  """ + (if sidebarLocation[0] == "left" then "left: 22px" else "right: " + (140 + sidebarOffsetW) + "px") + """;
-  top: 1px;
-  bottom: auto;
+#imgControls label::after {
+  position: relative;
+  """ + sidebarLocation[0] + """: 2px;
+  top: 2px;
 }
 #imgControls select {
-  float: right;
+  float: """ + sidebarLocation[1] + """;
 }
 #imgControls select > option {
   font-size: 80%;
@@ -1312,27 +1301,17 @@ div.navLinks {
   border-radius: 0;
 }
 #stats {
-  """ + (if sidebarLocation[0] == "left" then "left: 26px" else "right: 97px") + """ !important;
-  """ + sidebarLocation[1] + """: auto !important;
-  width: """ + (122 + sidebarOffsetW) + """px !important;
   font-size: 12px;
   position: fixed;
   cursor: default;
 }
 #updater {
-  """ + (if sidebarLocation[0] == "left" then "left: " + (186 + sidebarOffsetW) + "px" else "right: 4px") + """ !important;
-  top: """ + (if Conf["Updater Position"] == "top" then "0" else "auto") + """ !important;
-  bottom: """ + (if Conf["Updater Position"] == "bottom" then "2px" else "auto") + """ !important;
-  """ + sidebarLocation[1] + """: auto !important;
-  width: 58px !important;
+  width: 40px !important;
   border: 0;
   font-size: 12px;
   overflow: hidden;
-  padding-bottom: 2px;
-}
-#updater {
   background: none;
-  """ + (if sidebarLocation[0] == "left" then "left: " + (244 + sidebarOffsetW) + "px" else "right: 4px") + """;
+  text-align: right;
 }
 #count.new {
   background-color: transparent;
@@ -1619,13 +1598,14 @@ body {
 .suboptions {
   padding: 5px;
 }
+#stats,
+#updater,
 .boardTitle {
   text-shadow:
-    1px 1px 0 """ + theme["Background Color"] + """,
-    -1px 1px 0 """ + theme["Background Color"] + """,
-    1px -1px 0 """ + theme["Background Color"] + """,
-    -1px -1px 0 """ + theme["Background Color"] + """,
-    0px 0px 10px """ + theme["Text"] + """;
+    1px 1px 1px """ + theme["Background Color"] + """,
+    -1px 1px 1px """ + theme["Background Color"] + """,
+    1px -1px 1px """ + theme["Background Color"] + """,
+    -1px -1px 1px """ + theme["Background Color"] + """
 }
 #browse,
 #ft li,
@@ -1992,8 +1972,8 @@ body > a[style="cursor: pointer; float: right;"]::after {
 .boardBanner img {
   position: fixed;
   width: """ + (248 + sidebarOffsetW) + """px;
-  """ + sidebarLocation[0] + """: 19px;
-  right: 2px;
+  top: """ + (if Conf["Icon Orientation"] == "vertical" then "2px" else "19px") + """;
+  """ + sidebarLocation[0] + """: 2px;
 }
 """
         when "at sidebar bottom"
@@ -2021,13 +2001,11 @@ body > a[style="cursor: pointer; float: right;"]::after {
 /* 4chan X Options */
 #navtopright .settingsWindowLink::after {
   visibility: visible;
-  position: fixed;
   """ + (if sidebarLocation[0] == "left" then "left: " + (231 + sidebarOffsetW) + "px" else "right:  2px") + """;
 }
 /* Slideout Navigation */
 #boardNavDesktopFoot::after {
   border: none;
-  position: fixed;
   """ + (if sidebarLocation[0] == "left" then "left: " + (212 + sidebarOffsetW) + "px" else "right: 21px") + """;
 }
 /* Global Message */
@@ -2038,13 +2016,16 @@ body > a[style="cursor: pointer; float: right;"]::after {
 /* Watcher */
 #watcher::before {
   position: fixed;
-  """ + (if sidebarLocation[0] == "left" then "left: " + (175 + sidebarOffsetW) + "px" else "right: 59px") + """;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (174 + sidebarOffsetW) + "px" else "right: 59px") + """;
   cursor: pointer;
+}
+/* Expand Images */
+#imgControls {
+  """ + (if sidebarLocation[0] == "left" then "left: " + (155 + sidebarOffsetW) + "px" else "right: 78px") + """;
 }
 /* 4sight */
 body > a[style="cursor: pointer; float: right;"]::after {
-  position: fixed;
-  """ + (if sidebarLocation[0] == "left" then "left: " + (155 + sidebarOffsetW) + "px" else "right: 78px") + """;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (136 + sidebarOffsetW) + "px" else "right: 97px") + """;
 }
 /* Back */
 div.navLinks > a:first-of-type::after {
@@ -2053,25 +2034,44 @@ div.navLinks > a:first-of-type::after {
   cursor: pointer;
   """ + (if sidebarLocation[0] == "left" then "left: 2px" else "right: " + (228 + sidebarOffsetW) + "px") + """;
 }
+/* Thread Navigation Links */
 #navlinks {
-  top: 0 !important;
-  """ + (if sidebarLocation[0] == "left" then "left: " + (175 + sidebarOffsetW) + "px" else "right: 64px") + """ !important;
+  """ + (if sidebarLocation[0] == "left" then "left: 22px" else "right: " + (198 + sidebarOffsetW) + "px") + """;
   """ + sidebarLocation[1] + """: auto !important;
+  top: -5px !important;
+  width: 30px;
+}
+/* Stats */
+#stats {
+  """ + (if sidebarLocation[0] == "left" then "left: 4px" else "right: " + (196 + sidebarOffsetW) + "px") + """ !important;
+  """ + sidebarLocation[1] + """: auto !important;
+  top: """ + (if Conf["Stats Position"] == "top" then "20px" else "auto") + """ !important;
+  bottom: """ + (if Conf["Stats Position"] == "bottom" then "4px" else "auto") + """ !important;
+  width: 50px;
+  text-align: """ + sidebarLocation[1] + """;
+}
+/* Updater */
+#updater {
+  """ + (if sidebarLocation[0] == "left" then "left: " + (206 + sidebarOffsetW) + "px" else "right: 4px") + """ !important;
+  """ + sidebarLocation[1] + """: auto !important;
+  top: """ + (if Conf["Updater Position"] == "top" then "20px" else "auto") + """ !important;
+  bottom: """ + (if Conf["Updater Position"] == "bottom" then "4px" else "auto") + """ !important;
 }
 #boardNavDesktopFoot::after,
 #navtopright .settingsWindowLink::after,
-#stats,
 #watcher::before,
-.globalMessage::before ,
+.globalMessage::before,
+#imgControls,
 div.navLinks > a:first-of-type::after,
 body > a[style="cursor: pointer; float: right;"]::after {
-  top: """ + (21 + logoOffset) + """px !important;
+  position: fixed;
+  top: 0px !important;
 }
 .globalMessage,
 #boardNavDesktopFoot,
 #watcher {
   position: fixed;
-  top: """ + (38 + logoOffset) + """px !important;
+  top: 38px !important;
   z-index: 98 !important;
 }
 .globalMessage:hover,
@@ -2082,6 +2082,11 @@ body > a[style="cursor: pointer; float: right;"]::after {
 """
       else
         css += """
+/* Image Expansion */
+#imgControls {
+  position: fixed;
+  top: """ + (2 + logoOffset) + """px !important;
+}
 /* 4chan X Options */
 #navtopright .settingsWindowLink::after {
   visibility: visible;
@@ -2120,6 +2125,24 @@ div.navLinks > a:first-of-type::after {
   cursor: pointer;
   top: """ + (116 + logoOffset) + """px !important;
 }
+/* Stats */
+#stats {
+  """ + (if sidebarLocation[0] == "left" then "left: " + (4 + (if Conf["Stats Position"] == "top" and Conf["4chan Banner"] != "at sidebar top" and sidebarLocation[0] == "left" then 15 else 0)) + "px" else "right: " + (196 + sidebarOffsetW) + "px") + """ !important;
+  """ + sidebarLocation[1] + """: auto !important;
+  top: """ + (if Conf["Stats Position"] == "top" then "2px" else "auto") + """ !important;
+  bottom: """ + (if Conf["Stats Position"] == "bottom" then "4px" else "auto") + """ !important;
+  width: 50px;
+  text-align: left;
+  """ + (if Conf["Stats Position"] == "top" then "z-index: 96 !important;") + """
+}
+/* Updater */
+#updater {
+  """ + (if sidebarLocation[0] == "right" then "right: " + (4 + (if Conf["Updater Position"] == "top" and Conf["4chan Banner"] != "at sidebar top" and sidebarLocation[0] == "right" then 15 else 0)) + "px" else "left: " + (206 + sidebarOffsetW) + "px") + """ !important;
+  """ + sidebarLocation[1] + """: auto !important;
+  top: """ + (if Conf["Updater Position"] == "top" then "2px" else "auto") + """ !important;
+  bottom: """ + (if Conf["Updater Position"] == "bottom" then "4px" else "auto") + """ !important;
+  """ + (if Conf["Updater Position"] == "top" then "z-index: 96 !important;") + """
+}
 #navlinks {
   top: """ + (135 + logoOffset) + """px !important;
   """ + sidebarLocation[1] + """: auto !important;
@@ -2136,6 +2159,7 @@ div.navLinks > a:first-of-type::after {
 #watcher::before,
 .globalMessage,
 .globalMessage::before,
+#imgControls,
 body > a[style="cursor: pointer; float: right;"]::after,
 div.navLinks > a:first-of-type::after {
   """ + sidebarLocation[0] + """: 3px !important;
@@ -2157,7 +2181,7 @@ div.navLinks > a:first-of-type::after {
 .boardTitle {
   position: fixed;
   """ + sidebarLocation[0] + """: 2px;
-  top: """ + (45 + logoOffset) + """px;
+  top: """ + ((if Conf["Icon Orientation"] == "vertical" then 33 else 45) + logoOffset) + """px;
   z-index: 1;
   width: """ + (248 + sidebarOffsetW) + """px;
 }
@@ -2587,6 +2611,8 @@ body {
 #options ul,
 #options,
 #qp,
+#stats,
+#updater,
 #watcher,
 .globalMessage,
 .inline div.reply,

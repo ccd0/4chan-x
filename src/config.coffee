@@ -209,7 +209,6 @@ Config =
       'Post Form Style':           ['tabbed slideout', 'How the post form will sit on the page.', ['fixed', 'slideout', 'tabbed slideout', 'transparent fade']]
       'Slideout Navigation':       ['compact',         'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']]
       'Slideout Watcher':          [true,              'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
-      'Updater Position':          ['top',             'The position of 4chan thread updater', ['top', 'bottom']]
 
     Navigation:
       'Boards Navigation':         ['sticky top',      'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']]
@@ -243,7 +242,9 @@ Config =
       'Reply Padding':             ['normal',          'The padding around post content of replies.', ['phat', 'normal', 'slim', 'super slim', 'anorexia']]
       'Sidebar Location':          ['right',           'The side of the page the sidebar content is on. It is highly recommended that you do not hide the sidebar if you change this option.', ['left', 'right']]
       'Sidebar':                   ['normal',          'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['large', 'normal', 'minimal', 'hide']]
-
+      'Stats Position':            ['bottom',          'The position of 4chan thread stats', ['top', 'bottom']]
+      'Updater Position':          ['bottom',          'The position of 4chan thread updater', ['top', 'bottom']]
+      
   theme        : 'Yotsuba B'
   mascot       : ''
   styleenabled : '0'

@@ -1,6 +1,9 @@
 master
 - Zixaphir
   Linkification (based off of Mayhem's LinkifyPlusfork)
+  Various changes to icon layout options.
+  -- They should try to be "smarter" now.
+  Option to move the #stats to the bottom of the page.
 - noface
   It is now possible to set a Interval for background tabs.
   Add Optional increase value for Updater.

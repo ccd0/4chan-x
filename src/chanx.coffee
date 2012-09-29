@@ -2758,7 +2758,7 @@ ImageExpand =
     controls = $.el 'div',
       id: 'imgControls'
       innerHTML:
-        "<select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label>Expand Images<input type=checkbox id=imageExpand></label>"
+        "<div id=imgContainer><select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label>Expand Images<input type=checkbox id=imageExpand></label></div>"
     imageType = $.get 'imageType', 'full'
     select = $ 'select', controls
     select.value = imageType
