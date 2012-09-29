@@ -2081,6 +2081,15 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 """
       else
+        if Conf["Stats Position"] == "top" and Conf["4chan Banner"] != "at sidebar top" and sidebarLocation[0] == "left"
+          statOffset = 15
+          updaterOffset = 0
+        else if Conf["Updater Position"] == "top" and Conf["4chan Banner"] != "at sidebar top" and sidebarLocation[0] == "right"
+          statOffset = 0
+          updaterOffset = 15
+        else
+          statOffset = 0
+          updaterOffset = 0
         css += """
 /* Image Expansion */
 #imgControls {
@@ -2127,7 +2136,7 @@ div.navLinks > a:first-of-type::after {
 }
 /* Stats */
 #stats {
-  """ + (if sidebarLocation[0] == "left" then "left: " + (4 + (if Conf["Stats Position"] == "top" and Conf["4chan Banner"] != "at sidebar top" and sidebarLocation[0] == "left" then 15 else 0)) + "px" else "right: " + (196 + sidebarOffsetW) + "px") + """ !important;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (4 + statOffset) + "px" else "right: " + ((if Conf["Updater Position"] == "top" then (35 + updaterOffset) else (196 + sidebarOffsetW))) + "px") + """ !important;
   """ + sidebarLocation[1] + """: auto !important;
   top: """ + (if Conf["Stats Position"] == "top" then "2px" else "auto") + """ !important;
   bottom: """ + (if Conf["Stats Position"] == "bottom" then "4px" else "auto") + """ !important;
@@ -2137,7 +2146,7 @@ div.navLinks > a:first-of-type::after {
 }
 /* Updater */
 #updater {
-  """ + (if sidebarLocation[0] == "right" then "right: " + (4 + (if Conf["Updater Position"] == "top" and Conf["4chan Banner"] != "at sidebar top" and sidebarLocation[0] == "right" then 15 else 0)) + "px" else "left: " + (206 + sidebarOffsetW) + "px") + """ !important;
+  """ + (if sidebarLocation[0] == "right" then "right: " + (4 + updaterOffset) + "px" else "left: " + ((if Conf["Updater Position"] == "top" then (45 + statOffset) else (206 + sidebarOffsetW))) + "px") + """ !important;
   """ + sidebarLocation[1] + """: auto !important;
   top: """ + (if Conf["Updater Position"] == "top" then "2px" else "auto") + """ !important;
   bottom: """ + (if Conf["Updater Position"] == "bottom" then "4px" else "auto") + """ !important;
