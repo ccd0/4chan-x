@@ -16,7 +16,7 @@ Config =
       'Reply Navigation':             [false, 'Navigate to top / bottom of thread']
       'Style':                        [true,  'Custom theming and styling options.']
       'Custom Navigation':            [false, 'Customize your Navigation bar.']
-      'Check for Updates':            [false, 'Check for updated versions of Appchan X']
+      'Check for Updates':            [true, 'Check for updated versions of Appchan X']
 
     Filtering:
       'Anonymize':                    [false, 'Make everybody anonymous']
