@@ -1,1 +1,1 @@
-postMessage({version:'0.11beta'},'*')
+postMessage({version:'0.12beta'},'*')
