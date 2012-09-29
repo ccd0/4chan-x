@@ -190,7 +190,6 @@ Navigation =
     ["h",      "Hentai",                "//boards.4chan.org/h/"]
     ["hr",     "High Resolution",       "//boards.4chan.org/hr/"]
     ["k",      "Weapons",               "//boards.4chan.org/k/"]
-    ["l",      "Lolicon",               "http://7chan.org/cake/"]
     ["m",      "Mecha",                 "//boards.4chan.org/m/"]
     ["o",      "Auto",                  "//boards.4chan.org/o/"]
     ["p",      "Pictures",              "//boards.4chan.org/p/"]
