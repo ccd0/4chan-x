@@ -2340,7 +2340,7 @@ Options =
     <span></span>
     </ul>
     <ul>
-      Test here:<br>
+      Amounts for Optional Increase<br>
       <input name=updateIncrease class=field>
     </ul>
     <div class=warning><code>Custom Navigation</code> is disabled.</div>
@@ -2806,13 +2806,14 @@ Updater =
     j = Math.min @unsuccessfulFetchCount, 9
     w = Conf['updateIncrease'].split ','
     hidden = d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
-    if Conf['Optional Increase']
-      unless hidden
-        return Math.max i, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]
-      else return Math.max bg, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]
     unless hidden
-      return i
-    else bg
+      if Conf['Optional Increase']
+        return Math.max i, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]
+      else i
+    else
+      if Conf['Optional Increase']
+        return Math.max bg, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]
+      else bg
 
   timeout: ->
     Updater.timeoutID = setTimeout Updater.timeout, 1000

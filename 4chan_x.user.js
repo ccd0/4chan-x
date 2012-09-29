@@ -2873,7 +2873,7 @@
     <span></span>\
     </ul>\
     <ul>\
-      Test here:<br>\
+      Amounts for Optional Increase<br>\
       <input name=updateIncrease class=field>\
     </ul>\
     <div class=warning><code>Custom Navigation</code> is disabled.</div>\
@@ -3394,17 +3394,18 @@
       j = Math.min(this.unsuccessfulFetchCount, 9);
       w = Conf['updateIncrease'].split(',');
       hidden = d.hidden || d.oHidden || d.mozHidden || d.webkitHidden;
-      if (Conf['Optional Increase']) {
-        if (!hidden) {
+      if (!hidden) {
+        if (Conf['Optional Increase']) {
           return Math.max(i, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]);
         } else {
-          return Math.max(bg, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]);
+          return i;
         }
-      }
-      if (!hidden) {
-        return i;
       } else {
-        return bg;
+        if (Conf['Optional Increase']) {
+          return Math.max(bg, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]);
+        } else {
+          return bg;
+        }
       }
     },
     timeout: function() {
