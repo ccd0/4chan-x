@@ -833,14 +833,15 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {
 #qp {
   z-index: 104 !important;
 }
-#navtopright .settingsWindowLink::after,
-body > a[style="cursor: pointer; float: right;"]::after {
-  z-index: 102 !important;
-}
+#ihover,
 #overlay,
 #updater:hover,
 .exPopup,
 html .subMenu {
+  z-index: 102 !important;
+}
+#navtopright .settingsWindowLink::after,
+body > a[style="cursor: pointer; float: right;"]::after {
   z-index: 101 !important;
 }
 #imgControls {
@@ -858,7 +859,6 @@ div.navLinks > a:first-of-type::after {
 }
 #autoPagerBorderPaging,
 #boardNavDesktop,
-#ihover,
 #menu.reply.dialog,
 #navlinks {
   z-index: 95 !important;
