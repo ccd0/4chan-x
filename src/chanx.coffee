@@ -796,7 +796,7 @@ Keybinds =
       when Conf.watch
         Watcher.toggle thread
       when Conf.update
-        Updater.updateReset()
+        Updater.update()
       when Conf.unreadCountTo0
         Unread.replies = []
         Unread.update true

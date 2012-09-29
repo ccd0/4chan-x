@@ -3804,7 +3804,7 @@
           Watcher.toggle(thread);
           break;
         case Conf.update:
-          Updater.updateReset();
+          Updater.update();
           break;
         case Conf.unreadCountTo0:
           Unread.replies = [];
