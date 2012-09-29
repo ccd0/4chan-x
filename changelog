@@ -1,7 +1,8 @@
 master
 - noface
-  It is now possible to set a Interval for background tabs.
-  Add Optional increase value for Updater.
+  Updater:
+    - It is now possible to set a interval for background tabs.
+    - Add optional increase value for Updater which can be configured on the 'rice' tab.
 
 2.35.6
 - noface

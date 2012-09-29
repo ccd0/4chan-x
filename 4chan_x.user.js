@@ -179,6 +179,7 @@
     backlink: '>>%id',
     fileInfo: '%l (%p%s, %r)',
     favicon: 'ferongr',
+    updateIncrease: '5,10,15,20,30,60,90,120,240,300',
     hotkeys: {
       openQR: ['i', 'Open QR with post number inserted'],
       openEmptyQR: ['I', 'Open QR without post number inserted'],
@@ -2747,7 +2748,7 @@
       }
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, sauce, time, tr, ul, _i, _len, _ref, _ref1, _ref2;
+      var arr, back, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, sauce, time, tr, ul, updateIncrease, _i, _len, _ref, _ref1, _ref2;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2840,6 +2841,10 @@
       <option value=Original>Original</option>\
     </select>\
     <span></span>\
+    <div>\
+      <br>Test here:<br>\
+      <input name=updateIncrease class=field>\
+    </div>\
   </div>\
   <input type=radio name=tab hidden id=keybinds_tab>\
   <div>\
@@ -2894,6 +2899,8 @@
       favicon.value = $.get('favicon', Conf['favicon']);
       $.on(favicon, 'change', $.cb.value);
       $.on(favicon, 'change', Options.favicon);
+      (updateIncrease = $('[name=updateIncrease]', dialog)).value = $.get('updateIncrease', Conf['updateIncrease']);
+      $.on(updateIncrease, 'input', $.cb.value);
       _ref1 = Config.hotkeys;
       for (key in _ref1) {
         arr = _ref1[key];
@@ -3227,16 +3234,17 @@
       }
     },
     getInterval: function() {
-      var bg, hidden, i, j;
+      var bg, hidden, i, j, w;
       i = +Conf['Interval'];
       bg = +Conf['BGInterval'];
       j = Math.min(this.unsuccessfulFetchCount, 9);
+      w = Conf['updateIncrease'].split(',');
       hidden = d.hidden || d.oHidden || d.mozHidden || d.webkitHidden;
       if (Conf['Optional Increase']) {
         if (!hidden) {
-          return Math.max(i, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
+          return Math.max(i, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]);
         } else {
-          return Math.max(bg, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
+          return Math.max(bg, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]);
         }
       }
       if (!hidden) {

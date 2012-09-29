@@ -133,6 +133,7 @@ Config =
   backlink: '>>%id'
   fileInfo: '%l (%p%s, %r)'
   favicon: 'ferongr'
+  updateIncrease: '5,10,15,20,30,60,90,120,240,300'
   hotkeys:
     # QR & Options
     openQR:          ['i',      'Open QR with post number inserted']
@@ -2255,6 +2256,10 @@ Options =
       <option value=Original>Original</option>
     </select>
     <span></span>
+    <div>
+      <br>Test here:<br>
+      <input name=updateIncrease class=field>
+    </div>
   </div>
   <input type=radio name=tab hidden id=keybinds_tab>
   <div>
@@ -2309,6 +2314,8 @@ Options =
     favicon.value = $.get 'favicon', Conf['favicon']
     $.on favicon, 'change', $.cb.value
     $.on favicon, 'change', Options.favicon
+    (updateIncrease = $ '[name=updateIncrease]', dialog).value = $.get 'updateIncrease', Conf['updateIncrease']
+    $.on updateIncrease, 'input', $.cb.value
 
     #keybinds
     for key, arr of Config.hotkeys
@@ -2591,11 +2598,12 @@ Updater =
     i =  +Conf['Interval']
     bg = +Conf['BGInterval']
     j = Math.min @unsuccessfulFetchCount, 9
+    w = Conf['updateIncrease'].split ','
     hidden = d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
     if Conf['Optional Increase']
-      unless hidden 
-         return Math.max i, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
-      else return Math.max bg, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
+      unless hidden
+        return Math.max i, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]
+      else return Math.max bg, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]
     unless hidden
       return i
     else bg
