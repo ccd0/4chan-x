@@ -932,7 +932,7 @@ Keybinds =
     post.focus()
 
 Nav =
-  # ? ?
+  # ▲ ▼
   init: ->
     span = $.el 'span',
       id: 'navlinks'

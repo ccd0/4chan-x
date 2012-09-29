@@ -93,7 +93,7 @@
 * Thank you.
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, g, newTheme, userMascots, userNavigation, userThemes;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, g, newTheme, userMascots, userNavigation, userThemes;
 
   Config = {
     main: {
@@ -103,6 +103,7 @@
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'File Info Formatting': [true, 'Reformats the file information'],
+        'Linkify': [true, 'Convert text into links where applicable.'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
@@ -1766,6 +1767,8 @@
   */
 
 
+  console = console != null ? console : console = window.console || unsafeWindow.console;
+
   $ = function(selector, root) {
     var result;
     if (root == null) {
@@ -1774,7 +1777,7 @@
     if ((root != null) && (result = root.querySelector(selector))) {
       return result;
     } else {
-      console.log("" + selector + " @ " + root + " does not exist.");
+      $.log("" + selector + " @ " + root + " does not exist.");
       return null;
     }
   };
@@ -1793,7 +1796,9 @@
     MINUTE: 1000 * 60,
     HOUR: 1000 * 60 * 60,
     DAY: 1000 * 60 * 60 * 24,
-    log: typeof console !== "undefined" && console !== null ? console : console = window.console || unsafeWindow.console,
+    log: function(e) {
+      return console.log(e);
+    },
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     ready: function(fc) {
       var cb;
@@ -2059,7 +2064,7 @@
     if ((root != null) && (result = Array.prototype.slice.call(root.querySelectorAll(selector)))) {
       return result;
     } else {
-      console.log("" + selector + " @ " + root + " does not exist.");
+      $.log("" + selector + " @ " + root + " does not exist.");
       return null;
     }
   };
@@ -7688,6 +7693,76 @@
     }
   };
 
+  /*
+  Based on the Linkify scripts located at:
+  http://downloads.mozdev.org/greasemonkey/linkify.user.js
+  https://github.com/MayhemYDG/LinkifyPlusFork
+  
+  Originally written by Anthony Lieuallen of http://arantius.com/
+  Licensed for unlimited modification and redistribution as long as
+  this notice is kept intact.
+  
+  If possible, please contact me regarding new features, bugfixes
+  or changes that I could integrate into the existing code instead of
+  creating a different script. Thank you.
+  */
+
+
+  Linkify = {
+    init: function() {
+      return Main.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var blockquote, child, _i, _len, _ref, _results;
+      blockquote = $('blockquote', post.el);
+      _ref = blockquote.childNodes;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        child = _ref[_i];
+        if (child.nodeType === Node.TEXT_NODE) {
+          _results.push(Linkify.text(child));
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
+    },
+    text: function(child) {
+      var a, l, lLen, m, p, span, txt, urlRE;
+      txt = child.textContent;
+      span = null;
+      p = 0;
+      urlRE = new RegExp('(' + '\\b([a-z][-a-z0-9+.]+://|www\\.)' + '[^\\s\'"<>()]+' + '|' + '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b' + ')', 'gi');
+      while (m = urlRE.exec(txt)) {
+        if (null === span) {
+          span = $.el('span', {
+            className: 'linkifyplus'
+          });
+        }
+        l = m[0].replace(/\.*$/, '');
+        lLen = l.length;
+        span.appendChild(d.createTextNode(txt.substring(p, m.index)));
+        a = $.el('a', {
+          textContent: l,
+          className: 'linkifyplus',
+          rel: 'nofollow noreferrer _new',
+          href: l.indexOf(":/") < 0 ? (l.indexOf("@") > 0 ? "mailto:" + l : "http://" + l) : l
+        });
+        $.add(span, a);
+        p = m.index + lLen;
+      }
+      if (span) {
+        span.appendChild(d.createTextNode(txt.substring(p, txt.length)));
+        try {
+          return child.parentNode.replaceChild(span, child);
+        } catch (e) {
+          $.log(e);
+          return $.log(child.tagName + "could not be appended...");
+        }
+      }
+    }
+  };
+
   Style = {
     init: function() {
       return this.addStyle();
@@ -8133,6 +8208,9 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
       if (Conf['Image Auto-Gif']) {
         AutoGif.init();
+      }
+      if (Conf['Linkify']) {
+        Linkify.init();
       }
       if (Conf['Png Thumbnail Fix']) {
         PngFix.init();

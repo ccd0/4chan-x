@@ -94,6 +94,8 @@ Main =
     if Conf['Image Auto-Gif']
       AutoGif.init()
 
+    if Conf['Linkify']
+      Linkify.init()
     if Conf['Png Thumbnail Fix']
       PngFix.init()
 

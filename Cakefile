@@ -118,6 +118,7 @@ APPFILES  = [
   'themeoptions'
   'mascotoptions'
   'customnavigation'
+  'linkify'
   'appchan'
   'style'
   'main'

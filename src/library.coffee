@@ -70,11 +70,13 @@ loosely follows the jquery api:
 http://api.jquery.com/
 not chainable
 ###
+console = if console? then console else console = window.console or unsafeWindow.console
+
 $ = (selector, root=d.body) ->
   if root? and result = root.querySelector selector
     return result
   else
-    console.log "#{selector} @ #{root} does not exist."
+    $.log "#{selector} @ #{root} does not exist."
     return null
 
 $.extend = (object, properties) ->
@@ -88,7 +90,7 @@ $.extend $,
   MINUTE: 1000*60
   HOUR  : 1000*60*60
   DAY   : 1000*60*60*24
-  log   : if console? then console else console = window.console or unsafeWindow.console
+  log: (e) -> console.log e
   engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
   ready: (fc) ->
     if /interactive|complete/.test d.readyState
@@ -266,5 +268,5 @@ $$ = (selector, root=d.body) ->
   if root? and result = Array::slice.call root.querySelectorAll selector
     return result
   else
-    console.log "#{selector} @ #{root} does not exist."
+    $.log "#{selector} @ #{root} does not exist."
     return null
