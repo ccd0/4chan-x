@@ -2337,6 +2337,7 @@ Options =
         <option value=Mayhem>Mayhem</option>
         <option value=Original>Original</option>
       </select>
+    <span></span>
     </ul>
     <ul>
       Test here:<br>
