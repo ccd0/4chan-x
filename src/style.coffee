@@ -2573,10 +2573,10 @@ body {
   height: 88px !important;
 }
 #qr .textarea {
-  height: 89px;
+  height: 136px;
 }
 #qr.captcha .textarea {
-  height: 136px;
+  height: 89px;
 }
 #qr .field[name="email"],
 #qr .field[name="sub"] {

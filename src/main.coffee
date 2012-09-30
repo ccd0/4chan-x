@@ -96,6 +96,7 @@ Main =
 
     if Conf['Linkify']
       Linkify.init()
+
     if Conf['Png Thumbnail Fix']
       PngFix.init()
 
