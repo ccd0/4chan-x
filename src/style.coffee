@@ -2409,6 +2409,7 @@ div.reply .inline .rice {
 div.thread {
   padding: 0;
   position: relative;
+  z-index: 0;
 }
 div.post:not(#qp):not([hidden]) {
   margin: 0;
