@@ -1,8 +1,9 @@
 master
+
+2.35.7
 - noface
-  Updater:
-    - It is now possible to set a interval for background tabs.
-    - Add optional increase value for Updater which can be configured on the 'rice' tab.
+  It is now possible to set an interval.
+  Add optional increase value for Updater which can be configured on the 'rice' tab.
 - zixaphir
   Custom Navigation
   Linkification

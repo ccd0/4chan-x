@@ -135,6 +135,7 @@ Config =
   fileInfo: '%l (%p%s, %r)'
   favicon: 'ferongr'
   updateIncrease: '5,10,15,20,30,60,90,120,240,300'
+  updateIncreaseB: '5,10,15,20,30,60,90,120,240,300'
   hotkeys:
     # QR & Options
     openQR:          ['i',      'Open QR with post number inserted']
@@ -2342,7 +2343,10 @@ Options =
     </ul>
     <ul>
       Amounts for Optional Increase<br>
+      Visible tab<br>
       <input name=updateIncrease class=field>
+      <br>Background tab<br>
+      <input name=updateIncreaseB class=field>
     </ul>
     <div class=warning><code>Custom Navigation</code> is disabled.</div>
       <div id=customNavigation>
@@ -2404,6 +2408,8 @@ Options =
     Options.customNavigation.dialog dialog
     (updateIncrease = $ '[name=updateIncrease]', dialog).value = $.get 'updateIncrease', Conf['updateIncrease']
     $.on updateIncrease, 'input', $.cb.value
+    (updateIncreaseB = $ '[name=updateIncreaseB]', dialog).value = $.get 'updateIncreaseB', Conf['updateIncreaseB']
+    $.on updateIncreaseB, 'input', $.cb.value
 
     #keybinds
     for key, arr of Config.hotkeys
@@ -2439,6 +2445,7 @@ Options =
 
   customNavigation:
     dialog: (dialog) ->
+      return unless Conf['Custom Navigation']
       div = $ "#customNavigation", dialog
       ul = $.el "ul"
       ul.innerHTML = """
@@ -2805,7 +2812,7 @@ Updater =
     i =  +Conf['Interval']
     bg = +Conf['BGInterval']
     j = Math.min @unsuccessfulFetchCount, 9
-    w = Conf['updateIncrease'].split ','
+    wb = Conf['updateIncreaseB'].split ','
     hidden = d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
     unless hidden
       if Conf['Optional Increase']
@@ -2813,7 +2820,7 @@ Updater =
       else i
     else
       if Conf['Optional Increase']
-        return Math.max bg, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]
+        return Math.max bg, [wb[0], wb[1], wb[2], wb[3], wb[4], wb[5], wb[6], wb[7], wb[8], wb[9]][j]
       else bg
 
   timeout: ->
@@ -4839,7 +4846,7 @@ Main =
     $.globalEval "(#{code})()".replace '_id_', bq.id
 
   namespace: '4chan_x.'
-  version: '2.35.6'
+  version: '2.35.7'
   callbacks: []
   css: '
 /* dialog styling */

@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.35.6
+// @version        2.35.7
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -27,7 +27,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.35.6
+ * 4chan X 2.35.7
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -181,6 +181,7 @@
     fileInfo: '%l (%p%s, %r)',
     favicon: 'ferongr',
     updateIncrease: '5,10,15,20,30,60,90,120,240,300',
+    updateIncreaseB: '5,10,15,20,30,60,90,120,240,300',
     hotkeys: {
       openQR: ['i', 'Open QR with post number inserted'],
       openEmptyQR: ['I', 'Open QR without post number inserted'],
@@ -2779,7 +2780,7 @@
       }
     },
     dialog: function() {
-      var arr, back, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, sauce, time, tr, ul, updateIncrease, _i, _len, _ref, _ref1, _ref2;
+      var arr, back, checked, description, dialog, favicon, fileInfo, filter, hiddenNum, hiddenThreads, indicator, indicators, input, key, li, obj, overlay, sauce, time, tr, ul, updateIncrease, updateIncreaseB, _i, _len, _ref, _ref1, _ref2;
       dialog = $.el('div', {
         id: 'options',
         className: 'reply dialog',
@@ -2876,7 +2877,10 @@
     </ul>\
     <ul>\
       Amounts for Optional Increase<br>\
+      Visible tab<br>\
       <input name=updateIncrease class=field>\
+      <br>Background tab<br>\
+      <input name=updateIncreaseB class=field>\
     </ul>\
     <div class=warning><code>Custom Navigation</code> is disabled.</div>\
       <div id=customNavigation>\
@@ -2938,6 +2942,8 @@
       Options.customNavigation.dialog(dialog);
       (updateIncrease = $('[name=updateIncrease]', dialog)).value = $.get('updateIncrease', Conf['updateIncrease']);
       $.on(updateIncrease, 'input', $.cb.value);
+      (updateIncreaseB = $('[name=updateIncreaseB]', dialog)).value = $.get('updateIncreaseB', Conf['updateIncreaseB']);
+      $.on(updateIncreaseB, 'input', $.cb.value);
       _ref1 = Config.hotkeys;
       for (key in _ref1) {
         arr = _ref1[key];
@@ -2980,6 +2986,9 @@
     customNavigation: {
       dialog: function(dialog) {
         var addLink, div, index, input, item, itemIndex, li, link, navOptions, removeLink, ul, _ref;
+        if (!Conf['Custom Navigation']) {
+          return;
+        }
         div = $("#customNavigation", dialog);
         ul = $.el("ul");
         ul.innerHTML = "Custom Navigation";
@@ -3390,11 +3399,11 @@
       }
     },
     getInterval: function() {
-      var bg, hidden, i, j, w;
+      var bg, hidden, i, j, wb;
       i = +Conf['Interval'];
       bg = +Conf['BGInterval'];
       j = Math.min(this.unsuccessfulFetchCount, 9);
-      w = Conf['updateIncrease'].split(',');
+      wb = Conf['updateIncreaseB'].split(',');
       hidden = d.hidden || d.oHidden || d.mozHidden || d.webkitHidden;
       if (!hidden) {
         if (Conf['Optional Increase']) {
@@ -3404,7 +3413,7 @@
         }
       } else {
         if (Conf['Optional Increase']) {
-          return Math.max(bg, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]);
+          return Math.max(bg, [wb[0], wb[1], wb[2], wb[3], wb[4], wb[5], wb[6], wb[7], wb[8], wb[9]][j]);
         } else {
           return bg;
         }
@@ -5863,7 +5872,7 @@
       return $.globalEval(("(" + code + ")()").replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
-    version: '2.35.6',
+    version: '2.35.7',
     callbacks: [],
     css: '\
 /* dialog styling */\
