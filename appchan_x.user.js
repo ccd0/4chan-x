@@ -103,7 +103,7 @@
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'File Info Formatting': [true, 'Reformats the file information'],
-        'Linkify': [true, 'Convert text into links where applicable.'],
+        'Linkify': [true, 'Convert text into links where applicable. If a link is too long and only partially linkified, shift+ctrl+click it to merge the next line.'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
@@ -7757,7 +7757,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var blockquote, child, _i, _len, _ref, _results;
+      var blockquote, child, node, _i, _len, _ref, _results;
       blockquote = $('blockquote', post.el);
       _ref = blockquote.childNodes;
       _results = [];
@@ -7766,15 +7766,28 @@
         if (child.nodeType === Node.TEXT_NODE) {
           _results.push(Linkify.text(child));
         } else if (child.className === "quote") {
-          _results.push(Linkify.text(child.childNodes[0]));
+          _results.push((function() {
+            var _j, _len1, _ref1, _results1;
+            _ref1 = child.childNodes;
+            _results1 = [];
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              node = _ref1[_j];
+              if (node.nodeType === Node.TEXT_NODE) {
+                _results1.push(Linkify.text(node));
+              } else {
+                _results1.push(void 0);
+              }
+            }
+            return _results1;
+          })());
         } else {
           _results.push(void 0);
         }
       }
       return _results;
     },
-    text: function(child) {
-      var a, l, lLen, m, node, p, parent, txt, urlRE, _results;
+    text: function(child, link) {
+      var a, l, lLen, m, node, p, parent, rest, txt, urlRE, _results;
       txt = child.textContent;
       parent = child.parentNode;
       p = 0;
@@ -7784,17 +7797,39 @@
         l = m[0].replace(/\.*$/, '');
         lLen = l.length;
         node = $.tn(txt.substring(p, m.index));
-        $.replace(child, node);
+        if (link) {
+          $.replace(link, node);
+        } else {
+          $.replace(child, node);
+        }
         a = $.el('a', {
           textContent: l,
-          className: 'linkifyplus',
+          className: 'linkify',
           rel: 'nofollow noreferrer',
           target: 'blank',
           href: l.indexOf(":/") < 0 ? (l.indexOf("@") > 0 ? "mailto:" + l : "http://" + l) : l
         });
+        $.on(a, 'click', function(e) {
+          if (e.shiftKey && e.ctrlKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            if ("br" === this.nextSibling.tagName.toLowerCase()) {
+              $.rm(this.nextSibling);
+              child = $.tn(this.textContent + this.nextSibling.textContent);
+              $.rm(this.nextSibling);
+              return Linkify.text(child, this);
+            }
+          }
+        });
         $.after(node, a);
         p = m.index + lLen;
-        _results.push($.after(a, $.tn(txt.substring(p, txt.length))));
+        rest = $.tn(txt.substring(p, txt.length));
+        if (rest.textContent !== "") {
+          $.after(a, rest);
+          _results.push(this.text(rest));
+        } else {
+          _results.push(void 0);
+        }
       }
       return _results;
     }

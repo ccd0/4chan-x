@@ -8,7 +8,7 @@ Config =
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
       'File Info Formatting':         [true,  'Reformats the file information']
-      'Linkify':                      [true,  'Convert text into links where applicable.']
+      'Linkify':                      [true,  'Convert text into links where applicable. If a link is too long and only partially linkified, shift+ctrl+click it to merge the next line.']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
       'Index Navigation':             [true,  'Navigate to previous / next thread']

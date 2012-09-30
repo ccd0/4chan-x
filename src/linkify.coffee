@@ -25,9 +25,11 @@ Linkify =
       if child.nodeType == Node.TEXT_NODE
         Linkify.text child
       else if child.className == "quote"
-        Linkify.text child.childNodes[0]
+        for node in child.childNodes
+          if node.nodeType == Node.TEXT_NODE
+            Linkify.text node
 
-  text: (child) ->
+  text: (child, link) ->
     txt = child.textContent
     parent = child.parentNode
     p = 0
@@ -39,18 +41,35 @@ Linkify =
       lLen = l.length
       # Put in text up to the link so we can insert the link after it.
       node = $.tn(txt.substring(p, m.index))
-      $.replace child, node
+      if link
+        $.replace link, node
+      else
+        $.replace child, node
       # Create a link and put it in the span
       a = $.el 'a'
         textContent: l
-        className: 'linkifyplus'
+        className: 'linkify'
         rel:       'nofollow noreferrer'
         target:    'blank'
         href:      if l.indexOf(":/") < 0 then (if l.indexOf("@") > 0 then "mailto:" + l else "http://" + l) else l
 
+      $.on a, 'click', (e) ->
+        if e.shiftKey and e.ctrlKey
+          e.preventDefault()
+          e.stopPropagation()
+          if "br" == @.nextSibling.tagName.toLowerCase()
+            $.rm @.nextSibling
+            child = $.tn(@textContent + @.nextSibling.textContent)
+            $.rm @.nextSibling
+            Linkify.text(child, @)
+            
+
       $.after node, a
       # Track insertion point
       p = m.index+lLen
+      
+      rest = $.tn(txt.substring(p, txt.length))
 
-      $.after a, $.tn(txt.substring(p, txt.length))
-      # Replace the original text node with the new span
+      unless rest.textContent == ""
+        $.after a, rest
+        @text rest
