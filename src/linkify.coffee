@@ -55,7 +55,6 @@ Linkify =
       '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b'
       ')'
     ].join("")
-    $.log regString
     urlRE = new RegExp regString, 'gi'
     while m = urlRE.exec txt
 
@@ -74,7 +73,7 @@ Linkify =
         className: 'linkify'
         rel:       'nofollow noreferrer'
         target:    'blank'
-        href:      if l.indexOf(":/") < 0 then (if l.indexOf("@") > 0 then "mailto:" + l else "http://" + l) else l
+        href:      if l.indexOf(":") < 0 then (if l.indexOf("@") > 0 then "mailto:" + l else "http://" + l) else l
 
       $.on a, 'click', (e) ->
         if e.shiftKey and e.ctrlKey

@@ -7804,7 +7804,6 @@
       parent = child.parentNode;
       p = 0;
       regString = ['(', '\\b(', '[a-z][-a-z0-9+.]+://', '|', 'www\\.', '|', 'magnet:', '|', 'mailto:', '|', 'news:', ')', '[^\\s\'"<>()]+', '|', '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b', ')'].join("");
-      $.log(regString);
       urlRE = new RegExp(regString, 'gi');
       _results = [];
       while (m = urlRE.exec(txt)) {
@@ -7821,7 +7820,7 @@
           className: 'linkify',
           rel: 'nofollow noreferrer',
           target: 'blank',
-          href: l.indexOf(":/") < 0 ? (l.indexOf("@") > 0 ? "mailto:" + l : "http://" + l) : l
+          href: l.indexOf(":") < 0 ? (l.indexOf("@") > 0 ? "mailto:" + l : "http://" + l) : l
         });
         $.on(a, 'click', function(e) {
           if (e.shiftKey && e.ctrlKey) {
