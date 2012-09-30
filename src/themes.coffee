@@ -736,6 +736,9 @@ Mascots =
     category:   'NSFW'
     image:      'http://i.imgur.com/1rDfl.png'
     center:     true
+  'Asuka_Langley_Soryu_6':
+    category:   'SFW'
+    image:      'http://i.imgur.com/DL5uR.png'
   'Ayanami_Rei':
     category:   'SFW'
     image:      'http://i.imgur.com/Ye6OS.png'
@@ -907,6 +910,9 @@ Mascots =
   'Inori':
     category:   'SFW'
     image:      'http://i.imgur.com/u4zuy.png'
+  'Inori_2':
+    category:   'SFW'
+    image:      'http://i.imgur.com/56oEl.png'
   'Iwakura_Lain':
     category:   'SFW'
     image:      'http://i.imgur.com/AfjG9.png'
@@ -946,6 +952,9 @@ Mascots =
     category:   'NSFW'
     image:      'http://i.imgur.com/Rdk9s.png'
     center:     true
+  'Kirisame_Marisa':
+    category:   'SFW'
+    image:      'http://i.imgur.com/53yAK.png'
   'Kirino_Kosaka_and_Ruri_Goko':
     category:   'NSFW'
     image:      'http://i.imgur.com/MGaLr.png'
@@ -965,6 +974,9 @@ Mascots =
   'Kurisu_Makise':
     category:   'SFW'
     image:      'http://i.imgur.com/HKnLt.png'
+  'Kuroko_Shirai':
+    category:   'SFW'
+    image:      'http://i.imgur.com/uO5qZ.png'
   'Kyouko_Sakura':
     category:   'SFW'
     image:      'http://i.imgur.com/78HS9.png'
@@ -1203,6 +1215,9 @@ Mascots =
     category:   'SFW'
     image:      'http://goput.it/vig.png'
     center:     true
+  'Teletha_Tessa_Testarossa':
+    category:   'SFW'
+    image:      'http://i.imgur.com/zu9nY.png'
   'Tifa':
     category:   'NSFW'
     image:      'http://i.imgur.com/SEKOZ.png'
@@ -1228,6 +1243,9 @@ Mascots =
     category:   'SFW'
     image:      'http://i.imgur.com/2FQfj.png'
     center:     true
+  'Yakumo_Ran':
+    category:   'SFW'
+    image:      'http://i.imgur.com/WWozC.png'
   'Yin':
     category:   'SFW'
     image:      'http://i.imgur.com/haBSN.png'
@@ -1253,6 +1271,9 @@ Mascots =
     image:      'http://i.imgur.com/0S2WK.png'
     position:   'bottom'
     center:     true
+  'Yozora_Mikazuki':
+    category:   'SFW'
+    image:      'http://i.imgur.com/xwPrX.png'
   'Yukkikaze':
     category:   'SFW'
     image:      'http://i.imgur.com/EkUXJ.png'
