@@ -7798,14 +7798,12 @@
       return _results;
     },
     text: function(child, link) {
-      var a, l, lLen, m, node, p, parent, regString, rest, txt, urlRE, _results;
+      var a, l, lLen, m, node, p, regString, rest, txt, urlRE;
       txt = child.textContent;
-      parent = child.parentNode;
       p = 0;
       regString = ['(', '\\b(', '[a-z][-a-z0-9+.]+://', '|', 'www\\.', '|', 'magnet:', '|', 'mailto:', '|', 'news:', ')', '[^\\s\'"<>()]+', '|', '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b', ')'].join("");
-      urlRE = new RegExp(regString, 'gi');
-      _results = [];
-      while (m = urlRE.exec(txt)) {
+      urlRE = new RegExp(regString, 'i');
+      if (m = urlRE.exec(txt)) {
         l = m[0].replace(/\.*$/, '');
         lLen = l.length;
         node = $.tn(txt.substring(p, m.index));
@@ -7838,12 +7836,9 @@
         rest = $.tn(txt.substring(p, txt.length));
         if (rest.textContent !== "") {
           $.after(a, rest);
-          _results.push(this.text(rest));
-        } else {
-          _results.push(void 0);
+          return this.text(rest);
         }
       }
-      return _results;
     }
   };
 

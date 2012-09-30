@@ -26,9 +26,8 @@ Linkify =
 
     blockquote = post.blockquote or $ 'blockquote', post.el
     
-    # We collect all the text children before editting them
-    # so that further children don't get offset and therefore
-    # don't get parsed.
+    # We collect all the text children before editting them so that further children don't
+    # get offset and therefore don't get parsed.
     for child in blockquote.childNodes
       if child.nodeType == Node.TEXT_NODE
         nodes.push child
@@ -37,14 +36,12 @@ Linkify =
           if node.nodeType == Node.TEXT_NODE
             nodes.push node
     
-    # After we generate our list of nodes to parse we can 
-    # edit it without worrying about nodes getting orphaned.
+    # After we generate our list of nodes to parse we can edit it without worrying about nodes getting orphaned.
     for node in nodes
       Linkify.text node
 
   text: (child, link) ->
     txt = child.textContent
-    parent = child.parentNode
     p = 0
     regString = [
       '('
@@ -64,12 +61,12 @@ Linkify =
       # everything until non-URL character
       '[^\\s\'"<>()]+'
       '|'
-      # email
+      # emails. We don't need everything until a non-URL character because emails follow a consistent syntax.
       '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b'
       ')'
     ].join("")
-    urlRE = new RegExp regString, 'gi'
-    while m = urlRE.exec txt
+    urlRE = new RegExp regString, 'i'
+    if m = urlRE.exec txt
 
       # Get the link without trailing dots as to not create an invalid link.
       l = m[0].replace /\.*$/, ''
@@ -102,8 +99,10 @@ Linkify =
       # Track insertion point
       p = m.index+lLen
       
+      # Store leftover content in a text node so we can append it and continue to parse it.
       rest = $.tn(txt.substring(p, txt.length))
 
+      # If there is any content left, continue to parse it.
       unless rest.textContent == ""
         $.after a, rest
         @text rest
