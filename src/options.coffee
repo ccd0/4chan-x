@@ -108,17 +108,24 @@ Options =
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>
       <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>
     </ul>
+    <ul>
+      Amounts for Optional Increase<br>
+      <input name=updateIncrease class=field>
+    </ul>
     <div class=warning><code>Custom Navigation</code> is disabled.</div>
     <div id=customNavigation>
     </div>
-    <div class=warning><code>Unread Favicon</code> is disabled.</div>
-    Unread favicons<br>
-    <select name=favicon>
-      <option value=ferongr>ferongr</option>
-      <option value=xat->xat-</option>
-      <option value=Mayhem>Mayhem</option>
-      <option value=Original>Original</option>
-    </select>
+    <ul>
+      <div class=warning><code>Unread Favicon</code> is disabled.</div>
+      Unread favicons<br>
+      <select name=favicon>
+        <option value=ferongr>ferongr</option>
+        <option value=xat->xat-</option>
+        <option value=Mayhem>Mayhem</option>
+        <option value=Original>Original</option>
+      </select>
+     <span></span>
+    </ul>
     <span></span>
   </div>
   <input type=radio name=tab hidden id=keybinds_tab>
@@ -183,6 +190,8 @@ Options =
     $.on favicon, 'change', $.cb.value
     $.on favicon, 'change', Options.favicon
 
+    (updateIncrease = $ '[name=updateIncrease]', dialog).value = $.get 'updateIncrease', Conf['updateIncrease']
+    $.on updateIncrease, 'input', $.cb.value
     @customNavigation.dialog dialog
 
     #keybinds

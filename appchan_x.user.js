@@ -193,6 +193,7 @@
     backlink: '>>%id',
     fileInfo: '%l (%p%s, %r)',
     favicon: 'ferongr',
+    updateIncrease: '5,10,15,20,30,60,90,120,240,300',
     hotkeys: {
       openQR: ['i', 'Open QR with post number inserted'],
       openEmptyQR: ['I', 'Open QR without post number inserted'],
@@ -2099,7 +2100,7 @@
       return _results;
     },
     dialog: function(tab) {
-      var arr, back, batchmascots, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, keys, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, time, tr, ul, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var arr, back, batchmascots, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, keys, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, time, tr, ul, updateIncrease, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
       if (editMode) {
         if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
           try {
@@ -2199,17 +2200,24 @@
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>\
       <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>\
     </ul>\
+    <ul>\
+      Amounts for Optional Increase<br>\
+      <input name=updateIncrease class=field>\
+    </ul>\
     <div class=warning><code>Custom Navigation</code> is disabled.</div>\
     <div id=customNavigation>\
     </div>\
-    <div class=warning><code>Unread Favicon</code> is disabled.</div>\
-    Unread favicons<br>\
-    <select name=favicon>\
-      <option value=ferongr>ferongr</option>\
-      <option value=xat->xat-</option>\
-      <option value=Mayhem>Mayhem</option>\
-      <option value=Original>Original</option>\
-    </select>\
+    <ul>\
+      <div class=warning><code>Unread Favicon</code> is disabled.</div>\
+      Unread favicons<br>\
+      <select name=favicon>\
+        <option value=ferongr>ferongr</option>\
+        <option value=xat->xat-</option>\
+        <option value=Mayhem>Mayhem</option>\
+        <option value=Original>Original</option>\
+      </select>\
+     <span></span>\
+    </ul>\
     <span></span>\
   </div>\
   <input type=radio name=tab hidden id=keybinds_tab>\
@@ -2273,6 +2281,8 @@
       favicon.value = $.get('favicon', Conf['favicon']);
       $.on(favicon, 'change', $.cb.value);
       $.on(favicon, 'change', Options.favicon);
+      (updateIncrease = $('[name=updateIncrease]', dialog)).value = $.get('updateIncrease', Conf['updateIncrease']);
+      $.on(updateIncrease, 'input', $.cb.value);
       this.customNavigation.dialog(dialog);
       _ref1 = Config.hotkeys;
       for (key in _ref1) {
@@ -4299,22 +4309,24 @@
       }
     },
     getInterval: function() {
-      var bg, hidden, i, j;
+      var bg, hidden, i, j, w;
       i = +Conf['Interval'];
       bg = +Conf['BGInterval'];
       j = Math.min(this.unsuccessfulFetchCount, 9);
+      w = Conf['updateIncrease'].split(',');
       hidden = d.hidden || d.oHidden || d.mozHidden || d.webkitHidden;
-      if (Conf['Optional Increase']) {
-        if (!hidden) {
-          return Math.max(i, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
-        } else {
-          return Math.max(bg, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
-        }
-      }
       if (!hidden) {
-        return i;
+        if (Conf['Optional Increase']) {
+          return Math.max(i, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]);
+        } else {
+          return i;
+        }
       } else {
-        return bg;
+        if (Conf['Optional Increase']) {
+          return Math.max(bg, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]);
+        } else {
+          return bg;
+        }
       }
     },
     timeout: function() {
