@@ -3307,6 +3307,9 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.node(post);
       }
+      if (Conf['Linkify']) {
+        Linkify.node(post);
+      }
       $.replace(bq, clone);
       return Main.prettify(clone);
     }
@@ -7770,7 +7773,7 @@
     },
     node: function(post) {
       var blockquote, child, node, _i, _len, _ref, _results;
-      blockquote = $('blockquote', post.el);
+      blockquote = post.blockquote || $('blockquote', post.el);
       _ref = blockquote.childNodes;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {

@@ -14,13 +14,15 @@ creating a different script. Thank you.
 
 Linkify =
   init: ->
+    # Add Linkification to callbacks, which will call linkification on every post parsed by Appchan X.
     Main.callbacks.push @node
+
   node: (post) ->
     # Built based on:
     # - http://en.wikipedia.org/wiki/URI_scheme
     # - http://www.regular-expressions.info/regexbuddy/email.html
 
-    blockquote = $ 'blockquote', post.el
+    blockquote = post.blockquote or $ 'blockquote', post.el
     for child in blockquote.childNodes
       if child.nodeType == Node.TEXT_NODE
         Linkify.text child
