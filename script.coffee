@@ -2812,6 +2812,7 @@ Updater =
     i =  +Conf['Interval']
     bg = +Conf['BGInterval']
     j = Math.min @unsuccessfulFetchCount, 9
+    w = Conf['updateIncreaseB'].split ','
     wb = Conf['updateIncreaseB'].split ','
     hidden = d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
     unless hidden
@@ -4846,7 +4847,7 @@ Main =
     $.globalEval "(#{code})()".replace '_id_', bq.id
 
   namespace: '4chan_x.'
-  version: '2.35.7'
+  version: '2.35.8'
   callbacks: []
   css: '
 /* dialog styling */

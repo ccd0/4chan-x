@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           4chan x
-// @version        2.35.7
+// @version        2.35.8
 // @namespace      aeosynth
 // @description    Adds various features.
 // @copyright      2009-2011 James Campos <james.r.campos@gmail.com>
@@ -27,7 +27,7 @@
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
  * http://mayhemydg.github.com/4chan-x/
- * 4chan X 2.35.7
+ * 4chan X 2.35.8
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -3399,10 +3399,11 @@
       }
     },
     getInterval: function() {
-      var bg, hidden, i, j, wb;
+      var bg, hidden, i, j, w, wb;
       i = +Conf['Interval'];
       bg = +Conf['BGInterval'];
       j = Math.min(this.unsuccessfulFetchCount, 9);
+      w = Conf['updateIncreaseB'].split(',');
       wb = Conf['updateIncreaseB'].split(',');
       hidden = d.hidden || d.oHidden || d.mozHidden || d.webkitHidden;
       if (!hidden) {
@@ -5872,7 +5873,7 @@
       return $.globalEval(("(" + code + ")()").replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
-    version: '2.35.7',
+    version: '2.35.8',
     callbacks: [],
     css: '\
 /* dialog styling */\

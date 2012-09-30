@@ -1,5 +1,9 @@
 master
 
+2.35.8
+- noface
+  Don't break optional increase.
+
 2.35.7
 - noface
   It is now possible to set an interval.
