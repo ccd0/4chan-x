@@ -412,9 +412,9 @@ ExpandComment =
       QuoteOP.node      post
     if Conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
+    $.replace bq, clone
     if Conf['Linkify']
       Linkify.node      post
-    $.replace bq, clone
     Main.prettify clone
 
 ExpandThread =
