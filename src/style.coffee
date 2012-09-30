@@ -232,7 +232,6 @@ h1,
   box-sizing: border-box;
   """ + agent + """box-sizing: border-box;
   color: #333;
-  font: 13px sans-serif;
   margin: 0;
   padding: 2px 4px 3px;
   """ + agent + """transition: color .25s, border .25s;
@@ -2409,6 +2408,7 @@ div.reply .inline .rice {
 div.thread {
   padding: 0;
   position: relative;
+  z-index: 0;
 }
 div.post:not(#qp):not([hidden]) {
   margin: 0;
