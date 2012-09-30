@@ -158,8 +158,7 @@
         'Resurrect Quotes': [true, 'Linkify dead quotes to archives'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes'],
         'Indicate Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes'],
-        'Forward Hiding': [true, 'Hide original posts of inlined backlinks'],
-        'Quote Threading': [false, 'Thread conversations']
+        'Forward Hiding': [true, 'Hide original posts of inlined backlinks']
       }
     },
     filter: {
@@ -194,7 +193,6 @@
       watch: ['w', 'Watch thread'],
       update: ['u', 'Update now'],
       unreadCountTo0: ['z', 'Reset unread status'],
-      threading: ['t', 'Toggle threading'],
       expandImage: ['m', 'Expand selected image'],
       expandAllImages: ['M', 'Expand all images'],
       zero: ['0', 'Jump to page 0'],

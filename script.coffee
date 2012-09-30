@@ -68,7 +68,6 @@ Config =
       'Indicate OP quote':            [true,  'Add \'(OP)\' to OP quotes']
       'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes']
       'Forward Hiding':               [true,  'Hide original posts of inlined backlinks']
-      'Quote Threading':              [false, 'Thread conversations']
   filter:
     name: [
       '# Filter any namefags:'
@@ -150,7 +149,6 @@ Config =
     watch:           ['w',      'Watch thread']
     update:          ['u',      'Update now']
     unreadCountTo0:  ['z',      'Reset unread status']
-    threading:       ['t',      'Toggle threading']
     # Images
     expandImage:     ['m',      'Expand selected image']
     expandAllImages: ['M',      'Expand all images']
