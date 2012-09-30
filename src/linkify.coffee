@@ -33,7 +33,30 @@ Linkify =
     txt = child.textContent
     parent = child.parentNode
     p = 0
-    urlRE = new RegExp '(\\b([a-z][-a-z0-9+.]+://|www\\.)[^\\s\'"<>()]+|\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b)',  'gi'
+    regString = [
+      '('
+      # leading scheme:// or "www."
+      '\\b('
+      '[a-z][-a-z0-9+.]+://'
+      '|'
+      'www\\.'
+      '|'
+      # Various link handlers:
+      'magnet:'
+      '|'
+      'mailto:'
+      '|'
+      'news:'
+      ')'
+      # everything until non-URL character
+      '[^\\s\'"<>()]+'
+      '|'
+      # email
+      '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b'
+      ')'
+    ].join("")
+    $.log regString
+    urlRE = new RegExp regString, 'gi'
     while m = urlRE.exec txt
 
       # Get the link without trailing dots as to not create an invalid link.

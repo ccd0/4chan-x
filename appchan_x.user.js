@@ -7799,11 +7799,13 @@
       return _results;
     },
     text: function(child, link) {
-      var a, l, lLen, m, node, p, parent, rest, txt, urlRE, _results;
+      var a, l, lLen, m, node, p, parent, regString, rest, txt, urlRE, _results;
       txt = child.textContent;
       parent = child.parentNode;
       p = 0;
-      urlRE = new RegExp('(\\b([a-z][-a-z0-9+.]+://|www\\.)[^\\s\'"<>()]+|\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b)', 'gi');
+      regString = ['(', '\\b(', '[a-z][-a-z0-9+.]+://', '|', 'www\\.', '|', 'magnet:', '|', 'mailto:', '|', 'news:', ')', '[^\\s\'"<>()]+', '|', '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b', ')'].join("");
+      $.log(regString);
+      urlRE = new RegExp(regString, 'gi');
       _results = [];
       while (m = urlRE.exec(txt)) {
         l = m[0].replace(/\.*$/, '');
