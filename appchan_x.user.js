@@ -7772,32 +7772,28 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var blockquote, child, node, _i, _len, _ref, _results;
+      var blockquote, child, node, nodes, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _results;
+      nodes = [];
       blockquote = post.blockquote || $('blockquote', post.el);
       _ref = blockquote.childNodes;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         child = _ref[_i];
         if (child.nodeType === Node.TEXT_NODE) {
-          _results.push(Linkify.text(child));
+          nodes.push(child);
         } else if (child.className === "quote") {
-          _results.push((function() {
-            var _j, _len1, _ref1, _results1;
-            _ref1 = child.childNodes;
-            _results1 = [];
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              node = _ref1[_j];
-              if (node.nodeType === Node.TEXT_NODE) {
-                _results1.push(Linkify.text(node));
-              } else {
-                _results1.push(void 0);
-              }
+          _ref1 = child.childNodes;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            node = _ref1[_j];
+            if (node.nodeType === Node.TEXT_NODE) {
+              nodes.push(node);
             }
-            return _results1;
-          })());
-        } else {
-          _results.push(void 0);
+          }
         }
+      }
+      _results = [];
+      for (_k = 0, _len2 = nodes.length; _k < _len2; _k++) {
+        node = nodes[_k];
+        _results.push(Linkify.text(node));
       }
       return _results;
     },

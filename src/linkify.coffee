@@ -21,15 +21,26 @@ Linkify =
     # Built based on:
     # - http://en.wikipedia.org/wiki/URI_scheme
     # - http://www.regular-expressions.info/regexbuddy/email.html
+    
+    nodes = []
 
     blockquote = post.blockquote or $ 'blockquote', post.el
+    
+    # We collect all the text children before editting them
+    # so that further children don't get offset and therefore
+    # don't get parsed.
     for child in blockquote.childNodes
       if child.nodeType == Node.TEXT_NODE
-        Linkify.text child
+        nodes.push child
       else if child.className == "quote"
         for node in child.childNodes
           if node.nodeType == Node.TEXT_NODE
-            Linkify.text node
+            nodes.push node
+    
+    # After we generate our list of nodes to parse we can 
+    # edit it without worrying about nodes getting orphaned.
+    for node in nodes
+      Linkify.text node
 
   text: (child, link) ->
     txt = child.textContent
@@ -86,7 +97,6 @@ Linkify =
             child = $.tn(@textContent + @.nextSibling.textContent)
             $.rm @.nextSibling
             Linkify.text(child, @)
-            
 
       $.after node, a
       # Track insertion point
