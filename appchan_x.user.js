@@ -7713,21 +7713,27 @@
 
   CustomNavigation = {
     init: function() {
-      var delimiter, html, index, link, navigation, _i, _len, _ref;
-      delimiter = " " + userNavigation.delimiter + " ";
-      html = delimiter;
+      var a, index, link, navigation, _i, _len, _ref, _results;
       navigation = $("#boardNavDesktop", d.body);
       for (index in navigation.childNodes) {
         if (navigation.firstChild.id !== "navtopright") {
           $.rm(navigation.firstChild);
         }
       }
+      $.add(navigation, $.tn(" " + userNavigation.delimiter + " "));
       _ref = userNavigation.links;
+      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
-        html = "" + html + "<a href=\"" + link[2] + "\" title=\"" + link[1] + "\">" + link[0] + "</a>" + delimiter;
+        a = $.el('a', {
+          href: link[2],
+          title: link[1],
+          textContent: link[0]
+        });
+        $.add(navigation, a);
+        _results.push($.add(navigation, $.tn(" " + userNavigation.delimiter + " ")));
       }
-      return navigation.innerHTML = navigation.innerHTML + html;
+      return _results;
     }
   };
 
@@ -7759,6 +7765,8 @@
         child = _ref[_i];
         if (child.nodeType === Node.TEXT_NODE) {
           _results.push(Linkify.text(child));
+        } else if (child.className === "quote") {
+          _results.push(Linkify.text(child.childNodes[0]));
         } else {
           _results.push(void 0);
         }
@@ -7766,38 +7774,29 @@
       return _results;
     },
     text: function(child) {
-      var a, l, lLen, m, p, span, txt, urlRE;
+      var a, l, lLen, m, node, p, parent, txt, urlRE, _results;
       txt = child.textContent;
-      span = null;
+      parent = child.parentNode;
       p = 0;
-      urlRE = new RegExp('(' + '\\b([a-z][-a-z0-9+.]+://|www\\.)' + '[^\\s\'"<>()]+' + '|' + '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b' + ')', 'gi');
+      urlRE = new RegExp('(\\b([a-z][-a-z0-9+.]+://|www\\.)[^\\s\'"<>()]+|\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b)', 'gi');
+      _results = [];
       while (m = urlRE.exec(txt)) {
-        if (null === span) {
-          span = $.el('span', {
-            className: 'linkifyplus'
-          });
-        }
         l = m[0].replace(/\.*$/, '');
         lLen = l.length;
-        span.appendChild(d.createTextNode(txt.substring(p, m.index)));
+        node = $.tn(txt.substring(p, m.index));
+        $.replace(child, node);
         a = $.el('a', {
           textContent: l,
           className: 'linkifyplus',
-          rel: 'nofollow noreferrer _new',
+          rel: 'nofollow noreferrer',
+          target: 'blank',
           href: l.indexOf(":/") < 0 ? (l.indexOf("@") > 0 ? "mailto:" + l : "http://" + l) : l
         });
-        $.add(span, a);
+        $.after(node, a);
         p = m.index + lLen;
+        _results.push($.after(a, $.tn(txt.substring(p, txt.length))));
       }
-      if (span) {
-        span.appendChild(d.createTextNode(txt.substring(p, txt.length)));
-        try {
-          return child.parentNode.replaceChild(span, child);
-        } catch (e) {
-          $.log(e);
-          return $.log(child.tagName + "could not be appended...");
-        }
-      }
+      return _results;
     }
   };
 

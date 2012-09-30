@@ -24,39 +24,33 @@ Linkify =
     for child in blockquote.childNodes
       if child.nodeType == Node.TEXT_NODE
         Linkify.text child
+      else if child.className == "quote"
+        Linkify.text child.childNodes[0]
 
   text: (child) ->
     txt = child.textContent
-    span = null
+    parent = child.parentNode
     p = 0
-    urlRE = new RegExp '(' + '\\b([a-z][-a-z0-9+.]+://|www\\.)' + '[^\\s\'"<>()]+' + '|' + '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b' + ')',  'gi'
+    urlRE = new RegExp '(\\b([a-z][-a-z0-9+.]+://|www\\.)[^\\s\'"<>()]+|\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b)',  'gi'
     while m = urlRE.exec txt
-      if null == span
-        span = $.el 'span'
-          className: 'linkifyplus'
 
-      # Get the link without trailing dots
+      # Get the link without trailing dots as to not create an invalid link.
       l = m[0].replace /\.*$/, ''
       lLen = l.length
-      # Put in text up to the link
-      span.appendChild d.createTextNode txt.substring p, m.index
+      # Put in text up to the link so we can insert the link after it.
+      node = $.tn(txt.substring(p, m.index))
+      $.replace child, node
       # Create a link and put it in the span
       a = $.el 'a'
         textContent: l
         className: 'linkifyplus'
-        rel:       'nofollow noreferrer _new'
+        rel:       'nofollow noreferrer'
+        target:    'blank'
         href:      if l.indexOf(":/") < 0 then (if l.indexOf("@") > 0 then "mailto:" + l else "http://" + l) else l
 
-      $.add span, a
+      $.after node, a
       # Track insertion point
       p = m.index+lLen
 
-    if span
-      # Take the text after the last link
-      span.appendChild d.createTextNode txt.substring p, txt.length
-      # Replace the original text with the new span
-      try
-        child.parentNode.replaceChild(span, child)
-      catch e
-        $.log e
-        $.log child.tagName + "could not be appended..."
+      $.after a, $.tn(txt.substring(p, txt.length))
+      # Replace the original text node with the new span
