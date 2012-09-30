@@ -5,6 +5,7 @@ master
     - Add optional increase value for Updater which can be configured on the 'rice' tab.
 - zixaphir
   Custom Navigation
+  Linkification
 
 2.35.6
 - noface

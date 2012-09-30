@@ -114,7 +114,7 @@ task 'upgrade', (options) ->
 task 'build', ->
   exec 'coffee --print script.coffee', {maxBuffer: 1024 * 1024}, (err, stdout, stderr) ->
     throw err if err
-    fs.writeFile OUTFILE, HEADER + stdout, {maxBuffer: 1024 * 1024}, (err, stdout, stderr) ->
+    fs.writeFile OUTFILE, HEADER + stdout, (err) ->
       throw err if err
 
 task 'dev', ->

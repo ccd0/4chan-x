@@ -81,7 +81,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Markdown, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, userNavigation;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, userNavigation;
 
   Config = {
     main: {
@@ -91,6 +91,7 @@
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'File Info Formatting': [true, 'Reformats the file information'],
+        'Linkify': [true, 'Convert text into links where applicable. If a link is too long and only partially linkified, shift+ctrl+click it to merge the next line.'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
@@ -1074,6 +1075,9 @@
         QuoteCT.node(post);
       }
       $.replace(bq, clone);
+      if (Conf['Linkify']) {
+        Linkify.node(post);
+      }
       return Main.prettify(clone);
     }
   };
@@ -5404,6 +5408,106 @@
     }
   };
 
+  /*
+  Based on the Linkify scripts located at:
+  http://downloads.mozdev.org/greasemonkey/linkify.user.js
+  https://github.com/MayhemYDG/LinkifyPlusFork
+  
+  Originally written by Anthony Lieuallen of http://arantius.com/
+  Licensed for unlimited modification and redistribution as long as
+  this notice is kept intact.
+  
+  If possible, please contact me regarding new features, bugfixes
+  or changes that I could integrate into the existing code instead of
+  creating a different script. Thank you.
+  */
+
+
+  Linkify = {
+    init: function() {
+      return Main.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var child, comment, node, nodes, subject, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results;
+      nodes = [];
+      comment = post.blockquote || $('blockquote', post.el);
+      subject = $('.subject', post.el);
+      _ref = comment.childNodes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        child = _ref[_i];
+        if (child.nodeType === Node.TEXT_NODE) {
+          nodes.push(child);
+        } else if (child.className === "quote") {
+          _ref1 = child.childNodes;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            node = _ref1[_j];
+            if (node.nodeType === Node.TEXT_NODE) {
+              nodes.push(node);
+            }
+          }
+        }
+      }
+      if (subject != null) {
+        _ref2 = subject.childNodes;
+        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+          child = _ref2[_k];
+          if (child.nodeType === Node.TEXT_NODE) {
+            nodes.push(child);
+          }
+        }
+      }
+      _results = [];
+      for (_l = 0, _len3 = nodes.length; _l < _len3; _l++) {
+        node = nodes[_l];
+        _results.push(Linkify.text(node));
+      }
+      return _results;
+    },
+    text: function(child, link) {
+      var a, l, lLen, m, node, p, regString, rest, txt, urlRE;
+      txt = child.textContent;
+      p = 0;
+      regString = ['(', '\\b(', '[a-z][-a-z0-9+.]+://', '|', 'www\\.', '|', 'magnet:', '|', 'mailto:', '|', 'news:', ')', '[^\\s\'"<>()]+', '|', '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b', ')'].join("");
+      urlRE = new RegExp(regString, 'i');
+      if (m = urlRE.exec(txt)) {
+        l = m[0].replace(/\.*$/, '');
+        lLen = l.length;
+        node = $.tn(txt.substring(p, m.index));
+        if (link) {
+          $.replace(link, node);
+        } else {
+          $.replace(child, node);
+        }
+        a = $.el('a', {
+          textContent: l,
+          className: 'linkify',
+          rel: 'nofollow noreferrer',
+          target: 'blank',
+          href: l.indexOf(":") < 0 ? (l.indexOf("@") > 0 ? "mailto:" + l : "http://" + l) : l
+        });
+        $.on(a, 'click', function(e) {
+          if (e.shiftKey && e.ctrlKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            if ("br" === this.nextSibling.tagName.toLowerCase() && this.nextSibling.nextSibling.className !== "abbr") {
+              $.rm(this.nextSibling);
+              child = $.tn(this.textContent + this.nextSibling.textContent);
+              $.rm(this.nextSibling);
+              return Linkify.text(child, this);
+            }
+          }
+        });
+        $.after(node, a);
+        p = m.index + lLen;
+        rest = $.tn(txt.substring(p, txt.length));
+        if (rest.textContent !== "") {
+          $.after(a, rest);
+          return this.text(rest);
+        }
+      }
+    }
+  };
+
   Main = {
     init: function() {
       var cutoff, hiddenThreads, id, key, now, path, pathname, settings, temp, timestamp, val, _ref;
@@ -5539,6 +5643,9 @@
         if (Conf['Archive Link']) {
           ArchiveLink.init();
         }
+      }
+      if (Conf['Linkify']) {
+        Linkify.init();
       }
       if (Conf['Resurrect Quotes']) {
         Quotify.init();
