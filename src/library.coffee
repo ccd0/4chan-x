@@ -76,7 +76,6 @@ $ = (selector, root=d.body) ->
   if root? and result = root.querySelector selector
     return result
   else
-    $.log "#{selector} @ #{root} does not exist."
     return null
 
 $.extend = (object, properties) ->
@@ -268,5 +267,4 @@ $$ = (selector, root=d.body) ->
   if root? and result = Array::slice.call root.querySelectorAll selector
     return result
   else
-    $.log "#{selector} @ #{root} does not exist."
     return null

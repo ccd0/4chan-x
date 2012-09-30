@@ -1781,7 +1781,6 @@
     if ((root != null) && (result = root.querySelector(selector))) {
       return result;
     } else {
-      $.log("" + selector + " @ " + root + " does not exist.");
       return null;
     }
   };
@@ -2068,7 +2067,6 @@
     if ((root != null) && (result = Array.prototype.slice.call(root.querySelectorAll(selector)))) {
       return result;
     } else {
-      $.log("" + selector + " @ " + root + " does not exist.");
       return null;
     }
   };
