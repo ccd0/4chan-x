@@ -232,6 +232,7 @@ h1,
   box-sizing: border-box;
   """ + agent + """box-sizing: border-box;
   color: #333;
+  font-size: 12px;
   margin: 0;
   padding: 2px 4px 3px;
   """ + agent + """transition: color .25s, border .25s;
