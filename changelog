@@ -3,7 +3,10 @@ master
   Updater:
     - It is now possible to set a interval for background tabs.
     - Add optional increase value for Updater which can be configured on the 'rice' tab.
-  Don't automatically expand spoilers when using Expand Images. 
+  Don't automatically expand spoilers when using Expand Images.
+- Zixaphir
+  More robust linkifier
+  Lots more Mascot positioning options
 
 0.12beta
 - Zixaphir

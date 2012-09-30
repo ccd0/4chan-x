@@ -1,20 +1,20 @@
 MascotTools =
   init: ->
 
-    if Conf['Post Form Style'] == "fixed" or Conf['Post Form Style'] == "transparent fade"
-      mascotposition = 248
+    if Conf['Mascot Position'] == 'bottom'
+      position = 0
     else
-      mascotposition = 0
+      position = 248
 
     #If we're editting anything, let's not change mascots any time we change a value.
     unless editMode
-      mascotnames = []
+      names = []
 
       for name, mascot of userMascots
         if mascot["Enabled"]
-          mascotnames.push name
+          names.push name
 
-      unless Conf["mascot"] = mascotnames[Math.floor(Math.random() * mascotnames.length)]
+      unless Conf["mascot"] = names[Math.floor(Math.random() * names.length)]
         return
 
       mascot = userMascots[Conf["mascot"]]
@@ -24,13 +24,23 @@ MascotTools =
       unless mascot = editMascot or mascot = userMascots[Conf["mascot"]]
         return
 
+    if Conf["Sidebar Location"] == 'left'
+      if Conf["Mascot Location"] == "sidebar"
+        location = 'left'
+      else
+        location = 'right'
+    else if Conf["Mascot Location"] == "sidebar"
+      location = 'right'
+    else
+      location = 'left'
+
     result = """
 #mascot img {
   position: fixed;
-  z-index:                              """ + (if Conf['Mascots Overlap Posts'] then '3' else '-1') + """;
-  bottom:                               """ + (if mascot.position == 'bottom' then ( (mascot.vOffset or 0) + 0 + "px") else if mascot.position == 'top' then "auto" else ((mascot.vOffset or 0) + mascotposition) + "px") + """;
-  """ + Conf["Sidebar Location"] + """: """ + ((mascot.hOffset or 0) + (if (Conf['Sidebar'] == 'large' and mascot.center) then 25 else 0)) + """px;
-  top:                                  """ + (if mascot.position == 'top' then (mascot.vOffset or 0) + "px" else 'auto') + """;
+  z-index:              """ + (if Conf['Mascots Overlap Posts'] then '3' else '-1') + """;
+  bottom:               """ + (if mascot.position == 'bottom' then ( (mascot.vOffset or 0) + 0 + "px") else if mascot.position == 'top' then "auto" else ((mascot.vOffset or 0) + position) + "px") + """;
+  """ + location + """: """ + ((mascot.hOffset or 0) + (if (Conf['Sidebar'] == 'large' and mascot.center) then 25 else 0)) + """px;
+  top:                  """ + (if mascot.position == 'top' then (mascot.vOffset or 0) + "px" else 'auto') + """;
   pointer-events: none;
 }
 """

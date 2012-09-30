@@ -250,8 +250,10 @@
         'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
         'Font': ['Calibri', 'The font used by all elements of 4chan.', 'text'],
         'Font Size': ['12px', 'The font size of posts and various UI. This does not change all font sizes.', 'text'],
-        'Mascots': [false, 'Add a pretty picture of your waifu to the sidebar.'],
+        'Mascots': [false, 'Add a pretty picture of your waifu to Appchan.'],
         'Mascots Overlap Posts': [true, 'Mascots overlap threads and posts.'],
+        'Mascot Location': ['sidebar', 'Change where your mascot is located.', ['sidebar', 'opposite']],
+        'Mascot Position': ['bottom', 'Change where your mascot is placed in relation to the post form if the mascot isn\'t manually placed.', ['above post form', 'bottom']],
         'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
         'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
         'Underline Links': [true, 'Put lines under hyperlinks.']
@@ -7551,21 +7553,21 @@
 
   MascotTools = {
     init: function() {
-      var mascot, mascotnames, mascotposition, name, result;
-      if (Conf['Post Form Style'] === "fixed" || Conf['Post Form Style'] === "transparent fade") {
-        mascotposition = 248;
+      var location, mascot, name, names, position, result;
+      if (Conf['Mascot Position'] === 'bottom') {
+        position = 0;
       } else {
-        mascotposition = 0;
+        position = 248;
       }
       if (!editMode) {
-        mascotnames = [];
+        names = [];
         for (name in userMascots) {
           mascot = userMascots[name];
           if (mascot["Enabled"]) {
-            mascotnames.push(name);
+            names.push(name);
           }
         }
-        if (!(Conf["mascot"] = mascotnames[Math.floor(Math.random() * mascotnames.length)])) {
+        if (!(Conf["mascot"] = names[Math.floor(Math.random() * names.length)])) {
           return;
         }
         mascot = userMascots[Conf["mascot"]];
@@ -7575,7 +7577,18 @@
           return;
         }
       }
-      result = "#mascot img {\n  position: fixed;\n  z-index:                              " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\nbottom:                               " + (mascot.position === 'bottom' ? (mascot.vOffset || 0) + 0 + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + mascotposition) + "px") + ";" + Conf["Sidebar Location"] + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\ntop:                                  " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";\npointer-events: none;\n}";
+      if (Conf["Sidebar Location"] === 'left') {
+        if (Conf["Mascot Location"] === "sidebar") {
+          location = 'left';
+        } else {
+          location = 'right';
+        }
+      } else if (Conf["Mascot Location"] === "sidebar") {
+        location = 'right';
+      } else {
+        location = 'left';
+      }
+      result = "#mascot img {\n  position: fixed;\n  z-index:              " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\nbottom:               " + (mascot.position === 'bottom' ? (mascot.vOffset || 0) + 0 + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + position) + "px") + ";" + location + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\ntop:                  " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";\npointer-events: none;\n}";
       return result;
     },
     dialog: function(key) {
