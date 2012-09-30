@@ -7767,22 +7767,35 @@
 
   CustomNavigation = {
     init: function() {
-      var a, index, link, navigation, _i, _len, _ref, _results;
+      var a, link, navigation, node, nodes, _i, _j, _len, _len1, _ref, _results;
       navigation = $("#boardNavDesktop", d.body);
-      for (index in navigation.childNodes) {
-        if (navigation.firstChild.id !== "navtopright") {
-          $.rm(navigation.firstChild);
+      nodes = (function() {
+        var _i, _len, _ref, _results;
+        _ref = navigation.childNodes;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          node = _ref[_i];
+          if (node.id !== "navtopright") {
+            _results.push(node);
+          } else {
+            continue;
+          }
         }
+        return _results;
+      })();
+      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+        node = nodes[_i];
+        $.rm(node);
       }
       $.add(navigation, $.tn(" " + userNavigation.delimiter + " "));
       _ref = userNavigation.links;
       _results = [];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
+      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+        link = _ref[_j];
         a = $.el('a', {
-          href: link[2],
+          textContent: link[0],
           title: link[1],
-          textContent: link[0]
+          href: link[2]
         });
         $.add(navigation, a);
         _results.push($.add(navigation, $.tn(" " + userNavigation.delimiter + " ")));
@@ -7961,22 +7974,27 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
     },
     remStyle: function() {
-      var node, _i, _len, _ref, _results;
+      var node, nodes, _i, _len, _results;
       $.off(d, 'DOMNodeInserted', this.remStyle);
       if (d.head && d.head.childNodes.length > 10) {
-        _ref = d.head.childNodes;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          node = _ref[_i];
-          if (node.nodeType === 1) {
-            if ((node.rel === 'stylesheet' || node.rel === 'alternate stylesheet' || node.tagName.toLowerCase() === 'style') && node.id !== 'appchan') {
-              _results.push($.rm(node));
+        nodes = (function() {
+          var _i, _len, _ref, _results;
+          _ref = d.head.childNodes;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            node = _ref[_i];
+            if (node.nodeType === 1 && (node.rel === 'stylesheet' || node.rel === 'alternate stylesheet' || node.tagName.toLowerCase() === 'style') && node.id !== 'appchan') {
+              _results.push(node);
             } else {
-              _results.push(void 0);
+              continue;
             }
-          } else {
-            _results.push(void 0);
           }
+          return _results;
+        })();
+        _results = [];
+        for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+          node = nodes[_i];
+          _results.push($.rm(node));
         }
         return _results;
       } else {
