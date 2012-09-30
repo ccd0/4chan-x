@@ -2812,7 +2812,7 @@ Updater =
     i =  +Conf['Interval']
     bg = +Conf['BGInterval']
     j = Math.min @unsuccessfulFetchCount, 9
-    w = Conf['updateIncreaseB'].split ','
+    w = Conf['updateIncrease'].split ','
     wb = Conf['updateIncreaseB'].split ','
     hidden = d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
     unless hidden

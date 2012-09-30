@@ -3403,7 +3403,7 @@
       i = +Conf['Interval'];
       bg = +Conf['BGInterval'];
       j = Math.min(this.unsuccessfulFetchCount, 9);
-      w = Conf['updateIncreaseB'].split(',');
+      w = Conf['updateIncrease'].split(',');
       wb = Conf['updateIncreaseB'].split(',');
       hidden = d.hidden || d.oHidden || d.mozHidden || d.webkitHidden;
       if (!hidden) {
