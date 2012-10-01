@@ -3399,22 +3399,31 @@
       }
     },
     getInterval: function() {
-      var bg, hidden, i, j, w, wb;
+      var bg, hidden, i, j, oi, w, wb;
       i = +Conf['Interval'];
       bg = +Conf['BGInterval'];
-      j = Math.min(this.unsuccessfulFetchCount, 9);
       w = Conf['updateIncrease'].split(',');
       wb = Conf['updateIncreaseB'].split(',');
+      j = Math.min(this.unsuccessfulFetchCount, 9);
+      oi = function(y) {
+        var x, _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = y.length; _i < _len; _i++) {
+          x = y[_i];
+          _results.push(Number(x));
+        }
+        return _results;
+      };
       hidden = d.hidden || d.oHidden || d.mozHidden || d.webkitHidden;
       if (!hidden) {
         if (Conf['Optional Increase']) {
-          return Math.max(i, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]);
+          return Math.max(i, oi(w)[j]);
         } else {
           return i;
         }
       } else {
         if (Conf['Optional Increase']) {
-          return Math.max(bg, [wb[0], wb[1], wb[2], wb[3], wb[4], wb[5], wb[6], wb[7], wb[8], wb[9]][j]);
+          return Math.max(bg, oi(wb)[j]);
         } else {
           return bg;
         }

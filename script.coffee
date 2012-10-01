@@ -2809,19 +2809,21 @@ Updater =
       el.textContent = text
 
   getInterval: ->
-    i =  +Conf['Interval']
+    i  = +Conf['Interval']
     bg = +Conf['BGInterval']
-    j = Math.min @unsuccessfulFetchCount, 9
-    w = Conf['updateIncrease'].split ','
+    w  = Conf['updateIncrease'].split ','
     wb = Conf['updateIncreaseB'].split ','
+    j  = Math.min @unsuccessfulFetchCount, 9
+    oi = (y) ->
+      Number x for x in y
     hidden = d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
     unless hidden
       if Conf['Optional Increase']
-        return Math.max i, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]
+        return Math.max i, oi(w)[j]
       else i
     else
       if Conf['Optional Increase']
-        return Math.max bg, [wb[0], wb[1], wb[2], wb[3], wb[4], wb[5], wb[6], wb[7], wb[8], wb[9]][j]
+        return Math.max bg, oi(wb)[j]
       else bg
 
   timeout: ->
