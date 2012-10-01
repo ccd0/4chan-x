@@ -7,11 +7,11 @@ Main =
       Conf[key]    = $.get key,              val
 
     userNavigation = $.get "userNavigation", Navigation
-    userThemes     = $.get "userThemes",     Themes
-    userMascots    = $.get "userMascots",    Mascots
+    userThemes     = $.get "userThemes",     {}
+    userMascots    = $.get "userMascots",    {}
 
 
-    #If mascots have been updated, push them to the userMascots
+    # If mascots have been updated, push them to the userMascots
     unless userMascots == Mascots
       for name, mascot of Mascots
         if userMascots[name]
@@ -20,6 +20,21 @@ Main =
           if userMascots[name]["Enabled"]
             mascot["Enabled"] = true
         userMascots[name] = mascot
+
+    # Same thing with themes.
+    unless userThemes == Themes
+      for name, theme of Themes
+        $.log name
+        if userThemes[name]
+          $.log "Exists: " + name
+          if userThemes[name]["Customized"] and not userThemes[name]["Deleted"]
+            $.log "Customized: " + name
+            continue
+          if userThemes[name]["Deleted"]
+            $.log "Deleted: " + name
+            theme["Deleted"] = true
+        userThemes[name] = theme
+        $.log userThemes[name]
 
     path = location.pathname
     pathname = path[1..].split '/'

@@ -273,11 +273,13 @@ ThemeTools =
 
         if imported.bgRPA
           bgRPA = imported.bgRPA.split(' ')
+        else
+          bgRPA = ['no-repeat', 'bottom', 'left', 'fixed']
 
         if origin == "oneechan"
           userThemes[name] = {
             'Author'                      : "Author"
-            'Author Tripcode'             : "'!TRip.C0d3'"
+            'Author Tripcode'             : "!POMF.9waa"
             'Background Image'            : 'url("' + (imported.bgImg or '') + '")'
             'Background Attachment'       : bgRPA[3] or ''
             'Background Position'         : ((bgRPA[1] + " ") or '') + (bgRPA[2] or '')
@@ -357,7 +359,7 @@ textarea,
         else if origin == "SS"
           userThemes[name] = {
             'Author'                      : "Author"
-            'Author Tripcode'             : "'!TRip.C0d3'"
+            'Author Tripcode'             : "!.pC/AHOKAg"
             'Background Image'            : 'url("' + (imported.bgImg or '') + '")'
             'Background Attachment'       : bgRPA[3] or ''
             'Background Position'         : ((bgRPA[1] + " ") or '') + (bgRPA[2] or '')
