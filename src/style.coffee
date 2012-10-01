@@ -1449,7 +1449,7 @@ html .subMenu {
   right: 2px;
   top: auto;
   bottom: 110px;
-  color: """ + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.7)" else "rgba(0,0,0,0.7)") + """;
+  color: """ + (if theme["Dark Theme"] then "rgba(255,255,255,0.7)" else "rgba(0,0,0,0.7)") + """;
   font-size: 10px;
   height: 20px;
   text-align: right;
@@ -1695,7 +1695,7 @@ div.subMenu,
 }
 .inline div.reply {
   /* Inline Quotes */
-  background-color: """ + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.03)" else "rgba(0,0,0,0.03)") + """;
+  background-color: """ + (if theme["Dark Theme"] then "rgba(255,255,255,0.03)" else "rgba(0,0,0,0.03)") + """;
   border: 1px solid """ + theme["Reply Border"] + """;
   box-shadow: 5px 5px 5px """+ theme["Shadow Color"] + """;
 }
@@ -1789,7 +1789,7 @@ div.subMenu,
 }
 input[type=checkbox]:checked + .rice {
   background: """ + theme["Checkbox Checked Background"] + """;
-  background-image: url(""" + (if theme["Dark Theme"] == "1" then "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" else "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==") + """);
+  background-image: url(""" + (if theme["Dark Theme"] then "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" else "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==") + """);
   background-attachment: scroll;
   background-repeat: no-repeat;
   background-position: bottom right;
@@ -1835,20 +1835,20 @@ a.forwardlink {
 }
 #qr input:""" + agent + """placeholder,
 #qr textarea:""" + agent + """placeholder {
-  color: """ + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.2)" else "rgba(0,0,0,0.3)") + """ !important;
+  color: """ + (if theme["Dark Theme"] then "rgba(255,255,255,0.2)" else "rgba(0,0,0,0.3)") + """ !important;
 }
 .boxcontent dd,
 #options ul {
-  border-color: """ + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)") + """;
+  border-color: """ + (if theme["Dark Theme"] then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)") + """;
 }
 #options .styleoption {
-  border-top: 1px solid """ + (if theme["Dark Theme"] == "1" then "rgba(255,255,255,0.05)" else "rgba(0,0,0,0.05)") + """;
+  border-top: 1px solid """ + (if theme["Dark Theme"] then "rgba(255,255,255,0.05)" else "rgba(0,0,0,0.05)") + """;
 }
 #mascot img {
   """ + agent + """transform: scaleX(""" + (if sidebarLocation[0] == "left" then "-" else "") + """1);
 }
 """ + theme["Custom CSS"]
-      if theme["Dark Theme"] == "1"
+      if theme["Dark Theme"]
         css += """
 .prettyprint {
   background-color: rgba(255,255,255,.1);

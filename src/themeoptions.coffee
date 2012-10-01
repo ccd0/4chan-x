@@ -225,14 +225,17 @@ ThemeTools =
         tripColor   = new ThemeTools.color(imported.tripColor);
         timeColor   = new ThemeTools.color(imported.timeColor || imported.textColor);
 
+        if imported.bgRPA
+          bgRPA = imported.bgRPA.split(' ')
+
         if origin == "oneechan"
           userThemes[name] = {
             'Author'                      : "Author"
             'Author Tripcode'             : "'!TRip.C0d3'"
-            'Background Image'            : imported.bgImg or ''
-            'Background Attachment'       : imported.bgA or ''
-            'Background Position'         : (imported.bgPY + " " or '') + (imported.bgPX or '')
-            'Background Repeat'           : imported.bgR or ''
+            'Background Image'            : 'url("' + (imported.bgImg or '') + '")'
+            'Background Attachment'       : bgRPA[3] or ''
+            'Background Position'         : ((bgRPA[1] + " ") or '') + (bgRPA[2] or '')
+            'Background Repeat'           : bgRPA[0] or ''
             'Background Color'            : 'rgb(' + bgColor.rgb + ')'
             'Dialog Background'           : 'rgba(' + mainColor.rgb + ',.98)'
             'Dialog Border'               : 'rgb(' + brderColor.rgb + ')'
@@ -275,7 +278,7 @@ ThemeTools =
             'Inputs'                      : 'rgb(' + textColor.rgb + ')'
             'Warnings'                    : 'rgb(' + sageColor.rgb + ')'
             'Shadow Color'                : 'rgba(' + mainColor.shiftRGB(16) + ',.9)'
-            'Dark Theme'                  : if mainColor.isLight then '1' else '0'
+            'Dark Theme'                  : if mainColor.isLight then false else true
             'Custom CSS'                  : """
 .rice {
   box-shadow:rgba(""" + mainColor.shiftRGB(32) + """,.3) 0 1px;
@@ -303,16 +306,16 @@ input:not(.jsColor),
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
-}""" + imported.customCSS }
+}""" + (imported.customCSS or '') }
 
         else if origin == "SS"
           userThemes[name] = {
             'Author'                      : "Author"
             'Author Tripcode'             : "'!TRip.C0d3'"
-            'Background Image'            : imported.bgImg or ''
-            'Background Attachment'       : imported.bgA or ''
-            'Background Position'         : (imported.bgPY + " " or '') + (imported.bgPX or '')
-            'Background Repeat'           : imported.bgR or ''
+            'Background Image'            : 'url("' + (imported.bgImg or '') + '")'
+            'Background Attachment'       : bgRPA[3] or ''
+            'Background Position'         : ((bgRPA[1] + " ") or '') + (bgRPA[2] or '')
+            'Background Repeat'           : bgRPA[0] or ''
             'Background Color'            : 'rgb(' + bgColor.rgb + ')'
             'Dialog Background'           : 'rgba(' + mainColor.rgb + ',.98)'
             'Dialog Border'               : 'rgb(' + brderColor.rgb + ')'
@@ -355,7 +358,7 @@ textarea,
             'Inputs'                      : 'rgb(' + textColor.rgb + ')'
             'Warnings'                    : 'rgb(' + sageColor.rgb + ')'
             'Shadow Color'                : 'rgba(' + mainColor.shiftRGB(16) + ',.9)'
-            'Dark Theme'                  : if mainColor.isLight then '1' else '0'
+            'Dark Theme'                  : if mainColor.isLight then false else true
             'Custom CSS'                  : """
 #delform {
   padding: 1px 2px;
@@ -386,7 +389,7 @@ input:not(.jsColor),
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
-}""" + imported.customCSS }
+}""" + (imported.customCSS or '') }
 
       else if origin == 'appchan'
         userThemes[name] = imported
