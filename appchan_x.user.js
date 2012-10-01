@@ -8983,20 +8983,15 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       if (userThemes !== Themes) {
         for (name in Themes) {
           theme = Themes[name];
-          $.log(name);
           if (userThemes[name]) {
-            $.log("Exists: " + name);
             if (userThemes[name]["Customized"] && !userThemes[name]["Deleted"]) {
-              $.log("Customized: " + name);
               continue;
             }
             if (userThemes[name]["Deleted"]) {
-              $.log("Deleted: " + name);
               theme["Deleted"] = true;
             }
           }
           userThemes[name] = theme;
-          $.log(userThemes[name]);
         }
       }
       path = location.pathname;

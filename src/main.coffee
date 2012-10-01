@@ -24,17 +24,12 @@ Main =
     # Same thing with themes.
     unless userThemes == Themes
       for name, theme of Themes
-        $.log name
         if userThemes[name]
-          $.log "Exists: " + name
           if userThemes[name]["Customized"] and not userThemes[name]["Deleted"]
-            $.log "Customized: " + name
             continue
           if userThemes[name]["Deleted"]
-            $.log "Deleted: " + name
             theme["Deleted"] = true
         userThemes[name] = theme
-        $.log userThemes[name]
 
     path = location.pathname
     pathname = path[1..].split '/'
