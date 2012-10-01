@@ -37,10 +37,12 @@ MascotTools =
     result = """
 #mascot img {
   position: fixed;
-  z-index:              """ + (if Conf['Mascots Overlap Posts'] then '3' else '-1') + """;
-  bottom:               """ + (if mascot.position == 'bottom' then ( (mascot.vOffset or 0) + 0 + "px") else if mascot.position == 'top' then "auto" else ((mascot.vOffset or 0) + position) + "px") + """;
+  z-index: """ + (if Conf['Mascots Overlap Posts'] then '3' else '-1') + """;
+  bottom:  """ + (if mascot.position == 'bottom' then ( (mascot.vOffset or 0) + 0 + "px") else if mascot.position == 'top' then "auto" else ((mascot.vOffset or 0) + position) + "px") + """;
   """ + location + """: """ + ((mascot.hOffset or 0) + (if (Conf['Sidebar'] == 'large' and mascot.center) then 25 else 0)) + """px;
-  top:                  """ + (if mascot.position == 'top' then (mascot.vOffset or 0) + "px" else 'auto') + """;
+  top:     """ + (if mascot.position == 'top' then (mascot.vOffset or 0) + "px" else 'auto') + """;
+  height:  """ + (if mascot.height and isNaN parseFloat mascot.height then mascot.height else if mascot.height then parseInt(mascot.height) + "px" else "auto") + """;
+  width:   """ + (if mascot.width  and isNaN parseFloat mascot.width  then mascot.width  else if mascot.width  then parseInt(mascot.width)  + "px" else "auto") + """;;
   pointer-events: none;
 }
 """
@@ -76,6 +78,18 @@ MascotTools =
         "Where the mascot is anchored in the Sidebar. The default option places the mascot above the Post Form or on the bottom of the page, depending on the Post Form setting."
         "select"
         ["default", "top", "bottom"]
+      ]
+      height: [
+        "Height"
+        "auto"
+        "This value is used for manually setting a height for the mascot."
+        "text"
+      ]
+      width: [
+        "Width"
+        "auto"
+        "This value is used for manually setting a width for the mascot."
+        "text"
       ]
       vOffset: [
         "Vertical Offset"
