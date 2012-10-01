@@ -17,6 +17,32 @@ Linkify =
     # Add Linkification to callbacks, which will call linkification on every post parsed by Appchan X.
     Main.callbacks.push @node
 
+
+  # I didn't write any of this RegEx.
+  regString: [
+    '('
+    # leading scheme:// or "www."
+    '\\b('
+    '[a-z][-a-z0-9+.]+://'
+    '|'
+    'www\\.'
+    '|'
+    # Various link handlers:
+    'magnet:'
+    '|'
+    'mailto:'
+    '|'
+    'news:'
+    ')'
+    # everything until non-URL character
+    '[^\\s\'"<>()]+'
+    '|'
+    # emails. We don't need everything until a non-URL character because emails follow a consistent syntax.
+    '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b'
+    ')'
+  ].join("")
+  embedRegExp: /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|youtube.*\&v=)([^#\&\?]*).*/
+
   node: (post) ->
     # Built based on:
     # - http://en.wikipedia.org/wiki/URI_scheme
@@ -54,31 +80,7 @@ Linkify =
     # position tracker.
     p = 0
 
-    # I didn't write any of this RegEx.
-    regString = [
-      '('
-      # leading scheme:// or "www."
-      '\\b('
-      '[a-z][-a-z0-9+.]+://'
-      '|'
-      'www\\.'
-      '|'
-      # Various link handlers:
-      'magnet:'
-      '|'
-      'mailto:'
-      '|'
-      'news:'
-      ')'
-      # everything until non-URL character
-      '[^\\s\'"<>()]+'
-      '|'
-      # emails. We don't need everything until a non-URL character because emails follow a consistent syntax.
-      '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b'
-      ')'
-    ].join("")
-    embedRegExp = /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|youtube.*\&v=)([^#\&\?]*).*/
-    urlRegExp = new RegExp regString, 'i'
+    urlRegExp = new RegExp Linkify.regString, 'i'
     if m = urlRegExp.exec txt
 
       # Get the link without trailing dots as to not create an invalid link.
@@ -124,7 +126,7 @@ Linkify =
       # We can finally insert the link,
       $.after node, a
 
-      if Conf['Youtube Embed'] and match = a.href.match embedRegExp
+      if Conf['Youtube Embed'] and match = a.href.match Linkify.embedRegExp
         embed = $.el 'a'
           name:         match[1]
           className:    'embedlink'

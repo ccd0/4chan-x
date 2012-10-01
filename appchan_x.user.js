@@ -7824,6 +7824,8 @@
     init: function() {
       return Main.callbacks.push(this.node);
     },
+    regString: ['(', '\\b(', '[a-z][-a-z0-9+.]+://', '|', 'www\\.', '|', 'magnet:', '|', 'mailto:', '|', 'news:', ')', '[^\\s\'"<>()]+', '|', '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b', ')'].join(""),
+    embedRegExp: /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|youtube.*\&v=)([^#\&\?]*).*/,
     node: function(post) {
       var child, comment, node, nodes, subject, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results;
       nodes = [];
@@ -7861,12 +7863,10 @@
       return _results;
     },
     text: function(child, link) {
-      var a, embed, embedRegExp, l, lLen, m, match, node, p, regString, rest, txt, urlRegExp;
+      var a, embed, l, lLen, m, match, node, p, rest, txt, urlRegExp;
       txt = child.textContent;
       p = 0;
-      regString = ['(', '\\b(', '[a-z][-a-z0-9+.]+://', '|', 'www\\.', '|', 'magnet:', '|', 'mailto:', '|', 'news:', ')', '[^\\s\'"<>()]+', '|', '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b', ')'].join("");
-      embedRegExp = /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|youtube.*\&v=)([^#\&\?]*).*/;
-      urlRegExp = new RegExp(regString, 'i');
+      urlRegExp = new RegExp(Linkify.regString, 'i');
       if (m = urlRegExp.exec(txt)) {
         l = m[0].replace(/\.*$/, '');
         lLen = l.length;
@@ -7896,7 +7896,7 @@
           }
         });
         $.after(node, a);
-        if (Conf['Youtube Embed'] && (match = a.href.match(embedRegExp))) {
+        if (Conf['Youtube Embed'] && (match = a.href.match(Linkify.embedRegExp))) {
           embed = $.el('a', {
             name: match[1],
             className: 'embedlink',
