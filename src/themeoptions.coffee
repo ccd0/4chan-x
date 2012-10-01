@@ -125,6 +125,16 @@ ThemeTools =
         Style.addStyle(editTheme)
       $.add themecontent, div
 
+    div = $.el "div",
+      className: "themevar"
+      innerHTML: "<div class=optionname><label><input type=checkbox name='Dark Theme' #{if editTheme['Dark Theme'] then 'checked' else ''}><b>Dark Theme?</b></label></div>"
+
+    $.on $('input', div), 'click', ->
+      editTheme[@name] = @checked
+      Style.addStyle(editTheme)
+
+    $.add themecontent, div
+
     if newTheme
       editTheme["Custom CSS"] = ""
 

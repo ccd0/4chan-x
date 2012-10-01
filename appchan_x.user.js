@@ -7348,6 +7348,15 @@
         });
         $.add(themecontent, div);
       }
+      div = $.el("div", {
+        className: "themevar",
+        innerHTML: "<div class=optionname><label><input type=checkbox name='Dark Theme' " + (editTheme['Dark Theme'] ? 'checked' : '') + "><b>Dark Theme?</b></label></div>"
+      });
+      $.on($('input', div), 'click', function() {
+        editTheme[this.name] = this.checked;
+        return Style.addStyle(editTheme);
+      });
+      $.add(themecontent, div);
       if (newTheme) {
         editTheme["Custom CSS"] = "";
       }
