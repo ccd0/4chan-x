@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           AppChan x
-// @version        0.13beta
+// @version        0.14beta
 // @namespace      zixaphir
 // @description    Adds various features and stylings.
 // @copyright      Appchan x - 2012 Zixaphir <zixaphirmoxphar@gmail.com>
@@ -8651,7 +8651,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '0.13beta',
+    version: '0.14beta',
     callbacks: []
   };
 
