@@ -9,6 +9,7 @@ Config =
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
       'File Info Formatting':         [true,  'Reformats the file information']
       'Linkify':                      [true,  'Convert text into links where applicable. If a link is too long and only partially linkified, shift+ctrl+click it to merge the next line.']
+      'Youtube Embed':                [true,  'Add a link to linkified youtube links to embed the video inline.']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
       'Index Navigation':             [true,  'Navigate to previous / next thread']
@@ -16,7 +17,7 @@ Config =
       'Reply Navigation':             [false, 'Navigate to top / bottom of thread']
       'Style':                        [true,  'Custom theming and styling options.']
       'Custom Navigation':            [false, 'Customize your Navigation bar.']
-      'Check for Updates':            [true, 'Check for updated versions of Appchan X']
+      'Check for Updates':            [true,  'Check for updated versions of Appchan X']
 
     Filtering:
       'Anonymize':                    [false, 'Make everybody anonymous']

@@ -77,8 +77,9 @@ Linkify =
       '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b'
       ')'
     ].join("")
-    urlRE = new RegExp regString, 'i'
-    if m = urlRE.exec txt
+    embedRegExp = /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/
+    urlRegExp = new RegExp regString, 'i'
+    if m = urlRegExp.exec txt
 
       # Get the link without trailing dots as to not create an invalid link.
       l = m[0].replace /\.*$/, ''
@@ -122,6 +123,30 @@ Linkify =
 
       # We can finally insert the link,
       $.after node, a
+
+      if Conf['Youtube Embed'] and match = a.href.match embedRegExp
+        embed = $.el 'a'
+          name:         match[1]
+          className:    'embedlink'
+          href:         'javascript:;'
+          textContent:  '(embed)'
+
+        $.on embed, 'click', ->
+          link = @.previousSibling.previousSibling
+
+          iframe = $.el 'iframe'
+            src:        'http://www.youtube.com/embed/' + @name
+
+          iframe.style.border = '0'
+          iframe.style.width  = '640px'
+          iframe.style.height = '390px'
+
+          $.replace link, iframe
+          $.rm @.previousSibling
+          $.rm @
+
+        $.after a, embed
+        $.after a, $.tn ' '
 
       # track the insertion point,
       p = m.index+lLen

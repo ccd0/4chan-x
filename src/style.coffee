@@ -977,8 +977,6 @@ a.yuimenuitemlabel {
   width: auto;
   padding-right: 0px;
   margin-right: 0px;
-  padding-top: 1px;
-  padding-bottom: 1px;
 }
 #boardNavDesktopFoot {
   visibility: visible;
