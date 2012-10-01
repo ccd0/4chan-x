@@ -50,7 +50,10 @@ MascotTools =
 
   dialog: (key) ->
     editMode = "mascot"
-    editMascot = JSON.parse(JSON.stringify(userMascots[key])) or {}
+    if userMascots[key]
+      editMascot = JSON.parse(JSON.stringify(userMascots[key]))
+    else
+      editMascot = {}
     editMascot.name = key or ''
     MascotTools.addMascot editMascot
     Style.addStyle Conf["theme"]
@@ -64,7 +67,7 @@ MascotTools =
       image: [
         "Image"
         ""
-        "Image of Mascot. Accepts Base64 as well as URLs."
+        "Image of Mascot. Accepts Base64 as well as URLs. Shift+Click field to upload."
         "text"
       ]
       position: [
@@ -115,13 +118,32 @@ MascotTools =
 
         when "text"
           div = @input item, name
+          input = $ 'input', div
+          
           if name == 'image'
-            $.on $('input', div), 'blur', ->
+            
+            $.on input, 'blur', ->
               editMascot[@name] = @value
               MascotTools.addMascot editMascot
               Style.addStyle Conf["theme"]
+        
+            fileInput = $.el 'input'
+              type:     "file"
+              accept:   "image/*"
+              title:    "imagefile"
+              hidden:   "hidden"
+
+            $.on input, 'click', (evt) ->
+              if evt.shiftKey
+                @.nextSibling.click()
+
+            $.on fileInput, 'change', (evt) ->
+              MascotTools.uploadImage evt, @
+        
+            $.after input, fileInput
+            
           else
-            $.on $('input', div), 'blur', ->
+            $.on input, 'blur', ->
               editMascot[@name] = @value
               Style.addStyle Conf["theme"]
 
@@ -173,6 +195,19 @@ MascotTools =
       innerHTML: "<h2>#{item[0]}</h2><span class=description>#{item[2]}</span><div class=option><input type=#{item[3]} class=field name='#{name}' placeholder='#{item[0]}' value='#{value}'></div>"
 
     return div
+
+  uploadImage: (evt, el) ->
+    file = evt.target.files[0]
+    reader = new FileReader()
+
+    reader.onload = (evt) ->
+      val = evt.target.result
+
+      el.previousSibling.value = val
+      editMascot.image = val
+      Style.addStyle Conf["theme"]
+
+    reader.readAsDataURL file 
 
   addMascot: (mascot) ->
 

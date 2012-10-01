@@ -7666,15 +7666,19 @@
       return result;
     },
     dialog: function(key) {
-      var dialog, div, item, layout, name, option, optionHTML, value, _i, _len, _ref;
+      var dialog, div, fileInput, input, item, layout, name, option, optionHTML, value, _i, _len, _ref;
       editMode = "mascot";
-      editMascot = JSON.parse(JSON.stringify(userMascots[key])) || {};
+      if (userMascots[key]) {
+        editMascot = JSON.parse(JSON.stringify(userMascots[key]));
+      } else {
+        editMascot = {};
+      }
       editMascot.name = key || '';
       MascotTools.addMascot(editMascot);
       Style.addStyle(Conf["theme"]);
       layout = {
         name: ["Mascot Name", "", "The name of the Mascot", "text"],
-        image: ["Image", "", "Image of Mascot. Accepts Base64 as well as URLs.", "text"],
+        image: ["Image", "", "Image of Mascot. Accepts Base64 as well as URLs. Shift+Click field to upload.", "text"],
         position: ["Position", "default", "Where the mascot is anchored in the Sidebar. The default option places the mascot above the Post Form or on the bottom of the page, depending on the Post Form setting.", "select", ["default", "top", "bottom"]],
         vOffset: ["Vertical Offset", "0", "This value moves the mascot vertically away from the anchor point, in pixels (the post form is exactly \"248\" pixels tall if you'd like to force the mascot to sit above it).", "number"],
         hOffset: ["Horizontal Offset", "0", "This value moves the mascot further away from the edge of the screen, in pixels.", "number"],
@@ -7690,14 +7694,30 @@
         switch (item[3]) {
           case "text":
             div = this.input(item, name);
+            input = $('input', div);
             if (name === 'image') {
-              $.on($('input', div), 'blur', function() {
+              $.on(input, 'blur', function() {
                 editMascot[this.name] = this.value;
                 MascotTools.addMascot(editMascot);
                 return Style.addStyle(Conf["theme"]);
               });
+              fileInput = $.el('input', {
+                type: "file",
+                accept: "image/*",
+                title: "imagefile",
+                hidden: "hidden"
+              });
+              $.on(input, 'click', function(evt) {
+                if (evt.shiftKey) {
+                  return this.nextSibling.click();
+                }
+              });
+              $.on(fileInput, 'change', function(evt) {
+                return MascotTools.uploadImage(evt, this);
+              });
+              $.after(input, fileInput);
             } else {
-              $.on($('input', div), 'blur', function() {
+              $.on(input, 'blur', function() {
                 editMascot[this.name] = this.value;
                 return Style.addStyle(Conf["theme"]);
               });
@@ -7763,6 +7783,19 @@
         innerHTML: "<h2>" + item[0] + "</h2><span class=description>" + item[2] + "</span><div class=option><input type=" + item[3] + " class=field name='" + name + "' placeholder='" + item[0] + "' value='" + value + "'></div>"
       });
       return div;
+    },
+    uploadImage: function(evt, el) {
+      var file, reader;
+      file = evt.target.files[0];
+      reader = new FileReader();
+      reader.onload = function(evt) {
+        var val;
+        val = evt.target.result;
+        el.previousSibling.value = val;
+        editMascot.image = val;
+        return Style.addStyle(Conf["theme"]);
+      };
+      return reader.readAsDataURL(file);
     },
     addMascot: function(mascot) {
       var div, el;
