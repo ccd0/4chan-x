@@ -511,6 +511,14 @@ h1,
   left: 10px;
   bottom: 0;
 }
+#upload {
+  position: absolute;
+  width: 100px;
+  left: 50%;
+  margin-left: -50px;
+  text-align: center;
+  bottom: 0;
+}
 #content textarea {
   font-family: monospace;
   min-height: 350px;

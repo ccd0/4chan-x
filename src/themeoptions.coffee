@@ -80,7 +80,10 @@ ThemeTools =
 <div id=themecontent>
 </div>
 <div id=save>
-  <a href='javascript:;'>Save Theme</a>
+  <a href='javascript:;'>Save</a>
+</div>
+<div id=upload>
+  <a href='javascript:;'>Select Image</a>
 </div>
 <div id=close>
   <a href='javascript:;'>Close</a>
@@ -106,23 +109,42 @@ ThemeTools =
 
       div = $.el "div",
         className: "themevar"
-        innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input class=field name='#{item}' placeholder='#{item}' value='#{editTheme[item]}'>"
+        innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input class=field name='#{item}' placeholder='#{if item == "Background Image" then "Shift+Click to upload image" else item}' value='#{editTheme[item]}'>"
 
-      $.on $('input', div), 'blur', ->
+      input = $('input', div)
+      $.on input, 'blur', ->
         depth = 0
 
-        for i in [0..@value.length - 1]
-          switch @value[i]
-            when '(' then depth++
-            when ')' then depth--
-            when '"' then toggle1 = not toggle1
-            when "'" then toggle2 = not toggle2
+        unless @.value.length > 1000
+          for i in [0..@value.length - 1]
+            switch @value[i]
+              when '(' then depth++
+              when ')' then depth--
+              when '"' then toggle1 = not toggle1
+              when "'" then toggle2 = not toggle2
 
         if depth != 0 or toggle1 or toggle2
           return alert "Syntax error on #{@name}."
 
         editTheme[@name] = @value
         Style.addStyle(editTheme)
+
+      if item == "Background Image"
+        fileInput = $.el 'input'
+          type: 'file'
+          accept:   "image/*"
+          title:    "BG Image"
+          hidden:   "hidden"
+
+        $.on input, 'click', (evt) ->
+          if evt.shiftKey
+            @.nextSibling.click()
+
+        $.on fileInput, 'change', (evt) ->
+          ThemeTools.uploadImage evt, @
+        
+        $.after input, fileInput
+
       $.add themecontent, div
 
     div = $.el "div",
@@ -145,6 +167,7 @@ ThemeTools =
     $.on $('textarea', div), 'blur', ->
       editTheme["Custom CSS"] = @value
       Style.addStyle(editTheme)
+
     $.add themecontent, div
 
     $.on $('#save > a', dialog), 'click', ->
@@ -153,6 +176,19 @@ ThemeTools =
     $.on  $('#close > a', dialog), 'click', ThemeTools.close
     $.add d.body, dialog
     Style.addStyle(editTheme)
+
+  uploadImage: (evt, el) ->
+    file = evt.target.files[0]
+    reader = new FileReader()
+
+    reader.onload = (evt) ->
+      val = 'url("' + evt.target.result + '")'
+
+      el.previousSibling.value = val
+      editTheme["Background Image"] = val
+      Style.addStyle(editTheme)
+
+    reader.readAsDataURL file
 
   color: (hex) ->
     @hex = "#" + hex
