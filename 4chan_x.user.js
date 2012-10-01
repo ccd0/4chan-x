@@ -1880,7 +1880,7 @@
         $.on(link.firstChild, 'click', function() {
           QR.open();
           if (!g.REPLY) {
-            $('select', QR.el).value = 'new';
+            QR.threadSelector.value = 'new';
           }
           return $('textarea', QR.el).focus();
         });
@@ -1980,44 +1980,118 @@
     },
     cooldown: {
       init: function() {
-        var length, timeout, _ref;
         if (!Conf['Cooldown']) {
           return;
         }
-        _ref = $.get("/" + g.BOARD + "/cooldown", {}), timeout = _ref.timeout, length = _ref.length;
-        if (timeout) {
-          QR.cooldown.start(timeout, length);
+        QR.cooldown.types = {
+          thread: (function() {
+            switch (g.BOARD) {
+              case 'q':
+                return 86400;
+              case 'b':
+              case 'soc':
+              case 'r9k':
+                return 600;
+              default:
+                return 300;
+            }
+          })(),
+          sage: g.BOARD === 'q' ? 600 : 60,
+          file: g.BOARD === 'q' ? 300 : 30,
+          post: g.BOARD === 'q' ? 60 : 30
+        };
+        QR.cooldown.cooldowns = $.get("" + g.BOARD + ".cooldown", {});
+        QR.cooldown.start();
+        return $.sync("" + g.BOARD + ".cooldown", QR.cooldown.sync);
+      },
+      start: function() {
+        if (QR.cooldown.isCounting) {
+          return;
         }
-        return $.sync("/" + g.BOARD + "/cooldown", QR.cooldown.start);
+        QR.cooldown.isCounting = true;
+        return QR.cooldown.count();
       },
-      start: function(timeout, length) {
-        var seconds;
-        seconds = Math.floor((timeout - Date.now()) / 1000);
-        return QR.cooldown.count(seconds, length);
+      sync: function(cooldowns) {
+        QR.cooldown.cooldowns = cooldowns;
+        return QR.cooldown.start();
       },
-      set: function(seconds) {
+      set: function(data) {
+        var cooldown, hasFile, isReply, isSage, start, type;
         if (!Conf['Cooldown']) {
           return;
         }
-        QR.cooldown.count(seconds, seconds);
-        return $.set("/" + g.BOARD + "/cooldown", {
-          timeout: Date.now() + seconds * $.SECOND,
-          length: seconds
-        });
+        start = Date.now();
+        if (data.delay) {
+          cooldown = {
+            delay: data.delay
+          };
+        } else {
+          isSage = /sage/i.test(data.post.email);
+          hasFile = !!data.post.file;
+          isReply = data.isReply;
+          type = !isReply ? 'thread' : isSage ? 'sage' : hasFile ? 'file' : 'post';
+          cooldown = {
+            isReply: isReply,
+            isSage: isSage,
+            hasFile: hasFile,
+            timeout: start + QR.cooldown.types[type] * $.SECOND
+          };
+        }
+        QR.cooldown.cooldowns[start] = cooldown;
+        $.set("" + g.BOARD + ".cooldown", QR.cooldown.cooldowns);
+        return QR.cooldown.start();
       },
-      count: function(seconds, length) {
-        if (!((0 <= seconds && seconds <= length))) {
+      unset: function(id) {
+        delete QR.cooldown.cooldowns[id];
+        return $.set("" + g.BOARD + ".cooldown", QR.cooldown.cooldowns);
+      },
+      count: function() {
+        var cooldown, cooldowns, elapsed, hasFile, isReply, isSage, now, post, seconds, start, type, types, _ref;
+        if (Object.keys(QR.cooldown.cooldowns).length) {
+          setTimeout(QR.cooldown.count, 1000);
+        } else {
+          $["delete"]("" + g.BOARD + ".cooldown");
+          QR.cooldown.isCounting = false;
           return;
         }
-        setTimeout(QR.cooldown.count, 1000, seconds - 1, length);
-        QR.cooldown.seconds = seconds;
-        if (seconds === 0) {
-          $["delete"]("/" + g.BOARD + "/cooldown");
-          if (QR.cooldown.auto) {
-            QR.submit();
+        if ((isReply = g.REPLY ? true : QR.threadSelector.value !== 'new')) {
+          post = QR.replies[0];
+          isSage = /sage/i.test(post.email);
+          hasFile = !!post.file;
+        }
+        now = Date.now();
+        seconds = null;
+        _ref = QR.cooldown, types = _ref.types, cooldowns = _ref.cooldowns;
+        for (start in cooldowns) {
+          cooldown = cooldowns[start];
+          if ('delay' in cooldown) {
+            if (cooldown.delay) {
+              seconds = Math.max(seconds, cooldown.delay--);
+            } else {
+              seconds = Math.max(seconds, 0);
+              QR.cooldown.unset(start);
+            }
+            continue;
+          }
+          type = isReply && cooldown.isReply ? isSage && cooldown.isSage ? 'sage' : hasFile && cooldown.hasFile ? 'file' : 'post' : !(isReply || cooldown.isReply) ? type = 'thread' : void 0;
+          if (type) {
+            elapsed = Math.floor((now - start) / 1000);
+            if (elapsed >= 0) {
+              seconds = Math.max(seconds, types[type] - elapsed);
+            }
+            type = '';
+          }
+          if (!((start <= now && now <= cooldown.timeout))) {
+            QR.cooldown.unset(start);
           }
         }
-        return QR.status();
+        QR.cooldown.seconds = seconds;
+        if (seconds !== null) {
+          QR.status();
+        }
+        if (seconds === 0 && QR.cooldown.auto) {
+          return QR.submit();
+        }
       }
     },
     quote: function(e) {
@@ -2027,7 +2101,7 @@
       }
       QR.open();
       if (!g.REPLY) {
-        $('select', QR.el).value = $.x('ancestor::div[parent::div[@class="board"]]', this).id.slice(1);
+        QR.threadSelector.value = $.x('ancestor::div[parent::div[@class="board"]]', this).id.slice(1);
       }
       id = this.previousSibling.hash.slice(2);
       text = ">>" + id + "\n";
@@ -2317,10 +2391,7 @@
           (QR.replies[index - 1] || QR.replies[index + 1]).select();
         }
         QR.replies.splice(index, 1);
-        if (typeof (_base = window.URL || window.webkitURL).revokeObjectURL === "function") {
-          _base.revokeObjectURL(this.url);
-        }
-        return delete this;
+        return typeof (_base = window.URL || window.webkitURL).revokeObjectURL === "function" ? _base.revokeObjectURL(this.url) : void 0;
       };
 
       return _Class;
@@ -2486,11 +2557,12 @@
           id = thread.id.slice(1);
           threads += "<option value=" + id + ">Thread " + id + "</option>";
         }
-        $.prepend($('.move > span', QR.el), $.el('select', {
+        QR.threadSelector = $.el('select', {
           innerHTML: threads,
           title: 'Create a new thread / Reply to a thread'
-        }));
-        $.on($('select', QR.el), 'mousedown', function(e) {
+        });
+        $.prepend($('.move > span', QR.el), QR.threadSelector);
+        $.on(QR.threadSelector, 'mousedown', function(e) {
           return e.stopPropagation();
         });
       }
@@ -2524,7 +2596,7 @@
         $.on($("[name=" + name + "]", QR.el), 'input', function() {
           var _ref2;
           QR.selected[this.name] = this.value;
-          if (QR.cooldown.auto && QR.selected === QR.replies[0] && (0 < (_ref2 = QR.cooldown.seconds) && _ref2 < 6)) {
+          if (QR.cooldown.auto && QR.selected === QR.replies[0] && (0 < (_ref2 = QR.cooldown.seconds) && _ref2 <= 5)) {
             return QR.cooldown.auto = false;
           }
         });
@@ -2550,7 +2622,7 @@
       }
       QR.abort();
       reply = QR.replies[0];
-      threadID = g.THREAD_ID || $('select', QR.el).value;
+      threadID = g.THREAD_ID || QR.threadSelector.value;
       if (threadID === 'new') {
         if (((_ref = g.BOARD) === 'vg' || _ref === 'q') && !reply.sub) {
           err = 'New threads require a subject.';
@@ -2660,7 +2732,7 @@
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(html) {
-      var bs, doc, err, msg, persona, postID, reply, sage, seconds, threadID, _, _ref, _ref1;
+      var bs, doc, err, msg, persona, postID, reply, threadID, _, _ref, _ref1;
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = html;
       if (doc.title === '4chan - Banned') {
@@ -2681,7 +2753,9 @@
       if (err) {
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
           QR.cooldown.auto = QR.captchaIsEnabled ? !!$.get('captchas', []).length : true;
-          QR.cooldown.set(2);
+          QR.cooldown.set({
+            delay: 2
+          });
         } else {
           QR.cooldown.auto = false;
         }
@@ -2705,13 +2779,14 @@
           postID: postID
         }
       }));
+      QR.cooldown.set({
+        post: reply,
+        isReply: threadID !== '0'
+      });
       if (threadID === '0') {
         location.pathname = "/" + g.BOARD + "/res/" + postID;
       } else {
         QR.cooldown.auto = QR.replies.length > 1;
-        sage = /sage/i.test(reply.email);
-        seconds = g.BOARD === 'q' ? sage ? 600 : reply.file ? 300 : 60 : sage ? 60 : 30;
-        QR.cooldown.set(seconds);
         if (Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto) {
           $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
         }
