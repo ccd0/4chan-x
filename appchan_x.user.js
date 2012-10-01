@@ -7903,19 +7903,7 @@
             href: 'javascript:;',
             textContent: '(embed)'
           });
-          $.on(embed, 'click', function() {
-            var iframe;
-            link = this.previousSibling.previousSibling;
-            iframe = $.el('iframe', {
-              src: 'http://www.youtube.com/embed/' + this.name
-            });
-            iframe.style.border = '0';
-            iframe.style.width = '640px';
-            iframe.style.height = '390px';
-            $.replace(link, iframe);
-            $.rm(this.previousSibling);
-            return $.rm(this);
-          });
+          $.on(embed, 'click', Linkify.embed);
           $.after(a, embed);
           $.after(a, $.tn(' '));
         }
@@ -7926,6 +7914,19 @@
           return this.text(rest);
         }
       }
+    },
+    embed: function() {
+      var iframe, link;
+      link = this.previousSibling.previousSibling;
+      iframe = $.el('iframe', {
+        src: 'http://www.youtube.com/embed/' + this.name
+      });
+      iframe.style.border = '0';
+      iframe.style.width = '640px';
+      iframe.style.height = '390px';
+      $.replace(link, iframe);
+      $.rm(this.previousSibling);
+      return $.rm(this);
     }
   };
 

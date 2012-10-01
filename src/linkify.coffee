@@ -18,7 +18,7 @@ Linkify =
     Main.callbacks.push @node
 
 
-  # I didn't write any of this RegEx.
+  # I didn't write most of this RegEx.
   regString: [
     '('
     # leading scheme:// or "www."
@@ -41,6 +41,7 @@ Linkify =
     '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b'
     ')'
   ].join("")
+
   embedRegExp: /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|youtube.*\&v=)([^#\&\?]*).*/
 
   node: (post) ->
@@ -64,6 +65,7 @@ Linkify =
           if node.nodeType == Node.TEXT_NODE
             nodes.push node
 
+    # We only try to touch the subject if it exists.
     if subject?
       for child in subject.childNodes
         if child.nodeType == Node.TEXT_NODE
@@ -123,30 +125,23 @@ Linkify =
             $.rm @.nextSibling
             Linkify.text(child, @)
 
-      # We can finally insert the link,
+      # We can finally insert the link.
       $.after node, a
 
+      # We check to see if we're also allowing embedding and if we can.
       if Conf['Youtube Embed'] and match = a.href.match Linkify.embedRegExp
+        # We create a new element
         embed = $.el 'a'
           name:         match[1]
           className:    'embedlink'
           href:         'javascript:;'
           textContent:  '(embed)'
 
-        $.on embed, 'click', ->
-          link = @.previousSibling.previousSibling
+        # and allow the user to click it to embed the video.
+        $.on embed, 'click', Linkify.embed
 
-          iframe = $.el 'iframe'
-            src:        'http://www.youtube.com/embed/' + @name
-
-          iframe.style.border = '0'
-          iframe.style.width  = '640px'
-          iframe.style.height = '390px'
-
-          $.replace link, iframe
-          $.rm @.previousSibling
-          $.rm @
-
+        # We insert the embed link after the pre-existing link,
+        # Then add a space before the embed link / after the pre-existing link
         $.after a, embed
         $.after a, $.tn ' '
 
@@ -160,3 +155,21 @@ Linkify =
       unless rest.textContent == ""
         $.after a, rest
         @text rest
+
+  embed: ->
+    # We setup the link to be replaced by the embedded video
+    link = @.previousSibling.previousSibling
+
+    # We create an iframe to embed
+    iframe = $.el 'iframe'
+      src:        'http://www.youtube.com/embed/' + @name
+
+    # We style the iframe with respectable boundaries.
+    iframe.style.border = '0'
+    iframe.style.width  = '640px'
+    iframe.style.height = '390px'
+
+    # We replace the link with the iframe and kill the embedding element.
+    $.replace link, iframe
+    $.rm @.previousSibling
+    $.rm @
