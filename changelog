@@ -1,4 +1,22 @@
 master
+- Zixaphir
+  Allow uploading of images for use as backgrounds or mascots
+  New Options:
+    Tripcode Hider
+    A proper toggle for dark themes
+  New Themes:
+    ピンク
+    Yotsuba Purple
+    Vimyanized Dark
+    Tomorrow Night
+    Solarized Light
+    Muted
+    Monokai
+    Dark Flat
+    Blackboard
+    4chan Rewired
+    4chan Dark Upgrade
+  
 
 0.15beta
 - Zixaphir
