@@ -7865,7 +7865,7 @@
       txt = child.textContent;
       p = 0;
       regString = ['(', '\\b(', '[a-z][-a-z0-9+.]+://', '|', 'www\\.', '|', 'magnet:', '|', 'mailto:', '|', 'news:', ')', '[^\\s\'"<>()]+', '|', '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b', ')'].join("");
-      embedRegExp = /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=)([^#\&\?]*).*/;
+      embedRegExp = /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|youtube.*\&v=)([^#\&\?]*).*/;
       urlRegExp = new RegExp(regString, 'i');
       if (m = urlRegExp.exec(txt)) {
         l = m[0].replace(/\.*$/, '');
