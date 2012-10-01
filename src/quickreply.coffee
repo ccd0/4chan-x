@@ -311,7 +311,16 @@ QR =
       @el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
       # Load this reply's values.
       for data in ['name', 'email', 'sub', 'com']
-        $("[name=#{data}]", QR.el).value = @[data]
+        field = $("[name=#{data}]", QR.el)
+        field.value = @[data]
+        if Conf['Tripcode Hider']
+          if data == 'name'
+            check = /^.*##?.+/.test @[data]
+            if check then $.addClass field, 'tripped'
+            $.on field, 'blur', ->
+              check = /^.*##?.+/.test @.value
+              if check and !@.className.match "\\btripped\\b" then $.addClass @, 'tripped'
+              else if !check and @.className.match "\\btripped\\b" then $.rmClass @, 'tripped'
       QR.characterCount.call $ 'textarea', QR.el
       $('#spoiler', QR.el).checked = @spoiler
     dragStart: ->

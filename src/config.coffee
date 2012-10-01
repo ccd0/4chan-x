@@ -231,6 +231,7 @@ Config =
       'Mascot Position':           ['bottom',          'Change where your mascot is placed in relation to the post form if the mascot isn\'t manually placed.', ['above post form', 'bottom']]
       'Rounded Edges':             [true,              'Round the edges of various 4chan elements.']
       'Sage Highlighting':         ['image',           'Icons or text to highlight saged posts.', ['text', 'image', 'none']]
+      'Tripcode Hider':            [true,              'Intelligent name field hiding.']
       'Underline Links':           [true,              'Put lines under hyperlinks.']
 
     Layout:
