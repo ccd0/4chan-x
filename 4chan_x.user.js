@@ -92,6 +92,7 @@
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'File Info Formatting': [true, 'Reformats the file information'],
         'Linkify': [true, 'Convert text into links where applicable. If a link is too long and only partially linkified, shift+ctrl+click it to merge the next line.'],
+        'Youtube Embed': [true, 'Add a link to linkified youtube links to embed the video inline.'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
@@ -5519,6 +5520,8 @@
     init: function() {
       return Main.callbacks.push(this.node);
     },
+    regString: ['(', '\\b(', '[a-z][-a-z0-9+.]+://', '|', 'www\\.', '|', 'magnet:', '|', 'mailto:', '|', 'news:', ')', '[^\\s\'"<>()]+', '|', '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b', ')'].join(""),
+    embedRegExp: /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|youtube.*\&v=)([^#\&\?]*).*/,
     node: function(post) {
       var child, comment, node, nodes, subject, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results;
       nodes = [];
@@ -5556,12 +5559,11 @@
       return _results;
     },
     text: function(child, link) {
-      var a, l, lLen, m, node, p, regString, rest, txt, urlRE;
+      var a, embed, l, lLen, m, match, node, p, rest, txt, urlRegExp;
       txt = child.textContent;
       p = 0;
-      regString = ['(', '\\b(', '[a-z][-a-z0-9+.]+://', '|', 'www\\.', '|', 'magnet:', '|', 'mailto:', '|', 'news:', ')', '[^\\s\'"<>()]+', '|', '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b', ')'].join("");
-      urlRE = new RegExp(regString, 'i');
-      if (m = urlRE.exec(txt)) {
+      urlRegExp = new RegExp(Linkify.regString, 'i');
+      if (m = urlRegExp.exec(txt)) {
         l = m[0].replace(/\.*$/, '');
         lLen = l.length;
         node = $.tn(txt.substring(p, m.index));
@@ -5590,6 +5592,17 @@
           }
         });
         $.after(node, a);
+        if (Conf['Youtube Embed'] && (match = a.href.match(Linkify.embedRegExp))) {
+          embed = $.el('a', {
+            name: match[1],
+            className: 'embedlink',
+            href: 'javascript:;',
+            textContent: '(embed)'
+          });
+          $.on(embed, 'click', Linkify.embed);
+          $.after(a, embed);
+          $.after(a, $.tn(' '));
+        }
         p = m.index + lLen;
         rest = $.tn(txt.substring(p, txt.length));
         if (rest.textContent !== "") {
@@ -5597,6 +5610,19 @@
           return this.text(rest);
         }
       }
+    },
+    embed: function() {
+      var iframe, link;
+      link = this.previousSibling.previousSibling;
+      iframe = $.el('iframe', {
+        src: 'http://www.youtube.com/embed/' + this.name
+      });
+      iframe.style.border = '0';
+      iframe.style.width = '640px';
+      iframe.style.height = '390px';
+      $.replace(link, iframe);
+      $.rm(this.previousSibling);
+      return $.rm(this);
     }
   };
 

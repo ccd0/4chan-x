@@ -7,6 +7,7 @@ Config =
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
       'File Info Formatting':         [true,  'Reformats the file information']
       'Linkify':                      [true,  'Convert text into links where applicable. If a link is too long and only partially linkified, shift+ctrl+click it to merge the next line.']
+      'Youtube Embed':                [true,  'Add a link to linkified youtube links to embed the video inline.']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
       'Index Navigation':             [true,  'Navigate to previous / next thread']
@@ -4506,6 +4507,33 @@ Linkify =
     # Add Linkification to callbacks, which will call linkification on every post parsed by Appchan X.
     Main.callbacks.push @node
 
+
+  # I didn't write most of this RegEx.
+  regString: [
+    '('
+    # leading scheme:// or "www."
+    '\\b('
+    '[a-z][-a-z0-9+.]+://'
+    '|'
+    'www\\.'
+    '|'
+    # Various link handlers:
+    'magnet:'
+    '|'
+    'mailto:'
+    '|'
+    'news:'
+    ')'
+    # everything until non-URL character
+    '[^\\s\'"<>()]+'
+    '|'
+    # emails. We don't need everything until a non-URL character because emails follow a consistent syntax.
+    '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b'
+    ')'
+  ].join("")
+
+  embedRegExp: /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|youtube.*\&v=)([^#\&\?]*).*/
+
   node: (post) ->
     # Built based on:
     # - http://en.wikipedia.org/wiki/URI_scheme
@@ -4527,6 +4555,7 @@ Linkify =
           if node.nodeType == Node.TEXT_NODE
             nodes.push node
 
+    # We only try to touch the subject if it exists.
     if subject?
       for child in subject.childNodes
         if child.nodeType == Node.TEXT_NODE
@@ -4543,31 +4572,8 @@ Linkify =
     # position tracker.
     p = 0
 
-    # I didn't write any of this RegEx.
-    regString = [
-      '('
-      # leading scheme:// or "www."
-      '\\b('
-      '[a-z][-a-z0-9+.]+://'
-      '|'
-      'www\\.'
-      '|'
-      # Various link handlers:
-      'magnet:'
-      '|'
-      'mailto:'
-      '|'
-      'news:'
-      ')'
-      # everything until non-URL character
-      '[^\\s\'"<>()]+'
-      '|'
-      # emails. We don't need everything until a non-URL character because emails follow a consistent syntax.
-      '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b'
-      ')'
-    ].join("")
-    urlRE = new RegExp regString, 'i'
-    if m = urlRE.exec txt
+    urlRegExp = new RegExp Linkify.regString, 'i'
+    if m = urlRegExp.exec txt
 
       # Get the link without trailing dots as to not create an invalid link.
       l = m[0].replace /\.*$/, ''
@@ -4609,8 +4615,25 @@ Linkify =
             $.rm @.nextSibling
             Linkify.text(child, @)
 
-      # We can finally insert the link,
+      # We can finally insert the link.
       $.after node, a
+
+      # We check to see if we're also allowing embedding and if we can.
+      if Conf['Youtube Embed'] and match = a.href.match Linkify.embedRegExp
+        # We create a new element
+        embed = $.el 'a'
+          name:         match[1]
+          className:    'embedlink'
+          href:         'javascript:;'
+          textContent:  '(embed)'
+
+        # and allow the user to click it to embed the video.
+        $.on embed, 'click', Linkify.embed
+
+        # We insert the embed link after the pre-existing link,
+        # Then add a space before the embed link / after the pre-existing link
+        $.after a, embed
+        $.after a, $.tn ' '
 
       # track the insertion point,
       p = m.index+lLen
@@ -4622,6 +4645,24 @@ Linkify =
       unless rest.textContent == ""
         $.after a, rest
         @text rest
+
+  embed: ->
+    # We setup the link to be replaced by the embedded video
+    link = @.previousSibling.previousSibling
+
+    # We create an iframe to embed
+    iframe = $.el 'iframe'
+      src:        'http://www.youtube.com/embed/' + @name
+
+    # We style the iframe with respectable boundaries.
+    iframe.style.border = '0'
+    iframe.style.width  = '640px'
+    iframe.style.height = '390px'
+
+    # We replace the link with the iframe and kill the embedding element.
+    $.replace link, iframe
+    $.rm @.previousSibling
+    $.rm @
 
 Main =
   init: ->
