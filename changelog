@@ -1,4 +1,8 @@
 master
+- kupaka
+  Fix textarea font and user-defined font mismatching
+  Fixed images floating above navigation
+  
 
 0.13beta
 - noface
