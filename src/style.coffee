@@ -1068,12 +1068,14 @@ input[type=checkbox] {
   cursor: pointer;
   display: inline-block;
 }
-#qr .warning,
 #threadselect select,
 input,
 .field,
 input[type="submit"] {
   height: 20px !important;
+}
+#qr .warning {
+  min-height: 20px;
 }
 #qr .warning,
 #threadselect select,
