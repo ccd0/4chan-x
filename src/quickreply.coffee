@@ -170,11 +170,11 @@ QR =
               'file'
             else
               'post'
-         else unless isReply or cooldown.isReply
-           type = 'thread'
+          else unless isReply or cooldown.isReply
+            type = 'thread'
         if type
           elapsed = Math.floor (now - start) / 1000
-           seconds = Math.max seconds, types[type] - elapsed
+          seconds = Math.max seconds, types[type] - elapsed
           type = ''
         unless start <= now <= cooldown.timeout
           QR.cooldown.unset start
@@ -578,7 +578,7 @@ QR =
         id = thread.id[1..]
         threads += "<option value=#{id}>Thread #{id}</option>"
 
-      QR.threadSelector = = $.el 'select'
+      QR.threadSelector = $.el 'select'
         innerHTML: threads
         title: 'Create a new thread / Reply to a thread'
 
