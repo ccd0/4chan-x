@@ -230,7 +230,7 @@ h1,
 .field {
   border: 1px solid #CCC;
   color: #333;
-  font-size: 12px;
+  font-size: 13px;
   margin: 0;
   padding: 2px 4px 3px;
   """ + agent + """transition: color .25s, border .25s;
