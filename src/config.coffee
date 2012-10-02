@@ -262,5 +262,6 @@ editMascot     = {}
 userNavigation = {}
 editMode       = false
 newTheme       = false
+styleInit      = false
 d              = document
 g              = {}

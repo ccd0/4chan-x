@@ -225,9 +225,6 @@ MascotTools =
 
   addMascot: (mascot) ->
 
-    el = $('#mascot', d.body)
-    $.rm el if el
-
     div = $.el 'div',
       id: "mascot"
       innerHTML: "<img src='#{if Array.isArray(mascot.image) then (if userThemes and userThemes[Conf['theme']] and userThemes[Conf['theme']]['Dark Theme'] and Conf["Style"] then mascot.image[0] else mascot.image[1]) else mascot.image}'>"

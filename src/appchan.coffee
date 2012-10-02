@@ -38,15 +38,19 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         return '-o-'
 
   addStyle: (theme) ->
-    $.off d, 'DOMNodeInserted', Style.addStyle
-    if d.head
+    unless styleInit
+      $.off d, 'DOMNodeInserted', Style.addStyle
+      if d.head
+        styleInit = true
+        $.addStyle Style.css(userThemes[Conf['theme']]), 'appchan'
+      else # XXX fox
+        $.on d, 'DOMNodeInserted', Style.addStyle
+    else
       if !theme or !theme.Author
         theme = userThemes[Conf['theme']]
-      if existingStyle = $.id 'appchan'
-        $.rm existingStyle
-      $.addStyle Style.css(theme), 'appchan'
-    else # XXX fox
-      $.on d, 'DOMNodeInserted', Style.addStyle
+        if el = $('#mascot', d.body) then $.rm el
+        $.rm $.id 'appchan'
+        $.addStyle Style.css(theme), 'appchan'
 
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle

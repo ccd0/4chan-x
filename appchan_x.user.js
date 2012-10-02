@@ -93,7 +93,7 @@
 * Thank you.
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, g, newTheme, userMascots, userNavigation, userThemes;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, g, newTheme, styleInit, userMascots, userNavigation, userThemes;
 
   Config = {
     main: {
@@ -297,6 +297,8 @@
   editMode = false;
 
   newTheme = false;
+
+  styleInit = false;
 
   d = document;
 
@@ -8459,11 +8461,7 @@
       return reader.readAsDataURL(file);
     },
     addMascot: function(mascot) {
-      var div, el;
-      el = $('#mascot', d.body);
-      if (el) {
-        $.rm(el);
-      }
+      var div;
       div = $.el('div', {
         id: "mascot",
         innerHTML: "<img src='" + (Array.isArray(mascot.image) ? (userThemes && userThemes[Conf['theme']] && userThemes[Conf['theme']]['Dark Theme'] && Conf["Style"] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'>"
@@ -8724,18 +8722,24 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
     },
     addStyle: function(theme) {
-      var existingStyle;
-      $.off(d, 'DOMNodeInserted', Style.addStyle);
-      if (d.head) {
+      var el;
+      if (!styleInit) {
+        $.off(d, 'DOMNodeInserted', Style.addStyle);
+        if (d.head) {
+          styleInit = true;
+          return $.addStyle(Style.css(userThemes[Conf['theme']]), 'appchan');
+        } else {
+          return $.on(d, 'DOMNodeInserted', Style.addStyle);
+        }
+      } else {
         if (!theme || !theme.Author) {
           theme = userThemes[Conf['theme']];
+          if (el = $('#mascot', d.body)) {
+            $.rm(el);
+          }
+          $.rm($.id('appchan'));
+          return $.addStyle(Style.css(theme), 'appchan');
         }
-        if (existingStyle = $.id('appchan')) {
-          $.rm(existingStyle);
-        }
-        return $.addStyle(Style.css(theme), 'appchan');
-      } else {
-        return $.on(d, 'DOMNodeInserted', Style.addStyle);
       }
     },
     remStyle: function() {
