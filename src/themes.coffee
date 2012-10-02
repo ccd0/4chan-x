@@ -709,7 +709,7 @@ Themes =
 
   "ピンク":
     "Author"                      : "DrooidKun"
-    "Author Tripcode"             : "!POMF.9waa"
+    "Author Tripcode"             : "!/Apk/MRkGM"
     "Background Image"            : ""
     "Background Attachment"       : "fixed"
     "Background Position"         : "bottom left"
@@ -812,8 +812,8 @@ Themes =
     "Custom CSS"                  : ".rice {\n  box-shadow:rgba(255,253,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n\n\n\n\n#boardNavDesktop,.pagelist,#imgControls{background:rgba(229, 219, 240,.9)!important;}#delform,.reply,.hidden_thread,.stub{border-radius:0!important}.reply,.hidden_thread,.stub\"+($SS.conf[\"Recolor Even Posts\"] ? \",.replyContainer:nth-of-type(even)>div\" : \"\")+\"{border-left:0!important;border-top:0!important;}.boardTitle {color: #591177 !important;text-shadow: 1px 1px 1px #222 !important;}.boardSubtitle, .boardBanner .boardSubtitle > a{text-shadow: none !important;}.postNum a { color: #000000 !important; }"
 
   "Vimyanized Dark":
-    "Author"                      : "Ahoka"
-    "Author Tripcode"             : "!.pC/AHOKAg"
+    "Author"                      : "seaweed"
+    "Author Tripcode"             : "!POMF.9waa"
     "Background Image"            : ""
     "Background Attachment"       : "fixed"
     "Background Position"         : "bottom left"
