@@ -229,8 +229,6 @@ h1,
 }
 .field {
   border: 1px solid #CCC;
-  box-sizing: border-box;
-  """ + agent + """box-sizing: border-box;
   color: #333;
   font-size: 12px;
   margin: 0;
@@ -1063,25 +1061,30 @@ input[type=checkbox] {
   """ + agent + """appearance: checkbox !important;
 }
 /* Formatting for all postarea elements */
+
 #browse,
 #file,
+#threadselect select {
+  cursor: pointer;
+  display: inline-block;
+}
+#qr .warning,
 #threadselect select,
 input,
-input.field,
+.field,
 input[type="submit"] {
-  padding: 1px !important;
   height: 20px !important;
 }
-textarea {
-  padding: 1px !important;
-}
-#browse,
-#file,
-#qr input[type="submit"],
-#qr textarea,
-#qr .field {
+#qr .warning,
+#threadselect select,
+input,
+.field,
+input[type="submit"] {
   margin: 1px 0 0;
   vertical-align: bottom;
+  """ + agent + """box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 1px !important;
 }
 /* Width and height of all postarea elements (excluding some captcha elements) */
 textarea.field,
@@ -1116,14 +1119,6 @@ input[value="Report"] {
   text-align: center;
   width: 70px;
   margin: 1px 1px 0 0;
-}
-#browse,
-#file,
-#threadselect select {
-  cursor: pointer;
-  """ + agent + """box-sizing: border-box;
-  box-sizing: border-box;
-  display: inline-block;
 }
 /* Image Hover and Image Expansion */
 #ihover {
@@ -1523,6 +1518,9 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
   font-size: 12px;
   text-align: right;
 }
+#threadselect select {
+  margin-top: 0;
+}
 .dump > form > label {
   display: block;
   visibility: hidden;
@@ -1531,17 +1529,6 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
   position: absolute;
   bottom: 0;
   right: 2px;
-}
-#qr .warning {
-  position: absolute;
-  bottom: -20px;
-  right: 0;
-  height: 19px;
-  text-align: right;
-  vertical-align: middle;
-  text-align: center;
-  box-sizing: border-box;
-  """ + agent + """box-sizing: border-box;
 }
 input[title="Verification"],
 .captchaimg img {

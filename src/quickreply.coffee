@@ -57,19 +57,18 @@ QR =
     @checked and QR.hide() or QR.unhide()
 
   error: (err) ->
-    el = $ '.warning', QR.el
     if typeof err is 'string'
-      el.textContent = err
+      QR.warning.textContent = err
     else
-      el.innerHTML = null
-      $.add el, err
+      QR.warning.innerHTML = null
+      $.add QR.warning, err
     QR.open()
-    if QR.captchaIsEnabled and /captcha|verification/i.test el.textContent
+    if QR.captchaIsEnabled and /captcha|verification/i.test QR.warning.textContent
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
-    alert el.textContent if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
+    alert QR.warning.textContent if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
   cleanError: ->
-    $('.warning', QR.el).textContent = null
+    QR.warning.textContent = null
 
   status: (data={}) ->
     return unless QR.el
@@ -530,14 +529,14 @@ QR =
       QR.el = UI.dialog 'qr', '', '
 <div id=qrtab>- Post Form -</div>
 <form>
+  <div class=warning></div>
   <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
-  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=browse>Browse...</div><div id=file></div></div>
+  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=browse class=field>Browse...</div><div id=file class=field></div></div>
   <div id=submit><input type=submit></div>
   <div id=threadselect></div>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
-  <div class=warning></div>
 </form>'
 
     if Conf['Remember QR size'] and $.engine is 'gecko'
@@ -563,6 +562,7 @@ QR =
     fileInput.max    = $('input[name=MAX_FILE_SIZE]').value
     fileInput.accept = mimeTypes if $.engine isnt 'presto' # Opera's accept attribute is fucked up
 
+    QR.warning     = $ '.warning',  QR.el
     QR.spoiler     = !!$ 'input[name=spoiler]'
     spoiler        = $ '#spoilerLabel', QR.el
     spoiler.hidden = !QR.spoiler
@@ -607,7 +607,7 @@ QR =
     $.on fileInput,               'change',    QR.fileInput
     $.on fileInput,               'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
     $.on spoiler.firstChild,      'change',    -> $('input', QR.selected.el).click()
-    $.on $('.warning',  QR.el),   'click',     QR.cleanError
+    $.on QR.warning,              'click',     QR.cleanError
 
     new QR.reply().select()
 
@@ -729,6 +729,7 @@ QR =
           href: '//www.4chan.org/banned',
           target: '_blank',
           textContent: 'Connection error, or you are banned.'
+
     opts =
       form: $.formData post
       upCallbacks:
