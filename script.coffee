@@ -1406,7 +1406,7 @@ QR =
       value    = 404
       disabled = true
       QR.cooldown.auto = false
-    value = QR.cooldown.seconds or data.progress or value
+    value = data.progress or QR.cooldown.seconds or value
     {input} = QR.status
     input.value =
       if QR.cooldown.auto and Conf['Cooldown']
@@ -1434,7 +1434,10 @@ QR =
       QR.cooldown.isCounting = true
       QR.cooldown.count()
     sync: (cooldowns) ->
-      QR.cooldown.cooldowns = cooldowns
+      # Add each cooldowns, don't overwrite everything in case we
+      # still need to purge one in the current tab to auto-post.
+      for id of cooldowns
+        QR.cooldown.cooldowns[id] = cooldowns[id]
       QR.cooldown.start()
     set: (data) ->
       return unless Conf['Cooldown']
@@ -1471,7 +1474,9 @@ QR =
         setTimeout QR.cooldown.count, 1000
       else
         $.delete "#{g.BOARD}.cooldown"
-        QR.cooldown.isCounting = false
+        delete QR.cooldown.isCounting
+        delete QR.cooldown.seconds
+        QR.status()
         return
 
       if (isReply = if g.REPLY then true else QR.threadSelector.value isnt 'new')
@@ -1502,7 +1507,7 @@ QR =
             else
               'post'
           else unless isReply or cooldown.isReply
-            type = 'thread'
+            'thread'
         if type
           elapsed = Math.floor (now - start) / 1000
           if elapsed >= 0 # clock changed since then?
@@ -1511,8 +1516,12 @@ QR =
         unless start <= now <= cooldown.timeout
           QR.cooldown.unset start
 
+      # Update the status when we change posting type.
+      # Don't get stuck at some random number.
+      # Don't interfere with progress status updates.
+      update = seconds isnt null or !!QR.cooldown.seconds
       QR.cooldown.seconds = seconds
-      QR.status() if seconds isnt null
+      QR.status() if update
       QR.submit() if seconds is 0 and QR.cooldown.auto
 
   quote: (e) ->
