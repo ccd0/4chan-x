@@ -8,7 +8,7 @@ QR =
         link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
         $.on link.firstChild, 'click', ->
           QR.open()
-          $('select',   QR.el).value = 'new' unless g.REPLY
+          QR.threadSelector.value = 'new' unless g.REPLY
           $('textarea', QR.el).focus()
         $.before $.id('postForm'), link
 
@@ -89,32 +89,105 @@ QR =
   cooldown:
     init: ->
       return unless Conf['Cooldown']
-      {timeout, length} = $.get "/#{g.BOARD}/cooldown", {}
-      QR.cooldown.start timeout, length if timeout
-      $.sync "/#{g.BOARD}/cooldown", QR.cooldown.start
-    start: (timeout, length) ->
-      seconds = Math.floor (timeout - Date.now()) / 1000
-      QR.cooldown.count seconds, length
-    set: (seconds) ->
+      QR.cooldown.types =
+        thread: switch g.BOARD
+          when 'q' then 86400
+          when 'b', 'soc', 'r9k' then 600
+        sage: if g.BOARD is 'q' then 600 else 60
+        file: if g.BOARD is 'q' then 300 else 30
+        post: if g.BOARD is 'q' then 60  else 30
+      QR.cooldown.cooldowns = $.get "#{g.BOARD}.cooldown", {}
+      QR.cooldown.start()
+      $.sync "#{g.BOARD}.cooldown", QR.cooldown.sync
+    start: ->
+      return if QR.cooldown.isCounting
+      QR.cooldown.count()
+    sync: (cooldowns) ->
+      QR.cooldown.cooldowns = cooldowns
+      QR.cooldown.start()
+    set: (data) ->
       return unless Conf['Cooldown']
-      QR.cooldown.count seconds, seconds
-      $.set "/#{g.BOARD}/cooldown",
-        timeout: Date.now() + seconds * $.SECOND
-        length:  seconds
-    count: (seconds, length) ->
-      return unless 0 <= seconds <= length
-      setTimeout QR.cooldown.count, 1000, seconds-1, length
+      start = Date.now()
+      if data.delay
+        cooldown = delay: data.delay
+      else
+        isSage  = /sage/i.test data.post.email
+        hasFile = !!data.post.file
+        isReply = data.isReply
+        type =
+          unless isReply
+            'thread'
+          else
+            if isSage
+              'sage'
+            else if hasFile
+              'file'
+            else
+              'post'
+        cooldown =
+          isReply: isReply
+          isSage:  isSage
+          hasFile: hasFile
+          timeout: start + QR.cooldown.types[type] * $.SECOND
+      QR.cooldown.cooldowns[start] = cooldown
+      $.set "#{g.BOARD}.cooldown", QR.cooldown.cooldowns
+      QR.cooldown.start()
+    unset: (id) ->
+      delete QR.cooldown.cooldowns[id]
+      $.set "#{g.BOARD}.cooldown", QR.cooldown.cooldowns
+    count: ->
+      if Object.keys(QR.cooldown.cooldowns).length
+        setTimeout QR.cooldown.count, 1000
+      else
+        $.delete "#{g.BOARD}.cooldown"
+        QR.cooldown.isCounting = false
+        return
+
+      if (isReply = if g.REPLY then true else QR.threadSelector.value isnt 'new')
+        post    = QR.replies[0]
+        isSage  = /sage/i.test post.email
+        hasFile = !!post.file
+      now     = Date.now()
+      seconds = null
+      {types, cooldowns} = QR.cooldown
+
+      for start, cooldown of cooldowns
+        if 'delay' of cooldown
+          if cooldown.delay
+            seconds = Math.max seconds, cooldown.delay--
+          else
+            seconds = Math.max seconds, 0
+            QR.cooldown.unset start
+          continue
+
+        # Only cooldowns relevant to this post can set the seconds value.
+        # Unset outdated cooldowns that can no longer impact us.
+        type =
+          if isReply and cooldown.isReply
+            if isSage and cooldown.isSage
+              'sage'
+            else if hasFile and cooldown.hasFile
+              'file'
+            else
+              'post'
+         else unless isReply or cooldown.isReply
+           type = 'thread'
+        if type
+          elapsed = Math.floor (now - start) / 1000
+           seconds = Math.max seconds, types[type] - elapsed
+          type = ''
+        unless start <= now <= cooldown.timeout
+          QR.cooldown.unset start
+
       QR.cooldown.seconds = seconds
-      if seconds is 0
-        $.delete "/#{g.BOARD}/cooldown"
-        QR.submit() if QR.cooldown.auto
-      QR.status()
+      QR.status() if seconds isnt null
+      QR.submit() if seconds is 0 and QR.cooldown.auto
 
   quote: (e) ->
     e?.preventDefault()
     QR.open()
     unless g.REPLY
-      $('select', QR.el).value = $.x('ancestor::div[parent::div[@class="board"]]', @).id[1..]
+      QR.threadSelector.value = $.x('ancestor::div[parent::div[@class="board"]]', @).id[1..]
     # Make sure we get the correct number, even with XXX censors
     id   = @previousSibling.hash[2..]
     text = ">>#{id}\n"
@@ -357,7 +430,6 @@ QR =
         (QR.replies[index-1] or QR.replies[index+1]).select()
       QR.replies.splice index, 1
       (window.URL or window.webkitURL).revokeObjectURL? @url
-      delete @
 
   captcha:
     init: ->
@@ -506,17 +578,17 @@ QR =
         id = thread.id[1..]
         threads += "<option value=#{id}>Thread #{id}</option>"
 
+      QR.threadSelector = = $.el 'select'
+        innerHTML: threads
+        title: 'Create a new thread / Reply to a thread'
+
       if Conf["Style"]
-        $.prepend $('#threadselect', QR.el), $.el 'select'
-          innerHTML: threads
-          title: 'Create a new thread / Reply to a thread'
+        $.prepend $('#threadselect', QR.el), QR.threadSelector
 
       else
-        $.prepend $('.move > span', QR.el), $.el 'select'
-          innerHTML: threads
-          title: 'Create a new thread / Reply to a thread'
+        $.prepend $('.move > span', QR.el), QR.threadSelector
 
-      $.on $('select',  QR.el), 'mousedown', (e) -> e.stopPropagation()
+      $.on QR.threadSelector,     'mousedown', (e) -> e.stopPropagation()
 
     if Conf['Style']
       riceFile = $("#file", QR.el)
@@ -549,7 +621,7 @@ QR =
         QR.selected[@name] = @value
         # Disable auto-posting if you're typing in the first reply
         # during the last 5 seconds of the cooldown.
-        if QR.cooldown.auto and QR.selected is QR.replies[0] and 0 < QR.cooldown.seconds < 6
+        if QR.cooldown.auto and QR.selected is QR.replies[0] and 0 < QR.cooldown.seconds <= 5
           QR.cooldown.auto = false
 
     QR.status.input = $ 'input[type=submit]', QR.el
@@ -577,7 +649,7 @@ QR =
 
     reply = QR.replies[0]
 
-    threadID = g.THREAD_ID or $('select', QR.el).value
+    threadID = g.THREAD_ID or QR.threadSelector.value
 
     # prevent errors
     if threadID is 'new'
@@ -698,7 +770,7 @@ QR =
             true
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
-        QR.cooldown.set 2
+        QR.cooldown.set delay: 2
       else # stop auto-posting
         QR.cooldown.auto = false
       QR.status()
@@ -730,29 +802,16 @@ QR =
         threadID: threadID
         postID:   postID
 
+    QR.cooldown.set
+      post:    reply
+      isReply: threadID isnt '0'
+
     if threadID is '0' # new thread
       # auto-noko
       location.pathname = "/#{g.BOARD}/res/#{postID}"
     else
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       QR.cooldown.auto = QR.replies.length > 1
-      sage    = /sage/i.test reply.email
-      seconds =
-        # 300 seconds cooldown for new threads
-        # q: 86400 seconds
-        # b soc r9k: 600 seconds
-        if g.BOARD is 'q'
-          if sage
-            600
-          else if reply.file
-            300
-          else
-            60
-        else if sage
-          60
-        else
-          30
-      QR.cooldown.set seconds
       if Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto
         $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
 

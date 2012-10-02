@@ -16,6 +16,10 @@ master
     Blackboard
     4chan Rewired
     4chan Dark Upgrade
+- Mayhem
+  Added thread creation QR cooldown.
+  Fix QR cooldown timer between non-sage and sage posts. You can submit a non-sage post 30 seconds after a sage one.
+  Fix /q/ QR cooldowns.
   
 
 0.15beta
@@ -45,7 +49,7 @@ master
   -- They should try to be "smarter" now.
   Option to move the #stats to the bottom of the page.
 - noface
-  Don't automatically expand spoilers when using Expand Images. 
+  Don't automatically expand spoilers when using Expand Images.
 
 0.11beta
 - Mayhem
