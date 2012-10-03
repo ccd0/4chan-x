@@ -1,97 +1,69 @@
 // ==UserScript==
-// @name           AppChan x
-// @version        0.16beta
-// @namespace      zixaphir
-// @description    Adds various features and stylings.
-// @copyright      Appchan x - 2012 Zixaphir <zixaphirmoxphar@gmail.com>
-// @copyright      4chan x - 2009-2011 James Campos <james.r.campos@gmail.com>
-// @copyright      4chan x - 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
-// @license        MIT; http://en.wikipedia.org/wiki/Mit_license
-// @include        http://boards.4chan.org/*
-// @include        https://boards.4chan.org/*
-// @include        http://images.4chan.org/*
-// @include        https://images.4chan.org/*
-// @include        http://sys.4chan.org/*
-// @include        https://sys.4chan.org/*
-// @grant          GM_getValue
-// @grant          GM_setValue
-// @grant          GM_deleteValue
-// @grant          GM_openInTab
-// @run-at         document-start
-// @updateURL      https://github.com/zixaphir/appchan-x/raw/stable/appchan_x.user.js
-// @downloadURL    https://github.com/zixaphir/appchan-x/raw/stable/appchan_x.user.js
-// @icon           data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
+// @name                appchan x
+// @namespace           zixaphir
+// @version             0.16.1
+// @description         Cross-browser userscript for maximum lurking on 4chan.
+// @copyright           2012 Zixaphir <zixaphirmoxphar@gmail.com>
+// @copyright           2009-2011 James Campos <james.r.campos@gmail.com>
+// @copyright           2012 Nicolas Stepien <stepien.nicolas@gmail.com>
+// @license             MIT; http://en.wikipedia.org/wiki/Mit_license
+// @include             http://boards.4chan.org/*
+// @include             https://boards.4chan.org/*
+// @include             http://images.4chan.org/*
+// @include             https://images.4chan.org/*
+// @include             http://sys.4chan.org/*
+// @include             https://sys.4chan.org/*
+// @grant               GM_getValue
+// @grant               GM_setValue
+// @grant               GM_deleteValue
+// @grant               GM_openInTab
+// @run-at              document-start
+// @updateURL           https://github.com/zixaphir/appchan-x/raw/stable/appchan_x.meta.js
+// @downloadURL         https://github.com/zixaphir/appchan-x/raw/stable/appchan_x.user.js
+// @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* LICENSE
-*
-* Appchan X Copyright (c) 2012 Zixaphir <zixaphirmodnar@gmail.com>
-* http://zixaphir.github.com/appchan-x/
-* 4chan x Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
-* http://aeosynth.github.com/4chan-x/
-* 4chan x Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
-* http://mayhemydg.github.com/4chan-x/
-* OneeChan Copyright (c) 2012 Jordan Bates
-* http://seaweedchan.github.com/oneechan/
-* 4chan SS Copyright (c) 2012 Ahodesuka
-* http://ahodesuka.github.com/4chan-Style-Script/
-*
-* 4chan X
-* Appchan X
-*
-* Permission is hereby granted, free of charge, to any person
-* obtaining a copy of this software and associated documentation
-* files (the "Software"), to deal in the Software without
-* restriction, including without limitation the rights to use,
-* copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the
-* Software is furnished to do so, subject to the following
-* conditions:
-*
-* The above copyright notice and this permission notice shall be
-* included in all copies or substantial portions of the Software.
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-* OTHER DEALINGS IN THE SOFTWARE.
-*
-* HACKING
-*
-* Appchan X is written in CoffeeScript[1], and developed on GitHub[2].
-*
-* [1]: http://coffeescript.org/
-* [2]: https://github.com/zixaphir/appchan-x
-*
-* CONTRIBUTORS
-*
-* blaise - mentoring and support
-* aeosynth - original author of 4chan x
-* mayhemydg - a current maintainer of 4chan x
-* noface - a current maintainer of 4chan x
-* that4chanwolf - former maintainer of 4chan x
-* desuwa - Firefox filename upload fix
-* seaweed - bottom padding for image hover
-* e000 - cooldown sanity check
-* ahodesuka - scroll back when unexpanding images, file info formatting
-* Shou - pentadactyl fixes
-* ferongr - favicons
-* xat - favicons
-* Ongpot - sfw favicon
-* thisisanon - nsfw + 404 favicons
-* Anonymous - empty favicon
-* Seiba - chrome quick reply focusing
-* herpaderpderp - recaptcha fixes
-* WakiMiko - recaptcha tab order http://userscripts.org/scripts/show/82657
-* btmcsweeney - allow users to specify text for sauce links
-*
-* All the people who've taken the time to write bug reports.
-*
-* Thank you.
-*/
+/* appchan x - Version 0.16.1 - 2012-10-02
+ * http://mayhemydg.github.com/4chan-x/
+ *
+ * Appchan X Copyright (c) 2012 Zixaphir <zixaphirmoxphar@gmail.com>
+ * http://zixaphir.github.com/appchan-x/
+ * 4chan x Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
+ * http://aeosynth.github.com/4chan-x/
+ * 4chan x Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
+ * http://mayhemydg.github.com/4chan-x/
+ * OneeChan Copyright (c) 2012 Jordan Bates
+ * http://seaweedchan.github.com/oneechan/
+ * 4chan SS Copyright (c) 2012 Ahodesuka
+ * http://ahodesuka.github.com/4chan-Style-Script/
+ * Licensed under the MIT license.
+ * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
+ *
+ * Contributors:
+ * blaise - mentoring and support
+ * aeosynth - original author of 4chan x
+ * mayhemydg - a current maintainer of 4chan x
+ * noface - a current maintainer of 4chan x
+ * that4chanwolf - former maintainer of 4chan x
+ * desuwa - Firefox filename upload fix
+ * seaweed - bottom padding for image hover
+ * e000 - cooldown sanity check
+ * ahodesuka - scroll back when unexpanding images, file info formatting
+ * Shou - pentadactyl fixes
+ * ferongr - favicons
+ * xat - favicons
+ * Ongpot - sfw favicon
+ * thisisanon - nsfw + 404 favicons
+ * Anonymous - empty favicon
+ * Seiba - chrome quick reply focusing
+ * herpaderpderp - recaptcha fixes
+ * WakiMiko - recaptcha tab order http://userscripts.org/scripts/show/82657
+ * btmcsweeney - allow users to specify text for sauce links
+ *
+ * All the people who've taken the time to write bug reports.
+ *
+ * Thank you.
+ */
 (function() {
   var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, g, newTheme, styleInit, userMascots, userNavigation, userThemes;
 
@@ -9436,7 +9408,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '0.16beta',
+    version: '0.16.1',
     callbacks: []
   };
 
