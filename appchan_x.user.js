@@ -23,46 +23,76 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* appchan x - Version 0.16.1 - 2012-10-03
- * http://mayhemydg.github.com/4chan-x/
+/*  appchan x - Version 0.16.1 - 2012-10-03
  *
- * Appchan X Copyright (c) 2012 Zixaphir <zixaphirmoxphar@gmail.com>
- * http://zixaphir.github.com/appchan-x/
- * 4chan x Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
- * http://aeosynth.github.com/4chan-x/
- * 4chan x Copyright (c) 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
- * http://mayhemydg.github.com/4chan-x/
- * OneeChan Copyright (c) 2012 Jordan Bates
- * http://seaweedchan.github.com/oneechan/
- * 4chan SS Copyright (c) 2012 Ahodesuka
- * http://ahodesuka.github.com/4chan-Style-Script/
- * Licensed under the MIT license.
- * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
+ *  Licensed under the MIT license.
+ *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
  *
- * Contributors:
- * blaise - mentoring and support
- * aeosynth - original author of 4chan x
- * mayhemydg - a current maintainer of 4chan x
- * noface - a current maintainer of 4chan x
- * that4chanwolf - former maintainer of 4chan x
- * desuwa - Firefox filename upload fix
- * seaweed - bottom padding for image hover
- * e000 - cooldown sanity check
- * ahodesuka - scroll back when unexpanding images, file info formatting
- * Shou - pentadactyl fixes
- * ferongr - favicons
- * xat - favicons
- * Ongpot - sfw favicon
- * thisisanon - nsfw + 404 favicons
- * Anonymous - empty favicon
- * Seiba - chrome quick reply focusing
- * herpaderpderp - recaptcha fixes
- * WakiMiko - recaptcha tab order http://userscripts.org/scripts/show/82657
- * btmcsweeney - allow users to specify text for sauce links
+ *  appchan X Copyright © 2012 Zixaphir <zixaphirmoxphar@gmail.com>
+ *    http://zixaphir.github.com/appchan-x/
+ *  4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
+ *    http://aeosynth.github.com/4chan-x/
+ *  4chan x Copyright © 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
+ *    http://mayhemydg.github.com/4chan-x/
+ *  OneeChan Copyright © 2012 Jordan Bates
+ *    http://seaweedchan.github.com/oneechan/
+ *  4chan SS Copyright © 2012 Ahodesuka
+ *    http://ahodesuka.github.com/4chan-Style-Script
  *
- * All the people who've taken the time to write bug reports.
+ *  Permission is hereby granted, free of charge, to any person
+ *  obtaining a copy of this software and associated documentation
+ *  files (the "Software"), to deal in the Software without
+ *  restriction, including without limitation the rights to use,
+ *  copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *  copies of the Software, and to permit persons to whom the
+ *  Software is furnished to do so, subject to the following
+ *  conditions:
  *
- * Thank you.
+ *  The above copyright notice and this permission notice shall be
+ *  included in all copies or substantial portions of the Software.
+ *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ *  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ *  OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ *  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ *  HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ *  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ *  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ *  OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *  Contributors:
+ *    blaise - mentoring and support
+ *    aeosynth - original author of 4chan x
+ *    mayhemydg - a current maintainer of 4chan x
+ *    noface - a current maintainer of 4chan x
+ *    that4chanwolf - former maintainer of 4chan x
+ *    desuwa - Firefox filename upload fix
+ *    seaweed - bottom padding for image hover
+ *    e000 - cooldown sanity check
+ *    ahodesuka - scroll back when unexpanding images, file info formatting
+ *    Shou - pentadactyl fixes
+ *    ferongr - favicons
+ *    xat - favicons
+ *    Ongpot - sfw favicon
+ *    thisisanon - nsfw + 404 favicons
+ *    Anonymous - empty favicon
+ *    Seiba - chrome quick reply focusing
+ *    herpaderpderp - recaptcha fixes
+ *    WakiMiko - recaptcha tab order http://userscripts.org/scripts/show/82657
+ *    btmcsweeney - allow users to specify text for sauce links
+ *
+ *  All the people who've taken the time to write bug reports.
+ *
+ *  Thank you.
+ */
+
+/*
+ *  Linkification based on the Linkify scripts located at:
+ *    http://downloads.mozdev.org/greasemonkey/linkify.user.js
+ *    https://github.com/MayhemYDG/LinkifyPlusFork
+ *
+ *  Originally written by Anthony Lieuallen of http://arantius.com/
+ *  Licensed for unlimited modification and redistribution as long as
+ *  this notice is kept intact.
  */
 (function() {
   var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, g, newTheme, styleInit, userMascots, userNavigation, userThemes;
@@ -8518,21 +8548,6 @@
       return _results;
     }
   };
-
-  /*
-  Based on the Linkify scripts located at:
-  http://downloads.mozdev.org/greasemonkey/linkify.user.js
-  https://github.com/MayhemYDG/LinkifyPlusFork
-  
-  Originally written by Anthony Lieuallen of http://arantius.com/
-  Licensed for unlimited modification and redistribution as long as
-  this notice is kept intact.
-  
-  If possible, please contact me regarding new features, bugfixes
-  or changes that I could integrate into the existing code instead of
-  creating a different script. Thank you.
-  */
-
 
   Linkify = {
     init: function() {

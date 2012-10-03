@@ -1,18 +1,4 @@
-﻿###
-Based on the Linkify scripts located at:
-http://downloads.mozdev.org/greasemonkey/linkify.user.js
-https://github.com/MayhemYDG/LinkifyPlusFork
-
-Originally written by Anthony Lieuallen of http://arantius.com/
-Licensed for unlimited modification and redistribution as long as
-this notice is kept intact.
-
-If possible, please contact me regarding new features, bugfixes
-or changes that I could integrate into the existing code instead of
-creating a different script. Thank you.
-###
-
-Linkify =
+﻿Linkify =
   init: ->
     # Add Linkification to callbacks, which will call linkification on every post parsed by Appchan X.
     Main.callbacks.push @node
