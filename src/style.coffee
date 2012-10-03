@@ -1516,21 +1516,21 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
 #threadselect {
   position: absolute;
   top: -20px;
-  right: 0;
-  font-size: 12px;
-  text-align: right;
+  left: 0;
 }
 #threadselect select {
   margin-top: 0;
+  font-size: 12px;
+  text-align: right;
+}
+#spoilerLabel {
+  position: absolute;
+  top: -20px;
+  right: 0;
 }
 .dump > form > label {
   display: block;
   visibility: hidden;
-}
-#spoilerLabel {
-  position: absolute;
-  bottom: 0;
-  right: 2px;
 }
 input[title="Verification"],
 .captchaimg img {
@@ -1593,6 +1593,7 @@ body {
 .suboptions {
   padding: 5px;
 }
+#spoilerLabel,
 #stats,
 #updater,
 .boardTitle {
