@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* appchan x - Version 0.16.1 - 2012-10-02
+/* appchan x - Version 0.16.1 - 2012-10-03
  * http://mayhemydg.github.com/4chan-x/
  *
  * Appchan X Copyright (c) 2012 Zixaphir <zixaphirmoxphar@gmail.com>
@@ -7008,7 +7008,7 @@
         disabled = true;
         QR.cooldown.auto = false;
       }
-      value = QR.cooldown.seconds || data.progress || value;
+      value = data.progress || QR.cooldown.seconds || value;
       input = QR.status.input;
       input.value = QR.cooldown.auto && Conf['Cooldown'] ? value ? "Auto " + value : 'Auto' : value || 'Submit';
       return input.disabled = disabled || false;
@@ -7044,7 +7044,10 @@
         return QR.cooldown.count();
       },
       sync: function(cooldowns) {
-        QR.cooldown.cooldowns = cooldowns;
+        var id;
+        for (id in cooldowns) {
+          QR.cooldown.cooldowns[id] = cooldowns[id];
+        }
         return QR.cooldown.start();
       },
       set: function(data) {
@@ -7078,12 +7081,14 @@
         return $.set("" + g.BOARD + ".cooldown", QR.cooldown.cooldowns);
       },
       count: function() {
-        var cooldown, cooldowns, elapsed, hasFile, isReply, isSage, now, post, seconds, start, type, types, _ref;
+        var cooldown, cooldowns, elapsed, hasFile, isReply, isSage, now, post, seconds, start, type, types, update, _ref;
         if (Object.keys(QR.cooldown.cooldowns).length) {
           setTimeout(QR.cooldown.count, 1000);
         } else {
           $["delete"]("" + g.BOARD + ".cooldown");
-          QR.cooldown.isCounting = false;
+          delete QR.cooldown.isCounting;
+          delete QR.cooldown.seconds;
+          QR.status();
           return;
         }
         if ((isReply = g.REPLY ? true : QR.threadSelector.value !== 'new')) {
@@ -7105,7 +7110,7 @@
             }
             continue;
           }
-          type = isReply && cooldown.isReply ? isSage && cooldown.isSage ? 'sage' : hasFile && cooldown.hasFile ? 'file' : 'post' : !(isReply || cooldown.isReply) ? type = 'thread' : void 0;
+          type = isReply && cooldown.isReply ? isSage && cooldown.isSage ? 'sage' : hasFile && cooldown.hasFile ? 'file' : 'post' : !(isReply || cooldown.isReply) ? 'thread' : void 0;
           if (type) {
             elapsed = Math.floor((now - start) / 1000);
             seconds = Math.max(seconds, types[type] - elapsed);
@@ -7115,8 +7120,9 @@
             QR.cooldown.unset(start);
           }
         }
+        update = seconds !== null || !!QR.cooldown.seconds;
         QR.cooldown.seconds = seconds;
-        if (seconds !== null) {
+        if (update) {
           QR.status();
         }
         if (seconds === 0 && QR.cooldown.auto) {
