@@ -1844,26 +1844,6 @@ a.forwardlink {
 #mascot img {
   """ + agent + """transform: scaleX(""" + (if sidebarLocation[0] == "left" then "-" else "") + """1);
 }
-#YTLT-preview { position: fixed; z-index: 8888; width: 320px; padding: 0; border: 1px solid black; background-color: black; }
-#YTLT-preview img { max-height: 240px; width: inherit; }
-#YTLT-preview div { padding: 4px 2px; width: 316px; text-align: center; font-family: sans-serif; font-size: 13px; color: white; font-weight: bold; }
-a.YTLT-na { text-decoration: line-through !important;}
-a.YTLT-text { font-weight: bold !important; font-style: italic !important; white-space: nowrap;}
-a.YTLT-icon.YTLT-na:hover,
-a.YTLT-icon.YTLT-ne:hover { background: transparent url(data:image/gif;base64,R0lGODlhEAAQAKIGAO/v7+vr676+vmVlZZqamv///////wAAACH5BAEAAAYALAAAAAAQABAAAAM/aLrc/tAIQisRj4DCOSAZN4xDATpEV4zmMlVdWZ6GxqWr2Cq4mau0nk0VCHZelsuiBwypbpkNkcZAWjCRrCIBADs=) center left no-repeat!important;}
-#YTLT-bg { position:fixed;z-index:9999;top:0;right:0;bottom:0;left:0;background-color:black;opacity:0.9; }
-#YTLT-player { display:block;position:fixed;z-index:10000;line-height:normal;background-color:black;border:2px solid black;font-size:13px;line-height:16px;padding:0;margin:0; }
-#YTLT-player-titlebar { display:block;line-height:17px;padding:0;background:#232323;background:linear-gradient(#141414, #232323);border-bottom:2px solid black;text-align:right; }
-#YTLT-player-darken { padding:0px 11px 3px 11px; }
-#YTLT-player-resize { padding:1px 11px 2px 11px; }
-#YTLT-player-close { padding:0px 28px 3px 28px; }
-#YTLT-player .YTLT-embed { border:0;line-height:normal; }
-#YTLT-player .YTLT-player-titlebar-button { vertical-align:top;display:inline-block;margin:0;font-weight:bold;font-size:14px;text-decoration:none;border:0;border-left:1px solid black;color:#6e6e6e;""" + agent + """user-select:none;text-decoration:none;cursor:pointer; }
-#YTLT-player .YTLT-player-titlebar-button:hover { color:#c6c6c6; }
-.YTLT-embed { display:block;background-color:black;border:2px solid black;margin:0;padding:0;-moz-transition-property:width,height;-moz-transition-duration:500ms;-moz-transition-timing-function:ease;transition-property:width,height;transition-duration:500ms;transition-timing-function:ease; }
-#YTLT-player.YTLT-player-moving { opacity:0.8;cursor:move;border:2px solid white; }
-#YTLT-player.YTLT-player-moving .YTLT-embed { visibility:hidden; }
-.YTLT-noselect { """ + agent + """user-select:none;}
 """ + theme["Custom CSS"]
       if theme["Dark Theme"]
         css += """

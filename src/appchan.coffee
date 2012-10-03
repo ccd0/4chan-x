@@ -54,13 +54,21 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
 
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle
-    if d.head and d.head.childNodes.length > 10
-      nodes = for node in d.head.childNodes
-        if node.nodeType == 1 and (node.rel == 'stylesheet' or node.rel == 'alternate stylesheet' or node.tagName.toLowerCase() == 'style') and node.id != 'appchan'
-          node
-        else
-          continue
-      for node in nodes
-        $.rm node
+    unless remInit
+      if d.head and d.head.childNodes.length > 10
+        remInit = true
+        nodes = []
+        for node in d.head.childNodes
+          if node.rel == 'stylesheet'
+            nodes.push node
+          else if node.tagName == 'STYLE' and node.id != 'appchan'
+            nodes.push node
+            break
+          else
+            continue
+        for node in nodes
+          $.rm node
+      else
+        $.on d, 'DOMNodeInserted', @remStyle
     else # XXX fox
       $.on d, 'DOMNodeInserted', @remStyle

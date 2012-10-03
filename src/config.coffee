@@ -263,5 +263,6 @@ userNavigation = {}
 editMode       = false
 newTheme       = false
 styleInit      = false
+remInit        = false
 d              = document
 g              = {}
