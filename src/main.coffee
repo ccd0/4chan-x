@@ -10,7 +10,6 @@ Main =
     userThemes     = $.get "userThemes",     {}
     userMascots    = $.get "userMascots",    {}
 
-
     # If mascots have been updated, push them to the userMascots
     unless userMascots == Mascots
       for name, mascot of Mascots
@@ -37,6 +36,11 @@ Main =
     if temp is 'res'
       g.REPLY = true
       g.THREAD_ID = pathname[2]
+
+    # Setup Fill some per board configuration values with their global equivalents.
+    if Conf["Interval per board"]
+      Conf["Interval_"   + g.BOARD] = $.get "Interval_"   + g.BOARD, Conf["Interval"]
+      Conf["BGInterval_" + g.BOARD] = $.get "BGInterval_" + g.BOARD, Conf["BGInteval"]
 
     switch location.hostname
       when 'sys.4chan.org'

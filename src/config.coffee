@@ -47,6 +47,7 @@ Config =
     Monitoring:
       'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']
       'Optional Increase':            [false, 'Increase value of Updater over time.']
+      'Interval per board':           [false, 'Change the intervals of updates on a board-by-board basis.']
       'Unread Count':                 [true,  'Show unread post count in tab title']
       'Unread Favicon':               [true,  'Show a different favicon when there are unread posts']
       'Post in Title':                [true,  'Show the op\'s post in the tab title']
@@ -159,6 +160,7 @@ Config =
   fileInfo: '%l (%p%s, %r)'
   favicon: 'ferongr'
   updateIncrease: '5,10,15,20,30,60,90,120,240,300'
+  updateIncreaseB: '5,10,15,20,30,60,90,120,240,300'
 
   hotkeys:
     # QR & Options

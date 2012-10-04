@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                appchan x
 // @namespace           zixaphir
-// @version             0.16beta
+// @version             0.17.1
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           2012 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2009-2011 James Campos <james.r.campos@gmail.com>
@@ -144,6 +144,7 @@
       Monitoring: {
         'Thread Updater': [true, 'Update threads. Has more options in its own dialog.'],
         'Optional Increase': [false, 'Increase value of Updater over time.'],
+        'Interval per board': [false, 'Change the intervals of updates on a board-by-board basis.'],
         'Unread Count': [true, 'Show unread post count in tab title'],
         'Unread Favicon': [true, 'Show a different favicon when there are unread posts'],
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
@@ -197,6 +198,7 @@
     fileInfo: '%l (%p%s, %r)',
     favicon: 'ferongr',
     updateIncrease: '5,10,15,20,30,60,90,120,240,300',
+    updateIncreaseB: '5,10,15,20,30,60,90,120,240,300',
     hotkeys: {
       openQR: ['i', 'Open QR with post number inserted'],
       openEmptyQR: ['I', 'Open QR without post number inserted'],
@@ -4732,7 +4734,11 @@
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
       checked = Conf['Auto Update'] ? 'checked' : '';
-      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input type=number name=Interval class=field min=1></label></div>      <div><label>BGInterval<input type=number name=BGInterval class=field min=1></label></div>      <div><input value='Update Now' type=button name='Update Now'></div>";
+      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input type=number name=Interval" + (Conf['Interval per board'] ? "_" + g.BOARD : '') + " class=field min=1></label></div>";
+      if (Conf["Optional Increase"]) {
+        html += "<div><label>BGInterval<input type=number name=BGInterval" + (Conf['Interval per board'] ? "_" + g.BOARD : '') + " class=field min=1></label></div>";
+      }
+      html += "<div><input value='Update Now' type=button name='Update Now'></div>";
       dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
@@ -4759,12 +4765,10 @@
             this.cb.autoUpdate.call(input);
             break;
           case 'Interval':
-            input.value = Conf['Interval'];
-            $.on(input, 'change', this.cb.interval);
-            this.cb.interval.call(input);
-            break;
           case 'BGInterval':
-            input.value = Conf['BGInterval'];
+          case "Interval_" + g.BOARD:
+          case "BGInterval_" + g.BOARD:
+            input.value = Conf[input.name];
             $.on(input, 'change', this.cb.interval);
             this.cb.interval.call(input);
             break;
@@ -4791,8 +4795,14 @@
           return;
         }
         Updater.unsuccessfulFetchCount = 0;
-        if (Updater.timer.textContent < -Conf['Interval']) {
-          return Updater.set('timer', -Updater.getInterval());
+        if (Conf['Interval per board']) {
+          if (Updater.timer.textContent < -Conf['Interval_' + g.BOARD]) {
+            return Updater.set('timer', -Updater.getInterval());
+          }
+        } else {
+          if (Updater.timer.textContent < -Conf['Interval']) {
+            return Updater.set('timer', -Updater.getInterval());
+          }
         }
       },
       interval: function() {
@@ -4920,21 +4930,36 @@
       }
     },
     getInterval: function() {
-      var bg, hidden, i, j, w;
-      i = +Conf['Interval'];
-      bg = +Conf['BGInterval'];
-      j = Math.min(this.unsuccessfulFetchCount, 9);
+      var bg, hidden, i, j, oi, w, wb;
+      if (Conf['Interval per board']) {
+        i = +Conf['Interval_' + g.BOARD];
+        bg = +Conf['BGInterval_' + g.BOARD];
+      } else {
+        i = +Conf['Interval'];
+        bg = +Conf['BGInterval'];
+      }
       w = Conf['updateIncrease'].split(',');
+      wb = Conf['updateIncreaseB'].split(',');
+      j = Math.min(this.unsuccessfulFetchCount, 9);
+      oi = function(y) {
+        var x, _i, _len, _results;
+        _results = [];
+        for (_i = 0, _len = y.length; _i < _len; _i++) {
+          x = y[_i];
+          _results.push(Number(x));
+        }
+        return _results;
+      };
       hidden = d.hidden || d.oHidden || d.mozHidden || d.webkitHidden;
       if (!hidden) {
         if (Conf['Optional Increase']) {
-          return Math.max(i, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]);
+          return Math.max(i, oi(w)[j]);
         } else {
           return i;
         }
       } else {
         if (Conf['Optional Increase']) {
-          return Math.max(bg, [w[0], w[1], w[2], w[3], w[4], w[5], w[6], w[7], w[8], w[9]][j]);
+          return Math.max(bg, oi(wb)[j]);
         } else {
           return bg;
         }
@@ -6551,7 +6576,6 @@
           }
           break;
         case 'diy':
-        case 'g':
         case 'sci':
           url = "//archive.installgentoo.net/" + path;
           if (threadID && postID) {
@@ -6559,6 +6583,7 @@
           }
           break;
         case 'cgl':
+        case 'g':
         case 'mu':
         case 'soc':
         case 'w':
@@ -9069,6 +9094,12 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       if (temp === 'res') {
         g.REPLY = true;
         g.THREAD_ID = pathname[2];
+      }
+      if (Conf["Interval per board"]) {
+        Conf["Interval_" + g.BOARD] = $.get("Interval_" + g.BOARD, Conf["Interval"]);
+        Conf["BGInterval_" + g.BOARD] = $.get("BGInterval_" + g.BOARD, Conf["BGInteval"]);
+        $.log("Interval_" + g.BOARD);
+        $.log(Conf["Interval_" + g.BOARD]);
       }
       switch (location.hostname) {
         case 'sys.4chan.org':
