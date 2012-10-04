@@ -1,4 +1,11 @@
 master
+0.17.x
+- Mayhem
+  Added thread creation QR cooldown.
+  Fix QR cooldown timer between non-sage and sage posts. You can submit a non-sage post 30 seconds after a sage one.
+  Fix /q/ QR cooldowns.
+- Zixaphir
+  Altered code to allow other userscripts to inject CSS. (previous behavior would cleanse header of style elements every time a node was injected.)
 
 0.16beta
 - Zixaphir
@@ -18,11 +25,6 @@ master
     Blackboard
     4chan Rewired
     4chan Dark Upgrade
-- Mayhem
-  Added thread creation QR cooldown.
-  Fix QR cooldown timer between non-sage and sage posts. You can submit a non-sage post 30 seconds after a sage one.
-  Fix /q/ QR cooldowns.
-  
 
 0.15beta
 - Zixaphir
