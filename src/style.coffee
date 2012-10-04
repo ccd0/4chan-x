@@ -1561,9 +1561,13 @@ table.reply[style^="clear: both"] {
   height: 17px;
 }
 .prettyprint {
+  display: inline-block;
   white-space: pre-wrap;
   border-radius: 2px;
-  font-size: 11px;
+  font-size: inherit;
+  max-width: 600px;
+  overflow-x: auto;
+  padding: 3px;
 }
 #themeConf {
   position: fixed;
