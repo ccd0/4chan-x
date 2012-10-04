@@ -379,8 +379,7 @@ h1,
 #options input:checked + .rice + .optionlabel {
   font-weight: 800;
 }
-#options input,
-#options .rice {
+#options input:not[type=checkbox] {
   float: right;
   clear: left;
 }
@@ -406,6 +405,9 @@ h1,
 #options .option {
   width: 50%;
   display: inline-block;
+}
+#options .option .optionlabel {
+  padding-left: 18px;
 }
 #options .styleoption {
   padding: 1px 5px 1px 7px;
