@@ -230,9 +230,11 @@ Config =
       'Font':                      ['Calibri',         'The font used by all elements of 4chan.', 'text']
       'Font Size':                 ['12px',            'The font size of posts and various UI. This does not change all font sizes.', 'text']
       'Mascots':                   [false,             'Add a pretty picture of your waifu to Appchan.']
+      'NSFW/SFW Mascots':          [false,             'Enable or disable mascots based on the SFW status of the board you are viewing.']
       'Mascots Overlap Posts':     [true,              'Mascots overlap threads and posts.']
       'Mascot Location':           ['sidebar',         'Change where your mascot is located.', ['sidebar', 'opposite']]
       'Mascot Position':           ['bottom',          'Change where your mascot is placed in relation to the post form if the mascot isn\'t manually placed.', ['above post form', 'bottom']]
+      'NSFW/SFW Themes':           [false,             'Choose your theme based on the SFW status of the board you are viewing.']
       'Rounded Edges':             [true,              'Round the edges of various 4chan elements.']
       'Sage Highlighting':         ['image',           'Icons or text to highlight saged posts.', ['text', 'image', 'none']]
       'Tripcode Hider':            [true,              'Intelligent name field hiding.']
@@ -270,3 +272,4 @@ styleInit      = false
 remInit        = false
 d              = document
 g              = {}
+g.TYPE         = 'sfw'

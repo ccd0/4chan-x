@@ -268,8 +268,13 @@ Options =
 </div>
 "
         div = $('div[style]', li)
-        if mascot["Enabled"]
-          $.addClass div, 'enabled'
+        if Conf["NSFW/SFW Mascots"]
+          if mascot["Enabled_#{g.TYPE}"]
+            $.addClass div, 'enabled'
+
+        else
+          if mascot["Enabled"]
+            $.addClass div, 'enabled'
 
         $.on $('a.edit', li), 'click', ->
           unless Conf["Style"]
@@ -277,25 +282,37 @@ Options =
             return
           MascotTools.dialog @name
           Options.close()
-          userMascots[@name]["Enabled"] = true
+          if Conf["NSFW/SFW Mascots"]
+            userMascots[@name]["Enabled_#{g.TYPE}"] = true
+          else
+            userMascots[@name]["Enabled"] = true
 
         $.on $('a.delete', li), 'click', ->
           container = @.parentElement.parentElement.parentElement.parentElement.parentElement
           if confirm "Are you sure you want to delete \"#{@name}\"?"
             userMascots[@name]["Enabled"] = false
+            userMascots[@name]["Enabled_sfw"] = false
+            userMascots[@name]["Enabled_nsfw"] = false
             userMascots[@name]["Deleted"] = true
             $.set "userMascots", userMascots
             $.rm container
 
         $.on div, 'click', ->
-          if userMascots[@id]["Enabled"]
-            $.rmClass @, 'enabled'
-            userMascots[@id]["Enabled"] = false
-            $.set "userMascots", userMascots
+          if Conf["NSFW/SFW Mascots"]
+            if userMascots[@id]["Enabled_#{g.TYPE}"]
+              $.rmClass @, 'enabled'
+              userMascots[@id]["Enabled_#{g.TYPE}"] = false
+            else
+              $.addClass @, 'enabled'
+              userMascots[@id]["Enabled_#{g.TYPE}"] = true
           else
-            $.addClass @, 'enabled'
-            userMascots[@.id]["Enabled"] = true
-            $.set "userMascots", userMascots
+            if userMascots[@id]["Enabled"]
+              $.rmClass @, 'enabled'
+              userMascots[@id]["Enabled"] = false
+            else
+              $.addClass @, 'enabled'
+              userMascots[@id]["Enabled"] = true
+          $.set "userMascots", userMascots
 
         $.add ul, li
         $.add parentdiv, ul
@@ -307,17 +324,29 @@ Options =
       innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a> / <a href=\"javascript:;\" id=\"createNew\">New Mascot</a>"
 
     $.on $('#clear', batchmascots), 'click', ->
-      for name, mascot of userMascots
-        if mascot["Enabled"]
-          $.rmClass $('#' + name, @parentElement.parentElement), 'enabled'
-          userMascots[name]["Enabled"] = false
+      if Conf["NSFW/SFW Mascots"]
+        for name, mascot of userMascots
+          if mascot["Enabled_#{g.TYPE}"]
+            $.rmClass $('#' + name, @parentElement.parentElement), 'enabled'
+            userMascots[name]["Enabled_#{g.TYPE}"] = false
+      else
+        for name, mascot of userMascots
+          if mascot["Enabled"]
+            $.rmClass $('#' + name, @parentElement.parentElement), 'enabled'
+            userMascots[name]["Enabled"] = false
       $.set "userMascots", userMascots
 
     $.on $('#selectAll', batchmascots), 'click', ->
-      for name, mascot of userMascots
-        unless mascot["Enabled"] or mascot["Deleted"] or mascot["Hidden"]
-          $.addClass $('#' + name, @parentElement.parentElement), 'enabled'
-          userMascots[name]["Enabled"] = true
+      if Conf["NSFW/SFW Mascots"]
+        for name, mascot of userMascots
+          unless mascot["Enabled_#{g.TYPE}"] or mascot["Deleted"] or mascot["Hidden"]
+            $.addClass $('#' + name, @parentElement.parentElement), 'enabled'
+            userMascots[name]["Enabled_#{g.TYPE}"] = true
+      else
+        for name, mascot of userMascots
+          unless mascot["Enabled"] or mascot["Deleted"] or mascot["Hidden"]
+            $.addClass $('#' + name, @parentElement.parentElement), 'enabled'
+            userMascots[name]["Enabled"] = true
       $.set "userMascots", userMascots
 
     $.on $('#createNew', batchmascots), 'click', ->
@@ -726,6 +755,9 @@ Options =
     if currentTheme = $.id(Conf['theme'])
       $.rmClass currentTheme, 'selectedtheme'
 
-    $.set 'theme', container.id
+    if Conf["NSFW/SFW Themes"]
+      $.set "theme_#{g.TYPE}", container.id
+    else
+      $.set "theme", container.id
     Conf['theme'] = container.id
     $.addClass container, 'selectedtheme'

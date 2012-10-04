@@ -18,6 +18,10 @@ Main =
             continue
           if userMascots[name]["Enabled"]
             mascot["Enabled"] = true
+          if userMascots[name]["Enabled_sfw"]
+            mascot["Enabled_sfw"] = true
+          if userMascots[name]["Enabled_nsfw"]
+            mascot["Enabled_nsfw"] = true
         userMascots[name] = mascot
 
     # Same thing with themes.
@@ -37,10 +41,18 @@ Main =
       g.REPLY = true
       g.THREAD_ID = pathname[2]
 
+    for board in ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y']
+      if g.BOARD == board
+        g.TYPE = 'nsfw'
+        break
+
     # Setup Fill some per board configuration values with their global equivalents.
     if Conf["Interval per board"]
       Conf["Interval_"   + g.BOARD] = $.get "Interval_"   + g.BOARD, Conf["Interval"]
       Conf["BGInterval_" + g.BOARD] = $.get "BGInterval_" + g.BOARD, Conf["BGInteval"]
+    
+    if Conf["NSFW/SFW Themes"]
+      Conf["theme"] = $.get "theme_#{g.TYPE}", Conf["theme"]
 
     switch location.hostname
       when 'sys.4chan.org'
@@ -170,10 +182,10 @@ Main =
       return
     $.addClass d.body, $.engine
     $.addClass d.body, 'fourchan_x'
-    
+
     if Conf['Custom Navigation']
       CustomNavigation.init()
-    
+
     for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
       if a = $ "a[href$='/#{g.BOARD}/']", $.id nav
         # Gotta make it work in temporary boards.

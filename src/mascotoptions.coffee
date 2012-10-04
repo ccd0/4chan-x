@@ -10,9 +10,14 @@ MascotTools =
     unless editMode
       names = []
 
-      for name, mascot of userMascots
-        if mascot["Enabled"]
-          names.push name
+      if Conf["NSFW/SFW Mascots"]
+        for name, mascot of userMascots
+          if mascot["Enabled_#{g.TYPE}"]
+            names.push name
+      else
+        for name, mascot of userMascots
+          if mascot["Enabled"]
+            names.push name
 
       unless Conf["mascot"] = names[Math.floor(Math.random() * names.length)]
         return
@@ -224,6 +229,9 @@ MascotTools =
     reader.readAsDataURL file 
 
   addMascot: (mascot) ->
+
+    el = $('#mascot', d.body)
+    $.rm el if el
 
     div = $.el 'div',
       id: "mascot"
