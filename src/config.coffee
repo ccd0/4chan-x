@@ -24,7 +24,7 @@ Config =
       'Filter':                       [true,  'Self-moderation placebo']
       'Recursive Filtering':          [true,  'Filter replies of filtered posts, recursively']
       'Reply Hiding':                 [true,  'Hide single replies']
-      'Thread Hiding':                [true,  'Hide entire threads']
+      'Thread Hiding':                [false, 'Hide entire threads']
       'Show Stubs':                   [true,  'Of hidden threads / replies']
 
     Imaging:
@@ -43,6 +43,8 @@ Config =
       'Delete Link':                  [true,  'Add post and image deletion links to the menu.']
       'Download Link':                [true,  'Add a download with original filename link to the menu. Chrome-only currently.']
       'Archive Link':                 [true,  'Add an archive link to the menu.']
+      'Thread Hiding Link':            [true,  'Add a link to hide entire threads.']
+      'Reply Hiding Link':            [true,  'Add a link to hide single replies.']
 
     Monitoring:
       'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']

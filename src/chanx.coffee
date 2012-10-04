@@ -491,15 +491,13 @@ ThreadHiding =
         className: 'hide_thread_button'
         innerHTML: '<span>[ - ]</span>'
         href: 'javascript:;'
-      $.on a, 'click', ThreadHiding.cb
+      $.on a, 'click', ->
+        ThreadHiding.toggle @parentElement
       $.prepend thread, a
 
       if thread.id[1..] of hiddenThreads
         ThreadHiding.hide thread
     return
-
-  cb: ->
-    ThreadHiding.toggle $.x 'ancestor::div[parent::div[@class="board"]]', @
 
   toggle: (thread) ->
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
@@ -527,12 +525,13 @@ ThreadHiding =
     text    = if num is 1 then '1 reply' else "#{num} replies"
     opInfo  = $('.desktop > .nameBlock', thread).textContent
 
-    stub = $.el 'div',
-      className: 'hide_thread_button hidden_thread'
-      innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
-    a = stub.firstChild
-    $.on  a, 'click', ThreadHiding.cb
-    $.add a, $.tn "#{opInfo} (#{text})"
+    stub = $.el 'a',
+      className: 'hidden_thread'
+      innerHTML: '<span class=hide_thread_button>[ + ]</span>'
+      href:      'javascript:;'
+    $.on  stub, 'click', ->
+      ThreadHiding.toggle @parentElement
+    $.add stub, $.tn "#{opInfo} (#{text})"
     if Conf['Menu']
       menuButton = Menu.a.cloneNode true
       $.on menuButton, 'click', Menu.toggle
@@ -554,15 +553,13 @@ ReplyHiding =
     side = $ '.sideArrows', post.root
     $.addClass side, 'hide_reply_button'
     side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
-    $.on side.firstChild, 'click', ReplyHiding.toggle
+    $.on side.firstChild, 'click', ->
+      ReplyHiding.toggle button = @parentNode, root = button.parentNode, id = root.id[2..]
 
     if post.ID of g.hiddenReplies
       ReplyHiding.hide post.root
 
-  toggle: ->
-    button = @parentNode
-    root   = button.parentNode
-    id     = root.id[2..]
+  toggle: (button, root, id) ->
     quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href$='#p#{id}']"
     if /\bstub\b/.test button.className
       ReplyHiding.show root
@@ -591,7 +588,8 @@ ReplyHiding =
       className: 'hide_reply_button stub'
       innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
     a = stub.firstChild
-    $.on  a, 'click', ReplyHiding.toggle
+    $.on  a, 'click', ->
+      ReplyHiding.toggle button = @parentNode, root = button.parentNode, id = root.id[2..]
     $.add a, $.tn $('.desktop > .nameBlock', el).textContent
     if Conf['Menu']
       menuButton = Menu.a.cloneNode true
@@ -2355,6 +2353,38 @@ ArchiveLink =
           return false
         a.href = href
         true
+
+ThreadHideLink =
+  init: ->
+    a = $.el 'a',
+      className: 'thread_hide_link'
+      href: 'javascript:;'
+      textContent: 'Hide / Restore Thread'
+    $.on a, 'click', ->
+      menu   = $.id 'menu'
+      thread = $.id "t#{menu.dataset.id}"
+      ThreadHiding.toggle thread
+    Menu.addEntry
+      el: a
+      open: (post) ->
+        if post.el.classList.contains 'op' then true else false
+
+ReplyHideLink =
+  init: ->
+    a = $.el 'a',
+      className: 'reply_hide_link'
+      href: 'javascript:;'
+      textContent: 'Hide / Restore Post'
+    $.on a, 'click', ->
+      menu   = $.id 'menu'
+      id     = menu.dataset.rootid
+      root   = $.id id
+      button = root.firstChild
+      ReplyHiding.toggle button, root, id
+    Menu.addEntry
+      el: a
+      open: (post) ->
+        if post.isInlined or post.el.classList.contains 'op' then false else true
 
 ThreadStats =
   init: ->

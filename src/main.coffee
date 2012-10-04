@@ -135,6 +135,12 @@ Main =
       if Conf['Archive Link']
         ArchiveLink.init()
 
+      if Conf['Thread Hiding Link']
+        ThreadHideLink.init()
+
+      if Conf['Reply Hiding Link']
+        ReplyHideLink.init()
+
     if Conf['Resurrect Quotes']
       Quotify.init()
 

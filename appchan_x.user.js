@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 0.17.1 - 2012-10-03
+/*  appchan x - Version 0.17.1 - 2012-10-04
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -95,7 +95,7 @@
  *  this notice is kept intact.
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, g, newTheme, remInit, styleInit, userMascots, userNavigation, userThemes;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, g, newTheme, remInit, styleInit, userMascots, userNavigation, userThemes;
 
   Config = {
     main: {
@@ -121,7 +121,7 @@
         'Filter': [true, 'Self-moderation placebo'],
         'Recursive Filtering': [true, 'Filter replies of filtered posts, recursively'],
         'Reply Hiding': [true, 'Hide single replies'],
-        'Thread Hiding': [true, 'Hide entire threads'],
+        'Thread Hiding': [false, 'Hide entire threads'],
         'Show Stubs': [true, 'Of hidden threads / replies']
       },
       Imaging: {
@@ -139,7 +139,9 @@
         'Report Link': [true, 'Add a report link to the menu.'],
         'Delete Link': [true, 'Add post and image deletion links to the menu.'],
         'Download Link': [true, 'Add a download with original filename link to the menu. Chrome-only currently.'],
-        'Archive Link': [true, 'Add an archive link to the menu.']
+        'Archive Link': [true, 'Add an archive link to the menu.'],
+        'Thread Hiding Link': [true, 'Add a link to hide entire threads.'],
+        'Reply Hiding Link': [true, 'Add a link to hide single replies.']
       },
       Monitoring: {
         'Thread Updater': [true, 'Update threads. Has more options in its own dialog.'],
@@ -4033,15 +4035,14 @@
           innerHTML: '<span>[ - ]</span>',
           href: 'javascript:;'
         });
-        $.on(a, 'click', ThreadHiding.cb);
+        $.on(a, 'click', function() {
+          return ThreadHiding.toggle(this.parentElement);
+        });
         $.prepend(thread, a);
         if (thread.id.slice(1) in hiddenThreads) {
           ThreadHiding.hide(thread);
         }
       }
-    },
-    cb: function() {
-      return ThreadHiding.toggle($.x('ancestor::div[parent::div[@class="board"]]', this));
     },
     toggle: function(thread) {
       var hiddenThreads, id;
@@ -4057,7 +4058,7 @@
       return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
     },
     hide: function(thread, show_stub) {
-      var a, menuButton, num, opInfo, span, stub, text;
+      var menuButton, num, opInfo, span, stub, text;
       if (show_stub == null) {
         show_stub = Conf['Show Stubs'];
       }
@@ -4076,13 +4077,15 @@
       num += $$('.opContainer ~ .replyContainer', thread).length;
       text = num === 1 ? '1 reply' : "" + num + " replies";
       opInfo = $('.desktop > .nameBlock', thread).textContent;
-      stub = $.el('div', {
-        className: 'hide_thread_button hidden_thread',
-        innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
+      stub = $.el('a', {
+        className: 'hidden_thread',
+        innerHTML: '<span class=hide_thread_button>[ + ]</span>',
+        href: 'javascript:;'
       });
-      a = stub.firstChild;
-      $.on(a, 'click', ThreadHiding.cb);
-      $.add(a, $.tn("" + opInfo + " (" + text + ")"));
+      $.on(stub, 'click', function() {
+        return ThreadHiding.toggle(this.parentElement);
+      });
+      $.add(stub, $.tn("" + opInfo + " (" + text + ")"));
       if (Conf['Menu']) {
         menuButton = Menu.a.cloneNode(true);
         $.on(menuButton, 'click', Menu.toggle);
@@ -4112,16 +4115,16 @@
       side = $('.sideArrows', post.root);
       $.addClass(side, 'hide_reply_button');
       side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>';
-      $.on(side.firstChild, 'click', ReplyHiding.toggle);
+      $.on(side.firstChild, 'click', function() {
+        var button, id, root;
+        return ReplyHiding.toggle(button = this.parentNode, root = button.parentNode, id = root.id.slice(2));
+      });
       if (post.ID in g.hiddenReplies) {
         return ReplyHiding.hide(post.root);
       }
     },
-    toggle: function() {
-      var button, id, quote, quotes, root, _i, _j, _len, _len1;
-      button = this.parentNode;
-      root = button.parentNode;
-      id = root.id.slice(2);
+    toggle: function(button, root, id) {
+      var quote, quotes, _i, _j, _len, _len1;
       quotes = $$(".quotelink[href$='#p" + id + "'], .backlink[href$='#p" + id + "']");
       if (/\bstub\b/.test(button.className)) {
         ReplyHiding.show(root);
@@ -4161,7 +4164,10 @@
         innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
       });
       a = stub.firstChild;
-      $.on(a, 'click', ReplyHiding.toggle);
+      $.on(a, 'click', function() {
+        var button, id;
+        return ReplyHiding.toggle(button = this.parentNode, root = button.parentNode, id = root.id.slice(2));
+      });
       $.add(a, $.tn($('.desktop > .nameBlock', el).textContent));
       if (Conf['Menu']) {
         menuButton = Menu.a.cloneNode(true);
@@ -6316,6 +6322,63 @@
           }
           a.href = href;
           return true;
+        }
+      });
+    }
+  };
+
+  ThreadHideLink = {
+    init: function() {
+      var a;
+      a = $.el('a', {
+        className: 'thread_hide_link',
+        href: 'javascript:;',
+        textContent: 'Hide / Restore Thread'
+      });
+      $.on(a, 'click', function() {
+        var menu, thread;
+        menu = $.id('menu');
+        $.log(menu.dataset.rootid);
+        $.log(thread = $.id("t" + menu.dataset.id));
+        return ThreadHiding.toggle(thread);
+      });
+      return Menu.addEntry({
+        el: a,
+        open: function(post) {
+          if (post.el.classList.contains('op')) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      });
+    }
+  };
+
+  ReplyHideLink = {
+    init: function() {
+      var a;
+      a = $.el('a', {
+        className: 'reply_hide_link',
+        href: 'javascript:;',
+        textContent: 'Hide / Restore Post'
+      });
+      $.on(a, 'click', function() {
+        var button, id, menu, root;
+        menu = $.id('menu');
+        id = menu.dataset.rootid;
+        root = $.id(id);
+        button = root.firstChild;
+        return ReplyHiding.toggle(button, root, id);
+      });
+      return Menu.addEntry({
+        el: a,
+        open: function(post) {
+          if (post.isInlined || post.el.classList.contains('op')) {
+            return false;
+          } else {
+            return true;
+          }
         }
       });
     }
@@ -8844,7 +8907,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
             css += ".boardBanner img {\n  display: none;\n}";
         }
         if (Conf["Icon Orientation"] === "horizontal") {
-          css += "/* 4chan X Options */\n#navtopright .settingsWindowLink::after {\n  visibility: visible;" + (sidebarLocation[0] === "left" ? "left: " + (231 + sidebarOffsetW) + "px" : "right:  2px") + ";\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  border: none;" + (sidebarLocation[0] === "left" ? "left: " + (212 + sidebarOffsetW) + "px" : "right: 21px") + ";\n}\n/* Global Message */\n.globalMessage::before {\n  position: fixed;" + (sidebarLocation[0] === "left" ? "left: " + (193 + sidebarOffsetW) + "px" : "right: 40px") + ";\n}\n/* Watcher */\n#watcher::before {\n  position: fixed;" + (sidebarLocation[0] === "left" ? "left: " + (174 + sidebarOffsetW) + "px" : "right: 59px") + ";\ncursor: pointer;\n}\n/* Expand Images */\n#imgControls {" + (sidebarLocation[0] === "left" ? "left: " + (155 + sidebarOffsetW) + "px" : "right: 78px") + ";\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {" + (sidebarLocation[0] === "left" ? "left: " + (136 + sidebarOffsetW) + "px" : "right: 97px") + ";\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  position: fixed;\n  cursor: pointer;" + (sidebarLocation[0] === "left" ? "left: 2px" : "right: " + (228 + sidebarOffsetW) + "px") + ";\n}\n/* Thread Navigation Links */\n#navlinks {" + (sidebarLocation[0] === "left" ? "left: 22px" : "right: " + (198 + sidebarOffsetW) + "px") + ";" + sidebarLocation[1] + ": auto !important;\ntop: -5px !important;\nwidth: 30px;\n}\n/* Stats */\n#stats {" + (sidebarLocation[0] === "left" ? "left: 4px" : "right: " + (196 + sidebarOffsetW) + "px") + " !important;" + sidebarLocation[1] + ": auto !important;\ntop: " + (Conf["Stats Position"] === "top" ? "20px" : "auto") + " !important;\nbottom: " + (Conf["Stats Position"] === "bottom" ? "4px" : "auto") + " !important;\nwidth: 50px;\ntext-align: " + sidebarLocation[1] + ";\n}\n/* Updater */\n#updater {" + (sidebarLocation[0] === "left" ? "left: " + (206 + sidebarOffsetW) + "px" : "right: 4px") + " !important;" + sidebarLocation[1] + ": auto !important;\ntop: " + (Conf["Updater Position"] === "top" ? "20px" : "auto") + " !important;\nbottom: " + (Conf["Updater Position"] === "bottom" ? "4px" : "auto") + " !important;\n}\n#boardNavDesktopFoot::after,\n#navtopright .settingsWindowLink::after,\n#watcher::before,\n.globalMessage::before,\n#imgControls,\ndiv.navLinks > a:first-of-type::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  position: fixed;\n  top: 0px !important;\n}\n.globalMessage,\n#boardNavDesktopFoot,\n#watcher {\n  position: fixed;\n  top: 38px !important;\n  z-index: 98 !important;\n}\n.globalMessage:hover,\n#boardNavDesktopFoot:hover,\n#watcher:hover {\n  z-index: 99 !important;\n}";
+          css += "/* 4chan X Options */\n#navtopright .settingsWindowLink::after {\n  visibility: visible;" + (sidebarLocation[0] === "left" ? "left: " + (231 + sidebarOffsetW) + "px" : "right:  2px") + ";\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  border: none;" + (sidebarLocation[0] === "left" ? "left: " + (212 + sidebarOffsetW) + "px" : "right: 21px") + ";\n}\n/* Global Message */\n.globalMessage::before {\n  position: fixed;" + (sidebarLocation[0] === "left" ? "left: " + (193 + sidebarOffsetW) + "px" : "right: 40px") + ";\n}\n/* Watcher */\n#watcher::before {\n  position: fixed;" + (sidebarLocation[0] === "left" ? "left: " + (174 + sidebarOffsetW) + "px" : "right: 59px") + ";\ncursor: pointer;\n}\n/* Expand Images */\n#imgControls {" + (sidebarLocation[0] === "left" ? "left: " + (155 + sidebarOffsetW) + "px" : "right: 78px") + ";\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {" + (sidebarLocation[0] === "left" ? "left: " + (136 + sidebarOffsetW) + "px" : "right: 97px") + ";\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  position: fixed;\n  cursor: pointer;" + (sidebarLocation[0] === "left" ? "left: 2px" : "right: " + (228 + sidebarOffsetW) + "px") + ";\n}\n/* Thread Navigation Links */\n#navlinks {" + (sidebarLocation[0] === "left" ? "left: 22px" : "right: " + (198 + sidebarOffsetW) + "px") + ";" + sidebarLocation[1] + ": auto !important;\ntop: -5px !important;\nwidth: 30px;\n}\n/* Stats */\n#stats {" + (sidebarLocation[0] === "left" ? "left: 4px" : "right: " + (186 + sidebarOffsetW) + "px") + " !important;" + sidebarLocation[1] + ": auto !important;\ntop: " + (Conf["Stats Position"] === "top" ? "20px" : "auto") + " !important;\nbottom: " + (Conf["Stats Position"] === "bottom" ? "4px" : "auto") + " !important;\nwidth: 60px;\ntext-align: " + sidebarLocation[1] + ";\n}\n/* Updater */\n#updater {" + (sidebarLocation[0] === "left" ? "left: " + (206 + sidebarOffsetW) + "px" : "right: 4px") + " !important;" + sidebarLocation[1] + ": auto !important;\ntop: " + (Conf["Updater Position"] === "top" ? "20px" : "auto") + " !important;\nbottom: " + (Conf["Updater Position"] === "bottom" ? "4px" : "auto") + " !important;\n}\n#boardNavDesktopFoot::after,\n#navtopright .settingsWindowLink::after,\n#watcher::before,\n.globalMessage::before,\n#imgControls,\ndiv.navLinks > a:first-of-type::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  position: fixed;\n  top: 0px !important;\n}\n.globalMessage,\n#boardNavDesktopFoot,\n#watcher {\n  position: fixed;\n  top: 38px !important;\n  z-index: 98 !important;\n}\n.globalMessage:hover,\n#boardNavDesktopFoot:hover,\n#watcher:hover {\n  z-index: 99 !important;\n}";
         } else {
           if (Conf["Stats Position"] === "top" && Conf["4chan Banner"] !== "at sidebar top" && sidebarLocation[0] === "left") {
             statOffset = 15;
@@ -8856,7 +8919,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
             statOffset = 0;
             updaterOffset = 0;
           }
-          css += "/* Image Expansion */\n#imgControls {\n  position: fixed;\n  top: " + (2 + logoOffset) + "px !important;\n}\n/* 4chan X Options */\n#navtopright .settingsWindowLink::after {\n  visibility: visible;\n  position: fixed;\n  top: " + (21 + logoOffset) + "px !important;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after {\n  border: none;\n  position: fixed;\n  top: " + (40 + logoOffset) + "px !important;\n}\n/* Global Message */\n.globalMessage,\n.globalMessage::before {\n  position: fixed;\n  top: " + (59 + logoOffset) + "px !important;\n}\n/* Watcher */\n#watcher,\n#watcher::before {\n  position: fixed;\n  top: " + (78 + logoOffset) + "px !important;\ncursor: pointer;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\nposition: fixed;\ntop: " + (97 + logoOffset) + "px !important;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  position: fixed;\n  cursor: pointer;\n  top: " + (116 + logoOffset) + "px !important;\n}\n/* Stats */\n#stats {" + (sidebarLocation[0] === "left" ? "left: " + (4 + statOffset) + "px" : "right: " + (Conf["Updater Position"] === "top" ? 35 + updaterOffset : 196 + sidebarOffsetW) + "px") + " !important;" + sidebarLocation[1] + ": auto !important;\ntop: " + (Conf["Stats Position"] === "top" ? "2px" : "auto") + " !important;\nbottom: " + (Conf["Stats Position"] === "bottom" ? "4px" : "auto") + " !important;\nwidth: 50px;\ntext-align: left;" + (Conf["Stats Position"] === "top" ? "z-index: 96 !important;" : void 0) + "}\n/* Updater */\n#updater {" + (sidebarLocation[0] === "right" ? "right: " + (4 + updaterOffset) + "px" : "left: " + (Conf["Updater Position"] === "top" ? 45 + statOffset : 206 + sidebarOffsetW) + "px") + " !important;" + sidebarLocation[1] + ": auto !important;\ntop: " + (Conf["Updater Position"] === "top" ? "2px" : "auto") + " !important;\nbottom: " + (Conf["Updater Position"] === "bottom" ? "4px" : "auto") + " !important;" + (Conf["Updater Position"] === "top" ? "z-index: 96 !important;" : void 0) + "}\n#navlinks {\n  top: " + (135 + logoOffset) + "px !important;" + sidebarLocation[1] + ": auto !important;\n}\n#navlinks a {\n  display: block;\n  clear: both;\n}\n#navlinks,\n#navtopright .settingsWindowLink::after,\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after,\n#watcher,\n#watcher::before,\n.globalMessage,\n.globalMessage::before,\n#imgControls,\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\ndiv.navLinks > a:first-of-type::after {" + sidebarLocation[0] + ": 3px !important;\n}\n#boardNavDesktopFoot {\n  z-index: 97 !important;\n}\n.globalMessage {\n  z-index: 98 !important;\n}\n#watcher {\n  z-index: " + (Conf["Slideout Watcher"] ? "99" : "96") + " !important;\n}";
+          css += "/* Image Expansion */\n#imgControls {\n  position: fixed;\n  top: " + (2 + logoOffset) + "px !important;\n}\n/* 4chan X Options */\n#navtopright .settingsWindowLink::after {\n  visibility: visible;\n  position: fixed;\n  top: " + (21 + logoOffset) + "px !important;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after {\n  border: none;\n  position: fixed;\n  top: " + (40 + logoOffset) + "px !important;\n}\n/* Global Message */\n.globalMessage,\n.globalMessage::before {\n  position: fixed;\n  top: " + (59 + logoOffset) + "px !important;\n}\n/* Watcher */\n#watcher,\n#watcher::before {\n  position: fixed;\n  top: " + (78 + logoOffset) + "px !important;\ncursor: pointer;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\nposition: fixed;\ntop: " + (97 + logoOffset) + "px !important;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  position: fixed;\n  cursor: pointer;\n  top: " + (116 + logoOffset) + "px !important;\n}\n/* Stats */\n#stats {" + (sidebarLocation[0] === "left" ? "left: " + (4 + statOffset) + "px" : "right: " + (Conf["Stats Position"] === "top" ? 25 + updaterOffset : 186 + sidebarOffsetW) + "px") + " !important;" + sidebarLocation[1] + ": auto !important;\ntop: " + (Conf["Stats Position"] === "top" ? "2px" : "auto") + " !important;\nbottom: " + (Conf["Stats Position"] === "bottom" ? "4px" : "auto") + " !important;\nwidth: 60px;\ntext-align: left;" + (Conf["Stats Position"] === "top" ? "z-index: 96 !important;" : void 0) + "}\n/* Updater */\n#updater {" + (sidebarLocation[0] === "right" ? "right: " + (4 + updaterOffset) + "px" : "left: " + (Conf["Updater Position"] === "top" ? 45 + statOffset : 206 + sidebarOffsetW) + "px") + " !important;" + sidebarLocation[1] + ": auto !important;\ntop: " + (Conf["Updater Position"] === "top" ? "2px" : "auto") + " !important;\nbottom: " + (Conf["Updater Position"] === "bottom" ? "4px" : "auto") + " !important;" + (Conf["Updater Position"] === "top" ? "z-index: 96 !important;" : void 0) + "}\n#navlinks {\n  top: " + (135 + logoOffset) + "px !important;" + sidebarLocation[1] + ": auto !important;\n}\n#navlinks a {\n  display: block;\n  clear: both;\n}\n#navlinks,\n#navtopright .settingsWindowLink::after,\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after,\n#watcher,\n#watcher::before,\n.globalMessage,\n.globalMessage::before,\n#imgControls,\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\ndiv.navLinks > a:first-of-type::after {" + sidebarLocation[0] + ": 3px !important;\n}\n#boardNavDesktopFoot {\n  z-index: 97 !important;\n}\n.globalMessage {\n  z-index: 98 !important;\n}\n#watcher {\n  z-index: " + (Conf["Slideout Watcher"] ? "99" : "96") + " !important;\n}";
         }
         switch (Conf["Board Logo"]) {
           case "at sidebar top" || "in sidebar":
@@ -9098,8 +9161,6 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       if (Conf["Interval per board"]) {
         Conf["Interval_" + g.BOARD] = $.get("Interval_" + g.BOARD, Conf["Interval"]);
         Conf["BGInterval_" + g.BOARD] = $.get("BGInterval_" + g.BOARD, Conf["BGInteval"]);
-        $.log("Interval_" + g.BOARD);
-        $.log(Conf["Interval_" + g.BOARD]);
       }
       switch (location.hostname) {
         case 'sys.4chan.org':
@@ -9205,6 +9266,12 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         }
         if (Conf['Archive Link']) {
           ArchiveLink.init();
+        }
+        if (Conf['Thread Hiding Link']) {
+          ThreadHideLink.init();
+        }
+        if (Conf['Reply Hiding Link']) {
+          ReplyHideLink.init();
         }
       }
       if (Conf['Resurrect Quotes']) {

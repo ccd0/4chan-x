@@ -2040,11 +2040,11 @@ div.navLinks > a:first-of-type::after {
 }
 /* Stats */
 #stats {
-  """ + (if sidebarLocation[0] == "left" then "left: 4px" else "right: " + (196 + sidebarOffsetW) + "px") + """ !important;
+  """ + (if sidebarLocation[0] == "left" then "left: 4px" else "right: " + (186 + sidebarOffsetW) + "px") + """ !important;
   """ + sidebarLocation[1] + """: auto !important;
   top: """ + (if Conf["Stats Position"] == "top" then "20px" else "auto") + """ !important;
   bottom: """ + (if Conf["Stats Position"] == "bottom" then "4px" else "auto") + """ !important;
-  width: 50px;
+  width: 60px;
   text-align: """ + sidebarLocation[1] + """;
 }
 /* Updater */
@@ -2133,11 +2133,11 @@ div.navLinks > a:first-of-type::after {
 }
 /* Stats */
 #stats {
-  """ + (if sidebarLocation[0] == "left" then "left: " + (4 + statOffset) + "px" else "right: " + ((if Conf["Updater Position"] == "top" then (35 + updaterOffset) else (196 + sidebarOffsetW))) + "px") + """ !important;
+  """ + (if sidebarLocation[0] == "left" then "left: " + (4 + statOffset) + "px" else "right: " + ((if Conf["Stats Position"] == "top" then (25 + updaterOffset) else (186 + sidebarOffsetW))) + "px") + """ !important;
   """ + sidebarLocation[1] + """: auto !important;
   top: """ + (if Conf["Stats Position"] == "top" then "2px" else "auto") + """ !important;
   bottom: """ + (if Conf["Stats Position"] == "bottom" then "4px" else "auto") + """ !important;
-  width: 50px;
+  width: 60px;
   text-align: left;
   """ + (if Conf["Stats Position"] == "top" then "z-index: 96 !important;") + """
 }
