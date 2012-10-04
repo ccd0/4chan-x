@@ -39,6 +39,7 @@ Config =
     Monitoring:
       'Thread Updater':               [true,  'Update threads. Has more options in its own dialog.']
       'Optional Increase':            [false, 'Increase value of Updater over time.']
+      'Interval per board':           [false, 'Change the intervals of updates on a board-by-board basis.']
       'Unread Count':                 [true,  'Show unread post count in tab title']
       'Unread Favicon':               [true,  'Show a different favicon when there are unread posts']
       'Post in Title':                [true,  'Show the op\'s post in the tab title']
@@ -2728,9 +2729,12 @@ Updater =
     checked = if Conf['Auto Update'] then 'checked' else ''
     html += "
       <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
-      <div><label>Interval (s)<input type=number name=Interval class=field min=1></label></div>
-      <div><label>BGInterval<input type=number name=BGInterval class=field min=1></label></div>
-      <div><input value='Update Now' type=button name='Update Now'></div>"
+      <div><label>Interval (s)<input type=number name=Interval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>"
+    
+    if Conf["Optional Increase"]
+      html += "<div><label>BGInterval<input type=number name=BGInterval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>"
+
+    html += "<div><input value='Update Now' type=button name='Update Now'></div>"
 
     dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
 
@@ -2754,12 +2758,8 @@ Updater =
         when 'Auto Update This'
           $.on input, 'click', @cb.autoUpdate
           @cb.autoUpdate.call input
-        when 'Interval'
-          input.value = Conf['Interval']
-          $.on input, 'change', @cb.interval
-          @cb.interval.call input
-        when 'BGInterval'
-          input.value = Conf['BGInterval']
+        when 'Interval', 'BGInterval', "Interval_" + g.BOARD, "BGInterval_" + g.BOARD
+          input.value = Conf[input.name]
           $.on input, 'change', @cb.interval
           @cb.interval.call input
         when 'Update Now'
@@ -2780,8 +2780,12 @@ Updater =
       return if state isnt 'visible'
       # Reset the counter when we focus this tab.
       Updater.unsuccessfulFetchCount = 0
-      if Updater.timer.textContent < -Conf['Interval']
-        Updater.set 'timer', -Updater.getInterval()
+      if Conf['Interval per board']
+        if Updater.timer.textContent < -Conf['Interval_' + g.BOARD]
+          Updater.set 'timer', -Updater.getInterval()
+      else
+        if Updater.timer.textContent < -Conf['Interval']
+          Updater.set 'timer', -Updater.getInterval()
     interval: ->
       val = parseInt @value, 10
       @value = if val > 0 then val else 30
@@ -2882,8 +2886,12 @@ Updater =
       el.textContent = text
 
   getInterval: ->
-    i  = +Conf['Interval']
-    bg = +Conf['BGInterval']
+    if Conf['Interval per board']
+      i  = +Conf['Interval_' + g.BOARD]
+      bg = +Conf['BGInterval_' + g.BOARD]
+    else
+      i  = +Conf['Interval']
+      bg = +Conf['BGInterval']
     w  = Conf['updateIncrease'].split ','
     wb = Conf['updateIncreaseB'].split ','
     j  = Math.min @unsuccessfulFetchCount, 9
@@ -4689,6 +4697,11 @@ Main =
     if temp is 'res'
       g.REPLY = true
       g.THREAD_ID = pathname[2]
+
+    # Setup Fill some per board configuration values with their global equivalents.
+    if Conf["Interval per board"]
+      Conf["Interval_"   + g.BOARD] = $.get "Interval_"   + g.BOARD, Conf["Interval"]
+      Conf["BGInterval_" + g.BOARD] = $.get "BGInterval_" + g.BOARD, Conf["BGInteval"]
 
     switch location.hostname
       when 'sys.4chan.org'

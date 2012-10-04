@@ -128,6 +128,7 @@
       Monitoring: {
         'Thread Updater': [true, 'Update threads. Has more options in its own dialog.'],
         'Optional Increase': [false, 'Increase value of Updater over time.'],
+        'Interval per board': [false, 'Change the intervals of updates on a board-by-board basis.'],
         'Unread Count': [true, 'Show unread post count in tab title'],
         'Unread Favicon': [true, 'Show a different favicon when there are unread posts'],
         'Post in Title': [true, 'Show the op\'s post in the tab title'],
@@ -3294,7 +3295,11 @@
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
       checked = Conf['Auto Update'] ? 'checked' : '';
-      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input type=number name=Interval class=field min=1></label></div>      <div><label>BGInterval<input type=number name=BGInterval class=field min=1></label></div>      <div><input value='Update Now' type=button name='Update Now'></div>";
+      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input type=number name=Interval" + (Conf['Interval per board'] ? "_" + g.BOARD : '') + " class=field min=1></label></div>";
+      if (Conf["Optional Increase"]) {
+        html += "<div><label>BGInterval<input type=number name=BGInterval" + (Conf['Interval per board'] ? "_" + g.BOARD : '') + " class=field min=1></label></div>";
+      }
+      html += "<div><input value='Update Now' type=button name='Update Now'></div>";
       dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
@@ -3321,12 +3326,10 @@
             this.cb.autoUpdate.call(input);
             break;
           case 'Interval':
-            input.value = Conf['Interval'];
-            $.on(input, 'change', this.cb.interval);
-            this.cb.interval.call(input);
-            break;
           case 'BGInterval':
-            input.value = Conf['BGInterval'];
+          case "Interval_" + g.BOARD:
+          case "BGInterval_" + g.BOARD:
+            input.value = Conf[input.name];
             $.on(input, 'change', this.cb.interval);
             this.cb.interval.call(input);
             break;
@@ -3353,8 +3356,14 @@
           return;
         }
         Updater.unsuccessfulFetchCount = 0;
-        if (Updater.timer.textContent < -Conf['Interval']) {
-          return Updater.set('timer', -Updater.getInterval());
+        if (Conf['Interval per board']) {
+          if (Updater.timer.textContent < -Conf['Interval_' + g.BOARD]) {
+            return Updater.set('timer', -Updater.getInterval());
+          }
+        } else {
+          if (Updater.timer.textContent < -Conf['Interval']) {
+            return Updater.set('timer', -Updater.getInterval());
+          }
         }
       },
       interval: function() {
@@ -3482,8 +3491,13 @@
     },
     getInterval: function() {
       var bg, hidden, i, j, oi, w, wb;
-      i = +Conf['Interval'];
-      bg = +Conf['BGInterval'];
+      if (Conf['Interval per board']) {
+        i = +Conf['Interval_' + g.BOARD];
+        bg = +Conf['BGInterval_' + g.BOARD];
+      } else {
+        i = +Conf['Interval'];
+        bg = +Conf['BGInterval'];
+      }
       w = Conf['updateIncrease'].split(',');
       wb = Conf['updateIncreaseB'].split(',');
       j = Math.min(this.unsuccessfulFetchCount, 9);
@@ -5647,6 +5661,10 @@
       if (temp === 'res') {
         g.REPLY = true;
         g.THREAD_ID = pathname[2];
+      }
+      if (Conf["Interval per board"]) {
+        Conf["Interval_" + g.BOARD] = $.get("Interval_" + g.BOARD, Conf["Interval"]);
+        Conf["BGInterval_" + g.BOARD] = $.get("BGInterval_" + g.BOARD, Conf["BGInteval"]);
       }
       switch (location.hostname) {
         case 'sys.4chan.org':
