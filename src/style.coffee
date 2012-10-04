@@ -2072,7 +2072,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #boardNavDesktopFoot,
 #watcher {
   position: fixed;
-  top: 38px !important;
+  top: 16px !important;
   z-index: 98 !important;
 }
 .globalMessage:hover,
