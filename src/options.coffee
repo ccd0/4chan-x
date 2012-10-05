@@ -741,7 +741,7 @@ Options =
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
 
   applyStyle: (dialog, tab) ->
-    if Conf['styleenabled'] == '1'
+    if Conf['styleenabled']
       save = $.el 'div',
         innerHTML: '<a href="javascript:;">Save Style Settings</a>'
         className: 'stylesettings'

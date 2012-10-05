@@ -1,3 +1,4 @@
+# JavaScript "Globals"
 Config =
 # Depending on the category, the following objects are used to store default settings, generate layouts, and hold the various settings available for appchan x.
   main:
@@ -207,8 +208,8 @@ Config =
 
   style:
 
-    #Style Options are either booleans, select options, or text, depending on the value of optionName[2].
-    #If it doesn't exist, it is a boolean, if it does, it's either an array of the select options or "text".
+    # Style Options are either booleans, select options, or text, depending on the value of optionName[2].
+    # If it doesn't exist, it is a boolean, if it does, it's either an array of the select options or "text".
 
     Dialogs:
       'Announcements':             ['slideout',            'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']]
@@ -258,18 +259,17 @@ Config =
       
   theme        : 'Yotsuba B'
   mascot       : ''
-  styleenabled : '0'
 
-Conf           = {}
-userThemes     = {}
-editTheme      = {}
-userMascots    = {}
-editMascot     = {}
-userNavigation = {}
-editMode       = false
-newTheme       = false
-styleInit      = false
-remInit        = false
-d              = document
-g              = {}
-g.TYPE         = 'sfw'
+Conf           = {}			# User configuration.
+userThemes     = {}			# Installed themes.
+editTheme      = {}			# Currently editted theme.
+userMascots    = {}			# Installed mascots.
+editMascot     = {}			# Which mascot we're editting.
+userNavigation = {}			# ...
+editMode       = false		# If we're editting anything.
+newTheme       = false		# If we're creating a theme.
+styleInit      = false		# First initialization of CSS insertion.
+remInit        = false		# First initialization of CSS stripping.
+d              = document	# Shortcut
+g              = {}			# "globals"
+g.TYPE         = 'sfw'		# 4chan Board Type.

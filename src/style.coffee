@@ -646,7 +646,7 @@ div.opContainer {
       $.ready ->
         Style.rice d.body
 
-      Conf["styleenabled"] = "1"
+      Conf["styleenabled"] = true
 
       @remStyle()
 
