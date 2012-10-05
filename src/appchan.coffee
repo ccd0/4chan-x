@@ -70,5 +70,3 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
           $.rm node
       else
         $.on d, 'DOMNodeInserted', @remStyle
-    else # XXX fox
-      $.on d, 'DOMNodeInserted', @remStyle

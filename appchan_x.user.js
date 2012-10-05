@@ -1570,20 +1570,20 @@
 
   Mascots = {
     'Akiyama_Mio': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibrWLbKvjRnHZS.png'
     },
     'Akiyama_Mio_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibmZgHvl3ZSxYk.png'
     },
     'Akiyama_Mio_3': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/irFbpefCFt1cT.png',
       center: true
     },
     'Akiyama_Mio_sitting': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibnnAPmolhTfE7.png'
     },
     'Anime_Girl_in_Bondage': {
@@ -1592,27 +1592,27 @@
       center: true
     },
     'Applejack': {
-      category: 'MLP',
+      category: 'Ponies',
       image: 'https://i.minus.com/inZ8jSVsEhfnC.png',
       center: true
     },
     'Asuka_Langley_Soryu': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ib2z9ME9QKEBaS.png',
       center: true
     },
     'Asuka_Langley_Soryu_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iI3QR5SywNfg9.png',
       center: true
     },
     'Asuka_Langley_Soryu_3': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibwjj4dLtiADla.png',
       center: true
     },
     'Asuka_Langley_Soryu_4': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibiiInQGLGnYNj.png',
       center: true
     },
@@ -1622,11 +1622,11 @@
       center: true
     },
     'Asuka_Langley_Soryu_6': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibzbnBcaEtoqck.png'
     },
     'Ayanami_Rei': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ib0ft5OmqRZx2r.png',
       center: true
     },
@@ -1635,32 +1635,32 @@
       image: 'https://i.minus.com/ign5fGOZWTx5o.png'
     },
     'Ayase': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibmArq5Wb4Po4v.png',
       center: true
     },
     'Ayase_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibjUbDLSU5pwhK.png',
       center: true
     },
     'BLACK_ROCK_SHOOTER': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibMe9MrTMdvAT.png',
       center: true
     },
     'Blue_Rose': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibiq1joMemfzeM.png',
       center: true
     },
     'Brioche_d_Arquien': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibobXYJ2k3JXK.png',
       center: true
     },
     'CC': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iwndO4Pn6SO0X.png',
       center: true
     },
@@ -1670,7 +1670,7 @@
       center: true
     },
     'Chie': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ib0HI16h9FSjSp.png',
       center: true
     },
@@ -1680,32 +1680,32 @@
       center: true
     },
     'Cirno_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iSZ06ZxrcqAKq.png',
       center: true
     },
     'Dawn_Hikari': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iL3J1EmcDkFzE.png',
       center: true
     },
     'Doppleganger': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iPvv86W9r3Rxm.png',
       position: 'bottom'
     },
     'Dragonkid': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iq9fuyWSjIDWf.png',
       center: true
     },
     'Dragonkid_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/i7sdxK3G12RB6.png',
       center: true
     },
     'Eclair': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibsk5mMYVR5zuA.png',
       center: true
     },
@@ -1714,41 +1714,41 @@
       image: 'https://i.minus.com/in8bF152Y9qVB.png'
     },
     'Evangeline_AK_McDowell': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibuq7a8zWKi2gl.png',
       center: true
     },
     'Fluttershy': {
-      category: 'MLP',
+      category: 'Ponies',
       image: 'https://i.minus.com/ibwEFEGlRm0Uxy.png'
     },
     'Fluttershy_2': {
-      category: 'MLP',
+      category: 'Ponies',
       image: 'https://i.minus.com/ibwEFEGlRm0Uxy.png',
       center: true
     },
     'Fluttershy_Cutiemark': {
-      category: 'MLP',
+      category: 'Ponies',
       image: 'https://i.minus.com/i5WVpIAlHQdhs.png',
       center: true
     },
     'Fujiwara_no_Mokou': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibpwDyMGodvni6.png'
     },
     'Furudo_Erika': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iCrRzQ8WvHiSM.png',
       center: true
     },
     'Gally': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iblWZGuSlWtDI6.png',
       center: true,
       position: 'bottom'
     },
     'Gasai_Yuno': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iEQsK6K85jX2n.png'
     },
     'Gasai_Yuno_2': {
@@ -1757,16 +1757,16 @@
       center: true
     },
     'George_Costanza': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iFWdpFGfzLs6v.png'
     },
     'Hanako': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iRLF8gCIZbGjo.png',
       center: true
     },
     'Hasekura_Youko': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iqBTFZf5UhLpR.png',
       center: true
     },
@@ -1780,23 +1780,23 @@
       center: true
     },
     'Hatsune_Miku_3': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iLJ4uDTcg1T8r.png',
       center: true,
       position: 'bottom'
     },
     'Hatsune_Miku_4': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibjkPMLT8Uxitp.png',
       center: true
     },
     'Hatsune_Miku_5': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/i9Evu9dyvok4G.png',
       center: true
     },
     'Hatsune_Miku_6': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iQzx9fPFgPUNl.png',
       center: true
     },
@@ -1806,12 +1806,12 @@
       center: true
     },
     'Hirasawa_Yui': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iuGe5uDaTNmhR.png',
       center: true
     },
     'Homura_Akemi': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iPtrwFEEtPLhn.png'
     },
     'Horo': {
@@ -1823,12 +1823,12 @@
       image: ['https://i.minus.com/ibv270koIdRjm7.png', 'https://i.minus.com/iPM4lDD53yB5n.png']
     },
     'Ika_Musume': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibqVu5GNfKx5bC.png',
       center: true
     },
     'Ika_Musume_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibhnEiE8HabEqC.png',
       center: true
     },
@@ -1838,54 +1838,54 @@
       center: true
     },
     'Inori': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibpHKNPxcFqRxs.png'
     },
     'Inori_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibzM531DBaHYXD.png'
     },
     'Iwakura_Lain': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iBXRRT19scoHf.png',
       center: true
     },
     'Iwakura_Lain_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ioMltWNYUWeJ3.png',
       center: true
     },
     'KOn_Girls': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibndVLiH09uINs.png',
       center: true
     },
     'Kagamine_Rin': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iVPKJeDXKPKeV.png',
       center: true
     },
     'Kagari_Izuriha': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ihaFHsvFfL0vH.png'
     },
     'Kaname_Madoka': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iRuEFK8cdAHxB.png',
       center: true
     },
     'Karina': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iUADBOpQYPfeP.png',
       center: true
     },
     'Kigurumi_Harokitei': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibb17W5i3rQvut.png',
       center: true
     },
     'Kinomoto_Sakura': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iVmsLKa4zLwZR.png',
       center: true
     },
@@ -1895,7 +1895,7 @@
       center: true
     },
     'Kirisame_Marisa': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibikDZH5CZ0V30.png'
     },
     'Kirino_Kosaka_and_Ruri_Goko': {
@@ -1904,137 +1904,137 @@
       center: true
     },
     'Koiwai_Yotsuba': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iKFKyVVBato2N.png',
       center: true
     },
     'Koko': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ieVyNMSjXpBs2.png',
       center: true
     },
     'Kotobuki_Tsumugi': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/i6doAUnM6jMAY.png',
       center: true
     },
     'Kurisu_Makise': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ib1eMtRHdvc9ix.png'
     },
     'Kuroko_Shirai': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/i3K8F7lu2SHfn.png'
     },
     'Kyouko_Sakura': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iMrFOS1mfzIJP.png',
       center: true
     },
     'Kyubee': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iD0SEJPeZa0Dw.png'
     },
     'Kyubee_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iGlKiDZvM3xi8.png',
       center: true
     },
     'Leonmitchelli': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibgUFGlOpedfbs.png',
       center: true
     },
     'Li_Syaoran': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ib0IWPBRSHyiDe.png'
     },
     'Link': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibd1JShAMTdJBH.png',
       center: true
     },
     'Lizardgirl': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/is7h27Q6lsmyx.png',
       position: 'bottom'
     },
     'Luka': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/inds5h2BOmVBy.png',
       position: 'bottom'
     },
     'Madotsuki': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ik6QYfTfgx9Za.png',
       position: 'bottom'
     },
     'Makoto': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/i7q6aOuUqqA9F.png',
       center: true
     },
     'Mantis': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iBmluUJOZivY2.png'
     },
     'Megurine_Luka': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iMSUiQxRBylQG.png',
       center: true
     },
     'Mei_Sunohara': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/i7ElzNY4xQHHz.png',
       center: true
     },
     'Millefiori': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ifVzPtH8JHXjl.png',
       center: true
     },
     'Millefiori_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iMSUiQxRBylQG.png',
       center: true
     },
     'Millefiori_3': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iDOe3ltSvOYXZ.png',
       center: true
     },
     'Misaki_Mei': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/icmYGJ9vIOFjr.png',
       center: true
     },
     'Mizunashi_Akari': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iNy9kHlNsUoVK.png',
       center: true
     },
     'Motoko': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/irFtkWWyMChSA.png',
       center: true
     },
     'Nagato_Yuki': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/it3pEawWIxY84.png',
       center: true
     },
     'Nagato_Yuki_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iuspcZbLvmqpb.png',
       center: true
     },
     'Nagato_Yuki_3': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibndIkldw4njbD.png',
       center: true
     },
     'Nagato_Yuki_4': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/i92tUr90OVZGD.png',
       center: true
     },
@@ -2049,53 +2049,53 @@
       center: true
     },
     'Nakano_Azusa': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iiptfoMlr4v1k.png'
     },
     'Nichijou': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iE8lbZ5f3OT2B.png'
     },
     'Noir_VinoCacao': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibo8aCWF0OwNwP.png',
       center: true
     },
     'Pinkie_Pie': {
-      category: 'MLP',
+      category: 'Ponies',
       image: 'https://i.minus.com/ib1kcpqxvsyZWG.png',
       center: true
     },
     'Pinkie_Pie_2': {
-      category: 'MLP',
+      category: 'Ponies',
       image: 'https://i.minus.com/i8QRRgE7iKpw7.png',
       center: true
     },
     'Oshino_Shinobu': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibwhAyR6D7OBAB.png'
     },
     'Oshino_Shinobu_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibqoNiWzynsVvg.png',
       position: 'bottom'
     },
     'Patchouli_Knowledge': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibnOEAxXaKlctB.png',
       center: true
     },
     'Patchouli_Knowledge_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/i1MOPTmohOsMD.png'
     },
     'Pink_Doggy': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/i1SpWAzfcIEQc.png',
       center: true
     },
     'Pink_Hair': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibdwMaIPwdscao.png',
       center: true
     },
@@ -2110,43 +2110,43 @@
       center: true
     },
     'Railgun_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iNhpDDO0GSTeM.png',
       center: true
     },
     'Railgun_3': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iiW02dmqUwRcy.png'
     },
     'Railgun_4': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iR3j0mGgd1927.png',
       center: true
     },
     'Rainbow_Dash': {
-      category: 'MLP',
+      category: 'Ponies',
       image: 'https://i.minus.com/ibthr5EDMZHV9j.png',
       center: true
     },
     'Rarity': {
-      category: 'MLP',
+      category: 'Ponies',
       image: 'https://i.minus.com/ibkraGhhUh25CU.png',
       center: true
     },
     'Revi': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ivUMKcy5ow6Ab.png',
       position: 'bottom',
       center: true
     },
     'Ruri_Gokou': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibtZo1fdOk8NCB.png',
       position: 'bottom',
       center: true
     },
     'Ryuu': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iecVz4p2SuqK4.png',
       position: 'bottom'
     },
@@ -2161,72 +2161,72 @@
       image: 'https://i.minus.com/iHS6559NMU1tS.png'
     },
     'Samus_Aran': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iWG1GFJ89A05p.png',
       center: true
     },
     'Seraphim': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ivHaKIFHRpPFP.png',
       center: true
     },
     'Shana': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ib2cTJMF0cYIde.png',
       center: true
     },
     'Shana_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ioRICGu0Ipzj9.png',
       center: true
     },
     'Shiki': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iIZm1JxxDIDQ1.png'
     },
     'Shinji_and_Girls': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/itMrEn56GzvzE.png',
       center: true
     },
     'Shinonome_Hakase': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iocCwDCnNgI19.png',
       center: true
     },
     'Shirakiin_Ririchiyo': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/i1m0rdzmVLYLa.png',
       position: 'bottom',
       center: true
     },
     'Shirohibe': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iGu91k3KZeg00.png',
       position: 'bottom'
     },
     'Suruga_Kanbaru': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/irEL7AgC80qKD.png',
       center: true
     },
     'Suzumiya_Haruhi': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iM9qMfUNh9Qi9.png',
       center: true
     },
     'Suzumiya_Haruhi_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibnomd5iasjceY.png',
       center: true
     },
     'Tardis': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iQL2bwpDfOgk.png',
       center: true
     },
     'Teletha_Tessa_Testarossa': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iQKrg7Pq7Y6Ed.png'
     },
     'Tifa': {
@@ -2235,17 +2235,17 @@
       center: true
     },
     'Tomozo_Kaoru': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/islUcBaPRYAgv.png',
       center: true
     },
     'Twilight_Sparkle': {
-      category: 'MLP',
+      category: 'Ponies',
       image: 'https://i.minus.com/ibnMYVTZEykrKU.png',
       center: true
     },
     'Udine': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iiycujRmhn6QK.png',
       position: 'bottom'
     },
@@ -2256,56 +2256,56 @@
       center: true
     },
     'White_Curious': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ibfkj5osu99axe.png',
       center: true
     },
     'Yakumo_Ran': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ivKqn8vL9A8cQ.png'
     },
     'Yin': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iL9DlVtaAGFdq.png'
     },
     'Yin_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/izkTpyjr1XlLR.png',
       center: true
     },
     'Yoko_Littner': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/i0mtOEsBC9GlY.png',
       position: 'bottom'
     },
     'Yoko_Littner_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/i7aUDY4h9uB1T.png',
       position: 'bottom',
       center: true
     },
     'Yoko_Littner_3': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iYVd5DhCmB7VJ.png',
       position: 'bottom',
       center: true
     },
     'Yozora_Mikazuki': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iIFEsDzoDALQd.png'
     },
     'Yuzuki_Yukari': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/iYQOz0iGM9ygq.png',
       center: true
     },
     'Yukkikaze': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/ioQJAnyXebHDJ.png',
       center: true
     },
     'Yukkihaze_2': {
-      category: 'SFW',
+      category: 'Anime',
       image: 'https://i.minus.com/inpgaDlJtZ9Sc.png',
       center: true
     }
@@ -8921,8 +8921,6 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         } else {
           return $.on(d, 'DOMNodeInserted', this.remStyle);
         }
-      } else {
-        return $.on(d, 'DOMNodeInserted', this.remStyle);
       }
     },
     css: function(theme) {
