@@ -1626,13 +1626,12 @@ QR =
         type =
           unless isReply
             'thread'
+          else if isSage
+            'sage'
+          else if hasFile
+            'file'
           else
-            if isSage
-              'sage'
-            else if hasFile
-              'file'
-            else
-              'post'
+            'post'
         cooldown =
           isReply: isReply
           isSage:  isSage
@@ -1671,23 +1670,21 @@ QR =
             QR.cooldown.unset start
           continue
 
-        # Only cooldowns relevant to this post can set the seconds value.
-        # Unset outdated cooldowns that can no longer impact us.
-        type =
-          if isReply and cooldown.isReply
-            if isSage and cooldown.isSage
+        if isReply is cooldown.isReply
+          # Only cooldowns relevant to this post can set the seconds value.
+          # Unset outdated cooldowns that can no longer impact us.
+          type =
+            unless isReply
+              'thread'
+            else if isSage and cooldown.isSage
               'sage'
             else if hasFile and cooldown.hasFile
               'file'
             else
               'post'
-          else unless isReply or cooldown.isReply
-            'thread'
-        if type
           elapsed = Math.floor (now - start) / 1000
           if elapsed >= 0 # clock changed since then?
             seconds = Math.max seconds, types[type] - elapsed
-          type = ''
         unless start <= now <= cooldown.timeout
           QR.cooldown.unset start
 
