@@ -560,7 +560,6 @@ ReplyHiding =
       ReplyHiding.hide post.root
 
   toggle: (button, root, id) ->
-    $.log root + " " + button + " " + id
     quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href$='#p#{id}']"
     if /\bstub\b/.test button.className
       ReplyHiding.show root

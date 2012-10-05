@@ -1,6 +1,9 @@
 Style =
   init: ->
     @addStyle()
+    
+    if Conf["Style"]
+      $.ready @banner
 
   emoji: (position) ->
     css = ''
@@ -51,6 +54,18 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         if el = $('#mascot', d.body) then $.rm el
         $.rm $.id 'appchan'
         $.addStyle Style.css(theme), 'appchan'
+  
+  banner: ->
+    banner = $ ".boardBanner", d.body
+    title  = $.el "div"
+      id:   "boardTitle"
+    children = for child in banner.children
+      if child.tagName == "IMG"
+        continue;
+      child
+    $.add title, children
+    $.after banner, title
+      
 
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle

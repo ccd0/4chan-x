@@ -88,7 +88,7 @@ a[href="javascript:;"] {
   margin-top: -1px;
 }
 h1,
-.boardBanner {
+#boardTitle {
   text-align: center;
 }
 #qr > .move {
@@ -697,8 +697,7 @@ html,
 body,
 input,
 select,
-textarea,
-.boardTitle {
+textarea {
   font-family: '""" + Conf["Font"] + """';
 }
 #qr img,
@@ -743,6 +742,7 @@ time + span {
 #postPassword + span,
 .autoPagerS,
 .board > hr:last-of-type,
+""" + (unless Conf["Board Subtitle"] then ".boardSubtitle,") + """
 .closed,
 .deleteform,
 .entry:not(.focused) > .subMenu,
@@ -881,15 +881,15 @@ div.navLinks > a:first-of-type::after {
 .qrMessage {
   z-index: 6 !important;
 }
+#boardTitle,
 #watcher,
 #watcher::before,
-.boardTitle,
 .menu_button,
 .sideArrows {
   z-index: 4 !important;
 }
-.boardBanner,
 #globalMessage::before,
+.boardBanner,
 .replyhider a {
   z-index: 1 !important;
 }
@@ -939,7 +939,7 @@ div.navLinks > a:first-of-type:hover::after,
   border: none;
   width: """ + (248 + sidebarOffsetW) + """px;
 }
-.boardTitle {
+#boardTitle {
   font-size: 30px;
   font-weight: 400;
 }
@@ -1147,8 +1147,7 @@ input[value="Report"] {
 #qr {
   height: auto;
 }
-.top-box .menubutton,
-.boardTitle {
+.top-box .menubutton {
   background-image: none;
 }
 .rice {
@@ -1600,10 +1599,10 @@ body {
 .suboptions {
   padding: 5px;
 }
+#boardTitle,
 #spoilerLabel,
 #stats,
-#updater,
-.boardTitle {
+#updater {
   text-shadow:
     1px 1px 1px """ + theme["Background Color"] + """,
     -1px 1px 1px """ + theme["Background Color"] + """,
@@ -1810,11 +1809,11 @@ div.postContainer span.postNum > .replylink:hover,
 .nameBlock > .useremail > .postertrip:hover {
   color: """ + theme["Hovered Links"] + """;
 }
-.boardBanner a:hover,
-#boardNavDesktop a:hover {
+#boardNavDesktop a:hover,
+#boardTitle a:hover {
   color: """ + theme["Hovered Navigation Links"] + """;
 }
-.boardBanner {
+#boardTitle {
   color: """ + theme["Board Title"] + """;
 }
 .name {
@@ -2191,34 +2190,27 @@ div.navLinks > a:first-of-type::after {
       switch Conf["Board Logo"]
         when "at sidebar top" or "in sidebar"
           css += """
-.boardTitle {
+#boardTitle {
   position: fixed;
   """ + sidebarLocation[0] + """: 2px;
   top: """ + ((if Conf["Icon Orientation"] == "vertical" then 33 else 45) + logoOffset) + """px;
   z-index: 1;
   width: """ + (248 + sidebarOffsetW) + """px;
 }
-.boardSubtitle {
-  display: none;
-}
 """
         when "at sidebar bottom"
           css += """
-.boardTitle {
+#boardTitle {
   position: fixed;
   """ + sidebarLocation[0] + """: 2px;
   bottom: 400px;
   z-index: 1;
   width: """ + (248 + sidebarOffsetW) + """px;
 }
-.boardSubtitle {
-  display: none;
-}
 """
         when "hide"
           css += """
-.boardTitle,
-.boardSubtitle {
+#boardTitle {
   display: none;
 }
 """

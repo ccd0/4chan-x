@@ -244,6 +244,7 @@ Config =
     Layout:
       '4chan Banner':              ['at sidebar top',  'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'at top', 'hide']]
       'Board Logo':                ['at sidebar top',  'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'hide']]
+      'Board Subtitle':            [true,              'Show the board subtitle.']
       'Compact Post Form Inputs':  [true,              'Use compact inputs on the post form.']
       'Expand Post Form Textarea': [true,              'Expands the post form text area when in use.']
       'Icon Orientation':          ['horizontal',      'Change the orientation of the appchan x icons.', ['horizontal', 'vertical']]
