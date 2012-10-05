@@ -3503,6 +3503,9 @@
       j = Math.min(this.unsuccessfulFetchCount, 9);
       oi = function(y) {
         var x, _i, _len, _results;
+        while (y.length < 10) {
+          y.push(y[y.length - 1]);
+        }
         _results = [];
         for (_i = 0, _len = y.length; _i < _len; _i++) {
           x = y[_i];

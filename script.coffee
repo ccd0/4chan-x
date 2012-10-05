@@ -2896,6 +2896,8 @@ Updater =
     wb = Conf['updateIncreaseB'].split ','
     j  = Math.min @unsuccessfulFetchCount, 9
     oi = (y) ->
+      while y.length < 10
+        y.push y[y.length-1]
       Number x for x in y
     hidden = d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
     unless hidden
