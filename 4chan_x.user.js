@@ -1934,13 +1934,12 @@
             }
             continue;
           }
-          type = isReply && cooldown.isReply ? isSage && cooldown.isSage ? 'sage' : hasFile && cooldown.hasFile ? 'file' : 'post' : !(isReply || cooldown.isReply) ? 'thread' : void 0;
-          if (type) {
+          if (isReply === cooldown.isReply) {
+            type = !isReply ? 'thread' : isSage && cooldown.isSage ? 'sage' : hasFile && cooldown.hasFile ? 'file' : 'post';
             elapsed = Math.floor((now - start) / 1000);
             if (elapsed >= 0) {
               seconds = Math.max(seconds, types[type] - elapsed);
             }
-            type = '';
           }
           if (!((start <= now && now <= cooldown.timeout))) {
             QR.cooldown.unset(start);
