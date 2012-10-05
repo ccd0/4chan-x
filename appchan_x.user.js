@@ -1725,7 +1725,7 @@
     },
     'Fluttershy_2': {
       category: 'Ponies',
-      image: 'https://i.minus.com/ibwEFEGlRm0Uxy.png',
+      image: 'https://i.minus.com/ibjtz6EU2OFPgh.png',
       center: true
     },
     'Fluttershy_Cutiemark': {
