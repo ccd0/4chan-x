@@ -3,8 +3,9 @@
 ## Reporting bugs
 
 1. Make sure your **browser** & **Appchan X** are up to date.
-2. Disable your other extensions & scripts.
-3. If your issue persists:
+2. Please include as much information as possible, including your internet browser
+3. Disable your other extensions & scripts.
+4. If your issue persists:
   1. Report precise steps to reproduce the problem.
   2. Report console errors, if any.
   3. Report browser and browser version.

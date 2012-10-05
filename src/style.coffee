@@ -645,6 +645,7 @@ div.opContainer {
     if Conf["Style"]
       $.ready ->
         Style.rice d.body
+        Style.trimGlobalMessage()
 
       Conf["styleenabled"] = true
 
@@ -729,7 +730,7 @@ textarea,
 time + span {
   font-size: """ + Conf["Font Size"] + """;
 }
-.globalMessage b {
+#globalMessage b {
   font-weight: 100;
 }
 /* Cleanup */
@@ -888,7 +889,7 @@ div.navLinks > a:first-of-type::after {
   z-index: 4 !important;
 }
 .boardBanner,
-.globalMessage::before,
+#globalMessage::before,
 .replyhider a {
   z-index: 1 !important;
 }
@@ -902,7 +903,7 @@ body > a[style="cursor: pointer; float: right;"]::after,
 #navtopright .settingsWindowLink::after,
 #boardNavDesktopFoot::after,
 #watcher::before,
-.globalMessage::before,
+#globalMessage::before,
 div.navLinks > a:first-of-type::after,
 #imgControls label:first-of-type::after {
   opacity: 0.4;
@@ -910,7 +911,7 @@ div.navLinks > a:first-of-type::after,
 body > a[style="cursor: pointer; float: right;"]:hover::after,
 #navtopright .settingsWindowLink:hover::after,
 #boardNavDesktopFoot:hover::after,
-.globalMessage:hover::before,
+#globalMessage:hover::before,
 div.navLinks > a:first-of-type:hover::after,
 #watcher:hover::before,
 #imgControls label:hover:first-of-type::after {
@@ -1034,7 +1035,7 @@ img.bottomad:hover {
   word-spacing: 10px;
 }
 /* moots announcements */
-.globalMessage {
+#globalMessage {
   font-size: 12px;
   text-align: center;
   font-weight: 200;
@@ -1894,7 +1895,7 @@ div.navLinks > a:first-of-type::after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACpQTFRFAAAA0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLUmYS1qAAAAA10Uk5TABAgQFBggI+fv8/f74aeqbgAAABVSURBVAjXnY0xDsMwEMNo+5TYPen/3+2SpUCXlhvBgfAH2uecrcdWt5O4ewHIdVtTvmXB9BoRoIzy5DqsDIAszvXRlyfItS3kXRZA9StJ0l1f/z/xBlXVAtkqW+Q3AAAAAElFTkSuQmCC");
 }
 /* Announcement */
-.globalMessage::before {
+#globalMessage::before {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAK5JREFUGNN1kF0RxCAMhCMBCZVQCUhAwkmohDhAAhKQEAPfDBKQUAm5B3qU3s3t425mfyJygUTBMIzMLivYaTiGoigNpxJu8aSxLeeRTiOICIGOXfQLH8aT5eD8GKE4cTo4UTDKND1uWYRGFpzXkrnKGROc9JDnKBQTjDyJjbr0b+RnteO3WpgbhYSN/QQabX1L/HqLzyA2DKdTUCodx/E7dHgoFaOgJMo4kP8gEt+mlap7ZbvCVgAAAABJRU5ErkJggg==");
 }
 /* Slideout nav */
@@ -1952,7 +1953,7 @@ div.navLinks > a:first-of-type::after {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAALhJREFUOE+tkl0RgzAQhJFQCUhBAhJ4yENnMIEDJFRKJVRCJSCh3HfsMQfTFzI87CS5n+zuJU0ppalFdSOE9zY/x3EwvAzvBM7D2d7ObMnO8BUWW38JnCPXxSXeLDYKesNsYI+CNuWIE/Oce1YBAZgfYjtIVBNKyENAfUvzhDcp4AIvOvtT3CVrFlMNMwQb8x/PTHb3lXwSD8mb55CnBBP9SGKeNvuYdn+YdvYnpmvvXPO/7/2eVxSsk6VHBDjH8sAAAAAASUVORK5CYII=");
 }
 /* Announcement */
-.globalMessage::before {
+#globalMessage::before {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAK5JREFUGNN1kE0VxCAMhCMBCZVQCUhAwp6+cyXEARKQgIRIQAISKiF7oEvp7ts5zuTNT0QukCgYhpHZZQU7DcdQFKXhVMItnjS25TzSaQQRIdCxi37hw3iyHJwfIxQnTgcnCkaZpscti9DIgvNaMlc5Y4KTHvIchWKCkSexUZf+jfysdvxWC3OjkLCxn0CjrW+JX2/xGcSG4XQKSqXjOH6HDg+lYhSURBkH8h9E4htm9nkTaedRxgAAAABJRU5ErkJggg==");
 }
 /* Slideout nav */
@@ -2012,7 +2013,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
   """ + (if sidebarLocation[0] == "left" then "left: " + (212 + sidebarOffsetW) + "px" else "right: 21px") + """;
 }
 /* Global Message */
-.globalMessage::before {
+#globalMessage::before {
   position: fixed;
   """ + (if sidebarLocation[0] == "left" then "left: " + (193 + sidebarOffsetW) + "px" else "right: 40px") + """;
 }
@@ -2063,21 +2064,21 @@ div.navLinks > a:first-of-type::after {
 #boardNavDesktopFoot::after,
 #navtopright .settingsWindowLink::after,
 #watcher::before,
-.globalMessage::before,
+#globalMessage::before,
 #imgControls,
 div.navLinks > a:first-of-type::after,
 body > a[style="cursor: pointer; float: right;"]::after {
   position: fixed;
-  top: 0px !important;
+  top: 2px !important;
 }
-.globalMessage,
+#globalMessage,
 #boardNavDesktopFoot,
 #watcher {
   position: fixed;
   top: 16px !important;
   z-index: 98 !important;
 }
-.globalMessage:hover,
+#globalMessage:hover,
 #boardNavDesktopFoot:hover,
 #watcher:hover {
   z-index: 99 !important;
@@ -2113,8 +2114,8 @@ body > a[style="cursor: pointer; float: right;"]::after {
   top: """ + (40 + logoOffset) + """px !important;
 }
 /* Global Message */
-.globalMessage,
-.globalMessage::before {
+#globalMessage,
+#globalMessage::before {
   position: fixed;
   top: """ + (59 + logoOffset) + """px !important;
 }
@@ -2169,8 +2170,8 @@ div.navLinks > a:first-of-type::after {
 #boardNavDesktopFoot::after,
 #watcher,
 #watcher::before,
-.globalMessage,
-.globalMessage::before,
+#globalMessage,
+#globalMessage::before,
 #imgControls,
 body > a[style="cursor: pointer; float: right;"]::after,
 div.navLinks > a:first-of-type::after {
@@ -2179,7 +2180,7 @@ div.navLinks > a:first-of-type::after {
 #boardNavDesktopFoot {
   z-index: 97 !important;
 }
-.globalMessage {
+#globalMessage {
   z-index: 98 !important;
 }
 #watcher {
@@ -2627,7 +2628,7 @@ body {
 #stats,
 #updater,
 #watcher,
-.globalMessage,
+#globalMessage,
 .inline div.reply,
 div.reply,
 div.reply.highlight,
@@ -2648,7 +2649,6 @@ td[style="border: 1px dashed;"] {
         css += """
 #watcher:not(:hover) {
   border: 0 none;
-  padding: 0;
 }
 #watcher {
   position: fixed;
@@ -2661,9 +2661,10 @@ td[style="border: 1px dashed;"] {
   """ + agent + """transition: height .5s linear;
   """ + agent + """box-sizing: border-box;
   box-sizing: border-box;
+  padding: 0 10px;
 }
 #watcher:hover {
-  height: 400px;
+  height: 250px;
   padding-bottom: 4px;
 }
 """
@@ -2794,22 +2795,22 @@ a.useremail[href*="SAGE"]:last-of-type::after {
       switch Conf["Announcements"]
         when "4chan default"
           css += """
-.globalMessage {
+#globalMessage {
   position: static;
   background: none;
   border: none;
   margin-top: 0px;
 }
-.globalMessage::before {
+#globalMessage::before {
   display: none;
 }
 """
         when "slideout"
           css += """
-.globalMessage:not(:hover) {
+#globalMessage:not(:hover) {
   border: 0 none;
 }
-.globalMessage {
+#globalMessage {
   bottom: auto;
   position: fixed;
   """ + sidebarLocation[0] + """: 2px;
@@ -2822,17 +2823,18 @@ a.useremail[href*="SAGE"]:last-of-type::after {
   """ + agent + """transition: height .5s linear;
   """ + agent + """box-sizing: border-box;
   box-sizing: border-box;
+  padding: 0 10px;
 }
-.globalMessage:hover {
-  height: 500px;
+#globalMessage:hover {
+  height: 250px;
 }
 """
         when "hide"
           css += """
-.globalMessage {
+#globalMessage {
   display: none;
 }
-.globalMessage::before {
+#globalMessage::before {
   display: none;
 }
 """
