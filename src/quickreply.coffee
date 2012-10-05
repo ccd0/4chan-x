@@ -468,6 +468,9 @@ QR =
       $.on @img.parentNode, 'click',              @reload
       $.on @input,          'keydown',            @keydown
       $.on @challenge,      'DOMNodeInserted', => @load()
+      if Conf['Style']
+        $.on @input, 'focus', -> QR.el.classList.add    'focus'
+        $.on @input, 'blur',  -> QR.el.classList.remove 'focus'
       $.sync 'captchas', (arr) => @count arr.length
       @count $.get('captchas', []).length
       # start with an uncached captcha
@@ -638,9 +641,6 @@ QR =
     QR.cooldown.init()
     QR.captcha.init()
 
-    if Conf['Style']
-      $.on $(".captchainput .field", QR.el), 'focus', -> QR.el.classList.add 'focus'
-      $.on $(".captchainput .field", QR.el), 'blur',  -> QR.el.classList.remove 'focus'
     $.add d.body, QR.el
 
     # Create a custom event when the QR dialog is first initialized.

@@ -7673,6 +7673,14 @@
         $.on(this.challenge, 'DOMNodeInserted', function() {
           return _this.load();
         });
+        if (Conf['Style']) {
+          $.on(this.input, 'focus', function() {
+            return QR.el.classList.add('focus');
+          });
+          $.on(this.input, 'blur', function() {
+            return QR.el.classList.remove('focus');
+          });
+        }
         $.sync('captchas', function(arr) {
           return _this.count(arr.length);
         });
@@ -7883,14 +7891,6 @@
       QR.status();
       QR.cooldown.init();
       QR.captcha.init();
-      if (Conf['Style']) {
-        $.on($(".captchainput .field", QR.el), 'focus', function() {
-          return QR.el.classList.add('focus');
-        });
-        $.on($(".captchainput .field", QR.el), 'blur', function() {
-          return QR.el.classList.remove('focus');
-        });
-      }
       $.add(d.body, QR.el);
       return $.event(QR.el, new CustomEvent('QRDialogCreation', {
         bubbles: true
