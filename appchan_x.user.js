@@ -2715,7 +2715,7 @@
       return _results;
     },
     dialog: function(tab) {
-      var arr, back, batchmascots, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, keys, li, liHTML, mascot, name, obj, optionname, optionvalue, overlay, parentdiv, sauce, selectoption, styleSetting, time, tr, ul, updateIncrease, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, time, tr, ul, updateIncrease, _i, _len, _ref, _ref1, _ref2, _ref3;
       if (editMode) {
         if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
           try {
@@ -2963,137 +2963,7 @@
       $.add($('#style_tab + div', dialog), div);
       Options.applyStyle(dialog, 'style_tab');
       this.themeTab(dialog);
-      parentdiv = $.el('div', {
-        className: "suboptions",
-        innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div><div class=warning><code>Mascots</code> are currently disabled. Please enable them in the Style tab to use mascot options.</div>"
-      });
-      ul = $.el('ul', {
-        className: 'mascots'
-      });
-      keys = Object.keys(userMascots);
-      keys.sort();
-      for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
-        name = keys[_j];
-        mascot = userMascots[name];
-        if (!mascot["Deleted"]) {
-          li = $.el('li', {
-            className: 'mascot',
-            innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + (Array.isArray(mascot.image) ? (userThemes && userThemes[Conf['theme']] && userThemes[Conf['theme']]['Dark Theme'] && Conf["Style"] ? mascot.image[0] : mascot.image[1]) : mascot.image) + ");'></div><div class='mascotmetadata'>  <p><span class='mascotname'>" + (name.replace(/_/g, " ")) + "</span></p>  <p><span class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a> / <a class=delete name='" + name + "' href='javascript:;'>Delete</a></span></p></div>"
-          });
-          div = $('div[style]', li);
-          if (Conf["NSFW/SFW Mascots"]) {
-            if (mascot["Enabled_" + g.TYPE]) {
-              $.addClass(div, 'enabled');
-            }
-          } else {
-            if (mascot["Enabled"]) {
-              $.addClass(div, 'enabled');
-            }
-          }
-          $.on($('a.edit', li), 'click', function() {
-            if (!Conf["Style"]) {
-              alert("Please enable Style Options and reload the page to use Mascot Tools.");
-              return;
-            }
-            MascotTools.dialog(this.name);
-            Options.close();
-            if (Conf["NSFW/SFW Mascots"]) {
-              return userMascots[this.name]["Enabled_" + g.TYPE] = true;
-            } else {
-              return userMascots[this.name]["Enabled"] = true;
-            }
-          });
-          $.on($('a.delete', li), 'click', function() {
-            var container;
-            container = this.parentElement.parentElement.parentElement.parentElement.parentElement;
-            if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
-              userMascots[this.name]["Enabled"] = false;
-              userMascots[this.name]["Enabled_sfw"] = false;
-              userMascots[this.name]["Enabled_nsfw"] = false;
-              userMascots[this.name]["Deleted"] = true;
-              $.set("userMascots", userMascots);
-              return $.rm(container);
-            }
-          });
-          $.on(div, 'click', function() {
-            if (Conf["NSFW/SFW Mascots"]) {
-              if (userMascots[this.id]["Enabled_" + g.TYPE]) {
-                $.rmClass(this, 'enabled');
-                userMascots[this.id]["Enabled_" + g.TYPE] = false;
-              } else {
-                $.addClass(this, 'enabled');
-                userMascots[this.id]["Enabled_" + g.TYPE] = true;
-              }
-            } else {
-              if (userMascots[this.id]["Enabled"]) {
-                $.rmClass(this, 'enabled');
-                userMascots[this.id]["Enabled"] = false;
-              } else {
-                $.addClass(this, 'enabled');
-                userMascots[this.id]["Enabled"] = true;
-              }
-            }
-            return $.set("userMascots", userMascots);
-          });
-          $.add(ul, li);
-          $.add(parentdiv, ul);
-        }
-      }
-      $.add($('#mascot_tab + div', dialog), parentdiv);
-      batchmascots = $.el('div', {
-        id: "mascots_batch",
-        innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a> / <a href=\"javascript:;\" id=\"createNew\">New Mascot</a>"
-      });
-      $.on($('#clear', batchmascots), 'click', function() {
-        if (Conf["NSFW/SFW Mascots"]) {
-          for (name in userMascots) {
-            mascot = userMascots[name];
-            if (mascot["Enabled_" + g.TYPE]) {
-              $.rmClass($('#' + name, this.parentElement.parentElement), 'enabled');
-              userMascots[name]["Enabled_" + g.TYPE] = false;
-            }
-          }
-        } else {
-          for (name in userMascots) {
-            mascot = userMascots[name];
-            if (mascot["Enabled"]) {
-              $.rmClass($('#' + name, this.parentElement.parentElement), 'enabled');
-              userMascots[name]["Enabled"] = false;
-            }
-          }
-        }
-        return $.set("userMascots", userMascots);
-      });
-      $.on($('#selectAll', batchmascots), 'click', function() {
-        if (Conf["NSFW/SFW Mascots"]) {
-          for (name in userMascots) {
-            mascot = userMascots[name];
-            if (!(mascot["Enabled_" + g.TYPE] || mascot["Deleted"] || mascot["Hidden"])) {
-              $.addClass($('#' + name, this.parentElement.parentElement), 'enabled');
-              userMascots[name]["Enabled_" + g.TYPE] = true;
-            }
-          }
-        } else {
-          for (name in userMascots) {
-            mascot = userMascots[name];
-            if (!(mascot["Enabled"] || mascot["Deleted"] || mascot["Hidden"])) {
-              $.addClass($('#' + name, this.parentElement.parentElement), 'enabled');
-              userMascots[name]["Enabled"] = true;
-            }
-          }
-        }
-        return $.set("userMascots", userMascots);
-      });
-      $.on($('#createNew', batchmascots), 'click', function() {
-        if (!Conf["Style"]) {
-          alert("Please enable Style Options and reload the page to use Mascot Tools.");
-          return;
-        }
-        MascotTools.dialog();
-        return Options.close();
-      });
-      $.add($('#mascot_tab + div', dialog), batchmascots);
-      Options.applyStyle(dialog, 'mascot_tab');
+      this.mascotTab(dialog);
       Options.indicators(dialog);
       if (tab) {
         $("#main_tab", dialog).checked = false;
@@ -3209,7 +3079,7 @@
       }
       div = $.el('div', {
         id: 'addthemes',
-        innerHTML: " <a id=newtheme href='javascript:;'>New Theme</a> / <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> / <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> / <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>"
+        innerHTML: "<a id=newtheme href='javascript:;'>New Theme</a> / <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> / <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> / <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>"
       });
       $.on($("#newtheme", div), 'click', function() {
         if (!Conf["Style"]) {
@@ -3241,6 +3111,143 @@
       $.add($('#theme_tab + div', dialog), parentdiv);
       $.add($('#theme_tab + div', dialog), div);
       return Options.applyStyle(dialog, 'theme_tab');
+    },
+    mascotTab: function(dialog) {
+      var batchmascots, div, keys, li, mascot, name, parentdiv, ul, _i, _len;
+      if (!dialog) {
+        dialog = $("#options", d.body);
+      }
+      parentdiv = $.el('div', {
+        className: "suboptions",
+        innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div><div class=warning><code>Mascots</code> are currently disabled. Please enable them in the Style tab to use mascot options.</div>"
+      });
+      ul = $.el('ul', {
+        className: 'mascots'
+      });
+      keys = Object.keys(userMascots);
+      keys.sort();
+      for (_i = 0, _len = keys.length; _i < _len; _i++) {
+        name = keys[_i];
+        mascot = userMascots[name];
+        if (!mascot["Deleted"]) {
+          li = $.el('li', {
+            className: 'mascot',
+            innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + (Array.isArray(mascot.image) ? (Conf["Style"] && userThemes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + ");'></div><div class='mascotmetadata'>  <p><span class='mascotname'>" + (name.replace(/_/g, " ")) + "</span></p>  <p><span class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a> / <a class=delete name='" + name + "' href='javascript:;'>Delete</a></span></p></div>"
+          });
+          div = $('div[style]', li);
+          if (Conf["NSFW/SFW Mascots"]) {
+            if (mascot["Enabled_" + g.TYPE]) {
+              $.addClass(div, 'enabled');
+            }
+          } else {
+            if (mascot["Enabled"]) {
+              $.addClass(div, 'enabled');
+            }
+          }
+          $.on($('a.edit', li), 'click', function() {
+            if (!Conf["Style"]) {
+              alert("Please enable Style Options and reload the page to use Mascot Tools.");
+              return;
+            }
+            MascotTools.dialog(this.name);
+            Options.close();
+            if (Conf["NSFW/SFW Mascots"]) {
+              return userMascots[this.name]["Enabled_" + g.TYPE] = true;
+            } else {
+              return userMascots[this.name]["Enabled"] = true;
+            }
+          });
+          $.on($('a.delete', li), 'click', function() {
+            var container;
+            container = this.parentElement.parentElement.parentElement.parentElement.parentElement;
+            if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
+              userMascots[this.name]["Enabled"] = false;
+              userMascots[this.name]["Enabled_sfw"] = false;
+              userMascots[this.name]["Enabled_nsfw"] = false;
+              userMascots[this.name]["Deleted"] = true;
+              $.set("userMascots", userMascots);
+              return $.rm(container);
+            }
+          });
+          $.on(div, 'click', function() {
+            if (Conf["NSFW/SFW Mascots"]) {
+              if (userMascots[this.id]["Enabled_" + g.TYPE]) {
+                $.rmClass(this, 'enabled');
+                userMascots[this.id]["Enabled_" + g.TYPE] = false;
+              } else {
+                $.addClass(this, 'enabled');
+                userMascots[this.id]["Enabled_" + g.TYPE] = true;
+              }
+            } else {
+              if (userMascots[this.id]["Enabled"]) {
+                $.rmClass(this, 'enabled');
+                userMascots[this.id]["Enabled"] = false;
+              } else {
+                $.addClass(this, 'enabled');
+                userMascots[this.id]["Enabled"] = true;
+              }
+            }
+            return $.set("userMascots", userMascots);
+          });
+          $.add(ul, li);
+          $.add(parentdiv, ul);
+        }
+      }
+      $.add($('#mascot_tab + div', dialog), parentdiv);
+      batchmascots = $.el('div', {
+        id: "mascots_batch",
+        innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a> / <a href=\"javascript:;\" id=\"createNew\">New Mascot</a>"
+      });
+      $.on($('#clear', batchmascots), 'click', function() {
+        if (Conf["NSFW/SFW Mascots"]) {
+          for (name in userMascots) {
+            mascot = userMascots[name];
+            if (mascot["Enabled_" + g.TYPE]) {
+              $.rmClass($('#' + name, this.parentElement.parentElement), 'enabled');
+              userMascots[name]["Enabled_" + g.TYPE] = false;
+            }
+          }
+        } else {
+          for (name in userMascots) {
+            mascot = userMascots[name];
+            if (mascot["Enabled"]) {
+              $.rmClass($('#' + name, this.parentElement.parentElement), 'enabled');
+              userMascots[name]["Enabled"] = false;
+            }
+          }
+        }
+        return $.set("userMascots", userMascots);
+      });
+      $.on($('#selectAll', batchmascots), 'click', function() {
+        if (Conf["NSFW/SFW Mascots"]) {
+          for (name in userMascots) {
+            mascot = userMascots[name];
+            if (!(mascot["Enabled_" + g.TYPE] || mascot["Deleted"] || mascot["Hidden"])) {
+              $.addClass($('#' + name, this.parentElement.parentElement), 'enabled');
+              userMascots[name]["Enabled_" + g.TYPE] = true;
+            }
+          }
+        } else {
+          for (name in userMascots) {
+            mascot = userMascots[name];
+            if (!(mascot["Enabled"] || mascot["Deleted"] || mascot["Hidden"])) {
+              $.addClass($('#' + name, this.parentElement.parentElement), 'enabled');
+              userMascots[name]["Enabled"] = true;
+            }
+          }
+        }
+        return $.set("userMascots", userMascots);
+      });
+      $.on($('#createNew', batchmascots), 'click', function() {
+        if (!Conf["Style"]) {
+          alert("Please enable Style Options and reload the page to use Mascot Tools.");
+          return;
+        }
+        MascotTools.dialog();
+        return Options.close();
+      });
+      $.add($('#mascot_tab + div', dialog), batchmascots);
+      return Options.applyStyle(dialog, 'mascot_tab');
     },
     customNavigation: {
       dialog: function(dialog) {
@@ -3462,7 +3469,9 @@
           className: 'stylesettings'
         });
         $.on($('a', save), 'click', function() {
-          return Style.addStyle();
+          Style.addStyle();
+          $.rm($("#mascot_tab + div > div", d.body));
+          return Options.mascotTab();
         });
         return $.add($('#' + tab + ' + div', dialog), save);
       }
@@ -8586,7 +8595,7 @@
     input: function(item, name) {
       var div, value;
       if (Array.isArray(editMascot[name])) {
-        if (userThemes && userThemes[Conf['theme']] && userThemes[Conf['theme']]['Dark Theme'] && Conf["Style"]) {
+        if (Conf["Style"] && userThemes[Conf['theme']]['Dark Theme']) {
           value = editMascot[name][0];
         } else {
           value = editMascot[name][1];
@@ -8621,7 +8630,7 @@
       }
       div = $.el('div', {
         id: "mascot",
-        innerHTML: "<img src='" + (Array.isArray(mascot.image) ? (userThemes && userThemes[Conf['theme']] && userThemes[Conf['theme']]['Dark Theme'] && Conf["Style"] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'>"
+        innerHTML: "<img src='" + (Array.isArray(mascot.image) ? (Conf["Style"] && userThemes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'>"
       });
       return $.ready(function() {
         return $.add(d.body, div);
