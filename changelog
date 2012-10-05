@@ -1,4 +1,6 @@
 master
+
+0.17.2
 - Zixaphir
   New features:
   - Per board refresh intervals.
@@ -8,7 +10,7 @@ master
 - seaweed
   Fix code tags width.
 
-0.17.x
+0.17.1
 - Mayhem
   Added thread creation QR cooldown.
   Fix QR cooldown timer between non-sage and sage posts. You can submit a non-sage post 30 seconds after a sage one.
