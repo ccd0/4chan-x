@@ -1,10 +1,15 @@
 master
+
+2.35.9
 - Mayhem
   Added thread creation QR cooldown.
   Fix QR cooldown timer between non-sage and sage posts. You can submit a non-sage post 30 seconds after a sage one.
   Fix /q/ QR cooldowns.
 - zixaphir
   Youtube Embedding
+  Per board refresh intervals.
+- noface
+  Small Fixes.
 
 2.35.8
 - noface
