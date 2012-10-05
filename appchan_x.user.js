@@ -2382,14 +2382,27 @@
     }
   };
 
+  console = console != null ? console : console = window.console || unsafeWindow.console;
+
+  Array.prototype.contains = function(object) {
+    return this.indexOf(object) > -1;
+  };
+
+  Array.prototype.remove = function(object) {
+    var index;
+    if ((index = this.indexOf(object)) > -1) {
+      return this.splice(index, 1);
+    } else {
+      return false;
+    }
+  };
+
   /*
   loosely follows the jquery api:
   http://api.jquery.com/
   not chainable
   */
 
-
-  console = console != null ? console : console = window.console || unsafeWindow.console;
 
   $ = function(selector, root) {
     var result;
@@ -3130,20 +3143,14 @@
       for (_i = 0, _len = keys.length; _i < _len; _i++) {
         name = keys[_i];
         mascot = userMascots[name];
-        if (!mascot["Deleted"]) {
+        if (!Conf["Deleted Mascots"].contains(name)) {
           li = $.el('li', {
             className: 'mascot',
             innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + (Array.isArray(mascot.image) ? (Conf["Style"] && userThemes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + ");'></div><div class='mascotmetadata'>  <p><span class='mascotname'>" + (name.replace(/_/g, " ")) + "</span></p>  <p><span class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a> / <a class=delete name='" + name + "' href='javascript:;'>Delete</a></span></p></div>"
           });
           div = $('div[style]', li);
-          if (Conf["NSFW/SFW Mascots"]) {
-            if (mascot["Enabled_" + g.TYPE]) {
-              $.addClass(div, 'enabled');
-            }
-          } else {
-            if (mascot["Enabled"]) {
-              $.addClass(div, 'enabled');
-            }
+          if (Conf[g.MASCOTSTRING].contains(name)) {
+            $.addClass(div, 'enabled');
           }
           $.on($('a.edit', li), 'click', function() {
             if (!Conf["Style"]) {
@@ -3151,42 +3158,30 @@
               return;
             }
             MascotTools.dialog(this.name);
-            Options.close();
-            if (Conf["NSFW/SFW Mascots"]) {
-              return userMascots[this.name]["Enabled_" + g.TYPE] = true;
-            } else {
-              return userMascots[this.name]["Enabled"] = true;
-            }
+            return Options.close();
           });
           $.on($('a.delete', li), 'click', function() {
-            var container;
-            container = this.parentElement.parentElement.parentElement.parentElement.parentElement;
+            var container, type, _j, _len1, _ref;
+            container = this.parentElement.parentElement.parentElement.parentElement;
             if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
-              userMascots[this.name]["Enabled"] = false;
-              userMascots[this.name]["Enabled_sfw"] = false;
-              userMascots[this.name]["Enabled_nsfw"] = false;
-              userMascots[this.name]["Deleted"] = true;
+              _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
+              for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+                type = _ref[_j];
+                Conf[type].remove(this.name);
+                $.set(type, Conf[type]);
+              }
+              Conf["Deleted Mascots"].push(this.name);
+              $.set("Deleted Mascots", Conf["Deleted Mascots"]);
               $.set("userMascots", userMascots);
               return $.rm(container);
             }
           });
           $.on(div, 'click', function() {
-            if (Conf["NSFW/SFW Mascots"]) {
-              if (userMascots[this.id]["Enabled_" + g.TYPE]) {
-                $.rmClass(this, 'enabled');
-                userMascots[this.id]["Enabled_" + g.TYPE] = false;
-              } else {
-                $.addClass(this, 'enabled');
-                userMascots[this.id]["Enabled_" + g.TYPE] = true;
-              }
+            if (Conf[g.MASCOTSTRING].remove(this.id)) {
+              $.rmClass(this, 'enabled');
             } else {
-              if (userMascots[this.id]["Enabled"]) {
-                $.rmClass(this, 'enabled');
-                userMascots[this.id]["Enabled"] = false;
-              } else {
-                $.addClass(this, 'enabled');
-                userMascots[this.id]["Enabled"] = true;
-              }
+              $.addClass(this, 'enabled');
+              Conf[g.MASCOTSTRING].push(this.id);
             }
             return $.set("userMascots", userMascots);
           });
@@ -3200,44 +3195,24 @@
         innerHTML: "<a href=\"javascript:;\" id=\"clear\">Clear All</a> / <a href=\"javascript:;\" id=\"selectAll\">Select All</a> / <a href=\"javascript:;\" id=\"createNew\">New Mascot</a>"
       });
       $.on($('#clear', batchmascots), 'click', function() {
-        if (Conf["NSFW/SFW Mascots"]) {
-          for (name in userMascots) {
-            mascot = userMascots[name];
-            if (mascot["Enabled_" + g.TYPE]) {
-              $.rmClass($('#' + name, this.parentElement.parentElement), 'enabled');
-              userMascots[name]["Enabled_" + g.TYPE] = false;
-            }
-          }
-        } else {
-          for (name in userMascots) {
-            mascot = userMascots[name];
-            if (mascot["Enabled"]) {
-              $.rmClass($('#' + name, this.parentElement.parentElement), 'enabled');
-              userMascots[name]["Enabled"] = false;
-            }
-          }
+        var _j, _len1, _ref;
+        _ref = Conf[g.MASCOTSTRING];
+        for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+          name = _ref[_j];
+          $.rmClass($.id(name, 'enabled'));
+          Conf[g.MASCOTSTRING].remove(name);
         }
-        return $.set("userMascots", userMascots);
+        return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING]);
       });
       $.on($('#selectAll', batchmascots), 'click', function() {
-        if (Conf["NSFW/SFW Mascots"]) {
-          for (name in userMascots) {
-            mascot = userMascots[name];
-            if (!(mascot["Enabled_" + g.TYPE] || mascot["Deleted"] || mascot["Hidden"])) {
-              $.addClass($('#' + name, this.parentElement.parentElement), 'enabled');
-              userMascots[name]["Enabled_" + g.TYPE] = true;
-            }
-          }
-        } else {
-          for (name in userMascots) {
-            mascot = userMascots[name];
-            if (!(mascot["Enabled"] || mascot["Deleted"] || mascot["Hidden"])) {
-              $.addClass($('#' + name, this.parentElement.parentElement), 'enabled');
-              userMascots[name]["Enabled"] = true;
-            }
+        for (name in userMascots) {
+          mascot = userMascots[name];
+          if (!Conf[g.MASCOTSTRING].contains(name || Conf["Deleted Mascots"].contains(name))) {
+            $.addClass($.id(name, 'enabled'));
+            Conf[g.MASCOTSTRING].push(name);
           }
         }
-        return $.set("userMascots", userMascots);
+        return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING]);
       });
       $.on($('#createNew', batchmascots), 'click', function() {
         if (!Conf["Style"]) {
@@ -8471,7 +8446,7 @@
 
   MascotTools = {
     init: function() {
-      var location, mascot, name, names, position, result;
+      var location, mascot, names, position, result;
       if (Conf['Mascot Position'] === 'bottom') {
         position = 0;
       } else {
@@ -8479,22 +8454,7 @@
       }
       if (!editMode) {
         names = [];
-        if (Conf["NSFW/SFW Mascots"]) {
-          for (name in userMascots) {
-            mascot = userMascots[name];
-            if (mascot["Enabled_" + g.TYPE]) {
-              names.push(name);
-            }
-          }
-        } else {
-          for (name in userMascots) {
-            mascot = userMascots[name];
-            if (mascot["Enabled"]) {
-              names.push(name);
-            }
-          }
-        }
-        if (!(Conf["mascot"] = names[Math.floor(Math.random() * names.length)])) {
+        if (!(Conf["mascot"] = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)])) {
           return;
         }
         mascot = userMascots[Conf["mascot"]];
@@ -8667,24 +8627,29 @@
       });
     },
     save: function(mascot) {
-      var aname;
-      aname = mascot.name;
-      if (typeof aname === "undefined" || aname === "") {
+      var aname, type, _i, _len, _ref;
+      if (typeof (aname = mascot.name) === "undefined" || aname === "") {
         alert("Please name your mascot.");
         return;
       }
-      mascot["Deleted"] = false;
       delete mascot.name;
-      if (userMascots[aname] && !userMascots[aname]["Deleted"]) {
-        if (confirm("A mascot named " + aname + " already exists. Would you like to over-write?")) {
+      if (userMascots[aname] && !Conf["Deleted Mascots"].remove(aname)) {
+        if (confirm("A mascot named \"" + aname + "\" already exists. Would you like to over-write?")) {
           delete userMascots[aname];
         } else {
-          alert("" + aname + " aborted.");
+          alert("Creation of \"" + aname + "\" aborted.");
           return;
         }
       }
+      _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        if (!Conf[type].contains(aname)) {
+          Conf[type].push(aname);
+        }
+        $.set(type, Conf[type]);
+      }
       mascot["Customized"] = true;
-      mascot["Enabled"] = true;
       userMascots[aname] = mascot;
       Conf["mascot"] = aname;
       $.set('userMascots', userMascots);
@@ -8911,7 +8876,12 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         $.off(d, 'DOMNodeInserted', Style.addStyle);
         if (d.head) {
           styleInit = true;
-          return $.addStyle(Style.css(userThemes[Conf['theme']]), 'appchan');
+          try {
+            return $.addStyle(Style.css(userThemes[Conf['theme']]), 'appchan');
+          } catch (err) {
+            $.log(err);
+            return $.log(err.stack);
+          }
         } else {
           return $.on(d, 'DOMNodeInserted', Style.addStyle);
         }
@@ -9249,35 +9219,75 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
 
   Main = {
     init: function() {
-      var board, key, mascot, name, now, path, pathname, settings, temp, theme, val, _i, _len, _ref;
+      var key, mascot, name, now, path, pathname, settings, temp, theme, val;
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
         Conf[key] = $.get(key, val);
       }
+      path = location.pathname;
+      pathname = path.slice(1).split('/');
+      g.BOARD = pathname[0], temp = pathname[1];
+      if (temp === 'res') {
+        g.REPLY = true;
+        g.THREAD_ID = pathname[2];
+      }
+      if (['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains(g.BOARD)) {
+        g.TYPE = 'nsfw';
+      }
+      if (Conf["NSFW/SFW Mascots"]) {
+        g.MASCOTSTRING = "Enabled Mascots " + g.TYPE;
+      } else {
+        g.MASCOTSTRING = "Enabled Mascots";
+      }
       userNavigation = $.get("userNavigation", Navigation);
       userThemes = $.get("userThemes", {});
       userMascots = $.get("userMascots", {});
-      if (userMascots !== Mascots) {
-        for (name in Mascots) {
-          mascot = Mascots[name];
-          if (userMascots[name]) {
-            if (userMascots[name]["Customized"]) {
-              continue;
-            }
-            if (userMascots[name]["Enabled"]) {
-              mascot["Enabled"] = true;
-            }
-            if (userMascots[name]["Enabled_sfw"]) {
-              mascot["Enabled_sfw"] = true;
-            }
-            if (userMascots[name]["Enabled_nsfw"]) {
-              mascot["Enabled_nsfw"] = true;
-            }
+      Conf["Enabled Mascots"] = $.get("Enabled Mascots", []);
+      Conf["Enabled Mascots sfw"] = $.get("Enabled Mascots sfw", []);
+      Conf["Enabled Mascots nsfw"] = $.get("Enabled Mascots nsfw", []);
+      Conf["Deleted Mascots"] = $.get("Deleted Mascots", []);
+      for (name in userMascots) {
+        mascot = userMascots[name];
+        if (userMascots[name]["Enabled"]) {
+          userMascots[name]["Enabled"] = false;
+          if (!Conf["Enabled Mascots"].contains(name)) {
+            Conf["Enabled Mascots"].push(name);
+          }
+        }
+        if (userMascots[name]["Enabled_sfw"]) {
+          userMascots[name]["Enabled_sfw"] = false;
+          if (!Conf["Enabled Mascots sfw"].contains(name)) {
+            Conf["Enabled Mascots sfw"].push(name);
+          }
+        }
+        if (userMascots[name]["Enabled_nsfw"]) {
+          userMascots[name]["Enabled_nsfw"] = false;
+          if (!Conf["Enabled Mascots nsfw"].contains(name)) {
+            Conf["Enabled Mascots nsfw"].push(name);
+          }
+        }
+        if (userMascots[name]["Deleted"]) {
+          userMascots[name]["Deleted"] = false;
+          if (!Conf["Deleted Mascots"].contains(name)) {
+            Conf["Deleted Mascots"].push(name);
+          }
+        }
+        if (Mascots[name]) {
+          if (userMascots[name] === mascot) {
+            continue;
+          }
+          if (userMascots[name]["Customized"]) {
+            continue;
           }
           userMascots[name] = mascot;
         }
       }
+      $.set("userMascots", userMascots);
+      $.set("Enabled Mascots", Conf["Enabled Mascots"]);
+      $.set("Enabled Mascots sfw", Conf["Enabled Mascots sfw"]);
+      $.set("Enabled Mascots nsfw", Conf["Enabled Mascots nsfw"]);
+      $.set("Deleted Mascots", Conf["Deleted Mascots"]);
       if (userThemes !== Themes) {
         for (name in Themes) {
           theme = Themes[name];
@@ -9290,21 +9300,6 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
             }
           }
           userThemes[name] = theme;
-        }
-      }
-      path = location.pathname;
-      pathname = path.slice(1).split('/');
-      g.BOARD = pathname[0], temp = pathname[1];
-      if (temp === 'res') {
-        g.REPLY = true;
-        g.THREAD_ID = pathname[2];
-      }
-      _ref = ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        board = _ref[_i];
-        if (g.BOARD === board) {
-          g.TYPE = 'nsfw';
-          break;
         }
       }
       if (Conf["Interval per board"]) {

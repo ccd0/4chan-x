@@ -10,16 +10,7 @@ MascotTools =
     unless editMode
       names = []
 
-      if Conf["NSFW/SFW Mascots"]
-        for name, mascot of userMascots
-          if mascot["Enabled_#{g.TYPE}"]
-            names.push name
-      else
-        for name, mascot of userMascots
-          if mascot["Enabled"]
-            names.push name
-
-      unless Conf["mascot"] = names[Math.floor(Math.random() * names.length)]
+      unless Conf["mascot"] = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]
         return
 
       mascot = userMascots[Conf["mascot"]]
@@ -241,25 +232,25 @@ MascotTools =
         $.add d.body, div
 
   save: (mascot) ->
-    aname = mascot.name
-
-    if typeof aname == "undefined" or aname == ""
+    if typeof (aname = mascot.name) == "undefined" or aname == ""
       alert "Please name your mascot."
       return
 
-    mascot["Deleted"] = false
     delete mascot.name
 
-    if userMascots[aname] and not userMascots[aname]["Deleted"]
+    if userMascots[aname] and not Conf["Deleted Mascots"].remove aname
 
-      if confirm "A mascot named #{aname} already exists. Would you like to over-write?"
+      if confirm "A mascot named \"#{aname}\" already exists. Would you like to over-write?"
         delete userMascots[aname]
       else
-        alert "#{aname} aborted."
+        alert "Creation of \"#{aname}\" aborted."
         return
 
+    for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
+      unless Conf[type].contains aname
+        Conf[type].push aname
+      $.set type, Conf[type]
     mascot["Customized"] = true;
-    mascot["Enabled"]    = true;
     userMascots[aname]   = mascot
     Conf["mascot"]       = aname
     $.set 'userMascots', userMascots

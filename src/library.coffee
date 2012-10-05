@@ -65,13 +65,25 @@ UI =
     $.rm UI.el
     delete UI.el
 
+# Various browsers have problems with simply logging to the console
+# Trying to fix it usually results in breaking it elsewhere, so this fixes it everywhere I know of.
+console = if console? then console else console = window.console or unsafeWindow.console
+
+Array.prototype.contains = (object) ->
+  @indexOf(object) > -1
+
+Array.prototype.remove = (object) ->
+  if (index = @indexOf object) > -1
+    @splice index, 1
+  else
+    return false
+
+
 ###
 loosely follows the jquery api:
 http://api.jquery.com/
 not chainable
 ###
-console = if console? then console else console = window.console or unsafeWindow.console
-
 $ = (selector, root=d.body) ->
   if root? and result = root.querySelector selector
     return result

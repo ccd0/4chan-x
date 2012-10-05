@@ -6,23 +6,73 @@ Main =
     for key, val of Conf
       Conf[key]    = $.get key,              val
 
-    userNavigation = $.get "userNavigation", Navigation
-    userThemes     = $.get "userThemes",     {}
-    userMascots    = $.get "userMascots",    {}
+    path = location.pathname
+    pathname = path[1..].split '/'
+    [g.BOARD, temp] = pathname
+    if temp is 'res'
+      g.REPLY = true
+      g.THREAD_ID = pathname[2]
 
-    # If mascots have been updated, push them to the userMascots
-    unless userMascots == Mascots
-      for name, mascot of Mascots
-        if userMascots[name]
-          if userMascots[name]["Customized"]
-            continue
-          if userMascots[name]["Enabled"]
-            mascot["Enabled"] = true
-          if userMascots[name]["Enabled_sfw"]
-            mascot["Enabled_sfw"] = true
-          if userMascots[name]["Enabled_nsfw"]
-            mascot["Enabled_nsfw"] = true
+    if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains g.BOARD
+      g.TYPE = 'nsfw'
+
+    if Conf["NSFW/SFW Mascots"]
+      g.MASCOTSTRING = "Enabled Mascots #{g.TYPE}"
+    else
+      g.MASCOTSTRING = "Enabled Mascots"
+
+    userNavigation                = $.get "userNavigation", Navigation
+    userThemes                    = $.get "userThemes",     {}
+    userMascots                   = $.get "userMascots",    {}
+
+    Conf["Enabled Mascots"]       = $.get "Enabled Mascots",      []
+    Conf["Enabled Mascots sfw"]   = $.get "Enabled Mascots sfw",  []
+    Conf["Enabled Mascots nsfw"]  = $.get "Enabled Mascots nsfw", []
+    Conf["Deleted Mascots"]       = $.get "Deleted Mascots",      []
+
+    # This will be switched to "Mascots" instead of "userMascots" after
+    # the next stable version of appchan to use the new mascot code.
+    for name, mascot of userMascots
+
+      # These "if" statements will be removed from further versions of appchan x
+      # and serve only to seamlessly transfer mascot configuration between the old
+      # mascot code and the new mascot code.
+      # Customized mascots are the only thing that will trigger these more than once.
+      if userMascots[name]["Enabled"]
+        userMascots[name]["Enabled"] = false
+        unless Conf["Enabled Mascots"].contains name
+          Conf["Enabled Mascots"].push name
+      if userMascots[name]["Enabled_sfw"]
+        userMascots[name]["Enabled_sfw"] = false
+        unless Conf["Enabled Mascots sfw"].contains name
+          Conf["Enabled Mascots sfw"].push name
+      if userMascots[name]["Enabled_nsfw"]
+        userMascots[name]["Enabled_nsfw"] = false
+        unless Conf["Enabled Mascots nsfw"].contains name
+          Conf["Enabled Mascots nsfw"].push name
+      if userMascots[name]["Deleted"]
+        userMascots[name]["Deleted"] = false
+        unless Conf["Deleted Mascots"].contains name
+          Conf["Deleted Mascots"].push name
+
+      if Mascots[name]
+
+        # Don't refresh the mascot if the mascot hasn't changed.
+        if userMascots[name] == mascot
+          continue
+
+        # Don't replace the mascot if the user has customized it. That would be mean.
+        if userMascots[name]["Customized"]
+          continue
+
         userMascots[name] = mascot
+
+    # This will also be removed.
+    $.set "userMascots",          userMascots
+    $.set "Enabled Mascots",      Conf["Enabled Mascots"]
+    $.set "Enabled Mascots sfw",  Conf["Enabled Mascots sfw"]
+    $.set "Enabled Mascots nsfw", Conf["Enabled Mascots nsfw"]
+    $.set "Deleted Mascots",      Conf["Deleted Mascots"]
 
     # Same thing with themes.
     unless userThemes == Themes
@@ -34,23 +84,11 @@ Main =
             theme["Deleted"] = true
         userThemes[name] = theme
 
-    path = location.pathname
-    pathname = path[1..].split '/'
-    [g.BOARD, temp] = pathname
-    if temp is 'res'
-      g.REPLY = true
-      g.THREAD_ID = pathname[2]
-
-    for board in ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y']
-      if g.BOARD == board
-        g.TYPE = 'nsfw'
-        break
-
     # Setup Fill some per board configuration values with their global equivalents.
     if Conf["Interval per board"]
       Conf["Interval_"   + g.BOARD] = $.get "Interval_"   + g.BOARD, Conf["Interval"]
       Conf["BGInterval_" + g.BOARD] = $.get "BGInterval_" + g.BOARD, Conf["BGInteval"]
-    
+
     if Conf["NSFW/SFW Themes"]
       Conf["theme"] = $.get "theme_#{g.TYPE}", Conf["theme"]
 
