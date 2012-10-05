@@ -45,11 +45,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       $.off d, 'DOMNodeInserted', Style.addStyle
       if d.head
         styleInit = true
-        try
-          $.addStyle Style.css(userThemes[Conf['theme']]), 'appchan'
-        catch err
-          $.log err
-          $.log err.stack
+        $.addStyle Style.css(userThemes[Conf['theme']]), 'appchan'
       else # XXX fox
         $.on d, 'DOMNodeInserted', Style.addStyle
     else

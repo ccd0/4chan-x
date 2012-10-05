@@ -8876,12 +8876,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         $.off(d, 'DOMNodeInserted', Style.addStyle);
         if (d.head) {
           styleInit = true;
-          try {
-            return $.addStyle(Style.css(userThemes[Conf['theme']]), 'appchan');
-          } catch (err) {
-            $.log(err);
-            return $.log(err.stack);
-          }
+          return $.addStyle(Style.css(userThemes[Conf['theme']]), 'appchan');
         } else {
           return $.on(d, 'DOMNodeInserted', Style.addStyle);
         }
