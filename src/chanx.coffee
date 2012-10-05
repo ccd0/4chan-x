@@ -485,7 +485,7 @@ ExpandThread =
 
 ThreadHiding =
   init: ->
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    ThreadHiding.hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     for thread in $$ '.thread'
       a = $.el 'a',
         className: 'hide_thread_button'
@@ -495,20 +495,20 @@ ThreadHiding =
         ThreadHiding.toggle @parentElement
       $.prepend thread, a
 
-      if thread.id[1..] of hiddenThreads
+      if thread.id[1..] of ThreadHiding.hiddenThreads
         ThreadHiding.hide thread
     return
 
+
   toggle: (thread) ->
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     id = thread.id[1..]
     if thread.hidden or /\bhidden_thread\b/.test thread.firstChild.className
       ThreadHiding.show thread
-      delete hiddenThreads[id]
+      delete ThreadHiding.hiddenThreads[id]
     else
       ThreadHiding.hide thread
-      hiddenThreads[id] = Date.now()
-    $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
+      ThreadHiding.hiddenThreads[id] = Date.now()
+    $.set "hiddenThreads/#{g.BOARD}/", ThreadHiding.hiddenThreads
 
   hide: (thread, show_stub=Conf['Show Stubs']) ->
     unless show_stub
@@ -560,6 +560,7 @@ ReplyHiding =
       ReplyHiding.hide post.root
 
   toggle: (button, root, id) ->
+    $.log root + " " + button + " " + id
     quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href$='#p#{id}']"
     if /\bstub\b/.test button.className
       ReplyHiding.show root
@@ -1009,7 +1010,7 @@ Updater =
     html += "
       <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
       <div><label>Interval (s)<input type=number name=Interval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>"
-    
+
     if Conf["Optional Increase"]
       html += "<div><label>BGInterval<input type=number name=BGInterval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>"
 
@@ -1020,7 +1021,7 @@ Updater =
     @count  = $ '#count', dialog
     @timer  = $ '#timer', dialog
     @thread = $.id "t#{g.THREAD_ID}"
-    
+
     @unsuccessfulFetchCount = 0
     @lastModified = '0'
 
@@ -1145,7 +1146,7 @@ Updater =
       if Conf['Verbose']
         Updater.set 'count', "+#{count}"
         Updater.count.className = if count then 'new' else null
-        
+
       if count
         Updater.unsuccessfulFetchCount = 0
       else
@@ -2356,6 +2357,10 @@ ArchiveLink =
 
 ThreadHideLink =
   init: ->
+    # If ThreadHiding hasn't been initialized, we have to fake it.
+    unless Conf['Thread Hiding']
+      $.ready @iterate
+
     a = $.el 'a',
       className: 'thread_hide_link'
       href: 'javascript:;'
@@ -2368,23 +2373,43 @@ ThreadHideLink =
       el: a
       open: (post) ->
         if post.el.classList.contains 'op' then true else false
+  
+  iterate: ->
+    ThreadHiding.hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    for thread in $$ '.thread'
+      if thread.id[1..] of ThreadHiding.hiddenThreads
+        ThreadHiding.hide thread
+
 
 ReplyHideLink =
   init: ->
+    # Fake reply hiding functionality if it is disabled.
+    unless Conf['Reply Hiding']
+      Main.callbacks.push @node
+
     a = $.el 'a',
       className: 'reply_hide_link'
       href: 'javascript:;'
       textContent: 'Hide / Restore Post'
+      
     $.on a, 'click', ->
       menu   = $.id 'menu'
-      id     = menu.dataset.rootid
-      root   = $.id id
+      id     = menu.dataset.id
+      root   = $.id "pc#{id}"
       button = root.firstChild
       ReplyHiding.toggle button, root, id
+      
     Menu.addEntry
       el: a
       open: (post) ->
         if post.isInlined or post.el.classList.contains 'op' then false else true
+
+  node: (post) ->
+    return if post.isInlined or post.ID is post.threadID
+
+    if post.ID of g.hiddenReplies
+      $.log post.ID
+      ReplyHiding.hide post.root
 
 ThreadStats =
   init: ->

@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 0.17.2 - 2012-10-04
+/*  appchan x - Version 0.17.2 - 2012-10-05
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -4082,8 +4082,8 @@
 
   ThreadHiding = {
     init: function() {
-      var a, hiddenThreads, thread, _i, _len, _ref;
-      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
+      var a, thread, _i, _len, _ref;
+      ThreadHiding.hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
       _ref = $$('.thread');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         thread = _ref[_i];
@@ -4096,23 +4096,22 @@
           return ThreadHiding.toggle(this.parentElement);
         });
         $.prepend(thread, a);
-        if (thread.id.slice(1) in hiddenThreads) {
+        if (thread.id.slice(1) in ThreadHiding.hiddenThreads) {
           ThreadHiding.hide(thread);
         }
       }
     },
     toggle: function(thread) {
-      var hiddenThreads, id;
-      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
+      var id;
       id = thread.id.slice(1);
       if (thread.hidden || /\bhidden_thread\b/.test(thread.firstChild.className)) {
         ThreadHiding.show(thread);
-        delete hiddenThreads[id];
+        delete ThreadHiding.hiddenThreads[id];
       } else {
         ThreadHiding.hide(thread);
-        hiddenThreads[id] = Date.now();
+        ThreadHiding.hiddenThreads[id] = Date.now();
       }
-      return $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
+      return $.set("hiddenThreads/" + g.BOARD + "/", ThreadHiding.hiddenThreads);
     },
     hide: function(thread, show_stub) {
       var menuButton, num, opInfo, span, stub, text;
@@ -4182,6 +4181,7 @@
     },
     toggle: function(button, root, id) {
       var quote, quotes, _i, _j, _len, _len1;
+      $.log(root + " " + button + " " + id);
       quotes = $$(".quotelink[href$='#p" + id + "'], .backlink[href$='#p" + id + "']");
       if (/\bstub\b/.test(button.className)) {
         ReplyHiding.show(root);
@@ -6387,6 +6387,9 @@
   ThreadHideLink = {
     init: function() {
       var a;
+      if (!Conf['Thread Hiding']) {
+        $.ready(this.iterate);
+      }
       a = $.el('a', {
         className: 'thread_hide_link',
         href: 'javascript:;',
@@ -6408,12 +6411,30 @@
           }
         }
       });
+    },
+    iterate: function() {
+      var thread, _i, _len, _ref, _results;
+      ThreadHiding.hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
+      _ref = $$('.thread');
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        thread = _ref[_i];
+        if (thread.id.slice(1) in ThreadHiding.hiddenThreads) {
+          _results.push(ThreadHiding.hide(thread));
+        } else {
+          _results.push(void 0);
+        }
+      }
+      return _results;
     }
   };
 
   ReplyHideLink = {
     init: function() {
       var a;
+      if (!Conf['Reply Hiding']) {
+        Main.callbacks.push(this.node);
+      }
       a = $.el('a', {
         className: 'reply_hide_link',
         href: 'javascript:;',
@@ -6422,8 +6443,8 @@
       $.on(a, 'click', function() {
         var button, id, menu, root;
         menu = $.id('menu');
-        id = menu.dataset.rootid;
-        root = $.id(id);
+        id = menu.dataset.id;
+        root = $.id("pc" + id);
         button = root.firstChild;
         return ReplyHiding.toggle(button, root, id);
       });
@@ -6437,6 +6458,15 @@
           }
         }
       });
+    },
+    node: function(post) {
+      if (post.isInlined || post.ID === post.threadID) {
+        return;
+      }
+      if (post.ID in g.hiddenReplies) {
+        $.log(post.ID);
+        return ReplyHiding.hide(post.root);
+      }
     }
   };
 
@@ -8930,7 +8960,6 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           child = _ref[_i];
-          $.log(child.style.color);
           _results.push(child.style.color = "");
         }
         return _results;
@@ -9195,7 +9224,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
 
   Main = {
     init: function() {
-      var board, key, mascot, name, now, path, pathname, temp, theme, val, _i, _len, _ref;
+      var board, key, mascot, name, now, path, pathname, settings, temp, theme, val, _i, _len, _ref;
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
@@ -9310,16 +9339,18 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         });
       }
       if (Conf['Disable Inline 4chan Addon'] || Conf['Style']) {
-        localStorage.setItem('4chan-settings', '{"disableAll":true}');
+        settings = JSON.parse(localStorage.getItem('4chan-settings')) || {};
+        settings.disableAll = true;
+        localStorage.setItem('4chan-settings', JSON.stringify(settings));
       }
       if (Conf['Filter']) {
         Filter.init();
+        StrikethroughQuotes.init();
+      } else if (Conf['Reply Hiding'] || Conf['Reply Hiding Link']) {
+        StrikethroughQuotes.init();
       }
       if (Conf['Reply Hiding']) {
         ReplyHiding.init();
-      }
-      if (Conf['Filter'] || Conf['Reply Hiding']) {
-        StrikethroughQuotes.init();
       }
       if (Conf['Anonymize']) {
         Anonymize.init();

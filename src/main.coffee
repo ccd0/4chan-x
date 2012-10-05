@@ -91,16 +91,18 @@ Main =
           src: 'https://github.com/zixaphir/appchan-x/raw/master/latest.js'
 
     if Conf['Disable Inline 4chan Addon'] or Conf['Style']
-      localStorage.setItem '4chan-settings', '{"disableAll":true}'
+      settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
+      settings.disableAll = true
+      localStorage.setItem '4chan-settings', JSON.stringify settings
 
     if Conf['Filter']
       Filter.init()
+      StrikethroughQuotes.init()
+    else if Conf['Reply Hiding'] or Conf['Reply Hiding Link']
+      StrikethroughQuotes.init()
 
     if Conf['Reply Hiding']
       ReplyHiding.init()
-
-    if Conf['Filter'] or Conf['Reply Hiding']
-      StrikethroughQuotes.init()
 
     if Conf['Anonymize']
       Anonymize.init()
@@ -228,7 +230,7 @@ Main =
       if Conf['Unread Count'] or Conf['Unread Favicon']
         Unread.init()
 
-    else #not reply
+    else # not reply
       if Conf['Thread Hiding']
         ThreadHiding.init()
 

@@ -74,5 +74,4 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
   trimGlobalMessage: ->
     if el = $ "#globalMessage", d.body
       for child in el.children
-        $.log child.style.color
         child.style.color = ""
