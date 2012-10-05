@@ -55,10 +55,10 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle
     unless remInit
-      if d.head and d.head.childNodes.length > 10
+      if d.head and d.head.children.length > 10
         remInit = true
         nodes = []
-        for node in d.head.childNodes
+        for node in d.head.children
           if node.rel == 'stylesheet'
             nodes.push node
           else if node.tagName == 'STYLE' and node.id != 'appchan'

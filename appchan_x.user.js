@@ -8897,10 +8897,10 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       var node, nodes, _i, _j, _len, _len1, _ref, _results;
       $.off(d, 'DOMNodeInserted', this.remStyle);
       if (!remInit) {
-        if (d.head && d.head.childNodes.length > 10) {
+        if (d.head && d.head.children.length > 10) {
           remInit = true;
           nodes = [];
-          _ref = d.head.childNodes;
+          _ref = d.head.children;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             node = _ref[_i];
             if (node.rel === 'stylesheet') {
