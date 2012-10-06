@@ -1581,6 +1581,7 @@ table.reply[style^="clear: both"] {
 #themebar input {
   width: 30%;
 }
+html,
 body {
   background: """ + theme["Background Color"] + """;
   background-image: """ + theme["Background Image"] + """;
