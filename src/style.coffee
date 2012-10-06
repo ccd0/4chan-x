@@ -346,10 +346,10 @@ h1,
 #options #style_tab + div select {
   width: 100%;
 }
-#theme_tab + div > div > div:not(.selectedtheme) h1 {
+#theme_tab + div div:not(.selectedtheme) > div > h1 {
   color: transparent !important;
 }
-#theme_tab + div > div > div.selectedtheme h1 {
+#theme_tab + div div.selectedtheme h1 {
   right: 11px;
 }
 #theme_tab + div > div h1 {
