@@ -425,6 +425,7 @@ Options =
     $.add $('#theme_tab + div', dialog), parentdiv
     $.add $('#theme_tab + div', dialog), div
     Options.applyStyle(dialog, 'theme_tab')
+    Options.indicators dialog
 
 
   mascotTab: (dialog, mode) ->
@@ -533,6 +534,9 @@ Options =
             className: 'mascot'
             innerHTML: "
 <div id='#{name}' class='#{mascot.category}' style='background-image: url(#{if Array.isArray(mascot.image) then (if Conf["Style"] and userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image});'></div>
+<div class='mascotmetadata'>
+  <p><span class='mascotname'>#{name.replace /_/g, " "}</span></p>
+</div>
 "
           div = $('div', li)
   
@@ -558,6 +562,7 @@ Options =
     $.add parentdiv, batchmascots
     
     $.add $('#mascot_tab + div', dialog), parentdiv
+    Options.indicators dialog
 
 
   customNavigation:

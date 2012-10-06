@@ -3125,7 +3125,8 @@
       });
       $.add($('#theme_tab + div', dialog), parentdiv);
       $.add($('#theme_tab + div', dialog), div);
-      return Options.applyStyle(dialog, 'theme_tab');
+      Options.applyStyle(dialog, 'theme_tab');
+      return Options.indicators(dialog);
     },
     mascotTab: function(dialog, mode) {
       var batchmascots, div, keys, li, mascot, name, parentdiv, suboptions, ul, _i, _j, _len, _len1;
@@ -3247,7 +3248,7 @@
             mascot = userMascots[name];
             li = $.el('li', {
               className: 'mascot',
-              innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + (Array.isArray(mascot.image) ? (Conf["Style"] && userThemes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + ");'></div>"
+              innerHTML: "<div id='" + name + "' class='" + mascot.category + "' style='background-image: url(" + (Array.isArray(mascot.image) ? (Conf["Style"] && userThemes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + ");'></div><div class='mascotmetadata'>  <p><span class='mascotname'>" + (name.replace(/_/g, " ")) + "</span></p></div>"
             });
             div = $('div', li);
             $.on(div, 'click', function() {
@@ -3274,7 +3275,8 @@
       }
       $.add(parentdiv, suboptions);
       $.add(parentdiv, batchmascots);
-      return $.add($('#mascot_tab + div', dialog), parentdiv);
+      $.add($('#mascot_tab + div', dialog), parentdiv);
+      return Options.indicators(dialog);
     },
     customNavigation: {
       dialog: function(dialog) {
