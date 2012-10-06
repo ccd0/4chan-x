@@ -1198,9 +1198,10 @@ body > .postingMode ~ #delform br[clear="left"],
 /* Fixes text spoilers */
 .spoiler:not(:hover),
 .spoiler:not(:hover) .quote,
+.spoiler:not(:hover) .quote a,
 .spoiler:not(:hover) a {
-  color: rgb(0,0,0);
-  background-color: rgb(0,0,0);
+  color: rgb(0,0,0) !important;
+  background-color: rgb(0,0,0) !important;
   text-shadow: none !important;
 }
 /* Remove default "inherit" background declaration */
@@ -1563,7 +1564,7 @@ table.reply[style^="clear: both"] {
   height: 17px;
 }
 .prettyprint {
-  display: inline-block;
+  display: block;
   white-space: pre-wrap;
   border-radius: 2px;
   font-size: inherit;
