@@ -245,17 +245,6 @@ h1,
   color: #000;
   outline: none;
 }
-#qr > form > div:first-child > .field:not(#dump) {
-  width: 30%;
-}
-#qr textarea.field {
-  display: -webkit-box;
-  min-height: 160px;
-  min-width: 100%;
-}
-#qr.captcha textarea.field {
-  min-height: 120px;
-}
 #charCount {
   color: #000;
   background: hsla(0, 0%, 100%, .5);
@@ -269,29 +258,6 @@ h1,
 }
 #charCount.warning {
   color: red;
-}
-.captchainput > .field {
-  min-width: 100%;
-}
-.captchaimg {
-  text-align: center;
-}
-.captchaimg > img {
-  display: block;
-  height: 57px;
-  width: 300px;
-}
-#qr [type=file] {
-  margin: 1px 0;
-  width: 70%;
-}
-#qr [type=submit] {
-  margin: 1px 0;
-  padding: 1px; /* not Gecko */
-  width: 30%;
-}
-.gecko #qr [type=submit] {
-  padding: 0 1px; /* Gecko does not respect box-sizing: border-box */
 }
 .fileText:hover .fntrunc,
 .fileText:not(:hover) .fnfull {
@@ -642,7 +608,42 @@ div.opContainer {
   display: none;
 }"""
 
-    if Conf["Style"]
+    unless Conf["Style"]
+      css += """.captchainput > .field {
+  min-width: 100%;
+}
+#qr > form > div:first-child > .field:not(#dump) {
+  width: 30%;
+}
+#qr textarea.field {
+  display: -webkit-box;
+  min-height: 160px;
+  min-width: 100%;
+}
+#qr.captcha textarea.field {
+  min-height: 120px;
+}
+.captchaimg {
+  text-align: center;
+}
+.captchaimg > img {
+  display: block;
+  height: 57px;
+  width: 300px;
+}
+#qr [type=file] {
+  margin: 1px 0;
+  width: 70%;
+}
+#qr [type=submit] {
+  margin: 1px 0;
+  padding: 1px; /* not Gecko */
+  width: 30%;
+}
+.gecko #qr [type=submit] {
+  padding: 0 1px; /* Gecko does not respect box-sizing: border-box */
+}"""
+    else
       $.ready ->
         Style.rice d.body
         Style.trimGlobalMessage()
@@ -1075,7 +1076,7 @@ input[type=checkbox] {
 input,
 .field,
 input[type="submit"] {
-  height: 20px !important;
+  height: 20px;
 }
 #qr .warning {
   min-height: 20px;
@@ -1473,9 +1474,6 @@ html .subMenu {
   border: none;
   background: none;
 }
-textarea.field {
-  resize: none;
-}
 /* Position and Dimensions of the #qr */
 #qr {
   overflow: visible;
@@ -1489,10 +1487,6 @@ textarea.field {
   background-color: transparent !important;
 }
 /* Width and height of all #qr elements (excluding some captcha elements) */
-#qr.captcha textarea,
-#qr textarea {
-  min-height: 0 !important;
-}
 body > .postingMode ~ #delform .reply a > img[src^="//images"] {
   position: relative;
   z-index: 96;
@@ -1505,7 +1499,6 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
   background: none;
   border: none;
   width: 20px;
-  height: 17px;
   margin: 0;
   font-size: 14px;
   vertical-align: middle;
@@ -1537,7 +1530,6 @@ input[title="Verification"],
 .captchaimg img {
   margin-top: 1px;
 }
-#qr textarea.field,
 #qr div {
   min-width: 0;
 }
@@ -2542,16 +2534,10 @@ body {
       if Conf["Compact Post Form Inputs"]
         css += """
 #qr textarea.field {
-  height: 161px !important;
+  height: 161px;
 }
 #qr.captcha textarea.field {
-  height: 114px !important;
-}
-.textarea {
-  height: 162px;
-}
-#qr.captcha .textarea {
-  height: 115px;
+  height: 114px;
 }
 #qr .field[name="name"],
 #qr .field[name="email"],
@@ -2563,16 +2549,10 @@ body {
       else
         css += """
 #qr textarea.field {
-  height: 135px !important;
+  height: 135px;
 }
 #qr.captcha textarea.field {
-  height: 88px !important;
-}
-#qr .textarea {
-  height: 136px;
-}
-#qr.captcha .textarea {
-  height: 89px;
+  height: 88px;
 }
 #qr .field[name="email"],
 #qr .field[name="sub"] {
