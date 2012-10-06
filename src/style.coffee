@@ -230,7 +230,7 @@ h1,
 .field {
   border: 1px solid #CCC;
   color: #333;
-  font-size: 13px;
+  font-size: inherit;
   margin: 0;
   padding: 2px 4px 3px;
   """ + agent + """transition: color .25s, border .25s;
@@ -801,7 +801,6 @@ a {
 body:not([class]) a[href="javascript:;"],
 input,
 label {
-  font-size: 12px;
   text-decoration: none;
 }
 #credits a,
@@ -933,7 +932,7 @@ div.navLinks > a:first-of-type:hover::after,
   position: fixed;
   """ + sidebarLocation[0] + """: 2px;
   bottom: 250px;
-  font-size: 11px;
+  font-size: inherit;
   font-weight: 100;
   background: none;
   border: none;
@@ -1026,7 +1025,6 @@ img.bottomad:hover {
 .pages a,
 .pages strong {
   display: inline-block;
-  font-size: 12px;
   border: none;
   text-align: center;
   margin: 0 1px 0 2px;
@@ -1036,7 +1034,7 @@ img.bottomad:hover {
 }
 /* moots announcements */
 #globalMessage {
-  font-size: 12px;
+  font-size: """ + Conf["Font Size"] + """;
   text-align: center;
   font-weight: 200;
 }
@@ -1105,7 +1103,7 @@ input[type="submit"], /* Any lingering buttons */
 input[value="Report"] {
   height: 20px;
   padding: 0;
-  font-size: 12px;
+  font-size: """ + Conf["Font Size"] + """;
 }
 #qr input[type="submit"] {
   width: 100%;
@@ -1413,7 +1411,6 @@ textarea {
 }
 #boardNavDesktop .current {
   font-weight: bold;
-  font-size: 13px;
 }
 #postPassword {
   position: relative;
