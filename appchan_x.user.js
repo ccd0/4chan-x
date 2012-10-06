@@ -1981,7 +1981,7 @@
     },
     'Megurine_Luka': {
       category: 'Anime',
-      image: 'https://i.minus.com/iMSUiQxRBylQG.png',
+      image: 'https://i.minus.com/ibxe63yidpz9Gz.png',
       center: true
     },
     'Mei_Sunohara': {
