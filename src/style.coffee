@@ -1263,9 +1263,8 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
 #imgControls select > option {
   font-size: 80%;
 }
-/* End of Expand Images div */
 /* Reply Previews */
-#qp div.post /* 4chan x Quote Preview */ {
+#qp div.post {
   max-width: 70%;
   visibility: visible;
 }
@@ -1291,7 +1290,6 @@ div.navLinks {
   right: 300px !important;
   bottom: 0px;
 }
-/* Appchan x options */
 #options ul {
   margin: 0;
   margin-bottom: 6px;

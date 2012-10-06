@@ -262,3 +262,35 @@ MascotTools =
     $.rm $("#mascotConf", d.body)
     Style.addStyle Conf["Style"]
     Options.dialog("mascot")
+
+
+  importMascot: (evt) ->
+    file = evt.target.files[0]
+    reader = new FileReader()
+
+    reader.onload = (e) ->
+
+      try
+        imported = JSON.parse e.target.result
+      catch err
+        alert err
+        return
+
+      unless (imported["Mascot"])
+        alert "Mascot file is invalid."
+
+      name = imported["Mascot"]
+      delete imported["Mascot"]
+
+      if userMascots[name] and not Conf["Deleted Mascots"].remove name
+        unless confirm "A mascot with this name already exists. Would you like to over-write?"
+          return
+
+      userMascots[name] = imported
+
+      $.set 'userMascots', userMascots
+      alert "Mascot \"#{name}\" imported!"
+      $.rm $("#mascotContainer", d.body)
+      Options.mascotTab()
+
+    reader.readAsText(file)
