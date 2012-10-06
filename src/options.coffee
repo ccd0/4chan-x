@@ -291,11 +291,18 @@ Options =
         Options.indicators dialog
 
 
-  themeTab: (dialog) ->
+  themeTab: (dialog, mode) ->
+  
     unless dialog
       dialog = $("#options", d.body)
+      
+    unless mode
+      mode = 'default'
 
-    parentdiv = $.el 'div',
+    parentdiv  = $.el 'div',
+      id:        "themeContainer"
+      
+    suboptions = $.el 'div',
       className: "suboptions"
       id:        "themes"
       innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use theming options.</div>"
@@ -305,22 +312,25 @@ Options =
     keys.sort()
 
     # And use the sorted list to display all available themes to the user.
-    for name in keys
-      theme = userThemes[name]
-
-      # Themes aren't actually deleted, but are marked as such.
-      # Megaupload did something similar with illegal files and got in trouble for it.
-      # I do it like this to allow new themes to be added to the user's appchan x when
-      # I update the Themes variable. Otherwise, there would be no way to prevent deleted
-      # themes from being readded.
-      unless theme["Deleted"]
-
-        # Instead of writing a style sheet for each theme, we hard-code the colors into each preview.
-        # 4chan SS / OneeChan also do this, and inspired it here.
-        div = $.el 'div',
-          className: if name == Conf['theme'] then 'selectedtheme replyContainer' else 'replyContainer'
-          id:        name
-          innerHTML: "
+    
+    if mode == "default"
+    
+      for name in keys
+        theme = userThemes[name]
+  
+        # Themes aren't actually deleted, but are marked as such.
+        # Megaupload did something similar with illegal files and got in trouble for it.
+        # I do it like this to allow new themes to be added to the user's appchan x when
+        # I update the Themes variable. Otherwise, there would be no way to prevent deleted
+        # themes from being readded.
+        unless theme["Deleted"]
+  
+          # Instead of writing a style sheet for each theme, we hard-code the colors into each preview.
+          # 4chan SS / OneeChan also do this, and inspired it here.
+          div = $.el 'div',
+            className: if name == Conf['theme'] then 'selectedtheme replyContainer' else 'replyContainer'
+            id:        name
+            innerHTML: "
 <div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
   <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:#{theme['Checkbox Background']};border: 1px solid #{theme['Checkbox Border']};'></div>
   <span style='color:#{theme['Subjects']}!important; font-weight: 700 !important'> #{name}</span>
@@ -340,90 +350,139 @@ Options =
   </blockquote>
   <h1 style='color: #{theme['Text']}'>Selected</h1>
 </div>"
+  
+          # Theme Editting. themeoptions.coffee.
+          $.on $('a.edit', div), 'click', ->
+            unless Conf["Style"]
+              alert "Please enable Style Options and reload the page to use Theme Tools."
+              return
+            ThemeTools.init @.name
+            Options.close()
+  
+          # Theme Exporting
+          $.on $('a.export', div), 'click', ->
+            exportTheme = userThemes[@.name]
+            exportTheme['Theme'] = @.name
+            exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme))
+  
+            if window.open exportedTheme, "_blank"
+              return
+            else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
+              window.location exportedTheme
+  
+          # Delete Theme.
+          $.on $('a.delete', div), 'click', ->
+            container = @.parentElement.parentElement
+  
+            # We don't let the user delete a theme if there is no other theme available
+            # because themes can't function without one.
+            unless container.previousSibling or container.nextSibling
+              alert "Cannot delete theme (No other themes available)."
+              return
+  
+            if confirm "Are you sure you want to delete \"#{container.id}\"?"
+              if container.id == Conf['theme']
+                if settheme = container.previousSibling or container.nextSibling
+                  Conf['theme'] = settheme.id
+                  $.addClass settheme, 'selectedtheme'
+                  $.set 'theme', Conf['theme']
+              userThemes[container.id]["Deleted"] = true
+              $.set 'userThemes', userThemes
+              $.rm container
+  
+          $.on $('.rice', div), 'click', Options.selectTheme
+          $.on $('blockquote', div), 'click', Options.selectTheme
+          $.add suboptions, div
 
-        # Theme Editting. themeoptions.coffee.
-        $.on $('a.edit', div), 'click', ->
-          unless Conf["Style"]
-            alert "Please enable Style Options and reload the page to use Theme Tools."
-            return
-          ThemeTools.init @.name
-          Options.close()
+      div = $.el 'div',
+        id:        'addthemes'
+        innerHTML: "
+  <a id=newtheme href='javascript:;'>New Theme</a> /
+   <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> /
+   <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> /
+   <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden> /
+   <a id=tUndelete href='javascript:;'>Undelete Theme</a>
+  "
+  
+      # Create New Theme.
+      $.on $("#newtheme", div), 'click', ->
+        unless Conf["Style"]
+          alert "Please enable Style Options and reload the page to use Theme Tools."
+          return
+  
+        # We prepare ThemeTools to expect no incoming theme.
+        # themeoptions.coffee
+        newTheme = true
+        ThemeTools.init "untitled"
+        Options.close()
+  
+      # Essentially, you can't open a file dialog without a file input,
+      # but I don't want to show the user a file input.
+      $.on $("#import", div), 'click', ->
+        @.nextSibling.click()
+      $.on $("#importbutton", div), 'change', (evt) ->
+        ThemeTools.importtheme "appchan", evt
+  
+      $.on $("#OCimport", div), 'click', ->
+        @.nextSibling.click()
+      $.on $("#OCimportbutton", div), 'change', (evt) ->
+        ThemeTools.importtheme "oneechan", evt
+  
+      $.on $("#SSimportbutton", div), 'change', (evt) ->
+        ThemeTools.importtheme "SS", evt
+      $.on $("#SSimport", div), 'click', ->
+        @.nextSibling.click()  
+      
+      $.on $('#tUndelete', div), 'click', ->
+        $.rm $("#themeContainer", d.body)
+        Options.themeTab false, 'undelete'
+          
+    else
+    
+      for name in keys
+        theme = userThemes[name]
+  
+        if theme["Deleted"]
 
-        # Theme Exporting
-        $.on $('a.export', div), 'click', ->
-          exportTheme = userThemes[@.name]
-          exportTheme['Theme'] = @.name
-          exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme))
+          div = $.el 'div',
+            className: if name == Conf['theme'] then 'selectedtheme replyContainer' else 'replyContainer'
+            id:        name
+            innerHTML: "
+<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
+  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:#{theme['Checkbox Background']};border: 1px solid #{theme['Checkbox Border']};'></div>
+  <span style='color:#{theme['Subjects']}!important; font-weight: 700 !important'> #{name}</span>
+  <span style='color:#{theme['Names']}!important; font-weight: 700 !important'> #{theme['Author']}</span>
+  <span style='color:#{theme['Sage']}!important'> (SAGE)</span>
+  <span style='color:#{theme['Tripcodes']}!important'> #{theme['Author Tripcode']}</span>
+  <time style='color:#{theme['Timestamps']}'> 20XX.01.01 12:00 </time>
+  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important;' href='javascript:;'>No.27583594</a>
+  <br>
+  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>
+    <a style='color:#{theme['Quotelinks']}!important; font-weight: 800;'>&gt;&gt;27582902</a>
+    <br>
+    I forgive you for using VLC to open me. ;__;
+  </blockquote>
+</div>"
 
-          if window.open exportedTheme, "_blank"
-            return
-          else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
-            window.location exportedTheme
+          $.on div, 'click', ->
+            if confirm "Are you sure you want to undelete \"#{@id}\"?"
+              userThemes[@id]["Deleted"] = false
+              $.set 'userThemes', userThemes
+              $.rm @
+            
+          $.add suboptions, div
+          
+      div = $.el 'div',
+        id:        'addthemes'
+        innerHTML: "<a href='javascript:;'>Return</a>"
+      
+      $.on $('a', div), 'click', ->
+        $.rm $("#themeContainer", d.body)
+        Options.themeTab()
 
-        # Delete Theme.
-        $.on $('a.delete', div), 'click', ->
-          container = @.parentElement.parentElement
-
-          # We don't let the user delete a theme if there is no other theme available
-          # because themes can't function without one.
-          unless container.previousSibling or container.nextSibling
-            alert "Cannot delete theme (No other themes available)."
-            return
-
-          if confirm "Are you sure you want to delete \"#{container.id}\"?"
-            if container.id == Conf['theme']
-              if settheme = container.previousSibling or container.nextSibling
-                Conf['theme'] = settheme.id
-                $.addClass settheme, 'selectedtheme'
-                $.set 'theme', Conf['theme']
-            userThemes[container.id]["Deleted"] = true
-            $.set 'userThemes', userThemes
-            $.rm container
-
-        $.on $('.rice', div), 'click', Options.selectTheme
-        $.on $('blockquote', div), 'click', Options.selectTheme
-        $.add parentdiv, div
-
-    div = $.el 'div',
-      id:        'addthemes'
-      innerHTML: "
-<a id=newtheme href='javascript:;'>New Theme</a> /
- <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> /
- <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> /
- <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>
-"
-
-    # Create New Theme.
-    $.on $("#newtheme", div), 'click', ->
-      unless Conf["Style"]
-        alert "Please enable Style Options and reload the page to use Theme Tools."
-        return
-
-      # We prepare ThemeTools to expect no incoming theme.
-      # themeoptions.coffee
-      newTheme = true
-      ThemeTools.init "untitled"
-      Options.close()
-
-    # Essentially, you can't open a file dialog without a file input,
-    # but I don't want to show the user a file input.
-    $.on $("#import", div), 'click', ->
-      @.nextSibling.click()
-    $.on $("#importbutton", div), 'change', (evt) ->
-      ThemeTools.importtheme "appchan", evt
-
-    $.on $("#OCimport", div), 'click', ->
-      @.nextSibling.click()
-    $.on $("#OCimportbutton", div), 'change', (evt) ->
-      ThemeTools.importtheme "oneechan", evt
-
-    $.on $("#SSimportbutton", div), 'change', (evt) ->
-      ThemeTools.importtheme "SS", evt
-    $.on $("#SSimport", div), 'click', ->
-      @.nextSibling.click()
-
+    $.add parentdiv, suboptions
+    $.add parentdiv, div
     $.add $('#theme_tab + div', dialog), parentdiv
-    $.add $('#theme_tab + div', dialog), div
     Options.applyStyle(dialog, 'theme_tab')
     Options.indicators dialog
 
@@ -431,13 +490,17 @@ Options =
   mascotTab: (dialog, mode) ->
     unless dialog
       dialog = $("#options", d.body)
+      
     unless mode
       mode = 'default'
+      
     parentdiv = $.el 'div'
       id: "mascotContainer"
+      
     suboptions = $.el 'div',
       className: "suboptions"
       innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div><div class=warning><code>Mascots</code> are currently disabled. Please enable them in the Style tab to use mascot options.</div>"
+      
     ul = $.el 'ul',
       className:   'mascots'
     keys = Object.keys(userMascots)

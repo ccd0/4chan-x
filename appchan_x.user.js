@@ -3027,104 +3027,145 @@
       }
       return _results;
     },
-    themeTab: function(dialog) {
-      var div, keys, name, parentdiv, theme, _i, _len;
+    themeTab: function(dialog, mode) {
+      var div, keys, name, parentdiv, suboptions, theme, _i, _j, _len, _len1;
       if (!dialog) {
         dialog = $("#options", d.body);
       }
+      if (!mode) {
+        mode = 'default';
+      }
       parentdiv = $.el('div', {
+        id: "themeContainer"
+      });
+      suboptions = $.el('div', {
         className: "suboptions",
         id: "themes",
         innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use theming options.</div>"
       });
       keys = Object.keys(userThemes);
       keys.sort();
-      for (_i = 0, _len = keys.length; _i < _len; _i++) {
-        name = keys[_i];
-        theme = userThemes[name];
-        if (!theme["Deleted"]) {
-          div = $.el('div', {
-            className: name === Conf['theme'] ? 'selectedtheme replyContainer' : 'replyContainer',
-            id: name,
-            innerHTML: "<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div>  <span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + name + "</span>  <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'> " + theme['Author'] + "</span>  <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>  <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>  <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  <a class=edit name='" + name + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit</a>  <a class=export name='" + name + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;export</a>  <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;delete</a>  <br>  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>    <a style='color:" + theme['Quotelinks'] + "!important; font-weight: 800;'>&gt;&gt;27582902</a>    <br>    Post content is right here.  </blockquote>  <h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
-          });
-          $.on($('a.edit', div), 'click', function() {
-            if (!Conf["Style"]) {
-              alert("Please enable Style Options and reload the page to use Theme Tools.");
-              return;
-            }
-            ThemeTools.init(this.name);
-            return Options.close();
-          });
-          $.on($('a.export', div), 'click', function() {
-            var exportTheme, exportedTheme;
-            exportTheme = userThemes[this.name];
-            exportTheme['Theme'] = this.name;
-            exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme));
-            if (window.open(exportedTheme, "_blank")) {
-
-            } else if (confirm("Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?")) {
-              return window.location(exportedTheme);
-            }
-          });
-          $.on($('a.delete', div), 'click', function() {
-            var container, settheme;
-            container = this.parentElement.parentElement;
-            if (!(container.previousSibling || container.nextSibling)) {
-              alert("Cannot delete theme (No other themes available).");
-              return;
-            }
-            if (confirm("Are you sure you want to delete \"" + container.id + "\"?")) {
-              if (container.id === Conf['theme']) {
-                if (settheme = container.previousSibling || container.nextSibling) {
-                  Conf['theme'] = settheme.id;
-                  $.addClass(settheme, 'selectedtheme');
-                  $.set('theme', Conf['theme']);
-                }
+      if (mode === "default") {
+        for (_i = 0, _len = keys.length; _i < _len; _i++) {
+          name = keys[_i];
+          theme = userThemes[name];
+          if (!theme["Deleted"]) {
+            div = $.el('div', {
+              className: name === Conf['theme'] ? 'selectedtheme replyContainer' : 'replyContainer',
+              id: name,
+              innerHTML: "<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div>  <span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + name + "</span>  <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'> " + theme['Author'] + "</span>  <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>  <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>  <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  <a class=edit name='" + name + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit</a>  <a class=export name='" + name + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;export</a>  <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;delete</a>  <br>  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>    <a style='color:" + theme['Quotelinks'] + "!important; font-weight: 800;'>&gt;&gt;27582902</a>    <br>    Post content is right here.  </blockquote>  <h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
+            });
+            $.on($('a.edit', div), 'click', function() {
+              if (!Conf["Style"]) {
+                alert("Please enable Style Options and reload the page to use Theme Tools.");
+                return;
               }
-              userThemes[container.id]["Deleted"] = true;
-              $.set('userThemes', userThemes);
-              return $.rm(container);
-            }
-          });
-          $.on($('.rice', div), 'click', Options.selectTheme);
-          $.on($('blockquote', div), 'click', Options.selectTheme);
-          $.add(parentdiv, div);
+              ThemeTools.init(this.name);
+              return Options.close();
+            });
+            $.on($('a.export', div), 'click', function() {
+              var exportTheme, exportedTheme;
+              exportTheme = userThemes[this.name];
+              exportTheme['Theme'] = this.name;
+              exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme));
+              if (window.open(exportedTheme, "_blank")) {
+
+              } else if (confirm("Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?")) {
+                return window.location(exportedTheme);
+              }
+            });
+            $.on($('a.delete', div), 'click', function() {
+              var container, settheme;
+              container = this.parentElement.parentElement;
+              if (!(container.previousSibling || container.nextSibling)) {
+                alert("Cannot delete theme (No other themes available).");
+                return;
+              }
+              if (confirm("Are you sure you want to delete \"" + container.id + "\"?")) {
+                if (container.id === Conf['theme']) {
+                  if (settheme = container.previousSibling || container.nextSibling) {
+                    Conf['theme'] = settheme.id;
+                    $.addClass(settheme, 'selectedtheme');
+                    $.set('theme', Conf['theme']);
+                  }
+                }
+                userThemes[container.id]["Deleted"] = true;
+                $.set('userThemes', userThemes);
+                return $.rm(container);
+              }
+            });
+            $.on($('.rice', div), 'click', Options.selectTheme);
+            $.on($('blockquote', div), 'click', Options.selectTheme);
+            $.add(suboptions, div);
+          }
         }
+        div = $.el('div', {
+          id: 'addthemes',
+          innerHTML: "  <a id=newtheme href='javascript:;'>New Theme</a> /   <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> /   <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> /   <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden> /   <a id=tUndelete href='javascript:;'>Undelete Theme</a>  "
+        });
+        $.on($("#newtheme", div), 'click', function() {
+          if (!Conf["Style"]) {
+            alert("Please enable Style Options and reload the page to use Theme Tools.");
+            return;
+          }
+          newTheme = true;
+          ThemeTools.init("untitled");
+          return Options.close();
+        });
+        $.on($("#import", div), 'click', function() {
+          return this.nextSibling.click();
+        });
+        $.on($("#importbutton", div), 'change', function(evt) {
+          return ThemeTools.importtheme("appchan", evt);
+        });
+        $.on($("#OCimport", div), 'click', function() {
+          return this.nextSibling.click();
+        });
+        $.on($("#OCimportbutton", div), 'change', function(evt) {
+          return ThemeTools.importtheme("oneechan", evt);
+        });
+        $.on($("#SSimportbutton", div), 'change', function(evt) {
+          return ThemeTools.importtheme("SS", evt);
+        });
+        $.on($("#SSimport", div), 'click', function() {
+          return this.nextSibling.click();
+        });
+        $.on($('#tUndelete', div), 'click', function() {
+          $.rm($("#themeContainer", d.body));
+          return Options.themeTab(false, 'undelete');
+        });
+      } else {
+        for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
+          name = keys[_j];
+          theme = userThemes[name];
+          if (theme["Deleted"]) {
+            div = $.el('div', {
+              className: name === Conf['theme'] ? 'selectedtheme replyContainer' : 'replyContainer',
+              id: name,
+              innerHTML: "<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div>  <span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + name + "</span>  <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'> " + theme['Author'] + "</span>  <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>  <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>  <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  <br>  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>    <a style='color:" + theme['Quotelinks'] + "!important; font-weight: 800;'>&gt;&gt;27582902</a>    <br>    I forgive you for using VLC to open me. ;__;  </blockquote></div>"
+            });
+            $.on(div, 'click', function() {
+              if (confirm("Are you sure you want to undelete \"" + this.id + "\"?")) {
+                userThemes[this.id]["Deleted"] = false;
+                $.set('userThemes', userThemes);
+                return $.rm(this);
+              }
+            });
+            $.add(suboptions, div);
+          }
+        }
+        div = $.el('div', {
+          id: 'addthemes',
+          innerHTML: "<a href='javascript:;'>Return</a>"
+        });
+        $.on($('a', div), 'click', function() {
+          $.rm($("#themeContainer", d.body));
+          return Options.themeTab();
+        });
       }
-      div = $.el('div', {
-        id: 'addthemes',
-        innerHTML: "<a id=newtheme href='javascript:;'>New Theme</a> / <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> / <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> / <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden>"
-      });
-      $.on($("#newtheme", div), 'click', function() {
-        if (!Conf["Style"]) {
-          alert("Please enable Style Options and reload the page to use Theme Tools.");
-          return;
-        }
-        newTheme = true;
-        ThemeTools.init("untitled");
-        return Options.close();
-      });
-      $.on($("#import", div), 'click', function() {
-        return this.nextSibling.click();
-      });
-      $.on($("#importbutton", div), 'change', function(evt) {
-        return ThemeTools.importtheme("appchan", evt);
-      });
-      $.on($("#OCimport", div), 'click', function() {
-        return this.nextSibling.click();
-      });
-      $.on($("#OCimportbutton", div), 'change', function(evt) {
-        return ThemeTools.importtheme("oneechan", evt);
-      });
-      $.on($("#SSimportbutton", div), 'change', function(evt) {
-        return ThemeTools.importtheme("SS", evt);
-      });
-      $.on($("#SSimport", div), 'click', function() {
-        return this.nextSibling.click();
-      });
+      $.add(parentdiv, suboptions);
+      $.add(parentdiv, div);
       $.add($('#theme_tab + div', dialog), parentdiv);
-      $.add($('#theme_tab + div', dialog), div);
       Options.applyStyle(dialog, 'theme_tab');
       return Options.indicators(dialog);
     },
