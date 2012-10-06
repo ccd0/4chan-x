@@ -1429,7 +1429,7 @@ Mascots =
     image:      'https://i.minus.com/iblDClpOzDBgCC.png'
     center:     true
   'George_Costanza':
-    category:   'Anime'
+    category:   'George'
     image:      'https://i.minus.com/iFWdpFGfzLs6v.png'
   'Hanako':
     category:   'Anime'
