@@ -304,10 +304,10 @@ h1,
   padding: 5px;
   text-align: left;
   vertical-align: middle;
-  left: 5%;
-  right: 5%;
-  top: 10%;
-  bottom: 10%;
+  left: 15%;
+  right: 15%;
+  top: 15%;
+  bottom: 15%;
 }
 #options #style_tab + div select {
   width: 100%;
