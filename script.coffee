@@ -2726,10 +2726,8 @@ Updater =
     checked = if Conf['Auto Update'] then 'checked' else ''
     html += "
       <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
-      <div><label>Interval (s)<input type=number name=Interval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>"
-    
-    if Conf["Optional Increase"]
-      html += "<div><label>BGInterval<input type=number name=BGInterval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>"
+      <div><label>Interval (s)<input type=number name=Interval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>
+      <div><label>BGInterval<input type=number name=BGInterval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>"
 
     html += "<div><input value='Update Now' type=button name='Update Now'></div>"
 
