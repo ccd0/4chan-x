@@ -887,7 +887,7 @@
       'Warnings': 'rgb(128,0,0)',
       'Shadow Color': 'rgba(119,46,40,1)',
       'Dark Theme': false,
-      'Custom CSS': "#qp div.post{\n  background-color:rgba(240,192,176,1);\n  box-shadow:5px 5px 5px rgba(128,128,128,0.5);\n}\n.post {\n  border-style: none solid solid none !important;\n}"
+      'Custom CSS': "#qp div.post{\n  background-color:rgba(240,192,176,1);\n  box-shadow:5px 5px 5px rgba(128,128,128,0.5);\n}\n.reply.post {\n  border-style: none solid solid none !important;\n}"
     },
     'Yotsuba B': {
       'Author': 'moot',
@@ -939,7 +939,7 @@
       'Warnings': 'rgb(87,87,123)',
       'Shadow Color': 'rgba(128,128,128,0.5)',
       'Dark Theme': false,
-      'Custom CSS': "#qp div.post{\n  background-color:rgba(214,186,208,1);\n  box-shadow:5px 5px 5px rgba(128,128,128,0.5);\n}\n.post {\n  border-style: none solid solid none !important;\n}"
+      'Custom CSS': "#qp div.post{\n  background-color:rgba(214,186,208,1);\n  box-shadow:5px 5px 5px rgba(128,128,128,0.5);\n}\n.reply.post {\n  border-style: none solid solid none !important;\n}"
     },
     'Zenburned': {
       'Author': 'lazy',
