@@ -1,7 +1,7 @@
 Style =
   init: ->
     @addStyle()
-    
+
     if Conf["Style"]
       $.ready @banner
 
@@ -41,10 +41,10 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         return '-o-'
 
   addStyle: (theme) ->
-    unless styleInit
-      $.off d, 'DOMNodeInserted', Style.addStyle
+    $.off d, 'DOMNodeInserted', Style.addStyle
+    unless Conf['styleInit']
       if d.head
-        styleInit = true
+        Conf['styleInit'] = true
         $.addStyle Style.css(userThemes[Conf['theme']]), 'appchan'
       else # XXX fox
         $.on d, 'DOMNodeInserted', Style.addStyle
@@ -54,7 +54,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       if el = $('#mascot', d.body) then $.rm el
       $.rm $.id 'appchan'
       $.addStyle Style.css(theme), 'appchan'
-  
+
   banner: ->
     banner = $ ".boardBanner", d.body
     title  = $.el "div"
@@ -65,7 +65,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       child
     $.add title, children
     $.after banner, title
-  
+
   padding: ->
     Style.padding.nav   = $ "#boardNavDesktop", d.body
     Style.padding.pages = $(".pages", d.body)
@@ -86,23 +86,22 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
 
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle
-    unless remInit
+    unless Conf['remInit']
       if d.head and d.head.children.length > 10
-        remInit = true
+        Conf['remInit'] = true
         nodes = []
         for node in d.head.children
           if node.rel == 'stylesheet'
             nodes.push node
           else if node.tagName == 'STYLE' and node.id != 'appchan'
             nodes.push node
-            break
           else
             continue
         for node in nodes
           $.rm node
       else
         $.on d, 'DOMNodeInserted', @remStyle
-        
+
   trimGlobalMessage: ->
     if el = $ "#globalMessage", d.body
       for child in el.children

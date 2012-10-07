@@ -142,7 +142,7 @@ ThemeTools =
 
         $.on fileInput, 'change', (evt) ->
           ThemeTools.uploadImage evt, @
-        
+
         $.after input, fileInput
 
       $.add themecontent, div

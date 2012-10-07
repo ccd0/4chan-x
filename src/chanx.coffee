@@ -2372,7 +2372,7 @@ ThreadHideLink =
       el: a
       open: (post) ->
         if post.el.classList.contains 'op' then true else false
-  
+
   iterate: ->
     ThreadHiding.hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     for thread in $$ '.thread'
@@ -2390,14 +2390,14 @@ ReplyHideLink =
       className: 'reply_hide_link'
       href: 'javascript:;'
       textContent: 'Hide / Restore Post'
-      
+
     $.on a, 'click', ->
       menu   = $.id 'menu'
       id     = menu.dataset.id
       root   = $.id "pc#{id}"
       button = root.firstChild
       ReplyHiding.toggle button, root, id
-      
+
     Menu.addEntry
       el: a
       open: (post) ->

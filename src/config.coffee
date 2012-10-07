@@ -257,7 +257,7 @@ Config =
       'Sidebar':                   ['normal',          'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['large', 'normal', 'minimal', 'hide']]
       'Stats Position':            ['bottom',          'The position of 4chan thread stats', ['top', 'bottom']]
       'Updater Position':          ['bottom',          'The position of 4chan thread updater', ['top', 'bottom']]
-      
+
   theme        : 'Yotsuba B'
   mascot       : ''
 
@@ -268,8 +268,6 @@ userMascots    = {}			# Installed mascots.
 editMascot     = {}			# Which mascot we're editting.
 userNavigation = {}			# ...
 editMode       = false		# If we're editting anything.
-styleInit      = false		# First initialization of CSS insertion.
-remInit        = false		# First initialization of CSS stripping.
 d              = document	# Shortcut
 g              = {}			# "globals"
 g.TYPE         = 'sfw'		# 4chan Board Type.

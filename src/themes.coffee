@@ -626,7 +626,7 @@ div.reply.highlight {
   border-radius:0px !important;
 }
 """
-  
+
   'Photon':
     'Author'                      : 'seaweed'
     'Author Tripcode'             : '!POMF.9waa'
@@ -690,7 +690,7 @@ div.reply.highlight {
   text-shadow: none !important;
 }
 """
-  
+
   'RedUX':
     'Author'                      : 'Zixaphir'
     'Author Tripcode'             : '!VGsTHECURE'
@@ -786,7 +786,7 @@ div.reply.highlight {
   box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7);
   border-radius: 4px;
 }"""
-  
+
   'Solarized':
     'Author'                      : 'ubuntufriend'
     'Author Tripcode'             : '!TRip.C0d'
@@ -843,7 +843,7 @@ div.reply.highlight {
   border:1px solid rgba(79,95,143,0.9);
 }
 """
-  
+
   'Yotsuba':
     'Author'                      : 'moot'
     'Author Tripcode'             : '!Ep8pui8Vw2'
@@ -903,7 +903,7 @@ div.reply.highlight {
   border-style: none solid solid none !important;
 }
 """
-  
+
   'Yotsuba B':
     'Author'                      : 'moot'
     'Author Tripcode'             : '!Ep8pui8Vw2'
@@ -963,7 +963,7 @@ div.reply.highlight {
   border-style: none solid solid none !important;
 }
 """
-  
+
   'Zenburned':
     'Author'                      : 'lazy'
     'Author Tripcode'             : '!HONKYn7h1.'
@@ -1810,8 +1810,8 @@ textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
 }
-thread>.replyContainer>.reply>div.postInfo { 
-  box-shadow: 0px 2px 3px #0A0A0A !important; 
+thread>.replyContainer>.reply>div.postInfo {
+  box-shadow: 0px 2px 3px #0A0A0A !important;
 }
 """
 

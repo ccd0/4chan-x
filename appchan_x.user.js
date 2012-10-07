@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 0.17.4 - 2012-10-06
+/*  appchan x - Version 0.17.4 - 2012-10-07
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -95,7 +95,7 @@
  *  this notice is kept intact.
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, g, remInit, styleInit, userMascots, userNavigation, userThemes;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, g, userMascots, userNavigation, userThemes;
 
   Config = {
     main: {
@@ -303,10 +303,6 @@
   userNavigation = {};
 
   editMode = false;
-
-  styleInit = false;
-
-  remInit = false;
 
   d = document;
 
@@ -1459,7 +1455,7 @@
       "Warnings": "rgb(79,79,79)",
       "Shadow Color": "rgba(28,32,49,.9)",
       "Dark Theme": true,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(44,48,65,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\nthread>.replyContainer>.reply>div.postInfo { \n  box-shadow: 0px 2px 3px #0A0A0A !important; \n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(44,48,65,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\nthread>.replyContainer>.reply>div.postInfo {\n  box-shadow: 0px 2px 3px #0A0A0A !important;\n}"
     },
     "4chan Rewired": {
       "Author": "kweeb",
@@ -9013,10 +9009,10 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     },
     addStyle: function(theme) {
       var el;
-      if (!styleInit) {
-        $.off(d, 'DOMNodeInserted', Style.addStyle);
+      $.off(d, 'DOMNodeInserted', Style.addStyle);
+      if (!Conf['styleInit']) {
         if (d.head) {
-          styleInit = true;
+          Conf['styleInit'] = true;
           return $.addStyle(Style.css(userThemes[Conf['theme']]), 'appchan');
         } else {
           return $.on(d, 'DOMNodeInserted', Style.addStyle);
@@ -9057,7 +9053,6 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     padding: function() {
       Style.padding.nav = $("#boardNavDesktop", d.body);
       Style.padding.pages = $(".pages", d.body);
-      $.log(Style.padding.pages);
       if (Conf["Boards Navigation"] === "sticky top" || Conf["Boards Navigation"] === "sticky bottom") {
         Style.padding.nav.property = Conf["Boards Navigation"].split(" ")[1];
         d.body.style["padding" + (Style.padding.nav.property.capitalize())] = "" + Style.padding.nav.offsetHeight + "px";
@@ -9067,7 +9062,6 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       }
       if (Style.padding.pages && (Conf["Pagination"] === "sticky top" || Conf["Pagination"] === "sticky bottom")) {
         Style.padding.pages.property = Conf["Pagination"].split(" ")[1];
-        $.log(Style.padding.pages.property);
         d.body.style["padding" + (Style.padding.pages.property.capitalize())] = "" + Style.padding.pages.offsetHeight + "px";
         return $.on(window || unsafeWindow, "resize", function() {
           return d.body.style["padding" + (Style.padding.pages.property.capitalize())] = "" + Style.padding.pages.offsetHeight + "px";
@@ -9077,9 +9071,9 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     remStyle: function() {
       var node, nodes, _i, _j, _len, _len1, _ref, _results;
       $.off(d, 'DOMNodeInserted', this.remStyle);
-      if (!remInit) {
+      if (!Conf['remInit']) {
         if (d.head && d.head.children.length > 10) {
-          remInit = true;
+          Conf['remInit'] = true;
           nodes = [];
           _ref = d.head.children;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -9088,7 +9082,6 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
               nodes.push(node);
             } else if (node.tagName === 'STYLE' && node.id !== 'appchan') {
               nodes.push(node);
-              break;
             } else {
               continue;
             }

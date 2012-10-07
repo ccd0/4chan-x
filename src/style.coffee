@@ -658,7 +658,7 @@ div.opContainer {
       else
         sidebarOffsetW = 0
         sidebarOffsetH = 0
-        
+
       if Conf["Sidebar Location"] == "left"
         sidebarLocation = ["left",  "right"]
       else

@@ -129,14 +129,14 @@ MascotTools =
         when "text"
           div = @input item, name
           input = $ 'input', div
-          
+
           if name == 'image'
-            
+
             $.on input, 'blur', ->
               editMascot[@name] = @value
               MascotTools.addMascot editMascot
               Style.addStyle Conf["theme"]
-        
+
             fileInput = $.el 'input'
               type:     "file"
               accept:   "image/*"
@@ -149,9 +149,9 @@ MascotTools =
 
             $.on fileInput, 'change', (evt) ->
               MascotTools.uploadImage evt, @
-        
+
             $.after input, fileInput
-            
+
           else
             $.on input, 'blur', ->
               editMascot[@name] = @value
@@ -217,7 +217,7 @@ MascotTools =
       editMascot.image = val
       Style.addStyle Conf["theme"]
 
-    reader.readAsDataURL file 
+    reader.readAsDataURL file
 
   addMascot: (mascot) ->
 

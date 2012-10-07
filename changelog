@@ -102,7 +102,7 @@ master
 0.9.8beta
 - Zixaphir
   Fix post form tabbed slideout on everything that isn't Gecko-based.
-  
+
 0.9.6beta
 - Mayhem
   Larger Comment text input by default for 4chan Pass users and on /f/ (no captcha).

@@ -225,7 +225,7 @@ Main =
 
     if Conf['Custom Navigation']
       CustomNavigation.init()
-    
+
     if Conf['Style']
       Style.padding()
 
