@@ -2233,6 +2233,9 @@ Mascots =
     category:   'Anime'
     image:      'https://i.minus.com/iVPKJeDXKPKeV.png'
     center:     true
+  'Kagamine_Rin_2':
+    category:   'Anime'
+    image:      'https://i.minus.com/jbkL01TIeJwEN6.png'
   'Kagari_Izuriha':
     category:   'Anime'
     image:      'https://i.minus.com/ihaFHsvFfL0vH.png'
