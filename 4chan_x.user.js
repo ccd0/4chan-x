@@ -3366,10 +3366,9 @@
         };
         count = 0;
         return int = setInterval((function() {
-          console.log(count);
           count++;
           Updater.update;
-          if (checkpost() !== -1 || count === 6) {
+          if (checkpost() !== -1 || count === 8) {
             return clearInterval(int);
           }
         }), 300);
