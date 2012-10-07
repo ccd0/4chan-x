@@ -3342,11 +3342,37 @@
     },
     cb: {
       post: function() {
+        var checkpost, count, int, save;
         if (!Conf['Auto Update This']) {
           return;
         }
+        save = [];
+        save.push($('textarea', QR.el).value);
         Updater.unsuccessfulFetchCount = 0;
-        return setTimeout(Updater.update, 1000);
+        setTimeout(Updater.update, 1000);
+        checkpost = function() {
+          var posts, pposts;
+          posts = d.querySelectorAll('.postMessage');
+          pposts = function(y) {
+            var x, _i, _len, _results;
+            _results = [];
+            for (_i = 0, _len = y.length; _i < _len; _i++) {
+              x = y[_i];
+              _results.push(x.textContent);
+            }
+            return _results;
+          };
+          return (pposts(posts)).indexOf(save[0]);
+        };
+        count = 0;
+        return int = setInterval((function() {
+          console.log(count);
+          count++;
+          Updater.update;
+          if (checkpost() !== -1 || count === 6) {
+            return clearInterval(int);
+          }
+        }), 300);
       },
       visibility: function() {
         var state;

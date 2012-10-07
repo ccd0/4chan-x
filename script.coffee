@@ -2770,8 +2770,21 @@ Updater =
   cb:
     post: ->
       return unless Conf['Auto Update This']
+      save = []
+      save.push $('textarea', QR.el).value
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 1000
+      checkpost = ->
+        posts = d.querySelectorAll('.postMessage')
+        pposts = (y) ->
+          x.textContent for x in y
+        (pposts posts).indexOf save[0]
+      count = 0
+      int = setInterval (->
+        count++
+        Updater.update
+        clearInterval int if checkpost() isnt -1 or count is 8
+      ), 300
     visibility: ->
       state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
       return if state isnt 'visible'
