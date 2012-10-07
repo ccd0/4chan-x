@@ -419,7 +419,7 @@
       'Warnings': 'rgb(133,76,158)',
       'Shadow Color': 'rgba(128,128,128,0.5)',
       'Dark Theme': false,
-      'Custom CSS': '#delform{ box-shadow: 0px 10px 10px 2px rgba(128,128,128,0.5); border-radius: 3px;padding:10px;}#options.reply.dialog,#options .dialog{background-color:#FFF;color:#000;border:2px solid #CCC;border-radius:6px;}#options ul{border-bottom:1px solid #DBD8D2;border-radius: 0px;}#options ul:last-of-type{border:none;}#qp div.post{background-color:rgba(255,255,255,0.9);border:1px solid #D1A2FF;color:#000;}'
+      'Custom CSS': "#delform {\nbox-shadow: 0px 10px 10px 2px rgba(128,128,128,0.5);\nborder-radius: 3px;\n  padding:10px;\n}\n#options.reply.dialog,\n#options .dialog {\n  background-color:#FFF;\n  color:#000;\n  border:2px solid #CCC;\n  border-radius:6px;\n}\n#options ul {\n  border-bottom:1px solid #DBD8D2;\n  border-radius: 0px;\n}\n#options ul:last-of-type{\n  border:none;\n}\n#qp div.post{\n  background-color:rgba(255,255,255,0.9);\n  border:1px solid #D1A2FF;\n  color:#000;\n}"
     },
     'Blackberry Jam': {
       'Author': 'seaweed',
@@ -471,7 +471,7 @@
       'Warnings': 'rgb(103,204,232)',
       'Shadow Color': 'rgba(29,31,33,1)',
       'Dark Theme': true,
-      'Custom CSS': 'div.reply {box-shadow: inset 0px 1px 2px 1px #111;}#qr {box-shadow: none;}#qr textarea, #qr input[name="name"], #qr input[name="email"], #qr input[name="sub"], #qr input[title="Verification"] {box-shadow: inset 0px 1px 2px 0px #111;}#qp div.post {background-color: rgba(29,29,33,1); border: 1px solid rgba(95,137,172,0.4);}input:checked .rice { background: url("http://i.imgur.com/CAewG.png"); }'
+      'Custom CSS': "div.reply {\n  box-shadow: inset 0px 1px 2px 1px #111;\n}\n#qr {\n  box-shadow: none;\n}\n#qr textarea,\n#qr input[name=\"name\"],\n#qr input[name=\"email\"],\n#qr input[name=\"sub\"],\n#qr input[title=\"Verification\"] {\n  box-shadow: inset 0px 1px 2px 0px #111;\n}\n#qp div.post {\n  background-color: rgba(29,29,33,1);\n  border: 1px solid rgba(95,137,172,0.4);\n}"
     },
     'Midnight Caek': {
       'Author': 'Zixaphir',
@@ -575,7 +575,7 @@
       'Warnings': 'rgb(87,87,123)',
       'Shadow Color': 'rgba(16,16,16,0.4)',
       'Dark Theme': true,
-      'Custom CSS': '.nameBlock>.useremail>postertrip{color: rgb(137,115,153);}a.backlink:hover{color: rgb(198,23,230);}.reply:target,.reply.highlight:target{background:rgb(37,38,42);}[alt="sticky"]+a{color: rgb(242,141,0);}[alt="closed"]+a{color: rgb(178,171,130);}input:checked .rice{border-color:rgb(21,21,21)}}input[type="submit"], input[type="button"], button {background: linear-gradient(#393939, #292929);border: 1px solid #191919;color: #AAA;text-shadow: 0 1px 1px #191919;}input[type="checkbox"], input[type="radio"] {background-color: #393939;border: 1px solid #191919;}input[type="checkbox"]:checked, input[type="radio"]:checked {background: linear-gradient(#595959, #393939);border: 1px solid #151515;} #delform { padding: 7px; }.subject:hover,div.post:hover .subject{color: #3F8DBF !important;}.postertrip:hover,div.post:hover .postertrip{color:#CC7212 !important;}.name:hover, div.post:hover .name {  color: #0AAEE7 !important;}.name,.subject,.postertrip {-webkit-transition:color .3s ease-in-out;-moz-transition:color .3s ease-in-out;}'
+      'Custom CSS': ".nameBlock > .useremail > postertrip {\n  color: rgb(137,115,153);\n}\na.backlink:hover {\n  color: rgb(198,23,230);\n}\n.reply:target,\n.reply.highlight:target {\n  background:rgb(37,38,42);\n}\n[alt=\"sticky\"] + a {\n  color: rgb(242,141,0);\n}\n[alt=\"closed\"] + a {\n  color: rgb(178,171,130);\n}\ninput:checked .rice {\n  border-color:rgb(21,21,21);\n}\ninput[type=\"submit\"],\ninput[type=\"button\"],\nbutton {\n  background: linear-gradient(#393939, #292929);\n  border: 1px solid #191919;\n  color: #AAA;\n  text-shadow: 0 1px 1px #191919;\n}\ninput[type=\"checkbox\"],\ninput[type=\"radio\"] {\nbackground-color: #393939;\n  border: 1px solid #191919;\n}\ninput[type=\"checkbox\"]:checked,\ninput[type=\"radio\"]:checked {\n  background: linear-gradient(#595959, #393939);\n  border: 1px solid #151515;\n}\n#delform {\n  padding: 7px;\n}\n.subject:hover,\ndiv.post:hover .subject {\n  color: #3F8DBF !important;\n}\n.postertrip:hover,\ndiv.post:hover .postertrip {\n  color:#CC7212 !important;\n}\n.name:hover,\ndiv.post:hover .name {\n  color: #0AAEE7 !important;\n}\n.name,\n.subject,\n.postertrip {\n  -webkit-transition:color .3s ease-in-out;\n  -moz-transition:color .3s ease-in-out;\n  -o-transition:color .3s ease-in-out;\n}"
     },
     'ObsidianChan': {
       'Author': 'seaweed',
@@ -627,7 +627,7 @@
       'Warnings': 'rgb(0,255,255)',
       'Shadow Color': 'rgba(44,44,44,0.4)',
       'Dark Theme': true,
-      'Custom CSS': '#qp div.post{background-color:rgba(0,0,0,0.8);border-radius:4px;border: 1px solid #333;}#qr {background-color: rgba(0,0,0,0.7);border: 1px solid #333;}'
+      'Custom CSS': "#qp div.post{\n  background-color:rgba(0,0,0,0.8);\n  border-radius:4px;\n  border: 1px solid #333;\n}\n#qr {\n  background-color: rgba(0,0,0,0.7);\n  border: 1px solid #333;\n}"
     },
     'PaisleyChan': {
       'Author': 'Ubuntufriend',
@@ -679,7 +679,7 @@
       'Warnings': 'rgb(187,187,187)',
       'Shadow Color': 'rgba(20,20,20,0.9)',
       'Dark Theme': true,
-      'Custom CSS': '#options{background-color: rgba(16,16,16,1) !important;}#delform blockquote {border-radius:3px;color:#bbb;background:#343838;padding:8px;box-shadow:0px 0px 20px rgba(25,25,25,0.6);border:1px solid #343838;border-bottom:2px solid #444848;border-radius:0px 6px 6px 6px;padding-top:15px;}.name {font-weight:800;}.nameBlock > .useremail > .name:hover,.nameBlock> .useremail> .postertrip:hover {color:#00dffc;}a.forwardlink {color:#608cae;font-weight:800;}div.reply,.reply.highlight{padding:0;}#qp div.post{border:1px solid rgba(128,172,206,0.5) !important;background-color:rgba(24,24,24,0.9) !important;}.name,.postertrip {text-shadow:0px 0px 6px rgba(20,20,20,0.9);font-weight:bold;background:#343838;border:1px solid #343838;border-radius:5px 5px 0px 0px;padding:4px 6px;padding-top:2px;}#delform,#delform blockquote {margin:0 10px 15px 0 !important;padding:0px;}a{-moz-transition:all 0.5s ease;-webkit-transition:all 0.5s ease;-o-transition:all 0.5s ease;}a.pointer{font-weight:bold;font-weight:normal;color:#777;padding-right:5px;}#delform .opContainer,#delform .replyContainer {opacity:0.45;-moz-transition:all 0.5s ease;-webkit-transition:all 0.5s ease;-o-transition:all 0.5s ease;}#delform .opContainer:hover,#delform .replyContainer:hover{opacity:1;}.reply,.reply.highlight{background:transparent;border:0px;padding:0px;padding-bottom:0px;border-radius:6px;}#delform blockquote{padding:5px;background:#343838;margin-top:0px;min-height:20px;padding-top:10px;clear:none;}#delform .file + blockquote{margin-top:-16px !important;padding-left:150px !important;}.file{margin-top: 2px;}a.backlink{border:1px solid #343838;border-radius:5px 5px 0px 0px;background:#343838;padding:2px 4px 2px;text-decoration:none;}a.forwardlink{color:#608CAE;text-shadow:0 0 6px rgba(96,140,174,0.8);}.subject{font-weight: bold;letter-spacing: 3px;background: transparent;}div.reply,div.reply.highlight {background-color: rgba(0,0,0,0) !important;border: none !important;}#qp div.post .name,#qp div.post a.backlink,#qp div.post blockquote {background:none !important;border:none !important;box-shadow:none !important;border-radius:0px; !important}'
+      'Custom CSS': "#options{\n  background-color: rgba(16,16,16,1) !important;\n}\n#delform blockquote {\n  border-radius:3px;\n  color:#bbb;\n  background:#343838;\n  padding:8px;\n  box-shadow:0px 0px 20px rgba(25,25,25,0.6);\n  border:1px solid #343838;\n  border-bottom:2px solid #444848;\n  border-radius:0px 6px 6px 6px;\n  padding-top:15px;\n}\n.name {\n  font-weight:800;\n}\n.nameBlock > .useremail > .name:hover,\n.nameBlock> .useremail> .postertrip:hover {\n  color:#00dffc;\n}\na.forwardlink {\n  color:#608cae;\n  font-weight:800;\n}\ndiv.reply,\n.reply.highlight {\n  padding:0;\n}\n#qp div.post {\n  border:1px solid rgba(128,172,206,0.5) !important;\n  background-color: rgba(24,24,24,0.9) !important;\n}\n.name,\n.postertrip {\n  text-shadow:0px 0px 6px rgba(20,20,20,0.9);\n  font-weight:bold;\n  background:#343838;\n  border:1px solid #343838;\n  border-radius:5px 5px 0px 0px;\n  padding:4px 6px;\n  padding-top:2px;\n}\n#delform,\n#delform blockquote {\n  margin:0 10px 15px 0 !important;\n  padding:0px;\n}\na {\n  -moz-transition:all 0.5s ease;\n  -webkit-transition:all 0.5s ease;\n  -o-transition:all 0.5s ease;\n}\na.pointer{\n  font-weight:bold;\n  font-weight:normal;\n  color:#777;\n  padding-right:5px;\n}\n#delform .opContainer,\n#delform .replyContainer {\n  opacity:0.45;\n  transition:all 0.5s ease;\n}\n#delform .opContainer:hover,\n#delform .replyContainer:hover {\n  opacity:1;\n}\n.reply,\n.reply.highlight {\n  background:transparent;\n  border:0px;\n  padding:0px;\n  padding-bottom:0px;\n  border-radius:6px;\n}\n#delform blockquote {\n  padding:5px;\n  background:#343838;\n  margin-top:0px;\n  min-height:20px;\n  padding-top:10px;\n  clear:none;\n}\n  #delform .file + blockquote{\n  margin-top:-16px !important;\n  padding-left:150px !important;\n}\n.file{\n  margin-top: 2px;\n}\na.backlink{\nborder:1px solid #343838;\nborder-radius:5px 5px 0px 0px;\nbackground:#343838;\npadding:2px 4px 2px;\n  text-decoration:none;\n}\na.forwardlink{\n  color:#608CAE;\n  text-shadow:0 0 6px rgba(96,140,174,0.8);\n}\n.subject{\n  font-weight: bold;\n  letter-spacing: 3px;\n  background: transparent;\n}\ndiv.reply,\ndiv.reply.highlight {\n  background-color: rgba(0,0,0,0) !important;\n  border: none !important;\n}\n#qp div.post .name,\n#qp div.post a.backlink,\n#qp div.post blockquote {\n  background:none !important;\n  border:none !important;\n  box-shadow:none !important;\n  border-radius:0px !important;\n}"
     },
     'Photon': {
       'Author': 'seaweed',
@@ -731,7 +731,7 @@
       'Warnings': 'rgb(51,51,51)',
       'Shadow Color': 'rgba(128,128,128,0.5)',
       'Dark Theme': false,
-      'Custom CSS': '.fileText{color: rgb(102,102,102);}.boardTitle {color: #004a99 !important;text-shadow: 1px 1px 1px #222 !important;}.boardSubtitle, .boardBanner .boardSubtitle > a{text-shadow: none !important;}'
+      'Custom CSS': ".fileText{\n  color: rgb(102,102,102);\n}\n.boardTitle {\n  color: #004a99 !important;\n  text-shadow: 1px 1px 1px #222 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a  {\n  text-shadow: none !important;\n}"
     },
     'RedUX': {
       'Author': 'Zixaphir',
@@ -783,7 +783,7 @@
       'Warnings': 'rgb(87,87,123)',
       'Shadow Color': 'rgba(60,60,60,0.6)',
       'Dark Theme': true,
-      'Custom CSS': '.replyContainer > .reply {background-color: transparent; border: 0; border-bottom: 1px #ccc solid;} #qp div.post { background-color: rgba(0,0,0,0.7); border-color: rgba(0,0,0,0.7); } #qp div.post, #qp .postNum a { color: #fcd; } #qp .nameBlock > .useremail > .name, #qp .nameBlock > .useremail > .postertrip, #qp .name, #qp .postertrip, #qp .trip { color: #ffaac0 !important; } #qp a { color: #aaaac8; } .boardBanner a, #qp a.backlink, #qp span.quote > a.quotelink { color: rgb(255,255,255); } #updater:not(:hover), #updater:not(:hover) #count:not(.new)::after, #stats { color: rgb(123,123,123); } .boardBanner {color: rgb(238,187,204)} .boardTitle { text-shadow: 1px 1px 1px #222; } #delform { padding: 1px 15px 2px 15px; box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7); border-radius: 4px; }'
+      'Custom CSS': ".replyContainer > .reply {\n  background-color: transparent;\n  border: 0;\n  border-bottom: 1px #ccc solid;\n}\n#qp div.post {\n  background-color: rgba(0,0,0,0.7);\n  border-color: rgba(0,0,0,0.7);\n}\n#qp div.post,\n#qp .postNum a {\n  color: #fcd;\n}\n#qp .nameBlock > .useremail > .name,\n#qp .nameBlock > .useremail > .postertrip,\n#qp .name,\n#qp .postertrip,\n#qp .trip {\n  color: #ffaac0 !important;\n}\n#qp a {\n  color: #aaaac8;\n}\n.boardBanner a,\n#qp a.backlink,\n#qp span.quote > a.quotelink {\n  color: rgb(255,255,255);\n}\n#updater:not(:hover),\n#updater:not(:hover) #count:not(.new)::after,\n#stats {\n  color: rgb(123,123,123);\n}\n.boardBanner {\n  color: rgb(238,187,204);\n}\n.boardTitle {\n  text-shadow: 1px 1px 1px #222;\n}\n#delform {\n  padding: 1px 15px 2px 15px;\n  box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7);\n  border-radius: 4px;\n}"
     },
     'Solarized': {
       'Author': 'ubuntufriend',
@@ -835,7 +835,7 @@
       'Warnings': 'rgb(108,113,196)',
       'Shadow Color': 'rgba(0,0,0,0.4)',
       'Dark Theme': true,
-      'Custom CSS': '#qp div.post{background-color:rgba(7,54,66,0.9);border:1px solid rgba(79,95,143,0.9);}'
+      'Custom CSS': "#qp div.post{\n  background-color:rgba(7,54,66,0.9);\n  border:1px solid rgba(79,95,143,0.9);\n}"
     },
     'Yotsuba': {
       'Author': 'moot',
@@ -887,7 +887,7 @@
       'Warnings': 'rgb(128,0,0)',
       'Shadow Color': 'rgba(119,46,40,1)',
       'Dark Theme': false,
-      'Custom CSS': '#qp div.post{background-color:rgba(240,192,176,1);box-shadow:5px 5px 5px rgba(128,128,128,0.5);}'
+      'Custom CSS': "#qp div.post{\n  background-color:rgba(240,192,176,1);\n  box-shadow:5px 5px 5px rgba(128,128,128,0.5);\n}\n.reply,\n.highlight,\n.dialog {\n  border-style: none solid solid none;\n}"
     },
     'Yotsuba B': {
       'Author': 'moot',
@@ -939,7 +939,7 @@
       'Warnings': 'rgb(87,87,123)',
       'Shadow Color': 'rgba(128,128,128,0.5)',
       'Dark Theme': false,
-      'Custom CSS': '#qp div.post{background-color:rgba(214,186,208,1);box-shadow:5px 5px 5px rgba(128,128,128,0.5);}'
+      'Custom CSS': "#qp div.post{\n  background-color:rgba(214,186,208,1);\n  box-shadow:5px 5px 5px rgba(128,128,128,0.5);\n}\n.reply,\n.highlight,\n.dialog {\n  border-style: none solid solid none;\n}"
     },
     'Zenburned': {
       'Author': 'lazy',
@@ -1043,7 +1043,7 @@
       "Warnings": "rgb(200,40,41)",
       "Shadow Color": "rgba(255,255,255,.9)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}.boardTitle {color: #cc5ec1 !important;text-shadow: 1px 1px 1px #772E28 !important;}.boardSubtitle, .boardBanner .boardSubtitle > a{text-shadow: none !important;}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\nnput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle {\n  color: #cc5ec1 !important;\n  text-shadow: 1px 1px 1px #772E28 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a{\n  text-shadow: none !important;\n}"
     },
     "Yotsuba Purple": {
       "Author": "seaweed",
@@ -1095,7 +1095,7 @@
       "Warnings": "rgb(153,0,0)",
       "Shadow Color": "rgba(254,237,255,.9)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,253,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n\n\n\n\n#boardNavDesktop,.pagelist,#imgControls{background:rgba(229, 219, 240,.9)!important;}#delform,.reply,.hidden_thread,.stub{border-radius:0!important}.reply,.hidden_thread,.stub\"+($SS.conf[\"Recolor Even Posts\"] ? \",.replyContainer:nth-of-type(even)>div\" : \"\")+\"{border-left:0!important;border-top:0!important;}.boardTitle {color: #591177 !important;text-shadow: 1px 1px 1px #222 !important;}.boardSubtitle, .boardBanner .boardSubtitle > a{text-shadow: none !important;}.postNum a { color: #000000 !important; }"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,253,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#boardNavDesktop,.pagelist,#imgControls{background:rgba(229, 219, 240,.9)!important;}#delform,.reply,.hidden_thread,.stub{border-radius:0!important}.reply,.hidden_thread,.stub\"+($SS.conf[\"Recolor Even Posts\"] ? \",.replyContainer:nth-of-type(even)>div\" : \"\")+\"{border-left:0!important;border-top:0!important;}.boardTitle {color: #591177 !important;text-shadow: 1px 1px 1px #222 !important;}.boardSubtitle, .boardBanner .boardSubtitle > a{text-shadow: none !important;}.postNum a { color: #000000 !important; }"
     },
     "Vimyanized Dark": {
       "Author": "seaweed",
@@ -1251,7 +1251,7 @@
       "Warnings": "rgb(153,0,0)",
       "Shadow Color": "rgba(255,255,243,.9)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}.boardTitle {color: #b58900 !important;text-shadow: 1px 1px 1px #999 !important;}.boardSubtitle, .boardBanner .boardSubtitle > a{text-shadow: none !important;}.postNum a {color: #657b83 !important;}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle {\n  color: #b58900 !important;\n  text-shadow: 1px 1px 1px #999 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}\n.postNum a {\n  color: #657b83 !important;\n}"
     },
     "Muted": {
       "Author": "seaweed",
@@ -1303,7 +1303,7 @@
       "Warnings": "rgb(153,0,0)",
       "Shadow Color": "rgba(255,255,249,.9)",
       "Dark Theme": false,
-      "Custom CSS": "#delform {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}.boardTitle{color:#bc312a!important;text-shadow:1px 1px 1px #772e28!important;}.boardSubtitle,.boardBanner .boardSubtitle>a{text-shadow:none!important;}.postNum a{color:#111111!important;}div.reply a.quotelink{color:#bc312a!important;}"
+      "Custom CSS": "#delform {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle{\ncolor:#bc312a!important;\n  text-shadow:1px 1px 1px #772e28!important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle>a{\n  text-shadow:none!important;\n}\n.postNum a{\n  color:#111111!important;\n}\ndiv.reply a.quotelink{\n  color:#bc312a!important;\n}"
     },
     "Monokai": {
       "Author": "seaweed",
@@ -1407,7 +1407,7 @@
       "Warnings": "rgb(201,144,144)",
       "Shadow Color": "rgba(51,52,53,.9)",
       "Dark Theme": true,
-      "Custom CSS": "#delform {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(67,68,69,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}.reply{border:0!important}"
+      "Custom CSS": "#delform {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(67,68,69,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.reply{\n border:0!important\n}"
     },
     "Blackboard": {
       "Author": "seaweed",
@@ -1459,7 +1459,7 @@
       "Warnings": "rgb(79,79,79)",
       "Shadow Color": "rgba(28,32,49,.9)",
       "Dark Theme": true,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(44,48,65,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\nthread>.replyContainer>.reply>div.postInfo { box-shadow: 0px 2px 3px #0A0A0A !important; } "
+      "Custom CSS": ".rice {\n  box-shadow:rgba(44,48,65,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\nthread>.replyContainer>.reply>div.postInfo { \n  box-shadow: 0px 2px 3px #0A0A0A !important; \n}"
     },
     "4chan Rewired": {
       "Author": "kweeb",
@@ -1563,7 +1563,7 @@
       "Warnings": "rgb(177,115,133)",
       "Shadow Color": "rgba(67,67,67,.9)",
       "Dark Theme": true,
-      "Custom CSS": "#delform {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(83,83,83,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}#delform{background:rgba(22,22,22,.8)!important;border:0!important;padding:1px!important;box-shadow:rgba(0,0,0,.8) 0 0 10px;}.postContainer>.reply{background-image:url(http://img714.imageshack.us/img714/3969/4ch2.gif)!important;border-bottom:#1f1f1f!important;border-radius:5px!important}.thread:not(.stub){background:0!important}a:not([href='javascript:;']){text-shadow:#0f0f0f 0 1px;}"
+      "Custom CSS": "#delform {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(83,83,83,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#delform{\n  background:rgba(22,22,22,.8)!important;\n  border:0!important;\n  padding:1px!important;\n  box-shadow:rgba(0,0,0,.8) 0 0 10px;\n}\n.postContainer>.reply{\n  background-image:url(\"http://img714.imageshack.us/img714/3969/4ch2.gif\")!important;\n  border-bottom:#1f1f1f!important;\n  border-radius:5px!important\n}\n.thread:not(.stub){\n  background:0!important\n}\na:not([href='javascript:;']){\n  text-shadow:#0f0f0f 0 1px;\n}"
     }
   };
 
