@@ -1182,7 +1182,34 @@ textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
 }
-#boardNavDesktop,.pagelist,#imgControls{background:rgba(229, 219, 240,.9)!important;}#delform,.reply,.hidden_thread,.stub{border-radius:0!important}.reply,.hidden_thread,.stub\"+($SS.conf[\"Recolor Even Posts\"] ? \",.replyContainer:nth-of-type(even)>div\" : \"\")+\"{border-left:0!important;border-top:0!important;}.boardTitle {color: #591177 !important;text-shadow: 1px 1px 1px #222 !important;}.boardSubtitle, .boardBanner .boardSubtitle > a{text-shadow: none !important;}.postNum a { color: #000000 !important; }
+#boardNavDesktop,
+.pagelist,
+#imgControls {
+  background:rgba(229, 219, 240,.9)!important;
+}
+#delform,
+.reply,
+.hidden_thread,
+.stub {
+  border-radius:0!important
+}
+.reply,
+.hidden_thread,
+.stub {
+  border-left:0!important;
+  border-top:0!important;
+}
+.boardTitle {
+  color: #591177 !important;
+  text-shadow: 1px 1px 1px #222 !important;
+}
+.boardSubtitle,
+.boardBanner .boardSubtitle > a {
+  text-shadow: none !important;
+}
+.postNum a {
+  color: #000000 !important;
+}
 """
 
   "Vimyanized Dark":
