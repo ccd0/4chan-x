@@ -142,8 +142,12 @@ h1,
 }
 #replies > div {
   counter-reset: thumbnails;
-  top: 0; right: 0; bottom: 0; left: 0;
-  margin: 0; padding: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
   overflow: hidden;
   position: absolute;
   white-space: pre;
@@ -722,6 +726,7 @@ time + span {
 /* Cleanup */
 #absbot,
 #autohide,
+#delform > hr,
 #ft li.fill,
 #imgControls label:first-of-type input,
 #imgControls .rice,
@@ -2695,17 +2700,11 @@ td[style="border: 1px dashed;"] {
 .replyContainer {
   margin-bottom: 0px;
 }
-#delform {
-  margin-bottom: 12px;
-}
 """
         when "small"
           css += """
 .replyContainer {
   margin-bottom: 2px;
-}
-#delform {
-  margin-bottom: 10px;
 }
 """
         when "medium"
@@ -2713,16 +2712,10 @@ td[style="border: 1px dashed;"] {
 .replyContainer {
   margin-bottom: 4px;
 }
-#delform {
-  margin-bottom: 8px;
-}
 """
         when "large"
           css += """
 .replyContainer {
-  margin-bottom: 6px;
-}
-#delform {
   margin-bottom: 6px;
 }
 """

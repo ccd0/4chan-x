@@ -155,12 +155,14 @@ MascotTools =
           else
             $.on input, 'blur', ->
               editMascot[@name] = @value
+              MascotTools.addMascot editMascot
               Style.addStyle Conf["theme"]
 
         when "number"
           div = @input item, name
           $.on $('input', div), 'blur', ->
             editMascot[@name] = parseInt @value
+            MascotTools.addMascot editMascot
             Style.addStyle Conf["theme"]
 
         when "select"
@@ -174,6 +176,7 @@ MascotTools =
 
           $.on $('select', div), 'change', ->
             editMascot[@name] = @value
+            MascotTools.addMascot editMascot
             Style.addStyle Conf["theme"]
 
         when "checkbox"
@@ -183,6 +186,7 @@ MascotTools =
             innerHTML: "<h2><label><input type=#{item[3]} class=field name='#{name}' #{if value then 'checked'}>#{item[0]}</label></h2><span class=description>#{item[2]}</span>"
           $.on $('input', div), 'click', ->
             editMascot[@name] = if @checked then true else false
+            MascotTools.addMascot editMascot
             Style.addStyle Conf["theme"]
 
       $.add $("#mascotcontent", dialog), div
