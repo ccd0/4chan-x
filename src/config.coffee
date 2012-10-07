@@ -268,7 +268,6 @@ userMascots    = {}			# Installed mascots.
 editMascot     = {}			# Which mascot we're editting.
 userNavigation = {}			# ...
 editMode       = false		# If we're editting anything.
-newTheme       = false		# If we're creating a theme.
 styleInit      = false		# First initialization of CSS insertion.
 remInit        = false		# First initialization of CSS stripping.
 d              = document	# Shortcut

@@ -5,16 +5,14 @@ Options =
       # Prevent race conditions
       Favicon.init() unless Favicon.el
       Options.dialog()
+
     for settings in ['navtopright', 'navbotright']
       a = $.el 'a',
         href: 'javascript:;'
         className: 'settingsWindowLink'
         textContent: 'AppChan X Settings'
       $.on a, 'click', ->
-        try
-          Options.dialog()
-        catch err
-          $.log err.stack
+        Options.dialog()
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
 
   dialog: (tab) ->
@@ -415,7 +413,6 @@ Options =
 
         # We prepare ThemeTools to expect no incoming theme.
         # themeoptions.coffee
-        newTheme = true
         ThemeTools.init "untitled"
         Options.close()
 

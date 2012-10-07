@@ -10,14 +10,14 @@ ThemeTools =
 
     editMode = "theme"
 
-    if newTheme
+    if userThemes[key]
+      editTheme = JSON.parse(JSON.stringify(userThemes[key]))
+      editTheme["Theme"] = key
+    else
       editTheme = {}
       editTheme["Theme"] = "Untitled"
       editTheme["Author"] = "Author"
       editTheme["Author Tripcode"] = "Unknown"
-    else
-      editTheme = JSON.parse(JSON.stringify(userThemes[key]))
-      editTheme["Theme"] = key
 
     #Objects are not guaranteed to have any type of arrangement, so we use a presorted
     #array to generate the layout of of the theme editor.
@@ -104,7 +104,7 @@ ThemeTools =
     themecontent = $("#themecontent", dialog)
 
     for item in layout
-      if newTheme
+      unless editTheme[item]
         editTheme[item] = ''
 
       div = $.el "div",
@@ -157,7 +157,7 @@ ThemeTools =
 
     $.add themecontent, div
 
-    if newTheme
+    unless editTheme["Custom CSS"]
       editTheme["Custom CSS"] = ""
 
     div = $.el "div",
@@ -467,7 +467,6 @@ textarea,
     alert "Theme \"#{name}\" saved."
 
   close: ->
-    newTheme = false
     editMode = false
     $.rm $("#themeConf", d.body)
     Style.addStyle Conf["Style"]

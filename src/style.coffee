@@ -670,25 +670,10 @@ div.opContainer {
   color: """ + theme["Background Color"] + """;
 }
 body {
-  padding: 16px 0 16px;
+  padding: 0;
 }
 body > script + hr + div {
   display: none;
-}
-@media only screen and (max-width: 1100px) {
-  body {
-    padding-top: 32px;
-  }
-}
-@media only screen and (max-width:689px) {
-  body {
-    padding-top: 47px;
-  }
-}
-@media only screen and (max-width:553px) {
-  body {
-    padding-top: 62px;
-  }
 }
 html,
 body {
@@ -705,6 +690,7 @@ textarea {
 .captcha img {
   opacity: """ + Conf["Captcha Opacity"] + """;
 }
+#boardNavDesktop,
 #qp div.post .postertrip,
 #qp div.post .subject,
 .capcode,
@@ -2348,7 +2334,6 @@ div.postInfo {
 .sideArrows a,
 .sideArrows span {
   position: static;
-  font-size: 9px;
   height: 10px;
   width: 20px;
 }

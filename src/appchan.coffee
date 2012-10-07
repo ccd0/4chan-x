@@ -4,7 +4,15 @@ Style =
     
     if Conf["Style"]
       $.ready @banner
+      if Conf["Boards Navigation"] == "sticky top"
+        navPad = ->
+          nav = $ "#boardNavDesktop", d.body
+          d.body.style.paddingTop = "#{nav.offsetHeight}px"
+          $.log nav.offsetHeight
 
+        $.ready ->
+          navPad()
+          
   emoji: (position) ->
     css = ''
     for item in Emoji
@@ -51,9 +59,9 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
     else
       if !theme or !theme.Author
         theme = userThemes[Conf['theme']]
-        if el = $('#mascot', d.body) then $.rm el
-        $.rm $.id 'appchan'
-        $.addStyle Style.css(theme), 'appchan'
+      if el = $('#mascot', d.body) then $.rm el
+      $.rm $.id 'appchan'
+      $.addStyle Style.css(theme), 'appchan'
   
   banner: ->
     banner = $ ".boardBanner", d.body
@@ -65,8 +73,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       child
     $.add title, children
     $.after banner, title
-      
-
+    
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle
     unless remInit
