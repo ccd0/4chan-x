@@ -225,6 +225,9 @@ Main =
 
     if Conf['Custom Navigation']
       CustomNavigation.init()
+    
+    if Conf['Style']
+      Style.padding()
 
     for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
       if a = $ "a[href$='/#{g.BOARD}/']", $.id nav

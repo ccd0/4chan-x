@@ -69,14 +69,18 @@ UI =
 # Trying to fix it usually results in breaking it elsewhere, so this fixes it everywhere I know of.
 console = if console? then console else console = window.console or unsafeWindow.console
 
-Array.prototype.contains = (object) ->
+# Various prototypes I've wanted or needed to add.
+Array::contains = (object) ->
   @indexOf(object) > -1
 
-Array.prototype.remove = (object) ->
+Array::remove = (object) ->
   if (index = @indexOf object) > -1
     @splice index, 1
   else
-    return false
+    false
+
+String::capitalize = ->
+  @charAt(0).toUpperCase() + @slice(1);
 
 
 ###

@@ -2395,6 +2395,10 @@
     }
   };
 
+  String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  };
+
   /*
   loosely follows the jquery api:
   http://api.jquery.com/
@@ -8952,21 +8956,9 @@
 
   Style = {
     init: function() {
-      var navPad;
       this.addStyle();
       if (Conf["Style"]) {
-        $.ready(this.banner);
-        if (Conf["Boards Navigation"] === "sticky top") {
-          navPad = function() {
-            var nav;
-            nav = $("#boardNavDesktop", d.body);
-            d.body.style.paddingTop = "" + nav.offsetHeight + "px";
-            return $.log(nav.offsetHeight);
-          };
-          return $.ready(function() {
-            return navPad();
-          });
-        }
+        return $.ready(this.banner);
       }
     },
     emoji: function(position) {
@@ -9061,6 +9053,26 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       })();
       $.add(title, children);
       return $.after(banner, title);
+    },
+    padding: function() {
+      Style.padding.nav = $("#boardNavDesktop", d.body);
+      Style.padding.pages = $(".pages", d.body);
+      $.log(Style.padding.pages);
+      if (Conf["Boards Navigation"] === "sticky top" || Conf["Boards Navigation"] === "sticky bottom") {
+        Style.padding.nav.property = Conf["Boards Navigation"].split(" ")[1];
+        d.body.style["padding" + (Style.padding.nav.property.capitalize())] = "" + Style.padding.nav.offsetHeight + "px";
+        $.on(window || unsafeWindow, "resize", function() {
+          return d.body.style["padding" + (Style.padding.nav.property.capitalize())] = "" + Style.padding.nav.offsetHeight + "px";
+        });
+      }
+      if (Style.padding.pages && (Conf["Pagination"] === "sticky top" || Conf["Pagination"] === "sticky bottom")) {
+        Style.padding.pages.property = Conf["Pagination"].split(" ")[1];
+        $.log(Style.padding.pages.property);
+        d.body.style["padding" + (Style.padding.pages.property.capitalize())] = "" + Style.padding.pages.offsetHeight + "px";
+        return $.on(window || unsafeWindow, "resize", function() {
+          return d.body.style["padding" + (Style.padding.pages.property.capitalize())] = "" + Style.padding.pages.offsetHeight + "px";
+        });
+      }
     },
     remStyle: function() {
       var node, nodes, _i, _j, _len, _len1, _ref, _results;
@@ -9604,6 +9616,9 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       $.addClass(d.body, 'fourchan_x');
       if (Conf['Custom Navigation']) {
         CustomNavigation.init();
+      }
+      if (Conf['Style']) {
+        Style.padding();
       }
       _ref = ['boardNavDesktop', 'boardNavDesktopFoot'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {

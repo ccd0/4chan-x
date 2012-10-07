@@ -4,15 +4,7 @@ Style =
     
     if Conf["Style"]
       $.ready @banner
-      if Conf["Boards Navigation"] == "sticky top"
-        navPad = ->
-          nav = $ "#boardNavDesktop", d.body
-          d.body.style.paddingTop = "#{nav.offsetHeight}px"
-          $.log nav.offsetHeight
 
-        $.ready ->
-          navPad()
-          
   emoji: (position) ->
     css = ''
     for item in Emoji
@@ -73,7 +65,25 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       child
     $.add title, children
     $.after banner, title
-    
+  
+  padding: ->
+    Style.padding.nav   = $ "#boardNavDesktop", d.body
+    Style.padding.pages = $(".pages", d.body)
+    if Conf["Boards Navigation"] == "sticky top" or Conf["Boards Navigation"] == "sticky bottom"
+      Style.padding.nav.property = Conf["Boards Navigation"].split(" ")[1]
+      d.body.style["padding#{Style.padding.nav.property.capitalize()}"] = "#{Style.padding.nav.offsetHeight}px"
+
+      $.on (window or unsafeWindow), "resize", ->
+        d.body.style["padding#{Style.padding.nav.property.capitalize()}"] = "#{Style.padding.nav.offsetHeight}px"
+
+    if Style.padding.pages and (Conf["Pagination"] == "sticky top" or Conf["Pagination"] == "sticky bottom")
+      Style.padding.pages.property = Conf["Pagination"].split(" ")[1]
+      d.body.style["padding#{Style.padding.pages.property.capitalize()}"] = "#{Style.padding.pages.offsetHeight}px"
+
+      $.on (window or unsafeWindow), "resize", ->
+        d.body.style["padding#{Style.padding.pages.property.capitalize()}"] = "#{Style.padding.pages.offsetHeight}px"
+
+
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle
     unless remInit
