@@ -899,10 +899,8 @@ div.reply.highlight {
   background-color:rgba(240,192,176,1);
   box-shadow:5px 5px 5px rgba(128,128,128,0.5);
 }
-.reply,
-.highlight,
-.dialog {
-  border-style: none solid solid none;
+.post {
+  border-style: none solid solid none !important;
 }
 """
   
@@ -961,10 +959,8 @@ div.reply.highlight {
   background-color:rgba(214,186,208,1);
   box-shadow:5px 5px 5px rgba(128,128,128,0.5);
 }
-.reply,
-.highlight,
-.dialog {
-  border-style: none solid solid none;
+.post {
+  border-style: none solid solid none !important;
 }
 """
   
