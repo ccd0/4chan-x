@@ -16,11 +16,11 @@ Options =
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
 
   dialog: (tab) ->
-    if editMode
+    if Conf['editMode']
       if confirm "Opening the options dialog will close and discard any theme changes made with the theme editor."
         try ThemeTools.close()
         try MascotTools.close()
-        editMode = false
+        Conf['editMode'] = false
       else
         return
     dialog = $.el 'div'

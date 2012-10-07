@@ -2475,7 +2475,7 @@ div.reply {
         when "large"
           pagemargin = "350px"
 
-      if editMode == "theme"
+      if Conf['editMode'] == "theme"
         pagemargin = "300px"
 
       if Conf["Sidebar"]  == "minimal"

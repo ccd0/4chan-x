@@ -7,7 +7,7 @@ MascotTools =
       position = 248
 
     #If we're editting anything, let's not change mascots any time we change a value.
-    unless editMode
+    unless Conf['editMode']
       names = []
 
       unless Conf["mascot"] = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]
@@ -47,7 +47,7 @@ MascotTools =
 
 
   dialog: (key) ->
-    editMode = "mascot"
+    Conf['editMode'] = "mascot"
     if userMascots[key]
       editMascot = JSON.parse(JSON.stringify(userMascots[key]))
     else
@@ -261,7 +261,7 @@ MascotTools =
     alert "Mascot \"#{aname}\" saved."
 
   close: ->
-    editMode   = false
+    Conf['editMode']   = false
     editMascot = {}
     $.rm $("#mascotConf", d.body)
     Style.addStyle Conf["Style"]

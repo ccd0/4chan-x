@@ -95,7 +95,7 @@
  *  this notice is kept intact.
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editMode, editTheme, g, userMascots, userNavigation, userThemes;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editTheme, g, mascotCategories, userMascots, userNavigation, userThemes;
 
   Config = {
     main: {
@@ -302,7 +302,7 @@
 
   userNavigation = {};
 
-  editMode = false;
+  mascotCategories = ["Anime", "NSFW", "Ponies", "George"];
 
   d = document;
 
@@ -2732,7 +2732,7 @@
     },
     dialog: function(tab) {
       var arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, time, tr, ul, updateIncrease, _i, _len, _ref, _ref1, _ref2, _ref3;
-      if (editMode) {
+      if (Conf['editMode']) {
         if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
           try {
             ThemeTools.close();
@@ -2740,7 +2740,7 @@
           try {
             MascotTools.close();
           } catch (_error) {}
-          editMode = false;
+          Conf['editMode'] = false;
         } else {
           return;
         }
@@ -8209,7 +8209,7 @@
 
   ThemeTools = {
     init: function(key) {
-      var dialog, div, fileInput, header, input, item, layout, themecontent, _i, _j, _len, _len1, _ref;
+      var dialog, div, editMode, fileInput, header, input, item, layout, themecontent, _i, _j, _len, _len1, _ref;
       if (!Conf["Style"]) {
         alert("Please enable Style Options and reload the page to use Theme Tools.");
         return;
@@ -8548,6 +8548,7 @@
       return alert("Theme \"" + name + "\" saved.");
     },
     close: function() {
+      var editMode;
       editMode = false;
       $.rm($("#themeConf", d.body));
       Style.addStyle(Conf["Style"]);
@@ -8563,7 +8564,7 @@
       } else {
         position = 248;
       }
-      if (!editMode) {
+      if (!Conf['editMode']) {
         names = [];
         if (!(Conf["mascot"] = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)])) {
           return;
@@ -8591,7 +8592,7 @@
     },
     dialog: function(key) {
       var dialog, div, fileInput, input, item, layout, name, option, optionHTML, value, _i, _len, _ref;
-      editMode = "mascot";
+      Conf['editMode'] = "mascot";
       if (userMascots[key]) {
         editMascot = JSON.parse(JSON.stringify(userMascots[key]));
       } else {
@@ -8771,7 +8772,7 @@
       return alert("Mascot \"" + aname + "\" saved.");
     },
     close: function() {
-      editMode = false;
+      Conf['editMode'] = false;
       editMascot = {};
       $.rm($("#mascotConf", d.body));
       Style.addStyle(Conf["Style"]);
@@ -9248,7 +9249,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
           case "large":
             pagemargin = "350px";
         }
-        if (editMode === "theme") {
+        if (Conf['editMode'] === "theme") {
           pagemargin = "300px";
         }
         if (Conf["Sidebar"] === "minimal") {
