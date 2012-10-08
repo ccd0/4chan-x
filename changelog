@@ -1,4 +1,11 @@
-master
+0.17.5
+- Zixaphir
+  Mascot Categories and category hiding.
+  Appchan now adds padding dynamically based on the size of the navigation bars.
+  The HTML element is now colored, meaning less white screens while loading.
+  Smaller options dialog
+
+0.17.4
 - Zixaphir
   Option to enable the board subtitle.
   Theme and Mascot undeleting
