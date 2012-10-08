@@ -3273,7 +3273,7 @@
                 }
                 return $.set("Enabled Mascots", Conf["Enabled Mascots"]);
               });
-              $.add(ul[mascot.category], li);
+              $.add(ul[mascot.category || MascotTools.categories[0]], li);
             }
           }
           batchmascots = $.el('div', {
@@ -8684,7 +8684,7 @@
       layout = {
         name: ["Mascot Name", "", "The name of the Mascot", "text"],
         image: ["Image", "", "Image of Mascot. Accepts Base64 as well as URLs. Shift+Click field to upload.", "text"],
-        category: ["Category", "Anime", "A general categorization of the mascot.", "select", MascotTools.categories],
+        category: ["Category", MascotTools.categories[0], "A general categorization of the mascot.", "select", MascotTools.categories],
         position: ["Position", "default", "Where the mascot is anchored in the Sidebar. The default option places the mascot above the Post Form or on the bottom of the page, depending on the Post Form setting.", "select", ["default", "top", "bottom"]],
         height: ["Height", "auto", "This value is used for manually setting a height for the mascot.", "text"],
         width: ["Width", "auto", "This value is used for manually setting a width for the mascot.", "text"],
@@ -8793,6 +8793,7 @@
       } else {
         value = editMascot[name] || item[1];
       }
+      editMascot[name] = value;
       div = $.el("div", {
         className: "mascotvar",
         innerHTML: "<h2>" + item[0] + "</h2><span class=description>" + item[2] + "</span><div class=option><input type=" + item[3] + " class=field name='" + name + "' placeholder='" + item[0] + "' value='" + value + "'></div>"
@@ -8831,6 +8832,13 @@
       if (typeof (aname = mascot.name) === "undefined" || aname === "") {
         alert("Please name your mascot.");
         return;
+      }
+      if (typeof mascot.image === "undefined" || mascot.image === "") {
+        alert("Your mascot must contain an image.");
+        return;
+      }
+      if (!mascot.category) {
+        mascot.category = MascotTools.categories[0];
       }
       delete mascot.name;
       if (userMascots[aname] && !Conf["Deleted Mascots"].remove(aname)) {

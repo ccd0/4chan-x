@@ -588,7 +588,7 @@ Options =
                 Conf[g.MASCOTSTRING].push @id
               $.set "Enabled Mascots", Conf["Enabled Mascots"]
   
-            $.add ul[mascot.category], li
+            $.add ul[mascot.category or MascotTools.categories[0]], li
   
         batchmascots = $.el 'div',
           id:        "mascots_batch"

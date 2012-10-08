@@ -77,7 +77,7 @@ MascotTools =
       ]
       category: [
         "Category"
-        "Anime"
+        MascotTools.categories[0]
         "A general categorization of the mascot."
         "select"
         MascotTools.categories
@@ -221,6 +221,8 @@ MascotTools =
     else
       value = editMascot[name] or item[1]
 
+    editMascot[name] = value
+    
     div = $.el "div",
       className: "mascotvar"
       innerHTML: "<h2>#{item[0]}</h2><span class=description>#{item[2]}</span><div class=option><input type=#{item[3]} class=field name='#{name}' placeholder='#{item[0]}' value='#{value}'></div>"
@@ -256,6 +258,13 @@ MascotTools =
     if typeof (aname = mascot.name) == "undefined" or aname == ""
       alert "Please name your mascot."
       return
+      
+    if typeof mascot.image == "undefined" or mascot.image == ""
+      alert "Your mascot must contain an image."
+      return
+    
+    unless mascot.category
+      mascot.category = MascotTools.categories[0]
 
     delete mascot.name
 
