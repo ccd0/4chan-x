@@ -9412,10 +9412,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       for (name in Mascots) {
         mascot = Mascots[name];
         if (userMascots[name]) {
-          if (userMascots[name] === mascot) {
-            continue;
-          }
-          if (userMascots[name]["Customized"]) {
+          if (userMascots[name] === mascot || userMascots[name]["Customized"]) {
             continue;
           }
         }

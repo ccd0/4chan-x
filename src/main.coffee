@@ -1,10 +1,11 @@
 Main =
   init: ->
+    # Use the Config variable to create the flat Conf object, which conveniently stores keyed configuration values.
     Main.flatten null, Config
 
-    # Load values from localStorage.
+    # Load user configuration from localStorage.
     for key, val of Conf
-      Conf[key]    = $.get key,              val
+      Conf[key]    = $.get key, val
 
     path = location.pathname
     pathname = path[1..].split '/'
@@ -13,6 +14,7 @@ Main =
       g.REPLY = true
       g.THREAD_ID = pathname[2]
 
+    # Check if the current board we're on is SFW or not, so we can handle options that need to know that.
     if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains g.BOARD
       g.TYPE = 'nsfw'
 
@@ -21,6 +23,7 @@ Main =
     else
       g.MASCOTSTRING = "Enabled Mascots"
 
+    # Load user themes, mascots, and their various statuses.
     userNavigation                = $.get "userNavigation", Navigation
     userThemes                    = $.get "userThemes",     Themes
     userMascots                   = $.get "userMascots",    Mascots
@@ -30,20 +33,24 @@ Main =
     Conf["Enabled Mascots nsfw"]  = $.get "Enabled Mascots nsfw", []
     Conf["Deleted Mascots"]       = $.get "Deleted Mascots",      []
 
+    # To allow updating of the mascots object, I iterate through the hard-coded mascots
     for name, mascot of Mascots
+      # ...and check if the mascot already exists
       if userMascots[name]
 
-        # Don't refresh the mascot if the mascot hasn't changed.
-        if userMascots[name] == mascot
+        # I can refresh it if code has changed, but don't if it hasn't.
+        # I also don't replace the mascot if the user has customized it.
+        # That would be mean.
+        if userMascots[name] == mascot or userMascots[name]["Customized"]
           continue
 
-        # Don't replace the mascot if the user has customized it. That would be mean.
-        if userMascots[name]["Customized"]
-          continue
-
+      # If I'm here, I can shove a fresh mascot into the mascot object.
       userMascots[name] = mascot
+      
+      # And I track that I have done so.
       mascotToggle = true
 
+    # ...so I can save only if something has been updated.
     if mascotToggle
       $.set "userMascots", userMascots
 
@@ -79,6 +86,7 @@ Main =
               field.value = "#{response} #{response}" unless /\s/.test response
               form.submit()
         return
+
       when 'images.4chan.org'
         $.ready ->
           if /^4chan - 404/.test(d.title) and Conf['404 Redirect']
@@ -87,9 +95,10 @@ Main =
             location.href = url if url
         return
 
+    # Prune hidden objects that have expired.
     Main.pruneHidden()
 
-    #major features
+    # Major features
 
     Style.init()
 
