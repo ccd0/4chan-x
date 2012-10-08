@@ -2750,18 +2750,18 @@ td[style="border: 1px dashed;"] {
       switch Conf["Sage Highlighting"]
         when "text"
           css += """
-a.useremail[href*="sage"]:last-of-type::after,
-a.useremail[href*="Sage"]:last-of-type::after,
-a.useremail[href*="SAGE"]:last-of-type::after {
+a.useremail[href*="sage"]:last-of-type::""" + Conf["Sage Highlight Position"] + """,
+a.useremail[href*="Sage"]:last-of-type::""" + Conf["Sage Highlight Position"] + """,
+a.useremail[href*="SAGE"]:last-of-type::""" + Conf["Sage Highlight Position"] + """ {
   content: " (sage) ";
   color: """ + theme["Sage"] + """;
 }
 """
         when "image"
           css += """
-a.useremail[href*="sage"]:last-of-type::after,
-a.useremail[href*="Sage"]:last-of-type::after,
-a.useremail[href*="SAGE"]:last-of-type::after {
+a.useremail[href*="sage"]:last-of-type::""" + Conf["Sage Highlight Position"] + """,
+a.useremail[href*="Sage"]:last-of-type::""" + Conf["Sage Highlight Position"] + """,
+a.useremail[href*="SAGE"]:last-of-type::""" + Conf["Sage Highlight Position"] + """ {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=") "  ";
 }
 """

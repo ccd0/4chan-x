@@ -212,7 +212,7 @@ Config =
     # If it doesn't exist, it is a boolean, if it does, it's either an array of the select options or "text".
 
     Dialogs:
-      'Announcements':             ['slideout',            'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']]
+      'Announcements':             ['slideout',        'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']]
       'Post Form Style':           ['tabbed slideout', 'How the post form will sit on the page.', ['fixed', 'slideout', 'tabbed slideout', 'transparent fade']]
       'Slideout Navigation':       ['compact',         'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']]
       'Slideout Watcher':          [true,              'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
@@ -238,6 +238,7 @@ Config =
       'NSFW/SFW Themes':           [false,             'Choose your theme based on the SFW status of the board you are viewing.']
       'Rounded Edges':             [true,              'Round the edges of various 4chan elements.']
       'Sage Highlighting':         ['image',           'Icons or text to highlight saged posts.', ['text', 'image', 'none']]
+      'Sage Highlight Position':   ['after',          'Position of Sage Highlighting', ['before', 'after']]
       'Tripcode Hider':            [true,              'Intelligent name field hiding.']
       'Underline Links':           [true,              'Put lines under hyperlinks.']
 
@@ -268,5 +269,5 @@ userMascots      = {}       # Installed mascots.
 editMascot       = {}       # Which mascot we're editting.
 userNavigation   = {}       # ...
 d                = document # Shortcut
-g                = {}       # "globals"
+g                = {}       # "Globals"
 g.TYPE         = 'sfw'		# 4chan Board Type.

@@ -265,6 +265,7 @@
         'NSFW/SFW Themes': [false, 'Choose your theme based on the SFW status of the board you are viewing.'],
         'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
         'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
+        'Sage Highlight Position': ['after', 'Position of Sage Highlighting', ['before', 'after']],
         'Tripcode Hider': [true, 'Intelligent name field hiding.'],
         'Underline Links': [true, 'Put lines under hyperlinks.']
       },
@@ -9395,10 +9396,10 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         }
         switch (Conf["Sage Highlighting"]) {
           case "text":
-            css += "a.useremail[href*=\"sage\"]:last-of-type::after,\na.useremail[href*=\"Sage\"]:last-of-type::after,\na.useremail[href*=\"SAGE\"]:last-of-type::after {\n  content: \" (sage) \";\n  color: " + theme["Sage"] + ";\n}";
+            css += "a.useremail[href*=\"sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"Sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"SAGE\"]:last-of-type::" + Conf["Sage Highlight Position"] + " {\ncontent: \" (sage) \";\ncolor: " + theme["Sage"] + ";\n}";
             break;
           case "image":
-            css += "a.useremail[href*=\"sage\"]:last-of-type::after,\na.useremail[href*=\"Sage\"]:last-of-type::after,\na.useremail[href*=\"SAGE\"]:last-of-type::after {\n  content: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=\") \"  \";\n}";
+            css += "a.useremail[href*=\"sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"Sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"SAGE\"]:last-of-type::" + Conf["Sage Highlight Position"] + " {\ncontent: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=\") \"  \";\n}";
         }
         switch (Conf["Announcements"]) {
           case "4chan default":
