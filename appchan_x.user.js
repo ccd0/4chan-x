@@ -95,7 +95,7 @@
  *  this notice is kept intact.
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editTheme, g, mascotCategories, userMascots, userNavigation, userThemes;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editTheme, g, userMascots, userNavigation, userThemes;
 
   Config = {
     main: {
@@ -301,8 +301,6 @@
   editMascot = {};
 
   userNavigation = {};
-
-  mascotCategories = ["Anime", "NSFW", "Ponies", "George"];
 
   d = document;
 
@@ -8209,12 +8207,12 @@
 
   ThemeTools = {
     init: function(key) {
-      var dialog, div, editMode, fileInput, header, input, item, layout, themecontent, _i, _j, _len, _len1, _ref;
+      var dialog, div, fileInput, header, input, item, layout, themecontent, _i, _j, _len, _len1, _ref;
       if (!Conf["Style"]) {
         alert("Please enable Style Options and reload the page to use Theme Tools.");
         return;
       }
-      editMode = "theme";
+      Conf['editMode'] = "theme";
       if (userThemes[key]) {
         editTheme = JSON.parse(JSON.stringify(userThemes[key]));
         editTheme["Theme"] = key;
@@ -8548,8 +8546,7 @@
       return alert("Theme \"" + name + "\" saved.");
     },
     close: function() {
-      var editMode;
-      editMode = false;
+      Conf['editMode'] = false;
       $.rm($("#themeConf", d.body));
       Style.addStyle(Conf["Style"]);
       return Options.dialog("theme");
@@ -8590,8 +8587,9 @@
       result = "#mascot img {\n  position: fixed;\n  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\nbottom:  " + (mascot.position === 'bottom' ? (mascot.vOffset || 0) + 0 + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + position) + "px") + ";" + location + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\ntop:     " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";\nheight:  " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height) + "px" : "auto") + ";\nwidth:   " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width) + "px" : "auto") + ";;\npointer-events: none;\n}";
       return result;
     },
+    categories: ["Anime", "George", "NSFW", "Ponies"],
     dialog: function(key) {
-      var dialog, div, fileInput, input, item, layout, name, option, optionHTML, value, _i, _len, _ref;
+      var dialog, div, fileInput, input, item, layout, name, option, optionHTML, setting, value, _i, _len, _ref;
       Conf['editMode'] = "mascot";
       if (userMascots[key]) {
         editMascot = JSON.parse(JSON.stringify(userMascots[key]));
@@ -8604,6 +8602,7 @@
       layout = {
         name: ["Mascot Name", "", "The name of the Mascot", "text"],
         image: ["Image", "", "Image of Mascot. Accepts Base64 as well as URLs. Shift+Click field to upload.", "text"],
+        category: ["Category", "Anime", "A general categorization of the mascot.", "select", MascotTools.categories],
         position: ["Position", "default", "Where the mascot is anchored in the Sidebar. The default option places the mascot above the Post Form or on the bottom of the page, depending on the Post Form setting.", "select", ["default", "top", "bottom"]],
         height: ["Height", "auto", "This value is used for manually setting a height for the mascot.", "text"],
         width: ["Width", "auto", "This value is used for manually setting a width for the mascot.", "text"],
@@ -8660,7 +8659,8 @@
             });
             break;
           case "select":
-            optionHTML = "<h2>" + item[0] + "</h2><span class=description>" + item[2] + "</span><div class=option><select name='" + name + "'><br>";
+            value = editMascot[name] || item[1];
+            optionHTML = "<h2>" + item[0] + "</h2><span class=description>" + item[2] + "</span><div class=option><select name='" + name + "' value='" + value + "'><br>";
             _ref = item[4];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               option = _ref[_i];
@@ -8671,6 +8671,8 @@
               className: "mascotvar",
               innerHTML: optionHTML
             });
+            setting = $("select", div);
+            setting.value = value;
             $.on($('select', div), 'change', function() {
               editMascot[this.name] = this.value;
               MascotTools.addMascot(editMascot);
@@ -9379,7 +9381,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
 
   Main = {
     init: function() {
-      var key, mascot, name, now, path, pathname, settings, temp, theme, val;
+      var key, mascot, mascotToggle, name, now, path, pathname, settings, temp, theme, val;
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
@@ -9401,53 +9403,28 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         g.MASCOTSTRING = "Enabled Mascots";
       }
       userNavigation = $.get("userNavigation", Navigation);
-      userThemes = $.get("userThemes", {});
-      userMascots = $.get("userMascots", {});
+      userThemes = $.get("userThemes", Themes);
+      userMascots = $.get("userMascots", Mascots);
       Conf["Enabled Mascots"] = $.get("Enabled Mascots", []);
       Conf["Enabled Mascots sfw"] = $.get("Enabled Mascots sfw", []);
       Conf["Enabled Mascots nsfw"] = $.get("Enabled Mascots nsfw", []);
       Conf["Deleted Mascots"] = $.get("Deleted Mascots", []);
-      for (name in userMascots) {
-        mascot = userMascots[name];
-        if (userMascots[name]["Enabled"]) {
-          userMascots[name]["Enabled"] = false;
-          if (!Conf["Enabled Mascots"].contains(name)) {
-            Conf["Enabled Mascots"].push(name);
-          }
-        }
-        if (userMascots[name]["Enabled_sfw"]) {
-          userMascots[name]["Enabled_sfw"] = false;
-          if (!Conf["Enabled Mascots sfw"].contains(name)) {
-            Conf["Enabled Mascots sfw"].push(name);
-          }
-        }
-        if (userMascots[name]["Enabled_nsfw"]) {
-          userMascots[name]["Enabled_nsfw"] = false;
-          if (!Conf["Enabled Mascots nsfw"].contains(name)) {
-            Conf["Enabled Mascots nsfw"].push(name);
-          }
-        }
-        if (userMascots[name]["Deleted"]) {
-          userMascots[name]["Deleted"] = false;
-          if (!Conf["Deleted Mascots"].contains(name)) {
-            Conf["Deleted Mascots"].push(name);
-          }
-        }
-        if (Mascots[name]) {
+      for (name in Mascots) {
+        mascot = Mascots[name];
+        if (userMascots[name]) {
           if (userMascots[name] === mascot) {
             continue;
           }
           if (userMascots[name]["Customized"]) {
             continue;
           }
-          userMascots[name] = mascot;
         }
+        userMascots[name] = mascot;
+        mascotToggle = true;
       }
-      $.set("userMascots", userMascots);
-      $.set("Enabled Mascots", Conf["Enabled Mascots"]);
-      $.set("Enabled Mascots sfw", Conf["Enabled Mascots sfw"]);
-      $.set("Enabled Mascots nsfw", Conf["Enabled Mascots nsfw"]);
-      $.set("Deleted Mascots", Conf["Deleted Mascots"]);
+      if (mascotToggle) {
+        $.set("userMascots", userMascots);
+      }
       if (userThemes !== Themes) {
         for (name in Themes) {
           theme = Themes[name];

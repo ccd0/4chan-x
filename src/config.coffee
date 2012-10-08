@@ -267,7 +267,6 @@ editTheme        = {}       # Currently editted theme.
 userMascots      = {}       # Installed mascots.
 editMascot       = {}       # Which mascot we're editting.
 userNavigation   = {}       # ...
-mascotCategories = ["Anime", "NSFW", "Ponies", "George"]
 d                = document # Shortcut
 g                = {}       # "globals"
 g.TYPE         = 'sfw'		# 4chan Board Type.

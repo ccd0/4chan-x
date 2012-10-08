@@ -45,6 +45,12 @@ MascotTools =
 
     return result
 
+  categories: [
+    "Anime"
+    "George"
+    "NSFW"
+    "Ponies"
+  ]
 
   dialog: (key) ->
     Conf['editMode'] = "mascot"
@@ -67,6 +73,13 @@ MascotTools =
         ""
         "Image of Mascot. Accepts Base64 as well as URLs. Shift+Click field to upload."
         "text"
+      ]
+      category: [
+        "Category"
+        "Anime"
+        "A general categorization of the mascot."
+        "select"
+        MascotTools.categories
       ]
       position: [
         "Position"
@@ -166,13 +179,16 @@ MascotTools =
             Style.addStyle Conf["theme"]
 
         when "select"
-          optionHTML = "<h2>#{item[0]}</h2><span class=description>#{item[2]}</span><div class=option><select name='#{name}'><br>"
+          value = editMascot[name] or item[1]
+          optionHTML = "<h2>#{item[0]}</h2><span class=description>#{item[2]}</span><div class=option><select name='#{name}' value='#{value}'><br>"
           for option in item[4]
             optionHTML = optionHTML + "<option value=\"#{option}\">#{option}</option>"
           optionHTML = optionHTML + "</select>"
           div = $.el 'div',
             className: "mascotvar"
             innerHTML: optionHTML
+          setting = $ "select", div
+          setting.value = value
 
           $.on $('select', div), 'change', ->
             editMascot[@name] = @value

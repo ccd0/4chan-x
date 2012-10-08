@@ -22,40 +22,16 @@ Main =
       g.MASCOTSTRING = "Enabled Mascots"
 
     userNavigation                = $.get "userNavigation", Navigation
-    userThemes                    = $.get "userThemes",     {}
-    userMascots                   = $.get "userMascots",    {}
+    userThemes                    = $.get "userThemes",     Themes
+    userMascots                   = $.get "userMascots",    Mascots
 
     Conf["Enabled Mascots"]       = $.get "Enabled Mascots",      []
     Conf["Enabled Mascots sfw"]   = $.get "Enabled Mascots sfw",  []
     Conf["Enabled Mascots nsfw"]  = $.get "Enabled Mascots nsfw", []
     Conf["Deleted Mascots"]       = $.get "Deleted Mascots",      []
 
-    # This will be switched to "Mascots" instead of "userMascots" after
-    # the next stable version of appchan to use the new mascot code.
-    for name, mascot of userMascots
-
-      # These "if" statements will be removed from further versions of appchan x
-      # and serve only to seamlessly transfer mascot configuration between the old
-      # mascot code and the new mascot code.
-      # Customized mascots are the only thing that will trigger these more than once.
-      if userMascots[name]["Enabled"]
-        userMascots[name]["Enabled"] = false
-        unless Conf["Enabled Mascots"].contains name
-          Conf["Enabled Mascots"].push name
-      if userMascots[name]["Enabled_sfw"]
-        userMascots[name]["Enabled_sfw"] = false
-        unless Conf["Enabled Mascots sfw"].contains name
-          Conf["Enabled Mascots sfw"].push name
-      if userMascots[name]["Enabled_nsfw"]
-        userMascots[name]["Enabled_nsfw"] = false
-        unless Conf["Enabled Mascots nsfw"].contains name
-          Conf["Enabled Mascots nsfw"].push name
-      if userMascots[name]["Deleted"]
-        userMascots[name]["Deleted"] = false
-        unless Conf["Deleted Mascots"].contains name
-          Conf["Deleted Mascots"].push name
-
-      if Mascots[name]
+    for name, mascot of Mascots
+      if userMascots[name]
 
         # Don't refresh the mascot if the mascot hasn't changed.
         if userMascots[name] == mascot
@@ -65,14 +41,11 @@ Main =
         if userMascots[name]["Customized"]
           continue
 
-        userMascots[name] = mascot
+      userMascots[name] = mascot
+      mascotToggle = true
 
-    # This will also be removed.
-    $.set "userMascots",          userMascots
-    $.set "Enabled Mascots",      Conf["Enabled Mascots"]
-    $.set "Enabled Mascots sfw",  Conf["Enabled Mascots sfw"]
-    $.set "Enabled Mascots nsfw", Conf["Enabled Mascots nsfw"]
-    $.set "Deleted Mascots",      Conf["Deleted Mascots"]
+    if mascotToggle
+      $.set "userMascots", userMascots
 
     # Same thing with themes.
     unless userThemes == Themes

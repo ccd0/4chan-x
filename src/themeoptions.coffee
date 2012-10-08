@@ -8,7 +8,7 @@ ThemeTools =
       alert "Please enable Style Options and reload the page to use Theme Tools."
       return
 
-    editMode = "theme"
+    Conf['editMode'] = "theme"
 
     if userThemes[key]
       editTheme = JSON.parse(JSON.stringify(userThemes[key]))
@@ -467,7 +467,7 @@ textarea,
     alert "Theme \"#{name}\" saved."
 
   close: ->
-    editMode = false
+    Conf['editMode'] = false
     $.rm $("#themeConf", d.body)
     Style.addStyle Conf["Style"]
     Options.dialog("theme")
