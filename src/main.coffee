@@ -7,6 +7,8 @@ Main =
     for key, val of Conf
       Conf[key]    = $.get key, val
 
+    Conf['Hidden Categories'] = $.get "Hidden Categories", ["NSFW"]
+      
     path = location.pathname
     pathname = path[1..].split '/'
     [g.BOARD, temp] = pathname

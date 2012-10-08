@@ -2407,7 +2407,6 @@ ReplyHideLink =
     return if post.isInlined or post.ID is post.threadID
 
     if post.ID of g.hiddenReplies
-      $.log post.ID
       ReplyHiding.hide post.root
 
 ThreadStats =

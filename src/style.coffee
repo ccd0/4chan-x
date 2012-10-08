@@ -34,16 +34,42 @@ a[href="javascript:;"] {
 #qp .rice {
   display: none !important;
 }
-.menu_button {
+.menu_button,
+#mascot_hide {
   display: inline-block;
 }
-.menu_button > span {
+.menu_button > span,
+#mascot_hide > span {
   border-top:   .5em solid;
   border-right: .3em solid transparent;
   border-left:  .3em solid transparent;
   display: inline-block;
   margin: 2px;
   vertical-align: middle;
+}
+#mascot_hide {
+  position: absolute;
+  top: 2px;
+  right: 20px;
+  width: 120px;
+}
+#mascot_hide input,
+#mascot_hide .rice {
+  float: left;
+}
+#mascot_hide > div {
+  height: 0;
+  text-align: right;
+  overflow: hidden;
+}
+#mascot_hide:hover > div {
+  height: auto;
+}
+#mascot_hide label {
+  width: 100%;
+  border-bottom: 1px solid inherit;
+  display: block;
+  clear: both;
 }
 #menu {
   position: absolute;
@@ -387,7 +413,7 @@ h1,
   padding: 0;
 }
 #options .mascot {
-  display: inline;
+  display: inline-block;
   padding: 0;
   position: relative;
 }
@@ -734,6 +760,7 @@ time + span {
 #postPassword + span,
 .autoPagerS,
 .board > hr:last-of-type,
+.boardBanner div,
 """ + (unless Conf["Board Subtitle"] then ".boardSubtitle,") + """
 .closed,
 .deleteform,

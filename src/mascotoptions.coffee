@@ -312,6 +312,6 @@ MascotTools =
       $.set 'userMascots', userMascots
       alert "Mascot \"#{name}\" imported!"
       $.rm $("#mascotContainer", d.body)
-      Options.mascotTab()
+      Options.mascotTab.dialog()
 
     reader.readAsText(file)
