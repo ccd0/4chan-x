@@ -4941,10 +4941,7 @@
         html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
       }
       checked = Conf['Auto Update'] ? 'checked' : '';
-      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input type=number name=Interval" + (Conf['Interval per board'] ? "_" + g.BOARD : '') + " class=field min=1></label></div>";
-      if (Conf["Optional Increase"]) {
-        html += "<div><label>BGInterval<input type=number name=BGInterval" + (Conf['Interval per board'] ? "_" + g.BOARD : '') + " class=field min=1></label></div>";
-      }
+      html += "      <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>      <div><label>Interval (s)<input type=number name=Interval" + (Conf['Interval per board'] ? "_" + g.BOARD : '') + " class=field min=1></label></div>      <div><label>BGInterval<input type=number name=BGInterval" + (Conf['Interval per board'] ? "_" + g.BOARD : '') + " class=field min=1></label></div>";
       html += "<div><input value='Update Now' type=button name='Update Now'></div>";
       dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.count = $('#count', dialog);
@@ -4989,11 +4986,36 @@
     },
     cb: {
       post: function() {
+        var checkpost, count, int, save;
         if (!Conf['Auto Update This']) {
           return;
         }
+        save = [];
+        save.push($('textarea', QR.el).value);
         Updater.unsuccessfulFetchCount = 0;
-        return setTimeout(Updater.update, 1000);
+        setTimeout(Updater.update, 1000);
+        checkpost = function() {
+          var posts, pposts;
+          posts = d.querySelectorAll('.postMessage');
+          pposts = function(y) {
+            var x, _i, _len, _results;
+            _results = [];
+            for (_i = 0, _len = y.length; _i < _len; _i++) {
+              x = y[_i];
+              _results.push(x.textContent);
+            }
+            return _results;
+          };
+          return (pposts(posts)).indexOf(save[0]);
+        };
+        count = 0;
+        return int = setInterval((function() {
+          count++;
+          Updater.update;
+          if (checkpost() !== -1 || count === 8) {
+            return clearInterval(int);
+          }
+        }), 300);
       },
       visibility: function() {
         var state;
@@ -5150,6 +5172,9 @@
       j = Math.min(this.unsuccessfulFetchCount, 9);
       oi = function(y) {
         var x, _i, _len, _results;
+        while (y.length < 10) {
+          y.push(y[y.length - 1]);
+        }
         _results = [];
         for (_i = 0, _len = y.length; _i < _len; _i++) {
           x = y[_i];
@@ -7459,11 +7484,10 @@
             }
             continue;
           }
-          type = isReply && cooldown.isReply ? isSage && cooldown.isSage ? 'sage' : hasFile && cooldown.hasFile ? 'file' : 'post' : !(isReply || cooldown.isReply) ? 'thread' : void 0;
-          if (type) {
+          if (isReply === cooldown.isReply) {
+            type = !isReply ? 'thread' : isSage && cooldown.isSage ? 'sage' : hasFile && cooldown.hasFile ? 'file' : 'post';
             elapsed = Math.floor((now - start) / 1000);
             seconds = Math.max(seconds, types[type] - elapsed);
-            type = '';
           }
           if (!((start <= now && now <= cooldown.timeout))) {
             QR.cooldown.unset(start);

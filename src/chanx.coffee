@@ -1008,10 +1008,8 @@ Updater =
     checked = if Conf['Auto Update'] then 'checked' else ''
     html += "
       <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
-      <div><label>Interval (s)<input type=number name=Interval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>"
-
-    if Conf["Optional Increase"]
-      html += "<div><label>BGInterval<input type=number name=BGInterval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>"
+      <div><label>Interval (s)<input type=number name=Interval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>
+      <div><label>BGInterval<input type=number name=BGInterval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>"
 
     html += "<div><input value='Update Now' type=button name='Update Now'></div>"
 
@@ -1052,8 +1050,21 @@ Updater =
   cb:
     post: ->
       return unless Conf['Auto Update This']
+      save = []
+      save.push $('textarea', QR.el).value
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 1000
+      checkpost = ->
+        posts = d.querySelectorAll('.postMessage')
+        pposts = (y) ->
+          x.textContent for x in y
+        (pposts posts).indexOf save[0]
+      count = 0
+      int = setInterval (->
+        count++
+        Updater.update
+        clearInterval int if checkpost() isnt -1 or count is 8
+      ), 300
     visibility: ->
       state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
       return if state isnt 'visible'
@@ -1178,6 +1189,8 @@ Updater =
     wb = Conf['updateIncreaseB'].split ','
     j  = Math.min @unsuccessfulFetchCount, 9
     oi = (y) ->
+      while y.length < 10
+        y.push y[y.length-1]
       Number x for x in y
     hidden = d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
     unless hidden
