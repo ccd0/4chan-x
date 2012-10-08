@@ -2722,7 +2722,12 @@
           textContent: 'AppChan X Settings'
         });
         $.on(a, 'click', function() {
-          return Options.dialog();
+          try {
+            return Options.dialog();
+          } catch (err) {
+            $.log(err);
+            return $.log(err.stack);
+          }
         });
         _results.push($.prepend($.id(settings), [$.tn('['), a, $.tn('] ')]));
       }
@@ -3169,28 +3174,39 @@
       return Options.indicators(dialog);
     },
     mascotTab: function(dialog, mode) {
-      var batchmascots, div, keys, li, mascot, name, parentdiv, suboptions, ul, _i, _j, _len, _len1;
+      var batchmascots, category, div, header, keys, li, mascot, name, parentdiv, suboptions, ul, _i, _j, _k, _len, _len1, _len2, _ref;
+      ul = {};
       if (!dialog) {
         dialog = $("#options", d.body);
       }
       if (!mode) {
-        mode = 'default';
+        mode = "default";
       }
-      parentdiv = $.el('div', {
+      parentdiv = $.el("div", {
         id: "mascotContainer"
       });
-      suboptions = $.el('div', {
+      suboptions = $.el("div", {
         className: "suboptions",
         innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div><div class=warning><code>Mascots</code> are currently disabled. Please enable them in the Style tab to use mascot options.</div>"
       });
-      ul = $.el('ul', {
-        className: 'mascots'
-      });
+      _ref = MascotTools.categories;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        category = _ref[_i];
+        ul[category] = $.el("ul", {
+          className: "mascots " + category
+        });
+        header = $.el("h3", {
+          className: "mascotHeader",
+          textContent: category
+        });
+        $.add(ul[category], header);
+        $.add(suboptions, ul[category]);
+      }
       keys = Object.keys(userMascots);
       keys.sort();
       if (mode === 'default') {
-        for (_i = 0, _len = keys.length; _i < _len; _i++) {
-          name = keys[_i];
+        for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
+          name = keys[_j];
           if (!Conf["Deleted Mascots"].contains(name)) {
             mascot = userMascots[name];
             li = $.el('li', {
@@ -3210,12 +3226,12 @@
               return Options.close();
             });
             $.on($('a.delete', li), 'click', function() {
-              var container, type, _j, _len1, _ref;
+              var container, type, _k, _len2, _ref1;
               container = this.parentElement.parentElement.parentElement.parentElement;
               if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
-                _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
-                for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-                  type = _ref[_j];
+                _ref1 = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
+                for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+                  type = _ref1[_k];
                   Conf[type].remove(this.name);
                   $.set(type, Conf[type]);
                 }
@@ -3244,8 +3260,7 @@
               }
               return $.set("Enabled Mascots", Conf["Enabled Mascots"]);
             });
-            $.add(ul, li);
-            $.add(suboptions, ul);
+            $.add(ul[mascot.category], li);
           }
         }
         batchmascots = $.el('div', {
@@ -3253,10 +3268,10 @@
           innerHTML: "<a href=\"javascript:;\" id=clear>Clear All</a> / <a href=\"javascript:;\" id=selectAll>Select All</a> / <a href=\"javascript:;\" id=createNew>New Mascot</a> / <a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden> / <a href=\"javascript:;\" id=undelete>Undelete Mascots</a>"
         });
         $.on($('#clear', batchmascots), 'click', function() {
-          var _j, _len1, _ref;
-          _ref = Conf[g.MASCOTSTRING];
-          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-            name = _ref[_j];
+          var _k, _len2, _ref1;
+          _ref1 = Conf[g.MASCOTSTRING];
+          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+            name = _ref1[_k];
             $.rmClass($.id(name), 'enabled');
             Conf[g.MASCOTSTRING].remove(name);
           }
@@ -3299,8 +3314,8 @@
           return Options.mascotTab(false, 'undelete');
         });
       } else {
-        for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
-          name = keys[_j];
+        for (_k = 0, _len2 = keys.length; _k < _len2; _k++) {
+          name = keys[_k];
           if (Conf["Deleted Mascots"].contains(name)) {
             mascot = userMascots[name];
             li = $.el('li', {
@@ -8587,7 +8602,7 @@
       result = "#mascot img {\n  position: fixed;\n  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\nbottom:  " + (mascot.position === 'bottom' ? (mascot.vOffset || 0) + 0 + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + position) + "px") + ";" + location + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\ntop:     " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";\nheight:  " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height) + "px" : "auto") + ";\nwidth:   " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width) + "px" : "auto") + ";;\npointer-events: none;\n}";
       return result;
     },
-    categories: ["Anime", "George", "NSFW", "Ponies"],
+    categories: ["Anime", "George", "NSFW", "Ponies", "Silhouette"],
     dialog: function(key) {
       var dialog, div, fileInput, input, item, layout, name, option, optionHTML, setting, value, _i, _len, _ref;
       Conf['editMode'] = "mascot";

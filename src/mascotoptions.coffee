@@ -50,6 +50,7 @@ MascotTools =
     "George"
     "NSFW"
     "Ponies"
+    "Silhouette"
   ]
 
   dialog: (key) ->

@@ -12,7 +12,11 @@ Options =
         className: 'settingsWindowLink'
         textContent: 'AppChan X Settings'
       $.on a, 'click', ->
-        Options.dialog()
+        try
+          Options.dialog()
+        catch err
+          $.log err
+          $.log err.stack
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
 
   dialog: (tab) ->
@@ -488,24 +492,35 @@ Options =
 
 
   mascotTab: (dialog, mode) ->
+    ul = {}
     unless dialog
       dialog = $("#options", d.body)
 
     unless mode
-      mode = 'default'
+      mode = "default"
 
-    parentdiv = $.el 'div'
+    parentdiv = $.el "div"
       id: "mascotContainer"
 
-    suboptions = $.el 'div',
+    suboptions = $.el "div",
       className: "suboptions"
       innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div><div class=warning><code>Mascots</code> are currently disabled. Please enable them in the Style tab to use mascot options.</div>"
 
-    ul = $.el 'ul',
-      className:   'mascots'
+    # Create a keyed Unordered List Element for each mascot category.
+    for category in MascotTools.categories
+      ul[category] = $.el "ul",
+        className:   "mascots #{category}"
+      
+      header = $.el "h3"
+        className:   "mascotHeader"
+        textContent: category
+
+      # Add a text node to use as a header.
+      $.add ul[category], header
+      $.add suboptions, ul[category]
+        
     keys = Object.keys(userMascots)
     keys.sort()
-
 
     if mode == 'default'
 
@@ -561,8 +576,7 @@ Options =
               Conf[g.MASCOTSTRING].push @id
             $.set "Enabled Mascots", Conf["Enabled Mascots"]
 
-          $.add ul, li
-          $.add suboptions, ul
+          $.add ul[mascot.category], li
 
       batchmascots = $.el 'div',
         id:        "mascots_batch"
