@@ -105,7 +105,7 @@
           e.stopPropagation()
 
           # We essentially check for a <br> and make sure we're not merging non-post content.
-          if "br" == @.nextSibling.tagName.toLowerCase() and @.nextSibling.nextSibling.className != "abbr"
+          if ("br" == @.nextSibling.tagName.toLowerCase() or "spoiler" == @.nextSibling.className) and @.nextSibling.nextSibling.className != "abbr"
             $.rm @.nextSibling
             child = $.tn(@textContent + @.nextSibling.textContent)
             $.rm @.nextSibling

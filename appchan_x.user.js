@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 0.18.0 - 2012-10-07
+/*  appchan x - Version 0.18.0 - 2012-10-08
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -9000,7 +9000,7 @@
           if (e.shiftKey && e.ctrlKey) {
             e.preventDefault();
             e.stopPropagation();
-            if ("br" === this.nextSibling.tagName.toLowerCase() && this.nextSibling.nextSibling.className !== "abbr") {
+            if (("br" === this.nextSibling.tagName.toLowerCase() || "spoiler" === this.nextSibling.className) && this.nextSibling.nextSibling.className !== "abbr") {
               $.rm(this.nextSibling);
               child = $.tn(this.textContent + this.nextSibling.textContent);
               $.rm(this.nextSibling);
