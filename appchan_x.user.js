@@ -3571,7 +3571,7 @@
         });
         $.on($('a', save), 'click', function() {
           Style.addStyle();
-          $.rm($("#themeContainer", d.body));
+          $.rm($("#mascotContainer", d.body));
           return Options.mascotTab();
         });
         return $.add($('#' + tab + ' + div', dialog), save);

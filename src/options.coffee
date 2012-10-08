@@ -876,7 +876,7 @@ Options =
         className: 'stylesettings'
       $.on $('a', save), 'click', ->
         Style.addStyle()
-        $.rm $("#themeContainer", d.body)
+        $.rm $("#mascotContainer", d.body)
         Options.mascotTab()
       $.add $('#' + tab + ' + div', dialog), save
 
