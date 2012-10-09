@@ -3359,7 +3359,7 @@
           var iposts, pposts, tposts;
           tposts = d.querySelectorAll('.postMessage');
           if (!Conf['File Info Formatting']) {
-            iposts = d.querySelectorAll("span.fileText span");
+            iposts = d.querySelectorAll('span.fileText span');
           } else {
             iposts = d.querySelectorAll('span.fileText a[href^="http"]');
           }
@@ -3390,7 +3390,7 @@
         count = 0;
         if (checkpost() === -1) {
           return int = setInterval((function() {
-            Updater.update;
+            Updater.update();
             if (checkpost() !== -1 || count === 25) {
               clearInterval(int);
             }

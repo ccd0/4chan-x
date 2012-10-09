@@ -2782,7 +2782,7 @@ Updater =
       checkpost = ->
         tposts = d.querySelectorAll '.postMessage'
         unless Conf['File Info Formatting']
-          iposts = d.querySelectorAll "span.fileText span"
+          iposts = d.querySelectorAll 'span.fileText span'
         else iposts = d.querySelectorAll 'span.fileText a[href^="http"]'
         pposts = (y) ->
           unless image is false
@@ -2794,7 +2794,7 @@ Updater =
       count = 0
       if checkpost() is -1
         int = setInterval (->
-          Updater.update
+          Updater.update()
           clearInterval int if checkpost() isnt -1 or count is 25
           count++
         ), 400
