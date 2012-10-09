@@ -238,7 +238,7 @@ Config =
       'NSFW/SFW Themes':           [false,             'Choose your theme based on the SFW status of the board you are viewing.']
       'Rounded Edges':             [true,              'Round the edges of various 4chan elements.']
       'Sage Highlighting':         ['image',           'Icons or text to highlight saged posts.', ['text', 'image', 'none']]
-      'Sage Highlight Position':   ['after',          'Position of Sage Highlighting', ['before', 'after']]
+      'Sage Highlight Position':   ['after',           'Position of Sage Highlighting', ['before', 'after']]
       'Tripcode Hider':            [true,              'Intelligent name field hiding.']
       'Underline Links':           [true,              'Put lines under hyperlinks.']
 
