@@ -3339,36 +3339,64 @@
     },
     cb: {
       post: function() {
-        var checkpost, count, int, save;
+        var checkpost, count, file, image, int, save, text;
         if (!Conf['Auto Update This']) {
           return;
         }
         save = [];
-        save.push($('textarea', QR.el).value);
+        text = $('textarea', QR.el).value;
+        file = $('input[type="file"]', QR.el).value.replace(/^.*\\/, '');
+        if (text.length !== 0) {
+          save.push(text);
+          image = false;
+        } else {
+          save.push(file);
+          image = true;
+        }
         Updater.unsuccessfulFetchCount = 0;
         setTimeout(Updater.update, 1000);
         checkpost = function() {
-          var posts, pposts;
-          posts = d.querySelectorAll('.postMessage');
+          var iposts, pposts, tposts;
+          tposts = d.querySelectorAll('.postMessage');
+          if (!Conf['File Info Formatting']) {
+            iposts = d.querySelectorAll("span.fileText span");
+          } else {
+            iposts = d.querySelectorAll('span.fileText a[href^="http"]');
+          }
           pposts = function(y) {
-            var x, _i, _len, _results;
-            _results = [];
-            for (_i = 0, _len = y.length; _i < _len; _i++) {
-              x = y[_i];
-              _results.push(x.textContent);
+            var x, _i, _j, _len, _len1, _results, _results1;
+            if (image !== false) {
+              _results = [];
+              for (_i = 0, _len = y.length; _i < _len; _i++) {
+                x = y[_i];
+                _results.push(x.innerHTML);
+              }
+              return _results;
+            } else {
+              _results1 = [];
+              for (_j = 0, _len1 = y.length; _j < _len1; _j++) {
+                x = y[_j];
+                _results1.push(x.textContent);
+              }
+              return _results1;
             }
-            return _results;
           };
-          return (pposts(posts)).indexOf(save[0]);
+          if (image !== false) {
+            return (pposts(iposts)).indexOf(save[0]);
+          } else {
+            return (pposts(tposts)).indexOf(save[0]);
+          }
         };
         count = 0;
-        return int = setInterval((function() {
-          count++;
-          Updater.update;
-          if (checkpost() !== -1 || count === 8) {
-            return clearInterval(int);
-          }
-        }), 300);
+        if (checkpost() === -1) {
+          return int = setInterval((function() {
+            Updater.update;
+            if (checkpost() !== -1 || count === 25) {
+              clearInterval(int);
+            }
+            return count++;
+          }), 400);
+        }
       },
       visibility: function() {
         var state;

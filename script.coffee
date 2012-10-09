@@ -2769,20 +2769,35 @@ Updater =
     post: ->
       return unless Conf['Auto Update This']
       save = []
-      save.push $('textarea', QR.el).value
+      text = $('textarea', QR.el).value
+      file = $('input[type="file"]', QR.el).value.replace /^.*\\/, ''
+      unless text.length is 0
+        save.push text
+        image = false
+      else
+        save.push file
+        image = true
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 1000
       checkpost = ->
-        posts = d.querySelectorAll('.postMessage')
+        tposts = d.querySelectorAll '.postMessage'
+        unless Conf['File Info Formatting']
+          iposts = d.querySelectorAll "span.fileText span"
+        else iposts = d.querySelectorAll 'span.fileText a[href^="http"]'
         pposts = (y) ->
-          x.textContent for x in y
-        (pposts posts).indexOf save[0]
+          unless image is false
+            x.innerHTML for x in y
+          else x.textContent for x in y
+        unless image is false
+          (pposts iposts).indexOf save[0]
+        else (pposts tposts).indexOf save[0]
       count = 0
-      int = setInterval (->
-        count++
-        Updater.update
-        clearInterval int if checkpost() isnt -1 or count is 8
-      ), 300
+      if checkpost() is -1
+        int = setInterval (->
+          Updater.update
+          clearInterval int if checkpost() isnt -1 or count is 25
+          count++
+        ), 400
     visibility: ->
       state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
       return if state isnt 'visible'
