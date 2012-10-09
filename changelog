@@ -1,4 +1,6 @@
 master
+- noface
+  Updater should now check until own post is found.
 
 2.35.9
 - Mayhem

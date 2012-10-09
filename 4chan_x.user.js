@@ -3353,49 +3353,47 @@
           save.push(file);
           image = true;
         }
-        Updater.unsuccessfulFetchCount = 0;
-        setTimeout(Updater.update, 1000);
         checkpost = function() {
-          var iposts, pposts, tposts;
-          tposts = d.querySelectorAll('.postMessage');
+          var iposts, x;
           if (!Conf['File Info Formatting']) {
-            iposts = d.querySelectorAll('span.fileText span');
+            iposts = $$('span.fileText span');
           } else {
-            iposts = d.querySelectorAll('span.fileText a[href^="http"]');
+            iposts = $$('span.fileText a');
           }
-          pposts = function(y) {
-            var x, _i, _j, _len, _len1, _results, _results1;
-            if (image !== false) {
+          if (image !== false) {
+            return ((function() {
+              var _i, _len, _results;
               _results = [];
-              for (_i = 0, _len = y.length; _i < _len; _i++) {
-                x = y[_i];
+              for (_i = 0, _len = iposts.length; _i < _len; _i++) {
+                x = iposts[_i];
                 _results.push(x.innerHTML);
               }
               return _results;
-            } else {
-              _results1 = [];
-              for (_j = 0, _len1 = y.length; _j < _len1; _j++) {
-                x = y[_j];
-                _results1.push(x.textContent);
-              }
-              return _results1;
-            }
-          };
-          if (image !== false) {
-            return (pposts(iposts)).indexOf(save[0]);
+            })()).indexOf(save[0]);
           } else {
-            return (pposts(tposts)).indexOf(save[0]);
+            return ((function() {
+              var _i, _len, _ref, _results;
+              _ref = $$('.postMessage');
+              _results = [];
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                x = _ref[_i];
+                _results.push(x.textContent);
+              }
+              return _results;
+            })()).indexOf(save[0]);
           }
         };
+        Updater.unsuccessfulFetchCount = 0;
+        setTimeout(Updater.update, 1000);
         count = 0;
-        if (checkpost() === -1) {
+        if (checkpost() === -1 && !(Conf['Interval'] < 10)) {
           return int = setInterval((function() {
             Updater.update();
-            if (checkpost() !== -1 || count === 25) {
+            if (checkpost() !== -1 || count === 30) {
               clearInterval(int);
             }
             return count++;
-          }), 400);
+          }), 500);
         }
       },
       visibility: function() {

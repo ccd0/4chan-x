@@ -2777,27 +2777,22 @@ Updater =
       else
         save.push file
         image = true
+      checkpost = ->
+        unless Conf['File Info Formatting']
+          iposts = $$ 'span.fileText span'
+        else iposts = $$ 'span.fileText a'
+        unless image is false
+          (x.innerHTML for x in iposts).indexOf save[0]
+        else (x.textContent for x in $$ '.postMessage').indexOf save[0]
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 1000
-      checkpost = ->
-        tposts = d.querySelectorAll '.postMessage'
-        unless Conf['File Info Formatting']
-          iposts = d.querySelectorAll 'span.fileText span'
-        else iposts = d.querySelectorAll 'span.fileText a[href^="http"]'
-        pposts = (y) ->
-          unless image is false
-            x.innerHTML for x in y
-          else x.textContent for x in y
-        unless image is false
-          (pposts iposts).indexOf save[0]
-        else (pposts tposts).indexOf save[0]
       count = 0
-      if checkpost() is -1
+      if checkpost() is -1 and !(Conf['Interval'] < 10)
         int = setInterval (->
           Updater.update()
-          clearInterval int if checkpost() isnt -1 or count is 25
+          clearInterval int if checkpost() isnt -1 or count is 30
           count++
-        ), 400
+        ), 500
     visibility: ->
       state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
       return if state isnt 'visible'
