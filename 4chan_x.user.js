@@ -3344,7 +3344,7 @@
           return;
         }
         save = [];
-        text = $('textarea', QR.el).value;
+        text = $('textarea', QR.el).value.split(/\n/);
         file = $('input[type="file"]', QR.el).value.replace(/^.*\\/, '');
         if (text.length !== 0) {
           save.push(text);
@@ -3380,7 +3380,7 @@
                 _results.push(x.textContent);
               }
               return _results;
-            })()).indexOf(save[0]);
+            })()).indexOf(save[0][0]);
           }
         };
         Updater.unsuccessfulFetchCount = 0;
