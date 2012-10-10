@@ -228,7 +228,7 @@ Config =
       'Emoji':                     ['enabled',         'Enable emoji', ['enabled', 'disable ponies', 'disable']]
       'Emoji Position':            ['before',          'Position of emoji icons, like sega and neko.', ['before', 'after']]
       'Filtered Backlinks':        [true,              'Mark backlinks to filtered posts.']
-      'Font':                      ['Calibri',         'The font used by all elements of 4chan.', 'text']
+      'Font':                      ['Helvetica',       'The font used by all elements of 4chan.', 'text']
       'Font Size':                 ['12px',            'The font size of posts and various UI. This does not change all font sizes.', 'text']
       'Mascots':                   [false,             'Add a pretty picture of your waifu to Appchan.']
       'NSFW/SFW Mascots':          [false,             'Enable or disable mascots based on the SFW status of the board you are viewing.']
