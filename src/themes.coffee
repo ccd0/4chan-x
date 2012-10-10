@@ -2524,7 +2524,7 @@ Mascots =
     image:      'https://i.minus.com/iQKrg7Pq7Y6Ed.png'
   'Tewi_Inaba':
     category:   'Anime'
-    image:      'https://i.minus.com/iIIv6feUqzUiJ.png'
+    image:      'https://i.minus.com/ib2k9lwQIkmb66.png'
   'Tifa':
     category:   'NSFW'
     image:      'https://i.minus.com/inDzKQ0Wck4ef.png'

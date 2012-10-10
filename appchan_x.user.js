@@ -2229,7 +2229,7 @@
     },
     'Tewi_Inaba': {
       category: 'Anime',
-      image: 'https://i.minus.com/iIIv6feUqzUiJ.png'
+      image: 'https://i.minus.com/ib2k9lwQIkmb66.png'
     },
     'Tifa': {
       category: 'NSFW',
