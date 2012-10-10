@@ -75,6 +75,9 @@ a[href="javascript:;"] {
   position: absolute;
   outline: none;
 }
+.themevar textarea {
+  height: 300px;
+}
 .entry {
   border-bottom: 1px solid rgba(0,0,0,.25);
   cursor: pointer;
@@ -249,7 +252,6 @@ h1,
   margin: 0;
 }
 #addReply {
-  color: #333;
   font-size: 3.5em;
   line-height: 100px;
 }
@@ -258,21 +260,13 @@ h1,
   color: #000;
 }
 .field {
-  border: 1px solid #CCC;
-  color: #333;
   font-size: inherit;
   margin: 0;
   padding: 2px 4px 3px;
   """ + agent + """transition: color .25s, border .25s;
 }
-.field:-moz-placeholder,
-.field:hover:-moz-placeholder {
-  color: #AAA;
-}
 .field:hover,
 .field:focus {
-  border-color: #999;
-  color: #000;
   outline: none;
 }
 #charCount {
@@ -297,7 +291,9 @@ h1,
   max-width: 100%;
 }
 .gecko  .fitwidth img[data-md5] + img,
-.presto .fitwidth img[data-md5] + img {
+.presto .fitwidth img[data-md5] + img,
+.themevar .field,
+.themevar textarea {
   width: 100%;
 }
 #qr,
@@ -639,7 +635,24 @@ div.opContainer {
 }"""
 
     unless Conf["Style"]
-      css += """.captchainput > .field {
+      css += """
+#addReply {
+  color: #333;
+}
+.field {
+  border: 1px solid #CCC;
+  color: #333;
+}
+.field:-moz-placeholder,
+.field:hover:-moz-placeholder {
+  color: #AAA;
+}
+.field:hover,
+.field:focus {
+  border-color: #999;
+  color: #000;
+}
+.captchainput > .field {
   min-width: 100%;
 }
 #qr > form > div:first-child > .field:not(#dump) {
@@ -1583,7 +1596,7 @@ table.reply[style^="clear: both"] {
   """ + sidebarLocation[0] + """: auto;
   top: 0;
   bottom: 0;
-  width: 248px;
+  width: 296px;
 }
 #themebar input {
   width: 30%;
@@ -1737,6 +1750,7 @@ div.postContainer span.postNum > .replylink {
 .dateTime {
   color: """ + theme["Timestamps"] + """ !important;
 }
+#browse,
 #updater:not(:hover),
 #updater:not(:hover) #count:not(.new)::after,
 .summary,

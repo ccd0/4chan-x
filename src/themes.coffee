@@ -1818,16 +1818,16 @@ thread>.replyContainer>.reply>div.postInfo {
   "4chan Rewired":
     "Author"                      : "kweeb"
     "Author Tripcode"             : "!K.WeEabo0o"
-    "Background Image"            : "url(\"http://oi39.tinypic.com/2h51rb4.jpg\")"
+    "Background Image"            : ""
     "Background Attachment"       : "fixed"
     "Background Position"         : "bottom right"
     "Background Repeat"           : "no-repeat"
     "Background Color"            : "rgb(244,244,244)"
     "Dialog Background"           : "rgba(239,239,239,.98)"
     "Dialog Border"               : "rgb(212,212,212)"
-    "Thread Wrapper Background"   : "rgba(239,239,239,.5)"
-    "Thread Wrapper Border"       : "rgba(212,212,212,.9)"
-    "Reply Background"            : "rgba(239,239,239,.9)"
+    "Thread Wrapper Background"   : "rgba(0,0,0,0)"
+    "Thread Wrapper Border"       : "rgba(0,0,0,0)"
+    "Reply Background"            : "linear-gradient(rgba(244, 244, 244, 0.8), rgba(239, 239, 239, 0.8))"
     "Reply Border"                : "rgb(212,212,212)"
     "Highlighted Reply Background": "rgba(235,235,235,.9)"
     "Highlighted Reply Border"    : "rgb(191,127,63)"
@@ -1863,12 +1863,9 @@ thread>.replyContainer>.reply>div.postInfo {
     "Timestamps"                  : "rgb(76,76,76)"
     "Inputs"                      : "rgb(76,76,76)"
     "Warnings"                    : "rgb(204,102,102)"
-    "Shadow Color"                : "rgba(255,255,255,.9)"
+    "Shadow Color"                : "rgba(191,127,63,.7)"
     "Dark Theme"                  : false
     "Custom CSS"                  : """
-#delform {
-  padding: 1px 2px;
-}
 .rice {
   box-shadow:rgba(255,255,255,.3) 0 1px;
 }
@@ -2525,6 +2522,9 @@ Mascots =
   'Teletha_Tessa_Testarossa':
     category:   'Anime'
     image:      'https://i.minus.com/iQKrg7Pq7Y6Ed.png'
+  'Tewi_Inaba':
+    category:   'Anime'
+    image:      'https://i.minus.com/iIIv6feUqzUiJ.png'
   'Tifa':
     category:   'NSFW'
     image:      'https://i.minus.com/inDzKQ0Wck4ef.png'

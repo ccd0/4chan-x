@@ -162,7 +162,7 @@ ThemeTools =
 
     div = $.el "div",
       className: "themevar"
-      innerHTML: "<div class=optionname><b>Custom CSS</b></div><div class=option><textarea name='Custom CSS' placeholder='Custom CSS' style='height: 100px;'>#{editTheme['Custom CSS']}</textarea>"
+      innerHTML: "<div class=optionname><b>Custom CSS</b></div><div class=option><textarea name='Custom CSS' placeholder='Custom CSS'>#{editTheme['Custom CSS']}</textarea>"
 
     $.on $('textarea', div), 'blur', ->
       editTheme["Custom CSS"] = @value
