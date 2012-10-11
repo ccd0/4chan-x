@@ -3347,7 +3347,9 @@
         text = $('textarea', QR.el).value.split(/\n/);
         file = $('input[type="file"]', QR.el).value.replace(/^.*\\/, '');
         if (text.length !== 0) {
-          save.push(text);
+          save.push(text.filter(function(e) {
+            return e;
+          }));
           image = false;
         } else {
           save.push(file);
