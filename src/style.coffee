@@ -1684,7 +1684,7 @@ textarea.field:focus {
   color: """ + theme["Inputs"] + """;
 }
 #qp div.post,
-div.reply {
+div.replyContainer {
   background: """ + theme["Reply Background"] + """;
   border: 1px solid """ + theme["Reply Border"]  + """;
 }
@@ -2595,6 +2595,13 @@ body {
 }
 """
 
+      if Conf["Alternate Post Colors"]
+        css += """
+div.replyContainer:nth-of-type(2n+1) div.post {
+  background-color: rgba(""" + (if theme["Dark Theme"] then "255,255,255,0.02" else "255,255,255,0.2") + """);
+}
+"""
+
       if Conf["Expand Post Form Textarea"]
         css += """
 #qr textarea {
@@ -2629,9 +2636,7 @@ body {
 #watcher,
 #globalMessage,
 .inline div.reply,
-div.reply,
-div.reply.highlight,
-div.reply > tr > div.reply,
+div.replyContainer,
 h2,
 td[style="border: 1px dashed;"] {
   border-radius: 3px;

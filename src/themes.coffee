@@ -210,7 +210,7 @@ border-radius: 3px;
     'Shadow Color'                : 'rgba(29,31,33,1)'
     'Dark Theme'                  : true
     'Custom CSS'                  : """
-div.reply {
+div.replyContainer {
   box-shadow: inset 0px 1px 2px 1px #111;
 }
 #qr {
@@ -573,7 +573,7 @@ a.pointer{
 #delform .replyContainer:hover {
   opacity:1;
 }
-.reply,
+.replyContainer,
 .reply.highlight {
   background:transparent;
   border:0px;
@@ -612,7 +612,7 @@ a.forwardlink{
   letter-spacing: 3px;
   background: transparent;
 }
-div.reply,
+div.replyContainer,
 div.reply.highlight {
   background-color: rgba(0,0,0,0) !important;
   border: none !important;
@@ -742,7 +742,7 @@ div.reply.highlight {
     'Shadow Color'                : 'rgba(60,60,60,0.6)'
     'Dark Theme'                  : true
     'Custom CSS'                  : """
-.replyContainer > .reply {
+.replyContainer {
   background-color: transparent;
   border: 0;
   border-bottom: 1px #ccc solid;
@@ -899,7 +899,7 @@ div.reply.highlight {
   background-color:rgba(240,192,176,1);
   box-shadow:5px 5px 5px rgba(128,128,128,0.5);
 }
-.reply.post {
+.replyContainer {
   border-style: none solid solid none !important;
 }
 """
@@ -959,7 +959,7 @@ div.reply.highlight {
   background-color:rgba(214,186,208,1);
   box-shadow:5px 5px 5px rgba(128,128,128,0.5);
 }
-.reply.post {
+.replyContainer {
   border-style: none solid solid none !important;
 }
 """
@@ -1188,12 +1188,12 @@ textarea,
   background:rgba(229, 219, 240,.9)!important;
 }
 #delform,
-.reply,
+.replyContainer,
 .hidden_thread,
 .stub {
   border-radius:0!important
 }
-.reply,
+.replyContainer,
 .hidden_thread,
 .stub {
   border-left:0!important;
@@ -1727,7 +1727,7 @@ textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
 }
-.reply{
+.replyContainer {
  border:0!important
 }
 """
@@ -1982,7 +1982,7 @@ textarea,
   padding:1px!important;
   box-shadow:rgba(0,0,0,.8) 0 0 10px;
 }
-.postContainer>.reply{
+.replyContainer {
   background-image:url("http://img714.imageshack.us/img714/3969/4ch2.gif")!important;
   border-bottom:#1f1f1f!important;
   border-radius:5px!important

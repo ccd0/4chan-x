@@ -212,14 +212,11 @@ Config =
     # If it doesn't exist, it is a boolean, if it does, it's either an array of the select options or "text".
 
     Dialogs:
+      'Alternate Post Colors':     [false,             'Make post background colors alternate every other post.']
       'Announcements':             ['slideout',        'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']]
       'Post Form Style':           ['tabbed slideout', 'How the post form will sit on the page.', ['fixed', 'slideout', 'tabbed slideout', 'transparent fade']]
       'Slideout Navigation':       ['compact',         'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']]
       'Slideout Watcher':          [true,              'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
-
-    Navigation:
-      'Boards Navigation':         ['sticky top',      'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']]
-      'Pagination':                ['sticky bottom',   'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']]
 
     Rice:
       'Block Ads':                 [false,             'Block advertisements. It\'s probably better to use AdBlock for this.']
@@ -244,6 +241,7 @@ Config =
 
     Layout:
       '4chan Banner':              ['at sidebar top',  'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'at top', 'hide']]
+      'Boards Navigation':         ['sticky top',      'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']]
       'Board Logo':                ['at sidebar top',  'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'hide']]
       'Board Subtitle':            [true,              'Show the board subtitle.']
       'Compact Post Form Inputs':  [true,              'Use compact inputs on the post form.']
@@ -252,6 +250,7 @@ Config =
       'Images Overlap Post Form':  [true,              'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".']
       'Fit Width Replies':         [true,              'Replies fit the entire width of the page.']
       'Page Margin':               ['fully centered',  'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'minimal', 'small', 'medium', 'large', 'fully centered']]
+      'Pagination':                ['sticky bottom',   'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']]
       'Reply Spacing':             ['small',           'The amount of space between replies.', ['none', 'small', 'medium', 'large']]
       'Reply Padding':             ['normal',          'The padding around post content of replies.', ['phat', 'normal', 'slim', 'super slim', 'anorexia']]
       'Sidebar Location':          ['right',           'The side of the page the sidebar content is on. It is highly recommended that you do not hide the sidebar if you change this option.', ['left', 'right']]
