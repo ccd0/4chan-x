@@ -2769,10 +2769,10 @@ Updater =
     post: ->
       return unless Conf['Auto Update This']
       save = []
-      text = $('textarea', QR.el).value.split /\n/
+      text = $('textarea', QR.el).value.replace /\n/g, ''
       file = $('input[type="file"]', QR.el).value.replace /^.*\\/, ''
-      unless file.length isnt 0
-        save.push text.filter((e) -> e)
+      unless text.length is 0
+        save.push text
         image = false
       else
         save.push file
@@ -2783,7 +2783,7 @@ Updater =
         else iposts = $$ 'span.fileText a'
         unless image is false
           (x.innerHTML for x in iposts).indexOf save[0]
-        else (x.textContent for x in $$ '.postMessage').indexOf save[0][0]
+        else (x.textContent for x in $$ '.postMessage').indexOf save[0]
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 1000
       count = 0

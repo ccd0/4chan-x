@@ -3344,12 +3344,10 @@
           return;
         }
         save = [];
-        text = $('textarea', QR.el).value.split(/\n/);
+        text = $('textarea', QR.el).value.replace(/\n/g, '');
         file = $('input[type="file"]', QR.el).value.replace(/^.*\\/, '');
-        if (file.length === 0) {
-          save.push(text.filter(function(e) {
-            return e;
-          }));
+        if (text.length !== 0) {
+          save.push(text);
           image = false;
         } else {
           save.push(file);
@@ -3382,7 +3380,7 @@
                 _results.push(x.textContent);
               }
               return _results;
-            })()).indexOf(save[0][0]);
+            })()).indexOf(save[0]);
           }
         };
         Updater.unsuccessfulFetchCount = 0;
