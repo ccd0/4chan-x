@@ -2771,7 +2771,7 @@ Updater =
       save = []
       text = $('textarea', QR.el).value.split /\n/
       file = $('input[type="file"]', QR.el).value.replace /^.*\\/, ''
-      unless text.length is 0
+      unless file.length isnt 0
         save.push text.filter((e) -> e)
         image = false
       else
