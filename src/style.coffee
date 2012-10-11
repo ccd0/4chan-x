@@ -1781,7 +1781,6 @@ span.pln {
 }
 a.backlink {
   color: """ + theme["Backlinks"] + """;
-  font-weight: 800;
 }
 span.quote > a.quotelink,
 a.quotelink {
