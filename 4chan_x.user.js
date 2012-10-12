@@ -115,6 +115,7 @@
         'Image Hover': [false, 'Show full image on mouseover'],
         'Sauce': [true, 'Add sauce to images'],
         'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail'],
+        'Don\'t expand spoilers': [true, 'Don\'t expand spoilers when using ImageExpand.'],
         'Expand From Current': [false, 'Expand images from current position to thread end.'],
         'Prefetch': [false, 'Prefetch images.']
       },
@@ -5404,6 +5405,11 @@
       }
       a = post.img.parentNode;
       $.on(a, 'click', ImageExpand.cb.toggle);
+      if (Conf['Don\'t expand spoilers'] && !Conf['Reveal Spoilers']) {
+        if ($('.fileThumb.imgspoiler')) {
+          return;
+        }
+      }
       if (ImageExpand.on && !post.el.hidden) {
         return ImageExpand.expand(post.img);
       }
@@ -5432,7 +5438,7 @@
           }
           for (_j = 0, _len1 = thumbs.length; _j < _len1; _j++) {
             thumb = thumbs[_j];
-            if (!Conf['Reveal Spoilers']) {
+            if (Conf['Don\'t expand spoilers'] && !Conf['Reveal Spoilers']) {
               if ($('.fileThumb.imgspoiler', thumb.parentNode.parentNode)) {
                 continue;
               }
