@@ -1094,7 +1094,6 @@ input[type=checkbox] {
   """ + agent + """appearance: checkbox !important;
 }
 /* Formatting for all postarea elements */
-
 #browse,
 #file,
 #threadselect select {
@@ -1159,9 +1158,6 @@ input[value="Report"] {
 #ihover {
   max-width:85%;
   max-height:85%;
-}
-#qp {
-  min-width: 500px;
 }
 .fileText ~ a > img + img {
   position: relative;
@@ -1684,7 +1680,7 @@ textarea.field:focus {
   color: """ + theme["Inputs"] + """;
 }
 #qp div.post,
-div.replyContainer {
+.thread .replyContainer {
   background: """ + theme["Reply Background"] + """;
   border: 1px solid """ + theme["Reply Border"]  + """;
 }
