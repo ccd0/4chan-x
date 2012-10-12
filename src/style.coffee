@@ -296,14 +296,16 @@ h1,
 .themevar textarea {
   width: 100%;
 }
+#ihover,
+#navlinks,
+#overlay,
+#prefetch,
 #qr,
 #qp,
-#updater,
 #stats,
-#ihover,
-#overlay,
-#navlinks {
+#updater {
   position: fixed;
+  z-index: 96;
 }
 #ihover {
   max-height: 97%;
@@ -1627,6 +1629,7 @@ html {
   padding: 5px;
 }
 #boardTitle,
+#prefetch,
 #spoilerLabel,
 #stats,
 #updater {
