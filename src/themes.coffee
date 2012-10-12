@@ -1831,7 +1831,7 @@ thread>.replyContainer>.reply>div.postInfo {
     "Reply Border"                : "rgb(212,212,212)"
     "Highlighted Reply Background": "linear-gradient(rgba(235,235,235,.9)), rgba(230,230,230,0.9))"
     "Highlighted Reply Border"    : "rgb(191,127,63)"
-    "Backlinked Reply Outline"    : "rgb(191,127,63)"
+    "Backlinked Reply Outline"    : "rgba(191,127,63,0.5)"
     "Checkbox Background"         : "rgba(228,228,228,.9)"
     "Checkbox Border"             : "rgb(204,204,204)"
     "Checkbox Checked Background" : "rgb(228,228,228)"
@@ -1900,6 +1900,9 @@ textarea,
 .thread .replyContainer,
 #qp .post {
   background-image: linear-gradient(rgba(244,244,244,0.9), rgba(239,239,239,0.9)) !important;
+}
+.qphl {
+  outline-width: 1px;
 }
 """
 

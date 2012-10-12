@@ -1471,7 +1471,7 @@
       "Reply Border": "rgb(212,212,212)",
       "Highlighted Reply Background": "linear-gradient(rgba(235,235,235,.9)), rgba(230,230,230,0.9))",
       "Highlighted Reply Border": "rgb(191,127,63)",
-      "Backlinked Reply Outline": "rgb(191,127,63)",
+      "Backlinked Reply Outline": "rgba(191,127,63,0.5)",
       "Checkbox Background": "rgba(228,228,228,.9)",
       "Checkbox Border": "rgb(204,204,204)",
       "Checkbox Checked Background": "rgb(228,228,228)",
@@ -1505,7 +1505,7 @@
       "Warnings": "rgb(204,102,102)",
       "Shadow Color": "rgba(0,0,0,.05)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.subject:not(:empty)::after {\n  content: \" by\";\n  font-weight: normal;\n}\n.thread .replyContainer,\n#qp .post {\n  background-image: linear-gradient(rgba(244,244,244,0.9), rgba(239,239,239,0.9)) !important;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.subject:not(:empty)::after {\n  content: \" by\";\n  font-weight: normal;\n}\n.thread .replyContainer,\n#qp .post {\n  background-image: linear-gradient(rgba(244,244,244,0.9), rgba(239,239,239,0.9)) !important;\n}\n.qphl {\n  outline-width: 1px;\n}"
     },
     "4chan Dark Upgrade": {
       "Author": "Ahoka",
