@@ -1,3 +1,20 @@
+master
+- noface
+  Updater should now check until own post is found.
+  "Don't expand spoilers when using ImageExpand" should now work as expected and gets a new option.
+- Zixaphir
+  New Mascot: Tewi Inaba
+  New Option: Alternate Post Colors
+  Removed Bold from backlinks
+  Allow "Persistent QR" with Style enabled.
+  Quick Reply file 'input' now reflects maximum board file size and Shift-Click to clear functionality.
+
+0.18.1
+- Zixaphir
+  Bugfix: Fix settings button after adding a custom mascot
+  Spoiler workaround for Linkify
+  New Option: Sage Highlight Position
+
 0.18.0
 - Zixaphir
   Mascot Categories and category hiding.

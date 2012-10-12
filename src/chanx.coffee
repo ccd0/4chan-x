@@ -1051,20 +1051,30 @@ Updater =
     post: ->
       return unless Conf['Auto Update This']
       save = []
-      save.push $('textarea', QR.el).value
+      text = $('textarea', QR.el).value.replace /\n/g, ''
+      file = $('input[type="file"]', QR.el).value.replace /^.*\\/, ''
+      unless text.length is 0
+        save.push text
+        image = false
+      else
+        save.push file
+        image = true
+      checkpost = ->
+        unless Conf['File Info Formatting']
+          iposts = $$ 'span.fileText span'
+        else iposts = $$ 'span.fileText a'
+        unless image is false
+          (x.innerHTML for x in iposts).indexOf save[0]
+        else (x.textContent for x in $$ '.postMessage').indexOf save[0]
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 1000
-      checkpost = ->
-        posts = d.querySelectorAll('.postMessage')
-        pposts = (y) ->
-          x.textContent for x in y
-        (pposts posts).indexOf save[0]
       count = 0
-      int = setInterval (->
-        count++
-        Updater.update
-        clearInterval int if checkpost() isnt -1 or count is 8
-      ), 300
+      if checkpost() is -1 and !(Conf['Interval'] < 10)
+        int = setInterval (->
+          Updater.update()
+          clearInterval int if checkpost() isnt -1 or count is 30
+          count++
+        ), 500
     visibility: ->
       state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
       return if state isnt 'visible'
@@ -2698,7 +2708,7 @@ Prefetch =
     controls = $.el 'label',
       id: 'prefetch'
       innerHTML:
-        "Prefetch Images<input type=checkbox id=prefetch>"
+        "<input type=checkbox>Prefetch Images"
     input = $ 'input', controls
     $.on input, 'change', Prefetch.change
 
@@ -2743,6 +2753,8 @@ ImageExpand =
     return unless post.img
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
+    if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers']
+      return if $ '.fileThumb.imgspoiler'
     if ImageExpand.on and !post.el.hidden
       ImageExpand.expand post.img
   cb:

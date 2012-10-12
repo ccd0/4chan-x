@@ -35,6 +35,7 @@ Config =
       'Image Hover':                  [false, 'Show full image on mouseover']
       'Sauce':                        [true,  'Add sauce to images']
       'Reveal Spoilers':              [false, 'Replace spoiler thumbnails by the original thumbnail']
+      'Don\'t Expand Spoilers':       [true,  'Don\'t expand spoilers when using ImageExpand.']
       'Expand From Current':          [false, 'Expand images from current position to thread end.']
       'Prefetch':                     [false, 'Prefetch images.']
 

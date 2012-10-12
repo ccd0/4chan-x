@@ -734,6 +734,7 @@ textarea {
   opacity: """ + Conf["Captcha Opacity"] + """;
 }
 #boardNavDesktop,
+#prefetch,
 #qp div.post .postertrip,
 #qp div.post .subject,
 .capcode,
@@ -2087,6 +2088,11 @@ div.navLinks > a:first-of-type::after {
   top: """ + (if Conf["Updater Position"] == "top" then "20px" else "auto") + """ !important;
   bottom: """ + (if Conf["Updater Position"] == "bottom" then "4px" else "auto") + """ !important;
 }
+#prefetch {
+  width: """ + (248 + sidebarOffsetW) + """px;
+  """ + sidebarLocation[0] + """: 2px;
+  top: 40px;
+}
 #boardNavDesktopFoot::after,
 #navtopright .settingsWindowLink::after,
 #watcher::before,
@@ -2181,6 +2187,11 @@ div.navLinks > a:first-of-type::after {
   top: """ + (if Conf["Updater Position"] == "top" then "2px" else "auto") + """ !important;
   bottom: """ + (if Conf["Updater Position"] == "bottom" then "4px" else "auto") + """ !important;
   """ + (if Conf["Updater Position"] == "top" then "z-index: 96 !important;") + """
+}
+#prefetch {
+  width: """ + (248 + sidebarOffsetW) + """px;
+  """ + sidebarLocation[0] + """: 2px;
+  top: 20px;
 }
 #navlinks {
   top: """ + (135 + logoOffset) + """px !important;
