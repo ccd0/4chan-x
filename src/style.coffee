@@ -891,7 +891,8 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #imgControls {
   z-index: 100 !important;
 }
-.fileThumb {
+.fileThumb img + img {
+  position: relative;
   z-index: """ + (if Conf["Images Overlap Post Form"] then "100" else "1") + """ !important;
 }
 
@@ -1053,9 +1054,6 @@ img.middlead:hover,
 img.bottomad:hover {
   opacity: 1;
   """ + agent + """transition: opacity .3s linear;
-}
-.fileThumb {
-  position: relative;
 }
 """ + (unless Conf["Custom Navigation"] then "#boardNavDesktop a,") + """
 .pages a,
@@ -2444,7 +2442,7 @@ div.reply .inline .rice {
 div.thread {
   padding: 0;
   position: relative;
-  z-index: 0;
+  """ + (unless Conf['Images Overlap Post Form'] then "z-index: 0;") + """
 }
 div.post:not(#qp):not([hidden]) {
   margin: 0;
@@ -2915,7 +2913,7 @@ input.field.tripped:not(:hover):not(:focus) {
 .pages {
   position: fixed;
   top: 0;
-  z-index: 101;
+  z-index: 4;
 }
 """
         when "sticky bottom"
@@ -2923,7 +2921,7 @@ input.field.tripped:not(:hover):not(:focus) {
 .pages {
   position: fixed;
   bottom: 0;
-  z-index: 101;
+  z-index: 4;
 }
 """
         when "top"
