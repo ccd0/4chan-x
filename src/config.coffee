@@ -245,7 +245,6 @@ Config =
       'Board Logo':                ['at sidebar top',  'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'hide']]
       'Board Subtitle':            [true,              'Show the board subtitle.']
       'Compact Post Form Inputs':  [true,              'Use compact inputs on the post form.']
-      'Expand Post Form Textarea': [true,              'Expands the post form text area when in use.']
       'Icon Orientation':          ['horizontal',      'Change the orientation of the appchan x icons.', ['horizontal', 'vertical']]
       'Images Overlap Post Form':  [true,              'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".']
       'Fit Width Replies':         [true,              'Replies fit the entire width of the page.']
@@ -256,6 +255,7 @@ Config =
       'Sidebar Location':          ['right',           'The side of the page the sidebar content is on. It is highly recommended that you do not hide the sidebar if you change this option.', ['left', 'right']]
       'Sidebar':                   ['normal',          'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['large', 'normal', 'minimal', 'hide']]
       'Stats Position':            ['bottom',          'The position of 4chan thread stats', ['top', 'bottom']]
+      'Textarea Resize':           ['vertical',     'Options to resize the post form\'s comment box.', ['both', 'horizontal', 'vertical', 'none', 'auto-expand']]
       'Updater Position':          ['bottom',          'The position of 4chan thread updater', ['top', 'bottom']]
 
   theme        : 'Yotsuba B'

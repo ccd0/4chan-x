@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 0.18.1 - 2012-10-11
+/*  appchan x - Version 0.18.1 - 2012-10-12
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -272,7 +272,6 @@
         'Board Logo': ['at sidebar top', 'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'hide']],
         'Board Subtitle': [true, 'Show the board subtitle.'],
         'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
-        'Expand Post Form Textarea': [true, 'Expands the post form text area when in use.'],
         'Icon Orientation': ['horizontal', 'Change the orientation of the appchan x icons.', ['horizontal', 'vertical']],
         'Images Overlap Post Form': [true, 'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".'],
         'Fit Width Replies': [true, 'Replies fit the entire width of the page.'],
@@ -283,6 +282,7 @@
         'Sidebar Location': ['right', 'The side of the page the sidebar content is on. It is highly recommended that you do not hide the sidebar if you change this option.', ['left', 'right']],
         'Sidebar': ['normal', 'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['large', 'normal', 'minimal', 'hide']],
         'Stats Position': ['bottom', 'The position of 4chan thread stats', ['top', 'bottom']],
+        'Textarea Resize': ['vertical', 'Options to resize the post form\'s comment box.', ['both', 'horizontal', 'vertical', 'none', 'auto-expand']],
         'Updater Position': ['bottom', 'The position of 4chan thread updater', ['top', 'bottom']]
       }
     },
@@ -1456,7 +1456,7 @@
       "Custom CSS": ".rice {\n  box-shadow:rgba(44,48,65,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\nthread>.replyContainer>.reply>div.postInfo {\n  box-shadow: 0px 2px 3px #0A0A0A !important;\n}"
     },
     "4chan Rewired": {
-      "Author": "kweeb",
+      "Author": "",
       "Author Tripcode": "!K.WeEabo0o",
       "Background Image": "",
       "Background Attachment": "fixed",
@@ -1467,9 +1467,9 @@
       "Dialog Border": "rgb(212,212,212)",
       "Thread Wrapper Background": "rgba(0,0,0,0)",
       "Thread Wrapper Border": "rgba(0,0,0,0)",
-      "Reply Background": "linear-gradient(rgba(244, 244, 244, 0.8), rgba(239, 239, 239, 0.8))",
+      "Reply Background": "linear-gradient(rgba(244,244,244,0.8), rgba(239,239,239,0.8))",
       "Reply Border": "rgb(212,212,212)",
-      "Highlighted Reply Background": "rgba(235,235,235,.9)",
+      "Highlighted Reply Background": "linear-gradient(rgba(235,235,235,.9)), rgba(230,230,230,0.8))",
       "Highlighted Reply Border": "rgb(191,127,63)",
       "Backlinked Reply Outline": "rgb(191,127,63)",
       "Checkbox Background": "rgba(228,228,228,.9)",
@@ -1503,9 +1503,9 @@
       "Timestamps": "rgb(76,76,76)",
       "Inputs": "rgb(76,76,76)",
       "Warnings": "rgb(204,102,102)",
-      "Shadow Color": "rgba(191,127,63,.7)",
+      "Shadow Color": "rgba(0,0,0,.05)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not[type=checkbox]:hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.subject:not(:empty)::after {\n  content: \" by\";\n  font-weight: normal;\n}"
     },
     "4chan Dark Upgrade": {
       "Author": "Ahoka",
@@ -9363,8 +9363,10 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         if (Conf["Alternate Post Colors"]) {
           css += "div.replyContainer:nth-of-type(2n+1) div.post {\n  background-color: rgba(" + (theme["Dark Theme"] ? "255,255,255,0.02" : "255,255,255,0.2") + ");\n}";
         }
-        if (Conf["Expand Post Form Textarea"]) {
-          css += "#qr textarea {\n  display: block;" + agent + "transition: all 0.25s ease 0s, width .3s ease-in-out .3s;\nfloat: " + sidebarLocation[0] + ";\n}\n#qr textarea:focus {\n  width: 400px;\n}";
+        if (Conf["Textarea Resize"] === "auto-expand") {
+          css += "#qr textarea {\n  display: block;" + agent + "transition:\n  color 0.25s linear,\n  background-color 0.25s linear,\n  border-color 0.25s linear,\n  height step-end,\n  width .3s ease-in-out .3s;\nfloat: " + sidebarLocation[0] + ";\nresize: vertical;\n}\n#qr textarea:focus {\nwidth: 400px;\n}";
+        } else {
+          css += "#qr textarea {\n  display: block;" + agent + "transition:\n  color 0.25s linear,\n  background-color 0.25s linear,\n  border-color 0.25s linear,\n  height step-end,\n  width step-end;\nfloat: " + sidebarLocation[0] + ";\nresize: " + Conf["Textarea Resize"] + "}";
         }
         if (Conf["Filtered Backlinks"]) {
           css += ".filtered.backlink {\n  display: none;\n}";

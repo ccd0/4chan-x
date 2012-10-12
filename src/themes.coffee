@@ -1816,7 +1816,7 @@ thread>.replyContainer>.reply>div.postInfo {
 """
 
   "4chan Rewired":
-    "Author"                      : "kweeb"
+    "Author"                      : ""
     "Author Tripcode"             : "!K.WeEabo0o"
     "Background Image"            : ""
     "Background Attachment"       : "fixed"
@@ -1827,9 +1827,9 @@ thread>.replyContainer>.reply>div.postInfo {
     "Dialog Border"               : "rgb(212,212,212)"
     "Thread Wrapper Background"   : "rgba(0,0,0,0)"
     "Thread Wrapper Border"       : "rgba(0,0,0,0)"
-    "Reply Background"            : "linear-gradient(rgba(244, 244, 244, 0.8), rgba(239, 239, 239, 0.8))"
+    "Reply Background"            : "linear-gradient(rgba(244,244,244,0.8), rgba(239,239,239,0.8))"
     "Reply Border"                : "rgb(212,212,212)"
-    "Highlighted Reply Background": "rgba(235,235,235,.9)"
+    "Highlighted Reply Background": "linear-gradient(rgba(235,235,235,.9)), rgba(230,230,230,0.8))"
     "Highlighted Reply Border"    : "rgb(191,127,63)"
     "Backlinked Reply Outline"    : "rgb(191,127,63)"
     "Checkbox Background"         : "rgba(228,228,228,.9)"
@@ -1863,7 +1863,7 @@ thread>.replyContainer>.reply>div.postInfo {
     "Timestamps"                  : "rgb(76,76,76)"
     "Inputs"                      : "rgb(76,76,76)"
     "Warnings"                    : "rgb(204,102,102)"
-    "Shadow Color"                : "rgba(191,127,63,.7)"
+    "Shadow Color"                : "rgba(0,0,0,.05)"
     "Dark Theme"                  : false
     "Custom CSS"                  : """
 .rice {
@@ -1892,6 +1892,10 @@ input:not(.jsColor),
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
+}
+.subject:not(:empty)::after {
+  content: " by";
+  font-weight: normal;
 }
 """
 

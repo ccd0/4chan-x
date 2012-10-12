@@ -2601,15 +2601,35 @@ div.replyContainer:nth-of-type(2n+1) div.post {
 }
 """
 
-      if Conf["Expand Post Form Textarea"]
+      if Conf["Textarea Resize"] == "auto-expand"
         css += """
 #qr textarea {
   display: block;
-  """ + agent + """transition: all 0.25s ease 0s, width .3s ease-in-out .3s;
+  """ + agent + """transition:
+    color 0.25s linear,
+    background-color 0.25s linear,
+    border-color 0.25s linear,
+    height step-end,
+    width .3s ease-in-out .3s;
   float: """ + sidebarLocation[0] + """;
+  resize: vertical;
 }
 #qr textarea:focus {
   width: 400px;
+}
+"""
+      else
+        css += """
+#qr textarea {
+  display: block;
+  """ + agent + """transition:
+    color 0.25s linear,
+    background-color 0.25s linear,
+    border-color 0.25s linear,
+    height step-end,
+    width step-end;
+  float: """ + sidebarLocation[0] + """;
+  resize: """ + Conf["Textarea Resize"] + """
 }
 """
 
