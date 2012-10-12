@@ -3195,34 +3195,34 @@
           className: "reply",
           innerHTML: "Hide Categories <span></span><div></div>"
         });
-        _ref = MascotTools.categories;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          category = _ref[_i];
-          ul[category] = $.el("ul", {
-            className: "mascots",
-            id: category
-          });
-          if (Conf["Hidden Categories"].contains(category)) {
-            ul[category].hidden = true;
-          }
-          header = $.el("h3", {
-            className: "mascotHeader",
-            textContent: category
-          });
-          option = $.el("label", {
-            name: category,
-            innerHTML: "<input name='" + category + "' type=checkbox " + (Conf["Hidden Categories"].contains(category) ? 'checked' : '') + ">" + category
-          });
-          $.on($('input', option), 'change', function() {
-            return Options.mascotTab.toggle(this);
-          });
-          $.add(ul[category], header);
-          $.add(suboptions, ul[category]);
-          $.add($('div', mascotHide), option);
-        }
         keys = Object.keys(userMascots);
         keys.sort();
         if (mode === 'default') {
+          _ref = MascotTools.categories;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            category = _ref[_i];
+            ul[category] = $.el("ul", {
+              className: "mascots",
+              id: category
+            });
+            if (Conf["Hidden Categories"].contains(category)) {
+              ul[category].hidden = true;
+            }
+            header = $.el("h3", {
+              className: "mascotHeader",
+              textContent: category
+            });
+            option = $.el("label", {
+              name: category,
+              innerHTML: "<input name='" + category + "' type=checkbox " + (Conf["Hidden Categories"].contains(category) ? 'checked' : '') + ">" + category
+            });
+            $.on($('input', option), 'change', function() {
+              return Options.mascotTab.toggle(this);
+            });
+            $.add(ul[category], header);
+            $.add(suboptions, ul[category]);
+            $.add($('div', mascotHide), option);
+          }
           for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
             name = keys[_j];
             if (!Conf["Deleted Mascots"].contains(name)) {
@@ -3286,10 +3286,10 @@
             innerHTML: "  <a href=\"javascript:;\" id=clear>Clear All</a> /   <a href=\"javascript:;\" id=selectAll>Select All</a> /   <a href=\"javascript:;\" id=createNew>New Mascot</a> /   <a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden> /   <a href=\"javascript:;\" id=undelete>Undelete Mascots</a>  "
           });
           $.on($('#clear', batchmascots), 'click', function() {
-            var _k, _len2, _ref1;
-            _ref1 = Conf[g.MASCOTSTRING];
-            for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-              name = _ref1[_k];
+            var enabledMascots, _k, _len2;
+            enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]));
+            for (_k = 0, _len2 = enabledMascots.length; _k < _len2; _k++) {
+              name = enabledMascots[_k];
               $.rmClass($.id(name), 'enabled');
               Conf[g.MASCOTSTRING].remove(name);
             }
@@ -3298,7 +3298,7 @@
           $.on($('#selectAll', batchmascots), 'click', function() {
             for (name in userMascots) {
               mascot = userMascots[name];
-              if (!Conf[g.MASCOTSTRING].contains(name || Conf["Deleted Mascots"].contains(name))) {
+              if (!(Conf["Hidden Categories"].contains(mascot.category) || Conf[g.MASCOTSTRING].contains(name) || Conf["Deleted Mascots"].contains(name))) {
                 $.addClass($.id(name), 'enabled');
                 Conf[g.MASCOTSTRING].push(name);
               }
@@ -3332,6 +3332,10 @@
             return Options.mascotTab.dialog(false, 'undelete');
           });
         } else {
+          ul = $.el("ul", {
+            className: "mascots",
+            id: category
+          });
           for (_k = 0, _len2 = keys.length; _k < _len2; _k++) {
             name = keys[_k];
             if (Conf["Deleted Mascots"].contains(name)) {
@@ -3351,9 +3355,9 @@
                 }
               });
               $.add(ul, li);
-              $.add(suboptions, ul);
             }
           }
+          $.add(suboptions, ul);
           batchmascots = $.el('div', {
             id: "mascots_batch",
             innerHTML: "<a href=\"javascript:;\" id=\"return\">Return</a>"
@@ -9319,7 +9323,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
             css += ".boardBanner img {\n  display: none;\n}";
         }
         if (Conf["Icon Orientation"] === "horizontal") {
-          css += "/* 4chan X Options */\n#navtopright .settingsWindowLink::after {\n  visibility: visible;" + (sidebarLocation[0] === "left" ? "left: " + (231 + sidebarOffsetW) + "px" : "right:  2px") + ";\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  border: none;" + (sidebarLocation[0] === "left" ? "left: " + (212 + sidebarOffsetW) + "px" : "right: 21px") + ";\n}\n/* Global Message */\n#globalMessage::before {\n  position: fixed;" + (sidebarLocation[0] === "left" ? "left: " + (193 + sidebarOffsetW) + "px" : "right: 40px") + ";\n}\n/* Watcher */\n#watcher::before {\n  position: fixed;" + (sidebarLocation[0] === "left" ? "left: " + (174 + sidebarOffsetW) + "px" : "right: 59px") + ";\ncursor: pointer;\n}\n/* Expand Images */\n#imgControls {" + (sidebarLocation[0] === "left" ? "left: " + (155 + sidebarOffsetW) + "px" : "right: 78px") + ";\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {" + (sidebarLocation[0] === "left" ? "left: " + (136 + sidebarOffsetW) + "px" : "right: 97px") + ";\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  position: fixed;\n  cursor: pointer;" + (sidebarLocation[0] === "left" ? "left: 2px" : "right: " + (228 + sidebarOffsetW) + "px") + ";\n}\n/* Thread Navigation Links */\n#navlinks {" + (sidebarLocation[0] === "left" ? "left: 22px" : "right: " + (198 + sidebarOffsetW) + "px") + ";" + sidebarLocation[1] + ": auto !important;\ntop: -5px !important;\nwidth: 30px;\n}\n/* Stats */\n#stats {" + (sidebarLocation[0] === "left" ? "left: 4px" : "right: " + (186 + sidebarOffsetW) + "px") + " !important;" + sidebarLocation[1] + ": auto !important;\ntop: " + (Conf["Stats Position"] === "top" ? "20px" : "auto") + " !important;\nbottom: " + (Conf["Stats Position"] === "bottom" ? "4px" : "auto") + " !important;\nwidth: 60px;\ntext-align: " + sidebarLocation[1] + ";\n}\n/* Updater */\n#updater {" + (sidebarLocation[0] === "left" ? "left: " + (206 + sidebarOffsetW) + "px" : "right: 4px") + " !important;" + sidebarLocation[1] + ": auto !important;\ntop: " + (Conf["Updater Position"] === "top" ? "20px" : "auto") + " !important;\nbottom: " + (Conf["Updater Position"] === "bottom" ? "4px" : "auto") + " !important;\n}\n#prefetch {\n  width: " + (248 + sidebarOffsetW) + "px;" + sidebarLocation[0] + ": 2px;\ntop: 40px;\n}\n#boardNavDesktopFoot::after,\n#navtopright .settingsWindowLink::after,\n#watcher::before,\n#globalMessage::before,\n#imgControls,\ndiv.navLinks > a:first-of-type::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\nposition: fixed;\ntop: 2px !important;\n}\n#globalMessage,\n#boardNavDesktopFoot,\n#watcher {\nposition: fixed;\ntop: 16px !important;\nz-index: 98 !important;\n}\n#globalMessage:hover,\n#boardNavDesktopFoot:hover,\n#watcher:hover {\nz-index: 99 !important;\n}";
+          css += "/* 4chan X Options */\n#navtopright .settingsWindowLink::after {\n  visibility: visible;" + (sidebarLocation[0] === "left" ? "left: " + (231 + sidebarOffsetW) + "px" : "right:  2px") + ";\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  border: none;" + (sidebarLocation[0] === "left" ? "left: " + (212 + sidebarOffsetW) + "px" : "right: 21px") + ";\n}\n/* Global Message */\n#globalMessage::before {\n  position: fixed;" + (sidebarLocation[0] === "left" ? "left: " + (193 + sidebarOffsetW) + "px" : "right: 40px") + ";\n}\n/* Watcher */\n#watcher::before {\n  position: fixed;" + (sidebarLocation[0] === "left" ? "left: " + (174 + sidebarOffsetW) + "px" : "right: 59px") + ";\ncursor: pointer;\n}\n/* Expand Images */\n#imgControls {" + (sidebarLocation[0] === "left" ? "left: " + (155 + sidebarOffsetW) + "px" : "right: 78px") + ";\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {" + (sidebarLocation[0] === "left" ? "left: " + (136 + sidebarOffsetW) + "px" : "right: 97px") + ";\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  position: fixed;\n  cursor: pointer;" + (sidebarLocation[0] === "left" ? "left: 2px" : "right: " + (228 + sidebarOffsetW) + "px") + ";\n}\n/* Thread Navigation Links */\n#navlinks {" + (sidebarLocation[0] === "left" ? "left: 22px" : "right: " + (198 + sidebarOffsetW) + "px") + ";" + sidebarLocation[1] + ": auto !important;\ntop: 0 !important;\nwidth: 30px;\nline-height: 15px;\n}\n/* Stats */\n#stats {" + (sidebarLocation[0] === "left" ? "left: 4px" : "right: " + (186 + sidebarOffsetW) + "px") + " !important;" + sidebarLocation[1] + ": auto !important;\ntop: " + (Conf["Stats Position"] === "top" ? "20px" : "auto") + " !important;\nbottom: " + (Conf["Stats Position"] === "bottom" ? "4px" : "auto") + " !important;\nwidth: 60px;\ntext-align: " + sidebarLocation[1] + ";\n}\n/* Updater */\n#updater {" + (sidebarLocation[0] === "left" ? "left: " + (206 + sidebarOffsetW) + "px" : "right: 4px") + " !important;" + sidebarLocation[1] + ": auto !important;\ntop: " + (Conf["Updater Position"] === "top" ? "20px" : "auto") + " !important;\nbottom: " + (Conf["Updater Position"] === "bottom" ? "4px" : "auto") + " !important;\n}\n#prefetch {\n  width: " + (248 + sidebarOffsetW) + "px;" + sidebarLocation[0] + ": 2px;\ntop: 40px;\n}\n#boardNavDesktopFoot::after,\n#navtopright .settingsWindowLink::after,\n#watcher::before,\n#globalMessage::before,\n#imgControls,\ndiv.navLinks > a:first-of-type::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\nposition: fixed;\ntop: 2px !important;\n}\n#globalMessage,\n#boardNavDesktopFoot,\n#watcher {\nposition: fixed;\ntop: 16px !important;\nz-index: 98 !important;\n}\n#globalMessage:hover,\n#boardNavDesktopFoot:hover,\n#watcher:hover {\nz-index: 99 !important;\n}";
         } else {
           if (Conf["Stats Position"] === "top" && Conf["4chan Banner"] !== "at sidebar top" && sidebarLocation[0] === "left") {
             statOffset = 15;
@@ -9373,7 +9377,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
             css += "#qrtab {\n  display: none;\n}\n#qr {" + sidebarLocation[0] + ": 2px !important;" + sidebarLocation[1] + ": auto !important;\nopacity: 0.2;" + agent + "transition: opacity .3s ease-in-out 1s;\n}\n#qr:hover,\n#qr.focus,\n#qr.dump {\n  opacity: 1;" + agent + "transition: opacity .3s linear;\n}";
         }
         if (Conf["Fit Width Replies"]) {
-          css += ".summary {\n  clear: both;\n  padding-left: 20px;\n  display: block;\n}\n.replyContainer {\n  clear: both;\n}\n.sideArrows {\n  z-index: 1;\n  position: absolute;\n  right: 0px;\n  height: 10px;\n  padding-top: 1px;\n}\ndiv.postInfo {\n  margin: 1px 0 0;\n  position: relative;\n  width: 100%;\n}\n.sideArrows a,\n.sideArrows span {\n  position: static;\n  height: 10px;\n  width: 20px;\n}\n.sideArrows,\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  opacity: 0;" + agent + "transition: opacity .3s ease-out 0s;\n}\nform .replyContainer:hover div.reply .report_button,\nform .replyContainer:hover div.reply .menu_button,\nform .replyContainer:hover .sideArrows {\n  opacity: 1;" + agent + "transition: opacity .3s ease-in 0s;\n}\ndiv.reply {\n  padding-top: 6px;\n  padding-left: 10px;\n}\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  position: absolute;\n  right: 6px;\n  top: -1px;\n  font-size: 9px;\n}\n.sideArrows a {\n  position: absolute;\n  right: 20px;\n  top: 7px;\n}\ndiv.reply .inline .menu_button,\ndiv.reply .inline .sideArrows,\ndiv.reply .inline .sideArrows a,\ndiv.reply .inline .rice {\n  position: static;\n  opacity: 1;\n}\n.sideArrows a {\n  font-size: 9px;\n}\ndiv.thread {\n  padding: 0;\n  position: relative;" + (!Conf['Images Overlap Post Form'] ? "z-index: 0;" : void 0) + "}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n  width: 100%;\n}\ndiv.reply {\n  display: table;\n  clear: both;\n}\ndiv.sideArrows {\n  float: none;\n}\n.hide_thread_button {\n  position: relative;\n  z-index: 2;\n  margin-right: 10px;\n  margin-left: 5px;\n  font-size: 9px;\n}\n.opContainer input {\n  opacity: 1;\n}\n#options.reply {\n  display: inline-block;\n}";
+          css += ".summary {\n  clear: both;\n  padding-left: 20px;\n  display: block;\n}\n.replyContainer {\n  clear: both;\n}\n.sideArrows {\n  z-index: 1;\n  position: absolute;\n  right: 0px;\n  height: 10px;\n  padding-top: 1px;\n}\n.replyContainer div.postInfo {\n  margin: 1px 0 0;\n  position: relative;\n  width: 100%;\n}\n.sideArrows a,\n.sideArrows span {\n  position: static;\n  height: 10px;\n  width: 20px;\n}\n.sideArrows,\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  opacity: 0;" + agent + "transition: opacity .3s ease-out 0s;\n}\nform .replyContainer:hover div.reply .report_button,\nform .replyContainer:hover div.reply .menu_button,\nform .replyContainer:hover .sideArrows {\n  opacity: 1;" + agent + "transition: opacity .3s ease-in 0s;\n}\ndiv.reply {\n  padding-top: 6px;\n  padding-left: 10px;\n}\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  position: absolute;\n  right: 6px;\n  top: -1px;\n  font-size: 9px;\n}\n.sideArrows a {\n  position: absolute;\n  right: 20px;\n  top: 7px;\n}\ndiv.reply .inline .menu_button,\ndiv.reply .inline .sideArrows,\ndiv.reply .inline .sideArrows a,\ndiv.reply .inline .rice {\n  position: static;\n  opacity: 1;\n}\n.sideArrows a {\n  font-size: 9px;\n}\ndiv.thread {\n  padding: 0;\n  position: relative;" + (!Conf['Images Overlap Post Form'] ? "z-index: 0;" : void 0) + "}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n  width: 100%;\n}\ndiv.reply {\n  display: table;\n  clear: both;\n}\ndiv.sideArrows {\n  float: none;\n}\n.hide_thread_button {\n  position: relative;\n  z-index: 2;\n  margin-right: 10px;\n  margin-left: 5px;\n  font-size: 9px;\n}\n.opContainer input {\n  opacity: 1;\n}\n#options.reply {\n  display: inline-block;\n}";
         } else {
           css += ".sideArrows a {\n  font-size: 9px;\n}\n.sideArrows a {\n  position: static;\n}\ndiv.reply {\n  padding-right: 5px;\n}\n.sideArrows {\n  margin-right: 5px;\n  float: left;\n}\n.sideArrows a {\n  font-size: 12px;\n}\n.hide_thread_button {\n  position: relative;\n  z-index: 2;\n  margin-right: 5px;\n}\ndiv.reply {\n  padding-top: 5px;\n  padding-left: 2px;\n  display: table;\n}\ndiv.thread {\n  overflow: visible;\n  padding: 0;\n  position: relative;\n}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n}\n.thread > div > .post {\n  overflow: visible;\n}\n.sideArrows span {\n  font-size: 9px;\n}\ndiv.reply {\n  padding-top: 6px;\n  padding-left: 8px;\n}\n.sideArrows {\n  margin-right: 2px;\n}";
         }

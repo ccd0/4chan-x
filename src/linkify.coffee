@@ -3,7 +3,6 @@
     # Add Linkification to callbacks, which will call linkification on every post parsed by Appchan X.
     Main.callbacks.push @node
 
-
   # I didn't write most of this RegEx.
   regString: [
     '('

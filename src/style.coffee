@@ -2070,8 +2070,9 @@ div.navLinks > a:first-of-type::after {
 #navlinks {
   """ + (if sidebarLocation[0] == "left" then "left: 22px" else "right: " + (198 + sidebarOffsetW) + "px") + """;
   """ + sidebarLocation[1] + """: auto !important;
-  top: -5px !important;
+  top: 0 !important;
   width: 30px;
+  line-height: 15px;
 }
 /* Stats */
 #stats {
@@ -2390,7 +2391,7 @@ form .postContainer blockquote {
   height: 10px;
   padding-top: 1px;
 }
-div.postInfo {
+.replyContainer div.postInfo {
   margin: 1px 0 0;
   position: relative;
   width: 100%;
