@@ -16,13 +16,14 @@ Options =
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
 
   dialog: (tab) ->
-    if Conf['editMode']
+    if Conf['editMode'] == "theme"
       if confirm "Opening the options dialog will close and discard any theme changes made with the theme editor."
-        try ThemeTools.close()
-        try MascotTools.close()
-        Conf['editMode'] = false
-      else
-        return
+        ThemeTools.close()
+      return
+    if Conf['editMode'] == "mascot"
+      if confirm "Opening the options dialog will close and discard any mascot changes made with the mascot editor."
+        MascotTools.close()
+      return
     dialog = $.el 'div'
       id: 'options'
       className: 'reply dialog'

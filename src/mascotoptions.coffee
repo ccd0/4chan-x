@@ -287,7 +287,7 @@ MascotTools =
     alert "Mascot \"#{aname}\" saved."
 
   close: ->
-    Conf['editMode']   = false
+    Conf['editMode'] = false
     editMascot = {}
     $.rm $("#mascotConf", d.body)
     Style.addStyle Conf["Style"]

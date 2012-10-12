@@ -2735,18 +2735,17 @@
     },
     dialog: function(tab) {
       var arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, time, tr, ul, updateIncrease, _i, _len, _ref, _ref1, _ref2, _ref3;
-      if (Conf['editMode']) {
+      if (Conf['editMode'] === "theme") {
         if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
-          try {
-            ThemeTools.close();
-          } catch (_error) {}
-          try {
-            MascotTools.close();
-          } catch (_error) {}
-          Conf['editMode'] = false;
-        } else {
-          return;
+          ThemeTools.close();
         }
+        return;
+      }
+      if (Conf['editMode'] === "mascot") {
+        if (confirm("Opening the options dialog will close and discard any mascot changes made with the mascot editor.")) {
+          MascotTools.close();
+        }
+        return;
       }
       dialog = $.el('div', {
         id: 'options',
