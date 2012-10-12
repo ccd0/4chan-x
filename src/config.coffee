@@ -62,7 +62,7 @@ Config =
     Posting:
       'Quick Reply':                  [true,  'Reply without leaving the page. <span class=disabledwarning><code>Style</code> is enabled. This option will be enabled regardless of this setting\'s value.</span>']
       'Cooldown':                     [true,  'Prevent "flood detected" errors.']
-      'Persistent QR':                [true,  'The Quick reply won\'t disappear after posting. <span class=disabledwarning><code>Style</code> is enabled. This option will be enabled regardless of this setting\'s value.</span>']
+      'Persistent QR':                [true,  'The Quick reply won\'t disappear after posting.']
       'Auto Hide QR':                 [false, 'Automatically hide the quick reply when posting. <span class=disabledwarning><code>Style</code> is enabled. This option will be disabled regardless of this setting\'s value.</span>']
       'Open Reply in New Tab':        [false, 'Open replies in a new tab that are made from the main board.']
       'Remember QR size':             [false, 'Remember the size of the Quick reply (Firefox only).']

@@ -3,16 +3,26 @@ QR =
     return unless $.id 'postForm'
     Main.callbacks.push @node
 
-    if Conf['Hide Original Post Form'] or Conf['Style']
-      unless Conf['Style']
-        link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
+    if Conf['Hide Original Post Form'] and not Conf['Persistent QR']
+      if Conf['Style']
+        link = $.el 'a'
+          innerHTML: "Open Post Form"
+          id: "showQR"
+          href: "javascript:;"
+        $.on link, 'click', ->
+          QR.open()
+          QR.threadSelector.value = 'new' unless g.REPLY
+          $('textarea', QR.el).focus()
+      else
+        link = $.el 'h1'
+          innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
         $.on link.firstChild, 'click', ->
           QR.open()
           QR.threadSelector.value = 'new' unless g.REPLY
           $('textarea', QR.el).focus()
-        $.before $.id('postForm'), link
+      $.before $.id('postForm'), link
 
-    if Conf['Persistent QR'] or Conf['Style']
+    if Conf['Persistent QR']
       QR.dialog()
       QR.hide() if Conf['Auto Hide QR'] and not Conf['Style']
 
@@ -520,7 +530,20 @@ QR =
       e.preventDefault()
 
   dialog: ->
-    unless Conf['Style']
+    if Conf['Style']
+      QR.el = UI.dialog 'qr', '', '
+<div id=qrtab>- Post Form -</div>
+<form>
+  <div class=warning></div>
+  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
+  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
+  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
+  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=browse class=field>Browse...</div><div id=file class=field></div></div>
+  <div id=submit><input type=submit></div>
+  <div id=threadselect></div>
+  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
+</form>'
+    else
       QR.el = UI.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
   Quick Reply <input type=checkbox id=autohide title=Auto-hide>
@@ -533,19 +556,6 @@ QR =
   <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
   <div class=warning></div>
-</form>'
-    else
-      QR.el = UI.dialog 'qr', '', '
-<div id=qrtab>- Post Form -</div>
-<form>
-  <div class=warning></div>
-  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
-  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
-  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
-  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=browse class=field>Browse...</div><div id=file class=field></div></div>
-  <div id=submit><input type=submit></div>
-  <div id=threadselect></div>
-  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
 </form>'
 
     if Conf['Remember QR size'] and $.engine is 'gecko'
@@ -601,6 +611,10 @@ QR =
 
     if Conf['Style']
       riceFile = $("#file", QR.el)
+      i = 0
+      size = fileInput.max
+      size /= 1024 while i++ < 2
+      riceFile.innerHTML = "<span class='placeholder'>Max: #{size}MB, Shift+Click to Clear</span>"
       $.on $("#browse", QR.el),   'click',     -> fileInput.click()
       $.on riceFile,              'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else fileInput.click()
       $.on fileInput,             'change',    -> riceFile.textContent = fileInput.value
@@ -822,7 +836,7 @@ QR =
       if Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto
         $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
 
-    if Conf['Persistent QR'] or QR.cooldown.auto or Conf['Style']
+    if Conf['Persistent QR'] or QR.cooldown.auto
       reply.rm()
     else
       QR.close()

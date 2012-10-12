@@ -746,6 +746,7 @@ textarea {
 .name,
 .postNum,
 .postertrip,
+.posteruid,
 .rules,
 .subject,
 .summary,
@@ -1148,6 +1149,7 @@ input[value="Report"] {
 }
 #file {
   width: """ + (177 + sidebarOffsetW) + """px;
+  overflow: hidden;
 }
 #browse {
   text-align: center;
@@ -1499,6 +1501,7 @@ html .subMenu {
   background: none;
 }
 /* Position and Dimensions of the #qr */
+#showQR,
 #qr {
   overflow: visible;
   position: fixed;
@@ -1509,6 +1512,11 @@ html .subMenu {
   padding: 0;
   z-index: 5 !important;
   background-color: transparent !important;
+}
+#showQR {
+  display: block;
+  """ + sidebarLocation[0] + """: 2px !important;
+  text-align: center;
 }
 /* Width and height of all #qr elements (excluding some captcha elements) */
 body > .postingMode ~ #delform .reply a > img[src^="//images"] {
@@ -1553,6 +1561,9 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
 input[title="Verification"],
 .captchaimg img {
   margin-top: 1px;
+}
+.captchaimg {
+  line-height: 0;
 }
 #qr div {
   min-width: 0;
@@ -1852,6 +1863,7 @@ a.forwardlink {
 .qphl {
   outline-color: """ + theme["Backlinked Reply Outline"] + """;
 }
+.placeholder,
 #qr input:""" + agent + """placeholder,
 #qr textarea:""" + agent + """placeholder {
   color: """ + (if theme["Dark Theme"] then "rgba(255,255,255,0.2)" else "rgba(0,0,0,0.3)") + """ !important;
@@ -2965,7 +2977,7 @@ input[type=checkbox] {
 input[type=checkbox] {
   display: none;
 }
-.rice {
+.thread .rice {
   display: none;
 }
 """
