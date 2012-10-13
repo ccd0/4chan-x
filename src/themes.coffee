@@ -1835,19 +1835,19 @@ thread>.replyContainer>.reply>div.postInfo {
     "Checkbox Background"         : "rgba(228,228,228,.9)"
     "Checkbox Border"             : "rgb(204,204,204)"
     "Checkbox Checked Background" : "rgb(228,228,228)"
-    "Input Background"            : "rgba(228,228,228,.9)"
+    "Input Background"            : "rgba(244,244,244,0.9)"
     "Input Border"                : "rgb(204,204,204)"
     "Hovered Input Background"    : "rgba(212,212,212,.9)"
     "Hovered Input Border"        : "rgb(204,204,204)"
     "Focused Input Background"    : "rgba(212,212,212,.9)"
     "Focused Input Border"        : "rgb(204,204,204)"
-    "Buttons Background"          : "rgba(228,228,228,.9)"
+    "Buttons Background"          : "rgba(244,244,244,0.9)"
     "Buttons Border"              : "rgb(204,204,204)"
     "Navigation Background"       : "rgba(244,244,244,0.8)"
     "Navigation Border"           : "rgb(239,239,239)"
     "Quotelinks"                  : "rgb(191,127,63)"
     "Links"                       : "rgb(191,127,63)"
-    "Hovered Links"               : "rgb(211,54,130)"
+    "Hovered Links"               : "rgb(128,96,64)"
     "Navigation Links"            : "rgb(76,76,76)"
     "Hovered Navigation Links"    : "rgb(211,54,130)"
     "Subjects"                    : "rgb(76,76,76)"
@@ -1856,7 +1856,7 @@ thread>.replyContainer>.reply>div.postInfo {
     "Tripcodes"                   : "rgb(191,127,63)"
     "Emails"                      : "rgb(191,127,63)"
     "Post Numbers"                : "rgb(191,127,63)"
-    "Text"                        : "rgb(76,76,76)"
+    "Text"                        : "rgb(85,85,85)"
     "Backlinks"                   : "rgb(191,127,63)"
     "Greentext"                   : "rgb(107,122,30)"
     "Board Title"                 : "rgb(76,76,76)"
@@ -1886,6 +1886,12 @@ input.field:focus,
 textarea:focus,
 #options input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
+}
+a:hover {
+  text-shadow: 0 0 3px rgba(128,96,64,.7);
+  -moz-transition: text-shadow .2s;
+  -o-transition: text-shadow .2s;
+  -webkit-transition: text-shadow .2s;
 }
 button,
 input:not(.jsColor),

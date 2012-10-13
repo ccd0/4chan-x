@@ -736,6 +736,7 @@ textarea {
 #prefetch,
 #qp div.post .postertrip,
 #qp div.post .subject,
+.boardSubtitle,
 .capcode,
 .container::before,
 .dateTime,
@@ -977,9 +978,6 @@ div.navLinks > a:first-of-type:hover::after,
   font-size: 30px;
   font-weight: 400;
 }
-.boardSubtitle {
-  font-size: 13px;
-}
 hr {
   padding: 0;
   height: 0;
@@ -1094,6 +1092,10 @@ input[type=checkbox] {
   """ + agent + """appearance: checkbox !important;
 }
 /* Formatting for all postarea elements */
+#browse,
+#file {
+  line-height: 17px;
+}
 #browse,
 #file,
 #threadselect select {
@@ -1532,8 +1534,8 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
   width: 20px;
   margin: 0;
   font-size: 14px;
-  vertical-align: middle;
   outline: none;
+  padding: 0 0 3px !important
 }
 #dump:hover {
   background: none;
@@ -2375,12 +2377,8 @@ form .postContainer blockquote {
       if Conf["Fit Width Replies"]
         css += """
 .summary {
-  clear: both;
   padding-left: 20px;
   display: block;
-}
-.replyContainer {
-  clear: both;
 }
 .sideArrows {
   z-index: 1;
@@ -2445,11 +2443,10 @@ div.thread {
 }
 div.post:not(#qp):not([hidden]) {
   margin: 0;
-  width: 100%;
 }
 div.reply {
-  display: table;
-  clear: both;
+  display: block;
+  overflow: hidden;
 }
 div.sideArrows {
   float: none;
@@ -2495,9 +2492,6 @@ div.reply {
   padding-top: 5px;
   padding-left: 2px;
 }
-div.opContainer {
-  display: table !important;
-}
 div.reply,
 .replyContainer {
   display: table;
@@ -2522,6 +2516,13 @@ div.reply {
 }
 .sideArrows {
   margin-right: 2px;
+}
+"""
+      if Conf['Force Reply Break']
+        css += """
+.summary,
+.replyContainer {
+  clear: both;
 }
 """
 
@@ -2586,9 +2587,11 @@ body {
         css += """
 #qr textarea.field {
   height: 161px;
+  min-height: 161px;
 }
 #qr.captcha textarea.field {
   height: 114px;
+  min-height: 114px;
 }
 #qr .field[name="name"],
 #qr .field[name="email"],
@@ -2601,9 +2604,11 @@ body {
         css += """
 #qr textarea.field {
   height: 135px;
+  min-height: 135px;
 }
 #qr.captcha textarea.field {
   height: 88px;
+  min-height: 88px;
 }
 #qr .field[name="email"],
 #qr .field[name="sub"] {
@@ -2680,6 +2685,7 @@ div.replyContainer:nth-of-type(2n+1) div.post {
 #watcher,
 #globalMessage,
 .inline div.reply,
+div.opContainer,
 div.replyContainer,
 h2,
 td[style="border: 1px dashed;"] {
@@ -2810,7 +2816,7 @@ td[style="border: 1px dashed;"] {
   padding: 5px;
   """ + agent + """box-sizing: border-box;
   box-sizing: border-box;
-  margin-bottom: """ + replyMargin + """px;
+  margin-bottom: 20px;
 }
 """
 
