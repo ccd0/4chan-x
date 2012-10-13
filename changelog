@@ -1,4 +1,6 @@
 master
+
+2.36.0
 - noface
   Updater should now check until own post is found.
   "Don't expand spoilers when using ImageExpand" should now work as expected and gets a new option.
