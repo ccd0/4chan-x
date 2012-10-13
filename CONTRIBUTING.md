@@ -26,6 +26,11 @@ Open your console with:
 - Build with `grunt`.
 - For development (continuous builds), run `grunt watch`.
 
+### Test
+
+- You must have [PhantomJS](http://phantomjs.org/) installed. (need [help](https://github.com/gruntjs/grunt/blob/master/docs/faq.md#why-does-grunt-complain-that-phantomjs-isnt-installed)?)
+- Run test units with `grunt test`.
+
 ### Release
 
 - To patch, run `grunt patch` (`0.0.x` version bump).
