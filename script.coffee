@@ -2770,7 +2770,9 @@ Updater =
       return unless Conf['Auto Update This']
       save = []
       text = $('textarea', QR.el).value.replace /\n/g, ''
-      file = $('input[type="file"]', QR.el).value.replace /^.*\\/, ''
+      unless $('#dump', QR.el)
+        file = $('input[type="file"]', QR.el).value.replace /^.*\\/, ''
+      else file = $('#replies a', QR.el).title.replace /\ \(.*\)$/, ''
       unless text.length is 0
         save.push text
         image = false
