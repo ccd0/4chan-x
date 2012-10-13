@@ -1306,6 +1306,7 @@
         show_stub = Conf['Show Stubs'];
       }
       side = $('.sideArrows', root);
+      $.addClass(side.parentNode, 'hidden');
       if (side.hidden) {
         return;
       }

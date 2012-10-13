@@ -1097,6 +1097,7 @@ ReplyHiding =
 
   hide: (root, show_stub=Conf['Show Stubs']) ->
     side = $ '.sideArrows', root
+    $.addClass side.parentNode, 'hidden'
     return if side.hidden # already hidden once by the filter
     side.hidden = true
     el = side.nextElementSibling
