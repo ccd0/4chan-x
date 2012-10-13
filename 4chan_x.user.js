@@ -1292,7 +1292,6 @@
         delete g.hiddenReplies[id];
       } else {
         ReplyHiding.hide(root);
-        $.addClass(root, 'hidden');
         for (_j = 0, _len1 = quotes.length; _j < _len1; _j++) {
           quote = quotes[_j];
           $.addClass(quote, 'filtered');

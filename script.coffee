@@ -1090,7 +1090,6 @@ ReplyHiding =
       delete g.hiddenReplies[id]
     else
       ReplyHiding.hide root
-      $.addClass root, 'hidden'
       for quote in quotes
         $.addClass quote, 'filtered'
       g.hiddenReplies[id] = Date.now()
