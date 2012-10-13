@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 0.18.1 - 2012-10-12
+/*  appchan x - Version 0.18.1 - 2012-10-13
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -1577,12 +1577,17 @@
       center: true
     },
     'Akiyama_Mio_sitting': {
-      category: 'Anime',
+      category: 'Questionable',
       image: 'https://i.minus.com/ibnnAPmolhTfE7.png'
     },
     'Anime_Girl_in_Bondage': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/ibbfIrZEoNLmiU.png',
+      center: true
+    },
+    'Anime_Girl_in_Bondage_2': {
+      category: 'Questionable',
+      image: 'http://i.minus.com/iGRED5sHh4RMs.png',
       center: true
     },
     'Applejack': {
@@ -1611,7 +1616,7 @@
       center: true
     },
     'Asuka_Langley_Soryu_5': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/iJq4VXY1Gw8ZE.png',
       center: true
     },
@@ -1625,7 +1630,7 @@
       center: true
     },
     'Ayase_Yue': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/ign5fGOZWTx5o.png'
     },
     'Ayase': {
@@ -1634,7 +1639,7 @@
       center: true
     },
     'Ayase_2': {
-      category: 'Anime',
+      category: 'Questionable',
       image: 'https://i.minus.com/ibjUbDLSU5pwhK.png',
       center: true
     },
@@ -1644,7 +1649,7 @@
       center: true
     },
     'Blue_Rose': {
-      category: 'Anime',
+      category: 'Questionable',
       image: 'https://i.minus.com/ibiq1joMemfzeM.png',
       center: true
     },
@@ -1659,7 +1664,7 @@
       center: true
     },
     'CC2': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/iVT3TjJ7lBRpl.png',
       center: true
     },
@@ -1669,7 +1674,7 @@
       center: true
     },
     'Cirno': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/ibffjW5v0zrSGa.png',
       center: true
     },
@@ -1704,7 +1709,7 @@
       center: true
     },
     'Erio_Touwa': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/in8bF152Y9qVB.png'
     },
     'Evangeline_AK_McDowell': {
@@ -1746,7 +1751,7 @@
       image: 'https://i.minus.com/iEQsK6K85jX2n.png'
     },
     'Gasai_Yuno_2': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/iblDClpOzDBgCC.png',
       center: true
     },
@@ -1765,11 +1770,11 @@
       center: true
     },
     'Hatsune_Miku': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/iHuUwYVywpp3Z.png'
     },
     'Hatsune_Miku_2': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/iclhgYeHDD77I.png',
       center: true
     },
@@ -1790,12 +1795,12 @@
       center: true
     },
     'Hatsune_Miku_6': {
-      category: 'Anime',
+      category: 'Questionable',
       image: 'https://i.minus.com/iQzx9fPFgPUNl.png',
       center: true
     },
     'Hatsune_Miku_7': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/iDScshaEZqUuy.png',
       center: true
     },
@@ -1816,6 +1821,14 @@
       category: 'Silhouette',
       image: ['https://i.minus.com/ibv270koIdRjm7.png', 'https://i.minus.com/iPM4lDD53yB5n.png']
     },
+    'Horo_3': {
+      category: 'Questionable',
+      image: 'http://i.minus.com/ibyT9dlTe1HN5P.png'
+    },
+    'Horo_4': {
+      category: 'Questionable',
+      image: 'http://i.minus.com/ibbMKiznORGJ00.png'
+    },
     'Ika_Musume': {
       category: 'Anime',
       image: 'https://i.minus.com/ibqVu5GNfKx5bC.png',
@@ -1827,16 +1840,16 @@
       center: true
     },
     'Ika_Musume_3': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/iby8LyjXffukaI.png',
       center: true
     },
     'Inori': {
-      category: 'Anime',
+      category: 'Questionable',
       image: 'https://i.minus.com/ibpHKNPxcFqRxs.png'
     },
     'Inori_2': {
-      category: 'Anime',
+      category: 'Questionable',
       image: 'https://i.minus.com/ibzM531DBaHYXD.png'
     },
     'Iwakura_Lain': {
@@ -1855,7 +1868,7 @@
       center: true
     },
     'Kagamine_Rin': {
-      category: 'Anime',
+      category: 'Questionable',
       image: 'https://i.minus.com/iVPKJeDXKPKeV.png',
       center: true
     },
@@ -1888,7 +1901,7 @@
       center: true
     },
     'Kinomoto_Sakura_2': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/ibklztjz3Ua747.png',
       center: true
     },
@@ -1897,7 +1910,7 @@
       image: 'https://i.minus.com/ibikDZH5CZ0V30.png'
     },
     'Kirino_Kosaka_and_Ruri_Goko': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/isIzggtfUo4ql.png',
       center: true
     },
@@ -1910,6 +1923,11 @@
       category: 'Anime',
       image: 'https://i.minus.com/ieVyNMSjXpBs2.png',
       center: true
+    },
+    'Konjiki_no_Yami': {
+      category: 'Questionable',
+      image: 'http://i.minus.com/i7MEbrUTUc92W.png',
+      bottom: '0'
     },
     'Kotobuki_Tsumugi': {
       category: 'Anime',
@@ -1939,7 +1957,7 @@
       center: true
     },
     'Leonmitchelli': {
-      category: 'Anime',
+      category: 'Questionable',
       image: 'https://i.minus.com/ibgUFGlOpedfbs.png',
       center: true
     },
@@ -2032,7 +2050,7 @@
       center: true
     },
     'Nagato_Yuki_4': {
-      category: 'Anime',
+      category: 'Questionable',
       image: 'https://i.minus.com/i92tUr90OVZGD.png',
       center: true
     },
@@ -2046,9 +2064,17 @@
       image: ['https://i.minus.com/iJdxNEMekrQjp.png', 'https://i.minus.com/ibbHeuocMgN5Eu.png'],
       center: true
     },
+    'Nagato_Yuki_7': {
+      category: 'Questionable',
+      image: 'http://i.minus.com/iFQQPEaC3aEV7.png'
+    },
     'Nakano_Azusa': {
       category: 'Anime',
       image: 'https://i.minus.com/iiptfoMlr4v1k.png'
+    },
+    'Nodoka_Miyazaki': {
+      category: 'Anime',
+      image: 'http://i.minus.com/iDX5mImKBzrXK.png'
     },
     'Nichijou': {
       category: 'Anime',
@@ -2098,12 +2124,12 @@
       center: true
     },
     'Pixie': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/ipRzX1YsTyhgZ.png',
       center: true
     },
     'Railgun': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/iysolfmvz6WKs.png',
       center: true
     },
@@ -2149,13 +2175,13 @@
       position: 'bottom'
     },
     'Saber': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/i62cv3csQaqgk.png',
       position: 'bottom',
       center: true
     },
     'Sakurazaki_Setsuna': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/iHS6559NMU1tS.png'
     },
     'Samus_Aran': {
@@ -2163,8 +2189,12 @@
       image: 'https://i.minus.com/iWG1GFJ89A05p.png',
       center: true
     },
-    'Seraphim': {
+    'Samus_Aran_2': {
       category: 'Anime',
+      image: 'http://i.minus.com/ibl4efsNtHpkXg.png'
+    },
+    'Seraphim': {
+      category: 'Questionable',
       image: 'https://i.minus.com/ivHaKIFHRpPFP.png',
       center: true
     },
@@ -2224,15 +2254,19 @@
       center: true
     },
     'Teletha_Tessa_Testarossa': {
-      category: 'Anime',
+      category: 'Questionable',
       image: 'https://i.minus.com/iQKrg7Pq7Y6Ed.png'
+    },
+    'Rukia_Nia_and_Asa': {
+      category: 'Questionable',
+      image: 'http://i.minus.com/icECBJR5D5U4S.png'
     },
     'Tewi_Inaba': {
       category: 'Anime',
       image: 'https://i.minus.com/ib2k9lwQIkmb66.png'
     },
     'Tifa': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/inDzKQ0Wck4ef.png',
       center: true
     },
@@ -2247,12 +2281,12 @@
       center: true
     },
     'Udine': {
-      category: 'Anime',
+      category: 'Questionable',
       image: 'https://i.minus.com/iiycujRmhn6QK.png',
       position: 'bottom'
     },
     'Wanwan': {
-      category: 'NSFW',
+      category: 'Questionable',
       image: 'https://i.minus.com/iTdBWYMCXULLT.png',
       position: 'bottom',
       center: true
@@ -8737,7 +8771,7 @@
       result = "#mascot img {\n  position: fixed;\n  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\nbottom:  " + (mascot.position === 'bottom' ? (mascot.vOffset || 0) + 0 + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + position) + "px") + ";" + location + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\ntop:     " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";\nheight:  " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height) + "px" : "auto") + ";\nwidth:   " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width) + "px" : "auto") + ";;\npointer-events: none;\n}";
       return result;
     },
-    categories: ["Anime", "George", "NSFW", "Ponies", "Silhouette"],
+    categories: ["Anime", "George", "Questionable", "Ponies", "Silhouette"],
     dialog: function(key) {
       var dialog, div, fileInput, input, item, layout, name, option, optionHTML, setting, value, _i, _len, _ref;
       Conf['editMode'] = "mascot";
@@ -9139,6 +9173,7 @@ a.useremail[href*="' + name + '"]:last-of-type::' + position + ',\
 a.useremail[href*="' + name.toLowerCase() + '"]:last-of-type::' + position + ',\
 a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {\
   content: url("' + image + '") " ";\
+  vertical-align: top;\
 }\
 ';
         }
@@ -9312,7 +9347,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         } else {
           sidebarLocation = ["right", "left"];
         }
-        css += "::" + agent + "selection {\nbackground: " + theme["Text"] + ";\ncolor: " + theme["Background Color"] + ";\n}\nbody {\n  padding: 0;\n}\nbody > script + hr + div {\n  display: none;\n}\nhtml,\nbody {\n  min-height: 100%;\n}\nhtml,\nbody,\ninput,\nselect,\ntextarea {\n  font-family: '" + Conf["Font"] + "';\n}\n#qr img,\n.captcha img {\n  opacity: " + Conf["Captcha Opacity"] + ";\n}\n#boardNavDesktop,\n#prefetch,\n#qp div.post .postertrip,\n#qp div.post .subject,\n.capcode,\n.container::before,\n.dateTime,\n.file,\n.fileInfo,\n.fileText,\n.fileText span:not([class])::after,\n.name,\n.postNum,\n.postertrip,\n.posteruid,\n.rules,\n.subject,\n.summary,\na,\nbig,\nblockquote,\ndiv.post > blockquote .chanlinkify.YTLT-link.YTLT-text,\ndiv.reply,\nfieldset,\ntextarea,\ntime + span {\n  font-size: " + Conf["Font Size"] + ";\n}\n#globalMessage b {\n  font-weight: 100;\n}\n/* Cleanup */\n#absbot,\n#autohide,\n#delform > hr,\n#ft li.fill,\n#imgControls label:first-of-type input,\n#imgControls .rice,\n#logo,\n#postPassword + span,\n.autoPagerS,\n.board > hr:last-of-type,\n.boardBanner div," + (!Conf["Board Subtitle"] ? ".boardSubtitle," : void 0) + ".closed,\n.deleteform,\n.entry:not(.focused) > .subMenu,\n.error:empty,\n.hidden_thread > .summary,\n.inline .report_button,\n.inline input,\n.mobile,\n.navLinksBot,\n.next,\n.postInfo input,\n.postInfo .rice,\n.postingMode,\n.prev,\n.qrHeader,\n.replyContainer > .hide_reply_button.stub ~ .reply,\n.replymode,\n.rules,\n.sideArrows:not(.hide_reply_button),\n.stylechanger,\n.warnicon,\n.warning:empty,\n.yui-menu-shadow,\nbody > .postingMode ~ #delform hr,\nbody > br,\nbody > hr,\ndiv.reply[hidden],\nhtml body > span[style=\"left: 5px; position: absolute;\"]:nth-of-type(0),\ntable[style=\"text-align:center;width:100%;height:300px;\"] {\n  display: none !important;\n}\ndiv.post > blockquote .prettyprint span {\n  font-family: monospace;\n}\ndiv.post div.file .fileThumb {\n  float: left;\n  margin: 3px 20px 0;\n}\na {\n  outline: 0;\n}\n#boardNavDesktop,\n#boardNavDesktop a,\n#boardNavDesktopFoot a,\n#count,\n#imageType,\n#imageType option\n#imgControls,\n#navtopright a[href=\"javascript:;\"],\n#postcount,\n#stats,\n#timer,\n#updater,\n.pages a,\n.pages strong,\nbody:not([class]) a[href=\"javascript:;\"],\ninput,\nlabel {\n  text-decoration: none;\n}\n#credits a,\n.abbr a,\n.backlink:not(.filtered),\n.chanlinkify,\n.file a,\n.pages,\n.pages a,\n.quotejs,\n.quotelink:not(.filtered),\n.quotelink:not(.filtered),\n.useremail,\na,\na.deadlink,\na[href*=\"//dis\"],\na[href*=res],\ndiv.post > blockquote .chanlinkify.YTLT-link.YTLT-text,\ndiv.postContainer span.postNum > .replylink {\n  text-decoration: " + (Conf["Underline Links"] ? "underline" : "none") + ";\n}\n.filtered {\n  text-decoration: line-through;\n}\n/* YouTube Link Title */\ndiv.post > blockquote .chanlinkify.YTLT-link.YTLT-na {\n  text-decoration: line-through;\n}\ndiv.post > blockquote .chanlinkify.YTLT-link.YTLT-text {\n  font-style: normal;\n}\n/* Z-INDEXES */\n#mascotConf,\n#options.reply.dialog,\n#themeConf {\n  z-index: 999 !important;\n}\n#qp {\n  z-index: 104 !important;\n}\n#ihover,\n#overlay,\n#updater:hover,\n.exPopup,\nhtml .subMenu {\n  z-index: 102 !important;\n}\n#navtopright .settingsWindowLink::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  z-index: 101 !important;\n}\n#imgControls {\n  z-index: 100 !important;\n}\n.fileThumb img + img {\n  position: relative;\n  z-index: " + (Conf["Images Overlap Post Form"] ? "100" : "1") + " !important;\n}\n\ndiv.navLinks > a:first-of-type::after {\n  z-index: 99 !important;\n}\n.fileText ~ a > img + img {\n  z-index: 96 !important;\n}\n#autoPagerBorderPaging,\n#boardNavDesktop,\n#menu.reply.dialog,\n#navlinks {\n  z-index: 95 !important;\n}\n#boardNavMobile,\n#stats,\n#updater {\n  z-index: 10 !important;\n}\n#navtopright,\n.qrMessage {\n  z-index: 6 !important;\n}\n#boardTitle,\n#watcher,\n#watcher::before,\n.boardBanner,\n.menu_button,\n.sideArrows {\n  z-index: 4 !important;\n}\n#globalMessage::before,\n.boardBanner,\n.replyhider a {\n  z-index: 1 !important;\n}\ndiv.reply,\ndiv.reply.highlight {\n  z-index: 0 !important;" + agent + "box-sizing: border-box;\nbox-sizing: border-box;\n}\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#navtopright .settingsWindowLink::after,\n#boardNavDesktopFoot::after,\n#watcher::before,\n#globalMessage::before,\ndiv.navLinks > a:first-of-type::after,\n#imgControls label:first-of-type::after {\nopacity: 0.4;\n}\nbody > a[style=\"cursor: pointer; float: right;\"]:hover::after,\n#navtopright .settingsWindowLink:hover::after,\n#boardNavDesktopFoot:hover::after,\n#globalMessage:hover::before,\ndiv.navLinks > a:first-of-type:hover::after,\n#watcher:hover::before,\n#imgControls label:hover:first-of-type::after {\nopacity: 1;\n}\n.pageJump {\nposition: fixed;\ntop: -1000px;\npointer-events: all;\n}\n.extButton img {\nmargin-top: -4px;\n}\n#boardNavMobile select {\nfont-size: 11px;\npointer-events: all;\n}\n.qrMessage {\nposition: fixed;" + sidebarLocation[0] + ": 2px;\nbottom: 250px;\nfont-size: inherit;\nfont-weight: 100;\nbackground: none;\nborder: none;\nwidth: " + (248 + sidebarOffsetW) + "px;\n}\n#boardTitle {\n  font-size: 30px;\n  font-weight: 400;\n}\n.boardSubtitle {\n  font-size: 13px;\n}\nhr {\n  padding: 0;\n  height: 0;\n  width: 100%;\n  clear: both;\n  border: none;\n}\n/* Front Page */\n.bd,\n.bd ul,\nimg,\n.pages,\n#qr,\ndiv[id^=\"qr\"],\ntable.reply[style^=\"clear: both\"],\n.boxcontent > hr,\nh3 {\n  border: none;\n}\n.boxcontent input {\n  height: 18px;\n  vertical-align: bottom;\n  margin-right: 1px;\n}\na.yuimenuitemlabel {\n  padding: 0 20px;\n}\n/* Navigation */" + (Conf["Custom Navigation"] ? "" : "#boardNavDesktop,") + ".pages /* Bottom Navigation */ {\n  text-align: center;\n  font-size: 0;\n  color: transparent;\n  width: auto;\n}\n#boardNavDesktop {\n  text-align: center;\n  width: auto;\n  padding-right: 0px;\n  margin-right: 0px;\n}\n#boardNavDesktopFoot {\n  visibility: visible;\n  position: fixed;" + sidebarLocation[0] + ": 2px;\nbottom: auto;\ncolor: transparent;\nfont-size: 0;\nborder-width: 1px;\ntext-align: center;\nheight: 0;\nwidth: " + (248 + sidebarOffsetW) + "px !important;\noverflow: hidden;" + agent + "transition: height .5s linear, border 0s ease-in-out .5s;" + agent + "box-sizing: border-box;\nbox-sizing: border-box;\n}\n.center {\ntext-align: center;\nclear: both;\n}\nimg.topad,\nimg.middlead,\nimg.bottomad {\nopacity: 0.3;" + agent + "transition: opacity .3s ease-in-out .3s;\n}\nimg.topad:hover,\nimg.middlead:hover,\nimg.bottomad:hover {\n  opacity: 1;" + agent + "transition: opacity .3s linear;\n}" + (!Conf["Custom Navigation"] ? "#boardNavDesktop a," : void 0) + ".pages a,\n.pages strong {\n  display: inline-block;\n  border: none;\n  text-align: center;\n  margin: 0 1px 0 2px;\n}\n.pages {\n  word-spacing: 10px;\n}\n/* moots announcements */\n#globalMessage {\n  font-size: " + Conf["Font Size"] + ";\ntext-align: center;\nfont-weight: 200;\n}\n.pages strong,\na,\n.new {" + agent + "transition: background-color .1s linear;\n}\n/* Post Form */\n/* Override OS-specific UI */\n#ft li,\n#ft ul,\n#options input:not([type=\"radio\"]),\n#updater input:not([type=\"radio\"]),\n.box-outer,\n.boxbar,\n.top-box,\nh2,\ninput:not([type=\"radio\"]),\ninput[type=\"submit\"],\ntextarea {" + agent + "appearance: none;\n}\ninput[type=checkbox] {" + agent + "appearance: checkbox !important;\n}\n/* Formatting for all postarea elements */\n#browse,\n#file,\n#threadselect select {\n  cursor: pointer;\n  display: inline-block;\n}\n#threadselect select,\ninput,\n.field,\ninput[type=\"submit\"] {\n  height: 20px;\n}\n#qr .warning {\n  min-height: 20px;\n}\n#qr .warning,\n#threadselect select,\ninput,\n.field,\ninput[type=\"submit\"] {\n  margin: 1px 0 0;\n  vertical-align: bottom;" + agent + "box-sizing: border-box;\nbox-sizing: border-box;\npadding: 1px !important;\n}\n/* Width and height of all postarea elements (excluding some captcha elements) */\ntextarea.field,\n#qr .field[type=\"password\"],\n.ys_playerContainer audio,\n#qr input[title=\"Verification\"],\n#qr > form > div {\nwidth: " + (248 + sidebarOffsetW) + "px;\n}\n/* Buttons */\n#browse,\ninput[type=\"submit\"], /* Any lingering buttons */\ninput[value=\"Report\"] {\n  height: 20px;\n  padding: 0;\n  font-size: " + Conf["Font Size"] + ";\n}\n#qr input[type=\"submit\"] {\n  width: 100%;\n  float: left;\n  clear: both;\n}\n#qr input[type=\"file\"] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n#file {\n  width: " + (177 + sidebarOffsetW) + "px;\noverflow: hidden;\n}\n#browse {\ntext-align: center;\nwidth: 70px;\nmargin: 1px 1px 0 0;\n}\n/* Image Hover and Image Expansion */\n#ihover {\nmax-width:85%;\nmax-height:85%;\n}\n.fileText ~ a > img + img {\nposition: relative;\ntop: 0px;\n}\n#imageType {\nborder: none;\nwidth: 90px;\nposition: relative;\nbottom: 1px;\n}\n/* #qr dimensions */\n#qr {\nheight: auto;\n}\n.top-box .menubutton {\nbackground-image: none;\n}\n.rice {\nvertical-align: middle;\n}\n#qr label input,\n.boxcontent input,\n.boxcontent textarea {" + agent + "appearance: none;\nborder: 0;\n}\ninput[type=checkbox],\n.reply input[type=checkbox],\n#options input[type=checkbox] {" + agent + "appearance: none;\nwidth: 12px !important;\nheight: 12px !important;\ncursor: pointer;\n}\n.postingMode ~ #delform .opContainer input {\nposition: relative;\nbottom: 2px;\n}\n/* Posts */\nbody > .postingMode ~ #delform br[clear=\"left\"],\n#delform center {\nposition: fixed;\nbottom: -500px;\n}\n#delform .fileText + br + a[target=\"_blank\"] img,\n#qp div.post .fileText + br + a[target=\"_blank\"] img  {\nborder: 0;\nfloat: left;\nmargin: 5px 20px 15px;\n}\n#delform .fileText + br + a[target=\"_blank\"] img + img {\nmargin: 0 0 25px;\n}\n.fileText {\nmargin-top: 17px;\n}\n.fileText span:not([class])::after {\nfont-size: 13px;\n}\n#updater:hover {\nborder: 0;\n}\n/* Fixes text spoilers */\n.spoiler:not(:hover),\n.spoiler:not(:hover) .quote,\n.spoiler:not(:hover) .quote a,\n.spoiler:not(:hover) a {\ncolor: rgb(0,0,0) !important;\nbackground-color: rgb(0,0,0) !important;\ntext-shadow: none !important;\n}\n/* Remove default \"inherit\" background declaration */\n.span.subject,\n.subject,\n.name,\n.postertrip {\nbackground: transparent;\n}\n.name {\nfont-weight: 700;\n}\n/* Addons and such */\nbody > div[style=\"width: 100%;\"] {\nmargin-top: 34px;\n}\n#copyright,\n#boardNavDesktop a,\n#qr td,\n#qr tr[height=\"73\"]:nth-of-type(2),\n.menubutton a,\n.pages td,\ntd[style=\"padding-left: 7px;\"],\ndiv[id^=\"qr\"] tr[height=\"73\"]:nth-of-type(2) {\npadding: 0;\n}\n#navtopright {\nposition: fixed;\nbottom: -1000px;\nleft: -1000px;\n}\n/* Expand Images */\n#imgControls {\nwidth: 15px;\nheight: 20px;\noverflow: hidden;" + agent + "transition: width .2s linear;\n}\n#imgContainer {\n  width: 110px;\n  float: " + sidebarLocation[0] + ";\n}\n#imgControls:hover {\n  width: 110px;\n}\n#imgControls label {\n  font-size: 0;\n  color: transparent;\n  float: " + sidebarLocation[0] + ";\n}\n#imgControls label::after {\n  position: relative;" + sidebarLocation[0] + ": 2px;\ntop: 2px;\n}\n#imgControls select {\nfloat: " + sidebarLocation[1] + ";\n}\n#imgControls select > option {\n  font-size: 80%;\n}\n/* Reply Previews */\n#qp div.post {\n  max-width: 70%;\n  visibility: visible;\n}\n#qp div.op {\n  display: table;\n}\n#qp div.post {\n  padding: 2px 6px;\n}\n#qp div.post img {\n  max-width: 300px;\n  height: auto;\n}\ndiv.navLinks {\n  visibility: hidden;\n  height: 0;\n  width: 0;\n  overflow: hidden;\n}\n/* AutoPager */\n#autoPagerBorderPaging {\n  position: fixed !important;\n  right: 300px !important;\n  bottom: 0px;\n}\n#options ul {\n  margin: 0;\n  margin-bottom: 6px;\n  padding: 3px;\n}\n#stats,\n#navlinks {\n  left: auto !important;\n  bottom: auto !important;\n  text-align: right;\n  padding: 0;\n  border: 0;\n  border-radius: 0;\n}\n#stats {\n  font-size: 12px;\n  position: fixed;\n  cursor: default;\n}\n#updater {\n  width: 40px !important;\n  border: 0;\n  font-size: 12px;\n  overflow: hidden;\n  background: none;\n  text-align: right;\n}\n#count.new {\n  background-color: transparent;\n}\n#updater:hover {\n  width: 150px !important;\n}\n#watcher {\n  padding: 1px 0;\n  border-radius: 0;\n}\n#options .move,\n#updater .move,\n#watcher .move,\n#stats .move {\n  cursor: default !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"] {\n  position: fixed;\n  top: -1000px;\n  left: -1000px;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] {\n  display: block;\n  position: fixed;\n  top: 17px;\n  bottom: 17px;" + sidebarLocation[1] + ": 4px;" + sidebarLocation[0] + ": " + (252 + sidebarOffsetW) + "px;\nwidth: auto;\nmargin: 0;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\nheight: 100%;\nvertical-align: top;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"]{\nheight: 95%;\nmargin-top: 5px;\nmargin-bottom: 5px;\n}\n#fs_status {\nwidth: auto;\nheight: 100%;\nbackground: none;\npadding: 10px;\noverflow: scroll;\n}\n[alt=\"sticky\"] + a::before {\ncontent: \"Sticky | \";\n}\n[alt=\"closed\"] + a::before {\ncontent: \"Closed | \";\n}\n[alt=\"closed\"] + a {\ntext-decoration: line-through;\n}\n/* Youtube Link Title */\n.chanlinkify.YTLT-link.YTLT-text {\nfont-family: monospace;\nfont-size: 11px;\n}\n.fileText+br+a[target=\"_blank\"]:hover {\nbackground: none;\n}\n.inline,\n#qp {\nbackground-color: transparent;\nborder: none;\n}\ninput[type=\"submit\"]:hover {\ncursor: pointer;\n}\n/* 4chan Sounds */\n.ys_playerContainer.reply {\nposition: fixed;\nbottom: 252px;\nmargin: 0;" + sidebarLocation[0] + ": 3px;\npadding-right: 0;\npadding-left: 0;\npadding-top: 0;\n}\n#qr input:focus:" + agent + "placeholder,\n#qr textarea:focus:" + agent + "placeholder {\ncolor: transparent;\n}\nimg[md5] {\nimage-rendering: optimizeSpeed;\n}\ninput,\ntextarea {\ntext-rendering: geometricPrecision;\n}\n#boardNavDesktop .current {\nfont-weight: bold;\n}\n#postPassword {\nposition: relative;\nbottom: 3px;\n}\n.postContainer.inline {\nborder: none;\nbackground: none;\npadding-bottom: 2px;\n}\ndiv.pagelist {\nbackground: none;\nborder: none;\n}\na.forwardlink {\nborder: none;\n}\n.exif td {\ncolor: #999;\n}\n.callToAction.callToAction-big {\nfont-size: 18px;\ncolor: rgb(255,255,255);\n}\nbody > table[cellpadding=\"30\"] h1,\nbody > table[cellpadding=\"30\"] h3 {\nposition: static;\n}\n.focused.entry {\nbackground-color: transparent;\n}\n#menu.reply.dialog,\nhtml .subMenu {\npadding: 0px;\n}\n#qr #charCount {\nbackground: none;\nposition: absolute;\nright: 2px;\ntop: auto;\nbottom: 110px;\ncolor: " + (theme["Dark Theme"] ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)") + ";\nfont-size: 10px;\nheight: 20px;\ntext-align: right;\nvertical-align: middle;\npadding-top: 2px;\n}\n#qr #charCount.warning {\ncolor: rgb(255,0,0);\nposition: absolute;\ntop: auto;\nright: 2px;\nbottom: 110px;\nheight: 20px;\nmax-height: 20px;\nborder: none;\nbackground: none;\n}\n/* Position and Dimensions of the #qr */\n#showQR,\n#qr {\noverflow: visible;\nposition: fixed;\ntop: auto !important;\nbottom: 2px !important;\nwidth: " + (248 + sidebarOffsetW) + "px;\nmargin: 0;\npadding: 0;\nz-index: 5 !important;\nbackground-color: transparent !important;\n}\n#showQR {\ndisplay: block;" + sidebarLocation[0] + ": 2px !important;\ntext-align: center;\n}\n/* Width and height of all #qr elements (excluding some captcha elements) */\nbody > .postingMode ~ #delform .reply a > img[src^=\"//images\"] {\nposition: relative;\nz-index: 96;\n}\n#qr img {\nheight: 47px;\nwidth: " + (248 + sidebarOffsetW) + "px;\n}\n#dump {\n  background: none;\n  border: none;\n  width: 20px;\n  margin: 0;\n  font-size: 14px;\n  vertical-align: middle;\n  outline: none;\n}\n#dump:hover {\n  background: none;\n}\n#threadselect {\n  position: absolute;\n  top: -20px;\n  left: 0;\n}\n#threadselect select {\n  margin-top: 0;\n  font-size: 12px;\n  text-align: right;\n}\n#spoilerLabel {\n  position: absolute;\n  top: -20px;\n  right: 0;\n}\n.dump > form > label {\n  display: block;\n  visibility: hidden;\n}\ninput[title=\"Verification\"],\n.captchaimg img {\n  margin-top: 1px;\n}\n.captchaimg {\n  line-height: 0;\n}\n#qr div {\n  min-width: 0;\n}\nhtml body span[style=\"left: 5px; position: absolute;\"] a {\n  height: 14px;\n  padding-top: 3px;\n  width: 56px;\n}\nhr {\n  position: relative;\n  top: 2px;\n}\n#updater input,\n#options input,\n#qr,\ntable.reply[style^=\"clear: both\"] {\n  border: none;\n}\n#delform > div:not(.thread) select,\n.pages input[type=\"submit\"] {\n  margin: 0;\n  height: 17px;\n}\n.prettyprint {\n  display: block;\n  white-space: pre-wrap;\n  border-radius: 2px;\n  font-size: inherit;\n  max-width: 600px;\n  overflow-x: auto;\n  padding: 3px;\n}\n#themeConf {\n  position: fixed;" + sidebarLocation[1] + ": 2px;" + sidebarLocation[0] + ": auto;\ntop: 0;\nbottom: 0;\nwidth: 296px;\n}\n#themebar input {\nwidth: 30%;\n}\nhtml {\nbackground: " + theme["Background Color"] + ";\nbackground-image: " + theme["Background Image"] + ";\nbackground-repeat: " + theme["Background Repeat"] + ";\nbackground-attachment: " + theme["Background Attachment"] + ";\nbackground-position: " + theme["Background Position"] + ";\n}\n#content,\n#themecontent,\n#mascotcontent {\n  background: " + theme["Background Color"] + ";\nborder: 1px solid " + theme["Reply Border"] + ";\npadding: 5px;\n}\n.suboptions {\npadding: 5px;\n}\n#boardTitle,\n#prefetch,\n#spoilerLabel,\n#stats,\n#updater {\ntext-shadow:\n  1px 1px 1px " + theme["Background Color"] + ",\n-1px 1px 1px " + theme["Background Color"] + ",\n1px -1px 1px " + theme["Background Color"] + ",\n-1px -1px 1px " + theme["Background Color"] + "}\n#browse,\n#ft li,\n#ft ul,\n#options .dialog,\n#qrtab,\n#watcher,\n#updater:hover,\n.box-outer,\n.boxbar,\n.top-box,\n.yuimenuitem-selected,\nhtml body span[style=\"left: 5px; position: absolute;\"] a,\ninput[type=\"submit\"],\n#options.reply.dialog,\ninput[value=\"Report\"] {\n  background: " + theme["Buttons Background"] + ";\nborder: 1px solid " + theme["Buttons Border"] + ";\n}\n#dump,\n#file,\n#options input,\n#threadselect select,\ninput,\ninput.field,\nselect,\ntextarea,\ntextarea.field {\n  background: " + theme["Input Background"] + ";\nborder: 1px solid " + theme["Input Border"] + ";\ncolor: " + theme["Inputs"] + ";" + agent + "transition: all .2s linear;\n}\n#browse:hover,\n#file:hover,\ninput:hover,\ninput.field:hover,\ninput[type=\"submit\"]:hover,\nselect:hover,\ntextarea:hover,\ntextarea.field:hover {\n  background: " + theme["Hovered Input Background"] + ";\nborder-color: " + theme["Hovered Input Border"] + ";\ncolor: " + theme["Inputs"] + ";" + agent + "transition: all .2s linear;\n}\ninput:focus,\ninput.field:focus,\ninput[type=\"submit\"]:focus,\nselect:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\nborder-color: " + theme["Focused Input Border"] + ";\ncolor: " + theme["Inputs"] + ";\n}\n#qp div.post,\n.thread .replyContainer {\n  background: " + theme["Reply Background"] + ";\nborder: 1px solid " + theme["Reply Border"] + ";\n}\n.reply.highlight,\n.reply:target {\n  background: " + theme["Highlighted Reply Background"] + ";\nborder: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#boardNavDesktop,\n.pages {\n  background: " + theme["Navigation Background"] + ";\nborder: 1px solid " + theme["Navigation Border"] + ";\n}\n#delform {\n  background: " + theme["Thread Wrapper Background"] + ";\nborder: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#themeConf,\n#watcher,\n#watcher:hover,\ndiv.subMenu,\n#menu {\n  background: " + theme["Dialog Background"] + ";\nborder: 1px solid " + theme["Dialog Border"] + ";\n}\n.mascotname,\n.mascotoptions {\n  background: " + theme["Dialog Background"] + ";\n}\n.inline div.reply {\n  /* Inline Quotes */\n  background-color: " + (theme["Dark Theme"] ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)") + ";\nborder: 1px solid " + theme["Reply Border"] + ";\nbox-shadow: 5px 5px 5px " + theme["Shadow Color"] + ";\n}\n#qr .warning {\n  background: " + theme["Input Background"] + ";\nborder: 1px solid " + theme["Input Border"] + ";\n}\n[style='color: red !important;'] *,\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + " !important;\n}\na,\n#dump,\n.entry,\ndiv.post > blockquote a[href^=\"//\"],\n.sideArrows a,\ndiv.postContainer span.postNum > .replylink {\n  color: " + theme["Links"] + ";\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\nfont-weight: 600;\n}\n.dateTime {\ncolor: " + theme["Timestamps"] + " !important;\n}\n#browse,\n#updater:not(:hover),\n#updater:not(:hover) #count:not(.new)::after,\n.summary,\nbody > form,\nbody,\nhtml body span[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea,\n.abbr,\n.boxbar,\n.boxcontent,\n.pages strong,\n.reply,\n.reply.highlight,\n#boardNavDesktop .title,\n#imgControls label::after,\n#updater #count:not(.new)::after,\n#qr > form > label::after,\nspan.pln {\n  color: " + theme["Text"] + ";\n}\n#options ul {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\nbox-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\na.backlink {\n  color: " + theme["Backlinks"] + ";\n}\nspan.quote > a.quotelink,\na.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\ndiv.subMenu,\n#menu,\n#qp div.post {\n  box-shadow: 5px 5px 5px " + theme["Shadow Color"] + ";\n}\n.rice {\n  cursor: pointer;\n  width: 10px;\n  height: 10px;\n  margin: 3px;\n  display: inline-block;\n  background: " + theme["Checkbox Background"] + ";\nborder: 1px solid " + theme["Checkbox Border"] + ";\n}\n#qr label input,\n#updater input,\n.bd {\n  background: " + theme["Buttons Background"] + ";\nborder: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#boardNavDesktop a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  background: " + theme["Checkbox Checked Background"] + ";\nbackground-image: url(" + (theme["Dark Theme"] ? "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==") + ");\nbackground-attachment: scroll;\nbackground-repeat: no-repeat;\nbackground-position: bottom right;\n}\na:hover,\n#dump:hover,\n.entry:hover,\ndiv.post > blockquote a[href^=\"//\"]:hover,\n.sideArrows a:hover,\ndiv.post div.postInfo span.postNum a:hover,\ndiv.postContainer span.postNum > .replylink:hover,\n.nameBlock > .useremail > .name:hover,\n.nameBlock > .useremail > .postertrip:hover {\ncolor: " + theme["Hovered Links"] + ";\n}\n#boardNavDesktop a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name {\n  color: " + theme["Names"] + " !important;\n}\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\n.nameBlock > .useremail > .postertrip,\n.nameBlock > .useremail > .name {\n  color: " + theme["Emails"] + ";\n}\n.nameBlock > .useremail > .name,\n.name {\n  font-weight: 600;\n}\na.forwardlink {\n  border-bottom: 1px dashed;\n}\n.qphl {\n  outline-color: " + theme["Backlinked Reply Outline"] + ";\n}\n.placeholder,\n#qr input:" + agent + "placeholder,\n#qr textarea:" + agent + "placeholder {\ncolor: " + (theme["Dark Theme"] ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)") + " !important;\n}\n.boxcontent dd,\n#options ul {\n  border-color: " + (theme["Dark Theme"] ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)") + ";\n}\n#options .styleoption {\n  border-top: 1px solid " + (theme["Dark Theme"] ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)") + ";\n}\n#mascot img {" + agent + "transform: scaleX(" + (sidebarLocation[0] === "left" ? "-" : "") + "1);\n}" + theme["Custom CSS"];
+        css += "::" + agent + "selection {\nbackground: " + theme["Text"] + ";\ncolor: " + theme["Background Color"] + ";\n}\nbody {\n  padding: 0;\n}\nbody > script + hr + div {\n  display: none;\n}\nhtml,\nbody {\n  min-height: 100%;\n}\nhtml,\nbody,\ninput,\nselect,\ntextarea {\n  font-family: '" + Conf["Font"] + "';\n}\n#qr img,\n.captcha img {\n  opacity: " + Conf["Captcha Opacity"] + ";\n}\n#boardNavDesktop,\n#prefetch,\n#qp div.post .postertrip,\n#qp div.post .subject,\n.capcode,\n.container::before,\n.dateTime,\n.file,\n.fileInfo,\n.fileText,\n.fileText span:not([class])::after,\n.name,\n.postNum,\n.postertrip,\n.posteruid,\n.rules,\n.subject,\n.summary,\na,\nbig,\nblockquote,\ndiv.post > blockquote .chanlinkify.YTLT-link.YTLT-text,\ndiv.reply,\nfieldset,\ntextarea,\ntime + span {\n  font-size: " + Conf["Font Size"] + ";\n}\n#globalMessage b {\n  font-weight: 100;\n}\n/* Cleanup */\n#absbot,\n#autohide,\n#delform > hr,\n#ft li.fill,\n#imgControls label:first-of-type input,\n#imgControls .rice,\n#logo,\n#postPassword + span,\n.autoPagerS,\n.board > hr:last-of-type,\n.boardBanner div," + (!Conf["Board Subtitle"] ? ".boardSubtitle," : void 0) + ".closed,\n.deleteform,\n.entry:not(.focused) > .subMenu,\n.error:empty,\n.hidden_thread > .summary,\n.inline .report_button,\n.inline input,\n.mobile,\n.navLinksBot,\n.next,\n.postInfo input,\n.postInfo .rice,\n.postingMode,\n.prev,\n.qrHeader,\n.replyContainer > .hide_reply_button.stub ~ .reply,\n.replymode,\n.rules,\n.sideArrows:not(.hide_reply_button),\n.stylechanger,\n.warnicon,\n.warning:empty,\n.yui-menu-shadow,\nbody > .postingMode ~ #delform hr,\nbody > br,\nbody > hr,\ndiv.reply[hidden],\nhtml body > span[style=\"left: 5px; position: absolute;\"]:nth-of-type(0),\ntable[style=\"text-align:center;width:100%;height:300px;\"] {\n  display: none !important;\n}\ndiv.post > blockquote .prettyprint span {\n  font-family: monospace;\n}\ndiv.post div.file .fileThumb {\n  float: left;\n  margin: 3px 20px 0;\n}\na {\n  outline: 0;\n}\n#boardNavDesktop,\n#boardNavDesktop a,\n#boardNavDesktopFoot a,\n#count,\n#imageType,\n#imageType option\n#imgControls,\n#navtopright a[href=\"javascript:;\"],\n#postcount,\n#stats,\n#timer,\n#updater,\n.pages a,\n.pages strong,\nbody:not([class]) a[href=\"javascript:;\"],\ninput,\nlabel {\n  text-decoration: none;\n}\n#credits a,\n.abbr a,\n.backlink:not(.filtered),\n.chanlinkify,\n.file a,\n.pages,\n.pages a,\n.quotejs,\n.quotelink:not(.filtered),\n.quotelink:not(.filtered),\n.useremail,\na,\na.deadlink,\na[href*=\"//dis\"],\na[href*=res],\ndiv.post > blockquote .chanlinkify.YTLT-link.YTLT-text,\ndiv.postContainer span.postNum > .replylink {\n  text-decoration: " + (Conf["Underline Links"] ? "underline" : "none") + ";\n}\n.filtered {\n  text-decoration: line-through;\n}\n/* YouTube Link Title */\ndiv.post > blockquote .chanlinkify.YTLT-link.YTLT-na {\n  text-decoration: line-through;\n}\ndiv.post > blockquote .chanlinkify.YTLT-link.YTLT-text {\n  font-style: normal;\n}\n/* Z-INDEXES */\n#mascotConf,\n#options.reply.dialog,\n#themeConf {\n  z-index: 999 !important;\n}\n#qp {\n  z-index: 104 !important;\n}\n#ihover,\n#overlay,\n#updater:hover,\n.exPopup,\nhtml .subMenu {\n  z-index: 102 !important;\n}\n#navtopright .settingsWindowLink::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  z-index: 101 !important;\n}\n#imgControls {\n  z-index: 100 !important;\n}\n.fileThumb img + img {\n  position: relative;\n  z-index: " + (Conf["Images Overlap Post Form"] ? "100" : "1") + " !important;\n}\n\ndiv.navLinks > a:first-of-type::after {\n  z-index: 99 !important;\n}\n.fileText ~ a > img + img {\n  z-index: 96 !important;\n}\n#autoPagerBorderPaging,\n#boardNavDesktop,\n#menu.reply.dialog,\n#navlinks {\n  z-index: 95 !important;\n}\n#boardNavMobile,\n#stats,\n#updater {\n  z-index: 10 !important;\n}\n#navtopright,\n.qrMessage {\n  z-index: 6 !important;\n}\n#boardTitle,\n#watcher,\n#watcher::before,\n.boardBanner,\n.menu_button,\n.sideArrows {\n  z-index: 4 !important;\n}\n#globalMessage::before,\n.boardBanner,\n.replyhider a {\n  z-index: 1 !important;\n}\ndiv.reply,\ndiv.reply.highlight {\n  z-index: 0 !important;" + agent + "box-sizing: border-box;\nbox-sizing: border-box;\n}\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#navtopright .settingsWindowLink::after,\n#boardNavDesktopFoot::after,\n#watcher::before,\n#globalMessage::before,\ndiv.navLinks > a:first-of-type::after,\n#imgControls label:first-of-type::after {\nopacity: 0.4;\n}\nbody > a[style=\"cursor: pointer; float: right;\"]:hover::after,\n#navtopright .settingsWindowLink:hover::after,\n#boardNavDesktopFoot:hover::after,\n#globalMessage:hover::before,\ndiv.navLinks > a:first-of-type:hover::after,\n#watcher:hover::before,\n#imgControls label:hover:first-of-type::after {\nopacity: 1;\n}\n.pageJump {\nposition: fixed;\ntop: -1000px;\npointer-events: all;\n}\n.extButton img {\nmargin-top: -4px;\n}\n#boardNavMobile select {\nfont-size: 11px;\npointer-events: all;\n}\n.qrMessage {\nposition: fixed;" + sidebarLocation[0] + ": 2px;\nbottom: 250px;\nfont-size: inherit;\nfont-weight: 100;\nbackground: none;\nborder: none;\nwidth: " + (248 + sidebarOffsetW) + "px;\n}\n#boardTitle {\n  font-size: 30px;\n  font-weight: 400;\n}\n.boardSubtitle {\n  font-size: 13px;\n}\nhr {\n  padding: 0;\n  height: 0;\n  width: 100%;\n  clear: both;\n  border: none;\n}\n/* Front Page */\n.bd,\n.bd ul,\nimg,\n.pages,\n#qr,\ndiv[id^=\"qr\"],\ntable.reply[style^=\"clear: both\"],\n.boxcontent > hr,\nh3 {\n  border: none;\n}\n.boxcontent input {\n  height: 18px;\n  vertical-align: bottom;\n  margin-right: 1px;\n}\na.yuimenuitemlabel {\n  padding: 0 20px;\n}\n/* Navigation */" + (Conf["Custom Navigation"] ? "" : "#boardNavDesktop,") + ".pages /* Bottom Navigation */ {\n  text-align: center;\n  font-size: 0;\n  color: transparent;\n  width: auto;\n}\n#boardNavDesktop {\n  text-align: center;\n  width: auto;\n  padding-right: 0px;\n  margin-right: 0px;\n}\n#boardNavDesktopFoot {\n  visibility: visible;\n  position: fixed;" + sidebarLocation[0] + ": 2px;\nbottom: auto;\ncolor: transparent;\nfont-size: 0;\nborder-width: 1px;\ntext-align: center;\nheight: 0;\nwidth: " + (248 + sidebarOffsetW) + "px !important;\noverflow: hidden;" + agent + "transition: height .5s linear, border 0s ease-in-out .5s;" + agent + "box-sizing: border-box;\nbox-sizing: border-box;\n}\n.center {\ntext-align: center;\nclear: both;\n}\nimg.topad,\nimg.middlead,\nimg.bottomad {\nopacity: 0.3;" + agent + "transition: opacity .3s ease-in-out .3s;\n}\nimg.topad:hover,\nimg.middlead:hover,\nimg.bottomad:hover {\n  opacity: 1;" + agent + "transition: opacity .3s linear;\n}" + (!Conf["Custom Navigation"] ? "#boardNavDesktop a," : void 0) + ".pages a,\n.pages strong {\n  display: inline-block;\n  border: none;\n  text-align: center;\n  margin: 0 1px 0 2px;\n}\n.pages {\n  word-spacing: 10px;\n}\n/* moots announcements */\n#globalMessage {\n  font-size: " + Conf["Font Size"] + ";\ntext-align: center;\nfont-weight: 200;\n}\n.pages strong,\na,\n.new {" + agent + "transition: background-color .1s linear;\n}\n/* Post Form */\n/* Override OS-specific UI */\n#ft li,\n#ft ul,\n#options input:not([type=\"radio\"]),\n#updater input:not([type=\"radio\"]),\n.box-outer,\n.boxbar,\n.top-box,\nh2,\ninput:not([type=\"radio\"]),\ninput[type=\"submit\"],\ntextarea {" + agent + "appearance: none;\n}\ninput[type=checkbox] {" + agent + "appearance: checkbox !important;\n}\n/* Formatting for all postarea elements */\n#browse,\n#file,\n#threadselect select {\n  cursor: pointer;\n  display: inline-block;\n}\n#threadselect select,\ninput,\n.field,\ninput[type=\"submit\"] {\n  height: 20px;\n}\n#qr .warning {\n  min-height: 20px;\n}\n#qr .warning,\n#threadselect select,\ninput,\n.field,\ninput[type=\"submit\"] {\n  margin: 1px 0 0;\n  vertical-align: bottom;" + agent + "box-sizing: border-box;\nbox-sizing: border-box;\npadding: 1px !important;\n}\n/* Width and height of all postarea elements (excluding some captcha elements) */\ntextarea.field,\n#qr .field[type=\"password\"],\n.ys_playerContainer audio,\n#qr input[title=\"Verification\"],\n#qr > form > div {\nwidth: " + (248 + sidebarOffsetW) + "px;\n}\n/* Buttons */\n#browse,\ninput[type=\"submit\"], /* Any lingering buttons */\ninput[value=\"Report\"] {\n  height: 20px;\n  padding: 0;\n  font-size: " + Conf["Font Size"] + ";\n}\n#qr input[type=\"submit\"] {\n  width: 100%;\n  float: left;\n  clear: both;\n}\n#qr input[type=\"file\"] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n#file {\n  width: " + (177 + sidebarOffsetW) + "px;\noverflow: hidden;\n}\n#browse {\ntext-align: center;\nwidth: 70px;\nmargin: 1px 1px 0 0;\n}\n/* Image Hover and Image Expansion */\n#ihover {\nmax-width:85%;\nmax-height:85%;\n}\n.fileText ~ a > img + img {\nposition: relative;\ntop: 0px;\n}\n#imageType {\nborder: none;\nwidth: 90px;\nposition: relative;\nbottom: 1px;\n}\n/* #qr dimensions */\n#qr {\nheight: auto;\n}\n.top-box .menubutton {\nbackground-image: none;\n}\n.rice {\nvertical-align: middle;\n}\n#qr label input,\n.boxcontent input,\n.boxcontent textarea {" + agent + "appearance: none;\nborder: 0;\n}\ninput[type=checkbox],\n.reply input[type=checkbox],\n#options input[type=checkbox] {" + agent + "appearance: none;\nwidth: 12px !important;\nheight: 12px !important;\ncursor: pointer;\n}\n.postingMode ~ #delform .opContainer input {\nposition: relative;\nbottom: 2px;\n}\n/* Posts */\nbody > .postingMode ~ #delform br[clear=\"left\"],\n#delform center {\nposition: fixed;\nbottom: -500px;\n}\n#delform .fileText + br + a[target=\"_blank\"] img,\n#qp div.post .fileText + br + a[target=\"_blank\"] img  {\nborder: 0;\nfloat: left;\nmargin: 5px 20px 15px;\n}\n#delform .fileText + br + a[target=\"_blank\"] img + img {\nmargin: 0 0 25px;\n}\n.fileText {\nmargin-top: 17px;\n}\n.fileText span:not([class])::after {\nfont-size: 13px;\n}\n#updater:hover {\nborder: 0;\n}\n/* Fixes text spoilers */\n.spoiler:not(:hover),\n.spoiler:not(:hover) .quote,\n.spoiler:not(:hover) .quote a,\n.spoiler:not(:hover) a {\ncolor: rgb(0,0,0) !important;\nbackground-color: rgb(0,0,0) !important;\ntext-shadow: none !important;\n}\n/* Remove default \"inherit\" background declaration */\n.span.subject,\n.subject,\n.name,\n.postertrip {\nbackground: transparent;\n}\n.name {\nfont-weight: 700;\n}\n/* Addons and such */\nbody > div[style=\"width: 100%;\"] {\nmargin-top: 34px;\n}\n#copyright,\n#boardNavDesktop a,\n#qr td,\n#qr tr[height=\"73\"]:nth-of-type(2),\n.menubutton a,\n.pages td,\ntd[style=\"padding-left: 7px;\"],\ndiv[id^=\"qr\"] tr[height=\"73\"]:nth-of-type(2) {\npadding: 0;\n}\n#navtopright {\nposition: fixed;\nbottom: -1000px;\nleft: -1000px;\n}\n/* Expand Images */\n#imgControls {\nwidth: 15px;\nheight: 20px;\noverflow: hidden;" + agent + "transition: width .2s linear;\n}\n#imgContainer {\n  width: 110px;\n  float: " + sidebarLocation[0] + ";\n}\n#imgControls:hover {\n  width: 110px;\n}\n#imgControls label {\n  font-size: 0;\n  color: transparent;\n  float: " + sidebarLocation[0] + ";\n}\n#imgControls label::after {\n  position: relative;" + sidebarLocation[0] + ": 2px;\ntop: 2px;\n}\n#imgControls select {\nfloat: " + sidebarLocation[1] + ";\n}\n#imgControls select > option {\n  font-size: 80%;\n}\n/* Reply Previews */\n#qp div.post {\n  max-width: 70%;\n  visibility: visible;\n}\n#qp div.op {\n  display: table;\n}\n#qp div.post {\n  padding: 2px 6px;\n}\n#qp div.post img {\n  max-width: 300px;\n  height: auto;\n}\ndiv.navLinks {\n  visibility: hidden;\n  height: 0;\n  width: 0;\n  overflow: hidden;\n}\n/* AutoPager */\n#autoPagerBorderPaging {\n  position: fixed !important;\n  right: 300px !important;\n  bottom: 0px;\n}\n#options ul {\n  margin: 0;\n  margin-bottom: 6px;\n  padding: 3px;\n}\n#stats,\n#navlinks {\n  left: auto !important;\n  bottom: auto !important;\n  text-align: right;\n  padding: 0;\n  border: 0;\n  border-radius: 0;\n}\n#stats {\n  font-size: 12px;\n  position: fixed;\n  cursor: default;\n}\n#updater {\n  width: 40px !important;\n  border: 0;\n  font-size: 12px;\n  overflow: hidden;\n  background: none;\n  text-align: right;\n}\n#count.new {\n  background-color: transparent;\n}\n#updater:hover {\n  width: 150px !important;\n}\n#watcher {\n  padding: 1px 0;\n  border-radius: 0;\n}\n#options .move,\n#updater .move,\n#watcher .move,\n#stats .move {\n  cursor: default !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"] {\n  position: fixed;\n  top: -1000px;\n  left: -1000px;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] {\n  display: block;\n  position: fixed;\n  top: 17px;\n  bottom: 17px;" + sidebarLocation[1] + ": 4px;" + sidebarLocation[0] + ": " + (252 + sidebarOffsetW) + "px;\nwidth: auto;\nmargin: 0;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\nheight: 100%;\nvertical-align: top;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"]{\nheight: 95%;\nmargin-top: 5px;\nmargin-bottom: 5px;\n}\n#fs_status {\nwidth: auto;\nheight: 100%;\nbackground: none;\npadding: 10px;\noverflow: scroll;\n}\n[alt=\"sticky\"] + a::before {\ncontent: \"Sticky | \";\n}\n[alt=\"closed\"] + a::before {\ncontent: \"Closed | \";\n}\n[alt=\"closed\"] + a {\ntext-decoration: line-through;\n}\n/* Youtube Link Title */\n.chanlinkify.YTLT-link.YTLT-text {\nfont-family: monospace;\nfont-size: 11px;\n}\n.fileText+br+a[target=\"_blank\"]:hover {\nbackground: none;\n}\n.inline,\n#qp {\nbackground-color: transparent;\nborder: none;\n}\ninput[type=\"submit\"]:hover {\ncursor: pointer;\n}\n/* 4chan Sounds */\n.ys_playerContainer.reply {\nposition: fixed;\nbottom: 252px;\nmargin: 0;" + sidebarLocation[0] + ": 3px;\npadding-right: 0;\npadding-left: 0;\npadding-top: 0;\n}\n#qr input:focus:" + agent + "placeholder,\n#qr textarea:focus:" + agent + "placeholder {\ncolor: transparent;\n}\nimg[md5] {\nimage-rendering: optimizeSpeed;\n}\ninput,\ntextarea {\ntext-rendering: geometricPrecision;\n}\n#boardNavDesktop .current {\nfont-weight: bold;\n}\n#postPassword {\nposition: relative;\nbottom: 3px;\n}\n.postContainer.inline {\nborder: none;\nbackground: none;\npadding-bottom: 2px;\n}\ndiv.pagelist {\nbackground: none;\nborder: none;\n}\na.forwardlink {\nborder: none;\n}\n.exif td {\ncolor: #999;\n}\n.callToAction.callToAction-big {\nfont-size: 18px;\ncolor: rgb(255,255,255);\n}\nbody > table[cellpadding=\"30\"] h1,\nbody > table[cellpadding=\"30\"] h3 {\nposition: static;\n}\n.focused.entry {\nbackground-color: transparent;\n}\n#menu.reply.dialog,\nhtml .subMenu {\npadding: 0px;\n}\n#qr #charCount {\nbackground: none;\nposition: absolute;\nright: 2px;\ntop: auto;\nbottom: 110px;\ncolor: " + (theme["Dark Theme"] ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)") + ";\nfont-size: 10px;\nheight: 20px;\ntext-align: right;\nvertical-align: middle;\npadding-top: 2px;\n}\n#qr #charCount.warning {\ncolor: rgb(255,0,0);\nposition: absolute;\ntop: auto;\nright: 2px;\nbottom: 110px;\nheight: 20px;\nmax-height: 20px;\nborder: none;\nbackground: none;\n}\n/* Position and Dimensions of the #qr */\n#showQR,\n#qr {\noverflow: visible;\nposition: fixed;\ntop: auto !important;\nbottom: 2px !important;\nwidth: " + (248 + sidebarOffsetW) + "px;\nmargin: 0;\npadding: 0;\nz-index: 5 !important;\nbackground-color: transparent !important;\n}\n#showQR {\ndisplay: block;" + sidebarLocation[0] + ": 2px !important;\ntext-align: center;\n}\n/* Width and height of all #qr elements (excluding some captcha elements) */\nbody > .postingMode ~ #delform .reply a > img[src^=\"//images\"] {\nposition: relative;\nz-index: 96;\n}\n#qr img {\nheight: 47px;\nwidth: " + (248 + sidebarOffsetW) + "px;\n}\n#dump {\n  background: none;\n  border: none;\n  width: 20px;\n  margin: 0;\n  font-size: 14px;\n  vertical-align: middle;\n  outline: none;\n}\n#dump:hover {\n  background: none;\n}\n#threadselect {\n  position: absolute;\n  top: -20px;\n  left: 0;\n}\n#threadselect select {\n  margin-top: 0;\n  font-size: 12px;\n  text-align: right;\n}\n#spoilerLabel {\n  position: absolute;\n  top: -20px;\n  right: 0;\n}\n.dump > form > label {\n  display: block;\n  visibility: hidden;\n}\ninput[title=\"Verification\"],\n.captchaimg img {\n  margin-top: 1px;\n}\n.captchaimg {\n  line-height: 0;\n}\n#qr div {\n  min-width: 0;\n}\nhtml body span[style=\"left: 5px; position: absolute;\"] a {\n  height: 14px;\n  padding-top: 3px;\n  width: 56px;\n}\nhr {\n  position: relative;\n  top: 2px;\n}\n#updater input,\n#options input,\n#qr,\ntable.reply[style^=\"clear: both\"] {\n  border: none;\n}\n#delform > div:not(.thread) select,\n.pages input[type=\"submit\"] {\n  margin: 0;\n  height: 17px;\n}\n.prettyprint {\n  display: block;\n  white-space: pre-wrap;\n  border-radius: 2px;\n  font-size: inherit;\n  max-width: 600px;\n  overflow-x: auto;\n  padding: 3px;\n}\n#themeConf {\n  position: fixed;" + sidebarLocation[1] + ": 2px;" + sidebarLocation[0] + ": auto;\ntop: 0;\nbottom: 0;\nwidth: 296px;\n}\n#themebar input {\nwidth: 30%;\n}\nhtml {\nbackground: " + theme["Background Color"] + ";\nbackground-image: " + theme["Background Image"] + ";\nbackground-repeat: " + theme["Background Repeat"] + ";\nbackground-attachment: " + theme["Background Attachment"] + ";\nbackground-position: " + theme["Background Position"] + ";\n}\n#content,\n#themecontent,\n#mascotcontent {\n  background: " + theme["Background Color"] + ";\nborder: 1px solid " + theme["Reply Border"] + ";\npadding: 5px;\n}\n.suboptions {\npadding: 5px;\n}\n#boardTitle,\n#prefetch,\n#spoilerLabel,\n#stats,\n#updater {\ntext-shadow:\n  1px 1px 1px " + theme["Background Color"] + ",\n-1px 1px 1px " + theme["Background Color"] + ",\n1px -1px 1px " + theme["Background Color"] + ",\n-1px -1px 1px " + theme["Background Color"] + "}\n#browse,\n#ft li,\n#ft ul,\n#options .dialog,\n#qrtab,\n#watcher,\n#updater:hover,\n.box-outer,\n.boxbar,\n.top-box,\n.yuimenuitem-selected,\nhtml body span[style=\"left: 5px; position: absolute;\"] a,\ninput[type=\"submit\"],\n#options.reply.dialog,\ninput[value=\"Report\"] {\n  background: " + theme["Buttons Background"] + ";\nborder: 1px solid " + theme["Buttons Border"] + ";\n}\n#dump,\n#file,\n#options input,\n#threadselect select,\ninput,\ninput.field,\nselect,\ntextarea,\ntextarea.field {\n  background: " + theme["Input Background"] + ";\nborder: 1px solid " + theme["Input Border"] + ";\ncolor: " + theme["Inputs"] + ";" + agent + "transition: all .2s linear;\n}\n#browse:hover,\n#file:hover,\ninput:hover,\ninput.field:hover,\ninput[type=\"submit\"]:hover,\nselect:hover,\ntextarea:hover,\ntextarea.field:hover {\n  background: " + theme["Hovered Input Background"] + ";\nborder-color: " + theme["Hovered Input Border"] + ";\ncolor: " + theme["Inputs"] + ";" + agent + "transition: all .2s linear;\n}\ninput:focus,\ninput.field:focus,\ninput[type=\"submit\"]:focus,\nselect:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\nborder-color: " + theme["Focused Input Border"] + ";\ncolor: " + theme["Inputs"] + ";\n}\n#qp div.post,\n.thread .replyContainer {\n  background: " + theme["Reply Background"] + ";\nborder: 1px solid " + theme["Reply Border"] + ";\n}\n.reply.highlight,\n.reply:target {\n  background: " + theme["Highlighted Reply Background"] + ";\nborder: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#boardNavDesktop,\n.pages {\n  background: " + theme["Navigation Background"] + ";\nborder: 1px solid " + theme["Navigation Border"] + ";\n}\n#delform {\n  background: " + theme["Thread Wrapper Background"] + ";\nborder: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#themeConf,\n#watcher,\n#watcher:hover,\ndiv.subMenu,\n#menu {\n  background: " + theme["Dialog Background"] + ";\nborder: 1px solid " + theme["Dialog Border"] + ";\n}\n.mascotname,\n.mascotoptions {\n  background: " + theme["Dialog Background"] + ";\n}\n.inline .replyContainer {\n  background-color: " + theme["Reply Background"] + ";\nborder: 1px solid " + theme["Reply Border"] + ";\nbox-shadow: 5px 5px 5px " + theme["Shadow Color"] + ";\n}\n#qr .warning {\n  background: " + theme["Input Background"] + ";\nborder: 1px solid " + theme["Input Border"] + ";\n}\n[style='color: red !important;'] *,\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + " !important;\n}\na,\n#dump,\n.entry,\ndiv.post > blockquote a[href^=\"//\"],\n.sideArrows a,\ndiv.postContainer span.postNum > .replylink {\n  color: " + theme["Links"] + ";\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\nfont-weight: 600;\n}\n.dateTime {\ncolor: " + theme["Timestamps"] + " !important;\n}\n#browse,\n#updater:not(:hover),\n#updater:not(:hover) #count:not(.new)::after,\n.summary,\nbody > form,\nbody,\nhtml body span[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea,\n.abbr,\n.boxbar,\n.boxcontent,\n.pages strong,\n.reply,\n.reply.highlight,\n#boardNavDesktop .title,\n#imgControls label::after,\n#updater #count:not(.new)::after,\n#qr > form > label::after,\nspan.pln {\n  color: " + theme["Text"] + ";\n}\n#options ul {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\nbox-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\na.backlink {\n  color: " + theme["Backlinks"] + ";\n}\nspan.quote > a.quotelink,\na.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\ndiv.subMenu,\n#menu,\n#qp div.post {\n  box-shadow: 5px 5px 5px " + theme["Shadow Color"] + ";\n}\n.rice {\n  cursor: pointer;\n  width: 10px;\n  height: 10px;\n  margin: 3px;\n  display: inline-block;\n  background: " + theme["Checkbox Background"] + ";\nborder: 1px solid " + theme["Checkbox Border"] + ";\n}\n#qr label input,\n#updater input,\n.bd {\n  background: " + theme["Buttons Background"] + ";\nborder: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#boardNavDesktop a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  background: " + theme["Checkbox Checked Background"] + ";\nbackground-image: url(" + (theme["Dark Theme"] ? "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" : "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==") + ");\nbackground-attachment: scroll;\nbackground-repeat: no-repeat;\nbackground-position: bottom right;\n}\na:hover,\n#dump:hover,\n.entry:hover,\ndiv.post > blockquote a[href^=\"//\"]:hover,\n.sideArrows a:hover,\ndiv.post div.postInfo span.postNum a:hover,\ndiv.postContainer span.postNum > .replylink:hover,\n.nameBlock > .useremail > .name:hover,\n.nameBlock > .useremail > .postertrip:hover {\ncolor: " + theme["Hovered Links"] + ";\n}\n#boardNavDesktop a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name {\n  color: " + theme["Names"] + " !important;\n}\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\n.nameBlock > .useremail > .postertrip,\n.nameBlock > .useremail > .name {\n  color: " + theme["Emails"] + ";\n}\n.nameBlock > .useremail > .name,\n.name {\n  font-weight: 600;\n}\na.forwardlink {\n  border-bottom: 1px dashed;\n}\n.qphl {\n  outline-color: " + theme["Backlinked Reply Outline"] + ";\n}\n.placeholder,\n#qr input:" + agent + "placeholder,\n#qr textarea:" + agent + "placeholder {\ncolor: " + (theme["Dark Theme"] ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)") + " !important;\n}\n.boxcontent dd,\n#options ul {\n  border-color: " + (theme["Dark Theme"] ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)") + ";\n}\n#options .styleoption {\n  border-top: 1px solid " + (theme["Dark Theme"] ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.05)") + ";\n}\n#mascot img {" + agent + "transform: scaleX(" + (sidebarLocation[0] === "left" ? "-" : "") + "1);\n}" + theme["Custom CSS"];
         if (theme["Dark Theme"]) {
           css += ".prettyprint {\n  background-color: rgba(255,255,255,.1);\n  border: 1px solid rgba(0,0,0,0.5);\n}\nspan.tag {\n  color: #96562c;\n}\nspan.pun {\n  color: #5b6f2a;\n}\nspan.com {\n  color: #a34443;\n}\nspan.str,\nspan.atv {\n  color: #8ba446;\n}\nspan.kwd {\n  color: #987d3e;\n}\nspan.typ,\nspan.atn {\n  color: #897399;\n}\nspan.lit {\n  color: #558773;\n}\n/* 4chan X options */\n#navtopright .settingsWindowLink::after {\n  content: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAYAAAA71pVKAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAOwgAADsIBFShKgAAAABp0RVh0U29mdHdhcmUAUGFpbnQuTkVUIHYzLjUuMTAw9HKhAAABAklEQVQ4T2PYsWMHAxJmA7K50cSQ5UFsPpg8isSZM2f+wzBQgRiaIZxA/iwgPgjE5SA5mGYmqEIWNANg8iCN84G4AIiXA/FquGaQBiBHFGqAMpLtQkAxZI0rgPxuII5C0Qw1wBbNZiOgog6ojTCN8eh+DkPWhGaAAVDxJCDuAWK4RmQ/g/wWjscAW5A8WgDCAww51PmwGQLUqEmMZpBBmsQYgJ4AQPwYIN4DCn1CBiBrlgBqKALiA0CsAHUiLi9oIAcYK5CzHYgvALEemt/gBkANNwfSC5A1FwM554EYRMNSG0YgAuWSgFgFiJcga87BYiO2DNEEVDcTiFWRNWMLOIJiAARDOk9b1IHWAAAAAElFTkSuQmCC\");\n}\n/* Return button */\ndiv.navLinks > a:first-of-type::after {\n  content: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAC1QTFRFAAAA5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHk5OHkJaAqNQAAAA50Uk5TABAgQFBgcICPn6+/3+9ACPafAAAASElEQVQI15XMyxKAIAxD0eCr1ZT8/+eKDCOw07O700mBT45rrDXEXgul3sn0yCwsAaGBv/cw86xc92fbl0v7z7mBzeeudhJ/3aoUA1Vr0uhDAAAAAElFTkSuQmCC\");\n}\n/* Watcher */\n#watcher::before {\n  content: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACpQTFRFAAAA0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLU0dLUmYS1qAAAAA10Uk5TABAgQFBggI+fv8/f74aeqbgAAABVSURBVAjXnY0xDsMwEMNo+5TYPen/3+2SpUCXlhvBgfAH2uecrcdWt5O4ewHIdVtTvmXB9BoRoIzy5DqsDIAszvXRlyfItS3kXRZA9StJ0l1f/z/xBlXVAtkqW+Q3AAAAAElFTkSuQmCC\");\n}\n/* Announcement */\n#globalMessage::before {\n  content: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAQAAACR313BAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAK5JREFUGNN1kF0RxCAMhCMBCZVQCUhAwkmohDhAAhKQEAPfDBKQUAm5B3qU3s3t425mfyJygUTBMIzMLivYaTiGoigNpxJu8aSxLeeRTiOICIGOXfQLH8aT5eD8GKE4cTo4UTDKND1uWYRGFpzXkrnKGROc9JDnKBQTjDyJjbr0b+RnteO3WpgbhYSN/QQabX1L/HqLzyA2DKdTUCodx/E7dHgoFaOgJMo4kP8gEt+mlap7ZbvCVgAAAABJRU5ErkJggg==\");\n}\n/* Slideout nav */\n#boardNavDesktopFoot::after {\n  content: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAC1QTFRFAAAAzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMdShx9gAAAA50Uk5TABAgMEBggI+fr7/P3+82uMT1AAAAb0lEQVQIHQXBiQHDIAwEMOE8gGlu/3ErgWt297wAYyenT7IGjJNVqJUzsPMAniyuLODedspMQe3cKq8+8HxZOK0b9eUb6NYHO98Dv/am3FkDKq/Ktm9gp1h5AE8mxsku1M4ZMGby618yB6De7n4L/v79BDw2df22AAAAAElFTkSuQmCC\");\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  content: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPCAMAAAAMCGV4AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADBQTFRFAAAAzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMzczMIXMlggAAAA90Uk5TABAgMEBQYICPn6+/z9/vD6iGsgAAAFRJREFUCB0FwYcBwyAMADAZCCN2y//fRgIAAG0MAMSba/8eAO9EVAe0BOMAxgISMDaIBKgGewKMesS+C0A7mXPdCgCQtwIAou6/A0DUPQCgnw4A4APNOQHMJOa9jgAAAABJRU5ErkJggg==\");\n}\n/* Expand */\n#imgControls label:first-of-type::after {\n  content: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAALlJREFUKFOFkT0KwlAQhANWaUSb+AciVmLlSZLcVhttBH9QjyIIHiDOF2ZhOxeGebM7b3dfUnRdVwmN0Aq1UAqFGU2eekWSQ8RTh6HNMDqiwczNiJsnkR8Jx1RrSTKKDlE467wR9jY+XK9jN0bSKQwfGy/iqVcrMWespd82fsW7XP/XmZUmuXPsfHLHq3grHKzveef8NXjozKPH4mjAvf5rZPNLGtPAjI7ozUtfiD+1kp4LPLZxDV78APzYoty/jZXwAAAAAElFTkSuQmCC\");\n}";
         } else {
@@ -9391,7 +9426,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         if (Conf["Fit Width Replies"]) {
           css += ".summary {\n  clear: both;\n  padding-left: 20px;\n  display: block;\n}\n.replyContainer {\n  clear: both;\n}\n.sideArrows {\n  z-index: 1;\n  position: absolute;\n  right: 0px;\n  height: 10px;\n  padding-top: 1px;\n}\n.replyContainer div.postInfo {\n  margin: 1px 0 0;\n  position: relative;\n  width: 100%;\n}\n.sideArrows a,\n.sideArrows span {\n  position: static;\n  height: 10px;\n  width: 20px;\n}\n.sideArrows,\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  opacity: 0;" + agent + "transition: opacity .3s ease-out 0s;\n}\nform .replyContainer:hover div.reply .report_button,\nform .replyContainer:hover div.reply .menu_button,\nform .replyContainer:hover .sideArrows {\n  opacity: 1;" + agent + "transition: opacity .3s ease-in 0s;\n}\ndiv.reply {\n  padding-top: 6px;\n  padding-left: 10px;\n}\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  position: absolute;\n  right: 6px;\n  top: -1px;\n  font-size: 9px;\n}\n.sideArrows a {\n  position: absolute;\n  right: 20px;\n  top: 7px;\n}\ndiv.reply .inline .menu_button,\ndiv.reply .inline .sideArrows,\ndiv.reply .inline .sideArrows a,\ndiv.reply .inline .rice {\n  position: static;\n  opacity: 1;\n}\n.sideArrows a {\n  font-size: 9px;\n}\ndiv.thread {\n  padding: 0;\n  position: relative;" + (!Conf['Images Overlap Post Form'] ? "z-index: 0;" : void 0) + "}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n  width: 100%;\n}\ndiv.reply {\n  display: table;\n  clear: both;\n}\ndiv.sideArrows {\n  float: none;\n}\n.hide_thread_button {\n  position: relative;\n  z-index: 2;\n  margin-right: 10px;\n  margin-left: 5px;\n  font-size: 9px;\n}\n.opContainer input {\n  opacity: 1;\n}\n#options.reply {\n  display: inline-block;\n}";
         } else {
-          css += ".sideArrows a {\n  font-size: 9px;\n}\n.sideArrows a {\n  position: static;\n}\ndiv.reply {\n  padding-right: 5px;\n}\n.sideArrows {\n  margin-right: 5px;\n  float: left;\n}\n.sideArrows a {\n  font-size: 12px;\n}\n.hide_thread_button {\n  position: relative;\n  z-index: 2;\n  margin-right: 5px;\n}\ndiv.reply {\n  padding-top: 5px;\n  padding-left: 2px;\n  display: table;\n}\ndiv.thread {\n  overflow: visible;\n  padding: 0;\n  position: relative;\n}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n}\n.thread > div > .post {\n  overflow: visible;\n}\n.sideArrows span {\n  font-size: 9px;\n}\ndiv.reply {\n  padding-top: 6px;\n  padding-left: 8px;\n}\n.sideArrows {\n  margin-right: 2px;\n}";
+          css += ".sideArrows a {\n  font-size: 9px;\n}\n.sideArrows a {\n  position: static;\n}\ndiv.reply {\n  padding-right: 5px;\n}\n.sideArrows {\n  margin-right: 5px;\n  float: left;\n}\n.sideArrows a {\n  font-size: 12px;\n}\n.hide_thread_button {\n  position: relative;\n  z-index: 2;\n  margin-right: 5px;\n}\ndiv.reply {\n  padding-top: 5px;\n  padding-left: 2px;\n}\ndiv.reply,\n.replyContainer {\n  display: table;\n}\ndiv.thread {\n  overflow: visible;\n  padding: 0;\n  position: relative;\n}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n}\n.thread > div > .post {\n  overflow: visible;\n}\n.sideArrows span {\n  font-size: 9px;\n}\ndiv.reply {\n  padding-top: 6px;\n  padding-left: 8px;\n}\n.sideArrows {\n  margin-right: 2px;\n}";
         }
         if (Conf['editMode'] === "theme") {
           pagemargin = "300px";
@@ -9475,7 +9510,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
             css += "a.useremail[href*=\"sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"Sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"SAGE\"]:last-of-type::" + Conf["Sage Highlight Position"] + " {\ncontent: \" (sage) \";\ncolor: " + theme["Sage"] + ";\n}";
             break;
           case "image":
-            css += "a.useremail[href*=\"sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"Sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"SAGE\"]:last-of-type::" + Conf["Sage Highlight Position"] + " {\ncontent: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=\") \"  \";\n}";
+            css += "a.useremail[href*=\"sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"Sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"SAGE\"]:last-of-type::" + Conf["Sage Highlight Position"] + " {\ncontent: url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=\") \"  \";\nvertical-align: top;\n}";
         }
         switch (Conf["Announcements"]) {
           case "4chan default":
@@ -9554,7 +9589,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
         val = Conf[key];
         Conf[key] = $.get(key, val);
       }
-      Conf['Hidden Categories'] = $.get("Hidden Categories", ["NSFW"]);
+      Conf['Hidden Categories'] = $.get("Hidden Categories", ["Questionable"]);
       path = location.pathname;
       pathname = path.slice(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];

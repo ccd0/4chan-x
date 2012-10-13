@@ -2018,11 +2018,15 @@ Mascots =
     image:      'https://i.minus.com/irFbpefCFt1cT.png'
     center:     true
   'Akiyama_Mio_sitting':
-    category:   'Anime'
+    category:   'Questionable'
     image:      'https://i.minus.com/ibnnAPmolhTfE7.png'
   'Anime_Girl_in_Bondage':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/ibbfIrZEoNLmiU.png'
+    center:     true
+  'Anime_Girl_in_Bondage_2':
+    category:   'Questionable'
+    image:      'http://i.minus.com/iGRED5sHh4RMs.png'
     center:     true
   'Applejack':
     category:   'Ponies'
@@ -2045,7 +2049,7 @@ Mascots =
     image:      'https://i.minus.com/ibiiInQGLGnYNj.png'
     center:     true
   'Asuka_Langley_Soryu_5':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/iJq4VXY1Gw8ZE.png'
     center:     true
   'Asuka_Langley_Soryu_6':
@@ -2056,14 +2060,14 @@ Mascots =
     image:      'https://i.minus.com/ib0ft5OmqRZx2r.png'
     center:     true
   'Ayase_Yue':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/ign5fGOZWTx5o.png'
   'Ayase':
     category:   'Anime'
     image:      'https://i.minus.com/ibmArq5Wb4Po4v.png'
     center:     true
   'Ayase_2':
-    category:   'Anime'
+    category:   'Questionable'
     image:      'https://i.minus.com/ibjUbDLSU5pwhK.png'
     center:     true
   'BLACK_ROCK_SHOOTER':
@@ -2071,7 +2075,7 @@ Mascots =
     image:      'https://i.minus.com/ibMe9MrTMdvAT.png'
     center:     true
   'Blue_Rose':
-    category:   'Anime'
+    category:   'Questionable'
     image:      'https://i.minus.com/ibiq1joMemfzeM.png'
     center:     true
   'Brioche_d_Arquien':
@@ -2083,7 +2087,7 @@ Mascots =
     image:      'https://i.minus.com/iwndO4Pn6SO0X.png'
     center:     true
   'CC2':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/iVT3TjJ7lBRpl.png'
     center:     true
   'Chie':
@@ -2091,7 +2095,7 @@ Mascots =
     image:      'https://i.minus.com/ib0HI16h9FSjSp.png'
     center:     true
   'Cirno':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/ibffjW5v0zrSGa.png'
     center:     true
   'Cirno_2':
@@ -2119,7 +2123,7 @@ Mascots =
     image:      'https://i.minus.com/ibsk5mMYVR5zuA.png'
     center:     true
   'Erio_Touwa':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/in8bF152Y9qVB.png'
   'Evangeline_AK_McDowell':
     category:   'Anime'
@@ -2152,7 +2156,7 @@ Mascots =
     category:   'Anime'
     image:      'https://i.minus.com/iEQsK6K85jX2n.png'
   'Gasai_Yuno_2':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/iblDClpOzDBgCC.png'
     center:     true
   'George_Costanza':
@@ -2167,10 +2171,10 @@ Mascots =
     image:      'https://i.minus.com/iqBTFZf5UhLpR.png'
     center:     true
   'Hatsune_Miku':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/iHuUwYVywpp3Z.png'
   'Hatsune_Miku_2':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/iclhgYeHDD77I.png'
     center:     true
   'Hatsune_Miku_3':
@@ -2187,11 +2191,11 @@ Mascots =
     image:      'https://i.minus.com/i9Evu9dyvok4G.png'
     center:     true
   'Hatsune_Miku_6':
-    category:   'Anime'
+    category:   'Questionable'
     image:      'https://i.minus.com/iQzx9fPFgPUNl.png'
     center:     true
   'Hatsune_Miku_7':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/iDScshaEZqUuy.png'
     center:     true
   'Hirasawa_Yui':
@@ -2207,6 +2211,12 @@ Mascots =
   'Horo_2':
     category:   'Silhouette'
     image:       ['https://i.minus.com/ibv270koIdRjm7.png', 'https://i.minus.com/iPM4lDD53yB5n.png']
+  'Horo_3':
+    category:   'Questionable'
+    image:      'http://i.minus.com/ibyT9dlTe1HN5P.png'
+  'Horo_4':
+    category:   'Questionable'
+    image:      'http://i.minus.com/ibbMKiznORGJ00.png'
   'Ika_Musume':
     category:   'Anime'
     image:      'https://i.minus.com/ibqVu5GNfKx5bC.png'
@@ -2216,14 +2226,14 @@ Mascots =
     image:      'https://i.minus.com/ibhnEiE8HabEqC.png'
     center:     true
   'Ika_Musume_3':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/iby8LyjXffukaI.png'
     center:     true
   'Inori':
-    category:   'Anime'
+    category:   'Questionable'
     image:      'https://i.minus.com/ibpHKNPxcFqRxs.png'
   'Inori_2':
-    category:   'Anime'
+    category:   'Questionable'
     image:      'https://i.minus.com/ibzM531DBaHYXD.png'
   'Iwakura_Lain':
     category:   'Anime'
@@ -2238,7 +2248,7 @@ Mascots =
     image:      'https://i.minus.com/ibndVLiH09uINs.png'
     center:     true
   'Kagamine_Rin':
-    category:   'Anime'
+    category:   'Questionable'
     image:      'https://i.minus.com/iVPKJeDXKPKeV.png'
     center:     true
   'Kagamine_Rin_2':
@@ -2264,14 +2274,14 @@ Mascots =
     image:      'https://i.minus.com/iVmsLKa4zLwZR.png'
     center:     true
   'Kinomoto_Sakura_2':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/ibklztjz3Ua747.png'
     center:     true
   'Kirisame_Marisa':
     category:   'Anime'
     image:      'https://i.minus.com/ibikDZH5CZ0V30.png'
   'Kirino_Kosaka_and_Ruri_Goko':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/isIzggtfUo4ql.png'
     center:     true
   'Koiwai_Yotsuba':
@@ -2282,6 +2292,10 @@ Mascots =
     category:   'Anime'
     image:      'https://i.minus.com/ieVyNMSjXpBs2.png'
     center:     true
+  'Konjiki_no_Yami':
+    category:   'Questionable'
+    image:      'http://i.minus.com/i7MEbrUTUc92W.png'
+    bottom:     '0'
   'Kotobuki_Tsumugi':
     category:   'Anime'
     image:      'https://i.minus.com/i6doAUnM6jMAY.png'
@@ -2304,7 +2318,7 @@ Mascots =
     image:      'https://i.minus.com/iGlKiDZvM3xi8.png'
     center:     true
   'Leonmitchelli':
-    category:   'Anime'
+    category:   'Questionable'
     image:      'https://i.minus.com/ibgUFGlOpedfbs.png'
     center:     true
   'Li_Syaoran':
@@ -2378,7 +2392,7 @@ Mascots =
     image:      'https://i.minus.com/ibndIkldw4njbD.png'
     center:     true
   'Nagato_Yuki_4':
-    category:   'Anime'
+    category:   'Questionable'
     image:      'https://i.minus.com/i92tUr90OVZGD.png'
     center:     true
   'Nagato_Yuki_5':
@@ -2389,9 +2403,15 @@ Mascots =
     category:   'Silhouette'
     image:       ['https://i.minus.com/iJdxNEMekrQjp.png', 'https://i.minus.com/ibbHeuocMgN5Eu.png']
     center:     true
+  'Nagato_Yuki_7':
+    category:   'Questionable'
+    image:      'http://i.minus.com/iFQQPEaC3aEV7.png'
   'Nakano_Azusa':
     category:   'Anime'
     image:      'https://i.minus.com/iiptfoMlr4v1k.png'
+  'Nodoka_Miyazaki':
+    category:   'Anime'
+    image:      'http://i.minus.com/iDX5mImKBzrXK.png'
   'Nichijou':
     category:   'Anime'
     image:      'https://i.minus.com/iE8lbZ5f3OT2B.png'
@@ -2430,11 +2450,11 @@ Mascots =
     image:      'https://i.minus.com/ibdwMaIPwdscao.png'
     center:     true
   'Pixie':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/ipRzX1YsTyhgZ.png'
     center:     true
   'Railgun':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/iysolfmvz6WKs.png'
     center:     true
   'Railgun_2':
@@ -2471,19 +2491,22 @@ Mascots =
     image:      'https://i.minus.com/iecVz4p2SuqK4.png'
     position:   'bottom'
   'Saber':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/i62cv3csQaqgk.png'
     position:   'bottom'
     center:     true
   'Sakurazaki_Setsuna':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/iHS6559NMU1tS.png'
   'Samus_Aran':
     category:   'Anime'
     image:      'https://i.minus.com/iWG1GFJ89A05p.png'
     center:     true
-  'Seraphim':
+  'Samus_Aran_2':
     category:   'Anime'
+    image:      'http://i.minus.com/ibl4efsNtHpkXg.png'
+  'Seraphim':
+    category:   'Questionable'
     image:      'https://i.minus.com/ivHaKIFHRpPFP.png'
     center:     true
   'Shana':
@@ -2531,13 +2554,16 @@ Mascots =
     image:      'https://i.minus.com/iQL2bwpDfOgk.png'
     center:     true
   'Teletha_Tessa_Testarossa':
-    category:   'Anime'
+    category:   'Questionable'
     image:      'https://i.minus.com/iQKrg7Pq7Y6Ed.png'
+  'Rukia_Nia_and_Asa':
+    category:   'Questionable'
+    image:      'http://i.minus.com/icECBJR5D5U4S.png'
   'Tewi_Inaba':
     category:   'Anime'
     image:      'https://i.minus.com/ib2k9lwQIkmb66.png'
   'Tifa':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/inDzKQ0Wck4ef.png'
     center:     true
   'Tomozo_Kaoru':
@@ -2549,11 +2575,11 @@ Mascots =
     image:      'https://i.minus.com/ibnMYVTZEykrKU.png'
     center:     true
   'Udine':
-    category:   'Anime'
+    category:   'Questionable'
     image:      'https://i.minus.com/iiycujRmhn6QK.png'
     position:   'bottom'
   'Wanwan':
-    category:   'NSFW'
+    category:   'Questionable'
     image:      'https://i.minus.com/iTdBWYMCXULLT.png'
     position:   'bottom'
     center:     true

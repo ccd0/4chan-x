@@ -16,6 +16,7 @@ a.useremail[href*="' + name + '"]:last-of-type::' + position + ',
 a.useremail[href*="' + name.toLowerCase() + '"]:last-of-type::' + position + ',
 a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
   content: url("' + image + '") " ";
+  vertical-align: top;
 }
 '
     return css

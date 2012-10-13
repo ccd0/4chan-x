@@ -48,7 +48,7 @@ MascotTools =
   categories: [
     "Anime"
     "George"
-    "NSFW"
+    "Questionable"
     "Ponies"
     "Silhouette"
   ]
