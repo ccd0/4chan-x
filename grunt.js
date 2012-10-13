@@ -76,6 +76,13 @@ module.exports = function(grunt) {
     },
     clean: {
       tmp:['tmp']
+    },
+    qunit: {
+      all: 'http://localhost:8000/test/index.html'
+    },
+    server: {
+      port: 8000,
+      base: '.'
     }
   });
 
@@ -88,5 +95,6 @@ module.exports = function(grunt) {
   grunt.registerTask('release', 'concat:meta concat:latest default exec:commit exec:push');
   grunt.registerTask('patch',   'bump');
   grunt.registerTask('upgrade', 'bump:minor');
+  grunt.registerTask('test',    'server qunit');
 
 };

@@ -1,4 +1,6 @@
-# Get 4chan X [HERE](http://mayhemydg.github.com/4chan-x/).
+# 4chan X [![Build Status](https://secure.travis-ci.org/MayhemYDG/4chan-x.png?branch=master)](https://travis-ci.org/MayhemYDG/4chan-x)
+
+Get it [here](http://mayhemydg.github.com/4chan-x/).
 
 ***
 

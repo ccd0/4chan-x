@@ -3,6 +3,9 @@
   "version": "3.0.0",
   "author": "Nicolas Stepien <stepien.nicolas@gmail.com>",
   "description": "Cross-browser userscript for maximum lurking on 4chan.",
+  "scripts": {
+    "test": "grunt test --verbose"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/MayhemYDG/4chan-x.git"
@@ -12,7 +15,11 @@
     "grunt-contrib-clean": "0.3.x",
     "grunt-contrib-coffee": "0.3.x",
     "grunt-exec": "0.3.x",
-    "grunt-image-embed": "0.0.x"
+    "grunt-image-embed": "0.0.x",
+    "qunitjs": "1.x.x"
+  },
+  "devDependencies": {
+    "grunt": "0.3.x"
   },
   "license": "MIT",
   "engines": {
