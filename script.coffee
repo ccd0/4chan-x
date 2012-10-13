@@ -516,10 +516,9 @@ Markdown =
       ds: /(\|\||__)(?=\S)([^\r\n]*?\S)\1/g
 
     for tag, pattern of tag_patterns
-      if text == null
-        text = '\u00A0'
-      else
-        text = text.replace pattern, Markdown.unicode_convert
+      unless text?
+        text = '\u0020'
+      else text = text.replace pattern, Markdown.unicode_convert 
     text
 
   unicode_convert: (str, tag, inner) ->

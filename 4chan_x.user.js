@@ -594,8 +594,8 @@
       };
       for (tag in tag_patterns) {
         pattern = tag_patterns[tag];
-        if (text === null) {
-          text = '\u00A0';
+        if (text == null) {
+          text = '\u0020';
         } else {
           text = text.replace(pattern, Markdown.unicode_convert);
         }
