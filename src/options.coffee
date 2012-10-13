@@ -739,6 +739,8 @@ Options =
 
       #Generate list for custom navigation
       for index, link of userNavigation.links
+        unless typeof link is 'object'
+          continue
         li = $.el "li"
         input = $.el "input"
           className: "hidden"
@@ -749,6 +751,8 @@ Options =
 
         #Generate inputs for list
         for itemIndex, item of link
+          unless typeof item is 'string'
+            continue
           input = $.el "input"
             className: "field"
             name:      itemIndex

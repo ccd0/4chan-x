@@ -8,12 +8,12 @@ UI =
     el.querySelector('.move')?.addEventListener 'mousedown', UI.dragstart, false
     el
   dragstart: (e) ->
-    #prevent text selection
+    # Prevent text selection
     e.preventDefault()
     UI.el = el = @parentNode
     d.addEventListener 'mousemove', UI.drag,    false
     d.addEventListener 'mouseup',   UI.dragend, false
-    # distance from pointer to el edge is constant; calculate it here.
+    # Distance from pointer to el edge is constant; calculate it here.
     rect      = el.getBoundingClientRect()
     UI.dx     = e.clientX - rect.left
     UI.dy     = e.clientY - rect.top

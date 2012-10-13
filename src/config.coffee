@@ -256,7 +256,7 @@ Config =
       'Sidebar Location':          ['right',           'The side of the page the sidebar content is on. It is highly recommended that you do not hide the sidebar if you change this option.', ['left', 'right']]
       'Sidebar':                   ['normal',          'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['large', 'normal', 'minimal', 'hide']]
       'Stats Position':            ['bottom',          'The position of 4chan thread stats', ['top', 'bottom']]
-      'Textarea Resize':           ['vertical',     'Options to resize the post form\'s comment box.', ['both', 'horizontal', 'vertical', 'none', 'auto-expand']]
+      'Textarea Resize':           ['vertical',        'Options to resize the post form\'s comment box.', ['both', 'horizontal', 'vertical', 'none', 'auto-expand']]
       'Updater Position':          ['bottom',          'The position of 4chan thread updater', ['top', 'bottom']]
 
   theme        : 'Yotsuba B'

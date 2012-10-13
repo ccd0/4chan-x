@@ -3437,6 +3437,9 @@
         _ref = userNavigation.links;
         for (index in _ref) {
           link = _ref[index];
+          if (typeof link !== 'object') {
+            continue;
+          }
           li = $.el("li");
           input = $.el("input", {
             className: "hidden"
@@ -3447,6 +3450,9 @@
           $.add(li, input);
           for (itemIndex in link) {
             item = link[itemIndex];
+            if (typeof item !== 'string') {
+              continue;
+            }
             input = $.el("input", {
               className: "field",
               name: itemIndex
@@ -8982,7 +8988,7 @@
         node = nodes[_i];
         $.rm(node);
       }
-      $.add(navigation, $.tn(" " + userNavigation.delimiter + " "));
+      $.add(navigation, $.tn("" + userNavigation.delimiter + " "));
       _ref = userNavigation.links;
       _results = [];
       for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {

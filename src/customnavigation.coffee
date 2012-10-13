@@ -16,7 +16,7 @@ CustomNavigation =
       $.rm node
 
     # Add the first delimiter outside the for loop so we don't end up with hundreds.
-    $.add navigation, $.tn " #{userNavigation.delimiter} "
+    $.add navigation, $.tn "#{userNavigation.delimiter} "
 
     # Add the custom navigation.
     # It should be noted that doing this moves the #navtopright to the left. I could prepend it, but why?
