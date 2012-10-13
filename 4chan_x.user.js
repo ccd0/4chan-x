@@ -3348,7 +3348,7 @@
           return;
         }
         save = [];
-        text = $('textarea', QR.el).value.replace(/\n/g, '');
+        text = $('textarea', QR.el).value.replace(/^\s\s*/, '').replace(/\n/g, '');
         if (!$('#dump', QR.el)) {
           file = $('input[type="file"]', QR.el).value.replace(/^.*\\/, '');
         } else {

@@ -2772,7 +2772,7 @@ Updater =
     post: ->
       return unless Conf['Auto Update This']
       save = []
-      text = $('textarea', QR.el).value.replace /\n/g, ''
+      text = $('textarea', QR.el).value.replace(/^\s\s*/, '').replace /\n/g, ''
       unless $('#dump', QR.el)
         file = $('input[type="file"]', QR.el).value.replace /^.*\\/, ''
       else file = $('#replies a', QR.el).title.replace /\ \(.*\)$/, ''
