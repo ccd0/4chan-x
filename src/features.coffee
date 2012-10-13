@@ -189,11 +189,11 @@ Build =
       fileHTML =
         if isOP
           "<div id=f#{postID} class=file><div class=fileInfo></div><span class=fileThumb>" +
-              "<img src='#{staticPath}/image/filedeleted.gif' alt='File deleted.'>" +
+              "<img src='#{staticPath}/image/filedeleted.gif' alt='File deleted.' class='fileDeleted retina'>" +
           "</span></div>"
         else
           "<div id=f#{postID} class=file><span class=fileThumb>" +
-            "<img src='#{staticPath}/image/filedeleted-res.gif' alt='File deleted.'>" +
+            "<img src='#{staticPath}/image/filedeleted-res.gif' alt='File deleted.' class='fileDeletedRes retina'>" +
           "</span></div>"
     else if file
       ext = file.name[-3..]

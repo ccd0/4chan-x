@@ -8,6 +8,17 @@ alpha
 
 master
 
+2.36.0
+- Mayhem
+  Added thread creation QR cooldown.
+  Fix QR cooldown timer between non-sage and sage posts. You can submit a non-sage post 30 seconds after a sage one.
+  Fix /q/ QR cooldowns for image and sage posts.
+
+2.35.4
+- Mayhem
+  Removed the obnoxious 4chan Pass ad in captcha errors when posting.
+  Fix 'Administrator/Moderator/Developer Replies' creating extra backlinks on /q/, again.
+
 2.35.3
 - Mayhem
   Larger Comment text input by default for 4chan Pass users and on /f/ (no captcha).
