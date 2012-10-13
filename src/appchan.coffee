@@ -83,6 +83,8 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
       $.on (window or unsafeWindow), "resize", ->
         d.body.style["padding#{Style.padding.nav.property.capitalize()}"] = "#{Style.padding.nav.offsetHeight}px"
 
+    unless d.body.style.paddingBottom
+      d.body.style.paddingBottom = '15px'
 
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle

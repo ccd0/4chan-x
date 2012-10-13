@@ -1614,7 +1614,7 @@ div.reply a.quotelink{
     "Timestamps"                  : "rgb(248,248,242)"
     "Inputs"                      : "rgb(248,248,242)"
     "Warnings"                    : "rgb(79,79,79)"
-    "Shadow Color"                : "rgba(55,56,50,.9)"
+    "Shadow Color"                : "rgba(32,33,28,0.7)"
     "Dark Theme"                  : true
     "Custom CSS"                  : """
 .rice {
@@ -1694,7 +1694,7 @@ textarea,
     "Timestamps"                  : "rgb(221,221,221)"
     "Inputs"                      : "rgb(221,221,221)"
     "Warnings"                    : "rgb(201,144,144)"
-    "Shadow Color"                : "rgba(51,52,53,.9)"
+    "Shadow Color"                : "rgba(32,32,32,0.5)"
     "Dark Theme"                  : true
     "Custom CSS"                  : """
 #delform {

@@ -50,7 +50,7 @@ a[href="javascript:;"] {
 #mascot_hide {
   position: absolute;
   top: 2px;
-  right: 20px;
+  right: 18px;
   width: 120px;
 }
 #mascot_hide input,
@@ -369,10 +369,6 @@ h1,
 #options .optionlabel {
   text-decoration: underline;
 }
-#options input:checked + .optionlabel,
-#options input:checked + .rice + .optionlabel {
-  font-weight: 800;
-}
 #options input:not[type=checkbox] {
   float: right;
   clear: left;
@@ -405,6 +401,7 @@ h1,
 }
 #options .styleoption {
   padding: 1px 5px 1px 7px;
+  overflow: hidden;
 }
 #options .mascots {
   text-align: center;
@@ -920,6 +917,7 @@ div.navLinks > a:first-of-type::after {
 #boardTitle,
 #watcher,
 #watcher::before,
+.boardBanner,
 .menu_button,
 .sideArrows {
   z-index: 4 !important;
@@ -1713,6 +1711,7 @@ textarea.field:focus {
 }
 #boardNavDesktopFoot,
 #mascotConf,
+#mascot_hide,
 #themeConf,
 #watcher,
 #watcher:hover,
@@ -2521,22 +2520,22 @@ div.reply {
 }
 """
 
-      switch Conf["Page Margin"]
-        when "none"
-          pagemargin = "2px"
-        when "minimal"
-          pagemargin = "25px"
-        when "small"
-          pagemargin = "50px"
-        when "medium"
-          pagemargin = "150px"
-        when "fully centered"
-          pagemargin = (252 + sidebarOffsetW) + "px"
-        when "large"
-          pagemargin = "350px"
-
       if Conf['editMode'] == "theme"
         pagemargin = "300px"
+      else
+        switch Conf["Page Margin"]
+          when "none"
+            pagemargin = "2px"
+          when "minimal"
+            pagemargin = "25px"
+          when "small"
+            pagemargin = "50px"
+          when "medium"
+            pagemargin = "150px"
+          when "fully centered"
+            pagemargin = (252 + sidebarOffsetW) + "px"
+          when "large"
+            pagemargin = "350px"
 
       if Conf["Sidebar"]  == "minimal"
         css += """

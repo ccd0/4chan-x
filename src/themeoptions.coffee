@@ -202,16 +202,16 @@ ThemeTools =
       return rgb;
 
     @private_rgb = @calc_rgb(hex)
+
     @rgb = @private_rgb.join ","
 
-
-    @isLight = (rgb) ->
-      rgb[0] + rgb[1] + rgb[2] >= 400
+    @isLight = ->
+      @private_rgb[0] + @private_rgb[1] + @private_rgb[2] >= 400
 
     @shiftRGB = (shift, smart) ->
       rgb = @private_rgb.slice 0
       shift = if smart
-        if @isLight
+        if @isLight rgb
           if shift < 0
             shift
           else
@@ -405,7 +405,7 @@ textarea,
             'Timestamps'                  : 'rgb(' + timeColor.rgb + ')'
             'Inputs'                      : 'rgb(' + textColor.rgb + ')'
             'Warnings'                    : 'rgb(' + sageColor.rgb + ')'
-            'Shadow Color'                : 'rgba(' + mainColor.shiftRGB(16) + ',.9)'
+            'Shadow Color'                : 'rgba(' + mainColor.shiftRGB(-16) + ',.9)'
             'Dark Theme'                  : if mainColor.isLight then false else true
             'Custom CSS'                  : """
 #delform {

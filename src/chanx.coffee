@@ -6,7 +6,7 @@ Markdown =
       i:    /(\*|_)(?=\S)([^\r\n]*?\S)\1/g
       code: /(`)(?=\S)([^\r\n]*?\S)\1/g
       ds:   /(\|\||__)(?=\S)([^\r\n]*?\S)\1/g
-    unless text == null
+    unless text?
       for tag, pattern of tag_patterns
         text = text.replace pattern, Markdown.unicode_convert
       text
@@ -1052,7 +1052,9 @@ Updater =
       return unless Conf['Auto Update This']
       save = []
       text = $('textarea', QR.el).value.replace /\n/g, ''
-      file = $('input[type="file"]', QR.el).value.replace /^.*\\/, ''
+      unless $('#dump', QR.el)
+        file = $('input[type="file"]', QR.el).value.replace /^.*\\/, ''
+      else file = $('#replies a', QR.el).title.replace /\ \(.*\)$/, ''
       unless text.length is 0
         save.push text
         image = false
