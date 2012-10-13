@@ -740,24 +740,24 @@
       'Background Color': 'rgba(238,242,255,1)',
       'Thread Wrapper Background': 'linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px, rgb(240,240,240))',
       'Thread Wrapper Border': 'rgba(0,0,0,0)',
-      'Dialog Background': 'rgba(238,242,255,1)',
-      'Dialog Border': 'rgba(238,242,255,1)',
+      'Dialog Background': 'linear-gradient(rgb(220,210,210), rgb(240,240,240) 200px, rgb(240,240,240))',
+      'Dialog Border': 'rgb(220,210,210)',
       'Reply Background': 'rgba(240,240,240,1)',
       'Reply Border': 'rgba(204,204,204,1)',
       'Highlighted Reply Background': 'rgba(219,219,219,1)',
       'Highlighted Reply Border': 'rgba(219,219,219,1)',
       'Backlinked Reply Outline': 'rgba(98,124,141,1)',
-      'Input Background': 'rgba(255,255,255,1)',
-      'Input Border': 'rgba(255,255,255,1)',
-      'Hovered Input Background': 'rgba(214,186,208,1)',
+      'Input Background': 'linear-gradient(rgb(220,210,210), rgb(240,240,240))',
+      'Input Border': 'rgb(220,210,210)',
+      'Hovered Input Background': 'linear-gradient(rgba(214,186,208,1), rgb(240,240,240))',
       'Hovered Input Border': 'rgba(214,186,208,1)',
-      'Focused Input Background': 'rgba(255,255,255,1)',
-      'Focused Input Border': 'rgba(153,136,238,1)',
+      'Focused Input Background': 'linear-gradient(rgb(220,210,210), rgb(240,240,240))',
+      'Focused Input Border': 'rgb(220,210,210)',
       'Checkbox Background': 'rgba(238,242,255,1)',
       'Checkbox Checked Background': 'rgba(188,192,212,1)',
       'Checkbox Border': 'rgba(153,51,51,1)',
-      'Buttons Background': 'rgba(255,255,255,1)',
-      'Buttons Border': 'rgba(255,255,255,1)',
+      'Buttons Background': 'linear-gradient(rgb(220,210,210), rgb(240,240,240))',
+      'Buttons Border': 'rgb(220,210,210)',
       'Navigation Background': 'rgba(0,0,0,0.7)',
       'Navigation Border': 'rgba(0,0,0,0.7)',
       'Quotelinks': 'rgb(153,51,51)',
@@ -780,7 +780,7 @@
       'Warnings': 'rgb(87,87,123)',
       'Shadow Color': 'rgba(60,60,60,0.6)',
       'Dark Theme': true,
-      'Custom CSS': ".replyContainer {\n  background-color: transparent;\n  border: 0;\n  border-bottom: 1px #ccc solid;\n}\n#qp div.post {\n  background-color: rgba(0,0,0,0.7);\n  border-color: rgba(0,0,0,0.7);\n}\n#qp div.post,\n#qp .postNum a {\n  color: #fcd;\n}\n#qp .nameBlock > .useremail > .name,\n#qp .nameBlock > .useremail > .postertrip,\n#qp .name,\n#qp .postertrip,\n#qp .trip {\n  color: #ffaac0 !important;\n}\n#qp a {\n  color: #aaaac8;\n}\n.boardBanner a,\n#qp a.backlink,\n#qp span.quote > a.quotelink {\n  color: rgb(255,255,255);\n}\n#updater:not(:hover),\n#updater:not(:hover) #count:not(.new)::after,\n#stats {\n  color: rgb(123,123,123);\n}\n.boardBanner {\n  color: rgb(238,187,204);\n}\n.boardTitle {\n  text-shadow: 1px 1px 1px #222;\n}\n#delform {\n  padding: 1px 15px 2px 15px;\n  box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7);\n  border-radius: 4px;\n}"
+      'Custom CSS': ".thread > .replyContainer {\n  background-color: transparent;\n  border: 0;\n  border-bottom: 1px #ccc solid;\n}\n.placeholder,\n#qr input:-moz-placeholder,\n#qr textarea:-moz-placeholder {\n  color: rgba(0,0,0,0.5) !important;\n}\n.placeholder,\n#qr input:-o-placeholder,\n#qr textarea:-o-placeholder {\n  color: rgba(0,0,0,0.5) !important;\n}\n.placeholder,\n#qr input:-webkit-placeholder,\n#qr textarea:-webkit-placeholder {\n  color: rgba(0,0,0,0.5) !important;\n}\n#qp div.post {\n  background-color: rgba(0,0,0,0.7);\n  border-color: rgba(0,0,0,0.7);\n}\n#qp div.post,\n#qp .postNum a {\n  color: #fcd;\n}\n#qp .nameBlock > .useremail > .name,\n#qp .nameBlock > .useremail > .postertrip,\n#qp .name,\n#qp .postertrip,\n#qp .trip {\n  color: #ffaac0 !important;\n}\n#qp a {\n  color: #aaaac8;\n}\n.boardBanner a,\n#qp a.backlink,\n#qp span.quote > a.quotelink {\n  color: rgb(255,255,255);\n}\n#updater:not(:hover),\n#updater:not(:hover) #count:not(.new)::after,\n#stats {\n  color: rgb(123,123,123);\n}\n.boardBanner {\n  color: rgb(238,187,204);\n}\n#boardTitle {\n  text-shadow: 1px 1px 1px #222;\n}\n#delform {\n  padding: 1px 15px 2px 15px;\n  box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7);\n  border-radius: 4px;\n}"
     },
     'Solarized': {
       'Author': 'ubuntufriend',
@@ -9469,7 +9469,7 @@ a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
           css += "#qr textarea.field {\n  height: 135px;\n  min-height: 135px;\n}\n#qr.captcha textarea.field {\n  height: 88px;\n  min-height: 88px;\n}\n#qr .field[name=\"email\"],\n#qr .field[name=\"sub\"] {\n  width: " + (248 + sidebarOffsetW) + "px !important;\n}\n#qr .field[name=\"name\"] {\n  width: " + (227 + sidebarOffsetW) + "px !important;\nmargin-left: 1px !important;\n}\n#qr .field[name=\"email\"],\n#qr .field[name=\"sub\"] {\nmargin-top: 1px;\n}";
         }
         if (Conf["Alternate Post Colors"]) {
-          css += "div.replyContainer:nth-of-type(2n+1) div.post {\n  background-color: rgba(" + (theme["Dark Theme"] ? "255,255,255,0.02" : "255,255,255,0.2") + ");\n}";
+          css += "div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {\n  background-color: rgba(" + (theme["Dark Theme"] ? "255,255,255,0.02" : "255,255,255,0.2") + ");\n}";
         }
         if (Conf["Textarea Resize"] === "auto-expand") {
           css += "#qr textarea {\n  display: block;" + agent + "transition:\n  color 0.25s linear,\n  background-color 0.25s linear,\n  border-color 0.25s linear,\n  height step-end,\n  width .3s ease-in-out .3s;\nfloat: " + sidebarLocation[0] + ";\nresize: vertical;\n}\n#qr textarea:focus {\nwidth: 400px;\n}";

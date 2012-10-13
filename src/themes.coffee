@@ -701,24 +701,24 @@ div.reply.highlight {
     'Background Color'            : 'rgba(238,242,255,1)'
     'Thread Wrapper Background'   : 'linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px, rgb(240,240,240))'
     'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
-    'Dialog Background'           : 'rgba(238,242,255,1)'
-    'Dialog Border'               : 'rgba(238,242,255,1)'
+    'Dialog Background'           : 'linear-gradient(rgb(220,210,210), rgb(240,240,240) 200px, rgb(240,240,240))'
+    'Dialog Border'               : 'rgb(220,210,210)'
     'Reply Background'            : 'rgba(240,240,240,1)'
     'Reply Border'                : 'rgba(204,204,204,1)'
     'Highlighted Reply Background': 'rgba(219,219,219,1)'
     'Highlighted Reply Border'    : 'rgba(219,219,219,1)'
     'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
-    'Input Background'            : 'rgba(255,255,255,1)'
-    'Input Border'                : 'rgba(255,255,255,1)'
-    'Hovered Input Background'    : 'rgba(214,186,208,1)'
+    'Input Background'            : 'linear-gradient(rgb(220,210,210), rgb(240,240,240))'
+    'Input Border'                : 'rgb(220,210,210)'
+    'Hovered Input Background'    : 'linear-gradient(rgba(214,186,208,1), rgb(240,240,240))'
     'Hovered Input Border'        : 'rgba(214,186,208,1)'
-    'Focused Input Background'    : 'rgba(255,255,255,1)'
-    'Focused Input Border'        : 'rgba(153,136,238,1)'
+    'Focused Input Background'    : 'linear-gradient(rgb(220,210,210), rgb(240,240,240))'
+    'Focused Input Border'        : 'rgb(220,210,210)'
     'Checkbox Background'         : 'rgba(238,242,255,1)'
     'Checkbox Checked Background' : 'rgba(188,192,212,1)'
     'Checkbox Border'             : 'rgba(153,51,51,1)'
-    'Buttons Background'          : 'rgba(255,255,255,1)'
-    'Buttons Border'              : 'rgba(255,255,255,1)'
+    'Buttons Background'          : 'linear-gradient(rgb(220,210,210), rgb(240,240,240))'
+    'Buttons Border'              : 'rgb(220,210,210)'
     'Navigation Background'       : 'rgba(0,0,0,0.7)'
     'Navigation Border'           : 'rgba(0,0,0,0.7)'
     'Quotelinks'                  : 'rgb(153,51,51)'
@@ -742,10 +742,25 @@ div.reply.highlight {
     'Shadow Color'                : 'rgba(60,60,60,0.6)'
     'Dark Theme'                  : true
     'Custom CSS'                  : """
-.replyContainer {
+.thread > .replyContainer {
   background-color: transparent;
   border: 0;
   border-bottom: 1px #ccc solid;
+}
+.placeholder,
+#qr input:-moz-placeholder,
+#qr textarea:-moz-placeholder {
+  color: rgba(0,0,0,0.5) !important;
+}
+.placeholder,
+#qr input:-o-placeholder,
+#qr textarea:-o-placeholder {
+  color: rgba(0,0,0,0.5) !important;
+}
+.placeholder,
+#qr input:-webkit-placeholder,
+#qr textarea:-webkit-placeholder {
+  color: rgba(0,0,0,0.5) !important;
 }
 #qp div.post {
   background-color: rgba(0,0,0,0.7);
@@ -778,7 +793,7 @@ div.reply.highlight {
 .boardBanner {
   color: rgb(238,187,204);
 }
-.boardTitle {
+#boardTitle {
   text-shadow: 1px 1px 1px #222;
 }
 #delform {

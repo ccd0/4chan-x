@@ -2626,7 +2626,7 @@ body {
 
       if Conf["Alternate Post Colors"]
         css += """
-div.replyContainer:nth-of-type(2n+1) div.post {
+div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   background-color: rgba(""" + (if theme["Dark Theme"] then "255,255,255,0.02" else "255,255,255,0.2") + """);
 }
 """
