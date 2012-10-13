@@ -10,15 +10,16 @@ Style =
     for item in Emoji
       unless Conf['Emoji'] == "disable ponies" and item[2] == "pony"
         name  = item[0]
+                # In order to save a little data in the final JS, I've removed the PNG headers from all Emoji.
         image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA' + item[1]
-        css   = css + '
-a.useremail[href*="' + name + '"]:last-of-type::' + position + ',
-a.useremail[href*="' + name.toLowerCase() + '"]:last-of-type::' + position + ',
-a.useremail[href*="' + name.toUpperCase() + '"]:last-of-type::' + position + ' {
-  content: url("' + image + '") " ";
+        css   += """
+a.useremail[href*='""" + name + """']:last-of-type::""" + position + """,
+a.useremail[href*='""" + name.toLowerCase() + """']:last-of-type::""" + position + """,
+a.useremail[href*='""" + name.toUpperCase() + """']:last-of-type::""" + position + """ {
+  content: url('""" + image + """') " ";
   vertical-align: top;
 }
-'
+"""
     return css
 
   rice: (source)->

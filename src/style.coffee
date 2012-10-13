@@ -2461,6 +2461,9 @@ div.sideArrows {
 .opContainer input {
   opacity: 1;
 }
+.replyContainer {
+    overflow: hidden;
+}
 #options.reply {
   display: inline-block;
 }
