@@ -4,6 +4,7 @@ master
 - noface
   Updater should now check until own post is found.
   "Don't expand spoilers when using ImageExpand" should now work as expected and gets a new option.
+  postContainer now adds a class 'hidden' when the stub is hidden.
 
 2.35.9
 - Mayhem

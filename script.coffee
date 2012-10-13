@@ -1110,7 +1110,6 @@ ReplyHiding =
       innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
     a = stub.firstChild
     $.on  a, 'click', ReplyHiding.toggle
-    $.addClass side.parentNode, 'hidden'
     $.add a, $.tn $('.desktop > .nameBlock', el).textContent
     if Conf['Menu']
       menuButton = Menu.a.cloneNode true
