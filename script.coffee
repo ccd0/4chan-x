@@ -1084,6 +1084,7 @@ ReplyHiding =
     quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href$='#p#{id}']"
     if /\bstub\b/.test button.className
       ReplyHiding.show root
+      $.rmClass root, 'hidden'
       for quote in quotes
         $.rmClass quote, 'filtered'
       delete g.hiddenReplies[id]
@@ -1108,6 +1109,7 @@ ReplyHiding =
       innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
     a = stub.firstChild
     $.on  a, 'click', ReplyHiding.toggle
+    $.addClass side.parentNode, 'hidden'
     $.add a, $.tn $('.desktop > .nameBlock', el).textContent
     if Conf['Menu']
       menuButton = Menu.a.cloneNode true

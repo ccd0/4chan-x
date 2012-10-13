@@ -1284,6 +1284,7 @@
       quotes = $$(".quotelink[href$='#p" + id + "'], .backlink[href$='#p" + id + "']");
       if (/\bstub\b/.test(button.className)) {
         ReplyHiding.show(root);
+        $.rmClass(root, 'hidden');
         for (_i = 0, _len = quotes.length; _i < _len; _i++) {
           quote = quotes[_i];
           $.rmClass(quote, 'filtered');
@@ -1320,6 +1321,7 @@
       });
       a = stub.firstChild;
       $.on(a, 'click', ReplyHiding.toggle);
+      $.addClass(side.parentNode, 'hidden');
       $.add(a, $.tn($('.desktop > .nameBlock', el).textContent));
       if (Conf['Menu']) {
         menuButton = Menu.a.cloneNode(true);
