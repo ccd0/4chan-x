@@ -4379,6 +4379,7 @@
       quotes = $$(".quotelink[href$='#p" + id + "'], .backlink[href$='#p" + id + "']");
       if (/\bstub\b/.test(button.className)) {
         ReplyHiding.show(root);
+        $.rmClass(root, 'hidden');
         for (_i = 0, _len = quotes.length; _i < _len; _i++) {
           quote = quotes[_i];
           $.rmClass(quote, 'filtered');
@@ -4400,6 +4401,7 @@
         show_stub = Conf['Show Stubs'];
       }
       side = $('.sideArrows', root);
+      $.addClass(side.parentNode, 'hidden');
       if (side.hidden) {
         return;
       }
@@ -5041,7 +5043,7 @@
           return;
         }
         save = [];
-        text = $('textarea', QR.el).value.replace(/\n/g, '');
+        text = $('textarea', QR.el).value.replace(/^\s\s*/, '').replace(/\n/g, '');
         if (!$('#dump', QR.el)) {
           file = $('input[type="file"]', QR.el).value.replace(/^.*\\/, '');
         } else {

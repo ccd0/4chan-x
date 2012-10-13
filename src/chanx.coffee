@@ -563,6 +563,7 @@ ReplyHiding =
     quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href$='#p#{id}']"
     if /\bstub\b/.test button.className
       ReplyHiding.show root
+      $.rmClass root, 'hidden'
       for quote in quotes
         $.rmClass quote, 'filtered'
       delete g.hiddenReplies[id]
@@ -575,6 +576,7 @@ ReplyHiding =
 
   hide: (root, show_stub=Conf['Show Stubs']) ->
     side = $ '.sideArrows', root
+    $.addClass side.parentNode, 'hidden'
     return if side.hidden # already hidden once by the filter
     side.hidden = true
     el = side.nextElementSibling
@@ -1051,7 +1053,7 @@ Updater =
     post: ->
       return unless Conf['Auto Update This']
       save = []
-      text = $('textarea', QR.el).value.replace /\n/g, ''
+      text = $('textarea', QR.el).value.replace(/^\s\s*/, '').replace /\n/g, ''
       unless $('#dump', QR.el)
         file = $('input[type="file"]', QR.el).value.replace /^.*\\/, ''
       else file = $('#replies a', QR.el).title.replace /\ \(.*\)$/, ''
