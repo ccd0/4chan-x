@@ -3346,7 +3346,11 @@
         }
         save = [];
         text = $('textarea', QR.el).value.replace(/\n/g, '');
-        file = $('input[type="file"]', QR.el).value.replace(/^.*\\/, '');
+        if (!$('#dump', QR.el)) {
+          file = $('input[type="file"]', QR.el).value.replace(/^.*\\/, '');
+        } else {
+          file = $('#replies a', QR.el).title.replace(/\ \(.*\)$/, '');
+        }
         if (text.length !== 0) {
           save.push(text);
           image = false;
