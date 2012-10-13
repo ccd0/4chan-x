@@ -234,6 +234,7 @@ Config =
       'Mascot Location':           ['sidebar',         'Change where your mascot is located.', ['sidebar', 'opposite']]
       'Mascot Position':           ['bottom',          'Change where your mascot is placed in relation to the post form if the mascot isn\'t manually placed.', ['above post form', 'bottom']]
       'NSFW/SFW Themes':           [false,             'Choose your theme based on the SFW status of the board you are viewing.']
+      'OP Background':             [false,             'Adds a border and background color to the OP Post, as if it were a reply.']
       'Rounded Edges':             [true,              'Round the edges of various 4chan elements.']
       'Sage Highlighting':         ['image',           'Icons or text to highlight saged posts.', ['text', 'image', 'none']]
       'Sage Highlight Position':   ['after',           'Position of Sage Highlighting', ['before', 'after']]

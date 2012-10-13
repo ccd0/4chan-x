@@ -1725,7 +1725,7 @@ div.subMenu,
   background: """ + theme["Dialog Background"] + """;
 }
 .inline .replyContainer {
-  background-color: """ + theme["Reply Background"] + """;
+  background: """ + theme["Reply Background"] + """;
   border: 1px solid """ + theme["Reply Border"] + """;
   box-shadow: 5px 5px 5px """+ theme["Shadow Color"] + """;
 }
@@ -2495,6 +2495,9 @@ div.reply {
   padding-top: 5px;
   padding-left: 2px;
 }
+div.opContainer {
+  display: table !important;
+}
 div.reply,
 .replyContainer {
   display: table;
@@ -2782,27 +2785,32 @@ td[style="border: 1px dashed;"] {
 
       switch Conf["Reply Spacing"]
         when "none"
-          css += """
-.replyContainer {
-  margin-bottom: 0px;
-}
-"""
+          replyMargin = 0
         when "small"
-          css += """
-.replyContainer {
-  margin-bottom: 2px;
-}
-"""
+          replyMargin = 2
         when "medium"
-          css += """
+          replyMargin = 4
+        when "large"
+          replyMargin = 8
+
+      css += """
+.summary,
 .replyContainer {
-  margin-bottom: 4px;
+  margin-bottom: """ + replyMargin + """px;
+}
+.summary {
+  display: block;
 }
 """
-        when "large"
-          css += """
-.replyContainer {
-  margin-bottom: 6px;
+      if Conf["OP Background"]
+        css += """
+.opContainer {
+  background: """ + theme["Reply Background"] + """;
+  border: 1px solid """ + theme["Reply Border"] + """;
+  padding: 5px;
+  """ + agent + """box-sizing: border-box;
+  box-sizing: border-box;
+  margin-bottom: """ + replyMargin + """px;
 }
 """
 
