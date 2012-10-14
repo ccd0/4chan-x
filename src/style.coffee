@@ -1207,7 +1207,7 @@ body > .postingMode ~ #delform br[clear="left"],
   bottom: -500px;
 }
 #delform .fileText + br + a[target="_blank"] img,
-#qp div.post .fileText + br + a[target="_blank"] img  {
+#qp div.post .fileText + br + a[target="_blank"] img {
   border: 0;
   float: left;
   margin: 5px 20px 15px;
@@ -1293,7 +1293,7 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
   font-size: 80%;
 }
 /* Reply Previews */
-#qp div.post {
+#qp .replyContainer {
   max-width: 70%;
   visibility: visible;
 }
@@ -1797,7 +1797,7 @@ a.quotelink {
 }
 div.subMenu,
 #menu,
-#qp div.post {
+#qp .replyContainer {
   box-shadow: 5px 5px 5px """+ theme["Shadow Color"] + """;
 }
 .rice {

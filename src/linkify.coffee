@@ -160,8 +160,6 @@
       rel:       'nofollow noreferrer'
       target:    'blank'
       href:      @name
-    
-    Linkify.concat(a)
 
     embed = $.el 'a'
       name:         @name
