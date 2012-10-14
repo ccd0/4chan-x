@@ -2014,7 +2014,17 @@ body > a[style="cursor: pointer; float: right;"]::after {
 .boardBanner img {
   position: fixed;
   width: """ + (248 + sidebarOffsetW) + """px;
-  bottom: 280px;
+  bottom: 270px;
+  """ + sidebarLocation[0] + """: 2px;
+}
+"""
+        when "under post form"
+          logoOffset = 0
+          css += """
+.boardBanner img {
+  position: fixed;
+  width: """ + (248 + sidebarOffsetW) + """px;
+  bottom: 130px;
   """ + sidebarLocation[0] + """: 2px;
 }
 """
@@ -2243,7 +2253,17 @@ div.navLinks > a:first-of-type::after {
 #boardTitle {
   position: fixed;
   """ + sidebarLocation[0] + """: 2px;
-  bottom: 400px;
+  bottom: 280px;
+  z-index: 1;
+  width: """ + (248 + sidebarOffsetW) + """px;
+}
+"""
+        when "under post form"
+          css += """
+#boardTitle {
+  position: fixed;
+  """ + sidebarLocation[0] + """: 2px;
+  bottom: 140px;
   z-index: 1;
   width: """ + (248 + sidebarOffsetW) + """px;
 }

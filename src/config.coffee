@@ -242,9 +242,9 @@ Config =
       'Underline Links':           [true,              'Put lines under hyperlinks.']
 
     Layout:
-      '4chan Banner':              ['at sidebar top',  'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'at top', 'hide']]
+      '4chan Banner':              ['at sidebar top',  'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'under post form', 'at top', 'hide']]
       'Boards Navigation':         ['sticky top',      'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']]
-      'Board Logo':                ['at sidebar top',  'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'hide']]
+      'Board Logo':                ['at sidebar top',  'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'under post form', 'hide']]
       'Board Subtitle':            [true,              'Show the board subtitle.']
       'Compact Post Form Inputs':  [true,              'Use compact inputs on the post form.']
       'Force Reply Break':         [false,             'Force replies to occupy their own line and not be adjacent to the OP image.']

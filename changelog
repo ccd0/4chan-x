@@ -1,14 +1,33 @@
 master
+
+0.19.0 (Version 1.0.0rc1)
 - noface
   Updater should now check until own post is found.
   "Don't expand spoilers when using ImageExpand" should now work as expected and gets a new option.
   postContainer now adds a class 'hidden' when the stub is hidden.
 - Zixaphir
-  New Mascot: Tewi Inaba
-  New Option: Alternate Post Colors
-  Removed Bold from backlinks
+  Removed Bold from backlinks.
   Allow "Persistent QR" with Style enabled.
   Quick Reply file 'input' now reflects maximum board file size and Shift-Click to clear functionality.
+  Youtube Unembedding.
+  Prefetch Images checkbox is now fixed positioned.
+  Facelifts for 4chan Rewired and RedUX themes.
+  Removed NSFW Mascot Category, replaced with "Questionable".
+  Transferred mascots of questionable SFW status into the "Questionable" category.
+  New Mascots:
+  - Anime Girl in Bondage 2*
+  - Horo 2 and 3*
+  - Konjiki no Yami (Golden Darkness)*
+  - Nagato Yuki 7*
+  - Nodoka Miyazaki
+  - lazy's Samus Aran
+  - Rukia, Nia, and Asa*
+  - Tewi Inaba
+    * Mascots previously removed for nudity.
+  New Options:
+  - Alternate Post Colors.
+  - OP Backgrounds.
+  - New options for banner and logo positions.
 
 0.18.1
 - Zixaphir
