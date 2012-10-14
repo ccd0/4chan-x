@@ -299,7 +299,6 @@ h1,
 #ihover,
 #navlinks,
 #overlay,
-#prefetch,
 #qr,
 #qp,
 #stats,
@@ -562,10 +561,10 @@ h1,
   outline: 2px solid rgba(216,94,49,.7);
 }
 .quotelink.deadlink {
-  text-decoration: underline !important;
+  text-decoration: underline;
 }
 .deadlink:not(.quotelink) {
-  text-decoration: none !important;
+  text-decoration: none;
 }
 .image_expanded {
   clear: both !important;
@@ -607,8 +606,7 @@ div.opContainer {
 }
 .filtered,
 .quotelink.filtered {
-  text-decoration: underline;
-  text-decoration: line-through !important;
+  text-decoration: line-through;
 }
 .quotelink.forwardlink,
 .backlink.forwardlink {
@@ -832,6 +830,7 @@ a {
 #updater,
 .pages a,
 .pages strong,
+.quotelink.deadlink,
 body:not([class]) a[href="javascript:;"],
 input,
 label {
@@ -897,6 +896,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 div.navLinks > a:first-of-type::after {
   z-index: 99 !important;
 }
+#prefetch,
 .fileText ~ a > img + img {
   z-index: 96 !important;
 }
@@ -1332,6 +1332,9 @@ div.navLinks {
   padding: 0;
   border: 0;
   border-radius: 0;
+}
+#prefetch {
+  position: fixed;
 }
 #stats {
   font-size: 12px;
@@ -2483,6 +2486,11 @@ div.sideArrows {
 }
 .replyContainer {
     overflow: hidden;
+}
+.replyContainer.image_expanded {
+  overflow: visible;
+  display: table;
+  width: 100%;
 }
 #options.reply {
   display: inline-block;
