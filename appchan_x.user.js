@@ -9114,18 +9114,7 @@
           target: 'blank',
           href: l.indexOf(":") < 0 ? (l.indexOf("@") > 0 ? "mailto:" + l : "http://" + l) : l
         });
-        $.on(a, 'click', function(e) {
-          if (e.shiftKey && e.ctrlKey) {
-            e.preventDefault();
-            e.stopPropagation();
-            if (("br" === this.nextSibling.tagName.toLowerCase() || "spoiler" === this.nextSibling.className) && this.nextSibling.nextSibling.className !== "abbr") {
-              $.rm(this.nextSibling);
-              child = $.tn(this.textContent + this.nextSibling.textContent);
-              $.rm(this.nextSibling);
-              return Linkify.text(child, this);
-            }
-          }
-        });
+        Linkify.concat(a);
         $.after(node, a);
         if (Conf['Youtube Embed'] && (match = a.href.match(Linkify.embedRegExp))) {
           embed = $.el('a', {
@@ -9147,17 +9136,58 @@
       }
     },
     embed: function() {
-      var iframe, link;
+      var iframe, link, unembed;
       link = this.previousSibling.previousSibling;
       iframe = $.el('iframe', {
         src: 'http://www.youtube.com/embed/' + this.name
       });
+      unembed = $.el('a', {
+        name: this.name,
+        href: 'javascript:;',
+        textContent: '(unembed)'
+      });
+      $.on(unembed, 'click', Linkify.unembed);
       iframe.style.border = '0';
       iframe.style.width = '640px';
       iframe.style.height = '390px';
       $.replace(link, iframe);
-      $.rm(this.previousSibling);
-      return $.rm(this);
+      return $.replace(this, unembed);
+    },
+    unembed: function() {
+      var a, embed, embedded;
+      embedded = this.previousSibling.previousSibling;
+      a = $.el('a', {
+        textContent: embedded.src,
+        className: 'linkify',
+        rel: 'nofollow noreferrer',
+        target: 'blank',
+        href: this.name
+      });
+      Linkify.concat(a);
+      embed = $.el('a', {
+        name: this.name,
+        className: 'embedlink',
+        href: 'javascript:;',
+        textContent: '(embed)'
+      });
+      $.on(embed, 'click', Linkify.embed);
+      $.replace(embedded, a);
+      return $.replace(this, embed);
+    },
+    concat: function(a) {
+      return $.on(a, 'click', function(e) {
+        var child;
+        if (e.shiftKey && e.ctrlKey) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (("br" === this.nextSibling.tagName.toLowerCase() || "spoiler" === this.nextSibling.className) && this.nextSibling.nextSibling.className !== "abbr") {
+            $.rm(this.nextSibling);
+            child = $.tn(this.textContent + this.nextSibling.textContent);
+            $.rm(this.nextSibling);
+            return Linkify.text(child, this);
+          }
+        }
+      });
     }
   };
 

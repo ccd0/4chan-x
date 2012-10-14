@@ -94,21 +94,7 @@
         # I haven't found a situation where not having a slash in the conditional breaks anything.
         href:      if l.indexOf(":") < 0 then (if l.indexOf("@") > 0 then "mailto:" + l else "http://" + l) else l
 
-      # Add an event listener so that we can give the user the option to fix broken multi-line links.
-      $.on a, 'click', (e) ->
-        # Shift + CTRL + Click
-        if e.shiftKey and e.ctrlKey
-
-          # Let's not accidentally open the link while we're editting it.
-          e.preventDefault()
-          e.stopPropagation()
-
-          # We essentially check for a <br> and make sure we're not merging non-post content.
-          if ("br" == @.nextSibling.tagName.toLowerCase() or "spoiler" == @.nextSibling.className) and @.nextSibling.nextSibling.className != "abbr"
-            $.rm @.nextSibling
-            child = $.tn(@textContent + @.nextSibling.textContent)
-            $.rm @.nextSibling
-            Linkify.text(child, @)
+      Linkify.concat(a)
 
       # We can finally insert the link.
       $.after node, a
@@ -147,7 +133,14 @@
 
     # We create an iframe to embed
     iframe = $.el 'iframe'
-      src:        'http://www.youtube.com/embed/' + @name
+      src: 'http://www.youtube.com/embed/' + @name
+
+    unembed = $.el 'a'
+      name:        @name
+      href:        'javascript:;'
+      textContent: '(unembed)'
+    
+    $.on unembed, 'click', Linkify.unembed
 
     # We style the iframe with respectable boundaries.
     iframe.style.border = '0'
@@ -156,5 +149,43 @@
 
     # We replace the link with the iframe and kill the embedding element.
     $.replace link, iframe
-    $.rm @.previousSibling
-    $.rm @
+    $.replace @, unembed
+  
+  unembed: ->
+    embedded = @.previousSibling.previousSibling
+    
+    a = $.el 'a'
+      textContent: embedded.src
+      className: 'linkify'
+      rel:       'nofollow noreferrer'
+      target:    'blank'
+      href:      @name
+    
+    Linkify.concat(a)
+
+    embed = $.el 'a'
+      name:         @name
+      className:    'embedlink'
+      href:         'javascript:;'
+      textContent:  '(embed)'
+
+    $.on embed, 'click', Linkify.embed
+    
+    $.replace embedded, a
+    $.replace @, embed
+
+  concat: (a) ->
+    $.on a, 'click', (e) ->
+      # Shift + CTRL + Click
+      if e.shiftKey and e.ctrlKey
+
+        # Let's not accidentally open the link while we're editting it.
+        e.preventDefault()
+        e.stopPropagation()
+
+        # We essentially check for a <br> and make sure we're not merging non-post content.
+        if ("br" == @.nextSibling.tagName.toLowerCase() or "spoiler" == @.nextSibling.className) and @.nextSibling.nextSibling.className != "abbr"
+          $.rm @.nextSibling
+          child = $.tn(@textContent + @.nextSibling.textContent)
+          $.rm @.nextSibling
+          Linkify.text(child, @)
