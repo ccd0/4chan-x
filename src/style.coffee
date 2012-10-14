@@ -583,7 +583,6 @@ h1,
   background: none;
   border: none;
   margin: 0;
-  padding: 0;
 }
 div.opContainer {
   display: block !important;
