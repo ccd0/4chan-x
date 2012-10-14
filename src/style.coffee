@@ -327,10 +327,10 @@ h1,
 #options {
   z-index: 2;
   position: fixed;
-  display: inline-block;
   padding: 5px;
   text-align: left;
   vertical-align: middle;
+  width: auto;
   left: 15%;
   right: 15%;
   top: 15%;
@@ -2427,22 +2427,19 @@ form .postContainer blockquote {
   display: table;
 }
 .sideArrows {
-  z-index: 1;
+  width: 0;
+}
+.sideArrows a {
   position: absolute;
-  right: 0px;
-  height: 10px;
-  padding-top: 1px;
+  right: 27px;
+  top: 7px;
+}
+.replyContainer {
+  position: relative;
 }
 .replyContainer div.postInfo {
   margin: 1px 0 0;
-  position: relative;
   width: 100%;
-}
-.sideArrows a,
-.sideArrows span {
-  position: static;
-  height: 10px;
-  width: 20px;
 }
 .sideArrows,
 div.reply .report_button,
@@ -2464,13 +2461,8 @@ div.reply .report_button,
 div.reply .menu_button {
   position: absolute;
   right: 6px;
-  top: -1px;
-  font-size: 9px;
-}
-.sideArrows a {
-  position: absolute;
-  right: 20px;
   top: 7px;
+  font-size: 9px;
 }
 div.reply .inline .menu_button,
 div.reply .inline .sideArrows,

@@ -2315,7 +2315,7 @@ Mascots =
     center:     true
   'Konjiki_no_Yami':
     category:   'Questionable'
-    image:      'http://i.minus.com/i7MEbrUTUc92W.png'
+    image:      'https://i.minus.com/imy7iv5fuym8b.png'
     bottom:     '0'
   'Kotobuki_Tsumugi':
     category:   'Anime'
