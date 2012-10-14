@@ -1842,7 +1842,7 @@ thread>.replyContainer>.reply>div.postInfo {
     "Dialog Border"               : "rgb(212,212,212)"
     "Thread Wrapper Background"   : "rgba(0,0,0,0)"
     "Thread Wrapper Border"       : "rgba(0,0,0,0)"
-    "Reply Background"            : "rgba(239,239,239,1)"
+    "Reply Background"            : "linear-gradient(rgba(244,244,244,0.9), rgba(239,239,239,0.9)), rgba(239,239,239,1)"
     "Reply Border"                : "rgb(212,212,212)"
     "Highlighted Reply Background": "linear-gradient(rgba(235,235,235,.9), rgba(230,230,230,0.9))"
     "Highlighted Reply Border"    : "rgb(191,127,63)"
@@ -1862,7 +1862,7 @@ thread>.replyContainer>.reply>div.postInfo {
     "Navigation Border"           : "rgb(239,239,239)"
     "Quotelinks"                  : "rgb(191,127,63)"
     "Links"                       : "rgb(191,127,63)"
-    "Hovered Links"               : "rgb(128,96,64)"
+    "Hovered Links"               : "rgb(191,127,63)"
     "Navigation Links"            : "rgba(0,0,0,.7)"
     "Hovered Navigation Links"    : "rgb(211,54,130)"
     "Subjects"                    : "rgba(0,0,0,.7)"
@@ -1902,11 +1902,13 @@ textarea:focus,
 #options input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
-a:hover {
-  text-shadow: 0 0 3px rgba(128,96,64,.7);
+a {
   -moz-transition: text-shadow .2s;
   -o-transition: text-shadow .2s;
   -webkit-transition: text-shadow .2s;
+}
+a:hover {
+  text-shadow: 0 0 3px rgba(232,118,0,.7);
 }
 button,
 input:not(.jsColor),
@@ -1919,10 +1921,6 @@ textarea,
 .subject:not(:empty)::after {
   content: " by";
   font-weight: normal;
-}
-.thread .replyContainer,
-#qp div.post {
-  background-image: linear-gradient(rgba(244,244,244,0.9), rgba(239,239,239,0.9)) !important;
 }
 .qphl {
   outline-width: 1px;
@@ -2183,7 +2181,7 @@ Mascots =
     image:      'https://i.minus.com/iblDClpOzDBgCC.png'
     center:     true
   'George_Costanza':
-    category:   'George'
+    category:   'Western'
     image:      'https://i.minus.com/iFWdpFGfzLs6v.png'
   'Hanako':
     category:   'Anime'
@@ -2573,7 +2571,7 @@ Mascots =
     image:      'https://i.minus.com/ibnomd5iasjceY.png'
     center:     true
   'Tardis':
-    category:   'Anime'
+    category:   'Western'
     image:      'https://i.minus.com/iQL2bwpDfOgk.png'
     center:     true
   'Teletha_Tessa_Testarossa':

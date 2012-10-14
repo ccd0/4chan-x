@@ -47,10 +47,10 @@ MascotTools =
 
   categories: [
     "Anime"
-    "George"
-    "Questionable"
     "Ponies"
+    "Questionable"
     "Silhouette"
+    "Western"
   ]
 
   dialog: (key) ->

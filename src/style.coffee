@@ -903,7 +903,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
   position: relative;
   z-index: #{(if Conf["Images Overlap Post Form"] then "100" else "1")} !important;
 }
-
 div.navLinks > a:first-of-type::after {
   z-index: 99 !important;
 }
@@ -995,6 +994,7 @@ hr {
   width: 100%;
   clear: both;
   border: none;
+  border-bottom: 1px solid #{theme["Reply Border"]};
 }
 /* Front Page */
 .bd,
@@ -1595,10 +1595,6 @@ html body span[style="left: 5px; position: absolute;"] a {
   padding-top: 3px;
   width: 56px;
 }
-hr {
-  position: relative;
-  top: 2px;
-}
 #updater input,
 #options input,
 #qr,
@@ -2063,7 +2059,12 @@ body > a[style="cursor: pointer; float: right;"]::after {
   display: none;
 }
 """
-
+      if Conf["Hide Horizontal Rules"]
+        css += """
+hr {
+  visibility: hidden;
+}
+"""
       if Conf["Icon Orientation"] == "horizontal"
         css += """
 /* 4chan X Options */
@@ -2642,6 +2643,7 @@ body {
 #qr textarea.field {
   height: 161px;
   min-height: 161px;
+  min-width: #{248 + sidebarOffsetW}px;
 }
 #qr.captcha textarea.field {
   height: 114px;
@@ -2659,6 +2661,7 @@ body {
 #qr textarea.field {
   height: 135px;
   min-height: 135px;
+  min-width: #{248 + sidebarOffsetW}px
 }
 #qr.captcha textarea.field {
   height: 88px;
@@ -2871,7 +2874,6 @@ td[style="border: 1px dashed;"] {
   padding: 5px;
   #{agent}box-sizing: border-box;
   box-sizing: border-box;
-  margin-bottom: 20px;
 }
 """
 

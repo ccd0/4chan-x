@@ -394,7 +394,7 @@ Options =
             className: if name == Conf['theme'] then 'selectedtheme replyContainer' else 'replyContainer'
             id:        name
             innerHTML: "
-<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background-color:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
+<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
   <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:#{theme['Checkbox Background']};border: 1px solid #{theme['Checkbox Border']};'></div>
   <span style='color:#{theme['Subjects']}!important; font-weight: 700 !important'> #{name}</span>
   <span style='color:#{theme['Names']}!important; font-weight: 700 !important'> #{theme['Author']}</span>

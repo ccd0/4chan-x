@@ -248,6 +248,7 @@ Config =
       'Board Subtitle':            [true,              'Show the board subtitle.']
       'Compact Post Form Inputs':  [true,              'Use compact inputs on the post form.']
       'Force Reply Break':         [false,             'Force replies to occupy their own line and not be adjacent to the OP image.']
+      'Hide Horizontal Rules':     [false,             'Hides lines between threads.']
       'Icon Orientation':          ['horizontal',      'Change the orientation of the appchan x icons.', ['horizontal', 'vertical']]
       'Images Overlap Post Form':  [true,              'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".']
       'Fit Width Replies':         [true,              'Replies fit the entire width of the page.']
