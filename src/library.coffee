@@ -72,6 +72,12 @@ console = if console? then console else console = window.console or unsafeWindow
 # Various prototypes I've wanted or needed to add.
 Array::contains = (object) ->
   @indexOf(object) > -1
+  
+Array::add = (object, position) ->
+  keep = @slice position
+  @length = position
+  @push object
+  @push.apply userNavigation.links, keep
 
 Array::remove = (object) ->
   if (index = @indexOf object) > -1

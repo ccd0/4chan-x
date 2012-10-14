@@ -1091,7 +1091,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not[type=checkbox]:hover {
+#options input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1179,7 +1179,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not[type=checkbox]:hover {
+#options input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1290,7 +1290,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not[type=checkbox]:hover {
+#options input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1373,7 +1373,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not[type=checkbox]:hover {
+#options input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1453,7 +1453,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not[type=checkbox]:hover {
+#options input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1547,7 +1547,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not[type=checkbox]:hover {
+#options input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1641,7 +1641,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not[type=checkbox]:hover {
+#options input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1724,7 +1724,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not[type=checkbox]:hover {
+#options input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1807,7 +1807,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not[type=checkbox]:hover {
+#options input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1844,7 +1844,7 @@ thread>.replyContainer>.reply>div.postInfo {
     "Thread Wrapper Border"       : "rgba(0,0,0,0)"
     "Reply Background"            : "rgba(239,239,239,1)"
     "Reply Border"                : "rgb(212,212,212)"
-    "Highlighted Reply Background": "linear-gradient(rgba(235,235,235,.9)), rgba(230,230,230,0.9))"
+    "Highlighted Reply Background": "linear-gradient(rgba(235,235,235,.9), rgba(230,230,230,0.9))"
     "Highlighted Reply Border"    : "rgb(191,127,63)"
     "Backlinked Reply Outline"    : "rgba(191,127,63,0.5)"
     "Checkbox Background"         : "rgba(228,228,228,.9)"
@@ -1863,22 +1863,22 @@ thread>.replyContainer>.reply>div.postInfo {
     "Quotelinks"                  : "rgb(191,127,63)"
     "Links"                       : "rgb(191,127,63)"
     "Hovered Links"               : "rgb(128,96,64)"
-    "Navigation Links"            : "rgb(76,76,76)"
+    "Navigation Links"            : "rgba(0,0,0,.7)"
     "Hovered Navigation Links"    : "rgb(211,54,130)"
-    "Subjects"                    : "rgb(76,76,76)"
-    "Names"                       : "rgb(76,76,76)"
+    "Subjects"                    : "rgba(0,0,0,.7)"
+    "Names"                       : "rgba(0,0,0,.7)"
     "Sage"                        : "rgb(204,102,102)"
     "Tripcodes"                   : "rgb(191,127,63)"
     "Emails"                      : "rgb(191,127,63)"
     "Post Numbers"                : "rgb(191,127,63)"
-    "Text"                        : "rgb(85,85,85)"
+    "Text"                        : "rgba(0,0,0,.7)"
     "Backlinks"                   : "rgb(191,127,63)"
     "Greentext"                   : "rgb(107,122,30)"
-    "Board Title"                 : "rgb(76,76,76)"
-    "Timestamps"                  : "rgb(76,76,76)"
-    "Inputs"                      : "rgb(76,76,76)"
+    "Board Title"                 : "rgba(0,0,0,.7)"
+    "Timestamps"                  : "rgba(0,0,0,.7)"
+    "Inputs"                      : "rgba(0,0,0,.7)"
     "Warnings"                    : "rgb(204,102,102)"
-    "Shadow Color"                : "rgba(0,0,0,.05)"
+    "Shadow Color"                : "rgba(0,0,0,.07)"
     "Dark Theme"                  : false
     "Custom CSS"                  : """
 .rice {
@@ -1890,7 +1890,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not[type=checkbox]:hover {
+#options input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1912,14 +1912,16 @@ button,
 input:not(.jsColor),
 textarea,
 .rice {
-  transition:background .2s,box-shadow .2s;
+  transition:
+    background .2s,
+    box-shadow .2s;
 }
 .subject:not(:empty)::after {
   content: " by";
   font-weight: normal;
 }
 .thread .replyContainer,
-#qp .post {
+#qp div.post {
   background-image: linear-gradient(rgba(244,244,244,0.9), rgba(239,239,239,0.9)) !important;
 }
 .qphl {
@@ -1990,7 +1992,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not[type=checkbox]:hover {
+#options input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,

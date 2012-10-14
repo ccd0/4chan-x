@@ -337,7 +337,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not[type=checkbox]:hover {
+#options input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -420,7 +420,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not[type=checkbox]:hover {
+#options input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,

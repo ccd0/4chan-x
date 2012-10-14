@@ -799,30 +799,40 @@ Options =
       $.add ul, li
 
       # Names and Placeholders for custom navigation inputs.
+      # These values mirror the positions of values in the navigation link arrays.
       navOptions = ["Display Name", "Title / Alt Text", "URL"]
 
       # Generate list for custom navigation
       for index, link of userNavigation.links
+      
+        # Avoid iterating through prototypes.
         unless typeof link is 'object'
           continue
+          
+        # This input holds the index of the current link in the userNavigation array/object.
         li = $.el "li"
         input = $.el "input"
           className: "hidden"
-        input.setAttribute "value", index
-        input.setAttribute "type", "hidden"
-        input.setAttribute "hidden", "hidden"
+          value:     index
+          type:      "hidden"
+          hidden:    "hidden"
+          
         $.add li, input
 
         #Generate inputs for list
         for itemIndex, item of link
+          
+          # Avoid iterating through prototypes.
           unless typeof item is 'string'
             continue
+            
+          # Fill input with relevant values.
           input = $.el "input"
-            className: "field"
-            name:      itemIndex
-          input.setAttribute "value", item
-          input.setAttribute "placeholder", navOptions[itemIndex]
-          input.setAttribute "type", "text"
+            className:   "field"
+            name:        itemIndex
+            value:       item
+            placeholder: navOptions[itemIndex]
+            type:        "text"
 
           $.on input, "change", ->
             if @value == ""
@@ -839,14 +849,14 @@ Options =
           href: "javascript:;"
 
         $.on addLink, "click", ->
-          userNavigation.links.add = (at) ->
-            keep = userNavigation.links.slice at
-            userNavigation.links.length = at
-            blankLink = ["ex","example","http://www.example.com/"]
-            userNavigation.links.push blankLink
-            userNavigation.links.push.apply userNavigation.links, keep
-          userNavigation.links.add @parentElement.firstChild.value
-          delete userNavigation.links.add
+          # Example data for a new link.
+          blankLink = ["ex","example","http://www.example.com/"]
+          
+          # I add the new link at the position of the link where it was added,
+          # pushing the existing links to the next position.
+          userNavigation.links.add blankLink, @parentElement.firstChild.value
+          
+          # And refresh the link list.
           Options.customNavigation.cleanup()
 
         # Delete Custom Link
@@ -855,12 +865,7 @@ Options =
           href: "javascript:;"
 
         $.on removeLink, "click", ->
-          userNavigation.links.remove = (from) ->
-            keep = userNavigation.links.slice parseInt(from) + 1
-            userNavigation.links.length = from
-            userNavigation.links.push.apply userNavigation.links, keep
-          userNavigation.links.remove @parentElement.firstChild.value
-          delete userNavigation.links.remove
+          userNavigation.links.remove userNavigation.links[@parentElement.firstChild.value]
           Options.customNavigation.cleanup()
 
         $.add li, addLink

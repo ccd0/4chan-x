@@ -124,7 +124,7 @@ h1,
   min-width: 300px;
   overflow: hidden;
   box-sizing: border-box;
-  """ + agent + """box-sizing: border-box;
+  #{agent}box-sizing: border-box;
   padding: 0 2px;
 }
 #qr > .move > span {
@@ -144,7 +144,7 @@ h1,
   margin: 0;
 }
 #dump {
-  background: """ + agent + """linear-gradient(#EEE, #CCC);
+  background: #{agent}linear-gradient(#EEE, #CCC);
   width: 10%;
 }
 .gecko #dump {
@@ -152,11 +152,11 @@ h1,
 }
 #dump:hover,
 #dump:focus {
-  background: """ + agent + """linear-gradient(#FFF, #DDD);
+  background: #{agent}linear-gradient(#FFF, #DDD);
 }
 #dump:active,
 .dump #dump:not(:hover):not(:focus) {
-  background: """ + agent + """linear-gradient(#CCC, #DDD);
+  background: #{agent}linear-gradient(#CCC, #DDD);
 }
 #qr:not(.dump) #replies,
 .dump > form > label {
@@ -166,7 +166,7 @@ h1,
   display: block;
   height: 100px;
   position: relative;
-  """ + agent + """user-select: none;
+  #{agent}user-select: none;
   user-select: none;
 }
 #replies > div {
@@ -192,7 +192,7 @@ h1,
   background-size: cover !important;
   border: 1px solid #666;
   box-sizing: border-box;
-  """ + agent + """box-sizing: border-box;
+  #{agent}box-sizing: border-box;
   cursor: move;
   display: inline-block;
   height: 90px; width: 90px;
@@ -202,7 +202,7 @@ h1,
   overflow: hidden;
   position: relative;
   text-shadow: 0 1px 1px #000;
-  """ + agent + """transition: opacity .25s ease-in-out;
+  #{agent}transition: opacity .25s ease-in-out;
   vertical-align: top;
 }
 .thumbnail:hover,
@@ -263,7 +263,7 @@ h1,
   font-size: inherit;
   margin: 0;
   padding: 2px 4px 3px;
-  """ + agent + """transition: color .25s, border .25s;
+  #{agent}transition: color .25s, border .25s;
 }
 .field:hover,
 .field:focus {
@@ -350,7 +350,7 @@ h1,
   right: 300px;
   bottom: 10px;
   margin: 0;
-  """ + agent + """transition: all .2s ease-in-out;
+  #{agent}transition: all .2s ease-in-out;
 }
 #theme_tab + div > div {
   margin-bottom: 3px;
@@ -368,7 +368,7 @@ h1,
 #options .optionlabel {
   text-decoration: underline;
 }
-#options input:not[type=checkbox] {
+#options input:not([type=checkbox]) {
   float: right;
   clear: left;
 }
@@ -437,7 +437,7 @@ h1,
   overflow: auto;
 }
 #mascotConf input,
-#mascotConf input:""" + agent + """placeholder {
+#mascotConf input:#{agent}placeholder {
   text-align: center;
 }
 #mascotConf h2 {
@@ -626,6 +626,16 @@ div.opContainer {
   display: none;
 }"""
 
+
+    if Conf["Image Expansion"]
+      css+= """
+.fileThumb img {
+  cursor: #{agent}zoom-in;
+}
+.fileThumb img + img {
+  cursor: #{agent}zoom-out;
+}
+"""
     if Conf["Recursive Filtering"]
       css += """.hidden + .threadContainer {
   display: none;
@@ -705,9 +715,9 @@ div.opContainer {
         sidebarLocation = ["right", "left" ]
 
       css += """
-::""" + agent + """selection {
-  background: """ + theme["Text"] + """;
-  color: """ + theme["Background Color"] + """;
+::#{agent}selection {
+  background: #{theme["Text"]};
+  color: #{theme["Background Color"]};
 }
 body {
   padding: 0;
@@ -724,11 +734,11 @@ body,
 input,
 select,
 textarea {
-  font-family: '""" + Conf["Font"] + """';
+  font-family: '#{Conf["Font"]}';
 }
 #qr img,
 .captcha img {
-  opacity: """ + Conf["Captcha Opacity"] + """;
+  opacity: #{Conf["Captcha Opacity"]};
 }
 #boardNavDesktop,
 #prefetch,
@@ -743,6 +753,7 @@ textarea {
 .fileText,
 .fileText span:not([class])::after,
 .name,
+.postInfo,
 .postNum,
 .postertrip,
 .posteruid,
@@ -757,7 +768,7 @@ div.reply,
 fieldset,
 textarea,
 time + span {
-  font-size: """ + Conf["Font Size"] + """;
+  font-size: #{Conf["Font Size"]};
 }
 #globalMessage b {
   font-weight: 100;
@@ -774,7 +785,7 @@ time + span {
 .autoPagerS,
 .board > hr:last-of-type,
 .boardBanner div,
-""" + (unless Conf["Board Subtitle"] then ".boardSubtitle,") + """
+#{(unless Conf["Board Subtitle"] then ".boardSubtitle," else "")}
 .closed,
 .deleteform,
 .entry:not(.focused) > .subMenu,
@@ -853,7 +864,7 @@ a[href*="//dis"],
 a[href*=res],
 div.post > blockquote .chanlinkify.YTLT-link.YTLT-text,
 div.postContainer span.postNum > .replylink {
-  text-decoration: """ + (if Conf["Underline Links"] then "underline" else "none") + """;
+  text-decoration: #{(if Conf["Underline Links"] then "underline" else "none")};
 }
 .filtered {
   text-decoration: line-through;
@@ -890,7 +901,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 .fileThumb img + img {
   position: relative;
-  z-index: """ + (if Conf["Images Overlap Post Form"] then "100" else "1") + """ !important;
+  z-index: #{(if Conf["Images Overlap Post Form"] then "100" else "1")} !important;
 }
 
 div.navLinks > a:first-of-type::after {
@@ -931,7 +942,7 @@ div.navLinks > a:first-of-type::after {
 div.reply,
 div.reply.highlight {
   z-index: 0 !important;
-  """ + agent + """box-sizing: border-box;
+  #{agent}box-sizing: border-box;
   box-sizing: border-box;
 }
 body > a[style="cursor: pointer; float: right;"]::after,
@@ -966,13 +977,13 @@ div.navLinks > a:first-of-type:hover::after,
 }
 .qrMessage {
   position: fixed;
-  """ + sidebarLocation[0] + """: 2px;
+  #{sidebarLocation[0]}: 2px;
   bottom: 250px;
   font-size: inherit;
   font-weight: 100;
   background: none;
   border: none;
-  width: """ + (248 + sidebarOffsetW) + """px;
+  width: #{(248 + sidebarOffsetW)}px;
 }
 #boardTitle {
   font-size: 30px;
@@ -1006,7 +1017,7 @@ a.yuimenuitemlabel {
   padding: 0 20px;
 }
 /* Navigation */
-""" + (if Conf["Custom Navigation"] then "" else "#boardNavDesktop,") + """
+#{(if Conf["Custom Navigation"] then "" else "#boardNavDesktop,")}
 .pages /* Bottom Navigation */ {
   text-align: center;
   font-size: 0;
@@ -1022,17 +1033,17 @@ a.yuimenuitemlabel {
 #boardNavDesktopFoot {
   visibility: visible;
   position: fixed;
-  """ + sidebarLocation[0] + """: 2px;
+  #{sidebarLocation[0]}: 2px;
   bottom: auto;
   color: transparent;
   font-size: 0;
   border-width: 1px;
   text-align: center;
   height: 0;
-  width: """ + (248 + sidebarOffsetW) + """px !important;
+  width: #{(248 + sidebarOffsetW)}px !important;
   overflow: hidden;
-  """ + agent + """transition: height .5s linear, border 0s ease-in-out .5s;
-  """ + agent + """box-sizing: border-box;
+  #{agent}transition: height .5s linear, border 0s ease-in-out .5s;
+  #{agent}box-sizing: border-box;
   box-sizing: border-box;
 }
 .center {
@@ -1043,15 +1054,15 @@ img.topad,
 img.middlead,
 img.bottomad {
   opacity: 0.3;
-  """ + agent + """transition: opacity .3s ease-in-out .3s;
+  #{agent}transition: opacity .3s ease-in-out .3s;
 }
 img.topad:hover,
 img.middlead:hover,
 img.bottomad:hover {
   opacity: 1;
-  """ + agent + """transition: opacity .3s linear;
+  #{agent}transition: opacity .3s linear;
 }
-""" + (unless Conf["Custom Navigation"] then "#boardNavDesktop a,") + """
+#{(unless Conf["Custom Navigation"] then "#boardNavDesktop a," else "")}
 .pages a,
 .pages strong {
   display: inline-block;
@@ -1064,14 +1075,14 @@ img.bottomad:hover {
 }
 /* moots announcements */
 #globalMessage {
-  font-size: """ + Conf["Font Size"] + """;
+  font-size: #{Conf["Font Size"]};
   text-align: center;
   font-weight: 200;
 }
 .pages strong,
 a,
 .new {
-  """ + agent + """transition: background-color .1s linear;
+  #{agent}transition: background-color .1s linear;
 }
 /* Post Form */
 /* Override OS-specific UI */
@@ -1086,10 +1097,10 @@ h2,
 input:not([type="radio"]),
 input[type="submit"],
 textarea {
-  """ + agent + """appearance: none;
+  #{agent}appearance: none;
 }
 input[type=checkbox] {
-  """ + agent + """appearance: checkbox !important;
+  #{agent}appearance: checkbox !important;
 }
 /* Formatting for all postarea elements */
 #browse,
@@ -1118,7 +1129,7 @@ input,
 input[type="submit"] {
   margin: 1px 0 0;
   vertical-align: bottom;
-  """ + agent + """box-sizing: border-box;
+  #{agent}box-sizing: border-box;
   box-sizing: border-box;
   padding: 1px !important;
 }
@@ -1128,7 +1139,7 @@ textarea.field,
 .ys_playerContainer audio,
 #qr input[title="Verification"],
 #qr > form > div {
-  width: """ + (248 + sidebarOffsetW) + """px;
+  width: #{(248 + sidebarOffsetW)}px;
 }
 /* Buttons */
 #browse,
@@ -1136,7 +1147,7 @@ input[type="submit"], /* Any lingering buttons */
 input[value="Report"] {
   height: 20px;
   padding: 0;
-  font-size: """ + Conf["Font Size"] + """;
+  font-size: #{Conf["Font Size"]};
 }
 #qr input[type="submit"] {
   width: 100%;
@@ -1149,7 +1160,7 @@ input[value="Report"] {
   z-index: -1;
 }
 #file {
-  width: """ + (177 + sidebarOffsetW) + """px;
+  width: #{(177 + sidebarOffsetW)}px;
   overflow: hidden;
 }
 #browse {
@@ -1185,13 +1196,13 @@ input[value="Report"] {
 #qr label input,
 .boxcontent input,
 .boxcontent textarea {
-  """ + agent + """appearance: none;
+  #{agent}appearance: none;
   border: 0;
 }
 input[type=checkbox],
 .reply input[type=checkbox],
 #options input[type=checkbox] {
-  """ + agent + """appearance: none;
+  #{agent}appearance: none;
   width: 12px !important;
   height: 12px !important;
   cursor: pointer;
@@ -1267,11 +1278,11 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
   width: 15px;
   height: 20px;
   overflow: hidden;
-  """ + agent + """transition: width .2s linear;
+  #{agent}transition: width .2s linear;
 }
 #imgContainer {
   width: 110px;
-  float: """ + sidebarLocation[0] + """;
+  float: #{sidebarLocation[0]};
 }
 #imgControls:hover {
   width: 110px;
@@ -1279,22 +1290,25 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
 #imgControls label {
   font-size: 0;
   color: transparent;
-  float: """ + sidebarLocation[0] + """;
+  float: #{sidebarLocation[0]};
 }
 #imgControls label::after {
   position: relative;
-  """ + sidebarLocation[0] + """: 2px;
+  #{sidebarLocation[0]}: 2px;
   top: 2px;
 }
 #imgControls select {
-  float: """ + sidebarLocation[1] + """;
+  float: #{sidebarLocation[1]};
 }
 #imgControls select > option {
   font-size: 80%;
 }
 /* Reply Previews */
-#qp .replyContainer {
+#qp {
   max-width: 70%;
+}
+#qp .replyContainer,
+#qp .opContainer {
   visibility: visible;
 }
 #qp div.op {
@@ -1376,8 +1390,8 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] {
   position: fixed;
   top: 17px;
   bottom: 17px;
-  """ + sidebarLocation[1] + """: 4px;
-  """ + sidebarLocation[0] + """: """ + (252 + sidebarOffsetW) + """px;
+  #{sidebarLocation[1]}: 4px;
+  #{sidebarLocation[0]}: #{(252 + sidebarOffsetW)}px;
   width: auto;
   margin: 0;
 }
@@ -1406,6 +1420,11 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"]{
 [alt="closed"] + a {
   text-decoration: line-through;
 }
+.identityIcon,
+img[alt="Sticky"],
+img[alt="Closed"] {
+  vertical-align: top;
+}
 /* Youtube Link Title */
 .chanlinkify.YTLT-link.YTLT-text {
   font-family: monospace;
@@ -1427,13 +1446,13 @@ input[type="submit"]:hover {
   position: fixed;
   bottom: 252px;
   margin: 0;
-  """ + sidebarLocation[0] + """: 3px;
+  #{sidebarLocation[0]}: 3px;
   padding-right: 0;
   padding-left: 0;
   padding-top: 0;
 }
-#qr input:focus:""" + agent + """placeholder,
-#qr textarea:focus:""" + agent + """placeholder {
+#qr input:focus:#{agent}placeholder,
+#qr textarea:focus:#{agent}placeholder {
   color: transparent;
 }
 img[md5] {
@@ -1486,7 +1505,7 @@ html .subMenu {
   right: 2px;
   top: auto;
   bottom: 110px;
-  color: """ + (if theme["Dark Theme"] then "rgba(255,255,255,0.7)" else "rgba(0,0,0,0.7)") + """;
+  color: #{(if theme["Dark Theme"] then "rgba(255,255,255,0.7)" else "rgba(0,0,0,0.7)")};
   font-size: 10px;
   height: 20px;
   text-align: right;
@@ -1511,7 +1530,7 @@ html .subMenu {
   position: fixed;
   top: auto !important;
   bottom: 2px !important;
-  width: """ + (248 + sidebarOffsetW) + """px;
+  width: #{(248 + sidebarOffsetW)}px;
   margin: 0;
   padding: 0;
   z-index: 5 !important;
@@ -1519,7 +1538,7 @@ html .subMenu {
 }
 #showQR {
   display: block;
-  """ + sidebarLocation[0] + """: 2px !important;
+  #{sidebarLocation[0]}: 2px !important;
   text-align: center;
 }
 /* Width and height of all #qr elements (excluding some captcha elements) */
@@ -1529,7 +1548,7 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
 }
 #qr img {
   height: 47px;
-  width: """ + (248 + sidebarOffsetW) + """px;
+  width: #{(248 + sidebarOffsetW)}px;
 }
 #dump {
   background: none;
@@ -1551,7 +1570,6 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
 #threadselect select {
   margin-top: 0;
   font-size: 12px;
-  text-align: right;
 }
 #spoilerLabel {
   position: absolute;
@@ -1603,8 +1621,8 @@ table.reply[style^="clear: both"] {
 }
 #themeConf {
   position: fixed;
-  """ + sidebarLocation[1] + """: 2px;
-  """ + sidebarLocation[0] + """: auto;
+  #{sidebarLocation[1]}: 2px;
+  #{sidebarLocation[0]}: auto;
   top: 0;
   bottom: 0;
   width: 296px;
@@ -1613,17 +1631,17 @@ table.reply[style^="clear: both"] {
   width: 30%;
 }
 html {
-  background: """ + theme["Background Color"] + """;
-  background-image: """ + theme["Background Image"] + """;
-  background-repeat: """ + theme["Background Repeat"] + """;
-  background-attachment: """ + theme["Background Attachment"] + """;
-  background-position: """ + theme["Background Position"] + """;
+  background: #{theme["Background Color"]};
+  background-image: #{theme["Background Image"]};
+  background-repeat: #{theme["Background Repeat"]};
+  background-attachment: #{theme["Background Attachment"]};
+  background-position: #{theme["Background Position"]};
 }
 #content,
 #themecontent,
 #mascotcontent {
-  background: """ + theme["Background Color"] + """;
-  border: 1px solid """ + theme["Reply Border"]  + """;
+  background: #{theme["Background Color"]};
+  border: 1px solid #{theme["Reply Border"] };
   padding: 5px;
 }
 .suboptions {
@@ -1635,10 +1653,10 @@ html {
 #stats,
 #updater .move {
   text-shadow:
-    1px 1px 1px """ + theme["Background Color"] + """,
-    -1px 1px 1px """ + theme["Background Color"] + """,
-    1px -1px 1px """ + theme["Background Color"] + """,
-    -1px -1px 1px """ + theme["Background Color"] + """
+    1px 1px 1px #{theme["Background Color"]},
+    -1px 1px 1px #{theme["Background Color"]},
+    1px -1px 1px #{theme["Background Color"]},
+    -1px -1px 1px #{theme["Background Color"]}
 }
 #browse,
 #ft li,
@@ -1655,8 +1673,8 @@ html body span[style="left: 5px; position: absolute;"] a,
 input[type="submit"],
 #options.reply.dialog,
 input[value="Report"] {
-  background: """ + theme["Buttons Background"] + """;
-  border: 1px solid """ + theme["Buttons Border"]  + """;
+  background: #{theme["Buttons Background"]};
+  border: 1px solid #{theme["Buttons Border"] };
 }
 #dump,
 #file,
@@ -1668,10 +1686,10 @@ input.field,
 select,
 textarea,
 textarea.field {
-  background: """ + theme["Input Background"] + """;
-  border: 1px solid """ + theme["Input Border"]  + """;
-  color: """ + theme["Inputs"] + """;
-  """ + agent + """transition: all .2s linear;
+  background: #{theme["Input Background"]};
+  border: 1px solid #{theme["Input Border"] };
+  color: #{theme["Inputs"]};
+  #{agent}transition: all .2s linear;
 }
 #dump:hover,
 #browse:hover,
@@ -1682,10 +1700,10 @@ input[type="submit"]:hover,
 select:hover,
 textarea:hover,
 textarea.field:hover {
-  background: """ + theme["Hovered Input Background"] + """;
-  border-color: """ + theme["Hovered Input Border"]  + """;
-  color: """ + theme["Inputs"] + """;
-  """ + agent + """transition: all .2s linear;
+  background: #{theme["Hovered Input Background"]};
+  border-color: #{theme["Hovered Input Border"] };
+  color: #{theme["Inputs"]};
+  #{agent}transition: all .2s linear;
 }
 #dump:active,
 #dump:focus,
@@ -1695,28 +1713,28 @@ input[type="submit"]:focus,
 select:focus,
 textarea:focus,
 textarea.field:focus {
-  background: """ + theme["Focused Input Background"] + """;
-  border-color: """ + theme["Focused Input Border"]  + """;
-  color: """ + theme["Inputs"] + """;
+  background: #{theme["Focused Input Background"]};
+  border-color: #{theme["Focused Input Border"] };
+  color: #{theme["Inputs"]};
 }
 #qp div.post,
 .thread .replyContainer {
-  background: """ + theme["Reply Background"] + """;
-  border: 1px solid """ + theme["Reply Border"]  + """;
+  background: #{theme["Reply Background"]};
+  border: 1px solid #{theme["Reply Border"] };
 }
 .reply.highlight,
 .reply:target {
-  background: """ + theme["Highlighted Reply Background"] + """;
-  border: 1px solid """ + theme["Highlighted Reply Border"]  + """;
+  background: #{theme["Highlighted Reply Background"]};
+  border: 1px solid #{theme["Highlighted Reply Border"] };
 }
 #boardNavDesktop,
 .pages {
-  background: """ + theme["Navigation Background"] + """;
-  border: 1px solid """ + theme["Navigation Border"]  + """;
+  background: #{theme["Navigation Background"]};
+  border: 1px solid #{theme["Navigation Border"] };
 }
 #delform {
-  background: """ + theme["Thread Wrapper Background"] + """;
-  border: 1px solid """ + theme["Thread Wrapper Border"]  + """;
+  background: #{theme["Thread Wrapper Background"]};
+  border: 1px solid #{theme["Thread Wrapper Border"] };
 }
 #boardNavDesktopFoot,
 #mascotConf,
@@ -1726,26 +1744,26 @@ textarea.field:focus {
 #watcher:hover,
 div.subMenu,
 #menu {
-  background: """ + theme["Dialog Background"] + """;
-  border: 1px solid """ + theme["Dialog Border"]  + """;
+  background: #{theme["Dialog Background"]};
+  border: 1px solid #{theme["Dialog Border"] };
 }
 .mascotname,
 .mascotoptions {
-  background: """ + theme["Dialog Background"] + """;
+  background: #{theme["Dialog Background"]};
 }
 .inline .replyContainer {
-  background: """ + theme["Reply Background"] + """;
-  border: 1px solid """ + theme["Reply Border"] + """;
-  box-shadow: 5px 5px 5px """+ theme["Shadow Color"] + """;
+  background: #{theme["Reply Background"]};
+  border: 1px solid #{theme["Reply Border"]};
+  box-shadow: 5px 5px 5px #{theme["Shadow Color"]};
 }
 #qr .warning {
-  background: """ + theme["Input Background"] + """;
-  border: 1px solid """ + theme["Input Border"]  + """;
+  background: #{theme["Input Background"]};
+  border: 1px solid #{theme["Input Border"] };
 }
 [style='color: red !important;'] *,
 .disabledwarning,
 .warning {
-  color: """ + theme["Warnings"] + """ !important;
+  color: #{theme["Warnings"]} !important;
 }
 a,
 #dump,
@@ -1753,17 +1771,17 @@ a,
 div.post > blockquote a[href^="//"],
 .sideArrows a,
 div.postContainer span.postNum > .replylink {
-  color: """ + theme["Links"] + """;
+  color: #{theme["Links"]};
 }
 .postNum a {
-  color: """ + theme["Post Numbers"] + """;
+  color: #{theme["Post Numbers"]};
 }
 .subject {
-  color: """ + theme["Subjects"] + """ !important;
+  color: #{theme["Subjects"]} !important;
   font-weight: 600;
 }
 .dateTime {
-  color: """ + theme["Timestamps"] + """ !important;
+  color: #{theme["Timestamps"]} !important;
 }
 #browse,
 #updater:not(:hover),
@@ -1785,27 +1803,28 @@ textarea,
 #updater #count:not(.new)::after,
 #qr > form > label::after,
 span.pln {
-  color: """ + theme["Text"] + """;
+  color: #{theme["Text"]};
 }
 #options ul {
-  border-bottom: 1px solid """ + theme["Reply Border"] + """;
-  box-shadow: inset """+ theme["Shadow Color"] + """ 0 0 5px;
+  border-bottom: 1px solid #{theme["Reply Border"]};
+  box-shadow: inset #{theme["Shadow Color"]} 0 0 5px;
 }
 .quote + .spoiler:hover,
 .quote {
-  color: """ + theme["Greentext"] + """;
+  color: #{theme["Greentext"]};
 }
 a.backlink {
-  color: """ + theme["Backlinks"] + """;
+  color: #{theme["Backlinks"]};
 }
 span.quote > a.quotelink,
 a.quotelink {
-  color: """ + theme["Quotelinks"] + """;
+  color: #{theme["Quotelinks"]};
 }
 div.subMenu,
 #menu,
+#qp .opContainer,
 #qp .replyContainer {
-  box-shadow: 5px 5px 5px """+ theme["Shadow Color"] + """;
+  box-shadow: 5px 5px 5px #{theme["Shadow Color"]};
 }
 .rice {
   cursor: pointer;
@@ -1813,22 +1832,22 @@ div.subMenu,
   height: 10px;
   margin: 3px;
   display: inline-block;
-  background: """ + theme["Checkbox Background"] + """;
-  border: 1px solid """ + theme["Checkbox Border"]  + """;
+  background: #{theme["Checkbox Background"]};
+  border: 1px solid #{theme["Checkbox Border"] };
 }
 #qr label input,
 #updater input,
 .bd {
-  background: """ + theme["Buttons Background"] + """;
-  border: 1px solid """ + theme["Buttons Border"]  + """;
+  background: #{theme["Buttons Background"]};
+  border: 1px solid #{theme["Buttons Border"] };
 }
 .pages a,
 #boardNavDesktop a {
-  color: """ + theme["Navigation Links"] + """;
+  color: #{theme["Navigation Links"]};
 }
 input[type=checkbox]:checked + .rice {
-  background: """ + theme["Checkbox Checked Background"] + """;
-  background-image: url(""" + (if theme["Dark Theme"] then "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" else "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==") + """);
+  background: #{theme["Checkbox Checked Background"]};
+  background-image: url(#{(if theme["Dark Theme"] then "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" else "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==")});
   background-attachment: scroll;
   background-repeat: no-repeat;
   background-position: bottom right;
@@ -1842,25 +1861,25 @@ div.post div.postInfo span.postNum a:hover,
 div.postContainer span.postNum > .replylink:hover,
 .nameBlock > .useremail > .name:hover,
 .nameBlock > .useremail > .postertrip:hover {
-  color: """ + theme["Hovered Links"] + """;
+  color: #{theme["Hovered Links"]};
 }
 #boardNavDesktop a:hover,
 #boardTitle a:hover {
-  color: """ + theme["Hovered Navigation Links"] + """;
+  color: #{theme["Hovered Navigation Links"]};
 }
 #boardTitle {
-  color: """ + theme["Board Title"] + """;
+  color: #{theme["Board Title"]};
 }
 .name {
-  color: """ + theme["Names"] + """ !important;
+  color: #{theme["Names"]} !important;
 }
 .postertrip,
 .trip {
-  color: """ + theme["Tripcodes"] + """ !important;
+  color: #{theme["Tripcodes"]} !important;
 }
 .nameBlock > .useremail > .postertrip,
 .nameBlock > .useremail > .name {
-  color: """ + theme["Emails"] + """;
+  color: #{theme["Emails"]};
 }
 .nameBlock > .useremail > .name,
 .name {
@@ -1870,22 +1889,22 @@ a.forwardlink {
   border-bottom: 1px dashed;
 }
 .qphl {
-  outline-color: """ + theme["Backlinked Reply Outline"] + """;
+  outline-color: #{theme["Backlinked Reply Outline"]};
 }
 .placeholder,
-#qr input:""" + agent + """placeholder,
-#qr textarea:""" + agent + """placeholder {
-  color: """ + (if theme["Dark Theme"] then "rgba(255,255,255,0.2)" else "rgba(0,0,0,0.3)") + """ !important;
+#qr input:#{agent}placeholder,
+#qr textarea:#{agent}placeholder {
+  color: #{(if theme["Dark Theme"] then "rgba(255,255,255,0.2)" else "rgba(0,0,0,0.3)")} !important;
 }
 .boxcontent dd,
 #options ul {
-  border-color: """ + (if theme["Dark Theme"] then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)") + """;
+  border-color: #{(if theme["Dark Theme"] then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)")};
 }
 #options .styleoption {
-  border-top: 1px solid """ + (if theme["Dark Theme"] then "rgba(255,255,255,0.05)" else "rgba(0,0,0,0.05)") + """;
+  border-top: 1px solid #{(if theme["Dark Theme"] then "rgba(255,255,255,0.05)" else "rgba(0,0,0,0.05)")};
 }
 #mascot img {
-  """ + agent + """transform: scaleX(""" + (if sidebarLocation[0] == "left" then "-" else "") + """1);
+  #{agent}transform: scaleX(#{(if sidebarLocation[0] == "left" then "-" else "")}1);
 }
 """ + theme["Custom CSS"]
       if theme["Dark Theme"]
@@ -2010,9 +2029,9 @@ body > a[style="cursor: pointer; float: right;"]::after {
           css += """
 .boardBanner img {
   position: fixed;
-  width: """ + (248 + sidebarOffsetW) + """px;
-  top: """ + (if Conf["Icon Orientation"] == "vertical" then "2px" else "19px") + """;
-  """ + sidebarLocation[0] + """: 2px;
+  width: #{(248 + sidebarOffsetW)}px;
+  top: #{(if Conf["Icon Orientation"] == "vertical" then "2px" else "19px")};
+  #{sidebarLocation[0]}: 2px;
 }
 """
         when "at sidebar bottom"
@@ -2020,9 +2039,9 @@ body > a[style="cursor: pointer; float: right;"]::after {
           css += """
 .boardBanner img {
   position: fixed;
-  width: """ + (248 + sidebarOffsetW) + """px;
+  width: #{(248 + sidebarOffsetW)}px;
   bottom: 270px;
-  """ + sidebarLocation[0] + """: 2px;
+  #{sidebarLocation[0]}: 2px;
 }
 """
         when "under post form"
@@ -2030,9 +2049,9 @@ body > a[style="cursor: pointer; float: right;"]::after {
           css += """
 .boardBanner img {
   position: fixed;
-  width: """ + (248 + sidebarOffsetW) + """px;
+  width: #{(248 + sidebarOffsetW)}px;
   bottom: 130px;
-  """ + sidebarLocation[0] + """: 2px;
+  #{sidebarLocation[0]}: 2px;
 }
 """
         when "at top"
@@ -2050,66 +2069,66 @@ body > a[style="cursor: pointer; float: right;"]::after {
 /* 4chan X Options */
 #navtopright .settingsWindowLink::after {
   visibility: visible;
-  """ + (if sidebarLocation[0] == "left" then "left: " + (231 + sidebarOffsetW) + "px" else "right:  2px") + """;
+  #{(if sidebarLocation[0] == "left" then "left: " + (231 + sidebarOffsetW) + "px" else "right:  2px")};
 }
 /* Slideout Navigation */
 #boardNavDesktopFoot::after {
   border: none;
-  """ + (if sidebarLocation[0] == "left" then "left: " + (212 + sidebarOffsetW) + "px" else "right: 21px") + """;
+  #{(if sidebarLocation[0] == "left" then "left: " + (212 + sidebarOffsetW) + "px" else "right: 21px")};
 }
 /* Global Message */
 #globalMessage::before {
   position: fixed;
-  """ + (if sidebarLocation[0] == "left" then "left: " + (193 + sidebarOffsetW) + "px" else "right: 40px") + """;
+  #{(if sidebarLocation[0] == "left" then "left: " + (193 + sidebarOffsetW) + "px" else "right: 40px")};
 }
 /* Watcher */
 #watcher::before {
   position: fixed;
-  """ + (if sidebarLocation[0] == "left" then "left: " + (174 + sidebarOffsetW) + "px" else "right: 59px") + """;
+  #{(if sidebarLocation[0] == "left" then "left: " + (174 + sidebarOffsetW) + "px" else "right: 59px")};
   cursor: pointer;
 }
 /* Expand Images */
 #imgControls {
-  """ + (if sidebarLocation[0] == "left" then "left: " + (155 + sidebarOffsetW) + "px" else "right: 78px") + """;
+  #{(if sidebarLocation[0] == "left" then "left: " + (155 + sidebarOffsetW) + "px" else "right: 78px")};
 }
 /* 4sight */
 body > a[style="cursor: pointer; float: right;"]::after {
-  """ + (if sidebarLocation[0] == "left" then "left: " + (136 + sidebarOffsetW) + "px" else "right: 97px") + """;
+  #{(if sidebarLocation[0] == "left" then "left: " + (136 + sidebarOffsetW) + "px" else "right: 97px")};
 }
 /* Back */
 div.navLinks > a:first-of-type::after {
   visibility: visible;
   position: fixed;
   cursor: pointer;
-  """ + (if sidebarLocation[0] == "left" then "left: 2px" else "right: " + (228 + sidebarOffsetW) + "px") + """;
+  #{(if sidebarLocation[0] == "left" then "left: 2px" else "right: " + (228 + sidebarOffsetW) + "px")};
 }
 /* Thread Navigation Links */
 #navlinks {
-  """ + (if sidebarLocation[0] == "left" then "left: 22px" else "right: " + (198 + sidebarOffsetW) + "px") + """;
-  """ + sidebarLocation[1] + """: auto !important;
+  #{(if sidebarLocation[0] == "left" then "left: 22px" else "right: " + (198 + sidebarOffsetW) + "px")};
+  #{sidebarLocation[1]}: auto !important;
   top: 0 !important;
   width: 30px;
   line-height: 15px;
 }
 /* Stats */
 #stats {
-  """ + (if sidebarLocation[0] == "left" then "left: 4px" else "right: " + (186 + sidebarOffsetW) + "px") + """ !important;
-  """ + sidebarLocation[1] + """: auto !important;
-  top: """ + (if Conf["Stats Position"] == "top" then "20px" else "auto") + """ !important;
-  bottom: """ + (if Conf["Stats Position"] == "bottom" then "4px" else "auto") + """ !important;
+  #{(if sidebarLocation[0] == "left" then "left: 4px" else "right: " + (186 + sidebarOffsetW) + "px")} !important;
+  #{sidebarLocation[1]}: auto !important;
+  top: #{(if Conf["Stats Position"] == "top" then "20px" else "auto")} !important;
+  bottom: #{(if Conf["Stats Position"] == "bottom" then "4px" else "auto")} !important;
   width: 60px;
-  text-align: """ + sidebarLocation[1] + """;
+  text-align: #{sidebarLocation[1]};
 }
 /* Updater */
 #updater {
-  """ + (if sidebarLocation[0] == "left" then "left: " + (206 + sidebarOffsetW) + "px" else "right: 4px") + """ !important;
-  """ + sidebarLocation[1] + """: auto !important;
-  top: """ + (if Conf["Updater Position"] == "top" then "20px" else "auto") + """ !important;
-  bottom: """ + (if Conf["Updater Position"] == "bottom" then "4px" else "auto") + """ !important;
+  #{(if sidebarLocation[0] == "left" then "left: " + (206 + sidebarOffsetW) + "px" else "right: 4px")} !important;
+  #{sidebarLocation[1]}: auto !important;
+  top: #{(if Conf["Updater Position"] == "top" then "20px" else "auto")} !important;
+  bottom: #{(if Conf["Updater Position"] == "bottom" then "4px" else "auto")} !important;
 }
 #prefetch {
-  width: """ + (248 + sidebarOffsetW) + """px;
-  """ + sidebarLocation[0] + """: 2px;
+  width: #{(248 + sidebarOffsetW)}px;
+  #{sidebarLocation[0]}: 2px;
   top: 40px;
 }
 #boardNavDesktopFoot::after,
@@ -2149,72 +2168,72 @@ body > a[style="cursor: pointer; float: right;"]::after {
 /* Image Expansion */
 #imgControls {
   position: fixed;
-  top: """ + (2 + logoOffset) + """px !important;
+  top: #{(2 + logoOffset)}px !important;
 }
 /* 4chan X Options */
 #navtopright .settingsWindowLink::after {
   visibility: visible;
   position: fixed;
-  top: """ + (21 + logoOffset) + """px !important;
+  top: #{(21 + logoOffset)}px !important;
 }
 /* Slideout Navigation */
 #boardNavDesktopFoot,
 #boardNavDesktopFoot::after {
   border: none;
   position: fixed;
-  top: """ + (40 + logoOffset) + """px !important;
+  top: #{(40 + logoOffset)}px !important;
 }
 /* Global Message */
 #globalMessage,
 #globalMessage::before {
   position: fixed;
-  top: """ + (59 + logoOffset) + """px !important;
+  top: #{(59 + logoOffset)}px !important;
 }
 /* Watcher */
 #watcher,
 #watcher::before {
   position: fixed;
-  top: """ + (78 + logoOffset) + """px !important;
+  top: #{(78 + logoOffset)}px !important;
   cursor: pointer;
 }
 /* 4sight */
 body > a[style="cursor: pointer; float: right;"]::after {
   position: fixed;
-  top: """ + (97 + logoOffset) + """px !important;
+  top: #{(97 + logoOffset)}px !important;
 }
 /* Back */
 div.navLinks > a:first-of-type::after {
   visibility: visible;
   position: fixed;
   cursor: pointer;
-  top: """ + (116 + logoOffset) + """px !important;
+  top: #{(116 + logoOffset)}px !important;
 }
 /* Stats */
 #stats {
-  """ + (if sidebarLocation[0] == "left" then "left: " + (4 + statOffset) + "px" else "right: " + ((if Conf["Stats Position"] == "top" then (25 + updaterOffset) else (186 + sidebarOffsetW))) + "px") + """ !important;
-  """ + sidebarLocation[1] + """: auto !important;
-  top: """ + (if Conf["Stats Position"] == "top" then "2px" else "auto") + """ !important;
-  bottom: """ + (if Conf["Stats Position"] == "bottom" then "4px" else "auto") + """ !important;
+  #{(if sidebarLocation[0] == "left" then "left: " + (4 + statOffset) + "px" else "right: " + ((if Conf["Stats Position"] == "top" then (25 + updaterOffset) else (186 + sidebarOffsetW))) + "px")} !important;
+  #{sidebarLocation[1]}: auto !important;
+  top: #{(if Conf["Stats Position"] == "top" then "2px" else "auto")} !important;
+  bottom: #{(if Conf["Stats Position"] == "bottom" then "4px" else "auto")} !important;
   width: 60px;
   text-align: left;
-  """ + (if Conf["Stats Position"] == "top" then "z-index: 96 !important;") + """
+  #{(if Conf["Stats Position"] == "top" then "z-index: 96 !important;")}
 }
 /* Updater */
 #updater {
-  """ + (if sidebarLocation[0] == "right" then "right: " + (4 + updaterOffset) + "px" else "left: " + ((if Conf["Updater Position"] == "top" then (45 + statOffset) else (206 + sidebarOffsetW))) + "px") + """ !important;
-  """ + sidebarLocation[1] + """: auto !important;
-  top: """ + (if Conf["Updater Position"] == "top" then "2px" else "auto") + """ !important;
-  bottom: """ + (if Conf["Updater Position"] == "bottom" then "4px" else "auto") + """ !important;
-  """ + (if Conf["Updater Position"] == "top" then "z-index: 96 !important;") + """
+  #{(if sidebarLocation[0] == "right" then "right: " + (4 + updaterOffset) + "px" else "left: " + ((if Conf["Updater Position"] == "top" then (45 + statOffset) else (206 + sidebarOffsetW))) + "px")} !important;
+  #{sidebarLocation[1]}: auto !important;
+  top: #{(if Conf["Updater Position"] == "top" then "2px" else "auto")} !important;
+  bottom: #{(if Conf["Updater Position"] == "bottom" then "4px" else "auto")} !important;
+  #{(if Conf["Updater Position"] == "top" then "z-index: 96 !important;")}
 }
 #prefetch {
-  width: """ + (248 + sidebarOffsetW) + """px;
-  """ + sidebarLocation[0] + """: 2px;
+  width: #{(248 + sidebarOffsetW)}px;
+  #{sidebarLocation[0]}: 2px;
   top: 20px;
 }
 #navlinks {
-  top: """ + (135 + logoOffset) + """px !important;
-  """ + sidebarLocation[1] + """: auto !important;
+  top: #{(135 + logoOffset)}px !important;
+  #{sidebarLocation[1]}: auto !important;
 }
 #navlinks a {
   display: block;
@@ -2231,7 +2250,7 @@ div.navLinks > a:first-of-type::after {
 #imgControls,
 body > a[style="cursor: pointer; float: right;"]::after,
 div.navLinks > a:first-of-type::after {
-  """ + sidebarLocation[0] + """: 3px !important;
+  #{sidebarLocation[0]}: 3px !important;
 }
 #boardNavDesktopFoot {
   z-index: 97 !important;
@@ -2240,7 +2259,7 @@ div.navLinks > a:first-of-type::after {
   z-index: 98 !important;
 }
 #watcher {
-  z-index: """ + (if Conf["Slideout Watcher"] then "99" else "96") + """ !important;
+  z-index: #{(if Conf["Slideout Watcher"] then "99" else "96")} !important;
 }
 """
 
@@ -2249,30 +2268,30 @@ div.navLinks > a:first-of-type::after {
           css += """
 #boardTitle {
   position: fixed;
-  """ + sidebarLocation[0] + """: 2px;
-  top: """ + ((if Conf["Icon Orientation"] == "vertical" then 33 else 45) + logoOffset) + """px;
+  #{sidebarLocation[0]}: 2px;
+  top: #{((if Conf["Icon Orientation"] == "vertical" then 33 else 45) + logoOffset)}px;
   z-index: 1;
-  width: """ + (248 + sidebarOffsetW) + """px;
+  width: #{(248 + sidebarOffsetW)}px;
 }
 """
         when "at sidebar bottom"
           css += """
 #boardTitle {
   position: fixed;
-  """ + sidebarLocation[0] + """: 2px;
+  #{sidebarLocation[0]}: 2px;
   bottom: 280px;
   z-index: 1;
-  width: """ + (248 + sidebarOffsetW) + """px;
+  width: #{(248 + sidebarOffsetW)}px;
 }
 """
         when "under post form"
           css += """
 #boardTitle {
   position: fixed;
-  """ + sidebarLocation[0] + """: 2px;
+  #{sidebarLocation[0]}: 2px;
   bottom: 140px;
   z-index: 1;
-  width: """ + (248 + sidebarOffsetW) + """px;
+  width: #{(248 + sidebarOffsetW)}px;
 }
 """
         when "hide"
@@ -2321,8 +2340,8 @@ form .postContainer blockquote {
   display: none;
 }
 #qr {
-  """ + sidebarLocation[0] + """: 2px !important;
-  """ + sidebarLocation[1] + """: auto !important;
+  #{sidebarLocation[0]}: 2px !important;
+  #{sidebarLocation[1]}: auto !important;
 }
 """
         when "slideout"
@@ -2331,39 +2350,39 @@ form .postContainer blockquote {
   display: none;
 }
 #qr {
-  """ + sidebarLocation[0] + """: -""" + (233 + sidebarOffsetW) + """px !important;
-  """ + sidebarLocation[1] + """: auto !important;
-  """ + agent + """transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;
+  #{sidebarLocation[0]}: -#{(233 + sidebarOffsetW)}px !important;
+  #{sidebarLocation[1]}: auto !important;
+  #{agent}transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
-  """ + sidebarLocation[0] + """: 2px !important;
-  """ + sidebarLocation[1] + """: auto !important;
-  """ + agent + """transition: right .3s linear, left .3s linear;
+  #{sidebarLocation[0]}: 2px !important;
+  #{sidebarLocation[1]}: auto !important;
+  #{agent}transition: right .3s linear, left .3s linear;
 }
 """
         when "tabbed slideout"
           css += """
 #qr {
-  """ + sidebarLocation[0] + """: -""" + (249 + sidebarOffsetW) + """px !important;
-  """ + sidebarLocation[1] + """: auto !important;
-  """ + agent + """transition: """ + sidebarLocation[0] + """ .3s ease-in-out 1s;
+  #{sidebarLocation[0]}: -#{(249 + sidebarOffsetW)}px !important;
+  #{sidebarLocation[1]}: auto !important;
+  #{agent}transition: #{sidebarLocation[0]} .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
-  """ + sidebarLocation[0] + """: 2px !important;
-  """ + sidebarLocation[1] + """: auto !important;
-  """ + agent + """transition: """ + sidebarLocation[0] + """ .3s linear;
+  #{sidebarLocation[0]}: 2px !important;
+  #{sidebarLocation[1]}: auto !important;
+  #{agent}transition: #{sidebarLocation[0]} .3s linear;
 }
 #qrtab {
   z-index: -1;
-  """ + agent + """transform: rotate(""" + (if sidebarLocation[0] == "left" then "" else "-") + """90deg);
-  """ + agent + """transform-origin: bottom """ + sidebarLocation[0] + """;
+  #{agent}transform: rotate(#{(if sidebarLocation[0] == "left" then "" else "-")}90deg);
+  #{agent}transform-origin: bottom #{sidebarLocation[0]};
   position: fixed;
   bottom: 250px;
-  """ + sidebarLocation[0] + """: 0;
+  #{sidebarLocation[0]}: 0;
   width: 210px;
   display: inline-block;
   font-size: 12px;
@@ -2372,15 +2391,15 @@ form .postContainer blockquote {
   text-align: center;
   padding-top: 3px;
   vertical-align: middle;
-  color: """ + theme["Text"] + """;
-  """ + agent + """transition: opacity .3s ease-in-out 1s, """ + sidebarLocation[0] + """ .3s ease-in-out 1s;
+  color: #{theme["Text"]};
+  #{agent}transition: opacity .3s ease-in-out 1s, #{sidebarLocation[0]} .3s ease-in-out 1s;
 }
 #qr:hover #qrtab,
 #qr.focus #qrtab,
 #qr.dump #qrtab {
   opacity: 0;
-  """ + sidebarLocation[0] + """: """ + (252 + sidebarOffsetW) + """px;
-  """ + agent + """transition: opacity .3s linear, """ + sidebarLocation[0] + """ .3s linear;
+  #{sidebarLocation[0]}: #{(252 + sidebarOffsetW)}px;
+  #{agent}transition: opacity .3s linear, #{sidebarLocation[0]} .3s linear;
 }
 """
         when "transparent fade"
@@ -2389,23 +2408,23 @@ form .postContainer blockquote {
   display: none;
 }
 #qr {
-  """ + sidebarLocation[0] + """: 2px !important;
-  """ + sidebarLocation[1] + """: auto !important;
+  #{sidebarLocation[0]}: 2px !important;
+  #{sidebarLocation[1]}: auto !important;
   opacity: 0.2;
-  """ + agent + """transition: opacity .3s ease-in-out 1s;
+  #{agent}transition: opacity .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
   opacity: 1;
-  """ + agent + """transition: opacity .3s linear;
+  #{agent}transition: opacity .3s linear;
 }
 """
       if Conf["Fit Width Replies"]
         css += """
 .summary {
   padding-left: 20px;
-  display: block;
+  display: table;
 }
 .sideArrows {
   z-index: 1;
@@ -2429,13 +2448,13 @@ form .postContainer blockquote {
 div.reply .report_button,
 div.reply .menu_button {
   opacity: 0;
-  """ + agent + """transition: opacity .3s ease-out 0s;
+  #{agent}transition: opacity .3s ease-out 0s;
 }
 form .replyContainer:hover div.reply .report_button,
 form .replyContainer:hover div.reply .menu_button,
 form .replyContainer:hover .sideArrows {
   opacity: 1;
-  """ + agent + """transition: opacity .3s ease-in 0s;
+  #{agent}transition: opacity .3s ease-in 0s;
 }
 div.reply {
   padding-top: 6px;
@@ -2466,7 +2485,7 @@ div.reply .inline .rice {
 div.thread {
   padding: 0;
   position: relative;
-  """ + (unless Conf['Images Overlap Post Form'] then "z-index: 0;") + """
+  #{(unless Conf['Images Overlap Post Form'] then "z-index: 0;" else "")}
 }
 div.post:not(#qp):not([hidden]) {
   margin: 0;
@@ -2583,13 +2602,13 @@ div.reply {
 body {
   margin-top: 1px;
   margin-bottom: 0;
-  margin-""" + sidebarLocation[0] + """: 25px;
-  margin-""" + sidebarLocation[1] + ": " + pagemargin + """;
+  margin-#{sidebarLocation[0]}: 25px;
+  margin-#{sidebarLocation[1] + ": " + pagemargin};
 }
 #boardNavDesktop,
 .pages {
-  """ + sidebarLocation[0] + """: 25px;
-  """ + sidebarLocation[1] + ": " + pagemargin + """;
+  #{sidebarLocation[0]}: 25px;
+  #{sidebarLocation[1] + ": " + pagemargin};
 }
 """
       else if Conf["Sidebar"] != "hide"
@@ -2597,24 +2616,24 @@ body {
 body {
   margin-top: 1px;
   margin-bottom: 0;
-  margin-""" + sidebarLocation[0] + ": " +(252 + sidebarOffsetW) + """px;
-  margin-""" + sidebarLocation[1] + ": " + pagemargin + """;
+  margin-#{sidebarLocation[0] + ": " +(252 + sidebarOffsetW)}px;
+  margin-#{sidebarLocation[1] + ": " + pagemargin};
 }
 #boardNavDesktop,
 .pages {
-  """ + sidebarLocation[0] + ": " + (252 + sidebarOffsetW) + """px;
-  """ + sidebarLocation[1] + ": " + pagemargin + """;
+  #{sidebarLocation[0] + ": " + (252 + sidebarOffsetW)}px;
+  #{sidebarLocation[1] + ": " + pagemargin};
 }
 """
       else
         css += """
 body {
-  margin: 1px """ + pagemargin + " 0 " + pagemargin + """;
+  margin: 1px #{pagemargin + " 0 " + pagemargin};
 }
 #boardNavDesktop,
 .pages {
-  """ + sidebarLocation[0] + ": " + pagemargin + """;
-  """ + sidebarLocation[1] + ": " + pagemargin + """;
+  #{sidebarLocation[0] + ": " + pagemargin};
+  #{sidebarLocation[1] + ": " + pagemargin};
 }
 """
 
@@ -2631,7 +2650,7 @@ body {
 #qr .field[name="name"],
 #qr .field[name="email"],
 #qr .field[name="sub"] {
-  width: """ + (75 + (sidebarOffsetW / 3)) + """px !important;
+  width: #{(75 + (sidebarOffsetW / 3))}px !important;
   margin-left: 1px !important;
 }
 """
@@ -2647,10 +2666,10 @@ body {
 }
 #qr .field[name="email"],
 #qr .field[name="sub"] {
-  width: """ + (248 + sidebarOffsetW) + """px !important;
+  width: #{(248 + sidebarOffsetW)}px !important;
 }
 #qr .field[name="name"] {
-  width: """ + (227 + sidebarOffsetW) + """px !important;
+  width: #{(227 + sidebarOffsetW)}px !important;
   margin-left: 1px !important;
 }
 #qr .field[name="email"],
@@ -2662,7 +2681,7 @@ body {
       if Conf["Alternate Post Colors"]
         css += """
 div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
-  background-color: rgba(""" + (if theme["Dark Theme"] then "255,255,255,0.02" else "255,255,255,0.2") + """);
+  background-color: rgba(#{(if theme["Dark Theme"] then "255,255,255,0.02" else "255,255,255,0.2")});
 }
 """
 
@@ -2670,13 +2689,13 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
         css += """
 #qr textarea {
   display: block;
-  """ + agent + """transition:
+  #{agent}transition:
     color 0.25s linear,
     background-color 0.25s linear,
     border-color 0.25s linear,
     height step-end,
     width .3s ease-in-out .3s;
-  float: """ + sidebarLocation[0] + """;
+  float: #{sidebarLocation[0]};
   resize: vertical;
 }
 #qr textarea:focus {
@@ -2687,14 +2706,14 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
         css += """
 #qr textarea {
   display: block;
-  """ + agent + """transition:
+  #{agent}transition:
     color 0.25s linear,
     background-color 0.25s linear,
     border-color 0.25s linear,
     height step-end,
     width step-end;
-  float: """ + sidebarLocation[0] + """;
-  resize: """ + Conf["Textarea Resize"] + """
+  float: #{sidebarLocation[0]};
+  resize: #{Conf["Textarea Resize"]}
 }
 """
 
@@ -2715,6 +2734,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
 #options ul,
 #options,
 #qp,
+#qp div.post,
 #stats,
 #updater,
 #watcher,
@@ -2724,13 +2744,13 @@ div.opContainer,
 div.replyContainer,
 h2,
 td[style="border: 1px dashed;"] {
-  border-radius: 3px;
+  border-radius: 3px !important;
 }
 #qrtab {
   border-radius: 6px 6px 0 0;
 }
 .qphl {
-  """ + agent + """outline-radius: 3px;
+  #{agent}outline-radius: 3px;
 }
 """
 
@@ -2741,14 +2761,14 @@ td[style="border: 1px dashed;"] {
 }
 #watcher {
   position: fixed;
-  """ + sidebarLocation[0] + """: 2px !important;
-  """ + sidebarLocation[1] + """: auto !important;
+  #{sidebarLocation[0]}: 2px !important;
+  #{sidebarLocation[1]}: auto !important;
   bottom: auto !important;
   height: 0;
-  width: """ + (248 + sidebarOffsetW) + """px !important;
+  width: #{(248 + sidebarOffsetW)}px !important;
   overflow: hidden;
-  """ + agent + """transition: height .5s linear;
-  """ + agent + """box-sizing: border-box;
+  #{agent}transition: height .5s linear;
+  #{agent}box-sizing: border-box;
   box-sizing: border-box;
   padding: 0 10px;
 }
@@ -2763,12 +2783,12 @@ td[style="border: 1px dashed;"] {
   display: none;
 }
 #watcher {
-  """ + sidebarLocation[0] + """: 2px !important;
-  """ + sidebarLocation[1] + """: auto !important;
-  width: """ + (246 + sidebarOffsetW) + """px;
+  #{sidebarLocation[0]}: 2px !important;
+  #{sidebarLocation[1]}: auto !important;
+  width: #{(246 + sidebarOffsetW)}px;
   padding-bottom: 4px;
   z-index: 96;
-  top: """ + ( 100 + logoOffset) + """px !important;
+  top: #{( 100 + logoOffset)}px !important;
 }
 """
       switch Conf["Slideout Navigation"]
@@ -2837,19 +2857,19 @@ td[style="border: 1px dashed;"] {
       css += """
 .summary,
 .replyContainer {
-  margin-bottom: """ + replyMargin + """px;
+  margin-bottom: #{replyMargin}px;
 }
 .summary {
-  display: block;
+  display: table;
 }
 """
       if Conf["OP Background"]
         css += """
 .opContainer {
-  background: """ + theme["Reply Background"] + """;
-  border: 1px solid """ + theme["Reply Border"] + """;
+  background: #{theme["Reply Background"]};
+  border: 1px solid #{theme["Reply Border"]};
   padding: 5px;
-  """ + agent + """box-sizing: border-box;
+  #{agent}box-sizing: border-box;
   box-sizing: border-box;
   margin-bottom: 20px;
 }
@@ -2858,18 +2878,18 @@ td[style="border: 1px dashed;"] {
       switch Conf["Sage Highlighting"]
         when "text"
           css += """
-a.useremail[href*="sage"]:last-of-type::""" + Conf["Sage Highlight Position"] + """,
-a.useremail[href*="Sage"]:last-of-type::""" + Conf["Sage Highlight Position"] + """,
-a.useremail[href*="SAGE"]:last-of-type::""" + Conf["Sage Highlight Position"] + """ {
+a.useremail[href*="sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
+a.useremail[href*="Sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
+a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   content: " (sage) ";
-  color: """ + theme["Sage"] + """;
+  color: #{theme["Sage"]};
 }
 """
         when "image"
           css += """
-a.useremail[href*="sage"]:last-of-type::""" + Conf["Sage Highlight Position"] + """,
-a.useremail[href*="Sage"]:last-of-type::""" + Conf["Sage Highlight Position"] + """,
-a.useremail[href*="SAGE"]:last-of-type::""" + Conf["Sage Highlight Position"] + """ {
+a.useremail[href*="sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
+a.useremail[href*="Sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
+a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=") "  ";
   vertical-align: top;
 }
@@ -2896,15 +2916,15 @@ a.useremail[href*="SAGE"]:last-of-type::""" + Conf["Sage Highlight Position"] + 
 #globalMessage {
   bottom: auto;
   position: fixed;
-  """ + sidebarLocation[0] + """: 2px;
-  """ + sidebarLocation[1] + """: auto;
-  width: """ + (248 + sidebarOffsetW) + """px;
-  background: """ + theme["Dialog Background"] + """;
-  border: 1px solid """ + theme["Dialog Border"]  + """;
+  #{sidebarLocation[0]}: 2px;
+  #{sidebarLocation[1]}: auto;
+  width: #{(248 + sidebarOffsetW)}px;
+  background: #{theme["Dialog Background"]};
+  border: 1px solid #{theme["Dialog Border"] };
   height: 0px;
   overflow: hidden;
-  """ + agent + """transition: height .5s linear;
-  """ + agent + """box-sizing: border-box;
+  #{agent}transition: height .5s linear;
+  #{agent}box-sizing: border-box;
   box-sizing: border-box;
   padding: 0 10px;
 }
@@ -2991,11 +3011,11 @@ input.field.tripped:not(:hover):not(:focus) {
   top: auto;
   bottom: 175px;
   width: 290px;
-  """ + sidebarLocation[1] + """: auto;
-  """ + (if sidebarLocation[0] == "left" then "left: -1px" else "right: " + (251 + sidebarOffsetW) + "px") + """;
+  #{sidebarLocation[1]}: auto;
+  #{(if sidebarLocation[0] == "left" then "left: -1px" else "right: " + (251 + sidebarOffsetW) + "px")};
   position: fixed;
-  """ + agent + """transform: rotate(90deg);
-  """ + agent + """transform-origin: bottom right;
+  #{agent}transform: rotate(90deg);
+  #{agent}transform-origin: bottom right;
   letter-spacing: -1px;
   word-spacing: -6px;
   z-index: 6;
