@@ -2494,6 +2494,7 @@ div.post:not(#qp):not([hidden]) {
 div.reply {
   display: block;
   overflow: hidden;
+  width: #{agent}max-content;
 }
 div.sideArrows {
   float: none;
@@ -2507,14 +2508,6 @@ div.sideArrows {
 }
 .opContainer input {
   opacity: 1;
-}
-.replyContainer {
-    overflow: hidden;
-}
-.replyContainer.image_expanded {
-  overflow: visible;
-  display: table;
-  width: 100%;
 }
 #options.reply {
   display: inline-block;
