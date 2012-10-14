@@ -148,19 +148,35 @@ Options =
   <div>Reloading page with new settings.</div>
 </div>'
 
-    #main
+    # Main
+    # I start by gathering all of the main configuration category objects
     for key, obj of Config.main
+      # and creating an unordered list for the main categories.
       ul = $.el 'ul',
         textContent: key
+        
+      # Then I gather the variables from each category
       for key, arr of obj
+      
+        # I use the object's key to pull from the Conf variable
+        # which is created from the saved localstorage in the "Main" class.
         checked = if $.get(key, Conf[key]) then 'checked' else ''
         description = arr[1]
+        
+        # I create a list item to represent the option, with a checkbox to change it.
         li = $.el 'li',
           innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}><span class=\"optionlabel\">#{key}</span></label><span class=description>: #{description}</span>"
+          
+        # The option is both changed and saved on click.
         $.on $('input', li), 'click', $.cb.checked
+        
+        # We add the list item to the unordered list
         $.add ul, li
+        
+      # And add the list to the main tab of the options dialog.
       $.add $('#main_tab + div', dialog), ul
 
+    # Clear Hidden button.
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length
     li = $.el 'li',
@@ -168,16 +184,21 @@ Options =
     $.on $('button', li), 'click', Options.clearHidden
     $.add $('ul:nth-child(2)', dialog), li
 
-    #filter
+    # Filter
+    # The filter is a bit weird because it consists of a select, and when that select changes,
+    # I pull the correct data from the Options.filter method.
     filter = $ 'select[name=filter]', dialog
     $.on filter, 'change', Options.filter
 
-    #sauce
+    # Sauce
+    # The sauce HTML is already there, so I just fill up the textarea with data from localstorage
+    # and save it on change.
     sauce = $ '#sauces', dialog
     sauce.value = $.get sauce.name, Conf[sauce.name]
     $.on sauce, 'change', $.cb.value
 
-    #rice
+    # Rice
+    # See sauce comment above. This is not a goto.
     (back     = $ '[name=backlink]', dialog).value = $.get 'backlink', Conf['backlink']
     (time     = $ '[name=time]',     dialog).value = $.get 'time',     Conf['time']
     (fileInfo = $ '[name=fileInfo]', dialog).value = $.get 'fileInfo', Conf['fileInfo']
@@ -187,6 +208,7 @@ Options =
     $.on time,     'input', Options.time
     $.on fileInfo, 'input', $.cb.value
     $.on fileInfo, 'input', Options.fileInfo
+    
     favicon = $ 'select[name=favicon]', dialog
     favicon.value = $.get 'favicon', Conf['favicon']
     $.on favicon, 'change', $.cb.value
@@ -194,9 +216,13 @@ Options =
 
     (updateIncrease = $ '[name=updateIncrease]', dialog).value = $.get 'updateIncrease', Conf['updateIncrease']
     $.on updateIncrease, 'input', $.cb.value
+    
+    # The custom navigation has its own method. I pass it this dialog so it doesn't have to find the dialog itself
+    # (it finds the dialog itself when we change its settings)
     @customNavigation.dialog dialog
 
-    #keybinds
+    # Keybinds
+    # Pull options from Config, fill with options from localstorage.
     for key, arr of Config.hotkeys
       tr = $.el 'tr',
         innerHTML: "<td>#{arr[1]}</td><td><input name=#{key} class=field></td>"
@@ -205,15 +231,29 @@ Options =
       $.on input, 'keydown', Options.keybind
       $.add $('#keybinds_tab + div tbody', dialog), tr
 
-    #style
+    # Style
+    # Create a div to put everything in filled with a warning that shows if style is disabled.
     div = $.el 'div',
       className: "suboptions"
       innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use styling options.</div>"
+
+    # Pull categories from config
     for category, obj of Config.style
+    
+      # Create unordered lists for categories.
       ul = $.el 'ul',
         textContent: category
+        
+      # Pull options from categories of config
       for optionname, arr of obj
+      
+        # Save the description for more readable code.
         description = arr[1]
+        
+        # Verify the option variable type. If text, text input, if not text, select.
+        # If there is no second array cell, it's a checkbox.
+        # And create a list item and fill it
+        # Adding the JS to change and save it.
         if arr[2] == 'text'
           li = $.el 'li',
             className: "styleoption"
@@ -222,6 +262,7 @@ Options =
           styleSetting.value = $.get optionname, Conf[optionname]
           $.on styleSetting, 'change', $.cb.value
           $.on styleSetting, 'change', Options.style
+          
         else if arr[2]
           liHTML = "
           <div class=\"option\"><span class=\"optionlabel\">#{optionname}</span>: <span class=\"description\">#{description}</span></div><div class =\"option\"><select name=\"#{optionname}\"></div>"
@@ -235,40 +276,60 @@ Options =
           styleSetting.value = $.get optionname, Conf[optionname]
           $.on styleSetting, 'change', $.cb.value
           $.on styleSetting, 'change', Options.style
+          
         else
           checked = if $.get(optionname, Conf[optionname]) then 'checked' else ''
           li = $.el 'li',
             className: "styleoption"
             innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}><span class=\"optionlabel\">#{optionname}</span><span class=description>: #{description}</span></label>"
           $.on $('input', li), 'click', $.cb.checked
+          
+        # No matter what kinda option it is, it'll be a list item, so I separate that from the if...else if... else statements
         $.add ul, li
+        
+      # And after I'm done iterating through the category options, I can add the resulting list to the div.
       $.add div, ul
+      
+    # And after I'm done iterating through the categories themselves, I can add the resulting div to the dialog
     $.add $('#style_tab + div', dialog), div
+    
+    # And add a "Save Style Settings" button, too.
     Options.applyStyle(dialog, 'style_tab')
 
-    #themes
+    # Themes
+    # Because adding new themes clears the whole theme dialog, the dialog is created by its own method.
     @themeTab dialog
 
-    #mascots
+    # Mascots
+    # Because adding new mascots or changing style settings clears the whole mascot dialog,
+    # the dialog is created by its own method.
     @mascotTab.dialog dialog
+    
+    # And add a "Save Style Settings" button, too.
     Options.applyStyle(dialog, 'mascot_tab')
 
-    #indicators
+    # Indicators for disabled or enabled options that may cause conflicts.
     Options.indicators dialog
 
+    # For theme and mascot edit dialogs, mostly. Allows the user to return to the tab that opened the edit dialog.
     if tab
       $("#main_tab", dialog).checked = false
       $("#" + tab + "_tab", dialog).checked = true
 
+    # The overlay over 4chan and under the options dialog you can click to close.
     overlay = $.el 'div', id: 'overlay'
     $.on overlay, 'click', Options.close
     $.add d.body, overlay
     dialog.style.visibility = 'hidden'
+    
+    # Rice checkboxes if Style is enabled.
     if Conf['Style']
       Style.rice dialog
     $.add d.body, dialog
     dialog.style.visibility = 'visible'
 
+    # Fill values, mostly. See each section for the value of the variable used as an argument.
+    # Argument will be treated as 'this' by each method.
     Options.filter.call   filter
     Options.backlink.call back
     Options.time.call     time
@@ -732,7 +793,7 @@ Options =
       $.add li, input
       $.add ul, li
 
-      #Description of Syntax.
+      # Description of Syntax.
       li = $.el "li"
         textContent: "Navigation Syntax: Display Name | Title / Alternate Text | URL"
       $.add ul, li
@@ -740,7 +801,7 @@ Options =
       # Names and Placeholders for custom navigation inputs.
       navOptions = ["Display Name", "Title / Alt Text", "URL"]
 
-      #Generate list for custom navigation
+      # Generate list for custom navigation
       for index, link of userNavigation.links
         unless typeof link is 'object'
           continue
@@ -772,7 +833,7 @@ Options =
 
           $.add li, input
 
-        #Add Custom Link
+        # Add Custom Link
         addLink = $.el "a"
           textContent: " + "
           href: "javascript:;"
@@ -788,7 +849,7 @@ Options =
           delete userNavigation.links.add
           Options.customNavigation.cleanup()
 
-        #Delete Custom Link
+        # Delete Custom Link
         removeLink = $.el "a"
           textContent: " x "
           href: "javascript:;"

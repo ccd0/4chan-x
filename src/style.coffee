@@ -1633,7 +1633,7 @@ html {
 #prefetch,
 #spoilerLabel,
 #stats,
-#updater {
+#updater .move {
   text-shadow:
     1px 1px 1px """ + theme["Background Color"] + """,
     -1px 1px 1px """ + theme["Background Color"] + """,
