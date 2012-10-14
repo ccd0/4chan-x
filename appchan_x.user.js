@@ -9438,19 +9438,19 @@
         }
         switch (Conf["Reply Padding"]) {
           case "phat":
-            css += "form .postContainer blockquotee {\n  margin: 24px 60px 24px 50px\n}";
+            css += "form .postContainer blockquote {\n  margin: 24px 60px 24px 50px;\n}";
             break;
           case "normal":
-            css += "form .postContainer blockquote {\n  margin: 12px 40px 12px 30px\n}";
+            css += "form .postContainer blockquote {\n  margin: 12px 40px 12px 30px;\n}";
             break;
           case "slim":
-            css += "form .postContainer blockquote {\n  margin: 6px 20px 6px 15px\n}";
+            css += "form .postContainer blockquote {\n  margin: 6px 20px 6px 15px;\n}";
             break;
           case "super slim":
-            css += "form .postContainer blockquote {\n  margin: 3px 10px 3px 7px\n}";
+            css += "form .postContainer blockquote {\n  margin: 3px 10px 3px 7px;\n}";
             break;
           case "anorexia":
-            css += "form .postContainer blockquote {\n  margin: 1px 5px 1px 3px\n}";
+            css += "form .postContainer blockquote {\n  margin: 1px 5px 1px 3px;\n}";
         }
         switch (Conf["Post Form Style"]) {
           case "fixed":

@@ -2278,32 +2278,32 @@ div.navLinks > a:first-of-type::after {
       switch Conf["Reply Padding"]
         when "phat"
           css += """
-form .postContainer blockquotee {
-  margin: 24px 60px 24px 50px
+form .postContainer blockquote {
+  margin: 24px 60px 24px 50px;
 }
 """
         when "normal"
           css += """
 form .postContainer blockquote {
-  margin: 12px 40px 12px 30px
+  margin: 12px 40px 12px 30px;
 }
 """
         when "slim"
           css += """
 form .postContainer blockquote {
-  margin: 6px 20px 6px 15px
+  margin: 6px 20px 6px 15px;
 }
 """
         when "super slim"
           css += """
 form .postContainer blockquote {
-  margin: 3px 10px 3px 7px
+  margin: 3px 10px 3px 7px;
 }
 """
         when "anorexia"
           css += """
 form .postContainer blockquote {
-  margin: 1px 5px 1px 3px
+  margin: 1px 5px 1px 3px;
 }
 """
 
