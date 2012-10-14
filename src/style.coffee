@@ -2483,9 +2483,8 @@ div.post:not(#qp):not([hidden]) {
   margin: 0;
 }
 div.reply {
-  display: block;
+  display: inline-block;
   overflow: hidden;
-  width: #{agent}max-content;
 }
 div.sideArrows {
   float: none;
