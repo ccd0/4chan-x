@@ -3313,7 +3313,11 @@
                 }
                 return $.set("Enabled Mascots", Conf["Enabled Mascots"]);
               });
-              $.add(ul[mascot.category || MascotTools.categories[0]], li);
+              if (MascotTools.categories.contains(mascot.category)) {
+                $.add(ul[mascot.category], li);
+              } else {
+                $.add(ul[MascotTools.categories[0]], li);
+              }
             }
           }
           batchmascots = $.el('div', {
