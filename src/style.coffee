@@ -1662,6 +1662,7 @@ input[value="Report"] {
 #file,
 #options input,
 #threadselect select,
+.dump #dump:not(:hover):not(:focus),
 input,
 input.field,
 select,
@@ -1672,6 +1673,7 @@ textarea.field {
   color: """ + theme["Inputs"] + """;
   """ + agent + """transition: all .2s linear;
 }
+#dump:hover,
 #browse:hover,
 #file:hover,
 input:hover,
@@ -1685,6 +1687,8 @@ textarea.field:hover {
   color: """ + theme["Inputs"] + """;
   """ + agent + """transition: all .2s linear;
 }
+#dump:active,
+#dump:focus,
 input:focus,
 input.field:focus,
 input[type="submit"]:focus,
