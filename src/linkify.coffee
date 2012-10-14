@@ -183,7 +183,11 @@
 
         # We essentially check for a <br> and make sure we're not merging non-post content.
         if ("br" == @.nextSibling.tagName.toLowerCase() or "spoiler" == @.nextSibling.className) and @.nextSibling.nextSibling.className != "abbr"
-          $.rm @.nextSibling
-          child = $.tn(@textContent + @.nextSibling.textContent)
+          el = @.nextSibling
+          if el.textContent
+            child = $.tn(@textContent + el.textContent + el.nextSibling.textContent)
+          else
+            child = $.tn(@textContent + el.nextSibling.textContent)
+          $.rm el
           $.rm @.nextSibling
           Linkify.text(child, @)

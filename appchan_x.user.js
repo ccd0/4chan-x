@@ -9175,13 +9175,18 @@
     },
     concat: function(a) {
       return $.on(a, 'click', function(e) {
-        var child;
+        var child, el;
         if (e.shiftKey && e.ctrlKey) {
           e.preventDefault();
           e.stopPropagation();
           if (("br" === this.nextSibling.tagName.toLowerCase() || "spoiler" === this.nextSibling.className) && this.nextSibling.nextSibling.className !== "abbr") {
-            $.rm(this.nextSibling);
-            child = $.tn(this.textContent + this.nextSibling.textContent);
+            el = this.nextSibling;
+            if (el.textContent) {
+              child = $.tn(this.textContent + el.textContent + el.nextSibling.textContent);
+            } else {
+              child = $.tn(this.textContent + el.nextSibling.textContent);
+            }
+            $.rm(el);
             $.rm(this.nextSibling);
             return Linkify.text(child, this);
           }
