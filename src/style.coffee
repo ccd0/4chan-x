@@ -1723,6 +1723,10 @@ textarea.field:focus {
 #qp .opContainer,
 .thread .replyContainer {
   background: #{theme["Reply Background"]};
+}
+#qp .replyContainer div.reply,
+#qp .opContainer div.reply,
+.replyContainer div.reply {
   border: 1px solid #{theme["Reply Border"] };
 }
 .reply.highlight,
@@ -2744,6 +2748,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
 .inline div.reply,
 div.opContainer,
 div.replyContainer,
+div.post,
 h2,
 td[style="border: 1px dashed;"] {
   border-radius: 3px !important;
