@@ -616,7 +616,7 @@ Options =
   "
             div = $("##{name}", li)
             if Conf[g.MASCOTSTRING].contains name
-              $.addClass div, 'enabled'
+              $.addClass li, 'enabled'
 
             $.on $('a.edit', li), 'click', ->
               unless Conf["Style"]
@@ -648,9 +648,9 @@ Options =
 
             $.on div, 'click', ->
               if Conf[g.MASCOTSTRING].remove @id
-                $.rmClass @, 'enabled'
+                $.rmClass @.parentElement, 'enabled'
               else
-                $.addClass @, 'enabled'
+                $.addClass @.parentElement, 'enabled'
                 Conf[g.MASCOTSTRING].push @id
               $.set "Enabled Mascots", Conf["Enabled Mascots"]
 
@@ -672,14 +672,14 @@ Options =
         $.on $('#clear', batchmascots), 'click', ->
           enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]))
           for name in enabledMascots
-            $.rmClass $.id(name), 'enabled'
+            $.rmClass $.id(name).parentElement, 'enabled'
             Conf[g.MASCOTSTRING].remove name
           $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
 
         $.on $('#selectAll', batchmascots), 'click', ->
           for name, mascot of userMascots
             unless Conf["Hidden Categories"].contains(mascot.category) or Conf[g.MASCOTSTRING].contains(name) or Conf["Deleted Mascots"].contains(name)
-              $.addClass $.id(name), 'enabled'
+              $.addClass $.id(name).parentElement, 'enabled'
               Conf[g.MASCOTSTRING].push name
           $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
 
@@ -763,7 +763,7 @@ Options =
                 Conf[type].remove mName
                 $.set type, Conf[type]
               if type == g.MASCOTSTRING
-                $.rmClass $.id(mName), 'enabled'
+                $.rmClass $.id(mName).parentElement, 'enabled'
       else
         category.hidden = false
         Conf["Hidden Categories"].remove name

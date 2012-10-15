@@ -414,9 +414,11 @@ h1,
   overflow: hidden;
   padding: 0;
   width: 200px;
+  padding: 5px 5px 0;
   height: 250px;
   margin: 5px;
   text-align: left;
+  border: 1px solid transparent;
 }
 #options .mascot > div:first-child {
   border: 2px solid rgba(0,0,0,0);
@@ -432,7 +434,7 @@ h1,
   image-rendering: optimizeQuality;
   vertical-align: top;
 }
-#options .mascot div.enabled {
+#options .mascot.enabled {
   border: 2px solid rgba(0,0,0,0.5);
   background-color: rgba(255,255,255,0.1);
 }
@@ -1090,7 +1092,7 @@ img.bottomad:hover {
 .pages strong,
 a,
 .new {
-  #{agent}transition: background-color .1s linear;
+  #{agent}transition: background .1s linear;
 }
 /* Post Form */
 /* Override OS-specific UI */
@@ -1666,6 +1668,7 @@ html {
 #ft li,
 #ft ul,
 #options .dialog,
+#options li.mascot.enabled,
 #qrtab,
 #watcher,
 #updater:hover,
@@ -2700,7 +2703,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   #{agent}transition:
     color 0.25s linear,
     background-color 0.25s linear,
-    border-color 0.25s linear,
+    background-image 0.25s linear,
     height step-end,
     width .3s ease-in-out .3s;
   float: #{sidebarLocation[0]};
@@ -2717,6 +2720,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   #{agent}transition:
     color 0.25s linear,
     background-color 0.25s linear,
+    background-image 0.25s linear,
     border-color 0.25s linear,
     height step-end,
     width step-end;
@@ -2739,6 +2743,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
 }
 #boardNavDesktopFoot,
 #content,
+#options .mascot,
 #options ul,
 #options,
 #qp,

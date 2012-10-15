@@ -694,39 +694,39 @@ div.reply.highlight {
   'RedUX':
     'Author'                      : 'Zixaphir'
     'Author Tripcode'             : '!VGsTHECURE'
-    'Background Image'            : 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg=="), radial-gradient(rgb(190,0,0), rgb(15,0,0))'
-    'Background Attachment'       : 'scroll, fixed'
-    'Background Position'         : 'center, center'
-    'Background Repeat'           : 'repeat, no-repeat'
+    'Background Image'            : 'linear-gradient(rgba(220,210,210,0.7), rgba(240,240,240,0.4) 400px, rgba(240,240,240,0.3)), url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIQAAACEAQMAAABrihHkAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMASuCaZbYAAAA+SURBVHhe7c2xCQAgDAXRKywsHcFRdDNxchtBkhHk4Lp88ui7hhaztBCkyYZ7fFHzI/Jk/GRpaWlpaWlpaR3scHNQSY3kigAAAABJRU5ErkJggg==")'
+    'Background Attachment'       : 'fixed, scroll'
+    'Background Position'         : 'top, center'
+    'Background Repeat'           : 'no-repeat, repeat'
     'Background Color'            : 'rgba(238,242,255,1)'
-    'Thread Wrapper Background'   : 'linear-gradient(rgb(220,210,210), rgb(240,240,240) 400px, rgb(240,240,240))'
+    'Thread Wrapper Background'   : 'linear-gradient(rgb(230,222,222), rgb(240,240,240) 400px, rgb(240,240,240))'
     'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
-    'Dialog Background'           : 'linear-gradient(rgb(220,210,210), rgb(240,240,240) 200px, rgb(240,240,240))'
+    'Dialog Background'           : 'linear-gradient(rgb(230,222,222), rgb(240,240,240) 200px, rgb(240,240,240))'
     'Dialog Border'               : 'rgb(220,210,210)'
     'Reply Background'            : 'rgba(240,240,240,1)'
     'Reply Border'                : 'rgba(204,204,204,1)'
     'Highlighted Reply Background': 'rgba(219,219,219,1)'
     'Highlighted Reply Border'    : 'rgba(219,219,219,1)'
     'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
-    'Input Background'            : 'linear-gradient(rgb(220,210,210), rgb(240,240,240))'
+    'Input Background'            : 'linear-gradient(rgb(230,222,222), rgb(240,240,240)), rgb(255,255,255)'
     'Input Border'                : 'rgb(220,210,210)'
-    'Hovered Input Background'    : 'linear-gradient(rgba(214,186,208,1), rgb(240,240,240))'
+    'Hovered Input Background'    : 'linear-gradient(rgba(214,186,208,0.7), rgb(240,240,240)), rgb(255,255,255)'
     'Hovered Input Border'        : 'rgba(214,186,208,1)'
-    'Focused Input Background'    : 'linear-gradient(rgb(220,210,210), rgb(240,240,240))'
+    'Focused Input Background'    : 'linear-gradient(rgb(230,222,222), rgb(240,240,240)), rgb(255,255,255)'
     'Focused Input Border'        : 'rgb(220,210,210)'
     'Checkbox Background'         : 'rgba(238,242,255,1)'
     'Checkbox Checked Background' : 'rgba(188,192,212,1)'
     'Checkbox Border'             : 'rgba(153,51,51,1)'
-    'Buttons Background'          : 'linear-gradient(rgb(220,210,210), rgb(240,240,240))'
+    'Buttons Background'          : 'linear-gradient(rgb(230,222,222), rgb(240,240,240)), rgb(255,255,255)'
     'Buttons Border'              : 'rgb(220,210,210)'
-    'Navigation Background'       : 'rgba(0,0,0,0.7)'
-    'Navigation Border'           : 'rgba(0,0,0,0.7)'
+    'Navigation Background'       : 'linear-gradient(rgba(230,222,222,0.8), rgba(240,240,240,0.8))'
+    'Navigation Border'           : 'rgba(220,210,210,0.5)'
     'Quotelinks'                  : 'rgb(153,51,51)'
     'Backlinks'                   : 'rgb(153,51,51)'
     'Links'                       : 'rgb(87,87,123)'
     'Hovered Links'               : 'rgb(221,0,0)'
-    'Navigation Links'            : 'rgb(238,187,204)'
-    'Hovered Navigation Links'    : 'rgb(255,119,119)'
+    'Navigation Links'            : 'rgb(0,0,0)'
+    'Hovered Navigation Links'    : 'rgb(87,87,123)'
     'Names'                       : 'rgb(119,51,51)'
     'Tripcodes'                   : 'rgb(119,51,51)'
     'Emails'                      : 'rgb(87,87,123)'
@@ -736,39 +736,42 @@ div.reply.highlight {
     'Post Numbers'                : 'rgb(0,0,0)'
     'Greentext'                   : 'rgb(120,153,34)'
     'Sage'                        : 'rgb(87,87,123)'
-    'Board Title'                 : 'rgb(238,187,204)'
+    'Board Title'                 : 'rgb(119,51,51)'
     'Timestamps'                  : 'rgb(0,0,0)'
     'Warnings'                    : 'rgb(87,87,123)'
     'Shadow Color'                : 'rgba(60,60,60,0.6)'
-    'Dark Theme'                  : true
+    'Dark Theme'                  : false
     'Custom CSS'                  : """
 .thread > .replyContainer {
   background-color: transparent;
   border: 0;
-  border-bottom: 1px #ccc solid;
 }
-.placeholder,
-#qr input:-moz-placeholder,
-#qr textarea:-moz-placeholder {
-  color: rgba(0,0,0,0.5) !important;
+.replyContainer div.reply.post {
+  border-color: #ccc;
+  border-width: 0 0 1px 0;
+  border-style: solid;
+  border-radius: 0;
 }
-.placeholder,
-#qr input:-o-placeholder,
-#qr textarea:-o-placeholder {
-  color: rgba(0,0,0,0.5) !important;
+#qp {
+  text-shadow: 1px 1px 0 rgb(0,0,0),
+    1px 0 0 rgb(0,0,0),
+    1px 0 0 rgb(0,0,0),
+    1px 1px 2px rgb(0,0,0);
 }
-.placeholder,
-#qr input:-webkit-placeholder,
-#qr textarea:-webkit-placeholder {
-  color: rgba(0,0,0,0.5) !important;
+#qp .opContainer,
+#qp .replyContainer div.post {
+  border: 1px rgba(0,0,0,0.7) solid;
 }
-#qp div.post {
-  background-color: rgba(0,0,0,0.7);
-  border-color: rgba(0,0,0,0.7);
+#qp .opContainer,
+#qp .replyContainer {
+  background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), transparent;
 }
 #qp div.post,
 #qp .postNum a {
   color: #fcd;
+}
+#qp .dateTime {
+  color: #fcd !important;
 }
 #qp .nameBlock > .useremail > .name,
 #qp .nameBlock > .useremail > .postertrip,
@@ -790,17 +793,24 @@ div.reply.highlight {
 #stats {
   color: rgb(123,123,123);
 }
-.boardBanner {
-  color: rgb(238,187,204);
-}
-#boardTitle {
-  text-shadow: 1px 1px 1px #222;
-}
 #delform {
-  padding: 1px 15px 2px 15px;
-  box-shadow: 0 20px 15px 20px rgba(0,0,0,0.7);
+  padding: 1px 0 2px 0;
+  box-shadow: 0 20px 40px 10px rgba(0,0,0,0.1);
   border-radius: 4px;
-}"""
+}
+.thread .replyContainer:last-of-type div.reply.post {
+  border: none;
+}
+#boardTitle .boardSubtitle,
+#updater .move,
+#stats .move,
+#prefetch {
+  text-shadow: 1px 1px 0 rgb(238, 242, 255),
+    -1px 1px 0 rgb(238, 242, 255),
+    1px -1px 0 rgb(238, 242, 255),
+    -1px -1px 0 rgb(238, 242, 255)
+}
+"""
 
   'Solarized':
     'Author'                      : 'ubuntufriend'

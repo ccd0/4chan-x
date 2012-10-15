@@ -107,29 +107,32 @@
       # We can finally insert the link.
       $.after node, a
 
-      # We check to see if we're also allowing embedding and if we can.
+      # We check to see if we're also allowing embedding.
       if Conf['Youtube Embed']
 
+        # We gather our list of embeddable sites
         for key, site of Linkify.sites
-          if match = a.href.match(site.regExp)
-            break
-
-        if match
         
-          # We create a new element
-          embed = $.el 'a'
-            name:         match[1]
-            className:    key
-            href:         'javascript:;'
-            textContent:  '(embed)'
+          # Check if our current link matches any of them
+          if match = a.href.match(site.regExp)
+        
+            # We create a new element
+            embed = $.el 'a'
+              name:         match[1]
+              className:    key
+              href:         'javascript:;'
+              textContent:  '(embed)'
 
-          # and allow the user to click it to embed the video.
-          $.on embed, 'click', Linkify.embed
+            # and allow the user to click it to embed the video.
+            $.on embed, 'click', Linkify.embed
 
-          # We insert the embed link after the pre-existing link,
-          # Then add a space before the embed link / after the pre-existing link
-          $.after a, embed
-          $.after a, $.tn ' '
+            # We insert the embed link after the pre-existing link,
+            # Then add a space before the embed link / after the pre-existing link
+            $.after a, embed
+            $.after a, $.tn ' '
+            
+            # And we break out of the loop because no further embedding checks are needed.
+            break
 
       # track the insertion point,
       p = m.index+lLen
