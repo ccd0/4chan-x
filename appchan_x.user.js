@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                appchan x
 // @namespace           zixaphir
-// @version             0.19.1
+// @version             0.19.2
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           2012 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2009-2011 James Campos <james.r.campos@gmail.com>
@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 0.19.1 - 2012-10-14
+/*  appchan x - Version 0.19.2 - 2012-10-14
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -9467,9 +9467,9 @@
             css += "#qrtab {\n  display: none;\n}\n#qr {\n  " + sidebarLocation[0] + ": 2px !important;\n  " + sidebarLocation[1] + ": auto !important;\n  opacity: 0.2;\n  " + agent + "transition: opacity .3s ease-in-out 1s;\n}\n#qr:hover,\n#qr.focus,\n#qr.dump {\n  opacity: 1;\n  " + agent + "transition: opacity .3s linear;\n}";
         }
         if (Conf["Fit Width Replies"]) {
-          css += ".thread .replyContainer {\n  position: relative;\n  clear: both;\n  display: table;\n  width: 100%;\n}\ndiv.reply {\n  padding-top: 6px;\n  padding-left: 10px;\n}\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  position: absolute;\n  right: 6px;\n  top: 7px;\n  font-size: 9px;\n}\n.summary {\n  padding-left: 20px;\n  display: table;\n  clear: both;\n}\n.sideArrows {\n  width: 0;\n}\n.sideArrows a {\n  position: absolute;\n  right: 27px;\n  top: 7px;\n}\n.replyContainer div.postInfo {\n  margin: 1px 0 0;\n  width: 100%;\n}\n.sideArrows,\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  opacity: 0;\n  " + agent + "transition: opacity .3s ease-out 0s;\n}\nform .replyContainer:hover div.reply .report_button,\nform .replyContainer:hover div.reply .menu_button,\nform .replyContainer:hover .sideArrows {\n  opacity: 1;\n  " + agent + "transition: opacity .3s ease-in 0s;\n}\ndiv.reply .inline .menu_button,\ndiv.reply .inline .sideArrows,\ndiv.reply .inline .sideArrows a,\ndiv.reply .inline .rice {\n  position: static;\n  opacity: 1;\n}\n.sideArrows a {\n  font-size: 9px;\n}\ndiv.thread {\n  padding: 0;\n  position: relative;\n  " + (!Conf['Images Overlap Post Form'] ? "z-index: 0;" : "") + "\n}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n}\ndiv.sideArrows {\n  float: none;\n}\n.hide_thread_button {\n  position: relative;\n  z-index: 2;\n  margin-right: 10px;\n  margin-left: 5px;\n  font-size: 9px;\n}\n.opContainer input {\n  opacity: 1;\n}\n#options.reply {\n  display: inline-block;\n}";
+          css += ".thread .replyContainer {\n  position: relative;\n  clear: both;\n  display: table;\n  width: 100%;\n}\ndiv.reply {\n  padding-top: 6px;\n  padding-left: 10px;\n}\n.replyContainer div.reply {\n  display: table;\n  width: 100%;\n  height: 100%\n}\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  position: absolute;\n  right: 6px;\n  top: 7px;\n  font-size: 9px;\n}\n.summary {\n  padding-left: 20px;\n  display: table;\n  clear: both;\n}\n.sideArrows {\n  width: 0;\n}\n.sideArrows a {\n  position: absolute;\n  right: 27px;\n  top: 7px;\n}\n.replyContainer div.postInfo {\n  margin: 1px 0 0;\n  width: 100%;\n}\n.sideArrows,\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  opacity: 0;\n  " + agent + "transition: opacity .3s ease-out 0s;\n}\nform .replyContainer:hover div.reply .report_button,\nform .replyContainer:hover div.reply .menu_button,\nform .replyContainer:hover .sideArrows {\n  opacity: 1;\n  " + agent + "transition: opacity .3s ease-in 0s;\n}\ndiv.reply .inline .menu_button,\ndiv.reply .inline .sideArrows,\ndiv.reply .inline .sideArrows a,\ndiv.reply .inline .rice {\n  position: static;\n  opacity: 1;\n}\n.sideArrows a {\n  font-size: 9px;\n}\ndiv.thread {\n  padding: 0;\n  position: relative;\n  " + (!Conf['Images Overlap Post Form'] ? "z-index: 0;" : "") + "\n}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n}\ndiv.sideArrows {\n  float: none;\n}\n.hide_thread_button {\n  position: relative;\n  z-index: 2;\n  margin-right: 10px;\n  margin-left: 5px;\n  font-size: 9px;\n}\n.opContainer input {\n  opacity: 1;\n}\n#options.reply {\n  display: inline-block;\n}";
         } else {
-          css += ".sideArrows a {\n  font-size: 9px;\n}\n.sideArrows a {\n  position: static;\n}\ndiv.reply {\n  padding-right: 5px;\n}\n.sideArrows {\n  margin-right: 5px;\n  float: left;\n}\n.sideArrows a {\n  font-size: 12px;\n}\n.hide_thread_button {\n  position: relative;\n  z-index: 2;\n  margin-right: 5px;\n}\ndiv.reply {\n  padding-top: 5px;\n  padding-left: 2px;\n}\ndiv.reply,\n.replyContainer {\n  display: table;\n}\ndiv.thread {\n  overflow: visible;\n  padding: 0;\n  position: relative;\n}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n}\n.thread > div > .post {\n  overflow: visible;\n}\n.sideArrows span {\n  font-size: 9px;\n}\ndiv.reply {\n  padding-top: 6px;\n  padding-left: 8px;\n}\n.sideArrows {\n  margin-right: 2px;\n}";
+          css += ".sideArrows a {\n  font-size: 9px;\n}\n.sideArrows a {\n  position: static;\n}\ndiv.reply {\n  padding-right: 5px;\n}\n.sideArrows {\n  margin-right: 5px;\n  float: left;\n}\n.sideArrows a {\n  font-size: 12px;\n}\n.hide_thread_button {\n  position: relative;\n  z-index: 2;\n  margin-right: 5px;\n}\ndiv.reply {\n  padding-top: 5px;\n  padding-left: 2px;\n}\ndiv.reply,\n.replyContainer {\n  display: table;\n}\n.replyContainer div.reply {\n  height: 100%\n}\ndiv.thread {\n  overflow: visible;\n  padding: 0;\n  position: relative;\n}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n}\n.thread > div > .post {\n  overflow: visible;\n}\n.sideArrows span {\n  font-size: 9px;\n}\ndiv.reply {\n  padding-top: 6px;\n  padding-left: 8px;\n}\n.sideArrows {\n  margin-right: 2px;\n}";
         }
         if (Conf['Force Reply Break']) {
           css += ".summary,\n.replyContainer {\n  clear: both;\n}";
@@ -10072,7 +10072,7 @@
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '0.19.1',
+    version: '0.19.2',
     callbacks: []
   };
 

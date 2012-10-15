@@ -2433,6 +2433,11 @@ div.reply {
   padding-top: 6px;
   padding-left: 10px;
 }
+.replyContainer div.reply {
+  display: table;
+  width: 100%;
+  height: 100%
+}
 div.reply .report_button,
 div.reply .menu_button {
   position: absolute;
@@ -2534,6 +2539,9 @@ div.reply {
 div.reply,
 .replyContainer {
   display: table;
+}
+.replyContainer div.reply {
+  height: 100%
 }
 div.thread {
   overflow: visible;
