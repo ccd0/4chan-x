@@ -27,7 +27,15 @@
     ')'
   ].join("")
 
-  embedRegExp: /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|youtube.*\&v=)([^#\&\?]*).*/
+  sites:
+    yt:
+      regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
+      url:     "http://www.youtube.com/embed/"
+      safeurl: "http://www.youtube.com/watch/"
+    vm:
+      regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
+      url:     "https://player.vimeo.com/video/"
+      safeurl: "http://www.vimeo.com/"
 
   node: (post) ->
     # Built based on:
@@ -100,21 +108,28 @@
       $.after node, a
 
       # We check to see if we're also allowing embedding and if we can.
-      if Conf['Youtube Embed'] and match = a.href.match Linkify.embedRegExp
-        # We create a new element
-        embed = $.el 'a'
-          name:         match[1]
-          className:    'embedlink'
-          href:         'javascript:;'
-          textContent:  '(embed)'
+      if Conf['Youtube Embed']
 
-        # and allow the user to click it to embed the video.
-        $.on embed, 'click', Linkify.embed
+        for key, site of Linkify.sites
+          if match = a.href.match(site.regExp)
+            break
 
-        # We insert the embed link after the pre-existing link,
-        # Then add a space before the embed link / after the pre-existing link
-        $.after a, embed
-        $.after a, $.tn ' '
+        if match
+        
+          # We create a new element
+          embed = $.el 'a'
+            name:         match[1]
+            className:    key
+            href:         'javascript:;'
+            textContent:  '(embed)'
+
+          # and allow the user to click it to embed the video.
+          $.on embed, 'click', Linkify.embed
+
+          # We insert the embed link after the pre-existing link,
+          # Then add a space before the embed link / after the pre-existing link
+          $.after a, embed
+          $.after a, $.tn ' '
 
       # track the insertion point,
       p = m.index+lLen
@@ -133,15 +148,8 @@
 
     # We create an iframe to embed
     iframe = $.el 'iframe'
-      src: 'http://www.youtube.com/embed/' + @name
-
-    unembed = $.el 'a'
-      name:        @name
-      href:        'javascript:;'
-      textContent: '(unembed)'
-    
-    $.on unembed, 'click', Linkify.unembed
-
+      src: Linkify.sites[@className].url + @name
+        
     # We style the iframe with respectable boundaries.
     iframe.style.border = '0'
     iframe.style.width  = '640px'
@@ -149,21 +157,30 @@
 
     # We replace the link with the iframe and kill the embedding element.
     $.replace link, iframe
+    
+    unembed = $.el 'a'
+      name:        @name
+      className:   @className
+      href:        'javascript:;'
+      textContent: '(unembed)'
+    
+    $.on unembed, 'click', Linkify.unembed
+    
     $.replace @, unembed
   
   unembed: ->
+    url = Linkify.sites[@className].safeurl + @name
     embedded = @.previousSibling.previousSibling
     
     a = $.el 'a'
-      textContent: embedded.src
-      className: 'linkify'
-      rel:       'nofollow noreferrer'
-      target:    'blank'
-      href:      @name
+      textContent: url
+      rel:         'nofollow noreferrer'
+      target:      'blank'
+      href:        url
 
     embed = $.el 'a'
       name:         @name
-      className:    'embedlink'
+      className:    @className
       href:         'javascript:;'
       textContent:  '(embed)'
 

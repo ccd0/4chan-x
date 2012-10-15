@@ -44,10 +44,11 @@ a[href="javascript:;"] {
   border-right: .3em solid transparent;
   border-left:  .3em solid transparent;
   display: inline-block;
-  margin: 2px;
+  margin: 2px 2px 4px;
   vertical-align: middle;
 }
 #mascot_hide {
+  padding: 3px;
   position: absolute;
   top: 2px;
   right: 18px;
@@ -65,11 +66,12 @@ a[href="javascript:;"] {
 #mascot_hide:hover > div {
   height: auto;
 }
-#mascot_hide label {
+#options #mascot_hide label {
   width: 100%;
   border-bottom: 1px solid inherit;
   display: block;
   clear: both;
+  text-decoration: none;
 }
 #menu {
   position: absolute;
