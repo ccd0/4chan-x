@@ -1712,7 +1712,8 @@ textarea.field:focus {
   border-color: #{theme["Focused Input Border"] };
   color: #{theme["Inputs"]};
 }
-#qp div.post,
+#qp .replyContainer,
+#qp .opContainer,
 .thread .replyContainer {
   background: #{theme["Reply Background"]};
   border: 1px solid #{theme["Reply Border"] };
@@ -2422,9 +2423,27 @@ form .postContainer blockquote {
 """
       if Conf["Fit Width Replies"]
         css += """
+.thread .replyContainer {
+  position: relative;
+  clear: both;
+  display: table;
+  width: 100%;
+}
+div.reply {
+  padding-top: 6px;
+  padding-left: 10px;
+}
+div.reply .report_button,
+div.reply .menu_button {
+  position: absolute;
+  right: 6px;
+  top: 7px;
+  font-size: 9px;
+}
 .summary {
   padding-left: 20px;
   display: table;
+  clear: both;
 }
 .sideArrows {
   width: 0;
@@ -2433,9 +2452,6 @@ form .postContainer blockquote {
   position: absolute;
   right: 27px;
   top: 7px;
-}
-.replyContainer {
-  position: relative;
 }
 .replyContainer div.postInfo {
   margin: 1px 0 0;
@@ -2452,17 +2468,6 @@ form .replyContainer:hover div.reply .menu_button,
 form .replyContainer:hover .sideArrows {
   opacity: 1;
   #{agent}transition: opacity .3s ease-in 0s;
-}
-div.reply {
-  padding-top: 6px;
-  padding-left: 10px;
-}
-div.reply .report_button,
-div.reply .menu_button {
-  position: absolute;
-  right: 6px;
-  top: 7px;
-  font-size: 9px;
 }
 div.reply .inline .menu_button,
 div.reply .inline .sideArrows,
@@ -2481,10 +2486,6 @@ div.thread {
 }
 div.post:not(#qp):not([hidden]) {
   margin: 0;
-}
-div.reply {
-  display: inline-block;
-  overflow: hidden;
 }
 div.sideArrows {
   float: none;
