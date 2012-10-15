@@ -228,7 +228,7 @@ Config =
       'Filtered Backlinks':        [true,              'Mark backlinks to filtered posts.']
       'Font':                      ['Helvetica',       'The font used by all elements of 4chan.', 'text']
       'Font Size':                 ['12px',            'The font size of posts and various UI. This does not change all font sizes.', 'text']
-      'Mascots':                   [false,             'Add a pretty picture of your waifu to Appchan.']
+      'Mascots':                   [true,              'Add a pretty picture of your waifu to Appchan.']
       'NSFW/SFW Mascots':          [false,             'Enable or disable mascots based on the SFW status of the board you are viewing.']
       'Mascots Overlap Posts':     [true,              'Mascots overlap threads and posts.']
       'Mascot Location':           ['sidebar',         'Change where your mascot is located.', ['sidebar', 'opposite']]
