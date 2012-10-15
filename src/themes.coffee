@@ -821,10 +821,14 @@ body,
 #updater .move,
 #stats .move,
 #prefetch {
-  text-shadow: 1px 1px 0 rgb(238, 242, 255),
-    -1px 1px 0 rgb(238, 242, 255),
-    1px -1px 0 rgb(238, 242, 255),
-    -1px -1px 0 rgb(238, 242, 255)
+  text-shadow: 1px 1px 0 rgb(238, 242, 255), 
+    -1px 1px 0 rgb(238, 242, 255), 
+    1px -1px 0 rgb(238, 242, 255), 
+    -1px -1px 0 rgb(238, 242, 255),
+    1px 0 0 rgb(238, 242, 255), 
+    -1px 0 0 rgb(238, 242, 255), 
+    0 -1px 0 rgb(238, 242, 255), 
+    0 -1px 0 rgb(238, 242, 255);
 }
 """
 
@@ -940,7 +944,7 @@ body,
   background-color:rgba(240,192,176,1);
   box-shadow:5px 5px 5px rgba(128,128,128,0.5);
 }
-.replyContainer {
+.replyContainer div.post {
   border-style: none solid solid none !important;
 }
 """
@@ -1000,7 +1004,7 @@ body,
   background-color:rgba(214,186,208,1);
   box-shadow:5px 5px 5px rgba(128,128,128,0.5);
 }
-.replyContainer {
+.replyContainer div.post {
   border-style: none solid solid none !important;
 }
 """

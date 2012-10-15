@@ -774,14 +774,14 @@
       'Text': 'rgb(0,0,0)',
       'Inputs': 'rgb(0,0,0)',
       'Post Numbers': 'rgb(0,0,0)',
-      'Greentext': 'rgb(120,153,34)',
+      'Greentext': 'rgb(34,133,34)',
       'Sage': 'rgb(87,87,123)',
       'Board Title': 'rgb(119,51,51)',
       'Timestamps': 'rgb(0,0,0)',
       'Warnings': 'rgb(87,87,123)',
       'Shadow Color': 'rgba(60,60,60,0.6)',
       'Dark Theme': false,
-      'Custom CSS': ".thread > .replyContainer {\n  background-color: transparent;\n  border: 0;\n}\n.replyContainer div.reply.post {\n  border-color: #ccc;\n  border-width: 0 0 1px 0;\n  border-style: solid;\n  border-radius: 0 !important;\n}\nbody,\n.field {\n  text-shadow: 0 1px 0 #ccc,\n    1px 1px 0 #ccc;\n    1px 0 0 #ccc;\n}\n.thread .replyContainer {\n  margin-bottom: 0;\n}\n#themes {\n  text-shadow: none;\n}\n#qp {\n  text-shadow: 1px 0 0 rgb(0,0,0),\n    1px 1px 0 rgb(0,0,0),\n    0 1px 0 rgb(0,0,0),\n    1px 1px 2px rgb(0,0,0);\n}\n#qp .opContainer,\n#qp .replyContainer div.post {\n  border: 1px rgba(0,0,0,0.7) solid;\n}\n#qp .opContainer,\n#qp .replyContainer {\n  background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), transparent;\n}\n#qp div.post,\n#qp .postNum a {\n  color: #fcd;\n}\n#qp .dateTime {\n  color: #fcd !important;\n}\n#qp .nameBlock > .useremail > .name,\n#qp .nameBlock > .useremail > .postertrip,\n#qp .name,\n#qp .postertrip,\n#qp .trip {\n  color: #ffaac0 !important;\n}\n#qp a {\n  color: #aaaac8;\n}\n.boardBanner a,\n#qp a.backlink,\n#qp span.quote > a.quotelink {\n  color: rgb(255,255,255);\n}\n#updater:not(:hover),\n#updater:not(:hover) #count:not(.new)::after,\n#stats {\n  color: rgb(123,123,123);\n}\n#delform {\n  padding: 1px 0 2px 0;\n  box-shadow: 0 20px 40px 10px rgba(0,0,0,0.1);\n  border-radius: 4px;\n}\n:not(#themes) .rice {\n  box-shadow: 1px 1px 1px rgb(204, 204, 204) inset,\n    1px 1px 1px rgba(170, 170, 170,0.8);\n}\n.thread .replyContainer:last-of-type div.reply.post {\n  border: none;\n}\n#boardTitle .boardSubtitle,\n#updater .move,\n#stats .move,\n#prefetch {\n  text-shadow: 1px 1px 0 rgb(238, 242, 255),\n    -1px 1px 0 rgb(238, 242, 255),\n    1px -1px 0 rgb(238, 242, 255),\n    -1px -1px 0 rgb(238, 242, 255)\n}"
+      'Custom CSS': ".thread > .replyContainer {\n  background-color: transparent;\n  border: 0;\n}\n.replyContainer div.reply.post {\n  border-color: #ccc;\n  border-width: 0 0 1px 0;\n  border-style: solid;\n  border-radius: 0 !important;\n}\nbody,\n.field {\n  text-shadow: 0 1px 0 #ccc,\n    1px 1px 0 #ccc;\n    1px 0 0 #ccc;\n}\n.thread .replyContainer {\n  margin-bottom: 0;\n}\n#themes {\n  text-shadow: none;\n}\n#qp {\n  text-shadow: 1px 0 0 rgb(0,0,0),\n    1px 1px 0 rgb(0,0,0),\n    0 1px 0 rgb(0,0,0),\n    1px 1px 2px rgb(0,0,0);\n}\n#qp .opContainer,\n#qp .replyContainer div.post {\n  border: 1px rgba(0,0,0,0.7) solid;\n}\n#qp .opContainer,\n#qp .replyContainer {\n  background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), transparent;\n}\n#qp div.post,\n#qp .postNum a {\n  color: #fcd;\n}\n#qp .dateTime {\n  color: #fcd !important;\n}\n#qp .nameBlock > .useremail > .name,\n#qp .nameBlock > .useremail > .postertrip,\n#qp .name,\n#qp .postertrip,\n#qp .trip {\n  color: #ffaac0 !important;\n}\n#qp a {\n  color: #aaaac8;\n}\n.boardBanner a,\n#qp a.backlink,\n#qp span.quote > a.quotelink {\n  color: rgb(255,255,255);\n}\n#updater:not(:hover),\n#updater:not(:hover) #count:not(.new)::after,\n#stats {\n  color: rgb(123,123,123);\n}\n#delform {\n  padding: 1px 0 2px 0;\n  box-shadow: 0 20px 40px 10px rgba(0,0,0,0.1);\n  border-radius: 4px;\n}\n:not(#themes) .rice {\n  box-shadow: 1px 1px 1px rgb(204, 204, 204) inset,\n    1px 1px 1px rgba(170, 170, 170,0.8);\n}\n.thread .replyContainer:last-of-type div.reply.post {\n  border: none;\n}\n#boardTitle .boardSubtitle,\n#updater .move,\n#stats .move,\n#prefetch {\n  text-shadow: 1px 1px 0 rgb(238, 242, 255), \n    -1px 1px 0 rgb(238, 242, 255), \n    1px -1px 0 rgb(238, 242, 255), \n    -1px -1px 0 rgb(238, 242, 255),\n    1px 0 0 rgb(238, 242, 255), \n    -1px 0 0 rgb(238, 242, 255), \n    0 -1px 0 rgb(238, 242, 255), \n    0 -1px 0 rgb(238, 242, 255);\n}"
     },
     'Solarized': {
       'Author': 'ubuntufriend',
@@ -885,7 +885,7 @@
       'Warnings': 'rgb(128,0,0)',
       'Shadow Color': 'rgba(119,46,40,1)',
       'Dark Theme': false,
-      'Custom CSS': "#qp div.post{\n  background-color:rgba(240,192,176,1);\n  box-shadow:5px 5px 5px rgba(128,128,128,0.5);\n}\n.replyContainer {\n  border-style: none solid solid none !important;\n}"
+      'Custom CSS': "#qp div.post{\n  background-color:rgba(240,192,176,1);\n  box-shadow:5px 5px 5px rgba(128,128,128,0.5);\n}\n.replyContainer div.post {\n  border-style: none solid solid none !important;\n}"
     },
     'Yotsuba B': {
       'Author': 'moot',
@@ -937,7 +937,7 @@
       'Warnings': 'rgb(87,87,123)',
       'Shadow Color': 'rgba(128,128,128,0.5)',
       'Dark Theme': false,
-      'Custom CSS': "#qp div.post{\n  background-color:rgba(214,186,208,1);\n  box-shadow:5px 5px 5px rgba(128,128,128,0.5);\n}\n.replyContainer {\n  border-style: none solid solid none !important;\n}"
+      'Custom CSS': "#qp div.post{\n  background-color:rgba(214,186,208,1);\n  box-shadow:5px 5px 5px rgba(128,128,128,0.5);\n}\n.replyContainer div.post {\n  border-style: none solid solid none !important;\n}"
     },
     'Zenburned': {
       'Author': 'lazy',
