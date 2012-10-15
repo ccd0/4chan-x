@@ -1842,7 +1842,7 @@ div.subMenu,
   cursor: pointer;
   width: 10px;
   height: 10px;
-  margin: 3px;
+  margin: 1px 3px;
   display: inline-block;
   background: #{theme["Checkbox Background"]};
   border: 1px solid #{theme["Checkbox Border"] };
@@ -2737,6 +2737,35 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
 """
 
       if Conf["Rounded Edges"]
+        switch Conf["Boards Navigation"] 
+          when "sticky top", "top"
+            css += """
+#boardNavDesktop {
+  border-radius: 0 0 3px 3px;
+}
+"""
+          
+          when "sticky bottom", "bottom"
+            css += """
+#boardNavDesktop {
+  border-radius: 3px 3px 0 0;
+}
+"""
+        switch Conf["Pagination"] 
+          when "sticky top", "top"
+            css += """
+.pages {
+  border-radius: 0 0 3px 3px;
+}
+"""
+          
+          when "sticky bottom", "bottom"
+            css += """
+.pages {
+  border-radius: 3px 3px 0 0;
+}
+"""
+          
         css += """
 .rice {
   border-radius: 2px;

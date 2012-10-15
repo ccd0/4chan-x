@@ -700,7 +700,7 @@ div.reply.highlight {
     'Background Repeat'           : 'no-repeat, repeat'
     'Background Color'            : 'rgba(238,242,255,1)'
     'Thread Wrapper Background'   : 'linear-gradient(rgb(230,222,222), rgb(240,240,240) 400px, rgb(240,240,240))'
-    'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
+    'Thread Wrapper Border'       : 'rgba(204,204,204,1)'
     'Dialog Background'           : 'linear-gradient(rgb(230,222,222), rgb(240,240,240) 200px, rgb(240,240,240))'
     'Dialog Border'               : 'rgb(220,210,210)'
     'Reply Background'            : 'rgba(240,240,240,1)'
@@ -715,12 +715,12 @@ div.reply.highlight {
     'Focused Input Background'    : 'linear-gradient(rgb(230,222,222), rgb(240,240,240)), rgb(255,255,255)'
     'Focused Input Border'        : 'rgb(220,210,210)'
     'Checkbox Background'         : 'rgba(238,242,255,1)'
-    'Checkbox Checked Background' : 'rgba(188,192,212,1)'
-    'Checkbox Border'             : 'rgba(153,51,51,1)'
+    'Checkbox Checked Background' : 'rgba(255,255,255,1)'
+    'Checkbox Border'             : 'rgba(180,180,180,1)'
     'Buttons Background'          : 'linear-gradient(rgb(230,222,222), rgb(240,240,240)), rgb(255,255,255)'
     'Buttons Border'              : 'rgb(220,210,210)'
-    'Navigation Background'       : 'linear-gradient(rgba(230,222,222,0.8), rgba(240,240,240,0.8))'
-    'Navigation Border'           : 'rgba(220,210,210,0.5)'
+    'Navigation Background'       : 'rgba(230,222,222,0.8)'
+    'Navigation Border'           : 'rgba(204,204,204,1)'
     'Quotelinks'                  : 'rgb(153,51,51)'
     'Backlinks'                   : 'rgb(153,51,51)'
     'Links'                       : 'rgb(87,87,123)'
@@ -750,12 +750,24 @@ div.reply.highlight {
   border-color: #ccc;
   border-width: 0 0 1px 0;
   border-style: solid;
-  border-radius: 0;
+  border-radius: 0 !important;
+}
+body,
+.field {
+  text-shadow: 0 1px 0 #ccc,
+    1px 1px 0 #ccc;
+    1px 0 0 #ccc;
+}
+.thread .replyContainer {
+  margin-bottom: 0;
+}
+#themes {
+  text-shadow: none;
 }
 #qp {
-  text-shadow: 1px 1px 0 rgb(0,0,0),
-    1px 0 0 rgb(0,0,0),
-    1px 0 0 rgb(0,0,0),
+  text-shadow: 1px 0 0 rgb(0,0,0),
+    1px 1px 0 rgb(0,0,0),
+    0 1px 0 rgb(0,0,0),
     1px 1px 2px rgb(0,0,0);
 }
 #qp .opContainer,
@@ -797,6 +809,10 @@ div.reply.highlight {
   padding: 1px 0 2px 0;
   box-shadow: 0 20px 40px 10px rgba(0,0,0,0.1);
   border-radius: 4px;
+}
+:not(#themes) .rice {
+  box-shadow: 1px 1px 1px rgb(204, 204, 204) inset,
+    1px 1px 1px rgba(170, 170, 170,0.8);
 }
 .thread .replyContainer:last-of-type div.reply.post {
   border: none;
