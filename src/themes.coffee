@@ -734,7 +734,7 @@ div.reply.highlight {
     'Text'                        : 'rgb(0,0,0)'
     'Inputs'                      : 'rgb(0,0,0)'
     'Post Numbers'                : 'rgb(0,0,0)'
-    'Greentext'                   : 'rgb(120,153,34)'
+    'Greentext'                   : 'rgb(34,133,34)'
     'Sage'                        : 'rgb(87,87,123)'
     'Board Title'                 : 'rgb(119,51,51)'
     'Timestamps'                  : 'rgb(0,0,0)'
