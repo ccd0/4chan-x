@@ -5603,7 +5603,18 @@
       return Main.callbacks.push(this.node);
     },
     regString: ['(', '\\b(', '[a-z][-a-z0-9+.]+://', '|', 'www\\.', '|', 'magnet:', '|', 'mailto:', '|', 'news:', ')', '[^\\s\'"<>()]+', '|', '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b', ')'].join(""),
-    embedRegExp: /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|youtube.*\&v=)([^#\&\?]*).*/,
+    sites: {
+      yt: {
+        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
+        url: "http://www.youtube.com/embed/",
+        safeurl: "http://www.youtube.com/watch/"
+      },
+      vm: {
+        regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
+        url: "https://player.vimeo.com/video/",
+        safeurl: "http://www.vimeo.com/"
+      }
+    },
     node: function(post) {
       var child, comment, node, nodes, subject, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results;
       nodes = [];
@@ -5641,7 +5652,7 @@
       return _results;
     },
     text: function(child, link) {
-      var a, embed, l, lLen, m, match, node, p, rest, txt, urlRegExp;
+      var a, embed, key, l, lLen, m, match, node, p, rest, site, txt, urlRegExp, _ref;
       txt = child.textContent;
       p = 0;
       urlRegExp = new RegExp(Linkify.regString, 'i');
@@ -5661,29 +5672,25 @@
           target: 'blank',
           href: l.indexOf(":") < 0 ? (l.indexOf("@") > 0 ? "mailto:" + l : "http://" + l) : l
         });
-        $.on(a, 'click', function(e) {
-          if (e.shiftKey && e.ctrlKey) {
-            e.preventDefault();
-            e.stopPropagation();
-            if ("br" === this.nextSibling.tagName.toLowerCase() && this.nextSibling.nextSibling.className !== "abbr") {
-              $.rm(this.nextSibling);
-              child = $.tn(this.textContent + this.nextSibling.textContent);
-              $.rm(this.nextSibling);
-              return Linkify.text(child, this);
+        Linkify.concat(a);
+        $.after(node, a);
+        if (Conf['Youtube Embed']) {
+          _ref = Linkify.sites;
+          for (key in _ref) {
+            site = _ref[key];
+            if (match = a.href.match(site.regExp)) {
+              embed = $.el('a', {
+                name: match[1],
+                className: key,
+                href: 'javascript:;',
+                textContent: '(embed)'
+              });
+              $.on(embed, 'click', Linkify.embed);
+              $.after(a, embed);
+              $.after(a, $.tn(' '));
+              break;
             }
           }
-        });
-        $.after(node, a);
-        if (Conf['Youtube Embed'] && (match = a.href.match(Linkify.embedRegExp))) {
-          embed = $.el('a', {
-            name: match[1],
-            className: 'embedlink',
-            href: 'javascript:;',
-            textContent: '(embed)'
-          });
-          $.on(embed, 'click', Linkify.embed);
-          $.after(a, embed);
-          $.after(a, $.tn(' '));
         }
         p = m.index + lLen;
         rest = $.tn(txt.substring(p, txt.length));
@@ -5694,17 +5701,63 @@
       }
     },
     embed: function() {
-      var iframe, link;
+      var iframe, link, unembed;
       link = this.previousSibling.previousSibling;
       iframe = $.el('iframe', {
-        src: 'http://www.youtube.com/embed/' + this.name
+        src: Linkify.sites[this.className].url + this.name
       });
       iframe.style.border = '0';
       iframe.style.width = '640px';
       iframe.style.height = '390px';
       $.replace(link, iframe);
-      $.rm(this.previousSibling);
-      return $.rm(this);
+      unembed = $.el('a', {
+        name: this.name,
+        className: this.className,
+        href: 'javascript:;',
+        textContent: '(unembed)'
+      });
+      $.on(unembed, 'click', Linkify.unembed);
+      return $.replace(this, unembed);
+    },
+    unembed: function() {
+      var a, embed, embedded, url;
+      url = Linkify.sites[this.className].safeurl + this.name;
+      embedded = this.previousSibling.previousSibling;
+      a = $.el('a', {
+        textContent: url,
+        rel: 'nofollow noreferrer',
+        target: 'blank',
+        href: url
+      });
+      embed = $.el('a', {
+        name: this.name,
+        className: this.className,
+        href: 'javascript:;',
+        textContent: '(embed)'
+      });
+      $.on(embed, 'click', Linkify.embed);
+      $.replace(embedded, a);
+      return $.replace(this, embed);
+    },
+    concat: function(a) {
+      return $.on(a, 'click', function(e) {
+        var child, el;
+        if (e.shiftKey && e.ctrlKey) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (("br" === this.nextSibling.tagName.toLowerCase() || "spoiler" === this.nextSibling.className) && this.nextSibling.nextSibling.className !== "abbr") {
+            el = this.nextSibling;
+            if (el.textContent) {
+              child = $.tn(this.textContent + el.textContent + el.nextSibling.textContent);
+            } else {
+              child = $.tn(this.textContent + el.nextSibling.textContent);
+            }
+            $.rm(el);
+            $.rm(this.nextSibling);
+            return Linkify.text(child, this);
+          }
+        }
+      });
     }
   };
 

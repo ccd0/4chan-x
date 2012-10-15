@@ -4549,7 +4549,6 @@ Linkify =
     # Add Linkification to callbacks, which will call linkification on every post parsed by Appchan X.
     Main.callbacks.push @node
 
-
   # I didn't write most of this RegEx.
   regString: [
     '('
@@ -4574,7 +4573,15 @@ Linkify =
     ')'
   ].join("")
 
-  embedRegExp: /.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|youtube.*\&v=)([^#\&\?]*).*/
+  sites:
+    yt:
+      regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
+      url:     "http://www.youtube.com/embed/"
+      safeurl: "http://www.youtube.com/watch/"
+    vm:
+      regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
+      url:     "https://player.vimeo.com/video/"
+      safeurl: "http://www.vimeo.com/"
 
   node: (post) ->
     # Built based on:
@@ -4641,41 +4648,37 @@ Linkify =
         # I haven't found a situation where not having a slash in the conditional breaks anything.
         href:      if l.indexOf(":") < 0 then (if l.indexOf("@") > 0 then "mailto:" + l else "http://" + l) else l
 
-      # Add an event listener so that we can give the user the option to fix broken multi-line links.
-      $.on a, 'click', (e) ->
-        # Shift + CTRL + Click
-        if e.shiftKey and e.ctrlKey
-
-          # Let's not accidentally open the link while we're editting it.
-          e.preventDefault()
-          e.stopPropagation()
-
-          # We essentially check for a <br> and make sure we're not merging non-post content.
-          if "br" == @.nextSibling.tagName.toLowerCase() and @.nextSibling.nextSibling.className != "abbr"
-            $.rm @.nextSibling
-            child = $.tn(@textContent + @.nextSibling.textContent)
-            $.rm @.nextSibling
-            Linkify.text(child, @)
+      Linkify.concat(a)
 
       # We can finally insert the link.
       $.after node, a
 
-      # We check to see if we're also allowing embedding and if we can.
-      if Conf['Youtube Embed'] and match = a.href.match Linkify.embedRegExp
-        # We create a new element
-        embed = $.el 'a'
-          name:         match[1]
-          className:    'embedlink'
-          href:         'javascript:;'
-          textContent:  '(embed)'
+      # We check to see if we're also allowing embedding.
+      if Conf['Youtube Embed']
 
-        # and allow the user to click it to embed the video.
-        $.on embed, 'click', Linkify.embed
+        # We gather our list of embeddable sites
+        for key, site of Linkify.sites
+        
+          # Check if our current link matches any of them
+          if match = a.href.match(site.regExp)
+        
+            # We create a new element
+            embed = $.el 'a'
+              name:         match[1]
+              className:    key
+              href:         'javascript:;'
+              textContent:  '(embed)'
 
-        # We insert the embed link after the pre-existing link,
-        # Then add a space before the embed link / after the pre-existing link
-        $.after a, embed
-        $.after a, $.tn ' '
+            # and allow the user to click it to embed the video.
+            $.on embed, 'click', Linkify.embed
+
+            # We insert the embed link after the pre-existing link,
+            # Then add a space before the embed link / after the pre-existing link
+            $.after a, embed
+            $.after a, $.tn ' '
+            
+            # And we break out of the loop because no further embedding checks are needed.
+            break
 
       # track the insertion point,
       p = m.index+lLen
@@ -4694,8 +4697,8 @@ Linkify =
 
     # We create an iframe to embed
     iframe = $.el 'iframe'
-      src:        'http://www.youtube.com/embed/' + @name
-
+      src: Linkify.sites[@className].url + @name
+        
     # We style the iframe with respectable boundaries.
     iframe.style.border = '0'
     iframe.style.width  = '640px'
@@ -4703,8 +4706,57 @@ Linkify =
 
     # We replace the link with the iframe and kill the embedding element.
     $.replace link, iframe
-    $.rm @.previousSibling
-    $.rm @
+    
+    unembed = $.el 'a'
+      name:        @name
+      className:   @className
+      href:        'javascript:;'
+      textContent: '(unembed)'
+    
+    $.on unembed, 'click', Linkify.unembed
+    
+    $.replace @, unembed
+  
+  unembed: ->
+    url = Linkify.sites[@className].safeurl + @name
+    embedded = @.previousSibling.previousSibling
+    
+    a = $.el 'a'
+      textContent: url
+      rel:         'nofollow noreferrer'
+      target:      'blank'
+      href:        url
+
+    embed = $.el 'a'
+      name:         @name
+      className:    @className
+      href:         'javascript:;'
+      textContent:  '(embed)'
+
+    $.on embed, 'click', Linkify.embed
+    
+    $.replace embedded, a
+    $.replace @, embed
+
+  concat: (a) ->
+    $.on a, 'click', (e) ->
+      # Shift + CTRL + Click
+      if e.shiftKey and e.ctrlKey
+
+        # Let's not accidentally open the link while we're editting it.
+        e.preventDefault()
+        e.stopPropagation()
+
+        # We essentially check for a <br> and make sure we're not merging non-post content.
+        if ("br" == @.nextSibling.tagName.toLowerCase() or "spoiler" == @.nextSibling.className) and @.nextSibling.nextSibling.className != "abbr"
+          el = @.nextSibling
+          if el.textContent
+            child = $.tn(@textContent + el.textContent + el.nextSibling.textContent)
+          else
+            child = $.tn(@textContent + el.nextSibling.textContent)
+          $.rm el
+          $.rm @.nextSibling
+          Linkify.text(child, @)
 
 Main =
   init: ->
