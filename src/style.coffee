@@ -403,25 +403,32 @@ h1,
   overflow: hidden;
 }
 #options .mascots {
-  text-align: center;
   padding: 0;
+  text-align: center;
 }
 #options .mascot {
-  display: inline-block;
-  padding: 0;
   position: relative;
+  display: inline-block;
+  overflow: hidden;
+  padding: 0;
+  width: 200px;
+  height: 250px;
+  margin: 5px;
+  text-align: left;
 }
 #options .mascot > div:first-child {
   border: 2px solid rgba(0,0,0,0);
-  width: 200px;
-  height: 250px;
+  max-height: 250px;
+  overflow: hidden;
   display: inline-block;
-  margin: 5px;
   cursor: pointer;
-  background-position: top center;
-  background-repeat: no-repeat;
-  background-size: 200px auto;
-  text-align: center;
+  position: absolute;
+  bottom: 0;
+}
+#options .mascot img {
+  max-width: 200px;
+  image-rendering: optimizeQuality;
+  vertical-align: top;
 }
 #options .mascot div.enabled {
   border: 2px solid rgba(0,0,0,0.5);

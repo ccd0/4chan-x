@@ -12,7 +12,11 @@ Options =
         className: 'settingsWindowLink'
         textContent: 'AppChan X Settings'
       $.on a, 'click', ->
-        Options.dialog()
+        try
+          Options.dialog()
+        catch err
+          $.log err
+          $.log err.stack
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
 
   dialog: (tab) ->
@@ -604,13 +608,13 @@ Options =
             li = $.el 'li',
               className: 'mascot'
               innerHTML: "
-  <div id='#{name}' class='#{mascot.category}' style='background-image: url(#{if Array.isArray(mascot.image) then (if Conf["Style"] and userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image});'></div>
-  <div class='mascotmetadata'>
-    <p><span class='mascotname'>#{name.replace /_/g, " "}</span></p>
-    <p><span class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a> / <a class=export name='#{name}' href='javascript:;'>Export</a></span></p>
-  </div>
+<div id='#{name}' class='#{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Conf["Style"] and userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div>
+<div class='mascotmetadata'>
+  <p><span class='mascotname'>#{name.replace /_/g, " "}</span></p>
+  <p><span class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a> / <a class=export name='#{name}' href='javascript:;'>Export</a></span></p>
+</div>
   "
-            div = $('div[style]', li)
+            div = $("##{name}", li)
             if Conf[g.MASCOTSTRING].contains name
               $.addClass div, 'enabled'
 
@@ -713,10 +717,10 @@ Options =
             li = $.el 'li',
               className: 'mascot'
               innerHTML: "
-  <div id='#{name}' class='#{mascot.category}' style='background-image: url(#{if Array.isArray(mascot.image) then (if Conf["Style"] and userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image});'></div>
-  <div class='mascotmetadata'>
-    <p><span class='mascotname'>#{name.replace /_/g, " "}</span></p>
-  </div>
+<div id='#{name}' class='#{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Conf["Style"] and userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div>
+<div class='mascotmetadata'>
+  <p><span class='mascotname'>#{name.replace /_/g, " "}</span></p>
+</div>
   "
             div = $('div', li)
 
