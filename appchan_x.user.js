@@ -1755,8 +1755,7 @@
     },
     'Gasai_Yuno_2': {
       category: 'Questionable',
-      image: 'https://i.minus.com/iblDClpOzDBgCC.png',
-      center: true
+      image: 'https://i.minus.com/ifyPk7Yeo1JA7.png'
     },
     'George_Costanza': {
       category: 'Western',
