@@ -2738,7 +2738,8 @@ Updater =
     @count  = $ '#count', dialog
     @timer  = $ '#timer', dialog
     @thread = $.id "t#{g.THREAD_ID}"
-    @checkc = 0
+    @ccheck = true
+    @cnodes = []
 
     @unsuccessfulFetchCount = 0
     @lastModified = '0'
@@ -2773,29 +2774,29 @@ Updater =
       return unless Conf['Auto Update This']
       save = []
       text = $('textarea', QR.el).value.replace(/^\s\s*/, '').replace /\n/g, ''
-      unless $('#dump', QR.el)
-        file = $('input[type="file"]', QR.el).value.replace /^.*\\/, ''
-      else file = $('#replies a', QR.el).title.replace /\ \(.*\)$/, ''
       unless text.length is 0
         save.push text
         image = false
       else
-        save.push file
+        save.push QR.replies[0].file.name
         image = true
       checkpost = ->
+        nodes = Updater.cnodes.childNodes
         unless Conf['File Info Formatting']
-          iposts = $$ 'span.fileText span'
-        else iposts = $$ 'span.fileText a'
+          iposts = $$ 'span.fileText span', nodes
+        else iposts = $$ 'span.fileText a', nodes
         unless image is false
-          (x.innerHTML for x in iposts).indexOf save[0]
-        else (x.textContent for x in $$ '.postMessage').indexOf save[0]
+          (node.innerHTML for node in iposts).indexOf save[0]
+        else (node.textContent for node in $$ '.postMessage', nodes).indexOf save[0]
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 1000
       count = 0
-      if checkpost() is -1 and !(Conf['Interval'] < 10)
+      if checkpost() is -1 and Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
         int = setInterval (->
           Updater.update()
-          clearInterval int if checkpost() isnt -1 or count is 30
+          console.log 'Still going'
+          if checkpost() isnt -1 or count is 30
+            clearInterval(int) and Updater.cnodes = [] and Updater.ccheck = true
           count++
         ), 500
     visibility: ->
@@ -2880,6 +2881,7 @@ Updater =
       for post in posts.reverse()
         break if post.no <= id # Make sure to not insert older posts.
         nodes.push Build.postFromObject post, g.BOARD
+        Updater.cnodes.push Build.postFromObject post, g.BOARD
 
       count = nodes.length
       if Conf['Verbose']
@@ -2947,10 +2949,8 @@ Updater =
       Updater.set 'timer', n
 
   update: ->
-    if @checkc < 2 and Updater.cb.post
+    unless @ccheck is true
       Updater.set 'timer', 0
-      @checkc++
-    else Updater.set 'timer', 0
     {request} = Updater
     if request
       # Don't reset the counter when aborting.
