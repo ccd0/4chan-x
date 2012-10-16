@@ -5681,6 +5681,8 @@
         });
         Linkify.concat(a);
         $.after(node, a);
+        p = m.index + lLen;
+        rest = $.tn(txt.substring(p, txt.length));
         if (Conf['Youtube Embed']) {
           _ref = Linkify.sites;
           for (key in _ref) {
@@ -5698,12 +5700,15 @@
               break;
             }
           }
-        }
-        p = m.index + lLen;
-        rest = $.tn(txt.substring(p, txt.length));
-        if (rest.textContent !== "") {
-          $.after(a, rest);
-          return this.text(rest);
+          if (rest.textContent !== "") {
+            $.after(embed, rest);
+            return this.text(rest);
+          }
+        } else {
+          if (rest.textContent !== "") {
+            $.after(a, rest);
+            return this.text(rest);
+          }
         }
       }
     },
