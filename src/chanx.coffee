@@ -1000,14 +1000,25 @@ Nav =
 
 Updater =
   init: ->
+    # Setup basic HTML layout.
     html = '<div class=move><span id=count></span> <span id=timer></span></div>'
+    
+    # Gather possible toggle configuration variables from Config object
     {checkbox} = Config.updater
+    
+    # And create fields for them.
     for name of checkbox
       title = checkbox[name][1]
+      
+      # Gather user values.
       checked = if Conf[name] then 'checked' else ''
+      
+      # And create HTML for each checkbox.
       html += "<div><label title='#{title}'>#{name}<input name='#{name}' type=checkbox #{checked}></label></div>"
 
     checked = if Conf['Auto Update'] then 'checked' else ''
+    
+    # Per thread auto-update and global or per board update frequency.
     html += "
       <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
       <div><label>Interval (s)<input type=number name=Interval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>
@@ -1015,15 +1026,24 @@ Updater =
 
     html += "<div><input value='Update Now' type=button name='Update Now'></div>"
 
+    # Create a moveable dialog. See UI.dialog for more information.
     dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
 
+    # Point updater variables at HTML elements for ease of access.
     @count  = $ '#count', dialog
     @timer  = $ '#timer', dialog
     @thread = $.id "t#{g.THREAD_ID}"
+    
+    @ccheck = true
+    @cnodes = []
 
+    # How many times we have failed to find new posts.
     @unsuccessfulFetchCount = 0
+    
+    # Track last modified headers.
     @lastModified = '0'
 
+    # Add event listeners to updater dialogs.
     for input in $$ 'input', dialog
       if input.type is 'checkbox'
         $.on input, 'click', $.cb.checked
@@ -1046,7 +1066,9 @@ Updater =
 
     $.add d.body, dialog
 
+    # Check for new posts on post.
     $.on d, 'QRPostSuccessful', @cb.post
+    
     $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', @cb.visibility
 
   cb:
@@ -1054,29 +1076,32 @@ Updater =
       return unless Conf['Auto Update This']
       save = []
       text = $('textarea', QR.el).value.replace(/^\s\s*/, '').replace /\n/g, ''
-      unless $('#dump', QR.el)
-        file = $('input[type="file"]', QR.el).value.replace /^.*\\/, ''
-      else file = $('#replies a', QR.el).title.replace /\ \(.*\)$/, ''
       unless text.length is 0
-        save.push text
+        save.push QR.replies[0].file.name
         image = false
       else
         save.push file
         image = true
       checkpost = ->
+        nodes = Updater.cnodes.childNodes
         unless Conf['File Info Formatting']
-          iposts = $$ 'span.fileText span'
-        else iposts = $$ 'span.fileText a'
-        unless image is false
-          (x.innerHTML for x in iposts).indexOf save[0]
-        else (x.textContent for x in $$ '.postMessage').indexOf save[0]
+          iposts = $$ 'span.fileText span', nodes
+        else iposts = $$ 'span.fileText a', nodes
+        if image
+          (node.innerHTML for node in iposts).indexOf save[0]
+        else (node.textContent for node in $$ '.postMessage', nodes).indexOf save[0]
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 1000
       count = 0
-      if checkpost() is -1 and !(Conf['Interval'] < 10)
+      if checkpost() is -1 and Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
         int = setInterval (->
+          Updater.ccheck = true
           Updater.update()
-          clearInterval int if checkpost() isnt -1 or count is 30
+          if checkpost() isnt -1 or count is 30
+            Updater.ccheck = false
+            Updater.cnodes = []
+            clearInterval int
+          Updater.ccheck = false
           count++
         ), 500
     visibility: ->
@@ -1165,6 +1190,7 @@ Updater =
       for post in posts.reverse()
         break if post.no <= id # Make sure to not insert older posts.
         nodes.push Build.postFromObject post, g.BOARD
+        Updater.cnodes.push Build.postFromObject post, g.BOARD
 
       count = nodes.length
       if Conf['Verbose']
@@ -1231,7 +1257,9 @@ Updater =
       Updater.set 'timer', n
 
   update: ->
-    Updater.set 'timer', 0
+    unless @ccheck
+      Updater.set 'timer', 0
+    else @ccheck = false
     {request} = Updater
     if request
       # Don't reset the counter when aborting.

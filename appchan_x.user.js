@@ -5003,6 +5003,8 @@
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
       this.thread = $.id("t" + g.THREAD_ID);
+      this.ccheck = true;
+      this.cnodes = [];
       this.unsuccessfulFetchCount = 0;
       this.lastModified = '0';
       _ref = $$('input', dialog);
@@ -5042,49 +5044,45 @@
     },
     cb: {
       post: function() {
-        var checkpost, count, file, image, int, save, text;
+        var checkpost, count, image, int, save, text;
         if (!Conf['Auto Update This']) {
           return;
         }
         save = [];
         text = $('textarea', QR.el).value.replace(/^\s\s*/, '').replace(/\n/g, '');
-        if (!$('#dump', QR.el)) {
-          file = $('input[type="file"]', QR.el).value.replace(/^.*\\/, '');
-        } else {
-          file = $('#replies a', QR.el).title.replace(/\ \(.*\)$/, '');
-        }
         if (text.length !== 0) {
-          save.push(text);
+          save.push(QR.replies[0].file.name);
           image = false;
         } else {
           save.push(file);
           image = true;
         }
         checkpost = function() {
-          var iposts, x;
+          var iposts, node, nodes;
+          nodes = Updater.cnodes.childNodes;
           if (!Conf['File Info Formatting']) {
-            iposts = $$('span.fileText span');
+            iposts = $$('span.fileText span', nodes);
           } else {
-            iposts = $$('span.fileText a');
+            iposts = $$('span.fileText a', nodes);
           }
-          if (image !== false) {
+          if (image) {
             return ((function() {
               var _i, _len, _results;
               _results = [];
               for (_i = 0, _len = iposts.length; _i < _len; _i++) {
-                x = iposts[_i];
-                _results.push(x.innerHTML);
+                node = iposts[_i];
+                _results.push(node.innerHTML);
               }
               return _results;
             })()).indexOf(save[0]);
           } else {
             return ((function() {
               var _i, _len, _ref, _results;
-              _ref = $$('.postMessage');
+              _ref = $$('.postMessage', nodes);
               _results = [];
               for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                x = _ref[_i];
-                _results.push(x.textContent);
+                node = _ref[_i];
+                _results.push(node.textContent);
               }
               return _results;
             })()).indexOf(save[0]);
@@ -5093,12 +5091,16 @@
         Updater.unsuccessfulFetchCount = 0;
         setTimeout(Updater.update, 1000);
         count = 0;
-        if (checkpost() === -1 && !(Conf['Interval'] < 10)) {
+        if (checkpost() === -1 && Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
           return int = setInterval((function() {
+            Updater.ccheck = true;
             Updater.update();
             if (checkpost() !== -1 || count === 30) {
+              Updater.ccheck = false;
+              Updater.cnodes = [];
               clearInterval(int);
             }
+            Updater.ccheck = false;
             return count++;
           }), 500);
         }
@@ -5216,6 +5218,7 @@
             break;
           }
           nodes.push(Build.postFromObject(post, g.BOARD));
+          Updater.cnodes.push(Build.postFromObject(post, g.BOARD));
         }
         count = nodes.length;
         if (Conf['Verbose']) {
@@ -5300,7 +5303,11 @@
     },
     update: function() {
       var request, url;
-      Updater.set('timer', 0);
+      if (!this.ccheck) {
+        Updater.set('timer', 0);
+      } else {
+        this.ccheck = false;
+      }
       request = Updater.request;
       if (request) {
         request.onloadend = null;
