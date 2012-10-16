@@ -2785,18 +2785,21 @@ Updater =
         unless Conf['File Info Formatting']
           iposts = $$ 'span.fileText span', nodes
         else iposts = $$ 'span.fileText a', nodes
-        unless image is false
+        if image
           (node.innerHTML for node in iposts).indexOf save[0]
         else (node.textContent for node in $$ '.postMessage', nodes).indexOf save[0]
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 1000
       count = 0
       if checkpost() is -1 and Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
-        Updater.ccheck = true
         int = setInterval (->
+          Updater.ccheck = true
           Updater.update()
           if checkpost() isnt -1 or count is 30
-            clearInterval(int) and Updater.cnodes = [] and Updater.ccheck = false
+            Updater.ccheck = false
+            Updater.cnodes = []
+            clearInterval int
+          Updater.ccheck = false
           count++
         ), 500
     visibility: ->
@@ -2949,8 +2952,9 @@ Updater =
       Updater.set 'timer', n
 
   update: ->
-    unless @ccheck is true
+    unless @ccheck
       Updater.set 'timer', 0
+    else @ccheck = false
     {request} = Updater
     if request
       # Don't reset the counter when aborting.

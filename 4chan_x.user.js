@@ -3365,7 +3365,7 @@
           } else {
             iposts = $$('span.fileText a', nodes);
           }
-          if (image !== false) {
+          if (image) {
             return ((function() {
               var _i, _len, _results;
               _results = [];
@@ -3392,12 +3392,15 @@
         setTimeout(Updater.update, 1000);
         count = 0;
         if (checkpost() === -1 && Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
-          Updater.ccheck = true;
           return int = setInterval((function() {
+            Updater.ccheck = true;
             Updater.update();
             if (checkpost() !== -1 || count === 30) {
-              clearInterval(int) && (Updater.cnodes = [] && (Updater.ccheck = false));
+              Updater.ccheck = false;
+              Updater.cnodes = [];
+              clearInterval(int);
             }
+            Updater.ccheck = false;
             return count++;
           }), 500);
         }
@@ -3599,8 +3602,10 @@
     },
     update: function() {
       var request, url;
-      if (this.ccheck !== true) {
+      if (!this.ccheck) {
         Updater.set('timer', 0);
+      } else {
+        this.ccheck = false;
       }
       request = Updater.request;
       if (request) {
