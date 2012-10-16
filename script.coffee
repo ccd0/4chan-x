@@ -2792,11 +2792,11 @@ Updater =
       setTimeout Updater.update, 1000
       count = 0
       if checkpost() is -1 and Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
+        Updater.ccheck = true
         int = setInterval (->
           Updater.update()
-          console.log 'Still going'
           if checkpost() isnt -1 or count is 30
-            clearInterval(int) and Updater.cnodes = [] and Updater.ccheck = true
+            clearInterval(int) and Updater.cnodes = [] and Updater.ccheck = false
           count++
         ), 500
     visibility: ->

@@ -3392,11 +3392,11 @@
         setTimeout(Updater.update, 1000);
         count = 0;
         if (checkpost() === -1 && Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
+          Updater.ccheck = true;
           return int = setInterval((function() {
             Updater.update();
-            console.log('Still going');
             if (checkpost() !== -1 || count === 30) {
-              clearInterval(int) && (Updater.cnodes = [] && (Updater.ccheck = true));
+              clearInterval(int) && (Updater.cnodes = [] && (Updater.ccheck = false));
             }
             return count++;
           }), 500);
