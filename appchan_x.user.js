@@ -9153,15 +9153,15 @@
               break;
             }
           }
-          if (rest.textContent !== "") {
+        }
+        if (rest.textContent !== "") {
+          if (embed) {
             $.after(embed, rest);
-            return this.text(rest);
-          }
-        } else {
-          if (rest.textContent !== "") {
+          } else {
             $.after(a, rest);
-            return this.text(rest);
           }
+          embed = false;
+          return this.text(rest);
         }
       }
     },
