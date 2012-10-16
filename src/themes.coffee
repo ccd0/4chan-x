@@ -752,6 +752,9 @@ div.reply.highlight {
   border-style: solid;
   border-radius: 0 !important;
 }
+.thread .opContainer {
+  padding: 0 3px;
+}
 body,
 .field {
   text-shadow: 0 1px 0 #ccc,
@@ -799,6 +802,9 @@ body,
 #qp a.backlink,
 #qp span.quote > a.quotelink {
   color: rgb(255,255,255);
+}
+#qp span.quote {
+  color: rgb(130,163,100);
 }
 #updater:not(:hover),
 #updater:not(:hover) #count:not(.new)::after,

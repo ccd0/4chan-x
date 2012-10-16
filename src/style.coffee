@@ -1974,7 +1974,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 /* Expand */
 #imgControls label:first-of-type::after {
-  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAALlJREFUKFOFkT0KwlAQhANWaUSb+AciVmLlSZLcVhttBH9QjyIIHiDOF2ZhOxeGebM7b3dfUnRdVwmN0Aq1UAqFGU2eekWSQ8RTh6HNMDqiwczNiJsnkR8Jx1RrSTKKDlE467wR9jY+XK9jN0bSKQwfGy/iqVcrMWespd82fsW7XP/XmZUmuXPsfHLHq3grHKzveef8NXjozKPH4mjAvf5rZPNLGtPAjI7ozUtfiD+1kp4LPLZxDV78APzYoty/jZXwAAAAAElFTkSuQmCC");
+  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAMAAACecocUAAAAb1BMVEXR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tTR0tSZBvUpAAAAJHRSTlNQAMxPCQ5OFhARt829w77wIhjI7cYwF8vHKrjJGfMoAx4gGhsv+lFWAAAAZUlEQVR4XjWMNxLDMBDE9gKPopLlnPP+/40mC1fAoACyIVw8YBlGapKkpAHkJks3kkDoyOnR86gBT13PFXfr5BCRZcv7vvLfp0PtoTNP5wuvGgCpNykzieZDeZah+Quw92cx2PcHpWcHAn4fKmoAAAAASUVORK5CYII=");
 }
 """
       else
@@ -2032,7 +2032,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 /* Expand */
 #imgControls label:first-of-type::after {
-  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAMRJREFUKFNtks0OAUEQhOdM4iBx8XMSwb6En0dw89CciQMXvIIb9XW6pXfYpDKlu6rV9G4ppfSElbB2THTGA486GrQmfjteOnfJAKcWfbQ2IQp38WkyDMWvqY/WDEyJxkl8JoyFg4sfrjEDOflrpoUAU/CLD0CT72dB8lRiIp6niD+0NkS8lvBfJCYfPf9ZJ4v4RqovjXjh8cLUujSGWOuzyjzS71vq25a2qcB690JH6DrPL26DYSDkT2PpNeqNwFSApv8BTpBEE3rYF6oAAAAASUVORK5CYII=");
+  content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAMAAABhq6zVAAAAZlBMVEVoa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2toa2vk6M8rAAAAIXRSTlMAQPgdP1LN2xzYJRrfFSPmDifOWSjlG9lC4AoLQecpKhKOaDqEAAAAb0lEQVR4XjWMWQ6DMBTEZl5eEhIIpdB9n/tfsoiqn7YsY3IyAIH0CS5ZBKJJDkrHEegHiaANKrVL2hkRYp9UknKNAQBWrbwH8IdSAfyyPOs8xrAN8qGbtwGl59qfrhJxkWy53ReTHmhOvlp7k/75AuomByJlyaNFAAAAAElFTkSuQmCC");
 }
 """
       switch Conf["4chan Banner"]
@@ -2321,31 +2321,31 @@ div.navLinks > a:first-of-type::after {
       switch Conf["Reply Padding"]
         when "phat"
           css += """
-form .postContainer blockquote {
+.postContainer blockquote {
   margin: 24px 60px 24px 50px;
 }
 """
         when "normal"
           css += """
-form .postContainer blockquote {
+.postContainer blockquote {
   margin: 12px 40px 12px 30px;
 }
 """
         when "slim"
           css += """
-form .postContainer blockquote {
+.postContainer blockquote {
   margin: 6px 20px 6px 15px;
 }
 """
         when "super slim"
           css += """
-form .postContainer blockquote {
+.postContainer blockquote {
   margin: 3px 10px 3px 7px;
 }
 """
         when "anorexia"
           css += """
-form .postContainer blockquote {
+.postContainer blockquote {
   margin: 1px 5px 1px 3px;
 }
 """
