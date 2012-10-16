@@ -107,6 +107,12 @@
       # We can finally insert the link.
       $.after node, a
 
+      # track the insertion point,
+      p = m.index+lLen
+
+      # And store leftover content in a text node so we can append it and continue to parse it.
+      rest = $.tn(txt.substring(p, txt.length))
+
       # We check to see if we're also allowing embedding.
       if Conf['Youtube Embed']
 
@@ -134,16 +140,14 @@
             # And we break out of the loop because no further embedding checks are needed.
             break
 
-      # track the insertion point,
-      p = m.index+lLen
-
-      # And store leftover content in a text node so we can append it and continue to parse it.
-      rest = $.tn(txt.substring(p, txt.length))
-
-      # If there is any content left, we append and parse it.
-      unless rest.textContent == ""
-        $.after a, rest
-        @text rest
+        # If there is any content left, we append and parse it.
+        unless rest.textContent == ""
+          $.after embed, rest
+          @text rest
+      else
+        unless rest.textContent == ""
+          $.after a, rest
+          @text rest
 
   embed: ->
     # We setup the link to be replaced by the embedded video
