@@ -3303,6 +3303,7 @@
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
       this.thread = $.id("t" + g.THREAD_ID);
+      this.checkc = 0;
       this.unsuccessfulFetchCount = 0;
       this.lastModified = '0';
       _ref = $$('input', dialog);
@@ -3599,7 +3600,12 @@
     },
     update: function() {
       var request, url;
-      Updater.set('timer', 0);
+      if (this.checkc < 2 && Updater.cb.post) {
+        Updater.set('timer', 0);
+        this.checkc++;
+      } else {
+        Updater.set('timer', 0);
+      }
       request = Updater.request;
       if (request) {
         request.onloadend = null;

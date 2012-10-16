@@ -2738,6 +2738,7 @@ Updater =
     @count  = $ '#count', dialog
     @timer  = $ '#timer', dialog
     @thread = $.id "t#{g.THREAD_ID}"
+    @checkc = 0
 
     @unsuccessfulFetchCount = 0
     @lastModified = '0'
@@ -2946,7 +2947,10 @@ Updater =
       Updater.set 'timer', n
 
   update: ->
-    Updater.set 'timer', 0
+    if @checkc < 2 and Updater.cb.post
+      Updater.set 'timer', 0
+      @checkc++
+    else Updater.set 'timer', 0
     {request} = Updater
     if request
       # Don't reset the counter when aborting.
