@@ -16,7 +16,8 @@ $.extend $,
   MINUTE: 1000 * 60
   HOUR  : 1000 * 60 * 60
   DAY   : 1000 * 60 * 60 * 24
-  log: console.log.bind console
+  # XXX http://code.google.com/p/phantomjs/issues/detail?id=522
+  log: console.log.bind? console
   engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
   id: (id) ->
     d.getElementById id
