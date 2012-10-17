@@ -24,7 +24,7 @@ module.exports = function(grunt) {
         ],
         dest: 'tmp/script.coffee'
       },
-      js: {
+      script: {
         src: ['<file_template:src/metadata.js>', '<file_template:src/banner.js>', 'tmp/script.js'],
         dest: '<config:meta.files.userjs>'
       },
@@ -38,7 +38,7 @@ module.exports = function(grunt) {
       }
     },
     coffee: {
-      all: {
+      script: {
         src:  'tmp/script.coffee',
         dest: 'tmp/script.js'
       }
@@ -46,14 +46,15 @@ module.exports = function(grunt) {
     exec: {
       commit: {
         command: function(grunt) {
-          var name, version;
+          var name, release, version;
           name    = grunt.config(['pkg', 'name']).replace(/-/g, ' ');
           version = grunt.config(['pkg', 'version']);
+          release = name + ' v' + version;
           return [
             'git checkout master',
-            'git commit -am "Release ' + name + ' v' + version + '."',
-            'git tag -a ' + version + ' -m "' + version + '"',
-            'git tag -af stable -m "' + version + '"'
+            'git commit -am "Release ' + release + '."',
+            'git tag -a ' + version + ' -m "' + release + '"',
+            'git tag -af stable -m "' + release + '"'
           ].join(' && ');
         },
         stdout: true
@@ -91,10 +92,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-coffee');
   grunt.loadNpmTasks('grunt-exec');
 
-  grunt.registerTask('default', 'concat:coffee coffee concat:js clean');
+  grunt.registerTask('default', 'concat:coffee coffee:script concat:script clean');
   grunt.registerTask('release', 'concat:meta concat:latest default exec:commit exec:push');
   grunt.registerTask('patch',   'bump');
   grunt.registerTask('upgrade', 'bump:minor');
-  grunt.registerTask('test',    'server qunit');
+  grunt.registerTask('test',    'default server qunit');
 
 };

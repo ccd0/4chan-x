@@ -266,6 +266,10 @@ Main =
     for key, val of Conf
       Conf[key] = $.get key, val
 
+    if QUnit
+      Main.initQUnit()
+      return
+
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
     if g.REPLY = pathname[2] is 'res'
@@ -284,6 +288,39 @@ Main =
             url  = Redirect.image path[1], path[3]
             location.href = url if url
         return
+
+  initQUnit: ->
+    window.x =
+      # ui.coffee
+      UI: UI
+      # $.coffee
+      $: $
+      # main.coffee
+      Board:  Board
+      Thread: Thread
+      Post:   Post
+      Main:   Main
+      # features.coffee
+      Redirect: Redirect
+      Build: Build
+      Get:   Get
+      Quotify: Quotify
+      QuoteInline: QuoteInline
+      QuotePreview: QuotePreview
+      QuoteBacklink: QuoteBacklink
+      QuoteOP: QuoteOP
+      QuoteCT: QuoteCT
+      Anonymize: Anonymize
+      Time: Time
+      FileInfo: FileInfo
+      Sauce: Sauce
+      RevealSpoilers: RevealSpoilers
+      AutoGIF: AutoGIF
+      ImageHover: ImageHover
+      ThreadUpdater: ThreadUpdater
+    g.BOARD  = new Board 'a'
+    g.REPLY  = true
+    g.THREAD = '123456789'
 
   initHeader: ->
     $.addStyle Main.css

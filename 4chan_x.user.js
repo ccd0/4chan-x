@@ -2571,6 +2571,10 @@
         val = Conf[key];
         Conf[key] = $.get(key, val);
       }
+      if (QUnit) {
+        Main.initQUnit();
+        return;
+      }
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
       if (g.REPLY = pathname[2] === 'res') {
@@ -2594,6 +2598,36 @@
             }
           });
       }
+    },
+    initQUnit: function() {
+      window.x = {
+        UI: UI,
+        $: $,
+        Board: Board,
+        Thread: Thread,
+        Post: Post,
+        Main: Main,
+        Redirect: Redirect,
+        Build: Build,
+        Get: Get,
+        Quotify: Quotify,
+        QuoteInline: QuoteInline,
+        QuotePreview: QuotePreview,
+        QuoteBacklink: QuoteBacklink,
+        QuoteOP: QuoteOP,
+        QuoteCT: QuoteCT,
+        Anonymize: Anonymize,
+        Time: Time,
+        FileInfo: FileInfo,
+        Sauce: Sauce,
+        RevealSpoilers: RevealSpoilers,
+        AutoGIF: AutoGIF,
+        ImageHover: ImageHover,
+        ThreadUpdater: ThreadUpdater
+      };
+      g.BOARD = new Board('a');
+      g.REPLY = true;
+      return g.THREAD = '123456789';
     },
     initHeader: function() {
       $.addStyle(Main.css);
