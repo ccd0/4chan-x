@@ -266,8 +266,8 @@ Main =
     for key, val of Conf
       Conf[key] = $.get key, val
 
-    if QUnit
-      Main.initQUnit()
+    if unitTesting
+      Main.initUnitTesting()
       return
 
     pathname = location.pathname.split '/'
@@ -289,7 +289,7 @@ Main =
             location.href = url if url
         return
 
-  initQUnit: ->
+  initUnitTesting: ->
     window.x =
       # ui.coffee
       UI: UI

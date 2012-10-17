@@ -163,8 +163,9 @@ $.extend $,
     $.rm script
   # http://mths.be/unsafewindow
   unsafeWindow:
-    if window.opera # Opera
-      window
+    if unitTesting or # unit testing
+      window.opera # Opera
+        window
     else if unsafeWindow isnt window # Firefox
       unsafeWindow
     else # Chrome

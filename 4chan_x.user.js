@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, ThreadUpdater, Time, UI, d, g,
+  var $, $$, Anonymize, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, ThreadUpdater, Time, UI, d, g, unitTesting,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -170,7 +170,9 @@
     imageFit: 'fit width'
   };
 
-  if (!/^(boards|images|sys)\.4chan\.org$/.test(location.hostname)) {
+  unitTesting = !!window.QUnit;
+
+  if (!(/^(boards|images|sys)\.4chan\.org$/.test(location.hostname) || unitTesting)) {
     return;
   }
 
@@ -601,7 +603,7 @@
       $.add(d.head, script);
       return $.rm(script);
     },
-    unsafeWindow: window.opera ? window : unsafeWindow !== window ? unsafeWindow : (function() {
+    unsafeWindow: unitTesting || window.opera ? window : unsafeWindow !== window ? unsafeWindow : (function() {
       var p;
       p = d.createElement('p');
       p.setAttribute('onclick', 'return window');
@@ -2571,8 +2573,8 @@
         val = Conf[key];
         Conf[key] = $.get(key, val);
       }
-      if (QUnit) {
-        Main.initQUnit();
+      if (unitTesting) {
+        Main.initUnitTesting();
         return;
       }
       pathname = location.pathname.split('/');
@@ -2599,7 +2601,7 @@
           });
       }
     },
-    initQUnit: function() {
+    initUnitTesting: function() {
       window.x = {
         UI: UI,
         $: $,
