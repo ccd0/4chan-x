@@ -6009,7 +6009,7 @@
         emailStart = '';
         emailEnd = '';
       }
-      subject = subject ? "<span class=subject>" + subject + "</span>" : '';
+      subject = "<span class=subject>" + (subject || '') + "</span>";
       userID = !capcode && uniqueID ? (" <span class='posteruid id_" + uniqueID + "'>(ID: ") + ("<span class=hand title='Highlight posts by this ID'>" + uniqueID + "</span>)</span> ") : '';
       switch (capcode) {
         case 'admin':
