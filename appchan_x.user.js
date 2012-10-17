@@ -9249,8 +9249,8 @@
         item = Emoji[_i];
         if (!(Conf['Emoji'] === "disable ponies" && item[2] === "pony")) {
           name = item[0];
-          image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA' + item[1];
-          css += "a.useremail[href*='" + name + "']:last-of-type::" + position + ",\na.useremail[href*='" + name.toLowerCase() + "']:last-of-type::" + position + ",\na.useremail[href*='" + name.toUpperCase() + "']:last-of-type::" + position + " {\ncontent: url('" + image + "') \" \";\nvertical-align: top;\n}";
+          image = Icons.header + item[1];
+          css += "a.useremail[href*='" + name + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toLowerCase()) + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toUpperCase()) + "']:last-of-type::" + position + " {\n  content: url('" + image + "') \" \";\n  vertical-align: top;\n}";
         }
       }
       return css;
