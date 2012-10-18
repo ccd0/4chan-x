@@ -199,7 +199,9 @@ Filter =
         $.addClass root, result.class
 
   name: (post) ->
-    $('.name', post.el).textContent
+    if (cont = (name = $ '.name', post.el).textContent) isnt 'Anonymous' and cont.length isnt 0
+      return name.textContent
+    false
   uniqueid: (post) ->
     if uid = $ '.posteruid', post.el
       return uid.textContent[5...-1]
@@ -1078,7 +1080,7 @@ Updater =
       return unless Conf['Auto Update This']
       save = []
       text = $('textarea', QR.el).value.replace(/^\s\s*/, '').replace /\n/g, ''
-      unless text.length is 0
+      if text.length isnt 0
         save.push QR.replies[0].file.name
         image = false
       else
@@ -1086,20 +1088,22 @@ Updater =
         image = true
       checkpost = ->
         nodes = Updater.cnodes.childNodes
-        unless Conf['File Info Formatting']
-          iposts = $$ 'span.fileText span', nodes
-        else iposts = $$ 'span.fileText a', nodes
         if image
-          (node.innerHTML for node in iposts).indexOf save[0]
-        else (node.textContent for node in $$ '.postMessage', nodes).indexOf save[0]
+          if Conf['File Info Formatting']
+            pposts = $$ 'span.fileText a', nodes
+          else
+            pposts = $$ 'span.fileText span', nodes
+        else
+          pposts = $$ '.postMessage', nodes
+        save[0] in (node.textContent for node in pposts)
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 1000
       count = 0
-      if checkpost() is -1 and Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
+      if !checkpost() and Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
         int = setInterval (->
           Updater.ccheck = true
           Updater.update()
-          if checkpost() isnt -1 or count is 30
+          f checkpost() or count > 29
             Updater.ccheck = false
             Updater.cnodes = []
             clearInterval int
@@ -2402,20 +2406,18 @@ ArchiveLink =
       open: (post) -> 
         path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
         if (Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
-        # Doesn't really do what I want, but leaving this right now.
           return false
         else true
       children: []
 
     for type in [
-      ['Post',             'apost'] 
-      ['Name',             'name']
-      ['Tripcode',         'tripcode']
-      ['E-mail',           'email']
-      ['Subject',          'subject']
-     #['Comment',          'comment']
-      ['Filename',         'filename']
-     #['Image MD5',        'md5']
+      ['Post',      'apost'] 
+      ['Name',      'name']
+      ['Tripcode',  'tripcode']
+      ['E-mail',    'email']
+      ['Subject',   'subject']
+      ['Filename',  'filename']
+      ['Image MD5', 'md5']
     ]
       # Add a sub entry for each filter type.
       entry.children.push ArchiveLink.createSubEntry type[0], type[1]
@@ -2426,8 +2428,6 @@ ArchiveLink =
     el = $.el 'a',
       textContent: text
       target: '_blank'
-    # Define the onclick var outside of open's scope to $.off it properly.
-    onclick = null
 
     open = (post) ->
       value = Filter[type] post
@@ -2436,21 +2436,14 @@ ArchiveLink =
       # We want to parse the exact same stuff as Filter does already + maybe a few extras.
       return false if value is false
       path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
-      if (rthread = Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
+      if (rpost = Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
         return false
-      $.off el, 'click', onclick
-      onclick = ->
-        console.log
-        switch type
-          when 'apost'
-            href = rthread
-          when 'md5'
-            type = type.replace /\//g, '_'
-        href = Redirect.archiver path[1], value, type
-        el.href = href
-
-      $.on el, 'click', onclick
-      true
+      if type is 'md5'
+        value = value.replace /\//g, '_'
+      href = Redirect.thread path[1], value, type, true
+      if type is 'apost'
+        href = rpost
+      el.href = href
 
     return el: el, open: open
 
@@ -2690,68 +2683,62 @@ Redirect =
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-  thread: (board, threadID, postID) ->
-    # keep the number only if the location.hash was sent f.e.
-    postID = postID.match(/\d+/)[0] if postID
-    path   =
-      if threadID
-        "#{board}/thread/#{threadID}"
-      else
-        "#{board}/post/#{postID}"
+  thread: (board, threadID, postID, AL) ->
+    ar = (a) ->
+      postID = 'username' if postID is 'name'
+      postID = 'image'    if postID is 'md5'
+      if a
+        "#{board}/search/#{postID}/#{threadID}"
+      else unless postID is 'image'
+        "#{board}/?task=search2&search_#{postID}=#{threadID}"
+      else "#{board}/image/#{threadID}"
+    unless AL
+      # keep the number only if the location.hash was sent f.e.
+      postID = postID.match(/\d+/)[0] if postID
+      path   =
+        if threadID
+          "#{board}/thread/#{threadID}"
+        else
+          "#{board}/post/#{postID}"
     switch board
       when 'a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
+        path = ar true if AL
         url = "//archive.foolz.us/#{path}/"
-        if threadID and postID
+        if threadID and postID and !AL
           url += "##{postID}"
       when 'u', 'kuku'
+        path = ar true if AL
         url = "//nsfw.foolz.us/#{path}/"
-        if threadID and postID
+        if threadID and postID and !AL
           url += "##{postID}"
       when 'ck', 'jp', 'lit'
+        path = ar true if AL
         url = "//fuuka.warosu.org/#{path}"
-        if threadID and postID
-          url += "#p#{postID}"
+        if threadID and postID and !AL
+          url += "##{postID}"
       when 'diy', 'sci'
+        path = ar false if AL
         url = "//archive.installgentoo.net/#{path}"
-        if threadID and postID
+        if threadID and postID and !AL
           url += "#p#{postID}"
       when 'cgl', 'g', 'mu', 'soc', 'w'
+        path = ar false if AL
         url = "//archive.rebeccablacktech.com/#{path}"
-        if threadID and postID
+        if threadID and postID and !AL
           url += "#p#{postID}"
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
+        path = ar false if AL
         url = "http://archive.heinessen.com/#{path}"
-        if threadID and postID
+        if threadID and postID and !AL
           url += "#p#{postID}"
-      when 'e'
-        url = "https://www.cliché.net/4chan/cgi-board.pl/#{path}"
-        if threadID and postID
-          url += "#p#{postID}"
+      #when 'e'
+      #  url = "https://www.cliché.net/4chan/cgi-board.pl/#{path}"
+      #  if threadID and postID
+      #    url += "#p#{postID}"
       else
         if threadID
           url = "//boards.4chan.org/#{board}/"
     url or null
-  archiver: (board, value, type) ->
-    foolz = ->
-      switch type 
-        when 'name'
-          type = 'username'
-        when 'comment'
-          type = 'text'
-        when 'md5'
-          type  = 'image'
-    switch board
-      when 'a', 'm', 'q', 'sp', 'tg', 'vg', 'wsg'
-        "//archive.foolz.us/#{board}/search/#{foolz()}/#{value}" 
-      when 'u'
-        "//nsfw.foolz.us/#{board}/search/#{foolz()}/#{value}"
-      when 'cgl', 'g', 'w'
-         unless type is 'md5'
-          "//archive.rebeccablacktech.com/#{board}/?task=search2&search_#{type}=#{value}"
-        else "//archive.rebeccablacktech.com/#{board}/image/#{value}"
-      when 'an', 'k', 'toy', 'x'
-        "http://archive.heinessen.com/#{board}/?task=search&ghost=&search_#{type}=#{value}"
-
 
 ImageHover =
   init: ->
