@@ -219,7 +219,7 @@ Filter =
       return decodeURIComponent mail.href[7..]
     false
   subject: (post) ->
-    if subject = $ '.postInfo .subject', post.el
+    if (subject = $ '.postInfo .subject', post.el).textContent.length isnt 0
       return subject.textContent
     false
   comment: (post) ->
@@ -227,7 +227,9 @@ Filter =
     nodes = d.evaluate './/br|.//text()', post.blockquote, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null
     for i in [0...nodes.snapshotLength]
       text.push if data = nodes.snapshotItem(i).data then data else '\n'
-    text.join ''
+    if r = text.join('').length isnt 0
+      r
+    else false
   country: (post) ->
     if flag = $ '.countryFlag', post.el
       return flag.title
@@ -2391,13 +2393,18 @@ DownloadLink =
         true
 
 ArchiveLink =
-  init: ->
+  init: (post) ->
     div = $.el 'div',
       textContent: 'Archive'
 
     entry =
       el: div
-      open: -> true
+      open: (post) -> 
+        path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
+        if (Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
+        # Doesn't really do what I want, but leaving this right now.
+          return false
+        else true
       children: []
 
     for type in [
@@ -2428,18 +2435,18 @@ ArchiveLink =
         value = Filter[type] post
       # We want to parse the exact same stuff as Filter does already + maybe a few extras.
       return false if value is false
+      path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
+      if (rthread = Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
+        return false
       $.off el, 'click', onclick
       onclick = ->
-        path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
-        if (rthread = Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
-          return false
+        console.log
         switch type
           when 'apost'
             href = rthread
           when 'md5'
-            href = 'Put md5 here.'
-          else
-            href = Redirect.archiver path[1], value, type
+            type = type.replace /\//g, '_'
+        href = Redirect.archiver path[1], value, type
         el.href = href
 
       $.on el, 'click', onclick
@@ -2725,19 +2732,26 @@ Redirect =
           url = "//boards.4chan.org/#{board}/"
     url or null
   archiver: (board, value, type) ->
+    foolz = ->
+      switch type 
+        when 'name'
+          type = 'username'
+        when 'comment'
+          type = 'text'
+        when 'md5'
+          type  = 'image'
     switch board
       when 'a', 'm', 'q', 'sp', 'tg', 'vg', 'wsg'
-        unless type is 'name'
-          "//archive.foolz.us/#{board}/search/#{type}/#{value}"
-        else "//archive.foolz.us/#{board}/search/username/#{value}"
+        "//archive.foolz.us/#{board}/search/#{foolz()}/#{value}" 
       when 'u'
-        unless type is 'name'
-          "//nsfw.foolz.us/#{board}/search/#{type}/#{value}"
-        else "//nsfw.foolz.us/#{board}/search/username/#{value}"
+        "//nsfw.foolz.us/#{board}/search/#{foolz()}/#{value}"
       when 'cgl', 'g', 'w'
-         "//archive.rebeccablacktech.com/#{board}/?task=search2&search_#{type}=#{value}"
+         unless type is 'md5'
+          "//archive.rebeccablacktech.com/#{board}/?task=search2&search_#{type}=#{value}"
+        else "//archive.rebeccablacktech.com/#{board}/image/#{value}"
       when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/?task=search&ghost=&search_#{type}=#{value}"
+
 
 ImageHover =
   init: ->
