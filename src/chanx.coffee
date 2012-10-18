@@ -2392,18 +2392,49 @@ DownloadLink =
 
 ArchiveLink =
   init: ->
-    a = $.el 'a',
-      className:   'archive_link'
-      target:      '_blank'
-      textContent: 'Archived post'
-    Menu.addEntry
-      el: a
-      open: (post) ->
+    div = $.el 'div',
+      textContent: 'Archive'
+
+    entry =
+      el: div
+      open: -> true
+      children: []
+
+    for type in [
+      ['Name',             'name']
+      ['Tripcode',         'tripcode']
+      ['E-mail',           'email']
+      ['Subject',          'subject']
+     #['Comment',          'comment']
+      ['Filename',         'filename']
+     #['Image MD5',        'md5']
+    ]
+      # Add a sub entry for each filter type.
+      entry.children.push ArchiveLink.createSubEntry type[0], type[1]
+
+    Menu.addEntry entry
+
+  createSubEntry: (text, type) ->
+    el = $.el 'a',
+      textContent: text
+      target: '_blank'
+    # Define the onclick var outside of open's scope to $.off it properly.
+    onclick = null
+
+    open = (post) ->
+      value = Filter[type] post
+      # We want to parse the exact same stuff as Filter does already + maybe a few extras.
+      return false if value is false
+      $.off el, 'click', onclick
+      onclick = ->
         path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
-        if (href = Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
-          return false
-        a.href = href
-        true
+        href = Redirect.archiver path[1], value, type
+        el.href = href
+
+      $.on el, 'click', onclick
+      true
+
+    return el: el, open: open
 
 ThreadHideLink =
   init: ->
@@ -2682,6 +2713,16 @@ Redirect =
         if threadID
           url = "//boards.4chan.org/#{board}/"
     url or null
+  archiver: (board, type, value) ->
+    switch board
+      when 'a', 'm', 'q', 'sp', 'tg', 'vg', 'wsg'
+        "//archive.foolz.us/#{board}/search/#{value}/#{type}"
+      when 'u'
+        "//nsfw.foolz.us/#{board}/search/#{value}/#{type}"
+      when 'cgl', 'g', 'w'
+        "//archive.rebeccablacktech.com/#{board}/?task=search2&search_#{value}=#{type}"
+      when 'an', 'k', 'toy', 'x'
+        "http://archive.heinessen.com/#{board}/?task=search&ghost=&search_#{value}=#{type}"
 
 ImageHover =
   init: ->
