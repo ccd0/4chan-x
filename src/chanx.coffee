@@ -2720,16 +2720,20 @@ Redirect =
         if threadID
           url = "//boards.4chan.org/#{board}/"
     url or null
-  archiver: (board, type, value) ->
+  archiver: (board, value, type) ->
     switch board
       when 'a', 'm', 'q', 'sp', 'tg', 'vg', 'wsg'
-        "//archive.foolz.us/#{board}/search/#{value}/#{type}"
+        unless type is 'name'
+          "//archive.foolz.us/#{board}/search/#{type}/#{value}"
+        else "//archive.foolz.us/#{board}/search/username/#{value}"
       when 'u'
-        "//nsfw.foolz.us/#{board}/search/#{value}/#{type}"
+        unless type is 'name'
+          "//nsfw.foolz.us/#{board}/search/#{type}/#{value}"
+        else "//nsfw.foolz.us/#{board}/search/username/#{value}"
       when 'cgl', 'g', 'w'
-        "//archive.rebeccablacktech.com/#{board}/?task=search2&search_#{value}=#{type}"
+         "//archive.rebeccablacktech.com/#{board}/?task=search2&search_#{type}=#{value}"
       when 'an', 'k', 'toy', 'x'
-        "http://archive.heinessen.com/#{board}/?task=search&ghost=&search_#{value}=#{type}"
+        "http://archive.heinessen.com/#{board}/?task=search&ghost=&search_#{type}=#{value}"
 
 ImageHover =
   init: ->
