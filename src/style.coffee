@@ -784,6 +784,9 @@ textarea,
 time + span {
   font-size: #{Conf["Font Size"]};
 }
+.pages strong {
+  font-size: #{parseInt(Conf["Font Size"], 10) + 3}px;
+}
 #globalMessage b {
   font-weight: 100;
 }
