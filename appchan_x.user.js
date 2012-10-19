@@ -6986,6 +6986,7 @@
     image: function(board, filename) {
       switch (board) {
         case 'a':
+        case 'jp':
         case 'm':
         case 'q':
         case 'sp':
