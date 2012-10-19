@@ -3946,10 +3946,13 @@
         }
       }
     },
-    name: function(post) {
-      var cont, name;
-      if ((cont = (name = $('.name', post.el)).textContent) !== 'Anonymous' && cont.length !== 0) {
-        return name.textContent;
+    name: function(post, AL) {
+      var name;
+      name = $('.name', post.el).textContent;
+      if (!AL) {
+        return name;
+      } else if (name !== 'Anonymous' && name.length !== 0) {
+        return name;
       }
       return false;
     },
@@ -3974,10 +3977,15 @@
       }
       return false;
     },
-    email: function(post) {
-      var mail;
+    email: function(post, AL) {
+      var content, mail;
       if (mail = $('.useremail', post.el)) {
-        return decodeURIComponent(mail.href.slice(7));
+        content = decodeURIComponent(mail.href.slice(7));
+        if (!AL) {
+          return content;
+        } else if (content.toString() !== 'sage' && r.length !== 0) {
+          return content;
+        }
       }
       return false;
     },
@@ -3989,17 +3997,16 @@
       return false;
     },
     comment: function(post) {
-      var data, i, nodes, r, text, _i, _ref;
+      var content, data, i, nodes, text, _i, _ref;
       text = [];
       nodes = d.evaluate('.//br|.//text()', post.blockquote, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
       for (i = _i = 0, _ref = nodes.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
       }
-      if (r = text.join('').length !== 0) {
-        return r;
-      } else {
-        return false;
+      if ((content = text.join('')).length !== 0) {
+        return content;
       }
+      return false;
     },
     country: function(post) {
       var flag;
@@ -6684,7 +6691,7 @@
       open = function(post) {
         var href, path, rpost, value;
         if (type !== 'apost') {
-          value = Filter[type](post);
+          value = Filter[type](post, true);
         }
         if (value === false) {
           return false;
