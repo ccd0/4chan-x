@@ -284,7 +284,7 @@ Filter =
       ['Image MD5',        'md5']
     ]
       # Add a sub entry for each filter type.
-      entry.children.push Filter.createSubEntry type[0], type[1]
+      entry.children.push(this.createSubEntry(type[0], type[1]));
 
     Menu.addEntry entry
 
@@ -2684,49 +2684,52 @@ Redirect =
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
   thread: (board, threadID, postID, AL) ->
     ar = (a) ->
-      postID = 'username' if postID is 'name'
-      postID = 'image'    if postID is 'md5'
-      if a
-        "#{board}/search/#{postID}/#{threadID}"
-      else unless postID is 'image'
-        "#{board}/?task=search2&search_#{postID}=#{threadID}"
-      else "#{board}/image/#{threadID}"
-    unless AL
-      # keep the number only if the location.hash was sent f.e.
-      postID = postID.match(/\d+/)[0] if postID
-      path   =
-        if threadID
-          "#{board}/thread/#{threadID}"
-        else
-          "#{board}/post/#{postID}"
+      if AL
+        postID = 'username' if postID is 'name'
+        postID = 'image' if postID is 'md5'
+        if a is 'fuuka'
+          return "#{board}/search/#{postID}/#{threadID}"
+        else if a is 'gentoo'
+          if postID is 'image'
+            "#{board}/image/#{threadID}"
+          else
+            "#{board}/?task=search2&search_#{postID}=#{threadID}"
+      else
+        # keep the number only if the location.hash was sent f.e.
+        postID = postID.match(/\d+/)[0] if postID
+        path =
+          if threadID
+            "#{board}/thread/#{threadID}"
+          else
+            "#{board}/post/#{postID}"
     switch board
       when 'a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
-        path = ar true if AL
+        path = ar 'fuuka'
         url = "//archive.foolz.us/#{path}/"
         if threadID and postID and !AL
           url += "##{postID}"
       when 'u', 'kuku'
-        path = ar true if AL
+        path = ar 'fuuka'
         url = "//nsfw.foolz.us/#{path}/"
         if threadID and postID and !AL
           url += "##{postID}"
       when 'ck', 'jp', 'lit'
-        path = ar true if AL
+        path = ar 'fuuka'
         url = "//fuuka.warosu.org/#{path}"
         if threadID and postID and !AL
           url += "##{postID}"
       when 'diy', 'sci'
-        path = ar false if AL
+        path = ar 'gentoo'
         url = "//archive.installgentoo.net/#{path}"
         if threadID and postID and !AL
           url += "#p#{postID}"
       when 'cgl', 'g', 'mu', 'soc', 'w'
-        path = ar false if AL
+        path = ar 'gentoo'
         url = "//archive.rebeccablacktech.com/#{path}"
         if threadID and postID and !AL
           url += "#p#{postID}"
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
-        path = ar false if AL
+        path = ar 'gentoo'
         url = "http://archive.heinessen.com/#{path}"
         if threadID and postID and !AL
           url += "#p#{postID}"
