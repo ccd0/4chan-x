@@ -559,78 +559,29 @@ QR =
   dialog: ->
     if Conf['Style']
       QR.el = UI.dialog 'qr', '', '
-<div id=qrtab>
-  - Post Form -
-</div>
+<div id=qrtab>- Post Form -</div>
 <form>
   <div class=warning></div>
-  <div>
-    <input id=dump type=button title="Dump list" value=+ class=field>
-    <input name=name title=Name placeholder=Name class=field size=1>
-    <input name=email title=E-mail placeholder=E-mail class=field size=1>
-    <input name=sub title=Subject placeholder=Subject class=field size=1>
-  </div>
-  <div id=replies>
-    <div>
-      <a id=addReply href=javascript:; title="Add a reply">+</a>
-    </div>
-  </div>
-  <div class=textarea>
-    <textarea name=com title=Comment placeholder=Comment class=field></textarea>
-    <span id=charCount></span>
-  </div>
-  <div>
-    <input type=file title="Shift+Click to remove the selected file." multiple size=16>
-    <div id=browse class=field>
-      Browse...
-    </div>
-    <div id=file class=field></div></div>
-  <div id=submit>
-    <input type=submit>
-  </div>
+  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
+  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
+  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
+  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=browse class=field>Browse...</div><div id=file class=field></div></div>
+  <div id=submit><input type=submit></div>
   <div id=threadselect></div>
-  <label id=spoilerLabel>
-    <input type=checkbox id=spoiler>
-    Spoiler Image?
-  </label>
+  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
 </form>'
     else
       QR.el = UI.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
-  Quick Reply
-  <input type=checkbox id=autohide title=Auto-hide>
-  <span>
-    <a class=close title=Close>
-      ×
-    </a>
-  </span>
+  Quick Reply <input type=checkbox id=autohide title=Auto-hide>
+  <span> <a class=close title=Close>×</a></span>
 </div>
 <form>
-  <div>
-    <input id=dump type=button title="Dump list" value=+ class=field>
-    <input name=name title=Name placeholder=Name class=field size=1>
-    <input name=email title=E-mail placeholder=E-mail class=field size=1>
-    <input name=sub title=Subject placeholder=Subject class=field size=1>
-  </div>
-  <div id=replies>
-    <div>
-      <a id=addReply href=javascript:; title="Add a reply">
-        +
-      </a>
-    </div>
-  </div>
-  <div class=textarea>
-    <textarea name=com title=Comment placeholder=Comment class=field></textarea>
-    <span id=charCount></span>
-  </div>
-  <div>
-    <input type=file title="Shift+Click to remove the selected file." multiple size=16>
-    <input type=submit>
-  </div>
-  <label id=spoilerLabel>
-    <input type=checkbox id=spoiler>
-    Spoiler Image?
-  </label>
+  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
+  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
+  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
+  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>
+  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
   <div class=warning></div>
 </form>'
 

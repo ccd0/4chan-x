@@ -8158,78 +8158,29 @@
       var fileInput, i, id, mimeTypes, name, riceFile, size, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
       if (Conf['Style']) {
         QR.el = UI.dialog('qr', '', '\
-<div id=qrtab>\
-  - Post Form -\
-</div>\
+<div id=qrtab>- Post Form -</div>\
 <form>\
   <div class=warning></div>\
-  <div>\
-    <input id=dump type=button title="Dump list" value=+ class=field>\
-    <input name=name title=Name placeholder=Name class=field size=1>\
-    <input name=email title=E-mail placeholder=E-mail class=field size=1>\
-    <input name=sub title=Subject placeholder=Subject class=field size=1>\
-  </div>\
-  <div id=replies>\
-    <div>\
-      <a id=addReply href=javascript:; title="Add a reply">+</a>\
-    </div>\
-  </div>\
-  <div class=textarea>\
-    <textarea name=com title=Comment placeholder=Comment class=field></textarea>\
-    <span id=charCount></span>\
-  </div>\
-  <div>\
-    <input type=file title="Shift+Click to remove the selected file." multiple size=16>\
-    <div id=browse class=field>\
-      Browse...\
-    </div>\
-    <div id=file class=field></div></div>\
-  <div id=submit>\
-    <input type=submit>\
-  </div>\
+  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
+  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>\
+  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\
+  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=browse class=field>Browse...</div><div id=file class=field></div></div>\
+  <div id=submit><input type=submit></div>\
   <div id=threadselect></div>\
-  <label id=spoilerLabel>\
-    <input type=checkbox id=spoiler>\
-    Spoiler Image?\
-  </label>\
+  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>\
 </form>');
       } else {
         QR.el = UI.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
-  Quick Reply\
-  <input type=checkbox id=autohide title=Auto-hide>\
-  <span>\
-    <a class=close title=Close>\
-      ×\
-    </a>\
-  </span>\
+  Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
+  <span> <a class=close title=Close>×</a></span>\
 </div>\
 <form>\
-  <div>\
-    <input id=dump type=button title="Dump list" value=+ class=field>\
-    <input name=name title=Name placeholder=Name class=field size=1>\
-    <input name=email title=E-mail placeholder=E-mail class=field size=1>\
-    <input name=sub title=Subject placeholder=Subject class=field size=1>\
-  </div>\
-  <div id=replies>\
-    <div>\
-      <a id=addReply href=javascript:; title="Add a reply">\
-        +\
-      </a>\
-    </div>\
-  </div>\
-  <div class=textarea>\
-    <textarea name=com title=Comment placeholder=Comment class=field></textarea>\
-    <span id=charCount></span>\
-  </div>\
-  <div>\
-    <input type=file title="Shift+Click to remove the selected file." multiple size=16>\
-    <input type=submit>\
-  </div>\
-  <label id=spoilerLabel>\
-    <input type=checkbox id=spoiler>\
-    Spoiler Image?\
-  </label>\
+  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
+  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>\
+  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\
+  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>\
+  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>\
   <div class=warning></div>\
 </form>');
       }
@@ -9599,7 +9550,7 @@
           css += ".boardBanner {\n  opacity: 0.5;\n  " + agent + "transition: opacity 0.3s ease-in-out 1s;\n}\n.boardBanner:hover {\n  opacity: 1;\n  " + agent + "transition: opacity 0.3s ease-in;\n}";
         }
         if (Conf["4chan Banner Reflection"]) {
-          css += ".gecko .boardBanner::after {\n  background-image: -moz-element(#Banner);\n  bottom: -100%;\n  content: '';\n  left: 0;\n  mask: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KCTxkZWZzPg0KCQk8bGluZWFyR3JhZGllbnQgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giIGlkPSJncmFkaWVudCIgeDI9IjAiIHkyPSIxIj4NCgkJCTxzdG9wIHN0b3Atb2Zmc2V0PSIwIi8+DQoJCQk8c3RvcCBzdG9wLWNvbG9yPSJ3aGl0ZSIgb2Zmc2V0PSIxIi8+DQoJCTwvbGluZWFyR3JhZGllbnQ+DQoJCTxtYXNrIGlkPSJtYXNrIiBtYXNrVW5pdHM9Im9iamVjdEJvdW5kaW5nQm94IiBtYXNrQ29udGVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSI+DQoJCQk8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIvPg0KCQk8L21hc2s+DQoJPC9kZWZzPg0KPC9zdmc+#mask');\n  opacity: .2;\n  position: absolute;\n  right: 0;\n  top: 100%;\n  z-index: 1;\n  -moz-transform: scaleY(-1);\n}\n\n.webkit #Banner {\n  -webkit-box-reflect: below 0 linear-gradient(transparent, transparent 0.1, rgba(255,255,255,.5));\n}";
+          css += "/* From 4chan SS / OneeChan */\n.gecko .boardBanner::after {\n  background-image: -moz-element(#Banner);\n  bottom: -100%;\n  content: '';\n  left: 0;\n  mask: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KCTxkZWZzPg0KCQk8bGluZWFyR3JhZGllbnQgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giIGlkPSJncmFkaWVudCIgeDI9IjAiIHkyPSIxIj4NCgkJCTxzdG9wIHN0b3Atb2Zmc2V0PSIwIi8+DQoJCQk8c3RvcCBzdG9wLWNvbG9yPSJ3aGl0ZSIgb2Zmc2V0PSIxIi8+DQoJCTwvbGluZWFyR3JhZGllbnQ+DQoJCTxtYXNrIGlkPSJtYXNrIiBtYXNrVW5pdHM9Im9iamVjdEJvdW5kaW5nQm94IiBtYXNrQ29udGVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSI+DQoJCQk8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIvPg0KCQk8L21hc2s+DQoJPC9kZWZzPg0KPC9zdmc+#mask');\n  opacity: .2;\n  position: absolute;\n  right: 0;\n  top: 100%;\n  z-index: 1;\n  -moz-transform: scaleY(-1);\n}\n\n.webkit #Banner {\n  -webkit-box-reflect: below 0 linear-gradient(transparent, transparent 0.1, rgba(255,255,255,.5));\n}";
         }
         if (Conf["Hide Horizontal Rules"]) {
           css += "hr {\n  visibility: hidden;\n}";
