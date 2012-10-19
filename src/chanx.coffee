@@ -198,13 +198,8 @@ Filter =
         # Highlight
         $.addClass root, result.class
 
-  name: (post, AL) ->
-    name = $('.name', post.el).textContent
-    if !AL
-      return name
-    else if name isnt 'Anonymous' and name.length isnt 0
-      return name
-    false
+  name: (post) ->
+    $('.name', post.el).textContent
   uniqueid: (post) ->
     if uid = $ '.posteruid', post.el
       return uid.textContent[5...-1]
@@ -217,15 +212,11 @@ Filter =
     if mod = $ '.capcode', post.el
       return mod.textContent
     false
-  email: (post, AL) ->
+  email: (post) ->
     if mail = $ '.useremail', post.el
       # remove 'mailto:'
       # decode %20 into space for example
-      content = decodeURIComponent mail.href[7..]
-      if !AL
-        return content
-      else if content.toString() isnt 'sage' and r.length isnt 0
-        return content
+      return decodeURIComponent mail.href[7..]
     false
   subject: (post) ->
     if (subject = $ '.postInfo .subject', post.el).textContent.length isnt 0
@@ -2438,14 +2429,21 @@ ArchiveLink =
 
     open = (post) ->
       unless type is 'apost'
-        value = Filter[type] post, true
+        value = Filter[type] post
       # We want to parse the exact same stuff as Filter does already + maybe a few extras.
       return false if value is false
       path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
       if (rpost = Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
         return false
-      if type is 'md5'
-        value = value.replace /\//g, '_'
+      switch type
+        when 'name'
+          if value is 'Anonymous' or value.length is 0
+            return false
+        when 'email'
+          if value is 'sage' or value.length is 0
+            return false
+        when 'md5'
+          value = value.replace /\//g, '_'
       href = Redirect.thread path[1], value, type, true
       if type is 'apost'
         href = rpost
