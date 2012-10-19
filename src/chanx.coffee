@@ -2430,7 +2430,6 @@ ArchiveLink =
       target: '_blank'
 
     open = (post) ->
-      value = Filter[type] post
       unless type is 'apost'
         value = Filter[type] post
       # We want to parse the exact same stuff as Filter does already + maybe a few extras.

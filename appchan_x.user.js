@@ -6666,7 +6666,6 @@
       });
       open = function(post) {
         var href, path, rpost, value;
-        value = Filter[type](post);
         if (type !== 'apost') {
           value = Filter[type](post);
         }
