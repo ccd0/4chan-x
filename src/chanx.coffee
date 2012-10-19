@@ -1002,22 +1002,22 @@ Updater =
   init: ->
     # Setup basic HTML layout.
     html = '<div class=move><span id=count></span> <span id=timer></span></div>'
-    
+
     # Gather possible toggle configuration variables from Config object
     {checkbox} = Config.updater
-    
+
     # And create fields for them.
     for name of checkbox
       title = checkbox[name][1]
-      
+
       # Gather user values.
       checked = if Conf[name] then 'checked' else ''
-      
+
       # And create HTML for each checkbox.
       html += "<div><label title='#{title}'>#{name}<input name='#{name}' type=checkbox #{checked}></label></div>"
 
     checked = if Conf['Auto Update'] then 'checked' else ''
-    
+
     # Per thread auto-update and global or per board update frequency.
     html += "
       <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
@@ -1033,13 +1033,13 @@ Updater =
     @count  = $ '#count', dialog
     @timer  = $ '#timer', dialog
     @thread = $.id "t#{g.THREAD_ID}"
-    
+
     @ccheck = true
     @cnodes = []
 
     # How many times we have failed to find new posts.
     @unsuccessfulFetchCount = 0
-    
+
     # Track last modified headers.
     @lastModified = '0'
 
@@ -1068,7 +1068,7 @@ Updater =
 
     # Check for new posts on post.
     $.on d, 'QRPostSuccessful', @cb.post
-    
+
     $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', @cb.visibility
 
   cb:
@@ -2462,9 +2462,27 @@ ReplyHideLink =
 
 ThreadStats =
   init: ->
-    dialog = UI.dialog 'stats', 'bottom: 0; left: 0;', '<div class=move><span id=postcount>0</span> / <span id=imagecount>0</span></div>'
-    dialog.className = 'dialog'
-    $.add d.body, dialog
+    ThreadStats.postcount = $.el 'span'
+      id:          'postcount'
+      textContent: '0'
+    ThreadStats.imagecount = $.el 'span'
+      id:          'imagecount'
+      textContent: '0'
+    if Conf['Style'] and Conf['Thread Updater'] and move = Updater.count.parentElement
+      container = $.el 'span'
+      $.add container, $.tn('[')
+      $.add container, ThreadStats.postcount
+      $.add container, $.tn(' / ')
+      $.add container, ThreadStats.imagecount
+      $.add container, $.tn('] ')
+      $.prepend move, container
+    else
+      dialog = UI.dialog 'stats', 'bottom: 0; left: 0;', '<div class=move></div>'
+      dialog.className = 'dialog'
+      $.add $(".move", dialog), ThreadStats.postcount
+      $.add $(".move", dialog), $.tn(" / ")
+      $.add $(".move", dialog), ThreadStats.imagecount
+      $.add d.body, dialog
     @posts = @images = 0
     @imgLimit =
       switch g.BOARD
@@ -2477,12 +2495,11 @@ ThreadStats =
     Main.callbacks.push @node
   node: (post) ->
     return if post.isInlined
-    $.id('postcount').textContent = ++ThreadStats.posts
+    ThreadStats.postcount.textContent = ++ThreadStats.posts
     return unless post.img
-    imgcount = $.id 'imagecount'
-    imgcount.textContent = ++ThreadStats.images
+    ThreadStats.imagecount.textContent = ++ThreadStats.images
     if ThreadStats.images > ThreadStats.imgLimit
-      $.addClass imgcount, 'warning'
+      $.addClass ThreadStats.imagecount, 'warning'
 
 Unread =
   init: ->

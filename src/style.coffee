@@ -923,17 +923,18 @@ body > a[style="cursor: pointer; float: right;"]::after {
 div.navLinks > a:first-of-type::after {
   z-index: 99 !important;
 }
-#prefetch,
 .fileText ~ a > img + img {
   z-index: 96 !important;
+}
+#prefetch {
+  z-index: 95;
 }
 #autoPagerBorderPaging,
 #boardNavDesktop,
 #menu.reply.dialog,
 #navlinks {
-  z-index: 95 !important;
+  z-index: 94 !important;
 }
-#boardNavMobile,
 #stats,
 #updater {
   z-index: 10 !important;
@@ -944,14 +945,14 @@ div.navLinks > a:first-of-type::after {
 }
 #boardTitle,
 #watcher,
-#watcher::before,
+#watcher::after,
 .boardBanner,
 .menu_button,
 .sideArrows {
   z-index: 4 !important;
 }
-#globalMessage::before,
-.boardBanner,
+#globalMessage::after,
+.boardBanner img,
 .replyhider a {
   z-index: 1 !important;
 }
@@ -963,8 +964,8 @@ div.reply.highlight {
 }
 #navtopright .settingsWindowLink::after,
 div.navLinks > a:first-of-type::after,
-#watcher::before,
-#globalMessage::before,
+#watcher::after,
+#globalMessage::after,
 #boardNavDesktopFoot::after,
 body > a[style="cursor: pointer; float: right;"]::after,
 #imgControls label:first-of-type::after {
@@ -974,6 +975,7 @@ body > a[style="cursor: pointer; float: right;"]::after,
   content: " ";
   overflow: hidden;
   background-image: url('#{icons}');
+  opacity: 0.4;
 }
 #navtopright .settingsWindowLink::after {
   background-position: 0 0;
@@ -981,10 +983,10 @@ body > a[style="cursor: pointer; float: right;"]::after,
 div.navLinks > a:first-of-type::after {
   background-position: 0 -15px;
 }
-#watcher::before {
+#watcher::after {
   background-position: 0 -30px;
 }
-#globalMessage::before {
+#globalMessage::after {
   background-position: 0 -45px;
 }
 #boardNavDesktopFoot::after {
@@ -996,21 +998,12 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #imgControls label:first-of-type::after {
   background-position: 0 -90px;
 }
-body > a[style="cursor: pointer; float: right;"]::after,
-#navtopright .settingsWindowLink::after,
-#boardNavDesktopFoot::after,
-#watcher::before,
-#globalMessage::before,
-div.navLinks > a:first-of-type::after,
-#imgControls label:first-of-type::after {
-  opacity: 0.4;
-}
 body > a[style="cursor: pointer; float: right;"]:hover::after,
 #navtopright .settingsWindowLink:hover::after,
 #boardNavDesktopFoot:hover::after,
-#globalMessage:hover::before,
+#globalMessage:hover::after,
 div.navLinks > a:first-of-type:hover::after,
-#watcher:hover::before,
+#watcher:hover::after,
 #imgControls label:hover:first-of-type::after {
   opacity: 1;
 }
@@ -1403,7 +1396,6 @@ div.navLinks {
   cursor: default;
 }
 #updater {
-  width: 40px !important;
   border: 0;
   font-size: 12px;
   overflow: hidden;
@@ -1412,9 +1404,6 @@ div.navLinks {
 }
 #count.new {
   background-color: transparent;
-}
-#updater:hover {
-  width: 150px !important;
 }
 #watcher {
   padding: 1px 0;
@@ -2075,12 +2064,12 @@ hr {
   #{(if sidebarLocation[0] == "left" then "left: " + (212 + sidebarOffsetW) + "px" else "right: 21px")};
 }
 /* Global Message */
-#globalMessage::before {
+#globalMessage::after {
   position: fixed;
   #{(if sidebarLocation[0] == "left" then "left: " + (193 + sidebarOffsetW) + "px" else "right: 40px")};
 }
 /* Watcher */
-#watcher::before {
+#watcher::after {
   position: fixed;
   #{(if sidebarLocation[0] == "left" then "left: " + (174 + sidebarOffsetW) + "px" else "right: 59px")};
   cursor: pointer;
@@ -2108,18 +2097,10 @@ div.navLinks > a:first-of-type::after {
   width: 30px;
   line-height: 15px;
 }
-/* Stats */
+/* Updater + Stats */
+#updater,
 #stats {
-  #{(if sidebarLocation[0] == "left" then "left: 4px" else "right: " + (186 + sidebarOffsetW) + "px")} !important;
-  #{sidebarLocation[1]}: auto !important;
-  top: #{(if Conf["Stats Position"] == "top" then "20px" else "auto")} !important;
-  bottom: #{(if Conf["Stats Position"] == "bottom" then "4px" else "auto")} !important;
-  width: 60px;
-  text-align: #{sidebarLocation[1]};
-}
-/* Updater */
-#updater {
-  #{(if sidebarLocation[0] == "left" then "left: " + (206 + sidebarOffsetW) + "px" else "right: 4px")} !important;
+  #{sidebarLocation[0]}: 4px !important;
   #{sidebarLocation[1]}: auto !important;
   top: #{(if Conf["Updater Position"] == "top" then "20px" else "auto")} !important;
   bottom: #{(if Conf["Updater Position"] == "bottom" then "4px" else "auto")} !important;
@@ -2127,12 +2108,17 @@ div.navLinks > a:first-of-type::after {
 #prefetch {
   width: #{(248 + sidebarOffsetW)}px;
   #{sidebarLocation[0]}: 2px;
-  top: 40px;
+  top: 20px;
+  text-align: #{sidebarLocation[1]};
+}
+#prefetch .rice,
+#prefetch input {
+  float: #{sidebarLocation[1]};
 }
 #boardNavDesktopFoot::after,
 #navtopright .settingsWindowLink::after,
-#watcher::before,
-#globalMessage::before,
+#watcher::after,
+#globalMessage::after,
 #imgControls,
 div.navLinks > a:first-of-type::after,
 body > a[style="cursor: pointer; float: right;"]::after {
@@ -2153,15 +2139,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 """
       else
-        if Conf["Stats Position"] == "top" and Conf["4chan Banner"] != "at sidebar top" and sidebarLocation[0] == "left"
-          statOffset = 15
-          updaterOffset = 0
-        else if Conf["Updater Position"] == "top" and Conf["4chan Banner"] != "at sidebar top" and sidebarLocation[0] == "right"
-          statOffset = 0
-          updaterOffset = 15
-        else
-          statOffset = 0
-          updaterOffset = 0
         css += """
 /* Image Expansion */
 #imgControls {
@@ -2183,13 +2160,13 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 /* Global Message */
 #globalMessage,
-#globalMessage::before {
+#globalMessage::after {
   position: fixed;
   top: #{(59 + logoOffset)}px !important;
 }
 /* Watcher */
 #watcher,
-#watcher::before {
+#watcher::after {
   position: fixed;
   top: #{(78 + logoOffset)}px !important;
   cursor: pointer;
@@ -2206,19 +2183,10 @@ div.navLinks > a:first-of-type::after {
   cursor: pointer;
   top: #{(116 + logoOffset)}px !important;
 }
-/* Stats */
-#stats {
-  #{(if sidebarLocation[0] == "left" then "left: " + (4 + statOffset) + "px" else "right: " + ((if Conf["Stats Position"] == "top" then (25 + updaterOffset) else (186 + sidebarOffsetW))) + "px")} !important;
-  #{sidebarLocation[1]}: auto !important;
-  top: #{(if Conf["Stats Position"] == "top" then "2px" else "auto")} !important;
-  bottom: #{(if Conf["Stats Position"] == "bottom" then "4px" else "auto")} !important;
-  width: 60px;
-  text-align: left;
-  #{(if Conf["Stats Position"] == "top" then "z-index: 96 !important;")}
-}
-/* Updater */
+/* Updater + Stats */
+#stats,
 #updater {
-  #{(if sidebarLocation[0] == "right" then "right: " + (4 + updaterOffset) + "px" else "left: " + ((if Conf["Updater Position"] == "top" then (45 + statOffset) else (206 + sidebarOffsetW))) + "px")} !important;
+  #{sidebarLocation[0]}: #{(if Conf["Updater Position"] is "top" then "24" else "4")}px !important;
   #{sidebarLocation[1]}: auto !important;
   top: #{(if Conf["Updater Position"] == "top" then "2px" else "auto")} !important;
   bottom: #{(if Conf["Updater Position"] == "bottom" then "4px" else "auto")} !important;
@@ -2227,7 +2195,12 @@ div.navLinks > a:first-of-type::after {
 #prefetch {
   width: #{(248 + sidebarOffsetW)}px;
   #{sidebarLocation[0]}: 2px;
-  top: 20px;
+  top: 2px;
+  text-align: #{sidebarLocation[1]};
+}
+#prefetch .rice,
+#prefetch input {
+  float: #{sidebarLocation[1]};
 }
 #navlinks {
   top: #{(135 + logoOffset)}px !important;
@@ -2242,9 +2215,9 @@ div.navLinks > a:first-of-type::after {
 #boardNavDesktopFoot,
 #boardNavDesktopFoot::after,
 #watcher,
-#watcher::before,
+#watcher::after,
 #globalMessage,
-#globalMessage::before,
+#globalMessage::after,
 #imgControls,
 body > a[style="cursor: pointer; float: right;"]::after,
 div.navLinks > a:first-of-type::after {
@@ -2381,13 +2354,11 @@ div.navLinks > a:first-of-type::after {
   position: fixed;
   bottom: 250px;
   #{sidebarLocation[0]}: 0;
-  width: 210px;
+  width: 110px;
   display: inline-block;
   font-size: 12px;
   opacity: 1;
-  height: 18px;
   text-align: center;
-  padding-top: 3px;
   vertical-align: middle;
   color: #{theme["Text"]};
   #{agent}transition: opacity .3s ease-in-out 1s, #{sidebarLocation[0]} .3s ease-in-out 1s;
@@ -2577,7 +2548,7 @@ div.reply {
           when "none"
             pagemargin = "2px"
           when "minimal"
-            pagemargin = "25px"
+            pagemargin = "20px"
           when "small"
             pagemargin = "50px"
           when "medium"
@@ -2592,12 +2563,12 @@ div.reply {
 body {
   margin-top: 1px;
   margin-bottom: 0;
-  margin-#{sidebarLocation[0]}: 25px;
+  margin-#{sidebarLocation[0]}: 20px;
   margin-#{sidebarLocation[1] + ": " + pagemargin};
 }
 #boardNavDesktop,
 .pages {
-  #{sidebarLocation[0]}: 25px;
+  #{sidebarLocation[0]}: 20px;
   #{sidebarLocation[1] + ": " + pagemargin};
 }
 """
@@ -2803,7 +2774,7 @@ td[style="border: 1px dashed;"] {
 """
       else
         css += """
-#watcher::before {
+#watcher::after {
   display: none;
 }
 #watcher {
@@ -2927,7 +2898,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   border: none;
   margin-top: 0px;
 }
-#globalMessage::before {
+#globalMessage::after {
   display: none;
 }
 """
@@ -2957,10 +2928,8 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 """
         when "hide"
           css += """
-#globalMessage {
-  display: none;
-}
-#globalMessage::before {
+#globalMessage,
+#globalMessage::after {
   display: none;
 }
 """
