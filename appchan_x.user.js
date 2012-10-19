@@ -95,7 +95,8 @@
  *  this notice is kept intact.
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, Icons, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editTheme, g, userMascots, userNavigation, userThemes;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, Icons, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, console, d, editMascot, editTheme, g, userMascots, userNavigation, userThemes,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   Config = {
     main: {
@@ -3929,7 +3930,11 @@
       }
     },
     name: function(post) {
-      return $('.name', post.el).textContent;
+      var cont, name;
+      if ((cont = (name = $('.name', post.el)).textContent) !== 'Anonymous' && cont.length !== 0) {
+        return name.textContent;
+      }
+      return false;
     },
     uniqueid: function(post) {
       var uid;
@@ -3961,19 +3966,23 @@
     },
     subject: function(post) {
       var subject;
-      if (subject = $('.postInfo .subject', post.el)) {
+      if ((subject = $('.postInfo .subject', post.el)).textContent.length !== 0) {
         return subject.textContent;
       }
       return false;
     },
     comment: function(post) {
-      var data, i, nodes, text, _i, _ref;
+      var data, i, nodes, r, text, _i, _ref;
       text = [];
       nodes = d.evaluate('.//br|.//text()', post.blockquote, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
       for (i = _i = 0, _ref = nodes.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
       }
-      return text.join('');
+      if (r = text.join('').length !== 0) {
+        return r;
+      } else {
+        return false;
+      }
     },
     country: function(post) {
       var flag;
@@ -5067,44 +5076,35 @@
           image = true;
         }
         checkpost = function() {
-          var iposts, node, nodes;
+          var node, nodes, pposts, _ref;
           nodes = Updater.cnodes.childNodes;
-          if (!Conf['File Info Formatting']) {
-            iposts = $$('span.fileText span', nodes);
-          } else {
-            iposts = $$('span.fileText a', nodes);
-          }
           if (image) {
-            return ((function() {
-              var _i, _len, _results;
-              _results = [];
-              for (_i = 0, _len = iposts.length; _i < _len; _i++) {
-                node = iposts[_i];
-                _results.push(node.innerHTML);
-              }
-              return _results;
-            })()).indexOf(save[0]);
+            if (Conf['File Info Formatting']) {
+              pposts = $$('span.fileText a', nodes);
+            } else {
+              pposts = $$('span.fileText span', nodes);
+            }
           } else {
-            return ((function() {
-              var _i, _len, _ref, _results;
-              _ref = $$('.postMessage', nodes);
-              _results = [];
-              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                node = _ref[_i];
-                _results.push(node.textContent);
-              }
-              return _results;
-            })()).indexOf(save[0]);
+            pposts = $$('.postMessage', nodes);
           }
+          return _ref = save[0], __indexOf.call((function() {
+            var _i, _len, _results;
+            _results = [];
+            for (_i = 0, _len = pposts.length; _i < _len; _i++) {
+              node = pposts[_i];
+              _results.push(node.textContent);
+            }
+            return _results;
+          })(), _ref) >= 0;
         };
         Updater.unsuccessfulFetchCount = 0;
         setTimeout(Updater.update, 1000);
         count = 0;
-        if (checkpost() === -1 && Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
+        if (!checkpost() && Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
           return int = setInterval((function() {
             Updater.ccheck = true;
             Updater.update();
-            if (checkpost() !== -1 || count === 30) {
+            if (checkpost() || count > 29) {
               Updater.ccheck = false;
               Updater.cnodes = [];
               clearInterval(int);
@@ -6633,25 +6633,63 @@
   };
 
   ArchiveLink = {
-    init: function() {
-      var a;
-      a = $.el('a', {
-        className: 'archive_link',
-        target: '_blank',
-        textContent: 'Archived post'
+    init: function(post) {
+      var div, entry, type, _i, _len, _ref;
+      div = $.el('div', {
+        textContent: 'Archive'
       });
-      return Menu.addEntry({
-        el: a,
+      entry = {
+        el: div,
         open: function(post) {
-          var href, path;
+          var path;
           path = $('a[title="Highlight this post"]', post.el).pathname.split('/');
-          if ((href = Redirect.thread(path[1], path[3], post.ID)) === ("//boards.4chan.org/" + path[1] + "/")) {
+          if ((Redirect.thread(path[1], path[3], post.ID)) === ("//boards.4chan.org/" + path[1] + "/")) {
             return false;
+          } else {
+            return true;
           }
-          a.href = href;
-          return true;
-        }
+        },
+        children: []
+      };
+      _ref = [['Post', 'apost'], ['Name', 'name'], ['Tripcode', 'tripcode'], ['E-mail', 'email'], ['Subject', 'subject'], ['Filename', 'filename'], ['Image MD5', 'md5']];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        entry.children.push(ArchiveLink.createSubEntry(type[0], type[1]));
+      }
+      return Menu.addEntry(entry);
+    },
+    createSubEntry: function(text, type) {
+      var el, open;
+      el = $.el('a', {
+        textContent: text,
+        target: '_blank'
       });
+      open = function(post) {
+        var href, path, rpost, value;
+        value = Filter[type](post);
+        if (type !== 'apost') {
+          value = Filter[type](post);
+        }
+        if (value === false) {
+          return false;
+        }
+        path = $('a[title="Highlight this post"]', post.el).pathname.split('/');
+        if ((rpost = Redirect.thread(path[1], path[3], post.ID)) === ("//boards.4chan.org/" + path[1] + "/")) {
+          return false;
+        }
+        if (type === 'md5') {
+          value = value.replace(/\//g, '_');
+        }
+        href = Redirect.thread(path[1], value, type, true);
+        if (type === 'apost') {
+          href = rpost;
+        }
+        return el.href = href;
+      };
+      return {
+        el: el,
+        open: open
+      };
     }
   };
 
@@ -6974,12 +7012,29 @@
           return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
       }
     },
-    thread: function(board, threadID, postID) {
-      var path, url;
-      if (postID) {
-        postID = postID.match(/\d+/)[0];
+    thread: function(board, threadID, postID, AL) {
+      var ar, path, url;
+      ar = function(a) {
+        if (postID === 'name') {
+          postID = 'username';
+        }
+        if (postID === 'md5') {
+          postID = 'image';
+        }
+        if (a) {
+          return "" + board + "/search/" + postID + "/" + threadID;
+        } else if (postID !== 'image') {
+          return "" + board + "/?task=search2&search_" + postID + "=" + threadID;
+        } else {
+          return "" + board + "/image/" + threadID;
+        }
+      };
+      if (!AL) {
+        if (postID) {
+          postID = postID.match(/\d+/)[0];
+        }
+        path = threadID ? "" + board + "/thread/" + threadID : "" + board + "/post/" + postID;
       }
-      path = threadID ? "" + board + "/thread/" + threadID : "" + board + "/post/" + postID;
       switch (board) {
         case 'a':
         case 'co':
@@ -6993,30 +7048,42 @@
         case 'wsg':
         case 'dev':
         case 'foolz':
+          if (AL) {
+            path = ar(true);
+          }
           url = "//archive.foolz.us/" + path + "/";
-          if (threadID && postID) {
+          if (threadID && postID && !AL) {
             url += "#" + postID;
           }
           break;
         case 'u':
         case 'kuku':
+          if (AL) {
+            path = ar(true);
+          }
           url = "//nsfw.foolz.us/" + path + "/";
-          if (threadID && postID) {
+          if (threadID && postID && !AL) {
             url += "#" + postID;
           }
           break;
         case 'ck':
         case 'jp':
         case 'lit':
+          if (AL) {
+            path = ar(true);
+          }
           url = "//fuuka.warosu.org/" + path;
-          if (threadID && postID) {
-            url += "#p" + postID;
+          if (threadID && postID && !AL) {
+            url += "#" + postID;
           }
           break;
         case 'diy':
         case 'sci':
+          if (AL) {
+            path = ar(false);
+          }
           url = "//archive.installgentoo.net/" + path;
-          if (threadID && postID) {
+          if (threadID && postID && !AL) {
             url += "#p" + postID;
           }
           break;
@@ -7025,8 +7092,11 @@
         case 'mu':
         case 'soc':
         case 'w':
+          if (AL) {
+            path = ar(false);
+          }
           url = "//archive.rebeccablacktech.com/" + path;
-          if (threadID && postID) {
+          if (threadID && postID && !AL) {
             url += "#p" + postID;
           }
           break;
@@ -7037,14 +7107,11 @@
         case 'r9k':
         case 'toy':
         case 'x':
-          url = "http://archive.heinessen.com/" + path;
-          if (threadID && postID) {
-            url += "#p" + postID;
+          if (AL) {
+            path = ar(false);
           }
-          break;
-        case 'e':
-          url = "https://www.cliché.net/4chan/cgi-board.pl/" + path;
-          if (threadID && postID) {
+          url = "http://archive.heinessen.com/" + path;
+          if (threadID && postID && !AL) {
             url += "#p" + postID;
           }
           break;

@@ -1103,7 +1103,7 @@ Updater =
         int = setInterval (->
           Updater.ccheck = true
           Updater.update()
-          f checkpost() or count > 29
+          if checkpost() or count > 29
             Updater.ccheck = false
             Updater.cnodes = []
             clearInterval int
