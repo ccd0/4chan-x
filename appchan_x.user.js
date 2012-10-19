@@ -6657,9 +6657,8 @@
           path = $('a[title="Highlight this post"]', post.el).pathname.split('/');
           if ((Redirect.thread(path[1], path[3], post.ID)) === ("//boards.4chan.org/" + path[1] + "/")) {
             return false;
-          } else {
-            return true;
           }
+          return true;
         },
         children: []
       };
@@ -6677,15 +6676,12 @@
         target: '_blank'
       });
       open = function(post) {
-        var href, path, rpost, value;
+        var path, value;
+        path = $('a[title="Highlight this post"]', post.el).pathname.split('/');
         if (type !== 'apost') {
           value = Filter[type](post);
         }
         if (value === false) {
-          return false;
-        }
-        path = $('a[title="Highlight this post"]', post.el).pathname.split('/');
-        if ((rpost = Redirect.thread(path[1], path[3], post.ID)) === ("//boards.4chan.org/" + path[1] + "/")) {
           return false;
         }
         switch (type) {
@@ -6702,11 +6698,11 @@
           case 'md5':
             value = value.replace(/\//g, '_');
         }
-        href = Redirect.thread(path[1], value, type, true);
-        if (type === 'apost') {
-          href = rpost;
+        if (type !== 'apost') {
+          return el.href = Redirect.thread(path[1], value, type, true);
+        } else {
+          return el.href = Redirect.thread(path[1], path[3], post.ID);
         }
-        return el.href = href;
       };
       return {
         el: el,

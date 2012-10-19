@@ -2403,9 +2403,8 @@ ArchiveLink =
       el: div
       open: (post) -> 
         path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
-        if (Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
-          return false
-        else true
+        return false if (Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
+        true
       children: []
 
     for type in [
@@ -2428,13 +2427,11 @@ ArchiveLink =
       target: '_blank'
 
     open = (post) ->
+      path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
       unless type is 'apost'
         value = Filter[type] post
-      # We want to parse the exact same stuff as Filter does already + maybe a few extras.
+        # We want to parse the exact same stuff as Filter does already + maybe a few extras.
       return false if value is false
-      path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
-      if (rpost = Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
-        return false
       switch type
         when 'name'
           if value is 'Anonymous' or value.length is 0
@@ -2444,10 +2441,10 @@ ArchiveLink =
             return false
         when 'md5'
           value = value.replace /\//g, '_'
-      href = Redirect.thread path[1], value, type, true
-      if type is 'apost'
-        href = rpost
-      el.href = href
+      unless type is 'apost'
+        el.href = Redirect.thread path[1], value, type, true
+      else
+        el.href = Redirect.thread path[1], path[3], post.ID
 
     return el: el, open: open
 
