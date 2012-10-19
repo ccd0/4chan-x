@@ -354,7 +354,7 @@ h1,
   margin: 0;
   #{agent}transition: all .2s ease-in-out;
 }
-#theme_tab + div > div {
+#theme_tab + div > div:not(.stylesettings) {
   margin-bottom: 3px;
 }
 #credits {
