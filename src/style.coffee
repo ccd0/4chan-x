@@ -2006,7 +2006,7 @@ span.lit {
 }
 """
       switch Conf["4chan Banner"]
-        when "at sidebar top" or "in sidebar"
+        when "at sidebar top"
           logoOffset = 83 + sidebarOffsetH
           css += """
 .boardBanner img {
@@ -2045,12 +2045,25 @@ span.lit {
   display: none;
 }
 """
+      if Conf["Faded 4chan Banner"]
+        css += """
+.boardBanner img {
+  opacity: 0.5;
+  #{agent}transition: opacity 0.3s ease-in-out 1s;
+}
+.boardBanner img:hover {
+  opacity: 1;
+  #{agent}transition: opacity 0.3s ease-in;
+}
+"""
+
       if Conf["Hide Horizontal Rules"]
         css += """
 hr {
   visibility: hidden;
 }
 """
+
       if Conf["Icon Orientation"] == "horizontal"
         css += """
 /* 4chan X Options */

@@ -240,55 +240,61 @@
       'BGInterval': 60
     },
     style: {
-      Dialogs: {
-        'Alternate Post Colors': [false, 'Make post background colors alternate every other post.'],
+      Interface: {
+        'Sidebar': ['normal', 'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['large', 'normal', 'minimal', 'hide']],
+        'Sidebar Location': ['right', 'The side of the page the sidebar content is on. It is highly recommended that you do not hide the sidebar if you change this option.', ['left', 'right']],
+        'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'minimal', 'small', 'medium', 'large', 'fully centered']],
         'Announcements': ['slideout', 'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']],
-        'Post Form Style': ['tabbed slideout', 'How the post form will sit on the page.', ['fixed', 'slideout', 'tabbed slideout', 'transparent fade']],
-        'Slideout Navigation': ['compact', 'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']],
-        'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
-      },
-      Rice: {
-        'Block Ads': [false, 'Block advertisements. It\'s probably better to use AdBlock for this.'],
-        'Checkboxes': ['show', 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide', 'do not style checkboxes']],
-        'Captcha Opacity': ['1.00', 'Transparency of the 4chan Captcha', ['1.00', '.75', '.50', '.25']],
-        'Emoji': ['enabled', 'Enable emoji', ['enabled', 'disable ponies', 'disable']],
-        'Emoji Position': ['before', 'Position of emoji icons, like sega and neko.', ['before', 'after']],
-        'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
-        'Font': ['Helvetica', 'The font used by all elements of 4chan.', 'text'],
-        'Font Size': ['12px', 'The font size of posts and various UI. This does not change all font sizes.', 'text'],
-        'Mascots': [true, 'Add a pretty picture of your waifu to Appchan.'],
-        'NSFW/SFW Mascots': [false, 'Enable or disable mascots based on the SFW status of the board you are viewing.'],
-        'Mascots Overlap Posts': [true, 'Mascots overlap threads and posts.'],
-        'Mascot Location': ['sidebar', 'Change where your mascot is located.', ['sidebar', 'opposite']],
-        'Mascot Position': ['bottom', 'Change where your mascot is placed in relation to the post form if the mascot isn\'t manually placed.', ['above post form', 'bottom']],
-        'NSFW/SFW Themes': [false, 'Choose your theme based on the SFW status of the board you are viewing.'],
-        'OP Background': [false, 'Adds a border and background color to the OP Post, as if it were a reply.'],
-        'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
-        'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
-        'Sage Highlight Position': ['after', 'Position of Sage Highlighting', ['before', 'after']],
-        'Tripcode Hider': [true, 'Intelligent name field hiding.'],
-        'Underline Links': [true, 'Put lines under hyperlinks.']
-      },
-      Layout: {
         '4chan Banner': ['at sidebar top', 'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'under post form', 'at top', 'hide']],
-        'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']],
         'Board Logo': ['at sidebar top', 'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'under post form', 'hide']],
         'Board Subtitle': [true, 'Show the board subtitle.'],
-        'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
-        'Force Reply Break': [false, 'Force replies to occupy their own line and not be adjacent to the OP image.'],
-        'Hide Horizontal Rules': [false, 'Hides lines between threads.'],
+        'Faded 4chan Banner': [false, 'Make 4chan\'s image banner translucent.'],
         'Icon Orientation': ['horizontal', 'Change the orientation of the appchan x icons.', ['horizontal', 'vertical']],
-        'Images Overlap Post Form': [true, 'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".'],
+        'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.'],
+        'Updater Position': ['bottom', 'The position of 4chan thread updater', ['top', 'bottom']]
+      },
+      Posts: {
+        'Alternate Post Colors': [false, 'Make post background colors alternate every other post.'],
+        'OP Background': [false, 'Adds a border and background color to the OP Post, as if it were a reply.'],
+        'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
+        'Sage Highlight Position': ['after', 'Position of Sage Highlighting', ['before', 'after']],
+        'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
+        'Force Reply Break': [false, 'Force replies to occupy their own line and not be adjacent to the OP image.'],
         'Fit Width Replies': [true, 'Replies fit the entire width of the page.'],
-        'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'minimal', 'small', 'medium', 'large', 'fully centered']],
-        'Pagination': ['sticky bottom', 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']],
         'Reply Spacing': ['small', 'The amount of space between replies.', ['none', 'small', 'medium', 'large']],
         'Reply Padding': ['normal', 'The padding around post content of replies.', ['phat', 'normal', 'slim', 'super slim', 'anorexia']],
-        'Sidebar Location': ['right', 'The side of the page the sidebar content is on. It is highly recommended that you do not hide the sidebar if you change this option.', ['left', 'right']],
-        'Sidebar': ['normal', 'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['large', 'normal', 'minimal', 'hide']],
-        'Stats Position': ['bottom', 'The position of 4chan thread stats', ['top', 'bottom']],
+        'Hide Horizontal Rules': [false, 'Hides lines between threads.'],
+        'Images Overlap Post Form': [true, 'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".']
+      },
+      Mascots: {
+        'Mascots': [true, 'Add a pretty picture of your waifu to Appchan.'],
+        'Mascot Location': ['sidebar', 'Change where your mascot is located.', ['sidebar', 'opposite']],
+        'Mascot Position': ['bottom', 'Change where your mascot is placed in relation to the post form if the mascot isn\'t manually placed.', ['above post form', 'bottom']],
+        'Mascots Overlap Posts': [true, 'Mascots overlap threads and posts.'],
+        'NSFW/SFW Mascots': [false, 'Enable or disable mascots based on the SFW status of the board you are viewing.'],
+        'NSFW/SFW Themes': [false, 'Choose your theme based on the SFW status of the board you are viewing.']
+      },
+      Navigation: {
+        'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']],
+        'Slideout Navigation': ['compact', 'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']],
+        'Pagination': ['sticky bottom', 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']]
+      },
+      'Post Form': {
+        'Captcha Opacity': ['1.00', 'Transparency of the 4chan Captcha', ['1.00', '.75', '.50', '.25']],
+        'Post Form Style': ['tabbed slideout', 'How the post form will sit on the page.', ['fixed', 'slideout', 'tabbed slideout', 'transparent fade']],
+        'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
         'Textarea Resize': ['vertical', 'Options to resize the post form\'s comment box.', ['both', 'horizontal', 'vertical', 'none', 'auto-expand']],
-        'Updater Position': ['bottom', 'The position of 4chan thread updater', ['top', 'bottom']]
+        'Tripcode Hider': [true, 'Intelligent name field hiding.']
+      },
+      Aesthetics: {
+        'Block Ads': [false, 'Block advertisements. It\'s probably better to use AdBlock for this.'],
+        'Checkboxes': ['show', 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide', 'do not style checkboxes']],
+        'Emoji': ['enabled', 'Enable emoji', ['enabled', 'disable ponies', 'disable']],
+        'Emoji Position': ['before', 'Position of emoji icons, like sega and neko.', ['before', 'after']],
+        'Font': ['Helvetica', 'The font used by all elements of 4chan.', 'text'],
+        'Font Size': ['12px', 'The font size of posts and various UI. This does not change all font sizes.', 'text'],
+        'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
+        'Underline Links': [true, 'Put lines under hyperlinks.']
       }
     },
     theme: 'Yotsuba B',
@@ -1052,7 +1058,7 @@
       "Warnings": "rgb(200,40,41)",
       "Shadow Color": "rgba(255,255,255,.9)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\nnput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle {\n  color: #cc5ec1 !important;\n  text-shadow: 1px 1px 1px #772E28 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a{\n  text-shadow: none !important;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\nnput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle {\n  color: #cc5ec1 !important;\n  text-shadow: 1px 1px 1px #772E28 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}"
     },
     "Yotsuba Purple": {
       "Author": "seaweed",
@@ -1312,7 +1318,7 @@
       "Warnings": "rgb(153,0,0)",
       "Shadow Color": "rgba(255,255,249,.9)",
       "Dark Theme": false,
-      "Custom CSS": "#delform {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle{\ncolor:#bc312a!important;\n  text-shadow:1px 1px 1px #772e28!important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle>a{\n  text-shadow:none!important;\n}\n.postNum a{\n  color:#111111!important;\n}\ndiv.reply a.quotelink{\n  color:#bc312a!important;\n}"
+      "Custom CSS": "#delform {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle{\ncolor:#bc312a!important;\n  text-shadow:1px 1px 1px #772e28!important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow:none!important;\n}\n.postNum a {\n  color:#111111!important;\n}\ndiv.reply a.quotelink{\n  color:#bc312a!important;\n}"
     },
     "Monokai": {
       "Author": "seaweed",
@@ -8151,29 +8157,78 @@
       var fileInput, i, id, mimeTypes, name, riceFile, size, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
       if (Conf['Style']) {
         QR.el = UI.dialog('qr', '', '\
-<div id=qrtab>- Post Form -</div>\
+<div id=qrtab>\
+  - Post Form -\
+</div>\
 <form>\
   <div class=warning></div>\
-  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
-  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>\
-  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\
-  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=browse class=field>Browse...</div><div id=file class=field></div></div>\
-  <div id=submit><input type=submit></div>\
+  <div>\
+    <input id=dump type=button title="Dump list" value=+ class=field>\
+    <input name=name title=Name placeholder=Name class=field size=1>\
+    <input name=email title=E-mail placeholder=E-mail class=field size=1>\
+    <input name=sub title=Subject placeholder=Subject class=field size=1>\
+  </div>\
+  <div id=replies>\
+    <div>\
+      <a id=addReply href=javascript:; title="Add a reply">+</a>\
+    </div>\
+  </div>\
+  <div class=textarea>\
+    <textarea name=com title=Comment placeholder=Comment class=field></textarea>\
+    <span id=charCount></span>\
+  </div>\
+  <div>\
+    <input type=file title="Shift+Click to remove the selected file." multiple size=16>\
+    <div id=browse class=field>\
+      Browse...\
+    </div>\
+    <div id=file class=field></div></div>\
+  <div id=submit>\
+    <input type=submit>\
+  </div>\
   <div id=threadselect></div>\
-  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>\
+  <label id=spoilerLabel>\
+    <input type=checkbox id=spoiler>\
+    Spoiler Image?\
+  </label>\
 </form>');
       } else {
         QR.el = UI.dialog('qr', 'top:0;right:0;', '\
 <div class=move>\
-  Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
-  <span> <a class=close title=Close>×</a></span>\
+  Quick Reply\
+  <input type=checkbox id=autohide title=Auto-hide>\
+  <span>\
+    <a class=close title=Close>\
+      ×\
+    </a>\
+  </span>\
 </div>\
 <form>\
-  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
-  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>\
-  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\
-  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>\
-  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>\
+  <div>\
+    <input id=dump type=button title="Dump list" value=+ class=field>\
+    <input name=name title=Name placeholder=Name class=field size=1>\
+    <input name=email title=E-mail placeholder=E-mail class=field size=1>\
+    <input name=sub title=Subject placeholder=Subject class=field size=1>\
+  </div>\
+  <div id=replies>\
+    <div>\
+      <a id=addReply href=javascript:; title="Add a reply">\
+        +\
+      </a>\
+    </div>\
+  </div>\
+  <div class=textarea>\
+    <textarea name=com title=Comment placeholder=Comment class=field></textarea>\
+    <span id=charCount></span>\
+  </div>\
+  <div>\
+    <input type=file title="Shift+Click to remove the selected file." multiple size=16>\
+    <input type=submit>\
+  </div>\
+  <label id=spoilerLabel>\
+    <input type=checkbox id=spoiler>\
+    Spoiler Image?\
+  </label>\
   <div class=warning></div>\
 </form>');
       }
@@ -9519,7 +9574,7 @@
           css += ".prettyprint {\n  background-color: #e7e7e7;\n  border: 1px solid #dcdcdc;\n}\nspan.com {\n  color: #d00;\n}\nspan.str,\nspan.atv {\n  color: #7fa61b;\n}\nspan.pun {\n  color: #61663a;\n}\nspan.tag {\n  color: #117743;\n}\nspan.kwd {\n  color: #5a6F9e;\n}\nspan.typ,\nspan.atn {\n  color: #9474bd;\n}\nspan.lit {\n  color: #368c72;\n}";
         }
         switch (Conf["4chan Banner"]) {
-          case "at sidebar top" || "in sidebar":
+          case "at sidebar top":
             logoOffset = 83 + sidebarOffsetH;
             css += ".boardBanner img {\n  position: fixed;\n  width: " + (248 + sidebarOffsetW) + "px;\n  top: " + (Conf["Icon Orientation"] === "vertical" ? "2px" : "19px") + ";\n  " + sidebarLocation[0] + ": 2px;\n}";
             break;
@@ -9537,6 +9592,9 @@
           case "hide":
             logoOffset = 0;
             css += ".boardBanner img {\n  display: none;\n}";
+        }
+        if (Conf["Faded 4chan Banner"]) {
+          css += ".boardBanner img {\n  opacity: 0.5;\n  " + agent + "transition: opacity 0.3s ease-in-out 1s;\n}\n.boardBanner img:hover {\n  opacity: 1;\n  " + agent + "transition: opacity 0.3s ease-in;\n}";
         }
         if (Conf["Hide Horizontal Rules"]) {
           css += "hr {\n  visibility: hidden;\n}";

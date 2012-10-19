@@ -1157,7 +1157,7 @@ textarea,
   text-shadow: 1px 1px 1px #772E28 !important;
 }
 .boardSubtitle,
-.boardBanner .boardSubtitle > a{
+.boardBanner .boardSubtitle > a {
   text-shadow: none !important;
 }
 """
@@ -1613,10 +1613,10 @@ color:#bc312a!important;
   text-shadow:1px 1px 1px #772e28!important;
 }
 .boardSubtitle,
-.boardBanner .boardSubtitle>a{
+.boardBanner .boardSubtitle > a {
   text-shadow:none!important;
 }
-.postNum a{
+.postNum a {
   color:#111111!important;
 }
 div.reply a.quotelink{

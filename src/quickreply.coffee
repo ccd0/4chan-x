@@ -56,13 +56,16 @@ QR =
     if not Conf['Remember Spoiler'] and (spoiler = $.id 'spoiler').checked
       spoiler.click()
     QR.cleanError()
+
   hide: ->
     d.activeElement.blur()
     $.addClass QR.el, 'autohide'
     $.id('autohide').checked = true
+
   unhide: ->
     $.rmClass QR.el, 'autohide'
     $.id('autohide').checked = false
+
   toggleHide: ->
     @checked and QR.hide() or QR.unhide()
 
@@ -77,6 +80,7 @@ QR =
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
     alert QR.warning.textContent if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
+
   cleanError: ->
     QR.warning.textContent = null
 
@@ -108,15 +112,18 @@ QR =
       QR.cooldown.cooldowns = $.get "#{g.BOARD}.cooldown", {}
       QR.cooldown.start()
       $.sync "#{g.BOARD}.cooldown", QR.cooldown.sync
+
     start: ->
       return if QR.cooldown.isCounting
       QR.cooldown.count()
+
     sync: (cooldowns) ->
       # Add each cooldowns, don't overwrite everything in case we
       # still need to purge one in the current tab to auto-post.
       for id of cooldowns
         QR.cooldown.cooldowns[id] = cooldowns[id]
       QR.cooldown.start()
+
     set: (data) ->
       return unless Conf['Cooldown']
       start = Date.now()
@@ -143,9 +150,11 @@ QR =
       QR.cooldown.cooldowns[start] = cooldown
       $.set "#{g.BOARD}.cooldown", QR.cooldown.cooldowns
       QR.cooldown.start()
+
     unset: (id) ->
       delete QR.cooldown.cooldowns[id]
       $.set "#{g.BOARD}.cooldown", QR.cooldown.cooldowns
+
     count: ->
       if Object.keys(QR.cooldown.cooldowns).length
         setTimeout QR.cooldown.count, 1000
@@ -240,9 +249,11 @@ QR =
     toggle = if e.type is 'dragstart' then $.off else $.on
     toggle d, 'dragover', QR.dragOver
     toggle d, 'drop',     QR.dropFile
+
   dragOver: (e) ->
     e.preventDefault()
     e.dataTransfer.dropEffect = 'copy' # cursor feedback
+
   dropFile: (e) ->
     # Let it only handle files from the desktop.
     return unless e.dataTransfer.files.length
@@ -250,6 +261,7 @@ QR =
     QR.open()
     QR.fileInput.call e.dataTransfer
     $.addClass QR.el, 'dump'
+
   fileInput: ->
     QR.cleanError()
     # Set or change current reply's file.
@@ -279,6 +291,7 @@ QR =
         new QR.reply().setFile file
     $.addClass QR.el, 'dump'
     QR.resetFileInput() # reset input
+
   resetFileInput: ->
     input = $ '[type=file]', QR.el
     input.value = null
@@ -334,6 +347,7 @@ QR =
       $.on @el, 'drop',      @drop
 
       QR.replies.push @
+
     setFile: (@file) ->
       @el.title = "#{file.name} (#{$.bytesToString file.size})"
       $('label', @el).hidden = false if QR.spoiler
@@ -382,6 +396,8 @@ QR =
         url.revokeObjectURL? fileUrl
 
       img.src = fileUrl
+
+
     rmFile: ->
       QR.resetFileInput()
       delete @file
@@ -389,6 +405,7 @@ QR =
       @el.style.backgroundImage = null
       $('label', @el).hidden = true if QR.spoiler
       (window.URL or window.webkitURL).revokeObjectURL? @url
+
     select: ->
       QR.selected?.el.id = null
       QR.selected = @
@@ -411,15 +428,20 @@ QR =
               else if !check and @.className.match "\\btripped\\b" then $.rmClass @, 'tripped'
       QR.characterCount.call $ 'textarea', QR.el
       $('#spoiler', QR.el).checked = @spoiler
+
     dragStart: ->
       $.addClass @, 'drag'
+
     dragEnter: ->
       $.addClass @, 'over'
+
     dragLeave: ->
       $.rmClass @, 'over'
+
     dragOver: (e) ->
       e.preventDefault()
       e.dataTransfer.dropEffect = 'move'
+
     drop: ->
       el    = $ '.drag', @parentNode
       index = (el) -> Array::slice.call(el.parentNode.children).indexOf el
@@ -431,10 +453,12 @@ QR =
         $.before @, el
       reply = QR.replies.splice(oldIndex, 1)[0]
       QR.replies.splice newIndex, 0, reply
+
     dragEnd: ->
       $.rmClass @, 'drag'
       if el = $ '.over', @parentNode
         $.rmClass el, 'over'
+
     rm: ->
       QR.resetFileInput()
       $.rm @el
@@ -505,6 +529,7 @@ QR =
       @img.alt  = challenge
       @img.src  = "//www.google.com/recaptcha/api/image?c=#{challenge}"
       @input.value = null
+
     count: (count) ->
       @input.placeholder = switch count
         when 0
@@ -514,11 +539,13 @@ QR =
         else
           "Verification (#{count} cached captchas)"
       @input.alt = count # For XTRM RICE.
+
     reload: (focus) ->
       # the "t" argument prevents the input from being focused
       window.location = 'javascript:Recaptcha.reload("t")'
       # Focus if we meant to.
       QR.captcha.input.focus() if focus
+
     keydown: (e) ->
       c = QR.captcha
       if e.keyCode is 8 and not c.input.value
@@ -532,29 +559,78 @@ QR =
   dialog: ->
     if Conf['Style']
       QR.el = UI.dialog 'qr', '', '
-<div id=qrtab>- Post Form -</div>
+<div id=qrtab>
+  - Post Form -
+</div>
 <form>
   <div class=warning></div>
-  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
-  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
-  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
-  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=browse class=field>Browse...</div><div id=file class=field></div></div>
-  <div id=submit><input type=submit></div>
+  <div>
+    <input id=dump type=button title="Dump list" value=+ class=field>
+    <input name=name title=Name placeholder=Name class=field size=1>
+    <input name=email title=E-mail placeholder=E-mail class=field size=1>
+    <input name=sub title=Subject placeholder=Subject class=field size=1>
+  </div>
+  <div id=replies>
+    <div>
+      <a id=addReply href=javascript:; title="Add a reply">+</a>
+    </div>
+  </div>
+  <div class=textarea>
+    <textarea name=com title=Comment placeholder=Comment class=field></textarea>
+    <span id=charCount></span>
+  </div>
+  <div>
+    <input type=file title="Shift+Click to remove the selected file." multiple size=16>
+    <div id=browse class=field>
+      Browse...
+    </div>
+    <div id=file class=field></div></div>
+  <div id=submit>
+    <input type=submit>
+  </div>
   <div id=threadselect></div>
-  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
+  <label id=spoilerLabel>
+    <input type=checkbox id=spoiler>
+    Spoiler Image?
+  </label>
 </form>'
     else
       QR.el = UI.dialog 'qr', 'top:0;right:0;', '
 <div class=move>
-  Quick Reply <input type=checkbox id=autohide title=Auto-hide>
-  <span> <a class=close title=Close>×</a></span>
+  Quick Reply
+  <input type=checkbox id=autohide title=Auto-hide>
+  <span>
+    <a class=close title=Close>
+      ×
+    </a>
+  </span>
 </div>
 <form>
-  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
-  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
-  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
-  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>
-  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
+  <div>
+    <input id=dump type=button title="Dump list" value=+ class=field>
+    <input name=name title=Name placeholder=Name class=field size=1>
+    <input name=email title=E-mail placeholder=E-mail class=field size=1>
+    <input name=sub title=Subject placeholder=Subject class=field size=1>
+  </div>
+  <div id=replies>
+    <div>
+      <a id=addReply href=javascript:; title="Add a reply">
+        +
+      </a>
+    </div>
+  </div>
+  <div class=textarea>
+    <textarea name=com title=Comment placeholder=Comment class=field></textarea>
+    <span id=charCount></span>
+  </div>
+  <div>
+    <input type=file title="Shift+Click to remove the selected file." multiple size=16>
+    <input type=submit>
+  </div>
+  <label id=spoilerLabel>
+    <input type=checkbox id=spoiler>
+    Spoiler Image?
+  </label>
   <div class=warning></div>
 </form>'
 
