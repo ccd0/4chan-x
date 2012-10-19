@@ -975,7 +975,7 @@ body > a[style="cursor: pointer; float: right;"]::after,
   content: " ";
   overflow: hidden;
   background-image: url('#{icons}');
-  opacity: 0.4;
+  opacity: 0.6;
 }
 #navtopright .settingsWindowLink::after {
   background-position: 0 0;
