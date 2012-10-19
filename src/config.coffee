@@ -217,13 +217,14 @@ Config =
       'Sidebar Location':          ['right',           'The side of the page the sidebar content is on. It is highly recommended that you do not hide the sidebar if you change this option.', ['left', 'right']]
       'Page Margin':               ['fully centered',  'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'minimal', 'small', 'medium', 'large', 'fully centered']]
       'Announcements':             ['slideout',        'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']]
-      '4chan Banner':              ['at sidebar top',  'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'under post form', 'at top', 'hide']]
       'Board Logo':                ['at sidebar top',  'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'under post form', 'hide']]
       'Board Subtitle':            [true,              'Show the board subtitle.']
+      '4chan Banner':              ['at sidebar top',  'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'under post form', 'at top', 'hide']]
+      '4chan Banner Reflection':   [false,             'Adds reflection effects to 4chan\'s image banner.']
       'Faded 4chan Banner':        [false,             'Make 4chan\'s image banner translucent.']
       'Icon Orientation':          ['horizontal',      'Change the orientation of the appchan x icons.', ['horizontal', 'vertical']]
       'Slideout Watcher':          [true,              'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.']
-      'Updater Position':          ['bottom',          'The position of 4chan thread updater', ['top', 'bottom']]
+      'Updater Position':          ['bottom',          'The position of 4chan thread updater and stats', ['top', 'bottom']]
 
     Posts:
       'Alternate Post Colors':     [false,             'Make post background colors alternate every other post.']

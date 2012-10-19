@@ -29,14 +29,6 @@ Open your console with:
 - Build with `grunt`.
 - For development (continuous builds), run `grunt watch`.
 
-### Release
-
-- To patch, run `grunt patch` (`0.0.x` version bump).
-- To upgrade, run `grunt upgrade` (`0.x.0` version bump).
-- Release with `grunt release`.
-
-Note that this is only used to release new Appchan X versions, and is not needed or wanted in pull requests.
-
 ### Contributing
 
 - Fork the repo

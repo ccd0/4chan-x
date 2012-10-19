@@ -1610,7 +1610,7 @@ textarea,
 }
 .boardTitle{
 color:#bc312a!important;
-  text-shadow:1px 1px 1px #772e28!important;
+  text-shadow:1px 1px 1px #772e28 !important;
 }
 .boardSubtitle,
 .boardBanner .boardSubtitle > a {

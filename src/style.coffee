@@ -707,6 +707,7 @@ div.opContainer {
       $.ready ->
         Style.rice d.body
         Style.trimGlobalMessage()
+        $(".boardBanner img", d.body).id = "Banner"
 
       Conf["styleenabled"] = true
 
@@ -801,7 +802,6 @@ time + span {
 #postPassword + span,
 .autoPagerS,
 .board > hr:last-of-type,
-.boardBanner div,
 #{(unless Conf["Board Subtitle"] then ".boardSubtitle," else "")}
 .closed,
 .deleteform,
@@ -952,7 +952,7 @@ div.navLinks > a:first-of-type::after {
   z-index: 4 !important;
 }
 #globalMessage::after,
-.boardBanner img,
+.boardBanner,
 .replyhider a {
   z-index: 1 !important;
 }
@@ -1032,6 +1032,9 @@ div.navLinks > a:first-of-type:hover::after,
 #boardTitle {
   font-size: 30px;
   font-weight: 400;
+}
+.boardBanner {
+  line-height: 0;
 }
 hr {
   padding: 0;
@@ -2009,31 +2012,37 @@ span.lit {
         when "at sidebar top"
           logoOffset = 83 + sidebarOffsetH
           css += """
-.boardBanner img {
+.boardBanner {
   position: fixed;
-  width: #{(248 + sidebarOffsetW)}px;
   top: #{(if Conf["Icon Orientation"] == "vertical" then "2px" else "19px")};
   #{sidebarLocation[0]}: 2px;
+}
+.boardBanner img {
+  width: #{(248 + sidebarOffsetW)}px;
 }
 """
         when "at sidebar bottom"
           logoOffset = 0
           css += """
-.boardBanner img {
+.boardBanner {
   position: fixed;
-  width: #{(248 + sidebarOffsetW)}px;
   bottom: 270px;
   #{sidebarLocation[0]}: 2px;
+}
+.boardBanner img {
+  width: #{(248 + sidebarOffsetW)}px;
 }
 """
         when "under post form"
           logoOffset = 0
           css += """
-.boardBanner img {
+.boardBanner {
   position: fixed;
-  width: #{(248 + sidebarOffsetW)}px;
   bottom: 130px;
   #{sidebarLocation[0]}: 2px;
+}
+.boardBanner img {
+  width: #{(248 + sidebarOffsetW)}px;
 }
 """
         when "at top"
@@ -2041,19 +2050,41 @@ span.lit {
         when "hide"
           logoOffset = 0
           css += """
-.boardBanner img {
+.boardBanner {
   display: none;
 }
 """
       if Conf["Faded 4chan Banner"]
         css += """
-.boardBanner img {
+.boardBanner {
   opacity: 0.5;
   #{agent}transition: opacity 0.3s ease-in-out 1s;
 }
-.boardBanner img:hover {
+.boardBanner:hover {
   opacity: 1;
   #{agent}transition: opacity 0.3s ease-in;
+}
+"""
+
+      if Conf["4chan Banner Reflection"]
+        css += """
+/* From 4chan SS / OneeChan */
+.gecko .boardBanner::after {
+  background-image: -moz-element(#Banner);
+  bottom: -100%;
+  content: '';
+  left: 0;
+  mask: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjxzdmcgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KCTxkZWZzPg0KCQk8bGluZWFyR3JhZGllbnQgZ3JhZGllbnRVbml0cz0ib2JqZWN0Qm91bmRpbmdCb3giIGlkPSJncmFkaWVudCIgeDI9IjAiIHkyPSIxIj4NCgkJCTxzdG9wIHN0b3Atb2Zmc2V0PSIwIi8+DQoJCQk8c3RvcCBzdG9wLWNvbG9yPSJ3aGl0ZSIgb2Zmc2V0PSIxIi8+DQoJCTwvbGluZWFyR3JhZGllbnQ+DQoJCTxtYXNrIGlkPSJtYXNrIiBtYXNrVW5pdHM9Im9iamVjdEJvdW5kaW5nQm94IiBtYXNrQ29udGVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSI+DQoJCQk8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIvPg0KCQk8L21hc2s+DQoJPC9kZWZzPg0KPC9zdmc+#mask');
+  opacity: .2;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 1;
+  -moz-transform: scaleY(-1);
+}
+
+.webkit #Banner {
+  -webkit-box-reflect: below 0 linear-gradient(transparent, transparent 0.1, rgba(255,255,255,.5));
 }
 """
 
