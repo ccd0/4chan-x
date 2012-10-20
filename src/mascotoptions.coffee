@@ -222,7 +222,7 @@ MascotTools =
       value = editMascot[name] or item[1]
 
     editMascot[name] = value
-    
+
     div = $.el "div",
       className: "mascotvar"
       innerHTML: "<h2>#{item[0]}</h2><span class=description>#{item[2]}</span><div class=option><input type=#{item[3]} class=field name='#{name}' placeholder='#{item[0]}' value='#{value}'></div>"
@@ -258,28 +258,34 @@ MascotTools =
     if typeof (aname = mascot.name) == "undefined" or aname == ""
       alert "Please name your mascot."
       return
-      
+
     if typeof mascot.image == "undefined" or mascot.image == ""
       alert "Your mascot must contain an image."
       return
-    
+
     unless mascot.category
       mascot.category = MascotTools.categories[0]
 
     delete mascot.name
 
-    if userMascots[aname] and not Conf["Deleted Mascots"].remove aname
+    if userMascots[aname]
 
-      if confirm "A mascot named \"#{aname}\" already exists. Would you like to over-write?"
-        delete userMascots[aname]
+      if Conf["Deleted Mascots"].contains aname
+        Conf["Deleted Mascots"].remove aname
+        $.set "Deleted Mascots", Conf["Deleted Mascots"]
+
       else
-        alert "Creation of \"#{aname}\" aborted."
-        return
+        if confirm "A mascot named \"#{aname}\" already exists. Would you like to over-write?"
+          delete userMascots[aname]
+        else
+          alert "Creation of \"#{aname}\" aborted."
+          return
+
 
     for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
       unless Conf[type].contains aname
         Conf[type].push aname
-      $.set type, Conf[type]
+        $.set type, Conf[type]
     mascot["Customized"] = true;
     userMascots[aname]   = mascot
     Conf["mascot"]       = aname

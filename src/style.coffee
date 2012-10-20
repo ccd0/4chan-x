@@ -414,14 +414,15 @@ h1,
   overflow: hidden;
   padding: 0;
   width: 200px;
-  padding: 5px 5px 0;
+  padding: 3px;
   height: 250px;
   margin: 5px;
   text-align: left;
   border: 1px solid transparent;
 }
 #options .mascot > div:first-child {
-  border: 2px solid rgba(0,0,0,0);
+  border: 0;
+  margin: 0;
   max-height: 250px;
   overflow: hidden;
   display: inline-block;
