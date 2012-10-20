@@ -249,8 +249,10 @@ Config =
 
     Navigation:
       'Boards Navigation':         ['sticky top',      'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']]
+      'Navigation Alignment':      ['center',          'Change the text alignment of the navigation.', ['left', 'center', 'right']]
       'Slideout Navigation':       ['compact',         'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']]
       'Pagination':                ['sticky bottom',   'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']]
+      'Pagination Alignment':      ['center',          'Change the text alignment of the pagination.', ['left', 'center', 'right']]
 
     'Post Form':
       'Captcha Opacity':           ['1.00',            'Transparency of the 4chan Captcha', ['1.00', '.75', '.50', '.25']]

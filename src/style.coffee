@@ -1067,13 +1067,15 @@ a.yuimenuitemlabel {
 /* Navigation */
 #{(if Conf["Custom Navigation"] then "" else "#boardNavDesktop,")}
 .pages /* Bottom Navigation */ {
-  text-align: center;
   font-size: 0;
   color: transparent;
   width: auto;
 }
+.pages {
+  text-align: #{Conf["Pagination Alignment"]};
+}
 #boardNavDesktop {
-  text-align: center;
+  text-align: #{Conf["Navigation Alignment"]};
   width: auto;
   padding-right: 0px;
   margin-right: 0px;

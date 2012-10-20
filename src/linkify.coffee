@@ -118,10 +118,10 @@
 
         # We gather our list of embeddable sites
         for key, site of Linkify.sites
-        
+
           # Check if our current link matches any of them
           if match = a.href.match(site.regExp)
-        
+
             # We create a new element
             embed = $.el 'a'
               name:         match[1]
@@ -136,7 +136,7 @@
             # Then add a space before the embed link / after the pre-existing link
             $.after a, embed
             $.after a, $.tn ' '
-            
+
             # And we break out of the loop because no further embedding checks are needed.
             break
 
@@ -153,7 +153,7 @@
     # We create an iframe to embed
     iframe = $.el 'iframe'
       src: Linkify.sites[@className].url + @name
-        
+
     # We style the iframe with respectable boundaries.
     iframe.style.border = '0'
     iframe.style.width  = '640px'
@@ -161,21 +161,21 @@
 
     # We replace the link with the iframe and kill the embedding element.
     $.replace link, iframe
-    
+
     unembed = $.el 'a'
       name:        @name
       className:   @className
       href:        'javascript:;'
       textContent: '(unembed)'
-    
+
     $.on unembed, 'click', Linkify.unembed
-    
+
     $.replace @, unembed
-  
+
   unembed: ->
     url = Linkify.sites[@className].safeurl + @name
     embedded = @.previousSibling.previousSibling
-    
+
     a = $.el 'a'
       textContent: url
       rel:         'nofollow noreferrer'
@@ -189,7 +189,7 @@
       textContent:  '(embed)'
 
     $.on embed, 'click', Linkify.embed
-    
+
     $.replace embedded, a
     $.replace @, embed
 
