@@ -65,10 +65,6 @@ UI =
     $.rm UI.el
     delete UI.el
 
-# Various browsers have problems with simply logging to the console
-# Trying to fix it usually results in breaking it elsewhere, so this fixes it everywhere I know of.
-console = if console? then console else console = window.console or unsafeWindow.console
-
 # Various prototypes I've wanted or needed to add.
 Array::contains = (object) ->
   @indexOf(object) > -1
@@ -111,7 +107,9 @@ $.extend $,
   MINUTE: 1000*60
   HOUR  : 1000*60*60
   DAY   : 1000*60*60*24
-  log: (e) -> console.log e
+  log:
+    # XXX GreaseMonkey can't into console.log.bind
+    console.log.bind? console
   engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
   ready: (fc) ->
     if /interactive|complete/.test d.readyState
