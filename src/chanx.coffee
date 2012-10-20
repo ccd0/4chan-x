@@ -2395,20 +2395,20 @@ DownloadLink =
         true
 
 ArchiveLink =
-  init: (post) ->
+  init: ->
     div = $.el 'div',
       textContent: 'Archive'
 
     entry =
       el: div
-      open: (post) -> 
+      open: (post) ->
         path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
         return false if (Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
         true
       children: []
 
     for type in [
-      ['Post',      'apost'] 
+      ['Post',      'apost']
       ['Name',      'name']
       ['Tripcode',  'tripcode']
       ['E-mail',    'email']
@@ -2416,7 +2416,7 @@ ArchiveLink =
       ['Filename',  'filename']
       ['Image MD5', 'md5']
     ]
-      # Add a sub entry for each filter type.
+      # Add a sub entry for each type.
       entry.children.push ArchiveLink.createSubEntry type[0], type[1]
 
     Menu.addEntry entry
@@ -2428,20 +2428,15 @@ ArchiveLink =
 
     open = (post) ->
       path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
-      unless type is 'apost'
+      if type is 'apost'
+        el.href = Redirect.thread path[1], [path[3], 'apost'], post.ID
+        return true
+      else
         value = Filter[type] post
-        # We want to parse the exact same stuff as Filter does already + maybe a few extras.
-      return false if value is false
-      switch type
-        when 'name'
-          if value is 'Anonymous' or value.length is 0
-            return false
-        when 'email'
-          if value is 'sage' or value.length is 0
-            return false
-        when 'apost'
-          return el.href = Redirect.thread path[1], path[3], post.ID
-      el.href = Redirect.thread path[1], value, type, true
+        # We want to parse the exact same stuff as Filter does already.
+        return false unless value
+        el.href = Redirect.thread path[1], value, type
+        
 
     return el: el, open: open
 
@@ -2674,63 +2669,72 @@ Redirect =
       when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
       # when 'e'
-      #   "https://www.cliché.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
+      # "https://www.cliché.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-  thread: (board, threadID, postID, AL) ->
-    ar = (a) ->
-      if AL
-        postID = 'username' if postID is 'name'
-        postID = 'image' if postID is 'md5'
-        if a is 'fuuka'
-          return "#{board}/search/#{postID}/#{encodeURIComponent threadID}"
-        else if a is 'gentoo'
-          if postID is 'image'
-            "#{board}/image/#{encodeURIComponent threadID}"
-          else
-            "#{board}/?task=search2&search_#{postID}=#{encodeURIComponent threadID}"
+  archiveLink: (archiver, board, threadID, postID) ->
+    if ArchiveLink.createSubEntry and !(threadID[1] is 'apost')
+      value = threadID
+      type = postID
+      type = 'username' if type is 'name'
+      type = 'image' if type is 'md5'
+      if archiver is 'fuuka'
+        return "#{board}/search/#{type}/#{encodeURIComponent value}"
+      else if archiver is 'gentoo'
+        if type is 'image'
+          "#{board}/image/#{encodeURIComponent value}"
+        else
+          "#{board}/?task=search2&search_#{type}=#{encodeURIComponent value}"
+    else
+      # keep the number only if the location.hash was sent f.e.
+      postID = postID.match(/\d+/)[0] if postID
+      if (threadID[1] is 'apost')
+        threadID = false
       else
-        # keep the number only if the location.hash was sent f.e.
-        postID = postID.match(/\d+/)[0] if postID
-        path =
-          if threadID
-            "#{board}/thread/#{threadID}"
-          else
-            "#{board}/post/#{postID}"
+        threadID = threadID[0]
+      path =
+        if threadID
+          "#{board}/thread/#{threadID}"
+        else
+          "#{board}/post/#{postID}"
+  thread: (board, threadID, postID) ->
+    createLink = (archiver) ->
+      Redirect.archiveLink archiver, board, threadID, postID
+    check = threadID and postID and !ArchiveLink.createSubEntry
     switch board
       when 'a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
-        path = ar 'fuuka'
+        path = createLink 'fuuka'
         url = "//archive.foolz.us/#{path}/"
-        if threadID and postID and !AL
+        if check
           url += "##{postID}"
       when 'u', 'kuku'
-        path = ar 'fuuka'
+        path = createLink 'fuuka'
         url = "//nsfw.foolz.us/#{path}/"
-        if threadID and postID and !AL
+        if check
           url += "##{postID}"
       when 'ck', 'jp', 'lit'
-        path = ar 'fuuka'
+        path = createLink 'fuuka'
         url = "//fuuka.warosu.org/#{path}"
-        if threadID and postID and !AL
+        if check
           url += "##{postID}"
       when 'diy', 'sci'
-        path = ar 'gentoo'
+        path = createLink 'gentoo'
         url = "//archive.installgentoo.net/#{path}"
-        if threadID and postID and !AL
+        if check
           url += "#p#{postID}"
       when 'cgl', 'g', 'mu', 'soc', 'w'
-        path = ar 'gentoo'
+        path = createLink 'gentoo'
         url = "//archive.rebeccablacktech.com/#{path}"
-        if threadID and postID and !AL
+        if check
           url += "#p#{postID}"
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
-        path = ar 'gentoo'
+        path = createLink 'gentoo'
         url = "http://archive.heinessen.com/#{path}"
-        if threadID and postID and !AL
+        if check
           url += "#p#{postID}"
       #when 'e'
       #  url = "https://www.cliché.net/4chan/cgi-board.pl/#{path}"
