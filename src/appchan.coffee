@@ -3,7 +3,7 @@ Style =
     @addStyle()
 
     if Conf["Style"]
-      $.ready 
+      $.ready ->
         @banner
         Style.rice d.body
         Style.trimGlobalMessage()

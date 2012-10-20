@@ -911,24 +911,15 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #imgControls {
   z-index: 100 !important;
 }
-.fileThumb img + img {
-  position: relative;
-  z-index: #{(if Conf["Images Overlap Post Form"] then "100" else "1")} !important;
-}
-div.navLinks > a:first-of-type::after {
-  z-index: 99 !important;
-}
-.fileText ~ a > img + img {
-  z-index: 96 !important;
-}
-#prefetch {
-  z-index: 95;
-}
 #autoPagerBorderPaging,
 #boardNavDesktop,
 #menu.reply.dialog,
 #navlinks {
   z-index: 94 !important;
+}
+.fileThumb img + img {
+  position: relative;
+  z-index: #{(if Conf["Images Overlap Post Form"] then "90" else "1")} !important;
 }
 #stats,
 #updater {
@@ -2094,6 +2085,12 @@ hr {
 
       if Conf["Icon Orientation"] == "horizontal"
         css += """
+div.navLinks > a:first-of-type::after {
+  z-index: 99 !important;
+}
+#prefetch {
+  z-index: 89;
+}
 /* 4chan X Options */
 #navtopright .settingsWindowLink::after {
   visibility: visible;
@@ -2181,6 +2178,12 @@ body > a[style="cursor: pointer; float: right;"]::after {
 """
       else
         css += """
+div.navLinks > a:first-of-type::after {
+  z-index: 89 !important;
+}
+#prefetch {
+  z-index: 95;
+}
 /* Image Expansion */
 #imgControls {
   position: fixed;
