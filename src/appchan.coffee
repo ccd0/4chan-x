@@ -3,7 +3,11 @@ Style =
     @addStyle()
 
     if Conf["Style"]
-      $.ready @banner
+      $.ready 
+        @banner
+        Style.rice d.body
+        Style.trimGlobalMessage()
+        $(".boardBanner img", d.body).id = "Banner"
 
   emoji: (position) ->
     css = ''

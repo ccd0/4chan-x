@@ -705,16 +705,10 @@ div.opContainer {
   padding: 0 1px; /* Gecko does not respect box-sizing: border-box */
 }"""
     else
-      $.ready ->
-        Style.rice d.body
-        Style.trimGlobalMessage()
-        $(".boardBanner img", d.body).id = "Banner"
 
       Conf["styleenabled"] = true
 
       @remStyle()
-
-      Conf["Icons"] = "oneechan"
 
       icons = Icons.header + Icons.themes[Conf["Icons"]][if theme["Dark Theme"] then "dark" else "light"]
 

@@ -239,7 +239,7 @@ Config =
       'Hide Horizontal Rules':     [false,             'Hides lines between threads.']
       'Images Overlap Post Form':  [true,              'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".']
 
-    Mascots:    
+    Mascots:
       'Mascots':                   [true,              'Add a pretty picture of your waifu to Appchan.']
       'Mascot Location':           ['sidebar',         'Change where your mascot is located.', ['sidebar', 'opposite']]
       'Mascot Position':           ['bottom',          'Change where your mascot is placed in relation to the post form if the mascot isn\'t manually placed.', ['above post form', 'bottom']]
@@ -260,14 +260,15 @@ Config =
       'Compact Post Form Inputs':  [true,              'Use compact inputs on the post form.']
       'Textarea Resize':           ['vertical',        'Options to resize the post form\'s comment box.', ['both', 'horizontal', 'vertical', 'none', 'auto-expand']]
       'Tripcode Hider':            [true,              'Intelligent name field hiding.']
-    
+
     Aesthetics:
       'Block Ads':                 [false,             'Block advertisements. It\'s probably better to use AdBlock for this.']
       'Checkboxes':                ['show',            'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide', 'do not style checkboxes']]
       'Emoji':                     ['enabled',         'Enable emoji', ['enabled', 'disable ponies', 'disable']]
       'Emoji Position':            ['before',          'Position of emoji icons, like sega and neko.', ['before', 'after']]
       'Font':                      ['Helvetica',       'The font used by all elements of 4chan.', 'text']
-      'Font Size':                 ['12px',            'The font size of posts and various UI. This does not change all font sizes.', 'text']
+      'Font Size':                 ['12px',            'The font size of posts and various UI. This changes most, but not all, font sizes.', 'text']
+      'Icons':                     ['oneechan',        'Icon theme which Appchan will use.', ['oneechan', '4chan SS']]
       'Rounded Edges':             [true,              'Round the edges of various 4chan elements.']
       'Underline Links':           [true,              'Put lines under hyperlinks.']
 
