@@ -2439,12 +2439,9 @@ ArchiveLink =
         when 'email'
           if value is 'sage' or value.length is 0
             return false
-        when 'md5'
-          value = value.replace /\//g, '_'
-      unless type is 'apost'
-        el.href = Redirect.thread path[1], value, type, true
-      else
-        el.href = Redirect.thread path[1], path[3], post.ID
+        when 'apost'
+          return el.href = Redirect.thread path[1], path[3], post.ID
+      el.href = Redirect.thread path[1], value, type, true
 
     return el: el, open: open
 
@@ -2690,12 +2687,12 @@ Redirect =
         postID = 'username' if postID is 'name'
         postID = 'image' if postID is 'md5'
         if a is 'fuuka'
-          return "#{board}/search/#{postID}/#{threadID}"
+          return "#{board}/search/#{postID}/#{encodeURIComponent threadID}"
         else if a is 'gentoo'
           if postID is 'image'
-            "#{board}/image/#{threadID}"
+            "#{board}/image/#{encodeURIComponent threadID}"
           else
-            "#{board}/?task=search2&search_#{postID}=#{threadID}"
+            "#{board}/?task=search2&search_#{postID}=#{encodeURIComponent threadID}"
       else
         # keep the number only if the location.hash was sent f.e.
         postID = postID.match(/\d+/)[0] if postID

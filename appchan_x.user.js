@@ -6695,14 +6695,10 @@
               return false;
             }
             break;
-          case 'md5':
-            value = value.replace(/\//g, '_');
+          case 'apost':
+            return el.href = Redirect.thread(path[1], path[3], post.ID);
         }
-        if (type !== 'apost') {
-          return el.href = Redirect.thread(path[1], value, type, true);
-        } else {
-          return el.href = Redirect.thread(path[1], path[3], post.ID);
-        }
+        return el.href = Redirect.thread(path[1], value, type, true);
       };
       return {
         el: el,
@@ -7043,12 +7039,12 @@
             postID = 'image';
           }
           if (a === 'fuuka') {
-            return "" + board + "/search/" + postID + "/" + threadID;
+            return "" + board + "/search/" + postID + "/" + (encodeURIComponent(threadID));
           } else if (a === 'gentoo') {
             if (postID === 'image') {
-              return "" + board + "/image/" + threadID;
+              return "" + board + "/image/" + (encodeURIComponent(threadID));
             } else {
-              return "" + board + "/?task=search2&search_" + postID + "=" + threadID;
+              return "" + board + "/?task=search2&search_" + postID + "=" + (encodeURIComponent(threadID));
             }
           }
         } else {
