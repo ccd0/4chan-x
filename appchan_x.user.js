@@ -2560,6 +2560,9 @@
       }
       $.extend(r, callbacks);
       $.extend(r.upload, upCallbacks);
+      if (type === 'post') {
+        r.withCredentials = true;
+      }
       r.send(form);
       return r;
     },
@@ -7484,11 +7487,14 @@
 
   QR = {
     init: function() {
-      var link;
       if (!$.id('postForm')) {
         return;
       }
       Main.callbacks.push(this.node);
+      return setTimeout(this.asyncInit);
+    },
+    asyncInit: function() {
+      var link;
       if (Conf['Hide Original Post Form'] && !Conf['Persistent QR']) {
         if (Conf['Style']) {
           link = $.el('a', {
@@ -7623,6 +7629,8 @@
               case 'soc':
               case 'r9k':
                 return 600;
+              default:
+                return 300;
             }
           })(),
           sage: g.BOARD === 'q' ? 600 : 60,
@@ -7637,6 +7645,7 @@
         if (QR.cooldown.isCounting) {
           return;
         }
+        QR.cooldown.isCounting = true;
         return QR.cooldown.count();
       },
       sync: function(cooldowns) {
@@ -7709,7 +7718,9 @@
           if (isReply === cooldown.isReply) {
             type = !isReply ? 'thread' : isSage && cooldown.isSage ? 'sage' : hasFile && cooldown.hasFile ? 'file' : 'post';
             elapsed = Math.floor((now - start) / 1000);
-            seconds = Math.max(seconds, types[type] - elapsed);
+            if (elapsed >= 0) {
+              seconds = Math.max(seconds, types[type] - elapsed);
+            }
           }
           if (!((start <= now && now <= cooldown.timeout))) {
             QR.cooldown.unset(start);
@@ -7739,7 +7750,7 @@
       sel = window.getSelection();
       if ((s = sel.toString().trim()) && id === ((_ref = $.x('ancestor-or-self::blockquote', sel.anchorNode)) != null ? _ref.id.match(/\d+$/)[0] : void 0)) {
         if ($.engine === 'presto') {
-          s = d.getSelection();
+          s = d.getSelection().trim();
         }
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
@@ -7861,7 +7872,7 @@
           className: 'thumbnail',
           draggable: true,
           href: 'javascript:;',
-          innerHTML: '<a class=remove>X</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+          innerHTML: '<a class=remove>×</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
         });
         $('input', this.el).checked = this.spoiler;
         $.on(this.el, 'click', function() {
@@ -8442,6 +8453,9 @@
           innerHTML: /^You were issued a warning/.test($('.boxcontent', doc).textContent.trim()) ? "You were issued a warning on " + bs[0].innerHTML + " as " + bs[3].innerHTML + ".<br>Warning reason: " + bs[1].innerHTML : "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
         });
       } else if (err = doc.getElementById('errmsg')) {
+        if (/4chan Pass/.test(err.textContent)) {
+          err.textContent = 'You seem to have mistyped the CAPTCHA. Please try again.';
+        }
         if ((_ref = $('a', err)) != null) {
           _ref.target = '_blank';
         }

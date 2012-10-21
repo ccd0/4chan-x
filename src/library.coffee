@@ -146,6 +146,7 @@ $.extend $,
       r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
+    r.withCredentials = true if type is 'post'
     r.send form
     r
   cache: (url, cb) ->

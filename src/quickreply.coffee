@@ -2,7 +2,9 @@ QR =
   init: ->
     return unless $.id 'postForm'
     Main.callbacks.push @node
+    setTimeout @asyncInit
 
+  asyncInit: ->
     if Conf['Hide Original Post Form'] and not Conf['Persistent QR']
       if Conf['Style']
         link = $.el 'a'
@@ -106,6 +108,7 @@ QR =
         thread: switch g.BOARD
           when 'q' then 86400
           when 'b', 'soc', 'r9k' then 600
+          else 300
         sage: if g.BOARD is 'q' then 600 else 60
         file: if g.BOARD is 'q' then 300 else 30
         post: if g.BOARD is 'q' then 60  else 30
@@ -115,6 +118,7 @@ QR =
 
     start: ->
       return if QR.cooldown.isCounting
+      QR.cooldown.isCounting = true
       QR.cooldown.count()
 
     sync: (cooldowns) ->
@@ -195,7 +199,8 @@ QR =
             else
               'post'
           elapsed = Math.floor (now - start) / 1000
-          seconds = Math.max seconds, types[type] - elapsed
+          if elapsed >= 0 # clock changed since then?
+            seconds = Math.max seconds, types[type] - elapsed
         unless start <= now <= cooldown.timeout
           QR.cooldown.unset start
 
@@ -219,7 +224,7 @@ QR =
     sel = window.getSelection()
     if (s = sel.toString().trim()) and id is $.x('ancestor-or-self::blockquote', sel.anchorNode)?.id.match(/\d+$/)[0]
       # XXX Opera needs d.getSelection() to retain linebreaks from the selected text
-      s = d.getSelection() if $.engine is 'presto'
+      s = d.getSelection().trim() if $.engine is 'presto'
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
 
@@ -327,7 +332,7 @@ QR =
         className: 'thumbnail'
         draggable: true
         href: 'javascript:;'
-        innerHTML: '<a class=remove>X</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+        innerHTML: '<a class=remove>×</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
       $('input', @el).checked = @spoiler
       $.on @el,               'click',      => @select()
       $.on $('.remove', @el), 'click',  (e) =>
@@ -760,9 +765,9 @@ QR =
       spoiler:  reply.spoiler
       textonly: textOnly
       mode:     'regist'
-      pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
+      pwd:      if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
-      recaptcha_response_field: response
+      recaptcha_response_field:  response
 
     callbacks =
       onload: ->
@@ -801,6 +806,8 @@ QR =
           else
             "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
     else if err = doc.getElementById 'errmsg' # error!
+      if /4chan Pass/.test(err.textContent)
+        err.textContent = 'You seem to have mistyped the CAPTCHA. Please try again.'
       $('a', err)?.target = '_blank' # duplicate image link
     else unless msg = $ 'b', doc
       err = 'Connection error with sys.4chan.org.'
@@ -860,7 +867,7 @@ QR =
     else
       # Enable auto-posting if we have stuff to post, disable it otherwise.
       QR.cooldown.auto = QR.replies.length > 1
-      if Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto
+      if Conf['Open Reply in New Tab'] and !g.REPLY and !QR.cooldown.auto
         $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
 
     if Conf['Persistent QR'] or QR.cooldown.auto
