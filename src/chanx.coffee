@@ -2818,6 +2818,8 @@ Prefetch =
       $.after first, controls
     else
       $.before first, controls
+    if Conf["Style"]
+      Style.rice controls
 
   change: ->
     $.off @, 'change', Prefetch.change

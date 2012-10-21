@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 1.0.1 - 2012-10-20
+/*  appchan x - Version 1.0.1 - 2012-10-21
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -7250,9 +7250,12 @@
       $.on(input, 'change', Prefetch.change);
       first = $.id('delform').firstElementChild;
       if (first.id === 'imgControls') {
-        return $.after(first, controls);
+        $.after(first, controls);
       } else {
-        return $.before(first, controls);
+        $.before(first, controls);
+      }
+      if (Conf["Style"]) {
+        return Style.rice(controls);
       }
     },
     change: function() {
@@ -9344,7 +9347,7 @@
       this.addStyle();
       if (Conf["Style"]) {
         return $.ready(function() {
-          this.banner;
+          Style.banner();
           Style.rice(d.body);
           Style.trimGlobalMessage();
           return $(".boardBanner img", d.body).id = "Banner";
