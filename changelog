@@ -1,5 +1,21 @@
 master
 
+1.0.0 - 1.0.3
+- Zixaphir
+  Fix 4chan Pass support.
+  Icon themes.
+  Fixed an issue where mascots were not saving.
+  New options for navigation and pagination alignment
+  Brighter icons
+  Logo reflections
+  Recategorized Options
+  Smaller minimal sizes
+  Redo Gasai Yuno 2 mascot
+  Redo Konjiki no Yami (Golden Darkness) Mascot
+  Better Embedder
+- noface
+  Archives now populate a submenu just like the quicklinks for the Filter.
+
 0.19.0 (Version 1.0.0rc1)
 - noface
   Updater should now check until own post is found.
