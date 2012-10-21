@@ -367,6 +367,9 @@ h1,
   overflow: auto;
   padding: 0 5px 0 7px;
 }
+#options ul li:nth-of-type(2n) {
+  background-color: rgba(0, 0, 0, 0.05)
+}
 #options .optionlabel {
   text-decoration: underline;
 }
@@ -739,6 +742,7 @@ html,
 body {
   min-height: 100%;
 }
+#exlinks-options > *,
 html,
 body,
 input,
@@ -773,6 +777,7 @@ textarea {
 a,
 big,
 blockquote,
+body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"],
 div.post > blockquote .chanlinkify.YTLT-link.YTLT-text,
 div.reply,
 fieldset,
@@ -904,6 +909,7 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {
 html .subMenu {
   z-index: 102 !important;
 }
+#navtopright .exlinksOptionsLink::after,
 #navtopright .settingsWindowLink::after,
 body > a[style="cursor: pointer; float: right;"]::after {
   z-index: 101 !important;
@@ -948,6 +954,7 @@ div.reply.highlight {
   #{agent}box-sizing: border-box;
   box-sizing: border-box;
 }
+#navtopright .exlinksOptionsLink::after,
 #navtopright .settingsWindowLink::after,
 div.navLinks > a:first-of-type::after,
 #watcher::after,
@@ -955,6 +962,7 @@ div.navLinks > a:first-of-type::after,
 #boardNavDesktopFoot::after,
 body > a[style="cursor: pointer; float: right;"]::after,
 #imgControls label:first-of-type::after {
+  position: fixed;
   display: block;
   width: 15px;
   height: 15px;
@@ -982,10 +990,15 @@ body > a[style="cursor: pointer; float: right;"]::after {
   background-position: 0 -75px;
 }
 #imgControls label:first-of-type::after {
+  position: static;
   background-position: 0 -90px;
+}
+#navtopright .exlinksOptionsLink::after {
+  background-position: 0 -105px;
 }
 body > a[style="cursor: pointer; float: right;"]:hover::after,
 #navtopright .settingsWindowLink:hover::after,
+#navtopright .exlinksOptionsLink:hover::after,
 #boardNavDesktopFoot:hover::after,
 #globalMessage:hover::after,
 div.navLinks > a:first-of-type:hover::after,
@@ -1150,7 +1163,7 @@ input[type=checkbox] {
   display: inline-block;
 }
 #threadselect select,
-input,
+input:not([type=radio]),
 .field,
 input[type="submit"] {
   height: 20px;
@@ -1414,29 +1427,53 @@ body > a[style="cursor: pointer; float: right;"] {
 }
 body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] {
   display: block;
-  position: fixed;
-  top: 17px;
-  bottom: 17px;
-  #{sidebarLocation[1]}: 4px;
-  #{sidebarLocation[0]}: #{(252 + sidebarOffsetW)}px;
-  width: auto;
-  margin: 0;
+  position: fixed !important;
+  top: 17px !important;
+  bottom: 17px !important;
+  #{sidebarLocation[1]}: 4px !important;
+  #{sidebarLocation[0]}: #{(252 + sidebarOffsetW)}px !important;
+  width: auto !important;
+  margin: 0 !important;
 }
 body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
-  height: 100%;
+  border-collapse: separate !important;
+  background: #{theme["Dialog Background"]} !important;
+  border: 1px solid #{theme["Dialog Border"]} !important;
+  vertical-align: top !important;
+  height: auto !important;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table > tbody > tr > td {
+  background: #{theme["Body Background"]} !important;
+  border: 1px solid #{theme["Reply Border"]} !important;
   vertical-align: top;
 }
-body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"]{
-  height: 95%;
-  margin-top: 5px;
-  margin-bottom: 5px;
+body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table > tbody > tr:first-of-type > td > div {
+  max-height: 450px;
+}
+body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] {
+  height: 95% !important;
+  margin-top: 5px !important;
+  margin-bottom: 5px !important;
 }
 #fs_status {
-  width: auto;
-  height: 100%;
-  background: none;
-  padding: 10px;
-  overflow: scroll;
+  width: auto !important;
+  height: auto !important;
+  background: #{theme["Dialog Background"]} !important;
+  padding: 10px !important;
+  white-space: normal !important;
+}
+#fs_data tr[style="background-color: #EA8;"] {
+  background: #{theme["Reply Background"]} !important;
+}
+#fs_data,
+#fs_data * {
+  border-color: #{theme["Reply Border"]} !important;
+}
+#fs_status a {
+  color: #{theme["Text"]} !important;
 }
 [alt="sticky"] + a::before {
   content: "Sticky | ";
@@ -1661,8 +1698,9 @@ html {
   background-position: #{theme["Background Position"]};
 }
 #content,
-#themecontent,
-#mascotcontent {
+#exlinks-options-content,
+#mascotcontent,
+#themecontent {
   background: #{theme["Background Color"]};
   border: 1px solid #{theme["Reply Border"] };
   padding: 5px;
@@ -1685,6 +1723,7 @@ html {
 #ft li,
 #ft ul,
 #options .dialog,
+#exlinks-options,
 #options li.mascot.enabled,
 #qrtab,
 #watcher,
@@ -1751,6 +1790,7 @@ textarea.field:focus {
 .replyContainer div.reply {
   border: 1px solid #{theme["Reply Border"] };
 }
+.exblock.reply,
 .reply.highlight,
 .reply:target {
   background: #{theme["Highlighted Reply Background"]};
@@ -1834,6 +1874,7 @@ textarea,
 span.pln {
   color: #{theme["Text"]};
 }
+#exlinks-options-content > table,
 #options ul {
   border-bottom: 1px solid #{theme["Reply Border"]};
   box-shadow: inset #{theme["Shadow Color"]} 0 0 5px;
@@ -1929,8 +1970,8 @@ a.forwardlink {
 #options ul {
   border-color: #{(if theme["Dark Theme"] then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)")};
 }
-#options .styleoption {
-  border-top: 1px solid #{(if theme["Dark Theme"] then "rgba(255,255,255,0.05)" else "rgba(0,0,0,0.05)")};
+#options li {
+  border-top: 1px solid #{(if theme["Dark Theme"] then "rgba(255,255,255,0.025)" else "rgba(0,0,0,0.05)")};
 }
 #mascot img {
   #{agent}transform: scaleX(#{(if sidebarLocation[0] == "left" then "-" else "")}1);
@@ -2098,32 +2139,34 @@ div.navLinks > a:first-of-type::after {
 }
 /* Slideout Navigation */
 #boardNavDesktopFoot::after {
-  border: none;
   #{(if sidebarLocation[0] == "left" then "left: " + (212 + sidebarOffsetW) + "px" else "right: 21px")};
 }
 /* Global Message */
 #globalMessage::after {
-  position: fixed;
   #{(if sidebarLocation[0] == "left" then "left: " + (193 + sidebarOffsetW) + "px" else "right: 40px")};
 }
 /* Watcher */
 #watcher::after {
-  position: fixed;
   #{(if sidebarLocation[0] == "left" then "left: " + (174 + sidebarOffsetW) + "px" else "right: 59px")};
   cursor: pointer;
 }
+/* ExLinks */
+#navtopright .exlinksOptionsLink::after {
+  visibility: visible;
+  #{(if sidebarLocation[0] == "left" then "left: " + (155 + sidebarOffsetW) + "px" else "right: 78px")};
+}
 /* Expand Images */
 #imgControls {
-  #{(if sidebarLocation[0] == "left" then "left: " + (155 + sidebarOffsetW) + "px" else "right: 78px")};
+  position: fixed;
+  #{(if sidebarLocation[0] == "left" then "left: " + (136 + sidebarOffsetW) + "px" else "right: 97px")};
 }
 /* 4sight */
 body > a[style="cursor: pointer; float: right;"]::after {
-  #{(if sidebarLocation[0] == "left" then "left: " + (136 + sidebarOffsetW) + "px" else "right: 97px")};
+  #{(if sidebarLocation[0] == "left" then "left: " + (115 + sidebarOffsetW) + "px" else "right: 116px")};
 }
 /* Back */
 div.navLinks > a:first-of-type::after {
   visibility: visible;
-  position: fixed;
   cursor: pointer;
   #{(if sidebarLocation[0] == "left" then "left: 2px" else "right: " + (228 + sidebarOffsetW) + "px")};
 }
@@ -2154,13 +2197,13 @@ div.navLinks > a:first-of-type::after {
   float: #{sidebarLocation[1]};
 }
 #boardNavDesktopFoot::after,
+#navtopright .exlinksOptionsLink::after,
 #navtopright .settingsWindowLink::after,
 #watcher::after,
 #globalMessage::after,
 #imgControls,
 div.navLinks > a:first-of-type::after,
 body > a[style="cursor: pointer; float: right;"]::after {
-  position: fixed;
   top: 2px !important;
 }
 #globalMessage,
@@ -2192,40 +2235,40 @@ div.navLinks > a:first-of-type::after {
 /* 4chan X Options */
 #navtopright .settingsWindowLink::after {
   visibility: visible;
-  position: fixed;
   top: #{(21 + logoOffset)}px !important;
 }
 /* Slideout Navigation */
 #boardNavDesktopFoot,
 #boardNavDesktopFoot::after {
   border: none;
-  position: fixed;
   top: #{(40 + logoOffset)}px !important;
 }
 /* Global Message */
 #globalMessage,
 #globalMessage::after {
-  position: fixed;
   top: #{(59 + logoOffset)}px !important;
 }
 /* Watcher */
 #watcher,
 #watcher::after {
-  position: fixed;
   top: #{(78 + logoOffset)}px !important;
   cursor: pointer;
 }
 /* 4sight */
 body > a[style="cursor: pointer; float: right;"]::after {
-  position: fixed;
   top: #{(97 + logoOffset)}px !important;
+}
+/* ExLinks */
+#navtopright .exlinksOptionsLink::after {
+  visibility: visible;
+  top: #{(116 + logoOffset)}px !important;
 }
 /* Back */
 div.navLinks > a:first-of-type::after {
   visibility: visible;
   position: fixed;
   cursor: pointer;
-  top: #{(116 + logoOffset)}px !important;
+  top: #{(135 + logoOffset)}px !important;
 }
 /* Updater + Stats */
 #stats,
@@ -2247,7 +2290,7 @@ div.navLinks > a:first-of-type::after {
   float: #{sidebarLocation[1]};
 }
 #navlinks {
-  top: #{(135 + logoOffset)}px !important;
+  top: #{(156 + logoOffset)}px !important;
   #{sidebarLocation[1]}: auto !important;
 }
 #navlinks a {
@@ -2255,6 +2298,7 @@ div.navLinks > a:first-of-type::after {
   clear: both;
 }
 #navlinks,
+#navtopright .exlinksOptionsLink::after,
 #navtopright .settingsWindowLink::after,
 #boardNavDesktopFoot,
 #boardNavDesktopFoot::after,
@@ -2645,8 +2689,8 @@ body {
       if Conf["Compact Post Form Inputs"]
         css += """
 #qr textarea.field {
-  height: 161px;
-  min-height: 161px;
+  height: 184px;
+  min-height: 184px;
   min-width: #{248 + sidebarOffsetW}px;
 }
 #qr.captcha textarea.field {
@@ -2663,8 +2707,8 @@ body {
       else
         css += """
 #qr textarea.field {
-  height: 135px;
-  min-height: 135px;
+  height: 158px;
+  min-height: 158px;
   min-width: #{248 + sidebarOffsetW}px
 }
 #qr.captcha textarea.field {
