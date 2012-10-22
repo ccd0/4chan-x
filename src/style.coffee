@@ -910,8 +910,7 @@ html .subMenu {
   z-index: 102 !important;
 }
 #navtopright .exlinksOptionsLink::after,
-#navtopright .settingsWindowLink::after,
-body > a[style="cursor: pointer; float: right;"]::after {
+#navtopright .settingsWindowLink::after {
   z-index: 101 !important;
 }
 #imgControls {
@@ -920,7 +919,8 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #autoPagerBorderPaging,
 #boardNavDesktop,
 #menu.reply.dialog,
-#navlinks {
+#navlinks,
+body > a[style="cursor: pointer; float: right;"]::after {
   z-index: 94 !important;
 }
 .fileThumb img + img {
@@ -2162,13 +2162,13 @@ div.navLinks > a:first-of-type::after {
   visibility: visible;
   #{(if sidebarLocation[0] == "left" then "left: " + (155 + sidebarOffsetW) + "px" else "right: 78px")};
 }
+/* 4sight */
+body > a[style="cursor: pointer; float: right;"]::after {
+  #{(if sidebarLocation[0] == "left" then "left: " + (136 + sidebarOffsetW) + "px" else "right: 97px")};
+}
 /* Expand Images */
 #imgControls {
   position: fixed;
-  #{(if sidebarLocation[0] == "left" then "left: " + (136 + sidebarOffsetW) + "px" else "right: 97px")};
-}
-/* 4sight */
-body > a[style="cursor: pointer; float: right;"]::after {
   #{(if sidebarLocation[0] == "left" then "left: " + (115 + sidebarOffsetW) + "px" else "right: 116px")};
 }
 /* Back */
