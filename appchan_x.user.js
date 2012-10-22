@@ -28,7 +28,7 @@
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
  *
- *  appchan X Copyright © 2012 Zixaphir <zixaphirmoxphar@gmail.com>
+ *  Appchan X Copyright © 2012 Zixaphir <zixaphirmoxphar@gmail.com>
  *    http://zixaphir.github.com/appchan-x/
  *  4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
  *    http://aeosynth.github.com/4chan-x/
@@ -38,6 +38,8 @@
  *    http://seaweedchan.github.com/oneechan/
  *  4chan SS Copyright © 2012 Ahodesuka
  *    http://ahodesuka.github.com/4chan-Style-Script
+ *  4chan SS Icons Copyright © 2012 Dmitry Baranovskiy
+ *    http://raphaeljs.com/icons/
  *
  *  Permission is hereby granted, free of charge, to any person
  *  obtaining a copy of this software and associated documentation

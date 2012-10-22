@@ -3,7 +3,7 @@
  *  Licensed under the MIT license.
  *  <%= meta.repo %>blob/master/LICENSE
  *
- *  appchan X Copyright © <%= grunt.template.today('yyyy') %> Zixaphir <zixaphirmoxphar@gmail.com>
+ *  Appchan X Copyright © <%= grunt.template.today('yyyy') %> Zixaphir <zixaphirmoxphar@gmail.com>
  *    http://zixaphir.github.com/appchan-x/
  *  4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
  *    http://aeosynth.github.com/4chan-x/
@@ -13,6 +13,8 @@
  *    http://seaweedchan.github.com/oneechan/
  *  4chan SS Copyright © <%= grunt.template.today('yyyy') %> Ahodesuka
  *    http://ahodesuka.github.com/4chan-Style-Script
+ *  4chan SS Icons Copyright © <%= grunt.template.today('yyyy') %> Dmitry Baranovskiy
+ *    http://raphaeljs.com/icons/
  *
  *  Permission is hereby granted, free of charge, to any person
  *  obtaining a copy of this software and associated documentation
