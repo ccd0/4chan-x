@@ -4725,7 +4725,8 @@
           Updater.update();
           break;
         case Conf.unreadCountTo0:
-          Updater.to0();
+          Unread.replies = [];
+          Unread.update(true);
           break;
         case Conf.expandImage:
           Keybinds.img(thread);
@@ -5067,10 +5068,6 @@
             break;
           case 'Update Now':
             $.on(input, 'click', this.update);
-            break;
-          case 'Reset Count on Focus':
-            $.on(input, 'change', this.cb.reset);
-            this.cb.reset.call(input);
         }
       }
       if (Conf['Style']) {
@@ -5185,13 +5182,6 @@
         } : function() {
           return !(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden);
         };
-      },
-      reset: function() {
-        if (Conf['Reset Count on Focus'] = this.checked) {
-          return $.on(window || unsafeWindow, 'focus', Updater.to0);
-        } else {
-          return $.off(window || unsafeWindow, 'focus', Updater.to0);
-        }
       },
       load: function() {
         switch (this.status) {
@@ -5357,10 +5347,6 @@
           'If-Modified-Since': Updater.lastModified
         }
       });
-    },
-    to0: function() {
-      Unread.replies = [];
-      return Unread.update(true);
     }
   };
 
@@ -6864,7 +6850,7 @@
       this.title = d.title;
       $.on(d, 'QRPostSuccessful', this.post);
       this.update();
-      $.on(window, 'scroll', Unread.scroll);
+      $.on(window, 'scroll focus', Unread.scroll);
       return Main.callbacks.push(this.node);
     },
     replies: [],

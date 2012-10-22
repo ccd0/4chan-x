@@ -802,7 +802,8 @@ Keybinds =
       when Conf.update
         Updater.update()
       when Conf.unreadCountTo0
-        Updater.to0()
+        Unread.replies = []
+        Unread.update true
       # Images
       when Conf.expandImage
         Keybinds.img thread
@@ -979,7 +980,7 @@ Nav =
     [thread, i, rect] = Nav.getThread true
     {top} = rect
 
-    #unless we're not at the beginning of the current thread
+    # unless we're not at the beginning of the current thread
     # (and thus wanting to move to beginning)
     # or we're above the first thread and don't want to skip it
     unless (delta is -1 and Math.ceil(top) < 0) or (delta is +1 and top > 1)
@@ -1065,9 +1066,6 @@ Updater =
           @cb.interval.call input
         when 'Update Now'
           $.on input, 'click', @update
-        when 'Reset Count on Focus'
-          $.on input, 'change', @cb.reset
-          @cb.reset.call input
 
     if Conf['Style']
       Style.rice dialog
@@ -1153,11 +1151,6 @@ Updater =
           -> true
         else
           -> !(d.hidden or d.oHidden or d.mozHidden or d.webkitHidden)
-    reset: ->
-      if Conf['Reset Count on Focus'] = @checked
-        $.on (window or unsafeWindow), 'focus', Updater.to0
-      else
-        $.off (window or unsafeWindow), 'focus', Updater.to0
     load: ->
       switch @status
         when 404
@@ -1283,10 +1276,6 @@ Updater =
     url = "//api.4chan.org/#{g.BOARD}/res/#{g.THREAD_ID}.json"
     Updater.request = $.ajax url, onloadend: Updater.cb.load,
       headers: 'If-Modified-Since': Updater.lastModified
-  
-  to0: ->
-    Unread.replies = []
-    Unread.update true
 
 Watcher =
   init: ->
@@ -2556,7 +2545,7 @@ Unread =
     @title = d.title
     $.on d, 'QRPostSuccessful', @post
     @update()
-    $.on window, 'scroll', Unread.scroll
+    $.on window, 'scroll focus', Unread.scroll
     Main.callbacks.push @node
 
   replies: []
