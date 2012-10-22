@@ -9365,7 +9365,7 @@
         item = Emoji[_i];
         if (!(Conf['Emoji'] === "disable ponies" && item[2] === "pony")) {
           name = item[0];
-          image = Icons.header + item[1];
+          image = Icons.header.png + item[1];
           css += "a.useremail[href*='" + name + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toLowerCase()) + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toUpperCase()) + "']:last-of-type::" + position + " {\n  content: url('" + image + "') \" \";\n  vertical-align: top;\n}";
         }
       }

@@ -14,7 +14,7 @@ Style =
     for item in Emoji
       unless Conf['Emoji'] == "disable ponies" and item[2] == "pony"
         name  = item[0]
-        image = Icons.header + item[1]
+        image = Icons.header.png + item[1]
         css   += """
 a.useremail[href*='#{name}']:last-of-type::#{position},
 a.useremail[href*='#{name.toLowerCase()}']:last-of-type::#{position},
