@@ -1982,6 +1982,7 @@ a.forwardlink {
 }
 #mascot img {
   #{agent}transform: scaleX(#{(if sidebarLocation[0] == "left" then "-" else "")}1);
+  #{agent}user-select: none;
 }
 """ + theme["Custom CSS"]
       if theme["Dark Theme"]
@@ -2525,15 +2526,16 @@ div.reply .menu_button {
   margin: 1px 0 0;
   width: 100%;
 }
-.sideArrows,
+.sideArrows a,
 div.reply .report_button,
 div.reply .menu_button {
   opacity: 0;
   #{agent}transition: opacity .3s ease-out 0s;
+  #{agent}user-select: none;
 }
 form .replyContainer:hover div.reply .report_button,
 form .replyContainer:hover div.reply .menu_button,
-form .replyContainer:hover .sideArrows {
+form .replyContainer:hover .sideArrows a {
   opacity: 1;
   #{agent}transition: opacity .3s ease-in 0s;
 }
