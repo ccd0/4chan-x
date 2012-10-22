@@ -2138,7 +2138,7 @@ div.navLinks > a:first-of-type::after {
   z-index: 99 !important;
 }
 #prefetch {
-  z-index: 89;
+  z-index: 9;
 }
 /* 4chan X Options */
 #navtopright .settingsWindowLink::after {

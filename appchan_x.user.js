@@ -233,6 +233,7 @@
     },
     updater: {
       checkbox: {
+        'Reset Count on Focus': [false, 'Reset the post counter on window focus'],
         'Scrolling': [false, 'Scroll updated posts into view. Only enabled at bottom of page.'],
         'Scroll BG': [false, 'Scroll background tabs'],
         'Verbose': [true, 'Show countdown timer, new post count'],
@@ -4724,8 +4725,7 @@
           Updater.update();
           break;
         case Conf.unreadCountTo0:
-          Unread.replies = [];
-          Unread.update(true);
+          Updater.to0();
           break;
         case Conf.expandImage:
           Keybinds.img(thread);
@@ -5067,7 +5067,14 @@
             break;
           case 'Update Now':
             $.on(input, 'click', this.update);
+            break;
+          case 'Reset Count on Focus':
+            $.on(input, 'change', this.cb.reset);
+            this.cb.reset.call(input);
         }
+      }
+      if (Conf['Style']) {
+        Style.rice(dialog);
       }
       $.add(d.body, dialog);
       $.on(d, 'QRPostSuccessful', this.cb.post);
@@ -5178,6 +5185,13 @@
         } : function() {
           return !(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden);
         };
+      },
+      reset: function() {
+        if (Conf['Reset Count on Focus'] = this.checked) {
+          return $.on(window || unsafeWindow, 'focus', Updater.to0);
+        } else {
+          return $.off(window || unsafeWindow, 'focus', Updater.to0);
+        }
       },
       load: function() {
         switch (this.status) {
@@ -5343,6 +5357,10 @@
           'If-Modified-Since': Updater.lastModified
         }
       });
+    },
+    to0: function() {
+      Unread.replies = [];
+      return Unread.update(true);
     }
   };
 
@@ -9576,7 +9594,7 @@
           css += "hr {\n  visibility: hidden;\n}";
         }
         if (Conf["Icon Orientation"] === "horizontal") {
-          css += "div.navLinks > a:first-of-type::after {\n  z-index: 99 !important;\n}\n#prefetch {\n  z-index: 89;\n}\n/* 4chan X Options */\n#navtopright .settingsWindowLink::after {\n  visibility: visible;\n  " + (sidebarLocation[0] === "left" ? "left: " + (231 + sidebarOffsetW) + "px" : "right:  2px") + ";\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  " + (sidebarLocation[0] === "left" ? "left: " + (212 + sidebarOffsetW) + "px" : "right: 21px") + ";\n}\n/* Global Message */\n#globalMessage::after {\n  " + (sidebarLocation[0] === "left" ? "left: " + (193 + sidebarOffsetW) + "px" : "right: 40px") + ";\n}\n/* Watcher */\n#watcher::after {\n  " + (sidebarLocation[0] === "left" ? "left: " + (174 + sidebarOffsetW) + "px" : "right: 59px") + ";\n  cursor: pointer;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  visibility: visible;\n  " + (sidebarLocation[0] === "left" ? "left: " + (155 + sidebarOffsetW) + "px" : "right: 78px") + ";\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  " + (sidebarLocation[0] === "left" ? "left: " + (136 + sidebarOffsetW) + "px" : "right: 97px") + ";\n}\n/* Expand Images */\n#imgControls {\n  position: fixed;\n  " + (sidebarLocation[0] === "left" ? "left: " + (115 + sidebarOffsetW) + "px" : "right: 116px") + ";\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  cursor: pointer;\n  " + (sidebarLocation[0] === "left" ? "left: 2px" : "right: " + (228 + sidebarOffsetW) + "px") + ";\n}\n/* Thread Navigation Links */\n#navlinks {\n  " + (sidebarLocation[0] === "left" ? "left: 22px" : "right: " + (198 + sidebarOffsetW) + "px") + ";\n  " + sidebarLocation[1] + ": auto !important;\n  top: 0 !important;\n  width: 30px;\n  line-height: 15px;\n}\n/* Updater + Stats */\n#updater,\n#stats {\n  " + sidebarLocation[0] + ": 4px !important;\n  " + sidebarLocation[1] + ": auto !important;\n  top: " + (Conf["Updater Position"] === "top" ? "20px" : "auto") + " !important;\n  bottom: " + (Conf["Updater Position"] === "bottom" ? "4px" : "auto") + " !important;\n}\n#prefetch {\n  width: " + (248 + sidebarOffsetW) + "px;\n  " + sidebarLocation[0] + ": 2px;\n  top: 20px;\n  text-align: " + sidebarLocation[1] + ";\n}\n#prefetch .rice,\n#prefetch input {\n  float: " + sidebarLocation[1] + ";\n}\n#boardNavDesktopFoot::after,\n#navtopright .exlinksOptionsLink::after,\n#navtopright .settingsWindowLink::after,\n#watcher::after,\n#globalMessage::after,\n#imgControls,\ndiv.navLinks > a:first-of-type::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: 2px !important;\n}\n#globalMessage,\n#boardNavDesktopFoot,\n#watcher {\n  position: fixed;\n  top: 16px !important;\n  z-index: 98 !important;\n}\n#globalMessage:hover,\n#boardNavDesktopFoot:hover,\n#watcher:hover {\n  z-index: 99 !important;\n}";
+          css += "div.navLinks > a:first-of-type::after {\n  z-index: 99 !important;\n}\n#prefetch {\n  z-index: 9;\n}\n/* 4chan X Options */\n#navtopright .settingsWindowLink::after {\n  visibility: visible;\n  " + (sidebarLocation[0] === "left" ? "left: " + (231 + sidebarOffsetW) + "px" : "right:  2px") + ";\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  " + (sidebarLocation[0] === "left" ? "left: " + (212 + sidebarOffsetW) + "px" : "right: 21px") + ";\n}\n/* Global Message */\n#globalMessage::after {\n  " + (sidebarLocation[0] === "left" ? "left: " + (193 + sidebarOffsetW) + "px" : "right: 40px") + ";\n}\n/* Watcher */\n#watcher::after {\n  " + (sidebarLocation[0] === "left" ? "left: " + (174 + sidebarOffsetW) + "px" : "right: 59px") + ";\n  cursor: pointer;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  visibility: visible;\n  " + (sidebarLocation[0] === "left" ? "left: " + (155 + sidebarOffsetW) + "px" : "right: 78px") + ";\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  " + (sidebarLocation[0] === "left" ? "left: " + (136 + sidebarOffsetW) + "px" : "right: 97px") + ";\n}\n/* Expand Images */\n#imgControls {\n  position: fixed;\n  " + (sidebarLocation[0] === "left" ? "left: " + (115 + sidebarOffsetW) + "px" : "right: 116px") + ";\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  cursor: pointer;\n  " + (sidebarLocation[0] === "left" ? "left: 2px" : "right: " + (228 + sidebarOffsetW) + "px") + ";\n}\n/* Thread Navigation Links */\n#navlinks {\n  " + (sidebarLocation[0] === "left" ? "left: 22px" : "right: " + (198 + sidebarOffsetW) + "px") + ";\n  " + sidebarLocation[1] + ": auto !important;\n  top: 0 !important;\n  width: 30px;\n  line-height: 15px;\n}\n/* Updater + Stats */\n#updater,\n#stats {\n  " + sidebarLocation[0] + ": 4px !important;\n  " + sidebarLocation[1] + ": auto !important;\n  top: " + (Conf["Updater Position"] === "top" ? "20px" : "auto") + " !important;\n  bottom: " + (Conf["Updater Position"] === "bottom" ? "4px" : "auto") + " !important;\n}\n#prefetch {\n  width: " + (248 + sidebarOffsetW) + "px;\n  " + sidebarLocation[0] + ": 2px;\n  top: 20px;\n  text-align: " + sidebarLocation[1] + ";\n}\n#prefetch .rice,\n#prefetch input {\n  float: " + sidebarLocation[1] + ";\n}\n#boardNavDesktopFoot::after,\n#navtopright .exlinksOptionsLink::after,\n#navtopright .settingsWindowLink::after,\n#watcher::after,\n#globalMessage::after,\n#imgControls,\ndiv.navLinks > a:first-of-type::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: 2px !important;\n}\n#globalMessage,\n#boardNavDesktopFoot,\n#watcher {\n  position: fixed;\n  top: 16px !important;\n  z-index: 98 !important;\n}\n#globalMessage:hover,\n#boardNavDesktopFoot:hover,\n#watcher:hover {\n  z-index: 99 !important;\n}";
         } else {
           css += "div.navLinks > a:first-of-type::after {\n  z-index: 89 !important;\n}\n#prefetch {\n  z-index: 95;\n}\n/* Image Expansion */\n#imgControls {\n  position: fixed;\n  top: " + (2 + logoOffset) + "px !important;\n}\n/* 4chan X Options */\n#navtopright .settingsWindowLink::after {\n  visibility: visible;\n  top: " + (21 + logoOffset) + "px !important;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after {\n  border: none;\n  top: " + (40 + logoOffset) + "px !important;\n}\n/* Global Message */\n#globalMessage,\n#globalMessage::after {\n  top: " + (59 + logoOffset) + "px !important;\n}\n/* Watcher */\n#watcher,\n#watcher::after {\n  top: " + (78 + logoOffset) + "px !important;\n  cursor: pointer;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: " + (97 + logoOffset) + "px !important;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  visibility: visible;\n  top: " + (116 + logoOffset) + "px !important;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  position: fixed;\n  cursor: pointer;\n  top: " + (135 + logoOffset) + "px !important;\n}\n/* Updater + Stats */\n#stats,\n#updater {\n  " + sidebarLocation[0] + ": " + (Conf["Updater Position"] === "top" ? "24" : "4") + "px !important;\n  " + sidebarLocation[1] + ": auto !important;\n  top: " + (Conf["Updater Position"] === "top" ? "2px" : "auto") + " !important;\n  bottom: " + (Conf["Updater Position"] === "bottom" ? "4px" : "auto") + " !important;\n  " + (Conf["Updater Position"] === "top" ? "z-index: 96 !important;" : void 0) + "\n}\n#prefetch {\n  width: " + (248 + sidebarOffsetW) + "px;\n  " + sidebarLocation[0] + ": 2px;\n  top: 2px;\n  text-align: " + sidebarLocation[1] + ";\n}\n#prefetch .rice,\n#prefetch input {\n  float: " + sidebarLocation[1] + ";\n}\n#navlinks {\n  top: " + (156 + logoOffset) + "px !important;\n  " + sidebarLocation[1] + ": auto !important;\n}\n#navlinks a {\n  display: block;\n  clear: both;\n}\n#navlinks,\n#navtopright .exlinksOptionsLink::after,\n#navtopright .settingsWindowLink::after,\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after,\n#watcher,\n#watcher::after,\n#globalMessage,\n#globalMessage::after,\n#imgControls,\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\ndiv.navLinks > a:first-of-type::after {\n  " + sidebarLocation[0] + ": 3px !important;\n}\n#boardNavDesktopFoot {\n  z-index: 97 !important;\n}\n#globalMessage {\n  z-index: 98 !important;\n}\n#watcher {\n  z-index: " + (Conf["Slideout Watcher"] ? "99" : "96") + " !important;\n}";
         }

@@ -802,8 +802,7 @@ Keybinds =
       when Conf.update
         Updater.update()
       when Conf.unreadCountTo0
-        Unread.replies = []
-        Unread.update true
+        Updater.to0()
       # Images
       when Conf.expandImage
         Keybinds.img thread
@@ -1048,6 +1047,7 @@ Updater =
     # Add event listeners to updater dialogs.
     for input in $$ 'input', dialog
       if input.type is 'checkbox'
+        # Change localstorage value on click.
         $.on input, 'click', $.cb.checked
       switch input.name
         when 'Scroll BG'
@@ -1065,6 +1065,12 @@ Updater =
           @cb.interval.call input
         when 'Update Now'
           $.on input, 'click', @update
+        when 'Reset Count on Focus'
+          $.on input, 'change', @cb.reset
+          @cb.reset.call input
+
+    if Conf['Style']
+      Style.rice dialog
 
     $.add d.body, dialog
 
@@ -1147,6 +1153,11 @@ Updater =
           -> true
         else
           -> !(d.hidden or d.oHidden or d.mozHidden or d.webkitHidden)
+    reset: ->
+      if Conf['Reset Count on Focus'] = @checked
+        $.on (window or unsafeWindow), 'focus', Updater.to0
+      else
+        $.off (window or unsafeWindow), 'focus', Updater.to0
     load: ->
       switch @status
         when 404
@@ -1272,6 +1283,10 @@ Updater =
     url = "//api.4chan.org/#{g.BOARD}/res/#{g.THREAD_ID}.json"
     Updater.request = $.ajax url, onloadend: Updater.cb.load,
       headers: 'If-Modified-Since': Updater.lastModified
+  
+  to0: ->
+    Unread.replies = []
+    Unread.update true
 
 Watcher =
   init: ->
