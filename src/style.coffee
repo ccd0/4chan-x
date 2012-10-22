@@ -969,7 +969,7 @@ body > a[style="cursor: pointer; float: right;"]::after,
   content: " ";
   overflow: hidden;
   background-image: url('#{icons}');
-  opacity: 0.6;
+  opacity: 0.5;
 }
 #navtopright .settingsWindowLink::after {
   background-position: 0 0;
@@ -1841,6 +1841,13 @@ div.post > blockquote a[href^="//"],
 .sideArrows a,
 div.postContainer span.postNum > .replylink {
   color: #{theme["Links"]};
+}
+#navlinks a {
+  color: rgb(#{if theme["Dark Theme"] then "230,230,230" else "130,130,130"});
+  opacity: 0.5;
+}
+#navlinks a:hover {
+  opacity: 1;
 }
 .postNum a {
   color: #{theme["Post Numbers"]};
