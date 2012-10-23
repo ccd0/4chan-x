@@ -9203,15 +9203,23 @@
       return _results;
     },
     collector: function(node) {
-      var child, nodes, _i, _len, _ref;
+      var child, nodes, result, results, _i, _j, _len, _len1, _ref;
       nodes = [];
       _ref = node.childNodes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         child = _ref[_i];
         if (child.nodeType === Node.TEXT_NODE) {
           nodes.push(child);
-        } else {
-          nodes.push.apply(this.collector(child));
+        } else if (child.tagName.toLowerCase() !== "br") {
+          $.log(child.textContent);
+          results = this.collector(child);
+          for (_j = 0, _len1 = results.length; _j < _len1; _j++) {
+            result = results[_j];
+            if (result.nodeType === Node.TEXT_NODE) {
+              $.log(result);
+              nodes.push(result);
+            }
+          }
         }
       }
       return nodes;

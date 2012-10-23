@@ -56,10 +56,15 @@
     # We collect all the text children before editting them so that further children don't
     # get offset and therefore don't get parsed.
     for child in node.childNodes
-      if child.nodeType == Node.TEXT_NODE
+      if child.nodeType is Node.TEXT_NODE
         nodes.push child
-      else
-        nodes.push.apply @collector(child)
+      else unless child.tagName.toLowerCase() is "br"
+        $.log child.textContent
+        results = @collector(child)
+        for result in results
+          if result.nodeType is Node.TEXT_NODE
+            $.log result
+            nodes.push result
       
     return nodes
 
