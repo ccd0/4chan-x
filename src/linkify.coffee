@@ -59,12 +59,9 @@
       if child.nodeType is Node.TEXT_NODE
         nodes.push child
       else unless child.tagName.toLowerCase() is "br"
-        $.log child.textContent
         results = @collector(child)
         for result in results
-          if result.nodeType is Node.TEXT_NODE
-            $.log result
-            nodes.push result
+          nodes.push result
       
     return nodes
 

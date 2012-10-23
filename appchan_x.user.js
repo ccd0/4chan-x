@@ -9211,14 +9211,10 @@
         if (child.nodeType === Node.TEXT_NODE) {
           nodes.push(child);
         } else if (child.tagName.toLowerCase() !== "br") {
-          $.log(child.textContent);
           results = this.collector(child);
           for (_j = 0, _len1 = results.length; _j < _len1; _j++) {
             result = results[_j];
-            if (result.nodeType === Node.TEXT_NODE) {
-              $.log(result);
-              nodes.push(result);
-            }
+            nodes.push(result);
           }
         }
       }
