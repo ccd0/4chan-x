@@ -9188,40 +9188,33 @@
       }
     },
     node: function(post) {
-      var child, comment, node, nodes, subject, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results;
-      nodes = [];
+      var comment, node, nodes, subject, _i, _len, _results;
       comment = post.blockquote || $('blockquote', post.el);
       subject = $('.subject', post.el);
-      _ref = comment.childNodes;
+      nodes = Linkify.collector(comment);
+      if (subject != null) {
+        nodes.push(subject.childNodes);
+      }
+      _results = [];
+      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+        node = nodes[_i];
+        _results.push(Linkify.text(node));
+      }
+      return _results;
+    },
+    collector: function(node) {
+      var child, nodes, _i, _len, _ref;
+      nodes = [];
+      _ref = node.childNodes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         child = _ref[_i];
         if (child.nodeType === Node.TEXT_NODE) {
           nodes.push(child);
-        } else if (child.className === "quote" || child.className === "spoiler") {
-          _ref1 = child.childNodes;
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            node = _ref1[_j];
-            if (node.nodeType === Node.TEXT_NODE) {
-              nodes.push(node);
-            }
-          }
+        } else {
+          nodes.push.apply(this.collector(child));
         }
       }
-      if (subject != null) {
-        _ref2 = subject.childNodes;
-        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-          child = _ref2[_k];
-          if (child.nodeType === Node.TEXT_NODE) {
-            nodes.push(child);
-          }
-        }
-      }
-      _results = [];
-      for (_l = 0, _len3 = nodes.length; _l < _len3; _l++) {
-        node = nodes[_l];
-        _results.push(Linkify.text(node));
-      }
-      return _results;
+      return nodes;
     },
     text: function(child, link) {
       var a, embed, key, l, lLen, m, match, node, p, rest, site, txt, _ref;

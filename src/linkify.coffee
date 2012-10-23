@@ -37,31 +37,31 @@
     # - http://en.wikipedia.org/wiki/URI_scheme
     # - http://www.regular-expressions.info/regexbuddy/email.html
 
-    nodes = []
-
     comment = post.blockquote or $ 'blockquote', post.el
     subject = $ '.subject', post.el
-
-    # We collect all the text children before editting them so that further children don't
-    # get offset and therefore don't get parsed.
-    for child in comment.childNodes
-      if child.nodeType == Node.TEXT_NODE
-        nodes.push child
-      # Quotes can contain links, too.
-      else if child.className == "quote" or child.className == "spoiler"
-        for node in child.childNodes
-          if node.nodeType == Node.TEXT_NODE
-            nodes.push node
+      
+    nodes = Linkify.collector comment
 
     # We only try to touch the subject if it exists.
     if subject?
-      for child in subject.childNodes
-        if child.nodeType == Node.TEXT_NODE
-          nodes.push child
+      nodes.push subject.childNodes
 
     # After we generate our list of nodes to parse we can edit it without worrying about nodes getting orphaned.
     for node in nodes
       Linkify.text node
+
+  collector: (node) ->
+    nodes = []
+      
+    # We collect all the text children before editting them so that further children don't
+    # get offset and therefore don't get parsed.
+    for child in node.childNodes
+      if child.nodeType == Node.TEXT_NODE
+        nodes.push child
+      else
+        nodes.push.apply @collector(child)
+      
+    return nodes
 
   text: (child, link) ->
     # We need text to parse.
