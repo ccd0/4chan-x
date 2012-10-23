@@ -3,29 +3,24 @@
     # Add Linkification to callbacks, which will call linkification on every post parsed by Appchan X.
     Main.callbacks.push @node
 
-  # I didn't write most of this RegEx.
-  regString: [
-    '('
-    # leading scheme:// or "www."
-    '\\b('
-    '[a-z][-a-z0-9+.]+://'
-    '|'
-    'www\\.'
-    '|'
-    # Various link handlers:
-    'magnet:'
-    '|'
-    'mailto:'
-    '|'
-    'news:'
-    ')'
-    # everything until non-URL character
-    '[^\\s\'"<>()]+'
-    '|'
-    # emails. We don't need everything until a non-URL character because emails follow a consistent syntax.
-    '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b'
-    ')'
-  ].join("")
+  regString: ///
+    (
+      \b(
+        [a-z][-a-z0-9+.]+:// # Leading handler (http://, ftp://). Matches any *://
+        |
+        www\.
+        |
+        magnet:
+        |
+        mailto:
+        |
+        news:
+      )
+      [^\s'"<>()]+ # Non-URL characters. We cut of the string here.
+      |
+      \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails. Basically *@*.???
+    )
+  ///i
 
   sites:
     yt:
@@ -53,7 +48,7 @@
       if child.nodeType == Node.TEXT_NODE
         nodes.push child
       # Quotes can contain links, too.
-      else if child.className == "quote"
+      else if child.className == "quote" or child.className == "spoiler"
         for node in child.childNodes
           if node.nodeType == Node.TEXT_NODE
             nodes.push node
@@ -75,8 +70,7 @@
     # position tracker.
     p = 0
 
-    urlRegExp = new RegExp Linkify.regString, 'i'
-    if m = urlRegExp.exec txt
+    if m = Linkify.regString.exec txt
 
       # Get the link without trailing dots as to not create an invalid link.
       l = m[0].replace /\.*$/, ''

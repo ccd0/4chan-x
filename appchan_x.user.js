@@ -9174,7 +9174,7 @@
     init: function() {
       return Main.callbacks.push(this.node);
     },
-    regString: ['(', '\\b(', '[a-z][-a-z0-9+.]+://', '|', 'www\\.', '|', 'magnet:', '|', 'mailto:', '|', 'news:', ')', '[^\\s\'"<>()]+', '|', '\\b[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}\\b', ')'].join(""),
+    regString: /(\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s'"<>()]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/i,
     sites: {
       yt: {
         regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
@@ -9197,7 +9197,7 @@
         child = _ref[_i];
         if (child.nodeType === Node.TEXT_NODE) {
           nodes.push(child);
-        } else if (child.className === "quote") {
+        } else if (child.className === "quote" || child.className === "spoiler") {
           _ref1 = child.childNodes;
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             node = _ref1[_j];
@@ -9224,11 +9224,10 @@
       return _results;
     },
     text: function(child, link) {
-      var a, embed, key, l, lLen, m, match, node, p, rest, site, txt, urlRegExp, _ref;
+      var a, embed, key, l, lLen, m, match, node, p, rest, site, txt, _ref;
       txt = child.textContent;
       p = 0;
-      urlRegExp = new RegExp(Linkify.regString, 'i');
-      if (m = urlRegExp.exec(txt)) {
+      if (m = Linkify.regString.exec(txt)) {
         l = m[0].replace(/\.*$/, '');
         lLen = l.length;
         node = $.tn(txt.substring(p, m.index));
@@ -10183,7 +10182,7 @@
           }
         } catch (err) {
           if (notify) {
-            alert("AppChan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n" + Main.version + "\n" + window.location + "\n" + navigator.userAgent + "\n\n" + err.stack);
+            alert("AppChan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n" + Main.version + "\n" + window.location + "\n" + navigator.userAgent + "\n\n" + err + "\n" + err.stack);
           }
         }
       }
