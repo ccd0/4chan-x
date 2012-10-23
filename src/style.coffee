@@ -2121,7 +2121,7 @@ span.lit {
 }
 
 .webkit #Banner {
-  -webkit-box-reflect: below 0 linear-gradient(transparent, transparent 0.1, rgba(255,255,255,.5));
+  -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));
 }
 """
 
