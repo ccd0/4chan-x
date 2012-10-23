@@ -39,7 +39,9 @@
 
     comment = post.blockquote or $ 'blockquote', post.el
     subject = $ '.subject', post.el
-      
+
+    # We collect all the text children before editting them so that further children don't
+    # get offset and therefore don't get parsed.
     nodes = Linkify.collector comment
 
     # We only try to touch the subject if it exists.
@@ -52,9 +54,7 @@
 
   collector: (node) ->
     nodes = []
-      
-    # We collect all the text children before editting them so that further children don't
-    # get offset and therefore don't get parsed.
+
     for child in node.childNodes
       if child.nodeType is Node.TEXT_NODE
         nodes.push child
@@ -62,7 +62,7 @@
         results = @collector(child)
         for result in results
           nodes.push result
-      
+
     return nodes
 
   text: (child, link) ->

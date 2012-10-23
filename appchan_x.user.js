@@ -3365,7 +3365,7 @@
           }
           batchmascots = $.el('div', {
             id: "mascots_batch",
-            innerHTML: "  <a href=\"javascript:;\" id=clear>Clear All</a> /   <a href=\"javascript:;\" id=selectAll>Select All</a> /   <a href=\"javascript:;\" id=createNew>New Mascot</a> /   <a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden> /   <a href=\"javascript:;\" id=undelete>Undelete Mascots</a>  "
+            innerHTML: "  <a href=\"javascript:;\" id=clear>Clear All</a> /   <a href=\"javascript:;\" id=selectAll>Select All</a> /   <a href=\"javascript:;\" id=createNew>Add Mascot</a> /   <a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden> /   <a href=\"javascript:;\" id=undelete>Undelete Mascots</a>  "
           });
           $.on($('#clear', batchmascots), 'click', function() {
             var enabledMascots, _k, _len2;
