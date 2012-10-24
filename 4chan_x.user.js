@@ -2763,8 +2763,8 @@
     <ul>\
       File Info Formatting\
       <li><input name=fileInfo class=field> : <span id=fileInfoPreview class=fileText></span></li>\
-      <li>Link (with original file name): %l (lowercase L, truncated), %L (untruncated)</li>\
-      <li>Original file name: %n (Truncated), %N (Untruncated)</li>\
+      <li>Link: %l (lowercase L, truncated), %L (untruncated), %t (Unix timestamp)</li>\
+      <li>Original file name: %n (truncated), %N (untruncated), %T (Unix timestamp)</li>\
       <li>Spoiler indicator: %p</li>\
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>\
       <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>\
@@ -2949,7 +2949,7 @@
     },
     fileInfo: function() {
       FileInfo.data = {
-        link: 'javascript:;',
+        link: '//images.4chan.org/g/src/1334437723720.jpg',
         spoiler: true,
         size: '276',
         unit: 'KB',
@@ -3540,7 +3540,7 @@
     },
     setFormats: function() {
       var code;
-      code = Conf['fileInfo'].replace(/%([BKlLMnNprs])/g, function(s, c) {
+      code = Conf['fileInfo'].replace(/%(.)/g, function(s, c) {
         if (c in FileInfo.formatters) {
           return "' + f.formatters." + c + "() + '";
         } else {
@@ -3575,6 +3575,12 @@
       return "" + size + " " + unitT;
     },
     formatters: {
+      t: function() {
+        return FileInfo.data.link.match(/\d+\..+$/)[0];
+      },
+      T: function() {
+        return "<a href=" + FileInfo.data.link + " target=_blank>" + (this.t()) + "</a>";
+      },
       l: function() {
         return "<a href=" + FileInfo.data.link + " target=_blank>" + (this.n()) + "</a>";
       },
