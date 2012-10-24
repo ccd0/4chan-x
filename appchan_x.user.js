@@ -5721,7 +5721,7 @@
     },
     setFormats: function() {
       var code;
-      code = Conf['fileInfo'].replace(/%([BKlLMnNprs])/g, function(s, c) {
+      code = Conf['fileInfo'].replace(/%(.)/g, function(s, c) {
         if (c in FileInfo.formatters) {
           return "' + f.formatters." + c + "() + '";
         } else {
@@ -5756,6 +5756,12 @@
       return "" + size + " " + unitT;
     },
     formatters: {
+      t: function() {
+        return FileInfo.data.link.match(/\d+\..+$/)[0];
+      },
+      T: function() {
+        return "<a href=" + FileInfo.data.link + " target=_blank>" + (this.t()) + "</a>";
+      },
       l: function() {
         return "<a href=" + FileInfo.data.link + " target=_blank>" + (this.n()) + "</a>";
       },

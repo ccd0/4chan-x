@@ -1521,7 +1521,7 @@ FileInfo =
     node.setAttribute 'data-filename', filename
     node.innerHTML = FileInfo.funk FileInfo
   setFormats: ->
-    code = Conf['fileInfo'].replace /%([BKlLMnNprs])/g, (s, c) ->
+    code = Conf['fileInfo'].replace /%(.)/g, (s, c) ->
       if c of FileInfo.formatters
         "' + f.formatters.#{c}() + '"
       else
@@ -1542,6 +1542,8 @@ FileInfo =
         size = size.toFixed 2
     "#{size} #{unitT}"
   formatters:
+    t: -> FileInfo.data.link.match(/\d+\..+$/)[0]
+    T: -> "<a href=#{FileInfo.data.link} target=_blank>#{@t()}</a>"
     l: -> "<a href=#{FileInfo.data.link} target=_blank>#{@n()}</a>"
     L: -> "<a href=#{FileInfo.data.link} target=_blank>#{@N()}</a>"
     n: ->
