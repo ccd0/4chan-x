@@ -4819,11 +4819,11 @@
           url = Redirect.path("//fuuka.warosu.org", 'fuuka', data);
           break;
         case 'diy':
-        case 'g':
         case 'sci':
           url = Redirect.path("//archive.installgentoo.net", 'fuuka', data);
           break;
         case 'cgl':
+        case 'g':
         case 'mu':
         case 'soc':
         case 'w':

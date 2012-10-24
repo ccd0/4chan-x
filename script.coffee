@@ -3928,9 +3928,9 @@ Redirect =
         url = Redirect.path "//nsfw.foolz.us", 'foolfuuka', data
       when 'ck', 'lit'
         url = Redirect.path "//fuuka.warosu.org", 'fuuka', data
-      when 'diy', 'g', 'sci'
+      when 'diy', 'sci'
         url = Redirect.path "//archive.installgentoo.net", 'fuuka', data
-      when 'cgl', 'mu', 'soc', 'w'
+      when 'cgl', 'g', 'mu', 'soc', 'w'
         url = Redirect.path "//rbt.asia", 'fuuka', data
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
         url = Redirect.path "http://archive.heinessen.com", 'fuuka', data
