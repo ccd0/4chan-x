@@ -3736,7 +3736,7 @@ ArchiveLink =
     open = (post) ->
       if type is 'apost'
         el.href =
-          Redirect.to 
+          Redirect.to
             board:    post.info[0]
             threadID: post.info[1]
             postID:   post.ID
@@ -3906,7 +3906,7 @@ Redirect =
       when 'ck', 'lit'
         "//fuuka.warosu.org/#{board}/full_image/#{filename}"
       when 'cgl', 'g', 'w'
-        "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
+        "//rbt.asia/#{board}/full_image/#{filename}"
       when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
   post: (board, postID) ->
@@ -3929,7 +3929,7 @@ Redirect =
       when 'diy', 'g', 'sci'
         url = Redirect.path "//archive.installgentoo.net", 'fuuka', data
       when 'cgl', 'mu', 'soc', 'w'
-        url = Redirect.path "//archive.rebeccablacktech.com", 'fuuka', data
+        url = Redirect.path "//rbt.asia", 'fuuka', data
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
         url = Redirect.path "http://archive.heinessen.com", 'fuuka', data
       else
