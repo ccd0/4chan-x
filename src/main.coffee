@@ -200,7 +200,11 @@ Main =
   ready: ->
     if /^4chan - 404/.test d.title
       if Conf['404 Redirect'] and /^\d+$/.test g.THREAD_ID
-        location.href = Redirect.thread g.BOARD, g.THREAD_ID, location.hash
+        location.href =
+          Redirect.to
+            board:    g.BOARD
+            threadID: g.THREAD_ID
+            postID:   location.hash
       return
     unless $.id 'navtopright'
       return
