@@ -3522,7 +3522,11 @@ Quotify =
           a.href      = "#p#{id}"
           a.className = 'quotelink'
         else
-          a.href      = Redirect.thread board, 0, id
+          a.href =
+            Redirect.to
+              board:    board
+              threadID: 0
+              postID:   id
           a.className = 'deadlink'
           a.target    = '_blank'
           if Redirect.post board, id
@@ -3696,18 +3700,58 @@ DownloadLink =
 
 ArchiveLink =
   init: ->
-    a = $.el 'a',
-      className:   'archive_link'
-      target:      '_blank'
-      textContent: 'Archived post'
-    Menu.addEntry
-      el: a
+    div = $.el 'div',
+      textContent: 'Archive'
+
+    entry =
+      el: div
       open: (post) ->
         path = $('a[title="Highlight this post"]', post.el).pathname.split '/'
-        if (href = Redirect.thread path[1], path[3], post.ID) is "//boards.4chan.org/#{path[1]}/"
+        if (Redirect.to {board: path[1], threadID: path[3], postID: post.ID}) is "//boards.4chan.org/#{path[1]}/"
           return false
-        a.href = href
+        post.info = [path[1], path[3]]
         true
+      children: []
+
+    for type in [
+      ['Post',      'apost']
+      ['Name',      'name']
+      ['Tripcode',  'tripcode']
+      ['E-mail',    'email']
+      ['Subject',   'subject']
+      ['Filename',  'filename']
+      ['Image MD5', 'md5']
+    ]
+      # Add a sub entry for each type.
+      entry.children.push @createSubEntry type[0], type[1]
+
+    Menu.addEntry entry
+
+  createSubEntry: (text, type) ->
+
+    el = $.el 'a',
+      textContent: text
+      target: '_blank'
+
+    open = (post) ->
+      if type is 'apost'
+        el.href =
+          Redirect.to 
+            board:    post.info[0]
+            threadID: post.info[1]
+            postID:   post.ID
+        return true
+      value = Filter[type] post
+      # We want to parse the exact same stuff as Filter does already.
+      return false unless value
+      el.href =
+        Redirect.to
+          board:    post.info[0]
+          type:     type
+          value:    value
+          isSearch: true
+
+    return el: el, open: open
 
 ThreadStats =
   init: ->
@@ -3865,55 +3909,67 @@ Redirect =
         "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
       when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
-      # when 'e'
-      #   "https://www.cliché.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-  thread: (board, threadID, postID) ->
-    # keep the number only if the location.hash was sent f.e.
-    postID = postID.match(/\d+/)[0] if postID
-    path   =
-      if threadID
-        "#{board}/thread/#{threadID}"
-      else
-        "#{board}/post/#{postID}"
+  to: (data) ->
+    unless data.isSearch
+      {threadID} = data
+    {board} = data
     switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
-        url = "//archive.foolz.us/#{path}/"
-        if threadID and postID
-          url += "##{postID}"
+        url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
       when 'u', 'kuku'
-        url = "//nsfw.foolz.us/#{path}/"
-        if threadID and postID
-          url += "##{postID}"
+        url = Redirect.path "//nsfw.foolz.us", 'foolfuuka', data
       when 'ck', 'lit'
-        url = "//fuuka.warosu.org/#{path}"
-        if threadID and postID
-          url += "#p#{postID}"
+        url = Redirect.path "//fuuka.warosu.org", 'fuuka', data
       when 'diy', 'g', 'sci'
-        url = "//archive.installgentoo.net/#{path}"
-        if threadID and postID
-          url += "#p#{postID}"
+        url = Redirect.path "//archive.installgentoo.net", 'fuuka', data
       when 'cgl', 'mu', 'soc', 'w'
-        url = "//archive.rebeccablacktech.com/#{path}"
-        if threadID and postID
-          url += "#p#{postID}"
+        url = Redirect.path "//archive.rebeccablacktech.com", 'fuuka', data
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
-        url = "http://archive.heinessen.com/#{path}"
-        if threadID and postID
-          url += "#p#{postID}"
-      when 'e'
-        url = "https://www.cliché.net/4chan/cgi-board.pl/#{path}"
-        if threadID and postID
-          url += "#p#{postID}"
+        url = Redirect.path "http://archive.heinessen.com", 'fuuka', data
       else
         if threadID
           url = "//boards.4chan.org/#{board}/"
     url or null
+
+  path: (base, archiver, data) ->
+    if data.isSearch
+      {board, type, value} = data
+      type =
+        if type is 'name'
+          'username'
+        else if type is 'md5'
+          'image'
+        else
+          type
+      value = encodeURIComponent value
+      return if archiver is 'foolfuuka'
+          "#{base}/#{board}/search/#{type}/#{value}"
+        else if type is 'image'
+          "#{base}/#{board}/?task=search2&search_media_hash=#{value}"
+        else
+          "#{base}/#{board}/?task=search2&search_#{type}=#{value}"
+
+    {board, threadID, postID} = data
+    # keep the number only if the location.hash was sent f.e.
+    postID = postID.match(/\d+/)[0] if postID
+    path =
+      if threadID
+        "#{board}/thread/#{threadID}"
+      else
+        "#{board}/post/#{postID}"
+    if threadID and postID
+      path +=
+        if archiver is 'foolfuuka'
+          "##{postID}"
+        else
+          "#p#{postID}"
+    "#{base}/#{path}"
 
 ImageHover =
   init: ->
@@ -4245,7 +4301,11 @@ Main =
   ready: ->
     if /^4chan - 404/.test d.title
       if Conf['404 Redirect'] and /^\d+$/.test g.THREAD_ID
-        location.href = Redirect.thread g.BOARD, g.THREAD_ID, location.hash
+        location.href =
+          Redirect.to
+            board:    g.BOARD
+            threadID: g.THREAD_ID
+            postID:   location.hash
       return
     unless $.id 'navtopright'
       return
