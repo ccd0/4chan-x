@@ -2915,6 +2915,11 @@ td[style="border: 1px dashed;"] {
       switch Conf["Reply Spacing"]
         when "none"
           replyMargin = 0
+          css += """
+.thread > .replyContainer:not(:last-of-type) .post.reply:not(:target) {
+  border-bottom-width: 0;
+}
+"""
         when "small"
           replyMargin = 2
         when "medium"

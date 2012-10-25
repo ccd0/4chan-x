@@ -9437,14 +9437,14 @@
     padding: function() {
       Style.padding.nav = $("#boardNavDesktop", d.body);
       Style.padding.pages = $(".pages", d.body);
-      if (Style.padding.pages && (Conf["Pagination"] === "sticky top" || Conf["Pagination"] === "sticky bottom")) {
+      if (Style.padding.pages && (Conf["Pagination"] === "sticky top" || Conf["Pagination"] === "sticky bottom" || Conf["Pagination"] === "top")) {
         Style.padding.pages.property = Conf["Pagination"].split(" ")[1];
         d.body.style["padding" + (Style.padding.pages.property.capitalize())] = "" + Style.padding.pages.offsetHeight + "px";
         $.on(window || unsafeWindow, "resize", function() {
           return d.body.style["padding" + (Style.padding.pages.property.capitalize())] = "" + Style.padding.pages.offsetHeight + "px";
         });
       }
-      if (Conf["Boards Navigation"] === "sticky top" || Conf["Boards Navigation"] === "sticky bottom") {
+      if (Conf["Boards Navigation"] === "sticky top" || Conf["Boards Navigation"] === "sticky bottom" || Conf["Boards Navigation"] === "top") {
         Style.padding.nav.property = Conf["Boards Navigation"].split(" ")[1];
         d.body.style["padding" + (Style.padding.nav.property.capitalize())] = "" + Style.padding.nav.offsetHeight + "px";
         $.on(window || unsafeWindow, "resize", function() {
@@ -9702,6 +9702,7 @@
         switch (Conf["Reply Spacing"]) {
           case "none":
             replyMargin = 0;
+            css += ".thread > .replyContainer:not(:last-of-type) .post.reply:not(:target) {\n  border-bottom-width: 0;\n}";
             break;
           case "small":
             replyMargin = 2;

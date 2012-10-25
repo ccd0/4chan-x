@@ -74,14 +74,14 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
   padding: ->
     Style.padding.nav   = $ "#boardNavDesktop", d.body
     Style.padding.pages = $(".pages", d.body)
-    if Style.padding.pages and (Conf["Pagination"] == "sticky top" or Conf["Pagination"] == "sticky bottom")
+    if Style.padding.pages and (Conf["Pagination"] == "sticky top" or Conf["Pagination"] == "sticky bottom" or Conf["Pagination"] == "top")
       Style.padding.pages.property = Conf["Pagination"].split(" ")[1]
       d.body.style["padding#{Style.padding.pages.property.capitalize()}"] = "#{Style.padding.pages.offsetHeight}px"
 
       $.on (window or unsafeWindow), "resize", ->
         d.body.style["padding#{Style.padding.pages.property.capitalize()}"] = "#{Style.padding.pages.offsetHeight}px"
 
-    if Conf["Boards Navigation"] == "sticky top" or Conf["Boards Navigation"] == "sticky bottom"
+    if Conf["Boards Navigation"] == "sticky top" or Conf["Boards Navigation"] == "sticky bottom" or Conf["Boards Navigation"] == "top"
       Style.padding.nav.property = Conf["Boards Navigation"].split(" ")[1]
       d.body.style["padding#{Style.padding.nav.property.capitalize()}"] = "#{Style.padding.nav.offsetHeight}px"
 
