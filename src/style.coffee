@@ -1788,15 +1788,11 @@ textarea.field:focus {
   border-color: #{theme["Focused Input Border"] };
   color: #{theme["Inputs"]};
 }
-#qp .replyContainer,
-#qp .opContainer,
-.thread .replyContainer {
-  background: #{theme["Reply Background"]};
-}
 #qp .replyContainer div.reply,
 #qp .opContainer div.reply,
 .replyContainer div.reply {
   border: 1px solid #{theme["Reply Border"] };
+  background: #{theme["Reply Background"]};
 }
 .exblock.reply,
 .reply.highlight,
@@ -2502,8 +2498,7 @@ div.navLinks > a:first-of-type::after {
   width: 100%;
 }
 div.reply {
-  padding-top: 6px;
-  padding-left: 10px;
+  padding: 6px 0 0 10px;
 }
 .replyContainer div.reply {
   display: table;
@@ -2580,35 +2575,27 @@ div.sideArrows {
 """
       else
         css += """
-.sideArrows a {
-  font-size: 9px;
-}
-.sideArrows a {
-  position: static;
-}
-div.reply {
-  padding-right: 5px;
-}
 .sideArrows {
-  margin-right: 5px;
-  float: left;
+  padding: 3px;
 }
 .sideArrows a {
   font-size: 12px;
+  position: static;
 }
 div.reply {
-  padding-top: 5px;
-  padding-left: 2px;
+  padding: 6px 5px 0 8px
 }
-div.reply,
 .replyContainer {
   display: table;
+}
+.replyContainer div.post,
+sideArrows {
+  display: table-cell;
 }
 .replyContainer div.reply {
   height: 100%
 }
 div.thread {
-  overflow: visible;
   padding: 0;
   position: relative;
 }
@@ -2617,16 +2604,6 @@ div.post:not(#qp):not([hidden]) {
 }
 .thread > div > .post {
   overflow: visible;
-}
-.sideArrows span {
-  font-size: 9px;
-}
-div.reply {
-  padding-top: 6px;
-  padding-left: 8px;
-}
-.sideArrows {
-  margin-right: 2px;
 }
 """
       if Conf['Force Reply Break']
@@ -2740,7 +2717,7 @@ body {
       if Conf["Alternate Post Colors"]
         css += """
 div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
-  background-color: rgba(#{(if theme["Dark Theme"] then "255,255,255,0.02" else "255,255,255,0.2")});
+  background-image: #{agent}linear-gradient(#{(if theme["Dark Theme"] then "rgba(255,255,255,0.02), rgba(255,255,255,0.02)" else "rgba(0,0,0,0.05), rgba(0,0,0,0.05)")});
 }
 """
 
@@ -2962,6 +2939,7 @@ td[style="border: 1px dashed;"] {
   padding: 5px;
   #{agent}box-sizing: border-box;
   box-sizing: border-box;
+  margin-bottom: #{replyMargin}px;
 }
 """
 

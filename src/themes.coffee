@@ -228,7 +228,7 @@ border-radius: 3px;
     'Shadow Color'                : 'rgba(29,31,33,1)'
     'Dark Theme'                  : true
     'Custom CSS'                  : """
-div.replyContainer {
+div.replyContainer div.reply {
   box-shadow: inset 0px 1px 2px 1px #111;
 }
 #qr {
@@ -591,7 +591,7 @@ a.pointer{
 #delform .replyContainer:hover {
   opacity:1;
 }
-.replyContainer,
+.replyContainer div.reply,
 .reply.highlight {
   background:transparent;
   border:0px;
@@ -630,8 +630,8 @@ a.forwardlink{
   letter-spacing: 3px;
   background: transparent;
 }
-div.replyContainer,
-div.reply.highlight {
+div.replyContainer div.reply,
+div.reply.highlight div.reply {
   background-color: rgba(0,0,0,0) !important;
   border: none !important;
 }
@@ -760,11 +760,8 @@ div.reply.highlight {
     'Shadow Color'                : 'rgba(60,60,60,0.6)'
     'Dark Theme'                  : false
     'Custom CSS'                  : """
-.thread > .replyContainer {
-  background-color: transparent;
-  border: 0;
-}
 .replyContainer div.reply.post {
+  background-color: transparent;
   border-color: #ccc;
   border-width: 0 0 1px 0;
   border-style: solid;
@@ -1796,8 +1793,8 @@ textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
 }
-.replyContainer {
- border:0!important
+.replyContainer div.post {
+ border: 0 !important
 }
 """
 
@@ -2070,7 +2067,7 @@ textarea,
   padding:1px!important;
   box-shadow:rgba(0,0,0,.8) 0 0 10px;
 }
-.replyContainer {
+div.reply {
   background-image:    -moz-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;
   background-image:      -o-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;
   background-image: -webkit-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;
