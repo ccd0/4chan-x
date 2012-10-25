@@ -1795,10 +1795,10 @@ textarea.field:focus {
   background: #{theme["Reply Background"]};
 }
 .exblock.reply,
-.reply.highlight,
-.reply:target {
+.replyContainer div.reply.highlight,
+.replyContainer div.reply:target {
   background: #{theme["Highlighted Reply Background"]};
-  border: 1px solid #{theme["Highlighted Reply Border"] };
+  border: 1px solid #{theme["Highlighted Reply Border"]};
 }
 #boardNavDesktop,
 .pages {
@@ -2933,13 +2933,18 @@ td[style="border: 1px dashed;"] {
 """
       if Conf["OP Background"]
         css += """
-.opContainer {
+.opContainer div.post {
   background: #{theme["Reply Background"]};
   border: 1px solid #{theme["Reply Border"]};
   padding: 5px;
   #{agent}box-sizing: border-box;
   box-sizing: border-box;
   margin-bottom: #{replyMargin}px;
+}
+.opContainer div.post:target
+.opContainer div.post.highlight {
+  background: #{theme["Highlighted Reply Background"]};
+  border: 1px solid #{theme["Highlighted Reply Border"] };
 }
 """
 
