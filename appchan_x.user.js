@@ -3134,11 +3134,13 @@
           theme = userThemes[name];
           if (!theme["Deleted"]) {
             div = $.el('div', {
-              className: name === Conf['theme'] ? 'selectedtheme replyContainer' : 'replyContainer',
+              className: name === Conf['theme'] ? 'selectedtheme' : '',
               id: name,
-              innerHTML: "<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div>  <span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + name + "</span>  <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'> " + theme['Author'] + "</span>  <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>  <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>  <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  <a class=edit name='" + name + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit</a>  <a class=export name='" + name + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;export</a>  <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;delete</a>  <br>  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>    <a style='color:" + theme['Quotelinks'] + "!important; font-weight: 800;'>&gt;&gt;27582902</a>    <br>    Post content is right here.  </blockquote>  <h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
+              innerHTML: "<div style='position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div>  <span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + name + "</span>  <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'> " + theme['Author'] + "</span>  <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>  <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>  <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  <a class=edit name='" + name + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit</a>  <a class=export name='" + name + "' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;export</a>  <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important; font-weight: 800;&quot;)' style='color:" + theme['Backlinks'] + "!important; font-weight: 800;' href='javascript:;'> &gt;&gt;delete</a>  <br>  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>    <a style='color:" + theme['Quotelinks'] + "!important; font-weight: 800;'>&gt;&gt;27582902</a>    <br>    Post content is right here.  </blockquote>  <h1 style='color: " + theme['Text'] + "'>Selected</h1></div>"
             });
-            $.on($('a.edit', div), 'click', function() {
+            $.on($('a.edit', div), 'click', function(e) {
+              e.preventDefault();
+              e.stopPropagation();
               if (!Conf["Style"]) {
                 alert("Please enable Style Options and reload the page to use Theme Tools.");
                 return;
@@ -3146,8 +3148,10 @@
               ThemeTools.init(this.name);
               return Options.close();
             });
-            $.on($('a.export', div), 'click', function() {
+            $.on($('a.export', div), 'click', function(e) {
               var exportTheme, exportedTheme;
+              e.preventDefault();
+              e.stopPropagation();
               exportTheme = userThemes[this.name];
               exportTheme['Theme'] = this.name;
               exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme));
@@ -3157,8 +3161,10 @@
                 return window.location(exportedTheme);
               }
             });
-            $.on($('a.delete', div), 'click', function() {
+            $.on($('a.delete', div), 'click', function(e) {
               var container, settheme;
+              e.preventDefault();
+              e.stopPropagation();
               container = this.parentElement.parentElement;
               if (!(container.previousSibling || container.nextSibling)) {
                 alert("Cannot delete theme (No other themes available).");
@@ -3177,8 +3183,7 @@
                 return $.rm(container);
               }
             });
-            $.on($('.rice', div), 'click', Options.selectTheme);
-            $.on($('blockquote', div), 'click', Options.selectTheme);
+            $.on(div, 'click', Options.selectTheme);
             $.add(suboptions, div);
           }
         }
@@ -3705,18 +3710,17 @@
       }
     },
     selectTheme: function() {
-      var container, currentTheme;
-      container = this.parentElement.parentElement;
+      var currentTheme;
       if (currentTheme = $.id(Conf['theme'])) {
         $.rmClass(currentTheme, 'selectedtheme');
       }
       if (Conf["NSFW/SFW Themes"]) {
-        $.set("theme_" + g.TYPE, container.id);
+        $.set("theme_" + g.TYPE, this.id);
       } else {
-        $.set("theme", container.id);
+        $.set("theme", this.id);
       }
-      Conf['theme'] = container.id;
-      return $.addClass(container, 'selectedtheme');
+      Conf['theme'] = this.id;
+      return $.addClass(this, 'selectedtheme');
     }
   };
 

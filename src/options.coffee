@@ -395,10 +395,10 @@ Options =
           # Instead of writing a style sheet for each theme, we hard-code the colors into each preview.
           # 4chan SS / OneeChan also do this, and inspired it here.
           div = $.el 'div',
-            className: if name == Conf['theme'] then 'selectedtheme replyContainer' else 'replyContainer'
+            className: if name == Conf['theme'] then 'selectedtheme' else ''
             id:        name
             innerHTML: "
-<div class='reply' style='position: relative; width: 100%; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
+<div style='position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
   <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:#{theme['Checkbox Background']};border: 1px solid #{theme['Checkbox Border']};'></div>
   <span style='color:#{theme['Subjects']}!important; font-weight: 700 !important'> #{name}</span>
   <span style='color:#{theme['Names']}!important; font-weight: 700 !important'> #{theme['Author']}</span>
@@ -419,7 +419,9 @@ Options =
 </div>"
 
           # Theme Editting. themeoptions.coffee.
-          $.on $('a.edit', div), 'click', ->
+          $.on $('a.edit', div), 'click', (e) ->
+            e.preventDefault()
+            e.stopPropagation()
             unless Conf["Style"]
               alert "Please enable Style Options and reload the page to use Theme Tools."
               return
@@ -427,7 +429,9 @@ Options =
             Options.close()
 
           # Theme Exporting
-          $.on $('a.export', div), 'click', ->
+          $.on $('a.export', div), 'click', (e) ->
+            e.preventDefault()
+            e.stopPropagation()
             exportTheme = userThemes[@.name]
             exportTheme['Theme'] = @.name
             exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme))
@@ -438,7 +442,9 @@ Options =
               window.location exportedTheme
 
           # Delete Theme.
-          $.on $('a.delete', div), 'click', ->
+          $.on $('a.delete', div), 'click', (e) ->
+            e.preventDefault()
+            e.stopPropagation()
             container = @.parentElement.parentElement
 
             # We don't let the user delete a theme if there is no other theme available
@@ -457,8 +463,7 @@ Options =
               $.set 'userThemes', userThemes
               $.rm container
 
-          $.on $('.rice', div), 'click', Options.selectTheme
-          $.on $('blockquote', div), 'click', Options.selectTheme
+          $.on div, 'click', Options.selectTheme
           $.add suboptions, div
 
       div = $.el 'div',
@@ -995,14 +1000,12 @@ Options =
       $.add $('#' + tab + ' + div', dialog), save
 
   selectTheme: ->
-    container = @.parentElement.parentElement
-
     if currentTheme = $.id(Conf['theme'])
       $.rmClass currentTheme, 'selectedtheme'
 
     if Conf["NSFW/SFW Themes"]
-      $.set "theme_#{g.TYPE}", container.id
+      $.set "theme_#{g.TYPE}", @id
     else
-      $.set "theme", container.id
-    Conf['theme'] = container.id
-    $.addClass container, 'selectedtheme'
+      $.set "theme", @id
+    Conf['theme'] = @id
+    $.addClass @, 'selectedtheme'
