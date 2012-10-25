@@ -22,6 +22,7 @@ a[href="javascript:;"] {
   color: red;
 }
 .hide_thread_button:not(.hidden_thread) {
+  padding: 5px 5px 0;
   float: left;
 }
 .thread > .hidden_thread ~ *,
@@ -2509,11 +2510,12 @@ div.reply {
   width: 100%;
   height: 100%
 }
+div.op .menu_button,
 div.reply .report_button,
 div.reply .menu_button {
   position: absolute;
   right: 6px;
-  top: 7px;
+  top: 5px;
   font-size: 9px;
 }
 .summary {
@@ -2527,12 +2529,13 @@ div.reply .menu_button {
 .sideArrows a {
   position: absolute;
   right: 27px;
-  top: 7px;
+  top: 5px;
 }
 .replyContainer div.postInfo {
   margin: 1px 0 0;
   width: 100%;
 }
+div.op .menu_button,
 .sideArrows a,
 div.reply .report_button,
 div.reply .menu_button {
@@ -2540,6 +2543,7 @@ div.reply .menu_button {
   #{agent}transition: opacity .3s ease-out 0s;
   #{agent}user-select: none;
 }
+div.op:hover .menu_button,
 form .replyContainer:hover div.reply .report_button,
 form .replyContainer:hover div.reply .menu_button,
 form .replyContainer:hover .sideArrows a {
@@ -2567,13 +2571,6 @@ div.post:not(#qp):not([hidden]) {
 div.sideArrows {
   float: none;
 }
-.hide_thread_button {
-  position: relative;
-  z-index: 2;
-  margin-right: 10px;
-  margin-left: 5px;
-  font-size: 9px;
-}
 .opContainer input {
   opacity: 1;
 }
@@ -2598,11 +2595,6 @@ div.reply {
 }
 .sideArrows a {
   font-size: 12px;
-}
-.hide_thread_button {
-  position: relative;
-  z-index: 2;
-  margin-right: 5px;
 }
 div.reply {
   padding-top: 5px;
