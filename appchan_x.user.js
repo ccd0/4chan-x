@@ -2903,8 +2903,8 @@
     <ul>\
       File Info Formatting\
       <li><input name=fileInfo class=field> : <span id=fileInfoPreview class=fileText></span></li>\
-      <li>Link (with original file name): %l (lowercase L, truncated), %L (untruncated)</li>\
-      <li>Original file name: %n (Truncated), %N (Untruncated)</li>\
+      <li>Link: %l (lowercase L, truncated), %L (untruncated), %t (Unix timestamp)</li>\
+      <li>Original file name: %n (truncated), %N (untruncated), %T (Unix timestamp)</li>\
       <li>Spoiler indicator: %p</li>\
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>\
       <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>\
@@ -3677,7 +3677,7 @@
     },
     fileInfo: function() {
       FileInfo.data = {
-        link: 'javascript:;',
+        link: '//images.4chan.org/g/src/1334437723720.jpg',
         spoiler: true,
         size: '276',
         unit: 'KB',
@@ -8483,7 +8483,7 @@
       if (err) {
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
           if (/mistyped/i.test(err.textContent)) {
-            err.textContent = 'Error: You seem to have mistyped the CAPTCHA.';
+            err.textContent = 'You seem to have mistyped the CAPTCHA.';
           }
           QR.cooldown.auto = QR.captchaIsEnabled ? !!$.get('captchas', []).length : true;
           QR.cooldown.set({

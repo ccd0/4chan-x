@@ -1,14 +1,12 @@
 master
-<<<<<<< HEAD
+- Mayhem
+  Added possibility to display unix timestamps with File Info Formatting.
+
 1.0.5
 - Zixaphir
   Checkbox alignments should be better now
   Reply Spacing set to none now attempts to remove double-borders
   Fix ExLinks icon broken by 1.0.4 release.
-=======
-- Mayhem
-  Added possibility to display unix timestamps with File Info Formatting.
->>>>>>> 0ca4806... Add unix timestamps to fileinfo.
 
 1.0.4
 - noface

@@ -104,8 +104,8 @@ Options =
     <ul>
       File Info Formatting
       <li><input name=fileInfo class=field> : <span id=fileInfoPreview class=fileText></span></li>
-      <li>Link (with original file name): %l (lowercase L, truncated), %L (untruncated)</li>
-      <li>Original file name: %n (Truncated), %N (Untruncated)</li>
+      <li>Link: %l (lowercase L, truncated), %L (untruncated), %t (Unix timestamp)</li>
+      <li>Original file name: %n (truncated), %N (untruncated), %T (Unix timestamp)</li>
       <li>Spoiler indicator: %p</li>
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>
       <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>
@@ -974,7 +974,7 @@ Options =
 
   fileInfo: ->
     FileInfo.data =
-      link:       'javascript:;'
+      link:       '//images.4chan.org/g/src/1334437723720.jpg'
       spoiler:    true
       size:       '276'
       unit:       'KB'
