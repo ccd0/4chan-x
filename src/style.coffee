@@ -1789,7 +1789,7 @@ textarea.field:focus {
   color: #{theme["Inputs"]};
 }
 #qp .replyContainer div.reply,
-#qp .opContainer div.reply,
+#qp .opContainer div.post,
 .replyContainer div.reply {
   border: 1px solid #{theme["Reply Border"] };
   background: #{theme["Reply Background"]};
