@@ -1981,7 +1981,7 @@ textarea,
   "4chan Dark Upgrade":
     "Author"                      : "Ahoka"
     "Author Tripcode"             : "!.pC/AHOKAg"
-    "Background Image"            : "url(\"http://img85.imageshack.us/img85/4162/4chbg.gif\")"
+    "Background Image"            : "url('http://i.minus.com/iNkJoDJkLU0co.png')"
     "Background Attachment"       : "fixed"
     "Background Position"         : "top left"
     "Background Repeat"           : "repeat"
@@ -2029,8 +2029,10 @@ textarea,
     "Shadow Color"                : "rgba(67,67,67,.9)"
     "Dark Theme"                  : true
     "Custom CSS"                  : """
+html {
+}
 #delform {
-  padding: 1px 2px;
+  padding: 3px 4px;
 }
 .rice {
   box-shadow:rgba(83,83,83,.3) 0 1px;
@@ -2066,7 +2068,9 @@ textarea,
   box-shadow:rgba(0,0,0,.8) 0 0 10px;
 }
 .replyContainer {
-  background-image:url("http://img714.imageshack.us/img714/3969/4ch2.gif")!important;
+  background-image:    -moz-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;
+  background-image:      -o-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;
+  background-image: -webkit-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;
   border-bottom:#1f1f1f!important;
   border-radius:5px!important
 }

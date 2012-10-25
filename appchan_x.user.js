@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 1.0.3 - 2012-10-23
+/*  appchan x - Version 1.0.3 - 2012-10-24
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -1545,7 +1545,7 @@
     "4chan Dark Upgrade": {
       "Author": "Ahoka",
       "Author Tripcode": "!.pC/AHOKAg",
-      "Background Image": "url(\"http://img85.imageshack.us/img85/4162/4chbg.gif\")",
+      "Background Image": "url('http://i.minus.com/iNkJoDJkLU0co.png')",
       "Background Attachment": "fixed",
       "Background Position": "top left",
       "Background Repeat": "repeat",
@@ -1592,7 +1592,7 @@
       "Warnings": "rgb(177,115,133)",
       "Shadow Color": "rgba(67,67,67,.9)",
       "Dark Theme": true,
-      "Custom CSS": "#delform {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(83,83,83,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#delform{\n  background:rgba(22,22,22,.8)!important;\n  border:0!important;\n  padding:1px!important;\n  box-shadow:rgba(0,0,0,.8) 0 0 10px;\n}\n.replyContainer {\n  background-image:url(\"http://img714.imageshack.us/img714/3969/4ch2.gif\")!important;\n  border-bottom:#1f1f1f!important;\n  border-radius:5px!important\n}\n.thread:not(.stub){\n  background:0!important\n}\na:not([href='javascript:;']){\n  text-shadow:#0f0f0f 0 1px;\n}"
+      "Custom CSS": "html {\n}\n#delform {\n  padding: 3px 4px;\n}\n.rice {\n  box-shadow:rgba(83,83,83,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#delform{\n  background:rgba(22,22,22,.8)!important;\n  border:0!important;\n  padding:1px!important;\n  box-shadow:rgba(0,0,0,.8) 0 0 10px;\n}\n.replyContainer {\n  background-image:    -moz-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  background-image:      -o-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  background-image: -webkit-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  border-bottom:#1f1f1f!important;\n  border-radius:5px!important\n}\n.thread:not(.stub){\n  background:0!important\n}\na:not([href='javascript:;']){\n  text-shadow:#0f0f0f 0 1px;\n}"
     }
   };
 
@@ -9553,7 +9553,7 @@
             css += ".boardBanner {\n  display: none;\n}";
         }
         if (Conf["Faded 4chan Banner"]) {
-          css += ".boardBanner {\n  opacity: 0.5;\n  " + agent + "transition: opacity 0.3s ease-in-out 1s;\n}\n.boardBanner:hover {\n  opacity: 1;\n  " + agent + "transition: opacity 0.3s ease-in;\n}";
+          css += ".boardBanner {\n  opacity: 0.5;\n  " + agent + "transition: opacity 0.3s ease-in-out .5s;\n}\n.boardBanner:hover {\n  opacity: 1;\n  " + agent + "transition: opacity 0.3s ease-in;\n}";
         }
         if (Conf["4chan Banner Reflection"]) {
           css += "/* From 4chan SS / OneeChan */\n.gecko .boardBanner::after {\n  background-image: -moz-element(#Banner);\n  bottom: -100%;\n  content: '';\n  left: 0;\n  mask: url(\"data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask\");\n  opacity: .2;\n  position: absolute;\n  right: 0;\n  top: 100%;\n  z-index: 1;\n  -moz-transform: scaleY(-1);\n}\n\n.webkit #Banner {\n  -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));\n}";

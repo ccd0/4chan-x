@@ -2095,7 +2095,7 @@ span.lit {
         css += """
 .boardBanner {
   opacity: 0.5;
-  #{agent}transition: opacity 0.3s ease-in-out 1s;
+  #{agent}transition: opacity 0.3s ease-in-out .5s;
 }
 .boardBanner:hover {
   opacity: 1;
