@@ -2125,8 +2125,8 @@
               this.status.className = null;
               break;
             case 200:
-              this.lastModified = this.req.getResponseHeader('Last-Modified');
               this.parse(JSON.parse(this.req.response).posts);
+              this.lastModified = this.req.getResponseHeader('Last-Modified');
               this.set('timer', this.getInterval());
               break;
             default:
@@ -2614,11 +2614,14 @@
     },
     initUnitTesting: function() {
       window.x = {
+        Conf: Conf,
+        g: g,
         UI: UI,
         $: $,
         Board: Board,
         Thread: Thread,
         Post: Post,
+        Clone: Clone,
         Main: Main,
         Redirect: Redirect,
         Build: Build,

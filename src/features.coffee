@@ -1228,8 +1228,8 @@ ThreadUpdater =
             @set 'status', null
             @status.className = null
           when 200
-            @lastModified = @req.getResponseHeader 'Last-Modified'
             @parse JSON.parse(@req.response).posts
+            @lastModified = @req.getResponseHeader 'Last-Modified'
             @set 'timer', @getInterval()
           else
             @unsuccessfulFetchCount++

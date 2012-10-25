@@ -291,6 +291,9 @@ Main =
 
   initUnitTesting: ->
     window.x =
+      # globals.coffee
+      Conf: Conf
+      g: g
       # ui.coffee
       UI: UI
       # $.coffee
@@ -299,11 +302,12 @@ Main =
       Board:  Board
       Thread: Thread
       Post:   Post
+      Clone:  Clone
       Main:   Main
       # features.coffee
       Redirect: Redirect
       Build: Build
-      Get:   Get
+      Get: Get
       Quotify: Quotify
       QuoteInline: QuoteInline
       QuotePreview: QuotePreview
