@@ -1080,38 +1080,42 @@ Updater =
   cb:
     post: ->
       return unless Conf['Auto Update This']
-      save = []
-      text = $('textarea', QR.el).value.replace(/^\s\s*/, '').replace /\n/g, ''
-      if text.length isnt 0
-        save.push QR.replies[0].file.name
-        image = false
+      search = []
+      if (text = QR.replies[0].com) isnt null and text.length isnt 0
+        search[0] = text.replace(/^\s\s*/, '').replace(/\n/g, '')
       else
-        save.push file
-        image = true
+        search[0] = QR.replies[0].file.name
+        text = false
       checkpost = ->
+        return if search is undefined
         nodes = Updater.cnodes.childNodes
-        if image
-          if Conf['File Info Formatting']
-            pposts = $$ 'span.fileText a', nodes
+        cpost =
+          if text
+            $ '.postMessage', nodes
+          else if Conf['File Info Formatting']
+            $ 'span.fileText a', nodes
           else
-            pposts = $$ 'span.fileText span', nodes
-        else
-          pposts = $$ '.postMessage', nodes
-        save[0] in (node.textContent for node in pposts)
+            $ 'span.fileText span', nodes
+        if (node.textContent for node in cpost).indexOf search[0] isnt -1
+          return true
+        false
       Updater.unsuccessfulFetchCount = 0
-      setTimeout Updater.update, 1000
-      count = 0
-      if !checkpost() and Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
+      setTimeout Updater.update, 500
+      if checkpost()
+        return setTimeout Updater.update, 1000
+      else if Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
+      # This was still too bloated for just getting the value of the timer.
+        count = 0
         int = setInterval (->
           Updater.ccheck = true
           Updater.update()
-          if checkpost() or count > 29
+          if checkpost() or count > 25
             Updater.ccheck = false
             Updater.cnodes = []
+            setTimeout Updater.update, 1000
             clearInterval int
           Updater.ccheck = false
-          count++
-        ), 500
+          count++), 500
     visibility: ->
       state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
       return if state isnt 'visible'
@@ -1215,6 +1219,7 @@ Updater =
         lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
       $.add Updater.thread, nodes.reverse()
       if scroll
+        return if nodes is undefined
         nodes[0].scrollIntoView()
 
   set: (name, text) ->

@@ -97,8 +97,7 @@
  *  this notice is kept intact.
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, Icons, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userMascots, userNavigation, userThemes, _base,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, Icons, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userMascots, userNavigation, userThemes, _base;
 
   Config = {
     main: {
@@ -5108,51 +5107,50 @@
     },
     cb: {
       post: function() {
-        var checkpost, count, image, int, save, text;
+        var checkpost, count, int, search, text;
         if (!Conf['Auto Update This']) {
           return;
         }
-        save = [];
-        text = $('textarea', QR.el).value.replace(/^\s\s*/, '').replace(/\n/g, '');
-        if (text.length !== 0) {
-          save.push(QR.replies[0].file.name);
-          image = false;
+        search = [];
+        if ((text = QR.replies[0].com) !== null && text.length !== 0) {
+          search[0] = text.replace(/^\s\s*/, '').replace(/\n/g, '');
         } else {
-          save.push(file);
-          image = true;
+          search[0] = QR.replies[0].file.name;
+          text = false;
         }
         checkpost = function() {
-          var node, nodes, pposts, _ref;
-          nodes = Updater.cnodes.childNodes;
-          if (image) {
-            if (Conf['File Info Formatting']) {
-              pposts = $$('span.fileText a', nodes);
-            } else {
-              pposts = $$('span.fileText span', nodes);
-            }
-          } else {
-            pposts = $$('.postMessage', nodes);
+          var cpost, node, nodes;
+          if (search === void 0) {
+            return;
           }
-          return _ref = save[0], __indexOf.call((function() {
+          nodes = Updater.cnodes.childNodes;
+          cpost = text ? $('.postMessage', nodes) : Conf['File Info Formatting'] ? $('span.fileText a', nodes) : $('span.fileText span', nodes);
+          if (((function() {
             var _i, _len, _results;
             _results = [];
-            for (_i = 0, _len = pposts.length; _i < _len; _i++) {
-              node = pposts[_i];
+            for (_i = 0, _len = cpost.length; _i < _len; _i++) {
+              node = cpost[_i];
               _results.push(node.textContent);
             }
             return _results;
-          })(), _ref) >= 0;
+          })()).indexOf(search[0] !== -1)) {
+            return true;
+          }
+          return false;
         };
         Updater.unsuccessfulFetchCount = 0;
-        setTimeout(Updater.update, 1000);
-        count = 0;
-        if (!checkpost() && Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
+        setTimeout(Updater.update, 500);
+        if (checkpost()) {
+          return setTimeout(Updater.update, 1000);
+        } else if (Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
+          count = 0;
           return int = setInterval((function() {
             Updater.ccheck = true;
             Updater.update();
-            if (checkpost() || count > 29) {
+            if (checkpost() || count > 25) {
               Updater.ccheck = false;
               Updater.cnodes = [];
+              setTimeout(Updater.update, 1000);
               clearInterval(int);
             }
             Updater.ccheck = false;
@@ -5289,6 +5287,9 @@
         scroll = Conf['Scrolling'] && Updater.scrollBG() && lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
         $.add(Updater.thread, nodes.reverse());
         if (scroll) {
+          if (nodes === void 0) {
+            return;
+          }
           return nodes[0].scrollIntoView();
         }
       }
