@@ -459,7 +459,10 @@ Main =
   initFeaturesReady: ->
     if d.title is '4chan - 404 Not Found'
       if Conf['404 Redirect'] and g.REPLY
-        location.href = Redirect.thread g.BOARD, g.THREAD, location.hash
+        location.href = Redirect.to
+          board: g.BOARD
+          threadID: g.THREAD
+          postID: location.hash
       return
 
     return unless $.id 'navtopright'

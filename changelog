@@ -8,6 +8,12 @@ alpha
 
 master
 
+2.36.1
+- noface
+  The Menu now has search links for Archivers.
+- Mayhem
+  Added possibility to display unix timestamps with File Info Formatting.
+
 2.36.0
 - Mayhem
   Added thread creation QR cooldown.

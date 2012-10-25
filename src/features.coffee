@@ -12,11 +12,9 @@ Redirect =
       when 'diy', 'sci'
         "//archive.installgentoo.net/#{board}/full_image/#{filename}"
       when 'cgl', 'g', 'mu', 'soc', 'w'
-        "//archive.rebeccablacktech.com/#{board}/full_image/#{filename}"
+        "//rbt.asia/#{board}/full_image/#{filename}"
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
-      # when 'e'
-      #   "https://www.cliché.net/4chan/cgi-board.pl/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
@@ -25,47 +23,58 @@ Redirect =
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
     # for fuuka-based archives:
     # https://github.com/eksopl/fuuka/issues/27
-  thread: (board, threadID, postID) ->
-    # keep the number only, if the location.hash was sent f.e.
+  to: (data) ->
+    {board} = data
+    switch "#{board}"
+      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
+        url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
+      when 'u', 'kuku'
+        url = Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
+      when 'ck', 'lit'
+        url = Redirect.path '//fuuka.warosu.org', 'fuuka', data
+      when 'diy', 'sci'
+        url = Redirect.path '//archive.installgentoo.net', 'fuuka', data
+      when 'cgl', 'g', 'mu', 'soc', 'w'
+        url = Redirect.path '//rbt.asia', 'fuuka', data
+      when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
+        url = Redirect.path 'http://archive.heinessen.com', 'fuuka', data
+      else
+        if data.threadID
+          url = "//boards.4chan.org/#{board}/"
+    url or ''
+  path: (base, archiver, data) ->
+    if data.isSearch
+      {board, type, value} = data
+      type =
+        if type is 'name'
+          'username'
+        else if type is 'md5'
+          'image'
+        else
+          type
+      value = encodeURIComponent value
+      return if archiver is 'foolfuuka'
+          "#{base}/#{board}/search/#{type}/#{value}"
+        else if type is 'image'
+          "#{base}/#{board}/?task=search2&search_media_hash=#{value}"
+        else
+          "#{base}/#{board}/?task=search2&search_#{type}=#{value}"
+
+    {board, threadID, postID} = data
+    # keep the number only if the location.hash was sent f.e.
     postID = postID.match(/\d+/)[0] if postID
-    path   =
+    path =
       if threadID
         "#{board}/thread/#{threadID}"
       else
         "#{board}/post/#{postID}"
-    switch "#{board}"
-      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
-        url = "//archive.foolz.us/#{path}/"
-        if threadID and postID
-          url += "##{postID}"
-      when 'u', 'kuku'
-        url = "//nsfw.foolz.us/#{path}/"
-        if threadID and postID
-          url += "##{postID}"
-      when 'ck', 'lit'
-        url = "//fuuka.warosu.org/#{path}"
-        if threadID and postID
-          url += "#p#{postID}"
-      when 'diy', 'g', 'sci'
-        url = "//archive.installgentoo.net/#{path}"
-        if threadID and postID
-          url += "#p#{postID}"
-      when 'cgl', 'mu', 'soc', 'w'
-        url = "//archive.rebeccablacktech.com/#{path}"
-        if threadID and postID
-          url += "#p#{postID}"
-      when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
-        url = "http://archive.heinessen.com/#{path}"
-        if threadID and postID
-          url += "#p#{postID}"
-      when 'e'
-        url = "https://www.cliché.net/4chan/cgi-board.pl/#{path}"
-        if threadID and postID
-          url += "#p#{postID}"
-      else
-        if threadID
-          url = "//boards.4chan.org/#{board}/"
-    url or ''
+    if threadID and postID
+      path +=
+        if archiver is 'foolfuuka'
+          "##{postID}"
+        else
+          "#p#{postID}"
+    "#{base}/#{path}"
 
 Build =
   spoilerRange: {}
@@ -553,7 +562,10 @@ Quotify =
         if post = g.posts[quoteID]
           if post.isDead
             a = $.el 'a',
-              href:        Redirect.thread board, 0, ID
+              href: Redirect.to
+                board: board
+                threadID: 0
+                postID: ID
               className:   'quotelink deadlink'
               textContent: "#{quote}\u00A0(Dead)"
               target:      '_blank'
@@ -569,7 +581,10 @@ Quotify =
               textContent: quote
         else
           a = $.el 'a',
-            href:        Redirect.thread board, 0, ID
+            href: Redirect.to
+              board: board
+              threadID: 0
+              postID: ID
             className:   'deadlink'
             target:      '_blank'
             textContent: "#{quote}\u00A0(Dead)"
@@ -934,7 +949,7 @@ FileInfo =
     return if !@file or @isClone
     @file.text.innerHTML = FileInfo.funk FileInfo, @
   createFunc: (format) ->
-    code = format.replace /%([BKlLMnNprs])/g, (s, c) ->
+    code = format.replace /%(.)/g, (s, c) ->
       if c of FileInfo.formatters
         "' + FileInfo.formatters.#{c}.call(post) + '"
       else
@@ -955,6 +970,8 @@ FileInfo =
     name.replace /<|>/g, (c) ->
       c is '<' and '&lt;' or '&gt;'
   formatters:
+    t: -> @file.URL.match(/\d+\..+$/)[0]
+    T: -> "<a href=#{FileInfo.data.link} target=_blank>#{FileInfo.formatters.t.call @}</a>"
     l: -> "<a href=#{@file.URL} target=_blank>#{FileInfo.formatters.n.call @}</a>"
     L: -> "<a href=#{@file.URL} target=_blank>#{FileInfo.formatters.N.call @}</a>"
     n: ->

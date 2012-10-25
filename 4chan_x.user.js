@@ -20,7 +20,7 @@
 // @icon         https://github.com/MayhemYDG/4chan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2012-10-17
+/* 4chan X Alpha - Version 3.0.0 - 2012-10-25
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -702,7 +702,7 @@
         case 'mu':
         case 'soc':
         case 'w':
-          return "//archive.rebeccablacktech.com/" + board + "/full_image/" + filename;
+          return "//rbt.asia/" + board + "/full_image/" + filename;
         case 'an':
         case 'fit':
         case 'k':
@@ -734,12 +734,9 @@
           return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
       }
     },
-    thread: function(board, threadID, postID) {
-      var path, url;
-      if (postID) {
-        postID = postID.match(/\d+/)[0];
-      }
-      path = threadID ? "" + board + "/thread/" + threadID : "" + board + "/post/" + postID;
+    to: function(data) {
+      var board, url;
+      board = data.board;
       switch ("" + board) {
         case 'a':
         case 'co':
@@ -754,41 +751,26 @@
         case 'wsg':
         case 'dev':
         case 'foolz':
-          url = "//archive.foolz.us/" + path + "/";
-          if (threadID && postID) {
-            url += "#" + postID;
-          }
+          url = Redirect.path('//archive.foolz.us', 'foolfuuka', data);
           break;
         case 'u':
         case 'kuku':
-          url = "//nsfw.foolz.us/" + path + "/";
-          if (threadID && postID) {
-            url += "#" + postID;
-          }
+          url = Redirect.path('//nsfw.foolz.us', 'foolfuuka', data);
           break;
         case 'ck':
         case 'lit':
-          url = "//fuuka.warosu.org/" + path;
-          if (threadID && postID) {
-            url += "#p" + postID;
-          }
+          url = Redirect.path('//fuuka.warosu.org', 'fuuka', data);
           break;
         case 'diy':
-        case 'g':
         case 'sci':
-          url = "//archive.installgentoo.net/" + path;
-          if (threadID && postID) {
-            url += "#p" + postID;
-          }
+          url = Redirect.path('//archive.installgentoo.net', 'fuuka', data);
           break;
         case 'cgl':
+        case 'g':
         case 'mu':
         case 'soc':
         case 'w':
-          url = "//archive.rebeccablacktech.com/" + path;
-          if (threadID && postID) {
-            url += "#p" + postID;
-          }
+          url = Redirect.path('//rbt.asia', 'fuuka', data);
           break;
         case 'an':
         case 'fit':
@@ -797,23 +779,38 @@
         case 'r9k':
         case 'toy':
         case 'x':
-          url = "http://archive.heinessen.com/" + path;
-          if (threadID && postID) {
-            url += "#p" + postID;
-          }
-          break;
-        case 'e':
-          url = "https://www.cliché.net/4chan/cgi-board.pl/" + path;
-          if (threadID && postID) {
-            url += "#p" + postID;
-          }
+          url = Redirect.path('http://archive.heinessen.com', 'fuuka', data);
           break;
         default:
-          if (threadID) {
+          if (data.threadID) {
             url = "//boards.4chan.org/" + board + "/";
           }
       }
       return url || '';
+    },
+    path: function(base, archiver, data) {
+      var board, path, postID, threadID, type, value;
+      if (data.isSearch) {
+        board = data.board, type = data.type, value = data.value;
+        type = type === 'name' ? 'username' : type === 'md5' ? 'image' : type;
+        value = encodeURIComponent(value);
+        if (archiver === 'foolfuuka') {
+          return "" + base + "/" + board + "/search/" + type + "/" + value;
+        } else if (type === 'image') {
+          return "" + base + "/" + board + "/?task=search2&search_media_hash=" + value;
+        } else {
+          return "" + base + "/" + board + "/?task=search2&search_" + type + "=" + value;
+        }
+      }
+      board = data.board, threadID = data.threadID, postID = data.postID;
+      if (postID) {
+        postID = postID.match(/\d+/)[0];
+      }
+      path = threadID ? "" + board + "/thread/" + threadID : "" + board + "/post/" + postID;
+      if (threadID && postID) {
+        path += archiver === 'foolfuuka' ? "#" + postID : "#p" + postID;
+      }
+      return "" + base + "/" + path;
     }
   };
 
@@ -1198,7 +1195,11 @@
           if (post = g.posts[quoteID]) {
             if (post.isDead) {
               a = $.el('a', {
-                href: Redirect.thread(board, 0, ID),
+                href: Redirect.to({
+                  board: board,
+                  threadID: 0,
+                  postID: ID
+                }),
                 className: 'quotelink deadlink',
                 textContent: "" + quote + "\u00A0(Dead)",
                 target: '_blank'
@@ -1215,7 +1216,11 @@
             }
           } else {
             a = $.el('a', {
-              href: Redirect.thread(board, 0, ID),
+              href: Redirect.to({
+                board: board,
+                threadID: 0,
+                postID: ID
+              }),
               className: 'deadlink',
               target: '_blank',
               textContent: "" + quote + "\u00A0(Dead)"
@@ -1703,7 +1708,7 @@
     },
     createFunc: function(format) {
       var code;
-      code = format.replace(/%([BKlLMnNprs])/g, function(s, c) {
+      code = format.replace(/%(.)/g, function(s, c) {
         if (c in FileInfo.formatters) {
           return "' + FileInfo.formatters." + c + ".call(post) + '";
         } else {
@@ -1730,6 +1735,12 @@
       });
     },
     formatters: {
+      t: function() {
+        return this.file.URL.match(/\d+\..+$/)[0];
+      },
+      T: function() {
+        return "<a href=" + FileInfo.data.link + " target=_blank>" + (FileInfo.formatters.t.call(this)) + "</a>";
+      },
       l: function() {
         return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.n.call(this)) + "</a>";
       },
@@ -2776,7 +2787,11 @@
       var boardChild, posts, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1;
       if (d.title === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.REPLY) {
-          location.href = Redirect.thread(g.BOARD, g.THREAD, location.hash);
+          location.href = Redirect.to({
+            board: g.BOARD,
+            threadID: g.THREAD,
+            postID: location.hash
+          });
         }
         return;
       }
