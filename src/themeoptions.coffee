@@ -408,7 +408,7 @@ textarea,
             'Shadow Color'                : 'rgba(' + mainColor.shiftRGB(-16) + ',.9)'
             'Dark Theme'                  : if mainColor.isLight then false else true
             'Custom CSS'                  : """
-#delform {
+.board {
   padding: 1px 2px;
 }
 .rice {

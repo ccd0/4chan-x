@@ -152,7 +152,7 @@ Themes =
     'Shadow Color'                : 'rgba(128,128,128,0.5)'
     'Dark Theme'                  : false
     'Custom CSS'                  : """
-#delform {
+.board {
 box-shadow: 0px 10px 10px 2px rgba(128,128,128,0.5);
 border-radius: 3px;
   padding:10px;
@@ -387,7 +387,7 @@ input[type="radio"]:checked {
   background: linear-gradient(#595959, #393939);
   border: 1px solid #151515;
 }
-#delform {
+.board {
   padding: 7px;
 }
 .subject:hover,
@@ -829,7 +829,7 @@ body,
 #stats {
   color: rgb(123,123,123);
 }
-#delform {
+.board {
   padding: 1px 0 2px 0;
   box-shadow: 0 20px 40px 10px rgba(0,0,0,0.1);
   border-radius: 4px;
@@ -1332,7 +1332,7 @@ textarea,
     "Shadow Color"                : "rgba(29,33,36,.9)"
     "Dark Theme"                  : true
     "Custom CSS"                  : """
-#delform {
+.board {
   padding: 1px 2px;
 }
 .rice {
@@ -1415,7 +1415,7 @@ textarea,
     "Shadow Color"                : "rgba(56,58,62,.9)"
     "Dark Theme"                  : true
     "Custom CSS"                  : """
-#delform {
+.board {
   padding: 1px 2px;
 }
 .rice {
@@ -1589,7 +1589,7 @@ textarea,
     "Shadow Color"                : "rgba(255,255,249,.9)"
     "Dark Theme"                  : false
     "Custom CSS"                  : """
-#delform {
+.board {
   padding: 1px 2px;
 }
 .rice {
@@ -1766,7 +1766,7 @@ textarea,
     "Shadow Color"                : "rgba(32,32,32,0.5)"
     "Dark Theme"                  : true
     "Custom CSS"                  : """
-#delform {
+.board {
   padding: 1px 2px;
 }
 .rice {
@@ -2034,7 +2034,7 @@ textarea,
     "Custom CSS"                  : """
 html {
 }
-#delform {
+.board {
   padding: 3px 4px;
 }
 .rice {
