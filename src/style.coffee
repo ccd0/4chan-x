@@ -438,8 +438,12 @@ h1,
   image-rendering: optimizeQuality;
   vertical-align: top;
 }
-#options .mascot.enabled {
-  border: 2px solid rgba(0,0,0,0.5);
+#options ul li.mascot {
+  border: 2px solid transparent;
+  background-color: transparent;
+}
+#options ul li.mascot.enabled {
+  border-color: rgba(0,0,0,0.5);
   background-color: rgba(255,255,255,0.1);
 }
 #mascotConf {
@@ -1724,7 +1728,6 @@ html {
 #ft ul,
 #options .dialog,
 #exlinks-options,
-#options li.mascot.enabled,
 #qrtab,
 #watcher,
 #updater:hover,
@@ -1738,6 +1741,10 @@ input[type="submit"],
 input[value="Report"] {
   background: #{theme["Buttons Background"]};
   border: 1px solid #{theme["Buttons Border"] };
+}
+#options ul li.mascot.enabled {
+  background: #{theme["Buttons Background"]};
+  border-color: #{theme["Buttons Border"] };
 }
 #dump,
 #file,
