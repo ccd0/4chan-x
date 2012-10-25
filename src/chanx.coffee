@@ -1082,7 +1082,7 @@ Updater =
       return unless Conf['Auto Update This']
       search = []
       if (text = QR.replies[0].com) isnt null and text.length isnt 0
-        search[0] = text.replace(/^\s\s*/, '').replace(/\n/g, '')
+        search[0] = text.trim()
       else
         search[0] = QR.replies[0].file.name
         text = false
@@ -1096,13 +1096,14 @@ Updater =
             $ 'span.fileText a', nodes
           else
             $ 'span.fileText span', nodes
-        if (node.textContent for node in cpost).indexOf search[0] isnt -1
+        if (node.textContent for node in cpost).indexOf search[0] >= 0
           return true
         false
       Updater.unsuccessfulFetchCount = 0
-      setTimeout Updater.update, 500
+      setTimeout Updater.update, 1000
       if checkpost()
-        return setTimeout Updater.update, 1000
+        return Updater.cb.update null
+        # Still need to check if the post is really in the DOM or not.
       else if Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
       # This was still too bloated for just getting the value of the timer.
         count = 0
@@ -1112,7 +1113,8 @@ Updater =
           if checkpost() or count > 25
             Updater.ccheck = false
             Updater.cnodes = []
-            setTimeout Updater.update, 1000
+            Updater.cb.update(null)
+            # Same here.
             clearInterval int
           Updater.ccheck = false
           count++), 500

@@ -5113,7 +5113,7 @@
         }
         search = [];
         if ((text = QR.replies[0].com) !== null && text.length !== 0) {
-          search[0] = text.replace(/^\s\s*/, '').replace(/\n/g, '');
+          search[0] = text.trim();
         } else {
           search[0] = QR.replies[0].file.name;
           text = false;
@@ -5133,15 +5133,15 @@
               _results.push(node.textContent);
             }
             return _results;
-          })()).indexOf(search[0] !== -1)) {
+          })()).indexOf(search[0] >= 0)) {
             return true;
           }
           return false;
         };
         Updater.unsuccessfulFetchCount = 0;
-        setTimeout(Updater.update, 500);
+        setTimeout(Updater.update, 1000);
         if (checkpost()) {
-          return setTimeout(Updater.update, 1000);
+          return Updater.cb.update(null);
         } else if (Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
           count = 0;
           return int = setInterval((function() {
@@ -5150,7 +5150,7 @@
             if (checkpost() || count > 25) {
               Updater.ccheck = false;
               Updater.cnodes = [];
-              setTimeout(Updater.update, 1000);
+              Updater.cb.update(null);
               clearInterval(int);
             }
             Updater.ccheck = false;
