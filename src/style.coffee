@@ -1992,7 +1992,7 @@ a.forwardlink {
       if theme["Dark Theme"]
         css += """
 .prettyprint {
-  background-color: rgba(255,255,255,.1);
+  background-color: rgba(0,0,0,.1);
   border: 1px solid rgba(0,0,0,0.5);
 }
 span.tag {
