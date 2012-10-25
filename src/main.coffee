@@ -214,9 +214,6 @@ Main =
     if Conf['Custom Navigation']
       CustomNavigation.init()
 
-    if Conf['Style']
-      Style.padding()
-
     for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
       if a = $ "a[href$='/#{g.BOARD}/']", $.id nav
         # Gotta make it work in temporary boards.
@@ -271,6 +268,10 @@ Main =
 
       if Conf['Index Navigation']
         Nav.init()
+
+    if Conf["Style"]
+      Style.padding()
+      Style.rice(d.body)
 
     board = $ '.board'
     nodes = []

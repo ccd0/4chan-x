@@ -5,7 +5,6 @@ Style =
     if Conf["Style"]
       $.ready ->
         Style.banner()
-        Style.rice(d.body)
         Style.trimGlobalMessage()
         $(".boardBanner img", d.body).id = "Banner"
 

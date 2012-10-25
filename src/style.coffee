@@ -1244,9 +1244,6 @@ input[value="Report"] {
 .top-box .menubutton {
   background-image: none;
 }
-.rice {
-  vertical-align: middle;
-}
 #qr label input,
 .boxcontent input,
 .boxcontent textarea {
@@ -1642,7 +1639,7 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
 }
 #spoilerLabel {
   position: absolute;
-  top: -20px;
+  bottom: 100%;
   right: 0;
 }
 .dump > form > label {
@@ -1911,16 +1908,17 @@ div.subMenu,
   cursor: pointer;
   width: 10px;
   height: 10px;
-  margin: 1px 3px;
+  margin: 2px 3px;
   display: inline-block;
   background: #{theme["Checkbox Background"]};
-  border: 1px solid #{theme["Checkbox Border"] };
+  border: 1px solid #{theme["Checkbox Border"]};
+  vertical-align: bottom;
 }
 #qr label input,
 #updater input,
 .bd {
   background: #{theme["Buttons Background"]};
-  border: 1px solid #{theme["Buttons Border"] };
+  border: 1px solid #{theme["Buttons Border"]};
 }
 .pages a,
 #boardNavDesktop a {
@@ -2204,10 +2202,6 @@ div.navLinks > a:first-of-type::after {
   top: 20px;
   text-align: #{sidebarLocation[1]};
 }
-#prefetch .rice,
-#prefetch input {
-  float: #{sidebarLocation[1]};
-}
 #boardNavDesktopFoot::after,
 #navtopright .exlinksOptionsLink::after,
 #navtopright .settingsWindowLink::after,
@@ -2287,19 +2281,15 @@ div.navLinks > a:first-of-type::after {
 #updater {
   #{sidebarLocation[0]}: #{(if Conf["Updater Position"] is "top" then "24" else "4")}px !important;
   #{sidebarLocation[1]}: auto !important;
-  top: #{(if Conf["Updater Position"] == "top" then "2px" else "auto")} !important;
+  top: #{(if Conf["Updater Position"] == "top" then "1px" else "auto")} !important;
   bottom: #{(if Conf["Updater Position"] == "bottom" then "4px" else "auto")} !important;
   #{(if Conf["Updater Position"] == "top" then "z-index: 96 !important;")}
 }
 #prefetch {
   width: #{(248 + sidebarOffsetW)}px;
   #{sidebarLocation[0]}: 2px;
-  top: 2px;
+  top: 1px;
   text-align: #{sidebarLocation[1]};
-}
-#prefetch .rice,
-#prefetch input {
-  float: #{sidebarLocation[1]};
 }
 #navlinks {
   top: #{(156 + logoOffset)}px !important;

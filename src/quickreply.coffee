@@ -650,6 +650,7 @@ QR =
       $.on $("#browse", QR.el),   'click',     -> fileInput.click()
       $.on riceFile,              'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else fileInput.click()
       $.on fileInput,             'change',    -> riceFile.textContent = fileInput.value
+      Style.rice QR.el
 
     else
       $.on $('#autohide', QR.el), 'change',    QR.toggleHide
