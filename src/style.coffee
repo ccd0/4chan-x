@@ -1724,6 +1724,15 @@ html {
     1px -1px 1px #{theme["Background Color"]},
     -1px -1px 1px #{theme["Background Color"]}
 }
+#boardNavDesktop {
+  padding: 1px 0 2px;
+}
+#boardNavDesktop a,
+#prefetch,
+#spoilerLabel,
+#updater .move {
+  line-height: #{Conf["Font Size"]};
+}
 #browse,
 #ft li,
 #ft ul,
