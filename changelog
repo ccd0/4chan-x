@@ -1,5 +1,21 @@
 master
 
+1.0.4
+- noface
+  Archivelinks improvements
+- Zixaphir
+  Fix 4sight
+  Color navlinks like icons
+  Fix incorrect icons for dark and light themes.
+  Updater post count now updates on window focus like it does on window scroll.
+  Better linkifier.
+  Fix logo reflections on Chrome.
+  Positioned the OP menu button like reply menu buttons (thread hider will not be positioned due to syntax issues with hover opacity)
+  Theme importer fixes for 4chan SS
+  Darker prettyPrint background for code tags on dark themes
+  .highlight and :target fixes
+  
+
 1.0.0 - 1.0.3
 - Zixaphir
   Fix 4chan Pass support.
