@@ -791,9 +791,6 @@ body,
 #qp .opContainer,
 #qp .replyContainer div.post {
   border: 1px rgba(0,0,0,0.7) solid;
-}
-#qp .opContainer,
-#qp .replyContainer {
   background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), transparent;
 }
 #qp div.post,
