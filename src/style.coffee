@@ -668,6 +668,8 @@ div.opContainer {
 .field {
   border: 1px solid #CCC;
   color: #333;
+  box-sizing: border-box;
+  #{agent}box-sizing: border-box;
 }
 .field:-moz-placeholder,
 .field:hover:-moz-placeholder {
