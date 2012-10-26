@@ -762,6 +762,11 @@ textarea {
   opacity: #{Conf["Captcha Opacity"]};
 }
 #boardNavDesktop,
+#boardNavDesktopFoot a::after,
+#boardNavDesktopFoot a[href*="//boards.4chan.org/"]::after,
+#boardNavDesktopFoot a[href*="//boards.4chan.org/"]::before,
+#browse,
+#globalMessage,
 #prefetch,
 #qp div.post .postertrip,
 #qp div.post .subject,
@@ -787,6 +792,8 @@ blockquote,
 body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"],
 div.post > blockquote .chanlinkify.YTLT-link.YTLT-text,
 div.reply,
+input[type="submit"],
+input[value="Report"]
 fieldset,
 textarea,
 time + span {
@@ -1021,10 +1028,6 @@ div.navLinks > a:first-of-type:hover::after,
 .extButton img {
   margin-top: -4px;
 }
-#boardNavMobile select {
-  font-size: 11px;
-  pointer-events: all;
-}
 .qrMessage {
   position: fixed;
   #{sidebarLocation[0]}: 2px;
@@ -1129,7 +1132,6 @@ img.bottomad:hover {
 }
 /* moots announcements */
 #globalMessage {
-  font-size: #{Conf["Font Size"]};
   text-align: center;
   font-weight: 200;
 }
@@ -1201,7 +1203,6 @@ input[type="submit"], /* Any lingering buttons */
 input[value="Report"] {
   height: 20px;
   padding: 0;
-  font-size: #{Conf["Font Size"]};
 }
 #qr input[type="submit"] {
   width: 100%;
@@ -1279,9 +1280,6 @@ body > .postingMode ~ #delform br[clear="left"],
 }
 .fileText {
   margin-top: 17px;
-}
-.fileText span:not([class])::after {
-  font-size: 13px;
 }
 #updater:hover {
   border: 0;
@@ -1396,13 +1394,11 @@ div.navLinks {
   position: fixed;
 }
 #stats {
-  font-size: 12px;
   position: fixed;
   cursor: default;
 }
 #updater {
   border: 0;
-  font-size: 12px;
   overflow: hidden;
   background: none;
   text-align: right;
@@ -1490,12 +1486,7 @@ img[alt="Sticky"],
 img[alt="Closed"] {
   vertical-align: top;
 }
-/* Youtube Link Title */
-.chanlinkify.YTLT-link.YTLT-text {
-  font-family: monospace;
-  font-size: 11px;
-}
-.fileText+br+a[target="_blank"]:hover {
+.fileText + br + a[target="_blank"]:hover {
   background: none;
 }
 .inline,
@@ -1634,7 +1625,6 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
 }
 #threadselect select {
   margin-top: 0;
-  font-size: 12px;
 }
 #spoilerLabel {
   position: absolute;
@@ -1675,7 +1665,6 @@ table.reply[style^="clear: both"] {
   display: block;
   white-space: pre-wrap;
   border-radius: 2px;
-  font-size: inherit;
   max-width: 600px;
   overflow-x: auto;
   padding: 3px;
@@ -2471,12 +2460,10 @@ div.navLinks > a:first-of-type::after {
   #{sidebarLocation[0]}: 0;
   width: 110px;
   display: inline-block;
-  font-size: 12px;
   opacity: 1;
   text-align: center;
   vertical-align: middle;
   color: #{theme["Text"]};
-  #{agent}transition: opacity .3s ease-in-out 1s, #{sidebarLocation[0]} .3s ease-in-out 1s;
 }
 #qr:hover #qrtab,
 #qr.focus #qrtab,
@@ -2594,7 +2581,6 @@ div.sideArrows {
   padding: 3px;
 }
 .sideArrows a {
-  font-size: 12px;
   position: static;
 }
 div.reply {
@@ -2901,19 +2887,16 @@ td[style="border: 1px dashed;"] {
   overflow-y: scroll;
   word-spacing: 0px;
 }
-#boardNavDesktopFoot a::after{
+#boardNavDesktopFoot a::after {
   content: " - " attr(title);
-  font-size: 12px;
 }
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::after,
 #boardNavDesktopFoot a[href*="//rs.4chan.org/"]::after {
   content: "/ - " attr(title);
-  font-size: 12px;
 }
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::before,
 #boardNavDesktopFoot a[href*="//rs.4chan.org/"]::before {
   content: "/";
-  font-size: 12px;
 }
 #navbotright {
   display: none;
