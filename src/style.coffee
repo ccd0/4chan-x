@@ -797,7 +797,7 @@ input[value="Report"]
 fieldset,
 textarea,
 time + span {
-  font-size: #{Conf["Font Size"]};
+  font-size: #{parseInt(Conf["Font Size"], 10)}px;
 }
 .pages strong {
   font-size: #{parseInt(Conf["Font Size"], 10) + 3}px;

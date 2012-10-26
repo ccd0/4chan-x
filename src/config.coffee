@@ -711,7 +711,7 @@ Config =
         'The font used by all elements of 4chan.', 'text'
       ]
       'Font Size': [
-        '12px'
+        '12'
         'The font size of posts and various UI. This changes most, but not all, font sizes.', 'text'
       ]
       'Icons': [
