@@ -152,8 +152,8 @@ Options =
     # I start by gathering all of the main configuration category objects
     for key, obj of Config.main
       # and creating an unordered list for the main categories.
-      ul = $.el 'ul',
-        textContent: key
+      ul = $.el 'ul'
+        innerHTML: "<h3>#{key}</h3>"
 
       # Then I gather the variables from each category
       for key, arr of obj
@@ -165,10 +165,13 @@ Options =
 
         # I create a list item to represent the option, with a checkbox to change it.
         li = $.el 'li',
-          innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}><span class=\"optionlabel\">#{key}</span></label><span class=description>: #{description}</span>"
+          innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}><span class=\"optionlabel\">#{key}</span><div style=\"display: none\">#{description}</div></label>"
 
         # The option is both changed and saved on click.
         $.on $('input', li), 'click', $.cb.checked
+        
+        # Mouseover Labels
+        $.on $(".optionlabel", li), 'mouseover', Options.mouseover
 
         # We add the list item to the unordered list
         $.add ul, li
@@ -180,8 +183,9 @@ Options =
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length
     li = $.el 'li',
-      innerHTML: "<button>hidden: #{hiddenNum}</button> <span class=description>: Forget all hidden posts. Useful if you accidentally hide a post and have \"Show Stubs\" disabled."
+      innerHTML: "<span class=\"optionlabel\"><button>hidden: #{hiddenNum}</button></span><div style=\"display: none\">Forget all hidden posts. Useful if you accidentally hide a post and have \"Show Stubs\" disabled.</div>"
     $.on $('button', li), 'click', Options.clearHidden
+    $.on $('.optionlabel', li), 'mouseover', Options.mouseover
     $.add $('ul:nth-child(2)', dialog), li
 
     # Filter
@@ -241,8 +245,8 @@ Options =
     for category, obj of Config.style
 
       # Create unordered lists for categories.
-      ul = $.el 'ul',
-        textContent: category
+      ul = $.el 'ul'
+        innerHTML: "<h3>#{category}</h3>"
 
       # Pull options from categories of config
       for optionname, arr of obj
@@ -283,6 +287,7 @@ Options =
             innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></label>"
           $.on $('input', li), 'click', $.cb.checked
 
+        # Mouseover Labels.
         $.on $(".optionlabel", li), 'mouseover', Options.mouseover
 
         # No matter what kinda option it is, it'll be a list item, so I separate that from the if...else if... else statements
@@ -1015,13 +1020,11 @@ Options =
 
     # Don't stop other elements from dragging
     return if UI.el
-    
-    $.log @
 
     mouseover = UI.el = $.el 'div',
       id:           'mouseover'
       className:    'reply dialog'
-      textContent:  @nextSibling.textContent
+      innerHTML:  @nextSibling.innerHTML
 
     UI.hover e
     $.add d.body, mouseover

@@ -473,6 +473,25 @@ h1,
   bottom: 5px;
   left: 5px;
 }
+#style_tab + div .suboptions,
+#main_tab + div {
+  text-align: center;
+}
+#style_tab + div .suboptions ul,
+#main_tab + div ul {
+  display: inline-block;
+  vertical-align: top;
+}
+#style_tab + div .suboptions ul li,
+#main_tab + div ul li {
+  text-align: left;
+}
+#style_tab + div .suboptions ul {
+  width: 370px;
+}
+#main_tab + div ul {
+  width: 200px;
+}
 .suboptions,
 #mascotcontent,
 #themecontent {
@@ -820,6 +839,7 @@ select {
 .yui-menu-shadow,
 body > .postingMode ~ #delform hr,
 body > br,
+body > div[style^="text-align"],
 body > hr,
 div.reply[hidden],
 html body > span[style="left: 5px; position: absolute;"]:nth-of-type(0),
