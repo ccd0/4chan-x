@@ -481,6 +481,7 @@ h1,
 #main_tab + div ul {
   display: inline-block;
   vertical-align: top;
+  margin: 0 2px 5px;
 }
 #style_tab + div .suboptions ul li,
 #main_tab + div ul li {
