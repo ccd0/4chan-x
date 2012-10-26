@@ -761,42 +761,13 @@ textarea {
 .captcha img {
   opacity: #{Conf["Captcha Opacity"]};
 }
-#boardNavDesktop,
-#boardNavDesktopFoot a::after,
+#boardNavDesktop a,
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::after,
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::before,
-#browse,
-#globalMessage,
-#prefetch,
-#qp div.post .postertrip,
-#qp div.post .subject,
-.boardSubtitle,
-.capcode,
+#boardNavDesktopFoot a,
 .container::before,
-.dateTime,
-.file,
-.fileInfo,
-.fileText,
 .fileText span:not([class])::after,
-.name,
-.postInfo,
-.postNum,
-.postertrip,
-.posteruid,
-.rules,
-.subject,
-.summary,
-a,
-big,
-blockquote,
-body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"],
-div.post > blockquote .chanlinkify.YTLT-link.YTLT-text,
-div.reply,
-input[type="submit"],
-input[value="Report"]
-fieldset,
-textarea,
-time + span {
+body {
   font-size: #{parseInt(Conf["Font Size"], 10)}px;
 }
 .pages strong {
