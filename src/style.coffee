@@ -761,13 +761,14 @@ textarea {
 .captcha img {
   opacity: #{Conf["Captcha Opacity"]};
 }
-#boardNavDesktop a,
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::after,
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::before,
 #boardNavDesktopFoot a,
 .container::before,
 .fileText span:not([class])::after,
-body {
+a,
+body,
+select {
   font-size: #{parseInt(Conf["Font Size"], 10)}px;
 }
 .pages strong {
