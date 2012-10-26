@@ -243,7 +243,7 @@ Config =
       ]
       'Markdown': [
         false
-        'Code, italic, bold, italic bold, double struck - `, *, **, ***, ||, respectively. _ can be used instead of *. <span class=warning><code>Markdown</code> is currently blocked server-side on /g/, and using it will simply remove markdowned elements from your post.</style>'
+        'Code, italic, bold, italic bold, double struck - `, *, **, ***, ||, respectively. _ can be used instead of *.'
       ]
 
     Quoting:
