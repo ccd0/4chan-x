@@ -1,4 +1,9 @@
 master
+1.0.5
+- Zixaphir
+  Checkbox alignments should be better now
+  Reply Spacing set to none now attempts to remove double-borders
+  Fix ExLinks icon broken by 1.0.4 release.
 
 1.0.4
 - noface
@@ -14,7 +19,6 @@ master
   Theme importer fixes for 4chan SS
   Darker prettyPrint background for code tags on dark themes
   .highlight and :target fixes
-  
 
 1.0.0 - 1.0.3
 - Zixaphir
