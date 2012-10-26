@@ -719,9 +719,17 @@ Config =
         'Icon theme which Appchan will use.'
         ['oneechan', '4chan SS']
       ]
+      'Quote Shadows': [
+        true
+        'Add shadows to the quote previews and inline quotes.'
+      ]
       'Rounded Edges': [
         true
         'Round the edges of various 4chan elements.'
+      ]
+      'Slideout Transitions' : [
+        true
+        'Animate slideouts.'
       ]
       'Underline Links': [
         true

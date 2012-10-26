@@ -22,7 +22,7 @@ a[href="javascript:;"] {
   color: red;
 }
 .hide_thread_button:not(.hidden_thread) {
-  padding: 5px 5px 0;
+  padding: 0 5px;
   float: left;
 }
 .thread > .hidden_thread ~ *,
@@ -405,7 +405,7 @@ h1,
   padding-left: 18px;
 }
 #options .styleoption {
-  padding: 1px 5px 1px 7px;
+  padding: 1px 0;
   overflow: hidden;
 }
 #options .mascots {
@@ -586,7 +586,7 @@ h1,
 .deadlink:not(.quotelink) {
   text-decoration: none;
 }
-.image_expanded {
+:not(.opContainer).image_expanded {
   clear: both !important;
 }
 .inlined {
@@ -1098,7 +1098,6 @@ a.yuimenuitemlabel {
   height: 0;
   width: #{(248 + sidebarOffsetW)}px !important;
   overflow: hidden;
-  #{agent}transition: height .5s linear, border 0s ease-in-out .5s;
   #{agent}box-sizing: border-box;
   box-sizing: border-box;
 }
@@ -1110,7 +1109,6 @@ img.topad,
 img.middlead,
 img.bottomad {
   opacity: 0.3;
-  #{agent}transition: opacity .3s ease-in-out .3s;
 }
 img.topad:hover,
 img.middlead:hover,
@@ -1331,7 +1329,6 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
   width: 15px;
   height: 20px;
   overflow: hidden;
-  #{agent}transition: width .2s linear;
 }
 #imgContainer {
   width: 110px;
@@ -1826,7 +1823,7 @@ div.subMenu,
 .inline .replyContainer {
   background: #{theme["Reply Background"]};
   border: 1px solid #{theme["Reply Border"]};
-  box-shadow: 5px 5px 5px #{theme["Shadow Color"]};
+  box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
 }
 #qr .warning {
   background: #{theme["Input Background"]};
@@ -1904,7 +1901,7 @@ div.subMenu,
 #menu,
 #qp .opContainer,
 #qp .replyContainer {
-  box-shadow: 5px 5px 5px #{theme["Shadow Color"]};
+  box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else ""};
 }
 .rice {
   cursor: pointer;
@@ -2126,6 +2123,36 @@ span.lit {
 
 .webkit #Banner {
   -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));
+}
+"""
+
+      if Conf["Slideout Transitions"]
+        css += """
+#globalMessage,
+#watcher {
+  #{agent}transition: height .5s linear;
+}
+#boardNavDesktopFoot {
+  #{agent}transition: height .5s linear, border 0s ease-in-out .5s;
+}
+img.topad,
+img.middlead,
+img.bottomad {
+  #{agent}transition: opacity .3s ease-in-out .3s;
+}
+#qr {
+  #{agent}transition: #{sidebarLocation[0]} .3s ease-in-out 1s;
+}
+#qr:hover,
+#qr.focus,
+#qr.dump {
+  #{agent}transition: #{sidebarLocation[0]} .3s linear;
+}
+#qrtab {
+  #{agent}transition: opacity .3s ease-in-out 1s, #{sidebarLocation[0]} .3s ease-in-out 1s;
+}
+#imgControls {
+  #{agent}transition: width .2s linear;
 }
 """
 
@@ -2415,14 +2442,12 @@ div.navLinks > a:first-of-type::after {
 #qr {
   #{sidebarLocation[0]}: -#{(233 + sidebarOffsetW)}px !important;
   #{sidebarLocation[1]}: auto !important;
-  #{agent}transition: right .3s ease-in-out 1s, left .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
   #{sidebarLocation[0]}: 2px !important;
   #{sidebarLocation[1]}: auto !important;
-  #{agent}transition: right .3s linear, left .3s linear;
 }
 """
         when "tabbed slideout"
@@ -2430,14 +2455,12 @@ div.navLinks > a:first-of-type::after {
 #qr {
   #{sidebarLocation[0]}: -#{(249 + sidebarOffsetW)}px !important;
   #{sidebarLocation[1]}: auto !important;
-  #{agent}transition: #{sidebarLocation[0]} .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
   #{sidebarLocation[0]}: 2px !important;
   #{sidebarLocation[1]}: auto !important;
-  #{agent}transition: #{sidebarLocation[0]} .3s linear;
 }
 #qrtab {
   z-index: -1;
@@ -2722,7 +2745,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
     background-color 0.25s linear,
     background-image 0.25s linear,
     height step-end,
-    width .3s ease-in-out .3s;
+    width #{if Conf["Slideout Transitions"] then ".3s ease-in-out .3s" else "step-end"};
   float: #{sidebarLocation[0]};
   resize: vertical;
 }
@@ -2827,7 +2850,6 @@ td[style="border: 1px dashed;"] {
   height: 0;
   width: #{(248 + sidebarOffsetW)}px !important;
   overflow: hidden;
-  #{agent}transition: height .5s linear;
   #{agent}box-sizing: border-box;
   box-sizing: border-box;
   padding: 0 10px;
@@ -2993,7 +3015,6 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   border: 1px solid #{theme["Dialog Border"] };
   height: 0px;
   overflow: hidden;
-  #{agent}transition: height .5s linear;
   #{agent}box-sizing: border-box;
   box-sizing: border-box;
   padding: 0 10px;

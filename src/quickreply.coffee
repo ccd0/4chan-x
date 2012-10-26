@@ -647,6 +647,7 @@ QR =
       size = fileInput.max
       size /= 1024 while i++ < 2
       riceFile.innerHTML = "<span class='placeholder'>Max: #{size}MB, Shift+Click to Clear</span>"
+      riceFile.title     = "Max: #{size}MB, Shift+Click to Clear."
       $.on $("#browse", QR.el),   'click',     -> fileInput.click()
       $.on riceFile,              'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else fileInput.click()
       $.on fileInput,             'change',    -> riceFile.textContent = fileInput.value
