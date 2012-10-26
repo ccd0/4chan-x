@@ -46,7 +46,15 @@ UI =
     {clientHeight, clientWidth} = d.documentElement
     height = UI.el.offsetHeight
 
-    top = clientY - 120
+    if clientX <= clientWidth - 400
+      style.left  = clientX + 20 + 'px'
+      style.right = null
+      top = clientY + 20
+    else
+      style.left  = null
+      style.right = clientWidth - clientX + 20 + 'px'
+      top = clientY - 120
+
     style.top =
       if clientHeight <= height or top <= 0
         '0px'
@@ -54,13 +62,6 @@ UI =
         clientHeight - height + 'px'
       else
         top + 'px'
-
-    if clientX <= clientWidth - 400
-      style.left  = clientX + 45 + 'px'
-      style.right = null
-    else
-      style.left  = null
-      style.right = clientWidth - clientX + 45 + 'px'
   hoverend: ->
     $.rm UI.el
     delete UI.el

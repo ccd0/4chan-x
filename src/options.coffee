@@ -39,19 +39,19 @@ Options =
     | <a target=_blank href=http://zixaphir.github.com/appchan-x/#bug-report>Issues</a>
   </div>
   <div>
-    <label for=main_tab>Main</label>
-    | <label for=filter_tab>Filter</label>
-    | <label for=sauces_tab>Sauce</label>
-    | <label for=rice_tab>Rice</label>
-    | <label for=keybinds_tab>Keybinds</label>
-    | <label for=style_tab>Style</label>
+    <label for=style_tab>Style</label>
     | <label for=theme_tab>Themes</label>
     | <label for=mascot_tab>Mascots</label>
+    | <label for=main_tab>Function</label>
+    | <label for=filter_tab>Filter</label>
+    | <label for=sauces_tab>Sauce</label>
+    | <label for=keybinds_tab>Keybinds</label>
+    | <label for=rice_tab>Rice</label>
   </div>
 </div>
 <hr>
 <div id=content>
-  <input type=radio name=tab hidden id=main_tab checked>
+  <input type=radio name=tab hidden id=main_tab>
   <div></div>
   <input type=radio name=tab hidden id=sauces_tab>
   <div>
@@ -142,7 +142,7 @@ Options =
       <tr><th>Actions</th><th>Keybinds</th></tr>
     </tbody></table>
   </div>
-  <input type=radio name=tab hidden id=style_tab>
+  <input type=radio name=tab hidden id=style_tab checked>
   <div></div>
   <input type=radio name=tab hidden id=theme_tab>
   <div></div>
@@ -158,25 +158,25 @@ Options =
       # and creating an unordered list for the main categories.
       ul = $.el 'ul',
         textContent: key
-        
+
       # Then I gather the variables from each category
       for key, arr of obj
-      
+
         # I use the object's key to pull from the Conf variable
         # which is created from the saved localstorage in the "Main" class.
         checked = if $.get(key, Conf[key]) then 'checked' else ''
         description = arr[1]
-        
+
         # I create a list item to represent the option, with a checkbox to change it.
         li = $.el 'li',
           innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}><span class=\"optionlabel\">#{key}</span></label><span class=description>: #{description}</span>"
-          
+
         # The option is both changed and saved on click.
         $.on $('input', li), 'click', $.cb.checked
-        
+
         # We add the list item to the unordered list
         $.add ul, li
-        
+
       # And add the list to the main tab of the options dialog.
       $.add $('#main_tab + div', dialog), ul
 
@@ -212,7 +212,7 @@ Options =
     $.on time,     'input', Options.time
     $.on fileInfo, 'input', $.cb.value
     $.on fileInfo, 'input', Options.fileInfo
-    
+
     favicon = $ 'select[name=favicon]', dialog
     favicon.value = $.get 'favicon', Conf['favicon']
     $.on favicon, 'change', $.cb.value
@@ -220,7 +220,7 @@ Options =
 
     (updateIncrease = $ '[name=updateIncrease]', dialog).value = $.get 'updateIncrease', Conf['updateIncrease']
     $.on updateIncrease, 'input', $.cb.value
-    
+
     # The custom navigation has its own method. I pass it this dialog so it doesn't have to find the dialog itself
     # (it finds the dialog itself when we change its settings)
     @customNavigation.dialog dialog
@@ -243,17 +243,17 @@ Options =
 
     # Pull categories from config
     for category, obj of Config.style
-    
+
       # Create unordered lists for categories.
       ul = $.el 'ul',
         textContent: category
-        
+
       # Pull options from categories of config
       for optionname, arr of obj
-      
+
         # Save the description for more readable code.
         description = arr[1]
-        
+
         # Verify the option variable type. If text, text input, if not text, select.
         # If there is no second array cell, it's a checkbox.
         # And create a list item and fill it
@@ -261,15 +261,14 @@ Options =
         if arr[2] == 'text'
           li = $.el 'li',
             className: "styleoption"
-            innerHTML: "<div class=\"option\"><span class=\"optionlabel\">#{optionname}</span>: <span class=\"description\">#{description}</span></div><div class =\"option\"><input name=\"#{optionname}\" style=\"width: 100%\"></div>"
+            innerHTML: "<div class=\"option\"><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></div><div class =\"option\"><input name=\"#{optionname}\" style=\"width: 100%\"></div>"
           styleSetting = $ "input[name='#{optionname}']", li
           styleSetting.value = $.get optionname, Conf[optionname]
           $.on styleSetting, 'change', $.cb.value
           $.on styleSetting, 'change', Options.style
-          
+
         else if arr[2]
-          liHTML = "
-          <div class=\"option\"><span class=\"optionlabel\">#{optionname}</span>: <span class=\"description\">#{description}</span></div><div class =\"option\"><select name=\"#{optionname}\"></div>"
+          liHTML = "<div class=\"option\"><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></div><div class =\"option\"><select name=\"#{optionname}\"></div>"
           for selectoption, optionvalue in arr[2]
             liHTML = liHTML + "<option value=\"#{selectoption}\">#{selectoption}</option>"
           liHTML = liHTML + "</select>"
@@ -280,23 +279,25 @@ Options =
           styleSetting.value = $.get optionname, Conf[optionname]
           $.on styleSetting, 'change', $.cb.value
           $.on styleSetting, 'change', Options.style
-          
+
         else
           checked = if $.get(optionname, Conf[optionname]) then 'checked' else ''
           li = $.el 'li',
             className: "styleoption"
-            innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}><span class=\"optionlabel\">#{optionname}</span><span class=description>: #{description}</span></label>"
+            innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></label>"
           $.on $('input', li), 'click', $.cb.checked
-          
+
+        $.on $(".optionlabel", li), 'mouseover', Options.mouseover
+
         # No matter what kinda option it is, it'll be a list item, so I separate that from the if...else if... else statements
         $.add ul, li
-        
+
       # And after I'm done iterating through the category options, I can add the resulting list to the div.
       $.add div, ul
-      
+
     # And after I'm done iterating through the categories themselves, I can add the resulting div to the dialog
     $.add $('#style_tab + div', dialog), div
-    
+
     # And add a "Save Style Settings" button, too.
     Options.applyStyle(dialog, 'style_tab')
 
@@ -308,7 +309,7 @@ Options =
     # Because adding new mascots or changing style settings clears the whole mascot dialog,
     # the dialog is created by its own method.
     @mascotTab.dialog dialog
-    
+
     # And add a "Save Style Settings" button, too.
     Options.applyStyle(dialog, 'mascot_tab')
 
@@ -325,7 +326,7 @@ Options =
     $.on overlay, 'click', Options.close
     $.add d.body, overlay
     dialog.style.visibility = 'hidden'
-    
+
     # Rice checkboxes if Style is enabled.
     if Conf['Style']
       Style.rice dialog
@@ -812,11 +813,11 @@ Options =
 
       # Generate list for custom navigation
       for index, link of userNavigation.links
-      
+
         # Avoid iterating through prototypes.
         unless typeof link is 'object'
           continue
-          
+
         # This input holds the index of the current link in the userNavigation array/object.
         li = $.el "li"
         input = $.el "input"
@@ -824,16 +825,16 @@ Options =
           value:     index
           type:      "hidden"
           hidden:    "hidden"
-          
+
         $.add li, input
 
         #Generate inputs for list
         for itemIndex, item of link
-          
+
           # Avoid iterating through prototypes.
           unless typeof item is 'string'
             continue
-            
+
           # Fill input with relevant values.
           input = $.el "input"
             className:   "field"
@@ -859,11 +860,11 @@ Options =
         $.on addLink, "click", ->
           # Example data for a new link.
           blankLink = ["ex","example","http://www.example.com/"]
-          
+
           # I add the new link at the position of the link where it was added,
           # pushing the existing links to the next position.
           userNavigation.links.add blankLink, @parentElement.firstChild.value
-          
+
           # And refresh the link list.
           Options.customNavigation.cleanup()
 
@@ -1008,3 +1009,33 @@ Options =
       $.set "theme", @id
     Conf['theme'] = @id
     $.addClass @, 'selectedtheme'
+
+  mouseover: (e) ->
+
+    if mouseover = $.id 'mouseover'
+      if mouseover is UI.el
+        delete UI.el
+      $.rm mouseover
+
+    # Don't stop other elements from dragging
+    return if UI.el
+    
+    $.log @
+
+    mouseover = UI.el = $.el 'div',
+      id:           'mouseover'
+      className:    'reply dialog'
+      textContent:  @nextSibling.textContent
+
+    UI.hover e
+    $.add d.body, mouseover
+
+    $.on @, 'mousemove',      UI.hover
+    $.on @, 'mouseout',       Options.mouseout
+
+    return
+    
+  mouseout: (e) ->
+  
+    UI.hoverend()
+    $.off @, 'mousemove',      UI.hover

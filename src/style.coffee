@@ -300,6 +300,7 @@ h1,
   width: 100%;
 }
 #ihover,
+#mouseover,
 #navlinks,
 #overlay,
 #qr,
@@ -573,6 +574,7 @@ h1,
   margin: 0;
   padding: 0;
 }
+#mouseover,
 #qp img {
   max-height: 300px;
   max-width: 500px;
@@ -771,6 +773,10 @@ body,
 select {
   font-size: #{parseInt(Conf["Font Size"], 10)}px;
 }
+.boardSubtitle,
+.boardSubtitle a {
+  font-size: #{parseInt(Conf["Font Size"], 10) - 1}px;
+}
 .pages strong {
   font-size: #{parseInt(Conf["Font Size"], 10) + 3}px;
 }
@@ -880,10 +886,13 @@ div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {
   font-style: normal;
 }
 /* Z-INDEXES */
+#mouseover {
+  z-index: 999 !important;
+}
 #mascotConf,
 #options.reply.dialog,
 #themeConf {
-  z-index: 999 !important;
+  z-index: 998 !important;
 }
 #qp {
   z-index: 104 !important;
@@ -1319,6 +1328,7 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
   font-size: 80%;
 }
 /* Reply Previews */
+#mouseover,
 #qp {
   max-width: 70%;
 }
@@ -1745,6 +1755,7 @@ textarea.field:focus {
   border-color: #{theme["Focused Input Border"] };
   color: #{theme["Inputs"]};
 }
+#mouseover,
 #qp .replyContainer div.post,
 #qp .opContainer div.post,
 .replyContainer div.reply {
