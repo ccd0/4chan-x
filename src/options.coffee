@@ -12,11 +12,7 @@ Options =
         className: 'settingsWindowLink'
         textContent: 'AppChan X Settings'
       $.on a, 'click', ->
-        try
-          Options.dialog()
-        catch err
-          $.log err
-          $.log err.stack
+        Options.dialog()
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
 
   dialog: (tab) ->
@@ -42,7 +38,7 @@ Options =
     <label for=style_tab>Style</label>
     | <label for=theme_tab>Themes</label>
     | <label for=mascot_tab>Mascots</label>
-    | <label for=main_tab>Function</label>
+    | <label for=main_tab>Script</label>
     | <label for=filter_tab>Filter</label>
     | <label for=sauces_tab>Sauce</label>
     | <label for=keybinds_tab>Keybinds</label>

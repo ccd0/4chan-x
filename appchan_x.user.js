@@ -2804,12 +2804,7 @@
           textContent: 'AppChan X Settings'
         });
         $.on(a, 'click', function() {
-          try {
-            return Options.dialog();
-          } catch (err) {
-            $.log(err);
-            return $.log(err.stack);
-          }
+          return Options.dialog();
         });
         _results.push($.prepend($.id(settings), [$.tn('['), a, $.tn('] ')]));
       }
@@ -2843,7 +2838,7 @@
     <label for=style_tab>Style</label>\
     | <label for=theme_tab>Themes</label>\
     | <label for=mascot_tab>Mascots</label>\
-    | <label for=main_tab>Function</label>\
+    | <label for=main_tab>Script</label>\
     | <label for=filter_tab>Filter</label>\
     | <label for=sauces_tab>Sauce</label>\
     | <label for=keybinds_tab>Keybinds</label>\
