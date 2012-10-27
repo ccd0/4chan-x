@@ -64,7 +64,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
     title  = $.el "div"
       id:   "boardTitle"
     children = for child in banner.children
-      if child.tagName == "IMG"
+      if child.tagName.toLowerCase() == "img"
         continue;
       child
     $.add title, children
@@ -99,7 +99,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         for node in d.head.children
           if node.rel == 'stylesheet'
             nodes.push node
-          else if node.tagName == 'STYLE' and node.id != 'appchan'
+          else if node.tagName.toLowerCase() == 'style' and node.id != 'appchan'
             nodes.push node
           else
             continue

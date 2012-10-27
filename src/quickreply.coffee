@@ -17,7 +17,11 @@ QR =
       $.before $.id('postForm'), link
 
     if Conf['Persistent QR']
-      QR.dialog()
+      try
+        QR.dialog()
+      catch err
+        $.log err
+        $.log err.stack
 
     $.on d, 'dragover',          QR.dragOver
     $.on d, 'drop',              QR.dropFile
@@ -29,6 +33,7 @@ QR =
   open: ->
     if QR.el
       QR.el.hidden = false
+      QR.unhide()
     else
       QR.dialog()
 
@@ -548,14 +553,17 @@ QR =
 
   dialog: ->
     QR.el = UI.dialog 'qr', '', '
-<div id=qrtab>- Post Form -</div>
+<div id=qrtab class=move>
+  <label><input type=checkbox id=autohide title=Auto-hide> Post Form</label>
+  <span> <a class=close title=Close>×</a> </span>
+</div>
 <form>
   <div class=warning></div>
-  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
+  <div class=userInfo><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
-  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=browse class=field>Browse...</div><div id=file class=field></div></div>
   <div id=submit><input type=submit></div>
+  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=file class=field></div><div id=browse class=field>Browse...</div></div>
   <div id=threadselect></div>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
 </form>'
@@ -617,7 +625,10 @@ QR =
     $.on riceFile,              'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else fileInput.click()
     $.on fileInput,             'change',    -> riceFile.textContent = fileInput.value
     Style.rice QR.el
-
+    
+    
+    $.on $('#autohide', QR.el), 'change',    QR.toggleHide
+    $.on $('.close',    QR.el), 'click',     QR.close
     $.on $('#dump',     QR.el),   'click',     -> QR.el.classList.toggle 'dump'
     $.on $('#addReply', QR.el),   'click',     -> new QR.reply().select()
     $.on $('form',      QR.el),   'submit',    QR.submit
@@ -714,6 +725,8 @@ QR =
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.replies.length > 1
+    if Conf['Auto Hide QR'] and not QR.cooldown.auto and Conf['Post Form Style'] is "float"
+      QR.hide()
     if not QR.cooldown.auto and $.x 'ancestor::div[@id="qr"]', d.activeElement
       # Unfocus the focused element if it is one within the QR and we're not auto-posting.
       d.activeElement.blur()

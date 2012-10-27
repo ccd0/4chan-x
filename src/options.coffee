@@ -366,10 +366,7 @@ Options =
         Options.indicators dialog
 
 
-  themeTab: (dialog, mode) ->
-
-    unless dialog
-      dialog = $("#options", d.body)
+  themeTab: (dialog = Options.el, mode) ->
 
     unless mode
       mode = 'default'
@@ -558,10 +555,8 @@ Options =
 
 
   mascotTab:
-    dialog: (dialog, mode) ->
+    dialog: (dialog = Options.el, mode) ->
       ul = {}
-      unless dialog
-        dialog = Options.el
 
       unless mode
         mode = "default"

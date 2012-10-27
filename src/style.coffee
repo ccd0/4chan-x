@@ -45,7 +45,6 @@ a[href="javascript:;"] {
 [hidden],
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),
-.autohide:not(:hover) > form,
 #qp input,
 .forwarded,
 #qp .rice {
@@ -693,7 +692,10 @@ body {
   min-height: 100%;
 }
 #exlinks-options > *,
+#submit input,
 html,
+body,
+a,
 body,
 input,
 select,
@@ -707,11 +709,14 @@ textarea {
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::after,
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::before,
 #boardNavDesktopFoot a,
+#submit input,
 .container::before,
 .fileText span:not([class])::after,
 a,
 body,
-select {
+input,
+select,
+textarea {
   font-size: #{parseInt(Conf["Font Size"], 10)}px;
 }
 .boardSubtitle,
@@ -1064,7 +1069,10 @@ a,
   #{agent}transition: background .1s linear;
 }
 /* Post Form */
-/* Override OS-specific UI */
+#qr div.captchainput,
+#qr div.captchainput + #submit {
+  float: left;
+}
 #ft li,
 #ft ul,
 #options input:not([type="radio"]),
@@ -1106,45 +1114,24 @@ input[type="submit"] {
 input,
 .field,
 input[type="submit"] {
-  margin: 1px 0 0;
   vertical-align: bottom;
   #{agent}box-sizing: border-box;
   box-sizing: border-box;
   padding: 1px !important;
 }
-/* Width and height of all postarea elements (excluding some captcha elements) */
-textarea.field,
-#qr .field[type="password"],
-.ys_playerContainer audio,
-#qr input[title="Verification"],
-#qr > form > div {
-  width: #{(248 + sidebarOffsetW)}px;
-}
-/* Buttons */
 #browse,
 input[type="submit"], /* Any lingering buttons */
 input[value="Report"] {
   height: 20px;
   padding: 0;
 }
-#qr input[type="submit"] {
-  width: 100%;
-  float: left;
-  clear: both;
+#browse {
+  text-align: center;
 }
 #qr input[type="file"] {
   position: absolute;
   opacity: 0;
   z-index: -1;
-}
-#file {
-  width: #{(177 + sidebarOffsetW)}px;
-  overflow: hidden;
-}
-#browse {
-  text-align: center;
-  width: 70px;
-  margin: 1px 1px 0 0;
 }
 /* Image Hover and Image Expansion */
 #ihover {
@@ -1187,11 +1174,6 @@ input[type=checkbox],
   bottom: 2px;
 }
 /* Posts */
-body > .postingMode ~ #delform br[clear="left"],
-#delform center {
-  position: fixed;
-  bottom: -500px;
-}
 #delform .fileText + br + a[target="_blank"] img,
 #qp div.post .fileText + br + a[target="_blank"] img {
   border: 0;
@@ -1480,56 +1462,28 @@ html .subMenu {
   padding: 0px;
 }
 #qr #charCount {
-  background: none;
-  position: absolute;
-  right: 2px;
-  top: auto;
-  bottom: 110px;
   color: #{(if theme["Dark Theme"] then "rgba(255,255,255,0.7)" else "rgba(0,0,0,0.7)")};
+  background: none;
   font-size: 10px;
-  height: 20px;
-  text-align: right;
-  vertical-align: middle;
-  padding-top: 2px;
 }
 #qr #charCount.warning {
   color: rgb(255,0,0);
-  position: absolute;
-  top: auto;
-  right: 2px;
-  bottom: 110px;
-  height: 20px;
-  max-height: 20px;
   border: none;
   background: none;
 }
 /* Position and Dimensions of the #qr */
-#showQR,
-#qr {
-  overflow: visible;
-  position: fixed;
-  top: auto !important;
-  bottom: 2px !important;
-  width: #{(248 + sidebarOffsetW)}px;
-  margin: 0;
-  padding: 0;
-  z-index: 5 !important;
-  background-color: transparent !important;
-}
 #showQR {
   display: block;
-  #{sidebarLocation[0]}: 2px !important;
+  #{sidebarLocation[0]}: 2px;
+  width: #{(248 + sidebarOffsetW)}px;
+  z-index: 5;
+  background-color: transparent;
   text-align: center;
+  position: fixed;
+  top: auto;
+  bottom: 2px !important;
 }
 /* Width and height of all #qr elements (excluding some captcha elements) */
-body > .postingMode ~ #delform .reply a > img[src^="//images"] {
-  position: relative;
-  z-index: 96;
-}
-#qr img {
-  height: 47px;
-  width: #{(248 + sidebarOffsetW)}px;
-}
 #dump {
   background: none;
   border: none;
@@ -1541,27 +1495,6 @@ body > .postingMode ~ #delform .reply a > img[src^="//images"] {
 }
 #dump:hover {
   background: none;
-}
-#threadselect {
-  position: absolute;
-  top: -20px;
-  left: 0;
-}
-#threadselect select {
-  margin-top: 0;
-}
-#spoilerLabel {
-  position: absolute;
-  bottom: 100%;
-  right: 0;
-}
-.dump > form > label {
-  display: block;
-  visibility: hidden;
-}
-input[title="Verification"],
-.captchaimg img {
-  margin-top: 1px;
 }
 .captchaimg {
   line-height: 0;
@@ -1984,6 +1917,7 @@ span.lit {
       switch Conf["4chan Banner"]
         when "at sidebar top"
           logoOffset = 83 + sidebarOffsetH
+          
           css += """
 .boardBanner {
   position: fixed;
@@ -2290,7 +2224,7 @@ div.navLinks > a:first-of-type::after {
 """
 
       switch Conf["Board Logo"]
-        when "at sidebar top" or "in sidebar"
+        when "at sidebar top"
           css += """
 #boardTitle {
   position: fixed;
@@ -2358,7 +2292,164 @@ div.navLinks > a:first-of-type::after {
   margin: 1px 5px 1px 3px;
 }
 """
+      unless Conf["Post Form Style"] is "float"
+        if Conf["Compact Post Form Inputs"]
+          css += """
+#qr textarea.field {
+  height: 184px;
+  min-height: 184px;
+  min-width: #{248 + sidebarOffsetW}px;
+}
+#qr.captcha textarea.field {
+  height: 114px;
+  min-height: 114px;
+}
+#qr .field[name="name"],
+#qr .field[name="email"],
+#qr .field[name="sub"] {
+  width: #{(75 + (sidebarOffsetW / 3))}px !important;
+  margin-left: 1px !important;
+}
+"""
+        else
+          css += """
+#qr textarea.field {
+  height: 158px;
+  min-height: 158px;
+  min-width: #{248 + sidebarOffsetW}px
+}
+#qr.captcha textarea.field {
+  height: 88px;
+  min-height: 88px;
+}
+#qr .field[name="email"],
+#qr .field[name="sub"] {
+  width: #{(248 + sidebarOffsetW)}px !important;
+}
+#qr .field[name="name"] {
+  width: #{(227 + sidebarOffsetW)}px !important;
+  margin-left: 1px !important;
+}
+#qr .field[name="email"],
+#qr .field[name="sub"] {
+  margin-top: 1px;
+}
+"""
 
+        if Conf["Textarea Resize"] == "auto-expand"
+          css += """
+#qr textarea {
+  display: block;
+  #{agent}transition:
+    color 0.25s linear,
+    background-color 0.25s linear,
+    background-image 0.25s linear,
+    height step-end,
+    width #{if Conf["Slideout Transitions"] then ".3s ease-in-out .3s" else "step-end"};
+  float: #{sidebarLocation[0]};
+  resize: vertical;
+}
+#qr textarea:focus {
+  width: 400px;
+}
+"""
+        else
+          css += """
+#qr textarea {
+  display: block;
+  #{agent}transition:
+    color 0.25s linear,
+    background-color 0.25s linear,
+    background-image 0.25s linear,
+    border-color 0.25s linear,
+    height step-end,
+    width step-end;
+  float: #{sidebarLocation[0]};
+  resize: #{Conf["Textarea Resize"]}
+}
+"""
+        css += """
+#qr img {
+  height: 47px;
+  width: #{(248 + sidebarOffsetW)}px;
+}
+#threadselect {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+}
+#spoilerLabel {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+}
+#threadselect select {
+  margin-top: 0;
+}
+.dump > form > label {
+  display: block;
+  visibility: hidden;
+}
+textarea.field,
+#qr > form > div {
+  width: #{(248 + sidebarOffsetW)}px;
+}
+input[title="Verification"],
+#qr #submit input {
+  width: 100%;
+}
+#qr {
+  overflow: visible;
+  top: auto !important;
+  bottom: 2px !important;
+  width: #{(248 + sidebarOffsetW)}px;
+  margin: 0;
+  padding: 0;
+  z-index: 5 !important;
+  background-color: transparent !important;
+}
+#qr #charCount {
+  position: absolute;
+  right: 2px;
+  top: auto;
+  bottom: 110px;
+  text-align: right;
+  vertical-align: middle;
+  padding-top: 2px;
+  height: 20px;
+}
+#qr #charCount.warning {
+  position: absolute;
+  top: auto;
+  right: 2px;
+  bottom: 110px;
+  height: 20px;
+  max-height: 20px;
+}
+input[title="Verification"],
+.captchaimg img {
+  margin-top: 1px;
+}
+#qr .warning,
+#threadselect select,
+input,
+.field {
+  margin: 1px 0 0;
+}
+#qr div.captchainput,
+#file {
+  width: #{(177 + sidebarOffsetW)}px;
+  overflow: hidden;
+}
+#qr div.captchainput + #submit,
+#browse {
+  width: 70px;
+}
+#qr div.captchainput + #submit input,
+#browse {
+  margin: 1px 0 0 1px;
+}
+"""
       switch Conf["Post Form Style"]
         when "fixed"
           css += """
@@ -2388,6 +2479,11 @@ div.navLinks > a:first-of-type::after {
 """
         when "tabbed slideout"
           css += """
+#qrtab input,
+#qrtab .rice,
+#qr span {
+  display: none;
+}
 #qr {
   #{sidebarLocation[0]}: -#{(249 + sidebarOffsetW)}px !important;
   #{sidebarLocation[1]}: auto !important;
@@ -2398,12 +2494,12 @@ div.navLinks > a:first-of-type::after {
   #{sidebarLocation[0]}: 2px !important;
   #{sidebarLocation[1]}: auto !important;
 }
-#qrtab {
+#qr #qrtab {
   z-index: -1;
   #{agent}transform: rotate(#{(if sidebarLocation[0] == "left" then "" else "-")}90deg);
   #{agent}transform-origin: bottom #{sidebarLocation[0]};
   position: fixed;
-  bottom: 250px;
+  bottom: 220px;
   #{sidebarLocation[0]}: 0;
   width: 110px;
   display: inline-block;
@@ -2411,6 +2507,8 @@ div.navLinks > a:first-of-type::after {
   text-align: center;
   vertical-align: middle;
   color: #{theme["Text"]};
+  border-width: 1px 1px 0 1px;
+  cursor: default;
 }
 #qr:hover #qrtab,
 #qr.focus #qrtab,
@@ -2436,6 +2534,56 @@ div.navLinks > a:first-of-type::after {
 #qr.dump {
   opacity: 1;
   #{agent}transition: opacity .3s linear;
+}
+"""
+        when "float"
+          css += """
+#qr {
+  border: 1px solid #{theme["Background Color"]};
+  background: #{theme["Background Color"]}
+}
+.autohide:not(:hover) > form {
+  display: none !important;
+}
+#qr #submit input,
+textarea.field,
+#qr input[title="Verification"],
+#qr > form > div {
+  width: 100%;
+}
+#dump {
+  width: 10%;
+}
+#qr .captchainput + #submit,
+#browse,
+#qr div.userInfo .field:not(#dump) {
+  width: 30%;
+}
+#qr .captchainput,
+#qr div.captchainput,
+#file {
+  width: 70%;
+}
+#qr.captcha textarea.field {
+  min-height: 120px;
+}
+#qr textarea.field {
+  min-height: 160px;
+  resize: resize;
+  #{agent}transition:
+    color 0.25s linear,
+    background-color 0.25s linear,
+    background-image 0.25s linear,
+    border-color 0.25s linear,
+    height step-end,
+    width step-end;
+}
+#qr #threadselect {
+  float: left;
+  width: auto;
+}
+#spoilerLabel {
+  float: right;
 }
 """
       if Conf["Fit Width Replies"]
@@ -2619,86 +2767,11 @@ body {
 }
 """
 
-      if Conf["Compact Post Form Inputs"]
-        css += """
-#qr textarea.field {
-  height: 184px;
-  min-height: 184px;
-  min-width: #{248 + sidebarOffsetW}px;
-}
-#qr.captcha textarea.field {
-  height: 114px;
-  min-height: 114px;
-}
-#qr .field[name="name"],
-#qr .field[name="email"],
-#qr .field[name="sub"] {
-  width: #{(75 + (sidebarOffsetW / 3))}px !important;
-  margin-left: 1px !important;
-}
-"""
-      else
-        css += """
-#qr textarea.field {
-  height: 158px;
-  min-height: 158px;
-  min-width: #{248 + sidebarOffsetW}px
-}
-#qr.captcha textarea.field {
-  height: 88px;
-  min-height: 88px;
-}
-#qr .field[name="email"],
-#qr .field[name="sub"] {
-  width: #{(248 + sidebarOffsetW)}px !important;
-}
-#qr .field[name="name"] {
-  width: #{(227 + sidebarOffsetW)}px !important;
-  margin-left: 1px !important;
-}
-#qr .field[name="email"],
-#qr .field[name="sub"] {
-  margin-top: 1px;
-}
-"""
 
       if Conf["Alternate Post Colors"]
         css += """
 div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   background-image: #{agent}linear-gradient(#{(if theme["Dark Theme"] then "rgba(255,255,255,0.02), rgba(255,255,255,0.02)" else "rgba(0,0,0,0.05), rgba(0,0,0,0.05)")});
-}
-"""
-
-      if Conf["Textarea Resize"] == "auto-expand"
-        css += """
-#qr textarea {
-  display: block;
-  #{agent}transition:
-    color 0.25s linear,
-    background-color 0.25s linear,
-    background-image 0.25s linear,
-    height step-end,
-    width #{if Conf["Slideout Transitions"] then ".3s ease-in-out .3s" else "step-end"};
-  float: #{sidebarLocation[0]};
-  resize: vertical;
-}
-#qr textarea:focus {
-  width: 400px;
-}
-"""
-      else
-        css += """
-#qr textarea {
-  display: block;
-  #{agent}transition:
-    color 0.25s linear,
-    background-color 0.25s linear,
-    background-image 0.25s linear,
-    border-color 0.25s linear,
-    height step-end,
-    width step-end;
-  float: #{sidebarLocation[0]};
-  resize: #{Conf["Textarea Resize"]}
 }
 """
 
@@ -2710,6 +2783,12 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
 """
 
       if Conf["Rounded Edges"]
+        if Conf["Post Form Style"] is "float"
+          css += """
+#qr {
+  border-radius: 6px 6px 0 0;
+}
+"""
         switch Conf["Boards Navigation"]
           when "sticky top", "top"
             css += """

@@ -650,7 +650,7 @@ Config =
       ]
       'Post Form Style': [
         'tabbed slideout', 'How the post form will sit on the page.'
-        ['fixed', 'slideout', 'tabbed slideout', 'transparent fade']
+        ['fixed', 'slideout', 'tabbed slideout', 'transparent fade', 'float']
       ]
       'Compact Post Form Inputs':[
         true
