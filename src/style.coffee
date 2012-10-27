@@ -1838,6 +1838,11 @@ div.postContainer span.postNum > .replylink {
 #navlinks a {
   color: rgb(#{if theme["Dark Theme"] then "230,230,230" else "130,130,130"});
   opacity: 0.5;
+  display: inline-block;
+  font-size: 15px;
+  height: 15px;
+  text-align: center;
+  width: 15px;
 }
 #navlinks a:hover {
   opacity: 1;
@@ -2207,6 +2212,7 @@ div.navLinks > a:first-of-type::after {
   #{(if sidebarLocation[0] == "left" then "left: 22px" else "right: " + (198 + sidebarOffsetW) + "px")};
   #{sidebarLocation[1]}: auto !important;
   top: 0 !important;
+  font-size: 0;
   width: 30px;
   line-height: 15px;
 }
