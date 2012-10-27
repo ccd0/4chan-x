@@ -201,6 +201,10 @@ Config =
         true
         'The Quick reply won\'t disappear after posting.'
       ]
+      'Auto Hide QR': [
+        false
+        'Automatically hide the quick reply when posting.'
+      ]
       'Open Reply in New Tab': [
         false
         'Open replies in a new tab that are made from the main board.'

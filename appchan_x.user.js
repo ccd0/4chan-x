@@ -159,6 +159,7 @@
       Posting: {
         'Cooldown': [true, 'Prevent "flood detected" errors.'],
         'Persistent QR': [true, 'The Quick reply won\'t disappear after posting.'],
+        'Auto Hide QR': [false, 'Automatically hide the quick reply when posting.'],
         'Open Reply in New Tab': [false, 'Open replies in a new tab that are made from the main board.'],
         'Remember QR size': [false, 'Remember the size of the Quick reply (Firefox only).'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
