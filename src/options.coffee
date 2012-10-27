@@ -12,7 +12,11 @@ Options =
         className: 'settingsWindowLink'
         textContent: 'AppChan X Settings'
       $.on a, 'click', ->
-        Options.dialog()
+        try
+          Options.dialog()
+        catch err
+          $.log err
+          $.log err.stack
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
 
   dialog: (tab) ->
@@ -24,7 +28,7 @@ Options =
       if confirm "Opening the options dialog will close and discard any mascot changes made with the mascot editor."
         MascotTools.close()
       return
-    dialog = $.el 'div'
+    dialog = Options.el = $.el 'div'
       id: 'options'
       className: 'reply dialog'
       innerHTML: '<div id=optionsbar>
@@ -308,18 +312,16 @@ Options =
     # Mascots
     # Because adding new mascots or changing style settings clears the whole mascot dialog,
     # the dialog is created by its own method.
-    @mascotTab.dialog dialog
+    $.on $('#mascot_tab', Options.el), 'click', ->
+      if el = $.id "mascotContainer"
+        $.rm el
+      Options.mascotTab.dialog Options.el
 
     # And add a "Save Style Settings" button, too.
     Options.applyStyle(dialog, 'mascot_tab')
 
     # Indicators for disabled or enabled options that may cause conflicts.
     Options.indicators dialog
-
-    # For theme and mascot edit dialogs, mostly. Allows the user to return to the tab that opened the edit dialog.
-    if tab
-      $("#main_tab", dialog).checked = false
-      $("#" + tab + "_tab", dialog).checked = true
 
     # The overlay over 4chan and under the options dialog you can click to close.
     overlay = $.el 'div', id: 'overlay'
@@ -329,8 +331,14 @@ Options =
 
     # Rice checkboxes.
     Style.rice dialog
+    
+    # Add options dialog to the DOM.
     $.add d.body, dialog
     dialog.style.visibility = 'visible'
+
+    # For theme and mascot edit dialogs, mostly. Allows the user to return to the tab that opened the edit dialog.
+    if tab
+      $("##{tab}_tab", dialog).click()
 
     # Fill values, mostly. See each section for the value of the variable used as an argument.
     # Argument will be treated as 'this' by each method.
@@ -553,7 +561,7 @@ Options =
     dialog: (dialog, mode) ->
       ul = {}
       unless dialog
-        dialog = $("#options", d.body)
+        dialog = Options.el
 
       unless mode
         mode = "default"
@@ -691,7 +699,7 @@ Options =
             alert "No mascots have been deleted."
             return
           $.rm $("#mascotContainer", d.body)
-          Options.mascotTab.dialog false, 'undelete'
+          Options.mascotTab.dialog Options.el, 'undelete'
 
       else
         ul = $.el "ul",
@@ -733,6 +741,8 @@ Options =
       $.add parentdiv, suboptions
       $.add parentdiv, batchmascots
       $.add parentdiv, mascotHide
+
+      Style.rice parentdiv
 
       $.add $('#mascot_tab + div', dialog), parentdiv
       Options.indicators dialog
@@ -976,8 +986,6 @@ Options =
       className: 'stylesettings'
     $.on $('a', save), 'click', ->
       Style.addStyle()
-      $.rm $("#mascotContainer", d.body)
-      Options.mascotTab.dialog()
     $.add $('#' + tab + ' + div', dialog), save
 
   selectTheme: ->

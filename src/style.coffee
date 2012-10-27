@@ -51,8 +51,7 @@ a[href="javascript:;"] {
 #qp .rice {
   display: none !important;
 }
-.menu_button,
-#mascot_hide {
+.menu_button {
   display: inline-block;
 }
 .menu_button > span,
@@ -69,7 +68,6 @@ a[href="javascript:;"] {
   position: absolute;
   top: 2px;
   right: 18px;
-  width: 120px;
 }
 #mascot_hide input,
 #mascot_hide .rice {
