@@ -137,7 +137,6 @@ h1,
   text-align: center;
 }
 #qr > .move {
-  min-width: 300px;
   overflow: hidden;
   box-sizing: border-box;
   #{agent}box-sizing: border-box;
