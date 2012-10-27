@@ -2546,6 +2546,10 @@ input,
   background: #{theme["Background Color"]};
   box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
 }
+#qr > .move,
+#qr textarea {
+  min-width: 300px;
+}
 .autohide:not(:hover) > form {
   display: none !important;
 }
