@@ -1067,8 +1067,8 @@ Updater =
         when 'Update Now'
           $.on input, 'click', @update
 
-    if Conf['Style']
-      Style.rice dialog
+    # Applies fake checkboxes.
+    Style.rice dialog
 
     $.add d.body, dialog
 
@@ -1138,12 +1138,8 @@ Updater =
       if Conf['Verbose']
         Updater.set 'count', '+0'
         Updater.timer.hidden = false
-      else if Conf['Style']
-        Updater.set 'count', '+0'
-        Updater.count.className = ''
-        Updater.timer.hidden = true
       else
-        Updater.set 'count', 'Thread Updater'
+        Updater.set 'count', '+0'
         Updater.count.className = ''
         Updater.timer.hidden = true
     autoUpdate: ->
@@ -2528,7 +2524,7 @@ ThreadStats =
     ThreadStats.imagecount = $.el 'span'
       id:          'imagecount'
       textContent: '0'
-    if Conf['Style'] and Conf['Thread Updater'] and move = Updater.count.parentElement
+    if Conf['Thread Updater'] and move = Updater.count.parentElement
       container = $.el 'span'
       $.add container, $.tn('[')
       $.add container, ThreadStats.postcount
@@ -2835,8 +2831,7 @@ Prefetch =
       $.after first, controls
     else
       $.before first, controls
-    if Conf["Style"]
-      Style.rice controls
+    Style.rice controls
 
   change: ->
     $.off @, 'change', Prefetch.change

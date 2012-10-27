@@ -328,9 +328,8 @@ Options =
     $.add d.body, overlay
     dialog.style.visibility = 'hidden'
 
-    # Rice checkboxes if Style is enabled.
-    if Conf['Style']
-      Style.rice dialog
+    # Rice checkboxes.
+    Style.rice dialog
     $.add d.body, dialog
     dialog.style.visibility = 'visible'
 
@@ -424,9 +423,6 @@ Options =
           $.on $('a.edit', div), 'click', (e) ->
             e.preventDefault()
             e.stopPropagation()
-            unless Conf["Style"]
-              alert "Please enable Style Options and reload the page to use Theme Tools."
-              return
             ThemeTools.init @.name
             Options.close()
 
@@ -480,10 +476,6 @@ Options =
 
       # Create New Theme.
       $.on $("#newtheme", div), 'click', ->
-        unless Conf["Style"]
-          alert "Please enable Style Options and reload the page to use Theme Tools."
-          return
-
         # We prepare ThemeTools to expect no incoming theme.
         # themeoptions.coffee
         ThemeTools.init "untitled"
@@ -614,7 +606,7 @@ Options =
             li = $.el 'li',
               className: 'mascot'
               innerHTML: "
-<div id='#{name}' class='#{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Conf["Style"] and userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div>
+<div id='#{name}' class='#{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div>
 <div class='mascotmetadata'>
   <p><span class='mascotname'>#{name.replace /_/g, " "}</span></p>
   <p><span class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a> / <a class=export name='#{name}' href='javascript:;'>Export</a></span></p>
@@ -625,9 +617,6 @@ Options =
               $.addClass li, 'enabled'
 
             $.on $('a.edit', li), 'click', ->
-              unless Conf["Style"]
-                alert "Please enable Style Options and reload the page to use Mascot Tools."
-                return
               MascotTools.dialog @name
               Options.close()
 
@@ -690,9 +679,6 @@ Options =
           $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
 
         $.on $('#createNew', batchmascots), 'click', ->
-          unless Conf["Style"]
-            alert "Please enable Style Options and reload the page to use Mascot Tools."
-            return
           MascotTools.dialog()
           Options.close()
 
@@ -703,9 +689,6 @@ Options =
           MascotTools.importMascot evt
 
         $.on $('#undelete', batchmascots), 'click', ->
-          unless Conf["Style"]
-            alert "Please enable Style Options and reload the page to use Mascot Tools."
-            return
           unless Conf["Deleted Mascots"].length > 0
             alert "No mascots have been deleted."
             return
@@ -723,7 +706,7 @@ Options =
             li = $.el 'li',
               className: 'mascot'
               innerHTML: "
-<div id='#{name}' class='#{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Conf["Style"] and userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div>
+<div id='#{name}' class='#{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div>
 <div class='mascotmetadata'>
   <p><span class='mascotname'>#{name.replace /_/g, " "}</span></p>
 </div>
@@ -990,15 +973,14 @@ Options =
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
 
   applyStyle: (dialog, tab) ->
-    if Conf['styleenabled']
-      save = $.el 'div',
-        innerHTML: '<a href="javascript:;">Save Style Settings</a>'
-        className: 'stylesettings'
-      $.on $('a', save), 'click', ->
-        Style.addStyle()
-        $.rm $("#mascotContainer", d.body)
-        Options.mascotTab.dialog()
-      $.add $('#' + tab + ' + div', dialog), save
+    save = $.el 'div',
+      innerHTML: '<a href="javascript:;">Save Style Settings</a>'
+      className: 'stylesettings'
+    $.on $('a', save), 'click', ->
+      Style.addStyle()
+      $.rm $("#mascotContainer", d.body)
+      Options.mascotTab.dialog()
+    $.add $('#' + tab + ' + div', dialog), save
 
   selectTheme: ->
     if currentTheme = $.id(Conf['theme'])

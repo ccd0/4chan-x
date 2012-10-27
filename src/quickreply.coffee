@@ -5,28 +5,19 @@ QR =
     setTimeout @asyncInit
 
   asyncInit: ->
-    if Conf['Hide Original Post Form'] and not Conf['Persistent QR']
-      if Conf['Style']
-        link = $.el 'a'
-          innerHTML: "Open Post Form"
-          id: "showQR"
-          href: "javascript:;"
-        $.on link, 'click', ->
-          QR.open()
-          QR.threadSelector.value = 'new' unless g.REPLY
-          $('textarea', QR.el).focus()
-      else
-        link = $.el 'h1'
-          innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
-        $.on link.firstChild, 'click', ->
-          QR.open()
-          QR.threadSelector.value = 'new' unless g.REPLY
-          $('textarea', QR.el).focus()
+    unless Conf['Persistent QR']
+      link = $.el 'a'
+        innerHTML: "Open Post Form"
+        id: "showQR"
+        href: "javascript:;"
+      $.on link, 'click', ->
+        QR.open()
+        QR.threadSelector.value = 'new' unless g.REPLY
+        $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
 
     if Conf['Persistent QR']
       QR.dialog()
-      QR.hide() if Conf['Auto Hide QR'] and not Conf['Style']
 
     $.on d, 'dragover',          QR.dragOver
     $.on d, 'drop',              QR.dropFile
@@ -37,11 +28,7 @@ QR =
 
   open: ->
     if QR.el
-      unless Conf['Style']
-        QR.el.hidden = false
-        QR.unhide()
-      else
-        QR.el.hidden = false
+      QR.el.hidden = false
     else
       QR.dialog()
 
@@ -300,9 +287,8 @@ QR =
   resetFileInput: ->
     input = $ '[type=file]', QR.el
     input.value = null
-    if Conf['Style']
-      riceFile = $ '#file', QR.el
-      riceFile.textContent = null
+    riceFile = $ '#file', QR.el
+    riceFile.textContent = null
     return unless $.engine is 'presto'
     # XXX Opera needs extra care to reset its file input's value
     clone = $.el 'input',
@@ -504,9 +490,8 @@ QR =
       $.on @img.parentNode, 'click',              @reload
       $.on @input,          'keydown',            @keydown
       $.on @challenge,      'DOMNodeInserted', => @load()
-      if Conf['Style']
-        $.on @input, 'focus', -> QR.el.classList.add    'focus'
-        $.on @input, 'blur',  -> QR.el.classList.remove 'focus'
+      $.on @input, 'focus', -> QR.el.classList.add    'focus'
+      $.on @input, 'blur',  -> QR.el.classList.remove 'focus'
       $.sync 'captchas', (arr) => @count arr.length
       @count $.get('captchas', []).length
       # start with an uncached captcha
@@ -562,8 +547,7 @@ QR =
       e.preventDefault()
 
   dialog: ->
-    if Conf['Style']
-      QR.el = UI.dialog 'qr', '', '
+    QR.el = UI.dialog 'qr', '', '
 <div id=qrtab>- Post Form -</div>
 <form>
   <div class=warning></div>
@@ -574,20 +558,6 @@ QR =
   <div id=submit><input type=submit></div>
   <div id=threadselect></div>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
-</form>'
-    else
-      QR.el = UI.dialog 'qr', 'top:0;right:0;', '
-<div class=move>
-  Quick Reply <input type=checkbox id=autohide title=Auto-hide>
-  <span> <a class=close title=Close>×</a></span>
-</div>
-<form>
-  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
-  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
-  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
-  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>
-  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
-  <div class=warning></div>
 </form>'
 
     if Conf['Remember QR size'] and $.engine is 'gecko'
@@ -633,29 +603,21 @@ QR =
         innerHTML: threads
         title: 'Create a new thread / Reply to a thread'
 
-      if Conf["Style"]
-        $.prepend $('#threadselect', QR.el), QR.threadSelector
-
-      else
-        $.prepend $('.move > span', QR.el), QR.threadSelector
+      $.prepend $('#threadselect', QR.el), QR.threadSelector
 
       $.on QR.threadSelector,     'mousedown', (e) -> e.stopPropagation()
 
-    if Conf['Style']
-      riceFile = $("#file", QR.el)
-      i = 0
-      size = fileInput.max
-      size /= 1024 while i++ < 2
-      riceFile.innerHTML = "<span class='placeholder'>Max: #{size}MB, Shift+Click to Clear</span>"
-      riceFile.title     = "Max: #{size}MB, Shift+Click to Clear."
-      $.on $("#browse", QR.el),   'click',     -> fileInput.click()
-      $.on riceFile,              'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else fileInput.click()
-      $.on fileInput,             'change',    -> riceFile.textContent = fileInput.value
-      Style.rice QR.el
+    riceFile = $("#file", QR.el)
+    i = 0
+    size = fileInput.max
+    size /= 1024 while i++ < 2
+    riceFile.innerHTML = "<span class='placeholder'>Max: #{size}MB, Shift+Click to Clear</span>"
+    riceFile.title     = "Max: #{size}MB, Shift+Click to Clear."
+    $.on $("#browse", QR.el),   'click',     -> fileInput.click()
+    $.on riceFile,              'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else fileInput.click()
+    $.on fileInput,             'change',    -> riceFile.textContent = fileInput.value
+    Style.rice QR.el
 
-    else
-      $.on $('#autohide', QR.el), 'change',    QR.toggleHide
-      $.on $('.close',    QR.el), 'click',     QR.close
     $.on $('#dump',     QR.el),   'click',     -> QR.el.classList.toggle 'dump'
     $.on $('#addReply', QR.el),   'click',     -> new QR.reply().select()
     $.on $('form',      QR.el),   'submit',    QR.submit
@@ -668,11 +630,12 @@ QR =
 
     new QR.reply().select()
 
-    # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
-      if Conf['Style']
-        $.on $("[name=#{name}]",    QR.el), 'focus', -> QR.el.classList.add 'focus'
-        $.on $("[name=#{name}]",    QR.el), 'blur',  -> QR.el.classList.remove 'focus'
+      # Apply listeners for bubbling so the QR doesn't slide away while typing.
+      $.on $("[name=#{name}]",    QR.el), 'focus', -> QR.el.classList.add    'focus'
+      $.on $("[name=#{name}]",    QR.el), 'blur',  -> QR.el.classList.remove 'focus'
+
+      # save selected reply's data
       # The input event replaces keyup, change and paste events.
       $.on $("[name=#{name}]", QR.el), 'input', ->
         QR.selected[@name] = @value
@@ -680,6 +643,10 @@ QR =
         # during the last 5 seconds of the cooldown.
         if QR.cooldown.auto and QR.selected is QR.replies[0] and 0 < QR.cooldown.seconds <= 5
           QR.cooldown.auto = false
+
+      # Add a listener for bubbling to the file input.
+      $.on $("[type=file]", QR.el), 'focus', -> QR.el.classList.add    'focus'
+      $.on $("[type=file]", QR.el), 'blur',  -> QR.el.classList.remove 'focus'
 
     QR.status.input = $ 'input[type=submit]', QR.el
     QR.status()
@@ -747,8 +714,6 @@ QR =
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.replies.length > 1
-    if Conf['Auto Hide QR'] and not QR.cooldown.auto and not Conf['Style']
-      QR.hide()
     if not QR.cooldown.auto and $.x 'ancestor::div[@id="qr"]', d.activeElement
       # Unfocus the focused element if it is one within the QR and we're not auto-posting.
       d.activeElement.blur()

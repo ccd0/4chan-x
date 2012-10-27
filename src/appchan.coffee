@@ -1,12 +1,12 @@
 Style =
   init: ->
+    @remStyle()
     @addStyle()
 
-    if Conf["Style"]
-      $.ready ->
-        Style.banner()
-        Style.trimGlobalMessage()
-        $(".boardBanner img", d.body).id = "Banner"
+    $.ready ->
+      Style.banner()
+      Style.trimGlobalMessage()
+      $(".boardBanner img", d.body).id = "Banner"
 
   emoji: (position) ->
     css = ''

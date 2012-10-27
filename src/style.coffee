@@ -1,5 +1,21 @@
   css: (theme) ->
+
+    icons = Icons.header.png + Icons.themes[Conf["Icons"]][if theme["Dark Theme"] then "dark" else "light"]
+
+    if Conf["Sidebar"] == "large"
+      sidebarOffsetW = 51
+      sidebarOffsetH = 17
+    else
+      sidebarOffsetW = 0
+      sidebarOffsetH = 0
+
+    if Conf["Sidebar Location"] == "left"
+      sidebarLocation = ["left",  "right"]
+    else
+      sidebarLocation = ["right", "left" ]
+
     agent = Style.agent()
+
     css = """
 /* dialog styling */
 .dialog.reply {
@@ -661,102 +677,9 @@ div.opContainer {
 .stub ~ * {
   display: none !important;
 }
-"""
-    if (Conf["Quick Reply"] and Conf["Hide Original Post Form"]) or Conf["Style"]
-      css += """#postForm {
+#postForm {
   display: none;
-}"""
-
-
-    if Conf["Image Expansion"]
-      css+= """
-.fileThumb img {
-  cursor: #{agent}zoom-in;
 }
-.fileThumb img + img {
-  cursor: #{agent}zoom-out;
-}
-"""
-    if Conf["Recursive Filtering"]
-      css += """.hidden + .threadContainer {
-  display: none;
-}"""
-
-    unless Conf["Style"]
-      css += """
-#addReply {
-  color: #333;
-}
-.field {
-  border: 1px solid #CCC;
-  color: #333;
-  box-sizing: border-box;
-  #{agent}box-sizing: border-box;
-}
-.field:-moz-placeholder,
-.field:hover:-moz-placeholder {
-  color: #AAA;
-}
-.field:hover,
-.field:focus {
-  border-color: #999;
-  color: #000;
-}
-.captchainput > .field {
-  min-width: 100%;
-}
-#qr > form > div:first-child > .field:not(#dump) {
-  width: 30%;
-}
-#qr textarea.field {
-  display: -webkit-box;
-  min-height: 160px;
-  min-width: 100%;
-}
-#qr.captcha textarea.field {
-  min-height: 120px;
-}
-.captchaimg {
-  text-align: center;
-}
-.captchaimg > img {
-  display: block;
-  height: 57px;
-  width: 300px;
-}
-#qr [type=file] {
-  margin: 1px 0;
-  width: 70%;
-}
-#qr [type=submit] {
-  margin: 1px 0;
-  padding: 1px; /* not Gecko */
-  width: 30%;
-}
-.gecko #qr [type=submit] {
-  padding: 0 1px; /* Gecko does not respect box-sizing: border-box */
-}"""
-    else
-
-      Conf["styleenabled"] = true
-
-      @remStyle()
-
-      icons = Icons.header.png + Icons.themes[Conf["Icons"]][if theme["Dark Theme"] then "dark" else "light"]
-
-      if Conf["Sidebar"] == "large"
-        sidebarOffsetW = 51
-        sidebarOffsetH = 17
-      else
-        sidebarOffsetW = 0
-        sidebarOffsetH = 0
-
-      if Conf["Sidebar Location"] == "left"
-        sidebarLocation = ["left",  "right"]
-      else
-        sidebarLocation = ["right", "left" ]
-
-      css += """
 ::#{agent}selection {
   background: #{theme["Text"]};
   color: #{theme["Background Color"]};
@@ -1983,7 +1906,23 @@ a.forwardlink {
   #{agent}transform: scaleX(#{(if sidebarLocation[0] == "left" then "-" else "")}1);
   #{agent}user-select: none;
 }
-""" + theme["Custom CSS"]
+#{theme["Custom CSS"]}
+"""
+    if Conf["Image Expansion"]
+      css += """
+.fileThumb img {
+  cursor: #{agent}zoom-in;
+}
+.fileThumb img + img {
+  cursor: #{agent}zoom-out;
+}
+"""
+    if Conf["Recursive Filtering"]
+      css += """
+.hidden + .threadContainer {
+  display: none;
+}
+"""
       if theme["Dark Theme"]
         css += """
 .prettyprint {

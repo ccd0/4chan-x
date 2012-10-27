@@ -112,10 +112,9 @@ Main =
         $.add d.head, $.el 'script',
           src: 'https://github.com/zixaphir/appchan-x/raw/master/latest.js'
 
-    if Conf['Disable Inline 4chan Addon'] or Conf['Style']
-      settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
-      settings.disableAll = true
-      localStorage.setItem '4chan-settings', JSON.stringify settings
+    settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
+    settings.disableAll = true
+    localStorage.setItem '4chan-settings', JSON.stringify settings
 
     if Conf['Filter']
       Filter.init()
@@ -225,8 +224,7 @@ Main =
     Options.init()
 
     # Major features.
-    if Conf['Quick Reply']
-      QR.init()
+    QR.init()
 
     if Conf['Image Expansion']
       ImageExpand.init()
@@ -269,9 +267,8 @@ Main =
       if Conf['Index Navigation']
         Nav.init()
 
-    if Conf["Style"]
-      Style.padding()
-      Style.rice(d.body)
+    Style.padding()
+    Style.rice(d.body)
 
     board = $ '.board'
     nodes = []

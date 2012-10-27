@@ -4,10 +4,6 @@ Config =
   main:
 
     Enhancing:
-      'Disable Inline 4chan Addon': [
-        true
-        'Avoid conflicts between 4chan X and 4chan\'s inline extension. <span class=disabledwarning><code>Style</code> is enabled. This option will be enabled regardless of this setting\'s value.</span>'
-      ]
       '404 Redirect': [
         true
         'Redirect dead threads and images'
@@ -51,10 +47,6 @@ Config =
       'Reply Navigation': [
         false
         'Navigate to top / bottom of thread'
-      ]
-      'Style': [
-        true
-        'Custom theming and styling options.'
       ]
       'Custom Navigation': [
         false
@@ -201,10 +193,6 @@ Config =
       ]
 
     Posting:
-      'Quick Reply': [
-        true
-        'Reply without leaving the page. <span class=disabledwarning><code>Style</code> is enabled. This option will be enabled regardless of this setting\'s value.</span>'
-      ]
       'Cooldown': [
         true
         'Prevent "flood detected" errors.'
@@ -212,10 +200,6 @@ Config =
       'Persistent QR': [
         true
         'The Quick reply won\'t disappear after posting.'
-      ]
-      'Auto Hide QR': [
-        false
-        'Automatically hide the quick reply when posting. <span class=disabledwarning><code>Style</code> is enabled. This option will be disabled regardless of this setting\'s value.</span>'
       ]
       'Open Reply in New Tab': [
         false
@@ -236,10 +220,6 @@ Config =
       'Remember Sage': [
         false
         'Remember email even if it contains sage.'
-      ]
-      'Hide Original Post Form': [
-        true
-        'Replace the normal post form with a shortcut to open the QR. <span class=disabledwarning><code>Style</code> is enabled. This option will be disabled regardless of this setting\'s value.</span>'
       ]
       'Markdown': [
         false

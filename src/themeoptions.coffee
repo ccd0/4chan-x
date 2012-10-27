@@ -3,11 +3,6 @@
 ###
 ThemeTools =
   init: (key) ->
-    #ThemeTools do not work without Style enabled.
-    unless Conf["Style"]
-      alert "Please enable Style Options and reload the page to use Theme Tools."
-      return
-
     Conf['editMode'] = "theme"
 
     if userThemes[key]
@@ -462,12 +457,11 @@ textarea,
     theme["Customized"] = true
     userThemes[name] = theme
     $.set 'userThemes', userThemes
-    $.set "Style", name
-    Conf["Style"] = name
+    $.set "theme", name
     alert "Theme \"#{name}\" saved."
 
   close: ->
     Conf['editMode'] = false
     $.rm $("#themeConf", d.body)
-    Style.addStyle Conf["Style"]
+    Style.addStyle()
     Options.dialog("theme")

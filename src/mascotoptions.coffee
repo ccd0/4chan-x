@@ -217,7 +217,10 @@ MascotTools =
 
   input: (item, name) ->
     if Array.isArray(editMascot[name])
-      if Conf["Style"] and userThemes[Conf['theme']]['Dark Theme'] then value = editMascot[name][0] else value = editMascot[name][1]
+      if userThemes[Conf['theme']]['Dark Theme']
+        value = editMascot[name][0]
+      else
+        value = editMascot[name][1]
     else
       value = editMascot[name] or item[1]
 
@@ -249,7 +252,7 @@ MascotTools =
 
     div = $.el 'div',
       id: "mascot"
-      innerHTML: "<img src='#{if Array.isArray(mascot.image) then (if Conf["Style"] and userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'>"
+      innerHTML: "<img src='#{if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'>"
 
     $.ready ->
         $.add d.body, div
@@ -296,9 +299,8 @@ MascotTools =
     Conf['editMode'] = false
     editMascot = {}
     $.rm $("#mascotConf", d.body)
-    Style.addStyle Conf["Style"]
+    Style.addStyle()
     Options.dialog("mascot")
-
 
   importMascot: (evt) ->
     file = evt.target.files[0]
