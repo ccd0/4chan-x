@@ -2544,7 +2544,8 @@ input,
 #qr {
   z-index: 103 !important;
   border: 1px solid #{theme["Background Color"]};
-  background: #{theme["Background Color"]}
+  background: #{theme["Background Color"]};
+  box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
 }
 .autohide:not(:hover) > form {
   display: none !important;
