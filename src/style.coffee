@@ -1073,6 +1073,10 @@ a,
 #qr div.captchainput + #submit {
   float: left;
 }
+#qr div.captchainput,
+#file {
+  overflow: hidden;
+}
 #ft li,
 #ft ul,
 #options input:not([type="radio"]),
@@ -2439,7 +2443,6 @@ input,
 #qr div.captchainput,
 #file {
   width: #{(177 + sidebarOffsetW)}px;
-  overflow: hidden;
 }
 #qr div.captchainput + #submit,
 #browse {
