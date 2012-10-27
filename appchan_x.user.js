@@ -3002,8 +3002,7 @@
         $.add($('#keybinds_tab + div tbody', dialog), tr);
       }
       div = $.el('div', {
-        className: "suboptions",
-        innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use styling options.</div>"
+        className: "suboptions"
       });
       _ref2 = Config.style;
       for (category in _ref2) {
@@ -3116,8 +3115,7 @@
       });
       suboptions = $.el('div', {
         className: "suboptions",
-        id: "themes",
-        innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use theming options.</div>"
+        id: "themes"
       });
       keys = Object.keys(userThemes);
       keys.sort();
@@ -3255,7 +3253,7 @@
         });
         suboptions = $.el("div", {
           className: "suboptions",
-          innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div><div class=warning><code>Mascots</code> are currently disabled. Please enable them in the Style tab to use mascot options.</div>"
+          innerHTML: "<div class=warning><code>Mascots</code> are currently disabled. Please enable them in the Style tab to use mascot options.</div>"
         });
         mascotHide = $.el("div", {
           id: "mascot_hide",

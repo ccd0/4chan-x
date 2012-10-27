@@ -239,7 +239,6 @@ Options =
     # Create a div to put everything in filled with a warning that shows if style is disabled.
     div = $.el 'div',
       className: "suboptions"
-      innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use styling options.</div>"
 
     # Pull categories from config
     for category, obj of Config.style
@@ -373,7 +372,6 @@ Options =
     suboptions = $.el 'div',
       className: "suboptions"
       id:        "themes"
-      innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use theming options.</div>"
 
     # Get the names of all mascots and sort them alphabetically...
     keys = Object.keys(userThemes)
@@ -565,7 +563,7 @@ Options =
 
       suboptions = $.el "div",
         className: "suboptions"
-        innerHTML: "<div class=warning><code>Style</code> is currently disabled. Please enable it in the Main tab to use mascot options.</div><div class=warning><code>Mascots</code> are currently disabled. Please enable them in the Style tab to use mascot options.</div>"
+        innerHTML: "<div class=warning><code>Mascots</code> are currently disabled. Please enable them in the Style tab to use mascot options.</div>"
 
       mascotHide = $.el "div"
         id:        "mascot_hide"
