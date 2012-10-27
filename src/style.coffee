@@ -2542,6 +2542,7 @@ input,
         when "float"
           css += """
 #qr {
+  z-index: 103 !important;
   border: 1px solid #{theme["Background Color"]};
   background: #{theme["Background Color"]}
 }
