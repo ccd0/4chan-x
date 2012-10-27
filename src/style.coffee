@@ -2079,11 +2079,11 @@ body > a[style="cursor: pointer; float: right;"]::after {
 div.navLinks > a:first-of-type::after {
   visibility: visible;
   cursor: pointer;
-  #{(if sidebarLocation[0] == "left" then "left: 2px" else "right: " + (228 + sidebarOffsetW) + "px")};
+  #{(if sidebarLocation[0] == "left" then "left: 2px" else "right: " + (231 + sidebarOffsetW) + "px")};
 }
 /* Thread Navigation Links */
 #navlinks {
-  #{(if sidebarLocation[0] == "left" then "left: 22px" else "right: " + (198 + sidebarOffsetW) + "px")};
+  #{(if sidebarLocation[0] == "left" then "left: 21px" else "right: " + (193 + sidebarOffsetW) + "px")};
   #{sidebarLocation[1]}: auto !important;
   top: 0 !important;
   font-size: 0;

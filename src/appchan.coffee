@@ -7,6 +7,9 @@ Style =
       Style.banner()
       Style.trimGlobalMessage()
       $(".boardBanner img", d.body).id = "Banner"
+      if exLink = $ "#navtopright .exlinksOptionsLink", d.body
+        $.on exLink, "click", ->
+          setTimeout Style.rice, 50
 
   emoji: (position) ->
     css = ''
