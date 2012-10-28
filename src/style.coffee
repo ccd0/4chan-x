@@ -1176,8 +1176,7 @@ input[type=checkbox],
   position: relative;
   bottom: 2px;
 }
-#qr #fileContainer,
-#qr #submit {
+#qr #submit input {
   float: left;
 }
 /* Posts */
@@ -2258,15 +2257,9 @@ input,
 #file {
   width: #{(106 + Style.sidebarOffsetW)}px;
 }
-#qr #fileContainer {
-  width: #{(177 + Style.sidebarOffsetW)}px;
-}
-#submit input,
+#buttons input,
 #browse {
   width: 70px;
-}
-#submit input,
-#browse {
   margin: 1px 0 0 1px;
 }
 """
@@ -2387,21 +2380,16 @@ textarea.field,
 #qr div.userInfo .field:not(#dump) {
   width: 30%;
 }
-#browse {
-  width: 33%;
-}
-#qr #submit {
-  width: 25%;
+#browse,
+#buttons input {
+  width: 30%;
 }
 #qr .captchainput,
 #qr div.captchainput {
   width: 100%;
 }
-#qr #fileContainer {
-  width: 75%;
-}
 #file {
-  width: 67%;
+  width: 40%;
 }
 #qr.captcha textarea.field {
   min-height: 120px;

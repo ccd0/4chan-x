@@ -562,8 +562,7 @@ QR =
   <div class=userInfo><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
-  <div id=fileContainer><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=file class=field></div><div id=browse class=field>Browse...</div></div>
-  <div id=submit><input type=submit></div>
+  <div id=buttons><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=file class=field></div><div id=browse class=field>Browse...</div><input type=submit></div>
   <div id=threadselect></div>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
 </form>'
