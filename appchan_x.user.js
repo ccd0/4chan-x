@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                appchan x
 // @namespace           zixaphir
-// @version             1.0.5
+// @version             1.0.6
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           2012 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2009-2011 James Campos <james.r.campos@gmail.com>
@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 1.0.5 - 2012-10-28
+/*  appchan x - Version 1.0.6 - 2012-10-28
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -9541,8 +9541,8 @@
         }
         switch (Conf["4chan Banner"]) {
           case "at sidebar top":
-            Style.logoOffset = 83 + Style.sidebarOffsetH;
-            css += ".boardBanner {\n  position: fixed;\n  top: " + (Conf["Icon Orientation"] === "vertical" ? "2px" : "19px") + ";\n  " + Style.sidebarLocation[0] + ": 2px;\n}\n.boardBanner img {\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n}";
+            Style.logoOffset = 100 + Style.sidebarOffsetH;
+            css += ".boardBanner {\n  position: fixed;\n  top: 19px;\n  " + Style.sidebarLocation[0] + ": 2px;\n}\n.boardBanner img {\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n}";
             break;
           case "at sidebar bottom":
             Style.logoOffset = 0;
@@ -10246,7 +10246,7 @@
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '1.0.5',
+    version: '1.0.6',
     callbacks: []
   };
 

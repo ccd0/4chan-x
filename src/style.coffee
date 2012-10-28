@@ -1920,12 +1920,12 @@ span.lit {
 """
       switch Conf["4chan Banner"]
         when "at sidebar top"
-          Style.logoOffset = 83 + Style.sidebarOffsetH
+          Style.logoOffset = 100 + Style.sidebarOffsetH
           
           css += """
 .boardBanner {
   position: fixed;
-  top: #{(if Conf["Icon Orientation"] == "vertical" then "2px" else "19px")};
+  top: 19px;
   #{Style.sidebarLocation[0]}: 2px;
 }
 .boardBanner img {

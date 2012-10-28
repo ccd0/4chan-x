@@ -1,4 +1,14 @@
 master
+
+1.0.6
+- Zixaphir
+  Style Option removed
+  - Styles and Themes are required.
+  Navlinks are now colored as icons.
+  Enabled Floating QR Post Form Option.
+  RedUX and Obsidianchan Theme Tweaks
+  ExScript Support
+  Option to auto-position icons rather than depend on my spotty manual positioning
 - Mayhem
   Added possibility to display unix timestamps with File Info Formatting.
 
