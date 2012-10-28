@@ -451,7 +451,7 @@ div.post:hover .name {
     'Emails'                      : 'rgb(0,255,255)'
     'Post Numbers'                : 'rgb(253,254,255)'
     'Text'                        : 'rgb(253,254,255)'
-    'Quotelinks'                  : 'rgb(212,212,212)'
+    'Quotelinks'                  : 'rgb(0,255,255)'
     'Backlinks'                   : 'rgb(0,255,255)'
     'Greentext'                   : 'rgb(67,204,103)'
     'Board Title'                 : 'rgb(253,254,255)'
