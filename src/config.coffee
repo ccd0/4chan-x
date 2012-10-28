@@ -658,7 +658,8 @@ Config =
         ['1.00', '.75', '.50', '.25']
       ]
       'Post Form Style': [
-        'tabbed slideout', 'How the post form will sit on the page.'
+        'tabbed slideout'
+        'How the post form will sit on the page.'
         ['fixed', 'slideout', 'tabbed slideout', 'transparent fade', 'float']
       ]
       'Compact Post Form Inputs':[
@@ -688,7 +689,7 @@ Config =
       'Emoji': [
         'enabled'
         'Enable emoji'
-        ['enabled', 'disable ponies', 'disable']
+        ['enabled', 'disable ponies', 'only ponies', 'disable']
       ]
       'Emoji Position': [
         'before'

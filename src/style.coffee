@@ -580,12 +580,12 @@ h1,
 }
 #watcher {
   padding-bottom: 5px;
-  position: absolute;
+  position: fixed;
   overflow: hidden;
   white-space: nowrap;
 }
 #watcher:not(:hover) {
-  max-height: 220px;
+  max-height: 200px;
 }
 #watcher > div {
   max-width: 200px;
@@ -1923,7 +1923,7 @@ span.lit {
 """
       switch Conf["4chan Banner"]
         when "at sidebar top"
-          Style.logoOffset = 100 + Style.sidebarOffsetH
+          Style.logoOffset = 83 + Style.sidebarOffsetH
           
           css += """
 .boardBanner {
@@ -2045,9 +2045,9 @@ hr {
 #boardTitle {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
-  top: #{((if Conf["Icon Orientation"] == "vertical" then 33 else 45) + Style.logoOffset)}px;
+  top: #{(if Style.logoOffset is 0 and Conf["Icon Orientation"] isnt "vertical" then 40 else 21) + Style.logoOffset}px;
   z-index: 1;
-  width: #{(248 + Style.sidebarOffsetW)}px;
+  width: #{248 + Style.sidebarOffsetW}px;
 }
 """
         when "at sidebar bottom"
@@ -2704,12 +2704,9 @@ td[style="border: 1px dashed;"] {
   display: none;
 }
 #watcher {
-  #{Style.sidebarLocation[0]}: 2px !important;
-  #{Style.sidebarLocation[1]}: auto !important;
   width: #{(246 + Style.sidebarOffsetW)}px;
   padding-bottom: 4px;
   z-index: 96;
-  top: #{( 100 + Style.logoOffset)}px !important;
 }
 """
       switch Conf["Slideout Navigation"]

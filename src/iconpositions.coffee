@@ -1,20 +1,20 @@
   iconPositions: ->
     css = '';
-    
+
     # Lets autoposition stuff!
     if Conf['Icon Positions'] is 'auto-align'
-      
+
       if Conf["Icon Orientation"] is "horizontal"
         # Create a positioner to hold values
         positioner = [0]
-      
+
         # Check which elements we actually have. Some are easy, because the script creates them so we'd know they're here
         # Some are hard, like 4sight, which we have no way of knowing if available without looking for it.
         for enabled, count in [
           true
           (if Conf['Slideout Navigation'] isnt 'hide' then true else false)
           (if Conf['Announcements'] is 'slideout' then true else false)
-          (if Conf['Slideout Watcher'] isnt 'hide' and Conf['Thread Watcher'] then true else false)
+          (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
           $ '#navtopright .exlinksOptionsLink', d.body
           $ 'body > a[style="cursor: pointer; float: right;"]'
           Conf['Image Expansion']
@@ -110,39 +110,42 @@ div.navLinks > a:first-of-type::after,
 body > a[style="cursor: pointer; float: right;"]::after {
   top: 2px !important;
 }
-#globalMessage,
-#boardNavDesktopFoot,
-#watcher {
-  position: fixed;
+#{if Conf["Announcements"] is "slideout" then "#globalMessage," else ""}
+#{if Conf["Slideout Watcher"] then "#watcher," else ""}
+#boardNavDesktopFoot {
   top: 16px !important;
   z-index: 98 !important;
 }
 #globalMessage:hover,
-#boardNavDesktopFoot:hover,
-#watcher:hover {
+#{if Conf["Slideout Watcher"] then "#watcher:hover," else ""}
+#boardNavDesktopFoot:hover {
   z-index: 99 !important;
 }
 """
       else
+
         # Because the positions are different, we do this again here.
         positioner = [2]
-      
+
         for enabled, count in [
           Conf['Image Expansion']
           true
           (if Conf['Slideout Navigation'] isnt 'hide' then true else false)
           (if Conf['Announcements'] is 'slideout' then true else false)
-          (if Conf['Slideout Watcher'] isnt 'hide' and Conf['Thread Watcher'] then true else false)
+          (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
           $ 'body > a[style="cursor: pointer; float: right;"]'
           $ '#navtopright .exlinksOptionsLink', d.body
           g.REPLY
           Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation'])
         ]
-          $.log positioner.length - 1
           if enabled
             positioner[count + 1] = positioner[count] + 19
           else
             positioner[count + 1] = positioner[count]
+        if Conf["4chan Banner"] is "at sidebar top"
+          iLogoOffset = Style.logoOffset + 19
+        else
+          iLogoOffset = 0
 
         css = """
 div.navLinks > a:first-of-type::after {
@@ -154,48 +157,47 @@ div.navLinks > a:first-of-type::after {
 /* Image Expansion */
 #imgControls {
   position: fixed;
-  top: #{positioner[0] + Style.logoOffset}px !important;
+  top: #{positioner[0] + iLogoOffset}px !important;
 }
 /* 4chan X Options */
 #navtopright .settingsWindowLink::after {
   visibility: visible;
-  top: #{positioner[1] + Style.logoOffset}px !important;
+  top: #{positioner[1] + iLogoOffset}px !important;
 }
 /* Slideout Navigation */
 #boardNavDesktopFoot,
 #boardNavDesktopFoot::after {
   border: none;
-  top: #{positioner[2] + Style.logoOffset}px !important;
+  top: #{positioner[2] + iLogoOffset}px !important;
 }
 /* Global Message */
 #globalMessage,
 #globalMessage::after {
-  top: #{positioner[3] + Style.logoOffset}px !important;
+  top: #{positioner[3] + iLogoOffset}px !important;
 }
 /* Watcher */
-#watcher,
-#watcher::after {
-  top: #{positioner[4] + Style.logoOffset}px !important;
+#{if Conf["Slideout Watcher"] then "#watcher, #watcher::after" else ""} {
+  top: #{positioner[4] + iLogoOffset}px !important;
   cursor: pointer;
 }
 /* 4sight */
 body > a[style="cursor: pointer; float: right;"]::after {
-  top: #{positioner[5] + Style.logoOffset}px !important;
+  top: #{positioner[5] + iLogoOffset}px !important;
 }
 /* ExLinks */
 #navtopright .exlinksOptionsLink::after {
   visibility: visible;
-  top: #{positioner[6] + Style.logoOffset}px !important;
+  top: #{positioner[6] + iLogoOffset}px !important;
 }
 /* Back */
 div.navLinks > a:first-of-type::after {
   visibility: visible;
   position: fixed;
   cursor: pointer;
-  top: #{positioner[7] + Style.logoOffset}px !important;
+  top: #{positioner[7] + iLogoOffset}px !important;
 }
 #navlinks {
-  top: #{positioner[8] + Style.logoOffset}px !important;
+  top: #{positioner[8] + iLogoOffset}px !important;
   #{Style.sidebarLocation[1]}: auto !important;
 }
 /* Updater + Stats */
@@ -222,8 +224,7 @@ div.navLinks > a:first-of-type::after {
 #navtopright .settingsWindowLink::after,
 #boardNavDesktopFoot,
 #boardNavDesktopFoot::after,
-#watcher,
-#watcher::after,
+#{if Conf["Slideout Watcher"] then "#watcher, #watcher::after," else ""}
 #globalMessage,
 #globalMessage::after,
 #imgControls,
@@ -238,7 +239,7 @@ div.navLinks > a:first-of-type::after {
   z-index: 98 !important;
 }
 #watcher {
-  z-index: #{if Conf["Slideout Watcher"] then "99" else "96"} !important;
+  z-index: #{if Conf["Slideout Watcher"] then "99" else "10"} !important;
 }
 """
     else
@@ -321,20 +322,24 @@ div.navLinks > a:first-of-type::after,
 body > a[style="cursor: pointer; float: right;"]::after {
   top: 2px !important;
 }
-#globalMessage,
-#boardNavDesktopFoot,
-#watcher {
-  position: fixed;
+#{if Conf["Announcements"] is "slideout" then "#globalMessage," else ""}
+#{if Conf["Slideout Watcher"] then "#watcher," else ""}
+#boardNavDesktopFoot {
   top: 16px !important;
   z-index: 98 !important;
 }
 #globalMessage:hover,
-#boardNavDesktopFoot:hover,
-#watcher:hover {
+#{if Conf["Slideout Watcher"] then "#watcher:hover," else ""}
+#boardNavDesktopFoot:hover {
   z-index: 99 !important;
 }
 """
       else
+        if Conf["4chan Banner"] is "at sidebar top"
+          iLogoOffset = Style.logoOffset + 19
+        else
+          iLogoOffset = 0
+
         css += """
 div.navLinks > a:first-of-type::after {
   z-index: 89 !important;
@@ -345,45 +350,44 @@ div.navLinks > a:first-of-type::after {
 /* Image Expansion */
 #imgControls {
   position: fixed;
-  top: #{2 + Style.logoOffset}px !important;
+  top: #{2 + iLogoOffset}px !important;
 }
 /* 4chan X Options */
 #navtopright .settingsWindowLink::after {
   visibility: visible;
-  top: #{21 + Style.logoOffset}px !important;
+  top: #{21 + iLogoOffset}px !important;
 }
 /* Slideout Navigation */
 #boardNavDesktopFoot,
 #boardNavDesktopFoot::after {
   border: none;
-  top: #{40 + Style.logoOffset}px !important;
+  top: #{40 + iLogoOffset}px !important;
 }
 /* Global Message */
 #globalMessage,
 #globalMessage::after {
-  top: #{59 + Style.logoOffset}px !important;
+  top: #{59 + iLogoOffset}px !important;
 }
 /* Watcher */
-#watcher,
-#watcher::after {
-  top: #{78 + Style.logoOffset}px !important;
+#{if Conf["Slideout Watcher"] then "#watcher, #watcher::after" else ""} {
+  top: #{78 + iLogoOffset}px !important;
   cursor: pointer;
 }
 /* 4sight */
 body > a[style="cursor: pointer; float: right;"]::after {
-  top: #{97 + Style.logoOffset}px !important;
+  top: #{97 + iLogoOffset}px !important;
 }
 /* ExLinks */
 #navtopright .exlinksOptionsLink::after {
   visibility: visible;
-  top: #{116 + Style.logoOffset}px !important;
+  top: #{116 + iLogoOffset}px !important;
 }
 /* Back */
 div.navLinks > a:first-of-type::after {
   visibility: visible;
   position: fixed;
   cursor: pointer;
-  top: #{135 + Style.logoOffset}px !important;
+  top: #{135 + iLogoOffset}px !important;
 }
 /* Updater + Stats */
 #stats,
@@ -401,7 +405,7 @@ div.navLinks > a:first-of-type::after {
   text-align: #{Style.sidebarLocation[1]};
 }
 #navlinks {
-  top: #{156 + Style.logoOffset}px !important;
+  top: #{156 + iLogoOffset}px !important;
   #{Style.sidebarLocation[1]}: auto !important;
 }
 #navlinks a {
@@ -413,8 +417,7 @@ div.navLinks > a:first-of-type::after {
 #navtopright .settingsWindowLink::after,
 #boardNavDesktopFoot,
 #boardNavDesktopFoot::after,
-#watcher,
-#watcher::after,
+#{if Conf["Slideout Watcher"] then "#watcher, #watcher::after," else ""}
 #globalMessage,
 #globalMessage::after,
 #imgControls,
@@ -429,7 +432,7 @@ div.navLinks > a:first-of-type::after {
   z-index: 98 !important;
 }
 #watcher {
-  z-index: #{if Conf["Slideout Watcher"] then "99" else "96"} !important;
+  z-index: #{if Conf["Slideout Watcher"] then "99" else "10"} !important;
 }
 """
     return css

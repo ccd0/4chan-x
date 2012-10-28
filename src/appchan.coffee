@@ -16,7 +16,7 @@ Style =
   emoji: (position) ->
     css = ''
     for item in Emoji
-      unless Conf['Emoji'] == "disable ponies" and item[2] == "pony"
+      unless (Conf['Emoji'] == "disable ponies" and item[2] == "pony") or (Conf['Emoji'] == "only ponies" and item[2] != "pony")
         name  = item[0]
         image = Icons.header.png + item[1]
         css   += """
@@ -82,14 +82,16 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
     Style.padding.nav   = $ "#boardNavDesktop", d.body
     Style.padding.pages = $(".pages", d.body)
     if Style.padding.pages and (Conf["Pagination"] == "sticky top" or Conf["Pagination"] == "sticky bottom" or Conf["Pagination"] == "top")
-      Style.padding.pages.property = Conf["Pagination"].split(" ")[1]
+      Style.padding.pages.property = Conf["Pagination"].split(" ")
+      Style.padding.pages.property = Style.padding.pages.property[Style.padding.pages.property.length - 1]
       d.body.style["padding#{Style.padding.pages.property.capitalize()}"] = "#{Style.padding.pages.offsetHeight}px"
 
       $.on (window or unsafeWindow), "resize", ->
         d.body.style["padding#{Style.padding.pages.property.capitalize()}"] = "#{Style.padding.pages.offsetHeight}px"
 
-    if Conf["Boards Navigation"] == "sticky top" or Conf["Boards Navigation"] == "sticky bottom" or Conf["Boards Navigation"] == "top"
-      Style.padding.nav.property = Conf["Boards Navigation"].split(" ")[1]
+    if Conf["Boards Navigation"] isnt "hide"
+      Style.padding.nav.property = Conf["Boards Navigation"].split(" ")
+      Style.padding.nav.property = Style.padding.nav.property[Style.padding.nav.property.length - 1]
       d.body.style["padding#{Style.padding.nav.property.capitalize()}"] = "#{Style.padding.nav.offsetHeight}px"
 
       $.on (window or unsafeWindow), "resize", ->

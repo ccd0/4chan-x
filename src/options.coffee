@@ -12,11 +12,7 @@ Options =
         className: 'settingsWindowLink'
         textContent: 'AppChan X Settings'
       $.on a, 'click', ->
-        try
-          Options.dialog()
-        catch err
-          $.log err
-          $.log err.stack
+        Options.dialog()
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
 
   dialog: (tab) ->

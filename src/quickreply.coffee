@@ -17,11 +17,7 @@ QR =
       $.before $.id('postForm'), link
 
     if Conf['Persistent QR']
-      try
-        QR.dialog()
-      catch err
-        $.log err
-        $.log err.stack
+      QR.dialog()
 
     $.on d, 'dragover',          QR.dragOver
     $.on d, 'drop',              QR.dropFile
