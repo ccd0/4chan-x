@@ -89,10 +89,10 @@ div.navLinks > a:first-of-type::after {
 /* Updater + Stats */
 #updater,
 #stats {
-  #{Style.sidebarLocation[0]}: 4px !important;
+  #{Style.sidebarLocation[0]}: 2px !important;
   #{Style.sidebarLocation[1]}: auto !important;
   top: #{if Conf["Updater Position"] == "top" then "20px" else "auto"} !important;
-  bottom: #{if Conf["Updater Position"] == "bottom" then "4px" else "auto"} !important;
+  bottom: #{if Conf["Updater Position"] == "bottom" then "2px" else "auto"} !important;
 }
 #prefetch {
   width: #{248 + Style.sidebarOffsetW}px;
@@ -201,10 +201,10 @@ div.navLinks > a:first-of-type::after {
 /* Updater + Stats */
 #stats,
 #updater {
-  #{Style.sidebarLocation[0]}: #{if Conf["Updater Position"] is "top" then "24" else "4"}px !important;
+  #{Style.sidebarLocation[0]}: #{if Conf["Updater Position"] is "top" then "24" else "2"}px !important;
   #{Style.sidebarLocation[1]}: auto !important;
   top: #{if Conf["Updater Position"] == "top" then "1px" else "auto"} !important;
-  bottom: #{if Conf["Updater Position"] == "bottom" then "4px" else "auto"} !important;
+  bottom: #{if Conf["Updater Position"] == "bottom" then "2px" else "auto"} !important;
   #{if Conf["Updater Position"] == "top" then "z-index: 96 !important;"}
 }
 #prefetch {
@@ -300,10 +300,10 @@ div.navLinks > a:first-of-type::after {
 /* Updater + Stats */
 #updater,
 #stats {
-  #{Style.sidebarLocation[0]}: 4px !important;
+  #{Style.sidebarLocation[0]}: 2px !important;
   #{Style.sidebarLocation[1]}: auto !important;
   top: #{if Conf["Updater Position"] == "top" then "20px" else "auto"} !important;
-  bottom: #{if Conf["Updater Position"] == "bottom" then "4px" else "auto"} !important;
+  bottom: #{if Conf["Updater Position"] == "bottom" then "2px" else "auto"} !important;
 }
 #prefetch {
   width: #{248 + Style.sidebarOffsetW}px;
@@ -388,10 +388,10 @@ div.navLinks > a:first-of-type::after {
 /* Updater + Stats */
 #stats,
 #updater {
-  #{Style.sidebarLocation[0]}: #{if Conf["Updater Position"] is "top" then "24" else "4"}px !important;
+  #{Style.sidebarLocation[0]}: #{if Conf["Updater Position"] is "top" then "24" else "2"}px !important;
   #{Style.sidebarLocation[1]}: auto !important;
   top: #{if Conf["Updater Position"] == "top" then "1px" else "auto"} !important;
-  bottom: #{if Conf["Updater Position"] == "bottom" then "4px" else "auto"} !important;
+  bottom: #{if Conf["Updater Position"] == "bottom" then "2px" else "auto"} !important;
   #{if Conf["Updater Position"] == "top" then "z-index: 96 !important;"}
 }
 #prefetch {

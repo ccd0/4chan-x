@@ -1176,6 +1176,10 @@ input[type=checkbox],
   position: relative;
   bottom: 2px;
 }
+#qr #fileContainer,
+#qr #submit {
+  float: left;
+}
 /* Posts */
 #delform .fileText + br + a[target="_blank"] img,
 #qp div.post .fileText + br + a[target="_blank"] img {
@@ -2203,18 +2207,20 @@ hr {
   display: block;
   visibility: hidden;
 }
+input[title="Verification"] {
+  width: 100%;
+}
+#qr #submit {
+  width: auto;
+}
 textarea.field,
 #qr > form > div {
   width: #{(248 + Style.sidebarOffsetW)}px;
 }
-input[title="Verification"],
-#qr #submit input {
-  width: 100%;
-}
 #qr {
   overflow: visible;
   top: auto !important;
-  bottom: 2px !important;
+  bottom: 22px !important;
   width: #{(248 + Style.sidebarOffsetW)}px;
   margin: 0;
   padding: 0;
@@ -2249,15 +2255,17 @@ input,
 .field {
   margin: 1px 0 0;
 }
-#qr div.captchainput,
 #file {
+  width: #{(106 + Style.sidebarOffsetW)}px;
+}
+#qr #fileContainer {
   width: #{(177 + Style.sidebarOffsetW)}px;
 }
-#qr div.captchainput + #submit,
+#submit input,
 #browse {
   width: 70px;
 }
-#qr div.captchainput + #submit input,
+#submit input,
 #browse {
   margin: 1px 0 0 1px;
 }
@@ -2360,6 +2368,10 @@ input,
 #qr textarea {
   min-width: 300px;
 }
+#qr .captchaimg {
+  max-width: 300px;
+  overflow: hidden;
+}
 .autohide:not(:hover) > form {
   display: none !important;
 }
@@ -2372,15 +2384,24 @@ textarea.field,
 #dump {
   width: 10%;
 }
-#qr .captchainput + #submit,
-#browse,
 #qr div.userInfo .field:not(#dump) {
   width: 30%;
 }
+#browse {
+  width: 33%;
+}
+#qr #submit {
+  width: 25%;
+}
 #qr .captchainput,
-#qr div.captchainput,
+#qr div.captchainput {
+  width: 100%;
+}
+#qr #fileContainer {
+  width: 75%;
+}
 #file {
-  width: 70%;
+  width: 67%;
 }
 #qr.captcha textarea.field {
   min-height: 120px;
