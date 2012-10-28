@@ -241,16 +241,16 @@
       Interface: {
         'Sidebar': ['normal', 'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['large', 'normal', 'minimal', 'hide']],
         'Sidebar Location': ['right', 'The side of the page the sidebar content is on. It is highly recommended that you do not hide the sidebar if you change this option.', ['left', 'right']],
-        'Page Margin': ['fully centered', 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'minimal', 'small', 'medium', 'large', 'fully centered']],
+        'Page Margin': ['none', 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'minimal', 'small', 'medium', 'large', 'fully centered']],
         'Announcements': ['slideout', 'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']],
         'Board Logo': ['at sidebar top', 'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'under post form', 'hide']],
         'Board Subtitle': [true, 'Show the board subtitle.'],
         '4chan Banner': ['at sidebar top', 'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'under post form', 'at top', 'hide']],
-        '4chan Banner Reflection': [false, 'Adds reflection effects to 4chan\'s image banner.'],
-        'Faded 4chan Banner': [false, 'Make 4chan\'s image banner translucent.'],
+        '4chan Banner Reflection': [true, 'Adds reflection effects to 4chan\'s image banner.'],
+        'Faded 4chan Banner': [true, 'Make 4chan\'s image banner translucent.'],
         'Icon Orientation': ['horizontal', 'Change the orientation of the appchan x icons.', ['horizontal', 'vertical']],
         'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.'],
-        'Updater Position': ['bottom', 'The position of 4chan thread updater and stats', ['top', 'bottom']]
+        'Updater Position': ['top', 'The position of 4chan thread updater and stats', ['top', 'bottom']]
       },
       Posts: {
         'Alternate Post Colors': [false, 'Make post background colors alternate every other post.'],
@@ -296,9 +296,9 @@
         'Font Size': ['12', 'The font size of posts and various UI. This changes most, but not all, font sizes.', 'text'],
         'Icons': ['oneechan', 'Icon theme which Appchan will use.', ['oneechan', '4chan SS']],
         'Quote Shadows': [true, 'Add shadows to the quote previews and inline quotes.'],
-        'Rounded Edges': [true, 'Round the edges of various 4chan elements.'],
+        'Rounded Edges': [false, 'Round the edges of various 4chan elements.'],
         'Slideout Transitions': [true, 'Animate slideouts.'],
-        'Underline Links': [true, 'Put lines under hyperlinks.']
+        'Underline Links': [false, 'Put lines under hyperlinks.']
       }
     },
     theme: 'Yotsuba B',

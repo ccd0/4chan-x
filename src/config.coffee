@@ -495,7 +495,7 @@ Config =
         ['left', 'right']
       ]
       'Page Margin': [
-        'fully centered'
+        'none'
         'Additional layout options, allowing you to center the page or use additional page margins.'
         ['none', 'minimal', 'small', 'medium', 'large', 'fully centered']
       ]
@@ -519,11 +519,11 @@ Config =
         ['at sidebar top', 'at sidebar bottom', 'under post form', 'at top', 'hide']
       ]
       '4chan Banner Reflection': [
-        false
+        true
         'Adds reflection effects to 4chan\'s image banner.'
       ]
       'Faded 4chan Banner': [
-        false
+        true
         'Make 4chan\'s image banner translucent.'
       ]
       'Icon Orientation': [
@@ -536,7 +536,7 @@ Config =
         'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.'
       ]
       'Updater Position': [
-        'bottom'
+        'top'
         'The position of 4chan thread updater and stats'
         ['top', 'bottom']
       ]
@@ -708,7 +708,7 @@ Config =
         'Add shadows to the quote previews and inline quotes.'
       ]
       'Rounded Edges': [
-        true
+        false
         'Round the edges of various 4chan elements.'
       ]
       'Slideout Transitions' : [
@@ -716,7 +716,7 @@ Config =
         'Animate slideouts.'
       ]
       'Underline Links': [
-        true
+        false
         'Put lines under hyperlinks.'
       ]
 
