@@ -788,18 +788,20 @@ body,
     0 1px 0 rgb(0,0,0),
     1px 1px 2px rgb(0,0,0);
 }
-#qp .opContainer,
+#qp .opContainer div.post,
 #qp .replyContainer div.post {
   border: 1px rgba(0,0,0,0.7) solid;
   background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), transparent;
 }
 #qp div.post,
+#qp .pln,
 #qp .postNum a {
   color: #fcd;
 }
 #qp .dateTime {
   color: #fcd !important;
 }
+#qp .subject,
 #qp .nameBlock > .useremail > .name,
 #qp .nameBlock > .useremail > .postertrip,
 #qp .name,
@@ -847,6 +849,33 @@ body,
     -1px 0 0 rgb(238, 242, 255), 
     0 -1px 0 rgb(238, 242, 255), 
     0 -1px 0 rgb(238, 242, 255);
+}
+#qp .prettyprint {
+  background-color: rgba(0,0,0,.3);
+  border: 1px solid rgba(0,0,0,0.5);
+}
+#qp span.tag {
+  color: #96562c;
+}
+#qp span.pun {
+  color: #5b6f2a;
+}
+#qp span.com {
+  color: #a34443;
+}
+#qp span.str,
+#qp span.atv {
+  color: #8ba446;
+}
+#qp span.kwd {
+  color: #987d3e;
+}
+#qp span.typ,
+#qp span.atn {
+  color: #897399;
+}
+#qp span.lit {
+  color: #558773;
 }
 """
 
