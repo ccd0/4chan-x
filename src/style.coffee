@@ -3,16 +3,16 @@
     icons = Icons.header.png + Icons.themes[Conf["Icons"]][if theme["Dark Theme"] then "dark" else "light"]
 
     if Conf["Sidebar"] == "large"
-      sidebarOffsetW = 51
-      sidebarOffsetH = 17
+      Style.sidebarOffsetW = 51
+      Style.sidebarOffsetH = 17
     else
-      sidebarOffsetW = 0
-      sidebarOffsetH = 0
+      Style.sidebarOffsetW = 0
+      Style.sidebarOffsetH = 0
 
     if Conf["Sidebar Location"] == "left"
-      sidebarLocation = ["left",  "right"]
+      Style.sidebarLocation = ["left",  "right"]
     else
-      sidebarLocation = ["right", "left" ]
+      Style.sidebarLocation = ["right", "left" ]
 
     agent = Style.agent()
 
@@ -957,13 +957,13 @@ div.navLinks > a:first-of-type:hover::after,
 }
 .qrMessage {
   position: fixed;
-  #{sidebarLocation[0]}: 2px;
+  #{Style.sidebarLocation[0]}: 2px;
   bottom: 250px;
   font-size: inherit;
   font-weight: 100;
   background: none;
   border: none;
-  width: #{(248 + sidebarOffsetW)}px;
+  width: #{(248 + Style.sidebarOffsetW)}px;
 }
 #boardTitle {
   font-size: 30px;
@@ -1019,14 +1019,14 @@ a.yuimenuitemlabel {
 #boardNavDesktopFoot {
   visibility: visible;
   position: fixed;
-  #{sidebarLocation[0]}: 2px;
+  #{Style.sidebarLocation[0]}: 2px;
   bottom: auto;
   color: transparent;
   font-size: 0;
   border-width: 1px;
   text-align: center;
   height: 0;
-  width: #{(248 + sidebarOffsetW)}px !important;
+  width: #{(248 + Style.sidebarOffsetW)}px !important;
   overflow: hidden;
   #{agent}box-sizing: border-box;
   box-sizing: border-box;
@@ -1238,7 +1238,7 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
 }
 #imgContainer {
   width: 110px;
-  float: #{sidebarLocation[0]};
+  float: #{Style.sidebarLocation[0]};
 }
 #imgControls:hover {
   width: 110px;
@@ -1246,10 +1246,10 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
 #imgControls label {
   font-size: 0;
   color: transparent;
-  float: #{sidebarLocation[0]};
+  float: #{Style.sidebarLocation[0]};
 }
 #imgControls select {
-  float: #{sidebarLocation[1]};
+  float: #{Style.sidebarLocation[1]};
 }
 #imgControls select > option {
   font-size: 80%;
@@ -1336,8 +1336,8 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] {
   position: fixed !important;
   top: 17px !important;
   bottom: 17px !important;
-  #{sidebarLocation[1]}: 4px !important;
-  #{sidebarLocation[0]}: #{(252 + sidebarOffsetW)}px !important;
+  #{Style.sidebarLocation[1]}: 4px !important;
+  #{Style.sidebarLocation[0]}: #{(252 + Style.sidebarOffsetW)}px !important;
   width: auto !important;
   margin: 0 !important;
 }
@@ -1411,7 +1411,7 @@ input[type="submit"]:hover {
   position: fixed;
   bottom: 252px;
   margin: 0;
-  #{sidebarLocation[0]}: 3px;
+  #{Style.sidebarLocation[0]}: 3px;
   padding-right: 0;
   padding-left: 0;
   padding-top: 0;
@@ -1477,8 +1477,8 @@ html .subMenu {
 /* Position and Dimensions of the #qr */
 #showQR {
   display: block;
-  #{sidebarLocation[0]}: 2px;
-  width: #{(248 + sidebarOffsetW)}px;
+  #{Style.sidebarLocation[0]}: 2px;
+  width: #{(248 + Style.sidebarOffsetW)}px;
   z-index: 5;
   background-color: transparent;
   text-align: center;
@@ -1531,8 +1531,8 @@ table.reply[style^="clear: both"] {
 }
 #themeConf {
   position: fixed;
-  #{sidebarLocation[1]}: 2px;
-  #{sidebarLocation[0]}: auto;
+  #{Style.sidebarLocation[1]}: 2px;
+  #{Style.sidebarLocation[0]}: auto;
   top: 0;
   bottom: 0;
   width: 296px;
@@ -1838,7 +1838,7 @@ a.forwardlink {
   border-top: 1px solid #{(if theme["Dark Theme"] then "rgba(255,255,255,0.025)" else "rgba(0,0,0,0.05)")};
 }
 #mascot img {
-  #{agent}transform: scaleX(#{(if sidebarLocation[0] == "left" then "-" else "")}1);
+  #{agent}transform: scaleX(#{(if Style.sidebarLocation[0] == "left" then "-" else "")}1);
   #{agent}user-select: none;
 }
 #{theme["Custom CSS"]}
@@ -1920,46 +1920,46 @@ span.lit {
 """
       switch Conf["4chan Banner"]
         when "at sidebar top"
-          logoOffset = 83 + sidebarOffsetH
+          Style.logoOffset = 83 + Style.sidebarOffsetH
           
           css += """
 .boardBanner {
   position: fixed;
   top: #{(if Conf["Icon Orientation"] == "vertical" then "2px" else "19px")};
-  #{sidebarLocation[0]}: 2px;
+  #{Style.sidebarLocation[0]}: 2px;
 }
 .boardBanner img {
-  width: #{(248 + sidebarOffsetW)}px;
+  width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
         when "at sidebar bottom"
-          logoOffset = 0
+          Style.logoOffset = 0
           css += """
 .boardBanner {
   position: fixed;
   bottom: 270px;
-  #{sidebarLocation[0]}: 2px;
+  #{Style.sidebarLocation[0]}: 2px;
 }
 .boardBanner img {
-  width: #{(248 + sidebarOffsetW)}px;
+  width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
         when "under post form"
-          logoOffset = 0
+          Style.logoOffset = 0
           css += """
 .boardBanner {
   position: fixed;
   bottom: 130px;
-  #{sidebarLocation[0]}: 2px;
+  #{Style.sidebarLocation[0]}: 2px;
 }
 .boardBanner img {
-  width: #{(248 + sidebarOffsetW)}px;
+  width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
         when "at top"
-          logoOffset = 0
+          Style.logoOffset = 0
         when "hide"
-          logoOffset = 0
+          Style.logoOffset = 0
           css += """
 .boardBanner {
   display: none;
@@ -2014,15 +2014,15 @@ img.bottomad {
   #{agent}transition: opacity .3s ease-in-out .3s;
 }
 #qr {
-  #{agent}transition: #{sidebarLocation[0]} .3s ease-in-out 1s;
+  #{agent}transition: #{Style.sidebarLocation[0]} .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
-  #{agent}transition: #{sidebarLocation[0]} .3s linear;
+  #{agent}transition: #{Style.sidebarLocation[0]} .3s linear;
 }
 #qrtab {
-  #{agent}transition: opacity .3s ease-in-out 1s, #{sidebarLocation[0]} .3s ease-in-out 1s;
+  #{agent}transition: opacity .3s ease-in-out 1s, #{Style.sidebarLocation[0]} .3s ease-in-out 1s;
 }
 #imgControls {
   #{agent}transition: width .2s linear;
@@ -2036,226 +2036,35 @@ hr {
 }
 """
 
-      if Conf["Icon Orientation"] == "horizontal"
-        css += """
-div.navLinks > a:first-of-type::after {
-  z-index: 99 !important;
-}
-#prefetch {
-  z-index: 9;
-}
-/* 4chan X Options */
-#navtopright .settingsWindowLink::after {
-  visibility: visible;
-  #{(if sidebarLocation[0] == "left" then "left: " + (231 + sidebarOffsetW) + "px" else "right:  2px")};
-}
-/* Slideout Navigation */
-#boardNavDesktopFoot::after {
-  #{(if sidebarLocation[0] == "left" then "left: " + (212 + sidebarOffsetW) + "px" else "right: 21px")};
-}
-/* Global Message */
-#globalMessage::after {
-  #{(if sidebarLocation[0] == "left" then "left: " + (193 + sidebarOffsetW) + "px" else "right: 40px")};
-}
-/* Watcher */
-#watcher::after {
-  #{(if sidebarLocation[0] == "left" then "left: " + (174 + sidebarOffsetW) + "px" else "right: 59px")};
-  cursor: pointer;
-}
-/* ExLinks */
-#navtopright .exlinksOptionsLink::after {
-  visibility: visible;
-  #{(if sidebarLocation[0] == "left" then "left: " + (155 + sidebarOffsetW) + "px" else "right: 78px")};
-}
-/* 4sight */
-body > a[style="cursor: pointer; float: right;"]::after {
-  #{(if sidebarLocation[0] == "left" then "left: " + (136 + sidebarOffsetW) + "px" else "right: 97px")};
-}
-/* Expand Images */
-#imgControls {
-  position: fixed;
-  #{(if sidebarLocation[0] == "left" then "left: " + (115 + sidebarOffsetW) + "px" else "right: 116px")};
-}
-/* Back */
-div.navLinks > a:first-of-type::after {
-  visibility: visible;
-  cursor: pointer;
-  #{(if sidebarLocation[0] == "left" then "left: 2px" else "right: " + (231 + sidebarOffsetW) + "px")};
-}
-/* Thread Navigation Links */
-#navlinks {
-  #{(if sidebarLocation[0] == "left" then "left: 21px" else "right: " + (193 + sidebarOffsetW) + "px")};
-  #{sidebarLocation[1]}: auto !important;
-  top: 0 !important;
-  font-size: 0;
-  width: 30px;
-  line-height: 15px;
-}
-/* Updater + Stats */
-#updater,
-#stats {
-  #{sidebarLocation[0]}: 4px !important;
-  #{sidebarLocation[1]}: auto !important;
-  top: #{(if Conf["Updater Position"] == "top" then "20px" else "auto")} !important;
-  bottom: #{(if Conf["Updater Position"] == "bottom" then "4px" else "auto")} !important;
-}
-#prefetch {
-  width: #{(248 + sidebarOffsetW)}px;
-  #{sidebarLocation[0]}: 2px;
-  top: 20px;
-  text-align: #{sidebarLocation[1]};
-}
-#boardNavDesktopFoot::after,
-#navtopright .exlinksOptionsLink::after,
-#navtopright .settingsWindowLink::after,
-#watcher::after,
-#globalMessage::after,
-#imgControls,
-div.navLinks > a:first-of-type::after,
-body > a[style="cursor: pointer; float: right;"]::after {
-  top: 2px !important;
-}
-#globalMessage,
-#boardNavDesktopFoot,
-#watcher {
-  position: fixed;
-  top: 16px !important;
-  z-index: 98 !important;
-}
-#globalMessage:hover,
-#boardNavDesktopFoot:hover,
-#watcher:hover {
-  z-index: 99 !important;
-}
-"""
-      else
-        css += """
-div.navLinks > a:first-of-type::after {
-  z-index: 89 !important;
-}
-#prefetch {
-  z-index: 95;
-}
-/* Image Expansion */
-#imgControls {
-  position: fixed;
-  top: #{(2 + logoOffset)}px !important;
-}
-/* 4chan X Options */
-#navtopright .settingsWindowLink::after {
-  visibility: visible;
-  top: #{(21 + logoOffset)}px !important;
-}
-/* Slideout Navigation */
-#boardNavDesktopFoot,
-#boardNavDesktopFoot::after {
-  border: none;
-  top: #{(40 + logoOffset)}px !important;
-}
-/* Global Message */
-#globalMessage,
-#globalMessage::after {
-  top: #{(59 + logoOffset)}px !important;
-}
-/* Watcher */
-#watcher,
-#watcher::after {
-  top: #{(78 + logoOffset)}px !important;
-  cursor: pointer;
-}
-/* 4sight */
-body > a[style="cursor: pointer; float: right;"]::after {
-  top: #{(97 + logoOffset)}px !important;
-}
-/* ExLinks */
-#navtopright .exlinksOptionsLink::after {
-  visibility: visible;
-  top: #{(116 + logoOffset)}px !important;
-}
-/* Back */
-div.navLinks > a:first-of-type::after {
-  visibility: visible;
-  position: fixed;
-  cursor: pointer;
-  top: #{(135 + logoOffset)}px !important;
-}
-/* Updater + Stats */
-#stats,
-#updater {
-  #{sidebarLocation[0]}: #{(if Conf["Updater Position"] is "top" then "24" else "4")}px !important;
-  #{sidebarLocation[1]}: auto !important;
-  top: #{(if Conf["Updater Position"] == "top" then "1px" else "auto")} !important;
-  bottom: #{(if Conf["Updater Position"] == "bottom" then "4px" else "auto")} !important;
-  #{(if Conf["Updater Position"] == "top" then "z-index: 96 !important;")}
-}
-#prefetch {
-  width: #{(248 + sidebarOffsetW)}px;
-  #{sidebarLocation[0]}: 2px;
-  top: 1px;
-  text-align: #{sidebarLocation[1]};
-}
-#navlinks {
-  top: #{(156 + logoOffset)}px !important;
-  #{sidebarLocation[1]}: auto !important;
-}
-#navlinks a {
-  display: block;
-  clear: both;
-}
-#navlinks,
-#navtopright .exlinksOptionsLink::after,
-#navtopright .settingsWindowLink::after,
-#boardNavDesktopFoot,
-#boardNavDesktopFoot::after,
-#watcher,
-#watcher::after,
-#globalMessage,
-#globalMessage::after,
-#imgControls,
-body > a[style="cursor: pointer; float: right;"]::after,
-div.navLinks > a:first-of-type::after {
-  #{sidebarLocation[0]}: 3px !important;
-}
-#boardNavDesktopFoot {
-  z-index: 97 !important;
-}
-#globalMessage {
-  z-index: 98 !important;
-}
-#watcher {
-  z-index: #{(if Conf["Slideout Watcher"] then "99" else "96")} !important;
-}
-"""
-
       switch Conf["Board Logo"]
         when "at sidebar top"
           css += """
 #boardTitle {
   position: fixed;
-  #{sidebarLocation[0]}: 2px;
-  top: #{((if Conf["Icon Orientation"] == "vertical" then 33 else 45) + logoOffset)}px;
+  #{Style.sidebarLocation[0]}: 2px;
+  top: #{((if Conf["Icon Orientation"] == "vertical" then 33 else 45) + Style.logoOffset)}px;
   z-index: 1;
-  width: #{(248 + sidebarOffsetW)}px;
+  width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
         when "at sidebar bottom"
           css += """
 #boardTitle {
   position: fixed;
-  #{sidebarLocation[0]}: 2px;
+  #{Style.sidebarLocation[0]}: 2px;
   bottom: 280px;
   z-index: 1;
-  width: #{(248 + sidebarOffsetW)}px;
+  width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
         when "under post form"
           css += """
 #boardTitle {
   position: fixed;
-  #{sidebarLocation[0]}: 2px;
+  #{Style.sidebarLocation[0]}: 2px;
   bottom: 140px;
   z-index: 1;
-  width: #{(248 + sidebarOffsetW)}px;
+  width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
         when "hide"
@@ -2302,7 +2111,7 @@ div.navLinks > a:first-of-type::after {
 #qr textarea.field {
   height: 184px;
   min-height: 184px;
-  min-width: #{248 + sidebarOffsetW}px;
+  min-width: #{248 + Style.sidebarOffsetW}px;
 }
 #qr.captcha textarea.field {
   height: 114px;
@@ -2311,7 +2120,7 @@ div.navLinks > a:first-of-type::after {
 #qr .field[name="name"],
 #qr .field[name="email"],
 #qr .field[name="sub"] {
-  width: #{(75 + (sidebarOffsetW / 3))}px !important;
+  width: #{(75 + (Style.sidebarOffsetW / 3))}px !important;
   margin-left: 1px !important;
 }
 """
@@ -2320,7 +2129,7 @@ div.navLinks > a:first-of-type::after {
 #qr textarea.field {
   height: 158px;
   min-height: 158px;
-  min-width: #{248 + sidebarOffsetW}px
+  min-width: #{248 + Style.sidebarOffsetW}px
 }
 #qr.captcha textarea.field {
   height: 88px;
@@ -2328,10 +2137,10 @@ div.navLinks > a:first-of-type::after {
 }
 #qr .field[name="email"],
 #qr .field[name="sub"] {
-  width: #{(248 + sidebarOffsetW)}px !important;
+  width: #{(248 + Style.sidebarOffsetW)}px !important;
 }
 #qr .field[name="name"] {
-  width: #{(227 + sidebarOffsetW)}px !important;
+  width: #{(227 + Style.sidebarOffsetW)}px !important;
   margin-left: 1px !important;
 }
 #qr .field[name="email"],
@@ -2350,7 +2159,7 @@ div.navLinks > a:first-of-type::after {
     background-image 0.25s linear,
     height step-end,
     width #{if Conf["Slideout Transitions"] then ".3s ease-in-out .3s" else "step-end"};
-  float: #{sidebarLocation[0]};
+  float: #{Style.sidebarLocation[0]};
   resize: vertical;
 }
 #qr textarea:focus {
@@ -2368,14 +2177,14 @@ div.navLinks > a:first-of-type::after {
     border-color 0.25s linear,
     height step-end,
     width step-end;
-  float: #{sidebarLocation[0]};
+  float: #{Style.sidebarLocation[0]};
   resize: #{Conf["Textarea Resize"]}
 }
 """
         css += """
 #qr img {
   height: 47px;
-  width: #{(248 + sidebarOffsetW)}px;
+  width: #{(248 + Style.sidebarOffsetW)}px;
 }
 #threadselect {
   position: absolute;
@@ -2396,7 +2205,7 @@ div.navLinks > a:first-of-type::after {
 }
 textarea.field,
 #qr > form > div {
-  width: #{(248 + sidebarOffsetW)}px;
+  width: #{(248 + Style.sidebarOffsetW)}px;
 }
 input[title="Verification"],
 #qr #submit input {
@@ -2406,7 +2215,7 @@ input[title="Verification"],
   overflow: visible;
   top: auto !important;
   bottom: 2px !important;
-  width: #{(248 + sidebarOffsetW)}px;
+  width: #{(248 + Style.sidebarOffsetW)}px;
   margin: 0;
   padding: 0;
   z-index: 5 !important;
@@ -2442,7 +2251,7 @@ input,
 }
 #qr div.captchainput,
 #file {
-  width: #{(177 + sidebarOffsetW)}px;
+  width: #{(177 + Style.sidebarOffsetW)}px;
 }
 #qr div.captchainput + #submit,
 #browse {
@@ -2460,8 +2269,8 @@ input,
   display: none;
 }
 #qr {
-  #{sidebarLocation[0]}: 2px !important;
-  #{sidebarLocation[1]}: auto !important;
+  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
 }
 """
         when "slideout"
@@ -2470,14 +2279,14 @@ input,
   display: none;
 }
 #qr {
-  #{sidebarLocation[0]}: -#{(233 + sidebarOffsetW)}px !important;
-  #{sidebarLocation[1]}: auto !important;
+  #{Style.sidebarLocation[0]}: -#{(233 + Style.sidebarOffsetW)}px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
-  #{sidebarLocation[0]}: 2px !important;
-  #{sidebarLocation[1]}: auto !important;
+  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
 }
 """
         when "tabbed slideout"
@@ -2488,22 +2297,22 @@ input,
   display: none;
 }
 #qr {
-  #{sidebarLocation[0]}: -#{(249 + sidebarOffsetW)}px !important;
-  #{sidebarLocation[1]}: auto !important;
+  #{Style.sidebarLocation[0]}: -#{(249 + Style.sidebarOffsetW)}px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
-  #{sidebarLocation[0]}: 2px !important;
-  #{sidebarLocation[1]}: auto !important;
+  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
 }
 #qr #qrtab {
   z-index: -1;
-  #{agent}transform: rotate(#{(if sidebarLocation[0] == "left" then "" else "-")}90deg);
-  #{agent}transform-origin: bottom #{sidebarLocation[0]};
+  #{agent}transform: rotate(#{(if Style.sidebarLocation[0] == "left" then "" else "-")}90deg);
+  #{agent}transform-origin: bottom #{Style.sidebarLocation[0]};
   position: fixed;
   bottom: 220px;
-  #{sidebarLocation[0]}: 0;
+  #{Style.sidebarLocation[0]}: 0;
   width: 110px;
   display: inline-block;
   opacity: 1;
@@ -2517,8 +2326,8 @@ input,
 #qr.focus #qrtab,
 #qr.dump #qrtab {
   opacity: 0;
-  #{sidebarLocation[0]}: #{(252 + sidebarOffsetW)}px;
-  #{agent}transition: opacity .3s linear, #{sidebarLocation[0]} .3s linear;
+  #{Style.sidebarLocation[0]}: #{(252 + Style.sidebarOffsetW)}px;
+  #{agent}transition: opacity .3s linear, #{Style.sidebarLocation[0]} .3s linear;
 }
 """
         when "transparent fade"
@@ -2527,8 +2336,8 @@ input,
   display: none;
 }
 #qr {
-  #{sidebarLocation[0]}: 2px !important;
-  #{sidebarLocation[1]}: auto !important;
+  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
   opacity: 0.2;
   #{agent}transition: opacity .3s ease-in-out 1s;
 }
@@ -2732,7 +2541,7 @@ div.post:not(#qp):not([hidden]) {
           when "medium"
             pagemargin = "150px"
           when "fully centered"
-            pagemargin = (252 + sidebarOffsetW) + "px"
+            pagemargin = (252 + Style.sidebarOffsetW) + "px"
           when "large"
             pagemargin = "350px"
 
@@ -2741,13 +2550,13 @@ div.post:not(#qp):not([hidden]) {
 body {
   margin-top: 1px;
   margin-bottom: 0;
-  margin-#{sidebarLocation[0]}: 20px;
-  margin-#{sidebarLocation[1] + ": " + pagemargin};
+  margin-#{Style.sidebarLocation[0]}: 20px;
+  margin-#{Style.sidebarLocation[1] + ": " + pagemargin};
 }
 #boardNavDesktop,
 .pages {
-  #{sidebarLocation[0]}: 20px;
-  #{sidebarLocation[1] + ": " + pagemargin};
+  #{Style.sidebarLocation[0]}: 20px;
+  #{Style.sidebarLocation[1] + ": " + pagemargin};
 }
 """
       else if Conf["Sidebar"] != "hide"
@@ -2755,13 +2564,13 @@ body {
 body {
   margin-top: 1px;
   margin-bottom: 0;
-  margin-#{sidebarLocation[0] + ": " +(252 + sidebarOffsetW)}px;
-  margin-#{sidebarLocation[1] + ": " + pagemargin};
+  margin-#{Style.sidebarLocation[0] + ": " +(252 + Style.sidebarOffsetW)}px;
+  margin-#{Style.sidebarLocation[1] + ": " + pagemargin};
 }
 #boardNavDesktop,
 .pages {
-  #{sidebarLocation[0] + ": " + (252 + sidebarOffsetW)}px;
-  #{sidebarLocation[1] + ": " + pagemargin};
+  #{Style.sidebarLocation[0] + ": " + (252 + Style.sidebarOffsetW)}px;
+  #{Style.sidebarLocation[1] + ": " + pagemargin};
 }
 """
       else
@@ -2771,8 +2580,8 @@ body {
 }
 #boardNavDesktop,
 .pages {
-  #{sidebarLocation[0] + ": " + pagemargin};
-  #{sidebarLocation[1] + ": " + pagemargin};
+  #{Style.sidebarLocation[0] + ": " + pagemargin};
+  #{Style.sidebarLocation[1] + ": " + pagemargin};
 }
 """
 
@@ -2865,11 +2674,11 @@ td[style="border: 1px dashed;"] {
 }
 #watcher {
   position: fixed;
-  #{sidebarLocation[0]}: 2px !important;
-  #{sidebarLocation[1]}: auto !important;
+  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
   bottom: auto !important;
   height: 0;
-  width: #{(248 + sidebarOffsetW)}px !important;
+  width: #{(248 + Style.sidebarOffsetW)}px !important;
   overflow: hidden;
   #{agent}box-sizing: border-box;
   box-sizing: border-box;
@@ -2886,12 +2695,12 @@ td[style="border: 1px dashed;"] {
   display: none;
 }
 #watcher {
-  #{sidebarLocation[0]}: 2px !important;
-  #{sidebarLocation[1]}: auto !important;
-  width: #{(246 + sidebarOffsetW)}px;
+  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+  width: #{(246 + Style.sidebarOffsetW)}px;
   padding-bottom: 4px;
   z-index: 96;
-  top: #{( 100 + logoOffset)}px !important;
+  top: #{( 100 + Style.logoOffset)}px !important;
 }
 """
       switch Conf["Slideout Navigation"]
@@ -3026,9 +2835,9 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 #globalMessage {
   bottom: auto;
   position: fixed;
-  #{sidebarLocation[0]}: 2px;
-  #{sidebarLocation[1]}: auto;
-  width: #{(248 + sidebarOffsetW)}px;
+  #{Style.sidebarLocation[0]}: 2px;
+  #{Style.sidebarLocation[1]}: auto;
+  width: #{(248 + Style.sidebarOffsetW)}px;
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Dialog Border"] };
   height: 0px;
@@ -3118,8 +2927,8 @@ input.field.tripped:not(:hover):not(:focus) {
   top: auto;
   bottom: 175px;
   width: 290px;
-  #{sidebarLocation[1]}: auto;
-  #{(if sidebarLocation[0] == "left" then "left: -1px" else "right: " + (251 + sidebarOffsetW) + "px")};
+  #{Style.sidebarLocation[1]}: auto;
+  #{(if Style.sidebarLocation[0] == "left" then "left: -1px" else "right: " + (251 + Style.sidebarOffsetW) + "px")};
   position: fixed;
   #{agent}transform: rotate(90deg);
   #{agent}transform-origin: bottom right;

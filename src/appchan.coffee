@@ -7,6 +7,8 @@ Style =
       Style.banner()
       Style.trimGlobalMessage()
       $(".boardBanner img", d.body).id = "Banner"
+      $.rm $.id 'icons'
+      $.addStyle Style.iconPositions(), 'icons'
       if exLink = $ "#navtopright .exlinksOptionsLink", d.body
         $.on exLink, "click", ->
           setTimeout Style.rice, 50
@@ -53,6 +55,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       if d.head
         Conf['styleInit'] = true
         $.addStyle Style.css(userThemes[Conf['theme']]), 'appchan'
+        $.addStyle Style.iconPositions(), 'icons'
       else # XXX fox
         $.on d, 'DOMNodeInserted', Style.addStyle
     else
@@ -60,7 +63,9 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         theme = userThemes[Conf['theme']]
       if el = $('#mascot', d.body) then $.rm el
       $.rm $.id 'appchan'
+      $.rm $.id 'icons'
       $.addStyle Style.css(theme), 'appchan'
+      $.addStyle Style.iconPositions(), 'icons'
 
   banner: ->
     banner = $ ".boardBanner", d.body
@@ -102,7 +107,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         for node in d.head.children
           if node.rel == 'stylesheet'
             nodes.push node
-          else if node.tagName.toLowerCase() == 'style' and node.id != 'appchan'
+          else if node.tagName.toLowerCase() == 'style' and node.id != 'appchan' and node.id != 'icons'
             nodes.push node
           else
             continue

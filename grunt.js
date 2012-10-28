@@ -26,6 +26,7 @@ module.exports = function(grunt) {
           'src/customnavigation.coffee',
           'src/linkify.coffee',
           'src/appchan.coffee',
+          'src/iconpositions.coffee',
           'src/style.coffee',
           '<file_template:src/main.coffee>',
           'src/exec.coffee'
