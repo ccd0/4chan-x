@@ -1560,6 +1560,7 @@ html {
 }
 #boardTitle,
 #prefetch,
+#showQR,
 #spoilerLabel,
 #stats,
 #updater .move {
