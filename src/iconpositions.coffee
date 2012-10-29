@@ -25,8 +25,8 @@
           (if Conf['Slideout Navigation'] isnt 'hide' then true else false)
           (if Conf['Announcements'] is 'slideout' then true else false)
           (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
-          $ '#navtopright .exlinksOptionsLink', d.body
-          $ 'body > a[style="cursor: pointer; float: right;"]'
+          $('#navtopright .exlinksOptionsLink', d.body)?
+          $('body > a[style="cursor: pointer; float: right;"]', d.body)?
           Conf['Image Expansion']
           g.REPLY
           Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation'])
@@ -141,8 +141,8 @@ body > a[style="cursor: pointer; float: right;"]::after {
           (if Conf['Slideout Navigation'] isnt 'hide' then true else false)
           (if Conf['Announcements'] is 'slideout' then true else false)
           (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
-          $ 'body > a[style="cursor: pointer; float: right;"]'
-          $ '#navtopright .exlinksOptionsLink', d.body
+          $('body > a[style="cursor: pointer; float: right;"]', d.body)?
+          $('#navtopright .exlinksOptionsLink', d.body)?
           g.REPLY
           Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation'])
         ])

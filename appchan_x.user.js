@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 1.0.7 - 2012-10-28
+/*  appchan x - Version 1.0.7 - 2012-10-29
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -9295,17 +9295,22 @@
       this.remStyle();
       this.addStyle();
       return $.ready(function() {
-        var exLink;
+        var exLink, iconPositions;
         Style.banner();
         Style.trimGlobalMessage();
-        $(".boardBanner img", d.body).id = "Banner";
-        $.rm($.id('icons'));
-        $.addStyle(Style.iconPositions(), 'icons');
         if (exLink = $("#navtopright .exlinksOptionsLink", d.body)) {
-          return $.on(exLink, "click", function() {
+          $.on(exLink, "click", function() {
             return setTimeout(Style.rice, 50);
           });
         }
+        iconPositions = function() {
+          var icons;
+          if (icons = $.id('icons')) {
+            $.rm(icons);
+          }
+          return $.addStyle(Style.iconPositions(), 'icons');
+        };
+        return setTimeout(iconPositions, 300);
       });
     },
     emoji: function(position) {
@@ -9389,6 +9394,7 @@
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           child = _ref[_i];
           if (child.tagName.toLowerCase() === "img") {
+            child.id = "Banner";
             continue;
           }
           _results.push(child);
@@ -9480,7 +9486,7 @@
       };
       if (Conf["Icon Orientation"] === "horizontal") {
         if (Conf['Icon Positions'] === 'auto-align') {
-          positioner = aligner(0, [true, (Conf['Slideout Navigation'] !== 'hide' ? true : false), (Conf['Announcements'] === 'slideout' ? true : false), (Conf['Slideout Watcher'] && Conf['Thread Watcher'] ? true : false), $('#navtopright .exlinksOptionsLink', d.body), $('body > a[style="cursor: pointer; float: right;"]'), Conf['Image Expansion'], g.REPLY, Conf['Index Navigation'] || (g.REPLY && Conf['Reply Navigation'])]);
+          positioner = aligner(0, [true, (Conf['Slideout Navigation'] !== 'hide' ? true : false), (Conf['Announcements'] === 'slideout' ? true : false), (Conf['Slideout Watcher'] && Conf['Thread Watcher'] ? true : false), $('#navtopright .exlinksOptionsLink', d.body) != null, $('body > a[style="cursor: pointer; float: right;"]', d.body) != null, Conf['Image Expansion'], g.REPLY, Conf['Index Navigation'] || (g.REPLY && Conf['Reply Navigation'])]);
         } else {
           positioner = [0, 19, 38, 57, 76, 95, 114, 229, 191];
         }
@@ -9489,7 +9495,7 @@
         css = "div.navLinks > a:first-of-type::after {\n  z-index: 99 !important;\n}\n#prefetch {\n  z-index: 9;\n}\n/* 4chan X Options */\n#navtopright .settingsWindowLink::after {\n  visibility: visible;\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW) + "px" : "right:  " + rightStart + "px") + ";\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[1]) + "px" : "right:  " + (rightStart + positioner[1]) + "px") + ";\n}\n/* Global Message */\n#globalMessage::after {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[2]) + "px" : "right:  " + (rightStart + positioner[2]) + "px") + ";\n}\n/* Watcher */\n#watcher::after {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[3]) + "px" : "right:  " + (rightStart + positioner[3]) + "px") + ";\n  cursor: pointer;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  visibility: visible;\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[4]) + "px" : "right:  " + (rightStart + positioner[4]) + "px") + ";\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[5]) + "px" : "right:  " + (rightStart + positioner[5]) + "px") + ";\n}\n/* Expand Images */\n#imgControls {\n  position: fixed;\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[6]) + "px" : "right:  " + (rightStart + positioner[6]) + "px") + ";\n}\n\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  cursor: pointer;\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[7]) + "px" : "right:  " + (rightStart + positioner[7]) + "px") + ";\n}\n/* Thread Navigation Links */\n#navlinks {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[8]) + "px" : "right:  " + (rightStart + positioner[8]) + "px") + ";\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: 0 !important;\n  font-size: 0;\n  width: 40px;\n  line-height: 15px;\n}\n#navlinks a {\n  margin-left: 4px;\n}\n/* Updater + Stats */\n#updater,\n#stats {\n  " + Style.sidebarLocation[0] + ": 2px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: " + (Conf["Updater Position"] === "top" ? "20px" : "auto") + " !important;\n  bottom: " + (Conf["Updater Position"] === "bottom" ? "2px" : "auto") + " !important;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n  " + Style.sidebarLocation[0] + ": 2px;\n  top: 20px;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#boardNavDesktopFoot::after,\n#navtopright .exlinksOptionsLink::after,\n#navtopright .settingsWindowLink::after,\n#watcher::after,\n#globalMessage::after,\n#imgControls,\ndiv.navLinks > a:first-of-type::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: 2px !important;\n}\n" + (Conf["Announcements"] === "slideout" ? "#globalMessage," : "") + "\n" + (Conf["Slideout Watcher"] ? "#watcher," : "") + "\n#boardNavDesktopFoot {\n  top: 16px !important;\n  z-index: 98 !important;\n}\n#globalMessage:hover,\n" + (Conf["Slideout Watcher"] ? "#watcher:hover," : "") + "\n#boardNavDesktopFoot:hover {\n  z-index: 99 !important;\n}";
       } else {
         if (Conf['Icon Positions'] === 'auto-align') {
-          positioner = aligner(2, [Conf['Image Expansion'], true, (Conf['Slideout Navigation'] !== 'hide' ? true : false), (Conf['Announcements'] === 'slideout' ? true : false), (Conf['Slideout Watcher'] && Conf['Thread Watcher'] ? true : false), $('body > a[style="cursor: pointer; float: right;"]'), $('#navtopright .exlinksOptionsLink', d.body), g.REPLY, Conf['Index Navigation'] || (g.REPLY && Conf['Reply Navigation'])]);
+          positioner = aligner(2, [Conf['Image Expansion'], true, (Conf['Slideout Navigation'] !== 'hide' ? true : false), (Conf['Announcements'] === 'slideout' ? true : false), (Conf['Slideout Watcher'] && Conf['Thread Watcher'] ? true : false), $('body > a[style="cursor: pointer; float: right;"]', d.body) != null, $('#navtopright .exlinksOptionsLink', d.body) != null, g.REPLY, Conf['Index Navigation'] || (g.REPLY && Conf['Reply Navigation'])]);
         } else {
           positioner = [2, 21, 40, 59, 78, 97, 116, 135, 156];
         }
