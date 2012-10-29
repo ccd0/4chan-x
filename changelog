@@ -1,6 +1,14 @@
 master
+
+1.0.8
 - Zixaphir
-  Bugfix.
+  Bugfixes
+  - Icon Positions
+  - Recursive Filtering breaking _everything_
+
+1.0.7
+- Zixaphir
+  Floating Post Form option.
 
 1.0.6
 - Zixaphir
