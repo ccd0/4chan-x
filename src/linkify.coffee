@@ -1,4 +1,4 @@
-﻿Linkify =
+Linkify =
   init: ->
     # Add Linkification to callbacks, which will call linkification on every post parsed by Appchan X.
     Main.callbacks.push @node

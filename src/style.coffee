@@ -1023,22 +1023,6 @@ a,
 #file {
   overflow: hidden;
 }
-#ft li,
-#ft ul,
-#options input:not([type="radio"]),
-#updater input:not([type="radio"]),
-.box-outer,
-.boxbar,
-.top-box,
-h2,
-input:not([type="radio"]),
-input[type="submit"],
-textarea {
-  #{agent}appearance: none;
-}
-input[type=checkbox] {
-  #{agent}appearance: checkbox !important;
-}
 /* Formatting for all postarea elements */
 #browse,
 #file {
@@ -1105,16 +1089,9 @@ input[value="Report"] {
 .top-box .menubutton {
   background-image: none;
 }
-#qr label input,
-.boxcontent input,
-.boxcontent textarea {
-  #{agent}appearance: none;
-  border: 0;
-}
 input[type=checkbox],
 .reply input[type=checkbox],
 #options input[type=checkbox] {
-  #{agent}appearance: none;
   width: 12px !important;
   height: 12px !important;
   cursor: pointer;
@@ -1804,6 +1781,7 @@ a.forwardlink {
 }
 #{theme["Custom CSS"]}
 """
+
     if Conf["Image Expansion"]
       css += """
 .fileThumb img {
@@ -1813,14 +1791,16 @@ a.forwardlink {
   cursor: #{agent}zoom-out;
 }
 """
+
     if Conf["Recursive Filtering"]
       css += """
 .hidden + .threadContainer {
   display: none;
 }
 """
-      if theme["Dark Theme"]
-        css += """
+
+    if theme["Dark Theme"]
+      css += """
 .prettyprint {
   background-color: rgba(0,0,0,.1);
   border: 1px solid rgba(0,0,0,0.5);
@@ -1849,8 +1829,9 @@ span.lit {
   color: #558773;
 }
 """
-      else
-        css += """
+
+    else
+      css += """
 .prettyprint {
   background-color: #e7e7e7;
   border: 1px solid #dcdcdc;
@@ -1879,11 +1860,12 @@ span.lit {
   color: #368c72;
 }
 """
-      switch Conf["4chan Banner"]
-        when "at sidebar top"
-          Style.logoOffset = 83 + Style.sidebarOffsetH
+
+    switch Conf["4chan Banner"]
+      when "at sidebar top"
+        Style.logoOffset = 83 + Style.sidebarOffsetH
           
-          css += """
+        css += """
 .boardBanner {
   position: fixed;
   top: 19px;
@@ -1893,9 +1875,10 @@ span.lit {
   width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
-        when "at sidebar bottom"
-          Style.logoOffset = 0
-          css += """
+
+      when "at sidebar bottom"
+        Style.logoOffset = 0
+        css += """
 .boardBanner {
   position: fixed;
   bottom: 270px;
@@ -1905,9 +1888,10 @@ span.lit {
   width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
-        when "under post form"
-          Style.logoOffset = 0
-          css += """
+
+      when "under post form"
+        Style.logoOffset = 0
+        css += """
 .boardBanner {
   position: fixed;
   bottom: 130px;
@@ -1917,17 +1901,28 @@ span.lit {
   width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
-        when "at top"
-          Style.logoOffset = 0
-        when "hide"
-          Style.logoOffset = 0
-          css += """
+
+      when "at top"
+        Style.logoOffset = 0
+        css += """
+.boardBanner {
+  position: relative;
+  display: table;
+  margin: 0 auto;
+  text-align: center;
+}
+"""
+        
+      when "hide"
+        Style.logoOffset = 0
+        css += """
 .boardBanner {
   display: none;
 }
 """
-      if Conf["Faded 4chan Banner"]
-        css += """
+
+    if Conf["Faded 4chan Banner"]
+      css += """
 .boardBanner {
   opacity: 0.5;
   #{agent}transition: opacity 0.3s ease-in-out .5s;
@@ -1938,8 +1933,8 @@ span.lit {
 }
 """
 
-      if Conf["4chan Banner Reflection"]
-        css += """
+    if Conf["4chan Banner Reflection"]
+      css += """
 /* From 4chan SS / OneeChan */
 .gecko .boardBanner::after {
   background-image: -moz-element(#Banner);
@@ -1960,8 +1955,8 @@ span.lit {
 }
 """
 
-      if Conf["Slideout Transitions"]
-        css += """
+    if Conf["Slideout Transitions"]
+      css += """
 #globalMessage,
 #watcher {
   #{agent}transition: height .5s linear;
@@ -1990,16 +1985,16 @@ img.bottomad {
 }
 """
 
-      if Conf["Hide Horizontal Rules"]
-        css += """
+    if Conf["Hide Horizontal Rules"]
+      css += """
 hr {
   visibility: hidden;
 }
 """
 
-      switch Conf["Board Logo"]
-        when "at sidebar top"
-          css += """
+    switch Conf["Board Logo"]
+      when "at sidebar top"
+        css += """
 #boardTitle {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
@@ -2008,8 +2003,9 @@ hr {
   width: #{248 + Style.sidebarOffsetW}px;
 }
 """
-        when "at sidebar bottom"
-          css += """
+
+      when "at sidebar bottom"
+        css += """
 #boardTitle {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
@@ -2018,8 +2014,9 @@ hr {
   width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
-        when "under post form"
-          css += """
+
+      when "under post form"
+        css += """
 #boardTitle {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
@@ -2028,121 +2025,52 @@ hr {
   width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
-        when "hide"
-          css += """
+
+      when "hide"
+        css += """
 #boardTitle {
   display: none;
 }
 """
 
-      switch Conf["Reply Padding"]
-        when "phat"
-          css += """
+    switch Conf["Reply Padding"]
+      when "phat"
+        css += """
 .postContainer blockquote {
   margin: 24px 60px 24px 50px;
 }
 """
-        when "normal"
-          css += """
+
+      when "normal"
+        css += """
 .postContainer blockquote {
   margin: 12px 40px 12px 30px;
 }
 """
-        when "slim"
-          css += """
+
+      when "slim"
+        css += """
 .postContainer blockquote {
   margin: 6px 20px 6px 15px;
 }
 """
-        when "super slim"
-          css += """
+
+      when "super slim"
+        css += """
 .postContainer blockquote {
   margin: 3px 10px 3px 7px;
 }
 """
-        when "anorexia"
-          css += """
+
+      when "anorexia"
+        css += """
 .postContainer blockquote {
   margin: 1px 5px 1px 3px;
 }
 """
-      unless Conf["Post Form Style"] is "float"
-        if Conf["Compact Post Form Inputs"]
-          css += """
-#qr textarea.field {
-  height: 184px;
-  min-height: 184px;
-  min-width: #{248 + Style.sidebarOffsetW}px;
-}
-#qr.captcha textarea.field {
-  height: 114px;
-  min-height: 114px;
-}
-#qr .field[name="name"],
-#qr .field[name="email"],
-#qr .field[name="sub"] {
-  width: #{(75 + (Style.sidebarOffsetW / 3))}px !important;
-  margin-left: 1px !important;
-}
-"""
-        else
-          css += """
-#qr textarea.field {
-  height: 158px;
-  min-height: 158px;
-  min-width: #{248 + Style.sidebarOffsetW}px
-}
-#qr.captcha textarea.field {
-  height: 88px;
-  min-height: 88px;
-}
-#qr .field[name="email"],
-#qr .field[name="sub"] {
-  width: #{(248 + Style.sidebarOffsetW)}px !important;
-}
-#qr .field[name="name"] {
-  width: #{(227 + Style.sidebarOffsetW)}px !important;
-  margin-left: 1px !important;
-}
-#qr .field[name="email"],
-#qr .field[name="sub"] {
-  margin-top: 1px;
-}
-"""
 
-        if Conf["Textarea Resize"] == "auto-expand"
-          css += """
-#qr textarea {
-  display: block;
-  #{agent}transition:
-    color 0.25s linear,
-    background-color 0.25s linear,
-    background-image 0.25s linear,
-    height step-end,
-    width #{if Conf["Slideout Transitions"] then ".3s ease-in-out .3s" else "step-end"};
-  float: #{Style.sidebarLocation[0]};
-  resize: vertical;
-}
-#qr textarea:focus {
-  width: 400px;
-}
-"""
-        else
-          css += """
-#qr textarea {
-  display: block;
-  #{agent}transition:
-    color 0.25s linear,
-    background-color 0.25s linear,
-    background-image 0.25s linear,
-    border-color 0.25s linear,
-    height step-end,
-    width step-end;
-  float: #{Style.sidebarLocation[0]};
-  resize: #{Conf["Textarea Resize"]}
-}
-"""
-        css += """
+    unless Conf["Post Form Style"] is "float"
+      css += """
 #qr img {
   height: 47px;
   width: #{(248 + Style.sidebarOffsetW)}px;
@@ -2203,9 +2131,85 @@ input,
   margin: 1px 0 0 1px;
 }
 """
-      switch Conf["Post Form Style"]
-        when "fixed"
-          css += """
+      if Conf["Compact Post Form Inputs"]
+        css += """
+#qr textarea.field {
+  height: 184px;
+  min-height: 184px;
+  min-width: #{248 + Style.sidebarOffsetW}px;
+}
+#qr.captcha textarea.field {
+  height: 114px;
+  min-height: 114px;
+}
+#qr .field[name="name"],
+#qr .field[name="email"],
+#qr .field[name="sub"] {
+  width: #{(75 + (Style.sidebarOffsetW / 3))}px !important;
+  margin-left: 1px !important;
+}
+"""
+      else
+        css += """
+#qr textarea.field {
+  height: 158px;
+  min-height: 158px;
+  min-width: #{248 + Style.sidebarOffsetW}px
+}
+#qr.captcha textarea.field {
+  height: 88px;
+  min-height: 88px;
+}
+#qr .field[name="email"],
+#qr .field[name="sub"] {
+  width: #{(248 + Style.sidebarOffsetW)}px !important;
+}
+#qr .field[name="name"] {
+  width: #{(227 + Style.sidebarOffsetW)}px !important;
+  margin-left: 1px !important;
+}
+#qr .field[name="email"],
+#qr .field[name="sub"] {
+  margin-top: 1px;
+}
+"""
+
+      if Conf["Textarea Resize"] == "auto-expand"
+        css += """
+#qr textarea {
+  display: block;
+  #{agent}transition:
+    color 0.25s linear,
+    background-color 0.25s linear,
+    background-image 0.25s linear,
+    height step-end,
+    width #{if Conf["Slideout Transitions"] then ".3s ease-in-out .3s" else "step-end"};
+  float: #{Style.sidebarLocation[0]};
+  resize: vertical;
+}
+#qr textarea:focus {
+  width: 400px;
+}
+"""
+      else
+        css += """
+#qr textarea {
+  display: block;
+  #{agent}transition:
+    color 0.25s linear,
+    background-color 0.25s linear,
+    background-image 0.25s linear,
+    border-color 0.25s linear,
+    height step-end,
+    width step-end;
+  float: #{Style.sidebarLocation[0]};
+  resize: #{Conf["Textarea Resize"]}
+}
+"""
+
+    switch Conf["Post Form Style"]
+      when "fixed"
+        css += """
 #qrtab {
   display: none;
 }
@@ -2214,8 +2218,9 @@ input,
   #{Style.sidebarLocation[1]}: auto !important;
 }
 """
-        when "slideout"
-          css += """
+
+      when "slideout"
+        css += """
 #qrtab {
   display: none;
 }
@@ -2230,8 +2235,9 @@ input,
   #{Style.sidebarLocation[1]}: auto !important;
 }
 """
-        when "tabbed slideout"
-          css += """
+
+      when "tabbed slideout"
+        css += """
 #qrtab input,
 #qrtab .rice,
 #qrtab span {
@@ -2271,8 +2277,9 @@ input,
   #{agent}transition: opacity .3s linear, #{Style.sidebarLocation[0]} .3s linear;
 }
 """
-        when "transparent fade"
-          css += """
+
+      when "transparent fade"
+        css += """
 #qrtab {
   display: none;
 }
@@ -2289,8 +2296,9 @@ input,
   #{agent}transition: opacity .3s linear;
 }
 """
-        when "float"
-          css += """
+
+      when "float"
+        css += """
 #qr {
   z-index: 103 !important;
   border: 1px solid #{theme["Background Color"]};
@@ -2353,8 +2361,9 @@ textarea.field,
   float: right;
 }
 """
-      if Conf["Fit Width Replies"]
-        css += """
+
+    if Conf["Fit Width Replies"]
+      css += """
 .thread .replyContainer {
   position: relative;
   clear: both;
@@ -2437,8 +2446,8 @@ div.sideArrows {
   display: inline-block;
 }
 """
-      else
-        css += """
+    else
+      css += """
 .sideArrows {
   padding: 3px;
 }
@@ -2452,7 +2461,7 @@ div.reply {
   display: table;
 }
 .replyContainer div.post,
-sideArrows {
+.sideArrows {
   display: table-cell;
 }
 .replyContainer div.reply {
@@ -2469,33 +2478,33 @@ div.post:not(#qp):not([hidden]) {
   overflow: visible;
 }
 """
-      if Conf['Force Reply Break']
-        css += """
+    if Conf['Force Reply Break']
+      css += """
 .summary,
 .replyContainer {
   clear: both;
 }
 """
 
-      if Conf['editMode'] == "theme"
-        pagemargin = "300px"
-      else
-        switch Conf["Page Margin"]
-          when "none"
-            pagemargin = "2px"
-          when "minimal"
-            pagemargin = "20px"
-          when "small"
-            pagemargin = "50px"
-          when "medium"
-            pagemargin = "150px"
-          when "fully centered"
-            pagemargin = (252 + Style.sidebarOffsetW) + "px"
-          when "large"
-            pagemargin = "350px"
+    if Conf['editMode'] == "theme"
+      pagemargin = "300px"
+    else
+      switch Conf["Page Margin"]
+        when "none"
+          pagemargin = "2px"
+        when "minimal"
+          pagemargin = "20px"
+        when "small"
+          pagemargin = "50px"
+        when "medium"
+          pagemargin = "150px"
+        when "fully centered"
+          pagemargin = (252 + Style.sidebarOffsetW) + "px"
+        when "large"
+          pagemargin = "350px"
 
-      if Conf["Sidebar"]  == "minimal"
-        css += """
+    if Conf["Sidebar"]  == "minimal"
+      css += """
 body {
   margin-top: 1px;
   margin-bottom: 0;
@@ -2508,8 +2517,9 @@ body {
   #{Style.sidebarLocation[1] + ": " + pagemargin};
 }
 """
-      else if Conf["Sidebar"] != "hide"
-        css += """
+
+    else if Conf["Sidebar"] != "hide"
+      css += """
 body {
   margin-top: 1px;
   margin-bottom: 0;
@@ -2522,8 +2532,9 @@ body {
   #{Style.sidebarLocation[1] + ": " + pagemargin};
 }
 """
-      else
-        css += """
+
+    else
+      css += """
 body {
   margin: 1px #{pagemargin + " 0 " + pagemargin};
 }
@@ -2534,58 +2545,59 @@ body {
 }
 """
 
-
-      if Conf["Alternate Post Colors"]
-        css += """
+    if Conf["Alternate Post Colors"]
+      css += """
 div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   background-image: #{agent}linear-gradient(#{(if theme["Dark Theme"] then "rgba(255,255,255,0.02), rgba(255,255,255,0.02)" else "rgba(0,0,0,0.05), rgba(0,0,0,0.05)")});
 }
 """
 
-      if Conf["Filtered Backlinks"]
-        css += """
+    if Conf["Filtered Backlinks"]
+      css += """
 .filtered.backlink {
   display: none;
 }
 """
 
-      if Conf["Rounded Edges"]
-        if Conf["Post Form Style"] is "float"
-          css += """
+    if Conf["Rounded Edges"]
+      if Conf["Post Form Style"] is "float"
+        css += """
 #qr {
   border-radius: 6px 6px 0 0;
 }
 """
-        switch Conf["Boards Navigation"]
-          when "sticky top", "top"
-            css += """
+
+      switch Conf["Boards Navigation"]
+        when "sticky top", "top"
+          css += """
 #boardNavDesktop {
   border-radius: 0 0 3px 3px;
 }
 """
 
-          when "sticky bottom", "bottom"
-            css += """
+        when "sticky bottom", "bottom"
+          css += """
 #boardNavDesktop {
   border-radius: 3px 3px 0 0;
 }
 """
-        switch Conf["Pagination"]
-          when "sticky top", "top"
-            css += """
+
+      switch Conf["Pagination"]
+        when "sticky top", "top"
+          css += """
 .pages {
   border-radius: 0 0 3px 3px;
 }
 """
 
-          when "sticky bottom", "bottom"
-            css += """
+        when "sticky bottom", "bottom"
+          css += """
 .pages {
   border-radius: 3px 3px 0 0;
 }
 """
 
-        css += """
+      css += """
 .rice {
   border-radius: 2px;
 }
@@ -2616,8 +2628,8 @@ td[style="border: 1px dashed;"] {
 }
 """
 
-      if Conf["Slideout Watcher"]
-        css += """
+    if Conf["Slideout Watcher"]
+      css += """
 #watcher:not(:hover) {
   border: 0 none;
 }
@@ -2638,8 +2650,8 @@ td[style="border: 1px dashed;"] {
   padding-bottom: 4px;
 }
 """
-      else
-        css += """
+    else
+      css += """
 #watcher::after {
   display: none;
 }
@@ -2652,9 +2664,10 @@ td[style="border: 1px dashed;"] {
   cursor: pointer !important;
 }
 """
-      switch Conf["Slideout Navigation"]
-        when "compact"
-          css += """
+
+    switch Conf["Slideout Navigation"]
+      when "compact"
+        css += """
 #boardNavDesktopFoot:not(:hover) {
   border: 0 none !important;
 }
@@ -2666,8 +2679,9 @@ td[style="border: 1px dashed;"] {
   display: none;
 }
 """
-        when "list"
-          css += """
+
+      when "list"
+        css += """
 #boardNavDesktopFoot:not(:hover) {
   border: 0 none !important;
 }
@@ -2695,29 +2709,29 @@ td[style="border: 1px dashed;"] {
   display: none;
 }
 """
-        when "hide"
-          css += """
+      when "hide"
+        css += """
 #boardNavDesktopFoot {
   display: none;
 }
 """
 
-      switch Conf["Reply Spacing"]
-        when "none"
-          replyMargin = 0
-          css += """
+    switch Conf["Reply Spacing"]
+      when "none"
+        replyMargin = 0
+        css += """
 .thread > .replyContainer:not(:last-of-type) .post.reply:not(:target) {
   border-bottom-width: 0;
 }
 """
-        when "small"
-          replyMargin = 2
-        when "medium"
-          replyMargin = 4
-        when "large"
-          replyMargin = 8
+      when "small"
+        replyMargin = 2
+      when "medium"
+        replyMargin = 4
+      when "large"
+        replyMargin = 8
 
-      css += """
+    css += """
 .summary,
 .replyContainer {
   margin-bottom: #{replyMargin}px;
@@ -2726,8 +2740,8 @@ td[style="border: 1px dashed;"] {
   display: table;
 }
 """
-      if Conf["OP Background"]
-        css += """
+    if Conf["OP Background"]
+      css += """
 .opContainer div.post {
   background: #{theme["Reply Background"]};
   border: 1px solid #{theme["Reply Border"]};
@@ -2746,9 +2760,9 @@ td[style="border: 1px dashed;"] {
 }
 """
 
-      switch Conf["Sage Highlighting"]
-        when "text"
-          css += """
+    switch Conf["Sage Highlighting"]
+      when "text"
+        css += """
 a.useremail[href*="sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
 a.useremail[href*="Sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
 a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
@@ -2756,8 +2770,8 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   color: #{theme["Sage"]};
 }
 """
-        when "image"
-          css += """
+      when "image"
+        css += """
 a.useremail[href*="sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
 a.useremail[href*="Sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
 a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
@@ -2766,9 +2780,9 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 }
 """
 
-      switch Conf["Announcements"]
-        when "4chan default"
-          css += """
+    switch Conf["Announcements"]
+      when "4chan default"
+        css += """
 #globalMessage {
   position: static;
   background: none;
@@ -2779,8 +2793,9 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   display: none;
 }
 """
-        when "slideout"
-          css += """
+
+      when "slideout"
+        css += """
 #globalMessage:not(:hover) {
   border: 0 none;
 }
@@ -2802,77 +2817,83 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   height: 250px;
 }
 """
-        when "hide"
-          css += """
+
+      when "hide"
+        css += """
 #globalMessage,
 #globalMessage::after {
   display: none;
 }
 """
 
-      switch Conf["Boards Navigation"]
-        when "sticky top"
-          css += """
+    switch Conf["Boards Navigation"]
+      when "sticky top"
+        css += """
 #boardNavDesktop {
   position: fixed;
   top: 0;
 }
 """
-        when "sticky bottom"
-          css += """
+
+      when "sticky bottom"
+        css += """
 #boardNavDesktop {
   position: fixed;
   bottom: 0;
 }
 """
-        when "top"
-          css += """
+
+      when "top"
+        css += """
 #boardNavDesktop {
   position: absolute;
   top: 0;
 }
 """
-        when "hide"
-          css += """
+      when "hide"
+        css += """
 #boardNavDesktop {
   position: absolute;
   top: -100px;
 }
 """
 
-      if Conf["Tripcode Hider"]
-        css += """
+    if Conf["Tripcode Hider"]
+      css += """
 input.field.tripped:not(:hover):not(:focus) {
   color: transparent !important;
 }
 """
 
-      switch Conf["Pagination"]
-        when "sticky top"
-          css += """
+    switch Conf["Pagination"]
+      when "sticky top"
+        css += """
 .pages {
   position: fixed;
   top: 0;
   z-index: 4;
 }
 """
-        when "sticky bottom"
-          css += """
+
+      when "sticky bottom"
+        css += """
 .pages {
   position: fixed;
   bottom: 0;
   z-index: 4;
 }
 """
-        when "top"
-          css += """
+
+      when "top"
+        css += """
 .pages {
   position: absolute;
   top: 0;
 }
 """
-        when "on side"
-         css += """
+
+      when "on side"
+       css += """
 .pages {
   padding: 0;
   visibility: hidden;
@@ -2896,21 +2917,24 @@ input.field.tripped:not(:hover):not(:focus) {
   min-width: 0;
 }
 """
-        when "hide"
-          css += """
+
+      when "hide"
+        css += """
 .pages {
   display: none;
 }
 """
-      switch Conf["Checkboxes"]
-        when "show"
-          css += """
+
+    switch Conf["Checkboxes"]
+      when "show"
+        css += """
 input[type=checkbox] {
   display: none;
 }
 """
-        when "make checkboxes circular"
-          css += """
+
+      when "make checkboxes circular"
+        css += """
 input[type=checkbox] {
   display: none;
 }
@@ -2918,14 +2942,16 @@ input[type=checkbox] {
   border-radius: 6px;
 }
 """
-        when "do not style checkboxes"
-          css += """
+
+      when "do not style checkboxes"
+        css += """
 .rice {
   display: none;
 }
 """
-        when "hide"
-          css += """
+
+      when "hide"
+        css += """
 input[type=checkbox] {
   display: none;
 }
@@ -2934,18 +2960,18 @@ input[type=checkbox] {
 }
 """
 
-      if Conf["Mascots"]
-        css += MascotTools.init()
+    if Conf["Mascots"]
+      css += MascotTools.init()
 
-      if Conf["Block Ads"]
-        css += """
+    if Conf["Block Ads"]
+      css += """
 /* AdBlock Minus */
 a[href*="jlist"],
 img[src^="//static.4chan.org/support/"] {
   display: none;
 }
 """
-      unless Conf["Emoji"] == "disable"
-        css += Style.emoji Conf["Emoji Position"]
+    unless Conf["Emoji"] == "disable"
+      css += Style.emoji Conf["Emoji Position"]
 
     return css
