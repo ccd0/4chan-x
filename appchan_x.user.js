@@ -9304,13 +9304,10 @@
           });
         }
         iconPositions = function() {
-          var icons;
-          if (icons = $.id('icons')) {
-            $.rm(icons);
-          }
+          $.rm($.id('icons'));
           return $.addStyle(Style.iconPositions(), 'icons');
         };
-        return setTimeout(iconPositions, 300);
+        return setTimeout(iconPositions, 1000);
       });
     },
     emoji: function(position) {
@@ -9551,6 +9548,7 @@
           break;
         case "at top":
           Style.logoOffset = 0;
+          css += ".boardBanner {\n  position: relative;\n  display: table;\n  margin: 0 auto;\n  text-align: center;\n}";
           break;
         case "hide":
           Style.logoOffset = 0;

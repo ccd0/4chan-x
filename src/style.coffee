@@ -1846,6 +1846,7 @@ a.forwardlink {
 }
 #{theme["Custom CSS"]}
 """
+
     if Conf["Image Expansion"]
       css += """
 .fileThumb img {
@@ -1855,6 +1856,7 @@ a.forwardlink {
   cursor: #{agent}zoom-out;
 }
 """
+
     if Conf["Recursive Filtering"]
       css += """
 .hidden + .threadContainer {
@@ -1967,6 +1969,14 @@ span.lit {
 
       when "at top"
         Style.logoOffset = 0
+        css += """
+.boardBanner {
+  position: relative;
+  display: table;
+  margin: 0 auto;
+  text-align: center;
+}
+"""
         
       when "hide"
         Style.logoOffset = 0

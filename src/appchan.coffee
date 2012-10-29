@@ -10,11 +10,10 @@ Style =
         $.on exLink, "click", ->
           setTimeout Style.rice, 50
       iconPositions = ->
-        if icons = $.id 'icons'
-          $.rm icons
+        $.rm $.id 'icons'
         $.addStyle(Style.iconPositions(), 'icons')
       # Give ExLinks and 4sight a little time to append their dialog links
-      setTimeout iconPositions, 300
+      setTimeout iconPositions, 1000
 
   emoji: (position) ->
     css = ''
