@@ -1076,22 +1076,6 @@ a,
 #file {
   overflow: hidden;
 }
-#ft li,
-#ft ul,
-#options input:not([type="radio"]),
-#updater input:not([type="radio"]),
-.box-outer,
-.boxbar,
-.top-box,
-h2,
-input:not([type="radio"]),
-input[type="submit"],
-textarea {
-  #{agent}appearance: none;
-}
-input[type=checkbox] {
-  #{agent}appearance: checkbox !important;
-}
 /* Formatting for all postarea elements */
 #browse,
 #file {
@@ -1158,16 +1142,9 @@ input[value="Report"] {
 .top-box .menubutton {
   background-image: none;
 }
-#qr label input,
-.boxcontent input,
-.boxcontent textarea {
-  #{agent}appearance: none;
-  border: 0;
-}
 input[type=checkbox],
 .reply input[type=checkbox],
 #options input[type=checkbox] {
-  #{agent}appearance: none;
   width: 12px !important;
   height: 12px !important;
   cursor: pointer;
@@ -2544,7 +2521,7 @@ div.reply {
   display: table;
 }
 .replyContainer div.post,
-sideArrows {
+.sideArrows {
   display: table-cell;
 }
 .replyContainer div.reply {
