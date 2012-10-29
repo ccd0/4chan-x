@@ -2708,6 +2708,9 @@ td[style="border: 1px dashed;"] {
   padding-bottom: 4px;
   z-index: 96;
 }
+#watcher > .move {
+  cursor: pointer !important;
+}
 """
       switch Conf["Slideout Navigation"]
         when "compact"
