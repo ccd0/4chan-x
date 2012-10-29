@@ -2818,7 +2818,7 @@
       return _results;
     },
     dialog: function(tab) {
-      var arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, time, tr, ul, updateIncrease, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var archiver, arr, back, category, checked, data, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, name, obj, option, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, time, tr, ul, updateIncrease, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
       if (Conf['editMode'] === "theme") {
         if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
           ThemeTools.close();
@@ -2858,6 +2858,7 @@
   <div></div>\
   <input type=radio name=tab hidden id=sauces_tab>\
   <div>\
+    Select an Archiver for this board: <select name=archiver></select><br><br>\
     <div class=warning><code>Sauce</code> is disabled.</div>\
     Lines starting with a <code>#</code> will be ignored.<br>\
     You can specify a certain display text by appending <code>;text:[text]</code> to the url.\
@@ -2984,6 +2985,20 @@
       $.add($('ul:nth-child(2)', dialog), li);
       filter = $('select[name=filter]', dialog);
       $.on(filter, 'change', Options.filter);
+      archiver = $('select[name=archiver]', dialog);
+      _ref1 = data = Redirect.select('options');
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        name = _ref1[_i];
+        if (archiver.length >= data.length) {
+          return;
+        }
+        (option = d.createElement('option')).textContent = name;
+        $.add(archiver, option);
+      }
+      if (data.length > 1 && data) {
+        archiver.value = $.get("archiver/" + g.BOARD + "/");
+        $.on(archiver, 'mouseup', Options.archiver);
+      }
       sauce = $('#sauces', dialog);
       sauce.value = $.get(sauce.name, Conf[sauce.name]);
       $.on(sauce, 'change', $.cb.value);
@@ -3003,9 +3018,9 @@
       (updateIncrease = $('[name=updateIncrease]', dialog)).value = $.get('updateIncrease', Conf['updateIncrease']);
       $.on(updateIncrease, 'input', $.cb.value);
       this.customNavigation.dialog(dialog);
-      _ref1 = Config.hotkeys;
-      for (key in _ref1) {
-        arr = _ref1[key];
+      _ref2 = Config.hotkeys;
+      for (key in _ref2) {
+        arr = _ref2[key];
         tr = $.el('tr', {
           innerHTML: "<td>" + arr[1] + "</td><td><input name=" + key + " class=field></td>"
         });
@@ -3017,9 +3032,9 @@
       div = $.el('div', {
         className: "suboptions"
       });
-      _ref2 = Config.style;
-      for (category in _ref2) {
-        obj = _ref2[category];
+      _ref3 = Config.style;
+      for (category in _ref3) {
+        obj = _ref3[category];
         ul = $.el('ul', {
           innerHTML: "<h3>" + category + "</h3>"
         });
@@ -3037,9 +3052,9 @@
             $.on(styleSetting, 'change', Options.style);
           } else if (arr[2]) {
             liHTML = "<div class=\"option\"><span class=\"optionlabel\">" + optionname + "</span><div style=\"display: none\">" + description + "</div></div><div class =\"option\"><select name=\"" + optionname + "\"></div>";
-            _ref3 = arr[2];
-            for (optionvalue = _i = 0, _len = _ref3.length; _i < _len; optionvalue = ++_i) {
-              selectoption = _ref3[optionvalue];
+            _ref4 = arr[2];
+            for (optionvalue = _j = 0, _len1 = _ref4.length; _j < _len1; optionvalue = ++_j) {
+              selectoption = _ref4[optionvalue];
               liHTML = liHTML + ("<option value=\"" + selectoption + "\">" + selectoption + "</option>");
             }
             liHTML = liHTML + "</select>";
@@ -7007,6 +7022,7 @@
   };
 
   Redirect = {
+    current: [],
     image: function(board, filename) {
       switch (board) {
         case 'a':
@@ -7055,55 +7071,100 @@
           return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
       }
     },
+    archiver: [
+      {
+        'name': 'Foolz',
+        'base': '//archive.foolz.us',
+        'boards': ['a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz']
+      }, {
+        'name': 'NSFWFoolz',
+        'base': '//nsfw.foolz.us',
+        'boards': ['u', 'kuku']
+      }, {
+        'name': 'Warosu',
+        'base': '//fuuka.warosu.org',
+        'boards': ['cgl', 'ck', 'jp', 'lit', 'q', 'tg']
+      }, {
+        'name': 'InstallGentoo',
+        'base': '//archive.installgentoo.net',
+        'boards': ['diy', 'g', 'sci']
+      }, {
+        'name': 'RebeccaBlackTech',
+        'base': '//rbt.asia',
+        'boards': ['cgl', 'g', 'mu', 'soc', 'w']
+      }, {
+        'name': 'Heinessen',
+        'base': 'http://archive.heinessen.com',
+        'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x']
+      }
+    ],
+    select: function(origin, data, board) {
+      var arch, current, type, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      arch = [];
+      if (origin === 'options') {
+        _ref = this.archiver;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          type = _ref[_i];
+          if (!(type.boards.indexOf(g.BOARD) >= 0)) {
+            continue;
+          } else {
+            arch.push(type.name);
+          }
+        }
+        if (arch.length === 0) {
+          return false;
+        } else {
+          return arch;
+        }
+      }
+      if (origin === 'to') {
+        _ref1 = data.boards;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          type = _ref1[_j];
+          if ((current = $.get("archiver/" + board + "/")) === void 0) {
+            return board;
+          }
+          if (current === data.name) {
+            this.current.push(data.name);
+            return board;
+          }
+        }
+      }
+      if (origin === 'to_base') {
+        _ref2 = data.boards;
+        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+          type = _ref2[_k];
+          if (type === board) {
+            return data.base;
+          }
+        }
+      }
+    },
     to: function(data) {
-      var board, threadID, url;
+      var a, board, threadID, url;
       if (!data.isSearch) {
         threadID = data.threadID;
       }
       board = data.board;
+      a = this.archiver;
       switch (board) {
-        case 'a':
-        case 'co':
-        case 'm':
-        case 'q':
-        case 'sp':
-        case 'tg':
-        case 'tv':
-        case 'v':
-        case 'vg':
-        case 'wsg':
-        case 'dev':
-        case 'foolz':
-          url = Redirect.path('//archive.foolz.us', 'foolfuuka', data);
+        case this.select('to', a[0], board):
+          url = this.path(this.select('to_base', a[0], board), 'foolfuuka', data);
           break;
-        case 'u':
-        case 'kuku':
-          url = Redirect.path("//nsfw.foolz.us", 'foolfuuka', data);
+        case this.select('to', a[1], board):
+          url = this.path(this.select('to_base', a[1], board), 'foolfuuka', data);
           break;
-        case 'ck':
-        case 'jp':
-        case 'lit':
-          url = Redirect.path("//fuuka.warosu.org", 'fuuka', data);
+        case this.select('to', a[2], board):
+          url = this.path(this.select('to_base', a[2], board), 'fuuka', data);
           break;
-        case 'diy':
-        case 'sci':
-          url = Redirect.path("//archive.installgentoo.net", 'fuuka', data);
+        case this.select('to', a[3], board):
+          url = this.path(this.select('to_base', a[3], board), 'fuuka', data);
           break;
-        case 'cgl':
-        case 'g':
-        case 'mu':
-        case 'soc':
-        case 'w':
-          url = Redirect.path("//rbt.asia", 'fuuka', data);
+        case this.select('to', a[4], board):
+          url = this.path(this.select('to_base', a[4], board), 'fuuka', data);
           break;
-        case 'an':
-        case 'fit':
-        case 'k':
-        case 'mlp':
-        case 'r9k':
-        case 'toy':
-        case 'x':
-          url = Redirect.path("http://archive.heinessen.com", 'fuuka', data);
+        case this.select('to', a[5], board):
+          url = this.path(this.select('to_base', a[5], board), 'fuuka', data);
           break;
         default:
           if (threadID) {

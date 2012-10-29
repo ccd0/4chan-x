@@ -51,6 +51,7 @@ Options =
   <div></div>
   <input type=radio name=tab hidden id=sauces_tab>
   <div>
+    Select an Archiver for this board: <select name=archiver></select><br><br>
     <div class=warning><code>Sauce</code> is disabled.</div>
     Lines starting with a <code>#</code> will be ignored.<br>
     You can specify a certain display text by appending <code>;text:[text]</code> to the url.
@@ -193,6 +194,17 @@ Options =
     # I pull the correct data from the Options.filter method.
     filter = $ 'select[name=filter]', dialog
     $.on filter, 'change', Options.filter
+    
+    #archiver
+    archiver = $ 'select[name=archiver]', dialog
+    for name in data = Redirect.select 'options'
+      return if archiver.length >= data.length
+      (option = d.createElement 'option').textContent = name
+      $.add archiver, option
+    if data.length > 1 and data
+    # Might needs some nicer transition.
+      archiver.value = $.get "archiver/#{g.BOARD}/"
+      $.on archiver, 'mouseup', Options.archiver
 
     # Sauce
     # The sauce HTML is already there, so I just fill up the textarea with data from localstorage
