@@ -30,25 +30,9 @@ label,
 .favicon {
   cursor: pointer;
 }
-a[href="javascript:;"] {
-  text-decoration: none;
-}
-.warning,
-.disabledwarning {
-  color: red;
-}
 .hide_thread_button:not(.hidden_thread) {
   padding: 0 5px;
   float: left;
-}
-.thread > .hidden_thread ~ *,
-[hidden],
-#content > [name=tab]:not(:checked) + div,
-#updater:not(:hover) > :not(.move),
-#qp input,
-.forwarded,
-#qp .rice {
-  display: none !important;
 }
 .menu_button {
   display: inline-block;
@@ -123,9 +107,6 @@ a[href="javascript:;"] {
   position: absolute;
   right: 3px;
 }
-.hasSubMenu:not(.focused) > .subMenu {
-  display: none;
-}
 .subMenu {
   position: absolute;
   left: 100%;
@@ -157,25 +138,6 @@ h1,
 #qr select,
 #qr > form {
   margin: 0;
-}
-#dump {
-  background: #{agent}linear-gradient(#EEE, #CCC);
-  width: 10%;
-}
-.gecko #dump {
-  padding: 1px 0 2px;
-}
-#dump:hover,
-#dump:focus {
-  background: #{agent}linear-gradient(#FFF, #DDD);
-}
-#dump:active,
-.dump #dump:not(:hover):not(:focus) {
-  background: #{agent}linear-gradient(#CCC, #DDD);
-}
-#qr:not(.dump) #replies,
-.dump > form > label {
-  display: none;
 }
 #replies {
   display: block;
@@ -275,32 +237,11 @@ h1,
   color: #000;
 }
 .field {
-  font-size: inherit;
-  margin: 0;
-  padding: 2px 4px 3px;
   #{agent}transition: color .25s, border .25s;
 }
 .field:hover,
 .field:focus {
   outline: none;
-}
-#charCount {
-  color: #000;
-  background: hsla(0, 0%, 100%, .5);
-  position: absolute;
-  margin: 1px;
-  font-size: 8pt;
-  right: 0;
-  top: 100%;
-  bottom: 0;
-  pointer-events: none;
-}
-#charCount.warning {
-  color: red;
-}
-.fileText:hover .fntrunc,
-.fileText:not(:hover) .fnfull {
-  display: none;
 }
 .fitwidth img[data-md5] + img {
   max-width: 100%;
@@ -670,21 +611,12 @@ div.opContainer {
   margin-left: 20px;
   border-left: 1px solid black;
 }
-.stub ~ * {
-  display: none !important;
-}
-#postForm {
-  display: none;
-}
 ::#{agent}selection {
   background: #{theme["Text"]};
   color: #{theme["Background Color"]};
 }
 body {
   padding: 0;
-}
-body > script + hr + div {
-  display: none;
 }
 html,
 body {
@@ -731,19 +663,30 @@ textarea {
 /* Cleanup */
 #absbot,
 #autohide,
+#content > [name=tab]:not(:checked) + div,
 #delform > hr,
 #ft li.fill,
 #imgControls label:first-of-type input,
 #imgControls .rice,
 #logo,
+#postForm,
 #postPassword + span,
+#qr:not(.dump) #replies,
+#qp .rice
+#qp input,
+#updater:not(:hover) > :not(.move),
 .autoPagerS,
 .board > hr:last-of-type,
 #{(unless Conf["Board Subtitle"] then ".boardSubtitle," else "")}
 .closed,
 .deleteform,
+.dump > form > label,
 .entry:not(.focused) > .subMenu,
 .error:empty,
+.fileText:hover .fntrunc,
+.fileText:not(:hover) .fnfull,
+.forwarded,
+.hasSubMenu:not(.focused) > .subMenu,
 .hidden_thread > .summary,
 .inline .report_button,
 .inline input,
@@ -759,14 +702,18 @@ textarea {
 .replymode,
 .rules,
 .sideArrows:not(.hide_reply_button),
+.stub ~ *,
 .stylechanger,
+.thread > .hidden_thread ~ *,
 .warnicon,
 .warning:empty,
 .yui-menu-shadow,
+[hidden],
 body > .postingMode ~ #delform hr,
 body > br,
 body > div[style^="text-align"],
 body > hr,
+body > script + hr + div,
 div.reply[hidden],
 html body > span[style="left: 5px; position: absolute;"]:nth-of-type(0),
 table[style="text-align:center;width:100%;height:300px;"] {
@@ -1120,7 +1067,7 @@ input[type="submit"] {
   vertical-align: bottom;
   #{agent}box-sizing: border-box;
   box-sizing: border-box;
-  padding: 1px !important;
+  padding: 1px;
 }
 #browse,
 input[type="submit"], /* Any lingering buttons */
@@ -1467,13 +1414,24 @@ body > table[cellpadding="30"] h3 {
 html .subMenu {
   padding: 0px;
 }
+.textarea {
+  position: relative;
+}
 #qr #charCount {
   color: #{(if theme["Dark Theme"] then "rgba(255,255,255,0.7)" else "rgba(0,0,0,0.7)")};
   background: none;
   font-size: 10px;
+  pointer-events: none;
+  position: absolute;
+  right: 2px;
+  top: auto;
+  bottom: 0;
+  height: 20px;
 }
 #qr #charCount.warning {
   color: rgb(255,0,0);
+  padding: 0;
+  margin: 0;
   border: none;
   background: none;
 }
@@ -1686,7 +1644,7 @@ div.subMenu,
 [style='color: red !important;'] *,
 .disabledwarning,
 .warning {
-  color: #{theme["Warnings"]} !important;
+  color: #{theme["Warnings"]};
 }
 a,
 #dump,
@@ -2226,24 +2184,6 @@ textarea.field,
   z-index: 5 !important;
   background-color: transparent !important;
 }
-#qr #charCount {
-  position: absolute;
-  right: 2px;
-  top: auto;
-  bottom: 110px;
-  text-align: right;
-  vertical-align: middle;
-  padding-top: 2px;
-  height: 20px;
-}
-#qr #charCount.warning {
-  position: absolute;
-  top: auto;
-  right: 2px;
-  bottom: 110px;
-  height: 20px;
-  max-height: 20px;
-}
 input[title="Verification"],
 .captchaimg img {
   margin-top: 1px;
@@ -2294,7 +2234,7 @@ input,
           css += """
 #qrtab input,
 #qrtab .rice,
-#qr span {
+#qrtab span {
   display: none;
 }
 #qr {
@@ -2795,6 +2735,9 @@ td[style="border: 1px dashed;"] {
   #{agent}box-sizing: border-box;
   box-sizing: border-box;
   margin-bottom: #{replyMargin}px;
+}
+.hide_thread_button:not(.hidden_thread) {
+  padding: 5px 5px 0;
 }
 .opContainer div.post:target
 .opContainer div.post.highlight {

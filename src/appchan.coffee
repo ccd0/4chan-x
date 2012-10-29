@@ -7,11 +7,14 @@ Style =
       Style.banner()
       Style.trimGlobalMessage()
       $(".boardBanner img", d.body).id = "Banner"
-      $.rm $.id 'icons'
-      $.addStyle Style.iconPositions(), 'icons'
       if exLink = $ "#navtopright .exlinksOptionsLink", d.body
         $.on exLink, "click", ->
           setTimeout Style.rice, 50
+      iconPositions = -> 
+        $.rm $.id 'icons'
+        $.addStyle(Style.iconPositions(), 'icons')
+      # Give ExLinks and 4sight a little time to append their dialog links
+      setTimeout iconPositions, 300
 
   emoji: (position) ->
     css = ''

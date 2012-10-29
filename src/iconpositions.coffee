@@ -77,7 +77,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
   position: fixed;
   #{if Style.sidebarLocation[0] == "left" then "left: #{leftStart + Style.sidebarOffsetW - positioner[6]}px" else "right:  #{rightStart + positioner[6]}px"};
 }
-
 /* Back */
 div.navLinks > a:first-of-type::after {
   visibility: visible;
