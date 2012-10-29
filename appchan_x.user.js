@@ -7112,7 +7112,7 @@
           }
         }
         if (arch.length === 0) {
-          return false;
+          return ['No archiver available.'];
         } else {
           return arch;
         }

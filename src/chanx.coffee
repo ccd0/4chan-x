@@ -2738,7 +2738,7 @@ Redirect =
         else
           arch.push type.name
       return if arch.length is 0
-        false
+        ['No archiver available.']
       else
         arch
     if origin is 'to'
