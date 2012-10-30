@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 1.0.8 - 2012-10-29
+/*  appchan x - Version 1.0.8 - 2012-10-30
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -2426,22 +2426,35 @@
       d.removeEventListener('mouseup', UI.dragend, false);
       return delete UI.el;
     },
-    hover: function(e) {
+    hover: function(e, mode) {
       var clientHeight, clientWidth, clientX, clientY, height, style, top, _ref;
+      if (mode == null) {
+        mode = "default";
+      }
+      $.log(mode);
       clientX = e.clientX, clientY = e.clientY;
       style = UI.el.style;
       _ref = d.documentElement, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
       height = UI.el.offsetHeight;
-      if (clientX <= clientWidth - 400) {
-        style.left = clientX + 20 + 'px';
-        style.right = null;
-        top = clientY + 20;
-      } else {
-        style.left = null;
-        style.right = clientWidth - clientX + 20 + 'px';
+      if (mode === "default") {
         top = clientY - 120;
+        style.top = clientHeight <= height || top <= 0 ? '0px' : top + height >= clientHeight ? clientHeight - height + 'px' : top + 'px';
+        if (clientX <= clientWidth - 400) {
+          style.left = clientX + 45 + 'px';
+          return style.right = null;
+        }
+      } else {
+        if (clientX <= clientWidth - 400) {
+          style.left = clientX + 20 + 'px';
+          style.right = null;
+          top = clientY;
+        } else {
+          style.left = null;
+          style.right = clientWidth - clientX + 20 + 'px';
+          top = clientY - 120;
+        }
+        return style.top = clientHeight <= height || top <= 0 ? '0px' : top + height >= clientHeight ? clientHeight - height + 'px' : top + 'px';
       }
-      return style.top = clientHeight <= height || top <= 0 ? '0px' : top + height >= clientHeight ? clientHeight - height + 'px' : top + 'px';
     },
     hoverend: function() {
       $.rm(UI.el);
@@ -3711,14 +3724,16 @@
         className: 'reply dialog',
         innerHTML: this.nextSibling.innerHTML
       });
-      UI.hover(e);
+      Options.cb = function(e) {
+        return UI.hover(e, "menu");
+      };
       $.add(d.body, mouseover);
-      $.on(this, 'mousemove', UI.hover);
+      $.on(this, 'mousemove', Options.cb);
       $.on(this, 'mouseout', Options.mouseout);
     },
     mouseout: function(e) {
       UI.hoverend();
-      return $.off(this, 'mousemove', UI.hover);
+      return $.off(this, 'mousemove', Options.cb);
     }
   };
 

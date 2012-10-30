@@ -40,28 +40,47 @@ UI =
     d.removeEventListener 'mousemove', UI.drag,    false
     d.removeEventListener 'mouseup',   UI.dragend, false
     delete UI.el
-  hover: (e) ->
+  hover: (e, mode = "default") ->
+    $.log mode
     {clientX, clientY} = e
     {style} = UI.el
     {clientHeight, clientWidth} = d.documentElement
     height = UI.el.offsetHeight
-
-    if clientX <= clientWidth - 400
-      style.left  = clientX + 20 + 'px'
-      style.right = null
-      top = clientY + 20
-    else
-      style.left  = null
-      style.right = clientWidth - clientX + 20 + 'px'
+    
+    if mode is "default"
+    
       top = clientY - 120
+      style.top =
+        if clientHeight <= height or top <= 0
+          '0px'
+        else if top + height >= clientHeight
+          clientHeight - height + 'px'
+        else
+          top + 'px'
 
-    style.top =
-      if clientHeight <= height or top <= 0
-        '0px'
-      else if top + height >= clientHeight
-        clientHeight - height + 'px'
+      if clientX <= clientWidth - 400
+        style.left = clientX + 45 + 'px'
+        style.right = null
+    
+    else
+
+      if clientX <= clientWidth - 400
+        style.left  = clientX + 20 + 'px'
+        style.right = null
+        top = clientY
       else
-        top + 'px'
+        style.left  = null
+        style.right = clientWidth - clientX + 20 + 'px'
+        top = clientY - 120
+
+      style.top =
+        if clientHeight <= height or top <= 0
+          '0px'
+        else if top + height >= clientHeight
+          clientHeight - height + 'px'
+        else
+          top + 'px'
+
   hoverend: ->
     $.rm UI.el
     delete UI.el
