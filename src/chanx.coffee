@@ -2677,7 +2677,6 @@ Favicon =
   dead:  Icons.header.gif + 'KECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
 
 Redirect =
-  current: []
   image: (board, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch board
@@ -2729,9 +2728,9 @@ Redirect =
       'boards':  ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x']
     }
   ]
-  select: (origin, data, board) ->
-    arch = []
-    if origin is 'options'
+  select: (data, board) ->
+    unless board
+      arch = []
       for type in @archiver
         unless type.boards.indexOf(g.BOARD) >= 0
           continue
@@ -2741,35 +2740,29 @@ Redirect =
         ['No archiver available.']
       else
         arch
-    if origin is 'to'
-      for type in data.boards
-        if (current = $.get "archiver/#{board}/") is undefined
-          return board
-        if current is data.name
-          @current.push data.name
-          return board
-    if origin is 'to_base'
-      for type in data.boards
-        if type is board
-          return data.base
+    for type in data.boards
+      if (current = $.get "archiver/#{board}/") is undefined
+        return board
+      if current is data.name
+        return board
   to: (data) ->
     unless data.isSearch
       {threadID} = data
     {board} = data
     a = @archiver
     switch board
-      when @select 'to', a[0], board
-        url = @path (@select 'to_base', a[0], board), 'foolfuuka', data
-      when @select 'to', a[1], board
-        url = @path (@select 'to_base', a[1], board), 'foolfuuka', data
-      when @select 'to', a[2], board
-        url = @path (@select 'to_base', a[2], board), 'fuuka', data
-      when @select 'to', a[3], board
-        url = @path (@select 'to_base', a[3], board), 'fuuka', data
-      when @select 'to', a[4], board
-        url = @path (@select 'to_base', a[4], board), 'fuuka', data
-      when @select 'to', a[5], board
-        url = @path (@select 'to_base', a[5], board), 'fuuka', data
+      when @select a[0], board
+        url = @path a[0].base, 'foolfuuka', data
+      when @select a[1], board
+        url = @path a[1].base, 'foolfuuka', data
+      when @select a[2], board
+        url = @path a[2].base, 'fuuka', data
+      when @select a[3], board
+        url = @path a[3].base, 'fuuka', data
+      when @select a[4], board
+        url = @path a[4].base, 'fuuka', data
+      when @select a[5], board
+        url = @path a[5].base, 'fuuka', data
       else
         if threadID
           url = "//boards.4chan.org/#{board}/"

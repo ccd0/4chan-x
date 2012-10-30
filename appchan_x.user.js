@@ -2986,7 +2986,7 @@
       filter = $('select[name=filter]', dialog);
       $.on(filter, 'change', Options.filter);
       archiver = $('select[name=archiver]', dialog);
-      _ref1 = data = Redirect.select('options');
+      _ref1 = data = Redirect.select();
       for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
         name = _ref1[_i];
         if (archiver.length >= data.length) {
@@ -2995,7 +2995,7 @@
         (option = d.createElement('option')).textContent = name;
         $.add(archiver, option);
       }
-      if (data.length > 1 && data) {
+      if (data.length > 1 && data[0] !== 'No archiver available.') {
         archiver.value = $.get("archiver/" + g.BOARD + "/");
         $.on(archiver, 'mouseup', Options.archiver);
       }
@@ -3671,6 +3671,9 @@
     </li>\
   </ul>'
       }));
+    },
+    archiver: function() {
+      return $.set("archiver/" + g.BOARD + "/", "" + this.value);
     },
     time: function() {
       Time.foo();
@@ -7022,7 +7025,6 @@
   };
 
   Redirect = {
-    current: [],
     image: function(board, filename) {
       switch (board) {
         case 'a':
@@ -7098,10 +7100,10 @@
         'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x']
       }
     ],
-    select: function(origin, data, board) {
-      var arch, current, type, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
-      arch = [];
-      if (origin === 'options') {
+    select: function(data, board) {
+      var arch, current, type, _i, _j, _len, _len1, _ref, _ref1;
+      if (!board) {
+        arch = [];
         _ref = this.archiver;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           type = _ref[_i];
@@ -7117,26 +7119,14 @@
           return arch;
         }
       }
-      if (origin === 'to') {
-        _ref1 = data.boards;
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          type = _ref1[_j];
-          if ((current = $.get("archiver/" + board + "/")) === void 0) {
-            return board;
-          }
-          if (current === data.name) {
-            this.current.push(data.name);
-            return board;
-          }
+      _ref1 = data.boards;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        type = _ref1[_j];
+        if ((current = $.get("archiver/" + board + "/")) === void 0) {
+          return board;
         }
-      }
-      if (origin === 'to_base') {
-        _ref2 = data.boards;
-        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-          type = _ref2[_k];
-          if (type === board) {
-            return data.base;
-          }
+        if (current === data.name) {
+          return board;
         }
       }
     },
@@ -7148,23 +7138,23 @@
       board = data.board;
       a = this.archiver;
       switch (board) {
-        case this.select('to', a[0], board):
-          url = this.path(this.select('to_base', a[0], board), 'foolfuuka', data);
+        case this.select(a[0], board):
+          url = this.path(a[0].base, 'foolfuuka', data);
           break;
-        case this.select('to', a[1], board):
-          url = this.path(this.select('to_base', a[1], board), 'foolfuuka', data);
+        case this.select(a[1], board):
+          url = this.path(a[1].base, 'foolfuuka', data);
           break;
-        case this.select('to', a[2], board):
-          url = this.path(this.select('to_base', a[2], board), 'fuuka', data);
+        case this.select(a[2], board):
+          url = this.path(a[2].base, 'fuuka', data);
           break;
-        case this.select('to', a[3], board):
-          url = this.path(this.select('to_base', a[3], board), 'fuuka', data);
+        case this.select(a[3], board):
+          url = this.path(a[3].base, 'fuuka', data);
           break;
-        case this.select('to', a[4], board):
-          url = this.path(this.select('to_base', a[4], board), 'fuuka', data);
+        case this.select(a[4], board):
+          url = this.path(a[4].base, 'fuuka', data);
           break;
-        case this.select('to', a[5], board):
-          url = this.path(this.select('to_base', a[5], board), 'fuuka', data);
+        case this.select(a[5], board):
+          url = this.path(a[5].base, 'fuuka', data);
           break;
         default:
           if (threadID) {

@@ -197,11 +197,11 @@ Options =
     
     #archiver
     archiver = $ 'select[name=archiver]', dialog
-    for name in data = Redirect.select 'options'
+    for name in data = Redirect.select()
       return if archiver.length >= data.length
       (option = d.createElement 'option').textContent = name
       $.add archiver, option
-    if data.length > 1 and data
+    if data.length > 1 and data[0] isnt 'No archiver available.'
     # Might needs some nicer transition.
       archiver.value = $.get "archiver/#{g.BOARD}/"
       $.on archiver, 'mouseup', Options.archiver
@@ -956,6 +956,9 @@ Options =
       For example: <code>top:yes;</code> or <code>top:no;</code>.
     </li>
   </ul>'
+  
+  archiver: ->
+    $.set "archiver/#{g.BOARD}/", "#{@value}"
 
   time: ->
     Time.foo()
