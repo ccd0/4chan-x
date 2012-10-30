@@ -787,6 +787,11 @@ Keybinds =
           QR.close()
       when Conf.submit
         QR.submit() if QR.el and !QR.status()
+      when Conf.hideQR
+        if QR.el
+          return QR.el.hidden = false if QR.el.hidden
+          QR.autohide.click()
+        else QR.open()
       when Conf.spoiler
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'spoiler', target
@@ -2741,6 +2746,7 @@ Redirect =
         $.set "archiver/#{board}/", "#{name}"
         continue
       return board if current is data.name and data.boards.contains(board)
+
   to: (data) ->
     unless data.isSearch
       {threadID} = data

@@ -383,6 +383,10 @@ Config =
       'alt+s'
       'Submit post'
     ]
+    hideQR: [
+      'alt+h'
+      'Toggle hide status of QR'
+    ]
     # Thread related
     watch: [
       'w'

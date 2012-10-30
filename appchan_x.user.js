@@ -209,6 +209,7 @@
       code: ['alt+c', 'Quick code tags'],
       sageru: ['alt+n', 'Sage keybind'],
       submit: ['alt+s', 'Submit post'],
+      hideQR: ['alt+h', 'Toggle hide status of QR'],
       watch: ['w', 'Watch thread'],
       update: ['u', 'Update now'],
       unreadCountTo0: ['z', 'Mark thread as read'],
@@ -4739,6 +4740,16 @@
             QR.submit();
           }
           break;
+        case Conf.hideQR:
+          if (QR.el) {
+            if (QR.el.hidden) {
+              return QR.el.hidden = false;
+            }
+            QR.autohide.click();
+          } else {
+            QR.open();
+          }
+          break;
         case Conf.spoiler:
           if (target.nodeName !== 'TEXTAREA') {
             return;
@@ -7605,14 +7616,14 @@
     hide: function() {
       d.activeElement.blur();
       $.addClass(QR.el, 'autohide');
-      return $.id('autohide').checked = true;
+      return QR.autohide.checked = true;
     },
     unhide: function() {
       $.rmClass(QR.el, 'autohide');
-      return $.id('autohide').checked = false;
+      return QR.autohide.checked = false;
     },
     toggleHide: function() {
-      return this.checked && QR.hide() || QR.unhide();
+      return QR.autohide.checked && QR.hide() || QR.unhide();
     },
     error: function(err) {
       if (typeof err === 'string') {
@@ -8228,6 +8239,7 @@
         });
         ta.style.cssText = $.get('QR.size', '');
       }
+      QR.autohide = $('#autohide', QR.el);
       mimeTypes = $('ul.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':
@@ -8292,7 +8304,7 @@
         return riceFile.textContent = fileInput.value;
       });
       Style.rice(QR.el);
-      $.on($('#autohide', QR.el), 'change', QR.toggleHide);
+      $.on(QR.autohide, 'change', QR.toggleHide);
       $.on($('.close', QR.el), 'click', QR.close);
       $.on($('#dump', QR.el), 'click', function() {
         return QR.el.classList.toggle('dump');

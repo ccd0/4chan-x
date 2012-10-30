@@ -50,14 +50,14 @@ QR =
   hide: ->
     d.activeElement.blur()
     $.addClass QR.el, 'autohide'
-    $.id('autohide').checked = true
+    QR.autohide.checked = true
 
   unhide: ->
     $.rmClass QR.el, 'autohide'
-    $.id('autohide').checked = false
+    QR.autohide.checked = false
 
   toggleHide: ->
-    @checked and QR.hide() or QR.unhide()
+    QR.autohide.checked and QR.hide() or QR.unhide()
 
   error: (err) ->
     if typeof err is 'string'
@@ -567,6 +567,8 @@ QR =
       $.on ta = $('textarea', QR.el), 'mouseup', ->
         $.set 'QR.size', @style.cssText
       ta.style.cssText = $.get 'QR.size', ''
+      
+    QR.autohide = $ '#autohide', QR.el
 
     # Allow only this board's supported files.
     mimeTypes = $('ul.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
@@ -622,8 +624,8 @@ QR =
     Style.rice QR.el
     
     
-    $.on $('#autohide', QR.el), 'change',    QR.toggleHide
-    $.on $('.close',    QR.el), 'click',     QR.close
+    $.on QR.autohide,             'change',    QR.toggleHide
+    $.on $('.close',    QR.el),   'click',     QR.close
     $.on $('#dump',     QR.el),   'click',     -> QR.el.classList.toggle 'dump'
     $.on $('#addReply', QR.el),   'click',     -> new QR.reply().select()
     $.on $('form',      QR.el),   'submit',    QR.submit
