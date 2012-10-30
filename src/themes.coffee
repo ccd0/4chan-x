@@ -1970,6 +1970,10 @@ textarea:hover,
 #options input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
+.replyContainer div.reply,
+.opContainer div.op {
+  background-color: transparent !important;
+}
 input[type=password]:focus,
 input[type=text]:focus,
 input#fs_search:focus,
