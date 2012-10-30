@@ -7133,7 +7133,7 @@
           $.set("archiver/" + board + "/", "" + name);
           continue;
         }
-        if (current === data.name) {
+        if (current === data.name && data.boards.contains(board)) {
           return board;
         }
       }

@@ -2740,7 +2740,7 @@ Redirect =
       if (current = $.get "archiver/#{board}/") is undefined and (name = @select()[0])
         $.set "archiver/#{board}/", "#{name}"
         continue
-      return board if current is data.name
+      return board if current is data.name and data.boards.contains(board)
   to: (data) ->
     unless data.isSearch
       {threadID} = data
