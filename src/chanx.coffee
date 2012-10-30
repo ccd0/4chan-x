@@ -2730,19 +2730,15 @@ Redirect =
   ]
   select: (data, board) ->
     unless board
-      arch = []
-      for type in @archiver
+      arch = for type in @archiver
         unless type.boards.indexOf(g.BOARD) >= 0
           continue
         else
-          arch.push type.name
-      return if arch.length is 0
-        ['No archiver available.']
-      else
-        arch
+          type.name
+      return if arch.length > 0 then arch else false
     for type in data.boards
-      if (current = $.get "archiver/#{board}/") is undefined
-        $.set "archiver/#{board}/", "#{@select()[0]}"
+      if (current = $.get "archiver/#{board}/") is undefined and (name = @select()[0])
+        $.set "archiver/#{board}/", "#{name}"
         continue
       return board if current is data.name
   to: (data) ->

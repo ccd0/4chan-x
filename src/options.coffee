@@ -86,7 +86,7 @@ Options =
     <ul>
       Archiver
       <li>Select an Archiver for this board: <select name=archiver></select></li>
-    <ul>
+    </ul>
     <div class=warning><code>Quote Backlinks</code> are disabled.</div>
     <ul>
       Backlink formatting
@@ -200,12 +200,16 @@ Options =
     
     #archiver
     archiver = $ 'select[name=archiver]', dialog
-    for name in data = Redirect.select()
+    data =
+      if Redirect.select()
+         Redirect.select()
+      else
+        ['No archiver available.']
+    for name in data
       return if archiver.length >= data.length
       (option = d.createElement 'option').textContent = name
       $.add archiver, option
-    if data.length > 1 and data[0] isnt 'No archiver available.'
-    # Might needs some nicer transition.
+    if data.length > 1
       archiver.value = $.get "archiver/#{g.BOARD}/"
       $.on archiver, 'mouseup', Options.archiver
 
