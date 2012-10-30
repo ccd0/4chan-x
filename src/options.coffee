@@ -51,7 +51,6 @@ Options =
   <div></div>
   <input type=radio name=tab hidden id=sauces_tab>
   <div>
-    Select an Archiver for this board: <select name=archiver></select><br><br>
     <div class=warning><code>Sauce</code> is disabled.</div>
     Lines starting with a <code>#</code> will be ignored.<br>
     You can specify a certain display text by appending <code>;text:[text]</code> to the url.
@@ -84,6 +83,10 @@ Options =
   </div>
   <input type=radio name=tab hidden id=rice_tab>
   <div>
+    <ul>
+      Archiver
+      <li>Select an Archiver for this board: <select name=archiver></select></li>
+    <ul>
     <div class=warning><code>Quote Backlinks</code> are disabled.</div>
     <ul>
       Backlink formatting

@@ -2742,9 +2742,9 @@ Redirect =
         arch
     for type in data.boards
       if (current = $.get "archiver/#{board}/") is undefined
-        return board
-      if current is data.name
-        return board
+        $.set "archiver/#{board}/", "#{@select()[0]}"
+        continue
+      return board if current is data.name
   to: (data) ->
     unless data.isSearch
       {threadID} = data
