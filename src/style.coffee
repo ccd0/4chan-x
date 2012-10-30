@@ -1076,12 +1076,18 @@ input[value="Report"] {
 }
 /* Fixes text spoilers */
 .spoiler:not(:hover),
-.spoiler:not(:hover) .quote,
-.spoiler:not(:hover) .quote a,
-.spoiler:not(:hover) a {
+.spoiler:not(:hover) * {
   color: rgb(0,0,0) !important;
   background-color: rgb(0,0,0) !important;
   text-shadow: none !important;
+}
+div.thread {
+  padding: 0;
+  position: relative;
+  #{(unless Conf['Images Overlap Post Form'] then "z-index: 0;" else "")}
+}
+div.post:not(#qp):not([hidden]) {
+  margin: 0;
 }
 /* Remove default "inherit" background declaration */
 .span.subject,
@@ -1108,9 +1114,9 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
   padding: 0;
 }
 #navtopright {
-  position: fixed;
-  bottom: -1000px;
-  left: -1000px;
+  overflow: hidden;
+  max-width: 0;
+  max-height: 0;
 }
 /* Expand Images */
 #imgControls {
@@ -1304,8 +1310,6 @@ textarea {
   bottom: 3px;
 }
 .postContainer.inline {
-  border: none;
-  background: none;
   padding-bottom: 2px;
 }
 div.pagelist {
@@ -1552,7 +1556,7 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > 
 .mascotoptions {
   background: #{theme["Dialog Background"]};
 }
-.inline .replyContainer {
+.inline .post {
   background: #{theme["Reply Background"]};
   border: 1px solid #{theme["Reply Border"]};
   box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
@@ -2289,13 +2293,6 @@ textarea.field,
     height step-end,
     width step-end;
 }
-#qr #threadselect {
-  float: left;
-  width: auto;
-}
-#spoilerLabel {
-  float: right;
-}
 """
 
     if Conf["Fit Width Replies"]
@@ -2364,17 +2361,6 @@ div.reply .inline .rice {
 .sideArrows a {
   font-size: 9px;
 }
-div.thread {
-  padding: 0;
-  position: relative;
-  #{(unless Conf['Images Overlap Post Form'] then "z-index: 0;" else "")}
-}
-div.post:not(#qp):not([hidden]) {
-  margin: 0;
-}
-div.sideArrows {
-  float: none;
-}
 #options.reply {
   display: inline-block;
 }
@@ -2383,9 +2369,6 @@ div.sideArrows {
       css += """
 .sideArrows {
   padding: 3px;
-}
-.sideArrows a {
-  position: static;
 }
 div.reply {
   padding: 6px 5px 0 8px
@@ -2396,18 +2379,6 @@ div.reply {
 .replyContainer div.post,
 .sideArrows {
   display: table-cell;
-}
-.replyContainer div.reply {
-  height: 100%
-}
-div.thread {
-  padding: 0;
-  position: relative;
-}
-div.post:not(#qp):not([hidden]) {
-  margin: 0;
-}
-.thread > div > .post {
   overflow: visible;
 }
 """
