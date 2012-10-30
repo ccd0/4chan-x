@@ -2364,6 +2364,7 @@ input,
   border: 1px solid #{theme["Background Color"]};
   background: #{theme["Background Color"]};
   box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
+  padding: 0;
 }
 #qr > .move,
 #qr textarea {
