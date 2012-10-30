@@ -20,8 +20,6 @@
 /* dialog styling */
 .dialog.reply {
   display: block;
-  border: 1px solid rgba(0,0,0,.25);
-  padding: 0;
 }
 .move {
   cursor: move;
@@ -113,8 +111,14 @@ label,
   top: 0;
   margin-top: -1px;
 }
-h1,
-#boardTitle {
+#boardTitle,
+#browse,
+#main_tab + div,
+#mascotConf input,
+#mascotConf input:#{agent}placeholder,
+#style_tab + div .suboptions,
+.center,
+h1 {
   text-align: center;
 }
 #qr > .move {
@@ -185,9 +189,6 @@ h1,
 .thumbnail:hover,
 .thumbnail:focus {
   opacity: .9;
-}
-.thumbnail#selected {
-  opacity: 1;
 }
 .thumbnail::before {
   counter-increment: thumbnails;
@@ -282,11 +283,8 @@ h1,
   z-index: 1;
 }
 #options {
-  z-index: 2;
   position: fixed;
   padding: 5px;
-  text-align: left;
-  vertical-align: middle;
   width: auto;
   left: 15%;
   right: 15%;
@@ -295,6 +293,9 @@ h1,
 }
 #options #style_tab + div select {
   width: 100%;
+}
+#options h3 {
+  margin: 0;
 }
 #theme_tab + div div:not(.selectedtheme) > div > h1 {
   color: transparent !important;
@@ -325,16 +326,7 @@ h1,
 #options ul li:nth-of-type(2n) {
   background-color: rgba(0, 0, 0, 0.05)
 }
-#options .optionlabel {
-  text-decoration: underline;
-}
-#options input:not([type=checkbox]) {
-  float: right;
-  clear: left;
-}
 #options #rice_tab + div input {
-  float: none;
-  clear: none;
   margin: 1px;
 }
 #options article li {
@@ -345,12 +337,6 @@ h1,
   color: #000;
   padding: 0 1px;
 }
-#options label {
-  text-decoration: underline;
-}
-#options .styleoption label {
-  text-decoration: none;
-}
 #options .option {
   width: 50%;
   display: inline-block;
@@ -358,19 +344,18 @@ h1,
 #options .option .optionlabel {
   padding-left: 18px;
 }
-#options .styleoption {
-  padding: 1px 0;
-  overflow: hidden;
-}
 #options .mascots {
   padding: 0;
   text-align: center;
 }
+#options .mascot,
+#options .mascot > div:first-child {
+  overflow: hidden;
+  display: inline-block;
+
+}
 #options .mascot {
   position: relative;
-  display: inline-block;
-  overflow: hidden;
-  padding: 0;
   width: 200px;
   padding: 3px;
   height: 250px;
@@ -382,8 +367,6 @@ h1,
   border: 0;
   margin: 0;
   max-height: 250px;
-  overflow: hidden;
-  display: inline-block;
   cursor: pointer;
   position: absolute;
   bottom: 0;
@@ -394,12 +377,7 @@ h1,
   vertical-align: top;
 }
 #options ul li.mascot {
-  border: 2px solid transparent;
   background-color: transparent;
-}
-#options ul li.mascot.enabled {
-  border-color: rgba(0,0,0,0.5);
-  background-color: rgba(255,255,255,0.1);
 }
 #mascotConf {
   position: fixed;
@@ -410,10 +388,6 @@ h1,
   margin-left: -250px;
   overflow: auto;
 }
-#mascotConf input,
-#mascotConf input:#{agent}placeholder {
-  text-align: center;
-}
 #mascotConf h2 {
   margin: 10px 0 0;
   font-size: 14px;
@@ -421,14 +395,10 @@ h1,
 #content {
   overflow: auto;
   position: absolute;
-  top: 2.5em;
-  right: 5px;
+  top:    2.5em;
+  right:  5px;
   bottom: 5px;
-  left: 5px;
-}
-#style_tab + div .suboptions,
-#main_tab + div {
-  text-align: center;
+  left:   5px;
 }
 #style_tab + div .suboptions ul,
 #main_tab + div ul {
@@ -561,8 +531,9 @@ h1,
 .deadlink:not(.quotelink) {
   text-decoration: none;
 }
-:not(.opContainer).image_expanded {
-  clear: both !important;
+.center,
+.replyContainer.image_expanded {
+  clear: both;
 }
 .inlined {
   opacity: .5;
@@ -623,7 +594,6 @@ body {
   min-height: 100%;
 }
 #exlinks-options > *,
-#submit input,
 html,
 body,
 a,
@@ -640,7 +610,6 @@ textarea {
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::after,
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::before,
 #boardNavDesktopFoot a,
-#submit input,
 .container::before,
 .fileText span:not([class])::after,
 a,
@@ -710,6 +679,7 @@ textarea {
 .yui-menu-shadow,
 [hidden],
 body > .postingMode ~ #delform hr,
+body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] ~ .pagelist,
 body > br,
 body > div[style^="text-align"],
 body > hr,
@@ -884,14 +854,17 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #navtopright .exlinksOptionsLink::after {
   background-position: 0 -105px;
 }
-body > a[style="cursor: pointer; float: right;"]:hover::after,
-#navtopright .settingsWindowLink:hover::after,
-#navtopright .exlinksOptionsLink:hover::after,
 #boardNavDesktopFoot:hover::after,
 #globalMessage:hover::after,
-div.navLinks > a:first-of-type:hover::after,
+#imgControls label:hover:first-of-type::after,
+#navlinks a:hover,
+#navtopright .settingsWindowLink:hover::after,
+#navtopright .exlinksOptionsLink:hover::after,
+#qr #qrtab,
 #watcher:hover::after,
-#imgControls label:hover:first-of-type::after {
+.thumbnail#selected,
+body > a[style="cursor: pointer; float: right;"]:hover::after,
+div.navLinks > a:first-of-type:hover::after {
   opacity: 1;
 }
 .pageJump {
@@ -978,10 +951,6 @@ a.yuimenuitemlabel {
   #{agent}box-sizing: border-box;
   box-sizing: border-box;
 }
-.center {
-  text-align: center;
-  clear: both;
-}
 img.topad,
 img.middlead,
 img.bottomad {
@@ -1015,8 +984,7 @@ a,
   #{agent}transition: background .1s linear;
 }
 /* Post Form */
-#qr div.captchainput,
-#qr div.captchainput + #submit {
+#qr div.captchainput {
   float: left;
 }
 #qr div.captchainput,
@@ -1059,9 +1027,6 @@ input[value="Report"] {
   height: 20px;
   padding: 0;
 }
-#browse {
-  text-align: center;
-}
 #qr input[type="file"] {
   position: absolute;
   opacity: 0;
@@ -1089,19 +1054,9 @@ input[value="Report"] {
 .top-box .menubutton {
   background-image: none;
 }
-input[type=checkbox],
-.reply input[type=checkbox],
-#options input[type=checkbox] {
-  width: 12px !important;
-  height: 12px !important;
-  cursor: pointer;
-}
 .postingMode ~ #delform .opContainer input {
   position: relative;
   bottom: 2px;
-}
-#qr #submit input {
-  float: left;
 }
 /* Posts */
 #delform .fileText + br + a[target="_blank"] img,
@@ -1258,35 +1213,22 @@ body > a[style="cursor: pointer; float: right;"] {
   top: -1000px;
   left: -1000px;
 }
-body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] {
+body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
   display: block;
   position: fixed !important;
-  top: 17px !important;
-  bottom: 17px !important;
+  top: 117px !important;
   #{Style.sidebarLocation[1]}: 4px !important;
   #{Style.sidebarLocation[0]}: #{(252 + Style.sidebarOffsetW)}px !important;
   width: auto !important;
   margin: 0 !important;
+  z-index: 2;
 }
-body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
-  border-collapse: separate !important;
-  background: #{theme["Dialog Background"]} !important;
-  border: 1px solid #{theme["Dialog Border"]} !important;
-  vertical-align: top !important;
-  height: auto !important;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-}
-body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table > tbody > tr > td {
+body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] > table > tbody > tr > td {
   background: #{theme["Body Background"]} !important;
   border: 1px solid #{theme["Reply Border"]} !important;
   vertical-align: top;
 }
-body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table > tbody > tr:first-of-type > td > div {
-  max-height: 450px;
-}
-body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] {
+body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
   height: 95% !important;
   margin-top: 5px !important;
   margin-bottom: 5px !important;
@@ -1597,11 +1539,12 @@ textarea.field:focus {
 #boardNavDesktopFoot,
 #mascotConf,
 #mascot_hide,
+#menu,
 #themeConf,
 #watcher,
 #watcher:hover,
 div.subMenu,
-#menu {
+body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Dialog Border"] };
 }
@@ -1639,9 +1582,6 @@ div.postContainer span.postNum > .replylink {
   height: 15px;
   text-align: center;
   width: 15px;
-}
-#navlinks a:hover {
-  opacity: 1;
 }
 .postNum a {
   color: #{theme["Post Numbers"]};
@@ -2095,9 +2035,6 @@ hr {
 input[title="Verification"] {
   width: 100%;
 }
-#qr #submit {
-  width: auto;
-}
 textarea.field,
 #qr > form > div {
   width: #{(248 + Style.sidebarOffsetW)}px;
@@ -2262,7 +2199,6 @@ input,
   #{Style.sidebarLocation[0]}: 0;
   width: 110px;
   display: inline-block;
-  opacity: 1;
   text-align: center;
   vertical-align: middle;
   color: #{theme["Text"]};
@@ -2316,7 +2252,6 @@ input,
 .autohide:not(:hover) > form {
   display: none !important;
 }
-#qr #submit input,
 textarea.field,
 #qr input[title="Verification"],
 #qr > form > div {
@@ -2438,9 +2373,6 @@ div.post:not(#qp):not([hidden]) {
 }
 div.sideArrows {
   float: none;
-}
-.opContainer input {
-  opacity: 1;
 }
 #options.reply {
   display: inline-block;
