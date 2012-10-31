@@ -9181,6 +9181,8 @@
         child = _ref[_i];
         if (child.nodeType === Node.TEXT_NODE) {
           nodes.push(child);
+        } else if (child.tagName == null) {
+          continue;
         } else if (child.tagName.toLowerCase() !== "br") {
           results = this.collector(child);
           for (_j = 0, _len1 = results.length; _j < _len1; _j++) {
@@ -9405,6 +9407,9 @@
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           child = _ref[_i];
+          if (!child.tagName) {
+            continue;
+          }
           if (child.tagName.toLowerCase() === "img") {
             child.id = "Banner";
             continue;

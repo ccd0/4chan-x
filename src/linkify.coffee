@@ -58,6 +58,8 @@ Linkify =
     for child in node.childNodes
       if child.nodeType is Node.TEXT_NODE
         nodes.push child
+      else unless child.tagName?
+        continue
       else unless child.tagName.toLowerCase() is "br"
         results = @collector(child)
         for result in results

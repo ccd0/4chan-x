@@ -74,6 +74,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
     title  = $.el "div"
       id:   "boardTitle"
     children = for child in banner.children
+      continue unless child.tagName
       if child.tagName.toLowerCase() == "img"
         child.id = "Banner"
         continue;
