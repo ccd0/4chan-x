@@ -2450,7 +2450,7 @@ ArchiveLink =
     open = (post) ->
       if type is 'apost'
         el.href =
-          Redirect.to 
+          Redirect.to
             board:    post.info[0]
             threadID: post.info[1]
             postID:   post.ID
@@ -2718,14 +2718,14 @@ Redirect =
       'boards':  ['cgl', 'ck', 'jp', 'lit', 'q', 'tg']
     }
     {
-      'name':    'InstallGentoo'
-      'base':    '//archive.installgentoo.net'
-      'boards':  ['diy', 'g', 'sci']
-    }
-    {
       'name':    'RebeccaBlackTech'
       'base':    '//rbt.asia'
       'boards':  ['cgl', 'g', 'mu', 'soc', 'w']
+    }
+    {
+      'name':    'InstallGentoo'
+      'base':    '//archive.installgentoo.net'
+      'boards':  ['diy', 'g', 'sci']
     }
     {
       'name':    'Heinessen'
@@ -2734,15 +2734,16 @@ Redirect =
     }
   ]
   select: (data, board) ->
+    noarch = 'No archiver available.'
     unless board
       arch = for type in @archiver
-        unless type.boards.indexOf(g.BOARD) >= 0
+        unless type.boards.contains(g.BOARD)
           continue
         else
           type.name
-      return if arch.length > 0 then arch else false
+      return if arch.length > 0 then arch else noarch
     for type in data.boards
-      if (current = $.get "archiver/#{board}/") is undefined and (name = @select()[0])
+      if (current = $.get "archiver/#{board}/") is undefined and (name = @select()[..][0]) isnt noarch
         $.set "archiver/#{board}/", "#{name}"
         continue
       return board if current is data.name and data.boards.contains(board)

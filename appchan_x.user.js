@@ -2819,7 +2819,7 @@
       return _results;
     },
     dialog: function(tab) {
-      var archiver, arr, back, category, checked, data, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, name, obj, option, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, time, tr, ul, updateIncrease, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var archiver, arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, name, obj, option, optionname, optionvalue, overlay, sauce, select, selectoption, styleSetting, time, tr, ul, updateIncrease, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
       if (Conf['editMode'] === "theme") {
         if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
           ThemeTools.close();
@@ -2990,18 +2990,20 @@
       filter = $('select[name=filter]', dialog);
       $.on(filter, 'change', Options.filter);
       archiver = $('select[name=archiver]', dialog);
-      data = Redirect.select() ? Redirect.select() : ['No archiver available.'];
-      for (_i = 0, _len = data.length; _i < _len; _i++) {
-        name = data[_i];
-        if (archiver.length >= data.length) {
+      select = Redirect.select().slice(0);
+      for (_i = 0, _len = select.length; _i < _len; _i++) {
+        name = select[_i];
+        if (archiver.length >= select.length) {
           return;
         }
         (option = d.createElement('option')).textContent = name;
         $.add(archiver, option);
       }
-      if (data.length > 1) {
+      if (select.length > 1) {
         archiver.value = $.get("archiver/" + g.BOARD + "/");
-        $.on(archiver, 'mouseup', Options.archiver);
+        $.on(archiver, 'mouseup', function() {
+          return $.set("archiver/" + g.BOARD + "/", "" + this.value);
+        });
       }
       sauce = $('#sauces', dialog);
       sauce.value = $.get(sauce.name, Conf[sauce.name]);
@@ -3675,9 +3677,6 @@
     </li>\
   </ul>'
       }));
-    },
-    archiver: function() {
-      return $.set("archiver/" + g.BOARD + "/", "" + this.value);
     },
     time: function() {
       Time.foo();
@@ -7101,13 +7100,13 @@
         'base': '//fuuka.warosu.org',
         'boards': ['cgl', 'ck', 'jp', 'lit', 'q', 'tg']
       }, {
-        'name': 'InstallGentoo',
-        'base': '//archive.installgentoo.net',
-        'boards': ['diy', 'g', 'sci']
-      }, {
         'name': 'RebeccaBlackTech',
         'base': '//rbt.asia',
         'boards': ['cgl', 'g', 'mu', 'soc', 'w']
+      }, {
+        'name': 'InstallGentoo',
+        'base': '//archive.installgentoo.net',
+        'boards': ['diy', 'g', 'sci']
       }, {
         'name': 'Heinessen',
         'base': 'http://archive.heinessen.com',
@@ -7115,7 +7114,8 @@
       }
     ],
     select: function(data, board) {
-      var arch, current, name, type, _i, _len, _ref;
+      var arch, current, name, noarch, type, _i, _len, _ref;
+      noarch = 'No archiver available.';
       if (!board) {
         arch = (function() {
           var _i, _len, _ref, _results;
@@ -7123,7 +7123,7 @@
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             type = _ref[_i];
-            if (!(type.boards.indexOf(g.BOARD) >= 0)) {
+            if (!type.boards.contains(g.BOARD)) {
               continue;
             } else {
               _results.push(type.name);
@@ -7134,13 +7134,13 @@
         if (arch.length > 0) {
           return arch;
         } else {
-          return false;
+          return noarch;
         }
       }
       _ref = data.boards;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         type = _ref[_i];
-        if ((current = $.get("archiver/" + board + "/")) === void 0 && (name = this.select()[0])) {
+        if ((current = $.get("archiver/" + board + "/")) === void 0 && (name = this.select().slice(0)[0]) !== noarch) {
           $.set("archiver/" + board + "/", "" + name);
           continue;
         }
