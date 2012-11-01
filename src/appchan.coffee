@@ -51,7 +51,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       when 'presto'
         return '-o-'
 
-  addStyle: (theme) ->
+  addStyle: (theme = userThemes[Conf['theme']]) ->
     $.off d, 'DOMNodeInserted', Style.addStyle
     unless Conf['styleInit']
       if d.head
@@ -61,8 +61,6 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       else # XXX fox
         $.on d, 'DOMNodeInserted', Style.addStyle
     else
-      if !theme or !theme.Author
-        theme = userThemes[Conf['theme']]
       if el = $('#mascot', d.body) then $.rm el
       $.rm $.id 'appchan'
       $.rm $.id 'icons'

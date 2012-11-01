@@ -14,6 +14,8 @@ ThemeTools =
       editTheme["Author"] = "Author"
       editTheme["Author Tripcode"] = "Unknown"
 
+    $.log editTheme
+      
     # Objects are not guaranteed to have any type of arrangement, so we use a presorted
     # array to generate the layout of of the theme editor.
     layout = [
@@ -107,23 +109,7 @@ ThemeTools =
         innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input class=field name='#{item}' placeholder='#{if item == "Background Image" then "Shift+Click to upload image" else item}' value='#{editTheme[item]}'>"
 
       input = $('input', div)
-      $.on input, 'blur', ->
-        depth = 0
-
-        unless @.value.length > 1000
-          for i in [0..@value.length - 1]
-            switch @value[i]
-              when '(' then depth++
-              when ')' then depth--
-              when '"' then toggle1 = not toggle1
-              when "'" then toggle2 = not toggle2
-
-        if depth != 0 or toggle1 or toggle2
-          return alert "Syntax error on #{@name}."
-
-        editTheme[@name] = @value
-        Style.addStyle(editTheme)
-
+      
       switch item
         when "Background Image"
           fileInput = $.el 'input'
@@ -145,6 +131,24 @@ ThemeTools =
 
         else
           JSColor.bind input
+          
+      $.on input, 'blur', ->
+        depth = 0
+
+        unless @.value.length > 1000
+          for i in [0..@value.length - 1]
+            switch @value[i]
+              when '(' then depth++
+              when ')' then depth--
+              when '"' then toggle1 = not toggle1
+              when "'" then toggle2 = not toggle2
+
+        if depth != 0 or toggle1 or toggle2
+          return alert "Syntax error on #{@name}."
+
+        editTheme[@name] = @value
+        Style.addStyle(editTheme)
+
 
       $.add themecontent, div
 

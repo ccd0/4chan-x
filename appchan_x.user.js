@@ -8499,6 +8499,7 @@
         editTheme["Author"] = "Author";
         editTheme["Author Tripcode"] = "Unknown";
       }
+      $.log(editTheme);
       layout = ["Background Image", "Background Attachment", "Background Position", "Background Repeat", "Background Color", "Thread Wrapper Background", "Thread Wrapper Border", "Dialog Background", "Dialog Border", "Reply Background", "Reply Border", "Highlighted Reply Background", "Highlighted Reply Border", "Backlinked Reply Outline", "Input Background", "Input Border", "Hovered Input Background", "Hovered Input Border", "Focused Input Background", "Focused Input Border", "Checkbox Background", "Checkbox Border", "Checkbox Checked Background", "Buttons Background", "Buttons Border", "Navigation Background", "Navigation Border", "Links", "Hovered Links", "Quotelinks", "Backlinks", "Navigation Links", "Hovered Navigation Links", "Names", "Tripcodes", "Emails", "Subjects", "Text", "Inputs", "Post Numbers", "Greentext", "Sage", "Board Title", "Timestamps", "Warnings", "Shadow Color"];
       dialog = $.el("div", {
         id: "themeConf",
@@ -8527,6 +8528,31 @@
           innerHTML: "<div class=optionname><b>" + item + "</b></div><div class=option><input class=field name='" + item + "' placeholder='" + (item === "Background Image" ? "Shift+Click to upload image" : item) + "' value='" + editTheme[item] + "'>"
         });
         input = $('input', div);
+        switch (item) {
+          case "Background Image":
+            fileInput = $.el('input', {
+              type: 'file',
+              accept: "image/*",
+              title: "BG Image",
+              hidden: "hidden"
+            });
+            $.on(input, 'click', function(evt) {
+              if (evt.shiftKey) {
+                return this.nextSibling.click();
+              }
+            });
+            $.on(fileInput, 'change', function(evt) {
+              return ThemeTools.uploadImage(evt, this);
+            });
+            $.after(input, fileInput);
+            break;
+          case "Background Attachment":
+          case "Background Position":
+          case "Background Repeat":
+            break;
+          default:
+            JSColor.bind(input);
+        }
         $.on(input, 'blur', function() {
           var depth, i, toggle1, toggle2, _k, _ref1;
           depth = 0;
@@ -8553,31 +8579,6 @@
           editTheme[this.name] = this.value;
           return Style.addStyle(editTheme);
         });
-        switch (item) {
-          case "Background Image":
-            fileInput = $.el('input', {
-              type: 'file',
-              accept: "image/*",
-              title: "BG Image",
-              hidden: "hidden"
-            });
-            $.on(input, 'click', function(evt) {
-              if (evt.shiftKey) {
-                return this.nextSibling.click();
-              }
-            });
-            $.on(fileInput, 'change', function(evt) {
-              return ThemeTools.uploadImage(evt, this);
-            });
-            $.after(input, fileInput);
-            break;
-          case "Background Attachment":
-          case "Background Position":
-          case "Background Repeat":
-            break;
-          default:
-            JSColor.bind(input);
-        }
         $.add(themecontent, div);
       }
       div = $.el("div", {
@@ -10074,6 +10075,9 @@
     },
     addStyle: function(theme) {
       var el;
+      if (theme == null) {
+        theme = userThemes[Conf['theme']];
+      }
       $.off(d, 'DOMNodeInserted', Style.addStyle);
       if (!Conf['styleInit']) {
         if (d.head) {
@@ -10084,9 +10088,6 @@
           return $.on(d, 'DOMNodeInserted', Style.addStyle);
         }
       } else {
-        if (!theme || !theme.Author) {
-          theme = userThemes[Conf['theme']];
-        }
         if (el = $('#mascot', d.body)) {
           $.rm(el);
         }
