@@ -1181,7 +1181,7 @@ textarea:focus,
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
-input:not(.jsColor),
+input,
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
@@ -1269,7 +1269,7 @@ textarea:focus,
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
-input:not(.jsColor),
+input,
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
@@ -1380,7 +1380,7 @@ textarea:focus,
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
-input:not(.jsColor),
+input,
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
@@ -1463,7 +1463,7 @@ textarea:focus,
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
-input:not(.jsColor),
+input,
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
@@ -1543,7 +1543,7 @@ textarea:focus,
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
-input:not(.jsColor),
+input,
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
@@ -1637,7 +1637,7 @@ textarea:focus,
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
-input:not(.jsColor),
+input,
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
@@ -1731,7 +1731,7 @@ textarea:focus,
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
-input:not(.jsColor),
+input,
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
@@ -1814,7 +1814,7 @@ textarea:focus,
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
-input:not(.jsColor),
+input,
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
@@ -1897,7 +1897,7 @@ textarea:focus,
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
-input:not(.jsColor),
+input,
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
@@ -1992,7 +1992,7 @@ a:hover {
   text-shadow: 0 0 3px rgba(232,118,0,.7);
 }
 button,
-input:not(.jsColor),
+input,
 textarea,
 .rice {
   transition:
@@ -2086,7 +2086,7 @@ textarea:focus,
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
-input:not(.jsColor),
+input,
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;

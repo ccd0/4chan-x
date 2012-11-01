@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 1.0.10 - 2012-10-31
+/*  appchan x - Version 1.0.10 - 2012-11-01
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -97,7 +97,7 @@
  *  this notice is kept intact.
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, Icons, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userMascots, userNavigation, userThemes, _base;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, Icons, ImageExpand, ImageHover, JSColor, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userMascots, userNavigation, userThemes, _base;
 
   Config = {
     main: {
@@ -1070,7 +1070,7 @@
       "Warnings": "rgb(200,40,41)",
       "Shadow Color": "rgba(255,255,255,.9)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\nnput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle {\n  color: #cc5ec1 !important;\n  text-shadow: 1px 1px 1px #772E28 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\nnput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle {\n  color: #cc5ec1 !important;\n  text-shadow: 1px 1px 1px #772E28 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}"
     },
     "Yotsuba Purple": {
       "Author": "seaweed",
@@ -1122,7 +1122,7 @@
       "Warnings": "rgb(153,0,0)",
       "Shadow Color": "rgba(254,237,255,.9)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,253,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#boardNavDesktop,\n.pagelist,\n#imgControls {\n  background:rgba(229, 219, 240,.9)!important;\n}\n#delform,\n.replyContainer,\n.hidden_thread,\n.stub {\n  border-radius:0!important\n}\n.replyContainer,\n.hidden_thread,\n.stub {\n  border-left:0!important;\n  border-top:0!important;\n}\n.boardTitle {\n  color: #591177 !important;\n  text-shadow: 1px 1px 1px #222 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}\n.postNum a {\n  color: #000000 !important;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,253,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#boardNavDesktop,\n.pagelist,\n#imgControls {\n  background:rgba(229, 219, 240,.9)!important;\n}\n#delform,\n.replyContainer,\n.hidden_thread,\n.stub {\n  border-radius:0!important\n}\n.replyContainer,\n.hidden_thread,\n.stub {\n  border-left:0!important;\n  border-top:0!important;\n}\n.boardTitle {\n  color: #591177 !important;\n  text-shadow: 1px 1px 1px #222 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}\n.postNum a {\n  color: #000000 !important;\n}"
     },
     "Vimyanized Dark": {
       "Author": "seaweed",
@@ -1174,7 +1174,7 @@
       "Warnings": "rgb(79,79,79)",
       "Shadow Color": "rgba(29,33,36,.9)",
       "Dark Theme": true,
-      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(45,49,52,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}"
+      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(45,49,52,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}"
     },
     "Tomorrow Night": {
       "Author": "Chris Kempson",
@@ -1226,7 +1226,7 @@
       "Warnings": "rgb(204,102,102)",
       "Shadow Color": "rgba(56,58,62,.9)",
       "Dark Theme": true,
-      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(72,74,78,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}"
+      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(72,74,78,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}"
     },
     "Solarized Light": {
       "Author": "seaweed",
@@ -1278,7 +1278,7 @@
       "Warnings": "rgb(153,0,0)",
       "Shadow Color": "rgba(255,255,243,.9)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle {\n  color: #b58900 !important;\n  text-shadow: 1px 1px 1px #999 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}\n.postNum a {\n  color: #657b83 !important;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle {\n  color: #b58900 !important;\n  text-shadow: 1px 1px 1px #999 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}\n.postNum a {\n  color: #657b83 !important;\n}"
     },
     "Muted": {
       "Author": "seaweed",
@@ -1330,7 +1330,7 @@
       "Warnings": "rgb(153,0,0)",
       "Shadow Color": "rgba(255,255,249,.9)",
       "Dark Theme": false,
-      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle{\ncolor:#bc312a!important;\n  text-shadow:1px 1px 1px #772e28 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow:none!important;\n}\n.postNum a {\n  color:#111111!important;\n}\ndiv.reply a.quotelink{\n  color:#bc312a!important;\n}"
+      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle{\ncolor:#bc312a!important;\n  text-shadow:1px 1px 1px #772e28 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow:none!important;\n}\n.postNum a {\n  color:#111111!important;\n}\ndiv.reply a.quotelink{\n  color:#bc312a!important;\n}"
     },
     "Monokai": {
       "Author": "seaweed",
@@ -1382,7 +1382,7 @@
       "Warnings": "rgb(79,79,79)",
       "Shadow Color": "rgba(32,33,28,0.7)",
       "Dark Theme": true,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(71,72,66,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(71,72,66,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}"
     },
     "Dark Flat": {
       "Author": "Ahoka",
@@ -1434,7 +1434,7 @@
       "Warnings": "rgb(201,144,144)",
       "Shadow Color": "rgba(32,32,32,0.5)",
       "Dark Theme": true,
-      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(67,68,69,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.replyContainer div.post {\n border: 0 !important\n}"
+      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(67,68,69,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.replyContainer div.post {\n border: 0 !important\n}"
     },
     "Blackboard": {
       "Author": "seaweed",
@@ -1486,7 +1486,7 @@
       "Warnings": "rgb(79,79,79)",
       "Shadow Color": "rgba(28,32,49,.9)",
       "Dark Theme": true,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(44,48,65,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\nthread>.replyContainer>.reply>div.postInfo {\n  box-shadow: 0px 2px 3px #0A0A0A !important;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(44,48,65,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\nthread>.replyContainer>.reply>div.postInfo {\n  box-shadow: 0px 2px 3px #0A0A0A !important;\n}"
     },
     "4chan Rewired": {
       "Author": "",
@@ -1538,7 +1538,7 @@
       "Warnings": "rgb(204,102,102)",
       "Shadow Color": "rgba(0,0,0,.07)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\n.replyContainer div.reply,\n.opContainer div.op {\n  background-color: transparent !important;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\na {\n  -moz-transition: text-shadow .2s;\n  -o-transition: text-shadow .2s;\n  -webkit-transition: text-shadow .2s;\n}\na:hover {\n  text-shadow: 0 0 3px rgba(232,118,0,.7);\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:\n    background .2s,\n    box-shadow .2s;\n}\n.subject:not(:empty)::after {\n  content: \" by\";\n  font-weight: normal;\n}\n.qphl {\n  outline-width: 1px;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\n.replyContainer div.reply,\n.opContainer div.op {\n  background-color: transparent !important;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\na {\n  -moz-transition: text-shadow .2s;\n  -o-transition: text-shadow .2s;\n  -webkit-transition: text-shadow .2s;\n}\na:hover {\n  text-shadow: 0 0 3px rgba(232,118,0,.7);\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:\n    background .2s,\n    box-shadow .2s;\n}\n.subject:not(:empty)::after {\n  content: \" by\";\n  font-weight: normal;\n}\n.qphl {\n  outline-width: 1px;\n}"
     },
     "4chan Dark Upgrade": {
       "Author": "Ahoka",
@@ -1590,7 +1590,7 @@
       "Warnings": "rgb(177,115,133)",
       "Shadow Color": "rgba(67,67,67,.9)",
       "Dark Theme": true,
-      "Custom CSS": "html {\n}\n.board {\n  padding: 3px 4px;\n}\n.rice {\n  box-shadow:rgba(83,83,83,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#delform{\n  background:rgba(22,22,22,.8)!important;\n  border:0!important;\n  padding:1px!important;\n  box-shadow:rgba(0,0,0,.8) 0 0 10px;\n}\ndiv.reply {\n  background-image:    -moz-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  background-image:      -o-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  background-image: -webkit-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  border-bottom:#1f1f1f!important;\n  border-radius:5px!important\n}\n.thread:not(.stub){\n  background:0!important\n}\na:not([href='javascript:;']){\n  text-shadow:#0f0f0f 0 1px;\n}"
+      "Custom CSS": "html {\n}\n.board {\n  padding: 3px 4px;\n}\n.rice {\n  box-shadow:rgba(83,83,83,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#delform{\n  background:rgba(22,22,22,.8)!important;\n  border:0!important;\n  padding:1px!important;\n  box-shadow:rgba(0,0,0,.8) 0 0 10px;\n}\ndiv.reply {\n  background-image:    -moz-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  background-image:      -o-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  background-image: -webkit-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  border-bottom:#1f1f1f!important;\n  border-radius:5px!important\n}\n.thread:not(.stub){\n  background:0!important\n}\na:not([href='javascript:;']){\n  text-shadow:#0f0f0f 0 1px;\n}"
     }
   };
 
@@ -8553,22 +8553,30 @@
           editTheme[this.name] = this.value;
           return Style.addStyle(editTheme);
         });
-        if (item === "Background Image") {
-          fileInput = $.el('input', {
-            type: 'file',
-            accept: "image/*",
-            title: "BG Image",
-            hidden: "hidden"
-          });
-          $.on(input, 'click', function(evt) {
-            if (evt.shiftKey) {
-              return this.nextSibling.click();
-            }
-          });
-          $.on(fileInput, 'change', function(evt) {
-            return ThemeTools.uploadImage(evt, this);
-          });
-          $.after(input, fileInput);
+        switch (item) {
+          case "Background Image":
+            fileInput = $.el('input', {
+              type: 'file',
+              accept: "image/*",
+              title: "BG Image",
+              hidden: "hidden"
+            });
+            $.on(input, 'click', function(evt) {
+              if (evt.shiftKey) {
+                return this.nextSibling.click();
+              }
+            });
+            $.on(fileInput, 'change', function(evt) {
+              return ThemeTools.uploadImage(evt, this);
+            });
+            $.after(input, fileInput);
+            break;
+          case "Background Attachment":
+          case "Background Position":
+          case "Background Repeat":
+            break;
+          default:
+            JSColor.bind(input);
         }
         $.add(themecontent, div);
       }
@@ -8738,7 +8746,7 @@
               'Warnings': 'rgb(' + sageColor.rgb + ')',
               'Shadow Color': 'rgba(' + mainColor.shiftRGB(16) + ',.9)',
               'Dark Theme': mainColor.isLight ? false : true,
-              'Custom CSS': ".rice {\n  box-shadow:rgba(" + mainColor.shiftRGB(32) + ",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + (imported.customCSS || '')
+              'Custom CSS': ".rice {\n  box-shadow:rgba(" + mainColor.shiftRGB(32) + ",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + (imported.customCSS || '')
             };
           } else if (origin === "SS") {
             userThemes[name] = {
@@ -8791,7 +8799,7 @@
               'Warnings': 'rgb(' + sageColor.rgb + ')',
               'Shadow Color': 'rgba(' + mainColor.shiftRGB(-16) + ',.9)',
               'Dark Theme': mainColor.isLight ? false : true,
-              'Custom CSS': ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(" + mainColor.shiftRGB(32) + ",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + (imported.customCSS || '')
+              'Custom CSS': ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(" + mainColor.shiftRGB(32) + ",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + (imported.customCSS || '')
             };
           }
         } else if (origin === 'appchan') {
@@ -8826,6 +8834,700 @@
       $.rm($("#themeConf", d.body));
       Style.addStyle();
       return Options.dialog("theme");
+    }
+  };
+
+  /*
+  Based on JSColor, JavaScript Color Picker
+  
+  @license   GNU Lesser General Public License, http://www.gnu.org/copyleft/lesser.html
+  @author    Jan Odvarko, http://odvarko.cz
+  @link      http://JSColor.com
+  */
+
+
+  JSColor = {
+    bind: function(el) {
+      if (!el.color) {
+        return el.color = new JSColor.color(el);
+      }
+    },
+    images: {
+      pad: [181, 101],
+      sld: [16, 101],
+      cross: [15, 15],
+      arrow: [7, 11]
+    },
+    imgRequire: {},
+    imgLoaded: {},
+    requireImage: function(filename) {
+      return JSColor.imgRequire[filename] = true;
+    },
+    loadImage: function(filename) {
+      if (!JSColor.imgLoaded[filename]) {
+        JSColor.imgLoaded[filename] = new Image();
+        return JSColor.imgLoaded[filename].src = JSColor.getDir() + filename;
+      }
+    },
+    fetchElement: function(mixed) {
+      if (typeof mixed === "string") {
+        return document.getElementById(mixed);
+      } else {
+        return mixed;
+      }
+    },
+    fireEvent: function(el, evnt) {
+      var ev;
+      if (!el) {
+        return;
+      }
+      if (document.createEvent) {
+        ev = document.createEvent('HTMLEvents');
+        ev.initEvent(evnt, true, true);
+        return el.dispatchEvent(ev);
+      } else if (document.createEventObject) {
+        ev = document.createEventObject();
+        return el.fireEvent('on' + evnt, ev);
+      } else if (el['on' + evnt]) {
+        return el['on' + evnt]();
+      }
+    },
+    getElementPos: function(e) {
+      var e1, e2, x, y;
+      e1 = e;
+      e2 = e;
+      x = 0;
+      y = 0;
+      if (e1.offsetParent) {
+        while (e1 = e1.offsetParent) {
+          x += e1.offsetLeft;
+          y += e1.offsetTop;
+        }
+      }
+      while ((e2 = e2.parentNode) && e2.nodeName.toLowerCade() !== 'body') {
+        x -= e2.scrollLeft;
+        y -= e2.scrollTop;
+      }
+      return [x, y];
+    },
+    getElementSize: function(e) {
+      return [e.offsetWidth, e.offsetHeight];
+    },
+    getRelMousePos: function(e) {
+      var x, y;
+      if (e == null) {
+        e = window.event;
+      }
+      x = 0;
+      y = 0;
+      if (typeof e.offsetX === 'number') {
+        x = e.offsetX;
+        y = e.offsetY;
+      } else if (typeof e.layerX === 'number') {
+        x = e.layerX;
+        y = e.layerY;
+      }
+      return {
+        x: x,
+        y: y
+      };
+    },
+    getViewPos: function() {
+      if (typeof window.pageYOffset === 'number') {
+        return [window.pageXOffset, window.pageYOffset];
+      } else if (document.body && (document.body.scrollLeft || document.body.scrollTop)) {
+        return [document.body.scrollLeft, document.body.scrollTop];
+      } else if (document.documentElement && (document.documentElement.scrollLeft || document.documentElement.scrollTop)) {
+        return [document.documentElement.scrollLeft, document.documentElement.scrollTop];
+      } else {
+        return [0, 0];
+      }
+    },
+    getViewSize: function() {
+      if (typeof window.innerWidth === 'number') {
+        return [window.innerWidth, window.innerHeight];
+      } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) {
+        return [document.body.clientWidth, document.body.clientHeight];
+      } else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
+        return [document.documentElement.clientWidth, document.documentElement.clientHeight];
+      } else {
+        return [0, 0];
+      }
+    },
+    color: function(target, prop) {
+      var HSV_RGB, RGB_HSV, THIS, abortBlur, blurTarget, blurValue, dispatchImmediateChange, drawPicker, getPickerDims, holdPad, holdSld, isPickerOwner, leavePad, leaveSld, leaveStyle, leaveValue, modeID, redrawPad, redrawSld, removePicker, setPad, setSld, styleElement, updateField, valueElement;
+      this.required = true;
+      this.adjust = true;
+      this.slider = true;
+      this.valueElement = target;
+      this.styleElement = target;
+      this.onImmediateChange = null;
+      this.hsv = [0, 0, 1];
+      this.rgb = [1, 1, 1];
+      this.minH = 0;
+      this.maxH = 6;
+      this.minS = 0;
+      this.maxS = 1;
+      this.minV = 0;
+      this.maxV = 1;
+      this.pickerOnfocus = true;
+      this.pickerMode = 'HSV';
+      this.pickerPosition = 'bottom';
+      this.pickerSmartPosition = true;
+      this.pickerButtonHeight = 20;
+      this.pickerClosable = false;
+      this.pickerCloseText = 'Close';
+      this.pickerButtonColor = 'ButtonText';
+      this.pickerFace = 10;
+      this.pickerFaceColor = 'ThreeDFace';
+      this.pickerBorder = 1;
+      this.pickerBorderColor = 'ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight';
+      this.pickerInset = 1;
+      this.pickerInsetColor = 'ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow';
+      this.pickerZIndex = 10000;
+      this.hidePicker = function() {
+        if (isPickerOwner()) {
+          return removePicker();
+        }
+      };
+      this.showPicker = function() {
+        var a, b, c, l, pp, ps, tp, ts, vp, vs;
+        if (!isPickerOwner()) {
+          tp = JSColor.getElementPos(target);
+          ts = JSColor.getElementSize(target);
+          vp = JSColor.getViewPos();
+          vs = JSColor.getViewSize();
+          ps = getPickerDims(this);
+          switch (this.pickerPosition.toLowerCase()) {
+            case 'left':
+              a = 1;
+              b = 0;
+              c = -1;
+              break;
+            case 'right':
+              a = 1;
+              b = 0;
+              c = 1;
+              break;
+            case 'top':
+              a = 0;
+              b = 1;
+              c = -1;
+              break;
+            default:
+              a = 0;
+              b = 1;
+              c = 1;
+          }
+          l = (ts[b] + ps[b]) / 2;
+          if (!this.pickerSmartPosition) {
+            pp = [tp[a], tp[b] + ts[b] - l + l * c];
+          } else {
+            pp = [(-vp[a] + tp[a] + ps[a] > vs[a] ? -vp[a] + tp[a] + ts[a] / 2 > vs[a] / 2 && tp[a] + ts[a] - ps[a] >= 0 ? tp[a] + ts[a] - ps[a] : tp[a] : tp[a]), (-vp[b] + tp[b] + ts[b] + ps[b] - l + l * c > vs[b] ? -vp[b] + tp[b] + ts[b] / 2 > vs[b] / 2 && tp[b] + ts[b] - l - l * c >= 0 ? tp[b] + ts[b] - l - l * c : tp[b] + ts[b] - l + l * c : tp[b] + ts[b] - l + l * c >= 0 ? tp[b] + ts[b] - l + l * c : tp[b] + ts[b] - l - l * c)];
+          }
+          return drawPicker(pp[a], pp[b]);
+        }
+      };
+      this.importColor = function() {
+        if (!valueElement) {
+          return this.exportColor();
+        } else {
+          if (!this.adjust) {
+            if (!this.fromString(valueElement.value, leaveValue)) {
+              styleElement.style.backgroundImage = styleElement.jscStyle.backgroundImage;
+              styleElement.style.backgroundColor = styleElement.jscStyle.backgroundColor;
+              styleElement.style.color = styleElement.jscStyle.color;
+              return this.exportColor(leaveValue | leaveStyle);
+            }
+          } else if (!(this.required && /^\s*$/.test(valueElement.value))) {
+            valueElement.value = '';
+            styleElement.style.backgroundImage = styleElement.jscStyle.backgroundImage;
+            styleElement.style.backgroundColor = styleElement.jscStyle.backgroundColor;
+            styleElement.style.color = styleElement.jscStyle.color;
+            return this.exportColor(leaveValue | leaveStyle);
+          } else {
+            if (!this.fromString(valueElement.value)) {
+              return this.exportColor();
+            }
+          }
+        }
+      };
+      this.exportColor = function(flags) {
+        var value;
+        if (!(flags & leaveValue) && valueElement) {
+          value = this.toString();
+          value = '#' + value;
+          valueElement.value = value;
+        }
+        if (!(flags & leaveStyle) && styleElement) {
+          styleElement.style.backgroundImage = "none";
+          styleElement.style.backgroundColor = '#' + this.toString();
+          styleElement.style.color = (0.213 * this.rgb[0] + 0.715 * this.rgb[1] + 0.072 * this.rgb[2]) < 0.5 ? '#FFF' : '#000';
+        }
+        if (!(flags & leavePad) && isPickerOwner()) {
+          redrawPad();
+        }
+        if (!(flags & leaveSld) && isPickerOwner()) {
+          return redrawSld();
+        }
+      };
+      this.fromHSV = function(h, s, v, flags) {
+        if (h != null) {
+          h = Math.max(0.0, this.minH, Math.min(6.0, this.maxH, h));
+        }
+        if (s != null) {
+          s = Math.max(0.0, this.minS, Math.min(1.0, this.maxS, s));
+        }
+        if (v != null) {
+          v = Math.max(0.0, this.minV, Math.min(1.0, this.maxV, v));
+        }
+        this.rgb = HSV_RGB(h == null ? this.hsv[0] : (this.hsv[0] = h), s == null ? this.hsv[1] : (this.hsv[1] = s), v == null ? this.hsv[2] : (this.hsv[2] = v));
+        return this.exportColor(flags);
+      };
+      this.fromRGB = function(r, g, b, flags) {
+        var hsv, rgb;
+        if (r != null) {
+          r = Math.max(0.0, Math.min(1.0, r));
+        }
+        if (g != null) {
+          g = Math.max(0.0, Math.min(1.0, g));
+        }
+        if (b != null) {
+          b = Math.max(0.0, Math.min(1.0, b));
+        }
+        hsv = RGB_HSV(r == null ? this.rgb[0] : r, g == null ? this.rgb[1] : g, b == null ? this.rgb[2] : b);
+        if (hsv[0] != null) {
+          this.hsv[0] = Math.max(0.0, this.minH, Math.min(6.0, this.maxH, hsv[0]));
+        }
+        if (hsv[2] != null) {
+          this.hsv[1] = hsv[1] == null ? null : Math.max(0.0, this.minS, Math.min(1.0, this.maxS, hsv[1]));
+        }
+        this.hsv[2] = hsv[2] == null ? null : Math.max(0.0, this.minV, Math.min(1.0, this.maxV, hsv[2]));
+        rgb = HSV_RGB(this.hsv[0], this.hsv[1], this.hsv[2]);
+        this.rgb[0] = rgb[0];
+        this.rgb[1] = rgb[1];
+        this.rgb[2] = rgb[2];
+        return this.exportColor(flags);
+      };
+      this.fromString = function(hex, flags) {
+        var m;
+        m = hex.match(/^\W*([0-9A-F]{3}([0-9A-F]{3})?)\W*$/i);
+        if (!m) {
+          return false;
+        } else {
+          if (m[1].length === 6) {
+            this.fromRGB(parseInt(m[1].substr(0, 2), 16) / 255, parseInt(m[1].substr(2, 2), 16) / 255, parseInt(m[1].substr(4, 2), 16) / 255, flags);
+          } else {
+            this.fromRGB(parseInt(m[1].charAt(0) + m[1].charAt(0), 16) / 255, parseInt(m[1].charAt(1) + m[1].charAt(1), 16) / 255, parseInt(m[1].charAt(2) + m[1].charAt(2), 16) / 255, flags);
+          }
+          return true;
+        }
+      };
+      this.toString = function() {
+        return (0x100 | Math.round(255 * this.rgb[0])).toString(16).substr(1) + (0x100 | Math.round(255 * this.rgb[1])).toString(16).substr(1) + (0x100 | Math.round(255 * this.rgb[2])).toString(16).substr(1);
+      };
+      RGB_HSV = function(r, g, b) {
+        var h, m, n, v;
+        n = Math.min(Math.min(r, g), b);
+        v = Math.max(Math.max(r, g), b);
+        m = v - n;
+        if (m === 0) {
+          return [null, 0, v];
+        }
+        h = r === n ? 3 + (b - g) / m : g === n ? 5 + (r - b) / m : 1 + (g - r) / m;
+        return [h === 6 ? 0 : h, m / v, v];
+      };
+      HSV_RGB = function(h, s, v) {
+        var f, i, m, n;
+        if (h == null) {
+          return [v, v, v];
+        }
+        i = Math.floor(h);
+        f = i % 2 ? h - i : 1 - (h - i);
+        m = v * (1 - s);
+        n = v * (1 - s * f);
+        switch (i) {
+          case 6:
+          case 0:
+            return [v, n, m];
+          case 1:
+            return [n, v, m];
+          case 2:
+            return [m, v, n];
+          case 3:
+            return [m, n, v];
+          case 4:
+            return [n, m, v];
+          case 5:
+            return [v, m, n];
+        }
+      };
+      removePicker = function() {
+        delete JSColor.picker.owner;
+        return document.body.removeChild(JSColor.picker.boxB);
+      };
+      drawPicker = function(x, y) {
+        var dims, i, p, padImg, seg, segSize, setBtnBorder, _i, _len, _ref, _step;
+        if (!JSColor.picker) {
+          JSColor.picker = {
+            box: document.createElement('div'),
+            boxB: document.createElement('div'),
+            pad: document.createElement('div'),
+            padB: document.createElement('div'),
+            padM: document.createElement('div'),
+            sld: document.createElement('div'),
+            sldB: document.createElement('div'),
+            sldM: document.createElement('div'),
+            btn: document.createElement('div'),
+            btnS: document.createElement('span'),
+            btnT: document.createTextNode(this.pickerCloseText)
+          };
+          _ref = JSColor.images.sld[1];
+          for (_i = 0, _len = _ref.length, _step = (segSize = 4); _i < _len; _i += _step) {
+            i = _ref[_i];
+            seg = document.createElement('div');
+            seg.style.height = segSize + 'px';
+            seg.style.fontSize = '1px';
+            seg.style.lineHeight = '0';
+            JSColor.picker.sld.appendChild(seg);
+          }
+          JSColor.picker.sldB.appendChild(JSColor.picker.sld);
+          JSColor.picker.box.appendChild(JSColor.picker.sldB);
+          JSColor.picker.box.appendChild(JSColor.picker.sldM);
+          JSColor.picker.padB.appendChild(JSColor.picker.pad);
+          JSColor.picker.box.appendChild(JSColor.picker.padB);
+          JSColor.picker.box.appendChild(JSColor.picker.padM);
+          JSColor.picker.btnS.appendChild(JSColor.picker.btnT);
+          JSColor.picker.btn.appendChild(JSColor.picker.btnS);
+          JSColor.picker.box.appendChild(JSColor.picker.btn);
+          JSColor.picker.boxB.appendChild(JSColor.picker.box);
+        }
+        p = JSColor.picker;
+        p.box.onmouseup = p.box.onmouseout = function() {
+          return target.focus();
+        };
+        p.box.onmousedown = function() {
+          var abortBlur;
+          return abortBlur = true;
+        };
+        p.box.onmousemove = function(e) {
+          if (holdPad || holdSld) {
+            holdPad && setPad(e);
+            holdSld && setSld(e);
+            if (document.selection) {
+              document.selection.empty();
+            } else if (window.getSelection) {
+              window.getSelection().removeAllRanges();
+            }
+            return dispatchImmediateChange();
+          }
+        };
+        p.padM.onmouseup = p.padM.onmouseout = function() {
+          var holdPad;
+          if (holdPad) {
+            holdPad = false;
+            return JSColor.fireEvent(valueElement, 'change');
+          }
+        };
+        p.padM.onmousedown = function(e) {
+          var holdPad;
+          switch (modeID) {
+            case 0:
+              if (this.hsv[2] === 0) {
+                this.fromHSV(null, null, 1.0);
+              }
+              break;
+            case 1:
+              if (this.hsv[1] === 0) {
+                this.fromHSV(null, 1.0, null);
+              }
+          }
+          holdPad = true;
+          setPad(e);
+          return dispatchImmediateChange();
+        };
+        p.sldM.onmouseup = p.sldM.onmouseout = function() {
+          var holdSld;
+          if (holdSld) {
+            holdSld = false;
+            return JSColor.fireEvent(valueElement, 'change');
+          }
+        };
+        p.sldM.onmousedown = function(e) {
+          var holdSld;
+          holdSld = true;
+          setSld(e);
+          return dispatchImmediateChange();
+        };
+        dims = getPickerDims(THIS);
+        p.box.style.width = dims[0] + 'px';
+        p.box.style.height = dims[1] + 'px';
+        p.boxB.style.position = 'absolute';
+        p.boxB.style.clear = 'both';
+        p.boxB.style.left = x + 'px';
+        p.boxB.style.top = y + 'px';
+        p.boxB.style.zIndex = this.pickerZIndex;
+        p.boxB.style.border = this.pickerBorder + 'px solid';
+        p.boxB.style.borderColor = this.pickerBorderColor;
+        p.boxB.style.background = this.pickerFaceColor;
+        p.pad.style.width = JSColor.images.pad[0] + 'px';
+        p.pad.style.height = JSColor.images.pad[1] + 'px';
+        p.padB.style.position = 'absolute';
+        p.padB.style.left = this.pickerFace + 'px';
+        p.padB.style.top = this.pickerFace + 'px';
+        p.padB.style.border = this.pickerInset + 'px solid';
+        p.padB.style.borderColor = this.pickerInsetColor;
+        p.padM.style.position = 'absolute';
+        p.padM.style.left = '0';
+        p.padM.style.top = '0';
+        p.padM.style.width = this.pickerFace + 2 * this.pickerInset + JSColor.images.pad[0] + JSColor.images.arrow[0] + 'px';
+        p.padM.style.height = p.box.style.height;
+        p.padM.style.cursor = 'crosshair';
+        p.sld.style.overflow = 'hidden';
+        p.sld.style.width = JSColor.images.sld[0] + 'px';
+        p.sld.style.height = JSColor.images.sld[1] + 'px';
+        p.sldB.style.display = this.slider ? 'block' : 'none';
+        p.sldB.style.position = 'absolute';
+        p.sldB.style.right = this.pickerFace + 'px';
+        p.sldB.style.top = this.pickerFace + 'px';
+        p.sldB.style.border = this.pickerInset + 'px solid';
+        p.sldB.style.borderColor = this.pickerInsetColor;
+        p.sldM.style.display = this.slider ? 'block' : 'none';
+        p.sldM.style.position = 'absolute';
+        p.sldM.style.right = '0';
+        p.sldM.style.top = '0';
+        p.sldM.style.width = JSColor.images.sld[0] + JSColor.images.arrow[0] + this.pickerFace + 2 * this.pickerInset + 'px';
+        p.sldM.style.height = p.box.style.height;
+        try {
+          p.sldM.style.cursor = 'pointer';
+        } catch (eOldIE) {
+          p.sldM.style.cursor = 'hand';
+        }
+        setBtnBorder = function() {
+          var insetColors, pickerOutsetColor;
+          insetColors = this.pickerInsetColor.split(/\s+/);
+          pickerOutsetColor = insetColors.length < 2 ? insetColors[0] : insetColors[1] + ' ' + insetColors[0] + ' ' + insetColors[0] + ' ' + insetColors[1];
+          return p.btn.style.borderColor = pickerOutsetColor;
+        };
+        p.btn.style.display = this.pickerClosable ? 'block' : 'none';
+        p.btn.style.position = 'absolute';
+        p.btn.style.left = this.pickerFace + 'px';
+        p.btn.style.bottom = this.pickerFace + 'px';
+        p.btn.style.padding = '0 15px';
+        p.btn.style.height = '18px';
+        p.btn.style.border = this.pickerInset + 'px solid';
+        setBtnBorder();
+        p.btn.style.color = this.pickerButtonColor;
+        p.btn.style.font = '12px sans-serif';
+        p.btn.style.textAlign = 'center';
+        try {
+          p.btn.style.cursor = 'pointer';
+        } catch (eOldIE) {
+          p.btn.style.cursor = 'hand';
+        }
+        p.btn.onmousedown = function() {
+          return this.hidePicker();
+        };
+        p.btnS.style.lineHeight = p.btn.style.height;
+        switch (modeID) {
+          case 0:
+            padImg = "" + Style.agent + "linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), " + Style.agent + "linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)";
+            break;
+          case 1:
+            padImg = "" + Style.agent + "linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), " + Style.agent + "linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)";
+        }
+        p.padM.style.backgroundImage = "url('')";
+        p.padM.style.backgroundRepeat = "no-repeat";
+        p.sldM.style.backgroundImage = "url('')";
+        p.sldM.style.backgroundRepeat = "no-repeat";
+        p.pad.style.backgroundImage = padImg;
+        p.pad.style.backgroundRepeat = "no-repeat";
+        p.pad.style.backgroundPosition = "0 0";
+        redrawPad();
+        redrawSld();
+        JSColor.picker.owner = THIS;
+        return document.body.appendChild(p.boxB);
+      };
+      getPickerDims = function(o) {
+        var dims;
+        return dims = [2 * o.pickerInset + 2 * o.pickerFace + JSColor.images.pad[0] + (o.slider ? 2 * o.pickerInset + 2 * JSColor.images.arrow[0] + JSColor.images.sld[0] : 0), o.pickerClosable ? 4 * o.pickerInset + 3 * o.pickerFace + JSColor.images.pad[1] + o.pickerButtonHeight : 2 * o.pickerInset + 2 * o.pickerFace + JSColor.images.pad[1]];
+      };
+      redrawPad = function() {
+        var c, f, i, item, rgb, s, seg, x, y, yComponent, _i, _j, _len, _len1, _results, _results1;
+        switch (modeID) {
+          case 0:
+            yComponent = 1;
+            break;
+          case 1:
+            yComponent = 2;
+        }
+        x = Math.round((this.hsv[0] / 6) * (JSColor.images.pad[0] - 1));
+        y = Math.round((1 - this.hsv[yComponent]) * (JSColor.images.pad[1] - 1));
+        JSColor.picker.padM.style.backgroundPosition = ("" + (this.pickerFace + this.pickerInset + x - Math.floor(JSColor.images.cross[0] / 2)) + "px ") + ("" + (this.pickerFace + this.pickerInset + y - Math.floor(JSColor.images.cross[1] / 2)) + "px");
+        seg = JSColor.picker.sld.childNodes;
+        switch (modeID) {
+          case 0:
+            rgb = HSV_RGB(this.hsv[0], this.hsv[1], 1);
+            _results = [];
+            for (_i = 0, _len = seg.length; _i < _len; _i++) {
+              item = seg[_i];
+              _results.push(item.style.backgroundColor = "rgb(" + ("" + (rgb[0] * (1 - i / seg.length) * 100) + "%, ") + ("" + (rgb[1] * (1 - i / seg.length) * 100) + "%, ") + ("" + (rgb[2] * (1 - i / seg.length) * 100) + "%)"));
+            }
+            return _results;
+            break;
+          case 1:
+            c = [this.hsv[2], 0, 0];
+            i = Math.floor(this.hsv[0]);
+            f = i % 2 ? this.hsv[0] - i : 1 - (this.hsv[0] - i);
+            switch (i) {
+              case 6:
+              case 0:
+                rgb = [0, 1, 2];
+                break;
+              case 1:
+                rgb = [1, 0, 2];
+                break;
+              case 2:
+                rgb = [2, 0, 1];
+                break;
+              case 3:
+                rgb = [2, 1, 0];
+                break;
+              case 4:
+                rgb = [1, 2, 0];
+                break;
+              case 5:
+                rgb = [0, 2, 1];
+            }
+            _results1 = [];
+            for (_j = 0, _len1 = seg.length; _j < _len1; _j++) {
+              item = seg[_j];
+              s = 1 - 1 / (seg.length - 1) * i;
+              c[1] = c[0] * (1 - s * f);
+              c[2] = c[0] * (1 - s);
+              _results1.push(seg[i].style.backgroundColor = "rgb(" + ("" + (c[rgb[0]] * 100) + "%, ") + ("" + (c[rgb[1]] * 100) + "%, ") + ("" + (c[rgb[2]] * 100) + "%)"));
+            }
+            return _results1;
+        }
+      };
+      redrawSld = function() {
+        var y, yComponent;
+        switch (modeID) {
+          case 0:
+            yComponent = 2;
+            break;
+          case 1:
+            yComponent = 1;
+        }
+        y = Math.round((1 - this.hsv[yComponent]) * (JSColor.images.sld[1] - 1));
+        return JSColor.picker.sldM.style.backgroundPosition = "0 " + (this.pickerFace + this.pickerInset + y - Math.floor(JSColor.images.arrow[1] / 2)) + "px";
+      };
+      isPickerOwner = function() {
+        return JSColor.picker && JSColor.picker.owner === THIS;
+      };
+      blurTarget = function() {
+        if (valueElement === target) {
+          this.importColor();
+        }
+        if (this.pickerOnfocus) {
+          return this.hidePicker();
+        }
+      };
+      blurValue = function() {
+        if (valueElement !== target) {
+          return this.importColor();
+        }
+      };
+      setPad = function(e) {
+        var mpos, x, y;
+        mpos = JSColor.getRelMousePos(e);
+        x = mpos.x - this.pickerFace - this.pickerInset;
+        y = mpos.y - this.pickerFace - this.pickerInset;
+        switch (modeID) {
+          case 0:
+            return this.fromHSV(x * (6 / (JSColor.images.pad[0] - 1)), 1 - y / (JSColor.images.pad[1] - 1), null, leaveSld);
+          case 1:
+            return this.fromHSV(x * (6 / (JSColor.images.pad[0] - 1)), null, 1 - y / (JSColor.images.pad[1] - 1), leaveSld);
+        }
+      };
+      setSld = function(e) {
+        var mpos, y;
+        mpos = JSColor.getRelMousePos(e);
+        y = mpos.y - this.pickerFace - this.pickerInset;
+        switch (modeID) {
+          case 0:
+            return this.fromHSV(null, null, 1 - y / (JSColor.images.sld[1] - 1), leavePad);
+          case 1:
+            return this.fromHSV(null, 1 - y / (JSColor.images.sld[1] - 1), null, leavePad);
+        }
+      };
+      dispatchImmediateChange = function() {
+        var callback;
+        if (this.onImmediateChange) {
+          callback;
+
+          if (typeof this.onImmediateChange === 'string') {
+            callback = new Function(this.onImmediateChange);
+          } else {
+            callback = this.onImmediateChange;
+          }
+          return callback.call(THIS);
+        }
+      };
+      THIS = this;
+      modeID = this.pickerMode.toLowerCase() === 'hvs' ? 1 : 0;
+      abortBlur = false;
+      valueElement = JSColor.fetchElement(this.valueElement);
+      styleElement = JSColor.fetchElement(this.styleElement);
+      holdPad = false;
+      holdSld = false;
+      leaveValue = 1 << 0;
+      leaveStyle = 1 << 1;
+      leavePad = 1 << 2;
+      leaveSld = 1 << 3;
+      $.on(target, 'focus', function() {
+        if (this.pickerOnfocus) {
+          return this.showPicker();
+        }
+      });
+      $.on(target, 'blur', function() {
+        if (!abortBlur) {
+          window.setTimeout((function() {
+            abortBlur || blurTarget();
+            return abortBlur = false;
+          }));
+          return 0;
+        } else {
+          return abortBlur = false;
+        }
+      });
+      if (valueElement) {
+        updateField = function() {
+          this.fromString(valueElement.value, leaveValue);
+          return dispatchImmediateChange();
+        };
+        $.on(valueElement, 'keyup', updateField);
+        $.on(valueElement, 'input', updateField);
+        $.on(valueElement, 'blur', blurValue);
+        valueElement.setAttribute('autocomplete', 'off');
+      }
+      if (styleElement) {
+        styleElement.jscStyle = {
+          backgroundImage: styleElement.style.backgroundImage,
+          backgroundColor: styleElement.style.backgroundColor,
+          color: styleElement.style.color
+        };
+      }
+      switch (modeID) {
+        case 0:
+          JSColor.requireImage('hs.png');
+          break;
+        case 1:
+          JSColor.requireImage('hv.png');
+      }
+      JSColor.requireImage('cross.gif');
+      JSColor.requireImage('arrow.gif');
+      return this.importColor();
     }
   };
 

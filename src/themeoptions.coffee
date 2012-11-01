@@ -14,8 +14,8 @@ ThemeTools =
       editTheme["Author"] = "Author"
       editTheme["Author Tripcode"] = "Unknown"
 
-    #Objects are not guaranteed to have any type of arrangement, so we use a presorted
-    #array to generate the layout of of the theme editor.
+    # Objects are not guaranteed to have any type of arrangement, so we use a presorted
+    # array to generate the layout of of the theme editor.
     layout = [
       "Background Image"
       "Background Attachment"
@@ -124,21 +124,27 @@ ThemeTools =
         editTheme[@name] = @value
         Style.addStyle(editTheme)
 
-      if item == "Background Image"
-        fileInput = $.el 'input'
-          type: 'file'
-          accept:   "image/*"
-          title:    "BG Image"
-          hidden:   "hidden"
+      switch item
+        when "Background Image"
+          fileInput = $.el 'input'
+            type: 'file'
+            accept:   "image/*"
+            title:    "BG Image"
+            hidden:   "hidden"
 
-        $.on input, 'click', (evt) ->
-          if evt.shiftKey
-            @.nextSibling.click()
+          $.on input, 'click', (evt) ->
+            if evt.shiftKey
+              @.nextSibling.click()
 
-        $.on fileInput, 'change', (evt) ->
-          ThemeTools.uploadImage evt, @
+          $.on fileInput, 'change', (evt) ->
+            ThemeTools.uploadImage evt, @
 
-        $.after input, fileInput
+          $.after input, fileInput
+
+        when "Background Attachment" ,"Background Position", "Background Repeat"
+
+        else
+          JSColor.bind input
 
       $.add themecontent, div
 
@@ -345,7 +351,7 @@ textarea:focus,
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
-input:not(.jsColor),
+input,
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
@@ -428,7 +434,7 @@ textarea:focus,
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
-input:not(.jsColor),
+input,
 textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
