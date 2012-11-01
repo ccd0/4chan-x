@@ -2431,7 +2431,6 @@
       if (mode == null) {
         mode = "default";
       }
-      $.log(mode);
       clientX = e.clientX, clientY = e.clientY;
       style = UI.el.style;
       _ref = d.documentElement, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
@@ -9407,7 +9406,7 @@
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           child = _ref[_i];
-          if (!child.tagName) {
+          if (child.tagName == null) {
             continue;
           }
           if (child.tagName.toLowerCase() === "img") {

@@ -41,14 +41,13 @@ UI =
     d.removeEventListener 'mouseup',   UI.dragend, false
     delete UI.el
   hover: (e, mode = "default") ->
-    $.log mode
     {clientX, clientY} = e
     {style} = UI.el
     {clientHeight, clientWidth} = d.documentElement
     height = UI.el.offsetHeight
-    
+
     if mode is "default"
-    
+
       top = clientY - 120
       style.top =
         if clientHeight <= height or top <= 0
@@ -61,7 +60,7 @@ UI =
       if clientX <= clientWidth - 400
         style.left = clientX + 45 + 'px'
         style.right = null
-    
+
     else
 
       if clientX <= clientWidth - 400
@@ -88,7 +87,7 @@ UI =
 # Various prototypes I've wanted or needed to add.
 Array::contains = (object) ->
   @indexOf(object) > -1
-  
+
 Array::add = (object, position) ->
   keep = @slice position
   @length = position
