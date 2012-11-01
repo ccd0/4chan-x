@@ -1,7 +1,17 @@
 Style =
   init: ->
-    @remStyle()
-    @addStyle()
+
+    Style.agent = (->
+      switch $.engine
+        when 'gecko'
+          return '-moz-'
+        when 'webkit'
+          return '-webkit-'
+        when 'presto'
+          return '-o-')()
+
+    Style.remStyle()
+    Style.addStyle()
 
     $.ready ->
       Style.banner()
@@ -42,14 +52,6 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         $.on div, 'click', ->
           checkbox.click()
 
-  agent: ->
-    switch $.engine
-      when 'gecko'
-        return '-moz-'
-      when 'webkit'
-        return '-webkit-'
-      when 'presto'
-        return '-o-'
 
   addStyle: (theme) ->
     $.off d, 'DOMNodeInserted', Style.addStyle

@@ -102,7 +102,9 @@ Main =
 
     # Major features
 
-    Style.init()
+    # Nothing depends on any variables or DOM manipulation of Style
+    # Nor is any JS affected by it running, so I run it asynchronously.
+    setTimeout Style.init
 
     now = Date.now()
     if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 18*$.HOUR

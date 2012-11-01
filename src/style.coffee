@@ -1,7 +1,27 @@
   css: (theme) ->
 
-    icons = Icons.header.png + Icons.themes[Conf["Icons"]][if theme["Dark Theme"] then "dark" else "light"]
-
+    position = 
+      if Conf["Sidebar Location"] is "right"
+        switch Conf["Sidebar"]
+          when "hide"
+            switch Conf["Page Margin"]
+              when "none", "minimal", "small"
+                "right"
+              else
+                "left"
+          when "minimal"
+            "right"
+          else
+            "left"
+      else
+        switch Conf["Page Margin"]
+          when "none", "minimal", "small"
+            "right"
+          else
+            "left"
+    icons    = 
+      Icons.header.png + Icons.themes[Conf["Icons"]][if theme["Dark Theme"] then "dark" else "light"]
+      
     if Conf["Sidebar"] == "large"
       Style.sidebarOffsetW = 51
       Style.sidebarOffsetH = 17
@@ -13,8 +33,6 @@
       Style.sidebarLocation = ["left",  "right"]
     else
       Style.sidebarLocation = ["right", "left" ]
-
-    agent = Style.agent()
 
     css = """
 /* dialog styling */
@@ -86,18 +104,12 @@ label,
   text-decoration: none;
   white-space: nowrap;
 }
-.entry:last-child {
-  border: none;
-}
 .focused.entry {
   background: rgba(255,255,255,.33);
 }
-.entry.hasSubMenu {
-  padding-right: 1.5em;
-}
 .hasSubMenu::after {
   content: "";
-  border-left: .5em solid;
+  border-#{position}: .5em solid;
   border-top: .3em solid transparent;
   border-bottom: .3em solid transparent;
   display: inline-block;
@@ -105,17 +117,17 @@ label,
   position: absolute;
   right: 3px;
 }
-.subMenu {
+div.subMenu.reply {
+  padding: 0;
   position: absolute;
-  left: 100%;
-  top: 0;
-  margin-top: -1px;
+  #{position}: 100%;
+  top: -1px;
 }
 #boardTitle,
 #browse,
 #main_tab + div,
 #mascotConf input,
-#mascotConf input:#{agent}placeholder,
+#mascotConf input:#{Style.agent}placeholder,
 #style_tab + div .suboptions,
 .center,
 h1 {
@@ -124,7 +136,7 @@ h1 {
 #qr > .move {
   overflow: hidden;
   box-sizing: border-box;
-  #{agent}box-sizing: border-box;
+  #{Style.agent}box-sizing: border-box;
   padding: 0 2px;
 }
 #qr > .move > span {
@@ -147,7 +159,7 @@ h1 {
   display: block;
   height: 100px;
   position: relative;
-  #{agent}user-select: none;
+  #{Style.agent}user-select: none;
   user-select: none;
 }
 #replies > div {
@@ -173,7 +185,7 @@ h1 {
   background-size: cover !important;
   border: 1px solid #666;
   box-sizing: border-box;
-  #{agent}box-sizing: border-box;
+  #{Style.agent}box-sizing: border-box;
   cursor: move;
   display: inline-block;
   height: 90px; width: 90px;
@@ -183,7 +195,7 @@ h1 {
   overflow: hidden;
   position: relative;
   text-shadow: 0 1px 1px #000;
-  #{agent}transition: opacity .25s ease-in-out;
+  #{Style.agent}transition: opacity .25s ease-in-out;
   vertical-align: top;
 }
 .thumbnail:hover,
@@ -238,7 +250,7 @@ h1 {
   color: #000;
 }
 .field {
-  #{agent}transition: color .25s, border .25s;
+  #{Style.agent}transition: color .25s, border .25s;
 }
 .field:hover,
 .field:focus {
@@ -247,8 +259,8 @@ h1 {
 .fitwidth img[data-md5] + img {
   max-width: 100%;
 }
-.gecko  .fitwidth img[data-md5] + img,
-.presto .fitwidth img[data-md5] + img,
+#options #style_tab + div select,
+.fitwidth img[data-md5] + img,
 .themevar .field,
 .themevar textarea {
   width: 100%;
@@ -269,16 +281,11 @@ h1 {
   max-width: 75%;
   padding-bottom: 18px;
 }
-#navlinks {
-  font-size: 16px;
-  top: 25px;
-  right: 5px;
-}
 #overlay {
   top: 0;
   right: 0;
-  width: 100%;
-  height: 100%;
+  left: 0;
+  bottom: 0;
   background: rgba(0,0,0,.5);
   z-index: 1;
 }
@@ -290,9 +297,6 @@ h1 {
   right: 15%;
   top: 15%;
   bottom: 15%;
-}
-#options #style_tab + div select {
-  width: 100%;
 }
 #options h3 {
   margin: 0;
@@ -308,7 +312,7 @@ h1 {
   right: 300px;
   bottom: 10px;
   margin: 0;
-  #{agent}transition: all .2s ease-in-out;
+  #{Style.agent}transition: all .2s ease-in-out;
 }
 #theme_tab + div > div:not(.stylesettings) {
   margin-bottom: 3px;
@@ -486,9 +490,6 @@ h1 {
 #updater input[type=number] {
   width: 4em;
 }
-.new {
-  background: lime;
-}
 #watcher {
   padding-bottom: 5px;
   position: fixed;
@@ -535,23 +536,11 @@ h1 {
 .replyContainer.image_expanded {
   clear: both;
 }
-.inlined {
-  opacity: .5;
-}
 .inline {
-  background-color: rgba(255,255,255,0.15);
-  border: 1px solid rgba(128,128,128,0.5);
   display: table;
-  margin: 2px;
-  padding: 2px;
-}
-.inline .post {
-  background: none;
-  border: none;
-  margin: 0;
 }
 div.opContainer {
-  display: block !important;
+  display: block;
 }
 .opContainer.filter_highlight {
   box-shadow: inset 5px 0 rgba(255,0,0,.5);
@@ -582,7 +571,7 @@ div.opContainer {
   margin-left: 20px;
   border-left: 1px solid black;
 }
-::#{agent}selection {
+::#{Style.agent}selection {
   background: #{theme["Text"]};
   color: #{theme["Background Color"]};
 }
@@ -626,9 +615,6 @@ textarea {
 .pages strong {
   font-size: #{parseInt(Conf["Font Size"], 10) + 3}px;
 }
-#globalMessage b {
-  font-weight: 100;
-}
 /* Cleanup */
 #absbot,
 #autohide,
@@ -657,7 +643,6 @@ textarea {
 .forwarded,
 .hasSubMenu:not(.focused) > .subMenu,
 .hidden_thread > .summary,
-.inline .report_button,
 .inline input,
 .mobile,
 .navLinksBot,
@@ -676,7 +661,6 @@ textarea {
 .thread > .hidden_thread ~ *,
 .warnicon,
 .warning:empty,
-.yui-menu-shadow,
 [hidden],
 body > .postingMode ~ #delform hr,
 body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] ~ .pagelist,
@@ -734,19 +718,11 @@ a,
 a.deadlink,
 a[href*="//dis"],
 a[href*=res],
-div.post > blockquote .chanlinkify.YTLT-link.YTLT-text,
-div.postContainer span.postNum > .replylink {
+span.postNum > .replylink {
   text-decoration: #{(if Conf["Underline Links"] then "underline" else "none")};
 }
 .filtered {
   text-decoration: line-through;
-}
-/* YouTube Link Title */
-div.post > blockquote .chanlinkify.YTLT-link.YTLT-na {
-  text-decoration: line-through;
-}
-div.post > blockquote .chanlinkify.YTLT-link.YTLT-text {
-  font-style: normal;
 }
 /* Z-INDEXES */
 #mouseover {
@@ -789,8 +765,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #updater {
   z-index: 10 !important;
 }
-#navtopright,
-.qrMessage {
+#navtopright {
   z-index: 6 !important;
 }
 #boardTitle,
@@ -806,10 +781,10 @@ body > a[style="cursor: pointer; float: right;"]::after {
 .replyhider a {
   z-index: 1 !important;
 }
-div.reply,
-div.reply.highlight {
+div.post,
+div.post.highlight {
   z-index: 0 !important;
-  #{agent}box-sizing: border-box;
+  #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
 }
 #navtopright .exlinksOptionsLink::after,
@@ -867,24 +842,6 @@ body > a[style="cursor: pointer; float: right;"]:hover::after,
 div.navLinks > a:first-of-type:hover::after {
   opacity: 1;
 }
-.pageJump {
-  position: fixed;
-  top: -1000px;
-  pointer-events: all;
-}
-.extButton img {
-  margin-top: -4px;
-}
-.qrMessage {
-  position: fixed;
-  #{Style.sidebarLocation[0]}: 2px;
-  bottom: 250px;
-  font-size: inherit;
-  font-weight: 100;
-  background: none;
-  border: none;
-  width: #{(248 + Style.sidebarOffsetW)}px;
-}
 #boardTitle {
   font-size: 30px;
   font-weight: 400;
@@ -900,25 +857,19 @@ hr {
   border: none;
   border-bottom: 1px solid #{theme["Reply Border"]};
 }
-/* Front Page */
-.bd,
-.bd ul,
-img,
-.pages,
-#qr,
-div[id^="qr"],
-table.reply[style^="clear: both"],
 .boxcontent > hr,
-h3 {
+.entry:last-child,
+.pages,
+a.forwardlink,
+h3,
+img,
+table.reply[style^="clear: both"] {
   border: none;
 }
 .boxcontent input {
   height: 18px;
   vertical-align: bottom;
   margin-right: 1px;
-}
-a.yuimenuitemlabel {
-  padding: 0 20px;
 }
 /* Navigation */
 #{(if Conf["Custom Navigation"] then "" else "#boardNavDesktop,")}
@@ -948,7 +899,7 @@ a.yuimenuitemlabel {
   height: 0;
   width: #{(248 + Style.sidebarOffsetW)}px !important;
   overflow: hidden;
-  #{agent}box-sizing: border-box;
+  #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
 }
 img.topad,
@@ -960,7 +911,7 @@ img.topad:hover,
 img.middlead:hover,
 img.bottomad:hover {
   opacity: 1;
-  #{agent}transition: opacity .3s linear;
+  #{Style.agent}transition: opacity .3s linear;
 }
 #{(unless Conf["Custom Navigation"] then "#boardNavDesktop a," else "")}
 .pages a,
@@ -981,7 +932,7 @@ img.bottomad:hover {
 .pages strong,
 a,
 .new {
-  #{agent}transition: background .1s linear;
+  #{Style.agent}transition: background .1s linear;
 }
 /* Post Form */
 #qr div.captchainput {
@@ -1017,13 +968,12 @@ input,
 .field,
 input[type="submit"] {
   vertical-align: bottom;
-  #{agent}box-sizing: border-box;
+  #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
   padding: 1px;
 }
 #browse,
-input[type="submit"], /* Any lingering buttons */
-input[value="Report"] {
+input[type="submit"] {
   height: 20px;
   padding: 0;
 }
@@ -1051,28 +1001,12 @@ input[value="Report"] {
 #qr {
   height: auto;
 }
-.top-box .menubutton {
-  background-image: none;
-}
-.postingMode ~ #delform .opContainer input {
-  position: relative;
-  bottom: 2px;
-}
 /* Posts */
-#delform .fileText + br + a[target="_blank"] img,
-#qp div.post .fileText + br + a[target="_blank"] img {
-  border: 0;
-  float: left;
-  margin: 5px 20px 15px;
-}
 #delform .fileText + br + a[target="_blank"] img + img {
   margin: 0 0 25px;
 }
 .fileText {
   margin-top: 17px;
-}
-#updater:hover {
-  border: 0;
 }
 /* Fixes text spoilers */
 .spoiler:not(:hover),
@@ -1100,9 +1034,6 @@ div.post:not(#qp):not([hidden]) {
   font-weight: 700;
 }
 /* Addons and such */
-body > div[style="width: 100%;"] {
-  margin-top: 34px;
-}
 #copyright,
 #boardNavDesktop a,
 #qr td,
@@ -1114,9 +1045,9 @@ div[id^="qr"] tr[height="73"]:nth-of-type(2) {
   padding: 0;
 }
 #navtopright {
-  overflow: hidden;
-  max-width: 0;
-  max-height: 0;
+  position: fixed;
+  bottom: -1000px;
+  left: -1000px;
 }
 /* Expand Images */
 #imgControls {
@@ -1200,9 +1131,6 @@ div.navLinks {
   background: none;
   text-align: right;
 }
-#count.new {
-  background-color: transparent;
-}
 #watcher {
   padding: 1px 0;
   border-radius: 0;
@@ -1270,9 +1198,6 @@ img[alt="Sticky"],
 img[alt="Closed"] {
   vertical-align: top;
 }
-.fileText + br + a[target="_blank"]:hover {
-  background: none;
-}
 .inline,
 #qp {
   background-color: transparent;
@@ -1281,54 +1206,16 @@ img[alt="Closed"] {
 input[type="submit"]:hover {
   cursor: pointer;
 }
-/* 4chan Sounds */
-.ys_playerContainer.reply {
-  position: fixed;
-  bottom: 252px;
-  margin: 0;
-  #{Style.sidebarLocation[0]}: 3px;
-  padding-right: 0;
-  padding-left: 0;
-  padding-top: 0;
-}
-#qr input:focus:#{agent}placeholder,
-#qr textarea:focus:#{agent}placeholder {
+#qr input:focus:#{Style.agent}placeholder,
+#qr textarea:focus:#{Style.agent}placeholder {
   color: transparent;
-}
-img[md5] {
-  image-rendering: optimizeSpeed;
-}
-input,
-textarea {
-  text-rendering: geometricPrecision;
 }
 #boardNavDesktop .current {
   font-weight: bold;
 }
-#postPassword {
-  position: relative;
-  bottom: 3px;
-}
-.postContainer.inline {
-  padding-bottom: 2px;
-}
 div.pagelist {
   background: none;
   border: none;
-}
-a.forwardlink {
-  border: none;
-}
-.exif td {
-  color: #999;
-}
-.callToAction.callToAction-big {
-  font-size: 18px;
-  color: rgb(255,255,255);
-}
-body > table[cellpadding="30"] h1,
-body > table[cellpadding="30"] h3 {
-  position: static;
 }
 .focused.entry {
   background-color: transparent;
@@ -1372,27 +1259,17 @@ html .subMenu {
 }
 /* Width and height of all #qr elements (excluding some captcha elements) */
 #dump {
-  background: none;
-  border: none;
   width: 20px;
   margin: 0;
   font-size: 14px;
   outline: none;
-  padding: 0 0 3px !important
-}
-#dump:hover {
-  background: none;
+  padding: 0 0 3px;
 }
 .captchaimg {
   line-height: 0;
 }
 #qr div {
   min-width: 0;
-}
-html body span[style="left: 5px; position: absolute;"] a {
-  height: 14px;
-  padding-top: 3px;
-  width: 56px;
 }
 #updater input,
 #options input,
@@ -1465,7 +1342,6 @@ html {
 .box-outer,
 .boxbar,
 .top-box,
-.yuimenuitem-selected,
 html body span[style="left: 5px; position: absolute;"] a,
 input[type="submit"],
 #options.reply.dialog,
@@ -1490,7 +1366,7 @@ textarea.field {
   background: #{theme["Input Background"]};
   border: 1px solid #{theme["Input Border"]};
   color: #{theme["Inputs"]};
-  #{agent}transition: all .2s linear;
+  #{Style.agent}transition: all .2s linear;
 }
 #dump:hover,
 #browse:hover,
@@ -1504,7 +1380,7 @@ textarea.field:hover {
   background: #{theme["Hovered Input Background"]};
   border-color: #{theme["Hovered Input Border"]};
   color: #{theme["Inputs"]};
-  #{agent}transition: all .2s linear;
+  #{Style.agent}transition: all .2s linear;
 }
 #dump:active,
 #dump:focus,
@@ -1557,9 +1433,8 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > 
   background: #{theme["Dialog Background"]};
 }
 .inline .post {
-  background: #{theme["Reply Background"]};
-  border: 1px solid #{theme["Reply Border"]};
   box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
+  padding-bottom: 2px;
 }
 #qr .warning {
   background: #{theme["Input Background"]};
@@ -1575,7 +1450,7 @@ a,
 .entry,
 div.post > blockquote a[href^="//"],
 .sideArrows a,
-div.postContainer span.postNum > .replylink {
+span.postNum > .replylink {
   color: #{theme["Links"]};
 }
 #navlinks a {
@@ -1674,7 +1549,7 @@ a:hover,
 div.post > blockquote a[href^="//"]:hover,
 .sideArrows a:hover,
 div.post div.postInfo span.postNum a:hover,
-div.postContainer span.postNum > .replylink:hover,
+span.postNum > .replylink:hover,
 .nameBlock > .useremail > .name:hover,
 .nameBlock > .useremail > .postertrip:hover {
   color: #{theme["Hovered Links"]};
@@ -1708,8 +1583,8 @@ a.forwardlink {
   outline-color: #{theme["Backlinked Reply Outline"]};
 }
 .placeholder,
-#qr input:#{agent}placeholder,
-#qr textarea:#{agent}placeholder {
+#qr input:#{Style.agent}placeholder,
+#qr textarea:#{Style.agent}placeholder {
   color: #{(if theme["Dark Theme"] then "rgba(255,255,255,0.2)" else "rgba(0,0,0,0.3)")} !important;
 }
 .boxcontent dd,
@@ -1720,8 +1595,8 @@ a.forwardlink {
   border-top: 1px solid #{(if theme["Dark Theme"] then "rgba(255,255,255,0.025)" else "rgba(0,0,0,0.05)")};
 }
 #mascot img {
-  #{agent}transform: scaleX(#{(if Style.sidebarLocation[0] == "left" then "-" else "")}1);
-  #{agent}user-select: none;
+  #{Style.agent}transform: scaleX(#{(if Style.sidebarLocation[0] == "left" then "-" else "")}1);
+  #{Style.agent}user-select: none;
 }
 #{theme["Custom CSS"]}
 """
@@ -1729,10 +1604,10 @@ a.forwardlink {
     if Conf["Image Expansion"]
       css += """
 .fileThumb img {
-  cursor: #{agent}zoom-in;
+  cursor: #{Style.agent}zoom-in;
 }
 .fileThumb img + img {
-  cursor: #{agent}zoom-out;
+  cursor: #{Style.agent}zoom-out;
 }
 """
 
@@ -1869,11 +1744,11 @@ span.lit {
       css += """
 .boardBanner {
   opacity: 0.5;
-  #{agent}transition: opacity 0.3s ease-in-out .5s;
+  #{Style.agent}transition: opacity 0.3s ease-in-out .5s;
 }
 .boardBanner:hover {
   opacity: 1;
-  #{agent}transition: opacity 0.3s ease-in;
+  #{Style.agent}transition: opacity 0.3s ease-in;
 }
 """
 
@@ -1903,29 +1778,29 @@ span.lit {
       css += """
 #globalMessage,
 #watcher {
-  #{agent}transition: height .5s linear;
+  #{Style.agent}transition: height .5s linear;
 }
 #boardNavDesktopFoot {
-  #{agent}transition: height .5s linear, border 0s ease-in-out .5s;
+  #{Style.agent}transition: height .5s linear, border 0s ease-in-out .5s;
 }
 img.topad,
 img.middlead,
 img.bottomad {
-  #{agent}transition: opacity .3s ease-in-out .3s;
+  #{Style.agent}transition: opacity .3s ease-in-out .3s;
 }
 #qr {
-  #{agent}transition: #{Style.sidebarLocation[0]} .3s ease-in-out 1s;
+  #{Style.agent}transition: #{Style.sidebarLocation[0]} .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
-  #{agent}transition: #{Style.sidebarLocation[0]} .3s linear;
+  #{Style.agent}transition: #{Style.sidebarLocation[0]} .3s linear;
 }
 #qrtab {
-  #{agent}transition: opacity .3s ease-in-out 1s, #{Style.sidebarLocation[0]} .3s ease-in-out 1s;
+  #{Style.agent}transition: opacity .3s ease-in-out 1s, #{Style.sidebarLocation[0]} .3s ease-in-out 1s;
 }
 #imgControls {
-  #{agent}transition: width .2s linear;
+  #{Style.agent}transition: width .2s linear;
 }
 """
 
@@ -2032,10 +1907,6 @@ hr {
 #threadselect select {
   margin-top: 0;
 }
-.dump > form > label {
-  display: block;
-  visibility: hidden;
-}
 input[title="Verification"] {
   width: 100%;
 }
@@ -2072,6 +1943,7 @@ input,
   margin: 1px 0 0 1px;
 }
 """
+
       if Conf["Compact Post Form Inputs"]
         css += """
 #qr textarea.field {
@@ -2119,7 +1991,7 @@ input,
         css += """
 #qr textarea {
   display: block;
-  #{agent}transition:
+  #{Style.agent}transition:
     color 0.25s linear,
     background-color 0.25s linear,
     background-image 0.25s linear,
@@ -2136,7 +2008,7 @@ input,
         css += """
 #qr textarea {
   display: block;
-  #{agent}transition:
+  #{Style.agent}transition:
     color 0.25s linear,
     background-color 0.25s linear,
     background-image 0.25s linear,
@@ -2196,8 +2068,8 @@ input,
 }
 #qr #qrtab {
   z-index: -1;
-  #{agent}transform: rotate(#{(if Style.sidebarLocation[0] == "left" then "" else "-")}90deg);
-  #{agent}transform-origin: bottom #{Style.sidebarLocation[0]};
+  #{Style.agent}transform: rotate(#{(if Style.sidebarLocation[0] == "left" then "" else "-")}90deg);
+  #{Style.agent}transform-origin: bottom #{Style.sidebarLocation[0]};
   position: fixed;
   bottom: 220px;
   #{Style.sidebarLocation[0]}: 0;
@@ -2214,7 +2086,7 @@ input,
 #qr.dump #qrtab {
   opacity: 0;
   #{Style.sidebarLocation[0]}: #{(252 + Style.sidebarOffsetW)}px;
-  #{agent}transition: opacity .3s linear, #{Style.sidebarLocation[0]} .3s linear;
+  #{Style.agent}transition: opacity .3s linear, #{Style.sidebarLocation[0]} .3s linear;
 }
 """
 
@@ -2227,13 +2099,13 @@ input,
   #{Style.sidebarLocation[0]}: 2px !important;
   #{Style.sidebarLocation[1]}: auto !important;
   opacity: 0.2;
-  #{agent}transition: opacity .3s ease-in-out 1s;
+  #{Style.agent}transition: opacity .3s ease-in-out 1s;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
   opacity: 1;
-  #{agent}transition: opacity .3s linear;
+  #{Style.agent}transition: opacity .3s linear;
 }
 """
 
@@ -2285,7 +2157,7 @@ textarea.field,
 #qr textarea.field {
   min-height: 160px;
   resize: resize;
-  #{agent}transition:
+  #{Style.agent}transition:
     color 0.25s linear,
     background-color 0.25s linear,
     background-image 0.25s linear,
@@ -2341,15 +2213,15 @@ div.op .menu_button,
 div.reply .report_button,
 div.reply .menu_button {
   opacity: 0;
-  #{agent}transition: opacity .3s ease-out 0s;
-  #{agent}user-select: none;
+  #{Style.agent}transition: opacity .3s ease-out 0s;
+  #{Style.agent}user-select: none;
 }
 div.op:hover .menu_button,
 form .replyContainer:hover div.reply .report_button,
 form .replyContainer:hover div.reply .menu_button,
 form .replyContainer:hover .sideArrows a {
   opacity: 1;
-  #{agent}transition: opacity .3s ease-in 0s;
+  #{Style.agent}transition: opacity .3s ease-in 0s;
 }
 div.reply .inline .menu_button,
 div.reply .inline .sideArrows,
@@ -2452,7 +2324,7 @@ body {
     if Conf["Alternate Post Colors"]
       css += """
 div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
-  background-image: #{agent}linear-gradient(#{(if theme["Dark Theme"] then "rgba(255,255,255,0.02), rgba(255,255,255,0.02)" else "rgba(0,0,0,0.05), rgba(0,0,0,0.05)")});
+  background-image: #{Style.agent}linear-gradient(#{(if theme["Dark Theme"] then "rgba(255,255,255,0.02), rgba(255,255,255,0.02)" else "rgba(0,0,0,0.05), rgba(0,0,0,0.05)")});
 }
 """
 
@@ -2528,7 +2400,7 @@ td[style="border: 1px dashed;"] {
   border-radius: 6px 6px 0 0;
 }
 .qphl {
-  #{agent}outline-radius: 3px;
+  #{Style.agent}outline-radius: 3px;
 }
 """
 
@@ -2545,7 +2417,7 @@ td[style="border: 1px dashed;"] {
   height: 0;
   width: #{(248 + Style.sidebarOffsetW)}px !important;
   overflow: hidden;
-  #{agent}box-sizing: border-box;
+  #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
   padding: 0 10px;
 }
@@ -2650,7 +2522,7 @@ td[style="border: 1px dashed;"] {
   background: #{theme["Reply Background"]};
   border: 1px solid #{theme["Reply Border"]};
   padding: 5px;
-  #{agent}box-sizing: border-box;
+  #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
   margin-bottom: #{replyMargin}px;
 }
@@ -2713,7 +2585,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   border: 1px solid #{theme["Dialog Border"]};
   height: 0px;
   overflow: hidden;
-  #{agent}box-sizing: border-box;
+  #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
   padding: 0 10px;
 }
@@ -2766,6 +2638,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
       css += """
 input.field.tripped:not(:hover):not(:focus) {
   color: transparent !important;
+  text-shadow: none !important;
 }
 """
 
@@ -2807,8 +2680,8 @@ input.field.tripped:not(:hover):not(:focus) {
   #{Style.sidebarLocation[1]}: auto;
   #{(if Style.sidebarLocation[0] == "left" then "left: -1px" else "right: " + (251 + Style.sidebarOffsetW) + "px")};
   position: fixed;
-  #{agent}transform: rotate(90deg);
-  #{agent}transform-origin: bottom right;
+  #{Style.agent}transform: rotate(90deg);
+  #{Style.agent}transform-origin: bottom right;
   letter-spacing: -1px;
   word-spacing: -6px;
   z-index: 6;
