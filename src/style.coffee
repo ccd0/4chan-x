@@ -1425,18 +1425,18 @@ table.reply[style^="clear: both"] {
   width: 30%;
 }
 html {
-  background: #{theme["Background Color"]};
-  background-image: #{theme["Background Image"]};
-  background-repeat: #{theme["Background Repeat"]};
-  background-attachment: #{theme["Background Attachment"]};
-  background-position: #{theme["Background Position"]};
+  background: #{theme["Background Color"] or ''};
+  background-image: #{theme["Background Image"] or ''};
+  background-repeat: #{theme["Background Repeat"] or ''};
+  background-attachment: #{theme["Background Attachment"] or ''};
+  background-position: #{theme["Background Position"] or ''};
 }
 #content,
 #exlinks-options-content,
 #mascotcontent,
 #themecontent {
   background: #{theme["Background Color"]};
-  border: 1px solid #{theme["Reply Border"] };
+  border: 1px solid #{theme["Reply Border"]};
   padding: 5px;
 }
 .suboptions {
@@ -1471,11 +1471,11 @@ input[type="submit"],
 #options.reply.dialog,
 input[value="Report"] {
   background: #{theme["Buttons Background"]};
-  border: 1px solid #{theme["Buttons Border"] };
+  border: 1px solid #{theme["Buttons Border"]};
 }
 #options ul li.mascot.enabled {
   background: #{theme["Buttons Background"]};
-  border-color: #{theme["Buttons Border"] };
+  border-color: #{theme["Buttons Border"]};
 }
 #dump,
 #file,
@@ -1488,7 +1488,7 @@ select,
 textarea,
 textarea.field {
   background: #{theme["Input Background"]};
-  border: 1px solid #{theme["Input Border"] };
+  border: 1px solid #{theme["Input Border"]};
   color: #{theme["Inputs"]};
   #{agent}transition: all .2s linear;
 }
@@ -1502,7 +1502,7 @@ select:hover,
 textarea:hover,
 textarea.field:hover {
   background: #{theme["Hovered Input Background"]};
-  border-color: #{theme["Hovered Input Border"] };
+  border-color: #{theme["Hovered Input Border"]};
   color: #{theme["Inputs"]};
   #{agent}transition: all .2s linear;
 }
@@ -1515,14 +1515,14 @@ select:focus,
 textarea:focus,
 textarea.field:focus {
   background: #{theme["Focused Input Background"]};
-  border-color: #{theme["Focused Input Border"] };
+  border-color: #{theme["Focused Input Border"]};
   color: #{theme["Inputs"]};
 }
 #mouseover,
 #qp .replyContainer div.post,
 #qp .opContainer div.post,
 .replyContainer div.reply {
-  border: 1px solid #{theme["Reply Border"] };
+  border: 1px solid #{theme["Reply Border"]};
   background: #{theme["Reply Background"]};
 }
 .exblock.reply,
@@ -1534,11 +1534,11 @@ textarea.field:focus {
 #boardNavDesktop,
 .pages {
   background: #{theme["Navigation Background"]};
-  border: 1px solid #{theme["Navigation Border"] };
+  border: 1px solid #{theme["Navigation Border"]};
 }
 #delform {
   background: #{theme["Thread Wrapper Background"]};
-  border: 1px solid #{theme["Thread Wrapper Border"] };
+  border: 1px solid #{theme["Thread Wrapper Border"]};
 }
 #boardNavDesktopFoot,
 #mascotConf,
@@ -1550,7 +1550,7 @@ textarea.field:focus {
 div.subMenu,
 body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
   background: #{theme["Dialog Background"]};
-  border: 1px solid #{theme["Dialog Border"] };
+  border: 1px solid #{theme["Dialog Border"]};
 }
 .mascotname,
 .mascotoptions {
@@ -1563,7 +1563,7 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > 
 }
 #qr .warning {
   background: #{theme["Input Background"]};
-  border: 1px solid #{theme["Input Border"] };
+  border: 1px solid #{theme["Input Border"]};
 }
 [style='color: red !important;'] *,
 .disabledwarning,
@@ -2660,7 +2660,7 @@ td[style="border: 1px dashed;"] {
 .opContainer div.post:target
 .opContainer div.post.highlight {
   background: #{theme["Highlighted Reply Background"]};
-  border: 1px solid #{theme["Highlighted Reply Border"] };
+  border: 1px solid #{theme["Highlighted Reply Border"]};
 }
 """
 
@@ -2710,7 +2710,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   #{Style.sidebarLocation[1]}: auto;
   width: #{(248 + Style.sidebarOffsetW)}px;
   background: #{theme["Dialog Background"]};
-  border: 1px solid #{theme["Dialog Border"] };
+  border: 1px solid #{theme["Dialog Border"]};
   height: 0px;
   overflow: hidden;
   #{agent}box-sizing: border-box;

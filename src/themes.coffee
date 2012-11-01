@@ -52,10 +52,6 @@ Themes =
   'AppChan':
     'Author'                      : 'Zixaphir'
     'Author Tripcode'             : '!..NoTrip..'
-    'Background Image'            : ''
-    'Background Attachment'       : ''
-    'Background Position'         : ''
-    'Background Repeat'           : ''
     'Background Color'            : 'rgba(44,44,44,1)'
     'Thread Wrapper Background'   : 'rgba(0,0,0,0)'
     'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
@@ -180,10 +176,6 @@ border-radius: 3px;
   'Blackberry Jam':
     'Author'                      : 'seaweed'
     'Author Tripcode'             : '!POMF.9waa'
-    'Background Image'            : ''
-    'Background Attachment'       : ''
-    'Background Position'         : ''
-    'Background Repeat'           : ''
     'Dialog Background'           : 'rgba(27,27,27,1)'
     'Dialog Border'               : 'rgba(27,27,27,1)'
     'Background Color'            : 'rgba(45,45,45,1)'
@@ -250,10 +242,6 @@ div.replyContainer div.reply {
   'Midnight Caek':
     'Author'                      : 'Zixaphir'
     'Author Tripcode'             : '!M.........'
-    'Background Image'            : ''
-    'Background Attachment'       : ''
-    'Background Position'         : ''
-    'Background Repeat'           : ''
     'Background Color'            : 'rgba(16,16,16,1)'
     'Thread Wrapper Background'   : 'rgba(0,0,0,0)'
     'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
@@ -303,9 +291,6 @@ div.replyContainer div.reply {
     'Author'                      : 'Mayhem'
     'Author Tripcode'             : '!MayhemYDG.'
     'Background Image'            : 'url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAIAAAACDbGyAAAAAXNSR0IArs4c6QAAACdJREFUCNdNxzEBADAMwzCnOMwfWYDs2JNPCgCoH9m0zQa4jXob4AGJFwxchPNwQAAAAABJRU5ErkJggg==")'
-    'Background Attachment'       : ''
-    'Background Position'         : ''
-    'Background Repeat'           : ''
     'Background Color'            : 'rgba(25,25,25,1)'
     'Dialog Background'           : 'rgba(34,34,34,1)'
     'Dialog Border'               : 'rgba(41,41,41,1)'
@@ -415,8 +400,6 @@ div.post:hover .name {
     'Author Tripcode'             : '!POMF.9waa'
     'Background Image'            : 'url("http://i.imgur.com/sbi8u.png")'
     'Background Attachment'       : 'fixed'
-    'Background Position'         : ''
-    'Background Repeat'           : ''
     'Dialog Background'           : 'rgba(0,0,0,0.7)'
     'Dialog Border'               : 'rgba(0,0,0,0.7)'
     'Background Color'            : 'rgba(0,0,0,1)'
@@ -477,7 +460,6 @@ div.post:hover .name {
     'Author Tripcode'             : '!TRip.C0d3'
     'Background Image'            : 'url(http://i.imgur.com/DRaZf.jpg)'
     'Background Attachment'       : 'fixed'
-    'Background Position'         : ''
     'Background Repeat'           : 'repeat'
     'Background Color'            : 'rgba(19,19,19,1)'
     'Dialog Background'           : 'rgba(16,16,16,1)'
@@ -648,10 +630,6 @@ div.reply.highlight div.reply {
   'Photon':
     'Author'                      : 'seaweed'
     'Author Tripcode'             : '!POMF.9waa'
-    'Background Image'            : ''
-    'Background Attachment'       : ''
-    'Background Position'         : ''
-    'Background Repeat'           : ''
     'Background Color'            : 'rgba(238,238,238,1)'
     'Dialog Background'           : 'rgba(238,238,238,1)'
     'Dialog Border'               : 'rgba(204,204,204,1)'
@@ -882,10 +860,6 @@ body,
   'Solarized':
     'Author'                      : 'ubuntufriend'
     'Author Tripcode'             : '!TRip.C0d'
-    'Background Image'            : ''
-    'Background Attachment'       : ''
-    'Background Position'         : ''
-    'Background Repeat'           : ''
     'Background Color'            : 'rgba(7,54,66,1)'
     'Dialog Background'           : 'rgba(0,43,54,1)'
     'Dialog Border'               : 'rgba(0,43,54,1)'
@@ -940,9 +914,6 @@ body,
     'Author'                      : 'moot'
     'Author Tripcode'             : '!Ep8pui8Vw2'
     'Background Image'            : 'linear-gradient(rgb(254,214,175), rgb(255,255,238) 200px, rgb(255,255,238))'
-    'Background Attachment'       : ''
-    'Background Position'         : ''
-    'Background Repeat'           : ''
     'Background Color'            : 'rgba(255,255,238,1)'
     'Dialog Background'           : 'rgba(240,224,214,1)'
     'Dialog Border'               : 'rgba(217,191,183,1)'
@@ -1000,9 +971,6 @@ body,
     'Author'                      : 'moot'
     'Author Tripcode'             : '!Ep8pui8Vw2'
     'Background Image'            : 'linear-gradient(rgb(209,213,238), rgb(238,242,255) 200px, rgb(255,255,238))'
-    'Background Attachment'       : ''
-    'Background Position'         : ''
-    'Background Repeat'           : ''
     'Background Color'            : 'rgba(238,242,255,1)'
     'Dialog Background'           : 'rgba(214,218,240,1)'
     'Dialog Border'               : 'rgba(183,197,217,1)'
@@ -1059,10 +1027,6 @@ body,
   'Zenburned':
     'Author'                      : 'lazy'
     'Author Tripcode'             : '!HONKYn7h1.'
-    'Background Image'            : ''
-    'Background Attachment'       : ''
-    'Background Position'         : ''
-    'Background Repeat'           : ''
     'Background Color'            : 'rgba(63,63,63,1)'
     'Dialog Background'           : 'rgba(87,87,87,1)'
     'Dialog Border'               : 'rgba(87,87,87,1)'
@@ -1111,10 +1075,6 @@ body,
   "ピンク":
     "Author"                      : "DrooidKun"
     "Author Tripcode"             : "!/Apk/MRkGM"
-    "Background Image"            : ""
-    "Background Attachment"       : "fixed"
-    "Background Position"         : "bottom left"
-    "Background Repeat"           : "no-repeat"
     "Background Color"            : "rgb(255,255,255)"
     "Dialog Background"           : "rgba(242,242,242,.98)"
     "Dialog Border"               : "rgb(240,240,240)"
@@ -1200,9 +1160,6 @@ textarea,
     "Author"                      : "seaweed"
     "Author Tripcode"             : "!POMF.9waa"
     "Background Image"            : "linear-gradient(rgba(238,221,255,1.0), rgba(248,243,254,1) 200px, rgba(248,243,254,1))"
-    "Background Attachment"       : ""
-    "Background Position"         : ""
-    "Background Repeat"           : ""
     "Background Color"            : "rgb(248,243,254)"
     "Dialog Background"           : "rgba(238,221,255,.98)"
     "Dialog Border"               : "rgb(202,183,217)"
@@ -1307,10 +1264,6 @@ textarea,
   "Vimyanized Dark":
     "Author"                      : "seaweed"
     "Author Tripcode"             : "!POMF.9waa"
-    "Background Image"            : ""
-    "Background Attachment"       : "fixed"
-    "Background Position"         : "bottom left"
-    "Background Repeat"           : "no-repeat"
     "Background Color"            : "rgb(9,13,15)"
     "Dialog Background"           : "rgba(13,17,20,.98)"
     "Dialog Border"               : "rgb(11,19,22)"
@@ -1390,10 +1343,6 @@ textarea,
   "Tomorrow Night":
     "Author"                      : "Chris Kempson"
     "Author Tripcode"             : "!.pC/AHOKAg"
-    "Background Image"            : "url(\"\")"
-    "Background Attachment"       : "fixed"
-    "Background Position"         : "bottom left"
-    "Background Repeat"           : "no-repeat"
     "Background Color"            : "rgb(29,31,33)"
     "Dialog Background"           : "rgba(40,42,46,.98)"
     "Dialog Border"               : "rgb(55,59,65)"
@@ -1473,10 +1422,6 @@ textarea,
   "Solarized Light":
     "Author"                      : "seaweed"
     "Author Tripcode"             : "!POMF.9waa"
-    "Background Image"            : ""
-    "Background Attachment"       : "fixed"
-    "Background Position"         : "bottom left"
-    "Background Repeat"           : "no-repeat"
     "Background Color"            : "rgb(240,240,240)"
     "Dialog Background"           : "rgba(253,246,227,.98)"
     "Dialog Border"               : "rgb(230,223,206)"
@@ -1564,10 +1509,6 @@ textarea,
   "Muted":
     "Author"                      : "seaweed"
     "Author Tripcode"             : "!POMF.9waa"
-    "Background Image"            : ""
-    "Background Attachment"       : "fixed"
-    "Background Position"         : "bottom left"
-    "Background Repeat"           : "no-repeat"
     "Background Color"            : "rgb(255,255,255)"
     "Dialog Background"           : "rgba(245,242,233,.98)"
     "Dialog Border"               : "rgb(204,204,204)"
@@ -1661,10 +1602,6 @@ div.reply a.quotelink{
   "Monokai":
     "Author"                      : "seaweed"
     "Author Tripcode"             : "!POMF.9waa"
-    "Background Image"            : ""
-    "Background Attachment"       : "fixed"
-    "Background Position"         : "bottom left"
-    "Background Repeat"           : "no-repeat"
     "Background Color"            : "rgb(32,33,28)"
     "Dialog Background"           : "rgba(39,40,34,.98)"
     "Dialog Border"               : "rgb(45,46,39)"
@@ -1827,10 +1764,6 @@ textarea,
   "Blackboard":
     "Author"                      : "seaweed"
     "Author Tripcode"             : "!POMF.9waa"
-    "Background Image"            : ""
-    "Background Attachment"       : "fixed"
-    "Background Position"         : "bottom left"
-    "Background Repeat"           : "no-repeat"
     "Background Color"            : "rgb(10,13,28)"
     "Dialog Background"           : "rgba(12,16,33,.98)"
     "Dialog Border"               : "rgb(14,18,40)"
@@ -1910,10 +1843,6 @@ thread>.replyContainer>.reply>div.postInfo {
   "4chan Rewired":
     "Author"                      : ""
     "Author Tripcode"             : "!K.WeEabo0o"
-    "Background Image"            : ""
-    "Background Attachment"       : "fixed"
-    "Background Position"         : "bottom right"
-    "Background Repeat"           : "no-repeat"
     "Background Color"            : "rgb(244,244,244)"
     "Dialog Background"           : "rgba(239,239,239,.98)"
     "Dialog Border"               : "rgb(212,212,212)"
