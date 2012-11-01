@@ -1004,10 +1004,10 @@ Options =
       className:    'reply dialog'
       innerHTML:  @nextSibling.innerHTML
 
-    UI.hover e
+    Options.cb = (e) -> UI.hover e, "menu"
     $.add d.body, mouseover
 
-    $.on @, 'mousemove',      UI.hover
+    $.on @, 'mousemove',      Options.cb
     $.on @, 'mouseout',       Options.mouseout
 
     return
@@ -1015,4 +1015,4 @@ Options =
   mouseout: (e) ->
   
     UI.hoverend()
-    $.off @, 'mousemove',      UI.hover
+    $.off @, 'mousemove',     Options.cb

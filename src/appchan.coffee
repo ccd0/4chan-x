@@ -6,15 +6,14 @@ Style =
     $.ready ->
       Style.banner()
       Style.trimGlobalMessage()
-      $(".boardBanner img", d.body).id = "Banner"
       if exLink = $ "#navtopright .exlinksOptionsLink", d.body
         $.on exLink, "click", ->
           setTimeout Style.rice, 50
-      iconPositions = -> 
+      iconPositions = ->
         $.rm $.id 'icons'
         $.addStyle(Style.iconPositions(), 'icons')
       # Give ExLinks and 4sight a little time to append their dialog links
-      setTimeout iconPositions, 300
+      setTimeout iconPositions, 1000
 
   emoji: (position) ->
     css = ''
@@ -75,7 +74,9 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
     title  = $.el "div"
       id:   "boardTitle"
     children = for child in banner.children
+      continue unless child.tagName?
       if child.tagName.toLowerCase() == "img"
+        child.id = "Banner"
         continue;
       child
     $.add title, children
