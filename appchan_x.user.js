@@ -10738,10 +10738,37 @@
       }
     },
     message: function(e) {
-      var version;
+      var a, da, db, version, x;
       version = e.data.version;
-      if (version && version !== Main.version && confirm('An updated version of appchan X is available, would you like to install it now?')) {
-        return window.location = "https://raw.github.com/zixaphir/appchan-x/" + version + "/appchan_x.user.js";
+      if (version && version !== Main.version) {
+        a = $.el('a', {
+          textContent: "4chan X",
+          className: "xupdater",
+          href: "https://raw.github.com/ihavenoface/4chan-x/" + version + "/4chan_x.user.js"
+        });
+        db = $.el('span', {
+          textContent: "An updated version of ",
+          className: "xupdater"
+        });
+        da = $.el('span', {
+          textContent: " is available.",
+          className: "xupdater"
+        });
+        x = $.el('a', {
+          textContent: '  ×',
+          className: "xupdater",
+          href: "javascript:;"
+        });
+        $.after($('h1'), db);
+        $.after(db, a);
+        $.after(a, da);
+        $.after(da, x);
+        return $.on(x, 'click', function() {
+          $.rm(db);
+          $.rm(a);
+          $.rm(da);
+          return $.rm(x);
+        });
       }
     },
     preParse: function(node) {
