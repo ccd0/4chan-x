@@ -53,7 +53,7 @@ JSColor =
       while e1 = e1.offsetParent
         x += e1.offsetLeft
         y += e1.offsetTop
-    while (e2 = e2.parentNode) and e2.nodeName.toLowerCade() isnt 'body'
+    while (e2 = e2.parentNode) and e2.nodeName.toLowerCase() isnt 'body'
       x -= e2.scrollLeft
       y -= e2.scrollTop
     [x, y]
@@ -94,7 +94,7 @@ JSColor =
     else
       [0, 0]
 
-  color: (target, prop) ->
+  color: (target) ->
     @required                   = true           # refuse empty values?
     @adjust                     = true           # adjust value to uniform notation?
     @slider                     = true           # show the value/saturation slider?
@@ -232,41 +232,43 @@ JSColor =
         redrawSld()
 
     @fromHSV = (h, s, v, flags) -> # null = don't change
-      if h? then h = Math.max(0.0, @minH, Math.min(6.0, @maxH, h))
-      if s? then s = Math.max(0.0, @minS, Math.min(1.0, @maxS, s))
-      if v? then v = Math.max(0.0, @minV, Math.min(1.0, @maxV, v))
+      if h isnt null then h = Math.max(0.0, @minH, Math.min(6.0, @maxH, h))
+      if s isnt null then s = Math.max(0.0, @minS, Math.min(1.0, @maxS, s))
+      if v isnt null then v = Math.max(0.0, @minV, Math.min(1.0, @maxV, v))
 
       @rgb = HSV_RGB(
-        unless h? then @hsv[0] else (@hsv[0]=h)
-        unless s? then @hsv[1] else (@hsv[1]=s)
-        unless v? then @hsv[2] else (@hsv[2]=v)
+        if h is null then @hsv[0] else (@hsv[0] = h)
+        if s is null then @hsv[1] else (@hsv[1] = s)
+        if v is null then @hsv[2] else (@hsv[2] = v)
       )
+      
+      $.log @rgb
 
       @exportColor flags
 
     @fromRGB = (r, g, b, flags) -> # null = don't change
-      if r? then r = Math.max(0.0, Math.min(1.0, r))
-      if g? then g = Math.max(0.0, Math.min(1.0, g))
-      if b? then b = Math.max(0.0, Math.min(1.0, b))
+      if r isnt null then r = Math.max(0.0, Math.min(1.0, r))
+      if g isnt null then g = Math.max(0.0, Math.min(1.0, g))
+      if b isnt null then b = Math.max(0.0, Math.min(1.0, b))
 
       hsv = RGB_HSV(
-        unless r? then @rgb[0] else r
-        unless g? then @rgb[1] else g
-        unless b? then @rgb[2] else b
+        if r is null then @rgb[0] else r
+        if g is null then @rgb[1] else g
+        if b is null then @rgb[2] else b
       )
 
-      if hsv[0]?
+      if hsv[0] isnt null
         @hsv[0] = Math.max(0.0, @minH, Math.min(6.0, @maxH, hsv[0]))
 
-      if hsv[2]?
+      if hsv[2] isnt 0
         @hsv[1] = 
-          unless hsv[1]?
+          if hsv[1] is null
             null
           else
             Math.max 0.0, @minS, Math.min 1.0, @maxS, hsv[1]
 
       @hsv[2] =
-        unless hsv[2]?
+        if hsv[2] is null
           null
         else
           Math.max 0.0, @minV, Math.min 1.0, @maxV, hsv[2]
@@ -279,10 +281,25 @@ JSColor =
 
       @exportColor flags
 
-    @fromString = (hex, flags) ->
-      m = hex.match(/^\W*([0-9A-F]{3}([0-9A-F]{3})?)\W*$/i)
+    @fromString = (number, flags) ->
+      m = number.match(/^\W*([0-9A-F]{3}([0-9A-F]{3})?)\W*$/i)
       unless m
         return false
+        m = number.match /(rgba?)|(\d+(\.\d+)?%?)|(\.\d+)/i
+        unless m
+          return false
+        else if m and m.length >= 3
+          while i < 3
+            value = m[++i]
+            if value.contains '%'
+              value = Math.round parseFloat(value) * 2.55
+            else
+              value = parseInt value, 10
+            return false if value < 0 or value > 255
+            m[i] = value
+          
+          @fromRGB(m[1], m[2], m[3], flags)
+        else return false
       else
         if m[1].length is 6 # 6-char notation
           @fromRGB(
@@ -300,14 +317,12 @@ JSColor =
           )
         true
 
-
     @toString = ->
-        (0x100 | Math.round(255*@rgb[0])).toString(16).substr(1) +
-        (0x100 | Math.round(255*@rgb[1])).toString(16).substr(1) +
-        (0x100 | Math.round(255*@rgb[2])).toString(16).substr(1)
+      (0x100 | Math.round(255 * @rgb[0])).toString(16).substr(1) +
+      (0x100 | Math.round(255 * @rgb[1])).toString(16).substr(1) +
+      (0x100 | Math.round(255 * @rgb[2])).toString(16).substr(1)
 
-
-    RGB_HSV =(r, g, b) ->
+    RGB_HSV = (r, g, b) ->
       n = Math.min(Math.min(r,g),b)
       v = Math.max(Math.max(r,g),b)
       m = v - n
@@ -330,11 +345,11 @@ JSColor =
         v]
 
     HSV_RGB = (h, s, v) ->
-
-      return [ v, v, v ] unless h?
-
+      
+      return [ v, v, v ] if h is null
+      
       i = Math.floor(h)
-      f = if i%2 then h - i else 1 - (h - i)
+      f = if i % 2 then h - i else 1 - (h - i)
       m = v * (1 - s)
       n = v * (1 - s * f)
 
@@ -408,11 +423,11 @@ JSColor =
         # if the slider is at the bottom, move it up
         switch modeID
           when 0
-            if @hsv[2] is 0
-              @fromHSV null, null, 1.0
+            if THIS.hsv[2] is 0
+              THIS.fromHSV null, null, 1.0
           when 1
-            if @hsv[1] is 0
-              @fromHSV null, 1.0, null
+            if THIS.hsv[1] is 0
+              THIS.fromHSV null, 1.0, null
 
         holdPad = true
         setPad e
@@ -437,10 +452,10 @@ JSColor =
       p.boxB.style.clear        = 'both'
       p.boxB.style.left         = x + 'px'
       p.boxB.style.top          = y + 'px'
-      p.boxB.style.zIndex       = @pickerZIndex
-      p.boxB.style.border       = @pickerBorder + 'px solid'
-      p.boxB.style.borderColor  = @pickerBorderColor
-      p.boxB.style.background   = @pickerFaceColor
+      p.boxB.style.zIndex       = THIS.pickerZIndex
+      p.boxB.style.border       = THIS.pickerBorder + 'px solid'
+      p.boxB.style.borderColor  = THIS.pickerBorderColor
+      p.boxB.style.background   = THIS.pickerFaceColor
 
       # pad image
       p.pad.style.width         = JSColor.images.pad[0] + 'px'
@@ -448,16 +463,16 @@ JSColor =
 
       # pad border
       p.padB.style.position     = 'absolute'
-      p.padB.style.left         = @pickerFace  + 'px'
-      p.padB.style.top          = @pickerFace  + 'px'
-      p.padB.style.border       = @pickerInset + 'px solid'
-      p.padB.style.borderColor  = @pickerInsetColor
+      p.padB.style.left         = THIS.pickerFace  + 'px'
+      p.padB.style.top          = THIS.pickerFace  + 'px'
+      p.padB.style.border       = THIS.pickerInset + 'px solid'
+      p.padB.style.borderColor  = THIS.pickerInsetColor
 
       # pad mouse area
       p.padM.style.position     = 'absolute'
       p.padM.style.left         = '0'
       p.padM.style.top          = '0'
-      p.padM.style.width        = @pickerFace + 2 * @pickerInset + JSColor.images.pad[0] + JSColor.images.arrow[0] + 'px'
+      p.padM.style.width        = THIS.pickerFace + 2 * THIS.pickerInset + JSColor.images.pad[0] + JSColor.images.arrow[0] + 'px'
       p.padM.style.height       = p.box.style.height
       p.padM.style.cursor       = 'crosshair'
 
@@ -469,17 +484,17 @@ JSColor =
       # slider border
       p.sldB.style.display      = if @slider then 'block' else 'none'
       p.sldB.style.position     = 'absolute'
-      p.sldB.style.right        = @pickerFace  + 'px'
-      p.sldB.style.top          = @pickerFace  + 'px'
-      p.sldB.style.border       = @pickerInset + 'px solid'
-      p.sldB.style.borderColor  = @pickerInsetColor
+      p.sldB.style.right        = THIS.pickerFace  + 'px'
+      p.sldB.style.top          = THIS.pickerFace  + 'px'
+      p.sldB.style.border       = THIS.pickerInset + 'px solid'
+      p.sldB.style.borderColor  = THIS.pickerInsetColor
 
       # slider mouse area
       p.sldM.style.display      = if @slider then 'block' else 'none'
       p.sldM.style.position     = 'absolute'
       p.sldM.style.right        = '0'
       p.sldM.style.top          = '0'
-      p.sldM.style.width        = JSColor.images.sld[0] + JSColor.images.arrow[0] + @pickerFace + 2 * @pickerInset + 'px'
+      p.sldM.style.width        = JSColor.images.sld[0] + JSColor.images.arrow[0] + @pickerFace + 2 * THIS.pickerInset + 'px'
       p.sldM.style.height       = p.box.style.height
 
       try
@@ -489,22 +504,22 @@ JSColor =
 
       # "close" button
       setBtnBorder = ->
-        insetColors = @pickerInsetColor.split /\s+/
+        insetColors = THIS.pickerInsetColor.split /\s+/
         pickerOutsetColor = if insetColors.length < 2
           insetColors[0]
         else
           insetColors[1] + ' ' + insetColors[0] + ' ' + insetColors[0] + ' ' + insetColors[1]
         p.btn.style.borderColor = pickerOutsetColor
 
-      p.btn.style.display       = if @pickerClosable then 'block' else 'none'
+      p.btn.style.display       = if THIS.pickerClosable then 'block' else 'none'
       p.btn.style.position      = 'absolute'
-      p.btn.style.left          = @pickerFace + 'px'
-      p.btn.style.bottom        = @pickerFace + 'px'
+      p.btn.style.left          = THIS.pickerFace + 'px'
+      p.btn.style.bottom        = THIS.pickerFace + 'px'
       p.btn.style.padding       = '0 15px'
       p.btn.style.height        = '18px'
-      p.btn.style.border        = @pickerInset + 'px solid'
+      p.btn.style.border        = THIS.pickerInset + 'px solid'
       setBtnBorder()
-      p.btn.style.color         = @pickerButtonColor
+      p.btn.style.color         = THIS.pickerButtonColor
       p.btn.style.font          = '12px sans-serif'
       p.btn.style.textAlign     = 'center'
 
@@ -521,9 +536,9 @@ JSColor =
       # load images in optimal order
       switch modeID
         when 0
-          padImg = "#{Style.agent}linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), #{Style.agent}linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
+          padImg = "#{Style.agent()}linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), #{Style.agent()}linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
         when 1
-          padImg = "#{Style.agent}linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), #{Style.agent}linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
+          padImg = "#{Style.agent()}linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), #{Style.agent()}linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
 
       p.padM.style.backgroundImage   = "url('')"
       p.padM.style.backgroundRepeat  = "no-repeat"
@@ -579,18 +594,18 @@ JSColor =
         when 1
           yComponent = 2
 
-      x = Math.round (@hsv[0] / 6)          * (JSColor.images.pad[0] - 1)
-      y = Math.round (1 - @hsv[yComponent]) * (JSColor.images.pad[1] - 1)
+      x = Math.round (THIS.hsv[0] / 6)          * (JSColor.images.pad[0] - 1)
+      y = Math.round (1 - THIS.hsv[yComponent]) * (JSColor.images.pad[1] - 1)
       JSColor.picker.padM.style.backgroundPosition =
-        "#{@pickerFace+@pickerInset+x - Math.floor(JSColor.images.cross[0] / 2)}px " +
-        "#{@pickerFace+@pickerInset+y - Math.floor(JSColor.images.cross[1] / 2)}px"
+        "#{THIS.pickerFace+THIS.pickerInset+x - Math.floor(JSColor.images.cross[0] / 2)}px " +
+        "#{THIS.pickerFace+THIS.pickerInset+y - Math.floor(JSColor.images.cross[1] / 2)}px"
 
       # redraw the slider image
       seg = JSColor.picker.sld.childNodes
 
       switch modeID
         when 0
-          rgb = HSV_RGB(@hsv[0], @hsv[1], 1)
+          rgb = HSV_RGB(THIS.hsv[0], THIS.hsv[1], 1)
           for item in seg
             item.style.backgroundColor =
               "rgb(" +
@@ -598,12 +613,12 @@ JSColor =
               "#{rgb[1]*(1-i/seg.length)*100}%, " +
               "#{rgb[2]*(1-i/seg.length)*100}%)"
         when 1
-          c = [ @hsv[2], 0, 0 ]
-          i = Math.floor(@hsv[0])
+          c = [ THIS.hsv[2], 0, 0 ]
+          i = Math.floor(THIS.hsv[0])
           f = if i % 2
-            @hsv[0] - i
+            THIS.hsv[0] - i
           else
-            1 - (@hsv[0] - i)
+            1 - (THIS.hsv[0] - i)
 
           switch i
             when 6, 0
@@ -637,9 +652,9 @@ JSColor =
         when 1
           yComponent = 1
 
-      y = Math.round (1 - @hsv[yComponent]) * (JSColor.images.sld[1] - 1)
+      y = Math.round (1 - THIS.hsv[yComponent]) * (JSColor.images.sld[1] - 1)
       JSColor.picker.sldM.style.backgroundPosition =
-        "0 #{@pickerFace+@pickerInset+y - Math.floor(JSColor.images.arrow[1]/2)}px"
+        "0 #{THIS.pickerFace + THIS.pickerInset+y - Math.floor(JSColor.images.arrow[1] / 2)}px"
 
 
     isPickerOwner = ->
@@ -647,13 +662,13 @@ JSColor =
 
     blurTarget = ->
       if valueElement is target
-        @importColor()
-      if @pickerOnfocus
-        @hidePicker()
+        THIS.importColor()
+      if THIS.pickerOnfocus
+        THIS.hidePicker()
 
     blurValue = ->
       if valueElement isnt target
-        @importColor()
+        THIS.importColor()
 
     setPad = (e) ->
       mpos = JSColor.getRelMousePos e
@@ -661,7 +676,7 @@ JSColor =
       y = mpos.y - @pickerFace - @pickerInset
       switch modeID
         when 0
-          @fromHSV(
+          THIS.fromHSV(
             x * (
               6 / (
                 JSColor.images.pad[0] - 1
@@ -674,7 +689,7 @@ JSColor =
             leaveSld
           )
         when 1
-          @fromHSV(
+          THIS.fromHSV(
             x * (
               6 / (
                 JSColor.images.pad[0] - 1
@@ -738,8 +753,8 @@ JSColor =
 
     # target
     $.on target, 'focus', ->
-      if @pickerOnfocus
-        @showPicker()
+      if THIS.pickerOnfocus
+        THIS.showPicker()
 
     $.on target, 'blur', ->
       unless abortBlur
@@ -754,7 +769,7 @@ JSColor =
     # valueElement
     if valueElement
       updateField = ->
-        @fromString valueElement.value, leaveValue
+        THIS.fromString valueElement.value, leaveValue
         dispatchImmediateChange()
 
       $.on valueElement, 'keyup', updateField
@@ -769,14 +784,12 @@ JSColor =
         backgroundColor:    styleElement.style.backgroundColor
         color:              styleElement.style.color
 
-    # require images
-    switch modeID
-      when 0
-        JSColor.requireImage 'hs.png'
-      when 1
-        JSColor.requireImage 'hv.png'
-
     JSColor.requireImage 'cross.gif'
     JSColor.requireImage 'arrow.gif'
 
-    @importColor()
+    
+    try
+      @importColor()
+    catch err
+      $.log err
+      $.log err.stack

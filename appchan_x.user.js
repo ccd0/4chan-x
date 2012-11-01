@@ -8905,7 +8905,7 @@
           y += e1.offsetTop;
         }
       }
-      while ((e2 = e2.parentNode) && e2.nodeName.toLowerCade() !== 'body') {
+      while ((e2 = e2.parentNode) && e2.nodeName.toLowerCase() !== 'body') {
         x -= e2.scrollLeft;
         y -= e2.scrollTop;
       }
@@ -8955,7 +8955,7 @@
         return [0, 0];
       }
     },
-    color: function(target, prop) {
+    color: function(target) {
       var HSV_RGB, RGB_HSV, THIS, abortBlur, blurTarget, blurValue, dispatchImmediateChange, drawPicker, getPickerDims, holdPad, holdSld, isPickerOwner, leavePad, leaveSld, leaveStyle, leaveValue, modeID, redrawPad, redrawSld, removePicker, setPad, setSld, styleElement, updateField, valueElement;
       this.required = true;
       this.adjust = true;
@@ -9073,48 +9073,69 @@
         }
       };
       this.fromHSV = function(h, s, v, flags) {
-        if (h != null) {
+        if (h !== null) {
           h = Math.max(0.0, this.minH, Math.min(6.0, this.maxH, h));
         }
-        if (s != null) {
+        if (s !== null) {
           s = Math.max(0.0, this.minS, Math.min(1.0, this.maxS, s));
         }
-        if (v != null) {
+        if (v !== null) {
           v = Math.max(0.0, this.minV, Math.min(1.0, this.maxV, v));
         }
-        this.rgb = HSV_RGB(h == null ? this.hsv[0] : (this.hsv[0] = h), s == null ? this.hsv[1] : (this.hsv[1] = s), v == null ? this.hsv[2] : (this.hsv[2] = v));
+        this.rgb = HSV_RGB(h === null ? this.hsv[0] : (this.hsv[0] = h), s === null ? this.hsv[1] : (this.hsv[1] = s), v === null ? this.hsv[2] : (this.hsv[2] = v));
+        $.log(this.rgb);
         return this.exportColor(flags);
       };
       this.fromRGB = function(r, g, b, flags) {
         var hsv, rgb;
-        if (r != null) {
+        if (r !== null) {
           r = Math.max(0.0, Math.min(1.0, r));
         }
-        if (g != null) {
+        if (g !== null) {
           g = Math.max(0.0, Math.min(1.0, g));
         }
-        if (b != null) {
+        if (b !== null) {
           b = Math.max(0.0, Math.min(1.0, b));
         }
-        hsv = RGB_HSV(r == null ? this.rgb[0] : r, g == null ? this.rgb[1] : g, b == null ? this.rgb[2] : b);
-        if (hsv[0] != null) {
+        hsv = RGB_HSV(r === null ? this.rgb[0] : r, g === null ? this.rgb[1] : g, b === null ? this.rgb[2] : b);
+        if (hsv[0] !== null) {
           this.hsv[0] = Math.max(0.0, this.minH, Math.min(6.0, this.maxH, hsv[0]));
         }
-        if (hsv[2] != null) {
-          this.hsv[1] = hsv[1] == null ? null : Math.max(0.0, this.minS, Math.min(1.0, this.maxS, hsv[1]));
+        if (hsv[2] !== 0) {
+          this.hsv[1] = hsv[1] === null ? null : Math.max(0.0, this.minS, Math.min(1.0, this.maxS, hsv[1]));
         }
-        this.hsv[2] = hsv[2] == null ? null : Math.max(0.0, this.minV, Math.min(1.0, this.maxV, hsv[2]));
+        this.hsv[2] = hsv[2] === null ? null : Math.max(0.0, this.minV, Math.min(1.0, this.maxV, hsv[2]));
         rgb = HSV_RGB(this.hsv[0], this.hsv[1], this.hsv[2]);
         this.rgb[0] = rgb[0];
         this.rgb[1] = rgb[1];
         this.rgb[2] = rgb[2];
         return this.exportColor(flags);
       };
-      this.fromString = function(hex, flags) {
-        var m;
-        m = hex.match(/^\W*([0-9A-F]{3}([0-9A-F]{3})?)\W*$/i);
+      this.fromString = function(number, flags) {
+        var m, value;
+        m = number.match(/^\W*([0-9A-F]{3}([0-9A-F]{3})?)\W*$/i);
         if (!m) {
           return false;
+          m = number.match(/(rgba?)|(\d+(\.\d+)?%?)|(\.\d+)/i);
+          if (!m) {
+            return false;
+          } else if (m && m.length >= 3) {
+            while (i < 3) {
+              value = m[++i];
+              if (value.contains('%')) {
+                value = Math.round(parseFloat(value) * 2.55);
+              } else {
+                value = parseInt(value, 10);
+              }
+              if (value < 0 || value > 255) {
+                return false;
+              }
+              m[i] = value;
+            }
+            return this.fromRGB(m[1], m[2], m[3], flags);
+          } else {
+            return false;
+          }
         } else {
           if (m[1].length === 6) {
             this.fromRGB(parseInt(m[1].substr(0, 2), 16) / 255, parseInt(m[1].substr(2, 2), 16) / 255, parseInt(m[1].substr(4, 2), 16) / 255, flags);
@@ -9140,7 +9161,7 @@
       };
       HSV_RGB = function(h, s, v) {
         var f, i, m, n;
-        if (h == null) {
+        if (h === null) {
           return [v, v, v];
         }
         i = Math.floor(h);
@@ -9234,13 +9255,13 @@
           var holdPad;
           switch (modeID) {
             case 0:
-              if (this.hsv[2] === 0) {
-                this.fromHSV(null, null, 1.0);
+              if (THIS.hsv[2] === 0) {
+                THIS.fromHSV(null, null, 1.0);
               }
               break;
             case 1:
-              if (this.hsv[1] === 0) {
-                this.fromHSV(null, 1.0, null);
+              if (THIS.hsv[1] === 0) {
+                THIS.fromHSV(null, 1.0, null);
               }
           }
           holdPad = true;
@@ -9267,21 +9288,21 @@
         p.boxB.style.clear = 'both';
         p.boxB.style.left = x + 'px';
         p.boxB.style.top = y + 'px';
-        p.boxB.style.zIndex = this.pickerZIndex;
-        p.boxB.style.border = this.pickerBorder + 'px solid';
-        p.boxB.style.borderColor = this.pickerBorderColor;
-        p.boxB.style.background = this.pickerFaceColor;
+        p.boxB.style.zIndex = THIS.pickerZIndex;
+        p.boxB.style.border = THIS.pickerBorder + 'px solid';
+        p.boxB.style.borderColor = THIS.pickerBorderColor;
+        p.boxB.style.background = THIS.pickerFaceColor;
         p.pad.style.width = JSColor.images.pad[0] + 'px';
         p.pad.style.height = JSColor.images.pad[1] + 'px';
         p.padB.style.position = 'absolute';
-        p.padB.style.left = this.pickerFace + 'px';
-        p.padB.style.top = this.pickerFace + 'px';
-        p.padB.style.border = this.pickerInset + 'px solid';
-        p.padB.style.borderColor = this.pickerInsetColor;
+        p.padB.style.left = THIS.pickerFace + 'px';
+        p.padB.style.top = THIS.pickerFace + 'px';
+        p.padB.style.border = THIS.pickerInset + 'px solid';
+        p.padB.style.borderColor = THIS.pickerInsetColor;
         p.padM.style.position = 'absolute';
         p.padM.style.left = '0';
         p.padM.style.top = '0';
-        p.padM.style.width = this.pickerFace + 2 * this.pickerInset + JSColor.images.pad[0] + JSColor.images.arrow[0] + 'px';
+        p.padM.style.width = THIS.pickerFace + 2 * THIS.pickerInset + JSColor.images.pad[0] + JSColor.images.arrow[0] + 'px';
         p.padM.style.height = p.box.style.height;
         p.padM.style.cursor = 'crosshair';
         p.sld.style.overflow = 'hidden';
@@ -9289,15 +9310,15 @@
         p.sld.style.height = JSColor.images.sld[1] + 'px';
         p.sldB.style.display = this.slider ? 'block' : 'none';
         p.sldB.style.position = 'absolute';
-        p.sldB.style.right = this.pickerFace + 'px';
-        p.sldB.style.top = this.pickerFace + 'px';
-        p.sldB.style.border = this.pickerInset + 'px solid';
-        p.sldB.style.borderColor = this.pickerInsetColor;
+        p.sldB.style.right = THIS.pickerFace + 'px';
+        p.sldB.style.top = THIS.pickerFace + 'px';
+        p.sldB.style.border = THIS.pickerInset + 'px solid';
+        p.sldB.style.borderColor = THIS.pickerInsetColor;
         p.sldM.style.display = this.slider ? 'block' : 'none';
         p.sldM.style.position = 'absolute';
         p.sldM.style.right = '0';
         p.sldM.style.top = '0';
-        p.sldM.style.width = JSColor.images.sld[0] + JSColor.images.arrow[0] + this.pickerFace + 2 * this.pickerInset + 'px';
+        p.sldM.style.width = JSColor.images.sld[0] + JSColor.images.arrow[0] + this.pickerFace + 2 * THIS.pickerInset + 'px';
         p.sldM.style.height = p.box.style.height;
         try {
           p.sldM.style.cursor = 'pointer';
@@ -9306,19 +9327,19 @@
         }
         setBtnBorder = function() {
           var insetColors, pickerOutsetColor;
-          insetColors = this.pickerInsetColor.split(/\s+/);
+          insetColors = THIS.pickerInsetColor.split(/\s+/);
           pickerOutsetColor = insetColors.length < 2 ? insetColors[0] : insetColors[1] + ' ' + insetColors[0] + ' ' + insetColors[0] + ' ' + insetColors[1];
           return p.btn.style.borderColor = pickerOutsetColor;
         };
-        p.btn.style.display = this.pickerClosable ? 'block' : 'none';
+        p.btn.style.display = THIS.pickerClosable ? 'block' : 'none';
         p.btn.style.position = 'absolute';
-        p.btn.style.left = this.pickerFace + 'px';
-        p.btn.style.bottom = this.pickerFace + 'px';
+        p.btn.style.left = THIS.pickerFace + 'px';
+        p.btn.style.bottom = THIS.pickerFace + 'px';
         p.btn.style.padding = '0 15px';
         p.btn.style.height = '18px';
-        p.btn.style.border = this.pickerInset + 'px solid';
+        p.btn.style.border = THIS.pickerInset + 'px solid';
         setBtnBorder();
-        p.btn.style.color = this.pickerButtonColor;
+        p.btn.style.color = THIS.pickerButtonColor;
         p.btn.style.font = '12px sans-serif';
         p.btn.style.textAlign = 'center';
         try {
@@ -9332,10 +9353,10 @@
         p.btnS.style.lineHeight = p.btn.style.height;
         switch (modeID) {
           case 0:
-            padImg = "" + Style.agent + "linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), " + Style.agent + "linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)";
+            padImg = "" + (Style.agent()) + "linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), " + (Style.agent()) + "linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)";
             break;
           case 1:
-            padImg = "" + Style.agent + "linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), " + Style.agent + "linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)";
+            padImg = "" + (Style.agent()) + "linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), " + (Style.agent()) + "linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)";
         }
         p.padM.style.backgroundImage = "url('')";
         p.padM.style.backgroundRepeat = "no-repeat";
@@ -9362,13 +9383,13 @@
           case 1:
             yComponent = 2;
         }
-        x = Math.round((this.hsv[0] / 6) * (JSColor.images.pad[0] - 1));
-        y = Math.round((1 - this.hsv[yComponent]) * (JSColor.images.pad[1] - 1));
-        JSColor.picker.padM.style.backgroundPosition = ("" + (this.pickerFace + this.pickerInset + x - Math.floor(JSColor.images.cross[0] / 2)) + "px ") + ("" + (this.pickerFace + this.pickerInset + y - Math.floor(JSColor.images.cross[1] / 2)) + "px");
+        x = Math.round((THIS.hsv[0] / 6) * (JSColor.images.pad[0] - 1));
+        y = Math.round((1 - THIS.hsv[yComponent]) * (JSColor.images.pad[1] - 1));
+        JSColor.picker.padM.style.backgroundPosition = ("" + (THIS.pickerFace + THIS.pickerInset + x - Math.floor(JSColor.images.cross[0] / 2)) + "px ") + ("" + (THIS.pickerFace + THIS.pickerInset + y - Math.floor(JSColor.images.cross[1] / 2)) + "px");
         seg = JSColor.picker.sld.childNodes;
         switch (modeID) {
           case 0:
-            rgb = HSV_RGB(this.hsv[0], this.hsv[1], 1);
+            rgb = HSV_RGB(THIS.hsv[0], THIS.hsv[1], 1);
             _results = [];
             for (_i = 0, _len = seg.length; _i < _len; _i++) {
               item = seg[_i];
@@ -9377,9 +9398,9 @@
             return _results;
             break;
           case 1:
-            c = [this.hsv[2], 0, 0];
-            i = Math.floor(this.hsv[0]);
-            f = i % 2 ? this.hsv[0] - i : 1 - (this.hsv[0] - i);
+            c = [THIS.hsv[2], 0, 0];
+            i = Math.floor(THIS.hsv[0]);
+            f = i % 2 ? THIS.hsv[0] - i : 1 - (THIS.hsv[0] - i);
             switch (i) {
               case 6:
               case 0:
@@ -9420,23 +9441,23 @@
           case 1:
             yComponent = 1;
         }
-        y = Math.round((1 - this.hsv[yComponent]) * (JSColor.images.sld[1] - 1));
-        return JSColor.picker.sldM.style.backgroundPosition = "0 " + (this.pickerFace + this.pickerInset + y - Math.floor(JSColor.images.arrow[1] / 2)) + "px";
+        y = Math.round((1 - THIS.hsv[yComponent]) * (JSColor.images.sld[1] - 1));
+        return JSColor.picker.sldM.style.backgroundPosition = "0 " + (THIS.pickerFace + THIS.pickerInset + y - Math.floor(JSColor.images.arrow[1] / 2)) + "px";
       };
       isPickerOwner = function() {
         return JSColor.picker && JSColor.picker.owner === THIS;
       };
       blurTarget = function() {
         if (valueElement === target) {
-          this.importColor();
+          THIS.importColor();
         }
-        if (this.pickerOnfocus) {
-          return this.hidePicker();
+        if (THIS.pickerOnfocus) {
+          return THIS.hidePicker();
         }
       };
       blurValue = function() {
         if (valueElement !== target) {
-          return this.importColor();
+          return THIS.importColor();
         }
       };
       setPad = function(e) {
@@ -9446,9 +9467,9 @@
         y = mpos.y - this.pickerFace - this.pickerInset;
         switch (modeID) {
           case 0:
-            return this.fromHSV(x * (6 / (JSColor.images.pad[0] - 1)), 1 - y / (JSColor.images.pad[1] - 1), null, leaveSld);
+            return THIS.fromHSV(x * (6 / (JSColor.images.pad[0] - 1)), 1 - y / (JSColor.images.pad[1] - 1), null, leaveSld);
           case 1:
-            return this.fromHSV(x * (6 / (JSColor.images.pad[0] - 1)), null, 1 - y / (JSColor.images.pad[1] - 1), leaveSld);
+            return THIS.fromHSV(x * (6 / (JSColor.images.pad[0] - 1)), null, 1 - y / (JSColor.images.pad[1] - 1), leaveSld);
         }
       };
       setSld = function(e) {
@@ -9487,8 +9508,8 @@
       leavePad = 1 << 2;
       leaveSld = 1 << 3;
       $.on(target, 'focus', function() {
-        if (this.pickerOnfocus) {
-          return this.showPicker();
+        if (THIS.pickerOnfocus) {
+          return THIS.showPicker();
         }
       });
       $.on(target, 'blur', function() {
@@ -9504,7 +9525,7 @@
       });
       if (valueElement) {
         updateField = function() {
-          this.fromString(valueElement.value, leaveValue);
+          THIS.fromString(valueElement.value, leaveValue);
           return dispatchImmediateChange();
         };
         $.on(valueElement, 'keyup', updateField);
@@ -9519,16 +9540,14 @@
           color: styleElement.style.color
         };
       }
-      switch (modeID) {
-        case 0:
-          JSColor.requireImage('hs.png');
-          break;
-        case 1:
-          JSColor.requireImage('hv.png');
-      }
       JSColor.requireImage('cross.gif');
       JSColor.requireImage('arrow.gif');
-      return this.importColor();
+      try {
+        return this.importColor();
+      } catch (err) {
+        $.log(err);
+        return $.log(err.stack);
+      }
     }
   };
 
