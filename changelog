@@ -1,7 +1,8 @@
 master
 - noface
-  Added keybind to toggle the hide status of the QR.
-  Archivers Selection
+  Added keybind to toggle the hide status of the QR
+  'Check for Update' is now much less obstrusive.
+  Per-board archivers can now be selected under the rice tab.  
 - Zixaphir
   jscolor for theme editing
 

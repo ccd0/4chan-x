@@ -330,29 +330,13 @@ Main =
   message: (e) ->
     {version} = e.data
     if version and version isnt Main.version
-      a = $.el 'a'
-        textContent: "4chan X"
-        className: "xupdater"
-        href: "https://raw.github.com/ihavenoface/4chan-x/#{version}/4chan_x.user.js"
-      db = $.el 'span'
-        textContent: "An updated version of "
-        className: "xupdater"
-      da = $.el 'span'
-        textContent: " is available."
-        className: "xupdater"
-      x = $.el 'a'
-        textContent: '  ×'
-        className: "xupdater"
-        href: "javascript:;"
-      $.after $('h1'), db
-      $.after db, a
-      $.after a, da
-      $.after da, x
-      $.on x, 'click', ->
-        $.rm db
-        $.rm a
-        $.rm da
-        $.rm x
+      xupdate = $.el 'div'
+        id: 'xupdater'
+        innerHTML:
+          "An updated version of <a href=https://raw.github.com/ihavenoface/4chan-x/#{version}/4chan_x.user.js>4chan X</a> (v#{version}) is available.<a href=javascript:; id=dismiss_xupdate>×</a>"
+      $.before $('#imgControls'), xupdate
+      $.on $('#dismiss_xupdate'), 'click', ->
+        $.rm xupdate
 
   preParse: (node) ->
     parentClass = node.parentNode.className

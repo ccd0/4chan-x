@@ -970,6 +970,9 @@ img.bottomad:hover {
   text-align: center;
   font-weight: 200;
 }
+#xupdater {
+  margin-bottom: 2px;
+}
 .pages strong,
 a,
 .new {
