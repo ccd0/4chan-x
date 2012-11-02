@@ -83,6 +83,10 @@ Options =
   </div>
   <input type=radio name=tab hidden id=rice_tab>
   <div>
+    <ul>
+      Archiver
+      <li>Select an Archiver for this board: <select name=archiver></select></li>
+    </ul>
     <div class=warning><code>Quote Backlinks</code> are disabled.</div>
     <ul>
       Backlink formatting
@@ -193,6 +197,18 @@ Options =
     # I pull the correct data from the Options.filter method.
     filter = $ 'select[name=filter]', dialog
     $.on filter, 'change', Options.filter
+    
+    # Archiver
+    archiver = $ 'select[name=archiver]', dialog
+    select = Redirect.select()[..]
+    for name in select
+      return if archiver.length >= select.length
+      (option = d.createElement 'option').textContent = name
+      $.add archiver, option
+    if select.length > 1
+      archiver.value = $.get "archiver/#{g.BOARD}/"
+      $.on archiver, 'mouseup', ->
+        $.set "archiver/#{g.BOARD}/", "#{@value}"
 
     # Sauce
     # The sauce HTML is already there, so I just fill up the textarea with data from localstorage

@@ -787,6 +787,11 @@ Keybinds =
           QR.close()
       when Conf.submit
         QR.submit() if QR.el and !QR.status()
+      when Conf.hideQR
+        if QR.el
+          return QR.el.hidden = false if QR.el.hidden
+          QR.autohide.click()
+        else QR.open()
       when Conf.spoiler
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'spoiler', target
@@ -2445,7 +2450,7 @@ ArchiveLink =
     open = (post) ->
       if type is 'apost'
         el.href =
-          Redirect.to 
+          Redirect.to
             board:    post.info[0]
             threadID: post.info[1]
             postID:   post.ID
@@ -2696,35 +2701,85 @@ Redirect =
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
+  archiver: [
+    {
+      name:    'Foolz'
+      base:    '//archive.foolz.us'
+      boards:  ['a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz']
+      type:    'foolfuuka'
+    }
+    {
+      name:    'NSFWFoolz'
+      base:    '//nsfw.foolz.us'
+      boards:  ['u', 'kuku']
+      type:    'foolfuuka'
+    }
+    {
+      name:    'Warosu'
+      base:    '//fuuka.warosu.org'
+      boards:  ['cgl', 'ck', 'jp', 'lit', 'q', 'tg']
+      type:    'fuuka'
+    }
+    {
+      name:    'RebeccaBlackTech'
+      base:    '//rbt.asia'
+      boards:  ['cgl', 'g', 'mu', 'soc', 'w']
+      type:    'fuuka'
+    }
+    {
+      name:    'InstallGentoo'
+      base:    '//archive.installgentoo.net'
+      boards:  ['diy', 'g', 'sci']
+      type:    'fuuka'
+    }
+    {
+      name:    'Heinessen'
+      base:    'http://archive.heinessen.com'
+      boards:  ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x']
+      type:    'fuuka'
+    }
+  ]
+  select: (data, board) ->
+    noarch = 'No archiver available.'
+    unless board
+      arch = for type in @archiver
+        unless type.boards.contains(g.BOARD)
+          continue
+        else
+          type.name
+      return if arch.length > 0 then arch else noarch
+    for type in data.boards
+      if (current = $.get "archiver/#{board}/") is undefined and (name = @select()[..][0]) isnt noarch
+        $.set "archiver/#{board}/", "#{name}"
+        continue
+      return board if current is data.name and data.boards.contains(board)
+
   to: (data) ->
     unless data.isSearch
       {threadID} = data
     {board} = data
-    switch board
-      when 'a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
-        url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
-      when 'u', 'kuku'
-        url = Redirect.path "//nsfw.foolz.us", 'foolfuuka', data
-      when 'ck', 'jp', 'lit'
-        url = Redirect.path "//fuuka.warosu.org", 'fuuka', data
-      when 'diy', 'sci'
-        url = Redirect.path "//archive.installgentoo.net", 'fuuka', data
-      when 'cgl', 'g', 'mu', 'soc', 'w'
-        url = Redirect.path "//rbt.asia", 'fuuka', data
-      when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
-        url = Redirect.path "http://archive.heinessen.com", 'fuuka', data
-      else
-        if threadID
-          url = "//boards.4chan.org/#{board}/"
+    a = @archiver
+    
+    for archiver in a
+      if board is @select archiver, board
+        archive = archiver
+        break
+        
+    if archive?
+      url = @path archive.base, archive.type, data
+    else
+      if threadID
+        return url = "//boards.4chan.org/#{board}/"
+
     url or null
 
   path: (base, archiver, data) ->
     if data.isSearch
       {board, type, value} = data
-      type =
-        if type is 'name'
+      type = switch type
+        when 'name'
           'username'
-        else if type is 'md5'
+        when 'md5'
           'image'
         else
           type

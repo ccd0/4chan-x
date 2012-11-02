@@ -42,25 +42,6 @@ JSColor =
     else if document.createEventObject
       ev = document.createEventObject()
       el.fireEvent 'on' + evnt, ev
-    else if el['on' + evnt] # alternatively use the traditional event model (IE5)
-      el['on' + evnt]()
-
-  getElementPos: (e) ->
-    e1=e
-    e2=e
-    x=0
-    y=0
-    if e1.offsetParent
-      while e1 = e1.offsetParent
-        x += e1.offsetLeft
-        y += e1.offsetTop
-    while (e2 = e2.parentNode) and e2.nodeName.toLowerCase() isnt 'body'
-      x -= e2.scrollLeft
-      y -= e2.scrollTop
-    [x, y]
-
-  getElementSize: (e) ->
-    [e.offsetWidth, e.offsetHeight]
 
   getRelMousePos: (e = window.event) ->
     x = 0
@@ -73,27 +54,6 @@ JSColor =
       y = e.layerY
     x: x
     y: y
-
-  getViewPos: ->
-    if typeof window.pageYOffset is 'number'
-      [window.pageXOffset, window.pageYOffset]
-    else if document.body and (document.body.scrollLeft or document.body.scrollTop)
-      [document.body.scrollLeft, document.body.scrollTop]
-    else if document.documentElement and (document.documentElement.scrollLeft or document.documentElement.scrollTop)
-      [document.documentElement.scrollLeft, document.documentElement.scrollTop]
-    else
-      [0, 0]
-
-
-  getViewSize: ->
-    if typeof window.innerWidth is 'number'
-      [window.innerWidth, window.innerHeight]
-    else if document.body and (document.body.clientWidth or document.body.clientHeight)
-      [document.body.clientWidth, document.body.clientHeight]
-    else if document.documentElement and (document.documentElement.clientWidth or document.documentElement.clientHeight)
-      [document.documentElement.clientWidth, document.documentElement.clientHeight]
-    else
-      [0, 0]
 
   color: (target) ->
     @valueElement               = target         # value holder
@@ -123,12 +83,6 @@ JSColor =
 
     @showPicker = ->
       unless isPickerOwner()
-        tp = JSColor.getElementPos target   # target position
-        ts = JSColor.getElementSize target  # target size
-        vp = JSColor.getViewPos()           # view pos
-        vs = JSColor.getViewSize()          # view size
-        ps = getPickerDims @                # picker size
-
         drawPicker()
 
     @importColor = ->
@@ -412,10 +366,7 @@ JSColor =
       p.sldM.style.width            = JSColor.images.sld[0] + JSColor.images.arrow[0] + THIS.pickerFace + 2 * THIS.pickerInset + 'px'
       p.sldM.style.height           = p.box.style.height
 
-      try
-        p.sldM.style.cursor         = 'pointer'
-      catch eOldIE
-        p.sldM.style.cursor         = 'hand'
+      p.sldM.style.cursor         = 'pointer'
 
       # "close" button
       setBtnBorder = ->
@@ -438,10 +389,7 @@ JSColor =
       p.btn.style.font          = '12px sans-serif'
       p.btn.style.textAlign     = 'center'
 
-      try
-        p.btn.style.cursor = 'pointer'
-      catch eOldIE
-        p.btn.style.cursor = 'hand'
+      p.btn.style.cursor = 'pointer'
 
       p.btn.onmousedown = () ->
         THIS.hidePicker()

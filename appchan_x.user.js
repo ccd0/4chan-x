@@ -201,14 +201,15 @@
     updateIncrease: '5,10,15,20,30,60,90,120,240,300',
     updateIncreaseB: '5,10,15,20,30,60,90,120,240,300',
     hotkeys: {
-      openQR: ['i', 'Open QR with post number inserted'],
-      openEmptyQR: ['I', 'Open QR without post number inserted'],
+      openQR: ['I', 'Open QR with post number inserted'],
+      openEmptyQR: ['i', 'Open QR without post number inserted'],
       openOptions: ['ctrl+o', 'Open Options'],
       close: ['Esc', 'Close Options or QR'],
       spoiler: ['ctrl+s', 'Quick spoiler tags'],
       code: ['alt+c', 'Quick code tags'],
       sageru: ['alt+n', 'Sage keybind'],
       submit: ['alt+s', 'Submit post'],
+      hideQR: ['h', 'Toggle hide status of QR'],
       watch: ['w', 'Watch thread'],
       update: ['u', 'Update now'],
       unreadCountTo0: ['z', 'Mark thread as read'],
@@ -2747,7 +2748,7 @@
       return _results;
     },
     dialog: function(tab) {
-      var arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, time, tr, ul, updateIncrease, _i, _len, _ref, _ref1, _ref2, _ref3;
+      var archiver, arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, name, obj, option, optionname, optionvalue, overlay, sauce, select, selectoption, styleSetting, time, tr, ul, updateIncrease, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
       if (Conf['editMode'] === "theme") {
         if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
           ThemeTools.close();
@@ -2819,6 +2820,10 @@
   </div>\
   <input type=radio name=tab hidden id=rice_tab>\
   <div>\
+    <ul>\
+      Archiver\
+      <li>Select an Archiver for this board: <select name=archiver></select></li>\
+    </ul>\
     <div class=warning><code>Quote Backlinks</code> are disabled.</div>\
     <ul>\
       Backlink formatting\
@@ -2913,6 +2918,22 @@
       $.add($('ul:nth-child(2)', dialog), li);
       filter = $('select[name=filter]', dialog);
       $.on(filter, 'change', Options.filter);
+      archiver = $('select[name=archiver]', dialog);
+      select = Redirect.select().slice(0);
+      for (_i = 0, _len = select.length; _i < _len; _i++) {
+        name = select[_i];
+        if (archiver.length >= select.length) {
+          return;
+        }
+        (option = d.createElement('option')).textContent = name;
+        $.add(archiver, option);
+      }
+      if (select.length > 1) {
+        archiver.value = $.get("archiver/" + g.BOARD + "/");
+        $.on(archiver, 'mouseup', function() {
+          return $.set("archiver/" + g.BOARD + "/", "" + this.value);
+        });
+      }
       sauce = $('#sauces', dialog);
       sauce.value = $.get(sauce.name, Conf[sauce.name]);
       $.on(sauce, 'change', $.cb.value);
@@ -2967,7 +2988,7 @@
           } else if (arr[2]) {
             liHTML = "<div class=\"option\"><span class=\"optionlabel\">" + optionname + "</span><div style=\"display: none\">" + description + "</div></div><div class =\"option\"><select name=\"" + optionname + "\"></div>";
             _ref3 = arr[2];
-            for (optionvalue = _i = 0, _len = _ref3.length; _i < _len; optionvalue = ++_i) {
+            for (optionvalue = _j = 0, _len1 = _ref3.length; _j < _len1; optionvalue = ++_j) {
               selectoption = _ref3[optionvalue];
               liHTML = liHTML + ("<option value=\"" + selectoption + "\">" + selectoption + "</option>");
             }
@@ -4645,6 +4666,16 @@
         case Conf.submit:
           if (QR.el && !QR.status()) {
             QR.submit();
+          }
+          break;
+        case Conf.hideQR:
+          if (QR.el) {
+            if (QR.el.hidden) {
+              return QR.el.hidden = false;
+            }
+            QR.autohide.click();
+          } else {
+            QR.open();
           }
           break;
         case Conf.spoiler:
@@ -6984,60 +7015,95 @@
           return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
       }
     },
+    archiver: [
+      {
+        name: 'Foolz',
+        base: '//archive.foolz.us',
+        boards: ['a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'],
+        type: 'foolfuuka'
+      }, {
+        name: 'NSFWFoolz',
+        base: '//nsfw.foolz.us',
+        boards: ['u', 'kuku'],
+        type: 'foolfuuka'
+      }, {
+        name: 'Warosu',
+        base: '//fuuka.warosu.org',
+        boards: ['cgl', 'ck', 'jp', 'lit', 'q', 'tg'],
+        type: 'fuuka'
+      }, {
+        name: 'RebeccaBlackTech',
+        base: '//rbt.asia',
+        boards: ['cgl', 'g', 'mu', 'soc', 'w'],
+        type: 'fuuka'
+      }, {
+        name: 'InstallGentoo',
+        base: '//archive.installgentoo.net',
+        boards: ['diy', 'g', 'sci'],
+        type: 'fuuka'
+      }, {
+        name: 'Heinessen',
+        base: 'http://archive.heinessen.com',
+        boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'],
+        type: 'fuuka'
+      }
+    ],
+    select: function(data, board) {
+      var arch, current, name, noarch, type, _i, _len, _ref;
+      noarch = 'No archiver available.';
+      if (!board) {
+        arch = (function() {
+          var _i, _len, _ref, _results;
+          _ref = this.archiver;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            type = _ref[_i];
+            if (!type.boards.contains(g.BOARD)) {
+              continue;
+            } else {
+              _results.push(type.name);
+            }
+          }
+          return _results;
+        }).call(this);
+        if (arch.length > 0) {
+          return arch;
+        } else {
+          return noarch;
+        }
+      }
+      _ref = data.boards;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        if ((current = $.get("archiver/" + board + "/")) === void 0 && (name = this.select().slice(0)[0]) !== noarch) {
+          $.set("archiver/" + board + "/", "" + name);
+          continue;
+        }
+        if (current === data.name && data.boards.contains(board)) {
+          return board;
+        }
+      }
+    },
     to: function(data) {
-      var board, threadID, url;
+      var a, archive, archiver, board, threadID, url, _i, _len;
       if (!data.isSearch) {
         threadID = data.threadID;
       }
       board = data.board;
-      switch (board) {
-        case 'a':
-        case 'co':
-        case 'm':
-        case 'q':
-        case 'sp':
-        case 'tg':
-        case 'tv':
-        case 'v':
-        case 'vg':
-        case 'wsg':
-        case 'dev':
-        case 'foolz':
-          url = Redirect.path('//archive.foolz.us', 'foolfuuka', data);
+      a = this.archiver;
+      for (_i = 0, _len = a.length; _i < _len; _i++) {
+        archiver = a[_i];
+        if (board === this.select(archiver, board)) {
+          archive = archiver;
           break;
-        case 'u':
-        case 'kuku':
-          url = Redirect.path("//nsfw.foolz.us", 'foolfuuka', data);
-          break;
-        case 'ck':
-        case 'jp':
-        case 'lit':
-          url = Redirect.path("//fuuka.warosu.org", 'fuuka', data);
-          break;
-        case 'diy':
-        case 'sci':
-          url = Redirect.path("//archive.installgentoo.net", 'fuuka', data);
-          break;
-        case 'cgl':
-        case 'g':
-        case 'mu':
-        case 'soc':
-        case 'w':
-          url = Redirect.path("//rbt.asia", 'fuuka', data);
-          break;
-        case 'an':
-        case 'fit':
-        case 'k':
-        case 'mlp':
-        case 'r9k':
-        case 'toy':
-        case 'x':
-          url = Redirect.path("http://archive.heinessen.com", 'fuuka', data);
-          break;
-        default:
-          if (threadID) {
-            url = "//boards.4chan.org/" + board + "/";
-          }
+        }
+      }
+      if (archive != null) {
+        url = this.path(archive.base, archive.type, data);
+      } else {
+        if (threadID) {
+          return url = "//boards.4chan.org/" + board + "/";
+        }
       }
       return url || null;
     },
@@ -7045,7 +7111,16 @@
       var board, path, postID, threadID, type, value;
       if (data.isSearch) {
         board = data.board, type = data.type, value = data.value;
-        type = type === 'name' ? 'username' : type === 'md5' ? 'image' : type;
+        type = (function() {
+          switch (type) {
+            case 'name':
+              return 'username';
+            case 'md5':
+              return 'image';
+            default:
+              return type;
+          }
+        })();
         value = encodeURIComponent(value);
         if (archiver === 'foolfuuka') {
           return "" + base + "/" + board + "/search/?task=search2&search_media_hash=/" + value;
@@ -7475,14 +7550,14 @@
     hide: function() {
       d.activeElement.blur();
       $.addClass(QR.el, 'autohide');
-      return $.id('autohide').checked = true;
+      return QR.autohide.checked = true;
     },
     unhide: function() {
       $.rmClass(QR.el, 'autohide');
-      return $.id('autohide').checked = false;
+      return QR.autohide.checked = false;
     },
     toggleHide: function() {
-      return this.checked && QR.hide() || QR.unhide();
+      return QR.autohide.checked && QR.hide() || QR.unhide();
     },
     error: function(err) {
       if (typeof err === 'string') {
@@ -8098,6 +8173,7 @@
         });
         ta.style.cssText = $.get('QR.size', '');
       }
+      QR.autohide = $('#autohide', QR.el);
       mimeTypes = $('ul.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':
@@ -8162,7 +8238,7 @@
         return riceFile.textContent = fileInput.value;
       });
       Style.rice(QR.el);
-      $.on($('#autohide', QR.el), 'change', QR.toggleHide);
+      $.on(QR.autohide, 'change', QR.toggleHide);
       $.on($('.close', QR.el), 'click', QR.close);
       $.on($('#dump', QR.el), 'click', function() {
         return QR.el.classList.toggle('dump');
@@ -8849,30 +8925,7 @@
       } else if (document.createEventObject) {
         ev = document.createEventObject();
         return el.fireEvent('on' + evnt, ev);
-      } else if (el['on' + evnt]) {
-        return el['on' + evnt]();
       }
-    },
-    getElementPos: function(e) {
-      var e1, e2, x, y;
-      e1 = e;
-      e2 = e;
-      x = 0;
-      y = 0;
-      if (e1.offsetParent) {
-        while (e1 = e1.offsetParent) {
-          x += e1.offsetLeft;
-          y += e1.offsetTop;
-        }
-      }
-      while ((e2 = e2.parentNode) && e2.nodeName.toLowerCase() !== 'body') {
-        x -= e2.scrollLeft;
-        y -= e2.scrollTop;
-      }
-      return [x, y];
-    },
-    getElementSize: function(e) {
-      return [e.offsetWidth, e.offsetHeight];
     },
     getRelMousePos: function(e) {
       var x, y;
@@ -8892,28 +8945,6 @@
         x: x,
         y: y
       };
-    },
-    getViewPos: function() {
-      if (typeof window.pageYOffset === 'number') {
-        return [window.pageXOffset, window.pageYOffset];
-      } else if (document.body && (document.body.scrollLeft || document.body.scrollTop)) {
-        return [document.body.scrollLeft, document.body.scrollTop];
-      } else if (document.documentElement && (document.documentElement.scrollLeft || document.documentElement.scrollTop)) {
-        return [document.documentElement.scrollLeft, document.documentElement.scrollTop];
-      } else {
-        return [0, 0];
-      }
-    },
-    getViewSize: function() {
-      if (typeof window.innerWidth === 'number') {
-        return [window.innerWidth, window.innerHeight];
-      } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) {
-        return [document.body.clientWidth, document.body.clientHeight];
-      } else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
-        return [document.documentElement.clientWidth, document.documentElement.clientHeight];
-      } else {
-        return [0, 0];
-      }
     },
     color: function(target) {
       var HSV_RGB, RGB_HSV, THIS, abortBlur, blurTarget, blurValue, dispatchImmediateChange, drawPicker, getPickerDims, holdPad, holdSld, isPickerOwner, leavePad, leaveSld, leaveStyle, leaveValue, redrawPad, redrawSld, removePicker, setPad, setSld, styleElement, updateField, valueElement;
@@ -8943,13 +8974,7 @@
         }
       };
       this.showPicker = function() {
-        var ps, tp, ts, vp, vs;
         if (!isPickerOwner()) {
-          tp = JSColor.getElementPos(target);
-          ts = JSColor.getElementSize(target);
-          vp = JSColor.getViewPos();
-          vs = JSColor.getViewSize();
-          ps = getPickerDims(this);
           return drawPicker();
         }
       };
@@ -9207,11 +9232,7 @@
         p.sldM.style.top = '0';
         p.sldM.style.width = JSColor.images.sld[0] + JSColor.images.arrow[0] + THIS.pickerFace + 2 * THIS.pickerInset + 'px';
         p.sldM.style.height = p.box.style.height;
-        try {
-          p.sldM.style.cursor = 'pointer';
-        } catch (eOldIE) {
-          p.sldM.style.cursor = 'hand';
-        }
+        p.sldM.style.cursor = 'pointer';
         setBtnBorder = function() {
           var insetColors, pickerOutsetColor;
           insetColors = THIS.pickerInsetColor.split(/\s+/);
@@ -9229,11 +9250,7 @@
         p.btn.style.color = THIS.pickerButtonColor;
         p.btn.style.font = '12px sans-serif';
         p.btn.style.textAlign = 'center';
-        try {
-          p.btn.style.cursor = 'pointer';
-        } catch (eOldIE) {
-          p.btn.style.cursor = 'hand';
-        }
+        p.btn.style.cursor = 'pointer';
         p.btn.onmousedown = function() {
           return THIS.hidePicker();
         };
