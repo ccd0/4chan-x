@@ -353,11 +353,11 @@ Config =
   hotkeys:
     # QR & Options
     openQR: [
-      'i'
+      'I'
       'Open QR with post number inserted'
     ]
     openEmptyQR: [
-      'I'
+      'i'
       'Open QR without post number inserted'
     ]
     openOptions: [
@@ -384,7 +384,7 @@ Config =
       'Submit post'
     ]
     hideQR: [
-      'alt+h'
+      'h'
       'Toggle hide status of QR'
     ]
     # Thread related
