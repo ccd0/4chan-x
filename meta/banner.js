@@ -1,4 +1,5 @@
-/*  <%= meta.name %> - Version <%= pkg.version %> - <%= grunt.template.today('yyyy-mm-dd') %>
+/*
+ *  <%= meta.name %> - Version <%= pkg.version %> - <%= grunt.template.today('yyyy-mm-dd') %>
  *
  *  Licensed under the MIT license.
  *  <%= meta.repo %>blob/master/LICENSE
@@ -13,7 +14,7 @@
  *    http://seaweedchan.github.com/oneechan/
  *  4chan SS Copyright © <%= grunt.template.today('yyyy') %> Ahodesuka
  *    http://ahodesuka.github.com/4chan-Style-Script
- *  4chan SS Icons Copyright © <%= grunt.template.today('yyyy') %> Dmitry Baranovskiy
+ *  Raphael Icons Copyright © <%= grunt.template.today('yyyy') %> Dmitry Baranovskiy
  *    http://raphaeljs.com/icons/
  *
  *  Permission is hereby granted, free of charge, to any person
@@ -37,25 +38,25 @@
  *  OTHER DEALINGS IN THE SOFTWARE.
  *
  *  Contributors:
- *    blaise - mentoring and support
- *    aeosynth - original author of 4chan x
- *    mayhemydg - a current maintainer of 4chan x
- *    noface - a current maintainer of 4chan x
- *    that4chanwolf - former maintainer of 4chan x
- *    desuwa - Firefox filename upload fix
- *    seaweed - bottom padding for image hover
- *    e000 - cooldown sanity check
- *    ahodesuka - scroll back when unexpanding images, file info formatting
- *    Shou - pentadactyl fixes
- *    ferongr - favicons
- *    xat - favicons
- *    Ongpot - sfw favicon
- *    thisisanon - nsfw + 404 favicons
- *    Anonymous - empty favicon
- *    Seiba - chrome quick reply focusing
- *    herpaderpderp - recaptcha fixes
- *    WakiMiko - recaptcha tab order http://userscripts.org/scripts/show/82657
- *    btmcsweeney - allow users to specify text for sauce links
+ *    aeosynth
+ *    mayhemydg
+ *    noface
+ *    blaise
+ *    that4chanwolf
+ *    desuwa
+ *    seaweed
+ *    e000
+ *    ahodesuka
+ *    Shou
+ *    ferongr
+ *    xat
+ *    Ongpot
+ *    thisisanon
+ *    Anonymous
+ *    Seiba
+ *    herpaderpderp
+ *    WakiMiko
+ *    btmcsweeney
  *
  *  All the people who've taken the time to write bug reports.
  *
@@ -63,11 +64,19 @@
  */
 
 /*
- *  Linkification based on the Linkify scripts located at:
+ *  Linkify based on:
  *    http://downloads.mozdev.org/greasemonkey/linkify.user.js
  *    https://github.com/MayhemYDG/LinkifyPlusFork
  *
  *  Originally written by Anthony Lieuallen of http://arantius.com/
  *  Licensed for unlimited modification and redistribution as long as
  *  this notice is kept intact.
+ */
+
+/*
+ * JSColor, JavaScript Color Picker
+ *
+ * @license   GNU Lesser General Public License, http://www.gnu.org/copyleft/lesser.html
+ * @author    Jan Odvarko, http://odvarko.cz
+ * @link      http://JSColor.com
  */

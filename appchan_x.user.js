@@ -23,7 +23,8 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 1.0.10 - 2012-11-02
+/*
+ *  appchan x - Version 1.0.10 - 2012-11-02
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -38,7 +39,7 @@
  *    http://seaweedchan.github.com/oneechan/
  *  4chan SS Copyright © 2012 Ahodesuka
  *    http://ahodesuka.github.com/4chan-Style-Script
- *  4chan SS Icons Copyright © 2012 Dmitry Baranovskiy
+ *  Raphael Icons Copyright © 2012 Dmitry Baranovskiy
  *    http://raphaeljs.com/icons/
  *
  *  Permission is hereby granted, free of charge, to any person
@@ -62,25 +63,25 @@
  *  OTHER DEALINGS IN THE SOFTWARE.
  *
  *  Contributors:
- *    blaise - mentoring and support
- *    aeosynth - original author of 4chan x
- *    mayhemydg - a current maintainer of 4chan x
- *    noface - a current maintainer of 4chan x
- *    that4chanwolf - former maintainer of 4chan x
- *    desuwa - Firefox filename upload fix
- *    seaweed - bottom padding for image hover
- *    e000 - cooldown sanity check
- *    ahodesuka - scroll back when unexpanding images, file info formatting
- *    Shou - pentadactyl fixes
- *    ferongr - favicons
- *    xat - favicons
- *    Ongpot - sfw favicon
- *    thisisanon - nsfw + 404 favicons
- *    Anonymous - empty favicon
- *    Seiba - chrome quick reply focusing
- *    herpaderpderp - recaptcha fixes
- *    WakiMiko - recaptcha tab order http://userscripts.org/scripts/show/82657
- *    btmcsweeney - allow users to specify text for sauce links
+ *    aeosynth
+ *    mayhemydg
+ *    noface
+ *    blaise
+ *    that4chanwolf
+ *    desuwa
+ *    seaweed
+ *    e000
+ *    ahodesuka
+ *    Shou
+ *    ferongr
+ *    xat
+ *    Ongpot
+ *    thisisanon
+ *    Anonymous
+ *    Seiba
+ *    herpaderpderp
+ *    WakiMiko
+ *    btmcsweeney
  *
  *  All the people who've taken the time to write bug reports.
  *
@@ -88,13 +89,21 @@
  */
 
 /*
- *  Linkification based on the Linkify scripts located at:
+ *  Linkify based on:
  *    http://downloads.mozdev.org/greasemonkey/linkify.user.js
  *    https://github.com/MayhemYDG/LinkifyPlusFork
  *
  *  Originally written by Anthony Lieuallen of http://arantius.com/
  *  Licensed for unlimited modification and redistribution as long as
  *  this notice is kept intact.
+ */
+
+/*
+ * JSColor, JavaScript Color Picker
+ *
+ * @license   GNU Lesser General Public License, http://www.gnu.org/copyleft/lesser.html
+ * @author    Jan Odvarko, http://odvarko.cz
+ * @link      http://JSColor.com
  */
 (function() {
   var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, Icons, ImageExpand, ImageHover, JSColor, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userMascots, userNavigation, userThemes, _base;
@@ -8873,15 +8882,6 @@
       return Options.dialog("theme");
     }
   };
-
-  /*
-  Based on JSColor, JavaScript Color Picker
-  
-  @license   GNU Lesser General Public License, http://www.gnu.org/copyleft/lesser.html
-  @author    Jan Odvarko, http://odvarko.cz
-  @link      http://JSColor.com
-  */
-
 
   JSColor = {
     bind: function(el) {

@@ -1,11 +1,3 @@
-###
-Based on JSColor, JavaScript Color Picker
-
-@license   GNU Lesser General Public License, http://www.gnu.org/copyleft/lesser.html
-@author    Jan Odvarko, http://odvarko.cz
-@link      http://JSColor.com
-###
-
 JSColor =
   
   bind: (el) ->
