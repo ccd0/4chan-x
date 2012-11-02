@@ -107,7 +107,7 @@ Main =
     setTimeout Style.init
 
     now = Date.now()
-    if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 18*$.HOUR
+    if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 18 * $.HOUR
       $.ready ->
         $.on window, 'message', Main.message
         $.set 'lastUpdate', now
@@ -332,11 +332,12 @@ Main =
     if version and version isnt Main.version
       xupdate = $.el 'div'
         id: 'xupdater'
+        className: 'reply'
         innerHTML:
-          "An updated version of <a href=https://raw.github.com/ihavenoface/4chan-x/#{version}/4chan_x.user.js>4chan X</a> (v#{version}) is available.<a href=javascript:; id=dismiss_xupdate>×</a>"
-      $.before $('#imgControls'), xupdate
-      $.on $('#dismiss_xupdate'), 'click', ->
+          "<a href=https://raw.github.com/zixaphir/appchan-x/#{version}/appchan_x.user.js>An updated version of Appchan X (v#{version}) is available.</a> <a href=javascript:; id=dismiss_xupdate>dismiss</a>"
+      $.on $('#dismiss_xupdate', xupdate), 'click', ->
         $.rm xupdate
+      $.prepend $.id('delform'), xupdate;
 
   preParse: (node) ->
     parentClass = node.parentNode.className

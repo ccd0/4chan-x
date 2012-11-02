@@ -971,7 +971,12 @@ img.bottomad:hover {
   font-weight: 200;
 }
 #xupdater {
-  margin-bottom: 2px;
+  padding: 2px;
+  text-align: center;
+  margin: 1px;
+}
+#xupdater a {
+  font-size: #{parseInt(Conf["Font Size"], 10) + 3}px;
 }
 .pages strong,
 a,
@@ -1429,6 +1434,7 @@ textarea.field:focus {
 #mouseover,
 #qp .replyContainer div.post,
 #qp .opContainer div.post,
+#xupdater,
 .replyContainer div.reply {
   border: 1px solid #{theme["Reply Border"]};
   background: #{theme["Reply Background"]};
@@ -2207,7 +2213,7 @@ textarea.field,
   display: table;
   width: 100%;
 }
-div.reply {
+div.post {
   padding: 6px 0 0 10px;
 }
 .replyContainer div.reply {
@@ -2274,7 +2280,7 @@ div.reply .inline .rice {
 .sideArrows {
   padding: 3px;
 }
-div.reply {
+div.post {
   padding: 6px 5px 0 8px
 }
 .replyContainer {
