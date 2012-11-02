@@ -7088,29 +7088,35 @@
     },
     archiver: [
       {
-        'name': 'Foolz',
-        'base': '//archive.foolz.us',
-        'boards': ['a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz']
+        name: 'Foolz',
+        base: '//archive.foolz.us',
+        boards: ['a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'],
+        type: 'foolfuuka'
       }, {
-        'name': 'NSFWFoolz',
-        'base': '//nsfw.foolz.us',
-        'boards': ['u', 'kuku']
+        name: 'NSFWFoolz',
+        base: '//nsfw.foolz.us',
+        boards: ['u', 'kuku'],
+        type: 'foolfuuka'
       }, {
-        'name': 'Warosu',
-        'base': '//fuuka.warosu.org',
-        'boards': ['cgl', 'ck', 'jp', 'lit', 'q', 'tg']
+        name: 'Warosu',
+        base: '//fuuka.warosu.org',
+        boards: ['cgl', 'ck', 'jp', 'lit', 'q', 'tg'],
+        type: 'fuuka'
       }, {
-        'name': 'RebeccaBlackTech',
-        'base': '//rbt.asia',
-        'boards': ['cgl', 'g', 'mu', 'soc', 'w']
+        name: 'RebeccaBlackTech',
+        base: '//rbt.asia',
+        boards: ['cgl', 'g', 'mu', 'soc', 'w'],
+        type: 'fuuka'
       }, {
-        'name': 'InstallGentoo',
-        'base': '//archive.installgentoo.net',
-        'boards': ['diy', 'g', 'sci']
+        name: 'InstallGentoo',
+        base: '//archive.installgentoo.net',
+        boards: ['diy', 'g', 'sci'],
+        type: 'fuuka'
       }, {
-        'name': 'Heinessen',
-        'base': 'http://archive.heinessen.com',
-        'boards': ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x']
+        name: 'Heinessen',
+        base: 'http://archive.heinessen.com',
+        boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'],
+        type: 'fuuka'
       }
     ],
     select: function(data, board) {
@@ -7150,35 +7156,25 @@
       }
     },
     to: function(data) {
-      var a, board, threadID, url;
+      var a, archive, archiver, board, threadID, url, _i, _len;
       if (!data.isSearch) {
         threadID = data.threadID;
       }
       board = data.board;
       a = this.archiver;
-      switch (board) {
-        case this.select(a[0], board):
-          url = this.path(a[0].base, 'foolfuuka', data);
+      for (_i = 0, _len = a.length; _i < _len; _i++) {
+        archiver = a[_i];
+        if (board === this.select(archiver, board)) {
+          archive = archiver;
           break;
-        case this.select(a[1], board):
-          url = this.path(a[1].base, 'foolfuuka', data);
-          break;
-        case this.select(a[2], board):
-          url = this.path(a[2].base, 'fuuka', data);
-          break;
-        case this.select(a[3], board):
-          url = this.path(a[3].base, 'fuuka', data);
-          break;
-        case this.select(a[4], board):
-          url = this.path(a[4].base, 'fuuka', data);
-          break;
-        case this.select(a[5], board):
-          url = this.path(a[5].base, 'fuuka', data);
-          break;
-        default:
-          if (threadID) {
-            url = "//boards.4chan.org/" + board + "/";
-          }
+        }
+      }
+      if (archive != null) {
+        url = this.path(archive.base, archive.type, data);
+      } else {
+        if (threadID) {
+          return url = "//boards.4chan.org/" + board + "/";
+        }
       }
       return url || null;
     },
@@ -7186,7 +7182,16 @@
       var board, path, postID, threadID, type, value;
       if (data.isSearch) {
         board = data.board, type = data.type, value = data.value;
-        type = type === 'name' ? 'username' : type === 'md5' ? 'image' : type;
+        type = (function() {
+          switch (type) {
+            case 'name':
+              return 'username';
+            case 'md5':
+              return 'image';
+            default:
+              return type;
+          }
+        })();
         value = encodeURIComponent(value);
         if (archiver === 'foolfuuka') {
           return "" + base + "/" + board + "/search/?task=search2&search_media_hash=/" + value;

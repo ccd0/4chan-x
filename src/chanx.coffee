@@ -2703,34 +2703,40 @@ Redirect =
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
   archiver: [
     {
-      'name':    'Foolz'
-      'base':    '//archive.foolz.us'
-      'boards':  ['a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz']
+      name:    'Foolz'
+      base:    '//archive.foolz.us'
+      boards:  ['a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz']
+      type:    'foolfuuka'
     }
     {
-      'name':    'NSFWFoolz'
-      'base':    '//nsfw.foolz.us'
-      'boards':  ['u', 'kuku']
+      name:    'NSFWFoolz'
+      base:    '//nsfw.foolz.us'
+      boards:  ['u', 'kuku']
+      type:    'foolfuuka'
     }
     {
-      'name':    'Warosu'
-      'base':    '//fuuka.warosu.org'
-      'boards':  ['cgl', 'ck', 'jp', 'lit', 'q', 'tg']
+      name:    'Warosu'
+      base:    '//fuuka.warosu.org'
+      boards:  ['cgl', 'ck', 'jp', 'lit', 'q', 'tg']
+      type:    'fuuka'
     }
     {
-      'name':    'RebeccaBlackTech'
-      'base':    '//rbt.asia'
-      'boards':  ['cgl', 'g', 'mu', 'soc', 'w']
+      name:    'RebeccaBlackTech'
+      base:    '//rbt.asia'
+      boards:  ['cgl', 'g', 'mu', 'soc', 'w']
+      type:    'fuuka'
     }
     {
-      'name':    'InstallGentoo'
-      'base':    '//archive.installgentoo.net'
-      'boards':  ['diy', 'g', 'sci']
+      name:    'InstallGentoo'
+      base:    '//archive.installgentoo.net'
+      boards:  ['diy', 'g', 'sci']
+      type:    'fuuka'
     }
     {
-      'name':    'Heinessen'
-      'base':    'http://archive.heinessen.com'
-      'boards':  ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x']
+      name:    'Heinessen'
+      base:    'http://archive.heinessen.com'
+      boards:  ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x']
+      type:    'fuuka'
     }
   ]
   select: (data, board) ->
@@ -2753,31 +2759,27 @@ Redirect =
       {threadID} = data
     {board} = data
     a = @archiver
-    switch board
-      when @select a[0], board
-        url = @path a[0].base, 'foolfuuka', data
-      when @select a[1], board
-        url = @path a[1].base, 'foolfuuka', data
-      when @select a[2], board
-        url = @path a[2].base, 'fuuka', data
-      when @select a[3], board
-        url = @path a[3].base, 'fuuka', data
-      when @select a[4], board
-        url = @path a[4].base, 'fuuka', data
-      when @select a[5], board
-        url = @path a[5].base, 'fuuka', data
-      else
-        if threadID
-          url = "//boards.4chan.org/#{board}/"
+    
+    for archiver in a
+      if board is @select archiver, board
+        archive = archiver
+        break
+        
+    if archive?
+      url = @path archive.base, archive.type, data
+    else
+      if threadID
+        return url = "//boards.4chan.org/#{board}/"
+
     url or null
 
   path: (base, archiver, data) ->
     if data.isSearch
       {board, type, value} = data
-      type =
-        if type is 'name'
+      type = switch type
+        when 'name'
           'username'
-        else if type is 'md5'
+        when 'md5'
           'image'
         else
           type
