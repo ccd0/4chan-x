@@ -19,6 +19,7 @@
             "right"
           else
             "left"
+
     icons    = 
       Icons.header.png + Icons.themes[Conf["Icons"]][if theme["Dark Theme"] then "dark" else "light"]
       
@@ -33,6 +34,32 @@
       Style.sidebarLocation = ["left",  "right"]
     else
       Style.sidebarLocation = ["right", "left" ]
+
+    if Conf['editMode'] == "theme"
+      pagemargin = 300
+    else
+      switch Conf["Page Margin"]
+        when "none"
+          pagemargin = 2
+        when "minimal"
+          pagemargin = 20
+        when "small"
+          pagemargin = 50
+        when "medium"
+          pagemargin = 150
+        when "fully centered"
+          pagemargin = 252 + Style.sidebarOffsetW
+        when "large"
+          pagemargin = 350
+
+    if Conf["Sidebar"]  == "minimal"
+      sidebar = 20
+
+    else if Conf["Sidebar"] != "hide"
+      sidebar = (252 + Style.sidebarOffsetW)
+
+    else
+      sidebar = pagemargin
 
     css = """
 /* dialog styling */
@@ -327,9 +354,6 @@ h1 {
 #credits {
   float: right;
 }
-#options ul {
-  padding: 0;
-}
 #options ul li {
   overflow: auto;
   padding: 0 5px 0 7px;
@@ -582,12 +606,24 @@ div.opContainer {
   background: #{theme["Text"]};
   color: #{theme["Background Color"]};
 }
+#copyright,
+#boardNavDesktop a,
+#options ul,
+#qr,
+.menubutton a,
+.pages td,
 body {
   padding: 0;
 }
 html,
 body {
   min-height: 100%;
+}
+body {
+  margin-top: 1px;
+  margin-bottom: 1px;
+  margin-#{Style.sidebarLocation[0]}: #{sidebar}px;
+  margin-#{Style.sidebarLocation[1]}: #{pagemargin}px;
 }
 #exlinks-options > *,
 html,
@@ -670,7 +706,6 @@ textarea {
 .warning:empty,
 [hidden],
 body > .postingMode ~ #delform hr,
-body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] ~ .pagelist,
 body > br,
 body > div[style^="text-align"],
 body > hr,
@@ -869,8 +904,7 @@ hr {
 .pages,
 a.forwardlink,
 h3,
-img,
-table.reply[style^="clear: both"] {
+img {
   border: none;
 }
 .boxcontent input {
@@ -1039,17 +1073,6 @@ div.post:not(#qp):not([hidden]) {
 }
 .name {
   font-weight: 700;
-}
-/* Addons and such */
-#copyright,
-#boardNavDesktop a,
-#qr td,
-#qr tr[height="73"]:nth-of-type(2),
-.menubutton a,
-.pages td,
-td[style="padding-left: 7px;"],
-div[id^="qr"] tr[height="73"]:nth-of-type(2) {
-  padding: 0;
 }
 #navtopright {
   position: fixed;
@@ -1280,8 +1303,7 @@ html .subMenu {
 }
 #updater input,
 #options input,
-#qr,
-table.reply[style^="clear: both"] {
+#qr {
   border: none;
 }
 #delform > div:not(.thread) select,
@@ -1418,6 +1440,8 @@ textarea.field:focus {
 .pages {
   background: #{theme["Navigation Background"]};
   border: 1px solid #{theme["Navigation Border"]};
+  #{Style.sidebarLocation[0]}: #{sidebar}px;
+  #{Style.sidebarLocation[1]}: #{pagemargin}px;
 }
 #delform {
   background: #{theme["Thread Wrapper Background"]};
@@ -1927,7 +1951,6 @@ textarea.field,
   bottom: 22px !important;
   width: #{(248 + Style.sidebarOffsetW)}px;
   margin: 0;
-  padding: 0;
   z-index: 5 !important;
   background-color: transparent !important;
 }
@@ -2123,7 +2146,6 @@ input,
   border: 1px solid #{theme["Background Color"]};
   background: #{theme["Background Color"]};
   box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
-  padding: 0;
 }
 #qr > .move,
 #qr textarea {
@@ -2266,65 +2288,6 @@ div.reply {
 .summary,
 .replyContainer {
   clear: both;
-}
-"""
-
-    if Conf['editMode'] == "theme"
-      pagemargin = "300px"
-    else
-      switch Conf["Page Margin"]
-        when "none"
-          pagemargin = "2px"
-        when "minimal"
-          pagemargin = "20px"
-        when "small"
-          pagemargin = "50px"
-        when "medium"
-          pagemargin = "150px"
-        when "fully centered"
-          pagemargin = (252 + Style.sidebarOffsetW) + "px"
-        when "large"
-          pagemargin = "350px"
-
-    if Conf["Sidebar"]  == "minimal"
-      css += """
-body {
-  margin-top: 1px;
-  margin-bottom: 0;
-  margin-#{Style.sidebarLocation[0]}: 20px;
-  margin-#{Style.sidebarLocation[1] + ": " + pagemargin};
-}
-#boardNavDesktop,
-.pages {
-  #{Style.sidebarLocation[0]}: 20px;
-  #{Style.sidebarLocation[1] + ": " + pagemargin};
-}
-"""
-
-    else if Conf["Sidebar"] != "hide"
-      css += """
-body {
-  margin-top: 1px;
-  margin-bottom: 0;
-  margin-#{Style.sidebarLocation[0] + ": " +(252 + Style.sidebarOffsetW)}px;
-  margin-#{Style.sidebarLocation[1] + ": " + pagemargin};
-}
-#boardNavDesktop,
-.pages {
-  #{Style.sidebarLocation[0] + ": " + (252 + Style.sidebarOffsetW)}px;
-  #{Style.sidebarLocation[1] + ": " + pagemargin};
-}
-"""
-
-    else
-      css += """
-body {
-  margin: 1px #{pagemargin + " 0 " + pagemargin};
-}
-#boardNavDesktop,
-.pages {
-  #{Style.sidebarLocation[0] + ": " + pagemargin};
-  #{Style.sidebarLocation[1] + ": " + pagemargin};
 }
 """
 
