@@ -8996,30 +8996,7 @@
       } else if (document.createEventObject) {
         ev = document.createEventObject();
         return el.fireEvent('on' + evnt, ev);
-      } else if (el['on' + evnt]) {
-        return el['on' + evnt]();
       }
-    },
-    getElementPos: function(e) {
-      var e1, e2, x, y;
-      e1 = e;
-      e2 = e;
-      x = 0;
-      y = 0;
-      if (e1.offsetParent) {
-        while (e1 = e1.offsetParent) {
-          x += e1.offsetLeft;
-          y += e1.offsetTop;
-        }
-      }
-      while ((e2 = e2.parentNode) && e2.nodeName.toLowerCase() !== 'body') {
-        x -= e2.scrollLeft;
-        y -= e2.scrollTop;
-      }
-      return [x, y];
-    },
-    getElementSize: function(e) {
-      return [e.offsetWidth, e.offsetHeight];
     },
     getRelMousePos: function(e) {
       var x, y;
@@ -9039,28 +9016,6 @@
         x: x,
         y: y
       };
-    },
-    getViewPos: function() {
-      if (typeof window.pageYOffset === 'number') {
-        return [window.pageXOffset, window.pageYOffset];
-      } else if (document.body && (document.body.scrollLeft || document.body.scrollTop)) {
-        return [document.body.scrollLeft, document.body.scrollTop];
-      } else if (document.documentElement && (document.documentElement.scrollLeft || document.documentElement.scrollTop)) {
-        return [document.documentElement.scrollLeft, document.documentElement.scrollTop];
-      } else {
-        return [0, 0];
-      }
-    },
-    getViewSize: function() {
-      if (typeof window.innerWidth === 'number') {
-        return [window.innerWidth, window.innerHeight];
-      } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) {
-        return [document.body.clientWidth, document.body.clientHeight];
-      } else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
-        return [document.documentElement.clientWidth, document.documentElement.clientHeight];
-      } else {
-        return [0, 0];
-      }
     },
     color: function(target) {
       var HSV_RGB, RGB_HSV, THIS, abortBlur, blurTarget, blurValue, dispatchImmediateChange, drawPicker, getPickerDims, holdPad, holdSld, isPickerOwner, leavePad, leaveSld, leaveStyle, leaveValue, redrawPad, redrawSld, removePicker, setPad, setSld, styleElement, updateField, valueElement;
@@ -9090,13 +9045,7 @@
         }
       };
       this.showPicker = function() {
-        var ps, tp, ts, vp, vs;
         if (!isPickerOwner()) {
-          tp = JSColor.getElementPos(target);
-          ts = JSColor.getElementSize(target);
-          vp = JSColor.getViewPos();
-          vs = JSColor.getViewSize();
-          ps = getPickerDims(this);
           return drawPicker();
         }
       };
@@ -9354,11 +9303,7 @@
         p.sldM.style.top = '0';
         p.sldM.style.width = JSColor.images.sld[0] + JSColor.images.arrow[0] + THIS.pickerFace + 2 * THIS.pickerInset + 'px';
         p.sldM.style.height = p.box.style.height;
-        try {
-          p.sldM.style.cursor = 'pointer';
-        } catch (eOldIE) {
-          p.sldM.style.cursor = 'hand';
-        }
+        p.sldM.style.cursor = 'pointer';
         setBtnBorder = function() {
           var insetColors, pickerOutsetColor;
           insetColors = THIS.pickerInsetColor.split(/\s+/);
@@ -9376,11 +9321,7 @@
         p.btn.style.color = THIS.pickerButtonColor;
         p.btn.style.font = '12px sans-serif';
         p.btn.style.textAlign = 'center';
-        try {
-          p.btn.style.cursor = 'pointer';
-        } catch (eOldIE) {
-          p.btn.style.cursor = 'hand';
-        }
+        p.btn.style.cursor = 'pointer';
         p.btn.onmousedown = function() {
           return THIS.hidePicker();
         };
