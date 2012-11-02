@@ -2011,7 +2011,7 @@ textarea,
   "4chan Dark Upgrade":
     "Author"                      : "Ahoka"
     "Author Tripcode"             : "!.pC/AHOKAg"
-    "Background Image"            : "url('http://i.minus.com/iNkJoDJkLU0co.png')"
+    "Background Image"            : "url(\"http://i.minus.com/iNkJoDJkLU0co.png\")"
     "Background Attachment"       : "fixed"
     "Background Position"         : "top left"
     "Background Repeat"           : "repeat"

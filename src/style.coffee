@@ -311,6 +311,13 @@ h1,
 .themevar textarea {
   width: 100%;
 }
+.themevar .colorfield {
+  width: 75%;
+}
+.themevar .color {
+  width: 25%;
+  color: transparent !important;
+}
 #ihover,
 #mouseover,
 #navlinks,

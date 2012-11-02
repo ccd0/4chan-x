@@ -7,6 +7,7 @@ Based on JSColor, JavaScript Color Picker
 ###
 
 JSColor =
+  
   bind: (el) ->
     if not el.color
       el.color = new JSColor.color(el)
@@ -26,7 +27,7 @@ JSColor =
   loadImage: (filename) ->
     unless JSColor.imgLoaded[filename]
       JSColor.imgLoaded[filename]       = new Image()
-      JSColor.imgLoaded[filename].src   = JSColor.getDir() + filename
+      JSColor.imgLoaded[filename].src   = filename
 
   fetchElement: (mixed) ->
     (if typeof mixed is "string" then document.getElementById(mixed) else mixed)
@@ -95,8 +96,8 @@ JSColor =
       [0, 0]
 
   color: (target) ->
-    @required                   = true           # refuse empty values?
-    @adjust                     = true           # adjust value to uniform notation?
+    @required                   = false          # refuse empty values?
+    @adjust                     = false          # adjust value to uniform notation?
     @slider                     = true           # show the value/saturation slider?
     @valueElement               = target         # value holder
     @styleElement               = target         # where to reflect current color
@@ -114,7 +115,7 @@ JSColor =
     @pickerPosition             = 'bottom'       # left | right | top | bottom
     @pickerSmartPosition        = true           # automatically adjust picker position when necessary
     @pickerButtonHeight         = 20             # px
-    @pickerClosable             = false
+    @pickerClosable             = true
     @pickerCloseText            = 'Close'
     @pickerButtonColor          = 'ButtonText'   # px
     @pickerFace                 = 10             # px
@@ -215,10 +216,14 @@ JSColor =
         value = @toString()
         value = '#' + value
         valueElement.value = value
+        valueElement.previousSibling.value = value
+        editTheme[valueElement.previousSibling.name] = value
+        
+        Style.addStyle(editTheme)
 
       if not (flags & leaveStyle) and styleElement
         styleElement.style.backgroundImage = "none"
-        styleElement.style.backgroundColor = '#'+@toString()
+        styleElement.style.backgroundColor = '#' + @toString()
         styleElement.style.color = if ((
           0.213 * @rgb[0] +
           0.715 * @rgb[1] +
@@ -241,8 +246,6 @@ JSColor =
         if s is null then @hsv[1] else (@hsv[1] = s)
         if v is null then @hsv[2] else (@hsv[2] = v)
       )
-      
-      $.log @rgb
 
       @exportColor flags
 
@@ -285,21 +288,6 @@ JSColor =
       m = number.match(/^\W*([0-9A-F]{3}([0-9A-F]{3})?)\W*$/i)
       unless m
         return false
-        m = number.match /(rgba?)|(\d+(\.\d+)?%?)|(\.\d+)/i
-        unless m
-          return false
-        else if m and m.length >= 3
-          while i < 3
-            value = m[++i]
-            if value.contains '%'
-              value = Math.round parseFloat(value) * 2.55
-            else
-              value = parseInt value, 10
-            return false if value < 0 or value > 255
-            m[i] = value
-          
-          @fromRGB(m[1], m[2], m[3], flags)
-        else return false
       else
         if m[1].length is 6 # 6-char notation
           @fromRGB(
@@ -363,7 +351,7 @@ JSColor =
 
     removePicker = () ->
       delete JSColor.picker.owner
-      document.body.removeChild JSColor.picker.boxB
+      $.rm   JSColor.picker.boxB
 
     drawPicker = (x, y) ->
       unless JSColor.picker
@@ -378,25 +366,25 @@ JSColor =
           sldM: document.createElement('div')
           btn:  document.createElement('div')
           btnS: document.createElement('span')
-          btnT: document.createTextNode(@pickerCloseText)
+          btnT: document.createTextNode(THIS.pickerCloseText)
 
         for i in JSColor.images.sld[1] by (segSize = 4)
           seg = document.createElement('div')
           seg.style.height     = segSize + 'px'
           seg.style.fontSize   = '1px'
           seg.style.lineHeight = '0'
-          JSColor.picker.sld.appendChild(seg)
+          $.add JSColor.picker.sld, sed
 
-        JSColor.picker.sldB.appendChild JSColor.picker.sld
-        JSColor.picker.box.appendChild  JSColor.picker.sldB
-        JSColor.picker.box.appendChild  JSColor.picker.sldM
-        JSColor.picker.padB.appendChild JSColor.picker.pad
-        JSColor.picker.box.appendChild  JSColor.picker.padB
-        JSColor.picker.box.appendChild  JSColor.picker.padM
-        JSColor.picker.btnS.appendChild JSColor.picker.btnT
-        JSColor.picker.btn.appendChild  JSColor.picker.btnS
-        JSColor.picker.box.appendChild  JSColor.picker.btn
-        JSColor.picker.boxB.appendChild JSColor.picker.box
+        $.add JSColor.picker.sldB, JSColor.picker.sld
+        $.add JSColor.picker.box,  JSColor.picker.sldB
+        $.add JSColor.picker.box,  JSColor.picker.sldM
+        $.add JSColor.picker.padB, JSColor.picker.pad
+        $.add JSColor.picker.box,  JSColor.picker.padB
+        $.add JSColor.picker.box,  JSColor.picker.padM
+        $.add JSColor.picker.btnS, JSColor.picker.btnT
+        $.add JSColor.picker.btn,  JSColor.picker.btnS
+        $.add JSColor.picker.box,  JSColor.picker.btn
+        $.add JSColor.picker.boxB, JSColor.picker.box
 
       p = JSColor.picker
 
@@ -443,64 +431,65 @@ JSColor =
         dispatchImmediateChange()
 
       # picker
-      dims                      = getPickerDims THIS
-      p.box.style.width         = dims[0] + 'px'
-      p.box.style.height        = dims[1] + 'px'
+      dims                          = getPickerDims THIS
+      p.box.style.width             = dims[0] + 'px'
+      p.box.style.height            = dims[1] + 'px'
 
       # picker border
-      p.boxB.style.position     = 'absolute'
-      p.boxB.style.clear        = 'both'
-      p.boxB.style.left         = x + 'px'
-      p.boxB.style.top          = y + 'px'
-      p.boxB.style.zIndex       = THIS.pickerZIndex
-      p.boxB.style.border       = THIS.pickerBorder + 'px solid'
-      p.boxB.style.borderColor  = THIS.pickerBorderColor
-      p.boxB.style.background   = THIS.pickerFaceColor
+      p.boxB.style.position         = 'absolute'
+      p.boxB.style.clear            = 'both'
+      p.boxB.style.left             = '320px'
+      p.boxB.style.bottom           = '20px'
+      p.boxB.style.zIndex           = THIS.pickerZIndex
+      p.boxB.style.border           = THIS.pickerBorder + 'px solid'
+      p.boxB.style.borderColor      = THIS.pickerBorderColor
+      p.boxB.style.background       = THIS.pickerFaceColor
 
       # pad image
-      p.pad.style.width         = JSColor.images.pad[0] + 'px'
-      p.pad.style.height        = JSColor.images.pad[1] + 'px'
+      p.pad.style.width             = JSColor.images.pad[0] + 'px'
+      p.pad.style.height            = JSColor.images.pad[1] + 'px'
 
       # pad border
-      p.padB.style.position     = 'absolute'
-      p.padB.style.left         = THIS.pickerFace  + 'px'
-      p.padB.style.top          = THIS.pickerFace  + 'px'
-      p.padB.style.border       = THIS.pickerInset + 'px solid'
-      p.padB.style.borderColor  = THIS.pickerInsetColor
+      p.padB.style.position         = 'absolute'
+      p.padB.style.left             = THIS.pickerFace  + 'px'
+      p.padB.style.top              = THIS.pickerFace  + 'px'
+      p.padB.style.border           = THIS.pickerInset + 'px solid'
+      p.padB.style.borderColor      = THIS.pickerInsetColor
 
       # pad mouse area
-      p.padM.style.position     = 'absolute'
-      p.padM.style.left         = '0'
-      p.padM.style.top          = '0'
-      p.padM.style.width        = THIS.pickerFace + 2 * THIS.pickerInset + JSColor.images.pad[0] + JSColor.images.arrow[0] + 'px'
-      p.padM.style.height       = p.box.style.height
-      p.padM.style.cursor       = 'crosshair'
+      p.padM.style.position         = 'absolute'
+      p.padM.style.left             = '0'
+      p.padM.style.top              = '0'
+      p.padM.style.width            = THIS.pickerFace + 2 * THIS.pickerInset + JSColor.images.pad[0] + JSColor.images.arrow[0] + 'px'
+      p.padM.style.height           = p.box.style.height
+      p.padM.style.cursor           = 'crosshair'
 
       # slider image
-      p.sld.style.overflow      = 'hidden'
-      p.sld.style.width         = JSColor.images.sld[0] + 'px'
-      p.sld.style.height        = JSColor.images.sld[1] + 'px'
+      p.sld.style.overflow          = 'hidden'
+      p.sld.style.width             = JSColor.images.sld[0] + 'px'
+      p.sld.style.height            = JSColor.images.sld[1] + 'px'
 
       # slider border
-      p.sldB.style.display      = if @slider then 'block' else 'none'
-      p.sldB.style.position     = 'absolute'
-      p.sldB.style.right        = THIS.pickerFace  + 'px'
-      p.sldB.style.top          = THIS.pickerFace  + 'px'
-      p.sldB.style.border       = THIS.pickerInset + 'px solid'
-      p.sldB.style.borderColor  = THIS.pickerInsetColor
+      p.sldB.style.display          = if THIS.slider then 'block' else 'none'
+      p.sldB.style.position         = 'absolute'
+      p.sldB.style.right            = THIS.pickerFace  + 'px'
+      p.sldB.style.top              = THIS.pickerFace  + 'px'
+      p.sldB.style.border           = THIS.pickerInset + 'px solid'
+      p.sldB.style.borderColor      = THIS.pickerInsetColor
+      p.sldB.style.backgroundImage  = "#{Style.agent()}linear-gradient(#fff, #000)"
 
       # slider mouse area
-      p.sldM.style.display      = if @slider then 'block' else 'none'
-      p.sldM.style.position     = 'absolute'
-      p.sldM.style.right        = '0'
-      p.sldM.style.top          = '0'
-      p.sldM.style.width        = JSColor.images.sld[0] + JSColor.images.arrow[0] + @pickerFace + 2 * THIS.pickerInset + 'px'
-      p.sldM.style.height       = p.box.style.height
+      p.sldM.style.display          = if THIS.slider then 'block' else 'none'
+      p.sldM.style.position         = 'absolute'
+      p.sldM.style.right            = '0'
+      p.sldM.style.top              = '0'
+      p.sldM.style.width            = JSColor.images.sld[0] + JSColor.images.arrow[0] + THIS.pickerFace + 2 * THIS.pickerInset + 'px'
+      p.sldM.style.height           = p.box.style.height
 
       try
-        p.sldM.style.cursor     = 'pointer'
+        p.sldM.style.cursor         = 'pointer'
       catch eOldIE
-        p.sldM.style.cursor     = 'hand'
+        p.sldM.style.cursor         = 'hand'
 
       # "close" button
       setBtnBorder = ->
@@ -529,7 +518,7 @@ JSColor =
         p.btn.style.cursor = 'hand'
 
       p.btn.onmousedown = () ->
-        @hidePicker()
+        THIS.hidePicker()
 
       p.btnS.style.lineHeight   = p.btn.style.height
 
@@ -540,9 +529,9 @@ JSColor =
         when 1
           padImg = "#{Style.agent()}linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), #{Style.agent()}linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
 
-      p.padM.style.backgroundImage   = "url('')"
+      p.padM.style.backgroundImage   = "url('data:image/gif;base64,R0lGODlhBwALAKECAAAAAP///6g8eKg8eCH5BAEKAAIALAAAAAAHAAsAAAITTIQYcLnsgGxvijrxqdQq6DRJAQA7')"
       p.padM.style.backgroundRepeat  = "no-repeat"
-      p.sldM.style.backgroundImage   = "url('')"
+      p.sldM.style.backgroundImage   = "url('data:image/gif;base64,R0lGODlhDwAPAKEBAAAAAP///////////yH5BAEKAAIALAAAAAAPAA8AAAIklB8Qx53b4otSUWcvyiz4/4AeQJbmKY4p1HHapBlwPL/uVRsFADs=')"
       p.sldM.style.backgroundRepeat  = "no-repeat"
       p.pad.style.backgroundImage    = padImg
       p.pad.style.backgroundRepeat   = "no-repeat"
@@ -553,7 +542,7 @@ JSColor =
       redrawSld()
 
       JSColor.picker.owner = THIS
-      document.body.appendChild p.boxB
+      $.add ThemeTools.dialog, p.boxB
 
     getPickerDims = (o) ->
       dims = [
@@ -597,8 +586,8 @@ JSColor =
       x = Math.round (THIS.hsv[0] / 6)          * (JSColor.images.pad[0] - 1)
       y = Math.round (1 - THIS.hsv[yComponent]) * (JSColor.images.pad[1] - 1)
       JSColor.picker.padM.style.backgroundPosition =
-        "#{THIS.pickerFace+THIS.pickerInset+x - Math.floor(JSColor.images.cross[0] / 2)}px " +
-        "#{THIS.pickerFace+THIS.pickerInset+y - Math.floor(JSColor.images.cross[1] / 2)}px"
+        "#{THIS.pickerFace + THIS.pickerInset+x - Math.floor(JSColor.images.cross[0] / 2)}px " +
+        "#{THIS.pickerFace + THIS.pickerInset+y - Math.floor(JSColor.images.cross[1] / 2)}px"
 
       # redraw the slider image
       seg = JSColor.picker.sld.childNodes
@@ -663,8 +652,6 @@ JSColor =
     blurTarget = ->
       if valueElement is target
         THIS.importColor()
-      if THIS.pickerOnfocus
-        THIS.hidePicker()
 
     blurValue = ->
       if valueElement isnt target
@@ -672,8 +659,8 @@ JSColor =
 
     setPad = (e) ->
       mpos = JSColor.getRelMousePos e
-      x = mpos.x - @pickerFace - @pickerInset
-      y = mpos.y - @pickerFace - @pickerInset
+      x = mpos.x - THIS.pickerFace - THIS.pickerInset
+      y = mpos.y - THIS.pickerFace - THIS.pickerInset
       switch modeID
         when 0
           THIS.fromHSV(
@@ -705,10 +692,10 @@ JSColor =
 
     setSld = (e) ->
       mpos  = JSColor.getRelMousePos e
-      y     = mpos.y - @pickerFace - @pickerInset
+      y     = mpos.y - THIS.pickerFace - THIS.pickerInset
       switch modeID
         when 0
-          @fromHSV(
+          THIS.fromHSV(
             null
             null
             1 - y / (
@@ -717,7 +704,7 @@ JSColor =
             leavePad
           )
         when 1
-          @fromHSV(
+          THIS.fromHSV(
             null
             1 - y / (
               JSColor.images.sld[1] - 1
@@ -727,12 +714,12 @@ JSColor =
           )
 
     dispatchImmediateChange = ->
-      if @onImmediateChange
+      if THIS.onImmediateChange
         callback
-        if typeof @onImmediateChange is 'string'
-          callback = new Function (@onImmediateChange)
+        if typeof THIS.onImmediateChange is 'string'
+          callback = new Function (THIS.onImmediateChange)
         else
-          callback = @onImmediateChange
+          callback = THIS.onImmediateChange
         callback.call(THIS)
 
     THIS         = @
@@ -783,13 +770,5 @@ JSColor =
         backgroundImage:    styleElement.style.backgroundImage
         backgroundColor:    styleElement.style.backgroundColor
         color:              styleElement.style.color
-
-    JSColor.requireImage 'cross.gif'
-    JSColor.requireImage 'arrow.gif'
-
     
-    try
-      @importColor()
-    catch err
-      $.log err
-      $.log err.stack
+    @importColor()

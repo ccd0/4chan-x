@@ -13,8 +13,6 @@ ThemeTools =
       editTheme["Theme"] = "Untitled"
       editTheme["Author"] = "Author"
       editTheme["Author Tripcode"] = "Unknown"
-
-    $.log editTheme
       
     # Objects are not guaranteed to have any type of arrangement, so we use a presorted
     # array to generate the layout of of the theme editor.
@@ -67,7 +65,7 @@ ThemeTools =
       "Shadow Color"
     ]
 
-    dialog = $.el "div",
+    ThemeTools.dialog = $.el "div",
       id: "themeConf"
       className: "reply dialog"
       innerHTML: "
@@ -97,8 +95,8 @@ ThemeTools =
     for input in $$("input", header)
       $.on input, 'blur', ->
         editTheme[@name] = @value
-    $.add $("#themebar", dialog), header
-    themecontent = $("#themecontent", dialog)
+    $.add $("#themebar", ThemeTools.dialog), header
+    themecontent = $("#themecontent", ThemeTools.dialog)
 
     for item in layout
       unless editTheme[item]
@@ -106,12 +104,15 @@ ThemeTools =
 
       div = $.el "div",
         className: "themevar"
-        innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input class=field name='#{item}' placeholder='#{if item == "Background Image" then "Shift+Click to upload image" else item}' value='#{editTheme[item]}'>"
+        innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input name='#{item}' placeholder='#{if item == "Background Image" then "Shift+Click to upload image" else item}'>"
 
       input = $('input', div)
       
+      input.value = editTheme[item]
+      
       switch item
         when "Background Image"
+          input.className = 'field'
           fileInput = $.el 'input'
             type: 'file'
             accept:   "image/*"
@@ -128,9 +129,18 @@ ThemeTools =
           $.after input, fileInput
 
         when "Background Attachment" ,"Background Position", "Background Repeat"
+          input.className = 'field'
 
         else
-          JSColor.bind input
+          input.className = "colorfield"
+          
+          colorInput = $.el 'input'
+            className: 'color'
+            value: ThemeTools.colorToHex input.value
+          
+          JSColor.bind colorInput
+          
+          $.after input, colorInput
           
       $.on input, 'blur', ->
         depth = 0
@@ -175,11 +185,11 @@ ThemeTools =
 
     $.add themecontent, div
 
-    $.on $('#save > a', dialog), 'click', ->
+    $.on $('#save > a', ThemeTools.dialog), 'click', ->
       ThemeTools.save editTheme
 
-    $.on  $('#close > a', dialog), 'click', ThemeTools.close
-    $.add d.body, dialog
+    $.on  $('#close > a', ThemeTools.dialog), 'click', ThemeTools.close
+    $.add d.body, ThemeTools.dialog
     Style.addStyle(editTheme)
 
   uploadImage: (evt, el) ->
@@ -233,7 +243,21 @@ ThemeTools =
       return rgb.join ","
 
     @hover = @shiftRGB 16, true
-
+    
+  colorToHex: (color) ->
+    if color.substr(0, 1) is '#'
+      return color
+    if digits = /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/.exec color
+  
+      red   = parseInt digits[2], 10
+      green = parseInt digits[3], 10
+      blue  = parseInt digits[4], 10
+  
+      rgb = blue | (green << 8) | (red << 16)
+      '#' + rgb.toString 16
+    
+    else return
+      
   importtheme: (origin, evt) ->
     file = evt.target.files[0]
     reader = new FileReader()
