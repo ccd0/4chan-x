@@ -96,7 +96,6 @@ JSColor =
       [0, 0]
 
   color: (target) ->
-    @slider                     = true           # show the value/saturation slider?
     @valueElement               = target         # value holder
     @styleElement               = target         # where to reflect current color
     @onImmediateChange          = null           # onchange callback (can be either string or function)
@@ -108,13 +107,7 @@ JSColor =
     @maxS                       = 1              # read-only  0-1
     @minV                       = 0              # read-only  0-1
     @maxV                       = 1              # read-only  0-1
-    @pickerOnfocus              = true           # display picker on focus?
-    @pickerMode                 = 'HSV'          # HSV | HVS
-    @pickerPosition             = 'bottom'       # left | right | top | bottom
-    @pickerSmartPosition        = true           # automatically adjust picker position when necessary
     @pickerButtonHeight         = 20             # px
-    @pickerClosable             = true
-    @pickerCloseText            = 'Close'
     @pickerButtonColor          = 'ButtonText'   # px
     @pickerFace                 = 10             # px
     @pickerFaceColor            = 'ThreeDFace'   # CSS color
@@ -122,7 +115,7 @@ JSColor =
     @pickerBorderColor          = 'ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight' # CSS color
     @pickerInset                = 1              # px
     @pickerInsetColor           = 'ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow' # CSS color
-    @pickerZIndex               = 10000
+    @pickerZIndex               = 1000
 
     @hidePicker = ->
       if isPickerOwner()
@@ -303,7 +296,7 @@ JSColor =
           sldM: document.createElement('div')
           btn:  document.createElement('div')
           btnS: document.createElement('span')
-          btnT: document.createTextNode(THIS.pickerCloseText)
+          btnT: document.createTextNode('Close')
 
         for i in JSColor.images.sld[1] by (segSize = 4)
           seg = document.createElement('div')
@@ -346,13 +339,9 @@ JSColor =
         JSColor.fireEvent valueElement, 'change'
       p.padM.onmousedown = (e) ->
         # if the slider is at the bottom, move it up
-        switch modeID
-          when 0
-            if THIS.hsv[2] is 0
-              THIS.fromHSV null, null, 1.0
-          when 1
-            if THIS.hsv[1] is 0
-              THIS.fromHSV null, 1.0, null
+
+        if THIS.hsv[2] is 0
+          THIS.fromHSV null, null, 1.0
 
         holdPad = true
         setPad e
@@ -407,7 +396,7 @@ JSColor =
       p.sld.style.height            = JSColor.images.sld[1] + 'px'
 
       # slider border
-      p.sldB.style.display          = if THIS.slider then 'block' else 'none'
+      p.sldB.style.display          = 'block'
       p.sldB.style.position         = 'absolute'
       p.sldB.style.right            = THIS.pickerFace  + 'px'
       p.sldB.style.top              = THIS.pickerFace  + 'px'
@@ -416,7 +405,7 @@ JSColor =
       p.sldB.style.backgroundImage  = "#{Style.agent()}linear-gradient(#fff, #000)"
 
       # slider mouse area
-      p.sldM.style.display          = if THIS.slider then 'block' else 'none'
+      p.sldM.style.display          = 'block'
       p.sldM.style.position         = 'absolute'
       p.sldM.style.right            = '0'
       p.sldM.style.top              = '0'
@@ -437,7 +426,7 @@ JSColor =
           insetColors[1] + ' ' + insetColors[0] + ' ' + insetColors[0] + ' ' + insetColors[1]
         p.btn.style.borderColor = pickerOutsetColor
 
-      p.btn.style.display       = if THIS.pickerClosable then 'block' else 'none'
+      p.btn.style.display       = 'block'
       p.btn.style.position      = 'absolute'
       p.btn.style.left          = THIS.pickerFace + 'px'
       p.btn.style.bottom        = THIS.pickerFace + 'px'
@@ -459,12 +448,7 @@ JSColor =
 
       p.btnS.style.lineHeight   = p.btn.style.height
 
-      # load images in optimal order
-      switch modeID
-        when 0
-          padImg = "#{Style.agent()}linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), #{Style.agent()}linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
-        when 1
-          padImg = "#{Style.agent()}linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), #{Style.agent()}linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
+      padImg = "#{Style.agent()}linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), #{Style.agent()}linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
 
       p.padM.style.backgroundImage   = "url('data:image/gif;base64,R0lGODlhDwAPAKEBAAAAAP///////////yH5BAEKAAIALAAAAAAPAA8AAAIklB8Qx53b4otSUWcvyiz4/4AeQJbmKY4p1HHapBlwPL/uVRsFADs=')"
       p.padM.style.backgroundRepeat  = "no-repeat"
@@ -488,37 +472,23 @@ JSColor =
           2 * o.pickerFace                +
           JSColor.images.pad[0]           +
           (
-            if o.slider
-              2 * o.pickerInset           +
-              2 * JSColor.images.arrow[0] +
-              JSColor.images.sld[0]
-            else
-              0
+            2 * o.pickerInset           +
+            2 * JSColor.images.arrow[0] +
+            JSColor.images.sld[0]
           )
         )
-        if o.pickerClosable
-          (
-            4 * o.pickerInset       +
-            3*o.pickerFace          +
-            JSColor.images.pad[1]   +
-            o.pickerButtonHeight
-          )
-        else
-          (
-            2 * o.pickerInset       +
-            2 * o.pickerFace        +
-            JSColor.images.pad[1]
-          )
+        (
+          4 * o.pickerInset       +
+          3*o.pickerFace          +
+          JSColor.images.pad[1]   +
+          o.pickerButtonHeight
+        )
       ]
 
     # redraw the pad pointer
     redrawPad = () ->
 
-      switch modeID
-        when 0
-          yComponent = 1
-        when 1
-          yComponent = 2
+      yComponent = 1
 
       x = Math.round (THIS.hsv[0] / 6)          * (JSColor.images.pad[0] - 1)
       y = Math.round (1 - THIS.hsv[yComponent]) * (JSColor.images.pad[1] - 1)
@@ -529,54 +499,17 @@ JSColor =
       # redraw the slider image
       seg = JSColor.picker.sld.childNodes
 
-      switch modeID
-        when 0
-          rgb = HSV_RGB(THIS.hsv[0], THIS.hsv[1], 1)
-          for item in seg
-            item.style.backgroundColor =
-              "rgb(" +
-              "#{rgb[0]*(1-i/seg.length)*100}%, " +
-              "#{rgb[1]*(1-i/seg.length)*100}%, " +
-              "#{rgb[2]*(1-i/seg.length)*100}%)"
-        when 1
-          c = [ THIS.hsv[2], 0, 0 ]
-          i = Math.floor(THIS.hsv[0])
-          f = if i % 2
-            THIS.hsv[0] - i
-          else
-            1 - (THIS.hsv[0] - i)
-
-          switch i
-            when 6, 0
-              rgb=[0,1,2]
-            when 1
-              rgb=[1,0,2]
-            when 2
-              rgb=[2,0,1]
-            when 3
-              rgb=[2,1,0]
-            when 4
-              rgb=[1,2,0]
-            when 5
-              rgb=[0,2,1]
-
-          for item in seg
-            s = 1 - 1 / (seg.length - 1) * i
-            c[1] = c[0] * (1 - s*f)
-            c[2] = c[0] * (1 - s)
-            seg[i].style.backgroundColor =
-              "rgb(" +
-              "#{c[rgb[0]]*100}%, " +
-              "#{c[rgb[1]]*100}%, " +
-              "#{c[rgb[2]]*100}%)"
-
+      rgb = HSV_RGB(THIS.hsv[0], THIS.hsv[1], 1)
+      for item in seg
+        item.style.backgroundColor =
+          "rgb(" +
+          "#{rgb[0]*(1-i/seg.length)*100}%, " +
+          "#{rgb[1]*(1-i/seg.length)*100}%, " +
+          "#{rgb[2]*(1-i/seg.length)*100}%)"
+              
     redrawSld = ->
       # redraw the slider pointer
-      switch modeID
-        when 0
-          yComponent = 2
-        when 1
-          yComponent = 1
+      yComponent = 2
 
       y = Math.round (1 - THIS.hsv[yComponent]) * (JSColor.images.sld[1] - 1)
       JSColor.picker.sldM.style.backgroundPosition =
@@ -598,57 +531,30 @@ JSColor =
       mpos = JSColor.getRelMousePos e
       x = mpos.x - THIS.pickerFace - THIS.pickerInset
       y = mpos.y - THIS.pickerFace - THIS.pickerInset
-      switch modeID
-        when 0
-          THIS.fromHSV(
-            x * (
-              6 / (
-                JSColor.images.pad[0] - 1
-              )
-            )
-            1 - y / (
-              JSColor.images.pad[1] - 1
-            )
-            null
-            leaveSld
+      THIS.fromHSV(
+        x * (
+          6 / (
+            JSColor.images.pad[0] - 1
           )
-        when 1
-          THIS.fromHSV(
-            x * (
-              6 / (
-                JSColor.images.pad[0] - 1
-              )
-            )
-            null
-            1 - y / (
-              JSColor.images.pad[1] - 1
-            )
-            leaveSld
-          )
-
+        )
+        1 - y / (
+          JSColor.images.pad[1] - 1
+        )
+        null
+        leaveSld
+      )
 
     setSld = (e) ->
       mpos  = JSColor.getRelMousePos e
       y     = mpos.y - THIS.pickerFace - THIS.pickerInset
-      switch modeID
-        when 0
-          THIS.fromHSV(
-            null
-            null
-            1 - y / (
-              JSColor.images.sld[1] - 1
-            )
-            leavePad
-          )
-        when 1
-          THIS.fromHSV(
-            null
-            1 - y / (
-              JSColor.images.sld[1] - 1
-            )
-            null
-            leavePad
-          )
+      THIS.fromHSV(
+        null
+        null
+        1 - y / (
+          JSColor.images.sld[1] - 1
+        )
+        leavePad
+      )
 
     dispatchImmediateChange = ->
       if THIS.onImmediateChange
@@ -660,11 +566,6 @@ JSColor =
         callback.call(THIS)
 
     THIS         = @
-    modeID       =
-      if @pickerMode.toLowerCase() is 'hvs'
-        1
-      else
-        0
     abortBlur    = false
     valueElement = JSColor.fetchElement @valueElement
     styleElement = JSColor.fetchElement @styleElement
@@ -677,8 +578,7 @@ JSColor =
 
     # target
     $.on target, 'focus', ->
-      if THIS.pickerOnfocus
-        THIS.showPicker()
+      THIS.showPicker()
 
     $.on target, 'blur', ->
       unless abortBlur
