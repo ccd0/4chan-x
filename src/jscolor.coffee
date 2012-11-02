@@ -476,7 +476,7 @@ JSColor =
       p.sldB.style.top              = THIS.pickerFace  + 'px'
       p.sldB.style.border           = THIS.pickerInset + 'px solid'
       p.sldB.style.borderColor      = THIS.pickerInsetColor
-      p.sldB.style.backgroundImage  = "#{Style.agent()}linear-gradient(#fff, #000)"
+      p.sldB.style.backgroundImage  = "#{Style.agent}linear-gradient(#fff, #000)"
 
       # slider mouse area
       p.sldM.style.display          = if THIS.slider then 'block' else 'none'
@@ -525,9 +525,9 @@ JSColor =
       # load images in optimal order
       switch modeID
         when 0
-          padImg = "#{Style.agent()}linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), #{Style.agent()}linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
+          padImg = "#{Style.agent}linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), #{Style.agent}linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
         when 1
-          padImg = "#{Style.agent()}linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), #{Style.agent()}linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
+          padImg = "#{Style.agent}linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), #{Style.agent}linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
 
       p.padM.style.backgroundImage   = "url('data:image/gif;base64,R0lGODlhDwAPAKEBAAAAAP///////////yH5BAEKAAIALAAAAAAPAA8AAAIklB8Qx53b4otSUWcvyiz4/4AeQJbmKY4p1HHapBlwPL/uVRsFADs=')"
       p.padM.style.backgroundRepeat  = "no-repeat"
