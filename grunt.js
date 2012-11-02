@@ -22,6 +22,7 @@ module.exports = function(grunt) {
           'src/chanx.coffee',
           'src/quickreply.coffee',
           'src/themeoptions.coffee',
+          'src/jscolor.coffee',
           'src/mascotoptions.coffee',
           'src/customnavigation.coffee',
           'src/linkify.coffee',

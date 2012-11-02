@@ -97,7 +97,7 @@
  *  this notice is kept intact.
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, Icons, ImageExpand, ImageHover, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userMascots, userNavigation, userThemes, _base;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, Icons, ImageExpand, ImageHover, JSColor, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userMascots, userNavigation, userThemes, _base;
 
   Config = {
     main: {
@@ -1030,7 +1030,7 @@
       "Warnings": "rgb(200,40,41)",
       "Shadow Color": "rgba(255,255,255,.9)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\nnput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle {\n  color: #cc5ec1 !important;\n  text-shadow: 1px 1px 1px #772E28 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\nnput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle {\n  color: #cc5ec1 !important;\n  text-shadow: 1px 1px 1px #772E28 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}"
     },
     "Yotsuba Purple": {
       "Author": "seaweed",
@@ -1079,7 +1079,7 @@
       "Warnings": "rgb(153,0,0)",
       "Shadow Color": "rgba(254,237,255,.9)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,253,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#boardNavDesktop,\n.pagelist,\n#imgControls {\n  background:rgba(229, 219, 240,.9)!important;\n}\n#delform,\n.replyContainer,\n.hidden_thread,\n.stub {\n  border-radius:0!important\n}\n.replyContainer,\n.hidden_thread,\n.stub {\n  border-left:0!important;\n  border-top:0!important;\n}\n.boardTitle {\n  color: #591177 !important;\n  text-shadow: 1px 1px 1px #222 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}\n.postNum a {\n  color: #000000 !important;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,253,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#boardNavDesktop,\n.pagelist,\n#imgControls {\n  background:rgba(229, 219, 240,.9)!important;\n}\n#delform,\n.replyContainer,\n.hidden_thread,\n.stub {\n  border-radius:0!important\n}\n.replyContainer,\n.hidden_thread,\n.stub {\n  border-left:0!important;\n  border-top:0!important;\n}\n.boardTitle {\n  color: #591177 !important;\n  text-shadow: 1px 1px 1px #222 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}\n.postNum a {\n  color: #000000 !important;\n}"
     },
     "Vimyanized Dark": {
       "Author": "seaweed",
@@ -1127,7 +1127,7 @@
       "Warnings": "rgb(79,79,79)",
       "Shadow Color": "rgba(29,33,36,.9)",
       "Dark Theme": true,
-      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(45,49,52,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}"
+      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(45,49,52,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}"
     },
     "Tomorrow Night": {
       "Author": "Chris Kempson",
@@ -1175,7 +1175,7 @@
       "Warnings": "rgb(204,102,102)",
       "Shadow Color": "rgba(56,58,62,.9)",
       "Dark Theme": true,
-      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(72,74,78,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}"
+      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(72,74,78,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}"
     },
     "Solarized Light": {
       "Author": "seaweed",
@@ -1223,7 +1223,7 @@
       "Warnings": "rgb(153,0,0)",
       "Shadow Color": "rgba(255,255,243,.9)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle {\n  color: #b58900 !important;\n  text-shadow: 1px 1px 1px #999 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}\n.postNum a {\n  color: #657b83 !important;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle {\n  color: #b58900 !important;\n  text-shadow: 1px 1px 1px #999 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}\n.postNum a {\n  color: #657b83 !important;\n}"
     },
     "Muted": {
       "Author": "seaweed",
@@ -1271,7 +1271,7 @@
       "Warnings": "rgb(153,0,0)",
       "Shadow Color": "rgba(255,255,249,.9)",
       "Dark Theme": false,
-      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle{\ncolor:#bc312a!important;\n  text-shadow:1px 1px 1px #772e28 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow:none!important;\n}\n.postNum a {\n  color:#111111!important;\n}\ndiv.reply a.quotelink{\n  color:#bc312a!important;\n}"
+      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle{\ncolor:#bc312a!important;\n  text-shadow:1px 1px 1px #772e28 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow:none!important;\n}\n.postNum a {\n  color:#111111!important;\n}\ndiv.reply a.quotelink{\n  color:#bc312a!important;\n}"
     },
     "Monokai": {
       "Author": "seaweed",
@@ -1319,7 +1319,7 @@
       "Warnings": "rgb(79,79,79)",
       "Shadow Color": "rgba(32,33,28,0.7)",
       "Dark Theme": true,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(71,72,66,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(71,72,66,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}"
     },
     "Dark Flat": {
       "Author": "Ahoka",
@@ -1371,7 +1371,7 @@
       "Warnings": "rgb(201,144,144)",
       "Shadow Color": "rgba(32,32,32,0.5)",
       "Dark Theme": true,
-      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(67,68,69,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.replyContainer div.post {\n border: 0 !important\n}"
+      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(67,68,69,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.replyContainer div.post {\n border: 0 !important\n}"
     },
     "Blackboard": {
       "Author": "seaweed",
@@ -1419,7 +1419,7 @@
       "Warnings": "rgb(79,79,79)",
       "Shadow Color": "rgba(28,32,49,.9)",
       "Dark Theme": true,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(44,48,65,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\nthread>.replyContainer>.reply>div.postInfo {\n  box-shadow: 0px 2px 3px #0A0A0A !important;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(44,48,65,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\nthread>.replyContainer>.reply>div.postInfo {\n  box-shadow: 0px 2px 3px #0A0A0A !important;\n}"
     },
     "4chan Rewired": {
       "Author": "",
@@ -1467,12 +1467,12 @@
       "Warnings": "rgb(204,102,102)",
       "Shadow Color": "rgba(0,0,0,.07)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\n.replyContainer div.reply,\n.opContainer div.op {\n  background-color: transparent !important;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\na {\n  -moz-transition: text-shadow .2s;\n  -o-transition: text-shadow .2s;\n  -webkit-transition: text-shadow .2s;\n}\na:hover {\n  text-shadow: 0 0 3px rgba(232,118,0,.7);\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:\n    background .2s,\n    box-shadow .2s;\n}\n.subject:not(:empty)::after {\n  content: \" by\";\n  font-weight: normal;\n}\n.qphl {\n  outline-width: 1px;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\n.replyContainer div.reply,\n.opContainer div.op {\n  background-color: transparent !important;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\na {\n  -moz-transition: text-shadow .2s;\n  -o-transition: text-shadow .2s;\n  -webkit-transition: text-shadow .2s;\n}\na:hover {\n  text-shadow: 0 0 3px rgba(232,118,0,.7);\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:\n    background .2s,\n    box-shadow .2s;\n}\n.subject:not(:empty)::after {\n  content: \" by\";\n  font-weight: normal;\n}\n.qphl {\n  outline-width: 1px;\n}"
     },
     "4chan Dark Upgrade": {
       "Author": "Ahoka",
       "Author Tripcode": "!.pC/AHOKAg",
-      "Background Image": "url('http://i.minus.com/iNkJoDJkLU0co.png')",
+      "Background Image": "url(\"http://i.minus.com/iNkJoDJkLU0co.png\")",
       "Background Attachment": "fixed",
       "Background Position": "top left",
       "Background Repeat": "repeat",
@@ -1519,7 +1519,7 @@
       "Warnings": "rgb(177,115,133)",
       "Shadow Color": "rgba(67,67,67,.9)",
       "Dark Theme": true,
-      "Custom CSS": "html {\n}\n.board {\n  padding: 3px 4px;\n}\n.rice {\n  box-shadow:rgba(83,83,83,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#delform{\n  background:rgba(22,22,22,.8)!important;\n  border:0!important;\n  padding:1px!important;\n  box-shadow:rgba(0,0,0,.8) 0 0 10px;\n}\ndiv.reply {\n  background-image:    -moz-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  background-image:      -o-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  background-image: -webkit-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  border-bottom:#1f1f1f!important;\n  border-radius:5px!important\n}\n.thread:not(.stub){\n  background:0!important\n}\na:not([href='javascript:;']){\n  text-shadow:#0f0f0f 0 1px;\n}"
+      "Custom CSS": "html {\n}\n.board {\n  padding: 3px 4px;\n}\n.rice {\n  box-shadow:rgba(83,83,83,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#delform{\n  background:rgba(22,22,22,.8)!important;\n  border:0!important;\n  padding:1px!important;\n  box-shadow:rgba(0,0,0,.8) 0 0 10px;\n}\ndiv.reply {\n  background-image:    -moz-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  background-image:      -o-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  background-image: -webkit-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;\n  border-bottom:#1f1f1f!important;\n  border-radius:5px!important\n}\n.thread:not(.stub){\n  background:0!important\n}\na:not([href='javascript:;']){\n  text-shadow:#0f0f0f 0 1px;\n}"
     }
   };
 
@@ -8417,7 +8417,7 @@
 
   ThemeTools = {
     init: function(key) {
-      var dialog, div, fileInput, header, input, item, layout, themecontent, _i, _j, _len, _len1, _ref;
+      var colorInput, div, fileInput, header, input, item, layout, themecontent, _i, _j, _len, _len1, _ref;
       Conf['editMode'] = "theme";
       if (userThemes[key]) {
         editTheme = JSON.parse(JSON.stringify(userThemes[key]));
@@ -8429,7 +8429,7 @@
         editTheme["Author Tripcode"] = "Unknown";
       }
       layout = ["Background Image", "Background Attachment", "Background Position", "Background Repeat", "Background Color", "Thread Wrapper Background", "Thread Wrapper Border", "Dialog Background", "Dialog Border", "Reply Background", "Reply Border", "Highlighted Reply Background", "Highlighted Reply Border", "Backlinked Reply Outline", "Input Background", "Input Border", "Hovered Input Background", "Hovered Input Border", "Focused Input Background", "Focused Input Border", "Checkbox Background", "Checkbox Border", "Checkbox Checked Background", "Buttons Background", "Buttons Border", "Navigation Background", "Navigation Border", "Links", "Hovered Links", "Quotelinks", "Backlinks", "Navigation Links", "Hovered Navigation Links", "Names", "Tripcodes", "Emails", "Subjects", "Text", "Inputs", "Post Numbers", "Greentext", "Sage", "Board Title", "Timestamps", "Warnings", "Shadow Color"];
-      dialog = $.el("div", {
+      ThemeTools.dialog = $.el("div", {
         id: "themeConf",
         className: "reply dialog",
         innerHTML: "<div id=themebar></div><hr><div id=themecontent></div><div id=save>  <a href='javascript:;'>Save</a></div><div id=upload>  <a href='javascript:;'>Select Image</a></div><div id=close>  <a href='javascript:;'>Close</a></div>"
@@ -8444,8 +8444,8 @@
           return editTheme[this.name] = this.value;
         });
       }
-      $.add($("#themebar", dialog), header);
-      themecontent = $("#themecontent", dialog);
+      $.add($("#themebar", ThemeTools.dialog), header);
+      themecontent = $("#themecontent", ThemeTools.dialog);
       for (_j = 0, _len1 = layout.length; _j < _len1; _j++) {
         item = layout[_j];
         if (!editTheme[item]) {
@@ -8453,9 +8453,43 @@
         }
         div = $.el("div", {
           className: "themevar",
-          innerHTML: "<div class=optionname><b>" + item + "</b></div><div class=option><input class=field name='" + item + "' placeholder='" + (item === "Background Image" ? "Shift+Click to upload image" : item) + "' value='" + editTheme[item] + "'>"
+          innerHTML: "<div class=optionname><b>" + item + "</b></div><div class=option><input name='" + item + "' placeholder='" + (item === "Background Image" ? "Shift+Click to upload image" : item) + "'>"
         });
         input = $('input', div);
+        input.value = editTheme[item];
+        switch (item) {
+          case "Background Image":
+            input.className = 'field';
+            fileInput = $.el('input', {
+              type: 'file',
+              accept: "image/*",
+              title: "BG Image",
+              hidden: "hidden"
+            });
+            $.on(input, 'click', function(evt) {
+              if (evt.shiftKey) {
+                return this.nextSibling.click();
+              }
+            });
+            $.on(fileInput, 'change', function(evt) {
+              return ThemeTools.uploadImage(evt, this);
+            });
+            $.after(input, fileInput);
+            break;
+          case "Background Attachment":
+          case "Background Position":
+          case "Background Repeat":
+            input.className = 'field';
+            break;
+          default:
+            input.className = "colorfield";
+            colorInput = $.el('input', {
+              className: 'color',
+              value: ThemeTools.colorToHex(input.value)
+            });
+            JSColor.bind(colorInput);
+            $.after(input, colorInput);
+        }
         $.on(input, 'blur', function() {
           var depth, i, toggle1, toggle2, _k, _ref1;
           depth = 0;
@@ -8482,23 +8516,6 @@
           editTheme[this.name] = this.value;
           return Style.addStyle(editTheme);
         });
-        if (item === "Background Image") {
-          fileInput = $.el('input', {
-            type: 'file',
-            accept: "image/*",
-            title: "BG Image",
-            hidden: "hidden"
-          });
-          $.on(input, 'click', function(evt) {
-            if (evt.shiftKey) {
-              return this.nextSibling.click();
-            }
-          });
-          $.on(fileInput, 'change', function(evt) {
-            return ThemeTools.uploadImage(evt, this);
-          });
-          $.after(input, fileInput);
-        }
         $.add(themecontent, div);
       }
       div = $.el("div", {
@@ -8522,11 +8539,11 @@
         return Style.addStyle(editTheme);
       });
       $.add(themecontent, div);
-      $.on($('#save > a', dialog), 'click', function() {
+      $.on($('#save > a', ThemeTools.dialog), 'click', function() {
         return ThemeTools.save(editTheme);
       });
-      $.on($('#close > a', dialog), 'click', ThemeTools.close);
-      $.add(d.body, dialog);
+      $.on($('#close > a', ThemeTools.dialog), 'click', ThemeTools.close);
+      $.add(d.body, ThemeTools.dialog);
       return Style.addStyle(editTheme);
     },
     uploadImage: function(evt, el) {
@@ -8568,6 +8585,21 @@
         return rgb.join(",");
       };
       return this.hover = this.shiftRGB(16, true);
+    },
+    colorToHex: function(color) {
+      var blue, digits, green, red, rgb;
+      if (color.substr(0, 1) === '#') {
+        return color;
+      }
+      if (digits = /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/.exec(color)) {
+        red = parseInt(digits[2], 10);
+        green = parseInt(digits[3], 10);
+        blue = parseInt(digits[4], 10);
+        rgb = blue | (green << 8) | (red << 16);
+        return '#' + rgb.toString(16);
+      } else {
+
+      }
     },
     importtheme: function(origin, evt) {
       var file, reader;
@@ -8667,7 +8699,7 @@
               'Warnings': 'rgb(' + sageColor.rgb + ')',
               'Shadow Color': 'rgba(' + mainColor.shiftRGB(16) + ',.9)',
               'Dark Theme': mainColor.isLight ? false : true,
-              'Custom CSS': ".rice {\n  box-shadow:rgba(" + mainColor.shiftRGB(32) + ",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + (imported.customCSS || '')
+              'Custom CSS': ".rice {\n  box-shadow:rgba(" + mainColor.shiftRGB(32) + ",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + (imported.customCSS || '')
             };
           } else if (origin === "SS") {
             userThemes[name] = {
@@ -8720,7 +8752,7 @@
               'Warnings': 'rgb(' + sageColor.rgb + ')',
               'Shadow Color': 'rgba(' + mainColor.shiftRGB(-16) + ',.9)',
               'Dark Theme': mainColor.isLight ? false : true,
-              'Custom CSS': ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(" + mainColor.shiftRGB(32) + ",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput:not(.jsColor),\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + (imported.customCSS || '')
+              'Custom CSS': ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(" + mainColor.shiftRGB(32) + ",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + (imported.customCSS || '')
             };
           }
         } else if (origin === 'appchan') {
@@ -8755,6 +8787,692 @@
       $.rm($("#themeConf", d.body));
       Style.addStyle();
       return Options.dialog("theme");
+    }
+  };
+
+  /*
+  Based on JSColor, JavaScript Color Picker
+  
+  @license   GNU Lesser General Public License, http://www.gnu.org/copyleft/lesser.html
+  @author    Jan Odvarko, http://odvarko.cz
+  @link      http://JSColor.com
+  */
+
+
+  JSColor = {
+    bind: function(el) {
+      if (!el.color) {
+        return el.color = new JSColor.color(el);
+      }
+    },
+    images: {
+      pad: [181, 101],
+      sld: [16, 101],
+      cross: [15, 15],
+      arrow: [7, 11]
+    },
+    imgRequire: {},
+    imgLoaded: {},
+    requireImage: function(filename) {
+      return JSColor.imgRequire[filename] = true;
+    },
+    loadImage: function(filename) {
+      if (!JSColor.imgLoaded[filename]) {
+        JSColor.imgLoaded[filename] = new Image();
+        return JSColor.imgLoaded[filename].src = filename;
+      }
+    },
+    fetchElement: function(mixed) {
+      if (typeof mixed === "string") {
+        return document.getElementById(mixed);
+      } else {
+        return mixed;
+      }
+    },
+    fireEvent: function(el, evnt) {
+      var ev;
+      if (!el) {
+        return;
+      }
+      if (document.createEvent) {
+        ev = document.createEvent('HTMLEvents');
+        ev.initEvent(evnt, true, true);
+        return el.dispatchEvent(ev);
+      } else if (document.createEventObject) {
+        ev = document.createEventObject();
+        return el.fireEvent('on' + evnt, ev);
+      } else if (el['on' + evnt]) {
+        return el['on' + evnt]();
+      }
+    },
+    getElementPos: function(e) {
+      var e1, e2, x, y;
+      e1 = e;
+      e2 = e;
+      x = 0;
+      y = 0;
+      if (e1.offsetParent) {
+        while (e1 = e1.offsetParent) {
+          x += e1.offsetLeft;
+          y += e1.offsetTop;
+        }
+      }
+      while ((e2 = e2.parentNode) && e2.nodeName.toLowerCase() !== 'body') {
+        x -= e2.scrollLeft;
+        y -= e2.scrollTop;
+      }
+      return [x, y];
+    },
+    getElementSize: function(e) {
+      return [e.offsetWidth, e.offsetHeight];
+    },
+    getRelMousePos: function(e) {
+      var x, y;
+      if (e == null) {
+        e = window.event;
+      }
+      x = 0;
+      y = 0;
+      if (typeof e.offsetX === 'number') {
+        x = e.offsetX;
+        y = e.offsetY;
+      } else if (typeof e.layerX === 'number') {
+        x = e.layerX;
+        y = e.layerY;
+      }
+      return {
+        x: x,
+        y: y
+      };
+    },
+    getViewPos: function() {
+      if (typeof window.pageYOffset === 'number') {
+        return [window.pageXOffset, window.pageYOffset];
+      } else if (document.body && (document.body.scrollLeft || document.body.scrollTop)) {
+        return [document.body.scrollLeft, document.body.scrollTop];
+      } else if (document.documentElement && (document.documentElement.scrollLeft || document.documentElement.scrollTop)) {
+        return [document.documentElement.scrollLeft, document.documentElement.scrollTop];
+      } else {
+        return [0, 0];
+      }
+    },
+    getViewSize: function() {
+      if (typeof window.innerWidth === 'number') {
+        return [window.innerWidth, window.innerHeight];
+      } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) {
+        return [document.body.clientWidth, document.body.clientHeight];
+      } else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
+        return [document.documentElement.clientWidth, document.documentElement.clientHeight];
+      } else {
+        return [0, 0];
+      }
+    },
+    color: function(target) {
+      var HSV_RGB, RGB_HSV, THIS, abortBlur, blurTarget, blurValue, dispatchImmediateChange, drawPicker, getPickerDims, holdPad, holdSld, isPickerOwner, leavePad, leaveSld, leaveStyle, leaveValue, modeID, redrawPad, redrawSld, removePicker, setPad, setSld, styleElement, updateField, valueElement;
+      this.required = false;
+      this.adjust = false;
+      this.slider = true;
+      this.valueElement = target;
+      this.styleElement = target;
+      this.onImmediateChange = null;
+      this.hsv = [0, 0, 1];
+      this.rgb = [1, 1, 1];
+      this.minH = 0;
+      this.maxH = 6;
+      this.minS = 0;
+      this.maxS = 1;
+      this.minV = 0;
+      this.maxV = 1;
+      this.pickerOnfocus = true;
+      this.pickerMode = 'HSV';
+      this.pickerPosition = 'bottom';
+      this.pickerSmartPosition = true;
+      this.pickerButtonHeight = 20;
+      this.pickerClosable = true;
+      this.pickerCloseText = 'Close';
+      this.pickerButtonColor = 'ButtonText';
+      this.pickerFace = 10;
+      this.pickerFaceColor = 'ThreeDFace';
+      this.pickerBorder = 1;
+      this.pickerBorderColor = 'ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight';
+      this.pickerInset = 1;
+      this.pickerInsetColor = 'ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow';
+      this.pickerZIndex = 10000;
+      this.hidePicker = function() {
+        if (isPickerOwner()) {
+          return removePicker();
+        }
+      };
+      this.showPicker = function() {
+        var a, b, c, l, pp, ps, tp, ts, vp, vs;
+        if (!isPickerOwner()) {
+          tp = JSColor.getElementPos(target);
+          ts = JSColor.getElementSize(target);
+          vp = JSColor.getViewPos();
+          vs = JSColor.getViewSize();
+          ps = getPickerDims(this);
+          switch (this.pickerPosition.toLowerCase()) {
+            case 'left':
+              a = 1;
+              b = 0;
+              c = -1;
+              break;
+            case 'right':
+              a = 1;
+              b = 0;
+              c = 1;
+              break;
+            case 'top':
+              a = 0;
+              b = 1;
+              c = -1;
+              break;
+            default:
+              a = 0;
+              b = 1;
+              c = 1;
+          }
+          l = (ts[b] + ps[b]) / 2;
+          if (!this.pickerSmartPosition) {
+            pp = [tp[a], tp[b] + ts[b] - l + l * c];
+          } else {
+            pp = [(-vp[a] + tp[a] + ps[a] > vs[a] ? -vp[a] + tp[a] + ts[a] / 2 > vs[a] / 2 && tp[a] + ts[a] - ps[a] >= 0 ? tp[a] + ts[a] - ps[a] : tp[a] : tp[a]), (-vp[b] + tp[b] + ts[b] + ps[b] - l + l * c > vs[b] ? -vp[b] + tp[b] + ts[b] / 2 > vs[b] / 2 && tp[b] + ts[b] - l - l * c >= 0 ? tp[b] + ts[b] - l - l * c : tp[b] + ts[b] - l + l * c : tp[b] + ts[b] - l + l * c >= 0 ? tp[b] + ts[b] - l + l * c : tp[b] + ts[b] - l - l * c)];
+          }
+          return drawPicker(pp[a], pp[b]);
+        }
+      };
+      this.importColor = function() {
+        if (!valueElement) {
+          return this.exportColor();
+        } else {
+          if (!this.adjust) {
+            if (!this.fromString(valueElement.value, leaveValue)) {
+              styleElement.style.backgroundImage = styleElement.jscStyle.backgroundImage;
+              styleElement.style.backgroundColor = styleElement.jscStyle.backgroundColor;
+              styleElement.style.color = styleElement.jscStyle.color;
+              return this.exportColor(leaveValue | leaveStyle);
+            }
+          } else if (!(this.required && /^\s*$/.test(valueElement.value))) {
+            valueElement.value = '';
+            styleElement.style.backgroundImage = styleElement.jscStyle.backgroundImage;
+            styleElement.style.backgroundColor = styleElement.jscStyle.backgroundColor;
+            styleElement.style.color = styleElement.jscStyle.color;
+            return this.exportColor(leaveValue | leaveStyle);
+          } else {
+            if (!this.fromString(valueElement.value)) {
+              return this.exportColor();
+            }
+          }
+        }
+      };
+      this.exportColor = function(flags) {
+        var value;
+        if (!(flags & leaveValue) && valueElement) {
+          value = this.toString();
+          value = '#' + value;
+          valueElement.value = value;
+          valueElement.previousSibling.value = value;
+          editTheme[valueElement.previousSibling.name] = value;
+          Style.addStyle(editTheme);
+        }
+        if (!(flags & leaveStyle) && styleElement) {
+          styleElement.style.backgroundImage = "none";
+          styleElement.style.backgroundColor = '#' + this.toString();
+          styleElement.style.color = (0.213 * this.rgb[0] + 0.715 * this.rgb[1] + 0.072 * this.rgb[2]) < 0.5 ? '#FFF' : '#000';
+        }
+        if (!(flags & leavePad) && isPickerOwner()) {
+          redrawPad();
+        }
+        if (!(flags & leaveSld) && isPickerOwner()) {
+          return redrawSld();
+        }
+      };
+      this.fromHSV = function(h, s, v, flags) {
+        if (h !== null) {
+          h = Math.max(0.0, this.minH, Math.min(6.0, this.maxH, h));
+        }
+        if (s !== null) {
+          s = Math.max(0.0, this.minS, Math.min(1.0, this.maxS, s));
+        }
+        if (v !== null) {
+          v = Math.max(0.0, this.minV, Math.min(1.0, this.maxV, v));
+        }
+        this.rgb = HSV_RGB(h === null ? this.hsv[0] : (this.hsv[0] = h), s === null ? this.hsv[1] : (this.hsv[1] = s), v === null ? this.hsv[2] : (this.hsv[2] = v));
+        return this.exportColor(flags);
+      };
+      this.fromRGB = function(r, g, b, flags) {
+        var hsv, rgb;
+        if (r !== null) {
+          r = Math.max(0.0, Math.min(1.0, r));
+        }
+        if (g !== null) {
+          g = Math.max(0.0, Math.min(1.0, g));
+        }
+        if (b !== null) {
+          b = Math.max(0.0, Math.min(1.0, b));
+        }
+        hsv = RGB_HSV(r === null ? this.rgb[0] : r, g === null ? this.rgb[1] : g, b === null ? this.rgb[2] : b);
+        if (hsv[0] !== null) {
+          this.hsv[0] = Math.max(0.0, this.minH, Math.min(6.0, this.maxH, hsv[0]));
+        }
+        if (hsv[2] !== 0) {
+          this.hsv[1] = hsv[1] === null ? null : Math.max(0.0, this.minS, Math.min(1.0, this.maxS, hsv[1]));
+        }
+        this.hsv[2] = hsv[2] === null ? null : Math.max(0.0, this.minV, Math.min(1.0, this.maxV, hsv[2]));
+        rgb = HSV_RGB(this.hsv[0], this.hsv[1], this.hsv[2]);
+        this.rgb[0] = rgb[0];
+        this.rgb[1] = rgb[1];
+        this.rgb[2] = rgb[2];
+        return this.exportColor(flags);
+      };
+      this.fromString = function(number, flags) {
+        var m;
+        m = number.match(/^\W*([0-9A-F]{3}([0-9A-F]{3})?)\W*$/i);
+        if (!m) {
+          return false;
+        } else {
+          if (m[1].length === 6) {
+            this.fromRGB(parseInt(m[1].substr(0, 2), 16) / 255, parseInt(m[1].substr(2, 2), 16) / 255, parseInt(m[1].substr(4, 2), 16) / 255, flags);
+          } else {
+            this.fromRGB(parseInt(m[1].charAt(0) + m[1].charAt(0), 16) / 255, parseInt(m[1].charAt(1) + m[1].charAt(1), 16) / 255, parseInt(m[1].charAt(2) + m[1].charAt(2), 16) / 255, flags);
+          }
+          return true;
+        }
+      };
+      this.toString = function() {
+        return (0x100 | Math.round(255 * this.rgb[0])).toString(16).substr(1) + (0x100 | Math.round(255 * this.rgb[1])).toString(16).substr(1) + (0x100 | Math.round(255 * this.rgb[2])).toString(16).substr(1);
+      };
+      RGB_HSV = function(r, g, b) {
+        var h, m, n, v;
+        n = Math.min(Math.min(r, g), b);
+        v = Math.max(Math.max(r, g), b);
+        m = v - n;
+        if (m === 0) {
+          return [null, 0, v];
+        }
+        h = r === n ? 3 + (b - g) / m : g === n ? 5 + (r - b) / m : 1 + (g - r) / m;
+        return [h === 6 ? 0 : h, m / v, v];
+      };
+      HSV_RGB = function(h, s, v) {
+        var f, i, m, n;
+        if (h === null) {
+          return [v, v, v];
+        }
+        i = Math.floor(h);
+        f = i % 2 ? h - i : 1 - (h - i);
+        m = v * (1 - s);
+        n = v * (1 - s * f);
+        switch (i) {
+          case 6:
+          case 0:
+            return [v, n, m];
+          case 1:
+            return [n, v, m];
+          case 2:
+            return [m, v, n];
+          case 3:
+            return [m, n, v];
+          case 4:
+            return [n, m, v];
+          case 5:
+            return [v, m, n];
+        }
+      };
+      removePicker = function() {
+        delete JSColor.picker.owner;
+        return $.rm(JSColor.picker.boxB);
+      };
+      drawPicker = function(x, y) {
+        var dims, i, p, padImg, seg, segSize, setBtnBorder, _i, _len, _ref, _step;
+        if (!JSColor.picker) {
+          JSColor.picker = {
+            box: document.createElement('div'),
+            boxB: document.createElement('div'),
+            pad: document.createElement('div'),
+            padB: document.createElement('div'),
+            padM: document.createElement('div'),
+            sld: document.createElement('div'),
+            sldB: document.createElement('div'),
+            sldM: document.createElement('div'),
+            btn: document.createElement('div'),
+            btnS: document.createElement('span'),
+            btnT: document.createTextNode(THIS.pickerCloseText)
+          };
+          _ref = JSColor.images.sld[1];
+          for (_i = 0, _len = _ref.length, _step = (segSize = 4); _i < _len; _i += _step) {
+            i = _ref[_i];
+            seg = document.createElement('div');
+            seg.style.height = segSize + 'px';
+            seg.style.fontSize = '1px';
+            seg.style.lineHeight = '0';
+            $.add(JSColor.picker.sld, sed);
+          }
+          $.add(JSColor.picker.sldB, JSColor.picker.sld);
+          $.add(JSColor.picker.box, JSColor.picker.sldB);
+          $.add(JSColor.picker.box, JSColor.picker.sldM);
+          $.add(JSColor.picker.padB, JSColor.picker.pad);
+          $.add(JSColor.picker.box, JSColor.picker.padB);
+          $.add(JSColor.picker.box, JSColor.picker.padM);
+          $.add(JSColor.picker.btnS, JSColor.picker.btnT);
+          $.add(JSColor.picker.btn, JSColor.picker.btnS);
+          $.add(JSColor.picker.box, JSColor.picker.btn);
+          $.add(JSColor.picker.boxB, JSColor.picker.box);
+        }
+        p = JSColor.picker;
+        p.box.onmouseup = p.box.onmouseout = function() {
+          return target.focus();
+        };
+        p.box.onmousedown = function() {
+          var abortBlur;
+          return abortBlur = true;
+        };
+        p.box.onmousemove = function(e) {
+          if (holdPad || holdSld) {
+            holdPad && setPad(e);
+            holdSld && setSld(e);
+            if (document.selection) {
+              document.selection.empty();
+            } else if (window.getSelection) {
+              window.getSelection().removeAllRanges();
+            }
+            return dispatchImmediateChange();
+          }
+        };
+        p.padM.onmouseup = p.padM.onmouseout = function() {
+          var holdPad;
+          if (holdPad) {
+            holdPad = false;
+            return JSColor.fireEvent(valueElement, 'change');
+          }
+        };
+        p.padM.onmousedown = function(e) {
+          var holdPad;
+          switch (modeID) {
+            case 0:
+              if (THIS.hsv[2] === 0) {
+                THIS.fromHSV(null, null, 1.0);
+              }
+              break;
+            case 1:
+              if (THIS.hsv[1] === 0) {
+                THIS.fromHSV(null, 1.0, null);
+              }
+          }
+          holdPad = true;
+          setPad(e);
+          return dispatchImmediateChange();
+        };
+        p.sldM.onmouseup = p.sldM.onmouseout = function() {
+          var holdSld;
+          if (holdSld) {
+            holdSld = false;
+            return JSColor.fireEvent(valueElement, 'change');
+          }
+        };
+        p.sldM.onmousedown = function(e) {
+          var holdSld;
+          holdSld = true;
+          setSld(e);
+          return dispatchImmediateChange();
+        };
+        dims = getPickerDims(THIS);
+        p.box.style.width = dims[0] + 'px';
+        p.box.style.height = dims[1] + 'px';
+        p.boxB.style.position = 'absolute';
+        p.boxB.style.clear = 'both';
+        p.boxB.style.left = '320px';
+        p.boxB.style.bottom = '20px';
+        p.boxB.style.zIndex = THIS.pickerZIndex;
+        p.boxB.style.border = THIS.pickerBorder + 'px solid';
+        p.boxB.style.borderColor = THIS.pickerBorderColor;
+        p.boxB.style.background = THIS.pickerFaceColor;
+        p.pad.style.width = JSColor.images.pad[0] + 'px';
+        p.pad.style.height = JSColor.images.pad[1] + 'px';
+        p.padB.style.position = 'absolute';
+        p.padB.style.left = THIS.pickerFace + 'px';
+        p.padB.style.top = THIS.pickerFace + 'px';
+        p.padB.style.border = THIS.pickerInset + 'px solid';
+        p.padB.style.borderColor = THIS.pickerInsetColor;
+        p.padM.style.position = 'absolute';
+        p.padM.style.left = '0';
+        p.padM.style.top = '0';
+        p.padM.style.width = THIS.pickerFace + 2 * THIS.pickerInset + JSColor.images.pad[0] + JSColor.images.arrow[0] + 'px';
+        p.padM.style.height = p.box.style.height;
+        p.padM.style.cursor = 'crosshair';
+        p.sld.style.overflow = 'hidden';
+        p.sld.style.width = JSColor.images.sld[0] + 'px';
+        p.sld.style.height = JSColor.images.sld[1] + 'px';
+        p.sldB.style.display = THIS.slider ? 'block' : 'none';
+        p.sldB.style.position = 'absolute';
+        p.sldB.style.right = THIS.pickerFace + 'px';
+        p.sldB.style.top = THIS.pickerFace + 'px';
+        p.sldB.style.border = THIS.pickerInset + 'px solid';
+        p.sldB.style.borderColor = THIS.pickerInsetColor;
+        p.sldB.style.backgroundImage = "" + (Style.agent()) + "linear-gradient(#fff, #000)";
+        p.sldM.style.display = THIS.slider ? 'block' : 'none';
+        p.sldM.style.position = 'absolute';
+        p.sldM.style.right = '0';
+        p.sldM.style.top = '0';
+        p.sldM.style.width = JSColor.images.sld[0] + JSColor.images.arrow[0] + THIS.pickerFace + 2 * THIS.pickerInset + 'px';
+        p.sldM.style.height = p.box.style.height;
+        try {
+          p.sldM.style.cursor = 'pointer';
+        } catch (eOldIE) {
+          p.sldM.style.cursor = 'hand';
+        }
+        setBtnBorder = function() {
+          var insetColors, pickerOutsetColor;
+          insetColors = THIS.pickerInsetColor.split(/\s+/);
+          pickerOutsetColor = insetColors.length < 2 ? insetColors[0] : insetColors[1] + ' ' + insetColors[0] + ' ' + insetColors[0] + ' ' + insetColors[1];
+          return p.btn.style.borderColor = pickerOutsetColor;
+        };
+        p.btn.style.display = THIS.pickerClosable ? 'block' : 'none';
+        p.btn.style.position = 'absolute';
+        p.btn.style.left = THIS.pickerFace + 'px';
+        p.btn.style.bottom = THIS.pickerFace + 'px';
+        p.btn.style.padding = '0 15px';
+        p.btn.style.height = '18px';
+        p.btn.style.border = THIS.pickerInset + 'px solid';
+        setBtnBorder();
+        p.btn.style.color = THIS.pickerButtonColor;
+        p.btn.style.font = '12px sans-serif';
+        p.btn.style.textAlign = 'center';
+        try {
+          p.btn.style.cursor = 'pointer';
+        } catch (eOldIE) {
+          p.btn.style.cursor = 'hand';
+        }
+        p.btn.onmousedown = function() {
+          return THIS.hidePicker();
+        };
+        p.btnS.style.lineHeight = p.btn.style.height;
+        switch (modeID) {
+          case 0:
+            padImg = "" + (Style.agent()) + "linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), " + (Style.agent()) + "linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)";
+            break;
+          case 1:
+            padImg = "" + (Style.agent()) + "linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), " + (Style.agent()) + "linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)";
+        }
+        p.padM.style.backgroundImage = "url('data:image/gif;base64,R0lGODlhDwAPAKEBAAAAAP///////////yH5BAEKAAIALAAAAAAPAA8AAAIklB8Qx53b4otSUWcvyiz4/4AeQJbmKY4p1HHapBlwPL/uVRsFADs=')";
+        p.padM.style.backgroundRepeat = "no-repeat";
+        p.sldM.style.backgroundImage = "url('data:image/gif;base64,R0lGODlhBwALAKECAAAAAP///6g8eKg8eCH5BAEKAAIALAAAAAAHAAsAAAITTIQYcLnsgGxvijrxqdQq6DRJAQA7')";
+        p.sldM.style.backgroundRepeat = "no-repeat";
+        p.pad.style.backgroundImage = padImg;
+        p.pad.style.backgroundRepeat = "no-repeat";
+        p.pad.style.backgroundPosition = "0 0";
+        redrawPad();
+        redrawSld();
+        JSColor.picker.owner = THIS;
+        return $.add(ThemeTools.dialog, p.boxB);
+      };
+      getPickerDims = function(o) {
+        var dims;
+        return dims = [2 * o.pickerInset + 2 * o.pickerFace + JSColor.images.pad[0] + (o.slider ? 2 * o.pickerInset + 2 * JSColor.images.arrow[0] + JSColor.images.sld[0] : 0), o.pickerClosable ? 4 * o.pickerInset + 3 * o.pickerFace + JSColor.images.pad[1] + o.pickerButtonHeight : 2 * o.pickerInset + 2 * o.pickerFace + JSColor.images.pad[1]];
+      };
+      redrawPad = function() {
+        var c, f, i, item, rgb, s, seg, x, y, yComponent, _i, _j, _len, _len1, _results, _results1;
+        switch (modeID) {
+          case 0:
+            yComponent = 1;
+            break;
+          case 1:
+            yComponent = 2;
+        }
+        x = Math.round((THIS.hsv[0] / 6) * (JSColor.images.pad[0] - 1));
+        y = Math.round((1 - THIS.hsv[yComponent]) * (JSColor.images.pad[1] - 1));
+        JSColor.picker.padM.style.backgroundPosition = ("" + (THIS.pickerFace + THIS.pickerInset + x - Math.floor(JSColor.images.cross[0] / 2)) + "px ") + ("" + (THIS.pickerFace + THIS.pickerInset + y - Math.floor(JSColor.images.cross[1] / 2)) + "px");
+        seg = JSColor.picker.sld.childNodes;
+        switch (modeID) {
+          case 0:
+            rgb = HSV_RGB(THIS.hsv[0], THIS.hsv[1], 1);
+            _results = [];
+            for (_i = 0, _len = seg.length; _i < _len; _i++) {
+              item = seg[_i];
+              _results.push(item.style.backgroundColor = "rgb(" + ("" + (rgb[0] * (1 - i / seg.length) * 100) + "%, ") + ("" + (rgb[1] * (1 - i / seg.length) * 100) + "%, ") + ("" + (rgb[2] * (1 - i / seg.length) * 100) + "%)"));
+            }
+            return _results;
+            break;
+          case 1:
+            c = [THIS.hsv[2], 0, 0];
+            i = Math.floor(THIS.hsv[0]);
+            f = i % 2 ? THIS.hsv[0] - i : 1 - (THIS.hsv[0] - i);
+            switch (i) {
+              case 6:
+              case 0:
+                rgb = [0, 1, 2];
+                break;
+              case 1:
+                rgb = [1, 0, 2];
+                break;
+              case 2:
+                rgb = [2, 0, 1];
+                break;
+              case 3:
+                rgb = [2, 1, 0];
+                break;
+              case 4:
+                rgb = [1, 2, 0];
+                break;
+              case 5:
+                rgb = [0, 2, 1];
+            }
+            _results1 = [];
+            for (_j = 0, _len1 = seg.length; _j < _len1; _j++) {
+              item = seg[_j];
+              s = 1 - 1 / (seg.length - 1) * i;
+              c[1] = c[0] * (1 - s * f);
+              c[2] = c[0] * (1 - s);
+              _results1.push(seg[i].style.backgroundColor = "rgb(" + ("" + (c[rgb[0]] * 100) + "%, ") + ("" + (c[rgb[1]] * 100) + "%, ") + ("" + (c[rgb[2]] * 100) + "%)"));
+            }
+            return _results1;
+        }
+      };
+      redrawSld = function() {
+        var y, yComponent;
+        switch (modeID) {
+          case 0:
+            yComponent = 2;
+            break;
+          case 1:
+            yComponent = 1;
+        }
+        y = Math.round((1 - THIS.hsv[yComponent]) * (JSColor.images.sld[1] - 1));
+        return JSColor.picker.sldM.style.backgroundPosition = "0 " + (THIS.pickerFace + THIS.pickerInset + y - Math.floor(JSColor.images.arrow[1] / 2)) + "px";
+      };
+      isPickerOwner = function() {
+        return JSColor.picker && JSColor.picker.owner === THIS;
+      };
+      blurTarget = function() {
+        if (valueElement === target) {
+          return THIS.importColor();
+        }
+      };
+      blurValue = function() {
+        if (valueElement !== target) {
+          return THIS.importColor();
+        }
+      };
+      setPad = function(e) {
+        var mpos, x, y;
+        mpos = JSColor.getRelMousePos(e);
+        x = mpos.x - THIS.pickerFace - THIS.pickerInset;
+        y = mpos.y - THIS.pickerFace - THIS.pickerInset;
+        switch (modeID) {
+          case 0:
+            return THIS.fromHSV(x * (6 / (JSColor.images.pad[0] - 1)), 1 - y / (JSColor.images.pad[1] - 1), null, leaveSld);
+          case 1:
+            return THIS.fromHSV(x * (6 / (JSColor.images.pad[0] - 1)), null, 1 - y / (JSColor.images.pad[1] - 1), leaveSld);
+        }
+      };
+      setSld = function(e) {
+        var mpos, y;
+        mpos = JSColor.getRelMousePos(e);
+        y = mpos.y - THIS.pickerFace - THIS.pickerInset;
+        switch (modeID) {
+          case 0:
+            return THIS.fromHSV(null, null, 1 - y / (JSColor.images.sld[1] - 1), leavePad);
+          case 1:
+            return THIS.fromHSV(null, 1 - y / (JSColor.images.sld[1] - 1), null, leavePad);
+        }
+      };
+      dispatchImmediateChange = function() {
+        var callback;
+        if (THIS.onImmediateChange) {
+          callback;
+
+          if (typeof THIS.onImmediateChange === 'string') {
+            callback = new Function(THIS.onImmediateChange);
+          } else {
+            callback = THIS.onImmediateChange;
+          }
+          return callback.call(THIS);
+        }
+      };
+      THIS = this;
+      modeID = this.pickerMode.toLowerCase() === 'hvs' ? 1 : 0;
+      abortBlur = false;
+      valueElement = JSColor.fetchElement(this.valueElement);
+      styleElement = JSColor.fetchElement(this.styleElement);
+      holdPad = false;
+      holdSld = false;
+      leaveValue = 1 << 0;
+      leaveStyle = 1 << 1;
+      leavePad = 1 << 2;
+      leaveSld = 1 << 3;
+      $.on(target, 'focus', function() {
+        if (THIS.pickerOnfocus) {
+          return THIS.showPicker();
+        }
+      });
+      $.on(target, 'blur', function() {
+        if (!abortBlur) {
+          window.setTimeout((function() {
+            abortBlur || blurTarget();
+            return abortBlur = false;
+          }));
+          return 0;
+        } else {
+          return abortBlur = false;
+        }
+      });
+      if (valueElement) {
+        updateField = function() {
+          THIS.fromString(valueElement.value, leaveValue);
+          return dispatchImmediateChange();
+        };
+        $.on(valueElement, 'keyup', updateField);
+        $.on(valueElement, 'input', updateField);
+        $.on(valueElement, 'blur', blurValue);
+        valueElement.setAttribute('autocomplete', 'off');
+      }
+      if (styleElement) {
+        styleElement.jscStyle = {
+          backgroundImage: styleElement.style.backgroundImage,
+          backgroundColor: styleElement.style.backgroundColor,
+          color: styleElement.style.color
+        };
+      }
+      return this.importColor();
     }
   };
 
@@ -9301,6 +10019,9 @@
     },
     addStyle: function(theme) {
       var el;
+      if (theme == null) {
+        theme = userThemes[Conf['theme']];
+      }
       $.off(d, 'DOMNodeInserted', Style.addStyle);
       if (!Conf['styleInit']) {
         if (d.head) {
@@ -9311,9 +10032,6 @@
           return $.on(d, 'DOMNodeInserted', Style.addStyle);
         }
       } else {
-        if (!theme || !theme.Author) {
-          theme = userThemes[Conf['theme']];
-        }
         if (el = $('#mascot', d.body)) {
           $.rm(el);
         }
@@ -9497,7 +10215,7 @@
       } else {
         Style.sidebarLocation = ["right", "left"];
       }
-      css = "/* dialog styling */\n.dialog.reply {\n  display: block;\n}\n.move {\n  cursor: move;\n}\nlabel,\n.favicon {\n  cursor: pointer;\n}\n.hide_thread_button:not(.hidden_thread) {\n  padding: 0 5px;\n  float: left;\n}\n.menu_button {\n  display: inline-block;\n}\n.menu_button > span,\n#mascot_hide > span {\n  border-top:   .5em solid;\n  border-right: .3em solid transparent;\n  border-left:  .3em solid transparent;\n  display: inline-block;\n  margin: 2px 2px 4px;\n  vertical-align: middle;\n}\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide input,\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#options #mascot_hide label {\n  width: 100%;\n  border-bottom: 1px solid inherit;\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n#menu {\n  position: absolute;\n  outline: none;\n}\n.themevar textarea {\n  height: 300px;\n}\n.entry {\n  border-bottom: 1px solid rgba(0,0,0,.25);\n  cursor: pointer;\n  display: block;\n  outline: none;\n  padding: 3px 7px;\n  position: relative;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.focused.entry {\n  background: rgba(255,255,255,.33);\n}\n.hasSubMenu::after {\n  content: \"\";\n  border-" + position + ": .5em solid;\n  border-top: .3em solid transparent;\n  border-bottom: .3em solid transparent;\n  display: inline-block;\n  margin: .3em;\n  position: absolute;\n  right: 3px;\n}\ndiv.subMenu.reply {\n  padding: 0;\n  position: absolute;\n  " + position + ": 100%;\n  top: -1px;\n}\n#boardTitle,\n#browse,\n#main_tab + div,\n#mascotConf input,\n#mascotConf input:" + Style.agent + "placeholder,\n#style_tab + div .suboptions,\n.center,\nh1 {\n  text-align: center;\n}\n#qr > .move {\n  overflow: hidden;\n  box-sizing: border-box;\n  " + Style.agent + "box-sizing: border-box;\n  padding: 0 2px;\n}\n#qr > .move > span {\n  float: right;\n}\n#autohide,\n.close,\n#qr select,\n#dump,\n.remove,\n.captchaimg,\n#qr div.warning {\n  cursor: pointer;\n}\n#qr select,\n#qr > form {\n  margin: 0;\n}\n#replies {\n  display: block;\n  height: 100px;\n  position: relative;\n  " + Style.agent + "user-select: none;\n  user-select: none;\n}\n#replies > div {\n  counter-reset: thumbnails;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  margin: 0;\n  padding: 0;\n  overflow: hidden;\n  position: absolute;\n  white-space: pre;\n}\n#replies > div:hover {\n  bottom: -10px;\n  overflow-x: auto;\n  z-index: 1;\n}\n.thumbnail {\n  background-color: rgba(0,0,0,.2) !important;\n  background-position: 50% 20% !important;\n  background-size: cover !important;\n  border: 1px solid #666;\n  box-sizing: border-box;\n  " + Style.agent + "box-sizing: border-box;\n  cursor: move;\n  display: inline-block;\n  height: 90px; width: 90px;\n  margin: 5px; padding: 2px;\n  opacity: .5;\n  outline: none;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + Style.agent + "transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.thumbnail:hover,\n.thumbnail:focus {\n  opacity: .9;\n}\n.thumbnail::before {\n  counter-increment: thumbnails;\n  content: counter(thumbnails);\n  color: #FFF;\n  font-weight: 700;\n  padding: 3px;\n  position: absolute;\n  top: 0;\n  right: 0;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.thumbnail.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.thumbnail.over {\n  border-color: #FFF;\n}\n.thumbnail > span {\n  color: #FFF;\n}\n.remove {\n  background: none;\n  color: #E00;\n  font-weight: 700;\n  padding: 3px;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.thumbnail > label {\n  background: rgba(0,0,0,.5);\n  color: #FFF;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.thumbnail > label > input {\n  margin: 0;\n}\n#addReply {\n  font-size: 3.5em;\n  line-height: 100px;\n}\n#addReply:hover,\n#addReply:focus {\n  color: #000;\n}\n.field {\n  " + Style.agent + "transition: color .25s, border .25s;\n}\n.field:hover,\n.field:focus {\n  outline: none;\n}\n.fitwidth img[data-md5] + img {\n  max-width: 100%;\n}\n#options #style_tab + div select,\n.fitwidth img[data-md5] + img,\n.themevar .field,\n.themevar textarea {\n  width: 100%;\n}\n#ihover,\n#mouseover,\n#navlinks,\n#overlay,\n#qr,\n#qp,\n#stats,\n#updater {\n  position: fixed;\n  z-index: 96;\n}\n#ihover {\n  max-height: 97%;\n  max-width: 75%;\n  padding-bottom: 18px;\n}\n#overlay {\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n  z-index: 1;\n}\n#options {\n  position: fixed;\n  padding: 5px;\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n}\n#options h3 {\n  margin: 0;\n}\n#theme_tab + div div:not(.selectedtheme) > div > h1 {\n  color: transparent !important;\n}\n#theme_tab + div div.selectedtheme h1 {\n  right: 11px;\n}\n#theme_tab + div > div h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  " + Style.agent + "transition: all .2s ease-in-out;\n}\n#theme_tab + div > div:not(.stylesettings) {\n  margin-bottom: 3px;\n}\n#credits {\n  float: right;\n}\n#options ul {\n  padding: 0;\n}\n#options ul li {\n  overflow: auto;\n  padding: 0 5px 0 7px;\n}\n#options ul li:nth-of-type(2n) {\n  background-color: rgba(0, 0, 0, 0.05)\n}\n#options #rice_tab + div input {\n  margin: 1px;\n}\n#options article li {\n  margin: 10px 0 10px 2em;\n}\n#options code {\n  background: hsla(0, 0%, 100%, .5);\n  color: #000;\n  padding: 0 1px;\n}\n#options .option {\n  width: 50%;\n  display: inline-block;\n}\n#options .option .optionlabel {\n  padding-left: 18px;\n}\n#options .mascots {\n  padding: 0;\n  text-align: center;\n}\n#options .mascot,\n#options .mascot > div:first-child {\n  overflow: hidden;\n  display: inline-block;\n\n}\n#options .mascot {\n  position: relative;\n  width: 200px;\n  padding: 3px;\n  height: 250px;\n  margin: 5px;\n  text-align: left;\n  border: 1px solid transparent;\n}\n#options .mascot > div:first-child {\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  position: absolute;\n  bottom: 0;\n}\n#options .mascot img {\n  max-width: 200px;\n  image-rendering: optimizeQuality;\n  vertical-align: top;\n}\n#options ul li.mascot {\n  background-color: transparent;\n}\n#mascotConf {\n  position: fixed;\n  height: 400px;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n}\n#mascotConf h2 {\n  margin: 10px 0 0;\n  font-size: 14px;\n}\n#content {\n  overflow: auto;\n  position: absolute;\n  top:    2.5em;\n  right:  5px;\n  bottom: 5px;\n  left:   5px;\n}\n#style_tab + div .suboptions ul,\n#main_tab + div ul {\n  display: inline-block;\n  vertical-align: top;\n  margin: 0 3px 6px;\n}\n#style_tab + div .suboptions ul li,\n#main_tab + div ul li {\n  text-align: left;\n}\n#style_tab + div .suboptions ul {\n  width: 370px;\n}\n#main_tab + div ul {\n  width: 200px;\n}\n.suboptions,\n#mascotcontent,\n#themecontent {\n  overflow: auto;\n  position: absolute;\n  right: 0;\n  bottom: 1.5em;\n  left: 0;\n}\n#mascotcontent,\n.suboptions {\n  top: 0;\n}\n#themecontent {\n  top: 1.5em;\n}\n#mascotcontent {\n  text-align: center;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.mascotname,\n.mascotoptions {\n  margin: 5px;\n  border-radius: 10px;\n  padding: 1px 5px;\n}\n.mascotmetadata {\n  position: absolute;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  text-align: center;\n}\n#close,\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#content textarea {\n  font-family: monospace;\n  min-height: 350px;\n  resize: vertical;\n  width: 100%;\n}\n#updater:not(:hover) {\n  border: none;\n  background: transparent;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#watcher {\n  padding-bottom: 5px;\n  position: fixed;\n  overflow: hidden;\n  white-space: nowrap;\n}\n#watcher:not(:hover) {\n  max-height: 200px;\n}\n#watcher > div {\n  max-width: 200px;\n  overflow: hidden;\n  padding-left: 5px;\n  padding-right: 5px;\n  text-overflow: ellipsis;\n}\n#watcher > .move {\n  padding-top: 5px;\n  text-decoration: underline;\n}\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#mouseover,\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  outline: 2px solid rgba(216,94,49,.7);\n}\n.quotelink.deadlink {\n  text-decoration: underline;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none;\n}\n.center,\n.replyContainer.image_expanded {\n  clear: both;\n}\n.inline {\n  display: table;\n}\ndiv.opContainer {\n  display: block;\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 rgba(255,0,0,.5);\n}\n.opContainer.filter_highlight.qphl {\n  box-shadow:\n    inset 5px 0 rgba(255,0,0,.5),\n    0 0 0 2px rgba(216,94,49,.7);\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 rgba(255,0,0,0.5);\n}\n.filter_highlight > .reply.qphl {\n  box-shadow:\n    -5px 0 rgba(255,0,0,.5),\n    0 0 0 2px rgba(216,94,49,.7)\n}\n.filtered,\n.quotelink.filtered {\n  text-decoration: line-through;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.threadContainer {\n  margin-left: 20px;\n  border-left: 1px solid black;\n}\n::" + Style.agent + "selection {\n  background: " + theme["Text"] + ";\n  color: " + theme["Background Color"] + ";\n}\nbody {\n  padding: 0;\n}\nhtml,\nbody {\n  min-height: 100%;\n}\n#exlinks-options > *,\nhtml,\nbody,\na,\nbody,\ninput,\nselect,\ntextarea {\n  font-family: '" + Conf["Font"] + "';\n}\n#qr img,\n.captcha img {\n  opacity: " + Conf["Captcha Opacity"] + ";\n}\n#boardNavDesktopFoot a[href*=\"//boards.4chan.org/\"]::after,\n#boardNavDesktopFoot a[href*=\"//boards.4chan.org/\"]::before,\n#boardNavDesktopFoot a,\n.container::before,\n.fileText span:not([class])::after,\na,\nbody,\ninput,\nselect,\ntextarea {\n  font-size: " + (parseInt(Conf["Font Size"], 10)) + "px;\n}\n.boardSubtitle,\n.boardSubtitle a {\n  font-size: " + (parseInt(Conf["Font Size"], 10) - 1) + "px;\n}\n.pages strong {\n  font-size: " + (parseInt(Conf["Font Size"], 10) + 3) + "px;\n}\n/* Cleanup */\n#absbot,\n#autohide,\n#content > [name=tab]:not(:checked) + div,\n#delform > hr,\n#ft li.fill,\n#imgControls label:first-of-type input,\n#imgControls .rice,\n#logo,\n#postForm,\n#postPassword + span,\n#qr:not(.dump) #replies,\n#qp .rice\n#qp input,\n#updater:not(:hover) > :not(.move),\n.autoPagerS,\n.board > hr:last-of-type,\n" + (!Conf["Board Subtitle"] ? ".boardSubtitle," : "") + "\n.closed,\n.deleteform,\n.dump > form > label,\n.entry:not(.focused) > .subMenu,\n.error:empty,\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.forwarded,\n.hasSubMenu:not(.focused) > .subMenu,\n.hidden_thread > .summary,\n.inline input,\n.mobile,\n.navLinksBot,\n.next,\n.postInfo input,\n.postInfo .rice,\n.postingMode,\n.prev,\n.qrHeader,\n.replyContainer > .hide_reply_button.stub ~ .reply,\n.replymode,\n.rules,\n.sideArrows:not(.hide_reply_button),\n.stub ~ *,\n.stylechanger,\n.thread > .hidden_thread ~ *,\n.warnicon,\n.warning:empty,\n[hidden],\nbody > .postingMode ~ #delform hr,\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] ~ .pagelist,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr,\nbody > script + hr + div,\ndiv.reply[hidden],\nhtml body > span[style=\"left: 5px; position: absolute;\"]:nth-of-type(0),\ntable[style=\"text-align:center;width:100%;height:300px;\"] {\n  display: none !important;\n}\ndiv.post > blockquote .prettyprint span {\n  font-family: monospace;\n}\ndiv.post div.file .fileThumb {\n  float: left;\n  margin: 3px 20px 0;\n}\na {\n  outline: 0;\n}\n#boardNavDesktop,\n#boardNavDesktop a,\n#boardNavDesktopFoot a,\n#count,\n#imageType,\n#imageType option\n#imgControls,\n#navtopright a[href=\"javascript:;\"],\n#postcount,\n#stats,\n#timer,\n#updater,\n.pages a,\n.pages strong,\n.quotelink.deadlink,\nbody:not([class]) a[href=\"javascript:;\"],\ninput,\nlabel {\n  text-decoration: none;\n}\n#credits a,\n.abbr a,\n.backlink:not(.filtered),\n.chanlinkify,\n.file a,\n.pages,\n.pages a,\n.quotejs,\n.quotelink:not(.filtered),\n.quotelink:not(.filtered),\n.useremail,\na,\na.deadlink,\na[href*=\"//dis\"],\na[href*=res],\nspan.postNum > .replylink {\n  text-decoration: " + (Conf["Underline Links"] ? "underline" : "none") + ";\n}\n.filtered {\n  text-decoration: line-through;\n}\n/* Z-INDEXES */\n#mouseover {\n  z-index: 999 !important;\n}\n#mascotConf,\n#options.reply.dialog,\n#themeConf {\n  z-index: 998 !important;\n}\n#qp {\n  z-index: 104 !important;\n}\n#ihover,\n#overlay,\n#updater:hover,\n.exPopup,\nhtml .subMenu {\n  z-index: 102 !important;\n}\n#navtopright .exlinksOptionsLink::after,\n#navtopright .settingsWindowLink::after {\n  z-index: 101 !important;\n}\n#imgControls {\n  z-index: 100 !important;\n}\n#autoPagerBorderPaging,\n#boardNavDesktop,\n#menu.reply.dialog,\n#navlinks,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  z-index: 94 !important;\n}\n.fileThumb img + img {\n  position: relative;\n  z-index: " + (Conf["Images Overlap Post Form"] ? "90" : "1") + " !important;\n}\n#stats,\n#updater {\n  z-index: 10 !important;\n}\n#navtopright {\n  z-index: 6 !important;\n}\n#boardTitle,\n#watcher,\n#watcher::after,\n.boardBanner,\n.menu_button,\n.sideArrows {\n  z-index: 4 !important;\n}\n#globalMessage::after,\n.boardBanner,\n.replyhider a {\n  z-index: 1 !important;\n}\ndiv.post,\ndiv.post.highlight {\n  z-index: 0 !important;\n  " + Style.agent + "box-sizing: border-box;\n  box-sizing: border-box;\n}\n#navtopright .exlinksOptionsLink::after,\n#navtopright .settingsWindowLink::after,\ndiv.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#imgControls label:first-of-type::after {\n  position: fixed;\n  display: block;\n  width: 15px;\n  height: 15px;\n  content: \" \";\n  overflow: hidden;\n  background-image: url('" + icons + "');\n  opacity: 0.5;\n}\n#navtopright .settingsWindowLink::after {\n  background-position: 0 0;\n}\ndiv.navLinks > a:first-of-type::after {\n  background-position: 0 -15px;\n}\n#watcher::after {\n  background-position: 0 -30px;\n}\n#globalMessage::after {\n  background-position: 0 -45px;\n}\n#boardNavDesktopFoot::after {\n  background-position: 0 -60px;\n}\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  background-position: 0 -75px;\n}\n#imgControls label:first-of-type::after {\n  position: static;\n  background-position: 0 -90px;\n}\n#navtopright .exlinksOptionsLink::after {\n  background-position: 0 -105px;\n}\n#boardNavDesktopFoot:hover::after,\n#globalMessage:hover::after,\n#imgControls label:hover:first-of-type::after,\n#navlinks a:hover,\n#navtopright .settingsWindowLink:hover::after,\n#navtopright .exlinksOptionsLink:hover::after,\n#qr #qrtab,\n#watcher:hover::after,\n.thumbnail#selected,\nbody > a[style=\"cursor: pointer; float: right;\"]:hover::after,\ndiv.navLinks > a:first-of-type:hover::after {\n  opacity: 1;\n}\n#boardTitle {\n  font-size: 30px;\n  font-weight: 400;\n}\n.boardBanner {\n  line-height: 0;\n}\nhr {\n  padding: 0;\n  height: 0;\n  width: 100%;\n  clear: both;\n  border: none;\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n.boxcontent > hr,\n.entry:last-child,\n.pages,\na.forwardlink,\nh3,\nimg,\ntable.reply[style^=\"clear: both\"] {\n  border: none;\n}\n.boxcontent input {\n  height: 18px;\n  vertical-align: bottom;\n  margin-right: 1px;\n}\n/* Navigation */\n" + (Conf["Custom Navigation"] ? "" : "#boardNavDesktop,") + "\n.pages /* Bottom Navigation */ {\n  font-size: 0;\n  color: transparent;\n  width: auto;\n}\n.pages {\n  text-align: " + Conf["Pagination Alignment"] + ";\n}\n#boardNavDesktop {\n  text-align: " + Conf["Navigation Alignment"] + ";\n  width: auto;\n  padding-right: 0px;\n  margin-right: 0px;\n}\n#boardNavDesktopFoot {\n  visibility: visible;\n  position: fixed;\n  " + Style.sidebarLocation[0] + ": 2px;\n  bottom: auto;\n  color: transparent;\n  font-size: 0;\n  border-width: 1px;\n  text-align: center;\n  height: 0;\n  width: " + (248 + Style.sidebarOffsetW) + "px !important;\n  overflow: hidden;\n  " + Style.agent + "box-sizing: border-box;\n  box-sizing: border-box;\n}\nimg.topad,\nimg.middlead,\nimg.bottomad {\n  opacity: 0.3;\n}\nimg.topad:hover,\nimg.middlead:hover,\nimg.bottomad:hover {\n  opacity: 1;\n  " + Style.agent + "transition: opacity .3s linear;\n}\n" + (!Conf["Custom Navigation"] ? "#boardNavDesktop a," : "") + "\n.pages a,\n.pages strong {\n  display: inline-block;\n  border: none;\n  text-align: center;\n  margin: 0 1px 0 2px;\n}\n.pages {\n  word-spacing: 10px;\n}\n/* moots announcements */\n#globalMessage {\n  text-align: center;\n  font-weight: 200;\n}\n.pages strong,\na,\n.new {\n  " + Style.agent + "transition: background .1s linear;\n}\n/* Post Form */\n#qr div.captchainput {\n  float: left;\n}\n#qr div.captchainput,\n#file {\n  overflow: hidden;\n}\n/* Formatting for all postarea elements */\n#browse,\n#file {\n  line-height: 17px;\n}\n#browse,\n#file,\n#threadselect select {\n  cursor: pointer;\n  display: inline-block;\n}\n#threadselect select,\ninput:not([type=radio]),\n.field,\ninput[type=\"submit\"] {\n  height: 20px;\n}\n#qr .warning {\n  min-height: 20px;\n}\n#qr .warning,\n#threadselect select,\ninput,\n.field,\ninput[type=\"submit\"] {\n  vertical-align: bottom;\n  " + Style.agent + "box-sizing: border-box;\n  box-sizing: border-box;\n  padding: 1px;\n}\n#browse,\ninput[type=\"submit\"] {\n  height: 20px;\n  padding: 0;\n}\n#qr input[type=\"file\"] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n/* Image Hover and Image Expansion */\n#ihover {\n  max-width:85%;\n  max-height:85%;\n}\n.fileText ~ a > img + img {\n  position: relative;\n  top: 0px;\n}\n#imageType {\n  border: none;\n  width: 90px;\n  position: relative;\n  bottom: 1px;\n}\n/* #qr dimensions */\n#qr {\n  height: auto;\n}\n/* Posts */\n#delform .fileText + br + a[target=\"_blank\"] img + img {\n  margin: 0 0 25px;\n}\n.fileText {\n  margin-top: 17px;\n}\n/* Fixes text spoilers */\n.spoiler:not(:hover),\n.spoiler:not(:hover) * {\n  color: rgb(0,0,0) !important;\n  background-color: rgb(0,0,0) !important;\n  text-shadow: none !important;\n}\ndiv.thread {\n  padding: 0;\n  position: relative;\n  " + (!Conf['Images Overlap Post Form'] ? "z-index: 0;" : "") + "\n}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n}\n/* Remove default \"inherit\" background declaration */\n.span.subject,\n.subject,\n.name,\n.postertrip {\n  background: transparent;\n}\n.name {\n  font-weight: 700;\n}\n/* Addons and such */\n#copyright,\n#boardNavDesktop a,\n#qr td,\n#qr tr[height=\"73\"]:nth-of-type(2),\n.menubutton a,\n.pages td,\ntd[style=\"padding-left: 7px;\"],\ndiv[id^=\"qr\"] tr[height=\"73\"]:nth-of-type(2) {\n  padding: 0;\n}\n#navtopright {\n  position: fixed;\n  bottom: -1000px;\n  left: -1000px;\n}\n/* Expand Images */\n#imgControls {\n  width: 15px;\n  height: 20px;\n  overflow: hidden;\n}\n#imgContainer {\n  width: 110px;\n  float: " + Style.sidebarLocation[0] + ";\n}\n#imgControls:hover {\n  width: 110px;\n}\n#imgControls label {\n  font-size: 0;\n  color: transparent;\n  float: " + Style.sidebarLocation[0] + ";\n}\n#imgControls select {\n  float: " + Style.sidebarLocation[1] + ";\n}\n#imgControls select > option {\n  font-size: 80%;\n}\n/* Reply Previews */\n#mouseover,\n#qp {\n  max-width: 70%;\n}\n#qp .replyContainer,\n#qp .opContainer {\n  visibility: visible;\n}\n#qp div.op {\n  display: table;\n}\n#qp div.post {\n  padding: 2px 6px;\n}\n#qp div.post img {\n  max-width: 300px;\n  height: auto;\n}\ndiv.navLinks {\n  visibility: hidden;\n  height: 0;\n  width: 0;\n  overflow: hidden;\n}\n/* AutoPager */\n#autoPagerBorderPaging {\n  position: fixed !important;\n  right: 300px !important;\n  bottom: 0px;\n}\n#options ul {\n  margin: 0;\n  margin-bottom: 6px;\n  padding: 3px;\n}\n#stats,\n#navlinks {\n  left: auto !important;\n  bottom: auto !important;\n  text-align: right;\n  padding: 0;\n  border: 0;\n  border-radius: 0;\n}\n#prefetch {\n  position: fixed;\n}\n#stats {\n  position: fixed;\n  cursor: default;\n}\n#updater {\n  border: 0;\n  overflow: hidden;\n  background: none;\n  text-align: right;\n}\n#watcher {\n  padding: 1px 0;\n  border-radius: 0;\n}\n#options .move,\n#updater .move,\n#watcher .move,\n#stats .move {\n  cursor: default !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"] {\n  position: fixed;\n  top: -1000px;\n  left: -1000px;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] {\n  display: block;\n  position: fixed !important;\n  top: 117px !important;\n  " + Style.sidebarLocation[1] + ": 4px !important;\n  " + Style.sidebarLocation[0] + ": " + (252 + Style.sidebarOffsetW) + "px !important;\n  width: auto !important;\n  margin: 0 !important;\n  z-index: 2;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + theme["Body Background"] + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n  vertical-align: top;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] {\n  height: 95% !important;\n  margin-top: 5px !important;\n  margin-bottom: 5px !important;\n}\n#fs_status {\n  width: auto !important;\n  height: auto !important;\n  background: " + theme["Dialog Background"] + " !important;\n  padding: 10px !important;\n  white-space: normal !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data * {\n  border-color: " + theme["Reply Border"] + " !important;\n}\n#fs_status a {\n  color: " + theme["Text"] + " !important;\n}\n[alt=\"sticky\"] + a::before {\n  content: \"Sticky | \";\n}\n[alt=\"closed\"] + a::before {\n  content: \"Closed | \";\n}\n[alt=\"closed\"] + a {\n  text-decoration: line-through;\n}\n.identityIcon,\nimg[alt=\"Sticky\"],\nimg[alt=\"Closed\"] {\n  vertical-align: top;\n}\n.inline,\n#qp {\n  background-color: transparent;\n  border: none;\n}\ninput[type=\"submit\"]:hover {\n  cursor: pointer;\n}\n#qr input:focus:" + Style.agent + "placeholder,\n#qr textarea:focus:" + Style.agent + "placeholder {\n  color: transparent;\n}\n#boardNavDesktop .current {\n  font-weight: bold;\n}\ndiv.pagelist {\n  background: none;\n  border: none;\n}\n.focused.entry {\n  background-color: transparent;\n}\n#menu.reply.dialog,\nhtml .subMenu {\n  padding: 0px;\n}\n.textarea {\n  position: relative;\n}\n#qr #charCount {\n  color: " + (theme["Dark Theme"] ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)") + ";\n  background: none;\n  font-size: 10px;\n  pointer-events: none;\n  position: absolute;\n  right: 2px;\n  top: auto;\n  bottom: 0;\n  height: 20px;\n}\n#qr #charCount.warning {\n  color: rgb(255,0,0);\n  padding: 0;\n  margin: 0;\n  border: none;\n  background: none;\n}\n/* Position and Dimensions of the #qr */\n#showQR {\n  display: block;\n  " + Style.sidebarLocation[0] + ": 2px;\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n  z-index: 5;\n  background-color: transparent;\n  text-align: center;\n  position: fixed;\n  top: auto;\n  bottom: 2px !important;\n}\n/* Width and height of all #qr elements (excluding some captcha elements) */\n#dump {\n  width: 20px;\n  margin: 0;\n  font-size: 14px;\n  outline: none;\n  padding: 0 0 3px;\n}\n.captchaimg {\n  line-height: 0;\n}\n#qr div {\n  min-width: 0;\n}\n#updater input,\n#options input,\n#qr,\ntable.reply[style^=\"clear: both\"] {\n  border: none;\n}\n#delform > div:not(.thread) select,\n.pages input[type=\"submit\"] {\n  margin: 0;\n  height: 17px;\n}\n.prettyprint {\n  display: block;\n  white-space: pre-wrap;\n  border-radius: 2px;\n  max-width: 600px;\n  overflow-x: auto;\n  padding: 3px;\n}\n#themeConf {\n  position: fixed;\n  " + Style.sidebarLocation[1] + ": 2px;\n  " + Style.sidebarLocation[0] + ": auto;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n}\n#themebar input {\n  width: 30%;\n}\nhtml {\n  background: " + (theme["Background Color"] || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n#content,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + theme["Background Color"] + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n.suboptions {\n  padding: 5px;\n}\n#boardTitle,\n#prefetch,\n#showQR,\n#spoilerLabel,\n#stats,\n#updater .move {\n  text-shadow:\n    1px 1px 1px " + theme["Background Color"] + ",\n    -1px 1px 1px " + theme["Background Color"] + ",\n    1px -1px 1px " + theme["Background Color"] + ",\n    -1px -1px 1px " + theme["Background Color"] + "\n}\n#browse,\n#ft li,\n#ft ul,\n#options .dialog,\n#exlinks-options,\n#qrtab,\n#watcher,\n#updater:hover,\n.box-outer,\n.boxbar,\n.top-box,\nhtml body span[style=\"left: 5px; position: absolute;\"] a,\ninput[type=\"submit\"],\n#options.reply.dialog,\ninput[value=\"Report\"] {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n#options ul li.mascot.enabled {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#file,\n#options input,\n#threadselect select,\n.dump #dump:not(:hover):not(:focus),\ninput,\ninput.field,\nselect,\ntextarea,\ntextarea.field {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n  " + Style.agent + "transition: all .2s linear;\n}\n#dump:hover,\n#browse:hover,\n#file:hover,\ninput:hover,\ninput.field:hover,\ninput[type=\"submit\"]:hover,\nselect:hover,\ntextarea:hover,\ntextarea.field:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n  " + Style.agent + "transition: all .2s linear;\n}\n#dump:active,\n#dump:focus,\ninput:focus,\ninput.field:focus,\ninput[type=\"submit\"]:focus,\nselect:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#mouseover,\n#qp .replyContainer div.post,\n#qp .opContainer div.post,\n.replyContainer div.reply {\n  border: 1px solid " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.exblock.reply,\n.replyContainer div.reply.highlight,\n.replyContainer div.reply:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#boardNavDesktop,\n.pages {\n  background: " + theme["Navigation Background"] + ";\n  border: 1px solid " + theme["Navigation Border"] + ";\n}\n#delform {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#themeConf,\n#watcher,\n#watcher:hover,\ndiv.subMenu,\nbody > a[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n.mascotname,\n.mascotoptions {\n  background: " + theme["Dialog Background"] + ";\n}\n.inline .post {\n  box-shadow: " + (Conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n  padding-bottom: 2px;\n}\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n}\n[style='color: red !important;'] *,\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\na,\n#dump,\n.entry,\ndiv.post > blockquote a[href^=\"//\"],\n.sideArrows a,\nspan.postNum > .replylink {\n  color: " + theme["Links"] + ";\n}\n#navlinks a {\n  color: rgb(" + (theme["Dark Theme"] ? "230,230,230" : "130,130,130") + ");\n  opacity: 0.5;\n  display: inline-block;\n  font-size: 15px;\n  height: 15px;\n  text-align: center;\n  width: 15px;\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n  font-weight: 600;\n}\n.dateTime {\n  color: " + theme["Timestamps"] + " !important;\n}\n#browse,\n#updater:not(:hover),\n#updater:not(:hover) #count:not(.new)::after,\n.summary,\nbody > form,\nbody,\nhtml body span[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea,\n.abbr,\n.boxbar,\n.boxcontent,\n.pages strong,\n.reply,\n.reply.highlight,\n#boardNavDesktop .title,\n#imgControls label::after,\n#updater #count:not(.new)::after,\n#qr > form > label::after,\nspan.pln {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#options ul {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\na.backlink {\n  color: " + theme["Backlinks"] + ";\n}\nspan.quote > a.quotelink,\na.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\ndiv.subMenu,\n#menu,\n#qp .opContainer,\n#qp .replyContainer {\n  box-shadow: " + (Conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  cursor: pointer;\n  width: 10px;\n  height: 10px;\n  margin: 2px 3px;\n  display: inline-block;\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n  vertical-align: bottom;\n}\n#qr label input,\n#updater input,\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#boardNavDesktop a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  background: " + theme["Checkbox Checked Background"] + ";\n  background-image: url(" + (theme["Dark Theme"] ? Icons.header.png + "AkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" : Icons.header.png + "AkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==") + ");\n  background-attachment: scroll;\n  background-repeat: no-repeat;\n  background-position: bottom right;\n}\na:hover,\n#dump:hover,\n.entry:hover,\ndiv.post > blockquote a[href^=\"//\"]:hover,\n.sideArrows a:hover,\ndiv.post div.postInfo span.postNum a:hover,\nspan.postNum > .replylink:hover,\n.nameBlock > .useremail > .name:hover,\n.nameBlock > .useremail > .postertrip:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#boardNavDesktop a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name {\n  color: " + theme["Names"] + " !important;\n}\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\n.nameBlock > .useremail > .postertrip,\n.nameBlock > .useremail > .name {\n  color: " + theme["Emails"] + ";\n}\n.nameBlock > .useremail > .name,\n.name {\n  font-weight: 600;\n}\na.forwardlink {\n  border-bottom: 1px dashed;\n}\n.qphl {\n  outline-color: " + theme["Backlinked Reply Outline"] + ";\n}\n.placeholder,\n#qr input:" + Style.agent + "placeholder,\n#qr textarea:" + Style.agent + "placeholder {\n  color: " + (theme["Dark Theme"] ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)") + " !important;\n}\n.boxcontent dd,\n#options ul {\n  border-color: " + (theme["Dark Theme"] ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)") + ";\n}\n#options li {\n  border-top: 1px solid " + (theme["Dark Theme"] ? "rgba(255,255,255,0.025)" : "rgba(0,0,0,0.05)") + ";\n}\n#mascot img {\n  " + Style.agent + "transform: scaleX(" + (Style.sidebarLocation[0] === "left" ? "-" : "") + "1);\n  " + Style.agent + "user-select: none;\n}\n" + theme["Custom CSS"];
+      css = "/* dialog styling */\n.dialog.reply {\n  display: block;\n}\n.move {\n  cursor: move;\n}\nlabel,\n.favicon {\n  cursor: pointer;\n}\n.hide_thread_button:not(.hidden_thread) {\n  padding: 0 5px;\n  float: left;\n}\n.menu_button {\n  display: inline-block;\n}\n.menu_button > span,\n#mascot_hide > span {\n  border-top:   .5em solid;\n  border-right: .3em solid transparent;\n  border-left:  .3em solid transparent;\n  display: inline-block;\n  margin: 2px 2px 4px;\n  vertical-align: middle;\n}\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide input,\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#options #mascot_hide label {\n  width: 100%;\n  border-bottom: 1px solid inherit;\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n#menu {\n  position: absolute;\n  outline: none;\n}\n.themevar textarea {\n  height: 300px;\n}\n.entry {\n  border-bottom: 1px solid rgba(0,0,0,.25);\n  cursor: pointer;\n  display: block;\n  outline: none;\n  padding: 3px 7px;\n  position: relative;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.focused.entry {\n  background: rgba(255,255,255,.33);\n}\n.hasSubMenu::after {\n  content: \"\";\n  border-" + position + ": .5em solid;\n  border-top: .3em solid transparent;\n  border-bottom: .3em solid transparent;\n  display: inline-block;\n  margin: .3em;\n  position: absolute;\n  right: 3px;\n}\ndiv.subMenu.reply {\n  padding: 0;\n  position: absolute;\n  " + position + ": 100%;\n  top: -1px;\n}\n#boardTitle,\n#browse,\n#main_tab + div,\n#mascotConf input,\n#mascotConf input:" + Style.agent + "placeholder,\n#style_tab + div .suboptions,\n.center,\nh1 {\n  text-align: center;\n}\n#qr > .move {\n  overflow: hidden;\n  box-sizing: border-box;\n  " + Style.agent + "box-sizing: border-box;\n  padding: 0 2px;\n}\n#qr > .move > span {\n  float: right;\n}\n#autohide,\n.close,\n#qr select,\n#dump,\n.remove,\n.captchaimg,\n#qr div.warning {\n  cursor: pointer;\n}\n#qr select,\n#qr > form {\n  margin: 0;\n}\n#replies {\n  display: block;\n  height: 100px;\n  position: relative;\n  " + Style.agent + "user-select: none;\n  user-select: none;\n}\n#replies > div {\n  counter-reset: thumbnails;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  margin: 0;\n  padding: 0;\n  overflow: hidden;\n  position: absolute;\n  white-space: pre;\n}\n#replies > div:hover {\n  bottom: -10px;\n  overflow-x: auto;\n  z-index: 1;\n}\n.thumbnail {\n  background-color: rgba(0,0,0,.2) !important;\n  background-position: 50% 20% !important;\n  background-size: cover !important;\n  border: 1px solid #666;\n  box-sizing: border-box;\n  " + Style.agent + "box-sizing: border-box;\n  cursor: move;\n  display: inline-block;\n  height: 90px; width: 90px;\n  margin: 5px; padding: 2px;\n  opacity: .5;\n  outline: none;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + Style.agent + "transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.thumbnail:hover,\n.thumbnail:focus {\n  opacity: .9;\n}\n.thumbnail::before {\n  counter-increment: thumbnails;\n  content: counter(thumbnails);\n  color: #FFF;\n  font-weight: 700;\n  padding: 3px;\n  position: absolute;\n  top: 0;\n  right: 0;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.thumbnail.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.thumbnail.over {\n  border-color: #FFF;\n}\n.thumbnail > span {\n  color: #FFF;\n}\n.remove {\n  background: none;\n  color: #E00;\n  font-weight: 700;\n  padding: 3px;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.thumbnail > label {\n  background: rgba(0,0,0,.5);\n  color: #FFF;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.thumbnail > label > input {\n  margin: 0;\n}\n#addReply {\n  font-size: 3.5em;\n  line-height: 100px;\n}\n#addReply:hover,\n#addReply:focus {\n  color: #000;\n}\n.field {\n  " + Style.agent + "transition: color .25s, border .25s;\n}\n.field:hover,\n.field:focus {\n  outline: none;\n}\n.fitwidth img[data-md5] + img {\n  max-width: 100%;\n}\n#options #style_tab + div select,\n.fitwidth img[data-md5] + img,\n.themevar .field,\n.themevar textarea {\n  width: 100%;\n}\n.themevar .colorfield {\n  width: 75%;\n}\n.themevar .color {\n  width: 25%;\n  color: transparent !important;\n}\n#ihover,\n#mouseover,\n#navlinks,\n#overlay,\n#qr,\n#qp,\n#stats,\n#updater {\n  position: fixed;\n  z-index: 96;\n}\n#ihover {\n  max-height: 97%;\n  max-width: 75%;\n  padding-bottom: 18px;\n}\n#overlay {\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n  z-index: 1;\n}\n#options {\n  position: fixed;\n  padding: 5px;\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n}\n#options h3 {\n  margin: 0;\n}\n#theme_tab + div div:not(.selectedtheme) > div > h1 {\n  color: transparent !important;\n}\n#theme_tab + div div.selectedtheme h1 {\n  right: 11px;\n}\n#theme_tab + div > div h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  " + Style.agent + "transition: all .2s ease-in-out;\n}\n#theme_tab + div > div:not(.stylesettings) {\n  margin-bottom: 3px;\n}\n#credits {\n  float: right;\n}\n#options ul {\n  padding: 0;\n}\n#options ul li {\n  overflow: auto;\n  padding: 0 5px 0 7px;\n}\n#options ul li:nth-of-type(2n) {\n  background-color: rgba(0, 0, 0, 0.05)\n}\n#options #rice_tab + div input {\n  margin: 1px;\n}\n#options article li {\n  margin: 10px 0 10px 2em;\n}\n#options code {\n  background: hsla(0, 0%, 100%, .5);\n  color: #000;\n  padding: 0 1px;\n}\n#options .option {\n  width: 50%;\n  display: inline-block;\n}\n#options .option .optionlabel {\n  padding-left: 18px;\n}\n#options .mascots {\n  padding: 0;\n  text-align: center;\n}\n#options .mascot,\n#options .mascot > div:first-child {\n  overflow: hidden;\n  display: inline-block;\n\n}\n#options .mascot {\n  position: relative;\n  width: 200px;\n  padding: 3px;\n  height: 250px;\n  margin: 5px;\n  text-align: left;\n  border: 1px solid transparent;\n}\n#options .mascot > div:first-child {\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  position: absolute;\n  bottom: 0;\n}\n#options .mascot img {\n  max-width: 200px;\n  image-rendering: optimizeQuality;\n  vertical-align: top;\n}\n#options ul li.mascot {\n  background-color: transparent;\n}\n#mascotConf {\n  position: fixed;\n  height: 400px;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n}\n#mascotConf h2 {\n  margin: 10px 0 0;\n  font-size: 14px;\n}\n#content {\n  overflow: auto;\n  position: absolute;\n  top:    2.5em;\n  right:  5px;\n  bottom: 5px;\n  left:   5px;\n}\n#style_tab + div .suboptions ul,\n#main_tab + div ul {\n  display: inline-block;\n  vertical-align: top;\n  margin: 0 3px 6px;\n}\n#style_tab + div .suboptions ul li,\n#main_tab + div ul li {\n  text-align: left;\n}\n#style_tab + div .suboptions ul {\n  width: 370px;\n}\n#main_tab + div ul {\n  width: 200px;\n}\n.suboptions,\n#mascotcontent,\n#themecontent {\n  overflow: auto;\n  position: absolute;\n  right: 0;\n  bottom: 1.5em;\n  left: 0;\n}\n#mascotcontent,\n.suboptions {\n  top: 0;\n}\n#themecontent {\n  top: 1.5em;\n}\n#mascotcontent {\n  text-align: center;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.mascotname,\n.mascotoptions {\n  margin: 5px;\n  border-radius: 10px;\n  padding: 1px 5px;\n}\n.mascotmetadata {\n  position: absolute;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  text-align: center;\n}\n#close,\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#content textarea {\n  font-family: monospace;\n  min-height: 350px;\n  resize: vertical;\n  width: 100%;\n}\n#updater:not(:hover) {\n  border: none;\n  background: transparent;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#watcher {\n  padding-bottom: 5px;\n  position: fixed;\n  overflow: hidden;\n  white-space: nowrap;\n}\n#watcher:not(:hover) {\n  max-height: 200px;\n}\n#watcher > div {\n  max-width: 200px;\n  overflow: hidden;\n  padding-left: 5px;\n  padding-right: 5px;\n  text-overflow: ellipsis;\n}\n#watcher > .move {\n  padding-top: 5px;\n  text-decoration: underline;\n}\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#mouseover,\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  outline: 2px solid rgba(216,94,49,.7);\n}\n.quotelink.deadlink {\n  text-decoration: underline;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none;\n}\n.center,\n.replyContainer.image_expanded {\n  clear: both;\n}\n.inline {\n  display: table;\n}\ndiv.opContainer {\n  display: block;\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 rgba(255,0,0,.5);\n}\n.opContainer.filter_highlight.qphl {\n  box-shadow:\n    inset 5px 0 rgba(255,0,0,.5),\n    0 0 0 2px rgba(216,94,49,.7);\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 rgba(255,0,0,0.5);\n}\n.filter_highlight > .reply.qphl {\n  box-shadow:\n    -5px 0 rgba(255,0,0,.5),\n    0 0 0 2px rgba(216,94,49,.7)\n}\n.filtered,\n.quotelink.filtered {\n  text-decoration: line-through;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.threadContainer {\n  margin-left: 20px;\n  border-left: 1px solid black;\n}\n::" + Style.agent + "selection {\n  background: " + theme["Text"] + ";\n  color: " + theme["Background Color"] + ";\n}\nbody {\n  padding: 0;\n}\nhtml,\nbody {\n  min-height: 100%;\n}\n#exlinks-options > *,\nhtml,\nbody,\na,\nbody,\ninput,\nselect,\ntextarea {\n  font-family: '" + Conf["Font"] + "';\n}\n#qr img,\n.captcha img {\n  opacity: " + Conf["Captcha Opacity"] + ";\n}\n#boardNavDesktopFoot a[href*=\"//boards.4chan.org/\"]::after,\n#boardNavDesktopFoot a[href*=\"//boards.4chan.org/\"]::before,\n#boardNavDesktopFoot a,\n.container::before,\n.fileText span:not([class])::after,\na,\nbody,\ninput,\nselect,\ntextarea {\n  font-size: " + (parseInt(Conf["Font Size"], 10)) + "px;\n}\n.boardSubtitle,\n.boardSubtitle a {\n  font-size: " + (parseInt(Conf["Font Size"], 10) - 1) + "px;\n}\n.pages strong {\n  font-size: " + (parseInt(Conf["Font Size"], 10) + 3) + "px;\n}\n/* Cleanup */\n#absbot,\n#autohide,\n#content > [name=tab]:not(:checked) + div,\n#delform > hr,\n#ft li.fill,\n#imgControls label:first-of-type input,\n#imgControls .rice,\n#logo,\n#postForm,\n#postPassword + span,\n#qr:not(.dump) #replies,\n#qp .rice\n#qp input,\n#updater:not(:hover) > :not(.move),\n.autoPagerS,\n.board > hr:last-of-type,\n" + (!Conf["Board Subtitle"] ? ".boardSubtitle," : "") + "\n.closed,\n.deleteform,\n.dump > form > label,\n.entry:not(.focused) > .subMenu,\n.error:empty,\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.forwarded,\n.hasSubMenu:not(.focused) > .subMenu,\n.hidden_thread > .summary,\n.inline input,\n.mobile,\n.navLinksBot,\n.next,\n.postInfo input,\n.postInfo .rice,\n.postingMode,\n.prev,\n.qrHeader,\n.replyContainer > .hide_reply_button.stub ~ .reply,\n.replymode,\n.rules,\n.sideArrows:not(.hide_reply_button),\n.stub ~ *,\n.stylechanger,\n.thread > .hidden_thread ~ *,\n.warnicon,\n.warning:empty,\n[hidden],\nbody > .postingMode ~ #delform hr,\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] ~ .pagelist,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr,\nbody > script + hr + div,\ndiv.reply[hidden],\nhtml body > span[style=\"left: 5px; position: absolute;\"]:nth-of-type(0),\ntable[style=\"text-align:center;width:100%;height:300px;\"] {\n  display: none !important;\n}\ndiv.post > blockquote .prettyprint span {\n  font-family: monospace;\n}\ndiv.post div.file .fileThumb {\n  float: left;\n  margin: 3px 20px 0;\n}\na {\n  outline: 0;\n}\n#boardNavDesktop,\n#boardNavDesktop a,\n#boardNavDesktopFoot a,\n#count,\n#imageType,\n#imageType option\n#imgControls,\n#navtopright a[href=\"javascript:;\"],\n#postcount,\n#stats,\n#timer,\n#updater,\n.pages a,\n.pages strong,\n.quotelink.deadlink,\nbody:not([class]) a[href=\"javascript:;\"],\ninput,\nlabel {\n  text-decoration: none;\n}\n#credits a,\n.abbr a,\n.backlink:not(.filtered),\n.chanlinkify,\n.file a,\n.pages,\n.pages a,\n.quotejs,\n.quotelink:not(.filtered),\n.quotelink:not(.filtered),\n.useremail,\na,\na.deadlink,\na[href*=\"//dis\"],\na[href*=res],\nspan.postNum > .replylink {\n  text-decoration: " + (Conf["Underline Links"] ? "underline" : "none") + ";\n}\n.filtered {\n  text-decoration: line-through;\n}\n/* Z-INDEXES */\n#mouseover {\n  z-index: 999 !important;\n}\n#mascotConf,\n#options.reply.dialog,\n#themeConf {\n  z-index: 998 !important;\n}\n#qp {\n  z-index: 104 !important;\n}\n#ihover,\n#overlay,\n#updater:hover,\n.exPopup,\nhtml .subMenu {\n  z-index: 102 !important;\n}\n#navtopright .exlinksOptionsLink::after,\n#navtopright .settingsWindowLink::after {\n  z-index: 101 !important;\n}\n#imgControls {\n  z-index: 100 !important;\n}\n#autoPagerBorderPaging,\n#boardNavDesktop,\n#menu.reply.dialog,\n#navlinks,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  z-index: 94 !important;\n}\n.fileThumb img + img {\n  position: relative;\n  z-index: " + (Conf["Images Overlap Post Form"] ? "90" : "1") + " !important;\n}\n#stats,\n#updater {\n  z-index: 10 !important;\n}\n#navtopright {\n  z-index: 6 !important;\n}\n#boardTitle,\n#watcher,\n#watcher::after,\n.boardBanner,\n.menu_button,\n.sideArrows {\n  z-index: 4 !important;\n}\n#globalMessage::after,\n.boardBanner,\n.replyhider a {\n  z-index: 1 !important;\n}\ndiv.post,\ndiv.post.highlight {\n  z-index: 0 !important;\n  " + Style.agent + "box-sizing: border-box;\n  box-sizing: border-box;\n}\n#navtopright .exlinksOptionsLink::after,\n#navtopright .settingsWindowLink::after,\ndiv.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#imgControls label:first-of-type::after {\n  position: fixed;\n  display: block;\n  width: 15px;\n  height: 15px;\n  content: \" \";\n  overflow: hidden;\n  background-image: url('" + icons + "');\n  opacity: 0.5;\n}\n#navtopright .settingsWindowLink::after {\n  background-position: 0 0;\n}\ndiv.navLinks > a:first-of-type::after {\n  background-position: 0 -15px;\n}\n#watcher::after {\n  background-position: 0 -30px;\n}\n#globalMessage::after {\n  background-position: 0 -45px;\n}\n#boardNavDesktopFoot::after {\n  background-position: 0 -60px;\n}\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  background-position: 0 -75px;\n}\n#imgControls label:first-of-type::after {\n  position: static;\n  background-position: 0 -90px;\n}\n#navtopright .exlinksOptionsLink::after {\n  background-position: 0 -105px;\n}\n#boardNavDesktopFoot:hover::after,\n#globalMessage:hover::after,\n#imgControls label:hover:first-of-type::after,\n#navlinks a:hover,\n#navtopright .settingsWindowLink:hover::after,\n#navtopright .exlinksOptionsLink:hover::after,\n#qr #qrtab,\n#watcher:hover::after,\n.thumbnail#selected,\nbody > a[style=\"cursor: pointer; float: right;\"]:hover::after,\ndiv.navLinks > a:first-of-type:hover::after {\n  opacity: 1;\n}\n#boardTitle {\n  font-size: 30px;\n  font-weight: 400;\n}\n.boardBanner {\n  line-height: 0;\n}\nhr {\n  padding: 0;\n  height: 0;\n  width: 100%;\n  clear: both;\n  border: none;\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n.boxcontent > hr,\n.entry:last-child,\n.pages,\na.forwardlink,\nh3,\nimg,\ntable.reply[style^=\"clear: both\"] {\n  border: none;\n}\n.boxcontent input {\n  height: 18px;\n  vertical-align: bottom;\n  margin-right: 1px;\n}\n/* Navigation */\n" + (Conf["Custom Navigation"] ? "" : "#boardNavDesktop,") + "\n.pages /* Bottom Navigation */ {\n  font-size: 0;\n  color: transparent;\n  width: auto;\n}\n.pages {\n  text-align: " + Conf["Pagination Alignment"] + ";\n}\n#boardNavDesktop {\n  text-align: " + Conf["Navigation Alignment"] + ";\n  width: auto;\n  padding-right: 0px;\n  margin-right: 0px;\n}\n#boardNavDesktopFoot {\n  visibility: visible;\n  position: fixed;\n  " + Style.sidebarLocation[0] + ": 2px;\n  bottom: auto;\n  color: transparent;\n  font-size: 0;\n  border-width: 1px;\n  text-align: center;\n  height: 0;\n  width: " + (248 + Style.sidebarOffsetW) + "px !important;\n  overflow: hidden;\n  " + Style.agent + "box-sizing: border-box;\n  box-sizing: border-box;\n}\nimg.topad,\nimg.middlead,\nimg.bottomad {\n  opacity: 0.3;\n}\nimg.topad:hover,\nimg.middlead:hover,\nimg.bottomad:hover {\n  opacity: 1;\n  " + Style.agent + "transition: opacity .3s linear;\n}\n" + (!Conf["Custom Navigation"] ? "#boardNavDesktop a," : "") + "\n.pages a,\n.pages strong {\n  display: inline-block;\n  border: none;\n  text-align: center;\n  margin: 0 1px 0 2px;\n}\n.pages {\n  word-spacing: 10px;\n}\n/* moots announcements */\n#globalMessage {\n  text-align: center;\n  font-weight: 200;\n}\n.pages strong,\na,\n.new {\n  " + Style.agent + "transition: background .1s linear;\n}\n/* Post Form */\n#qr div.captchainput {\n  float: left;\n}\n#qr div.captchainput,\n#file {\n  overflow: hidden;\n}\n/* Formatting for all postarea elements */\n#browse,\n#file {\n  line-height: 17px;\n}\n#browse,\n#file,\n#threadselect select {\n  cursor: pointer;\n  display: inline-block;\n}\n#threadselect select,\ninput:not([type=radio]),\n.field,\ninput[type=\"submit\"] {\n  height: 20px;\n}\n#qr .warning {\n  min-height: 20px;\n}\n#qr .warning,\n#threadselect select,\ninput,\n.field,\ninput[type=\"submit\"] {\n  vertical-align: bottom;\n  " + Style.agent + "box-sizing: border-box;\n  box-sizing: border-box;\n  padding: 1px;\n}\n#browse,\ninput[type=\"submit\"] {\n  height: 20px;\n  padding: 0;\n}\n#qr input[type=\"file\"] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n/* Image Hover and Image Expansion */\n#ihover {\n  max-width:85%;\n  max-height:85%;\n}\n.fileText ~ a > img + img {\n  position: relative;\n  top: 0px;\n}\n#imageType {\n  border: none;\n  width: 90px;\n  position: relative;\n  bottom: 1px;\n}\n/* #qr dimensions */\n#qr {\n  height: auto;\n}\n/* Posts */\n#delform .fileText + br + a[target=\"_blank\"] img + img {\n  margin: 0 0 25px;\n}\n.fileText {\n  margin-top: 17px;\n}\n/* Fixes text spoilers */\n.spoiler:not(:hover),\n.spoiler:not(:hover) * {\n  color: rgb(0,0,0) !important;\n  background-color: rgb(0,0,0) !important;\n  text-shadow: none !important;\n}\ndiv.thread {\n  padding: 0;\n  position: relative;\n  " + (!Conf['Images Overlap Post Form'] ? "z-index: 0;" : "") + "\n}\ndiv.post:not(#qp):not([hidden]) {\n  margin: 0;\n}\n/* Remove default \"inherit\" background declaration */\n.span.subject,\n.subject,\n.name,\n.postertrip {\n  background: transparent;\n}\n.name {\n  font-weight: 700;\n}\n/* Addons and such */\n#copyright,\n#boardNavDesktop a,\n#qr td,\n#qr tr[height=\"73\"]:nth-of-type(2),\n.menubutton a,\n.pages td,\ntd[style=\"padding-left: 7px;\"],\ndiv[id^=\"qr\"] tr[height=\"73\"]:nth-of-type(2) {\n  padding: 0;\n}\n#navtopright {\n  position: fixed;\n  bottom: -1000px;\n  left: -1000px;\n}\n/* Expand Images */\n#imgControls {\n  width: 15px;\n  height: 20px;\n  overflow: hidden;\n}\n#imgContainer {\n  width: 110px;\n  float: " + Style.sidebarLocation[0] + ";\n}\n#imgControls:hover {\n  width: 110px;\n}\n#imgControls label {\n  font-size: 0;\n  color: transparent;\n  float: " + Style.sidebarLocation[0] + ";\n}\n#imgControls select {\n  float: " + Style.sidebarLocation[1] + ";\n}\n#imgControls select > option {\n  font-size: 80%;\n}\n/* Reply Previews */\n#mouseover,\n#qp {\n  max-width: 70%;\n}\n#qp .replyContainer,\n#qp .opContainer {\n  visibility: visible;\n}\n#qp div.op {\n  display: table;\n}\n#qp div.post {\n  padding: 2px 6px;\n}\n#qp div.post img {\n  max-width: 300px;\n  height: auto;\n}\ndiv.navLinks {\n  visibility: hidden;\n  height: 0;\n  width: 0;\n  overflow: hidden;\n}\n/* AutoPager */\n#autoPagerBorderPaging {\n  position: fixed !important;\n  right: 300px !important;\n  bottom: 0px;\n}\n#options ul {\n  margin: 0;\n  margin-bottom: 6px;\n  padding: 3px;\n}\n#stats,\n#navlinks {\n  left: auto !important;\n  bottom: auto !important;\n  text-align: right;\n  padding: 0;\n  border: 0;\n  border-radius: 0;\n}\n#prefetch {\n  position: fixed;\n}\n#stats {\n  position: fixed;\n  cursor: default;\n}\n#updater {\n  border: 0;\n  overflow: hidden;\n  background: none;\n  text-align: right;\n}\n#watcher {\n  padding: 1px 0;\n  border-radius: 0;\n}\n#options .move,\n#updater .move,\n#watcher .move,\n#stats .move {\n  cursor: default !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"] {\n  position: fixed;\n  top: -1000px;\n  left: -1000px;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] {\n  display: block;\n  position: fixed !important;\n  top: 117px !important;\n  " + Style.sidebarLocation[1] + ": 4px !important;\n  " + Style.sidebarLocation[0] + ": " + (252 + Style.sidebarOffsetW) + "px !important;\n  width: auto !important;\n  margin: 0 !important;\n  z-index: 2;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + theme["Body Background"] + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n  vertical-align: top;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] {\n  height: 95% !important;\n  margin-top: 5px !important;\n  margin-bottom: 5px !important;\n}\n#fs_status {\n  width: auto !important;\n  height: auto !important;\n  background: " + theme["Dialog Background"] + " !important;\n  padding: 10px !important;\n  white-space: normal !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data * {\n  border-color: " + theme["Reply Border"] + " !important;\n}\n#fs_status a {\n  color: " + theme["Text"] + " !important;\n}\n[alt=\"sticky\"] + a::before {\n  content: \"Sticky | \";\n}\n[alt=\"closed\"] + a::before {\n  content: \"Closed | \";\n}\n[alt=\"closed\"] + a {\n  text-decoration: line-through;\n}\n.identityIcon,\nimg[alt=\"Sticky\"],\nimg[alt=\"Closed\"] {\n  vertical-align: top;\n}\n.inline,\n#qp {\n  background-color: transparent;\n  border: none;\n}\ninput[type=\"submit\"]:hover {\n  cursor: pointer;\n}\n#qr input:focus:" + Style.agent + "placeholder,\n#qr textarea:focus:" + Style.agent + "placeholder {\n  color: transparent;\n}\n#boardNavDesktop .current {\n  font-weight: bold;\n}\ndiv.pagelist {\n  background: none;\n  border: none;\n}\n.focused.entry {\n  background-color: transparent;\n}\n#menu.reply.dialog,\nhtml .subMenu {\n  padding: 0px;\n}\n.textarea {\n  position: relative;\n}\n#qr #charCount {\n  color: " + (theme["Dark Theme"] ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)") + ";\n  background: none;\n  font-size: 10px;\n  pointer-events: none;\n  position: absolute;\n  right: 2px;\n  top: auto;\n  bottom: 0;\n  height: 20px;\n}\n#qr #charCount.warning {\n  color: rgb(255,0,0);\n  padding: 0;\n  margin: 0;\n  border: none;\n  background: none;\n}\n/* Position and Dimensions of the #qr */\n#showQR {\n  display: block;\n  " + Style.sidebarLocation[0] + ": 2px;\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n  z-index: 5;\n  background-color: transparent;\n  text-align: center;\n  position: fixed;\n  top: auto;\n  bottom: 2px !important;\n}\n/* Width and height of all #qr elements (excluding some captcha elements) */\n#dump {\n  width: 20px;\n  margin: 0;\n  font-size: 14px;\n  outline: none;\n  padding: 0 0 3px;\n}\n.captchaimg {\n  line-height: 0;\n}\n#qr div {\n  min-width: 0;\n}\n#updater input,\n#options input,\n#qr,\ntable.reply[style^=\"clear: both\"] {\n  border: none;\n}\n#delform > div:not(.thread) select,\n.pages input[type=\"submit\"] {\n  margin: 0;\n  height: 17px;\n}\n.prettyprint {\n  display: block;\n  white-space: pre-wrap;\n  border-radius: 2px;\n  max-width: 600px;\n  overflow-x: auto;\n  padding: 3px;\n}\n#themeConf {\n  position: fixed;\n  " + Style.sidebarLocation[1] + ": 2px;\n  " + Style.sidebarLocation[0] + ": auto;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n}\n#themebar input {\n  width: 30%;\n}\nhtml {\n  background: " + (theme["Background Color"] || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n#content,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + theme["Background Color"] + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n.suboptions {\n  padding: 5px;\n}\n#boardTitle,\n#prefetch,\n#showQR,\n#spoilerLabel,\n#stats,\n#updater .move {\n  text-shadow:\n    1px 1px 1px " + theme["Background Color"] + ",\n    -1px 1px 1px " + theme["Background Color"] + ",\n    1px -1px 1px " + theme["Background Color"] + ",\n    -1px -1px 1px " + theme["Background Color"] + "\n}\n#browse,\n#ft li,\n#ft ul,\n#options .dialog,\n#exlinks-options,\n#qrtab,\n#watcher,\n#updater:hover,\n.box-outer,\n.boxbar,\n.top-box,\nhtml body span[style=\"left: 5px; position: absolute;\"] a,\ninput[type=\"submit\"],\n#options.reply.dialog,\ninput[value=\"Report\"] {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n#options ul li.mascot.enabled {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#file,\n#options input,\n#threadselect select,\n.dump #dump:not(:hover):not(:focus),\ninput,\ninput.field,\nselect,\ntextarea,\ntextarea.field {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n  " + Style.agent + "transition: all .2s linear;\n}\n#dump:hover,\n#browse:hover,\n#file:hover,\ninput:hover,\ninput.field:hover,\ninput[type=\"submit\"]:hover,\nselect:hover,\ntextarea:hover,\ntextarea.field:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n  " + Style.agent + "transition: all .2s linear;\n}\n#dump:active,\n#dump:focus,\ninput:focus,\ninput.field:focus,\ninput[type=\"submit\"]:focus,\nselect:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#mouseover,\n#qp .replyContainer div.post,\n#qp .opContainer div.post,\n.replyContainer div.reply {\n  border: 1px solid " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.exblock.reply,\n.replyContainer div.reply.highlight,\n.replyContainer div.reply:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#boardNavDesktop,\n.pages {\n  background: " + theme["Navigation Background"] + ";\n  border: 1px solid " + theme["Navigation Border"] + ";\n}\n#delform {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#themeConf,\n#watcher,\n#watcher:hover,\ndiv.subMenu,\nbody > a[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n.mascotname,\n.mascotoptions {\n  background: " + theme["Dialog Background"] + ";\n}\n.inline .post {\n  box-shadow: " + (Conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n  padding-bottom: 2px;\n}\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n}\n[style='color: red !important;'] *,\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\na,\n#dump,\n.entry,\ndiv.post > blockquote a[href^=\"//\"],\n.sideArrows a,\nspan.postNum > .replylink {\n  color: " + theme["Links"] + ";\n}\n#navlinks a {\n  color: rgb(" + (theme["Dark Theme"] ? "230,230,230" : "130,130,130") + ");\n  opacity: 0.5;\n  display: inline-block;\n  font-size: 15px;\n  height: 15px;\n  text-align: center;\n  width: 15px;\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n  font-weight: 600;\n}\n.dateTime {\n  color: " + theme["Timestamps"] + " !important;\n}\n#browse,\n#updater:not(:hover),\n#updater:not(:hover) #count:not(.new)::after,\n.summary,\nbody > form,\nbody,\nhtml body span[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea,\n.abbr,\n.boxbar,\n.boxcontent,\n.pages strong,\n.reply,\n.reply.highlight,\n#boardNavDesktop .title,\n#imgControls label::after,\n#updater #count:not(.new)::after,\n#qr > form > label::after,\nspan.pln {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#options ul {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\na.backlink {\n  color: " + theme["Backlinks"] + ";\n}\nspan.quote > a.quotelink,\na.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\ndiv.subMenu,\n#menu,\n#qp .opContainer,\n#qp .replyContainer {\n  box-shadow: " + (Conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  cursor: pointer;\n  width: 10px;\n  height: 10px;\n  margin: 2px 3px;\n  display: inline-block;\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n  vertical-align: bottom;\n}\n#qr label input,\n#updater input,\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#boardNavDesktop a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  background: " + theme["Checkbox Checked Background"] + ";\n  background-image: url(" + (theme["Dark Theme"] ? Icons.header.png + "AkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" : Icons.header.png + "AkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==") + ");\n  background-attachment: scroll;\n  background-repeat: no-repeat;\n  background-position: bottom right;\n}\na:hover,\n#dump:hover,\n.entry:hover,\ndiv.post > blockquote a[href^=\"//\"]:hover,\n.sideArrows a:hover,\ndiv.post div.postInfo span.postNum a:hover,\nspan.postNum > .replylink:hover,\n.nameBlock > .useremail > .name:hover,\n.nameBlock > .useremail > .postertrip:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#boardNavDesktop a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name {\n  color: " + theme["Names"] + " !important;\n}\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\n.nameBlock > .useremail > .postertrip,\n.nameBlock > .useremail > .name {\n  color: " + theme["Emails"] + ";\n}\n.nameBlock > .useremail > .name,\n.name {\n  font-weight: 600;\n}\na.forwardlink {\n  border-bottom: 1px dashed;\n}\n.qphl {\n  outline-color: " + theme["Backlinked Reply Outline"] + ";\n}\n.placeholder,\n#qr input:" + Style.agent + "placeholder,\n#qr textarea:" + Style.agent + "placeholder {\n  color: " + (theme["Dark Theme"] ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.3)") + " !important;\n}\n.boxcontent dd,\n#options ul {\n  border-color: " + (theme["Dark Theme"] ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)") + ";\n}\n#options li {\n  border-top: 1px solid " + (theme["Dark Theme"] ? "rgba(255,255,255,0.025)" : "rgba(0,0,0,0.05)") + ";\n}\n#mascot img {\n  " + Style.agent + "transform: scaleX(" + (Style.sidebarLocation[0] === "left" ? "-" : "") + "1);\n  " + Style.agent + "user-select: none;\n}\n" + theme["Custom CSS"];
       if (Conf["Image Expansion"]) {
         css += ".fileThumb img {\n  cursor: " + Style.agent + "zoom-in;\n}\n.fileThumb img + img {\n  cursor: " + Style.agent + "zoom-out;\n}";
       }
