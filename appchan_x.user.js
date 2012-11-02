@@ -23,7 +23,7 @@
 // @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/*  appchan x - Version 1.0.10 - 2012-11-01
+/*  appchan x - Version 1.0.10 - 2012-11-02
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -8584,6 +8584,10 @@
           if (depth !== 0 || toggle1 || toggle2) {
             return alert("Syntax error on " + this.name + ".");
           }
+          if (this.className === "colorfield") {
+            this.nextSibling.value = ThemeTools.colorToHex(this.value);
+            this.nextSibling.color.importColor();
+          }
           editTheme[this.name] = this.value;
           return Style.addStyle(editTheme);
         });
@@ -8658,7 +8662,7 @@
       return this.hover = this.shiftRGB(16, true);
     },
     colorToHex: function(color) {
-      var blue, digits, green, red, rgb;
+      var blue, digits, green, hex, red, rgb;
       if (color.substr(0, 1) === '#') {
         return color;
       }
@@ -8667,7 +8671,11 @@
         green = parseInt(digits[3], 10);
         blue = parseInt(digits[4], 10);
         rgb = blue | (green << 8) | (red << 16);
-        return '#' + rgb.toString(16);
+        hex = '#' + rgb.toString(16);
+        while (hex.length < 4) {
+          hex += 0;
+        }
+        return hex;
       } else {
 
       }
@@ -8980,8 +8988,6 @@
     },
     color: function(target) {
       var HSV_RGB, RGB_HSV, THIS, abortBlur, blurTarget, blurValue, dispatchImmediateChange, drawPicker, getPickerDims, holdPad, holdSld, isPickerOwner, leavePad, leaveSld, leaveStyle, leaveValue, modeID, redrawPad, redrawSld, removePicker, setPad, setSld, styleElement, updateField, valueElement;
-      this.required = false;
-      this.adjust = false;
       this.slider = true;
       this.valueElement = target;
       this.styleElement = target;
@@ -9015,64 +9021,25 @@
         }
       };
       this.showPicker = function() {
-        var a, b, c, l, pp, ps, tp, ts, vp, vs;
+        var ps, tp, ts, vp, vs;
         if (!isPickerOwner()) {
           tp = JSColor.getElementPos(target);
           ts = JSColor.getElementSize(target);
           vp = JSColor.getViewPos();
           vs = JSColor.getViewSize();
           ps = getPickerDims(this);
-          switch (this.pickerPosition.toLowerCase()) {
-            case 'left':
-              a = 1;
-              b = 0;
-              c = -1;
-              break;
-            case 'right':
-              a = 1;
-              b = 0;
-              c = 1;
-              break;
-            case 'top':
-              a = 0;
-              b = 1;
-              c = -1;
-              break;
-            default:
-              a = 0;
-              b = 1;
-              c = 1;
-          }
-          l = (ts[b] + ps[b]) / 2;
-          if (!this.pickerSmartPosition) {
-            pp = [tp[a], tp[b] + ts[b] - l + l * c];
-          } else {
-            pp = [(-vp[a] + tp[a] + ps[a] > vs[a] ? -vp[a] + tp[a] + ts[a] / 2 > vs[a] / 2 && tp[a] + ts[a] - ps[a] >= 0 ? tp[a] + ts[a] - ps[a] : tp[a] : tp[a]), (-vp[b] + tp[b] + ts[b] + ps[b] - l + l * c > vs[b] ? -vp[b] + tp[b] + ts[b] / 2 > vs[b] / 2 && tp[b] + ts[b] - l - l * c >= 0 ? tp[b] + ts[b] - l - l * c : tp[b] + ts[b] - l + l * c : tp[b] + ts[b] - l + l * c >= 0 ? tp[b] + ts[b] - l + l * c : tp[b] + ts[b] - l - l * c)];
-          }
-          return drawPicker(pp[a], pp[b]);
+          return drawPicker();
         }
       };
       this.importColor = function() {
         if (!valueElement) {
           return this.exportColor();
         } else {
-          if (!this.adjust) {
-            if (!this.fromString(valueElement.value, leaveValue)) {
-              styleElement.style.backgroundImage = styleElement.jscStyle.backgroundImage;
-              styleElement.style.backgroundColor = styleElement.jscStyle.backgroundColor;
-              styleElement.style.color = styleElement.jscStyle.color;
-              return this.exportColor(leaveValue | leaveStyle);
-            }
-          } else if (!(this.required && /^\s*$/.test(valueElement.value))) {
-            valueElement.value = '';
+          if (!this.fromString(valueElement.value, leaveValue)) {
             styleElement.style.backgroundImage = styleElement.jscStyle.backgroundImage;
             styleElement.style.backgroundColor = styleElement.jscStyle.backgroundColor;
             styleElement.style.color = styleElement.jscStyle.color;
             return this.exportColor(leaveValue | leaveStyle);
-          } else {
-            if (!this.fromString(valueElement.value)) {
-              return this.exportColor();
-            }
           }
         }
       };

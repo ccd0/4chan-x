@@ -96,8 +96,6 @@ JSColor =
       [0, 0]
 
   color: (target) ->
-    @required                   = false          # refuse empty values?
-    @adjust                     = false          # adjust value to uniform notation?
     @slider                     = true           # show the value/saturation slider?
     @valueElement               = target         # value holder
     @styleElement               = target         # where to reflect current color
@@ -138,78 +136,17 @@ JSColor =
         vs = JSColor.getViewSize()          # view size
         ps = getPickerDims @                # picker size
 
-        switch @pickerPosition.toLowerCase()
-          when 'left'
-            a=1
-            b=0
-            c=-1
-          when 'right'
-            a=1
-            b=0
-            c=1
-          when 'top'
-            a=0
-            b=1
-            c=-1
-          else
-            a=0
-            b=1
-            c=1
-        l = (ts[b] + ps[b]) / 2
-
-        # picker pos
-        unless @pickerSmartPosition
-          pp = [
-            tp[a],
-            tp[b] + ts[b] - l + l * c
-          ]
-        else
-          pp = [
-
-            (
-              if -vp[a] + tp[a] + ps[a] > vs[a]
-               if -vp[a] + tp[a] + ts[a] / 2 > vs[a] / 2 and tp[a] + ts[a] - ps[a] >= 0
-                  tp[a] + ts[a] - ps[a]
-                else
-                  tp[a]
-              else
-                tp[a]
-            )
-
-            (
-              if -vp[b] + tp[b] + ts[b] + ps[b] - l + l * c > vs[b]
-                if -vp[b] + tp[b] + ts[b] / 2 > vs[b] / 2 and tp[b] + ts[b] - l - l * c >= 0
-                  tp[b] + ts[b] - l - l * c
-                else
-                  tp[b] + ts[b] - l + l * c
-              else
-                if tp[b] + ts[b] - l + l * c >= 0
-                  tp[b] + ts[b] - l + l * c
-                else
-                  tp[b] + ts[b] - l - l * c
-            )
-          ]
-        drawPicker pp[a], pp[b]
+        drawPicker()
 
     @importColor = ->
       unless valueElement
         @exportColor()
       else
-        unless @adjust
-          unless @fromString valueElement.value, leaveValue
-            styleElement.style.backgroundImage = styleElement.jscStyle.backgroundImage
-            styleElement.style.backgroundColor = styleElement.jscStyle.backgroundColor
-            styleElement.style.color           = styleElement.jscStyle.color
-            @exportColor leaveValue | leaveStyle
-
-        else unless @required and /^\s*$/.test(valueElement.value)
-          valueElement.value                   = ''
-          styleElement.style.backgroundImage   = styleElement.jscStyle.backgroundImage
-          styleElement.style.backgroundColor   = styleElement.jscStyle.backgroundColor
-          styleElement.style.color             = styleElement.jscStyle.color
+        unless @fromString valueElement.value, leaveValue
+          styleElement.style.backgroundImage = styleElement.jscStyle.backgroundImage
+          styleElement.style.backgroundColor = styleElement.jscStyle.backgroundColor
+          styleElement.style.color           = styleElement.jscStyle.color
           @exportColor leaveValue | leaveStyle
-
-        else @exportColor() unless @fromString valueElement.value
 
     @exportColor = (flags) ->
       if not (flags & leaveValue) and valueElement
