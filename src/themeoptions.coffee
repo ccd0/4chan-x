@@ -13,7 +13,7 @@ ThemeTools =
       editTheme["Theme"] = "Untitled"
       editTheme["Author"] = "Author"
       editTheme["Author Tripcode"] = "Unknown"
-      
+
     # Objects are not guaranteed to have any type of arrangement, so we use a presorted
     # array to generate the layout of of the theme editor.
     layout = [
@@ -107,9 +107,9 @@ ThemeTools =
         innerHTML: "<div class=optionname><b>#{item}</b></div><div class=option><input name='#{item}' placeholder='#{if item == "Background Image" then "Shift+Click to upload image" else item}'>"
 
       input = $('input', div)
-      
+
       input.value = editTheme[item]
-      
+
       switch item
         when "Background Image"
           input.className = 'field'
@@ -133,15 +133,15 @@ ThemeTools =
 
         else
           input.className = "colorfield"
-          
+
           colorInput = $.el 'input'
             className: 'color'
             value: ThemeTools.colorToHex input.value
-          
+
           JSColor.bind colorInput
-          
+
           $.after input, colorInput
-          
+
       $.on input, 'blur', ->
         depth = 0
 
@@ -155,6 +155,10 @@ ThemeTools =
 
         if depth != 0 or toggle1 or toggle2
           return alert "Syntax error on #{@name}."
+          
+        if @className == "colorfield"
+          @nextSibling.value = ThemeTools.colorToHex @value
+          @nextSibling.color.importColor()
 
         editTheme[@name] = @value
         Style.addStyle(editTheme)
@@ -243,21 +247,26 @@ ThemeTools =
       return rgb.join ","
 
     @hover = @shiftRGB 16, true
-    
+
   colorToHex: (color) ->
     if color.substr(0, 1) is '#'
       return color
     if digits = /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/.exec color
-  
+
       red   = parseInt digits[2], 10
       green = parseInt digits[3], 10
       blue  = parseInt digits[4], 10
-  
+
       rgb = blue | (green << 8) | (red << 16)
-      '#' + rgb.toString 16
-    
-    else return
+      hex = '#' + rgb.toString 16
       
+      while hex.length < 4
+        hex += 0
+      
+      hex
+
+    else return
+
   importtheme: (origin, evt) ->
     file = evt.target.files[0]
     reader = new FileReader()
