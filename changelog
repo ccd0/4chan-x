@@ -1,4 +1,6 @@
 master
+
+1.0.11
 - noface
   Added keybind to toggle the hide status of the QR
   'Check for Update' is now much less obstrusive.
