@@ -7078,13 +7078,13 @@
         if (arch.length > 0) {
           return arch;
         } else {
-          return noarch;
+          return [noarch];
         }
       }
       _ref = data.boards;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         type = _ref[_i];
-        if ((current = $.get("archiver/" + board + "/")) === void 0 && (name = this.select().slice(0)[0]) !== noarch) {
+        if ((current = $.get("archiver/" + board + "/")) === void 0 && (name = this.select().slice(0)[0]) !== [noarch]) {
           $.set("archiver/" + board + "/", "" + name);
           continue;
         }

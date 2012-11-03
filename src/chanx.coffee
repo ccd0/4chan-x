@@ -2747,9 +2747,9 @@ Redirect =
           continue
         else
           type.name
-      return if arch.length > 0 then arch else noarch
+      return if arch.length > 0 then arch else [noarch]
     for type in data.boards
-      if (current = $.get "archiver/#{board}/") is undefined and (name = @select()[..][0]) isnt noarch
+      if (current = $.get "archiver/#{board}/") is undefined and (name = @select()[..][0]) isnt [noarch]
         $.set "archiver/#{board}/", "#{name}"
         continue
       return board if current is data.name and data.boards.contains(board)
