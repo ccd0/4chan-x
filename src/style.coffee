@@ -674,7 +674,6 @@ textarea {
 #qp input,
 #updater:not(:hover) > :not(.move),
 .autoPagerS,
-.board > hr:last-of-type,
 #{(unless Conf["Board Subtitle"] then ".boardSubtitle," else "")}
 .closed,
 .deleteform,
@@ -724,6 +723,10 @@ div.post div.file .fileThumb {
 }
 a {
   outline: 0;
+}
+.board > hr:last-of-type {
+  margin: 0;
+  border-bottom-color: transparent;
 }
 #boardNavDesktop,
 #boardNavDesktop a,
