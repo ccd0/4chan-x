@@ -208,6 +208,8 @@ Options =
     if select.length > 1
       archiver.value = $.get "archiver/#{g.BOARD}/"
       $.on archiver, 'mouseup', ->
+        if Redirect.archive[g.BOARD]
+          delete Redirect.archive[g.BOARD]
         $.set "archiver/#{g.BOARD}/", "#{@value}"
 
     # Sauce
