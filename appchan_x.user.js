@@ -7085,7 +7085,7 @@
           return [noarch];
         }
       }
-      if ((current = $.get("archiver/" + board + "/")) === void 0 && (name = this.select().slice(0)[0]) !== [noarch]) {
+      if ((current = $.get("archiver/" + board + "/")) === void 0 && (name = this.select().slice(0)[0]) !== noarch) {
         $.set("archiver/" + board + "/", "" + name);
       }
       _ref = data.boards;
@@ -7097,15 +7097,15 @@
       }
     },
     to: function(data) {
-      var a, archiver, board, threadID, url, _i, _len;
+      var archiver, board, threadID, url, _i, _len, _ref;
       if (!data.isSearch) {
         threadID = data.threadID;
       }
       board = data.board;
-      a = this.archiver;
       if (!Redirect.archive[board]) {
-        for (_i = 0, _len = a.length; _i < _len; _i++) {
-          archiver = a[_i];
+        _ref = this.archiver;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          archiver = _ref[_i];
           if (board === this.select(archiver, board)) {
             Redirect.archive[board] = archiver;
             break;

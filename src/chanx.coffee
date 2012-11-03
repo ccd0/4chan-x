@@ -2749,7 +2749,7 @@ Redirect =
         else
           type.name
       return if arch.length > 0 then arch else [noarch]
-    if (current = $.get "archiver/#{board}/") is undefined and (name = @select()[..][0]) isnt [noarch]
+    if (current = $.get "archiver/#{board}/") is undefined and (name = @select()[..][0]) isnt noarch
       $.set "archiver/#{board}/", "#{name}"
     for type in data.boards
       return board if current is data.name and data.boards.contains(board)
@@ -2758,10 +2758,9 @@ Redirect =
     unless data.isSearch
       {threadID} = data
     {board} = data
-    a = @archiver
 
     unless Redirect.archive[board]
-      for archiver in a
+      for archiver in @archiver
         if board is @select archiver, board
           Redirect.archive[board] = archiver
           break
