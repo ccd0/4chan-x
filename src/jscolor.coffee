@@ -1,8 +1,7 @@
 JSColor =
   
   bind: (el) ->
-    if not el.color
-      el.color = new JSColor.color(el)
+    el.color = new JSColor.color(el) if not el.color
 
   images:
     pad:        [ 181, 101 ]
@@ -10,30 +9,15 @@ JSColor =
     cross:      [ 15, 15 ]
     arrow:      [ 7, 11 ]
 
-  imgRequire:   {}
-  imgLoaded:    {}
-
-  requireImage: (filename) ->
-    JSColor.imgRequire[filename]        = true
-
-  loadImage: (filename) ->
-    unless JSColor.imgLoaded[filename]
-      JSColor.imgLoaded[filename]       = new Image()
-      JSColor.imgLoaded[filename].src   = filename
-
   fetchElement: (mixed) ->
-    (if typeof mixed is "string" then document.getElementById(mixed) else mixed)
+    document.getElementById(mixed) if typeof mixed is "string" else mixed
 
   fireEvent: (el, evnt) ->
     return unless el
 
-    if document.createEvent
-      ev = document.createEvent 'HTMLEvents'
-      ev.initEvent evnt, true, true
-      el.dispatchEvent ev
-    else if document.createEventObject
-      ev = document.createEventObject()
-      el.fireEvent 'on' + evnt, ev
+    ev = document.createEvent 'HTMLEvents'
+    ev.initEvent evnt, true, true
+    el.dispatchEvent ev
 
   getRelMousePos: (e = window.event) ->
     x = 0
@@ -48,26 +32,26 @@ JSColor =
     y: y
 
   color: (target) ->
-    @valueElement               = target         # value holder
-    @styleElement               = target         # where to reflect current color
-    @onImmediateChange          = null           # onchange callback (can be either string or function)
-    @hsv                        = [0, 0, 1]      # read-only  0-6, 0-1, 0-1
-    @rgb                        = [1, 1, 1]      # read-only  0-1, 0-1, 0-1
-    @minH                       = 0              # read-only  0-6
-    @maxH                       = 6              # read-only  0-6
-    @minS                       = 0              # read-only  0-1
-    @maxS                       = 1              # read-only  0-1
-    @minV                       = 0              # read-only  0-1
-    @maxV                       = 1              # read-only  0-1
-    @pickerButtonHeight         = 20             # px
-    @pickerButtonColor          = 'ButtonText'   # px
-    @pickerFace                 = 10             # px
-    @pickerFaceColor            = 'ThreeDFace'   # CSS color
-    @pickerBorder               = 1              # px
-    @pickerBorderColor          = 'ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight' # CSS color
-    @pickerInset                = 1              # px
-    @pickerInsetColor           = 'ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow' # CSS color
-    @pickerZIndex               = 1000
+    @valueElement       = target         # value holder
+    @styleElement       = target         # where to reflect current color
+    @onImmediateChange  = null           # onchange callback (can be either string or function)
+    @hsv                = [0, 0, 1]      # read-only  0-6, 0-1, 0-1
+    @rgb                = [1, 1, 1]      # read-only  0-1, 0-1, 0-1
+    @minH               = 0              # read-only  0-6
+    @maxH               = 6              # read-only  0-6
+    @minS               = 0              # read-only  0-1
+    @maxS               = 1              # read-only  0-1
+    @minV               = 0              # read-only  0-1
+    @maxV               = 1              # read-only  0-1
+    @pickerButtonHeight = 20             # px
+    @pickerButtonColor  = 'ButtonText'   # px
+    @pickerFace         = 10             # px
+    @pickerFaceColor    = 'ThreeDFace'   # CSS color
+    @pickerBorder       = 1              # px
+    @pickerBorderColor  = 'ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight' # CSS color
+    @pickerInset        = 1              # px
+    @pickerInsetColor   = 'ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow' # CSS color
+    @pickerZIndex       = 1000
 
     @hidePicker = ->
       if isPickerOwner()
@@ -358,7 +342,7 @@ JSColor =
       p.sldM.style.width            = JSColor.images.sld[0] + JSColor.images.arrow[0] + THIS.pickerFace + 2 * THIS.pickerInset + 'px'
       p.sldM.style.height           = p.box.style.height
 
-      p.sldM.style.cursor         = 'pointer'
+      p.sldM.style.cursor           = 'pointer'
 
       # "close" button
       setBtnBorder = ->
@@ -378,12 +362,11 @@ JSColor =
       p.btn.style.border        = THIS.pickerInset + 'px solid'
       setBtnBorder()
       p.btn.style.color         = THIS.pickerButtonColor
-      p.btn.style.font          = '12px sans-serif'
       p.btn.style.textAlign     = 'center'
 
       p.btn.style.cursor = 'pointer'
 
-      p.btn.onmousedown = () ->
+      p.btn.onmousedown = ->
         THIS.hidePicker()
 
       p.btnS.style.lineHeight   = p.btn.style.height
@@ -433,8 +416,8 @@ JSColor =
       x = Math.round (THIS.hsv[0] / 6)          * (JSColor.images.pad[0] - 1)
       y = Math.round (1 - THIS.hsv[yComponent]) * (JSColor.images.pad[1] - 1)
       JSColor.picker.padM.style.backgroundPosition =
-        "#{THIS.pickerFace + THIS.pickerInset+x - Math.floor(JSColor.images.cross[0] / 2)}px " +
-        "#{THIS.pickerFace + THIS.pickerInset+y - Math.floor(JSColor.images.cross[1] / 2)}px"
+        "#{THIS.pickerFace + THIS.pickerInset + x - Math.floor(JSColor.images.cross[0] / 2)}px " +
+        "#{THIS.pickerFace + THIS.pickerInset + y - Math.floor(JSColor.images.cross[1] / 2)}px"
 
       # redraw the slider image
       seg = JSColor.picker.sld.childNodes

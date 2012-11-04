@@ -552,9 +552,6 @@ h1 {
 .qphl {
   outline: 2px solid rgba(216,94,49,.7);
 }
-.deadlink:not(.quotelink) {
-  text-decoration: none;
-}
 .center,
 .replyContainer.image_expanded {
   clear: both;
@@ -580,10 +577,6 @@ div.opContainer {
   box-shadow:
     -5px 0 rgba(255,0,0,.5),
     0 0 0 2px rgba(216,94,49,.7)
-}
-.filtered,
-.quotelink.filtered {
-  text-decoration: line-through;
 }
 .quotelink.forwardlink,
 .backlink.forwardlink {
@@ -720,46 +713,23 @@ a {
   margin: 0;
   border-bottom-color: transparent;
 }
-#boardNavDesktop,
 #boardNavDesktop a,
 #boardNavDesktopFoot a,
-#count,
-#imageType,
-#imageType option
-#imgControls,
-#navtopright a[href="javascript:;"],
-#postcount,
-#stats,
-#timer,
-#updater,
+#navlinks a,
 .pages a,
-.pages strong,
 .quotelink.deadlink,
-body:not([class]) a[href="javascript:;"],
-input,
-label {
+.sideArrows a {
   text-decoration: none;
 }
 #watcher > .move,
-#credits a,
-.abbr a,
 .backlink:not(.filtered),
-.chanlinkify,
-.file a,
-.pages,
-.pages a,
-.quotejs,
-.quotelink:not(.filtered),
-.quotelink.deadlink,
-.useremail,
 a,
-a.deadlink,
-a[href*="//dis"],
-a[href*=res],
 span.postNum > .replylink {
   text-decoration: #{if Conf["Underline Links"] then "underline" else "none"};
 }
-.filtered {
+.filtered,
+.quotelink.filtered,
+[alt="closed"] + a {
   text-decoration: line-through;
 }
 /* Z-INDEXES */
@@ -812,7 +782,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #watcher::after,
 .boardBanner,
 .menu_button,
-.sideArrows {
+.sideArrows a {
   z-index: 4;
 }
 #boardTitle,
@@ -1226,9 +1196,6 @@ body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
 [alt="closed"] + a::before {
   content: "Closed | ";
 }
-[alt="closed"] + a {
-  text-decoration: line-through;
-}
 .identityIcon,
 img[alt="Sticky"],
 img[alt="Closed"] {
@@ -1429,16 +1396,15 @@ textarea.field:focus {
   color: #{theme["Inputs"]};
 }
 #mouseover,
-#qp .replyContainer div.post,
-#qp .opContainer div.post,
+#qp div.post,
 #xupdater,
-.replyContainer div.reply {
+div.reply.post {
   border: 1px solid #{theme["Reply Border"]};
   background: #{theme["Reply Background"]};
 }
 .exblock.reply,
-.replyContainer div.reply.highlight,
-.replyContainer div.reply:target {
+div.reply.post.highlight,
+div.reply.post:target {
   background: #{theme["Highlighted Reply Background"]};
   border: 1px solid #{theme["Highlighted Reply Border"]};
 }
@@ -2195,6 +2161,7 @@ textarea.field,
     border-color 0.25s linear,
     height step-end,
     width step-end;
+  margin: 0;
 }
 """
 
@@ -2209,7 +2176,7 @@ textarea.field,
 div.post {
   padding: 6px 0 0 10px;
 }
-.replyContainer div.reply {
+div.reply.post {
   display: table;
   width: 100%;
   height: 100%
@@ -2235,7 +2202,7 @@ div.reply .menu_button {
   right: 27px;
   top: 5px;
 }
-.replyContainer div.postInfo {
+.reply div.postInfo {
   margin: 1px 0 0;
   width: 100%;
 }
@@ -2248,9 +2215,9 @@ div.reply .menu_button {
   #{Style.agent}user-select: none;
 }
 div.op:hover .menu_button,
-form .replyContainer:hover div.reply .report_button,
-form .replyContainer:hover div.reply .menu_button,
-form .replyContainer:hover .sideArrows a {
+.replyContainer:hover div.reply .report_button,
+.replyContainer:hover div.reply .menu_button,
+.replyContainer:hover .sideArrows a {
   opacity: 1;
   #{Style.agent}transition: opacity .3s ease-in 0s;
 }
@@ -2279,7 +2246,7 @@ div.post {
 .replyContainer {
   display: table;
 }
-.replyContainer div.post,
+div.reply.post,
 .sideArrows {
   display: table-cell;
   overflow: visible;

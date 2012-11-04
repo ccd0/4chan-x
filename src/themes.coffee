@@ -1985,7 +1985,7 @@ textarea,
     "Timestamps"                  : "rgb(170,170,170)"
     "Inputs"                      : "rgb(255,255,255)"
     "Warnings"                    : "rgb(177,115,133)"
-    "Shadow Color"                : "rgba(67,67,67,.9)"
+    "Shadow Color"                : "rgba(0,0,0,0.2)"
     "Dark Theme"                  : true
     "Custom CSS"                  : """
 html {
@@ -2020,24 +2020,24 @@ textarea,
 .rice {
   transition:background .2s,box-shadow .2s;
 }
-#delform{
-  background:rgba(22,22,22,.8)!important;
-  border:0!important;
-  padding:1px!important;
-  box-shadow:rgba(0,0,0,.8) 0 0 10px;
+#delform {
+  background: rgba(22,22,22,.8) !important;
+  border: 0 !important;
+  padding: 1px !important;
+  box-shadow: rgba(0,0,0,.8) 0 0 10px;
 }
-div.reply {
-  background-image:    -moz-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;
-  background-image:      -o-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;
-  background-image: -webkit-repeating-linear-gradient(45deg, #292929, #303030, #303030 3px) !important;
+div.reply.post {
+  background-image:    -moz-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;
+  background-image:      -o-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;
+  background-image: -webkit-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;
   border-bottom:#1f1f1f!important;
   border-radius:5px!important
 }
-.thread:not(.stub){
-  background:0!important
+.thread:not(.stub) {
+  background: 0 !important
 }
 a:not([href='javascript:;']){
-  text-shadow:#0f0f0f 0 1px;
+  text-shadow: #0f0f0f 0 1px;
 }
 """
 
