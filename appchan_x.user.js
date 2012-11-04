@@ -8901,7 +8901,11 @@
       arrow: [7, 11]
     },
     fetchElement: function(mixed) {
-      return document.getElementById(mixed)(typeof mixed === "string" ? void 0 : mixed);
+      if (typeof mixed === "string") {
+        return document.getElementById(mixed);
+      } else {
+        return mixed;
+      }
     },
     fireEvent: function(el, evnt) {
       var ev;

@@ -10,7 +10,7 @@ JSColor =
     arrow:      [ 7, 11 ]
 
   fetchElement: (mixed) ->
-    document.getElementById(mixed) if typeof mixed is "string" else mixed
+    if typeof mixed is "string" then document.getElementById(mixed) else mixed
 
   fireEvent: (el, evnt) ->
     return unless el
