@@ -204,7 +204,6 @@ h1 {
 #replies > div:hover {
   bottom: -10px;
   overflow-x: auto;
-  z-index: 1;
 }
 .thumbnail {
   background-color: rgba(0,0,0,.2) !important;
@@ -308,7 +307,6 @@ h1 {
 #stats,
 #updater {
   position: fixed;
-  z-index: 96;
 }
 #ihover {
   max-height: 97%;
@@ -321,7 +319,6 @@ h1 {
   left: 0;
   bottom: 0;
   background: rgba(0,0,0,.5);
-  z-index: 1;
 }
 #options {
   position: fixed;
@@ -536,10 +533,8 @@ h1 {
   padding-left: 5px;
   padding-right: 5px;
   text-overflow: ellipsis;
-}
-#watcher > .move {
+} {
   padding-top: 5px;
-  text-decoration: underline;
 }
 #qp {
   padding: 2px 2px 5px;
@@ -556,9 +551,6 @@ h1 {
 }
 .qphl {
   outline: 2px solid rgba(216,94,49,.7);
-}
-.quotelink.deadlink {
-  text-decoration: underline;
 }
 .deadlink:not(.quotelink) {
   text-decoration: none;
@@ -748,6 +740,7 @@ input,
 label {
   text-decoration: none;
 }
+#watcher > .move,
 #credits a,
 .abbr a,
 .backlink:not(.filtered),
@@ -757,61 +750,62 @@ label {
 .pages a,
 .quotejs,
 .quotelink:not(.filtered),
-.quotelink:not(.filtered),
+.quotelink.deadlink,
 .useremail,
 a,
 a.deadlink,
 a[href*="//dis"],
 a[href*=res],
 span.postNum > .replylink {
-  text-decoration: #{(if Conf["Underline Links"] then "underline" else "none")};
+  text-decoration: #{if Conf["Underline Links"] then "underline" else "none"};
 }
 .filtered {
   text-decoration: line-through;
 }
 /* Z-INDEXES */
 #mouseover {
-  z-index: 999 !important;
+  z-index: 999;
 }
 #mascotConf,
 #options.reply.dialog,
 #themeConf {
-  z-index: 998 !important;
+  z-index: 998;
 }
 #qp {
-  z-index: 104 !important;
+  z-index: 104;
 }
 #ihover,
 #overlay,
 #updater:hover,
 .exPopup,
 html .subMenu {
-  z-index: 102 !important;
+  z-index: 102;
 }
 #navtopright .exlinksOptionsLink::after,
 #navtopright .settingsWindowLink::after {
-  z-index: 101 !important;
+  z-index: 101;
 }
 #imgControls {
-  z-index: 100 !important;
+  z-index: 100;
 }
 #autoPagerBorderPaging,
 #boardNavDesktop,
 #menu.reply.dialog,
 #navlinks,
 body > a[style="cursor: pointer; float: right;"]::after {
-  z-index: 94 !important;
+  z-index: 94;
 }
 .fileThumb img + img {
   position: relative;
-  z-index: #{(if Conf["Images Overlap Post Form"] then "90" else "1")} !important;
+  z-index: #{(if Conf["Images Overlap Post Form"] then "90" else "1")};
 }
 #stats,
 #updater {
-  z-index: 10 !important;
+  z-index: 10;
 }
-#navtopright {
-  z-index: 6 !important;
+#navtopright,
+#showQR {
+  z-index: 6;
 }
 #boardTitle,
 #watcher,
@@ -819,16 +813,17 @@ body > a[style="cursor: pointer; float: right;"]::after {
 .boardBanner,
 .menu_button,
 .sideArrows {
-  z-index: 4 !important;
+  z-index: 4;
 }
+#boardTitle,
 #globalMessage::after,
 .boardBanner,
 .replyhider a {
-  z-index: 1 !important;
+  z-index: 1;
 }
 div.post,
 div.post.highlight {
-  z-index: 0 !important;
+  z-index: 0;
   #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
 }
@@ -1291,7 +1286,6 @@ html .subMenu {
   display: block;
   #{Style.sidebarLocation[0]}: 2px;
   width: #{(248 + Style.sidebarOffsetW)}px;
-  z-index: 5;
   background-color: transparent;
   text-align: center;
   position: fixed;
@@ -1861,7 +1855,6 @@ hr {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
   top: #{(if Style.logoOffset is 0 and Conf["Icon Orientation"] isnt "vertical" then 40 else 21) + Style.logoOffset}px;
-  z-index: 1;
   width: #{248 + Style.sidebarOffsetW}px;
 }
 """
@@ -1872,7 +1865,6 @@ hr {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
   bottom: 280px;
-  z-index: 1;
   width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
@@ -1883,7 +1875,6 @@ hr {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
   bottom: 140px;
-  z-index: 1;
   width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
@@ -2109,7 +2100,6 @@ input,
   #{Style.sidebarLocation[1]}: auto !important;
 }
 #qr #qrtab {
-  z-index: -1;
   #{Style.agent}transform: rotate(#{(if Style.sidebarLocation[0] == "left" then "" else "-")}90deg);
   #{Style.agent}transform-origin: bottom #{Style.sidebarLocation[0]};
   position: fixed;
@@ -2154,7 +2144,7 @@ input,
       when "float"
         css += """
 #qr {
-  z-index: 103 !important;
+  z-index: 103;
   border: 1px solid #{theme["Background Color"]};
   background: #{theme["Background Color"]};
   box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
@@ -2444,7 +2434,6 @@ td[style="border: 1px dashed;"] {
   border: 0 none !important;
 }
 #boardNavDesktopFoot a {
-  z-index: 1;
   display: block;
 }
 #boardNavDesktopFoot:hover {
