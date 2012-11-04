@@ -358,7 +358,7 @@ h1 {
   overflow: auto;
   padding: 0 5px 0 7px;
 }
-#options ul li:nth-of-type(2n) {
+#options ul li:nth-of-type(2n+1) {
   background-color: rgba(0, 0, 0, 0.05)
 }
 #options #rice_tab + div input {
