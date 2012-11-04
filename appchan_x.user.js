@@ -2043,7 +2043,7 @@
       image: 'https://i.minus.com/iiptfoMlr4v1k.png'
     },
     'Nodoka_Miyazaki': {
-      category: 'Anime',
+      category: 'Questionable',
       image: 'http://i.minus.com/iDX5mImKBzrXK.png'
     },
     'Nichijou': {
