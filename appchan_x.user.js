@@ -9410,7 +9410,7 @@
       }
       editMascot.name = key || '';
       MascotTools.addMascot(editMascot);
-      Style.addStyle(Conf["theme"]);
+      Style.addStyle;
       layout = {
         name: ["Mascot Name", "", "The name of the Mascot", "text"],
         image: ["Image", "", "Image of Mascot. Accepts Base64 as well as URLs. Shift+Click field to upload.", "text"],
@@ -9437,7 +9437,7 @@
               $.on(input, 'blur', function() {
                 editMascot[this.name] = this.value;
                 MascotTools.addMascot(editMascot);
-                return Style.addStyle(Conf["theme"]);
+                return Style.addStyle;
               });
               fileInput = $.el('input', {
                 type: "file",
@@ -9458,7 +9458,7 @@
               $.on(input, 'blur', function() {
                 editMascot[this.name] = this.value;
                 MascotTools.addMascot(editMascot);
-                return Style.addStyle(Conf["theme"]);
+                return Style.addStyle;
               });
             }
             break;
@@ -9467,7 +9467,7 @@
             $.on($('input', div), 'blur', function() {
               editMascot[this.name] = parseInt(this.value);
               MascotTools.addMascot(editMascot);
-              return Style.addStyle(Conf["theme"]);
+              return Style.addStyle;
             });
             break;
           case "select":
@@ -9488,7 +9488,7 @@
             $.on($('select', div), 'change', function() {
               editMascot[this.name] = this.value;
               MascotTools.addMascot(editMascot);
-              return Style.addStyle(Conf["theme"]);
+              return Style.addStyle;
             });
             break;
           case "checkbox":
@@ -9500,7 +9500,7 @@
             $.on($('input', div), 'click', function() {
               editMascot[this.name] = this.checked ? true : false;
               MascotTools.addMascot(editMascot);
-              return Style.addStyle(Conf["theme"]);
+              return Style.addStyle;
             });
         }
         $.add($("#mascotcontent", dialog), div);
@@ -9539,7 +9539,7 @@
         val = evt.target.result;
         el.previousSibling.value = val;
         editMascot.image = val;
-        return Style.addStyle(Conf["theme"]);
+        return Style.addStyle;
       };
       return reader.readAsDataURL(file);
     },
