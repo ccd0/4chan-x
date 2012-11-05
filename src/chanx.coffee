@@ -2764,8 +2764,10 @@ Redirect =
         if board is @select archiver, board
           Redirect.archive[board] = archiver
           break
+      unless Redirect.archive[board]
+        Redirect.archive[board] = "none"
 
-    if Redirect.archive[board]?
+    if Redirect.archive[board] isnt "none"
       url = @path Redirect.archive[board].base, Redirect.archive[board].type, data
     else
       if threadID

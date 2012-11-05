@@ -7111,8 +7111,11 @@
             break;
           }
         }
+        if (!Redirect.archive[board]) {
+          Redirect.archive[board] = "none";
+        }
       }
-      if (Redirect.archive[board] != null) {
+      if (Redirect.archive[board] !== "none") {
         url = this.path(Redirect.archive[board].base, Redirect.archive[board].type, data);
       } else {
         if (threadID) {
