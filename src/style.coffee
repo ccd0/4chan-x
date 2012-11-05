@@ -166,6 +166,7 @@ h1 {
   #{Style.agent}box-sizing: border-box;
   padding: 0 2px;
 }
+#credits,
 #qr > .move > span {
   float: right;
 }
@@ -347,9 +348,6 @@ h1 {
 }
 #theme_tab + div > div:not(.stylesettings) {
   margin-bottom: 3px;
-}
-#credits {
-  float: right;
 }
 #options ul li {
   overflow: auto;
@@ -596,7 +594,6 @@ div.opContainer {
 #options ul,
 #qr,
 .menubutton a,
-.pages td,
 body {
   padding: 0;
 }
@@ -881,20 +878,16 @@ img {
   margin-right: 1px;
 }
 /* Navigation */
-#{(if Conf["Custom Navigation"] then "" else "#boardNavDesktop,")}
-.pages /* Bottom Navigation */ {
+#{(if Conf["Custom Navigation"] then "" else "#boardNavDesktop")} {
   font-size: 0;
   color: transparent;
-  width: auto;
+  word-spacing: 2px;
 }
 .pages {
   text-align: #{Conf["Pagination Alignment"]};
 }
 #boardNavDesktop {
   text-align: #{Conf["Navigation Alignment"]};
-  width: auto;
-  padding-right: 0px;
-  margin-right: 0px;
 }
 #boardNavDesktopFoot {
   visibility: visible;
@@ -921,17 +914,6 @@ img.middlead:hover,
 img.bottomad:hover {
   opacity: 1;
   #{Style.agent}transition: opacity .3s linear;
-}
-#{(unless Conf["Custom Navigation"] then "#boardNavDesktop a," else "")}
-.pages a,
-.pages strong {
-  display: inline-block;
-  border: none;
-  text-align: center;
-  margin: 0 1px 0 2px;
-}
-.pages {
-  word-spacing: 10px;
 }
 /* moots announcements */
 #globalMessage {
@@ -1004,23 +986,19 @@ input[type="submit"] {
   max-width:85%;
   max-height:85%;
 }
-.fileText ~ a > img + img {
-  position: relative;
-  top: 0px;
-}
 #imageType {
   border: none;
   width: 90px;
   position: relative;
   bottom: 1px;
-}
-/* #qr dimensions */
-#qr {
-  height: auto;
+  margin: 0;
+  height: 17px;
 }
 /* Posts */
-#delform .fileText + br + a[target="_blank"] img + img {
+.fileText ~ a > img + img {
   margin: 0 0 25px;
+  position: relative;
+  top: 0px;
 }
 .fileText {
   margin-top: 17px;
@@ -1277,11 +1255,6 @@ html .subMenu {
 #options input,
 #qr {
   border: none;
-}
-#delform > div:not(.thread) select,
-.pages input[type="submit"] {
-  margin: 0;
-  height: 17px;
 }
 .prettyprint {
   display: block;
@@ -2388,7 +2361,7 @@ td[style="border: 1px dashed;"] {
 }
 #boardNavDesktopFoot:hover {
   height: 84px;
-  word-spacing: 3px;
+  word-spacing: 1px;
 }
 #navbotright {
   display: none;
@@ -2406,7 +2379,6 @@ td[style="border: 1px dashed;"] {
 #boardNavDesktopFoot:hover {
   height: 300px;
   overflow-y: scroll;
-  word-spacing: 0px;
 }
 #boardNavDesktopFoot a::after {
   content: " - " attr(title);
@@ -2611,25 +2583,17 @@ input.field.tripped:not(:hover):not(:focus) {
        css += """
 .pages {
   padding: 0;
-  visibility: hidden;
   top: auto;
-  bottom: 175px;
-  width: 290px;
+  bottom: 269px;
   #{Style.sidebarLocation[1]}: auto;
-  #{(if Style.sidebarLocation[0] == "left" then "left: -1px" else "right: " + (251 + Style.sidebarOffsetW) + "px")};
+  #{(if Style.sidebarLocation[0] == "left" then "left: 0" else "right: " + (250 + Style.sidebarOffsetW) + "px")};
   position: fixed;
   #{Style.agent}transform: rotate(90deg);
   #{Style.agent}transform-origin: bottom right;
-  letter-spacing: -1px;
-  word-spacing: -6px;
   z-index: 6;
   margin: 0;
-  height: 15px;
-}
-.pages a,
-.pages strong {
-  visibility: visible;
-  min-width: 0;
+  background: none transparent;
+  border: 0px none transparent;
 }
 """
 
