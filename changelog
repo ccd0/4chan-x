@@ -1,5 +1,10 @@
 master
 
+1.0.12
+- Zixaphir
+  Backlinks position option
+  Fixed a bug where the mascot editor was causing themes not to apply
+
 1.0.11
 - noface
   Added keybind to toggle the hide status of the QR
