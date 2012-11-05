@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                appchan x
 // @namespace           zixaphir
-// @version             1.0.12
+// @version             1.0.13
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           2012 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2009-2011 James Campos <james.r.campos@gmail.com>
@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
- *  appchan x - Version 1.0.12 - 2012-11-05
+ *  appchan x - Version 1.0.13 - 2012-11-05
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -452,7 +452,7 @@
       'Warnings': 'rgb(133,76,158)',
       'Shadow Color': 'rgba(128,128,128,0.5)',
       'Dark Theme': false,
-      'Custom CSS': ".board {\nbox-shadow: 0px 10px 10px 2px rgba(128,128,128,0.5);\nborder-radius: 3px;\n  padding:10px;\n}\n#options.reply.dialog,\n#options .dialog {\n  background-color:#FFF;\n  color:#000;\n  border:2px solid #CCC;\n  border-radius:6px;\n}\n#options ul {\n  border-bottom:1px solid #DBD8D2;\n  border-radius: 0px;\n}\n#options ul:last-of-type{\n  border:none;\n}\n#qp div.post{\n  background-color:rgba(255,255,255,0.9);\n  border:1px solid #D1A2FF;\n  color:#000;\n}"
+      'Custom CSS': ".board {\nbox-shadow: 0px 10px 10px 2px rgba(128,128,128,0.5);\nborder-radius: 3px;\n  padding:10px;\n}\n#options.reply.dialog,\n#options .dialog {\n  background-color:#FFF;\n  color:#000;\n  border:2px solid #CCC;\n}\n#options ul {\n  border-bottom:1px solid #DBD8D2;\n}\n#options ul:last-of-type{\n  border:none;\n}\n#qp div.post{\n  background-color:rgba(255,255,255,0.9);\n  border:1px solid #D1A2FF;\n  color:#000;\n}"
     },
     'Blackberry Jam': {
       'Author': 'seaweed',
@@ -647,7 +647,7 @@
       'Warnings': 'rgb(0,255,255)',
       'Shadow Color': 'rgba(44,44,44,0.4)',
       'Dark Theme': true,
-      'Custom CSS': "#qp div.post{\n  background-color:rgba(0,0,0,0.8);\n  border-radius:4px;\n  border: 1px solid #333;\n}\n#qr {\n  background-color: rgba(0,0,0,0.7);\n  border: 1px solid #333;\n}"
+      'Custom CSS': "#qp div.post{\n  background-color:rgba(0,0,0,0.8);\n  border: 1px solid #333;\n}\n#qr {\n  background-color: rgba(0,0,0,0.7);\n  border: 1px solid #333;\n}"
     },
     'PaisleyChan': {
       'Author': 'Ubuntufriend',
@@ -1529,7 +1529,7 @@
       "Warnings": "rgb(177,115,133)",
       "Shadow Color": "rgba(0,0,0,0.2)",
       "Dark Theme": true,
-      "Custom CSS": "html {\n}\n.board {\n  padding: 3px 4px;\n}\n.rice {\n  box-shadow:rgba(83,83,83,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#delform {\n  background: rgba(22,22,22,.8) !important;\n  border: 0 !important;\n  padding: 1px !important;\n  box-shadow: rgba(0,0,0,.8) 0 0 10px;\n}\ndiv.reply.post {\n  background-image:    -moz-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;\n  background-image:      -o-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;\n  background-image: -webkit-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;\n  border-bottom:#1f1f1f!important;\n  border-radius:5px!important\n}\n.thread:not(.stub) {\n  background: 0 !important\n}\na:not([href='javascript:;']){\n  text-shadow: #0f0f0f 0 1px;\n}"
+      "Custom CSS": "html {\n}\n.board {\n  padding: 3px 4px;\n}\n.rice {\n  box-shadow:rgba(83,83,83,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#delform {\n  background: rgba(22,22,22,.8) !important;\n  border: 0 !important;\n  padding: 1px !important;\n  box-shadow: rgba(0,0,0,.8) 0 0 10px;\n}\ndiv.reply.post {\n  background-image:    -moz-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;\n  background-image:      -o-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;\n  background-image: -webkit-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;\n  border-bottom:#1f1f1f!important;\n}\n.thread:not(.stub) {\n  background: 0 !important\n}\na:not([href='javascript:;']){\n  text-shadow: #0f0f0f 0 1px;\n}"
     }
   };
 
@@ -10249,7 +10249,7 @@
           css += "#qr {\n  z-index: 103;\n  border: 1px solid " + theme["Background Color"] + ";\n  background: " + theme["Background Color"] + ";\n  box-shadow: " + (Conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n#qr > .move,\n#qr textarea {\n  min-width: 300px;\n}\n#qr .captchaimg {\n  max-width: 300px;\n  overflow: hidden;\n}\n.autohide:not(:hover) > form {\n  display: none !important;\n}\ntextarea.field,\n#qr input[title=\"Verification\"],\n#qr > form > div {\n  width: 100%;\n}\n#dump {\n  width: 10%;\n}\n#qr div.userInfo .field:not(#dump) {\n  width: 30%;\n}\n#browse,\n#buttons input {\n  width: 30%;\n}\n#qr .captchainput,\n#qr div.captchainput {\n  width: 100%;\n}\n#file {\n  width: 40%;\n}\n#qr.captcha textarea.field {\n  min-height: 120px;\n}\n#qr textarea.field {\n  min-height: 160px;\n  resize: resize;\n  " + Style.agent + "transition:\n    color 0.25s linear,\n    background-color 0.25s linear,\n    background-image 0.25s linear,\n    border-color 0.25s linear,\n    height step-end,\n    width step-end;\n  margin: 0;\n}";
       }
       if (Conf["Fit Width Replies"]) {
-        css += ".thread .replyContainer {\n  position: relative;\n  clear: both;\n  display: table;\n  width: 100%;\n}\ndiv.post {\n  padding: 6px 0 0 10px;\n}\ndiv.reply.post {\n  display: table;\n  width: 100%;\n  height: 100%\n}\ndiv.op .menu_button,\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  position: absolute;\n  right: 6px;\n  top: 5px;\n  font-size: 9px;\n}\n.summary {\n  padding-left: 20px;\n  display: table;\n  clear: both;\n}\n.sideArrows {\n  width: 0;\n}\n.sideArrows a {\n  position: absolute;\n  right: 27px;\n  top: 5px;\n}\n.reply div.postInfo {\n  margin: 1px 0 0;\n  width: 100%;\n}\ndiv.op .menu_button,\n.sideArrows a,\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  opacity: 0;\n  " + Style.agent + "transition: opacity .3s ease-out 0s;\n  " + Style.agent + "user-select: none;\n}\ndiv.op:hover .menu_button,\n.replyContainer:hover div.reply .report_button,\n.replyContainer:hover div.reply .menu_button,\n.replyContainer:hover .sideArrows a {\n  opacity: 1;\n  " + Style.agent + "transition: opacity .3s ease-in 0s;\n}\ndiv.reply .inline .menu_button,\ndiv.reply .inline .sideArrows,\ndiv.reply .inline .sideArrows a,\ndiv.reply .inline .rice {\n  position: static;\n  opacity: 1;\n}\n.sideArrows a {\n  font-size: 9px;\n}\n#options.reply {\n  display: inline-block;\n}";
+        css += ".thread .replyContainer {\n  position: relative;\n  clear: both;\n  display: table;\n  width: 100%;\n}\ndiv.post {\n  padding: 6px 0 0 10px;\n}\n.replyContainer div.reply.post {\n  display: table;\n  width: 100%;\n  height: 100%\n}\ndiv.op .menu_button,\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  position: absolute;\n  right: 6px;\n  top: 5px;\n  font-size: 9px;\n}\n.summary {\n  padding-left: 20px;\n  display: table;\n  clear: both;\n}\n.sideArrows {\n  width: 0;\n}\n.sideArrows a {\n  position: absolute;\n  right: 27px;\n  top: 5px;\n}\n.reply div.postInfo {\n  margin: 1px 0 0;\n  width: 100%;\n}\ndiv.op .menu_button,\n.sideArrows a,\ndiv.reply .report_button,\ndiv.reply .menu_button {\n  opacity: 0;\n  " + Style.agent + "transition: opacity .3s ease-out 0s;\n  " + Style.agent + "user-select: none;\n}\ndiv.op:hover .menu_button,\n.replyContainer:hover div.reply .report_button,\n.replyContainer:hover div.reply .menu_button,\n.replyContainer:hover .sideArrows a {\n  opacity: 1;\n  " + Style.agent + "transition: opacity .3s ease-in 0s;\n}\ndiv.reply .inline .menu_button,\ndiv.reply .inline .sideArrows,\ndiv.reply .inline .sideArrows a,\ndiv.reply .inline .rice {\n  position: static;\n  opacity: 1;\n}\n.sideArrows a {\n  font-size: 9px;\n}\n#options.reply {\n  display: inline-block;\n}";
       } else {
         css += ".sideArrows {\n  padding: 3px;\n}\ndiv.post {\n  padding: 6px 5px 0 8px\n}\n.replyContainer {\n  display: table;\n}\ndiv.reply.post,\n.sideArrows {\n  display: table-cell;\n  overflow: visible;\n}";
       }
@@ -10842,7 +10842,7 @@
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '1.0.12',
+    version: '1.0.13',
     callbacks: []
   };
 

@@ -158,11 +158,9 @@ border-radius: 3px;
   background-color:#FFF;
   color:#000;
   border:2px solid #CCC;
-  border-radius:6px;
 }
 #options ul {
   border-bottom:1px solid #DBD8D2;
-  border-radius: 0px;
 }
 #options ul:last-of-type{
   border:none;
@@ -446,7 +444,6 @@ div.post:hover .name {
     'Custom CSS'                  : """
 #qp div.post{
   background-color:rgba(0,0,0,0.8);
-  border-radius:4px;
   border: 1px solid #333;
 }
 #qr {
@@ -2031,7 +2028,6 @@ div.reply.post {
   background-image:      -o-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;
   background-image: -webkit-repeating-linear-gradient(45deg, #303030, #292929, #303030, #303030 3px) !important;
   border-bottom:#1f1f1f!important;
-  border-radius:5px!important
 }
 .thread:not(.stub) {
   background: 0 !important

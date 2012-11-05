@@ -2180,7 +2180,7 @@ textarea.field,
 div.post {
   padding: 6px 0 0 10px;
 }
-div.reply.post {
+.replyContainer div.reply.post {
   display: table;
   width: 100%;
   height: 100%
