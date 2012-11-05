@@ -209,7 +209,7 @@ JSColor =
         when 4    then return [n,m,v]
         when 5    then return [v,m,n]
 
-    removePicker = () ->
+    removePicker = ->
       delete JSColor.picker.owner
       $.rm   JSColor.picker.boxB
 
@@ -409,12 +409,13 @@ JSColor =
       ]
 
     # redraw the pad pointer
-    redrawPad = () ->
+    redrawPad = ->
 
       yComponent = 1
 
       x = Math.round (THIS.hsv[0] / 6)          * (JSColor.images.pad[0] - 1)
       y = Math.round (1 - THIS.hsv[yComponent]) * (JSColor.images.pad[1] - 1)
+      
       JSColor.picker.padM.style.backgroundPosition =
         "#{THIS.pickerFace + THIS.pickerInset + x - Math.floor(JSColor.images.cross[0] / 2)}px " +
         "#{THIS.pickerFace + THIS.pickerInset + y - Math.floor(JSColor.images.cross[1] / 2)}px"
@@ -426,9 +427,11 @@ JSColor =
       for item in seg
         item.style.backgroundColor =
           "rgb(" +
-          "#{rgb[0]*(1-i/seg.length)*100}%, " +
-          "#{rgb[1]*(1-i/seg.length)*100}%, " +
-          "#{rgb[2]*(1-i/seg.length)*100}%)"
+          "#{rgb[0] * (1 - i / seg.length) * 100}%, " +
+          "#{rgb[1] * (1 - i / seg.length) * 100}%, " +
+          "#{rgb[2] * (1 - i / seg.length) * 100}%)"
+      
+      return
               
     redrawSld = ->
       # redraw the slider pointer

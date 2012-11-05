@@ -9264,19 +9264,17 @@
         return dims = [2 * o.pickerInset + 2 * o.pickerFace + JSColor.images.pad[0] + (2 * o.pickerInset + 2 * JSColor.images.arrow[0] + JSColor.images.sld[0]), 4 * o.pickerInset + 3 * o.pickerFace + JSColor.images.pad[1] + o.pickerButtonHeight];
       };
       redrawPad = function() {
-        var item, rgb, seg, x, y, yComponent, _i, _len, _results;
+        var item, rgb, seg, x, y, yComponent, _i, _len;
         yComponent = 1;
         x = Math.round((THIS.hsv[0] / 6) * (JSColor.images.pad[0] - 1));
         y = Math.round((1 - THIS.hsv[yComponent]) * (JSColor.images.pad[1] - 1));
         JSColor.picker.padM.style.backgroundPosition = ("" + (THIS.pickerFace + THIS.pickerInset + x - Math.floor(JSColor.images.cross[0] / 2)) + "px ") + ("" + (THIS.pickerFace + THIS.pickerInset + y - Math.floor(JSColor.images.cross[1] / 2)) + "px");
         seg = JSColor.picker.sld.childNodes;
         rgb = HSV_RGB(THIS.hsv[0], THIS.hsv[1], 1);
-        _results = [];
         for (_i = 0, _len = seg.length; _i < _len; _i++) {
           item = seg[_i];
-          _results.push(item.style.backgroundColor = "rgb(" + ("" + (rgb[0] * (1 - i / seg.length) * 100) + "%, ") + ("" + (rgb[1] * (1 - i / seg.length) * 100) + "%, ") + ("" + (rgb[2] * (1 - i / seg.length) * 100) + "%)"));
+          item.style.backgroundColor = "rgb(" + ("" + (rgb[0] * (1 - i / seg.length) * 100) + "%, ") + ("" + (rgb[1] * (1 - i / seg.length) * 100) + "%, ") + ("" + (rgb[2] * (1 - i / seg.length) * 100) + "%)");
         }
-        return _results;
       };
       redrawSld = function() {
         var y, yComponent;
