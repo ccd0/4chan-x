@@ -558,7 +558,7 @@ Config =
       'Backlinks Position': [
         'default'
         'The position of backlinks in relation to the post.'
-        ['default', 'lower right']
+        ['default', 'lower left', 'lower right']
       ]
       'Sage Highlighting': [
         'image'

@@ -74,7 +74,7 @@ label,
   cursor: pointer;
 }
 .hide_thread_button:not(.hidden_thread) {
-  padding: 0 5px;
+  padding: 5px 5px 0;
   float: left;
 }
 .menu_button {
@@ -704,6 +704,9 @@ div.post > blockquote .prettyprint span {
 div.post div.file .fileThumb {
   float: left;
   margin: 3px 20px 0;
+}
+.exthumbnail {
+  image-rendering: optimizeQuality;
 }
 a {
   outline: 0;
@@ -1651,8 +1654,8 @@ span.lit {
     switch Conf["Backlinks Position"]
       when 'lower left'
         css += """
-#delform .post.reply {
-  padding-bottom: 20px;
+#delform .reply.quoted {
+  padding-bottom: 15px;
 }
 #delform .reply .container {
   position: absolute;
@@ -1666,6 +1669,10 @@ span.lit {
 #delform .container {
   max-width: 50%;
 }
+#delform .inline .container {
+  position: static;
+  max-width: 100%;
+}
 """
       when 'lower right'
         css += """
@@ -1677,12 +1684,20 @@ span.lit {
   right: 5px;
   bottom: 0;
 }
-#delform .reply .container::before {
+#delform .container::before {
   content: "REPLIES: ";
   color: #{theme["Timestamps"]};
 }
 #delform .container {
   max-width: 50%;
+}
+#delform .inline .container {
+  position: static;
+  float: none;
+  max-width: 100%;
+}
+#delform .inline .container::before {
+  content: "";
 }
 """
 
@@ -2466,9 +2481,6 @@ td[style="border: 1px dashed;"] {
   #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
   margin-bottom: #{replyMargin}px;
-}
-.hide_thread_button:not(.hidden_thread) {
-  padding: 5px 5px 0;
 }
 .opContainer div.post:target
 .opContainer div.post.highlight {

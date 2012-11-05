@@ -2010,6 +2010,7 @@ QuoteBacklink =
       if Conf['Quote Inline']
         $.on link, 'click', QuoteInline.toggle
       unless container = $.id "blc#{qid}"
+        $.addClass el.parentNode, 'quoted'
         container = $.el 'span',
           className: 'container'
           id: "blc#{qid}"
