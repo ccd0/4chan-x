@@ -7154,7 +7154,7 @@
         if ((current = $.get("archiver/" + board + "/")) === data.name) {
           break;
         } else {
-          $.set("archiver/" + board + "/", "" + (this.select().slice(0)[0]));
+          $.set("archiver/" + board + "/", "" + (this.select()[0]));
           break;
         }
       }

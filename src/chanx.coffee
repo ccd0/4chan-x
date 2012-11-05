@@ -2754,7 +2754,7 @@ Redirect =
       if (current = $.get "archiver/#{board}/") is data.name
         break
       else
-        $.set "archiver/#{board}/", "#{@select()[..][0]}"
+        $.set "archiver/#{board}/", "#{@select()[0]}"
         break
     if current is undefined and (name = @select()[..][0]) isnt noarch
       $.set "archiver/#{board}/", "#{name}"
