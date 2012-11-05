@@ -9368,7 +9368,7 @@
 
   MascotTools = {
     init: function() {
-      var location, mascot, names, position, result;
+      var location, mascot, names, position;
       if (Conf['Mascot Position'] === 'bottom') {
         position = 0;
       } else {
@@ -9397,8 +9397,7 @@
       } else {
         location = 'left';
       }
-      result = "#mascot img {\n  position: fixed;\n  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\nbottom:  " + (mascot.position === 'bottom' ? (mascot.vOffset || 0) + 0 + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + position) + "px") + ";" + location + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\ntop:     " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";\nheight:  " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height) + "px" : "auto") + ";\nwidth:   " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width) + "px" : "auto") + ";;\npointer-events: none;\n}";
-      return result;
+      return "#mascot img {\n  position: fixed;\n  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\n  bottom: " + (mascot.position === 'bottom' ? ((mascot.vOffset || 0) + 0) + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + position) + "px") + ";\n  " + location + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\n  top: " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";\n  height: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + "px" : "auto") + ";\n  width: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + "px" : "auto") + ";\n  pointer-events: none;\n}";
     },
     categories: ["Anime", "Ponies", "Questionable", "Silhouette", "Western"],
     dialog: function(key) {
@@ -9571,7 +9570,6 @@
       if (!mascot.category) {
         mascot.category = MascotTools.categories[0];
       }
-      delete mascot.name;
       if (userMascots[aname]) {
         if (Conf["Deleted Mascots"].contains(aname)) {
           Conf["Deleted Mascots"].remove(aname);
@@ -9594,7 +9592,8 @@
         }
       }
       mascot["Customized"] = true;
-      userMascots[aname] = mascot;
+      userMascots[aname] = JSON.parse(JSON.stringify(mascot));
+      delete userMascots[aname].name;
       Conf["mascot"] = aname;
       $.set('userMascots', userMascots);
       return alert("Mascot \"" + aname + "\" saved.");

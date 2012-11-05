@@ -30,20 +30,56 @@ MascotTools =
     else
       location = 'left'
 
-    result = """
+    return  """
 #mascot img {
   position: fixed;
-  z-index: """ + (if Conf['Mascots Overlap Posts'] then '3' else '-1') + """;
-  bottom:  """ + (if mascot.position == 'bottom' then ( (mascot.vOffset or 0) + 0 + "px") else if mascot.position == 'top' then "auto" else ((mascot.vOffset or 0) + position) + "px") + """;
-  """ + location + """: """ + ((mascot.hOffset or 0) + (if (Conf['Sidebar'] == 'large' and mascot.center) then 25 else 0)) + """px;
-  top:     """ + (if mascot.position == 'top' then (mascot.vOffset or 0) + "px" else 'auto') + """;
-  height:  """ + (if mascot.height and isNaN parseFloat mascot.height then mascot.height else if mascot.height then parseInt(mascot.height) + "px" else "auto") + """;
-  width:   """ + (if mascot.width  and isNaN parseFloat mascot.width  then mascot.width  else if mascot.width  then parseInt(mascot.width)  + "px" else "auto") + """;;
+  z-index: #{
+    if Conf['Mascots Overlap Posts']
+      '3'
+    else
+      '-1'
+  };
+  bottom: #{
+    if mascot.position is 'bottom'
+      ((mascot.vOffset or 0) + 0) + "px"
+    else if mascot.position is 'top'
+      "auto"
+    else
+      ((mascot.vOffset or 0) + position) + "px"
+  };
+  #{location}: #{
+    (mascot.hOffset or 0) + (
+      if Conf['Sidebar'] is 'large' and mascot.center
+        25 
+      else
+        0
+    )
+  }px;
+  top: #{
+    if mascot.position is 'top'
+      (mascot.vOffset or 0) + "px"
+    else
+      'auto'
+  };
+  height: #{
+    if mascot.height and isNaN parseFloat mascot.height
+      mascot.height
+    else if mascot.height
+      parseInt(mascot.height, 10) + "px"
+    else
+      "auto"
+  };
+  width: #{
+    if mascot.width and isNaN parseFloat mascot.width
+      mascot.width
+    else if mascot.width
+      parseInt(mascot.width,  10) + "px"
+    else
+      "auto"
+  };
   pointer-events: none;
 }
 """
-
-    return result
 
   categories: [
     "Anime"
@@ -167,6 +203,7 @@ MascotTools =
             $.after input, fileInput
 
           else
+          
             $.on input, 'blur', ->
               editMascot[@name] = @value
               MascotTools.addMascot editMascot
@@ -269,8 +306,6 @@ MascotTools =
     unless mascot.category
       mascot.category = MascotTools.categories[0]
 
-    delete mascot.name
-
     if userMascots[aname]
 
       if Conf["Deleted Mascots"].contains aname
@@ -284,13 +319,13 @@ MascotTools =
           alert "Creation of \"#{aname}\" aborted."
           return
 
-
     for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
       unless Conf[type].contains aname
         Conf[type].push aname
         $.set type, Conf[type]
     mascot["Customized"] = true;
-    userMascots[aname]   = mascot
+    userMascots[aname]   = JSON.parse(JSON.stringify(mascot))
+    delete userMascots[aname].name
     Conf["mascot"]       = aname
     $.set 'userMascots', userMascots
     alert "Mascot \"#{aname}\" saved."
