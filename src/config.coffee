@@ -459,10 +459,6 @@ Config =
 
   updater:
     checkbox:
-      'Reset Count on Focus': [
-        false
-        'Reset the post counter on window focus'
-      ]
       'Scrolling': [
         false
         'Scroll updated posts into view. Only enabled at bottom of page.'
@@ -558,6 +554,11 @@ Config =
       'OP Background': [
         false
         'Adds a border and background color to the OP Post, as if it were a reply.'
+      ]
+      'Backlinks Position': [
+        'default'
+        'The position of backlinks in relation to the post.'
+        ['default', 'lower right']
       ]
       'Sage Highlighting': [
         'image'

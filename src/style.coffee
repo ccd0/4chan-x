@@ -1,6 +1,6 @@
   css: (theme) ->
 
-    position = 
+    position =
       if Conf["Sidebar Location"] is "right"
         switch Conf["Sidebar"]
           when "hide"
@@ -20,9 +20,9 @@
           else
             "left"
 
-    icons    = 
+    icons    =
       Icons.header.png + Icons.themes[Conf["Icons"]][if theme["Dark Theme"] then "dark" else "light"]
-      
+
     if Conf["Sidebar"] == "large"
       Style.sidebarOffsetW = 51
       Style.sidebarOffsetH = 17
@@ -866,7 +866,6 @@ hr {
 }
 .boxcontent > hr,
 .entry:last-child,
-.pages,
 a.forwardlink,
 h3,
 img {
@@ -1168,12 +1167,6 @@ body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
 #fs_status a {
   color: #{theme["Text"]} !important;
 }
-[alt="sticky"] + a::before {
-  content: "Sticky | ";
-}
-[alt="closed"] + a::before {
-  content: "Closed | ";
-}
 .identityIcon,
 img[alt="Sticky"],
 img[alt="Closed"] {
@@ -1193,10 +1186,6 @@ input[type="submit"]:hover {
 }
 #boardNavDesktop .current {
   font-weight: bold;
-}
-div.pagelist {
-  background: none;
-  border: none;
 }
 .focused.entry {
   background-color: transparent;
@@ -1382,7 +1371,7 @@ div.reply.post:target {
   border: 1px solid #{theme["Highlighted Reply Border"]};
 }
 #boardNavDesktop,
-.pages {
+.pagelist {
   background: #{theme["Navigation Background"]};
   border: 1px solid #{theme["Navigation Border"]};
   #{Style.sidebarLocation[0]}: #{sidebar}px;
@@ -1656,10 +1645,49 @@ span.lit {
 }
 """
 
+
+    switch Conf["Backlinks Position"]
+      when 'lower left'
+        css += """
+#delform .post.reply {
+  padding-bottom: 20px;
+}
+#delform .reply .container {
+  position: absolute;
+  left: 5px;
+  bottom: 0;
+}
+#delform .reply .container::before {
+  content: "REPLIES: ";
+  color: #{theme["Timestamps"]};
+}
+#delform .container {
+  max-width: 50%;
+}
+"""
+      when 'lower right'
+        css += """
+#delform .op .container {
+  float: right;
+}
+#delform .reply .container {
+  position: absolute;
+  right: 5px;
+  bottom: 0;
+}
+#delform .reply .container::before {
+  content: "REPLIES: ";
+  color: #{theme["Timestamps"]};
+}
+#delform .container {
+  max-width: 50%;
+}
+"""
+
     switch Conf["4chan Banner"]
       when "at sidebar top"
         Style.logoOffset = 83 + Style.sidebarOffsetH
-          
+
         css += """
 .boardBanner {
   position: fixed;
@@ -1705,9 +1733,10 @@ span.lit {
   display: table;
   margin: 0 auto;
   text-align: center;
+  z-index: -1;
 }
 """
-        
+
       when "hide"
         Style.logoOffset = 0
         css += """
@@ -2273,14 +2302,14 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
       switch Conf["Pagination"]
         when "sticky top", "top"
           css += """
-.pages {
+.pagelist {
   border-radius: 0 0 3px 3px;
 }
 """
 
         when "sticky bottom", "bottom"
           css += """
-.pages {
+.pagelist {
   border-radius: 3px 3px 0 0;
 }
 """
@@ -2555,7 +2584,7 @@ input.field.tripped:not(:hover):not(:focus) {
     switch Conf["Pagination"]
       when "sticky top"
         css += """
-.pages {
+.pagelist {
   position: fixed;
   top: 0;
   z-index: 4;
@@ -2564,7 +2593,7 @@ input.field.tripped:not(:hover):not(:focus) {
 
       when "sticky bottom"
         css += """
-.pages {
+.pagelist {
   position: fixed;
   bottom: 0;
   z-index: 4;
@@ -2573,7 +2602,7 @@ input.field.tripped:not(:hover):not(:focus) {
 
       when "top"
         css += """
-.pages {
+.pagelist {
   position: absolute;
   top: 0;
 }
@@ -2581,7 +2610,7 @@ input.field.tripped:not(:hover):not(:focus) {
 
       when "on side"
        css += """
-.pages {
+.pagelist {
   padding: 0;
   top: auto;
   bottom: 269px;
@@ -2599,7 +2628,7 @@ input.field.tripped:not(:hover):not(:focus) {
 
       when "hide"
         css += """
-.pages {
+.pagelist {
   display: none;
 }
 """

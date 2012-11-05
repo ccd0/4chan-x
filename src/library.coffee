@@ -60,6 +60,10 @@ UI =
       if clientX <= clientWidth - 400
         style.left = clientX + 45 + 'px'
         style.right = null
+      else
+        style.left  = null
+        style.right = clientWidth - clientX + 20 + 'px'
+        top = clientY - 120
 
     else
 
