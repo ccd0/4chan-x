@@ -30,7 +30,7 @@ MascotTools =
     else
       location = 'left'
 
-    return  """
+    return """
 #mascot img {
   position: fixed;
   z-index: #{
@@ -97,7 +97,7 @@ MascotTools =
       editMascot = {}
     editMascot.name = key or ''
     MascotTools.addMascot editMascot
-    Style.addStyle
+    Style.addStyle()
     layout =
       name: [
         "Mascot Name"
@@ -185,7 +185,7 @@ MascotTools =
             $.on input, 'blur', ->
               editMascot[@name] = @value
               MascotTools.addMascot editMascot
-              Style.addStyle
+              Style.addStyle()
 
             fileInput = $.el 'input'
               type:     "file"
@@ -207,14 +207,14 @@ MascotTools =
             $.on input, 'blur', ->
               editMascot[@name] = @value
               MascotTools.addMascot editMascot
-              Style.addStyle
+              Style.addStyle()
 
         when "number"
           div = @input item, name
           $.on $('input', div), 'blur', ->
             editMascot[@name] = parseInt @value
             MascotTools.addMascot editMascot
-            Style.addStyle
+            Style.addStyle()
 
         when "select"
           value = editMascot[name] or item[1]
@@ -231,7 +231,7 @@ MascotTools =
           $.on $('select', div), 'change', ->
             editMascot[@name] = @value
             MascotTools.addMascot editMascot
-            Style.addStyle
+            Style.addStyle()
 
         when "checkbox"
           value = editMascot[name] or item[1]
@@ -241,7 +241,7 @@ MascotTools =
           $.on $('input', div), 'click', ->
             editMascot[@name] = if @checked then true else false
             MascotTools.addMascot editMascot
-            Style.addStyle
+            Style.addStyle()
 
       $.add $("#mascotcontent", dialog), div
 
@@ -278,7 +278,7 @@ MascotTools =
 
       el.previousSibling.value = val
       editMascot.image = val
-      Style.addStyle
+      Style.addStyle()
 
     reader.readAsDataURL file
 
