@@ -1676,6 +1676,9 @@ span.lit {
 """
       when 'lower right'
         css += """
+#delform .reply.quoted {
+  padding-bottom: 15px;
+}
 #delform .op .container {
   float: right;
 }

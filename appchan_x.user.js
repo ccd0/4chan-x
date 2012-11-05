@@ -10156,7 +10156,7 @@
           css += "#delform .reply.quoted {\n  padding-bottom: 15px;\n}\n#delform .reply .container {\n  position: absolute;\n  left: 5px;\n  bottom: 0;\n}\n#delform .reply .container::before {\n  content: \"REPLIES: \";\n  color: " + theme["Timestamps"] + ";\n}\n#delform .container {\n  max-width: 50%;\n}\n#delform .inline .container {\n  position: static;\n  max-width: 100%;\n}";
           break;
         case 'lower right':
-          css += "#delform .op .container {\n  float: right;\n}\n#delform .reply .container {\n  position: absolute;\n  right: 5px;\n  bottom: 0;\n}\n#delform .container::before {\n  content: \"REPLIES: \";\n  color: " + theme["Timestamps"] + ";\n}\n#delform .container {\n  max-width: 50%;\n}\n#delform .inline .container {\n  position: static;\n  float: none;\n  max-width: 100%;\n}\n#delform .inline .container::before {\n  content: \"\";\n}";
+          css += "#delform .reply.quoted {\n  padding-bottom: 15px;\n}\n#delform .op .container {\n  float: right;\n}\n#delform .reply .container {\n  position: absolute;\n  right: 5px;\n  bottom: 0;\n}\n#delform .container::before {\n  content: \"REPLIES: \";\n  color: " + theme["Timestamps"] + ";\n}\n#delform .container {\n  max-width: 50%;\n}\n#delform .inline .container {\n  position: static;\n  float: none;\n  max-width: 100%;\n}\n#delform .inline .container::before {\n  content: \"\";\n}";
       }
       switch (Conf["4chan Banner"]) {
         case "at sidebar top":
