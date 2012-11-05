@@ -154,10 +154,12 @@ div.subMenu.reply {
 #browse,
 #main_tab + div,
 #mascotConf input,
-#mascotConf input:#{Style.agent}placeholder,
 #style_tab + div .suboptions,
 .center,
 h1 {
+  text-align: center;
+}
+#mascotConf input:#{Style.agent}placeholder {
   text-align: center;
 }
 #qr > .move {
