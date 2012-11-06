@@ -544,11 +544,6 @@ input[type="submit"] {
   padding-left: 5px;
   padding-right: 5px;
   text-overflow: ellipsis;
-} {
-  padding-top: 5px;
-}
-#qp {
-  padding: 2px 2px 5px;
 }
 #qp .post {
   border: none;
@@ -1082,9 +1077,6 @@ div.post:not(#qp):not([hidden]) {
 }
 #qp div.op {
   display: table;
-}
-#qp div.post {
-  padding: 2px 6px;
 }
 #qp div.post img {
   max-width: 300px;
