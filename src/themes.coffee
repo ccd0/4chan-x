@@ -745,12 +745,6 @@ div.reply.highlight div.reply {
 .thread .opContainer {
   padding: 0 3px;
 }
-body,
-.field {
-  text-shadow: 0 1px 0 #ccc,
-    1px 1px 0 #ccc;
-    1px 0 0 #ccc;
-}
 .thread .replyContainer {
   margin-bottom: 0;
 }
@@ -811,19 +805,6 @@ body,
 }
 .thread .replyContainer:last-of-type div.reply.post {
   border: none;
-}
-#boardTitle .boardSubtitle,
-#updater .move,
-#stats .move,
-#prefetch {
-  text-shadow: 1px 1px 0 rgb(238, 242, 255), 
-    -1px 1px 0 rgb(238, 242, 255), 
-    1px -1px 0 rgb(238, 242, 255), 
-    -1px -1px 0 rgb(238, 242, 255),
-    1px 0 0 rgb(238, 242, 255), 
-    -1px 0 0 rgb(238, 242, 255), 
-    0 -1px 0 rgb(238, 242, 255), 
-    0 -1px 0 rgb(238, 242, 255);
 }
 #qp .prettyprint {
   background-color: rgba(0,0,0,.3);

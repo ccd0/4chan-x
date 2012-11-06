@@ -551,6 +551,10 @@ Config =
         false
         'Make post background colors alternate every other post.'
       ]
+      'Color Reply Headings': [
+        false
+        'Give the post info and file info a background.'
+      ]
       'OP Background': [
         false
         'Adds a border and background color to the OP Post, as if it were a reply.'

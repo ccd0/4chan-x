@@ -162,10 +162,23 @@ h1 {
 #mascotConf input:#{Style.agent}placeholder {
   text-align: center;
 }
+#boardNavDesktopFoot,
+#qr .warning,
+#qr > .move,
+#threadselect select,
+.field,
+.file,
+.postInfo,
+.thumbnail,
+div.post,
+div.post.highlight,
+input,
+input[type="submit"] {
+  #{Style.agent}box-sizing: border-box;
+  box-sizing: border-box;
+}
 #qr > .move {
   overflow: hidden;
-  box-sizing: border-box;
-  #{Style.agent}box-sizing: border-box;
   padding: 0 2px;
 }
 #credits,
@@ -213,8 +226,6 @@ h1 {
   background-position: 50% 20% !important;
   background-size: cover !important;
   border: 1px solid #666;
-  box-sizing: border-box;
-  #{Style.agent}box-sizing: border-box;
   cursor: move;
   display: inline-block;
   height: 90px; width: 90px;
@@ -787,7 +798,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
 .sideArrows a {
   z-index: 4;
 }
-#boardTitle,
 #globalMessage::after,
 .boardBanner,
 .replyhider a {
@@ -796,8 +806,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
 div.post,
 div.post.highlight {
   z-index: 0;
-  #{Style.agent}box-sizing: border-box;
-  box-sizing: border-box;
 }
 #navtopright .exlinksOptionsLink::after,
 #navtopright .settingsWindowLink::after,
@@ -855,7 +863,7 @@ div.navLinks > a:first-of-type:hover::after {
   opacity: 1;
 }
 #boardTitle {
-  font-size: 30px;
+  font-size: 22px;
   font-weight: 400;
 }
 .boardBanner {
@@ -905,8 +913,6 @@ img {
   height: 0;
   width: #{(248 + Style.sidebarOffsetW)}px !important;
   overflow: hidden;
-  #{Style.agent}box-sizing: border-box;
-  box-sizing: border-box;
 }
 img.topad,
 img.middlead,
@@ -971,8 +977,6 @@ input,
 .field,
 input[type="submit"] {
   vertical-align: bottom;
-  #{Style.agent}box-sizing: border-box;
-  box-sizing: border-box;
   padding: 1px;
 }
 #browse,
@@ -999,6 +1003,12 @@ input[type="submit"] {
   height: 17px;
 }
 /* Posts */
+div.postInfo {
+  padding: 3px 0 0 8px;
+}
+div.file {
+  padding-left: 8px;
+}
 .fileText ~ a > img + img {
   margin: 0 0 25px;
   position: relative;
@@ -1287,7 +1297,6 @@ html {
 .suboptions {
   padding: 5px;
 }
-#boardTitle,
 #prefetch,
 #showQR,
 #spoilerLabel,
@@ -1298,6 +1307,14 @@ html {
     -1px 1px 1px #{theme["Background Color"]},
     1px -1px 1px #{theme["Background Color"]},
     -1px -1px 1px #{theme["Background Color"]}
+}
+#boardTitle {
+  text-shadow:
+    1px 1px 1px #{theme["Background Color"]},
+    -1px 1px 1px #{theme["Background Color"]},
+    1px -1px 1px #{theme["Background Color"]},
+    -1px -1px 1px #{theme["Background Color"]},
+    0 0 7px #{theme["Text"]};
 }
 #browse,
 #ft li,
@@ -1673,6 +1690,9 @@ span.lit {
   position: static;
   max-width: 100%;
 }
+#delform .inline .container::before {
+  content: "";
+}
 """
       when 'lower right'
         css += """
@@ -1878,35 +1898,35 @@ hr {
       when "phat"
         css += """
 .postContainer blockquote {
-  margin: 24px 60px 24px 50px;
+  margin: 24px 60px 24px 58px;
 }
 """
 
       when "normal"
         css += """
 .postContainer blockquote {
-  margin: 12px 40px 12px 30px;
+  margin: 12px 40px 12px 38px;
 }
 """
 
       when "slim"
         css += """
 .postContainer blockquote {
-  margin: 6px 20px 6px 15px;
+  margin: 6px 20px 6px 23px;
 }
 """
 
       when "super slim"
         css += """
 .postContainer blockquote {
-  margin: 3px 10px 3px 7px;
+  margin: 3px 10px 3px 15px;
 }
 """
 
       when "anorexia"
         css += """
 .postContainer blockquote {
-  margin: 1px 5px 1px 3px;
+  margin: 1px 5px 1px 11px;
 }
 """
 
@@ -2195,9 +2215,6 @@ textarea.field,
   display: table;
   width: 100%;
 }
-div.post {
-  padding: 6px 0 0 10px;
-}
 .replyContainer div.reply.post {
   display: table;
   width: 100%;
@@ -2225,7 +2242,6 @@ div.reply .menu_button {
   top: 5px;
 }
 .reply div.postInfo {
-  margin: 1px 0 0;
   width: 100%;
 }
 div.op .menu_button,
@@ -2262,9 +2278,6 @@ div.reply .inline .rice {
 .sideArrows {
   padding: 3px;
 }
-div.post {
-  padding: 6px 5px 0 8px
-}
 .replyContainer {
   display: table;
 }
@@ -2288,6 +2301,27 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   background-image: #{Style.agent}linear-gradient(#{(if theme["Dark Theme"] then "rgba(255,255,255,0.02), rgba(255,255,255,0.02)" else "rgba(0,0,0,0.05), rgba(0,0,0,0.05)")});
 }
 """
+
+    if Conf["Color Reply Headings"]
+      if theme["Dark Theme"]
+        css += """
+.postInfo {
+  background: rgba(255,255,255,0.05);
+}
+.file {
+  background: rgba(255,255,255,0.025);
+}
+"""
+      else
+        css += """
+.postInfo {
+  background: rgba(0,0,0,0.1);
+}
+.file {
+  background: rgba(0,0,0,0.05);
+}
+"""
+
 
     if Conf["Filtered Backlinks"]
       css += """
