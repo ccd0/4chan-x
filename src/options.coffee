@@ -200,7 +200,7 @@ Options =
     
     # Archiver
     archiver = $ 'select[name=archiver]', dialog
-    select = Redirect.select()[..]
+    select = Redirect.select()
     for name in select
       return if archiver.length >= select.length
       (option = d.createElement 'option').textContent = name
@@ -210,7 +210,7 @@ Options =
       $.on archiver, 'mouseup', ->
         if Redirect.archive[g.BOARD]
           delete Redirect.archive[g.BOARD]
-        $.set "archiver/#{g.BOARD}/", "#{@value}"
+        $.set "archiver/#{g.BOARD}/", @value
 
     # Sauce
     # The sauce HTML is already there, so I just fill up the textarea with data from localstorage

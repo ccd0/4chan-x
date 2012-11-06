@@ -2990,7 +2990,7 @@
       filter = $('select[name=filter]', dialog);
       $.on(filter, 'change', Options.filter);
       archiver = $('select[name=archiver]', dialog);
-      select = Redirect.select().slice(0);
+      select = Redirect.select();
       for (_i = 0, _len = select.length; _i < _len; _i++) {
         name = select[_i];
         if (archiver.length >= select.length) {
@@ -3005,7 +3005,7 @@
           if (Redirect.archive[g.BOARD]) {
             delete Redirect.archive[g.BOARD];
           }
-          return $.set("archiver/" + g.BOARD + "/", "" + this.value);
+          return $.set("archiver/" + g.BOARD + "/", this.value);
         });
       }
       sauce = $('#sauces', dialog);
@@ -7125,7 +7125,7 @@
       }
     ],
     select: function(data, board) {
-      var arch, current, name, noarch, type, _i, _j, _len, _len1, _ref, _ref1;
+      var arch, current, name, noarch, type, _i, _len, _ref;
       noarch = 'No archiver available.';
       if (!board) {
         arch = (function() {
@@ -7148,22 +7148,24 @@
           return [noarch];
         }
       }
-      _ref = data.name;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        name = _ref[_i];
-        if ((current = $.get("archiver/" + board + "/")) === data.name) {
-          break;
-        } else {
-          $.set("archiver/" + board + "/", "" + (this.select()[0]));
-          break;
+      if (!(((function() {
+        var _i, _len, _ref, _results;
+        _ref = this.archiver;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          name = _ref[_i];
+          _results.push(name.name);
         }
+        return _results;
+      }).call(this)).contains(current = $.get("archiver/" + board + "/")) && (name = this.select()[0]) === noarch)) {
+        $.set("archiver/" + board + "/", name);
       }
-      if (current === void 0 && (name = this.select().slice(0)[0]) !== noarch) {
-        $.set("archiver/" + board + "/", "" + name);
+      if (current === void 0 && (name = this.select()[0]) !== noarch) {
+        $.set("archiver/" + board + "/", name);
       }
-      _ref1 = data.boards;
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        type = _ref1[_j];
+      _ref = data.boards;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
         if (current === data.name && data.boards.contains(board)) {
           return board;
         }
