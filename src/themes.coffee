@@ -1094,7 +1094,7 @@ div.reply.highlight div.reply {
     "Timestamps"                  : "rgb(77,77,76)"
     "Inputs"                      : "rgb(77,77,76)"
     "Warnings"                    : "rgb(200,40,41)"
-    "Shadow Color"                : "rgba(255,255,255,.9)"
+    "Shadow Color"                : "rgba(0,0,0,0.05)"
     "Dark Theme"                  : false
     "Custom CSS"                  : """
 .rice {
@@ -1213,12 +1213,6 @@ textarea,
 .pagelist,
 #imgControls {
   background:rgba(229, 219, 240,.9)!important;
-}
-#delform,
-.replyContainer,
-.hidden_thread,
-.stub {
-  border-radius:0!important
 }
 .replyContainer,
 .hidden_thread,

@@ -233,9 +233,10 @@ $.extend $,
     $.extend el, properties if properties
     el
   on: (el, events, handler) ->
-    for event in events.split ' '
-      el.addEventListener event, handler, false
-    return
+    if el
+      for event in events.split ' '
+        el.addEventListener event, handler, false
+      return
   off: (el, events, handler) ->
     for event in events.split ' '
       el.removeEventListener event, handler, false

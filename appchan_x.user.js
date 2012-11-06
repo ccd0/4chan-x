@@ -1039,7 +1039,7 @@
       "Timestamps": "rgb(77,77,76)",
       "Inputs": "rgb(77,77,76)",
       "Warnings": "rgb(200,40,41)",
-      "Shadow Color": "rgba(255,255,255,.9)",
+      "Shadow Color": "rgba(0,0,0,0.05)",
       "Dark Theme": false,
       "Custom CSS": ".rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\nnput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n.boardTitle {\n  color: #cc5ec1 !important;\n  text-shadow: 1px 1px 1px #772E28 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}"
     },
@@ -1090,7 +1090,7 @@
       "Warnings": "rgb(153,0,0)",
       "Shadow Color": "rgba(254,237,255,.9)",
       "Dark Theme": false,
-      "Custom CSS": ".rice {\n  box-shadow:rgba(255,253,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#boardNavDesktop,\n.pagelist,\n#imgControls {\n  background:rgba(229, 219, 240,.9)!important;\n}\n#delform,\n.replyContainer,\n.hidden_thread,\n.stub {\n  border-radius:0!important\n}\n.replyContainer,\n.hidden_thread,\n.stub {\n  border-left:0!important;\n  border-top:0!important;\n}\n.boardTitle {\n  color: #591177 !important;\n  text-shadow: 1px 1px 1px #222 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}\n.postNum a {\n  color: #000000 !important;\n}"
+      "Custom CSS": ".rice {\n  box-shadow:rgba(255,253,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n#boardNavDesktop,\n.pagelist,\n#imgControls {\n  background:rgba(229, 219, 240,.9)!important;\n}\n.replyContainer,\n.hidden_thread,\n.stub {\n  border-left:0!important;\n  border-top:0!important;\n}\n.boardTitle {\n  color: #591177 !important;\n  text-shadow: 1px 1px 1px #222 !important;\n}\n.boardSubtitle,\n.boardBanner .boardSubtitle > a {\n  text-shadow: none !important;\n}\n.postNum a {\n  color: #000000 !important;\n}"
     },
     "Vimyanized Dark": {
       "Author": "seaweed",
@@ -2633,10 +2633,12 @@
     },
     on: function(el, events, handler) {
       var event, _i, _len, _ref;
-      _ref = events.split(' ');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        event = _ref[_i];
-        el.addEventListener(event, handler, false);
+      if (el) {
+        _ref = events.split(' ');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          event = _ref[_i];
+          el.addEventListener(event, handler, false);
+        }
       }
     },
     off: function(el, events, handler) {
@@ -10184,7 +10186,7 @@
         css += ".boardBanner {\n  opacity: 0.5;\n  " + Style.agent + "transition: opacity 0.3s ease-in-out .5s;\n}\n.boardBanner:hover {\n  opacity: 1;\n  " + Style.agent + "transition: opacity 0.3s ease-in;\n}";
       }
       if (Conf["4chan Banner Reflection"]) {
-        css += "/* From 4chan SS / OneeChan */\n.gecko .boardBanner::after {\n  background-image: -moz-element(#Banner);\n  bottom: -100%;\n  content: '';\n  left: 0;\n  mask: url(\"data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask\");\n  opacity: .2;\n  position: absolute;\n  right: 0;\n  top: 100%;\n  z-index: 1;\n  -moz-transform: scaleY(-1);\n}\n\n.webkit #Banner {\n  -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));\n}";
+        css += "/* From 4chan SS / OneeChan */\n.gecko .boardBanner::after {\n  background-image: -moz-element(#Banner);\n  bottom: -100%;\n  content: '';\n  left: 0;\n  mask: url(\"data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask\");\n  opacity: 0.3;\n  position: absolute;\n  right: 0;\n  top: 100%;\n  z-index: 1;\n  -moz-transform: scaleY(-1);\n}\n\n.webkit #Banner {\n  -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));\n}";
       }
       if (Conf["Slideout Transitions"]) {
         css += "#globalMessage,\n#watcher {\n  " + Style.agent + "transition: height .5s linear;\n}\n#boardNavDesktopFoot {\n  " + Style.agent + "transition: height .5s linear, border 0s ease-in-out .5s;\n}\nimg.topad,\nimg.middlead,\nimg.bottomad {\n  " + Style.agent + "transition: opacity .3s ease-in-out .3s;\n}\n#qr {\n  " + Style.agent + "transition: " + Style.sidebarLocation[0] + " .3s ease-in-out 1s;\n}\n#qr:hover,\n#qr.focus,\n#qr.dump {\n  " + Style.agent + "transition: " + Style.sidebarLocation[0] + " .3s linear;\n}\n#qrtab {\n  " + Style.agent + "transition: opacity .3s ease-in-out 1s, " + Style.sidebarLocation[0] + " .3s ease-in-out 1s;\n}\n#imgControls {\n  " + Style.agent + "transition: width .2s linear;\n}";
@@ -10293,7 +10295,7 @@
           case "bottom":
             css += ".pagelist {\n  border-radius: 3px 3px 0 0;\n}";
         }
-        css += ".rice {\n  border-radius: 2px;\n}\n#boardNavDesktopFoot,\n#content,\n#options .mascot,\n#options ul,\n#options,\n#qp,\n#qp div.post,\n#stats,\n#updater,\n#watcher,\n#globalMessage,\n.inline div.reply,\ndiv.opContainer,\ndiv.replyContainer,\ndiv.post,\nh2,\ntd[style=\"border: 1px dashed;\"] {\n  border-radius: 3px !important;\n}\n#qrtab {\n  border-radius: 6px 6px 0 0;\n}\n.qphl {\n  " + Style.agent + "outline-radius: 3px;\n}";
+        css += ".rice {\n  border-radius: 2px;\n}\n#boardNavDesktopFoot,\n#content,\n#options .mascot,\n#options ul,\n#options,\n#qp,\n#qp div.post,\n#stats,\n#updater,\n#watcher,\n#globalMessage,\n.inline div.reply,\ndiv.opContainer,\ndiv.replyContainer,\ndiv.post,\nh2,\ntd[style=\"border: 1px dashed;\"] {\n  border-radius: 3px;\n}\n.reply .postInfo {\n  border-radius: 3px 3px 0 0;\n}\n#qrtab {\n  border-radius: 6px 6px 0 0;\n}\n.qphl {\n  " + Style.agent + "outline-radius: 3px;\n}";
       }
       if (Conf["Slideout Watcher"]) {
         css += "#watcher:not(:hover) {\n  border: 0 none;\n}\n#watcher {\n  position: fixed;\n  " + Style.sidebarLocation[0] + ": 2px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  bottom: auto !important;\n  height: 0;\n  width: " + (248 + Style.sidebarOffsetW) + "px !important;\n  overflow: hidden;\n  " + Style.agent + "box-sizing: border-box;\n  box-sizing: border-box;\n  padding: 0 10px;\n}\n#watcher:hover {\n  height: 250px;\n  padding-bottom: 4px;\n}";

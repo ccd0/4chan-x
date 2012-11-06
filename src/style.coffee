@@ -1798,7 +1798,7 @@ span.lit {
   content: '';
   left: 0;
   mask: url("data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask");
-  opacity: .2;
+  opacity: 0.3;
   position: absolute;
   right: 0;
   top: 100%;
@@ -2381,7 +2381,10 @@ div.replyContainer,
 div.post,
 h2,
 td[style="border: 1px dashed;"] {
-  border-radius: 3px !important;
+  border-radius: 3px;
+}
+.reply .postInfo {
+  border-radius: 3px 3px 0 0;
 }
 #qrtab {
   border-radius: 6px 6px 0 0;
