@@ -7160,26 +7160,27 @@
       }
     },
     to: function(data) {
-      var archiver, board, threadID, url, _i, _len, _ref;
+      var archiver, board, cache, threadID, url, _i, _len, _ref;
       if (!data.isSearch) {
         threadID = data.threadID;
       }
       board = data.board;
-      if (!Redirect.archive[board]) {
+      cache = Redirect.archive[board];
+      if (!cache) {
         _ref = this.archiver;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           archiver = _ref[_i];
           if (board === this.select(archiver, board)) {
-            Redirect.archive[board] = archiver;
+            cache = archiver;
             break;
           }
         }
-        if (!Redirect.archive[board]) {
-          Redirect.archive[board] = "none";
+        if (!cache) {
+          cache = "none";
         }
       }
-      if (Redirect.archive[board] !== "none") {
-        url = this.path(Redirect.archive[board].base, Redirect.archive[board].type, data);
+      if (cache !== "none") {
+        url = this.path(cache.base, cache.type, data);
       } else {
         if (threadID) {
           return url = "//boards.4chan.org/" + board + "/";

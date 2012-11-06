@@ -2011,6 +2011,7 @@ a:not([href='javascript:;']){
   text-shadow: #0f0f0f 0 1px;
 }
 """
+
   "安心院なじみ ":
     "Author"                      :"Ahoka"
     "Author Tripcode"             : "!.pC/AHOKAg"
