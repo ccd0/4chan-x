@@ -2011,6 +2011,87 @@ a:not([href='javascript:;']){
   text-shadow: #0f0f0f 0 1px;
 }
 """
+  "安心院なじみ ":
+    "Author"                      :"Ahoka"
+    "Author Tripcode"             : "!.pC/AHOKAg"
+    "Background Image"            : "url(\"http://i.imgur.com/RewHm.png\")"
+    "Background Attachment"       : "fixed"
+    "Background Position"         : "bottom right"
+    "Background Repeat"           : "no-repeat"
+    "Background Color"            : "rgb(255,255,255)"
+    "Dialog Background"           : "rgba(239,239,239,.98)"
+    "Dialog Border"               : "rgb(214,214,214)"
+    "Thread Wrapper Background"   : "rgba(239,239,239,.4)"
+    "Thread Wrapper Border"       : "rgba(214,214,214,.9)"
+    "Reply Background"            : "rgba(239,239,239,.9)"
+    "Reply Border"                : "rgb(214,214,214)"
+    "Highlighted Reply Background": "rgba(235,235,235,.9)"
+    "Highlighted Reply Border"    : "rgb(191,128,64)"
+    "Backlinked Reply Outline"    : "rgb(191,128,64)"
+    "Checkbox Background"         : "rgba(204,204,204,.9)"
+    "Checkbox Border"             : "rgb(187,187,187)"
+    "Checkbox Checked Background" : "rgb(204,204,204)"
+    "Input Background"            : "rgba(204,204,204,.9)"
+    "Input Border"                : "rgb(187,187,187)"
+    "Hovered Input Background"    : "rgba(188,188,188,.9)"
+    "Hovered Input Border"        : "rgb(187,187,187)"
+    "Focused Input Background"    : "rgba(188,188,188,.9)"
+    "Focused Input Border"        : "rgb(187,187,187)"
+    "Buttons Background"          : "rgba(204,204,204,.9)"
+    "Buttons Border"              : "rgb(187,187,187)"
+    "Navigation Background"       : "rgba(255,255,255,0.8)"
+    "Navigation Border"           : "rgb(239,239,239)"
+    "Quotelinks"                  : "rgb(191,128,64)"
+    "Links"                       : "rgb(191,128,64)"
+    "Hovered Links"               : "rgb(191,128,64)"
+    "Navigation Links"            : "rgb(77,77,76)"
+    "Hovered Navigation Links"    : "rgb(191,128,64)"
+    "Subjects"                    : "rgb(77,77,77)"
+    "Names"                       : "rgb(43,128,194)"
+    "Sage"                        : "rgb(200,40,41)"
+    "Tripcodes"                   : "rgb(62,153,159)"
+    "Emails"                      : "rgb(191,128,64)"
+    "Post Numbers"                : "rgb(191,128,64)"
+    "Text"                        : "rgb(77,77,76)"
+    "Backlinks"                   : "rgb(191,128,64)"
+    "Greentext"                   : "rgb(113,140,0)"
+    "Board Title"                 : "rgb(77,77,76)"
+    "Timestamps"                  : "rgb(77,77,76)"
+    "Inputs"                      : "rgb(77,77,76)"
+    "Warnings"                    : "rgb(200,40,41)"
+    "Shadow Color"                : "rgba(0,0,0,.05)"
+    "Dark Theme"                  : false
+    "Custom CSS"                  : """
+.board {
+  padding: 1px 2px;
+}
+.rice {
+  box-shadow:rgba(255,255,255,.3) 0 1px;
+}
+input[type=password]:hover,
+input[type=text]:not([disabled]):hover,
+input#fs_search:hover,
+input.field:hover,
+.webkit select:hover,
+textarea:hover,
+#options input:not([type=checkbox]):hover {
+  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
+}
+input[type=password]:focus,
+input[type=text]:focus,
+input#fs_search:focus,
+input.field:focus,
+.webkit select:focus,
+textarea:focus,
+#options input:focus {
+  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
+}
+button,
+input,
+textarea,
+.rice {
+  transition:background .2s,box-shadow .2s;
+}"""
 
 Mascots =
   'Akiyama_Mio':
