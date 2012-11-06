@@ -1354,7 +1354,6 @@ textarea.field:hover {
   background: #{theme["Hovered Input Background"]};
   border-color: #{theme["Hovered Input Border"]};
   color: #{theme["Inputs"]};
-  #{Style.agent}transition: all .2s linear;
 }
 #dump:active,
 #dump:focus,
@@ -1814,15 +1813,15 @@ span.lit {
       css += """
 #globalMessage,
 #watcher {
-  #{Style.agent}transition: height .5s linear;
+  #{Style.agent}transition: height .3s linear;
 }
 #boardNavDesktopFoot {
-  #{Style.agent}transition: height .5s linear, border 0s ease-in-out .5s;
+  #{Style.agent}transition: height .3s linear, border .3s linear;
 }
 img.topad,
 img.middlead,
 img.bottomad {
-  #{Style.agent}transition: opacity .3s ease-in-out .3s;
+  #{Style.agent}transition: opacity .3s linear;
 }
 #qr {
   #{Style.agent}transition: #{Style.sidebarLocation[0]} .3s ease-in-out 1s;
