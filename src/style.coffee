@@ -2212,13 +2212,15 @@ textarea.field,
   width: 100%;
   height: 100%
 }
-div.op .menu_button,
-div.reply .report_button,
-div.reply .menu_button {
+.sideArrows a,
+.menu_button {
   position: absolute;
   right: 6px;
-  top: 5px;
+  top: 2px;
   font-size: 9px;
+}
+.sideArrows a {
+  right: 27px;
 }
 .summary {
   padding-left: 20px;
@@ -2228,33 +2230,19 @@ div.reply .menu_button {
 .sideArrows {
   width: 0;
 }
-.sideArrows a {
-  position: absolute;
-  right: 27px;
-  top: 5px;
-}
-.reply div.postInfo {
-  width: 100%;
-}
-div.op .menu_button,
 .sideArrows a,
-div.reply .report_button,
-div.reply .menu_button {
+.menu_button {
   opacity: 0;
   #{Style.agent}transition: opacity .3s ease-out 0s;
   #{Style.agent}user-select: none;
 }
 div.op:hover .menu_button,
-.replyContainer:hover div.reply .report_button,
 .replyContainer:hover div.reply .menu_button,
 .replyContainer:hover .sideArrows a {
   opacity: 1;
   #{Style.agent}transition: opacity .3s ease-in 0s;
 }
-div.reply .inline .menu_button,
-div.reply .inline .sideArrows,
-div.reply .inline .sideArrows a,
-div.reply .inline .rice {
+.inline .menu_button {
   position: static;
   opacity: 1;
 }
@@ -2707,9 +2695,6 @@ input[type=checkbox] {
       when "hide"
         css += """
 input[type=checkbox] {
-  display: none;
-}
-.thread .rice {
   display: none;
 }
 """
