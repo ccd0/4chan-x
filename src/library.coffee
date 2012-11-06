@@ -233,10 +233,13 @@ $.extend $,
     $.extend el, properties if properties
     el
   on: (el, events, handler) ->
-    if el
+    if el?
       for event in events.split ' '
         el.addEventListener event, handler, false
-      return
+    else
+      $.log "An error occurred attaching an event listener. If you are reading this, please file a bug report, including the following: "
+      $.log handler
+    return
   off: (el, events, handler) ->
     for event in events.split ' '
       el.removeEventListener event, handler, false

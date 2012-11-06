@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
- *  appchan x - Version 1.0.13 - 2012-11-05
+ *  appchan x - Version 1.0.13 - 2012-11-06
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -2633,12 +2633,15 @@
     },
     on: function(el, events, handler) {
       var event, _i, _len, _ref;
-      if (el) {
+      if (el != null) {
         _ref = events.split(' ');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           event = _ref[_i];
           el.addEventListener(event, handler, false);
         }
+      } else {
+        $.log("An error occurred attaching an event listener. If you are reading this, please file a bug report, including the following: ");
+        $.log(handler);
       }
     },
     off: function(el, events, handler) {
