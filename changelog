@@ -1,5 +1,16 @@
 master
 
+1.0.14
+- Zixaphir
+  Expanded backlinks position option.
+  Options for adding background colors to the file and post information bars.
+  Added Ahoka's theme, "安心院なじみ".
+  Faster and better transitions for slideout elements.
+
+1.0.13
+- Zixaphir
+  Fixed a display bug with exLinks.
+
 1.0.12
 - Zixaphir
   Backlinks position option
@@ -14,6 +25,7 @@ master
   jscolor for theme editing
 
 1.0.10
+- Zixaphir
   Bugfix.
 
 1.0.9
