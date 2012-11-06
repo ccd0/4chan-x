@@ -553,7 +553,11 @@ Config =
       ]
       'Color Reply Headings': [
         false
-        'Give the post info and file info a background.'
+        'Give the post info a background.'
+      ]
+      'Color File Info': [
+        false
+        'Give the file info a background.'
       ]
       'OP Background': [
         false

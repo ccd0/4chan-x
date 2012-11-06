@@ -2288,15 +2288,23 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
 .postInfo {
   background: rgba(255,255,255,0.05);
 }
-.file {
-  background: rgba(255,255,255,0.025);
-}
 """
       else
         css += """
 .postInfo {
   background: rgba(0,0,0,0.1);
 }
+"""
+
+    if Conf["Color File Info"]
+      if theme["Dark Theme"]
+        css += """
+.file {
+  background: rgba(255,255,255,0.025);
+}
+"""
+      else
+        css += """
 .file {
   background: rgba(0,0,0,0.05);
 }

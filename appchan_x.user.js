@@ -264,7 +264,8 @@
       },
       Posts: {
         'Alternate Post Colors': [false, 'Make post background colors alternate every other post.'],
-        'Color Reply Headings': [false, 'Give the post info and file info a background.'],
+        'Color Reply Headings': [false, 'Give the post info a background.'],
+        'Color File Info': [false, 'Give the file info a background.'],
         'OP Background': [false, 'Adds a border and background color to the OP Post, as if it were a reply.'],
         'Backlinks Position': ['default', 'The position of backlinks in relation to the post.', ['default', 'lower left', 'lower right']],
         'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
@@ -10333,9 +10334,16 @@
       }
       if (Conf["Color Reply Headings"]) {
         if (theme["Dark Theme"]) {
-          css += ".postInfo {\n  background: rgba(255,255,255,0.05);\n}\n.file {\n  background: rgba(255,255,255,0.025);\n}";
+          css += ".postInfo {\n  background: rgba(255,255,255,0.05);\n}";
         } else {
-          css += ".postInfo {\n  background: rgba(0,0,0,0.1);\n}\n.file {\n  background: rgba(0,0,0,0.05);\n}";
+          css += ".postInfo {\n  background: rgba(0,0,0,0.1);\n}";
+        }
+      }
+      if (Conf["Color File Info"]) {
+        if (theme["Dark Theme"]) {
+          css += ".file {\n  background: rgba(255,255,255,0.025);\n}";
+        } else {
+          css += ".file {\n  background: rgba(0,0,0,0.05);\n}";
         }
       }
       if (Conf["Filtered Backlinks"]) {
