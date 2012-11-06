@@ -789,11 +789,6 @@ div.reply.highlight div.reply {
 #qp span.quote {
   color: rgb(130,163,100);
 }
-#updater:not(:hover),
-#updater:not(:hover) #count:not(.new)::after,
-#stats {
-  color: rgb(123,123,123);
-}
 .board {
   padding: 1px 0 2px 0;
   box-shadow: 0 20px 40px 10px rgba(0,0,0,0.1);

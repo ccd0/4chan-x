@@ -177,6 +177,7 @@ input[type="submit"] {
   #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
 }
+#updater .move,
 #qr > .move {
   overflow: hidden;
   padding: 0 2px;
@@ -523,8 +524,7 @@ input[type="submit"] {
   width: 100%;
 }
 #updater:not(:hover) {
-  border: none;
-  background: transparent;
+  border-color: transparent;
 }
 #updater input[type=number] {
   width: 4em;
@@ -657,6 +657,7 @@ textarea {
 #imgControls label:first-of-type input,
 #imgControls .rice,
 #logo,
+#navbotright,
 #postForm,
 #postPassword + span,
 #qr:not(.dump) #replies,
@@ -1116,7 +1117,6 @@ div.navLinks {
   cursor: default;
 }
 #updater {
-  border: 0;
   overflow: hidden;
   background: none;
   text-align: right;
@@ -1289,24 +1289,21 @@ html {
 .suboptions {
   padding: 5px;
 }
+#boardTitle,
 #prefetch,
 #showQR,
 #spoilerLabel,
 #stats,
-#updater .move {
+#updater:not(:hover) .move {
   text-shadow:
-    1px 1px 1px #{theme["Background Color"]},
-    -1px 1px 1px #{theme["Background Color"]},
-    1px -1px 1px #{theme["Background Color"]},
-    -1px -1px 1px #{theme["Background Color"]}
-}
-#boardTitle {
-  text-shadow:
-    1px 1px 1px #{theme["Background Color"]},
-    -1px 1px 1px #{theme["Background Color"]},
-    1px -1px 1px #{theme["Background Color"]},
-    -1px -1px 1px #{theme["Background Color"]},
-    0 0 7px #{theme["Text"]};
+     1px  1px 0 #{theme["Background Color"]},
+    -1px -1px 0 #{theme["Background Color"]},
+     1px -1px 0 #{theme["Background Color"]},
+    -1px  1px 0 #{theme["Background Color"]},
+     0px  1px 0 #{theme["Background Color"]},
+     0px -1px 0 #{theme["Background Color"]},
+     1px  0px 0 #{theme["Background Color"]},
+    -1px  0px 0 #{theme["Background Color"]}#{if Conf["Sidebar Glow"] then "\n, 0 0 5px #{theme['Text']};" else ";"}
 }
 #browse,
 #ft li,
@@ -1407,6 +1404,9 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > 
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Dialog Border"]};
 }
+#boardNavDesktopFoot:not(:hover) {
+  border-color: transparent;
+}
 .mascotname,
 .mascotoptions {
   background: #{theme["Dialog Background"]};
@@ -1452,8 +1452,7 @@ span.postNum > .replylink {
   color: #{theme["Timestamps"]} !important;
 }
 #browse,
-#updater:not(:hover),
-#updater:not(:hover) #count:not(.new)::after,
+#updater,
 .summary,
 body > form,
 body,
@@ -1848,7 +1847,7 @@ hr {
 }
 """
 
-    switch Conf["Board Logo"]
+    switch Conf["Board Title"]
       when "at sidebar top"
         css += """
 #boardTitle {
@@ -2393,7 +2392,7 @@ td[style="border: 1px dashed;"] {
     if Conf["Slideout Watcher"]
       css += """
 #watcher:not(:hover) {
-  border: 0 none;
+  border-color: transparent;
 }
 #watcher {
   position: fixed;
@@ -2430,23 +2429,14 @@ td[style="border: 1px dashed;"] {
     switch Conf["Slideout Navigation"]
       when "compact"
         css += """
-#boardNavDesktopFoot:not(:hover) {
-  border: 0 none !important;
-}
 #boardNavDesktopFoot:hover {
   height: 84px;
   word-spacing: 1px;
-}
-#navbotright {
-  display: none;
 }
 """
 
       when "list"
         css += """
-#boardNavDesktopFoot:not(:hover) {
-  border: 0 none !important;
-}
 #boardNavDesktopFoot a {
   display: block;
 }
@@ -2464,9 +2454,6 @@ td[style="border: 1px dashed;"] {
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::before,
 #boardNavDesktopFoot a[href*="//rs.4chan.org/"]::before {
   content: "/";
-}
-#navbotright {
-  display: none;
 }
 """
       when "hide"
@@ -2554,7 +2541,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
       when "slideout"
         css += """
 #globalMessage:not(:hover) {
-  border: 0 none;
+  border-color: transparent;
 }
 #globalMessage {
   bottom: auto;
@@ -2664,7 +2651,7 @@ input.field.tripped:not(:hover):not(:focus) {
   z-index: 6;
   margin: 0;
   background: none transparent;
-  border: 0px none transparent;
+  border: 0 none;
 }
 """
 

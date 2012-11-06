@@ -504,7 +504,7 @@ Config =
         'The style of announcements and the ability to hide them.'
         ['4chan default', 'slideout', 'hide']
       ]
-      'Board Logo': [
+      'Board Title': [
         'at sidebar top'
         'The positioning of the board\'s logo and subtitle.'
         ['at sidebar top', 'at sidebar bottom', 'at top', 'under post form', 'hide']
@@ -693,6 +693,10 @@ Config =
       'Block Ads': [
         false
         'Block advertisements. It\'s probably better to use AdBlock for this.'
+      ]
+      'Sidebar Glow': [
+        false
+        'Adds a glow to the sidebar\'s text.'
       ]
       'Checkboxes': [
         'show'
