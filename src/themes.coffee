@@ -430,7 +430,7 @@ div.post:hover .name {
     'Sage'                        : 'rgb(253,254,255)'
     'Tripcodes'                   : 'rgb(255,82,203)'
     'Emails'                      : 'rgb(0,255,255)'
-    'Post Numbers'                : 'rgb(253,254,255)'
+    'Post Numbers'                : 'rgb(0,255,255)'
     'Text'                        : 'rgb(253,254,255)'
     'Quotelinks'                  : 'rgb(0,255,255)'
     'Backlinks'                   : 'rgb(0,255,255)'
