@@ -74,7 +74,7 @@ label,
   cursor: pointer;
 }
 .hide_thread_button:not(.hidden_thread) {
-  padding: 5px 5px 0;
+  padding: 0 5px;
   float: left;
 }
 .menu_button {
