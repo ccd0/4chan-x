@@ -52,7 +52,6 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         $.on div, 'click', ->
           checkbox.click()
 
-
   addStyle: (theme = userThemes[Conf['theme']]) ->
     $.off d, 'DOMNodeInserted', Style.addStyle
     unless Conf['styleInit']
@@ -126,3 +125,62 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
     if el = $ "#globalMessage", d.body
       for child in el.children
         child.style.color = ""
+
+  color: (hex) ->
+    @hex = "#" + hex
+
+    @calc_rgb = (hex) ->
+      rgb = []
+      hex = parseInt hex, 16
+      rgb[0] = (hex >> 16) & 0xFF
+      rgb[1] = (hex >> 8) & 0xFF
+      rgb[2] = hex & 0xFF
+      return rgb;
+
+    @private_rgb = @calc_rgb(hex)
+
+    @rgb = @private_rgb.join ","
+
+    @isLight = ->
+      @private_rgb[0] + @private_rgb[1] + @private_rgb[2] >= 400
+
+    @shiftRGB = (shift, smart) ->
+      rgb = @private_rgb.slice 0
+      shift = if smart
+        if @isLight rgb
+          if shift < 0
+            shift
+          else
+            -shift
+        else
+          Math.abs shift
+
+      else
+        shift;
+
+      rgb[0] = Math.min Math.max(rgb[0] + shift, 0), 255
+      rgb[1] = Math.min Math.max(rgb[1] + shift, 0), 255
+      rgb[2] = Math.min Math.max(rgb[2] + shift, 0), 255
+      return rgb.join ","
+
+    @hover = @shiftRGB 16, true
+
+  colorToHex: (color) ->
+    if color.substr(0, 1) is '#'
+      return color
+
+    if digits = /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/.exec color
+
+      red   = parseInt digits[2], 10
+      green = parseInt digits[3], 10
+      blue  = parseInt digits[4], 10
+
+      rgb = blue | (green << 8) | (red << 16)
+      hex = '#' + rgb.toString 16
+      
+      while hex.length < 4
+        hex += 0
+      
+      hex
+
+    else return false

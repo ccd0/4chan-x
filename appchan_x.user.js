@@ -8582,7 +8582,7 @@
   };
 
   /*
-    ThemeTools.color adapted from 4chan Style Script
+    Style.color adapted from 4chan Style Script
   */
 
 
@@ -8656,7 +8656,7 @@
             input.className = "colorfield";
             colorInput = $.el('input', {
               className: 'color',
-              value: ThemeTools.colorToHex(input.value)
+              value: Style.colorToHex(input.value)
             });
             JSColor.bind(colorInput);
             $.after(input, colorInput);
@@ -8685,7 +8685,7 @@
             return alert("Syntax error on " + this.name + ".");
           }
           if (this.className === "colorfield") {
-            this.nextSibling.value = ThemeTools.colorToHex(this.value);
+            this.nextSibling.value = Style.colorToHex(this.value);
             this.nextSibling.color.importColor();
           }
           editTheme[this.name] = this.value;
@@ -8734,52 +8734,6 @@
       };
       return reader.readAsDataURL(file);
     },
-    color: function(hex) {
-      this.hex = "#" + hex;
-      this.calc_rgb = function(hex) {
-        var rgb;
-        rgb = [];
-        hex = parseInt(hex, 16);
-        rgb[0] = (hex >> 16) & 0xFF;
-        rgb[1] = (hex >> 8) & 0xFF;
-        rgb[2] = hex & 0xFF;
-        return rgb;
-      };
-      this.private_rgb = this.calc_rgb(hex);
-      this.rgb = this.private_rgb.join(",");
-      this.isLight = function() {
-        return this.private_rgb[0] + this.private_rgb[1] + this.private_rgb[2] >= 400;
-      };
-      this.shiftRGB = function(shift, smart) {
-        var rgb;
-        rgb = this.private_rgb.slice(0);
-        shift = smart ? this.isLight(rgb) ? shift < 0 ? shift : -shift : Math.abs(shift) : shift;
-        rgb[0] = Math.min(Math.max(rgb[0] + shift, 0), 255);
-        rgb[1] = Math.min(Math.max(rgb[1] + shift, 0), 255);
-        rgb[2] = Math.min(Math.max(rgb[2] + shift, 0), 255);
-        return rgb.join(",");
-      };
-      return this.hover = this.shiftRGB(16, true);
-    },
-    colorToHex: function(color) {
-      var blue, digits, green, hex, red, rgb;
-      if (color.substr(0, 1) === '#') {
-        return color;
-      }
-      if (digits = /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/.exec(color)) {
-        red = parseInt(digits[2], 10);
-        green = parseInt(digits[3], 10);
-        blue = parseInt(digits[4], 10);
-        rgb = blue | (green << 8) | (red << 16);
-        hex = '#' + rgb.toString(16);
-        while (hex.length < 4) {
-          hex += 0;
-        }
-        return hex;
-      } else {
-
-      }
-    },
     importtheme: function(origin, evt) {
       var file, reader;
       file = evt.target.files[0];
@@ -8806,22 +8760,22 @@
           }
         }
         if (origin === "oneechan" || origin === "SS") {
-          bgColor = new ThemeTools.color(imported.bgColor);
-          mainColor = new ThemeTools.color(imported.mainColor);
-          brderColor = new ThemeTools.color(imported.brderColor);
-          inputColor = new ThemeTools.color(imported.inputColor);
-          inputbColor = new ThemeTools.color(imported.inputbColor);
-          blinkColor = new ThemeTools.color(imported.blinkColor);
-          jlinkColor = new ThemeTools.color(imported.jlinkColor);
-          linkColor = new ThemeTools.color(imported.linkColor);
-          linkHColor = new ThemeTools.color(imported.linkHColor);
-          nameColor = new ThemeTools.color(imported.nameColor);
-          quoteColor = new ThemeTools.color(imported.quoteColor);
-          sageColor = new ThemeTools.color(imported.sageColor);
-          textColor = new ThemeTools.color(imported.textColor);
-          titleColor = new ThemeTools.color(imported.titleColor);
-          tripColor = new ThemeTools.color(imported.tripColor);
-          timeColor = new ThemeTools.color(imported.timeColor || imported.textColor);
+          bgColor = new Style.color(imported.bgColor);
+          mainColor = new Style.color(imported.mainColor);
+          brderColor = new Style.color(imported.brderColor);
+          inputColor = new Style.color(imported.inputColor);
+          inputbColor = new Style.color(imported.inputbColor);
+          blinkColor = new Style.color(imported.blinkColor);
+          jlinkColor = new Style.color(imported.jlinkColor);
+          linkColor = new Style.color(imported.linkColor);
+          linkHColor = new Style.color(imported.linkHColor);
+          nameColor = new Style.color(imported.nameColor);
+          quoteColor = new Style.color(imported.quoteColor);
+          sageColor = new Style.color(imported.sageColor);
+          textColor = new Style.color(imported.textColor);
+          titleColor = new Style.color(imported.titleColor);
+          tripColor = new Style.color(imported.tripColor);
+          timeColor = new Style.color(imported.timeColor || imported.textColor);
           if (imported.bgRPA) {
             bgRPA = imported.bgRPA.split(' ');
           } else {
@@ -10096,6 +10050,52 @@
           _results.push(child.style.color = "");
         }
         return _results;
+      }
+    },
+    color: function(hex) {
+      this.hex = "#" + hex;
+      this.calc_rgb = function(hex) {
+        var rgb;
+        rgb = [];
+        hex = parseInt(hex, 16);
+        rgb[0] = (hex >> 16) & 0xFF;
+        rgb[1] = (hex >> 8) & 0xFF;
+        rgb[2] = hex & 0xFF;
+        return rgb;
+      };
+      this.private_rgb = this.calc_rgb(hex);
+      this.rgb = this.private_rgb.join(",");
+      this.isLight = function() {
+        return this.private_rgb[0] + this.private_rgb[1] + this.private_rgb[2] >= 400;
+      };
+      this.shiftRGB = function(shift, smart) {
+        var rgb;
+        rgb = this.private_rgb.slice(0);
+        shift = smart ? this.isLight(rgb) ? shift < 0 ? shift : -shift : Math.abs(shift) : shift;
+        rgb[0] = Math.min(Math.max(rgb[0] + shift, 0), 255);
+        rgb[1] = Math.min(Math.max(rgb[1] + shift, 0), 255);
+        rgb[2] = Math.min(Math.max(rgb[2] + shift, 0), 255);
+        return rgb.join(",");
+      };
+      return this.hover = this.shiftRGB(16, true);
+    },
+    colorToHex: function(color) {
+      var blue, digits, green, hex, red, rgb;
+      if (color.substr(0, 1) === '#') {
+        return color;
+      }
+      if (digits = /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/.exec(color)) {
+        red = parseInt(digits[2], 10);
+        green = parseInt(digits[3], 10);
+        blue = parseInt(digits[4], 10);
+        rgb = blue | (green << 8) | (red << 16);
+        hex = '#' + rgb.toString(16);
+        while (hex.length < 4) {
+          hex += 0;
+        }
+        return hex;
+      } else {
+        return false;
       }
     },
     iconPositions: function() {

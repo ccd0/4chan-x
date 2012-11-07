@@ -1,5 +1,5 @@
 ###
-  ThemeTools.color adapted from 4chan Style Script
+  Style.color adapted from 4chan Style Script
 ###
 ThemeTools =
   init: (key) ->
@@ -136,7 +136,7 @@ ThemeTools =
 
           colorInput = $.el 'input'
             className: 'color'
-            value: ThemeTools.colorToHex input.value
+            value: Style.colorToHex input.value
 
           JSColor.bind colorInput
 
@@ -157,7 +157,7 @@ ThemeTools =
           return alert "Syntax error on #{@name}."
           
         if @className == "colorfield"
-          @nextSibling.value = ThemeTools.colorToHex @value
+          @nextSibling.value = Style.colorToHex @value
           @nextSibling.color.importColor()
 
         editTheme[@name] = @value
@@ -209,64 +209,6 @@ ThemeTools =
 
     reader.readAsDataURL file
 
-  color: (hex) ->
-    @hex = "#" + hex
-
-    @calc_rgb = (hex) ->
-      rgb = []
-      hex = parseInt hex, 16
-      rgb[0] = (hex >> 16) & 0xFF
-      rgb[1] = (hex >> 8) & 0xFF
-      rgb[2] = hex & 0xFF
-      return rgb;
-
-    @private_rgb = @calc_rgb(hex)
-
-    @rgb = @private_rgb.join ","
-
-    @isLight = ->
-      @private_rgb[0] + @private_rgb[1] + @private_rgb[2] >= 400
-
-    @shiftRGB = (shift, smart) ->
-      rgb = @private_rgb.slice 0
-      shift = if smart
-        if @isLight rgb
-          if shift < 0
-            shift
-          else
-            -shift
-        else
-          Math.abs shift
-
-      else
-        shift;
-
-      rgb[0] = Math.min Math.max(rgb[0] + shift, 0), 255
-      rgb[1] = Math.min Math.max(rgb[1] + shift, 0), 255
-      rgb[2] = Math.min Math.max(rgb[2] + shift, 0), 255
-      return rgb.join ","
-
-    @hover = @shiftRGB 16, true
-
-  colorToHex: (color) ->
-    if color.substr(0, 1) is '#'
-      return color
-    if digits = /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/.exec color
-
-      red   = parseInt digits[2], 10
-      green = parseInt digits[3], 10
-      blue  = parseInt digits[4], 10
-
-      rgb = blue | (green << 8) | (red << 16)
-      hex = '#' + rgb.toString 16
-      
-      while hex.length < 4
-        hex += 0
-      
-      hex
-
-    else return
-
   importtheme: (origin, evt) ->
     file = evt.target.files[0]
     reader = new FileReader()
@@ -292,22 +234,22 @@ ThemeTools =
           return
 
       if origin == "oneechan" or origin == "SS"
-        bgColor     = new ThemeTools.color(imported.bgColor);
-        mainColor   = new ThemeTools.color(imported.mainColor);
-        brderColor  = new ThemeTools.color(imported.brderColor);
-        inputColor  = new ThemeTools.color(imported.inputColor);
-        inputbColor = new ThemeTools.color(imported.inputbColor);
-        blinkColor  = new ThemeTools.color(imported.blinkColor);
-        jlinkColor  = new ThemeTools.color(imported.jlinkColor);
-        linkColor   = new ThemeTools.color(imported.linkColor);
-        linkHColor  = new ThemeTools.color(imported.linkHColor);
-        nameColor   = new ThemeTools.color(imported.nameColor);
-        quoteColor  = new ThemeTools.color(imported.quoteColor);
-        sageColor   = new ThemeTools.color(imported.sageColor);
-        textColor   = new ThemeTools.color(imported.textColor);
-        titleColor  = new ThemeTools.color(imported.titleColor);
-        tripColor   = new ThemeTools.color(imported.tripColor);
-        timeColor   = new ThemeTools.color(imported.timeColor || imported.textColor);
+        bgColor     = new Style.color(imported.bgColor);
+        mainColor   = new Style.color(imported.mainColor);
+        brderColor  = new Style.color(imported.brderColor);
+        inputColor  = new Style.color(imported.inputColor);
+        inputbColor = new Style.color(imported.inputbColor);
+        blinkColor  = new Style.color(imported.blinkColor);
+        jlinkColor  = new Style.color(imported.jlinkColor);
+        linkColor   = new Style.color(imported.linkColor);
+        linkHColor  = new Style.color(imported.linkHColor);
+        nameColor   = new Style.color(imported.nameColor);
+        quoteColor  = new Style.color(imported.quoteColor);
+        sageColor   = new Style.color(imported.sageColor);
+        textColor   = new Style.color(imported.textColor);
+        titleColor  = new Style.color(imported.titleColor);
+        tripColor   = new Style.color(imported.tripColor);
+        timeColor   = new Style.color(imported.timeColor || imported.textColor);
 
         if imported.bgRPA
           bgRPA = imported.bgRPA.split(' ')
