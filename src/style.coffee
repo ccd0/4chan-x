@@ -653,7 +653,6 @@ textarea {
 #autohide,
 #content > [name=tab]:not(:checked) + div,
 #delform > hr,
-#ft li.fill,
 #imgControls label:first-of-type input,
 #imgControls .rice,
 #logo,
@@ -664,16 +663,9 @@ textarea {
 #qp .rice
 #qp input,
 #updater:not(:hover) > :not(.move),
-.autoPagerS,
 #{(unless Conf["Board Subtitle"] then ".boardSubtitle," else "")}
-.closed,
 .deleteform,
 .dump > form > label,
-.entry:not(.focused) > .subMenu,
-.error:empty,
-.fileText:hover .fntrunc,
-.fileText:not(:hover) .fnfull,
-.forwarded,
 .hasSubMenu:not(.focused) > .subMenu,
 .hidden_thread > .summary,
 .inline input,
@@ -687,7 +679,6 @@ textarea {
 .qrHeader,
 .replyContainer > .hide_reply_button.stub ~ .reply,
 .replymode,
-.rules,
 .sideArrows:not(.hide_reply_button),
 .stub ~ *,
 .stylechanger,
@@ -1306,16 +1297,10 @@ html {
     -1px  0px 0 #{theme["Background Color"]}#{if Conf["Sidebar Glow"] then "\n, 0 0 5px #{theme['Text']};" else ";"}
 }
 #browse,
-#ft li,
-#ft ul,
 #options .dialog,
 #exlinks-options,
 #qrtab,
-#watcher,
 #updater:hover,
-.box-outer,
-.boxbar,
-.top-box,
 html body span[style="left: 5px; position: absolute;"] a,
 input[type="submit"],
 #options.reply.dialog,
@@ -1405,6 +1390,7 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > 
 }
 #boardNavDesktopFoot:not(:hover) {
   border-color: transparent;
+  background-color: transparent;
 }
 .mascotname,
 .mascotoptions {
@@ -1803,7 +1789,6 @@ span.lit {
   z-index: 1;
   -moz-transform: scaleY(-1);
 }
-
 .webkit #Banner {
   -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));
 }
@@ -1812,11 +1797,14 @@ span.lit {
     if Conf["Slideout Transitions"]
       css += """
 #globalMessage,
-#watcher {
-  #{Style.agent}transition: height .3s linear;
-}
+#watcher,
 #boardNavDesktopFoot {
-  #{Style.agent}transition: height .3s linear, border .3s linear;
+  #{Style.agent}transition: height .3s linear, border .3s linear, background-color .3s step-end;
+}
+#globalMessage:hover,
+#watcher:hover,
+#boardNavDesktopFoot:hover {
+  #{Style.agent}transition: height .3s linear, border .3s linear, background-color .3s step-start;
 }
 img.topad,
 img.middlead,
@@ -2107,9 +2095,9 @@ input,
   display: inline-block;
   text-align: center;
   vertical-align: middle;
-  color: #{theme["Text"]};
   border-width: 1px 1px 0 1px;
   cursor: default;
+  text-rendering: optimizeLegibility;
 }
 #qr:hover #qrtab,
 #qr.focus #qrtab,
@@ -2392,6 +2380,7 @@ td[style="border: 1px dashed;"] {
       css += """
 #watcher:not(:hover) {
   border-color: transparent;
+  background-color: transparent;
 }
 #watcher {
   position: fixed;
@@ -2541,6 +2530,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
         css += """
 #globalMessage:not(:hover) {
   border-color: transparent;
+  background-color: transparent;
 }
 #globalMessage {
   bottom: auto;
