@@ -1562,10 +1562,10 @@ a.forwardlink {
   #{Style.agent}user-select: none;
 }
 #{theme["Custom CSS"]}
-"""
+""" + (
 
-    if Conf["Image Expansion"]
-      css += """
+      if Conf["Image Expansion"]
+        """
 .fileThumb img {
   cursor: #{Style.agent}zoom-in;
 }
@@ -1573,16 +1573,16 @@ a.forwardlink {
   cursor: #{Style.agent}zoom-out;
 }
 """
-
-    if Conf["Recursive Filtering"]
-      css += """
+    ) + (
+      if Conf["Recursive Filtering"]
+        """
 .hidden + .threadContainer {
   display: none;
 }
 """
-
-    if theme["Dark Theme"]
-      css += """
+    ) + (
+      if theme["Dark Theme"]
+        """
 .prettyprint {
   background-color: rgba(0,0,0,.1);
   border: 1px solid rgba(0,0,0,0.5);
@@ -1611,9 +1611,8 @@ span.lit {
   color: #558773;
 }
 """
-
-    else
-      css += """
+      else
+        """
 .prettyprint {
   background-color: #e7e7e7;
   border: 1px solid #dcdcdc;
@@ -1642,127 +1641,9 @@ span.lit {
   color: #368c72;
 }
 """
-
-
-    switch Conf["Backlinks Position"]
-      when 'lower left'
-        css += """
-#delform .reply.quoted {
-  padding-bottom: 15px;
-}
-#delform .reply .container {
-  position: absolute;
-  left: 5px;
-  bottom: 0;
-}
-#delform .reply .container::before {
-  content: "REPLIES: ";
-  color: #{theme["Timestamps"]};
-}
-#delform .container {
-  max-width: 50%;
-}
-#delform .inline .container {
-  position: static;
-  max-width: 100%;
-}
-#delform .inline .container::before {
-  content: "";
-}
-"""
-      when 'lower right'
-        css += """
-#delform .reply.quoted {
-  padding-bottom: 15px;
-}
-#delform .op .container {
-  float: right;
-}
-#delform .reply .container {
-  position: absolute;
-  right: 5px;
-  bottom: 0;
-}
-#delform .container::before {
-  content: "REPLIES: ";
-  color: #{theme["Timestamps"]};
-}
-#delform .container {
-  max-width: 50%;
-}
-#delform .inline .container {
-  position: static;
-  float: none;
-  max-width: 100%;
-}
-#delform .inline .container::before {
-  content: "";
-}
-"""
-
-    switch Conf["4chan Banner"]
-      when "at sidebar top"
-        Style.logoOffset = 83 + Style.sidebarOffsetH
-
-        css += """
-.boardBanner {
-  position: fixed;
-  top: 19px;
-  #{Style.sidebarLocation[0]}: 2px;
-}
-.boardBanner img {
-  width: #{(248 + Style.sidebarOffsetW)}px;
-}
-"""
-
-      when "at sidebar bottom"
-        Style.logoOffset = 0
-        css += """
-.boardBanner {
-  position: fixed;
-  bottom: 270px;
-  #{Style.sidebarLocation[0]}: 2px;
-}
-.boardBanner img {
-  width: #{(248 + Style.sidebarOffsetW)}px;
-}
-"""
-
-      when "under post form"
-        Style.logoOffset = 0
-        css += """
-.boardBanner {
-  position: fixed;
-  bottom: 130px;
-  #{Style.sidebarLocation[0]}: 2px;
-}
-.boardBanner img {
-  width: #{(248 + Style.sidebarOffsetW)}px;
-}
-"""
-
-      when "at top"
-        Style.logoOffset = 0
-        css += """
-.boardBanner {
-  position: relative;
-  display: table;
-  margin: 0 auto;
-  text-align: center;
-  z-index: -1;
-}
-"""
-
-      when "hide"
-        Style.logoOffset = 0
-        css += """
-.boardBanner {
-  display: none;
-}
-"""
-
-    if Conf["Faded 4chan Banner"]
-      css += """
+    ) + (
+      if Conf["Faded 4chan Banner"]
+        """
 .boardBanner {
   opacity: 0.5;
   #{Style.agent}transition: opacity 0.3s ease-in-out .5s;
@@ -1772,9 +1653,10 @@ span.lit {
   #{Style.agent}transition: opacity 0.3s ease-in;
 }
 """
-
-    if Conf["4chan Banner Reflection"]
-      css += """
+      else "\n"
+    ) + (
+      if Conf["4chan Banner Reflection"]
+        """
 /* From 4chan SS / OneeChan */
 .gecko .boardBanner::after {
   background-image: -moz-element(#Banner);
@@ -1793,9 +1675,10 @@ span.lit {
   -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));
 }
 """
-
-    if Conf["Slideout Transitions"]
-      css += """
+      else "\n"
+    ) + (
+      if Conf["Slideout Transitions"]
+        """
 #globalMessage,
 #watcher,
 #boardNavDesktopFoot {
@@ -1826,17 +1709,19 @@ img.bottomad {
   #{Style.agent}transition: width .2s linear;
 }
 """
-
-    if Conf["Hide Horizontal Rules"]
-      css += """
+      else "\n"
+    ) + (
+      if Conf["Hide Horizontal Rules"]
+        """
 hr {
   visibility: hidden;
 }
 """
-
-    switch Conf["Board Title"]
-      when "at sidebar top"
-        css += """
+      else "\n"
+    ) + (
+      switch Conf["Board Title"]
+        when "at sidebar top"
+          """
 #boardTitle {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
@@ -1844,9 +1729,8 @@ hr {
   width: #{248 + Style.sidebarOffsetW}px;
 }
 """
-
-      when "at sidebar bottom"
-        css += """
+        when "at sidebar bottom"
+          """
 #boardTitle {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
@@ -1854,9 +1738,8 @@ hr {
   width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
-
-      when "under post form"
-        css += """
+        when "under post form"
+          """
 #boardTitle {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
@@ -1864,52 +1747,47 @@ hr {
   width: #{(248 + Style.sidebarOffsetW)}px;
 }
 """
-
-      when "hide"
-        css += """
+        when "hide"
+          """
 #boardTitle {
   display: none;
 }
 """
-
-    switch Conf["Reply Padding"]
-      when "phat"
-        css += """
+    ) + (
+      switch Conf["Reply Padding"]
+        when "phat"
+          """
 .postContainer blockquote {
   margin: 24px 60px 24px 58px;
 }
 """
-
-      when "normal"
-        css += """
+        when "normal"
+          """
 .postContainer blockquote {
   margin: 12px 40px 12px 38px;
 }
 """
-
-      when "slim"
-        css += """
+        when "slim"
+          """
 .postContainer blockquote {
   margin: 6px 20px 6px 23px;
 }
 """
-
-      when "super slim"
-        css += """
+        when "super slim"
+          """
 .postContainer blockquote {
   margin: 3px 10px 3px 15px;
 }
 """
-
-      when "anorexia"
-        css += """
+        when "anorexia"
+          """
 .postContainer blockquote {
   margin: 1px 5px 1px 11px;
 }
 """
-
-    unless Conf["Post Form Style"] is "float"
-      css += """
+    ) + (
+      unless Conf["Post Form Style"] is "float"
+        """
 #qr img {
   height: 47px;
   width: #{(248 + Style.sidebarOffsetW)}px;
@@ -1960,11 +1838,8 @@ input,
 #browse {
   width: 70px;
   margin: 1px 0 0 1px;
-}
-"""
-
-      if Conf["Compact Post Form Inputs"]
-        css += """
+}""" + (
+          if Conf["Compact Post Form Inputs"] then """
 #qr textarea.field {
   height: 184px;
   min-height: 184px;
@@ -1981,8 +1856,8 @@ input,
   margin-left: 1px !important;
 }
 """
-      else
-        css += """
+          else
+            """
 #qr textarea.field {
   height: 158px;
   min-height: 158px;
@@ -2005,9 +1880,9 @@ input,
   margin-top: 1px;
 }
 """
-
-      if Conf["Textarea Resize"] == "auto-expand"
-        css += """
+        ) + (
+          if Conf["Textarea Resize"] == "auto-expand"
+            """
 #qr textarea {
   display: block;
   #{Style.agent}transition:
@@ -2023,8 +1898,8 @@ input,
   width: 400px;
 }
 """
-      else
-        css += """
+          else
+            """
 #qr textarea {
   display: block;
   #{Style.agent}transition:
@@ -2038,10 +1913,499 @@ input,
   resize: #{Conf["Textarea Resize"]}
 }
 """
+        )
+      else "\n"  
+    ) + (
+      if Conf["Fit Width Replies"]
+        """
+.thread .replyContainer {
+  position: relative;
+  clear: both;
+  display: table;
+  width: 100%;
+}
+.replyContainer div.reply.post {
+  display: table;
+  width: 100%;
+  height: 100%
+}
+.sideArrows a,
+.menu_button {
+  position: absolute;
+  right: 6px;
+  top: 2px;
+  font-size: 9px;
+}
+.sideArrows a {
+  right: 27px;
+}
+.summary {
+  padding-left: 20px;
+  display: table;
+  clear: both;
+}
+.sideArrows {
+  width: 0;
+}
+.sideArrows a,
+.menu_button {
+  opacity: 0;
+  #{Style.agent}transition: opacity .3s ease-out 0s;
+  #{Style.agent}user-select: none;
+}
+div.op:hover .menu_button,
+.replyContainer:hover div.reply .menu_button,
+.replyContainer:hover .sideArrows a {
+  opacity: 1;
+  #{Style.agent}transition: opacity .3s ease-in 0s;
+}
+.inline .menu_button {
+  position: static;
+  opacity: 1;
+}
+.sideArrows a {
+  font-size: 9px;
+}
+#options.reply {
+  display: inline-block;
+}
+"""
+      else
+        """
+.sideArrows {
+  padding: 3px;
+}
+.replyContainer {
+  display: table;
+}
+div.reply.post,
+.sideArrows {
+  display: table-cell;
+  overflow: visible;
+}
+"""
+    ) + (
+      if Conf['Force Reply Break']
+        """
+.summary,
+.replyContainer {
+  clear: both;
+}
+"""
+    ) + (
+      if Conf["Alternate Post Colors"]
+        """
+div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
+  background-image: #{Style.agent}linear-gradient(#{(if theme["Dark Theme"] then "rgba(255,255,255,0.02), rgba(255,255,255,0.02)" else "rgba(0,0,0,0.05), rgba(0,0,0,0.05)")});
+}
+"""
+    ) + (
+      if Conf["Color Reply Headings"]
+        if theme["Dark Theme"]
+          """
+.postInfo {
+  background: rgba(255,255,255,0.05);
+}
+"""
+        else
+          """
+.postInfo {
+  background: rgba(0,0,0,0.1);
+}
+"""
+      else "\n"
+    ) + (
+      if Conf["Color File Info"]
+        if theme["Dark Theme"]
+          """
+.file {
+  background: rgba(255,255,255,0.025);
+}
+"""
+        else
+          """
+.file {
+  background: rgba(0,0,0,0.05);
+}
+"""
+      else "\n"
+    ) + (
+      if Conf["Filtered Backlinks"]
+       """
+.filtered.backlink {
+  display: none;
+}
+"""
+      else "\n"
+    ) + (
+      if Conf["Slideout Watcher"]
+        """
+#watcher:not(:hover) {
+  border-color: transparent;
+  background-color: transparent;
+}
+#watcher {
+  position: fixed;
+  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+  bottom: auto !important;
+  height: 0;
+  width: #{(248 + Style.sidebarOffsetW)}px !important;
+  overflow: hidden;
+  #{Style.agent}box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0 10px;
+}
+#watcher:hover {
+  height: 250px;
+  padding-bottom: 4px;
+}
+"""
+      else
+        """
+#watcher::after {
+  display: none;
+}
+#watcher {
+  width: #{(246 + Style.sidebarOffsetW)}px;
+  padding-bottom: 4px;
+  z-index: 96;
+}
+#watcher > .move {
+  cursor: pointer !important;
+}
+"""
+    ) + (
+      if Conf["OP Background"]
+        """
+.opContainer div.post {
+  background: #{theme["Reply Background"]};
+  border: 1px solid #{theme["Reply Border"]};
+  padding: 5px;
+  #{Style.agent}box-sizing: border-box;
+  box-sizing: border-box;
+  margin-bottom: #{Style.replyMargin}px;
+}
+.opContainer div.post:target
+.opContainer div.post.highlight {
+  background: #{theme["Highlighted Reply Background"]};
+  border: 1px solid #{theme["Highlighted Reply Border"]};
+}
+"""
+    ) + (
+      if Conf["Tripcode Hider"]
+        """
+input.field.tripped:not(:hover):not(:focus) {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+"""
+      else "\n"
+    ) + (
+      if Conf["Mascots"]
+        MascotTools.init()
+      else "\n"
+    ) + (
+      if Conf["Block Ads"]
+        """
+/* AdBlock Minus */
+a[href*="jlist"],
+img[src^="//static.4chan.org/support/"] {
+  display: none;
+}
+"""
+      else "\n"
+    ) + (
+      unless Conf["Emoji"] == "disable"
+        Style.emoji Conf["Emoji Position"]
+      else "\n"
+    ) + (
+      if Conf["Rounded Edges"]
+        (
+          if Conf["Post Form Style"] is "float"
+            """
+#qr {
+  border-radius: 6px 6px 0 0;
+}
+"""
+          else "\n"
+        ) + (
+          switch Conf["Boards Navigation"]
+            when "sticky top", "top"
+              """
+#boardNavDesktop {
+  border-radius: 0 0 3px 3px;
+}
+"""
+            when "sticky bottom", "bottom"
+              """
+#boardNavDesktop {
+  border-radius: 3px 3px 0 0;
+}
+"""
+        ) + (
+          switch Conf["Pagination"]
+            when "sticky top", "top"
+              """
+.pagelist {
+  border-radius: 0 0 3px 3px;
+}
+"""
 
-    switch Conf["Post Form Style"]
-      when "fixed"
-        css += """
+            when "sticky bottom", "bottom"
+              """
+.pagelist {
+  border-radius: 3px 3px 0 0;
+}
+"""
+        ) + (
+          """
+.rice {
+  border-radius: 2px;
+}
+#boardNavDesktopFoot,
+#content,
+#options .mascot,
+#options ul,
+#options,
+#qp,
+#qp div.post,
+#stats,
+#updater,
+#watcher,
+#globalMessage,
+.inline div.reply,
+div.opContainer,
+div.replyContainer,
+div.post,
+h2,
+td[style="border: 1px dashed;"] {
+  border-radius: 3px;
+}
+.reply .postInfo {
+  border-radius: 3px 3px 0 0;
+}
+#qrtab {
+  border-radius: 6px 6px 0 0;
+}
+.qphl {
+  #{Style.agent}outline-radius: 3px;
+}
+"""
+        )
+      else "\n"
+    ) + (
+      switch Conf["Slideout Navigation"]
+        when "compact"
+          """
+#boardNavDesktopFoot:hover {
+  height: 84px;
+  word-spacing: 1px;
+}
+"""
+
+        when "list"
+          """
+#boardNavDesktopFoot a {
+  display: block;
+}
+#boardNavDesktopFoot:hover {
+  height: 300px;
+  overflow-y: scroll;
+}
+#boardNavDesktopFoot a::after {
+  content: " - " attr(title);
+}
+#boardNavDesktopFoot a[href*="//boards.4chan.org/"]::after,
+#boardNavDesktopFoot a[href*="//rs.4chan.org/"]::after {
+  content: "/ - " attr(title);
+}
+#boardNavDesktopFoot a[href*="//boards.4chan.org/"]::before,
+#boardNavDesktopFoot a[href*="//rs.4chan.org/"]::before {
+  content: "/";
+}
+"""
+        when "hide"
+          """
+#boardNavDesktopFoot {
+  display: none;
+}
+"""
+    ) + (
+      (switch Conf["Reply Spacing"]
+        when "none"
+          Style.replyMargin = 0
+          """
+.thread > .replyContainer:not(:last-of-type) .post.reply:not(:target) {
+  border-bottom-width: 0;
+}
+"""
+        when "small"
+          Style.replyMargin = 2
+          "\n"
+        when "medium"
+          Style.replyMargin = 4
+          "\n"
+        when "large"
+          Style.replyMargin = 8
+          "\n"
+      ) + ("""
+.summary,
+.replyContainer {
+  margin-bottom: #{Style.replyMargin}px;
+}
+.summary {
+  display: table;
+}
+""")
+    ) + (
+      switch Conf["Sage Highlighting"]
+        when "text"
+          """
+a.useremail[href*="sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
+a.useremail[href*="Sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
+a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
+  content: " (sage) ";
+  color: #{theme["Sage"]};
+}
+"""
+        when "image"
+          """
+a.useremail[href*="sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
+a.useremail[href*="Sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
+a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
+  content: url("#{Icons.header.png}A4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=") "  ";
+  vertical-align: top;
+}
+"""
+        else "\n"
+    ) + (
+      switch Conf["Announcements"]
+        when "4chan default"
+          """
+#globalMessage {
+  position: static;
+  background: none;
+  border: none;
+  margin-top: 0px;
+}
+#globalMessage::after {
+  display: none;
+}
+"""
+        when "slideout"
+          """
+#globalMessage:not(:hover) {
+  border-color: transparent;
+  background-color: transparent;
+}
+#globalMessage {
+  bottom: auto;
+  position: fixed;
+  #{Style.sidebarLocation[0]}: 2px;
+  #{Style.sidebarLocation[1]}: auto;
+  width: #{(248 + Style.sidebarOffsetW)}px;
+  background: #{theme["Dialog Background"]};
+  border: 1px solid #{theme["Dialog Border"]};
+  height: 0px;
+  overflow: hidden;
+  #{Style.agent}box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0 10px;
+}
+#globalMessage:hover {
+  height: 250px;
+}
+"""
+        when "hide"
+          """
+#globalMessage,
+#globalMessage::after {
+  display: none;
+}
+"""
+    ) + (
+      switch Conf["Boards Navigation"]
+        when "sticky top"
+          """
+#boardNavDesktop {
+  position: fixed;
+  top: 0;
+}
+"""
+        when "sticky bottom"
+          """
+#boardNavDesktop {
+  position: fixed;
+  bottom: 0;
+}
+"""
+        when "top"
+          """
+#boardNavDesktop {
+  position: absolute;
+  top: 0;
+}
+"""
+        when "hide"
+          """
+#boardNavDesktop {
+  position: absolute;
+  top: -100px;
+}
+"""
+    ) + (
+      switch Conf["Pagination"]
+        when "sticky top"
+          """
+.pagelist {
+  position: fixed;
+  top: 0;
+  z-index: 4;
+}
+"""
+        when "sticky bottom"
+          """
+.pagelist {
+  position: fixed;
+  bottom: 0;
+  z-index: 4;
+}
+"""
+        when "top"
+          """
+.pagelist {
+  position: absolute;
+  top: 0;
+}
+"""
+        when "on side"
+          """
+.pagelist {
+  padding: 0;
+  top: auto;
+  bottom: 269px;
+  #{Style.sidebarLocation[1]}: auto;
+  #{(if Style.sidebarLocation[0] == "left" then "left: 0" else "right: " + (250 + Style.sidebarOffsetW) + "px")};
+  position: fixed;
+  #{Style.agent}transform: rotate(90deg);
+  #{Style.agent}transform-origin: bottom right;
+  z-index: 6;
+  margin: 0;
+  background: none transparent;
+  border: 0 none;
+}
+"""
+        when "hide"
+          """
+.pagelist {
+  display: none;
+}
+"""
+    ) + (
+      switch Conf["Post Form Style"]
+        when "fixed"
+          """
 #qrtab {
   display: none;
 }
@@ -2051,8 +2415,8 @@ input,
 }
 """
 
-      when "slideout"
-        css += """
+        when "slideout"
+          """
 #qrtab {
   display: none;
 }
@@ -2067,9 +2431,8 @@ input,
   #{Style.sidebarLocation[1]}: auto !important;
 }
 """
-
-      when "tabbed slideout"
-        css += """
+        when "tabbed slideout"
+          """
 #qrtab input,
 #qrtab .rice,
 #qrtab span {
@@ -2107,9 +2470,8 @@ input,
   #{Style.agent}transition: opacity .3s linear, #{Style.sidebarLocation[0]} .3s linear;
 }
 """
-
-      when "transparent fade"
-        css += """
+        when "transparent fade"
+          """
 #qrtab {
   display: none;
 }
@@ -2126,9 +2488,8 @@ input,
   #{Style.agent}transition: opacity .3s linear;
 }
 """
-
-      when "float"
-        css += """
+        when "float"
+          """
 #qr {
   z-index: 103;
   border: 1px solid #{theme["Background Color"]};
@@ -2184,483 +2545,129 @@ textarea.field,
   margin: 0;
 }
 """
-
-    if Conf["Fit Width Replies"]
-      css += """
-.thread .replyContainer {
-  position: relative;
-  clear: both;
-  display: table;
-  width: 100%;
-}
-.replyContainer div.reply.post {
-  display: table;
-  width: 100%;
-  height: 100%
-}
-.sideArrows a,
-.menu_button {
-  position: absolute;
-  right: 6px;
-  top: 2px;
-  font-size: 9px;
-}
-.sideArrows a {
-  right: 27px;
-}
-.summary {
-  padding-left: 20px;
-  display: table;
-  clear: both;
-}
-.sideArrows {
-  width: 0;
-}
-.sideArrows a,
-.menu_button {
-  opacity: 0;
-  #{Style.agent}transition: opacity .3s ease-out 0s;
-  #{Style.agent}user-select: none;
-}
-div.op:hover .menu_button,
-.replyContainer:hover div.reply .menu_button,
-.replyContainer:hover .sideArrows a {
-  opacity: 1;
-  #{Style.agent}transition: opacity .3s ease-in 0s;
-}
-.inline .menu_button {
-  position: static;
-  opacity: 1;
-}
-.sideArrows a {
-  font-size: 9px;
-}
-#options.reply {
-  display: inline-block;
-}
-"""
-    else
-      css += """
-.sideArrows {
-  padding: 3px;
-}
-.replyContainer {
-  display: table;
-}
-div.reply.post,
-.sideArrows {
-  display: table-cell;
-  overflow: visible;
-}
-"""
-    if Conf['Force Reply Break']
-      css += """
-.summary,
-.replyContainer {
-  clear: both;
-}
-"""
-
-    if Conf["Alternate Post Colors"]
-      css += """
-div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
-  background-image: #{Style.agent}linear-gradient(#{(if theme["Dark Theme"] then "rgba(255,255,255,0.02), rgba(255,255,255,0.02)" else "rgba(0,0,0,0.05), rgba(0,0,0,0.05)")});
-}
-"""
-
-    if Conf["Color Reply Headings"]
-      if theme["Dark Theme"]
-        css += """
-.postInfo {
-  background: rgba(255,255,255,0.05);
-}
-"""
-      else
-        css += """
-.postInfo {
-  background: rgba(0,0,0,0.1);
-}
-"""
-
-    if Conf["Color File Info"]
-      if theme["Dark Theme"]
-        css += """
-.file {
-  background: rgba(255,255,255,0.025);
-}
-"""
-      else
-        css += """
-.file {
-  background: rgba(0,0,0,0.05);
-}
-"""
-
-
-    if Conf["Filtered Backlinks"]
-      css += """
-.filtered.backlink {
-  display: none;
-}
-"""
-
-    if Conf["Rounded Edges"]
-      if Conf["Post Form Style"] is "float"
-        css += """
-#qr {
-  border-radius: 6px 6px 0 0;
-}
-"""
-
-      switch Conf["Boards Navigation"]
-        when "sticky top", "top"
-          css += """
-#boardNavDesktop {
-  border-radius: 0 0 3px 3px;
-}
-"""
-
-        when "sticky bottom", "bottom"
-          css += """
-#boardNavDesktop {
-  border-radius: 3px 3px 0 0;
-}
-"""
-
-      switch Conf["Pagination"]
-        when "sticky top", "top"
-          css += """
-.pagelist {
-  border-radius: 0 0 3px 3px;
-}
-"""
-
-        when "sticky bottom", "bottom"
-          css += """
-.pagelist {
-  border-radius: 3px 3px 0 0;
-}
-"""
-
-      css += """
-.rice {
-  border-radius: 2px;
-}
-#boardNavDesktopFoot,
-#content,
-#options .mascot,
-#options ul,
-#options,
-#qp,
-#qp div.post,
-#stats,
-#updater,
-#watcher,
-#globalMessage,
-.inline div.reply,
-div.opContainer,
-div.replyContainer,
-div.post,
-h2,
-td[style="border: 1px dashed;"] {
-  border-radius: 3px;
-}
-.reply .postInfo {
-  border-radius: 3px 3px 0 0;
-}
-#qrtab {
-  border-radius: 6px 6px 0 0;
-}
-.qphl {
-  #{Style.agent}outline-radius: 3px;
-}
-"""
-
-    if Conf["Slideout Watcher"]
-      css += """
-#watcher:not(:hover) {
-  border-color: transparent;
-  background-color: transparent;
-}
-#watcher {
+    ) + (
+      switch Conf["4chan Banner"]
+        when "at sidebar top"
+          Style.logoOffset = 83 + Style.sidebarOffsetH
+          """
+.boardBanner {
   position: fixed;
-  #{Style.sidebarLocation[0]}: 2px !important;
-  #{Style.sidebarLocation[1]}: auto !important;
-  bottom: auto !important;
-  height: 0;
-  width: #{(248 + Style.sidebarOffsetW)}px !important;
-  overflow: hidden;
-  #{Style.agent}box-sizing: border-box;
-  box-sizing: border-box;
-  padding: 0 10px;
-}
-#watcher:hover {
-  height: 250px;
-  padding-bottom: 4px;
-}
-"""
-    else
-      css += """
-#watcher::after {
-  display: none;
-}
-#watcher {
-  width: #{(246 + Style.sidebarOffsetW)}px;
-  padding-bottom: 4px;
-  z-index: 96;
-}
-#watcher > .move {
-  cursor: pointer !important;
-}
-"""
-
-    switch Conf["Slideout Navigation"]
-      when "compact"
-        css += """
-#boardNavDesktopFoot:hover {
-  height: 84px;
-  word-spacing: 1px;
-}
-"""
-
-      when "list"
-        css += """
-#boardNavDesktopFoot a {
-  display: block;
-}
-#boardNavDesktopFoot:hover {
-  height: 300px;
-  overflow-y: scroll;
-}
-#boardNavDesktopFoot a::after {
-  content: " - " attr(title);
-}
-#boardNavDesktopFoot a[href*="//boards.4chan.org/"]::after,
-#boardNavDesktopFoot a[href*="//rs.4chan.org/"]::after {
-  content: "/ - " attr(title);
-}
-#boardNavDesktopFoot a[href*="//boards.4chan.org/"]::before,
-#boardNavDesktopFoot a[href*="//rs.4chan.org/"]::before {
-  content: "/";
-}
-"""
-      when "hide"
-        css += """
-#boardNavDesktopFoot {
-  display: none;
-}
-"""
-
-    switch Conf["Reply Spacing"]
-      when "none"
-        replyMargin = 0
-        css += """
-.thread > .replyContainer:not(:last-of-type) .post.reply:not(:target) {
-  border-bottom-width: 0;
-}
-"""
-      when "small"
-        replyMargin = 2
-      when "medium"
-        replyMargin = 4
-      when "large"
-        replyMargin = 8
-
-    css += """
-.summary,
-.replyContainer {
-  margin-bottom: #{replyMargin}px;
-}
-.summary {
-  display: table;
-}
-"""
-    if Conf["OP Background"]
-      css += """
-.opContainer div.post {
-  background: #{theme["Reply Background"]};
-  border: 1px solid #{theme["Reply Border"]};
-  padding: 5px;
-  #{Style.agent}box-sizing: border-box;
-  box-sizing: border-box;
-  margin-bottom: #{replyMargin}px;
-}
-.opContainer div.post:target
-.opContainer div.post.highlight {
-  background: #{theme["Highlighted Reply Background"]};
-  border: 1px solid #{theme["Highlighted Reply Border"]};
-}
-"""
-
-    switch Conf["Sage Highlighting"]
-      when "text"
-        css += """
-a.useremail[href*="sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
-a.useremail[href*="Sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
-a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
-  content: " (sage) ";
-  color: #{theme["Sage"]};
-}
-"""
-      when "image"
-        css += """
-a.useremail[href*="sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
-a.useremail[href*="Sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
-a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
-  content: url("#{Icons.header.png}A4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=") "  ";
-  vertical-align: top;
-}
-"""
-
-    switch Conf["Announcements"]
-      when "4chan default"
-        css += """
-#globalMessage {
-  position: static;
-  background: none;
-  border: none;
-  margin-top: 0px;
-}
-#globalMessage::after {
-  display: none;
-}
-"""
-
-      when "slideout"
-        css += """
-#globalMessage:not(:hover) {
-  border-color: transparent;
-  background-color: transparent;
-}
-#globalMessage {
-  bottom: auto;
-  position: fixed;
+  top: 19px;
   #{Style.sidebarLocation[0]}: 2px;
-  #{Style.sidebarLocation[1]}: auto;
+}
+.boardBanner img {
   width: #{(248 + Style.sidebarOffsetW)}px;
-  background: #{theme["Dialog Background"]};
-  border: 1px solid #{theme["Dialog Border"]};
-  height: 0px;
-  overflow: hidden;
-  #{Style.agent}box-sizing: border-box;
-  box-sizing: border-box;
-  padding: 0 10px;
-}
-#globalMessage:hover {
-  height: 250px;
 }
 """
-
-      when "hide"
-        css += """
-#globalMessage,
-#globalMessage::after {
+        when "at sidebar bottom"
+          Style.logoOffset = 0
+          """
+.boardBanner {
+  position: fixed;
+  bottom: 270px;
+  #{Style.sidebarLocation[0]}: 2px;
+}
+.boardBanner img {
+  width: #{(248 + Style.sidebarOffsetW)}px;
+}
+"""
+        when "under post form"
+          Style.logoOffset = 0
+          """
+.boardBanner {
+  position: fixed;
+  bottom: 130px;
+  #{Style.sidebarLocation[0]}: 2px;
+}
+.boardBanner img {
+  width: #{(248 + Style.sidebarOffsetW)}px;
+}
+"""
+        when "at top"
+          Style.logoOffset = 0
+          """
+.boardBanner {
+  position: relative;
+  display: table;
+  margin: 0 auto;
+  text-align: center;
+  z-index: -1;
+}
+"""
+        when "hide"
+          Style.logoOffset = 0
+          """
+.boardBanner {
   display: none;
 }
 """
-
-    switch Conf["Boards Navigation"]
-      when "sticky top"
-        css += """
-#boardNavDesktop {
-  position: fixed;
-  top: 0;
+    ) + (
+      switch Conf["Backlinks Position"]
+        when 'lower left'
+          """
+#delform .reply.quoted {
+  padding-bottom: 15px;
 }
-"""
-
-      when "sticky bottom"
-        css += """
-#boardNavDesktop {
-  position: fixed;
+#delform .reply .container {
+  position: absolute;
+  left: 5px;
   bottom: 0;
 }
+#delform .reply .container::before {
+  content: "REPLIES: ";
+  color: #{theme["Timestamps"]};
+}
+#delform .container {
+  max-width: 50%;
+}
+#delform .inline .container {
+  position: static;
+  max-width: 100%;
+}
+#delform .inline .container::before {
+  content: "";
+}
 """
-
-      when "top"
-        css += """
-#boardNavDesktop {
+        when 'lower right'
+          """
+#delform .reply.quoted {
+  padding-bottom: 15px;
+}
+#delform .op .container {
+  float: right;
+}
+#delform .reply .container {
   position: absolute;
-  top: 0;
-}
-"""
-      when "hide"
-        css += """
-#boardNavDesktop {
-  position: absolute;
-  top: -100px;
-}
-"""
-
-    if Conf["Tripcode Hider"]
-      css += """
-input.field.tripped:not(:hover):not(:focus) {
-  color: transparent !important;
-  text-shadow: none !important;
-}
-"""
-
-    switch Conf["Pagination"]
-      when "sticky top"
-        css += """
-.pagelist {
-  position: fixed;
-  top: 0;
-  z-index: 4;
-}
-"""
-
-      when "sticky bottom"
-        css += """
-.pagelist {
-  position: fixed;
+  right: 5px;
   bottom: 0;
-  z-index: 4;
+}
+#delform .container::before {
+  content: "REPLIES: ";
+  color: #{theme["Timestamps"]};
+}
+#delform .container {
+  max-width: 50%;
+}
+#delform .inline .container {
+  position: static;
+  float: none;
+  max-width: 100%;
+}
+#delform .inline .container::before {
+  content: "";
 }
 """
-
-      when "top"
-        css += """
-.pagelist {
-  position: absolute;
-  top: 0;
-}
-"""
-
-      when "on side"
-       css += """
-.pagelist {
-  padding: 0;
-  top: auto;
-  bottom: 269px;
-  #{Style.sidebarLocation[1]}: auto;
-  #{(if Style.sidebarLocation[0] == "left" then "left: 0" else "right: " + (250 + Style.sidebarOffsetW) + "px")};
-  position: fixed;
-  #{Style.agent}transform: rotate(90deg);
-  #{Style.agent}transform-origin: bottom right;
-  z-index: 6;
-  margin: 0;
-  background: none transparent;
-  border: 0 none;
-}
-"""
-
-      when "hide"
-        css += """
-.pagelist {
-  display: none;
-}
-"""
-
-    switch Conf["Checkboxes"]
-      when "show"
-        css += """
+        else "\n"
+    ) + (
+      switch Conf["Checkboxes"]
+        when "show"
+          """
 input[type=checkbox] {
   display: none;
 }
 """
-
-      when "make checkboxes circular"
-        css += """
+        when "make checkboxes circular"
+          """
 input[type=checkbox] {
   display: none;
 }
@@ -2668,33 +2675,15 @@ input[type=checkbox] {
   border-radius: 6px;
 }
 """
-
-      when "do not style checkboxes"
-        css += """
+        when "do not style checkboxes"
+          """
 .rice {
   display: none;
 }
 """
-
-      when "hide"
-        css += """
+        when "hide"
+          """
 input[type=checkbox] {
   display: none;
 }
-"""
-
-    if Conf["Mascots"]
-      css += MascotTools.init()
-
-    if Conf["Block Ads"]
-      css += """
-/* AdBlock Minus */
-a[href*="jlist"],
-img[src^="//static.4chan.org/support/"] {
-  display: none;
-}
-"""
-    unless Conf["Emoji"] == "disable"
-      css += Style.emoji Conf["Emoji Position"]
-
-    return css
+""" )
