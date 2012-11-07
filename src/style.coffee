@@ -666,6 +666,8 @@ textarea {
 #{(unless Conf["Board Subtitle"] then ".boardSubtitle," else "")}
 .deleteform,
 .dump > form > label,
+.fileText:hover .fntrunc,
+.fileText:not(:hover) .fnfull,
 .hasSubMenu:not(.focused) > .subMenu,
 .hidden_thread > .summary,
 .inline input,
