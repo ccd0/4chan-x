@@ -116,8 +116,6 @@ not chainable
 $ = (selector, root=d.body) ->
   if root? and result = root.querySelector selector
     return result
-  else
-    return null
 
 $.extend = (object, properties) ->
   for key, val of properties
@@ -233,13 +231,8 @@ $.extend $,
     $.extend el, properties if properties
     el
   on: (el, events, handler) ->
-    if el?
-      for event in events.split ' '
-        el.addEventListener event, handler, false
-    else
-      $.log "An error occurred attaching an event listener. If you are reading this, please file a bug report, including the following: "
-      $.log handler
-    return
+    for event in events.split ' '
+      el.addEventListener event, handler, false
   off: (el, events, handler) ->
     for event in events.split ' '
       el.removeEventListener event, handler, false

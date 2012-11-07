@@ -20,7 +20,7 @@
           else
             "left"
 
-    icons    =
+    icons =
       Icons.header.png + Icons.themes[Conf["Icons"]][if theme["Dark Theme"] then "dark" else "light"]
 
     if Conf["Sidebar"] == "large"
@@ -1139,7 +1139,7 @@ body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
   z-index: 2;
 }
 body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] > table > tbody > tr > td {
-  background: #{theme["Body Background"]} !important;
+  background: #{theme["Background Color"]} !important;
   border: 1px solid #{theme["Reply Border"]} !important;
   vertical-align: top;
 }
@@ -1561,9 +1561,8 @@ a.forwardlink {
   #{Style.agent}transform: scaleX(#{(if Style.sidebarLocation[0] == "left" then "-" else "")}1);
   #{Style.agent}user-select: none;
 }
-#{theme["Custom CSS"]}
+#{theme["Custom CSS"]}\n
 """ + (
-
       if Conf["Image Expansion"]
         """
 .fileThumb img {
@@ -1571,15 +1570,16 @@ a.forwardlink {
 }
 .fileThumb img + img {
   cursor: #{Style.agent}zoom-out;
-}
+}\n
 """
     ) + (
       if Conf["Recursive Filtering"]
         """
 .hidden + .threadContainer {
   display: none;
-}
+}\n
 """
+      else "\n"
     ) + (
       if theme["Dark Theme"]
         """
@@ -1609,7 +1609,7 @@ span.atn {
 }
 span.lit {
   color: #558773;
-}
+}\n
 """
       else
         """
@@ -1639,7 +1639,7 @@ span.atn {
 }
 span.lit {
   color: #368c72;
-}
+}\n
 """
     ) + (
       if Conf["Faded 4chan Banner"]
@@ -1651,7 +1651,7 @@ span.lit {
 .boardBanner:hover {
   opacity: 1;
   #{Style.agent}transition: opacity 0.3s ease-in;
-}
+}\n
 """
       else "\n"
     ) + (
@@ -1673,7 +1673,7 @@ span.lit {
 }
 .webkit #Banner {
   -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));
-}
+}\n
 """
       else "\n"
     ) + (
@@ -1707,7 +1707,7 @@ img.bottomad {
 }
 #imgControls {
   #{Style.agent}transition: width .2s linear;
-}
+}\n
 """
       else "\n"
     ) + (
@@ -1715,76 +1715,9 @@ img.bottomad {
         """
 hr {
   visibility: hidden;
-}
+}\n
 """
       else "\n"
-    ) + (
-      switch Conf["Board Title"]
-        when "at sidebar top"
-          """
-#boardTitle {
-  position: fixed;
-  #{Style.sidebarLocation[0]}: 2px;
-  top: #{(if Style.logoOffset is 0 and Conf["Icon Orientation"] isnt "vertical" then 40 else 21) + Style.logoOffset}px;
-  width: #{248 + Style.sidebarOffsetW}px;
-}
-"""
-        when "at sidebar bottom"
-          """
-#boardTitle {
-  position: fixed;
-  #{Style.sidebarLocation[0]}: 2px;
-  bottom: 280px;
-  width: #{(248 + Style.sidebarOffsetW)}px;
-}
-"""
-        when "under post form"
-          """
-#boardTitle {
-  position: fixed;
-  #{Style.sidebarLocation[0]}: 2px;
-  bottom: 140px;
-  width: #{(248 + Style.sidebarOffsetW)}px;
-}
-"""
-        when "hide"
-          """
-#boardTitle {
-  display: none;
-}
-"""
-    ) + (
-      switch Conf["Reply Padding"]
-        when "phat"
-          """
-.postContainer blockquote {
-  margin: 24px 60px 24px 58px;
-}
-"""
-        when "normal"
-          """
-.postContainer blockquote {
-  margin: 12px 40px 12px 38px;
-}
-"""
-        when "slim"
-          """
-.postContainer blockquote {
-  margin: 6px 20px 6px 23px;
-}
-"""
-        when "super slim"
-          """
-.postContainer blockquote {
-  margin: 3px 10px 3px 15px;
-}
-"""
-        when "anorexia"
-          """
-.postContainer blockquote {
-  margin: 1px 5px 1px 11px;
-}
-"""
     ) + (
       unless Conf["Post Form Style"] is "float"
         """
@@ -1854,7 +1787,7 @@ input,
 #qr .field[name="sub"] {
   width: #{(75 + (Style.sidebarOffsetW / 3))}px !important;
   margin-left: 1px !important;
-}
+}\n
 """
           else
             """
@@ -1878,7 +1811,7 @@ input,
 #qr .field[name="email"],
 #qr .field[name="sub"] {
   margin-top: 1px;
-}
+}\n
 """
         ) + (
           if Conf["Textarea Resize"] == "auto-expand"
@@ -1896,7 +1829,7 @@ input,
 }
 #qr textarea:focus {
   width: 400px;
-}
+}\n
 """
           else
             """
@@ -1911,7 +1844,7 @@ input,
     width step-end;
   float: #{Style.sidebarLocation[0]};
   resize: #{Conf["Textarea Resize"]}
-}
+}\n
 """
         )
       else "\n"  
@@ -1968,7 +1901,7 @@ div.op:hover .menu_button,
 }
 #options.reply {
   display: inline-block;
-}
+}\n
 """
       else
         """
@@ -1982,7 +1915,7 @@ div.reply.post,
 .sideArrows {
   display: table-cell;
   overflow: visible;
-}
+}\n
 """
     ) + (
       if Conf['Force Reply Break']
@@ -1990,28 +1923,30 @@ div.reply.post,
 .summary,
 .replyContainer {
   clear: both;
-}
+}\n
 """
+      else "\n"
     ) + (
       if Conf["Alternate Post Colors"]
         """
 div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   background-image: #{Style.agent}linear-gradient(#{(if theme["Dark Theme"] then "rgba(255,255,255,0.02), rgba(255,255,255,0.02)" else "rgba(0,0,0,0.05), rgba(0,0,0,0.05)")});
-}
+}\n
 """
+      else "\n"
     ) + (
       if Conf["Color Reply Headings"]
         if theme["Dark Theme"]
           """
 .postInfo {
   background: rgba(255,255,255,0.05);
-}
+}\n
 """
         else
           """
 .postInfo {
   background: rgba(0,0,0,0.1);
-}
+}\n
 """
       else "\n"
     ) + (
@@ -2020,13 +1955,13 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
           """
 .file {
   background: rgba(255,255,255,0.025);
-}
+}\n
 """
         else
           """
 .file {
   background: rgba(0,0,0,0.05);
-}
+}\n
 """
       else "\n"
     ) + (
@@ -2034,7 +1969,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
        """
 .filtered.backlink {
   display: none;
-}
+}\n
 """
       else "\n"
     ) + (
@@ -2059,7 +1994,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
 #watcher:hover {
   height: 250px;
   padding-bottom: 4px;
-}
+}\n
 """
       else
         """
@@ -2073,7 +2008,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
 }
 #watcher > .move {
   cursor: pointer !important;
-}
+}\n
 """
     ) + (
       if Conf["OP Background"]
@@ -2090,15 +2025,16 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
 .opContainer div.post.highlight {
   background: #{theme["Highlighted Reply Background"]};
   border: 1px solid #{theme["Highlighted Reply Border"]};
-}
+}\n
 """
+      else "\n"
     ) + (
       if Conf["Tripcode Hider"]
         """
 input.field.tripped:not(:hover):not(:focus) {
   color: transparent !important;
   text-shadow: none !important;
-}
+}\n
 """
       else "\n"
     ) + (
@@ -2112,7 +2048,7 @@ input.field.tripped:not(:hover):not(:focus) {
 a[href*="jlist"],
 img[src^="//static.4chan.org/support/"] {
   display: none;
-}
+}\n
 """
       else "\n"
     ) + (
@@ -2120,13 +2056,80 @@ img[src^="//static.4chan.org/support/"] {
         Style.emoji Conf["Emoji Position"]
       else "\n"
     ) + (
+      switch Conf["Board Title"]
+        when "at sidebar top"
+          """
+#boardTitle {
+  position: fixed;
+  #{Style.sidebarLocation[0]}: 2px;
+  top: #{(if Style.logoOffset is 0 and Conf["Icon Orientation"] isnt "vertical" then 40 else 21) + Style.logoOffset}px;
+  width: #{248 + Style.sidebarOffsetW}px;
+}\n
+"""
+        when "at sidebar bottom"
+          """
+#boardTitle {
+  position: fixed;
+  #{Style.sidebarLocation[0]}: 2px;
+  bottom: 280px;
+  width: #{(248 + Style.sidebarOffsetW)}px;
+}\n
+"""
+        when "under post form"
+          """
+#boardTitle {
+  position: fixed;
+  #{Style.sidebarLocation[0]}: 2px;
+  bottom: 140px;
+  width: #{(248 + Style.sidebarOffsetW)}px;
+}\n
+"""
+        when "hide"
+          """
+#boardTitle {
+  display: none;
+}\n
+"""
+    ) + (
+      switch Conf["Reply Padding"]
+        when "phat"
+          """
+.postContainer blockquote {
+  margin: 24px 60px 24px 58px;
+}\n
+"""
+        when "normal"
+          """
+.postContainer blockquote {
+  margin: 12px 40px 12px 38px;
+}\n
+"""
+        when "slim"
+          """
+.postContainer blockquote {
+  margin: 6px 20px 6px 23px;
+}\n
+"""
+        when "super slim"
+          """
+.postContainer blockquote {
+  margin: 3px 10px 3px 15px;
+}\n
+"""
+        when "anorexia"
+          """
+.postContainer blockquote {
+  margin: 1px 5px 1px 11px;
+}\n
+"""
+    ) + (
       if Conf["Rounded Edges"]
         (
           if Conf["Post Form Style"] is "float"
             """
 #qr {
   border-radius: 6px 6px 0 0;
-}
+}\n
 """
           else "\n"
         ) + (
@@ -2135,13 +2138,13 @@ img[src^="//static.4chan.org/support/"] {
               """
 #boardNavDesktop {
   border-radius: 0 0 3px 3px;
-}
+}\n
 """
             when "sticky bottom", "bottom"
               """
 #boardNavDesktop {
   border-radius: 3px 3px 0 0;
-}
+}\n
 """
         ) + (
           switch Conf["Pagination"]
@@ -2149,14 +2152,14 @@ img[src^="//static.4chan.org/support/"] {
               """
 .pagelist {
   border-radius: 0 0 3px 3px;
-}
+}\n
 """
 
             when "sticky bottom", "bottom"
               """
 .pagelist {
   border-radius: 3px 3px 0 0;
-}
+}\n
 """
         ) + (
           """
@@ -2190,7 +2193,7 @@ td[style="border: 1px dashed;"] {
 }
 .qphl {
   #{Style.agent}outline-radius: 3px;
-}
+}\n
 """
         )
       else "\n"
@@ -2201,7 +2204,7 @@ td[style="border: 1px dashed;"] {
 #boardNavDesktopFoot:hover {
   height: 84px;
   word-spacing: 1px;
-}
+}\n
 """
 
         when "list"
@@ -2223,13 +2226,13 @@ td[style="border: 1px dashed;"] {
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::before,
 #boardNavDesktopFoot a[href*="//rs.4chan.org/"]::before {
   content: "/";
-}
+}\n
 """
         when "hide"
           """
 #boardNavDesktopFoot {
   display: none;
-}
+}\n
 """
     ) + (
       (switch Conf["Reply Spacing"]
@@ -2238,7 +2241,7 @@ td[style="border: 1px dashed;"] {
           """
 .thread > .replyContainer:not(:last-of-type) .post.reply:not(:target) {
   border-bottom-width: 0;
-}
+}\n
 """
         when "small"
           Style.replyMargin = 2
@@ -2256,7 +2259,7 @@ td[style="border: 1px dashed;"] {
 }
 .summary {
   display: table;
-}
+}\n
 """)
     ) + (
       switch Conf["Sage Highlighting"]
@@ -2267,7 +2270,7 @@ a.useremail[href*="Sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
 a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   content: " (sage) ";
   color: #{theme["Sage"]};
-}
+}\n
 """
         when "image"
           """
@@ -2276,7 +2279,7 @@ a.useremail[href*="Sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
 a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   content: url("#{Icons.header.png}A4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=") "  ";
   vertical-align: top;
-}
+}\n
 """
         else "\n"
     ) + (
@@ -2291,7 +2294,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 }
 #globalMessage::after {
   display: none;
-}
+}\n
 """
         when "slideout"
           """
@@ -2315,14 +2318,14 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 }
 #globalMessage:hover {
   height: 250px;
-}
+}\n
 """
         when "hide"
           """
 #globalMessage,
 #globalMessage::after {
   display: none;
-}
+}\n
 """
     ) + (
       switch Conf["Boards Navigation"]
@@ -2331,28 +2334,28 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 #boardNavDesktop {
   position: fixed;
   top: 0;
-}
+}\n
 """
         when "sticky bottom"
           """
 #boardNavDesktop {
   position: fixed;
   bottom: 0;
-}
+}\n
 """
         when "top"
           """
 #boardNavDesktop {
   position: absolute;
   top: 0;
-}
+}\n
 """
         when "hide"
           """
 #boardNavDesktop {
   position: absolute;
   top: -100px;
-}
+}\n
 """
     ) + (
       switch Conf["Pagination"]
@@ -2362,7 +2365,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   position: fixed;
   top: 0;
   z-index: 4;
-}
+}\n
 """
         when "sticky bottom"
           """
@@ -2370,14 +2373,14 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   position: fixed;
   bottom: 0;
   z-index: 4;
-}
+}\n
 """
         when "top"
           """
 .pagelist {
   position: absolute;
   top: 0;
-}
+}\n
 """
         when "on side"
           """
@@ -2394,13 +2397,13 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   margin: 0;
   background: none transparent;
   border: 0 none;
-}
+}\n
 """
         when "hide"
           """
 .pagelist {
   display: none;
-}
+}\n
 """
     ) + (
       switch Conf["Post Form Style"]
@@ -2412,7 +2415,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 #qr {
   #{Style.sidebarLocation[0]}: 2px !important;
   #{Style.sidebarLocation[1]}: auto !important;
-}
+}\n
 """
 
         when "slideout"
@@ -2429,7 +2432,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 #qr.dump {
   #{Style.sidebarLocation[0]}: 2px !important;
   #{Style.sidebarLocation[1]}: auto !important;
-}
+}\n
 """
         when "tabbed slideout"
           """
@@ -2468,7 +2471,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   opacity: 0;
   #{Style.sidebarLocation[0]}: #{(252 + Style.sidebarOffsetW)}px;
   #{Style.agent}transition: opacity .3s linear, #{Style.sidebarLocation[0]} .3s linear;
-}
+}\n
 """
         when "transparent fade"
           """
@@ -2486,7 +2489,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 #qr.dump {
   opacity: 1;
   #{Style.agent}transition: opacity .3s linear;
-}
+}\n
 """
         when "float"
           """
@@ -2543,7 +2546,7 @@ textarea.field,
     height step-end,
     width step-end;
   margin: 0;
-}
+}\n
 """
     ) + (
       switch Conf["4chan Banner"]
@@ -2557,7 +2560,7 @@ textarea.field,
 }
 .boardBanner img {
   width: #{(248 + Style.sidebarOffsetW)}px;
-}
+}\n
 """
         when "at sidebar bottom"
           Style.logoOffset = 0
@@ -2569,7 +2572,7 @@ textarea.field,
 }
 .boardBanner img {
   width: #{(248 + Style.sidebarOffsetW)}px;
-}
+}\n
 """
         when "under post form"
           Style.logoOffset = 0
@@ -2581,7 +2584,7 @@ textarea.field,
 }
 .boardBanner img {
   width: #{(248 + Style.sidebarOffsetW)}px;
-}
+}\n
 """
         when "at top"
           Style.logoOffset = 0
@@ -2592,14 +2595,14 @@ textarea.field,
   margin: 0 auto;
   text-align: center;
   z-index: -1;
-}
+}\n
 """
         when "hide"
           Style.logoOffset = 0
           """
 .boardBanner {
   display: none;
-}
+}\n
 """
     ) + (
       switch Conf["Backlinks Position"]
@@ -2626,7 +2629,7 @@ textarea.field,
 }
 #delform .inline .container::before {
   content: "";
-}
+}\n
 """
         when 'lower right'
           """
@@ -2655,7 +2658,7 @@ textarea.field,
 }
 #delform .inline .container::before {
   content: "";
-}
+}\n
 """
         else "\n"
     ) + (
@@ -2664,7 +2667,7 @@ textarea.field,
           """
 input[type=checkbox] {
   display: none;
-}
+}\n
 """
         when "make checkboxes circular"
           """
@@ -2673,17 +2676,17 @@ input[type=checkbox] {
 }
 .rice {
   border-radius: 6px;
-}
+}\n
 """
         when "do not style checkboxes"
           """
 .rice {
   display: none;
-}
+}\n
 """
         when "hide"
           """
 input[type=checkbox] {
   display: none;
-}
+}\n
 """ )
