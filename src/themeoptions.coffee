@@ -258,7 +258,7 @@ ThemeTools =
 
         if origin == "oneechan"
           userThemes[name] = {
-            'Author'                      : "Author"
+            'Author'                      : "Anonymous"
             'Author Tripcode'             : "!POMF.9waa"
             'Background Image'            : 'url("' + (imported.bgImg or '') + '")'
             'Background Attachment'       : bgRPA[3] or ''
@@ -305,8 +305,8 @@ ThemeTools =
             'Timestamps'                  : 'rgb(' + timeColor.rgb + ')'
             'Inputs'                      : 'rgb(' + textColor.rgb + ')'
             'Warnings'                    : 'rgb(' + sageColor.rgb + ')'
-            'Shadow Color'                : 'rgba(' + mainColor.shiftRGB(16) + ',.9)'
-            'Dark Theme'                  : if mainColor.isLight then false else true
+            'Shadow Color'                : 'rgba(0,0,0,0.1)'
+            'Dark Theme'                  : if mainColor.isLight() then false else true
             'Custom CSS'                  : """
 .rice {
   box-shadow:rgba(""" + mainColor.shiftRGB(32) + """,.3) 0 1px;
@@ -338,7 +338,7 @@ textarea,
 
         else if origin == "SS"
           userThemes[name] = {
-            'Author'                      : "Author"
+            'Author'                      : "Anonymous"
             'Author Tripcode'             : "!.pC/AHOKAg"
             'Background Image'            : 'url("' + (imported.bgImg or '') + '")'
             'Background Attachment'       : bgRPA[3] or ''
@@ -385,8 +385,8 @@ textarea,
             'Timestamps'                  : 'rgb(' + timeColor.rgb + ')'
             'Inputs'                      : 'rgb(' + textColor.rgb + ')'
             'Warnings'                    : 'rgb(' + sageColor.rgb + ')'
-            'Shadow Color'                : 'rgba(' + mainColor.shiftRGB(-16) + ',.9)'
-            'Dark Theme'                  : if mainColor.isLight then false else true
+            'Shadow Color'                : 'rgba(0,0,0,0.1)'
+            'Dark Theme'                  : if mainColor.isLight() then false else true
             'Custom CSS'                  : """
 .board {
   padding: 1px 2px;

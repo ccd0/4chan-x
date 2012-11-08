@@ -2089,6 +2089,87 @@ textarea,
   transition:background .2s,box-shadow .2s;
 }"""
 
+  "violaceous":
+    "Author"                      : "Anonymous"
+    "Author Tripcode"             : "!MaSoOdDwDw"
+    "Background Color"            : "rgb(18,19,20)"
+    "Dialog Background"           : "rgba(27,27,27,.98)"
+    "Dialog Border"               : "rgb(41,42,43)"
+    "Thread Wrapper Background"   : "rgba(27,27,27,.5)"
+    "Thread Wrapper Border"       : "rgba(41,42,43,.9)"
+    "Reply Background"            : "rgba(27,27,27,.9)"
+    "Reply Border"                : "rgb(41,42,43)"
+    "Highlighted Reply Background": "rgba(31,31,31,.9)"
+    "Highlighted Reply Border"    : "rgb(42,127,160)"
+    "Backlinked Reply Outline"    : "rgb(42,127,160)"
+    "Checkbox Background"         : "rgba(24,25,26,.9)"
+    "Checkbox Border"             : "rgb(18,19,20)"
+    "Checkbox Checked Background" : "rgb(24,25,26)"
+    "Input Background"            : "rgba(24,25,26,.9)"
+    "Input Border"                : "rgb(18,19,20)"
+    "Hovered Input Background"    : "rgba(40,41,42,.9)"
+    "Hovered Input Border"        : "rgb(18,19,20)"
+    "Focused Input Background"    : "rgba(40,41,42,.9)"
+    "Focused Input Border"        : "rgb(18,19,20)"
+    "Buttons Background"          : "rgba(24,25,26,.9)"
+    "Buttons Border"              : "rgb(18,19,20)"
+    "Navigation Background"       : "rgba(18,19,20,0.8)"
+    "Navigation Border"           : "rgb(27,27,27)"
+    "Quotelinks"                  : "rgb(42,127,160)"
+    "Links"                       : "rgb(42,127,160)"
+    "Hovered Links"               : "rgb(48,144,181)"
+    "Navigation Links"            : "rgb(221,221,221)"
+    "Hovered Navigation Links"    : "rgb(48,144,181)"
+    "Subjects"                    : "rgb(6,152,154)"
+    "Names"                       : "rgb(164,151,176)"
+    "Sage"                        : "rgb(79,79,79)"
+    "Tripcodes"                   : "rgb(189,43,131)"
+    "Emails"                      : "rgb(42,127,160)"
+    "Post Numbers"                : "rgb(42,127,160)"
+    "Text"                        : "rgb(221,221,221)"
+    "Backlinks"                   : "rgb(42,127,160)"
+    "Greentext"                   : "rgb(0,171,63)"
+    "Board Title"                 : "rgb(221,221,221)"
+    "Timestamps"                  : "rgb(221,221,221)"
+    "Inputs"                      : "rgb(221,221,221)"
+    "Warnings"                    : "rgb(79,79,79)"
+    "Shadow Color"                : "rgba(0,0,0,.1)"
+    "Dark Theme"                  : true
+    "Custom CSS"                  : """
+.board {
+  padding: 1px 2px;
+}
+.rice {
+  box-shadow:rgba(59,59,59,.3) 0 1px;
+}
+input[type=password]:hover,
+input[type=text]:not([disabled]):hover,
+input#fs_search:hover,
+input.field:hover,
+.webkit select:hover,
+textarea:hover,
+#options input:not([type=checkbox]):hover {
+  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
+}
+input[type=password]:focus,
+input[type=text]:focus,
+input#fs_search:focus,
+input.field:focus,
+.webkit select:focus,
+textarea:focus,
+#options input:focus {
+  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
+}
+button,
+input,
+textarea,
+.rice {
+  transition:background .2s,box-shadow .2s;
+}
+div.post.reply {
+  border: 0 !important}
+"""
+
 Mascots =
   'Akiyama_Mio':
     category:   'Anime'

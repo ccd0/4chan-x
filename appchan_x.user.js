@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
- *  appchan x - Version 1.0.14 - 2012-11-07
+ *  appchan x - Version 1.0.14 - 2012-11-08
  *
  *  Licensed under the MIT license.
  *  https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -1585,6 +1585,54 @@
       "Shadow Color": "rgba(0,0,0,.05)",
       "Dark Theme": false,
       "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(255,255,255,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}"
+    },
+    "violaceous": {
+      "Author": "Anonymous",
+      "Author Tripcode": "!MaSoOdDwDw",
+      "Background Color": "rgb(18,19,20)",
+      "Dialog Background": "rgba(27,27,27,.98)",
+      "Dialog Border": "rgb(41,42,43)",
+      "Thread Wrapper Background": "rgba(27,27,27,.5)",
+      "Thread Wrapper Border": "rgba(41,42,43,.9)",
+      "Reply Background": "rgba(27,27,27,.9)",
+      "Reply Border": "rgb(41,42,43)",
+      "Highlighted Reply Background": "rgba(31,31,31,.9)",
+      "Highlighted Reply Border": "rgb(42,127,160)",
+      "Backlinked Reply Outline": "rgb(42,127,160)",
+      "Checkbox Background": "rgba(24,25,26,.9)",
+      "Checkbox Border": "rgb(18,19,20)",
+      "Checkbox Checked Background": "rgb(24,25,26)",
+      "Input Background": "rgba(24,25,26,.9)",
+      "Input Border": "rgb(18,19,20)",
+      "Hovered Input Background": "rgba(40,41,42,.9)",
+      "Hovered Input Border": "rgb(18,19,20)",
+      "Focused Input Background": "rgba(40,41,42,.9)",
+      "Focused Input Border": "rgb(18,19,20)",
+      "Buttons Background": "rgba(24,25,26,.9)",
+      "Buttons Border": "rgb(18,19,20)",
+      "Navigation Background": "rgba(18,19,20,0.8)",
+      "Navigation Border": "rgb(27,27,27)",
+      "Quotelinks": "rgb(42,127,160)",
+      "Links": "rgb(42,127,160)",
+      "Hovered Links": "rgb(48,144,181)",
+      "Navigation Links": "rgb(221,221,221)",
+      "Hovered Navigation Links": "rgb(48,144,181)",
+      "Subjects": "rgb(6,152,154)",
+      "Names": "rgb(164,151,176)",
+      "Sage": "rgb(79,79,79)",
+      "Tripcodes": "rgb(189,43,131)",
+      "Emails": "rgb(42,127,160)",
+      "Post Numbers": "rgb(42,127,160)",
+      "Text": "rgb(221,221,221)",
+      "Backlinks": "rgb(42,127,160)",
+      "Greentext": "rgb(0,171,63)",
+      "Board Title": "rgb(221,221,221)",
+      "Timestamps": "rgb(221,221,221)",
+      "Inputs": "rgb(221,221,221)",
+      "Warnings": "rgb(79,79,79)",
+      "Shadow Color": "rgba(0,0,0,.1)",
+      "Dark Theme": true,
+      "Custom CSS": ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(59,59,59,.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\ndiv.post.reply {\n  border: 0 !important}"
     }
   };
 
@@ -8778,7 +8826,7 @@
           }
           if (origin === "oneechan") {
             userThemes[name] = {
-              'Author': "Author",
+              'Author': "Anonymous",
               'Author Tripcode': "!POMF.9waa",
               'Background Image': 'url("' + (imported.bgImg || '') + '")',
               'Background Attachment': bgRPA[3] || '',
@@ -8825,13 +8873,13 @@
               'Timestamps': 'rgb(' + timeColor.rgb + ')',
               'Inputs': 'rgb(' + textColor.rgb + ')',
               'Warnings': 'rgb(' + sageColor.rgb + ')',
-              'Shadow Color': 'rgba(' + mainColor.shiftRGB(16) + ',.9)',
-              'Dark Theme': mainColor.isLight ? false : true,
+              'Shadow Color': 'rgba(0,0,0,0.1)',
+              'Dark Theme': mainColor.isLight() ? false : true,
               'Custom CSS': ".rice {\n  box-shadow:rgba(" + mainColor.shiftRGB(32) + ",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + (imported.customCSS || '')
             };
           } else if (origin === "SS") {
             userThemes[name] = {
-              'Author': "Author",
+              'Author': "Anonymous",
               'Author Tripcode': "!.pC/AHOKAg",
               'Background Image': 'url("' + (imported.bgImg || '') + '")',
               'Background Attachment': bgRPA[3] || '',
@@ -8878,8 +8926,8 @@
               'Timestamps': 'rgb(' + timeColor.rgb + ')',
               'Inputs': 'rgb(' + textColor.rgb + ')',
               'Warnings': 'rgb(' + sageColor.rgb + ')',
-              'Shadow Color': 'rgba(' + mainColor.shiftRGB(-16) + ',.9)',
-              'Dark Theme': mainColor.isLight ? false : true,
+              'Shadow Color': 'rgba(0,0,0,0.1)',
+              'Dark Theme': mainColor.isLight() ? false : true,
               'Custom CSS': ".board {\n  padding: 1px 2px;\n}\n.rice {\n  box-shadow:rgba(" + mainColor.shiftRGB(32) + ",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + (imported.customCSS || '')
             };
           }
