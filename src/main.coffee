@@ -269,9 +269,6 @@ Main =
       if Conf['Index Navigation']
         Nav.init()
 
-    Style.padding()
-    Style.rice(d.body)
-
     board = $ '.board'
     nodes = []
     for node in $$ '.postContainer', board

@@ -690,6 +690,10 @@ Config =
       ]
 
     Aesthetics:
+      '4chan SS Emulation': [
+        true
+        'Try to emulate the appearance of 4chan SS.'
+      ]
       'Block Ads': [
         false
         'Block advertisements. It\'s probably better to use AdBlock for this.'

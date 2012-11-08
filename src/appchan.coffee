@@ -14,6 +14,7 @@ Style =
     Style.addStyle()
 
     $.ready ->
+      Style.rice(d.body)
       Style.banner()
       Style.trimGlobalMessage()
       if exLink = $ "#navtopright .exlinksOptionsLink", d.body
@@ -24,11 +25,15 @@ Style =
         $.addStyle(Style.iconPositions(), 'icons')
       # Give ExLinks and 4sight a little time to append their dialog links
       setTimeout iconPositions, 1000
+      Style.padding.nav   = $ "#boardNavDesktop", d.body
+      Style.padding.pages = $(".pagelist", d.body)
+      Style.padding()
+      $.on (window or unsafeWindow), "resize", Style.padding
 
   emoji: (position) ->
     css = ''
     for item in Emoji
-      unless (Conf['Emoji'] == "disable ponies" and item[2] == "pony") or (Conf['Emoji'] == "only ponies" and item[2] != "pony")
+      unless (Conf['Emoji'] is "disable ponies" and item[2] is "pony") or (Conf['Emoji'] is "only ponies" and item[2] != "pony")
         name  = item[0]
         image = Icons.header.png + item[1]
         css   += """
@@ -59,6 +64,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         Conf['styleInit'] = true
         $.addStyle Style.css(userThemes[Conf['theme']]), 'appchan'
         $.addStyle Style.iconPositions(), 'icons'
+        $.addStyle "", 'padding'
       else # XXX fox
         $.on d, 'DOMNodeInserted', Style.addStyle
     else
@@ -68,13 +74,28 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       $.addStyle Style.css(theme), 'appchan'
       $.addStyle Style.iconPositions(), 'icons'
 
+  remStyle: ->
+    $.off d, 'DOMNodeInserted', @remStyle
+    unless Conf['remInit']
+      if d.head and d.head.children.length > 15
+        Conf['remInit'] = true
+        nodes = []
+        for node in d.head.children
+          if node.rel is 'stylesheet' or node.tagName.toLowerCase() is 'style'
+            unless node.id is 'appchan' or node.id is 'icons' or node.id is 'padding'
+              nodes.push node
+        for node in nodes
+          $.rm node
+      else
+        $.on d, 'DOMNodeInserted', @remStyle
+
   banner: ->
     banner = $ ".boardBanner", d.body
     title  = $.el "div"
       id:   "boardTitle"
     children = for child in banner.children
       continue unless child.tagName?
-      if child.tagName.toLowerCase() == "img"
+      if child.tagName.toLowerCase() is "img"
         child.id = "Banner"
         continue;
       child
@@ -82,44 +103,34 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
     $.after banner, title
 
   padding: ->
-    Style.padding.nav   = $ "#boardNavDesktop", d.body
-    Style.padding.pages = $(".pages", d.body)
-    if Style.padding.pages and (Conf["Pagination"] == "sticky top" or Conf["Pagination"] == "sticky bottom" or Conf["Pagination"] == "top")
+    css = "body::before {\n"
+    sheet = $.id('padding')
+    Style.padding.nav.property = Conf["Boards Navigation"].split(" ")
+    Style.padding.nav.property = Style.padding.nav.property[Style.padding.nav.property.length - 1]
+    if Style.padding.pages?
       Style.padding.pages.property = Conf["Pagination"].split(" ")
       Style.padding.pages.property = Style.padding.pages.property[Style.padding.pages.property.length - 1]
-      d.body.style["padding#{Style.padding.pages.property.capitalize()}"] = "#{Style.padding.pages.offsetHeight}px"
+    if Conf["4chan SS Emulation"]
+      if Style.padding.pages? and (Conf["Pagination"] is "sticky top"  or Conf["Pagination"] is "sticky bottom")
+        css += "  #{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight}px !important;\n"
 
-      $.on (window or unsafeWindow), "resize", ->
-        d.body.style["padding#{Style.padding.pages.property.capitalize()}"] = "#{Style.padding.pages.offsetHeight}px"
+      if Conf["Boards Navigation"] is "sticky top" or Conf["Boards Navigation"] is "sticky bottom"
+        css += "  #{Style.padding.nav.property}: #{Style.padding.nav.offsetHeight}px !important;\n"
 
-    if Conf["Boards Navigation"] isnt "hide"
-      Style.padding.nav.property = Conf["Boards Navigation"].split(" ")
-      Style.padding.nav.property = Style.padding.nav.property[Style.padding.nav.property.length - 1]
-      d.body.style["padding#{Style.padding.nav.property.capitalize()}"] = "#{Style.padding.nav.offsetHeight}px"
+    css += """
+}
+body {
+  padding-bottom: 15px;\n
+"""
 
-      $.on (window or unsafeWindow), "resize", ->
-        d.body.style["padding#{Style.padding.nav.property.capitalize()}"] = "#{Style.padding.nav.offsetHeight}px"
+    if Style.padding.pages? and (Conf["Pagination"] is "sticky top" or Conf["Pagination"] is "sticky bottom" or Conf["Pagination"] is "top")
+      css += "  padding-#{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight}px;\n"
 
-    unless d.body.style.paddingBottom
-      d.body.style.paddingBottom = '15px'
+    unless Conf["Boards Navigation"] is "hide"
+      css += "  padding-#{Style.padding.nav.property}: #{Style.padding.nav.offsetHeight}px;\n"
 
-  remStyle: ->
-    $.off d, 'DOMNodeInserted', @remStyle
-    unless Conf['remInit']
-      if d.head and d.head.children.length > 10
-        Conf['remInit'] = true
-        nodes = []
-        for node in d.head.children
-          if node.rel == 'stylesheet'
-            nodes.push node
-          else if node.tagName.toLowerCase() == 'style' and node.id != 'appchan' and node.id != 'icons'
-            nodes.push node
-          else
-            continue
-        for node in nodes
-          $.rm node
-      else
-        $.on d, 'DOMNodeInserted', @remStyle
+    css += "}"
+    sheet.textContent = css
 
   trimGlobalMessage: ->
     if el = $ "#globalMessage", d.body
@@ -177,10 +188,10 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
 
       rgb = blue | (green << 8) | (red << 16)
       hex = rgb.toString 16
-      
+
       while hex.length < 4
         hex += 0
-      
+
       hex
 
     else return false

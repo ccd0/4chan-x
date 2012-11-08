@@ -23,19 +23,19 @@
     icons =
       Icons.header.png + Icons.themes[Conf["Icons"]][if theme["Dark Theme"] then "dark" else "light"]
 
-    if Conf["Sidebar"] == "large"
+    if Conf["Sidebar"] is "large"
       Style.sidebarOffsetW = 51
       Style.sidebarOffsetH = 17
     else
       Style.sidebarOffsetW = 0
       Style.sidebarOffsetH = 0
 
-    if Conf["Sidebar Location"] == "left"
+    if Conf["Sidebar Location"] is "left"
       Style.sidebarLocation = ["left",  "right"]
     else
       Style.sidebarLocation = ["right", "left" ]
 
-    if Conf['editMode'] == "theme"
+    if Conf['editMode'] is "theme"
       pagemargin = 300
     else
       switch Conf["Page Margin"]
@@ -52,7 +52,7 @@
         when "large"
           pagemargin = 350
 
-    if Conf["Sidebar"]  == "minimal"
+    if Conf["Sidebar"]  is "minimal"
       sidebar = 20
 
     else if Conf["Sidebar"] != "hide"
@@ -1571,7 +1571,7 @@ a.forwardlink {
   border-top: 1px solid #{(if theme["Dark Theme"] then "rgba(255,255,255,0.025)" else "rgba(0,0,0,0.05)")};
 }
 #mascot img {
-  #{Style.agent}transform: scaleX(#{(if Style.sidebarLocation[0] == "left" then "-" else "")}1);
+  #{Style.agent}transform: scaleX(#{(if Style.sidebarLocation[0] is "left" then "-" else "")}1);
   #{Style.agent}user-select: none;
 }
 #{theme["Custom CSS"]}
@@ -1839,7 +1839,7 @@ input,
 \n
 """
         ) + (
-          if Conf["Textarea Resize"] == "auto-expand"
+          if Conf["Textarea Resize"] is "auto-expand"
             """
 #qr textarea {
   display: block;
@@ -2072,8 +2072,41 @@ img[src^="//static.4chan.org/support/"] {
 """
       else "\n"
     ) + (
-      unless Conf["Emoji"] == "disable"
+      unless Conf["Emoji"] is "disable"
         Style.emoji Conf["Emoji Position"]
+      else "\n"
+    ) + (
+      if Conf["4chan SS Emulation"]
+        background = new Style.color Style.colorToHex theme["Thread Wrapper Background"] or theme["Background Color"]
+        """
+body::before {
+  background: none repeat scroll 0% 0% rgba(#{background.shiftRGB -18}, 0.8);
+  border-#{Style.sidebarLocation[1]}: 2px solid #{theme["Background Color"]};
+  box-shadow: inset #{if Conf["Sidebar Location"] is "right" then "" else "-"}1px 0px 0px #{theme["Thread Wrapper Border"]};
+  content: "";
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  #{Style.sidebarLocation[0]}: 0;
+  width: #{if Conf["Sidebar"] is "large" then 303 else if Conf["Sidebar"] is "normal" then 252 else if Conf["Sidebar"] is "minimal" then 25 else 0}px;
+  z-index: -1;
+  #{Style.agent}box-sizing: border-box;
+  box-sizing: border-box;
+  display: block;
+}
+#{if Conf["Pagination"] is "sticky top" or Conf["Pagination"] is "sticky bottom" then ".pagelist,"}
+#boardNavDesktop {
+  left: 0;
+  right: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0 !important;
+}
+#delform {
+  margin-top: -2px;
+}
+\n
+"""
       else "\n"
     ) + (
       switch Conf["Board Title"]
@@ -2441,7 +2474,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   top: auto;
   bottom: 269px;
   #{Style.sidebarLocation[1]}: auto;
-  #{(if Style.sidebarLocation[0] == "left" then "left: 0" else "right: " + (250 + Style.sidebarOffsetW) + "px")};
+  #{(if Style.sidebarLocation[0] is "left" then "left: 0" else "right: " + (250 + Style.sidebarOffsetW) + "px")};
   position: fixed;
   #{Style.agent}transform: rotate(90deg);
   #{Style.agent}transform-origin: bottom right;
@@ -2508,7 +2541,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   #{Style.sidebarLocation[1]}: auto !important;
 }
 #qr #qrtab {
-  #{Style.agent}transform: rotate(#{(if Style.sidebarLocation[0] == "left" then "" else "-")}90deg);
+  #{Style.agent}transform: rotate(#{(if Style.sidebarLocation[0] is "left" then "" else "-")}90deg);
   #{Style.agent}transform-origin: bottom #{Style.sidebarLocation[0]};
   position: fixed;
   bottom: 220px;
