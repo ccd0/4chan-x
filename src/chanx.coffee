@@ -1086,7 +1086,7 @@ Updater =
     post: ->
       return unless Conf['Auto Update This']
       search = []
-      if (text = QR.replies[0].com) isnt null and text.length isnt 0
+      if (text = QR.replies[0].com)?  and text.length isnt 0
         search[0] = text.trim()
       else
         search[0] = QR.replies[0].file.name
@@ -1106,10 +1106,7 @@ Updater =
         false
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 1000
-      if checkpost()
-        return Updater.cb.update null
-        # Still need to check if the post is really in the DOM or not.
-      else if Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
+      if !checkpost() and Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
       # This was still too bloated for just getting the value of the timer.
         count = 0
         int = setInterval (->
@@ -1118,8 +1115,6 @@ Updater =
           if checkpost() or count > 25
             Updater.ccheck = false
             Updater.cnodes = []
-            Updater.cb.update(null)
-            # Same here.
             clearInterval int
           Updater.ccheck = false
           count++), 500

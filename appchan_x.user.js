@@ -5180,7 +5180,7 @@
           return;
         }
         search = [];
-        if ((text = QR.replies[0].com) !== null && text.length !== 0) {
+        if (((text = QR.replies[0].com) != null) && text.length !== 0) {
           search[0] = text.trim();
         } else {
           search[0] = QR.replies[0].file.name;
@@ -5208,9 +5208,7 @@
         };
         Updater.unsuccessfulFetchCount = 0;
         setTimeout(Updater.update, 1000);
-        if (checkpost()) {
-          return Updater.cb.update(null);
-        } else if (Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
+        if (!checkpost() && Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
           count = 0;
           return int = setInterval((function() {
             Updater.ccheck = true;
@@ -5218,7 +5216,6 @@
             if (checkpost() || count > 25) {
               Updater.ccheck = false;
               Updater.cnodes = [];
-              Updater.cb.update(null);
               clearInterval(int);
             }
             Updater.ccheck = false;
