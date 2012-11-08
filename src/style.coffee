@@ -1923,9 +1923,6 @@ div.op:hover .menu_button,
   position: static;
   opacity: 1;
 }
-.sideArrows a {
-  font-size: 9px;
-}
 #options.reply {
   display: inline-block;
 }
@@ -1967,37 +1964,19 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
       else "\n"
     ) + (
       if Conf["Color Reply Headings"]
-        if theme["Dark Theme"]
-          """
+        """
 .postInfo {
-  background: rgba(255,255,255,0.05);
+  background: #{if (replyHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgb(" + (replyHeading.shiftRGB 16, true) + ")" else (if theme["Dark Theme"] then "rgba(255,255,255,0.05)" else "rgba(0,0,0,0.1)")};
 }
-\n
-"""
-        else
-          """
-.postInfo {
-  background: rgba(0,0,0,0.1);
-}
-\n
-"""
+\n"""
       else "\n"
     ) + (
       if Conf["Color File Info"]
-        if theme["Dark Theme"]
-          """
+        """
 .file {
-  background: rgba(255,255,255,0.025);
+  background: #{if (fileHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgb(" + (fileHeading.shiftRGB 8, true) + ")" else (if theme["Dark Theme"] then "rgba(255,255,255,0.05)" else "rgba(0,0,0,0.1)")};
 }
-\n
-"""
-        else
-          """
-.file {
-  background: rgba(0,0,0,0.05);
-}
-\n
-"""
+\n"""
       else "\n"
     ) + (
       if Conf["Filtered Backlinks"]

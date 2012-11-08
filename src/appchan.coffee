@@ -176,7 +176,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       blue  = parseInt digits[4], 10
 
       rgb = blue | (green << 8) | (red << 16)
-      hex = '#' + rgb.toString 16
+      hex = rgb.toString 16
       
       while hex.length < 4
         hex += 0

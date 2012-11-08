@@ -136,7 +136,7 @@ ThemeTools =
 
           colorInput = $.el 'input'
             className: 'color'
-            value: Style.colorToHex input.value
+            value: "##{Style.colorToHex input.value}"
 
           JSColor.bind colorInput
 
@@ -157,7 +157,7 @@ ThemeTools =
           return alert "Syntax error on #{@name}."
           
         if @className == "colorfield"
-          @nextSibling.value = Style.colorToHex @value
+          @nextSibling.value = "##{Style.colorToHex @value}"
           @nextSibling.color.importColor()
 
         editTheme[@name] = @value
