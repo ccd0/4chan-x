@@ -8455,7 +8455,7 @@
       }
       QR.abort();
       reply = QR.replies[0];
-      if (g.BOARD !== 'f') {
+      if (!((g.BOARD === 'f') && !g.REPLY)) {
         threadID = g.THREAD_ID || QR.threadSelector.value;
       }
       if (threadID === 'new') {
@@ -8523,7 +8523,8 @@
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,
-        recaptcha_response_field: response
+        recaptcha_response_field: response,
+        filetag: (g.BOARD === 'f') && !g.REPLY ? ($('select[name="filetag"]')).value : void 0
       };
       callbacks = {
         onload: function() {

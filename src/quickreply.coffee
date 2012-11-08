@@ -686,14 +686,14 @@ QR =
 
     reply = QR.replies[0]
 
-    threadID = g.THREAD_ID or QR.threadSelector.value unless g.BOARD is 'f'
+    threadID = g.THREAD_ID or QR.threadSelector.value unless (g.BOARD is 'f') and !g.REPLY
 
     # prevent errors
     if threadID is 'new'
       if g.BOARD in ['vg', 'q'] and !reply.sub
         err = 'New threads require a subject.'
       else unless reply.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
-          err = 'No file selected.'
+        err = 'No file selected.'
     else
       unless reply.com or reply.file
         err = 'No file selected.'
@@ -753,6 +753,7 @@ QR =
       pwd:      if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response
+      filetag:  ($ 'select[name="filetag"]').value if (g.BOARD is 'f') and !g.REPLY
 
     callbacks =
       onload: ->
