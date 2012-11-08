@@ -1587,6 +1587,7 @@ a.forwardlink {
 }
 \n
 """
+      else "\n"
     ) + (
       if Conf["Recursive Filtering"]
         """
