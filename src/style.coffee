@@ -2077,7 +2077,7 @@ img[src^="//static.4chan.org/support/"] {
       else "\n"
     ) + (
       if Conf["4chan SS Emulation"]
-        background = new Style.color Style.colorToHex theme["Thread Wrapper Background"] or theme["Background Color"]
+        background = new Style.color Style.colorToHex theme["Background Color"]
         """
 body::before {
   background: none repeat scroll 0% 0% rgba(#{background.shiftRGB -18}, 0.8);
