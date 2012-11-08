@@ -8577,6 +8577,9 @@
         err = 'Connection error with sys.4chan.org.';
       }
       if (err) {
+        if (err.nodeName === 'CENTER') {
+          err = err.textContent;
+        }
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
           if (/mistyped/i.test(err.textContent)) {
             err.textContent = 'You seem to have mistyped the CAPTCHA.';
