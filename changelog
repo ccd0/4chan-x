@@ -1,4 +1,6 @@
 master
+- noface
+  Added support for posting with QR and tags on /f/.
 
 1.0.16
 - Zixaphir

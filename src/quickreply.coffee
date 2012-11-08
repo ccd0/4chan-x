@@ -604,9 +604,13 @@ QR =
         id = thread.id[1..]
         threads += "<option value=#{id}>Thread #{id}</option>"
 
-      QR.threadSelector = $.el 'select'
-        innerHTML: threads
-        title: 'Create a new thread / Reply to a thread'
+      QR.threadSelector =
+        if g.BOARD is 'f'
+          $ 'select[name="filetag"]'
+        else
+          $.el 'select'
+            innerHTML: threads
+            title: 'Create a new thread / Reply to a thread'
 
       $.prepend $('#threadselect', QR.el), QR.threadSelector
 
@@ -678,7 +682,7 @@ QR =
 
     reply = QR.replies[0]
 
-    threadID = g.THREAD_ID or QR.threadSelector.value
+    threadID = g.THREAD_ID or QR.threadSelector.value unless g.BOARD is 'f'
 
     # prevent errors
     if threadID is 'new'
@@ -782,9 +786,11 @@ QR =
             "You were issued a warning on #{bs[0].innerHTML} as #{bs[3].innerHTML}.<br>Warning reason: #{bs[1].innerHTML}"
           else
             "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
-    else if err = doc.getElementById 'errmsg' # error!
-      if /4chan Pass/.test(err.textContent)
-        err.textContent = 'You seem to have mistyped the CAPTCHA. Please try again.'
+    else if err = doc.getElementById('errmsg') or err = $('center', doc) # error!
+      if /4chan Pass/.test err.textContent
+        err.textContent = 'You seem to have mistyped the CAPTCHA. Please try again.'    
+      if $ 'font', err
+        err.textContent = err.textContent.replace /Return$/, ''
       $('a', err)?.target = '_blank' # duplicate image link
     else unless msg = $ 'b', doc
       err = 'Connection error with sys.4chan.org.'
