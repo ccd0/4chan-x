@@ -12,7 +12,11 @@ QR =
         href: "javascript:;"
       $.on link, 'click', ->
         QR.open()
-        QR.threadSelector.value = 'new' unless g.REPLY
+        unless g.BOARD is 'f'
+          unless g.REPLY
+            QR.threadSelector.value = 'new' 
+        else
+          '9999'
         $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
 

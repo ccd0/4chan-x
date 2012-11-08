@@ -7647,8 +7647,13 @@
         });
         $.on(link, 'click', function() {
           QR.open();
-          if (!g.REPLY) {
-            QR.threadSelector.value = 'new';
+          if (g.BOARD !== 'f') {
+            if (!g.REPLY) {
+              QR.threadSelector.value = 'new';
+            }
+          } else {
+            '9999';
+
           }
           return $('textarea', QR.el).focus();
         });
