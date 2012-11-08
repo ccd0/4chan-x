@@ -593,7 +593,7 @@ Config =
       'Reply Spacing': [
         'small'
         'The amount of space between replies.'
-        ['none', 'small', 'medium', 'large']
+        ['none', 'minimal', 'small', 'medium', 'large']
       ]
       'Reply Padding': [
         'normal'
