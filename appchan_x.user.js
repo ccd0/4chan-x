@@ -9943,8 +9943,7 @@
           });
         }
         iconPositions = function() {
-          $.rm($.id('icons'));
-          return $.addStyle(Style.iconPositions(), 'icons');
+          return Style.icons.textContent = Style.iconPositions();
         };
         setTimeout(iconPositions, 1000);
         Style.padding.nav = $("#boardNavDesktop", d.body);
@@ -9998,7 +9997,9 @@
           Conf['styleInit'] = true;
           $.addStyle(Style.css(userThemes[Conf['theme']]), 'appchan');
           $.addStyle(Style.iconPositions(), 'icons');
-          return $.addStyle("", 'padding');
+          $.addStyle("", 'padding');
+          Style.appchan = $.id('appchan');
+          return Style.icons = $.id('icons');
         } else {
           return $.on(d, 'DOMNodeInserted', Style.addStyle);
         }
@@ -10006,10 +10007,8 @@
         if (el = $('#mascot', d.body)) {
           $.rm(el);
         }
-        $.rm($.id('appchan'));
-        $.rm($.id('icons'));
-        $.addStyle(Style.css(theme), 'appchan');
-        return $.addStyle(Style.iconPositions(), 'icons');
+        Style.appchan.textContent = Style.css(theme);
+        return Style.icons.textContent = Style.iconPositions();
       }
     },
     remStyle: function() {

@@ -21,8 +21,7 @@ Style =
         $.on exLink, "click", ->
           setTimeout Style.rice, 50
       iconPositions = ->
-        $.rm $.id 'icons'
-        $.addStyle(Style.iconPositions(), 'icons')
+        Style.icons.textContent = Style.iconPositions()
       # Give ExLinks and 4sight a little time to append their dialog links
       setTimeout iconPositions, 1000
       Style.padding.nav   = $ "#boardNavDesktop", d.body
@@ -65,14 +64,14 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         $.addStyle Style.css(userThemes[Conf['theme']]), 'appchan'
         $.addStyle Style.iconPositions(), 'icons'
         $.addStyle "", 'padding'
+        Style.appchan = $.id 'appchan'
+        Style.icons   = $.id 'icons'
       else # XXX fox
         $.on d, 'DOMNodeInserted', Style.addStyle
     else
       if el = $('#mascot', d.body) then $.rm el
-      $.rm $.id 'appchan'
-      $.rm $.id 'icons'
-      $.addStyle Style.css(theme), 'appchan'
-      $.addStyle Style.iconPositions(), 'icons'
+      Style.appchan.textContent = Style.css(theme)
+      Style.icons.textContent   = Style.iconPositions()
 
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle
