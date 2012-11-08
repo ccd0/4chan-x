@@ -96,8 +96,8 @@ label,
 }
 .hide_thread_button span > span,
 .hide_reply_button span > span {
-  width: 4px;
-  height: 1px;
+  width: .4em;
+  height: .1em;
   background-color: #{theme["Links"]};
 }
 #mascot_hide {
