@@ -81,13 +81,24 @@ label,
   display: inline-block;
 }
 .menu_button > span,
+#mascot_hide > span,
+.hide_thread_button span > span,
+.hide_reply_button span > span {
+  display: inline-block;
+  margin: 2px 2px 3px;
+  vertical-align: middle;
+}
+.menu_button > span,
 #mascot_hide > span {
   border-top:   .5em solid;
   border-right: .3em solid transparent;
   border-left:  .3em solid transparent;
-  display: inline-block;
-  margin: 2px 2px 4px;
-  vertical-align: middle;
+}
+.hide_thread_button span > span,
+.hide_reply_button span > span {
+  width: 4px;
+  height: 1px;
+  background-color: #{theme["Links"]};
 }
 #mascot_hide {
   padding: 3px;

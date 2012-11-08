@@ -491,7 +491,7 @@ ThreadHiding =
     for thread in $$ '.thread'
       a = $.el 'a',
         className: 'hide_thread_button'
-        innerHTML: '<span>[ - ]</span>'
+        innerHTML: '<span>[<span></span>]</span>'
         href: 'javascript:;'
       $.on a, 'click', ->
         ThreadHiding.toggle @parentElement
@@ -554,7 +554,7 @@ ReplyHiding =
     return if post.isInlined or post.ID is post.threadID
     side = $ '.sideArrows', post.root
     $.addClass side, 'hide_reply_button'
-    side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
+    side.innerHTML = '<a href="javascript:;"><span>[<span></span>]</span></a>'
     $.on side.firstChild, 'click', ->
       ReplyHiding.toggle button = @parentNode, root = button.parentNode, id = root.id[2..]
 
