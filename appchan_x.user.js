@@ -10134,7 +10134,7 @@
     colorToHex: function(color) {
       var blue, digits, green, hex, red, rgb;
       if (color.substr(0, 1) === '#') {
-        return color;
+        return color.slice(1, color.length);
       }
       if (digits = /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/.exec(color)) {
         red = parseInt(digits[2], 10);

@@ -177,7 +177,7 @@ body {
 
   colorToHex: (color) ->
     if color.substr(0, 1) is '#'
-      return color
+      return color.slice 1, color.length
 
     if digits = /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/.exec color
 
