@@ -1918,14 +1918,13 @@ div.op:hover .menu_button,
         """
 .sideArrows {
   padding: 3px;
+  float: left;
 }
-.replyContainer {
-  display: table;
-}
-div.reply.post,
-.sideArrows {
-  display: table-cell;
+div.reply.post {
+  position: relative;
   overflow: visible;
+  display: table;
+  
 }\n
 """
     ) + (
@@ -2661,7 +2660,7 @@ textarea.field,
   color: #{theme["Timestamps"]};
 }
 #delform .container {
-  max-width: 50%;
+  max-width: 100%%;
 }
 #delform .inline .container {
   position: static;
@@ -2689,7 +2688,7 @@ textarea.field,
   color: #{theme["Timestamps"]};
 }
 #delform .container {
-  max-width: 50%;
+  max-width: 100%;
 }
 #delform .inline .container {
   position: static;
