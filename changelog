@@ -1,4 +1,9 @@
 master
+- Zixaphir
+  Fixed issues with non-fit width replies
+  Fixed issues with the hider [ - ] being too wide with monospaced fonts
+  Added a 4chan SS Emulation Mode (may break this up into several options later)
+  Removed underlines from #navlinks with the underline link option enabled (they are icons, they don't need underlines)
 
 1.0.14
 - Zixaphir
