@@ -1259,6 +1259,7 @@ html .subMenu {
 }
 .prettyprint {
   display: table;
+  clear: right;
   white-space: pre-wrap;
   border-radius: 2px;
   overflow-x: auto;
