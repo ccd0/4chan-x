@@ -10016,7 +10016,7 @@
       var node, nodes, _i, _j, _len, _len1, _ref, _ref1, _results;
       $.off(d, 'DOMNodeInserted', this.remStyle);
       if (!Conf['remInit']) {
-        if (d.head && d.head.children.length > 15) {
+        if (d.head && d.head.children.length > 35) {
           Conf['remInit'] = true;
           nodes = [];
           _ref = d.head.children;

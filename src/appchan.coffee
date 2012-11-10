@@ -76,7 +76,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle
     unless Conf['remInit']
-      if d.head and d.head.children.length > 15
+      if d.head and d.head.children.length > 35
         Conf['remInit'] = true
         nodes = []
         for node in d.head.children
