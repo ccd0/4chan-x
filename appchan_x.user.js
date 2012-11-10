@@ -7151,6 +7151,11 @@
         boards: ['u', 'kuku'],
         type: 'foolfuuka'
       }, {
+        name: 'TheDarkCave',
+        base: '//archive.thedarkcave.org',
+        boards: ['c', 'po'],
+        type: 'foolfuuka'
+      }, {
         name: 'Warosu',
         base: '//fuuka.warosu.org',
         boards: ['cgl', 'ck', 'jp', 'lit', 'q', 'tg'],
