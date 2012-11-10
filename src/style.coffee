@@ -1031,6 +1031,9 @@ div.post div.postInfo {
 div.file {
   padding-left: 8px;
 }
+.postContainer blockquote {
+  min-height: #{parseInt(Conf["Font Size"], 10) + 3}px;
+}
 .fileText ~ a > img + img {
   margin: 0 0 25px;
   position: relative;

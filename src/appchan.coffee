@@ -80,7 +80,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         Conf['remInit'] = true
         nodes = []
         for node in d.head.children
-          if node.rel.match(*stylesheet) or node.tagName.toLowerCase() is 'style'
+          if node.rel?.match(/^.*\bstylesheet\b.*/) or node.tagName.toLowerCase() is 'style'
             unless node.id
               nodes.push node
         for node in nodes
