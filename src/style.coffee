@@ -1023,8 +1023,10 @@ input[type="submit"] {
   height: 17px;
 }
 /* Posts */
-div.postInfo {
+div.post div.postInfo {
   padding: 3px 0 0 8px;
+  display: block;
+  width: auto;
 }
 div.file {
   padding-left: 8px;
