@@ -1056,7 +1056,7 @@ div.thread {
   position: relative;
   #{(unless Conf['Images Overlap Post Form'] then "z-index: 0;" else "")}
 }
-div.post:not(#qp):not([hidden]) {
+div.post {
   margin: 0;
 }
 /* Remove default "inherit" background declaration */
