@@ -2128,7 +2128,7 @@ body::before {
   padding-#{Style.sidebarLocation[0]}: 0 !important;
 }
 div.post.reply {
-  border-#{Style.sidebarLocation[0]}-width: 0 !important;
+  border-#{Style.sidebarLocation[0]}-width: #{if Conf["Fit Width Replies"] then 0 else 1} px !important;
   border-top-#{Style.sidebarLocation[0]}-radius: 0 !important;
   border-bottom-#{Style.sidebarLocation[0]}-radius: 0 !important;
 }\n

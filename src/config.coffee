@@ -691,7 +691,7 @@ Config =
 
     Aesthetics:
       '4chan SS Emulation': [
-        true
+        false
         'Try to emulate the appearance of 4chan SS.'
       ]
       'Block Ads': [
