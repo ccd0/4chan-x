@@ -10288,7 +10288,7 @@
             return "#boardTitle {\n  position: fixed;\n  " + Style.sidebarLocation[0] + ": 2px;\n  bottom: 280px;\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n}\n";
           case "under post form":
             return "#boardTitle {\n  position: fixed;\n  " + Style.sidebarLocation[0] + ": 2px;\n  bottom: 140px;\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n}\n";
-          case "top":
+          case "at top":
             return "";
           case "hide":
             return "#boardTitle {\n  display: none;\n}\n";

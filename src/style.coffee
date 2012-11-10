@@ -2163,7 +2163,7 @@ div.post.reply {
   width: #{(248 + Style.sidebarOffsetW)}px;
 }\n
 """
-        when "top"
+        when "at top"
           ""
         when "hide"
           """
