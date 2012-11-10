@@ -118,9 +118,9 @@ label,
 #mascot_hide:hover > div {
   height: auto;
 }
-#options #mascot_hide label {
+#mascot_hide label {
   width: 100%;
-  border-bottom: 1px solid inherit;
+  border-bottom: 1px solid;
   display: block;
   clear: both;
   text-decoration: none;
@@ -234,9 +234,9 @@ input[type="submit"] {
   overflow-x: auto;
 }
 .thumbnail {
-  background-color: rgba(0,0,0,.2) !important;
-  background-position: 50% 20% !important;
-  background-size: cover !important;
+  background-color: rgba(0,0,0,.2);
+  background-position: 50% 20%;
+  background-size: cover;
   border: 1px solid #666;
   cursor: move;
   display: inline-block;
@@ -311,7 +311,7 @@ input[type="submit"] {
 .fitwidth img[data-md5] + img {
   max-width: 100%;
 }
-#options #style_tab + div select,
+#style_tab + div select,
 .fitwidth img[data-md5] + img,
 .themevar .field,
 .themevar textarea {
@@ -320,9 +320,9 @@ input[type="submit"] {
 .themevar .colorfield {
   width: 75%;
 }
-.themevar .color {
+.themevar .field.color {
   width: 25%;
-  color: transparent !important;
+  color: transparent;
 }
 #ihover,
 #mouseover,
@@ -358,11 +358,12 @@ input[type="submit"] {
 #options h3 {
   margin: 0;
 }
-#theme_tab + div div:not(.selectedtheme) > div > h1 {
-  color: transparent !important;
+#theme_tab + div h1 {
+  opacity: 0;
 }
 #theme_tab + div div.selectedtheme h1 {
   right: 11px;
+  opacity: 1;
 }
 #theme_tab + div > div h1 {
   position: absolute;
@@ -381,7 +382,7 @@ input[type="submit"] {
 #options ul li:nth-of-type(2n+1) {
   background-color: rgba(0, 0, 0, 0.05)
 }
-#options #rice_tab + div input {
+#rice_tab + div input {
   margin: 1px;
 }
 #options article li {
@@ -1257,10 +1258,9 @@ html .subMenu {
   border: none;
 }
 .prettyprint {
-  display: block;
+  display: table;
   white-space: pre-wrap;
   border-radius: 2px;
-  max-width: 600px;
   overflow-x: auto;
   padding: 3px;
 }
@@ -1884,7 +1884,7 @@ input,
   font-size: 9px;
 }
 .sideArrows a {
-  right: 27px;
+  #{if Conf["Menu"] then "right: 27px;" else ""}
 }
 .summary {
   padding-left: 20px;
@@ -2660,7 +2660,7 @@ textarea.field,
   color: #{theme["Timestamps"]};
 }
 #delform .container {
-  max-width: 100%%;
+  max-width: 100%;
 }
 #delform .inline .container {
   position: static;

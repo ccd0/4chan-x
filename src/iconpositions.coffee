@@ -23,7 +23,7 @@
         positioner = aligner(0, [
           true
           (if Conf['Slideout Navigation'] isnt 'hide' then true else false)
-          (if Conf['Announcements'] is 'slideout' then true else false)
+          (if Conf['Announcements'] is 'slideout' and $('#globalMessage', d.body)? then true else false)
           (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
           $('#navtopright .exlinksOptionsLink', d.body)?
           $('body > a[style="cursor: pointer; float: right;"]', d.body)?

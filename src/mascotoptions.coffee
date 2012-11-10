@@ -292,7 +292,7 @@ MascotTools =
       innerHTML: "<img src='#{if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'>"
 
     $.ready ->
-        $.add d.body, div
+      $.add d.body, div
 
   save: (mascot) ->
     if typeof (aname = mascot.name) == "undefined" or aname == ""
