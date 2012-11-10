@@ -61,6 +61,22 @@
     else
       sidebar = pagemargin
 
+    switch Conf["Reply Spacing"]
+      when "none"
+        Style.replyMargin = 0
+
+      when "minimal"
+        Style.replyMargin = 1
+
+      when "small"
+        Style.replyMargin = 2
+
+      when "medium"
+        Style.replyMargin = 4
+
+      when "large"
+        Style.replyMargin = 8
+
     css = """
 /* dialog styling */
 .dialog.reply {
@@ -1021,6 +1037,13 @@ div.file {
 .fileText {
   margin-top: 17px;
 }
+.summary,
+.replyContainer {
+  margin-bottom: #{Style.replyMargin}px;
+}
+.summary {
+  display: table;
+}
 /* Fixes text spoilers */
 .spoiler:not(:hover),
 .spoiler:not(:hover) * {
@@ -1608,6 +1631,14 @@ a.forwardlink {
 """
       else ""
     ) + (
+      if Conf["Reply Spacing"] is "none"
+        """
+.thread > .replyContainer:not(:last-of-type) .post.reply:not(:target) {
+  border-bottom-width: 0;
+}\n
+"""
+      else ""
+    ) + (
       if theme["Dark Theme"]
         """
 .prettyprint {
@@ -1901,7 +1932,6 @@ input,
 }
 .summary {
   padding-left: 20px;
-  display: table;
   clear: both;
 }
 .sideArrows {
@@ -2081,7 +2111,7 @@ body::before {
   box-sizing: border-box;
   display: block;
 }
-#{if Conf["Pagination"] is "sticky top" or Conf["Pagination"] is "sticky bottom" then ".pagelist,"}
+#{if Conf["Pagination"] is "sticky top" or Conf["Pagination"] is "sticky bottom" then ".pagelist," else ""}
 #boardNavDesktop {
   left: 0;
   right: 0;
@@ -2133,6 +2163,8 @@ div.post.reply {
   width: #{(248 + Style.sidebarOffsetW)}px;
 }\n
 """
+        when "top"
+          ""
         when "hide"
           """
 #boardTitle {
@@ -2283,36 +2315,6 @@ td[style="border: 1px dashed;"] {
   display: none;
 }\n
 """
-    ) + (
-      (switch Conf["Reply Spacing"]
-        when "none"
-          Style.replyMargin = 0
-          """
-.thread > .replyContainer:not(:last-of-type) .post.reply:not(:target) {
-  border-bottom-width: 0;
-}\n
-"""
-        when "minimal"
-          Style.replyMargin = 1
-          ""
-        when "small"
-          Style.replyMargin = 2
-          ""
-        when "medium"
-          Style.replyMargin = 4
-          ""
-        when "large"
-          Style.replyMargin = 8
-          ""
-      ) + ("""
-.summary,
-.replyContainer {
-  margin-bottom: #{Style.replyMargin}px;
-}
-.summary {
-  display: table;
-}\n
-""")
     ) + (
       switch Conf["Sage Highlighting"]
         when "text"
