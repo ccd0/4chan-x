@@ -170,6 +170,9 @@ div.subMenu.reply {
 h1 {
   text-align: center;
 }
+#mascotConf input::#{Style.agent}placeholder {
+  text-align: center;
+}
 #mascotConf input:#{Style.agent}placeholder {
   text-align: center;
 }
@@ -1192,6 +1195,10 @@ img[alt="Closed"] {
 input[type="submit"]:hover {
   cursor: pointer;
 }
+#qr input:focus::#{Style.agent}placeholder,
+#qr textarea:focus::#{Style.agent}placeholder {
+  color: transparent;
+}
 #qr input:focus:#{Style.agent}placeholder,
 #qr textarea:focus:#{Style.agent}placeholder {
   color: transparent;
@@ -1558,6 +1565,11 @@ a.forwardlink {
 }
 .qphl {
   outline-color: #{theme["Backlinked Reply Outline"]};
+}
+.placeholder,
+#qr input::#{Style.agent}placeholder,
+#qr textarea::#{Style.agent}placeholder {
+  color: #{(if theme["Dark Theme"] then "rgba(255,255,255,0.2)" else "rgba(0,0,0,0.3)")} !important;
 }
 .placeholder,
 #qr input:#{Style.agent}placeholder,
@@ -2422,6 +2434,8 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   top: 0;
 }\n
 """
+        when "bottom"
+          ""
         when "on side"
           """
 .pagelist {
