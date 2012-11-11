@@ -7178,7 +7178,7 @@
       }
     ],
     select: function(data, board) {
-      var arch, current, name, noarch, type, _i, _len, _ref;
+      var arch, current, name, noarch, type, _i, _j, _len, _len1, _ref, _ref1;
       noarch = 'No archiver available.';
       if (!board) {
         arch = (function() {
@@ -7201,26 +7201,25 @@
           return [noarch];
         }
       }
-      if (!(((function() {
-        var _i, _len, _ref, _results;
-        _ref = this.archiver;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          name = _ref[_i];
-          _results.push(name.name);
+      name = [this.select()][0];
+      if (name[1]) {
+        if (!(((current = $.get("archiver/" + board + "/")) != null) || name.contains(current))) {
+          $.set("archiver/" + board + "/", name[0]);
         }
-        return _results;
-      }).call(this)).contains(current = $.get("archiver/" + board + "/")) && (name = this.select()[0]) === noarch)) {
-        $.set("archiver/" + board + "/", name);
-      }
-      if (current === void 0 && (name = this.select()[0]) !== noarch) {
-        $.set("archiver/" + board + "/", name);
-      }
-      _ref = data.boards;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        type = _ref[_i];
-        if (current === data.name && data.boards.contains(board)) {
-          return board;
+        _ref = data.boards;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          type = _ref[_i];
+          if (data.name === name[name.indexOf(current)] && type === board) {
+            return board;
+          }
+        }
+      } else if (name[0] !== noarch) {
+        _ref1 = data.boards;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          type = _ref1[_j];
+          if (name[0] === data.name) {
+            return board;
+          }
         }
       }
     },

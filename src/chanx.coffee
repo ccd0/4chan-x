@@ -2753,12 +2753,17 @@ Redirect =
         else
           type.name
       return if arch.length > 0 then arch else [noarch]
-    unless (name.name for name in @archiver).contains(current = $.get "archiver/#{board}/") and (name = @select()[0]) is noarch
-      $.set "archiver/#{board}/", name
-    if current is undefined and (name = @select()[0]) isnt noarch
-     $.set "archiver/#{board}/", name
-    for type in data.boards
-      return board if current is data.name and data.boards.contains(board)
+    name = [@select()][0]
+    if name[1]
+      unless (current = $.get "archiver/#{board}/")? or name.contains(current)
+        $.set "archiver/#{board}/", name[0]
+      for type in data.boards
+        if data.name is name[name.indexOf(current)] and type is board
+          return board
+    else if name[0] isnt noarch
+      for type in data.boards
+        if name[0] is data.name
+          return board
 
   to: (data) ->
     unless data.isSearch
