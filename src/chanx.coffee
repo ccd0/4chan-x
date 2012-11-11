@@ -2699,7 +2699,6 @@ Redirect =
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-  archive: {}
   archiver: [
     {
       name:    'Foolz'
@@ -2755,10 +2754,10 @@ Redirect =
       return if arch.length > 0 then arch else [noarch]
     name = [@select()][0]
     if name[1]
-      unless (current = $.get "archiver/#{board}/")? or (index = name.indexOf(current)) >= 0
+      unless (current = $.get "archiver/#{board}/")? or name.contains(current)
         $.set "archiver/#{board}/", name[0]
       for type in data.boards
-        if data.name is name[index]
+        if data.name is name[name.indexOf(current)]
           return board
     else if name[0] isnt noarch
       for type in data.boards
@@ -2769,21 +2768,14 @@ Redirect =
     unless data.isSearch
       {threadID} = data
     {board} = data
-    cache = Redirect.archive[board]
 
-    unless cache
-      for archiver in @archiver
-        if board is @select archiver, board
-          cache = archiver
-          break
-      unless cache
-        cache = "none"
-
-    if cache isnt "none"
-      url = @path cache.base, cache.type, data
-    else
-      if threadID
-        return url = "//boards.4chan.org/#{board}/"
+    for archiver in @archiver
+      if board is @select archiver, board
+        url = @path archiver.base, archiver.type, data
+        break
+        
+    if !url and threadID
+      return "//boards.4chan.org/#{board}/"
 
     url or null
 
