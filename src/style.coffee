@@ -586,9 +586,6 @@ input[type="submit"] {
   max-height: 300px;
   max-width: 500px;
 }
-.qphl {
-  outline: 2px solid rgba(216,94,49,.7);
-}
 .center,
 .replyContainer.image_expanded {
   clear: both;
@@ -740,7 +737,7 @@ div.post div.file .fileThumb {
   image-rendering: optimizeQuality;
 }
 a {
-  outline: 0;
+  outline: none;
 }
 .board > hr:last-of-type {
   margin: 0;
@@ -1591,8 +1588,8 @@ span.postNum > .replylink:hover,
 a.forwardlink {
   border-bottom: 1px dashed;
 }
-.qphl {
-  outline-color: #{theme["Backlinked Reply Outline"]};
+div.post.qphl {
+  border-color: #{theme["Backlinked Reply Outline"]};
 }
 .placeholder,
 #qr input::#{Style.agent}placeholder,
@@ -2277,9 +2274,6 @@ td[style="border: 1px dashed;"] {
 #qrtab {
   border-radius: 6px 6px 0 0;
 }
-.qphl {
-  #{Style.agent}outline-radius: 3px;
-}\n
 """
         )
       else ""
