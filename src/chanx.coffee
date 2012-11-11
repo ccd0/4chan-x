@@ -2930,9 +2930,10 @@ ImageExpand =
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
     if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers']
-      return if $ '.fileThumb.imgspoiler'
+      return if $ '.imgspoiler'
     if ImageExpand.on and !post.el.hidden
       ImageExpand.expand post.img
+
   cb:
     toggle: (e) ->
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
@@ -2940,7 +2941,7 @@ ImageExpand =
       ImageExpand.toggle @
     all: ->
       ImageExpand.on = @checked
-      if ImageExpand.on #expand
+      if ImageExpand.on # Expand
         thumbs = $$ 'img[data-md5]'
         if Conf['Expand From Current']
           for thumb, i in thumbs
@@ -2948,8 +2949,9 @@ ImageExpand =
               break
           thumbs = thumbs[i...]
         for thumb in thumbs
+          continue if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers'] and thumb.parentElement.className.contains "imgspoiler"
           ImageExpand.expand thumb
-      else #contract
+      else # Contract
         for thumb in $$ 'img[data-md5][hidden]'
           ImageExpand.contract thumb
       return

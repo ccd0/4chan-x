@@ -7459,7 +7459,7 @@
       a = post.img.parentNode;
       $.on(a, 'click', ImageExpand.cb.toggle);
       if (Conf['Don\'t Expand Spoilers'] && !Conf['Reveal Spoilers']) {
-        if ($('.fileThumb.imgspoiler')) {
+        if ($('.imgspoiler')) {
           return;
         }
       }
@@ -7491,6 +7491,9 @@
           }
           for (_j = 0, _len1 = thumbs.length; _j < _len1; _j++) {
             thumb = thumbs[_j];
+            if (Conf['Don\'t Expand Spoilers'] && !Conf['Reveal Spoilers'] && thumb.parentElement.className.contains("imgspoiler")) {
+              continue;
+            }
             ImageExpand.expand(thumb);
           }
         } else {
