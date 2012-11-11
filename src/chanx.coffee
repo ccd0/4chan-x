@@ -2728,7 +2728,7 @@ Redirect =
       name:    'RebeccaBlackTech'
       base:    '//rbt.asia'
       boards:  ['cgl', 'g', 'mu', 'soc', 'w']
-      type:    'fuuka'
+      type:    'fuuka_mail'
     }
     {
       name:    'InstallGentoo'
@@ -2791,11 +2791,14 @@ Redirect =
           type
       value = encodeURIComponent value
       return if archiver is 'foolfuuka'
-          "#{base}/#{board}/search/?task=search2&search_media_hash=/#{value}"
-        else if type is 'image'
-          "#{base}/#{board}/#{type}/#{value}"
-        else
+          "#{base}/#{board}/search/#{type}/#{value}"
+      else if type is 'image'
+        "#{base}/#{board}/?task=search2&search_media_hash=#{value}"
+      else if /fuuka/.test archiver
+        unless type is 'email' and archiver isnt 'fuuka_mail'
           "#{base}/#{board}/?task=search2&search_#{type}=#{value}"
+        else
+          false
 
     {board, threadID, postID} = data
     # keep the number only if the location.hash was sent f.e.
