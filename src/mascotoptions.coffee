@@ -202,6 +202,14 @@ MascotTools =
 
             $.after input, fileInput
 
+          if name == 'name'
+            
+            $.on input, 'blur', ->
+              @value = @value.replace /[^A-Za-z-_0-9]/g, "_"
+              editMascot[@name] = @value
+              MascotTools.addMascot editMascot
+              Style.addStyle()
+            
           else
           
             $.on input, 'blur', ->

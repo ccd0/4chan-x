@@ -9531,6 +9531,14 @@
                 return MascotTools.uploadImage(evt, this);
               });
               $.after(input, fileInput);
+            }
+            if (name === 'name') {
+              $.on(input, 'blur', function() {
+                this.value = this.value.replace(/[^A-Za-z-_0-9]/g, "_");
+                editMascot[this.name] = this.value;
+                MascotTools.addMascot(editMascot);
+                return Style.addStyle();
+              });
             } else {
               $.on(input, 'blur', function() {
                 editMascot[this.name] = this.value;
