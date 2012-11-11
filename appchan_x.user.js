@@ -7178,7 +7178,7 @@
       }
     ],
     select: function(data, board) {
-      var arch, current, name, noarch, type, _i, _j, _len, _len1, _ref, _ref1;
+      var arch, current, index, name, noarch, type, _i, _j, _len, _len1, _ref, _ref1;
       noarch = 'No archiver available.';
       if (!board) {
         arch = (function() {
@@ -7203,13 +7203,13 @@
       }
       name = [this.select()][0];
       if (name[1]) {
-        if (!(((current = $.get("archiver/" + board + "/")) != null) || name.contains(current))) {
+        if (!(((current = $.get("archiver/" + board + "/")) != null) || (index = name.indexOf(current)) >= 0)) {
           $.set("archiver/" + board + "/", name[0]);
         }
         _ref = data.boards;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           type = _ref[_i];
-          if (data.name === name[name.indexOf(current)] && type === board) {
+          if (data.name === name[index]) {
             return board;
           }
         }

@@ -2755,10 +2755,10 @@ Redirect =
       return if arch.length > 0 then arch else [noarch]
     name = [@select()][0]
     if name[1]
-      unless (current = $.get "archiver/#{board}/")? or name.contains(current)
+      unless (current = $.get "archiver/#{board}/")? or (index = name.indexOf(current)) >= 0
         $.set "archiver/#{board}/", name[0]
       for type in data.boards
-        if data.name is name[name.indexOf(current)] and type is board
+        if data.name is name[index]
           return board
     else if name[0] isnt noarch
       for type in data.boards
