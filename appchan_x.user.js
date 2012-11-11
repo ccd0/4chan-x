@@ -2867,7 +2867,7 @@
       return _results;
     },
     dialog: function(tab) {
-      var archiver, arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, name, obj, option, optionname, optionvalue, overlay, sauce, select, selectoption, styleSetting, time, tr, ul, updateIncrease, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var archiver, arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, li, liHTML, name, obj, option, optionname, optionvalue, overlay, sauce, select, selectoption, styleSetting, time, tr, ul, updateIncrease, value, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
       if (Conf['editMode'] === "theme") {
         if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
           ThemeTools.close();
@@ -3047,10 +3047,14 @@
         (option = d.createElement('option')).textContent = name;
         $.add(archiver, option);
       }
-      if (select.length > 1) {
-        archiver.value = $.get("archiver/" + g.BOARD + "/");
+      if (select[1]) {
+        value = "archiver/" + g.BOARD + "/";
+        archiver.value = $.get(value);
         $.on(archiver, 'mouseup', function() {
-          return $.set("archiver/" + g.BOARD + "/", this.value);
+          $.set(value, this.value);
+          if (select[0] === $.get(value)) {
+            return $["delete"](value);
+          }
         });
       }
       sauce = $('#sauces', dialog);
