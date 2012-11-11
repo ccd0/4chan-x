@@ -233,8 +233,6 @@ input[type="submit"] {
   display: block;
   height: 100px;
   position: relative;
-  #{Style.agent}user-select: none;
-  user-select: none;
 }
 #replies > div {
   counter-reset: thumbnails;
@@ -653,9 +651,9 @@ select,
 textarea {
   font-family: '#{Conf["Font"]}';
 }
-#qr img,
-.captcha img {
+#qr .captchaimg {
   opacity: #{Conf["Captcha Opacity"]};
+  background-color: #fff;
 }
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::after,
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::before,
@@ -672,9 +670,6 @@ textarea {
 .boardSubtitle,
 .boardSubtitle a {
   font-size: #{parseInt(Conf["Font Size"], 10) - 1}px;
-}
-.pages strong {
-  font-size: #{parseInt(Conf["Font Size"], 10) + 3}px;
 }
 /* Cleanup */
 #absbot,
@@ -961,9 +956,6 @@ a,
   #{Style.agent}transition: background .1s linear;
 }
 /* Post Form */
-#qr div.captchainput {
-  float: left;
-}
 #qr div.captchainput,
 #file {
   overflow: hidden;
@@ -1040,7 +1032,7 @@ div.file {
   margin-top: 17px;
 }
 .summary,
-.replyContainer {
+.postContainer {
   margin-bottom: #{Style.replyMargin}px;
 }
 .summary {
@@ -1610,7 +1602,6 @@ div.post.qphl {
 }
 #mascot img {
   #{Style.agent}transform: scaleX(#{(if Style.sidebarLocation[0] is "left" then "-" else "")}1);
-  #{Style.agent}user-select: none;
 }
 #{theme["Custom CSS"]}\n
 """ + (
@@ -1939,11 +1930,22 @@ input,
 .sideArrows {
   width: 0;
 }
+#browse,
+#mascot img,
+#replies,
+#spoilerLabel,
+.captchaimg,
+.sideArrows,
+.sideArrows a,
+.menu_button,
+.move {
+  user-select: none;
+  #{Style.agent}user-select: none;
+}
 .sideArrows a,
 .menu_button {
   opacity: 0;
   #{Style.agent}transition: opacity .3s ease-out 0s;
-  #{Style.agent}user-select: none;
 }
 div.op:hover .menu_button,
 .replyContainer:hover div.reply .menu_button,
@@ -2058,7 +2060,6 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   padding: 5px;
   #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
-  margin-bottom: #{Style.replyMargin}px;
 }
 .opContainer div.post:target
 .opContainer div.post.highlight {
@@ -2559,15 +2560,14 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   min-width: 300px;
 }
 #qr .captchaimg {
-  max-width: 300px;
+  max-width: 100%;
   overflow: hidden;
 }
 .autohide:not(:hover) > form {
   display: none !important;
 }
 textarea.field,
-#qr input[title="Verification"],
-#qr > form > div {
+#qr input[title="Verification"] {
   width: 100%;
 }
 #dump {
@@ -2578,14 +2578,10 @@ textarea.field,
 }
 #browse,
 #buttons input {
-  width: 30%;
-}
-#qr .captchainput,
-#qr div.captchainput {
-  width: 100%;
+  width: 25%;
 }
 #file {
-  width: 40%;
+  width: 50%;
 }
 #qr.captcha textarea.field {
   min-height: 120px;
@@ -2610,7 +2606,7 @@ textarea.field,
           """
 .boardBanner {
   position: fixed;
-  top: 19px;
+  top: 18px;
   #{Style.sidebarLocation[0]}: 2px;
 }
 .boardBanner img {

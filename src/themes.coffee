@@ -1817,7 +1817,7 @@ thread>.replyContainer>.reply>div.postInfo {
     "Thread Wrapper Border"       : "rgba(0,0,0,0)"
     "Reply Background"            : "linear-gradient(rgba(244,244,244,0.9), rgba(239,239,239,0.9)), rgba(239,239,239,1)"
     "Reply Border"                : "rgb(212,212,212)"
-    "Highlighted Reply Background": "linear-gradient(rgba(235,235,235,.9), rgba(230,230,230,0.9))"
+    "Highlighted Reply Background": "linear-gradient(rgba(250,250,250,.9), rgba(230,230,230,0.9))"
     "Highlighted Reply Border"    : "rgb(191,127,63)"
     "Backlinked Reply Outline"    : "rgba(191,127,63,0.5)"
     "Checkbox Background"         : "rgba(228,228,228,.9)"
