@@ -2934,7 +2934,7 @@ ImageExpand =
 
     if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers']
       # Detect Spoilers in this post.
-      return if a.className.contains "imgspoiler"
+      return if a.className?.contains "imgspoiler"
       
     # Expand the image if "Expand All" is enabled.
     if ImageExpand.on and !post.el.hidden

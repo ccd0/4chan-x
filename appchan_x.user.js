@@ -7455,14 +7455,14 @@
       return this.dialog();
     },
     node: function(post) {
-      var a;
+      var a, _ref;
       if (!post.img) {
         return;
       }
       a = post.img.parentNode;
       $.on(a, 'click', ImageExpand.cb.toggle);
       if (Conf['Don\'t Expand Spoilers'] && !Conf['Reveal Spoilers']) {
-        if (a.className.contains("imgspoiler")) {
+        if ((_ref = a.className) != null ? _ref.contains("imgspoiler") : void 0) {
           return;
         }
       }
