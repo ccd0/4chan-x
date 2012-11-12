@@ -1082,18 +1082,17 @@ Updater =
 
     $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', @cb.visibility
 
-    postID: []
+    postID: ''
 
   cb:
     post: ->
       return unless Conf['Auto Update This']
-      search = Updater.postID
       checkpost = ->
-        return if search is undefined
         nodes = Updater.cnodes.childNodes
-        postIDs = ($ '[title="Quote this post"]', nodes).textContent
-        if (node.textContent for node in postIDs).indexOf search >= 0
-          return true
+        postIDs = ($$ '[title="Quote this post"]', nodes)
+        for node in postIDs
+          if node.text is Updater.postID
+            return true
         false
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 1000

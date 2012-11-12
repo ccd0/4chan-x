@@ -5174,33 +5174,24 @@
       $.on(d, 'QRPostSuccessful', this.cb.post);
       $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility);
       return {
-        postID: []
+        postID: ''
       };
     },
     cb: {
       post: function() {
-        var checkpost, count, int, search;
+        var checkpost, count, int;
         if (!Conf['Auto Update This']) {
           return;
         }
-        search = Updater.postID;
         checkpost = function() {
-          var node, nodes, postIDs;
-          if (search === void 0) {
-            return;
-          }
+          var node, nodes, postIDs, _i, _len;
           nodes = Updater.cnodes.childNodes;
-          postIDs = ($('[title="Quote this post"]', nodes)).textContent;
-          if (((function() {
-            var _i, _len, _results;
-            _results = [];
-            for (_i = 0, _len = postIDs.length; _i < _len; _i++) {
-              node = postIDs[_i];
-              _results.push(node.textContent);
+          postIDs = $$('[title="Quote this post"]', nodes);
+          for (_i = 0, _len = postIDs.length; _i < _len; _i++) {
+            node = postIDs[_i];
+            if (node.text === Updater.postID) {
+              return true;
             }
-            return _results;
-          })()).indexOf(search >= 0)) {
-            return true;
           }
           return false;
         };
