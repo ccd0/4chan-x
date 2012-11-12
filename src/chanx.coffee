@@ -2929,8 +2929,12 @@ ImageExpand =
     return unless post.img
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
+
     if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers']
-      return if $ '.imgspoiler', post.el
+      # Detect Spoilers in this post.
+      return if a.className.contains "imgspoiler"
+      
+    # Expand the image if "Expand All" is enabled.
     if ImageExpand.on and !post.el.hidden
       ImageExpand.expand post.img
 
