@@ -2016,6 +2016,8 @@ QuoteBacklink =
           id: "blc#{qid}"
         $.add el, container
       $.add container, [$.tn(' '), link]
+      unless Conf["Backlinks Position"] is "default" or /\bop\b/.test el.parentNode.className
+        el.parentNode.style.paddingBottom = "#{container.offsetHeight}px"
     return
 
 QuoteInline =

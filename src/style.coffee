@@ -1108,6 +1108,10 @@ div.post {
   max-width: 300px;
   height: auto;
 }
+.inline div.post,
+#qp div.post {
+  padding-bottom: 0 !important;
+}
 div.navLinks {
   visibility: hidden;
   height: 0;
@@ -2664,8 +2668,9 @@ textarea.field,
 }
 #delform .reply .container {
   position: absolute;
-  left: 5px;
+  left: 0;
   bottom: 0;
+  padding: 0 5px;
 }
 #delform .reply .container::before {
   content: "REPLIES: ";
@@ -2692,8 +2697,9 @@ textarea.field,
 }
 #delform .reply .container {
   position: absolute;
-  right: 5px;
+  right: 0;
   bottom: 0;
+  padding: 0 5px;
 }
 #delform .container::before {
   content: "REPLIES: ";
