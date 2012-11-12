@@ -609,86 +609,6 @@ Config =
         'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".'
       ]
 
-    Mascots:
-      'Mascots': [
-        true
-        'Add a pretty picture of your waifu to Appchan.'
-      ]
-      'Mascot Location': [
-        'sidebar'
-        'Change where your mascot is located.'
-        ['sidebar', 'opposite']
-      ]
-      'Mascot Position': [
-        'bottom'
-        'Change where your mascot is placed in relation to the post form if the mascot isn\'t manually placed.'
-        ['above post form', 'bottom']
-      ]
-      'Mascots Overlap Posts': [
-        true
-        'Mascots overlap threads and posts.'
-      ]
-      'NSFW/SFW Mascots': [
-        false
-        'Enable or disable mascots based on the SFW status of the board you are viewing.'
-      ]
-      'NSFW/SFW Themes': [
-        false
-        'Choose your theme based on the SFW status of the board you are viewing.'
-      ]
-
-    Navigation:
-      'Boards Navigation': [
-        'sticky top'
-        'The position of 4chan board navigation'
-        ['sticky top', 'sticky bottom', 'top', 'hide']
-      ]
-      'Navigation Alignment': [
-        'center'
-        'Change the text alignment of the navigation.'
-        ['left', 'center', 'right']
-      ]
-      'Slideout Navigation': [
-        'compact'
-        'How the slideout navigation will be displayed.'
-        ['compact', 'list', 'hide']
-      ]
-      'Pagination': [
-        'sticky bottom'
-        'The position of 4chan page navigation'
-        ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']
-      ]
-      'Pagination Alignment': [
-        'center'
-        'Change the text alignment of the pagination.'
-        ['left', 'center', 'right']
-      ]
-
-    'Post Form':
-      'Captcha Opacity': [
-        '1.00'
-        'Transparency of the 4chan Captcha'
-        ['1.00', '.75', '.50', '.25']
-      ]
-      'Post Form Style': [
-        'tabbed slideout'
-        'How the post form will sit on the page.'
-        ['fixed', 'slideout', 'tabbed slideout', 'transparent fade', 'float']
-      ]
-      'Compact Post Form Inputs':[
-        true
-        'Use compact inputs on the post form.'
-      ]
-      'Textarea Resize': [
-        'vertical'
-        'Options to resize the post form\'s comment box.'
-        ['both', 'horizontal', 'vertical', 'none', 'auto-expand']
-      ]
-      'Tripcode Hider': [
-        true
-        'Intelligent name field hiding.'
-      ]
-
     Aesthetics:
       '4chan SS Emulation': [
         false
@@ -745,6 +665,86 @@ Config =
       'Underline Links': [
         false
         'Put lines under hyperlinks.'
+      ]
+      'NSFW/SFW Themes': [
+        false
+        'Choose your theme based on the SFW status of the board you are viewing.'
+      ]
+
+    Mascots:
+      'Mascots': [
+        true
+        'Add a pretty picture of your waifu to Appchan.'
+      ]
+      'Mascot Location': [
+        'sidebar'
+        'Change where your mascot is located.'
+        ['sidebar', 'opposite']
+      ]
+      'Mascot Position': [
+        'bottom'
+        'Change where your mascot is placed in relation to the post form if the mascot isn\'t manually placed.'
+        ['above post form', 'bottom']
+      ]
+      'Mascots Overlap Posts': [
+        true
+        'Mascots overlap threads and posts.'
+      ]
+      'NSFW/SFW Mascots': [
+        false
+        'Enable or disable mascots based on the SFW status of the board you are viewing.'
+      ]
+
+    Navigation:
+      'Boards Navigation': [
+        'sticky top'
+        'The position of 4chan board navigation'
+        ['sticky top', 'sticky bottom', 'top', 'hide']
+      ]
+      'Navigation Alignment': [
+        'center'
+        'Change the text alignment of the navigation.'
+        ['left', 'center', 'right']
+      ]
+      'Slideout Navigation': [
+        'compact'
+        'How the slideout navigation will be displayed.'
+        ['compact', 'list', 'hide']
+      ]
+      'Pagination': [
+        'sticky bottom'
+        'The position of 4chan page navigation'
+        ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']
+      ]
+      'Pagination Alignment': [
+        'center'
+        'Change the text alignment of the pagination.'
+        ['left', 'center', 'right']
+      ]
+
+    'Post Form':
+      'Captcha Opacity': [
+        '1.00'
+        'Transparency of the 4chan Captcha'
+        ['1.00', '.75', '.50', '.25']
+      ]
+      'Post Form Style': [
+        'tabbed slideout'
+        'How the post form will sit on the page.'
+        ['fixed', 'slideout', 'tabbed slideout', 'transparent fade', 'float']
+      ]
+      'Compact Post Form Inputs':[
+        true
+        'Use compact inputs on the post form.'
+      ]
+      'Textarea Resize': [
+        'vertical'
+        'Options to resize the post form\'s comment box.'
+        ['both', 'horizontal', 'vertical', 'none', 'auto-expand']
+      ]
+      'Tripcode Hider': [
+        true
+        'Intelligent name field hiding.'
       ]
 
   theme        : 'Yotsuba B'

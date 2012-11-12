@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.14 - 2012-11-11
+ * appchan x - Version 1.0.14 - 2012-11-12
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -279,13 +279,28 @@
         'Hide Horizontal Rules': [false, 'Hides lines between threads.'],
         'Images Overlap Post Form': [true, 'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".']
       },
+      Aesthetics: {
+        '4chan SS Emulation': [false, 'Try to emulate the appearance of 4chan SS.'],
+        'Block Ads': [false, 'Block advertisements. It\'s probably better to use AdBlock for this.'],
+        'Sidebar Glow': [false, 'Adds a glow to the sidebar\'s text.'],
+        'Checkboxes': ['show', 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide', 'do not style checkboxes']],
+        'Emoji': ['enabled', 'Enable emoji', ['enabled', 'disable ponies', 'only ponies', 'disable']],
+        'Emoji Position': ['before', 'Position of emoji icons, like sega and neko.', ['before', 'after']],
+        'Font': ['Helvetica', 'The font used by all elements of 4chan.', 'text'],
+        'Font Size': ['12', 'The font size of posts and various UI. This changes most, but not all, font sizes.', 'text'],
+        'Icons': ['oneechan', 'Icon theme which Appchan will use.', ['oneechan', '4chan SS']],
+        'Quote Shadows': [true, 'Add shadows to the quote previews and inline quotes.'],
+        'Rounded Edges': [false, 'Round the edges of various 4chan elements.'],
+        'Slideout Transitions': [true, 'Animate slideouts.'],
+        'Underline Links': [false, 'Put lines under hyperlinks.'],
+        'NSFW/SFW Themes': [false, 'Choose your theme based on the SFW status of the board you are viewing.']
+      },
       Mascots: {
         'Mascots': [true, 'Add a pretty picture of your waifu to Appchan.'],
         'Mascot Location': ['sidebar', 'Change where your mascot is located.', ['sidebar', 'opposite']],
         'Mascot Position': ['bottom', 'Change where your mascot is placed in relation to the post form if the mascot isn\'t manually placed.', ['above post form', 'bottom']],
         'Mascots Overlap Posts': [true, 'Mascots overlap threads and posts.'],
-        'NSFW/SFW Mascots': [false, 'Enable or disable mascots based on the SFW status of the board you are viewing.'],
-        'NSFW/SFW Themes': [false, 'Choose your theme based on the SFW status of the board you are viewing.']
+        'NSFW/SFW Mascots': [false, 'Enable or disable mascots based on the SFW status of the board you are viewing.']
       },
       Navigation: {
         'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']],
@@ -300,21 +315,6 @@
         'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
         'Textarea Resize': ['vertical', 'Options to resize the post form\'s comment box.', ['both', 'horizontal', 'vertical', 'none', 'auto-expand']],
         'Tripcode Hider': [true, 'Intelligent name field hiding.']
-      },
-      Aesthetics: {
-        '4chan SS Emulation': [false, 'Try to emulate the appearance of 4chan SS.'],
-        'Block Ads': [false, 'Block advertisements. It\'s probably better to use AdBlock for this.'],
-        'Sidebar Glow': [false, 'Adds a glow to the sidebar\'s text.'],
-        'Checkboxes': ['show', 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide', 'do not style checkboxes']],
-        'Emoji': ['enabled', 'Enable emoji', ['enabled', 'disable ponies', 'only ponies', 'disable']],
-        'Emoji Position': ['before', 'Position of emoji icons, like sega and neko.', ['before', 'after']],
-        'Font': ['Helvetica', 'The font used by all elements of 4chan.', 'text'],
-        'Font Size': ['12', 'The font size of posts and various UI. This changes most, but not all, font sizes.', 'text'],
-        'Icons': ['oneechan', 'Icon theme which Appchan will use.', ['oneechan', '4chan SS']],
-        'Quote Shadows': [true, 'Add shadows to the quote previews and inline quotes.'],
-        'Rounded Edges': [false, 'Round the edges of various 4chan elements.'],
-        'Slideout Transitions': [true, 'Animate slideouts.'],
-        'Underline Links': [false, 'Put lines under hyperlinks.']
       }
     },
     theme: 'Yotsuba B',
