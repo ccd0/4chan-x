@@ -7455,14 +7455,15 @@
       return this.dialog();
     },
     node: function(post) {
-      var a, _ref;
+      var a;
       if (!post.img) {
         return;
       }
       a = post.img.parentNode;
       $.on(a, 'click', ImageExpand.cb.toggle);
       if (Conf['Don\'t Expand Spoilers'] && !Conf['Reveal Spoilers']) {
-        if ((_ref = a.className) != null ? _ref.contains("imgspoiler") : void 0) {
+        $.log(a.className);
+        if (/\bimgspoiler\b/.test(a.className)) {
           return;
         }
       }
@@ -7494,7 +7495,7 @@
           }
           for (_j = 0, _len1 = thumbs.length; _j < _len1; _j++) {
             thumb = thumbs[_j];
-            if (Conf['Don\'t Expand Spoilers'] && !Conf['Reveal Spoilers'] && thumb.parentElement.className.contains("imgspoiler")) {
+            if (Conf['Don\'t Expand Spoilers'] && !Conf['Reveal Spoilers'] && /\bimgspoiler\b/.test(thumb.parentElement.className)) {
               continue;
             }
             ImageExpand.expand(thumb);

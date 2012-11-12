@@ -2934,7 +2934,8 @@ ImageExpand =
 
     if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers']
       # Detect Spoilers in this post.
-      return if a.className?.contains "imgspoiler"
+      $.log a.className
+      return if /\bimgspoiler\b/.test a.className
       
     # Expand the image if "Expand All" is enabled.
     if ImageExpand.on and !post.el.hidden
@@ -2955,7 +2956,7 @@ ImageExpand =
               break
           thumbs = thumbs[i...]
         for thumb in thumbs
-          continue if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers'] and thumb.parentElement.className.contains "imgspoiler"
+          continue if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers'] and /\bimgspoiler\b/.test thumb.parentElement.className
           ImageExpand.expand thumb
       else # Contract
         for thumb in $$ 'img[data-md5][hidden]'
