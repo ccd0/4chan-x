@@ -14,7 +14,7 @@ QR =
         QR.open()
         unless g.BOARD is 'f'
           unless g.REPLY
-            QR.threadSelector.value = 'new' 
+            QR.threadSelector.value = 'new'
         else
           '9999'
         $('textarea', QR.el).focus()
@@ -571,7 +571,7 @@ QR =
       $.on ta = $('textarea', QR.el), 'mouseup', ->
         $.set 'QR.size', @style.cssText
       ta.style.cssText = $.get 'QR.size', ''
-      
+
     QR.autohide = $ '#autohide', QR.el
 
     # Allow only this board's supported files.
@@ -630,8 +630,8 @@ QR =
     $.on riceFile,              'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else fileInput.click()
     $.on fileInput,             'change',    -> riceFile.textContent = fileInput.value
     Style.rice QR.el
-    
-    
+
+
     $.on QR.autohide,             'change',    QR.toggleHide
     $.on $('.close',    QR.el),   'click',     QR.close
     $.on $('#dump',     QR.el),   'click',     -> QR.el.classList.toggle 'dump'
@@ -793,7 +793,7 @@ QR =
             "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
     else if err = doc.getElementById('errmsg') or err = $('center', doc) # error!
       if /4chan Pass/.test err.textContent
-        err.textContent = 'You seem to have mistyped the CAPTCHA. Please try again.'    
+        err.textContent = 'You seem to have mistyped the CAPTCHA. Please try again.'
       if $ 'font', err
         err.textContent = err.textContent.replace /Return$/, ''
       $('a', err)?.target = '_blank' # duplicate image link
@@ -839,6 +839,7 @@ QR =
     $.set 'QR.persona', persona
 
     [_, threadID, postID] = msg.lastChild.textContent.match /thread:(\d+),no:(\d+)/
+    Updater.postID = postID
 
     # Post/upload confirmed as successful.
     $.event QR.el, new CustomEvent 'QRPostSuccessful',

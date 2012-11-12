@@ -5135,7 +5135,8 @@
       this.timer = $('#timer', dialog);
       this.thread = $.id("t" + g.THREAD_ID);
       this.ccheck = true;
-      this.cnodes = [];
+      this.ccount = 0;
+      this.postID = [];
       this.unsuccessfulFetchCount = 0;
       this.lastModified = '0';
       _ref = $$('input', dialog);
@@ -5173,45 +5174,29 @@
       $.add(d.body, dialog);
       $.on(d, 'QRPostSuccessful', this.cb.post);
       $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility);
-      return {
-        postID: ''
-      };
+      ({
+        checkpost: function(search) {}
+      });
+      if (search.indexOf(this.postID[0]) === -1 && Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
+        this.ccheck = true;
+        if (this.ccount > 25) {
+          return this.ccheck = false;
+        } else {
+          this.ccount++;
+          this.ccheck = false;
+          return this.update();
+        }
+      } else {
+        return this.postID = [];
+      }
     },
     cb: {
       post: function() {
         if (!Conf['Auto Update This']) {
           return;
         }
-        return setTimeout(function() {
-          var checkloop, checkpost, count;
-          checkpost = function() {
-            var node, nodes, postIDs, _i, _len;
-            nodes = Updater.cnodes.childNodes;
-            postIDs = $$('[title="Quote this post"]', nodes);
-            $.log("test");
-            for (_i = 0, _len = postIDs.length; _i < _len; _i++) {
-              node = postIDs[_i];
-              if (node.text === Updater.postID) {
-                return true;
-              }
-            }
-            return false;
-          };
-          Updater.update();
-          if (!checkpost() && Conf['Interval'] > 10 && -Number(Updater.timer.firstChild.data) > 5) {
-            count = 0;
-            return checkloop = setInterval((function() {
-              Updater.ccheck = true;
-              Updater.update();
-              if (checkpost() || count > 25) {
-                Updater.cnodes = [];
-                clearInterval(checkloop);
-              }
-              Updater.ccheck = false;
-              return count++;
-            }), 500);
-          }
-        }, 1000);
+        Updater.unsuccessfulFetchCount = 0;
+        return setTimeout(Updater.update, 1000);
       },
       visibility: function() {
         var state;
@@ -5307,14 +5292,15 @@
         }
         return delete Updater.request;
       },
-      update: function(posts) {
-        var count, id, lastPost, nodes, post, scroll, spoilerRange, _i, _len, _ref;
+      update: function(posts, postID) {
+        var count, id, lastPost, nodes, post, scroll, search, spoilerRange, _i, _len, _ref;
         if (spoilerRange = posts[0].custom_spoiler) {
           Build.spoilerRange[g.BOARD] = spoilerRange;
         }
         lastPost = Updater.thread.lastElementChild;
         id = +lastPost.id.slice(2);
         nodes = [];
+        search = [];
         _ref = posts.reverse();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           post = _ref[_i];
@@ -5322,7 +5308,12 @@
             break;
           }
           nodes.push(Build.postFromObject(post, g.BOARD));
-          Updater.cnodes.push(Build.postFromObject(post, g.BOARD));
+          search.push(post.no);
+        }
+        if (Updater.postID[0]) {
+          Updater.checkpost(search);
+        } else {
+          this.ccheck = false;
         }
         count = nodes.length;
         if (Conf['Verbose']) {
@@ -8593,6 +8584,7 @@
       };
       $.set('QR.persona', persona);
       _ref1 = msg.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
+      Updater.postID = postID;
       $.event(QR.el, new CustomEvent('QRPostSuccessful', {
         bubbles: true,
         detail: {
