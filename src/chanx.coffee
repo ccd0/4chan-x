@@ -1084,16 +1084,17 @@ Updater =
     $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', @cb.visibility
 
     checkpost: (search) ->
-    if search.indexOf(@postID[0]) is -1 and Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
+    if search.indexOf(@postID) is -1 and Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
       @ccheck = true
-      return if @ccount > 25
+      return if @ccount > 10
         @ccheck = false
       else
         @ccount++
         @ccheck = false
         @update()
     else
-      @postID = []
+      @ccount = 0
+      delete @postID
 
   cb:
     post: ->
@@ -1172,7 +1173,7 @@ Updater =
             Updater.set 'count', @statusText
             Updater.count.className = 'warning'
       delete Updater.request
-    update: (posts, postID) ->
+    update: (posts) ->
       if spoilerRange = posts[0].custom_spoiler
         Build.spoilerRange[g.BOARD] = spoilerRange
 
@@ -1185,7 +1186,7 @@ Updater =
         nodes.push Build.postFromObject post, g.BOARD
         search.push post.no
 
-      if Updater.postID[0]
+      if Updater.postID
         Updater.checkpost search
       else
         @ccheck = false
