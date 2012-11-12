@@ -1087,27 +1087,28 @@ Updater =
   cb:
     post: ->
       return unless Conf['Auto Update This']
-      checkpost = ->
-        nodes = Updater.cnodes.childNodes
-        postIDs = ($$ '[title="Quote this post"]', nodes)
-        for node in postIDs
-          if node.text is Updater.postID
-            return true
-        false
-      Updater.unsuccessfulFetchCount = 0
-      setTimeout Updater.update, 1000
-      if !checkpost() and Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
-      # This was still too bloated for just getting the value of the timer.
-        count = 0
-        int = setInterval (->
-          Updater.ccheck = true
-          Updater.update()
-          if checkpost() or count > 25
+      setTimeout ->
+        checkpost = ->
+          nodes = Updater.cnodes.childNodes
+          postIDs = ($$ '[title="Quote this post"]', nodes)
+          $.log "test"
+          for node in postIDs
+            if node.text is Updater.postID
+              return true
+          false
+        Updater.update()
+        if !checkpost() and Conf['Interval'] > 10 and -Number(Updater.timer.firstChild.data) > 5
+        # This was still too bloated for just getting the value of the timer.
+          count = 0
+          checkloop = setInterval (->
+            Updater.ccheck = true
+            Updater.update()
+            if checkpost() or count > 25
+              Updater.cnodes = []
+              clearInterval checkloop
             Updater.ccheck = false
-            Updater.cnodes = []
-            clearInterval int
-          Updater.ccheck = false
-          count++), 500
+            count++), 500
+      , 1000
     visibility: ->
       state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
       return if state isnt 'visible'

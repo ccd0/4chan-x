@@ -5179,38 +5179,39 @@
     },
     cb: {
       post: function() {
-        var checkpost, count, int;
         if (!Conf['Auto Update This']) {
           return;
         }
-        checkpost = function() {
-          var node, nodes, postIDs, _i, _len;
-          nodes = Updater.cnodes.childNodes;
-          postIDs = $$('[title="Quote this post"]', nodes);
-          for (_i = 0, _len = postIDs.length; _i < _len; _i++) {
-            node = postIDs[_i];
-            if (node.text === Updater.postID) {
-              return true;
+        return setTimeout(function() {
+          var checkloop, checkpost, count;
+          checkpost = function() {
+            var node, nodes, postIDs, _i, _len;
+            nodes = Updater.cnodes.childNodes;
+            postIDs = $$('[title="Quote this post"]', nodes);
+            $.log("test");
+            for (_i = 0, _len = postIDs.length; _i < _len; _i++) {
+              node = postIDs[_i];
+              if (node.text === Updater.postID) {
+                return true;
+              }
             }
-          }
-          return false;
-        };
-        Updater.unsuccessfulFetchCount = 0;
-        setTimeout(Updater.update, 1000);
-        if (!checkpost() && Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
-          count = 0;
-          return int = setInterval((function() {
-            Updater.ccheck = true;
-            Updater.update();
-            if (checkpost() || count > 25) {
+            return false;
+          };
+          Updater.update();
+          if (!checkpost() && Conf['Interval'] > 10 && -Number(Updater.timer.firstChild.data) > 5) {
+            count = 0;
+            return checkloop = setInterval((function() {
+              Updater.ccheck = true;
+              Updater.update();
+              if (checkpost() || count > 25) {
+                Updater.cnodes = [];
+                clearInterval(checkloop);
+              }
               Updater.ccheck = false;
-              Updater.cnodes = [];
-              clearInterval(int);
-            }
-            Updater.ccheck = false;
-            return count++;
-          }), 500);
-        }
+              return count++;
+            }), 500);
+          }
+        }, 1000);
       },
       visibility: function() {
         var state;
