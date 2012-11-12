@@ -5172,37 +5172,34 @@
       Style.rice(dialog);
       $.add(d.body, dialog);
       $.on(d, 'QRPostSuccessful', this.cb.post);
-      return $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility);
+      $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility);
+      return {
+        postID: []
+      };
     },
     cb: {
       post: function() {
-        var checkpost, count, int, search, text;
+        var checkpost, count, int, search;
         if (!Conf['Auto Update This']) {
           return;
         }
-        search = [];
-        if (((text = QR.replies[0].com) != null) && text.length !== 0) {
-          search[0] = text.trim();
-        } else {
-          search[0] = QR.replies[0].file.name;
-          text = false;
-        }
+        search = Updater.postID;
         checkpost = function() {
-          var cpost, node, nodes;
+          var node, nodes, postIDs;
           if (search === void 0) {
             return;
           }
           nodes = Updater.cnodes.childNodes;
-          cpost = text ? $('.postMessage', nodes) : Conf['File Info Formatting'] ? $('span.fileText a', nodes) : $('span.fileText span', nodes);
+          postIDs = ($('[title="Quote this post"]', nodes)).textContent;
           if (((function() {
             var _i, _len, _results;
             _results = [];
-            for (_i = 0, _len = cpost.length; _i < _len; _i++) {
-              node = cpost[_i];
+            for (_i = 0, _len = postIDs.length; _i < _len; _i++) {
+              node = postIDs[_i];
               _results.push(node.textContent);
             }
             return _results;
-          })()).indexOf(search[0] >= 0)) {
+          })()).indexOf(search >= 0)) {
             return true;
           }
           return false;

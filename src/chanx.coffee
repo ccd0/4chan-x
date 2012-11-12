@@ -1082,26 +1082,17 @@ Updater =
 
     $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', @cb.visibility
 
+    postID: []
+
   cb:
     post: ->
       return unless Conf['Auto Update This']
-      search = []
-      if (text = QR.replies[0].com)? and text.length isnt 0
-        search[0] = text.trim()
-      else
-        search[0] = QR.replies[0].file.name
-        text = false
+      search = Updater.postID
       checkpost = ->
         return if search is undefined
         nodes = Updater.cnodes.childNodes
-        cpost =
-          if text
-            $ '.postMessage', nodes
-          else if Conf['File Info Formatting']
-            $ 'span.fileText a', nodes
-          else
-            $ 'span.fileText span', nodes
-        if (node.textContent for node in cpost).indexOf search[0] >= 0
+        postIDs = ($ '[title="Quote this post"]', nodes).textContent
+        if (node.textContent for node in postIDs).indexOf search >= 0
           return true
         false
       Updater.unsuccessfulFetchCount = 0
@@ -2772,7 +2763,7 @@ Redirect =
       if board is @select archiver, board
         url = @path archiver.base, archiver.type, data
         break
-        
+
     if !url and threadID
       return "//boards.4chan.org/#{board}/"
 
@@ -2935,7 +2926,7 @@ ImageExpand =
     if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers']
       # Detect Spoilers in this post.
       return if /\bimgspoiler\b/.test a.className
-      
+
     # Expand the image if "Expand All" is enabled.
     if ImageExpand.on and !post.el.hidden
       ImageExpand.expand post.img
