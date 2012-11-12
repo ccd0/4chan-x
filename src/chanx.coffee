@@ -2930,7 +2930,7 @@ ImageExpand =
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
     if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers']
-      return if $ '.imgspoiler'
+      return if $ '.imgspoiler', post.el
     if ImageExpand.on and !post.el.hidden
       ImageExpand.expand post.img
 

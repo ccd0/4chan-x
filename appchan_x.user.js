@@ -7459,7 +7459,7 @@
       a = post.img.parentNode;
       $.on(a, 'click', ImageExpand.cb.toggle);
       if (Conf['Don\'t Expand Spoilers'] && !Conf['Reveal Spoilers']) {
-        if ($('.imgspoiler')) {
+        if ($('.imgspoiler', post.el)) {
           return;
         }
       }
