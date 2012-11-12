@@ -1,9 +1,16 @@
 master
+
+1.0.15
 - Zixaphir
   Fixed issues with non-fit width replies
   Fixed issues with the hider [ - ] being too wide with monospaced fonts
   Added a 4chan SS Emulation Mode (may break this up into several options later)
   Removed underlines from #navlinks with the underline link option enabled (they are icons, they don't need underlines)
+  Backlinks now auto-adjust padding when positioned at the bottom. Changing this option requires a refresh to remove padding. This padding does not change on window resize.
+  Mascot editor now replaces spaces and special characters in the mascot name with underscores. Underscores will be translated back as spaces for display purposes.
+  Outlines are no longer used by Appchan X for any reason and have been replaced with border colors. Outlines are bad and you should feel bad for using them.
+  Resolved a bug where threads with spoilers caused odd behavior with Image Expansion.
+  Appchan X no longer replaces style sheets upon changing settings but applies changes to the existing sheet.
 
 1.0.14
 - Zixaphir

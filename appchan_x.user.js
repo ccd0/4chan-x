@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                appchan x
 // @namespace           zixaphir
-// @version             1.0.14
+// @version             1.0.15
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           2012 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2009-2011 James Campos <james.r.campos@gmail.com>
@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.14 - 2012-11-12
+ * appchan x - Version 1.0.15 - 2012-11-12
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -10893,7 +10893,7 @@
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '1.0.14',
+    version: '1.0.15',
     callbacks: []
   };
 
