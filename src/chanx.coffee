@@ -2934,7 +2934,6 @@ ImageExpand =
 
     if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers']
       # Detect Spoilers in this post.
-      $.log a.className
       return if /\bimgspoiler\b/.test a.className
       
     # Expand the image if "Expand All" is enabled.
