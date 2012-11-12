@@ -1041,10 +1041,6 @@ Updater =
     @timer  = $ '#timer', dialog
     @thread = $.id "t#{g.THREAD_ID}"
 
-    @ccheck = true
-    @ccount = 0
-    @postID = []
-
     # How many times we have failed to find new posts.
     @unsuccessfulFetchCount = 0
 
@@ -1084,17 +1080,12 @@ Updater =
     $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', @cb.visibility
 
     checkpost: (search) ->
-    if search.indexOf(@postID) is -1 and Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
-      @ccheck = true
-      return if @ccount > 10
-        @ccheck = false
-      else
-        @ccount++
-        @ccheck = false
+      if !search.contains(Updater.postID) and Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
+        Updater.checkPostCount++
         @update()
-    else
-      @ccount = 0
-      delete @postID
+      else
+        Updater.checkPostCount = 0
+        delete Updater.postID
 
   cb:
     post: ->

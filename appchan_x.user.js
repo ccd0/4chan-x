@@ -5134,9 +5134,6 @@
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
       this.thread = $.id("t" + g.THREAD_ID);
-      this.ccheck = true;
-      this.ccount = 0;
-      this.postID = [];
       this.unsuccessfulFetchCount = 0;
       this.lastModified = '0';
       _ref = $$('input', dialog);
@@ -5174,22 +5171,17 @@
       $.add(d.body, dialog);
       $.on(d, 'QRPostSuccessful', this.cb.post);
       $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility);
-      ({
-        checkpost: function(search) {}
-      });
-      if (search.indexOf(this.postID) === -1 && Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
-        this.ccheck = true;
-        if (this.ccount > 10) {
-          return this.ccheck = false;
-        } else {
-          this.ccount++;
-          this.ccheck = false;
-          return this.update();
+      return {
+        checkpost: function(search) {
+          if (!search.contains(Updater.postID) && Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
+            Updater.checkPostCount++;
+            return this.update();
+          } else {
+            Updater.checkPostCount = 0;
+            return delete Updater.postID;
+          }
         }
-      } else {
-        this.ccount = 0;
-        return delete this.postID;
-      }
+      };
     },
     cb: {
       post: function() {
