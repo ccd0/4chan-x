@@ -2106,14 +2106,14 @@ img[src^="//static.4chan.org/support/"] {
 body::before {
   background: none repeat scroll 0% 0% rgba(#{background.shiftRGB -18}, 0.8);
   border-#{Style.sidebarLocation[1]}: 2px solid #{theme["Background Color"]};
-  box-shadow: inset #{if Conf["Sidebar Location"] is "right" then "" else "-"}1px 0px 0px #{theme["Thread Wrapper Border"]};
+  box-shadow: #{if Conf["Sidebar Location"] is "right" then "inset" else ""} 1px 0px 0px #{theme["Thread Wrapper Border"]}, #{if Conf["Sidebar Location"] is "left" then "inset" else ""} -1px 0px 0px #{theme["Thread Wrapper Border"]};
   content: "";
   position: fixed;
   top: 0;
   bottom: 0;
   #{Style.sidebarLocation[0]}: 0;
-  width: #{if Conf["Sidebar"] is "large" then 303 else if Conf["Sidebar"] is "normal" then 252 else if Conf["Sidebar"] is "minimal" then 25 else 0}px;
-  z-index: -1;
+  width: #{if Conf["Sidebar"] is "large" then 305 else if Conf["Sidebar"] is "normal" then 254 else if Conf["Sidebar"] is "minimal" then 27 else 0}px;
+  z-index: 1;
   #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
   display: block;
@@ -2134,11 +2134,6 @@ body::before {
 .thread {
   padding-#{Style.sidebarLocation[0]}: 0 !important;
 }
-div.post.reply {
-  border-#{Style.sidebarLocation[0]}-width: #{if Conf["Fit Width Replies"] then 0 else 1}px !important;
-  border-top-#{Style.sidebarLocation[0]}-radius: 0 !important;
-  border-bottom-#{Style.sidebarLocation[0]}-radius: 0 !important;
-}\n
 """
       else ""
     ) + (
