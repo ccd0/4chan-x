@@ -1,5 +1,10 @@
 master
 
+1.0.16
+- Zixaphir
+  Fixed a bug causing the board title to be incorrectly positioned.
+  Custom Board Titles (and subtitles)
+
 1.0.15
 - Zixaphir
   Fixed issues with non-fit width replies

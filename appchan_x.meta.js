@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                appchan x
 // @namespace           zixaphir
-// @version             1.0.15
+// @version             1.0.16
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           2012 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2009-2011 James Campos <james.r.campos@gmail.com>
