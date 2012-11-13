@@ -1040,11 +1040,9 @@ Updater =
     @count  = $ '#count', dialog
     @timer  = $ '#timer', dialog
     @thread = $.id "t#{g.THREAD_ID}"
+    @save   = []
 
-    # How many times we have failed to find new posts.
-    @unsuccessfulFetchCount = 0
-
-    # Track last modified headers.
+    @checkPostCount = 0
     @lastModified = '0'
 
     # Add event listeners to updater dialogs.
@@ -1079,19 +1077,20 @@ Updater =
 
     $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', @cb.visibility
 
-    checkpost: (search) ->
-      if !search.contains(Updater.postID) and Conf['Interval'] > 10 and ($ '#timer', Updater.dialog).textContent.replace(/^-/, '') > 5
-        Updater.checkPostCount++
-        @update()
-      else
-        Updater.checkPostCount = 0
-        delete Updater.postID
-
   cb:
     post: ->
       return unless Conf['Auto Update This']
       Updater.unsuccessfulFetchCount = 0
-      setTimeout Updater.update, 1000
+      
+      setTimeout Updater.update, 500
+    checkpost: ->
+      if !Updater.save.join(' ').contains(Updater.postID) and Updater.checkPostCount < 11
+        Updater.checkPostCount++
+        return checkloop = setTimeout Updater.update, 300
+      clearTimeout checkloop
+      Updater.checkPostCount = 0
+      Updater.save = []
+      delete Updater.postID
     visibility: ->
       state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
       return if state isnt 'visible'
@@ -1177,10 +1176,11 @@ Updater =
         nodes.push Build.postFromObject post, g.BOARD
         search.push post.no
 
-      if Updater.postID
+      if Updater.postID and Updater.checkPostCount < 11
+        Updater.isChecking = true
         Updater.checkpost search
       else
-        @ccheck = false
+        Updater.isChecking = false
 
       count = nodes.length
       if Conf['Verbose']
@@ -1248,9 +1248,9 @@ Updater =
       Updater.set 'timer', n
 
   update: ->
-    unless @ccheck
+    unless Updater.isChecking
       Updater.set 'timer', 0
-    else @ccheck = false
+    else Updater.isChecking = false
     {request} = Updater
     if request
       # Don't reset the counter when aborting.

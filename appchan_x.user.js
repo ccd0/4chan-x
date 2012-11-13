@@ -5134,7 +5134,8 @@
       this.count = $('#count', dialog);
       this.timer = $('#timer', dialog);
       this.thread = $.id("t" + g.THREAD_ID);
-      this.unsuccessfulFetchCount = 0;
+      this.save = [];
+      this.checkPostCount = 0;
       this.lastModified = '0';
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -5170,18 +5171,7 @@
       Style.rice(dialog);
       $.add(d.body, dialog);
       $.on(d, 'QRPostSuccessful', this.cb.post);
-      $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility);
-      return {
-        checkpost: function(search) {
-          if (!search.contains(Updater.postID) && Conf['Interval'] > 10 && ($('#timer', Updater.dialog)).textContent.replace(/^-/, '') > 5) {
-            Updater.checkPostCount++;
-            return this.update();
-          } else {
-            Updater.checkPostCount = 0;
-            return delete Updater.postID;
-          }
-        }
-      };
+      return $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility);
     },
     cb: {
       post: function() {
@@ -5189,7 +5179,18 @@
           return;
         }
         Updater.unsuccessfulFetchCount = 0;
-        return setTimeout(Updater.update, 1000);
+        return setTimeout(Updater.update, 500);
+      },
+      checkpost: function() {
+        var checkloop;
+        if (!Updater.save.join(' ').contains(Updater.postID) && Updater.checkPostCount < 11) {
+          Updater.checkPostCount++;
+          return checkloop = setTimeout(Updater.update, 300);
+        }
+        clearTimeout(checkloop);
+        Updater.checkPostCount = 0;
+        Updater.save = [];
+        return delete Updater.postID;
       },
       visibility: function() {
         var state;
@@ -5303,10 +5304,11 @@
           nodes.push(Build.postFromObject(post, g.BOARD));
           search.push(post.no);
         }
-        if (Updater.postID) {
+        if (Updater.postID && Updater.checkPostCount < 11) {
+          Updater.isChecking = true;
           Updater.checkpost(search);
         } else {
-          this.ccheck = false;
+          Updater.isChecking = false;
         }
         count = nodes.length;
         if (Conf['Verbose']) {
@@ -5394,10 +5396,10 @@
     },
     update: function() {
       var request, url;
-      if (!this.ccheck) {
+      if (!Updater.isChecking) {
         Updater.set('timer', 0);
       } else {
-        this.ccheck = false;
+        Updater.isChecking = false;
       }
       request = Updater.request;
       if (request) {
