@@ -13,7 +13,10 @@ MascotTools =
       unless Conf["mascot"] = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]
         return
 
-      mascot = userMascots[Conf["mascot"]]
+      unless mascot = userMascots[Conf["mascot"]]
+        Conf[gMASCOTSTRING].remove Conf["mascot"]
+        return
+
       @addMascot mascot
 
     else

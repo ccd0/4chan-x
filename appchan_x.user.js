@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.15 - 2012-11-12
+ * appchan x - Version 1.0.15 - 2012-11-13
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -9462,7 +9462,10 @@
         if (!(Conf["mascot"] = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)])) {
           return;
         }
-        mascot = userMascots[Conf["mascot"]];
+        if (!(mascot = userMascots[Conf["mascot"]])) {
+          Conf[gMASCOTSTRING].remove(Conf["mascot"]);
+          return;
+        }
         this.addMascot(mascot);
       } else {
         if (!(mascot = editMascot || (mascot = userMascots[Conf["mascot"]]))) {
