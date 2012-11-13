@@ -93,10 +93,19 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
     title  = $.el "div"
       id:   "boardTitle"
     children = for child in banner.children
-      continue unless child.tagName?
       if child.tagName.toLowerCase() is "img"
         child.id = "Banner"
         continue;
+      if Conf['Custom Board Titles']
+        child.innerHTML = $.get "#{g.BOARD}#{child.className}", child.innerHTML
+        child.contentEditable = true
+        $.on child, 'keydown', (e) ->
+          e.stopPropagation()
+        $.on child, 'focus', ->
+          @textContent = @innerHTML
+        $.on child, 'blur', ->
+          $.set "#{g.BOARD}#{@className}", @textContent
+          @innerHTML = @textContent
       child
     $.add title, children
     $.after banner, title

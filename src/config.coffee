@@ -509,6 +509,10 @@ Config =
         'The positioning of the board\'s logo and subtitle.'
         ['at sidebar top', 'at sidebar bottom', 'at top', 'under post form', 'hide']
       ]
+      'Custom Board Titles': [
+        false
+        'Customize Board Titles'
+      ]
       'Board Subtitle': [
         true
         'Show the board subtitle.'

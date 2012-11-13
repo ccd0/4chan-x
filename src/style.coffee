@@ -29,6 +29,8 @@
     else
       Style.sidebarOffsetW = 0
       Style.sidebarOffsetH = 0
+    
+    Style.logoOffset = if Conf["4chan Banner"] is "at sidebar top" then 83 + Style.sidebarOffsetH else 0
 
     if Conf["Sidebar Location"] is "left"
       Style.sidebarLocation = ["left",  "right"]
@@ -874,7 +876,8 @@ body > a[style="cursor: pointer; float: right;"]:hover::after,
 div.navLinks > a:first-of-type:hover::after {
   opacity: 1;
 }
-#boardTitle {
+#boardTitle,
+.boardTitle > a {
   font-size: 22px;
   font-weight: 400;
 }
@@ -2601,7 +2604,6 @@ textarea.field,
     ) + (
       switch Conf["4chan Banner"]
         when "at sidebar top"
-          Style.logoOffset = 83 + Style.sidebarOffsetH
           """
 .boardBanner {
   position: fixed;
@@ -2613,7 +2615,6 @@ textarea.field,
 }\n
 """
         when "at sidebar bottom"
-          Style.logoOffset = 0
           """
 .boardBanner {
   position: fixed;
@@ -2625,7 +2626,6 @@ textarea.field,
 }\n
 """
         when "under post form"
-          Style.logoOffset = 0
           """
 .boardBanner {
   position: fixed;
@@ -2637,7 +2637,6 @@ textarea.field,
 }\n
 """
         when "at top"
-          Style.logoOffset = 0
           """
 .boardBanner {
   position: relative;
