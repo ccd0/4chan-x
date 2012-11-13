@@ -2658,6 +2658,9 @@ textarea.field,
       switch Conf["Backlinks Position"]
         when 'lower left'
           """
+#delform .op .container {
+  padding: 0 5px;
+}
 #delform .reply.quoted {
   padding-bottom: 15px;
 }
@@ -2689,6 +2692,7 @@ textarea.field,
 }
 #delform .op .container {
   float: right;
+  padding: 0 5px;
 }
 #delform .reply .container {
   position: absolute;

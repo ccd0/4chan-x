@@ -10429,9 +10429,9 @@
       })()) + ((function() {
         switch (Conf["Backlinks Position"]) {
           case 'lower left':
-            return "#delform .reply.quoted {\n  padding-bottom: 15px;\n}\n#delform .reply .container {\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  padding: 0 5px;\n}\n#delform .reply .container::before {\n  content: \"REPLIES: \";\n  color: " + theme["Timestamps"] + ";\n}\n#delform .container {\n  max-width: 100%;\n}\n#delform .inline .container {\n  position: static;\n  max-width: 100%;\n}\n#delform .inline .container::before {\n  content: \"\";\n}\n";
+            return "#delform .op .container {\n  padding: 0 5px;\n}\n#delform .reply.quoted {\n  padding-bottom: 15px;\n}\n#delform .reply .container {\n  position: absolute;\n  left: 0;\n  bottom: 0;\n  padding: 0 5px;\n}\n#delform .reply .container::before {\n  content: \"REPLIES: \";\n  color: " + theme["Timestamps"] + ";\n}\n#delform .container {\n  max-width: 100%;\n}\n#delform .inline .container {\n  position: static;\n  max-width: 100%;\n}\n#delform .inline .container::before {\n  content: \"\";\n}\n";
           case 'lower right':
-            return "#delform .reply.quoted {\n  padding-bottom: 15px;\n}\n#delform .op .container {\n  float: right;\n}\n#delform .reply .container {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  padding: 0 5px;\n}\n#delform .container::before {\n  content: \"REPLIES: \";\n  color: " + theme["Timestamps"] + ";\n}\n#delform .container {\n  max-width: 100%;\n}\n#delform .inline .container {\n  position: static;\n  float: none;\n  max-width: 100%;\n}\n#delform .inline .container::before {\n  content: \"\";\n}\n";
+            return "#delform .reply.quoted {\n  padding-bottom: 15px;\n}\n#delform .op .container {\n  float: right;\n  padding: 0 5px;\n}\n#delform .reply .container {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  padding: 0 5px;\n}\n#delform .container::before {\n  content: \"REPLIES: \";\n  color: " + theme["Timestamps"] + ";\n}\n#delform .container {\n  max-width: 100%;\n}\n#delform .inline .container {\n  position: static;\n  float: none;\n  max-width: 100%;\n}\n#delform .inline .container::before {\n  content: \"\";\n}\n";
           default:
             return "";
         }
