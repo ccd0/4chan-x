@@ -5284,17 +5284,19 @@
               Updater.count.className = 'warning';
             }
         }
-        return delete Updater.request;
+        delete Updater.request;
+        if (Updater.postID != null) {
+          return Updater.cb.checkpost();
+        }
       },
       update: function(posts) {
-        var count, id, lastPost, nodes, post, scroll, search, spoilerRange, _i, _len, _ref;
+        var count, id, lastPost, nodes, post, scroll, spoilerRange, _i, _len, _ref;
         if (spoilerRange = posts[0].custom_spoiler) {
           Build.spoilerRange[g.BOARD] = spoilerRange;
         }
         lastPost = Updater.thread.lastElementChild;
         id = +lastPost.id.slice(2);
         nodes = [];
-        search = [];
         _ref = posts.reverse();
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           post = _ref[_i];
@@ -5302,13 +5304,7 @@
             break;
           }
           nodes.push(Build.postFromObject(post, g.BOARD));
-          search.push(post.no);
-        }
-        if (Updater.postID && Updater.checkPostCount < 11) {
-          Updater.isChecking = true;
-          Updater.checkpost(search);
-        } else {
-          Updater.isChecking = false;
+          Updater.save.push(post.no);
         }
         count = nodes.length;
         if (Conf['Verbose']) {
@@ -5396,10 +5392,8 @@
     },
     update: function() {
       var request, url;
-      if (!Updater.isChecking) {
+      if (!Updater.postID) {
         Updater.set('timer', 0);
-      } else {
-        Updater.isChecking = false;
       }
       request = Updater.request;
       if (request) {
@@ -7118,7 +7112,7 @@
       {
         name: 'Foolz',
         base: '//archive.foolz.us',
-        boards: ['a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'],
+        boards: ['a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'],
         type: 'foolfuuka'
       }, {
         name: 'NSFWFoolz',

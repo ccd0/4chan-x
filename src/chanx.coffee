@@ -1163,24 +1163,18 @@ Updater =
             Updater.set 'count', @statusText
             Updater.count.className = 'warning'
       delete Updater.request
+      Updater.cb.checkpost() if Updater.postID?
     update: (posts) ->
       if spoilerRange = posts[0].custom_spoiler
         Build.spoilerRange[g.BOARD] = spoilerRange
 
       lastPost = Updater.thread.lastElementChild
       id = +lastPost.id[2..]
-      nodes  = []
-      search = []
+      nodes = []
       for post in posts.reverse()
         break if post.no <= id # Make sure to not insert older posts.
         nodes.push Build.postFromObject post, g.BOARD
-        search.push post.no
-
-      if Updater.postID and Updater.checkPostCount < 11
-        Updater.isChecking = true
-        Updater.checkpost search
-      else
-        Updater.isChecking = false
+        Updater.save.push post.no
 
       count = nodes.length
       if Conf['Verbose']
@@ -1248,9 +1242,8 @@ Updater =
       Updater.set 'timer', n
 
   update: ->
-    unless Updater.isChecking
+    unless Updater.postID
       Updater.set 'timer', 0
-    else Updater.isChecking = false
     {request} = Updater
     if request
       # Don't reset the counter when aborting.
@@ -2683,7 +2676,7 @@ Redirect =
     {
       name:    'Foolz'
       base:    '//archive.foolz.us'
-      boards:  ['a', 'co', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz']
+      boards:  ['a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz']
       type:    'foolfuuka'
     }
     {
