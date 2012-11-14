@@ -7171,7 +7171,7 @@
         }
       }
       if ((name = this.select(false, board))[1]) {
-        if (!name.contains((current = $.get("archiver/" + board + "/")))) {
+        if (!name.contains(current = $.get("archiver/" + board + "/"))) {
           $.set("archiver/" + board + "/", name[0]);
         }
         _ref = data.boards;
