@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.16 - 2012-11-13
+ * appchan x - Version 1.0.16 - 2012-11-14
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -7171,7 +7171,7 @@
         }
       }
       if ((name = this.select(false, board))[1]) {
-        if (!(((current = $.get("archiver/" + board + "/")) != null) || name.contains(current))) {
+        if (!name.contains((current = $.get("archiver/" + board + "/")))) {
           $.set("archiver/" + board + "/", name[0]);
         }
         _ref = data.boards;

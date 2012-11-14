@@ -2,7 +2,6 @@ master
 - noface
   Improved checking for own post directly after posting. This should sort out a number of small hiccups.
   Fixed crossquotes not showing the correct archiver.
-  Fixed yet another quirk in blank spoiler detection.
   Added support for posting with QR and tags on /f/.
   Added redirection for /c/ and /po/.
 
