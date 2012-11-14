@@ -2740,14 +2740,22 @@ Redirect =
     unless data.isSearch
       {threadID} = data
     {board} = data
+    aboard  = Redirect.archive[board]
 
-    for archiver in @archiver
-      if board is @select archiver, board
-        url = @path archiver.base, archiver.type, data
-        break
+    unless aboard
+      for archiver in @archiver
+        if board is @select archiver, board
+          aboard = archiver
+          break
 
-    if !url and threadID
-      return "//boards.4chan.org/#{board}/"
+      unless aboard
+        aboard = 'none'
+
+    if aboard isnt 'none'
+      url = @path aboard.base, aboard.type, data
+    else
+      if threadID
+        return url = "//boards.4chan.org/#{board}/"
 
     url or null
 
