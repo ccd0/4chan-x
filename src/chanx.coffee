@@ -1081,7 +1081,7 @@ Updater =
     post: ->
       return unless Conf['Auto Update This']
       Updater.unsuccessfulFetchCount = 0
-      
+
       setTimeout Updater.update, 500
     checkpost: ->
       if !Updater.save.join(' ').contains(Updater.postID) and Updater.checkPostCount < 11
@@ -2672,6 +2672,7 @@ Redirect =
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
+  archive: {}
   archiver: [
     {
       name:    'Foolz'
@@ -2749,15 +2750,15 @@ Redirect =
           break
 
       unless aboard
-        aboard = 'none'
+        aboard = true
 
-    if aboard isnt 'none'
-      url = @path aboard.base, aboard.type, data
+      Redirect.archive[board] = aboard
+
+    if aboard.base
+      return @path aboard.base, aboard.type, data
     else
       if threadID
-        return url = "//boards.4chan.org/#{board}/"
-
-    url or null
+        return "//boards.4chan.org/#{board}/"
 
   path: (base, archiver, data) ->
     if data.isSearch

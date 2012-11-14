@@ -209,6 +209,8 @@ Options =
       value = "archiver/#{g.BOARD}/"
       archiver.value = $.get value
       $.on archiver, 'mouseup', ->
+        if Redirect.archive[g.BOARD]
+          delete Redirect.archive[g.BOARD]
         $.set value, @value
         if select[0] is $.get value
           $.delete value

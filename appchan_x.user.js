@@ -3051,6 +3051,9 @@
         value = "archiver/" + g.BOARD + "/";
         archiver.value = $.get(value);
         $.on(archiver, 'mouseup', function() {
+          if (Redirect.archive[g.BOARD]) {
+            delete Redirect.archive[g.BOARD];
+          }
           $.set(value, this.value);
           if (select[0] === $.get(value)) {
             return $["delete"](value);
@@ -7108,6 +7111,7 @@
           return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
       }
     },
+    archive: {},
     archiver: [
       {
         name: 'Foolz',
@@ -7192,7 +7196,7 @@
       }
     },
     to: function(data) {
-      var aboard, archiver, board, threadID, url, _i, _len, _ref;
+      var aboard, archiver, board, threadID, _i, _len, _ref;
       if (!data.isSearch) {
         threadID = data.threadID;
       }
@@ -7208,17 +7212,17 @@
           }
         }
         if (!aboard) {
-          aboard = 'none';
+          aboard = true;
         }
+        Redirect.archive[board] = aboard;
       }
-      if (aboard !== 'none') {
-        url = this.path(aboard.base, aboard.type, data);
+      if (aboard.base) {
+        return this.path(aboard.base, aboard.type, data);
       } else {
         if (threadID) {
-          return url = "//boards.4chan.org/" + board + "/";
+          return "//boards.4chan.org/" + board + "/";
         }
       }
-      return url || null;
     },
     path: function(base, archiver, data) {
       var board, path, postID, threadID, type, value;
