@@ -7203,6 +7203,7 @@
       board = data.board;
       aboard = Redirect.archive[board];
       if (!aboard) {
+        aboard = true;
         _ref = this.archiver;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           archiver = _ref[_i];
@@ -7210,9 +7211,6 @@
             aboard = archiver;
             break;
           }
-        }
-        if (!aboard) {
-          aboard = true;
         }
         Redirect.archive[board] = aboard;
       }

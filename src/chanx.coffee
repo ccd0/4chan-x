@@ -2744,13 +2744,11 @@ Redirect =
     aboard  = Redirect.archive[board]
 
     unless aboard
+      aboard = true
       for archiver in @archiver
         if board is @select archiver, board
           aboard = archiver
           break
-
-      unless aboard
-        aboard = true
 
       Redirect.archive[board] = aboard
 
