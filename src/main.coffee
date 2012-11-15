@@ -371,12 +371,12 @@ Main =
     nodes = []
     for mutation in mutations
       for addedNode in mutation.addedNodes
-        if /\bpostContainer\b/.test(addedNode.className) and addedNode.parentNode.className isnt 'threadContainer'
+        if /\bpostContainer\b/.test(addedNode.className)
           nodes.push Main.preParse addedNode
     Main.node nodes if nodes.length
   listener: (e) ->
     {target} = e
-    if /\bpostContainer\b/.test(target.className) and target.parentNode.className isnt 'threadContainer'
+    if /\bpostContainer\b/.test(target.className)
       Main.node [Main.preParse target]
 
   prettify: (bq) ->

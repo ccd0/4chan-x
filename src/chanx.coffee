@@ -1190,8 +1190,7 @@ Updater =
       scroll = Conf['Scrolling'] and Updater.scrollBG() and
         lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
       $.add Updater.thread, nodes.reverse()
-      if scroll
-        return if nodes is undefined
+      if scroll and nodes?
         nodes[0].scrollIntoView()
 
   set: (name, text) ->

@@ -5322,10 +5322,7 @@
         }
         scroll = Conf['Scrolling'] && Updater.scrollBG() && lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
         $.add(Updater.thread, nodes.reverse());
-        if (scroll) {
-          if (nodes === void 0) {
-            return;
-          }
+        if (scroll && (nodes != null)) {
           return nodes[0].scrollIntoView();
         }
       }
@@ -7625,13 +7622,8 @@
         });
         $.on(link, 'click', function() {
           QR.open();
-          if (g.BOARD !== 'f') {
-            if (!g.REPLY) {
-              QR.threadSelector.value = 'new';
-            }
-          } else {
-            '9999';
-
+          if (!g.REPLY) {
+            QR.threadSelector.value = g.BOARD !== 'f' ? 'new' : '9999';
           }
           return $('textarea', QR.el).focus();
         });
@@ -8433,7 +8425,7 @@
       }
       QR.abort();
       reply = QR.replies[0];
-      if (!((g.BOARD === 'f') && !g.REPLY)) {
+      if (g.REPLY && g.BOARD !== 'f') {
         threadID = g.THREAD_ID || QR.threadSelector.value;
       }
       if (threadID === 'new') {
@@ -8502,7 +8494,7 @@
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,
         recaptcha_response_field: response,
-        filetag: (g.BOARD === 'f') && !g.REPLY ? ($('select[name="filetag"]')).value : void 0
+        filetag: !g.REPLY ? QR.threadSelector.value : void 0
       };
       callbacks = {
         onload: function() {
@@ -10860,7 +10852,7 @@
         _ref = mutation.addedNodes;
         for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
           addedNode = _ref[_j];
-          if (/\bpostContainer\b/.test(addedNode.className) && addedNode.parentNode.className !== 'threadContainer') {
+          if (/\bpostContainer\b/.test(addedNode.className)) {
             nodes.push(Main.preParse(addedNode));
           }
         }
@@ -10872,7 +10864,7 @@
     listener: function(e) {
       var target;
       target = e.target;
-      if (/\bpostContainer\b/.test(target.className) && target.parentNode.className !== 'threadContainer') {
+      if (/\bpostContainer\b/.test(target.className)) {
         return Main.node([Main.preParse(target)]);
       }
     },

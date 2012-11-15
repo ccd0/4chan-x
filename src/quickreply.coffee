@@ -12,11 +12,12 @@ QR =
         href: "javascript:;"
       $.on link, 'click', ->
         QR.open()
-        unless g.BOARD is 'f'
-          unless g.REPLY
-            QR.threadSelector.value = 'new'
-        else
-          '9999'
+        unless g.REPLY
+          QR.threadSelector.value = 
+            unless g.BOARD is 'f'
+              'new' 
+            else
+              '9999'
         $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
 
@@ -686,7 +687,8 @@ QR =
 
     reply = QR.replies[0]
 
-    threadID = g.THREAD_ID or QR.threadSelector.value unless (g.BOARD is 'f') and !g.REPLY
+    if g.REPLY and g.BOARD isnt 'f'
+      threadID = g.THREAD_ID or QR.threadSelector.value
 
     # prevent errors
     if threadID is 'new'
@@ -753,7 +755,7 @@ QR =
       pwd:      if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response
-      filetag:  ($ 'select[name="filetag"]').value if (g.BOARD is 'f') and !g.REPLY
+      filetag:  QR.threadSelector.value unless g.REPLY
 
     callbacks =
       onload: ->
