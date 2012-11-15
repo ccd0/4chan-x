@@ -1144,11 +1144,11 @@ Updater =
           if Conf['Verbose']
             Updater.set 'count', '+0'
             Updater.count.className = null
-            Updater.checkPostCount++
           if Updater.postID
-            setTimeout Updater.update, 300
             if Updater.checkPostCount > 15
               delete Updater.postID
+            Updater.checkPostCount++
+            return (-> setTimeout Updater.update, Updater.checkPostCount * 20)()
         when 200
           Updater.lastModified = @getResponseHeader 'Last-Modified'
           Updater.cb.update JSON.parse(@response).posts
@@ -1159,9 +1159,11 @@ Updater =
           if Conf['Verbose']
             Updater.set 'count', @statusText
             Updater.count.className = 'warning'
+      if Updater.postID
+        check = Updater.save.join(' ').indexOf Updater.postID
+        if check is -1
+          return Updater.update()
       delete Updater.request
-      if Updater.postID and Updater.save.join(' ').indexOf(Updater.postID) is -1
-        return Updater.update()
       Updater.checkPostCount = 0
       Updater.save = []
       delete Updater.postID

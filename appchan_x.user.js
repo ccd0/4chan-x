@@ -5231,6 +5231,7 @@
         };
       },
       load: function() {
+        var check;
         switch (this.status) {
           case 404:
             Updater.set('timer', '');
@@ -5259,13 +5260,15 @@
             if (Conf['Verbose']) {
               Updater.set('count', '+0');
               Updater.count.className = null;
-              Updater.checkPostCount++;
             }
             if (Updater.postID) {
-              setTimeout(Updater.update, 50 * Updater.checkPostCount);
-            }
-            if (Updater.checkPostCount > 15) {
-              delete Updater.postID;
+              if (Updater.checkPostCount > 15) {
+                delete Updater.postID;
+              }
+              Updater.checkPostCount++;
+              return (function() {
+                return setTimeout(Updater.update, Updater.checkPostCount * 20);
+              })();
             }
             break;
           case 200:
@@ -5281,10 +5284,13 @@
               Updater.count.className = 'warning';
             }
         }
-        delete Updater.request;
-        if (Updater.postID && Updater.save.join(' ').indexOf(Updater.postID) === -1) {
-          return Updater.update();
+        if (Updater.postID) {
+          check = Updater.save.join(' ').indexOf(Updater.postID);
+          if (check === -1) {
+            return Updater.update();
+          }
         }
+        delete Updater.request;
         Updater.checkPostCount = 0;
         Updater.save = [];
         return delete Updater.postID;
