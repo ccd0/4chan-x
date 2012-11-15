@@ -693,6 +693,7 @@ textarea {
 .dump > form > label,
 .fileText:hover .fntrunc,
 .fileText:not(:hover) .fnfull,
+.forwarded,
 .hasSubMenu:not(.focused) > .subMenu,
 .hidden_thread > .summary,
 .inline input,
