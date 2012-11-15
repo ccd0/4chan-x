@@ -98,7 +98,9 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         continue;
       if Conf['Custom Board Titles']
         child.innerHTML = $.get "#{g.BOARD}#{child.className}", child.innerHTML
-        child.contentEditable = true
+        $.on child, 'click', (e) ->
+          if e.shiftKey
+            @contentEditable = true
         $.on child, 'keydown', (e) ->
           e.stopPropagation()
         $.on child, 'focus', ->
@@ -106,6 +108,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         $.on child, 'blur', ->
           $.set "#{g.BOARD}#{@className}", @textContent
           @innerHTML = @textContent
+          @contentEditable = false
       child
     $.add title, children
     $.after banner, title

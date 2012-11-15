@@ -511,7 +511,7 @@ Config =
       ]
       'Custom Board Titles': [
         false
-        'Customize Board Titles'
+        'Customize Board Titles by shift-clicking the board title or subtitle.'
       ]
       'Board Subtitle': [
         true

@@ -24,7 +24,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.16 - 2012-11-14
+ * appchan x - Version 1.0.16 - 2012-11-15
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -254,7 +254,7 @@
         'Page Margin': ['none', 'Additional layout options, allowing you to center the page or use additional page margins.', ['none', 'minimal', 'small', 'medium', 'large', 'fully centered']],
         'Announcements': ['slideout', 'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']],
         'Board Title': ['at sidebar top', 'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'under post form', 'hide']],
-        'Custom Board Titles': [false, 'Customize Board Titles'],
+        'Custom Board Titles': [false, 'Customize Board Titles by shift-clicking the board title or subtitle.'],
         'Board Subtitle': [true, 'Show the board subtitle.'],
         '4chan Banner': ['at sidebar top', 'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'under post form', 'at top', 'hide']],
         '4chan Banner Reflection': [true, 'Adds reflection effects to 4chan\'s image banner.'],
@@ -10065,7 +10065,11 @@
           }
           if (Conf['Custom Board Titles']) {
             child.innerHTML = $.get("" + g.BOARD + child.className, child.innerHTML);
-            child.contentEditable = true;
+            $.on(child, 'click', function(e) {
+              if (e.shiftKey) {
+                return this.contentEditable = true;
+              }
+            });
             $.on(child, 'keydown', function(e) {
               return e.stopPropagation();
             });
@@ -10074,7 +10078,8 @@
             });
             $.on(child, 'blur', function() {
               $.set("" + g.BOARD + this.className, this.textContent);
-              return this.innerHTML = this.textContent;
+              this.innerHTML = this.textContent;
+              return this.contentEditable = false;
             });
           }
           _results.push(child);
