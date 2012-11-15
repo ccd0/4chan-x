@@ -5185,12 +5185,10 @@
         return setTimeout(Updater.update, 500);
       },
       checkpost: function() {
-        var checkloop;
         if (!Updater.save.join(' ').contains(Updater.postID) && Updater.checkPostCount < 11) {
           Updater.checkPostCount++;
-          return checkloop = setTimeout(Updater.update, 300);
+          return Updater.update();
         }
-        clearTimeout(checkloop);
         Updater.checkPostCount = 0;
         Updater.save = [];
         return delete Updater.postID;
@@ -5273,11 +5271,17 @@
               Updater.set('count', '+0');
               Updater.count.className = null;
             }
+            if (Updater.postID) {
+              setTimeout(Updater.update, 50 * Updater.checkPostCount);
+            }
             break;
           case 200:
             Updater.lastModified = this.getResponseHeader('Last-Modified');
             Updater.cb.update(JSON.parse(this.response).posts);
             Updater.set('timer', -Updater.getInterval());
+            if (Updater.postID) {
+              Updater.cb.checkpost();
+            }
             break;
           default:
             Updater.unsuccessfulFetchCount++;
@@ -5287,10 +5291,7 @@
               Updater.count.className = 'warning';
             }
         }
-        delete Updater.request;
-        if (Updater.postID != null) {
-          return Updater.cb.checkpost();
-        }
+        return delete Updater.request;
       },
       update: function(posts) {
         var count, id, lastPost, nodes, post, scroll, spoilerRange, _i, _len, _ref;

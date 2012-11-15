@@ -1086,8 +1086,7 @@ Updater =
     checkpost: ->
       if !Updater.save.join(' ').contains(Updater.postID) and Updater.checkPostCount < 11
         Updater.checkPostCount++
-        return checkloop = setTimeout Updater.update, 300
-      clearTimeout checkloop
+        return Updater.update() # setTimeout Updater.update, 50 * Updater.checkPostCount
       Updater.checkPostCount = 0
       Updater.save = []
       delete Updater.postID
@@ -1152,10 +1151,13 @@ Updater =
           if Conf['Verbose']
             Updater.set 'count', '+0'
             Updater.count.className = null
+          if Updater.postID
+            setTimeout Updater.update, 50 * Updater.checkPostCount
         when 200
           Updater.lastModified = @getResponseHeader 'Last-Modified'
           Updater.cb.update JSON.parse(@response).posts
           Updater.set 'timer', -Updater.getInterval()
+          Updater.cb.checkpost() if Updater.postID
         else
           Updater.unsuccessfulFetchCount++
           Updater.set 'timer', -Updater.getInterval()
@@ -1163,7 +1165,6 @@ Updater =
             Updater.set 'count', @statusText
             Updater.count.className = 'warning'
       delete Updater.request
-      Updater.cb.checkpost() if Updater.postID?
     update: (posts) ->
       if spoilerRange = posts[0].custom_spoiler
         Build.spoilerRange[g.BOARD] = spoilerRange
