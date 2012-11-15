@@ -1083,13 +1083,6 @@ Updater =
       Updater.unsuccessfulFetchCount = 0
 
       setTimeout Updater.update, 500
-    checkpost: ->
-      if !Updater.save.join(' ').contains(Updater.postID) and Updater.checkPostCount < 11
-        Updater.checkPostCount++
-        return Updater.update() # setTimeout Updater.update, 50 * Updater.checkPostCount
-      Updater.checkPostCount = 0
-      Updater.save = []
-      delete Updater.postID
     visibility: ->
       state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
       return if state isnt 'visible'
@@ -1151,13 +1144,15 @@ Updater =
           if Conf['Verbose']
             Updater.set 'count', '+0'
             Updater.count.className = null
+            Updater.checkPostCount++
           if Updater.postID
             setTimeout Updater.update, 50 * Updater.checkPostCount
+          if Updater.checkPostCount > 15
+            delete Updater.postID
         when 200
           Updater.lastModified = @getResponseHeader 'Last-Modified'
           Updater.cb.update JSON.parse(@response).posts
           Updater.set 'timer', -Updater.getInterval()
-          Updater.cb.checkpost() if Updater.postID
         else
           Updater.unsuccessfulFetchCount++
           Updater.set 'timer', -Updater.getInterval()
@@ -1165,6 +1160,11 @@ Updater =
             Updater.set 'count', @statusText
             Updater.count.className = 'warning'
       delete Updater.request
+      if Updater.postID and Updater.save.join(' ').indexOf(Updater.postID) is -1
+        return Updater.update()
+      Updater.checkPostCount = 0
+      Updater.save = []
+      delete Updater.postID
     update: (posts) ->
       if spoilerRange = posts[0].custom_spoiler
         Build.spoilerRange[g.BOARD] = spoilerRange

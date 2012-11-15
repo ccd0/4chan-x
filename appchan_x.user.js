@@ -5184,15 +5184,6 @@
         Updater.unsuccessfulFetchCount = 0;
         return setTimeout(Updater.update, 500);
       },
-      checkpost: function() {
-        if (!Updater.save.join(' ').contains(Updater.postID) && Updater.checkPostCount < 11) {
-          Updater.checkPostCount++;
-          return Updater.update();
-        }
-        Updater.checkPostCount = 0;
-        Updater.save = [];
-        return delete Updater.postID;
-      },
       visibility: function() {
         var state;
         state = d.visibilityState || d.oVisibilityState || d.mozVisibilityState || d.webkitVisibilityState;
@@ -5270,18 +5261,19 @@
             if (Conf['Verbose']) {
               Updater.set('count', '+0');
               Updater.count.className = null;
+              Updater.checkPostCount++;
             }
             if (Updater.postID) {
               setTimeout(Updater.update, 50 * Updater.checkPostCount);
+            }
+            if (Updater.checkPostCount > 15) {
+              delete Updater.postID;
             }
             break;
           case 200:
             Updater.lastModified = this.getResponseHeader('Last-Modified');
             Updater.cb.update(JSON.parse(this.response).posts);
             Updater.set('timer', -Updater.getInterval());
-            if (Updater.postID) {
-              Updater.cb.checkpost();
-            }
             break;
           default:
             Updater.unsuccessfulFetchCount++;
@@ -5291,7 +5283,13 @@
               Updater.count.className = 'warning';
             }
         }
-        return delete Updater.request;
+        delete Updater.request;
+        if (Updater.postID && Updater.save.join(' ').indexOf(Updater.postID) === -1) {
+          return Updater.update();
+        }
+        Updater.checkPostCount = 0;
+        Updater.save = [];
+        return delete Updater.postID;
       },
       update: function(posts) {
         var count, id, lastPost, nodes, post, scroll, spoilerRange, _i, _len, _ref;
