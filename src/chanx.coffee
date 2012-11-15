@@ -1895,23 +1895,6 @@ Build =
           ''
         }'>" +
 
-        "<div class='postInfoM mobile' id=pim#{postID}>" +
-          "<span class='nameBlock#{capcodeClass}'>" +
-              "<span class=name>#{name or ''}</span>" + tripcode +
-            capcodeStart + capcode + userID + flag + sticky + closed +
-            "<br>#{subject}" +
-          "</span><span class='dateTime postNum' data-utc=#{dateUTC}>#{date}" +
-          '<br><em>' +
-            "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"}>No.</a>" +
-            "<a href='#{
-              if g.REPLY and g.THREAD_ID is threadID
-                "javascript:quote(#{postID})"
-              else
-                "/#{board}/res/#{threadID}#q#{postID}"
-              }'>#{postID}</a>" +
-          '</em></span>' +
-        '</div>' +
-
         (if isOP then fileHTML else '') +
 
         "<div class='postInfo desktop' id=pi#{postID}>" +
