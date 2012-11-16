@@ -1,5 +1,6 @@
 master
 - noface
+  Added keybinds for math and eqn tags on /sci/.
   Improved checking for own post directly after posting. This should sort out a number of small hiccups.
   Fixed crossquotes not showing the correct archiver.
   Added support for posting with QR and tags on /f/.
@@ -42,7 +43,7 @@ master
 - noface
   Added keybind to toggle the hide status of the QR
   'Check for Update' is now much less obstrusive.
-  Per-board archivers can now be selected under the rice tab.  
+  Per-board archivers can now be selected under the rice tab.
 - Zixaphir
   jscolor for theme editing
 

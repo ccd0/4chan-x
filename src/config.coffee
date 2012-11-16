@@ -369,7 +369,16 @@ Config =
       'Close Options or QR'
     ]
     spoiler: [
-      'ctrl+s', 'Quick spoiler tags'
+      'ctrl+s'
+      'Quick spoiler tags'
+    ]
+    math: [
+      'ctrl+m'
+      'Quick math tags'
+    ]
+    eqn: [
+      'ctrl+e'
+      'Quick eqn tags'
     ]
     code: [
       'alt+c'

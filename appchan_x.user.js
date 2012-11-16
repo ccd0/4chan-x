@@ -211,6 +211,8 @@
       openOptions: ['ctrl+o', 'Open Options'],
       close: ['Esc', 'Close Options or QR'],
       spoiler: ['ctrl+s', 'Quick spoiler tags'],
+      math: ['ctrl+m', 'Quick math tags'],
+      eqn: ['ctrl+e', 'Quick eqn tags'],
       code: ['alt+c', 'Quick code tags'],
       sageru: ['alt+n', 'Sage keybind'],
       submit: ['alt+s', 'Submit post'],
@@ -4808,8 +4810,20 @@
           }
           Keybinds.tags('spoiler', target);
           break;
+        case Conf.math:
+          if (!(g.BOARD === 'sci' && target.nodeName === 'TEXTAREA')) {
+            return;
+          }
+          Keybinds.tags('math', target);
+          break;
+        case Conf.eqn:
+          if (!(g.BOARD === 'sci' && target.nodeName === 'TEXTAREA')) {
+            return;
+          }
+          Keybinds.tags('eqn', target);
+          break;
         case Conf.code:
-          if (target.nodeName !== 'TEXTAREA') {
+          if (!(g.BOARD === 'g' && target.nodeName === 'TEXTAREA')) {
             return;
           }
           Keybinds.tags('code', target);
