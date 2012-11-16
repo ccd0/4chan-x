@@ -3907,7 +3907,7 @@ Redirect =
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
       when 'ck', 'lit'
         "//fuuka.warosu.org/#{board}/full_image/#{filename}"
-      when 'cgl', 'g', 'w'
+      when 'cgl', 'g', 'mu', 'w'
         "//rbt.asia/#{board}/full_image/#{filename}"
       when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
@@ -3930,7 +3930,7 @@ Redirect =
         url = Redirect.path "//fuuka.warosu.org", 'fuuka', data
       when 'diy', 'sci'
         url = Redirect.path "//archive.installgentoo.net", 'fuuka', data
-      when 'cgl', 'g', 'mu', 'soc', 'w'
+      when 'cgl', 'g', 'mu', 'w'
         url = Redirect.path "//rbt.asia", 'fuuka', data
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
         url = Redirect.path "http://archive.heinessen.com", 'fuuka', data

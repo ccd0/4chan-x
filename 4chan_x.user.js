@@ -4758,6 +4758,7 @@
           return "//fuuka.warosu.org/" + board + "/full_image/" + filename;
         case 'cgl':
         case 'g':
+        case 'mu':
         case 'w':
           return "//rbt.asia/" + board + "/full_image/" + filename;
         case 'an':
@@ -4825,7 +4826,6 @@
         case 'cgl':
         case 'g':
         case 'mu':
-        case 'soc':
         case 'w':
           url = Redirect.path("//rbt.asia", 'fuuka', data);
           break;
