@@ -1342,7 +1342,12 @@ QR =
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
       $.on link.firstChild, 'click', ->
         QR.open()
-        QR.threadSelector.value = 'new' unless g.REPLY
+        unless g.REPLY
+         QR.threadSelector.value =
+           unless g.BOARD is 'f'
+             'new'
+           else
+             '9999'
         $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
 
@@ -1885,9 +1890,13 @@ QR =
       for thread in $$ '.thread'
         id = thread.id[1..]
         threads += "<option value=#{id}>Thread #{id}</option>"
-      QR.threadSelector = $.el 'select'
-        innerHTML: threads
-        title: 'Create a new thread / Reply to a thread'
+      QR.threadSelector =
+        unless g.BOARD is 'f'
+          $.el 'select'
+            innerHTML: threads
+            title: 'Create a new thread / Reply to a thread'
+        else
+          $ 'select[name="filetag"]'
       $.prepend $('.move > span', QR.el), QR.threadSelector
       $.on QR.threadSelector,   'mousedown', (e) -> e.stopPropagation()
     $.on $('#autohide', QR.el), 'change',    QR.toggleHide
@@ -1933,7 +1942,8 @@ QR =
     QR.abort()
 
     reply = QR.replies[0]
-    threadID = g.THREAD_ID or QR.threadSelector.value
+    unless (g.BOARD is 'f') and not g.REPLY
+      threadID = g.THREAD_ID or QR.threadSelector.value
 
     # prevent errors
     if threadID is 'new'
@@ -1994,6 +2004,7 @@ QR =
       sub:      reply.sub
       com:      reply.com
       upfile:   reply.file
+      filetag:  QR.threadSelector.value unless g.REPLY
       spoiler:  reply.spoiler
       textonly: textOnly
       mode:     'regist'
@@ -2036,12 +2047,16 @@ QR =
             "You were issued a warning on #{bs[0].innerHTML} as #{bs[3].innerHTML}.<br>Warning reason: #{bs[1].innerHTML}"
           else
             "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
-    else if err = doc.getElementById 'errmsg' # error!
+    else if err = doc.getElementById('errmsg') or err = $('center', doc) # error!
+      if $ 'font', err
+        err.textContent = err.textContent.replace /Return$/, ''
       $('a', err)?.target = '_blank' # duplicate image link
     else unless msg = $ 'b', doc
       err = 'Connection error with sys.4chan.org.'
 
     if err
+      if err.nodeName is 'CENTER'
+        err = err.textContent
       if /captcha|verification/i.test(err.textContent) or err is 'Connection error with sys.4chan.org.'
         # Remove the obnoxious 4chan Pass ad.
         if /mistyped/i.test err.textContent

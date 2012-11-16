@@ -1738,7 +1738,7 @@
         $.on(link.firstChild, 'click', function() {
           QR.open();
           if (!g.REPLY) {
-            QR.threadSelector.value = 'new';
+            QR.threadSelector.value = g.BOARD !== 'f' ? 'new' : '9999';
           }
           return $('textarea', QR.el).focus();
         });
@@ -2418,10 +2418,10 @@
           id = thread.id.slice(1);
           threads += "<option value=" + id + ">Thread " + id + "</option>";
         }
-        QR.threadSelector = $.el('select', {
+        QR.threadSelector = g.BOARD !== 'f' ? $.el('select', {
           innerHTML: threads,
           title: 'Create a new thread / Reply to a thread'
-        });
+        }) : $('select[name="filetag"]');
         $.prepend($('.move > span', QR.el), QR.threadSelector);
         $.on(QR.threadSelector, 'mousedown', function(e) {
           return e.stopPropagation();
@@ -2483,7 +2483,9 @@
       }
       QR.abort();
       reply = QR.replies[0];
-      threadID = g.THREAD_ID || QR.threadSelector.value;
+      if (!((g.BOARD === 'f') && !g.REPLY)) {
+        threadID = g.THREAD_ID || QR.threadSelector.value;
+      }
       if (threadID === 'new') {
         if (((_ref = g.BOARD) === 'vg' || _ref === 'q') && !reply.sub) {
           err = 'New threads require a subject.';
@@ -2544,6 +2546,7 @@
         sub: reply.sub,
         com: reply.com,
         upfile: reply.file,
+        filetag: !g.REPLY ? QR.threadSelector.value : void 0,
         spoiler: reply.spoiler,
         textonly: textOnly,
         mode: 'regist',
@@ -2591,7 +2594,10 @@
         err = $.el('span', {
           innerHTML: /^You were issued a warning/.test($('.boxcontent', doc).textContent.trim()) ? "You were issued a warning on " + bs[0].innerHTML + " as " + bs[3].innerHTML + ".<br>Warning reason: " + bs[1].innerHTML : "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
         });
-      } else if (err = doc.getElementById('errmsg')) {
+      } else if (err = doc.getElementById('errmsg') || (err = $('center', doc))) {
+        if ($('font', err)) {
+          err.textContent = err.textContent.replace(/Return$/, '');
+        }
         if ((_ref = $('a', err)) != null) {
           _ref.target = '_blank';
         }
@@ -2599,6 +2605,9 @@
         err = 'Connection error with sys.4chan.org.';
       }
       if (err) {
+        if (err.nodeName === 'CENTER') {
+          err = err.textContent;
+        }
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
           if (/mistyped/i.test(err.textContent)) {
             err.textContent = 'Error: You seem to have mistyped the CAPTCHA.';
