@@ -1004,8 +1004,8 @@ input[type="submit"] {
 }
 /* Image Hover and Image Expansion */
 #ihover {
-  max-width:85%;
-  max-height:85%;
+  max-width: 85%;
+  max-height: 85%;
 }
 #imageType {
   border: none;
@@ -1018,7 +1018,7 @@ input[type="submit"] {
 /* Posts */
 div.post div.postInfo {
   padding: 3px 0 0 8px;
-  display: block;
+  display: block !important;
   width: auto;
 }
 div.file {
