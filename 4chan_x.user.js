@@ -1738,7 +1738,7 @@
         $.on(link.firstChild, 'click', function() {
           QR.open();
           if (!g.REPLY) {
-            QR.threadSelector.value = g.BOARD !== 'f' ? 'new' : '9999';
+            QR.threadSelector.value = g.BOARD === 'f' ? '9999' : 'new';
           }
           return $('textarea', QR.el).focus();
         });
@@ -2418,10 +2418,10 @@
           id = thread.id.slice(1);
           threads += "<option value=" + id + ">Thread " + id + "</option>";
         }
-        QR.threadSelector = g.BOARD !== 'f' ? $.el('select', {
+        QR.threadSelector = g.BOARD === 'f' ? $('select[name=filetag]').cloneNode(true) : $.el('select', {
           innerHTML: threads,
           title: 'Create a new thread / Reply to a thread'
-        }) : $('select[name="filetag"]');
+        });
         $.prepend($('.move > span', QR.el), QR.threadSelector);
         $.on(QR.threadSelector, 'mousedown', function(e) {
           return e.stopPropagation();
@@ -2472,7 +2472,7 @@
       }));
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, textOnly, threadID, _ref;
+      var callbacks, captcha, captchas, challenge, err, filetag, m, opts, post, reply, response, textOnly, threadID, _ref;
       if (e != null) {
         e.preventDefault();
       }
@@ -2483,19 +2483,23 @@
       }
       QR.abort();
       reply = QR.replies[0];
-      if (!((g.BOARD === 'f') && !g.REPLY)) {
+      if (g.BOARD === 'f' && !g.REPLY) {
+        filetag = QR.threadSelector.value;
+        threadID = 'new';
+      } else {
         threadID = g.THREAD_ID || QR.threadSelector.value;
       }
       if (threadID === 'new') {
+        threadID = null;
         if (((_ref = g.BOARD) === 'vg' || _ref === 'q') && !reply.sub) {
           err = 'New threads require a subject.';
         } else if (!(reply.file || (textOnly = !!$('input[name=textonly]', $.id('postForm'))))) {
           err = 'No file selected.';
+        } else if (g.BOARD === 'f' && filetag === '9999') {
+          err = 'Invalid tag specified.';
         }
-      } else {
-        if (!(reply.com || reply.file)) {
-          err = 'No file selected.';
-        }
+      } else if (!(reply.com || reply.file)) {
+        err = 'No file selected.';
       }
       if (QR.captchaIsEnabled && !err) {
         captchas = $.get('captchas', []);
@@ -2546,7 +2550,7 @@
         sub: reply.sub,
         com: reply.com,
         upfile: reply.file,
-        filetag: !g.REPLY ? QR.threadSelector.value : void 0,
+        filetag: filetag,
         spoiler: reply.spoiler,
         textonly: textOnly,
         mode: 'regist',
@@ -2594,10 +2598,7 @@
         err = $.el('span', {
           innerHTML: /^You were issued a warning/.test($('.boxcontent', doc).textContent.trim()) ? "You were issued a warning on " + bs[0].innerHTML + " as " + bs[3].innerHTML + ".<br>Warning reason: " + bs[1].innerHTML : "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
         });
-      } else if (err = doc.getElementById('errmsg') || (err = $('center', doc))) {
-        if ($('font', err)) {
-          err.textContent = err.textContent.replace(/Return$/, '');
-        }
+      } else if (err = doc.getElementById('errmsg')) {
         if ((_ref = $('a', err)) != null) {
           _ref.target = '_blank';
         }
@@ -2605,9 +2606,6 @@
         err = 'Connection error with sys.4chan.org.';
       }
       if (err) {
-        if (err.nodeName === 'CENTER') {
-          err = err.textContent;
-        }
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
           if (/mistyped/i.test(err.textContent)) {
             err.textContent = 'Error: You seem to have mistyped the CAPTCHA.';
