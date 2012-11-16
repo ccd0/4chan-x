@@ -1,6 +1,8 @@
 master
 - noface
   Added keybinds for math and eqn tags on /sci/.
+  Added full image redirection to /mu/.
+  Removed ArchiveLink redirection from /soc/ (URLs will still be redirected).
   Improved checking for own post directly after posting. This should sort out a number of small hiccups.
   Fixed crossquotes not showing the correct archiver.
   Added support for posting with QR and tags on /f/.

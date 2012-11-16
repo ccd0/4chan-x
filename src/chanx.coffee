@@ -2655,7 +2655,7 @@ Redirect =
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
       when 'ck', 'lit'
         "//fuuka.warosu.org/#{board}/full_image/#{filename}"
-      when 'cgl', 'g', 'w'
+      when 'cgl', 'g', mu, 'w'
         "//rbt.asia/#{board}/full_image/#{filename}"
       when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
@@ -2745,7 +2745,7 @@ Redirect =
 
       Redirect.archive[board] = aboard
 
-    if aboard.base
+    if aboard.base and !(board is 'soc')
       return @path aboard.base, aboard.type, data
     else
       if threadID
