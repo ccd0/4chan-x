@@ -5231,7 +5231,6 @@
         };
       },
       load: function() {
-        var check;
         switch (this.status) {
           case 404:
             Updater.set('timer', '');
@@ -5266,9 +5265,7 @@
                 delete Updater.postID;
               }
               Updater.checkPostCount++;
-              return (function() {
-                return setTimeout(Updater.update, Updater.checkPostCount * 20);
-              })();
+              return setTimeout(Updater.update, Updater.checkPostCount * 20);
             }
             break;
           case 200:
@@ -5285,10 +5282,12 @@
             }
         }
         if (Updater.postID) {
-          check = Updater.save.join(' ').indexOf(Updater.postID);
-          if (check === -1) {
+          if (!Updater.save.join(' ').contains(Updater.postID)) {
             return Updater.update();
           }
+          Updater.checkPostCount = 0;
+          Updater.save = [];
+          delete Updater.postI;
         }
         delete Updater.request;
         Updater.checkPostCount = 0;

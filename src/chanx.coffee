@@ -1148,7 +1148,7 @@ Updater =
             if Updater.checkPostCount > 15
               delete Updater.postID
             Updater.checkPostCount++
-            return (-> setTimeout Updater.update, Updater.checkPostCount * 20)()
+            return setTimeout Updater.update, (Updater.checkPostCount * 20)
         when 200
           Updater.lastModified = @getResponseHeader 'Last-Modified'
           Updater.cb.update JSON.parse(@response).posts
@@ -1160,9 +1160,11 @@ Updater =
             Updater.set 'count', @statusText
             Updater.count.className = 'warning'
       if Updater.postID
-        check = Updater.save.join(' ').indexOf Updater.postID
-        if check is -1
+        unless Updater.save.join(' ').contains(Updater.postID)
           return Updater.update()
+        Updater.checkPostCount = 0
+        Updater.save = []
+        delete Updater.postI
       delete Updater.request
       Updater.checkPostCount = 0
       Updater.save = []
