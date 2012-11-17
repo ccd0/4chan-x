@@ -1153,6 +1153,7 @@ Updater =
           if Updater.postID
             if Updater.checkPostCount > 15
               delete Updater.postID
+              break
             Updater.checkPostCount++
             return setTimeout Updater.update, (Updater.checkPostCount * 20)
         when 200

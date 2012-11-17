@@ -15,9 +15,9 @@ QR =
         unless g.REPLY
           QR.threadSelector.value = 
             unless g.BOARD is 'f'
-              'new' 
-            else
               '9999'
+            else
+              'new'
         $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
 
@@ -611,7 +611,7 @@ QR =
 
       QR.threadSelector =
         if g.BOARD is 'f'
-          $ 'select[name="filetag"]'
+          $('select[name=filetag]').cloneNode(true)
         else
           $.el 'select'
             innerHTML: threads
@@ -687,18 +687,23 @@ QR =
 
     reply = QR.replies[0]
 
-    if g.REPLY and g.BOARD isnt 'f'
+    if !g.REPLY and g.BOARD is 'f'
+      filetag  = QR.threadSelector.value
+      threadID = 'new'
+    else
       threadID = g.THREAD_ID or QR.threadSelector.value
 
     # prevent errors
     if threadID is 'new'
+      threadID = null
       if g.BOARD in ['vg', 'q'] and !reply.sub
         err = 'New threads require a subject.'
       else unless reply.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
         err = 'No file selected.'
-    else
-      unless reply.com or reply.file
-        err = 'No file selected.'
+      else if g.BOARD is 'f' and filetag is '9999'
+        err = 'Invalid tag specified.'
+    else unless reply.com or reply.file
+      err = 'No file selected.'
 
     if QR.captchaIsEnabled and !err
       # get oldest valid captcha
@@ -749,13 +754,13 @@ QR =
       sub:      reply.sub
       com:      if Conf['Markdown'] then Markdown.format reply.com else reply.com
       upfile:   reply.file
+      filetag:  filetag
       spoiler:  reply.spoiler
       textonly: textOnly
       mode:     'regist'
       pwd:      if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $('input[name=pwd]').value
       recaptcha_challenge_field: challenge
       recaptcha_response_field:  response
-      filetag:  QR.threadSelector.value unless g.REPLY
 
     callbacks =
       onload: ->
@@ -793,18 +798,12 @@ QR =
             "You were issued a warning on #{bs[0].innerHTML} as #{bs[3].innerHTML}.<br>Warning reason: #{bs[1].innerHTML}"
           else
             "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
-    else if err = doc.getElementById('errmsg') or err = $('center', doc) # error!
-      if /4chan Pass/.test err.textContent
-        err.textContent = 'You seem to have mistyped the CAPTCHA. Please try again.'
-      if $ 'font', err
-        err.textContent = err.textContent.replace /Return$/, ''
+    else if err = doc.getElementById 'errmsg' # error!
       $('a', err)?.target = '_blank' # duplicate image link
     else unless msg = $ 'b', doc
       err = 'Connection error with sys.4chan.org.'
 
     if err
-      if err.nodeName is 'CENTER'
-        err = err.textContent
       if /captcha|verification/i.test(err.textContent) or err is 'Connection error with sys.4chan.org.'
         # Remove the obnoxious 4chan Pass ad.
         if /mistyped/i.test err.textContent

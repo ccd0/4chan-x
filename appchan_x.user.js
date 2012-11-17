@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.16 - 2012-11-25
+ * appchan x - Version 1.0.16 - 2012-11-26
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -4805,7 +4805,7 @@
           }
           break;
         case Conf.spoiler:
-          if (target.nodeName !== 'TEXTAREA') {
+          if (!(/Spoiler/.test(($.id('postFile')).nextElementSibling.textContent) && target.nodeName === 'TEXTAREA')) {
             return;
           }
           Keybinds.tags('spoiler', target);
@@ -5277,6 +5277,7 @@
             if (Updater.postID) {
               if (Updater.checkPostCount > 15) {
                 delete Updater.postID;
+                break;
               }
               Updater.checkPostCount++;
               return setTimeout(Updater.update, Updater.checkPostCount * 20);
@@ -7640,7 +7641,7 @@
         $.on(link, 'click', function() {
           QR.open();
           if (!g.REPLY) {
-            QR.threadSelector.value = g.BOARD !== 'f' ? 'new' : '9999';
+            QR.threadSelector.value = g.BOARD !== 'f' ? '9999' : 'new';
           }
           return $('textarea', QR.el).focus();
         });
@@ -8343,7 +8344,7 @@
           id = thread.id.slice(1);
           threads += "<option value=" + id + ">Thread " + id + "</option>";
         }
-        QR.threadSelector = g.BOARD === 'f' ? $('select[name="filetag"]') : $.el('select', {
+        QR.threadSelector = g.BOARD === 'f' ? $('select[name=filetag]').cloneNode(true) : $.el('select', {
           innerHTML: threads,
           title: 'Create a new thread / Reply to a thread'
         });
@@ -8431,7 +8432,7 @@
       }));
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, textOnly, threadID, _ref;
+      var callbacks, captcha, captchas, challenge, err, filetag, m, opts, post, reply, response, textOnly, threadID, _ref;
       if (e != null) {
         e.preventDefault();
       }
@@ -8442,19 +8443,23 @@
       }
       QR.abort();
       reply = QR.replies[0];
-      if (g.REPLY && g.BOARD !== 'f') {
+      if (!g.REPLY && g.BOARD === 'f') {
+        filetag = QR.threadSelector.value;
+        threadID = 'new';
+      } else {
         threadID = g.THREAD_ID || QR.threadSelector.value;
       }
       if (threadID === 'new') {
+        threadID = null;
         if (((_ref = g.BOARD) === 'vg' || _ref === 'q') && !reply.sub) {
           err = 'New threads require a subject.';
         } else if (!(reply.file || (textOnly = !!$('input[name=textonly]', $.id('postForm'))))) {
           err = 'No file selected.';
+        } else if (g.BOARD === 'f' && filetag === '9999') {
+          err = 'Invalid tag specified.';
         }
-      } else {
-        if (!(reply.com || reply.file)) {
-          err = 'No file selected.';
-        }
+      } else if (!(reply.com || reply.file)) {
+        err = 'No file selected.';
       }
       if (QR.captchaIsEnabled && !err) {
         captchas = $.get('captchas', []);
@@ -8505,13 +8510,13 @@
         sub: reply.sub,
         com: Conf['Markdown'] ? Markdown.format(reply.com) : reply.com,
         upfile: reply.file,
+        filetag: filetag,
         spoiler: reply.spoiler,
         textonly: textOnly,
         mode: 'regist',
         pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
         recaptcha_challenge_field: challenge,
-        recaptcha_response_field: response,
-        filetag: !g.REPLY ? QR.threadSelector.value : void 0
+        recaptcha_response_field: response
       };
       callbacks = {
         onload: function() {
@@ -8553,13 +8558,7 @@
         err = $.el('span', {
           innerHTML: /^You were issued a warning/.test($('.boxcontent', doc).textContent.trim()) ? "You were issued a warning on " + bs[0].innerHTML + " as " + bs[3].innerHTML + ".<br>Warning reason: " + bs[1].innerHTML : "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
         });
-      } else if (err = doc.getElementById('errmsg') || (err = $('center', doc))) {
-        if (/4chan Pass/.test(err.textContent)) {
-          err.textContent = 'You seem to have mistyped the CAPTCHA. Please try again.';
-        }
-        if ($('font', err)) {
-          err.textContent = err.textContent.replace(/Return$/, '');
-        }
+      } else if (err = doc.getElementById('errmsg')) {
         if ((_ref = $('a', err)) != null) {
           _ref.target = '_blank';
         }
@@ -8567,9 +8566,6 @@
         err = 'Connection error with sys.4chan.org.';
       }
       if (err) {
-        if (err.nodeName === 'CENTER') {
-          err = err.textContent;
-        }
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
           if (/mistyped/i.test(err.textContent)) {
             err.textContent = 'You seem to have mistyped the CAPTCHA.';
