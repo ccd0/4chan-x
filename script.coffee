@@ -1342,7 +1342,12 @@ QR =
       link = $.el 'h1', innerHTML: "<a href=javascript:;>#{if g.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
       $.on link.firstChild, 'click', ->
         QR.open()
-        QR.threadSelector.value = 'new' unless g.REPLY
+        unless g.REPLY
+          QR.threadSelector.value =
+            if g.BOARD is 'f'
+              '9999'
+            else
+              'new'
         $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
 
@@ -1885,9 +1890,13 @@ QR =
       for thread in $$ '.thread'
         id = thread.id[1..]
         threads += "<option value=#{id}>Thread #{id}</option>"
-      QR.threadSelector = $.el 'select'
-        innerHTML: threads
-        title: 'Create a new thread / Reply to a thread'
+      QR.threadSelector =
+        if g.BOARD is 'f'
+          $('select[name=filetag]').cloneNode true
+        else
+          $.el 'select'
+            innerHTML: threads
+            title: 'Create a new thread / Reply to a thread'
       $.prepend $('.move > span', QR.el), QR.threadSelector
       $.on QR.threadSelector,   'mousedown', (e) -> e.stopPropagation()
     $.on $('#autohide', QR.el), 'change',    QR.toggleHide
@@ -1933,16 +1942,22 @@ QR =
     QR.abort()
 
     reply = QR.replies[0]
-    threadID = g.THREAD_ID or QR.threadSelector.value
+    if g.BOARD is 'f' and not g.REPLY
+      filetag  = QR.threadSelector.value
+      threadID = 'new'
+    else
+      threadID = g.THREAD_ID or QR.threadSelector.value
 
     # prevent errors
     if threadID is 'new'
+      threadID = null
       if g.BOARD in ['vg', 'q'] and !reply.sub
         err = 'New threads require a subject.'
       else unless reply.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
-          err = 'No file selected.'
-    else
-      unless reply.com or reply.file
+        err = 'No file selected.'
+      else if g.BOARD is 'f' and filetag is '9999'
+        err = 'Invalid tag specified.'
+    else unless reply.com or reply.file
         err = 'No file selected.'
 
     if QR.captchaIsEnabled and !err
@@ -1994,6 +2009,7 @@ QR =
       sub:      reply.sub
       com:      reply.com
       upfile:   reply.file
+      filetag:  filetag
       spoiler:  reply.spoiler
       textonly: textOnly
       mode:     'regist'

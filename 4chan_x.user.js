@@ -1738,7 +1738,7 @@
         $.on(link.firstChild, 'click', function() {
           QR.open();
           if (!g.REPLY) {
-            QR.threadSelector.value = 'new';
+            QR.threadSelector.value = g.BOARD === 'f' ? '9999' : 'new';
           }
           return $('textarea', QR.el).focus();
         });
@@ -2418,7 +2418,7 @@
           id = thread.id.slice(1);
           threads += "<option value=" + id + ">Thread " + id + "</option>";
         }
-        QR.threadSelector = $.el('select', {
+        QR.threadSelector = g.BOARD === 'f' ? $('select[name=filetag]').cloneNode(true) : $.el('select', {
           innerHTML: threads,
           title: 'Create a new thread / Reply to a thread'
         });
@@ -2472,7 +2472,7 @@
       }));
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, m, opts, post, reply, response, textOnly, threadID, _ref;
+      var callbacks, captcha, captchas, challenge, err, filetag, m, opts, post, reply, response, textOnly, threadID, _ref;
       if (e != null) {
         e.preventDefault();
       }
@@ -2483,17 +2483,23 @@
       }
       QR.abort();
       reply = QR.replies[0];
-      threadID = g.THREAD_ID || QR.threadSelector.value;
+      if (g.BOARD === 'f' && !g.REPLY) {
+        filetag = QR.threadSelector.value;
+        threadID = 'new';
+      } else {
+        threadID = g.THREAD_ID || QR.threadSelector.value;
+      }
       if (threadID === 'new') {
+        threadID = null;
         if (((_ref = g.BOARD) === 'vg' || _ref === 'q') && !reply.sub) {
           err = 'New threads require a subject.';
         } else if (!(reply.file || (textOnly = !!$('input[name=textonly]', $.id('postForm'))))) {
           err = 'No file selected.';
+        } else if (g.BOARD === 'f' && filetag === '9999') {
+          err = 'Invalid tag specified.';
         }
-      } else {
-        if (!(reply.com || reply.file)) {
-          err = 'No file selected.';
-        }
+      } else if (!(reply.com || reply.file)) {
+        err = 'No file selected.';
       }
       if (QR.captchaIsEnabled && !err) {
         captchas = $.get('captchas', []);
@@ -2544,6 +2550,7 @@
         sub: reply.sub,
         com: reply.com,
         upfile: reply.file,
+        filetag: filetag,
         spoiler: reply.spoiler,
         textonly: textOnly,
         mode: 'regist',
