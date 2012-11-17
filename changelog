@@ -1,6 +1,10 @@
 master
+
+2.36.2
 - noface
-  Added tags support on /f/.
+  Add tags support on /f/.
+- Mayhem
+  Add /mu/ archived image redirection.
 
 2.36.1
 - noface
