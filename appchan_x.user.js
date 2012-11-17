@@ -7140,7 +7140,7 @@
         type: 'foolfuuka'
       }, {
         name: 'TheDarkCave',
-        base: '//archive.thedarkcave.org',
+        base: 'http://archive.thedarkcave.org',
         boards: ['c', 'po'],
         type: 'foolfuuka'
       }, {
