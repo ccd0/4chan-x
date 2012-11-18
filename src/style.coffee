@@ -724,6 +724,18 @@ html body > span[style="left: 5px; position: absolute;"]:nth-of-type(0),
 table[style="text-align:center;width:100%;height:300px;"] {
   display: none !important;
 }
+#browse,
+#mascot img,
+#replies,
+#spoilerLabel,
+.captchaimg,
+.sideArrows,
+.sideArrows a,
+.menu_button,
+.move {
+  user-select: none;
+  #{Style.agent}user-select: none;
+}
 div.post > blockquote .prettyprint span {
   font-family: monospace;
 }
@@ -1937,18 +1949,6 @@ input,
 }
 .sideArrows {
   width: 0;
-}
-#browse,
-#mascot img,
-#replies,
-#spoilerLabel,
-.captchaimg,
-.sideArrows,
-.sideArrows a,
-.menu_button,
-.move {
-  user-select: none;
-  #{Style.agent}user-select: none;
 }
 .sideArrows a,
 .menu_button {
