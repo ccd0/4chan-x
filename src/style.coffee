@@ -2110,7 +2110,9 @@ img[src^="//static.4chan.org/support/"] {
 body::before {
   background: none repeat scroll 0% 0% rgba(#{background.shiftRGB -18}, 0.8);
   border-#{Style.sidebarLocation[1]}: 2px solid #{theme["Background Color"]};
-  box-shadow: #{if Conf["Sidebar Location"] is "right" then "inset" else ""} 1px 0px 0px #{theme["Thread Wrapper Border"]}, #{if Conf["Sidebar Location"] is "left" then "inset" else ""} -1px 0px 0px #{theme["Thread Wrapper Border"]};
+  box-shadow: 
+    #{if Conf["Sidebar Location"] is "right" then "inset" else ""}  1px 0px 0px #{theme["Thread Wrapper Border"]},
+    #{if Conf["Sidebar Location"] is "left"  then "inset" else ""} -1px 0px 0px #{theme["Thread Wrapper Border"]};
   content: "";
   position: fixed;
   top: 0;

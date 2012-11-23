@@ -14,6 +14,7 @@ Style =
     Style.addStyle()
 
     $.ready ->
+      $.off d, 'DOMNodeInserted', Style.remStyle
       Style.rice(d.body)
       Style.banner()
       Style.trimGlobalMessage()
@@ -73,20 +74,21 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       Style.appchan.textContent = Style.css(theme)
       Style.icons.textContent   = Style.iconPositions()
 
+  headCount: 0
+  
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle
-    unless Conf['remInit']
-      if d.head and d.head.children.length > 35
-        Conf['remInit'] = true
+    if Style.headCount < 10 and head = d.head
         nodes = []
-        for node in d.head.children
+        for node in head.children
           if node.rel?.match(/^.*\bstylesheet\b.*/) or node.tagName.toLowerCase() is 'style'
             unless node.id
+              Style.headCount++
               nodes.push node
         for node in nodes
           $.rm node
-      else
-        $.on d, 'DOMNodeInserted', @remStyle
+    else
+      $.on d, 'DOMNodeInserted', @remStyle
 
   banner: ->
     banner = $ ".boardBanner", d.body
