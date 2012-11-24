@@ -692,7 +692,7 @@ Options =
           enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]))
           for name in enabledMascots
             $.rmClass $.id(name).parentElement, 'enabled'
-          $.set g.MASCOTSTRING, []
+          $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING] = []
 
         $.on $('#selectAll', batchmascots), 'click', ->
           for name, mascot of userMascots

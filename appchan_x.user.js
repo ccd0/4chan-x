@@ -3452,9 +3452,8 @@
             for (_k = 0, _len2 = enabledMascots.length; _k < _len2; _k++) {
               name = enabledMascots[_k];
               $.rmClass($.id(name).parentElement, 'enabled');
-              Conf[g.MASCOTSTRING].remove(name);
             }
-            return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING]);
+            return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING] = []);
           });
           $.on($('#selectAll', batchmascots), 'click', function() {
             for (name in userMascots) {
