@@ -193,6 +193,7 @@ $.extend $,
       textContent: css
       id:          identifier
     $.add d.head, style
+    return style
   x: (path, root=d.body) ->
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
       singleNodeValue

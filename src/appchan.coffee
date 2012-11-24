@@ -28,6 +28,7 @@ Style =
       Style.padding.nav   = $ "#boardNavDesktop", d.body
       Style.padding.pages = $(".pagelist", d.body)
       Style.padding()
+      MascotTools.init()
       $.on (window or unsafeWindow), "resize", Style.padding
 
   emoji: (position) ->
@@ -62,11 +63,10 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
     unless Conf['styleInit']
       if d.head
         Conf['styleInit'] = true
-        $.addStyle Style.css(userThemes[Conf['theme']]), 'appchan'
-        $.addStyle Style.iconPositions(), 'icons'
-        $.addStyle "", 'padding'
-        Style.appchan = $.id 'appchan'
-        Style.icons   = $.id 'icons'
+        Style.appchan      = $.addStyle Style.css(userThemes[Conf['theme']]), 'appchan'
+        Style.icons        = $.addStyle Style.iconPositions(), 'icons'
+        Style.paddingSheet = $.addStyle "", 'padding'
+        Style.mascot       = $.addStyle "", 'mascotSheet'
       else # XXX fox
         $.on d, 'DOMNodeInserted', Style.addStyle
     else
@@ -116,8 +116,8 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
     $.after banner, title
 
   padding: ->
-    css = "body::before {\n"
-    sheet = $.id('padding')
+    css   = "body::before {\n"
+    sheet = Style.paddingSheet
     Style.padding.nav.property = Conf["Boards Navigation"].split(" ")
     Style.padding.nav.property = Style.padding.nav.property[Style.padding.nav.property.length - 1]
     if Style.padding.pages?

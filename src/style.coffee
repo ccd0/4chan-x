@@ -2087,10 +2087,6 @@ input.field.tripped:not(:hover):not(:focus) {
 """
       else ""
     ) + (
-      if Conf["Mascots"]
-        MascotTools.init()
-      else ""
-    ) + (
       if Conf["Block Ads"]
         """
 /* AdBlock Minus */

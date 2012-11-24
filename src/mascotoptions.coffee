@@ -6,8 +6,12 @@ MascotTools =
     else
       position = 248
 
-    #If we're editting anything, let's not change mascots any time we change a value.
-    unless Conf['editMode']
+    # If we're editting anything, let's not change mascots any time we change a value.
+    if Conf['editMode']
+      unless mascot = editMascot or mascot = userMascots[Conf["mascot"]]
+        return
+
+    else
       names = []
 
       unless Conf["mascot"] = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]
@@ -18,10 +22,6 @@ MascotTools =
         return
 
       @addMascot mascot
-
-    else
-      unless mascot = editMascot or mascot = userMascots[Conf["mascot"]]
-        return
 
     if Conf["Sidebar Location"] == 'left'
       if Conf["Mascot Location"] == "sidebar"
@@ -38,7 +38,7 @@ MascotTools =
     if Conf["Grayscale Mascots"]
       filters.push '<feColorMatrix id="color" type="saturate" values="0" />'
 
-    return """
+    Style.mascot.textContent = """
 #mascot img {
   position: fixed;
   z-index: #{
