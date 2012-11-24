@@ -687,6 +687,7 @@ textarea {
 #qr:not(.dump) #replies,
 #qp .rice
 #qp input,
+#{unless Conf["Hide Show QR"] then "#showQR," else ""}
 #updater:not(:hover) > :not(.move),
 #{unless Conf["Board Subtitle"] then ".boardSubtitle," else ""}
 .deleteform,

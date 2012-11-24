@@ -732,14 +732,18 @@ Config =
         'Transparency of the 4chan Captcha'
         ['1.00', '.75', '.50', '.25']
       ]
+      'Compact Post Form Inputs':[
+        true
+        'Use compact inputs on the post form.'
+      ]
+      'Hide Show QR': [
+        false
+        'Hides the "Show Post Form" button when Persistent QR is disabled.'
+      ]
       'Post Form Style': [
         'tabbed slideout'
         'How the post form will sit on the page.'
         ['fixed', 'slideout', 'tabbed slideout', 'transparent fade', 'float']
-      ]
-      'Compact Post Form Inputs':[
-        true
-        'Use compact inputs on the post form.'
       ]
       'Textarea Resize': [
         'vertical'
