@@ -647,7 +647,7 @@ Options =
             $.on $('a.delete', li), 'click', ->
               container = @.parentElement.parentElement.parentElement.parentElement
               if confirm "Are you sure you want to delete \"#{@name}\"?"
-                if Conf['mascot'] is @id
+                if Conf['mascot'] is @name
                   MascotTools.init()
                 for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
                   Conf[type].remove @name

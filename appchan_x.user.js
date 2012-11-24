@@ -3405,7 +3405,7 @@
                 var container, type, _k, _len2, _ref1;
                 container = this.parentElement.parentElement.parentElement.parentElement;
                 if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
-                  if (Conf['mascot'] === this.id) {
+                  if (Conf['mascot'] === this.name) {
                     MascotTools.init();
                   }
                   _ref1 = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
