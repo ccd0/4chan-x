@@ -284,28 +284,33 @@ Options =
             innerHTML: "<div class=\"option\"><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></div><div class =\"option\"><input name=\"#{optionname}\" style=\"width: 100%\"></div>"
           styleSetting = $ "input[name='#{optionname}']", li
           styleSetting.value = $.get optionname, Conf[optionname]
-          $.on styleSetting, 'change', $.cb.value
-          $.on styleSetting, 'change', Options.style
+          $.on styleSetting, 'blur', ->
+            $.cb.value.call @
+            Style.addStyle.call @
 
         else if arr[2]
-          liHTML = "<div class=\"option\"><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></div><div class =\"option\"><select name=\"#{optionname}\"></div>"
+          liHTML = []
+          liHTML.push "<div class=\"option\"><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></div><div class =\"option\"><select name=\"#{optionname}\"></div>"
           for selectoption, optionvalue in arr[2]
-            liHTML = liHTML + "<option value=\"#{selectoption}\">#{selectoption}</option>"
-          liHTML = liHTML + "</select>"
+            liHTML.push "<option value=\"#{selectoption}\">#{selectoption}</option>"
+          liHTML.push "</select>"
           li = $.el 'li',
-            innerHTML: liHTML
+            innerHTML: liHTML.join ''
             className: "styleoption"
           styleSetting = $ "select[name='#{optionname}']", li
           styleSetting.value = $.get optionname, Conf[optionname]
-          $.on styleSetting, 'change', $.cb.value
-          $.on styleSetting, 'change', Options.style
+          $.on styleSetting, 'change', ->
+            $.cb.value.call @
+            Style.addStyle.call @
 
         else
           checked = if $.get(optionname, Conf[optionname]) then 'checked' else ''
           li = $.el 'li',
             className: "styleoption"
             innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></label>"
-          $.on $('input', li), 'click', $.cb.checked
+          $.on $('input', li), 'click', ->
+            $.cb.checked.call @
+            Style.addStyle.call @
 
         # Mouseover Labels.
         $.on $(".optionlabel", li), 'mouseover', Options.mouseover
@@ -319,9 +324,6 @@ Options =
     # And after I'm done iterating through the categories themselves, I can add the resulting div to the dialog
     $.add $('#style_tab + div', dialog), div
 
-    # And add a "Save Style Settings" button, too.
-    Options.applyStyle(dialog, 'style_tab')
-
     # Themes
     # Because adding new themes clears the whole theme dialog, the dialog is created by its own method.
     @themeTab dialog
@@ -333,9 +335,6 @@ Options =
       if el = $.id "mascotContainer"
         $.rm el
       Options.mascotTab.dialog Options.el
-
-    # And add a "Save Style Settings" button, too.
-    Options.applyStyle(dialog, 'mascot_tab')
 
     # Indicators for disabled or enabled options that may cause conflicts.
     Options.indicators dialog
@@ -566,7 +565,6 @@ Options =
     $.add parentdiv, suboptions
     $.add parentdiv, div
     $.add $('#theme_tab + div', dialog), parentdiv
-    Options.applyStyle(dialog, 'theme_tab')
     Options.indicators dialog
 
 
@@ -622,13 +620,23 @@ Options =
             mascot = userMascots[name]
             li = $.el 'li',
               className: 'mascot'
-              innerHTML: "
-<div id='#{name}' class='#{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div>
-<div class='mascotmetadata'>
-  <p><span class='mascotname'>#{name.replace /_/g, " "}</span></p>
-  <p><span class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a> / <a class=export name='#{name}' href='javascript:;'>Export</a></span></p>
-</div>
-  "
+              innerHTML: [
+                "<div id='"
+                name
+                "' class='"
+                mascot.category
+                "'><img class=mascotimg src='"
+                ( if Array.isArray(mascot.image) then ( if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image )
+                "'></div><div class='mascotmetadata'><p><span class='mascotname'>"
+                name.replace /_/g, " "
+                "</span></p><p><span class='mascotoptions'><a class=edit name='"
+                name
+                "' href='javascript:;'>Edit</a> / <a class=delete name='"
+                name
+                "' href='javascript:;'>Delete</a> / <a class=export name='"
+                name
+                "' href='javascript:;'>Export</a></span></p></div>"
+              ].join("")
             div = $("##{name}", li)
             if Conf[g.MASCOTSTRING].contains name
               $.addClass li, 'enabled'
@@ -991,14 +999,6 @@ Options =
     Unread.update true
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
 
-  applyStyle: (dialog, tab) ->
-    save = $.el 'div',
-      innerHTML: '<a href="javascript:;">Save Style Settings</a>'
-      className: 'stylesettings'
-    $.on $('a', save), 'click', ->
-      Style.addStyle()
-    $.add $('#' + tab + ' + div', dialog), save
-
   selectTheme: ->
     if currentTheme = $.id(Conf['theme'])
       $.rmClass currentTheme, 'selectedtheme'
@@ -1009,6 +1009,7 @@ Options =
       $.set "theme", @id
     Conf['theme'] = @id
     $.addClass @, 'selectedtheme'
+    Style.addStyle()
 
   mouseover: (e) ->
 

@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.16 - 2012-11-22
+ * appchan x - Version 1.0.16 - 2012-11-23
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -3104,31 +3104,39 @@
             });
             styleSetting = $("input[name='" + optionname + "']", li);
             styleSetting.value = $.get(optionname, Conf[optionname]);
-            $.on(styleSetting, 'change', $.cb.value);
-            $.on(styleSetting, 'change', Options.style);
+            $.on(styleSetting, 'blur', function() {
+              $.cb.value.call(this);
+              return Style.addStyle.call(this);
+            });
           } else if (arr[2]) {
-            liHTML = "<div class=\"option\"><span class=\"optionlabel\">" + optionname + "</span><div style=\"display: none\">" + description + "</div></div><div class =\"option\"><select name=\"" + optionname + "\"></div>";
+            liHTML = [];
+            liHTML.push("<div class=\"option\"><span class=\"optionlabel\">" + optionname + "</span><div style=\"display: none\">" + description + "</div></div><div class =\"option\"><select name=\"" + optionname + "\"></div>");
             _ref3 = arr[2];
             for (optionvalue = _j = 0, _len1 = _ref3.length; _j < _len1; optionvalue = ++_j) {
               selectoption = _ref3[optionvalue];
-              liHTML = liHTML + ("<option value=\"" + selectoption + "\">" + selectoption + "</option>");
+              liHTML.push("<option value=\"" + selectoption + "\">" + selectoption + "</option>");
             }
-            liHTML = liHTML + "</select>";
+            liHTML.push("</select>");
             li = $.el('li', {
-              innerHTML: liHTML,
+              innerHTML: liHTML.join(''),
               className: "styleoption"
             });
             styleSetting = $("select[name='" + optionname + "']", li);
             styleSetting.value = $.get(optionname, Conf[optionname]);
-            $.on(styleSetting, 'change', $.cb.value);
-            $.on(styleSetting, 'change', Options.style);
+            $.on(styleSetting, 'change', function() {
+              $.cb.value.call(this);
+              return Style.addStyle.call(this);
+            });
           } else {
             checked = $.get(optionname, Conf[optionname]) ? 'checked' : '';
             li = $.el('li', {
               className: "styleoption",
               innerHTML: "<label><input type=checkbox name=\"" + optionname + "\" " + checked + "><span class=\"optionlabel\">" + optionname + "</span><div style=\"display: none\">" + description + "</div></label>"
             });
-            $.on($('input', li), 'click', $.cb.checked);
+            $.on($('input', li), 'click', function() {
+              $.cb.checked.call(this);
+              return Style.addStyle.call(this);
+            });
           }
           $.on($(".optionlabel", li), 'mouseover', Options.mouseover);
           $.add(ul, li);
@@ -3136,7 +3144,6 @@
         $.add(div, ul);
       }
       $.add($('#style_tab + div', dialog), div);
-      Options.applyStyle(dialog, 'style_tab');
       this.themeTab(dialog);
       $.on($('#mascot_tab', Options.el), 'click', function() {
         var el;
@@ -3145,7 +3152,6 @@
         }
         return Options.mascotTab.dialog(Options.el);
       });
-      Options.applyStyle(dialog, 'mascot_tab');
       Options.indicators(dialog);
       overlay = $.el('div', {
         id: 'overlay'
@@ -3324,7 +3330,6 @@
       $.add(parentdiv, suboptions);
       $.add(parentdiv, div);
       $.add($('#theme_tab + div', dialog), parentdiv);
-      Options.applyStyle(dialog, 'theme_tab');
       return Options.indicators(dialog);
     },
     mascotTab: {
@@ -3383,7 +3388,7 @@
               mascot = userMascots[name];
               li = $.el('li', {
                 className: 'mascot',
-                innerHTML: "<div id='" + name + "' class='" + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (userThemes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'></div><div class='mascotmetadata'>  <p><span class='mascotname'>" + (name.replace(/_/g, " ")) + "</span></p>  <p><span class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a> / <a class=delete name='" + name + "' href='javascript:;'>Delete</a> / <a class=export name='" + name + "' href='javascript:;'>Export</a></span></p></div>  "
+                innerHTML: ["<div id='", name, "' class='", mascot.category, "'><img class=mascotimg src='", (Array.isArray(mascot.image) ? (userThemes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image), "'></div><div class='mascotmetadata'><p><span class='mascotname'>", name.replace(/_/g, " "), "</span></p><p><span class='mascotoptions'><a class=edit name='", name, "' href='javascript:;'>Edit</a> / <a class=delete name='", name, "' href='javascript:;'>Delete</a> / <a class=export name='", name, "' href='javascript:;'>Export</a></span></p></div>"].join("")
               });
               div = $("#" + name, li);
               if (Conf[g.MASCOTSTRING].contains(name)) {
@@ -3754,17 +3759,6 @@
       Unread.update(true);
       return this.nextElementSibling.innerHTML = "<img src=" + Favicon.unreadSFW + "> <img src=" + Favicon.unreadNSFW + "> <img src=" + Favicon.unreadDead + ">";
     },
-    applyStyle: function(dialog, tab) {
-      var save;
-      save = $.el('div', {
-        innerHTML: '<a href="javascript:;">Save Style Settings</a>',
-        className: 'stylesettings'
-      });
-      $.on($('a', save), 'click', function() {
-        return Style.addStyle();
-      });
-      return $.add($('#' + tab + ' + div', dialog), save);
-    },
     selectTheme: function() {
       var currentTheme;
       if (currentTheme = $.id(Conf['theme'])) {
@@ -3776,7 +3770,8 @@
         $.set("theme", this.id);
       }
       Conf['theme'] = this.id;
-      return $.addClass(this, 'selectedtheme');
+      $.addClass(this, 'selectedtheme');
+      return Style.addStyle();
     },
     mouseover: function(e) {
       var mouseover;

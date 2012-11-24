@@ -688,7 +688,7 @@ textarea {
 #qp .rice
 #qp input,
 #updater:not(:hover) > :not(.move),
-#{(unless Conf["Board Subtitle"] then ".boardSubtitle," else "")}
+#{unless Conf["Board Subtitle"] then ".boardSubtitle," else ""}
 .deleteform,
 .dump > form > label,
 .fileText:hover .fntrunc,
