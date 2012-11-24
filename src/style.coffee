@@ -337,11 +337,13 @@ input[type="submit"] {
   width: 100%;
 }
 .themevar .colorfield {
-  width: 75%;
+  width: 90%;
+  border-right-width: 0px;
 }
-.themevar .field.color {
-  width: 25%;
+.themevar .color {
+  width: 10%;
   color: transparent;
+  border-left-width: 0px;
 }
 #ihover,
 #mouseover,

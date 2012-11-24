@@ -34,7 +34,6 @@ JSColor =
   color: (target) ->
     @valueElement       = target         # value holder
     @styleElement       = target         # where to reflect current color
-    @onImmediateChange  = null           # onchange callback (can be either string or function)
     @hsv                = [0, 0, 1]      # read-only  0-6, 0-1, 0-1
     @rgb                = [1, 1, 1]      # read-only  0-1, 0-1, 0-1
     @minH               = 0              # read-only  0-6
@@ -52,6 +51,9 @@ JSColor =
     @pickerInset        = 1              # px
     @pickerInsetColor   = 'ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow' # CSS color
     @pickerZIndex       = 1000
+    abortBlur    = false
+    holdPad      = false
+    holdSld      = false
 
     @hidePicker = ->
       if isPickerOwner()
@@ -66,9 +68,7 @@ JSColor =
         @exportColor()
       else
         unless @fromString valueElement.value, leaveValue
-          styleElement.style.backgroundImage = styleElement.jscStyle.backgroundImage
           styleElement.style.backgroundColor = styleElement.jscStyle.backgroundColor
-          styleElement.style.color           = styleElement.jscStyle.color
           @exportColor leaveValue | leaveStyle
 
     @exportColor = (flags) ->
@@ -82,13 +82,7 @@ JSColor =
         Style.addStyle(editTheme)
 
       if not (flags & leaveStyle) and styleElement
-        styleElement.style.backgroundImage = "none"
         styleElement.style.backgroundColor = '#' + @toString()
-        styleElement.style.color = if ((
-          0.213 * @rgb[0] +
-          0.715 * @rgb[1] +
-          0.072 * @rgb[2]
-        ) < 0.5) then '#FFF' else '#000'
 
       if not (flags & leavePad) and isPickerOwner()
         redrawPad()
@@ -256,26 +250,24 @@ JSColor =
         if holdPad or holdSld
           holdPad and setPad e
           holdSld and setSld e
+          
           if document.selection
             document.selection.empty()
           else if window.getSelection
             window.getSelection().removeAllRanges()
-
-          dispatchImmediateChange()
 
       p.padM.onmouseup =
       p.padM.onmouseout = -> if holdPad
         holdPad = false
         JSColor.fireEvent valueElement, 'change'
       p.padM.onmousedown = (e) ->
-        # if the slider is at the bottom, move it up
+        # If the slider is at the bottom, move it up
 
         if THIS.hsv[2] is 0
           THIS.fromHSV null, null, 1.0
 
         holdPad = true
         setPad e
-        dispatchImmediateChange()
 
       p.sldM.onmouseup =
       p.sldM.onmouseout = -> if holdSld
@@ -284,7 +276,6 @@ JSColor =
       p.sldM.onmousedown = (e) ->
         holdSld = true
         setSld e
-        dispatchImmediateChange()
 
       # picker
       dims                          = getPickerDims THIS
@@ -482,21 +473,9 @@ JSColor =
         leavePad
       )
 
-    dispatchImmediateChange = ->
-      if THIS.onImmediateChange
-        callback
-        if typeof THIS.onImmediateChange is 'string'
-          callback = new Function (THIS.onImmediateChange)
-        else
-          callback = THIS.onImmediateChange
-        callback.call(THIS)
-
     THIS         = @
-    abortBlur    = false
     valueElement = JSColor.fetchElement @valueElement
     styleElement = JSColor.fetchElement @styleElement
-    holdPad      = false
-    holdSld      = false
     leaveValue   = 1 << 0
     leaveStyle   = 1 << 1
     leavePad     = 1 << 2
@@ -508,11 +487,10 @@ JSColor =
 
     $.on target, 'blur', ->
       unless abortBlur
-        window.setTimeout (->
+        window.setTimeout(->
             abortBlur or blurTarget()
             abortBlur = false
           )
-          0
       else
         abortBlur = false
 
@@ -520,18 +498,14 @@ JSColor =
     if valueElement
       updateField = ->
         THIS.fromString valueElement.value, leaveValue
-        dispatchImmediateChange()
 
-      $.on valueElement, 'keyup', updateField
-      $.on valueElement, 'input', updateField
+      $.on valueElement, 'keyup input', updateField
       $.on valueElement, 'blur',  blurValue
       valueElement.setAttribute 'autocomplete', 'off'
 
     # styleElement
     if styleElement
       styleElement.jscStyle =
-        backgroundImage:    styleElement.style.backgroundImage
         backgroundColor:    styleElement.style.backgroundColor
-        color:              styleElement.style.color
     
     @importColor()
