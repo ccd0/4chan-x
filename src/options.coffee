@@ -16,11 +16,11 @@ Options =
       $.prepend $.id(settings), [$.tn('['), a, $.tn('] ')]
 
   dialog: (tab) ->
-    if Conf['editMode'] == "theme"
+    if Conf['editMode'] is "theme"
       if confirm "Opening the options dialog will close and discard any theme changes made with the theme editor."
         ThemeTools.close()
       return
-    if Conf['editMode'] == "mascot"
+    if Conf['editMode'] is "mascot"
       if confirm "Opening the options dialog will close and discard any mascot changes made with the mascot editor."
         MascotTools.close()
       return
@@ -278,7 +278,7 @@ Options =
         # If there is no second array cell, it's a checkbox.
         # And create a list item and fill it
         # Adding the JS to change and save it.
-        if arr[2] == 'text'
+        if arr[2] is 'text'
           li = $.el 'li',
             className: "styleoption"
             innerHTML: "<div class=\"option\"><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></div><div class =\"option\"><input name=\"#{optionname}\" style=\"width: 100%\"></div>"
@@ -399,7 +399,7 @@ Options =
 
     # And use the sorted list to display all available themes to the user.
 
-    if mode == "default"
+    if mode is "default"
 
       for name in keys
         theme = userThemes[name]
@@ -414,7 +414,7 @@ Options =
           # Instead of writing a style sheet for each theme, we hard-code the colors into each preview.
           # 4chan SS / OneeChan also do this, and inspired it here.
           div = $.el 'div',
-            className: if name == Conf['theme'] then 'selectedtheme' else ''
+            className: if name is Conf['theme'] then 'selectedtheme' else ''
             id:        name
             innerHTML: "
 <div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
@@ -469,7 +469,7 @@ Options =
               return
 
             if confirm "Are you sure you want to delete \"#{container.id}\"?"
-              if container.id == Conf['theme']
+              if container.id is Conf['theme']
                 if settheme = container.previousSibling or container.nextSibling
                   Conf['theme'] = settheme.id
                   $.addClass settheme, 'selectedtheme'
@@ -589,7 +589,7 @@ Options =
       keys = Object.keys(userMascots)
       keys.sort()
 
-      if mode == 'default'
+      if mode is 'default'
         # Create a keyed Unordered List Element and hide option for each mascot category.
         for category in MascotTools.categories
           ul[category] = $.el "ul",
@@ -743,7 +743,7 @@ Options =
               container = @.parentElement
               if confirm "Are you sure you want to undelete \"#{@id}\"?"
                 Conf["Deleted Mascots"].remove @id
-                if Conf['mascot'] == @id
+                if Conf['mascot'] is @id
                   MascotTools.init()
                 $.set "Deleted Mascots", Conf["Deleted Mascots"]
                 $.rm container
@@ -776,12 +776,12 @@ Options =
         category.hidden = true
         Conf["Hidden Categories"].push name
         for mName, mascot of userMascots
-          if mascot.category == name
+          if mascot.category is name
             for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
               if Conf[type].contains mName
                 Conf[type].remove mName
                 $.set type, Conf[type]
-              if type == g.MASCOTSTRING
+              if type is g.MASCOTSTRING
                 $.rmClass $.id(mName).parentElement, 'enabled'
       else
         category.hidden = false
@@ -808,7 +808,7 @@ Options =
       input.setAttribute "type", "text"
 
       $.on input, "change", ->
-        if @value == ""
+        if @value is ""
           alert "Custom Navigation options cannot be blank."
           return
         userNavigation.delimiter = @value
@@ -858,7 +858,7 @@ Options =
             type:        "text"
 
           $.on input, "change", ->
-            if @value == ""
+            if @value is ""
               alert "Custom Navigation options cannot be blank."
               return
             userNavigation.links[@parentElement.firstChild.value][@name] = @value
