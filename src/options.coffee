@@ -743,6 +743,8 @@ Options =
               container = @.parentElement
               if confirm "Are you sure you want to undelete \"#{@id}\"?"
                 Conf["Deleted Mascots"].remove @id
+                if Conf['mascot'] == @id
+                  MascotTools.init()
                 $.set "Deleted Mascots", Conf["Deleted Mascots"]
                 $.rm container
 

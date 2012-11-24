@@ -3507,6 +3507,9 @@
                 container = this.parentElement;
                 if (confirm("Are you sure you want to undelete \"" + this.id + "\"?")) {
                   Conf["Deleted Mascots"].remove(this.id);
+                  if (Conf['mascot'] === this.id) {
+                    MascotTools.init();
+                  }
                   $.set("Deleted Mascots", Conf["Deleted Mascots"]);
                   return $.rm(container);
                 }
