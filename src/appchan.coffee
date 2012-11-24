@@ -70,7 +70,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       else # XXX fox
         $.on d, 'DOMNodeInserted', Style.addStyle
     else
-      if el = $('#mascot', d.body) then $.rm el
+      MascotTools.init Conf["mascot"]
       Style.appchan.textContent = Style.css(theme)
       Style.icons.textContent   = Style.iconPositions()
 

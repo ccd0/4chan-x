@@ -3430,9 +3430,13 @@
               $.on(div, 'click', function() {
                 if (Conf[g.MASCOTSTRING].remove(this.id)) {
                   $.rmClass(this.parentElement, 'enabled');
+                  if (Conf['mascot'] = this.id) {
+                    MascotTools.init();
+                  }
                 } else {
                   $.addClass(this.parentElement, 'enabled');
                   Conf[g.MASCOTSTRING].push(this.id);
+                  MascotTools.init(this.id);
                 }
                 return $.set("Enabled Mascots", Conf["Enabled Mascots"]);
               });
@@ -9424,8 +9428,18 @@
   };
 
   MascotTools = {
-    init: function() {
-      var filters, location, mascot, names, position;
+    init: function(mascot) {
+      var el, filters, location, names, position;
+      if (mascot == null) {
+        mascot = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)];
+      }
+      Conf['mascot'] = mascot;
+      if (el = $('#mascot', d.body)) {
+        $.rm(el);
+      }
+      if (!Conf['Mascots']) {
+        return;
+      }
       if (Conf['Mascot Position'] === 'bottom') {
         position = 0;
       } else {
@@ -9437,7 +9451,7 @@
         }
       } else {
         names = [];
-        if (!(Conf["mascot"] = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)])) {
+        if (!Conf["mascot"]) {
           return;
         }
         if (!(mascot = userMascots[Conf["mascot"]])) {
@@ -9985,7 +9999,6 @@
       return _results;
     },
     addStyle: function(theme) {
-      var el;
       if (theme == null) {
         theme = userThemes[Conf['theme']];
       }
@@ -10001,9 +10014,7 @@
           return $.on(d, 'DOMNodeInserted', Style.addStyle);
         }
       } else {
-        if (el = $('#mascot', d.body)) {
-          $.rm(el);
-        }
+        MascotTools.init(Conf["mascot"]);
         Style.appchan.textContent = Style.css(theme);
         return Style.icons.textContent = Style.iconPositions();
       }

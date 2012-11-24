@@ -668,9 +668,12 @@ Options =
             $.on div, 'click', ->
               if Conf[g.MASCOTSTRING].remove @id
                 $.rmClass @.parentElement, 'enabled'
+                if Conf['mascot'] = @id
+                  MascotTools.init()
               else
                 $.addClass @.parentElement, 'enabled'
                 Conf[g.MASCOTSTRING].push @id
+                MascotTools.init @id
               $.set "Enabled Mascots", Conf["Enabled Mascots"]
 
             if MascotTools.categories.contains mascot.category

@@ -1,5 +1,11 @@
 MascotTools =
-  init: ->
+  init: (mascot = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]) ->
+  
+    Conf['mascot'] = mascot
+
+    if el = $('#mascot', d.body) then $.rm el
+    
+    return unless Conf['Mascots']
 
     if Conf['Mascot Position'] == 'bottom'
       position = 0
@@ -14,7 +20,7 @@ MascotTools =
     else
       names = []
 
-      unless Conf["mascot"] = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]
+      unless Conf["mascot"]
         return
 
       unless mascot = userMascots[Conf["mascot"]]
