@@ -32,6 +32,11 @@ MascotTools =
       location = 'right'
     else
       location = 'left'
+    
+    filters = []
+    
+    if Conf["Grayscale Mascots"]
+      filters.push '<feColorMatrix id="color" type="saturate" values="0" />'
 
     return """
 #mascot img {
@@ -80,6 +85,7 @@ MascotTools =
     else
       "auto"
   };
+  #{if filters.length > 0 then "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" else ""}
   pointer-events: none;
 }
 """

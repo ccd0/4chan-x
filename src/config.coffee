@@ -698,6 +698,10 @@ Config =
         false
         'Enable or disable mascots based on the SFW status of the board you are viewing.'
       ]
+      'Grayscale Mascots': [
+        false
+        'Force mascots to be monochrome.'
+      ]
 
     Navigation:
       'Boards Navigation': [

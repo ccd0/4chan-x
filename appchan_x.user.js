@@ -296,7 +296,8 @@
         'Mascot Location': ['sidebar', 'Change where your mascot is located.', ['sidebar', 'opposite']],
         'Mascot Position': ['bottom', 'Change where your mascot is placed in relation to the post form if the mascot isn\'t manually placed.', ['above post form', 'bottom']],
         'Mascots Overlap Posts': [true, 'Mascots overlap threads and posts.'],
-        'NSFW/SFW Mascots': [false, 'Enable or disable mascots based on the SFW status of the board you are viewing.']
+        'NSFW/SFW Mascots': [false, 'Enable or disable mascots based on the SFW status of the board you are viewing.'],
+        'Grayscale Mascots': [false, 'Force mascots to be monochrome.']
       },
       Navigation: {
         'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']],
@@ -9424,7 +9425,7 @@
 
   MascotTools = {
     init: function() {
-      var location, mascot, names, position;
+      var filters, location, mascot, names, position;
       if (Conf['Mascot Position'] === 'bottom') {
         position = 0;
       } else {
@@ -9456,7 +9457,11 @@
       } else {
         location = 'left';
       }
-      return "#mascot img {\n  position: fixed;\n  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\n  bottom: " + (mascot.position === 'bottom' ? ((mascot.vOffset || 0) + 0) + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + position) + "px") + ";\n  " + location + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\n  top: " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";\n  height: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + "px" : "auto") + ";\n  width: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + "px" : "auto") + ";\n  pointer-events: none;\n}";
+      filters = [];
+      if (Conf["Grayscale Mascots"]) {
+        filters.push('<feColorMatrix id="color" type="saturate" values="0" />');
+      }
+      return "#mascot img {\n  position: fixed;\n  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\n  bottom: " + (mascot.position === 'bottom' ? ((mascot.vOffset || 0) + 0) + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + position) + "px") + ";\n  " + location + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\n  top: " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";\n  height: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + "px" : "auto") + ";\n  width: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + "px" : "auto") + ";\n  " + (filters.length > 0 ? "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" : "") + "\n  pointer-events: none;\n}";
     },
     categories: ["Anime", "Ponies", "Questionable", "Silhouette", "Western"],
     dialog: function(key) {
