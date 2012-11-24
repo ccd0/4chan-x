@@ -496,13 +496,13 @@ input[type="submit"] {
 #themecontent {
   overflow: auto;
   position: absolute;
+  top: 0;
   right: 0;
   bottom: 1.5em;
   left: 0;
 }
-#mascotcontent,
 .suboptions {
-  top: 0;
+  bottom: 0;
 }
 #themecontent {
   top: 1.5em;
@@ -2125,6 +2125,7 @@ body::before {
 #boardNavDesktop {
   left: 0;
   right: 0;
+  padding-#{Conf["Sidebar Location"]}: #{sidebar}px;
   border-left: 0;
   border-right: 0;
   border-radius: 0 !important;
