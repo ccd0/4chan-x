@@ -647,6 +647,8 @@ Options =
             $.on $('a.delete', li), 'click', ->
               container = @.parentElement.parentElement.parentElement.parentElement
               if confirm "Are you sure you want to delete \"#{@name}\"?"
+                if Conf['mascot'] is @id
+                  MascotTools.init()
                 for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
                   Conf[type].remove @name
                   $.set type, Conf[type]
@@ -743,8 +745,6 @@ Options =
               container = @.parentElement
               if confirm "Are you sure you want to undelete \"#{@id}\"?"
                 Conf["Deleted Mascots"].remove @id
-                if Conf['mascot'] is @id
-                  MascotTools.init()
                 $.set "Deleted Mascots", Conf["Deleted Mascots"]
                 $.rm container
 

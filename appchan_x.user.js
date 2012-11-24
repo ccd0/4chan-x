@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.16 - 2012-11-23
+ * appchan x - Version 1.0.16 - 2012-11-24
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -3405,6 +3405,9 @@
                 var container, type, _k, _len2, _ref1;
                 container = this.parentElement.parentElement.parentElement.parentElement;
                 if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
+                  if (Conf['mascot'] === this.id) {
+                    MascotTools.init();
+                  }
                   _ref1 = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
                   for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
                     type = _ref1[_k];
@@ -3507,9 +3510,6 @@
                 container = this.parentElement;
                 if (confirm("Are you sure you want to undelete \"" + this.id + "\"?")) {
                   Conf["Deleted Mascots"].remove(this.id);
-                  if (Conf['mascot'] === this.id) {
-                    MascotTools.init();
-                  }
                   $.set("Deleted Mascots", Conf["Deleted Mascots"]);
                   return $.rm(container);
                 }
