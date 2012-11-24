@@ -289,8 +289,7 @@ Options =
             Style.addStyle.call @
 
         else if arr[2]
-          liHTML = []
-          liHTML.push "<div class=\"option\"><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></div><div class =\"option\"><select name=\"#{optionname}\"></div>"
+          liHTML = ["<div class=\"option\"><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></div><div class =\"option\"><select name=\"#{optionname}\"></div>"]
           for selectoption, optionvalue in arr[2]
             liHTML.push "<option value=\"#{selectoption}\">#{selectoption}</option>"
           liHTML.push "</select>"

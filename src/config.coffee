@@ -643,11 +643,13 @@ Config =
       ]
       'Font': [
         'Helvetica'
-        'The font used by all elements of 4chan.', 'text'
+        'The font used by all elements of 4chan.'
+        'text'
       ]
       'Font Size': [
         '12'
-        'The font size of posts and various UI. This changes most, but not all, font sizes.', 'text'
+        'The font size of posts and various UI. This changes most, but not all, font sizes.'
+        'text'
       ]
       'Icons': [
         'oneechan'
@@ -701,6 +703,11 @@ Config =
       'Grayscale Mascots': [
         false
         'Force mascots to be monochrome.'
+      ]
+      'Mascot Opacity': [
+        '1.00'
+        'Make Mascots transparent.'
+        'text'
       ]
 
     Navigation:

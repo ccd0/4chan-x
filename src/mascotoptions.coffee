@@ -85,6 +85,7 @@ MascotTools =
     else
       "auto"
   };
+  opacity: #{Conf['Mascot Opacity']};
   #{if filters.length > 0 then "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" else ""}
   pointer-events: none;
 }

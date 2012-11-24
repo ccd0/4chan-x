@@ -297,7 +297,8 @@
         'Mascot Position': ['bottom', 'Change where your mascot is placed in relation to the post form if the mascot isn\'t manually placed.', ['above post form', 'bottom']],
         'Mascots Overlap Posts': [true, 'Mascots overlap threads and posts.'],
         'NSFW/SFW Mascots': [false, 'Enable or disable mascots based on the SFW status of the board you are viewing.'],
-        'Grayscale Mascots': [false, 'Force mascots to be monochrome.']
+        'Grayscale Mascots': [false, 'Force mascots to be monochrome.'],
+        'Mascot Opacity': ['1.00', 'Make Mascots transparent.', 'text']
       },
       Navigation: {
         'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']],
@@ -3111,8 +3112,7 @@
               return Style.addStyle.call(this);
             });
           } else if (arr[2]) {
-            liHTML = [];
-            liHTML.push("<div class=\"option\"><span class=\"optionlabel\">" + optionname + "</span><div style=\"display: none\">" + description + "</div></div><div class =\"option\"><select name=\"" + optionname + "\"></div>");
+            liHTML = ["<div class=\"option\"><span class=\"optionlabel\">" + optionname + "</span><div style=\"display: none\">" + description + "</div></div><div class =\"option\"><select name=\"" + optionname + "\"></div>"];
             _ref3 = arr[2];
             for (optionvalue = _j = 0, _len1 = _ref3.length; _j < _len1; optionvalue = ++_j) {
               selectoption = _ref3[optionvalue];
@@ -9461,7 +9461,7 @@
       if (Conf["Grayscale Mascots"]) {
         filters.push('<feColorMatrix id="color" type="saturate" values="0" />');
       }
-      return "#mascot img {\n  position: fixed;\n  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\n  bottom: " + (mascot.position === 'bottom' ? ((mascot.vOffset || 0) + 0) + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + position) + "px") + ";\n  " + location + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\n  top: " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";\n  height: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + "px" : "auto") + ";\n  width: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + "px" : "auto") + ";\n  " + (filters.length > 0 ? "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" : "") + "\n  pointer-events: none;\n}";
+      return "#mascot img {\n  position: fixed;\n  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\n  bottom: " + (mascot.position === 'bottom' ? ((mascot.vOffset || 0) + 0) + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + position) + "px") + ";\n  " + location + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\n  top: " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";\n  height: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + "px" : "auto") + ";\n  width: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + "px" : "auto") + ";\n  opacity: " + Conf['Mascot Opacity'] + ";\n  " + (filters.length > 0 ? "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" : "") + "\n  pointer-events: none;\n}";
     },
     categories: ["Anime", "Ponies", "Questionable", "Silhouette", "Western"],
     dialog: function(key) {
