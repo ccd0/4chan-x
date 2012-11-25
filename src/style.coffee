@@ -472,7 +472,7 @@ input[type="submit"] {
 #content {
   overflow: auto;
   position: absolute;
-  top:    2.5em;
+  top:    1.7em;
   right:  5px;
   bottom: 5px;
   left:   5px;

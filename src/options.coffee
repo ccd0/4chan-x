@@ -45,7 +45,6 @@ Options =
     | <label for=rice_tab>Rice</label>
   </div>
 </div>
-<hr>
 <div id=content>
   <input type=radio name=tab hidden id=main_tab>
   <div></div>
