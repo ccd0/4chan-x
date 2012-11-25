@@ -599,20 +599,10 @@ div.opContainer {
   display: block;
 }
 .opContainer.filter_highlight {
-  box-shadow: inset 5px 0 rgba(255,0,0,.5);
-}
-.opContainer.filter_highlight.qphl {
-  box-shadow:
-    inset 5px 0 rgba(255,0,0,.5),
-    0 0 0 2px rgba(216,94,49,.7);
+  box-shadow: inset 5px 0 #{theme["Backlinked Reply Outline"]};
 }
 .filter_highlight > .reply {
-  box-shadow: -5px 0 rgba(255,0,0,0.5);
-}
-.filter_highlight > .reply.qphl {
-  box-shadow:
-    -5px 0 rgba(255,0,0,.5),
-    0 0 0 2px rgba(216,94,49,.7)
+  box-shadow: -5px 0 #{theme["Backlinked Reply Outline"]};
 }
 .quotelink.forwardlink,
 .backlink.forwardlink {
