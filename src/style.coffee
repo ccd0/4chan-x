@@ -115,7 +115,7 @@ label,
 .hide_thread_button span > span,
 .hide_reply_button span > span {
   width: .4em;
-  height: .1em;
+  height: 1px;
   background-color: #{theme["Links"]};
 }
 #mascot_hide {
@@ -1355,7 +1355,7 @@ html {
      0px  1px 0 #{theme["Background Color"]},
      0px -1px 0 #{theme["Background Color"]},
      1px  0px 0 #{theme["Background Color"]},
-    -1px  0px 0 #{theme["Background Color"]}#{if Conf["Sidebar Glow"] then "\n, 0 0 5px #{theme['Text']};" else ";"}
+    -1px  0px 0 #{theme["Background Color"]}#{if Conf["Sidebar Glow"] then "\n, 1px 0 5px #{theme['Text']};" else ";"}
 }
 #browse,
 #options .dialog,

@@ -18,7 +18,7 @@ Linkify =
       )
       [^\s'"<>()]+ # Non-URL characters. We cut of the string here.
       |
-      \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails. Basically *@*.???
+      \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails.
     )
   ///i
 
@@ -36,16 +36,22 @@ Linkify =
     # Built based on:
     # - http://en.wikipedia.org/wiki/URI_scheme
     # - http://www.regular-expressions.info/regexbuddy/email.html
-
+    
     comment = post.blockquote or $ 'blockquote', post.el
-    subject = $ '.subject', post.el
+
+    # Remove blank spoilers.
+    for spoiler in $$ '.spoiler', comment
+      if (p = spoiler.previousSibling) and (n = spoiler.nextSibling) and (spoiler.textContent.length is 0) and (n.nodeType and p.nodeType is Node.TEXT_NODE)
+        p.textContent += n.textContent
+        $.rm n
+        $.rm spoiler
 
     # We collect all the text children before editting them so that further children don't
     # get offset and therefore don't get parsed.
     nodes = Linkify.collector comment
 
     # We only try to touch the subject if it exists.
-    if subject?
+    if subject = $ '.subject', post.el
       nodes.push subject.childNodes
 
     # After we generate our list of nodes to parse we can edit it without worrying about nodes getting orphaned.
@@ -61,9 +67,7 @@ Linkify =
       else unless child.tagName?
         continue
       else unless child.tagName.toLowerCase() is "br"
-        results = @collector(child)
-        for result in results
-          nodes.push result
+        nodes.push.apply @collector(child)
 
     return nodes
 
@@ -106,7 +110,7 @@ Linkify =
       $.after node, a
 
       # track the insertion point,
-      p = m.index+lLen
+      p = m.index + lLen
 
       # And store leftover content in a text node so we can append it and continue to parse it.
       rest = $.tn(txt.substring(p, txt.length))

@@ -14,7 +14,6 @@ Style =
     Style.addStyle()
 
     $.ready ->
-      $.off d, 'DOMNodeInserted', Style.remStyle
       Style.rice(d.body)
       Style.banner()
       Style.trimGlobalMessage()

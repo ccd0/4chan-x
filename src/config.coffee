@@ -71,7 +71,7 @@ Config =
         'Filter replies of filtered posts, recursively'
       ]
       'Reply Hiding': [
-        true
+        false
         'Hide single replies'
       ]
       'Thread Hiding': [

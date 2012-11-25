@@ -93,7 +93,7 @@ Themes =
     'Board Title'                 : 'rgb(170,170,170)'
     'Timestamps'                  : 'rgb(170,170,170)'
     'Warnings'                    : 'rgb(102,136,170)'
-    'Shadow Color'                : 'rgba(44,44,44,0.4)'
+    'Shadow Color'                : 'rgba(0,0,0,.1)'
     'Dark Theme'                  : true
     'Custom CSS'                  : ''
 
@@ -145,7 +145,7 @@ Themes =
     'Board Title'                 : 'rgb(133,76,158)'
     'Timestamps'                  : 'rgb(0,0,0)'
     'Warnings'                    : 'rgb(133,76,158)'
-    'Shadow Color'                : 'rgba(128,128,128,0.5)'
+    'Shadow Color'                : 'rgba(0,0,0,.05)'
     'Dark Theme'                  : false
     'Custom CSS'                  : """
 .board {
@@ -215,7 +215,7 @@ border-radius: 3px;
     'Timestamps'                  : 'rgb(218,105,224)'
     'Inputs'                      : 'rgb(218,105,224)'
     'Warnings'                    : 'rgb(103,204,232)'
-    'Shadow Color'                : 'rgba(29,31,33,1)'
+    'Shadow Color'                : 'rgba(0,0,0,.1)'
     'Dark Theme'                  : true
     'Custom CSS'                  : """
 div.replyContainer div.reply {
@@ -281,7 +281,7 @@ div.replyContainer div.reply {
     'Board Title'                 : 'rgb(144,144,144)'
     'Timestamps'                  : 'rgb(144,144,144)'
     'Warnings'                    : 'rgb(87,87,123)'
-    'Shadow Color'                : 'rgba(16,16,16,0.4)'
+    'Shadow Color'                : 'rgba(0,0,0,.1)'
     'Dark Theme'                  : true
     'Custom CSS'                  : ''
 
@@ -330,7 +330,7 @@ div.replyContainer div.reply {
     'Timestamps'                  : 'rgb(221,221,221)'
     'Inputs'                      : 'rgb(187,187,187)'
     'Warnings'                    : 'rgb(87,87,123)'
-    'Shadow Color'                : 'rgba(16,16,16,0.4)'
+    'Shadow Color'                : 'rgba(0,0,0,.1)'
     'Dark Theme'                  : true
     'Custom CSS'                  : """
 .nameBlock > .useremail > postertrip {
@@ -439,7 +439,7 @@ div.post:hover .name {
     'Timestamps'                  : 'rgb(253,254,255)'
     'Inputs'                      : 'rgb(253,254,255)'
     'Warnings'                    : 'rgb(0,255,255)'
-    'Shadow Color'                : 'rgba(44,44,44,0.4)'
+    'Shadow Color'                : 'rgba(0,0,0,.1)'
     'Dark Theme'                  : true
     'Custom CSS'                  : """
 #qp div.post{
@@ -499,7 +499,7 @@ div.post:hover .name {
     'Timestamps'                  : 'rgb(153,153,153)'
     'Inputs'                      : 'rgb(153,153,153)'
     'Warnings'                    : 'rgb(187,187,187)'
-    'Shadow Color'                : 'rgba(20,20,20,0.9)'
+    'Shadow Color'                : 'rgba(0,0,0,.1)'
     'Dark Theme'                  : true
     'Custom CSS'                  : """
 #options{
@@ -668,7 +668,7 @@ div.reply.highlight div.reply {
     'Timestamps'                  : 'rgb(51,51,51)'
     'Inputs'                      : 'rgb(0,0,0)'
     'Warnings'                    : 'rgb(51,51,51)'
-    'Shadow Color'                : 'rgba(128,128,128,0.5)'
+    'Shadow Color'                : 'rgba(0,0,0,.05)'
     'Dark Theme'                  : false
     'Custom CSS'                  : """
 .fileText{
@@ -732,7 +732,7 @@ div.reply.highlight div.reply {
     'Board Title'                 : 'rgb(119,51,51)'
     'Timestamps'                  : 'rgb(0,0,0)'
     'Warnings'                    : 'rgb(87,87,123)'
-    'Shadow Color'                : 'rgba(60,60,60,0.6)'
+    'Shadow Color'                : 'rgba(0,0,0,.07)'
     'Dark Theme'                  : false
     'Custom CSS'                  : """
 .replyContainer div.reply.post {
@@ -874,7 +874,7 @@ div.reply.highlight div.reply {
     'Timestamps'                  : 'rgb(147,161,161)'
     'Inputs'                      : 'rgb(147,161,161)'
     'Warnings'                    : 'rgb(108,113,196)'
-    'Shadow Color'                : 'rgba(0,0,0,0.4)'
+    'Shadow Color'                : 'rgba(0,0,0,.1)'
     'Dark Theme'                  : true
     'Custom CSS'                  : """
 #qp div.post{
@@ -928,7 +928,7 @@ div.reply.highlight div.reply {
     'Timestamps'                  : 'rgb(186,0,0)'
     'Inputs'                      : 'rgb(0,0,0)'
     'Warnings'                    : 'rgb(128,0,0)'
-    'Shadow Color'                : 'rgba(119,46,40,1)'
+    'Shadow Color'                : 'rgba(0,0,0,.05)'
     'Dark Theme'                  : false
     'Custom CSS'                  : """
 #qp div.post{
@@ -985,7 +985,7 @@ div.reply.highlight div.reply {
     'Timestamps'                  : 'rgb(0,0,0)'
     'Inputs'                      : 'rgb(0,0,0)'
     'Warnings'                    : 'rgb(87,87,123)'
-    'Shadow Color'                : 'rgba(128,128,128,0.5)'
+    'Shadow Color'                : 'rgba(0,0,0,.05)'
     'Dark Theme'                  : false
     'Custom CSS'                  : """
 #qp div.post{
@@ -1041,7 +1041,7 @@ div.reply.highlight div.reply {
     'Timestamps'                  : 'rgb(220,220,204)'
     'Inputs'                      : 'rgb(220,220,204)'
     'Warnings'                    : 'rgb(239,220,188)'
-    'Shadow Color'                : 'rgba(63,63,63,0.4)'
+    'Shadow Color'                : 'rgba(0,0,0,.1)'
     'Dark Theme'                  : true
     'Custom CSS'                  : ''
 
@@ -1174,7 +1174,7 @@ textarea,
     "Timestamps"                  : "rgb(0,0,0)"
     "Inputs"                      : "rgb(0,0,0)"
     "Warnings"                    : "rgb(153,0,0)"
-    "Shadow Color"                : "rgba(254,237,255,.9)"
+    "Shadow Color"                : "rgba(0,0,0,.05)"
     "Dark Theme"                  : false
     "Custom CSS"                  : """
 .rice {
@@ -1272,7 +1272,7 @@ textarea,
     "Timestamps"                  : "rgb(221,221,221)"
     "Inputs"                      : "rgb(248,248,248)"
     "Warnings"                    : "rgb(79,79,79)"
-    "Shadow Color"                : "rgba(29,33,36,.9)"
+    "Shadow Color"                : "rgba(0,0,0,.1)"
     "Dark Theme"                  : true
     "Custom CSS"                  : """
 .board {
@@ -1351,7 +1351,7 @@ textarea,
     "Timestamps"                  : "rgb(197,200,198)"
     "Inputs"                      : "rgb(197,200,198)"
     "Warnings"                    : "rgb(204,102,102)"
-    "Shadow Color"                : "rgba(56,58,62,.9)"
+    "Shadow Color"                : "rgba(0,0,0,.1)"
     "Dark Theme"                  : true
     "Custom CSS"                  : """
 .board {
@@ -1430,7 +1430,7 @@ textarea,
     "Timestamps"                  : "rgb(101,123,131)"
     "Inputs"                      : "rgb(101,123,131)"
     "Warnings"                    : "rgb(153,0,0)"
-    "Shadow Color"                : "rgba(255,255,243,.9)"
+    "Shadow Color"                : "rgba(0,0,0,.05)"
     "Dark Theme"                  : false
     "Custom CSS"                  : """
 .rice {
@@ -1517,7 +1517,7 @@ textarea,
     "Timestamps"                  : "rgb(51,51,51)"
     "Inputs"                      : "rgb(57,55,53)"
     "Warnings"                    : "rgb(153,0,0)"
-    "Shadow Color"                : "rgba(255,255,249,.9)"
+    "Shadow Color"                : "rgba(0,0,0,.05)"
     "Dark Theme"                  : false
     "Custom CSS"                  : """
 .board {
@@ -1610,7 +1610,7 @@ div.reply a.quotelink{
     "Timestamps"                  : "rgb(248,248,242)"
     "Inputs"                      : "rgb(248,248,242)"
     "Warnings"                    : "rgb(79,79,79)"
-    "Shadow Color"                : "rgba(32,33,28,0.7)"
+    "Shadow Color"                : "rgba(0,0,0,.12)"
     "Dark Theme"                  : true
     "Custom CSS"                  : """
 .rice {
@@ -1690,7 +1690,7 @@ textarea,
     "Timestamps"                  : "rgb(221,221,221)"
     "Inputs"                      : "rgb(221,221,221)"
     "Warnings"                    : "rgb(201,144,144)"
-    "Shadow Color"                : "rgba(32,32,32,0.5)"
+    "Shadow Color"                : "rgba(0,0,0,.1)"
     "Dark Theme"                  : true
     "Custom CSS"                  : """
 .board {
@@ -1772,7 +1772,7 @@ textarea,
     "Timestamps"                  : "rgb(221,221,221)"
     "Inputs"                      : "rgb(248,248,248)"
     "Warnings"                    : "rgb(79,79,79)"
-    "Shadow Color"                : "rgba(28,32,49,.9)"
+    "Shadow Color"                : "rgba(0,0,0,.1)"
     "Dark Theme"                  : true
     "Custom CSS"                  : """
 .rice {
