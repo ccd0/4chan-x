@@ -8933,7 +8933,6 @@
     save: function(theme) {
       var name;
       name = theme["Theme"];
-      delete theme["Theme"];
       if (userThemes[name] && !userThemes[name]["Deleted"]) {
         if (confirm("A theme with this name already exists. Would you like to over-write?")) {
           delete userThemes[name];
@@ -8943,6 +8942,7 @@
       }
       theme["Customized"] = true;
       userThemes[name] = theme;
+      delete userThemes[name];
       $.set('userThemes', userThemes);
       $.set("theme", name);
       return alert("Theme \"" + name + "\" saved.");

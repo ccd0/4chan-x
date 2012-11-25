@@ -431,7 +431,6 @@ textarea,
 
   save: (theme) ->
     name = theme["Theme"]
-    delete theme["Theme"]
 
     if userThemes[name] and not userThemes[name]["Deleted"]
       if confirm "A theme with this name already exists. Would you like to over-write?"
@@ -441,6 +440,7 @@ textarea,
 
     theme["Customized"] = true
     userThemes[name] = theme
+    delete userThemes[name]
     $.set 'userThemes', userThemes
     $.set "theme", name
     alert "Theme \"#{name}\" saved."
