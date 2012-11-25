@@ -335,9 +335,8 @@ Main =
         className: 'reply'
         innerHTML:
           "<a href=https://raw.github.com/zixaphir/appchan-x/#{version}/appchan_x.user.js>An updated version of Appchan X (v#{version}) is available.</a> <a href=javascript:; id=dismiss_xupdate>dismiss</a>"
-      $.on $('#dismiss_xupdate', xupdate), 'click', ->
-        $.rm xupdate
-      $.prepend $.id('delform'), xupdate;
+      $.on $('#dismiss_xupdate', xupdate), 'click', -> $.rm xupdate
+      $.prepend $.id('delform'), xupdate
 
   preParse: (node) ->
     parentClass = node.parentNode.className

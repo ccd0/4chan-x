@@ -1188,13 +1188,6 @@ Updater =
         nodes.push Build.postFromObject post, g.BOARD
         Updater.save.push post.no if Updater.postID
         
-      if IDColor.clicked
-        for el in nodes
-          uid = $ '.hand', el
-          if uid.textContent is IDColor.highlighted[0].firstElementChild.textContent
-            $.addClass uid.parentNode.parentNode.parentNode.parentNode, 'highlight'
-            IDColor.highlighted.push uid.parentNode
-
       count = nodes.length
       if Conf['Verbose']
         Updater.set 'count', "+#{count}"
@@ -2179,6 +2172,10 @@ IDColor =
     uid = uid[1].firstElementChild
     uid.style.cssText = IDColor.apply uid.textContent
     $.on uid, 'click', -> IDColor.idClick uid.textContent
+    if IDColor.clicked and uid.textContent is IDColor.uid or uid.textContent is $.get "highlightedID/#{g.BOARD}/"
+      uid = uid.parentNode
+      $.addClass uid.parentNode.parentNode.parentNode, 'highlight'
+      IDColor.highlighted.push uid
 
   compute: (str) ->
     rgb = []
@@ -2212,6 +2209,7 @@ IDColor =
   clicked:     false
 
   idClick: (uid) ->
+    $.delete "highlightedID/#{g.BOARD}/"
     for el in @highlighted
       $.rmClass el.parentNode.parentNode.parentNode, 'highlight'
     @highlighted = []
@@ -2222,6 +2220,7 @@ IDColor =
       continue if el.parentNode.parentNode.parentNode.parentNode.parentNode.className is 'inline'
       $.addClass el.parentNode.parentNode.parentNode, 'highlight'
       @highlighted.push el
+    $.set "highlightedID/#{g.BOARD}/", uid
     @uid = uid
     @clicked = true
 

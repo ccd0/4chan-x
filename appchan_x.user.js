@@ -5311,7 +5311,7 @@
         return delete Updater.postID;
       },
       update: function(posts) {
-        var count, el, id, lastPost, nodes, post, scroll, spoilerRange, uid, _i, _j, _len, _len1, _ref;
+        var count, id, lastPost, nodes, post, scroll, spoilerRange, _i, _len, _ref;
         if (spoilerRange = posts[0].custom_spoiler) {
           Build.spoilerRange[g.BOARD] = spoilerRange;
         }
@@ -5327,16 +5327,6 @@
           nodes.push(Build.postFromObject(post, g.BOARD));
           if (Updater.postID) {
             Updater.save.push(post.no);
-          }
-        }
-        if (IDColor.clicked) {
-          for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
-            el = nodes[_j];
-            uid = $('.hand', el);
-            if (uid.textContent === IDColor.highlighted[0].firstElementChild.textContent) {
-              $.addClass(uid.parentNode.parentNode.parentNode.parentNode, 'highlight');
-              IDColor.highlighted.push(uid.parentNode);
-            }
           }
         }
         count = nodes.length;
@@ -6531,9 +6521,14 @@
       }
       uid = uid[1].firstElementChild;
       uid.style.cssText = IDColor.apply(uid.textContent);
-      return $.on(uid, 'click', function() {
+      $.on(uid, 'click', function() {
         return IDColor.idClick(uid.textContent);
       });
+      if (IDColor.clicked && uid.textContent === IDColor.uid || uid.textContent === $.get("highlightedID/" + g.BOARD + "/")) {
+        uid = uid.parentNode;
+        $.addClass(uid.parentNode.parentNode.parentNode, 'highlight');
+        return IDColor.highlighted.push(uid);
+      }
     },
     compute: function(str) {
       var hash, rgb;
@@ -6567,6 +6562,7 @@
     clicked: false,
     idClick: function(uid) {
       var el, _i, _j, _len, _len1, _ref, _ref1;
+      $["delete"]("highlightedID/" + g.BOARD + "/");
       _ref = this.highlighted;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         el = _ref[_i];
@@ -6586,6 +6582,7 @@
         $.addClass(el.parentNode.parentNode.parentNode, 'highlight');
         this.highlighted.push(el);
       }
+      $.set("highlightedID/" + g.BOARD + "/", uid);
       this.uid = uid;
       return this.clicked = true;
     }
