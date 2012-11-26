@@ -6525,7 +6525,7 @@
         return IDColor.idClick(str);
       });
       if (str === $.get("highlightedID/" + g.BOARD + "/")) {
-        $.addClass(uid.parentNode.parentNode.parentNode.parentNode, 'highlight');
+        $.addClass(/\binline\b/.test(el.parentNode.parentNode.parentNode.parentNode.parentNode.className));
         IDColor.highlighted.push(uid.parentNode);
         return IDColor.clicked = true;
       }

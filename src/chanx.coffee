@@ -2173,7 +2173,7 @@ IDColor =
     uid.style.cssText = IDColor.apply str = uid.textContent
     $.on uid, 'click', -> IDColor.idClick str
     if str is $.get "highlightedID/#{g.BOARD}/"
-      $.addClass uid.parentNode.parentNode.parentNode.parentNode, 'highlight'
+      $.addClass /\binline\b/.test el.parentNode.parentNode.parentNode.parentNode.parentNode.className
       IDColor.highlighted.push uid.parentNode
       IDColor.clicked = true
 
