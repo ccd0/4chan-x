@@ -3123,7 +3123,7 @@
             }
             liHTML += "</select>";
             li = $.el('li', {
-              innerHTML: liHTML.join(''),
+              innerHTML: liHTML,
               className: "styleoption"
             });
             styleSetting = $("select[name='" + optionname + "']", li);

@@ -293,7 +293,7 @@ Options =
             liHTML += "<option value=\"#{selectoption}\">#{selectoption}</option>"
           liHTML += "</select>"
           li = $.el 'li',
-            innerHTML: liHTML.join ''
+            innerHTML: liHTML
             className: "styleoption"
           styleSetting = $ "select[name='#{optionname}']", li
           styleSetting.value = $.get optionname, Conf[optionname]
