@@ -195,6 +195,9 @@ Main =
 
     if Conf['Indicate Cross-thread Quotes']
       QuoteCT.init()
+  
+    if Conf['Color user IDs']
+      IDColor.init()
 
     $.ready Main.ready
 
@@ -228,7 +231,7 @@ Main =
     # Major features.
     QR.init()
 
-    if Conf['Image Expansion'] and g.BOARD isnt 'f'
+    if Conf['Image Expansion']
       ImageExpand.init()
 
     if Conf['Thread Watcher']
@@ -238,7 +241,7 @@ Main =
       Keybinds.init()
 
     if g.REPLY
-      if Conf['Prefetch'] and g.BOARD isnt 'f'
+      if Conf['Prefetch']
         Prefetch.init()
 
       if Conf['Thread Updater']

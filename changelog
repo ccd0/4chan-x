@@ -1,12 +1,14 @@
 master
 - noface
-  Added keybinds for math and eqn tags on /sci/.
-  Added full image redirection to /mu/.
-  Removed ArchiveLink redirection from /soc/ (URLs will still be redirected).
   Improved checking for own post directly after posting. This should sort out a number of small hiccups.
   Fixed crossquotes not showing the correct archiver.
   Added support for posting with QR and tags on /f/.
   Added redirection for /c/ and /po/.
+  Added keybinds for math and eqn tags on /sci/.
+  Added full image redirection to /mu/.
+  Removed ArchiveLink redirection from /soc/ (URLs will still be redirected).
+  Quick tags won't be inserted where not possible anymore (like spoilers on /g/).
+  Added support for coloured IDs and post highlighting from the native 4chan extension.
 
 1.0.16
 - Zixaphir

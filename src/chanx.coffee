@@ -793,16 +793,16 @@ Keybinds =
           QR.autohide.click()
         else QR.open()
       when Conf.spoiler
-        return unless /Spoiler/.test(($.id 'postFile').nextElementSibling.textContent) and target.nodeName is 'TEXTAREA'
+        return unless ($ '[name=spoiler]') and target.nodeName is 'TEXTAREA'
         Keybinds.tags 'spoiler', target
       when Conf.math
-        return unless g.BOARD is 'sci' and target.nodeName is 'TEXTAREA'
+        return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and target.nodeName is 'TEXTAREA'
         Keybinds.tags 'math', target
       when Conf.eqn
-        return unless g.BOARD is 'sci' and target.nodeName is 'TEXTAREA'
+        return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and target.nodeName is 'TEXTAREA'
         Keybinds.tags 'eqn', target
       when Conf.code
-        return unless g.BOARD is 'g' and target.nodeName is 'TEXTAREA'
+        return unless g.BOARD is Main.hasCodeTags and target.nodeName is 'TEXTAREA'
         Keybinds.tags 'code', target
       when Conf.sageru
         $("[name=email]", QR.el).value = "sage"
@@ -1186,7 +1186,14 @@ Updater =
       for post in posts.reverse()
         break if post.no <= id # Make sure to not insert older posts.
         nodes.push Build.postFromObject post, g.BOARD
-        Updater.save.push post.no
+        Updater.save.push post.no if Updater.postID
+        
+      if IDColor.clicked
+        for el in nodes
+          uid = $ '.hand', el
+          if uid.textContent is IDColor.highlighted[0].firstElementChild.textContent
+            $.addClass uid.parentNode.parentNode.parentNode.parentNode, 'highlight'
+            IDColor.highlighted.push uid.parentNode
 
       count = nodes.length
       if Conf['Verbose']
@@ -2105,6 +2112,8 @@ QuotePreview =
         FileInfo.node       post
       if Conf['Resurrect Quotes']
         Quotify.node        post
+      if Conf['Color user IDs'] and board in ['b', 'q', 'soc']
+        IDColor.node        post
 
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
@@ -2154,6 +2163,67 @@ QuoteCT =
         # \u00A0 is nbsp
         $.add quote, $.tn '\u00A0(Cross-thread)'
     return
+
+IDColor =
+
+  init: ->
+    return unless g.BOARD in ['b', 'q', 'soc']
+    @ids = {}
+    css = 'padding: 0 5px; border-radius: 6px; font-size: 0.8em;'
+    $.addStyle ".posteruid .hand {#{css}}"
+    Main.callbacks.push @node
+
+  node: (post) ->
+    uid = $$ '.posteruid', post.el
+    return unless uid[1]
+    uid = uid[1].firstElementChild
+    uid.style.cssText = IDColor.apply uid.textContent
+    $.on uid, 'click', -> IDColor.idClick uid.textContent
+
+  compute: (str) ->
+    rgb = []
+    hash = @hash str
+
+    rgb[0] = (hash >> 24) & 0xFF
+    rgb[1] = (hash >> 16) & 0xFF
+    rgb[2] = (hash >> 8)  & 0xFF
+    rgb[3] = ((rgb[0] * 0.299) + (rgb[1] * 0.587) + (rgb[2] * 0.114)) > 125
+
+    @ids[str] = rgb
+    rgb
+
+  apply: (uid) ->
+    rgb = @ids[uid] or @compute uid
+    "background-color: rgb(#{rgb[0]},#{rgb[1]},#{rgb[2]}); color: " + if rgb[3] then "black;" else "white;"
+
+  hash: (str) ->
+    msg = 0
+    i = 0
+    j = str.length
+    while i < j
+      msg = ((msg << 5) - msg) + str.charCodeAt i
+      ++i
+    msg
+
+  highlighted: []
+
+  uid :        null
+
+  clicked:     false
+
+  idClick: (uid) ->
+    for el in @highlighted
+      $.rmClass el.parentNode.parentNode.parentNode, 'highlight'
+    @highlighted = []
+    if @uid is uid and @clicked
+      @clicked = false
+      return
+    for el in d.getElementsByClassName 'id_' + uid
+      continue if el.parentNode.parentNode.parentNode.parentNode.parentNode.className is 'inline'
+      $.addClass el.parentNode.parentNode.parentNode, 'highlight'
+      @highlighted.push el
+    @uid = uid
+    @clicked = true
 
 Quotify =
   init: ->
