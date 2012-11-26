@@ -618,23 +618,12 @@ Options =
             mascot = userMascots[name]
             li = $.el 'li',
               className: 'mascot'
-              innerHTML: [
-                "<div id='"
-                name
-                "' class='"
-                mascot.category
-                "'><img class=mascotimg src='"
-                ( if Array.isArray(mascot.image) then ( if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image )
-                "'></div><div class='mascotmetadata'><p><span class='mascotname'>"
-                name.replace /_/g, " "
-                "</span></p><p><span class='mascotoptions'><a class=edit name='"
-                name
-                "' href='javascript:;'>Edit</a> / <a class=delete name='"
-                name
-                "' href='javascript:;'>Delete</a> / <a class=export name='"
-                name
-                "' href='javascript:;'>Export</a></span></p></div>"
-              ].join("")
+              innerHTML: "
+<div id='#{name}' class='#{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div>
+<div class='mascotmetadata'>
+<p><span class='mascotname'>#{name.replace /_/g, " "}</span></p>
+<p><span class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a> / <a class=export name='#{name}' href='javascript:;'>Export</a></span></p>
+</div>"
             div = $("##{name}", li)
             if Conf[g.MASCOTSTRING].contains name
               $.addClass li, 'enabled'
@@ -737,7 +726,7 @@ Options =
 <div class='mascotmetadata'>
   <p><span class='mascotname'>#{name.replace /_/g, " "}</span></p>
 </div>
-  "
+"
             div = $('div', li)
 
             $.on div, 'click', ->
