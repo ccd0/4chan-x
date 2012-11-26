@@ -2163,19 +2163,19 @@ IDColor =
     return unless g.BOARD in ['b', 'q', 'soc']
     @ids = {}
     css = 'padding: 0 5px; border-radius: 6px; font-size: 0.8em;'
-    $.addStyle ".posteruid .hand {#{css}}"
+    $.addStyle ".posteruid .hand {#{css}}", 'appchan'
     Main.callbacks.push @node
 
   node: (post) ->
     uid = $$ '.posteruid', post.el
     return unless uid[1]
     uid = uid[1].firstElementChild
-    uid.style.cssText = IDColor.apply uid.textContent
-    $.on uid, 'click', -> IDColor.idClick uid.textContent
-    if IDColor.clicked and uid.textContent is IDColor.uid or uid.textContent is $.get "highlightedID/#{g.BOARD}/"
-      uid = uid.parentNode
-      $.addClass uid.parentNode.parentNode.parentNode, 'highlight'
-      IDColor.highlighted.push uid
+    uid.style.cssText = IDColor.apply str = uid.textContent
+    $.on uid, 'click', -> IDColor.idClick str
+    if str is $.get "highlightedID/#{g.BOARD}/"
+      $.addClass uid.parentNode.parentNode.parentNode.parentNode, 'highlight'
+      IDColor.highlighted.push uid.parentNode
+      IDColor.clicked = true
 
   compute: (str) ->
     rgb = []
@@ -2204,24 +2204,21 @@ IDColor =
 
   highlighted: []
 
-  uid :        null
-
   clicked:     false
 
   idClick: (uid) ->
-    $.delete "highlightedID/#{g.BOARD}/"
     for el in @highlighted
       $.rmClass el.parentNode.parentNode.parentNode, 'highlight'
     @highlighted = []
-    if @uid is uid and @clicked
-      @clicked = false
-      return
+    value = "highlightedID/#{g.BOARD}/"
+    if @clicked and uid is $.get value
+      $.delete value
+      return @clicked = false
     for el in d.getElementsByClassName 'id_' + uid
       continue if el.parentNode.parentNode.parentNode.parentNode.parentNode.className is 'inline'
       $.addClass el.parentNode.parentNode.parentNode, 'highlight'
       @highlighted.push el
-    $.set "highlightedID/#{g.BOARD}/", uid
-    @uid = uid
+    $.set value, uid
     @clicked = true
 
 Quotify =

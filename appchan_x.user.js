@@ -6510,24 +6510,24 @@
       }
       this.ids = {};
       css = 'padding: 0 5px; border-radius: 6px; font-size: 0.8em;';
-      $.addStyle(".posteruid .hand {" + css + "}");
+      $.addStyle(".posteruid .hand {" + css + "}", 'appchan');
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var uid;
+      var str, uid;
       uid = $$('.posteruid', post.el);
       if (!uid[1]) {
         return;
       }
       uid = uid[1].firstElementChild;
-      uid.style.cssText = IDColor.apply(uid.textContent);
+      uid.style.cssText = IDColor.apply(str = uid.textContent);
       $.on(uid, 'click', function() {
-        return IDColor.idClick(uid.textContent);
+        return IDColor.idClick(str);
       });
-      if (IDColor.clicked && uid.textContent === IDColor.uid || uid.textContent === $.get("highlightedID/" + g.BOARD + "/")) {
-        uid = uid.parentNode;
-        $.addClass(uid.parentNode.parentNode.parentNode, 'highlight');
-        return IDColor.highlighted.push(uid);
+      if (str === $.get("highlightedID/" + g.BOARD + "/")) {
+        $.addClass(uid.parentNode.parentNode.parentNode.parentNode, 'highlight');
+        IDColor.highlighted.push(uid.parentNode);
+        return IDColor.clicked = true;
       }
     },
     compute: function(str) {
@@ -6558,20 +6558,19 @@
       return msg;
     },
     highlighted: [],
-    uid: null,
     clicked: false,
     idClick: function(uid) {
-      var el, _i, _j, _len, _len1, _ref, _ref1;
-      $["delete"]("highlightedID/" + g.BOARD + "/");
+      var el, value, _i, _j, _len, _len1, _ref, _ref1;
       _ref = this.highlighted;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         el = _ref[_i];
         $.rmClass(el.parentNode.parentNode.parentNode, 'highlight');
       }
       this.highlighted = [];
-      if (this.uid === uid && this.clicked) {
-        this.clicked = false;
-        return;
+      value = "highlightedID/" + g.BOARD + "/";
+      if (this.clicked && uid === $.get(value)) {
+        $["delete"](value);
+        return this.clicked = false;
       }
       _ref1 = d.getElementsByClassName('id_' + uid);
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
@@ -6582,8 +6581,7 @@
         $.addClass(el.parentNode.parentNode.parentNode, 'highlight');
         this.highlighted.push(el);
       }
-      $.set("highlightedID/" + g.BOARD + "/", uid);
-      this.uid = uid;
+      $.set(value, uid);
       return this.clicked = true;
     }
   };
