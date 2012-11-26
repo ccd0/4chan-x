@@ -1205,9 +1205,6 @@ body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
 #fs_data * {
   border-color: #{theme["Reply Border"]} !important;
 }
-#fs_status a {
-  color: #{theme["Text"]} !important;
-}
 .identityIcon,
 img[alt="Sticky"],
 img[alt="Closed"] {
@@ -1481,6 +1478,8 @@ span.postNum > .replylink {
 .dateTime {
   color: #{theme["Timestamps"]} !important;
 }
+#fs_status a,
+#showQR,
 #updater,
 .summary,
 body > form,
