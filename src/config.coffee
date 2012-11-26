@@ -191,6 +191,10 @@ Config =
         false
         'Automatically watch threads that you reply to'
       ]
+      'Color user IDs': [
+        false
+        'Assign unique colors to user IDs on boards that use them'
+      ]
 
     Posting:
       'Cooldown': [

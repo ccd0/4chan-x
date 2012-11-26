@@ -159,7 +159,8 @@
         'Thread Stats': [true, 'Display reply and image count'],
         'Thread Watcher': [true, 'Bookmark threads'],
         'Auto Watch': [true, 'Automatically watch threads that you start'],
-        'Auto Watch Reply': [false, 'Automatically watch threads that you reply to']
+        'Auto Watch Reply': [false, 'Automatically watch threads that you reply to'],
+        'Color user IDs': [false, 'Assign unique colors to user IDs on boards that use them']
       },
       Posting: {
         'Cooldown': [true, 'Prevent "flood detected" errors.'],
@@ -7465,6 +7466,9 @@
 
   Prefetch = {
     init: function() {
+      if (g.BOARD === 'f') {
+        return;
+      }
       return this.dialog();
     },
     dialog: function() {
@@ -7530,6 +7534,9 @@
 
   ImageExpand = {
     init: function() {
+      if (g.BOARD === 'f') {
+        return;
+      }
       Main.callbacks.push(this.node);
       return this.dialog();
     },

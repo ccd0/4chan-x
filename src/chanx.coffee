@@ -2920,6 +2920,7 @@ AutoGif =
 
 Prefetch =
   init: ->
+    return if g.BOARD is 'f'
     @dialog()
   dialog: ->
     controls = $.el 'label',
@@ -2964,6 +2965,7 @@ PngFix =
 
 ImageExpand =
   init: ->
+    return if g.BOARD is 'f'
     Main.callbacks.push @node
     @dialog()
 
