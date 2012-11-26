@@ -10103,7 +10103,7 @@
     },
     headCount: 0,
     remStyle: function() {
-      var head, node, nodes, _i, _j, _len, _len1, _ref, _ref1, _results;
+      var head, node, nodes, _i, _j, _len, _len1, _ref, _ref1;
       $.off(d, 'DOMNodeInserted', this.remStyle);
       if (Style.headCount < 10 && (head = d.head)) {
         nodes = [];
@@ -10117,12 +10117,13 @@
             }
           }
         }
-        _results = [];
         for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
           node = nodes[_j];
-          _results.push($.rm(node));
+          $.rm(node);
         }
-        return _results;
+        if (Style.headCount < 10) {
+          return $.on(d, 'DOMNodeInserted', this.remStyle);
+        }
       } else {
         return $.on(d, 'DOMNodeInserted', this.remStyle);
       }

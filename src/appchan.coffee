@@ -78,14 +78,16 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle
     if Style.headCount < 10 and head = d.head
-        nodes = []
-        for node in head.children
-          if node.rel?.match(/^.*\bstylesheet\b.*/) or node.tagName.toLowerCase() is 'style'
-            unless node.id
-              Style.headCount++
-              nodes.push node
-        for node in nodes
-          $.rm node
+      nodes = []
+      for node in head.children
+        if node.rel?.match(/^.*\bstylesheet\b.*/) or node.tagName.toLowerCase() is 'style'
+          unless node.id
+            Style.headCount++
+            nodes.push node
+      for node in nodes
+        $.rm node
+      if Style.headCount < 10
+        $.on d, 'DOMNodeInserted', @remStyle
     else
       $.on d, 'DOMNodeInserted', @remStyle
 
