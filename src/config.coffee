@@ -273,79 +273,71 @@ Config =
       ]
 
   filter:
-    name: [
-      '# Filter any namefags:'
-      '#/^(?!Anonymous$)/'
-    ].join '\n'
+    name: """
+# Filter any namefags:
+#/^(?!Anonymous$)/
+"""
 
-    uniqueid: [
-      '# Filter a specific ID:'
-      '#/Txhvk1Tl/'
-    ].join '\n'
+    uniqueid: """
+# Filter a specific ID:
+#/Txhvk1Tl/
+"""
 
-    tripcode: [
-      '# Filter any tripfags'
-      '#/^!/'
-    ].join '\n'
+    tripcode: """
+# Filter any tripfags
+#/^!/
+"""
 
-    mod: [
-      '# Set a custom class for mods:'
-      '#/Mod$/;highlight:mod;op:yes'
-      '# Set a custom class for moot:'
-      '#/Admin$/;highlight:moot;op:yes'
-    ].join '\n'
+    mod: """
+# Set a custom class for mods:
+#/Mod$/;highlight:mod;op:yes
+# Set a custom class for moot:
+#/Admin$/;highlight:moot;op:yes
+"""
 
-    email: [
-      '# Filter any e-mails that are not `sage` on /a/ and /jp/:'
-      '#/^(?!sage$)/;boards:a,jp'
-    ].join '\n'
+    email: """
+# Filter any e-mails that are not `sage` on /a/ and /jp/:
+#/^(?!sage$)/;boards:a,jp
+"""
 
-    subject: [
-      '# Filter Generals on /v/:'
-      '#/general/i;boards:v;op:only'
-    ].join '\n'
+    subject: """
+# Filter Generals on /v/:
+#/general/i;boards:v;op:only'
+"""
 
-    comment: [
-      '# Filter Stallman copypasta on /g/:'
-      '#/what you\'re refer+ing to as linux/i;boards:g'
-    ].join '\n'
+    comment: """
+# Filter Stallman copypasta on /g/:
+#/what you\'re refer+ing to as linux/i;boards:g
+"""
 
-    country: [
-      ''
-    ].join '\n'
+    country: ''
 
-    filename: [
-      ''
-    ].join '\n'
+    filename: ''
 
-    dimensions: [
-      '# Highlight potential wallpapers:'
-      '#/1920x1080/;op:yes;highlight;top:no;boards:w,wg'
-    ].join '\n'
+    dimensions: """
+# Highlight potential wallpapers:
+#/1920x1080/;op:yes;highlight;top:no;boards:w,wg
+"""
 
-    filesize: [
-      ''
-    ].join '\n'
+    filesize: ''
 
-    md5: [
-      ''
-    ].join '\n'
+    md5: ''
 
-  sauces: [
-    'http://iqdb.org/?url=$1'
-    'http://www.google.com/searchbyimage?image_url=$1'
-    '#http://tineye.com/search?url=$1'
-    '#http://saucenao.com/search.php?db=999&url=$1'
-    '#http://3d.iqdb.org/?url=$1'
-    '#http://regex.info/exif.cgi?imgurl=$2'
-    '# uploaders:'
-    '#http://imgur.com/upload?url=$2;text:Upload to imgur'
-    '#http://omploader.org/upload?url1=$2;text:Upload to omploader'
-    '# "View Same" in archives:'
-    '#http://archive.foolz.us/_/search/image/$3/;text:View same on foolz'
-    '#http://archive.foolz.us/$4/search/image/$3/;text:View same on foolz /$4/'
-    '#https://archive.installgentoo.net/$4/image/$3;text:View same on installgentoo /$4/'
-  ].join '\n'
+  sauces: """
+http://iqdb.org/?url=$1
+http://www.google.com/searchbyimage?image_url=$1
+#http://tineye.com/search?url=$1
+#http://saucenao.com/search.php?db=999&url=$1
+#http://3d.iqdb.org/?url=$1
+#http://regex.info/exif.cgi?imgurl=$2
+# uploaders:
+#http://imgur.com/upload?url=$2;text:Upload to imgur
+#http://omploader.org/upload?url1=$2;text:Upload to omploader
+# "View Same" in archives:
+#http://archive.foolz.us/_/search/image/$3/;text:View same on foolz
+#http://archive.foolz.us/$4/search/image/$3/;text:View same on foolz /$4/
+#https://archive.installgentoo.net/$4/image/$3;text:View same on installgentoo /$4/
+"""
 
   time:             '%m/%d/%y(%a)%H:%M'
   backlink:         '>>%id'

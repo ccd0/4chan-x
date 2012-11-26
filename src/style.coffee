@@ -1064,7 +1064,6 @@ div.post {
 .postertrip {
   background: transparent;
 }
-#showQR,
 .name {
   font-weight: 700;
 }
