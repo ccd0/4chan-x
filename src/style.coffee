@@ -180,7 +180,6 @@ div.subMenu.reply {
   top: -1px;
 }
 #boardTitle,
-#browse,
 #main_tab + div,
 #mascotConf input,
 #style_tab + div .suboptions,
@@ -717,7 +716,6 @@ html body > span[style="left: 5px; position: absolute;"]:nth-of-type(0),
 table[style="text-align:center;width:100%;height:300px;"] {
   display: none !important;
 }
-#browse,
 #mascot img,
 #replies,
 #spoilerLabel,
@@ -970,11 +968,9 @@ a,
   overflow: hidden;
 }
 /* Formatting for all postarea elements */
-#browse,
 #file {
   line-height: 17px;
 }
-#browse,
 #file,
 #threadselect select {
   cursor: pointer;
@@ -997,7 +993,6 @@ input[type="submit"] {
   vertical-align: bottom;
   padding: 1px;
 }
-#browse,
 input[type="submit"] {
   height: 20px;
   padding: 0;
@@ -1348,7 +1343,6 @@ html {
      1px  0px 0 #{theme["Background Color"]},
     -1px  0px 0 #{theme["Background Color"]}#{if Conf["Sidebar Glow"] then "\n, 1px 0 5px #{theme['Text']};" else ";"}
 }
-#browse,
 #options .dialog,
 #exlinks-options,
 #qrtab,
@@ -1380,7 +1374,6 @@ textarea.field {
   #{Style.agent}transition: all .2s linear;
 }
 #dump:hover,
-#browse:hover,
 #file:hover,
 input:hover,
 input.field:hover,
@@ -1488,7 +1481,6 @@ span.postNum > .replylink {
 .dateTime {
   color: #{theme["Timestamps"]} !important;
 }
-#browse,
 #updater,
 .summary,
 body > form,
@@ -1830,10 +1822,9 @@ input,
   margin: 1px 0 0;
 }
 #file {
-  width: #{(106 + Style.sidebarOffsetW)}px;
+  width: #{(177 + Style.sidebarOffsetW)}px;
 }
-#buttons input,
-#browse {
+#buttons input {
   width: 70px;
   margin: 1px 0 0 1px;
 }""" + (
@@ -2572,12 +2563,11 @@ textarea.field,
 #qr div.userInfo .field:not(#dump) {
   width: 30%;
 }
-#browse,
 #buttons input {
   width: 25%;
 }
 #file {
-  width: 50%;
+  width: 75%;
 }
 #qr.captcha textarea.field {
   min-height: 120px;
