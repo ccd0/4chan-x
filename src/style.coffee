@@ -1341,7 +1341,7 @@ html {
      0px  1px 0 #{theme["Background Color"]},
      0px -1px 0 #{theme["Background Color"]},
      1px  0px 0 #{theme["Background Color"]},
-    -1px  0px 0 #{theme["Background Color"]}#{if Conf["Sidebar Glow"] then "\n, 1px 0 5px #{theme['Text']};" else ";"}
+    -1px  0px 0 #{theme["Background Color"]}#{if Conf["Sidebar Glow"] then "\n, 0 2px 5px #{theme['Text']};" else ";"}
 }
 #options .dialog,
 #exlinks-options,
