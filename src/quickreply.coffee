@@ -293,8 +293,7 @@ QR =
   resetFileInput: ->
     input = $ '[type=file]', QR.el
     input.value = null
-    riceFile = $ '#file', QR.el
-    riceFile.textContent = null
+    QR.riceFile.innerHTML = QR.defaultMessage
     return unless $.engine is 'presto'
     # XXX Opera needs extra care to reset its file input's value
     clone = $.el 'input',
@@ -563,7 +562,7 @@ QR =
   <div class=userInfo><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span><div style=clear:both></div></div>
-  <div id=buttons><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=file class=field></div><input type=submit></div>
+  <div id=buttons><input type=file multiple size=16><div id=file class=field></div><input type=submit></div>
   <div id=threadselect></div>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
 </form>'
@@ -589,9 +588,9 @@ QR =
     QR.mimeTypes = mimeTypes.split ', '
     # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
     QR.mimeTypes.push ''
-    fileInput        = $ 'input[type=file]', QR.el
-    fileInput.max    = $('input[name=MAX_FILE_SIZE]').value
-    fileInput.accept = mimeTypes if $.engine isnt 'presto' # Opera's accept attribute is fucked up
+    QR.fileEl        = $ 'input[type=file]', QR.el
+    QR.fileEl.max    = $('input[name=MAX_FILE_SIZE]').value
+    QR.fileEl.accept = mimeTypes if $.engine isnt 'presto' # Opera's accept attribute is fucked up
 
     QR.warning     = $ '.warning',  QR.el
     QR.spoiler     = !!$ 'input[name=spoiler]'
@@ -621,14 +620,18 @@ QR =
 
       $.on QR.threadSelector,     'mousedown', (e) -> e.stopPropagation()
 
-    riceFile = $("#file", QR.el)
+    QR.riceFile = $("#file", QR.el)
     i = 0
-    size = fileInput.max
+    size = QR.fileEl.max
     size /= 1024 while i++ < 2
-    riceFile.innerHTML = "<span class='placeholder'>Max: #{size}MB, Shift+Click to Clear</span>"
-    riceFile.title     = "Max: #{size}MB, Shift+Click to Clear."
-    $.on riceFile,              'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else fileInput.click()
-    $.on fileInput,             'change',    -> riceFile.textContent = fileInput.value
+    QR.riceFile.innerHTML = QR.defaultMessage = "<span class='placeholder'>Max: #{size}MB, Shift+Click to Clear</span>"
+    QR.riceFile.title     = "Max: #{size}MB, Shift+Click to Clear."
+    $.on QR.riceFile,             'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else QR.fileEl.click()
+    $.on QR.fileEl,               'change',    
+    $.on QR.fileEl,               'change',    ->
+      QR.riceFile.textContent = QR.fileEl.value
+      QR.fileInput.call @
+    $.on QR.fileEl,               'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
     Style.rice QR.el
 
 
@@ -639,8 +642,6 @@ QR =
     $.on $('form',      QR.el),   'submit',    QR.submit
     $.on ta,                      'input',     -> QR.selected.el.lastChild.textContent = @value
     $.on ta,                      'input',     QR.characterCount
-    $.on fileInput,               'change',    QR.fileInput
-    $.on fileInput,               'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
     $.on spoiler.firstChild,      'change',    -> $('input', QR.selected.el).click()
     $.on QR.warning,              'click',     QR.cleanError
 

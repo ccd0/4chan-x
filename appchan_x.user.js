@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.16 - 2012-11-26
+ * appchan x - Version 1.0.16 - 2012-11-27
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -8041,11 +8041,10 @@
       return QR.resetFileInput();
     },
     resetFileInput: function() {
-      var clone, input, riceFile;
+      var clone, input;
       input = $('[type=file]', QR.el);
       input.value = null;
-      riceFile = $('#file', QR.el);
-      riceFile.textContent = null;
+      QR.riceFile.innerHTML = QR.defaultMessage;
       if ($.engine !== 'presto') {
         return;
       }
@@ -8384,7 +8383,7 @@
       }
     },
     dialog: function() {
-      var fileInput, i, id, mimeTypes, name, riceFile, size, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+      var i, id, mimeTypes, name, size, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
       QR.el = UI.dialog('qr', '', '\
 <div id=qrtab class=move>\
   <label><input type=checkbox id=autohide title=Auto-hide> Post Form</label>\
@@ -8395,7 +8394,7 @@
   <div class=userInfo><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>\
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span><div style=clear:both></div></div>\
-  <div id=buttons><input type=file title="Shift+Click to remove the selected file." multiple size=16><div id=file class=field></div><input type=submit></div>\
+  <div id=buttons><input type=file multiple size=16><div id=file class=field></div><input type=submit></div>\
   <div id=threadselect></div>\
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>\
 </form>');
@@ -8420,10 +8419,10 @@
       });
       QR.mimeTypes = mimeTypes.split(', ');
       QR.mimeTypes.push('');
-      fileInput = $('input[type=file]', QR.el);
-      fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
+      QR.fileEl = $('input[type=file]', QR.el);
+      QR.fileEl.max = $('input[name=MAX_FILE_SIZE]').value;
       if ($.engine !== 'presto') {
-        fileInput.accept = mimeTypes;
+        QR.fileEl.accept = mimeTypes;
       }
       QR.warning = $('.warning', QR.el);
       QR.spoiler = !!$('input[name=spoiler]');
@@ -8448,23 +8447,29 @@
           return e.stopPropagation();
         });
       }
-      riceFile = $("#file", QR.el);
+      QR.riceFile = $("#file", QR.el);
       i = 0;
-      size = fileInput.max;
+      size = QR.fileEl.max;
       while (i++ < 2) {
         size /= 1024;
       }
-      riceFile.innerHTML = "<span class='placeholder'>Max: " + size + "MB, Shift+Click to Clear</span>";
-      riceFile.title = "Max: " + size + "MB, Shift+Click to Clear.";
-      $.on(riceFile, 'click', function(e) {
+      QR.riceFile.innerHTML = QR.defaultMessage = "<span class='placeholder'>Max: " + size + "MB, Shift+Click to Clear</span>";
+      QR.riceFile.title = "Max: " + size + "MB, Shift+Click to Clear.";
+      $.on(QR.riceFile, 'click', function(e) {
         if (e.shiftKey) {
           return QR.selected.rmFile() || e.preventDefault();
         } else {
-          return fileInput.click();
+          return QR.fileEl.click();
         }
       });
-      $.on(fileInput, 'change', function() {
-        return riceFile.textContent = fileInput.value;
+      $.on(QR.fileEl, 'change', $.on(QR.fileEl, 'change', function() {
+        QR.riceFile.textContent = QR.fileEl.value;
+        return QR.fileInput.call(this);
+      }));
+      $.on(QR.fileEl, 'click', function(e) {
+        if (e.shiftKey) {
+          return QR.selected.rmFile() || e.preventDefault();
+        }
       });
       Style.rice(QR.el);
       $.on(QR.autohide, 'change', QR.toggleHide);
@@ -8480,12 +8485,6 @@
         return QR.selected.el.lastChild.textContent = this.value;
       });
       $.on(ta, 'input', QR.characterCount);
-      $.on(fileInput, 'change', QR.fileInput);
-      $.on(fileInput, 'click', function(e) {
-        if (e.shiftKey) {
-          return QR.selected.rmFile() || e.preventDefault();
-        }
-      });
       $.on(spoiler.firstChild, 'change', function() {
         return $('input', QR.selected.el).click();
       });
