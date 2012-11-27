@@ -415,8 +415,6 @@ ExpandComment =
     if Conf['Indicate Cross-thread Quotes']
       QuoteCT.node      post
     $.replace bq, clone
-    if Conf['Linkify']
-      Linkify.node      post
     Main.prettify clone
 
 ExpandThread =
@@ -2223,9 +2221,72 @@ IDColor =
 
 Quotify =
   init: ->
+    # Extend Quotify to include linkification, if it should be enabled.
+    if Conf['Linkify']
+      @regString = ///(
+        ^>>(>/[a-z\d]+/)?\d+
+        |
+        \b(
+          [a-z][-a-z0-9+.]+:// # Leading handler (http://, ftp://). Matches any *://
+          |
+          www\.
+          |
+          magnet:
+          |
+          mailto:
+          |
+          news:
+        )
+        [^\s'"<>()]+ # Non-URL characters. We cut of the string here.
+        |
+        \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails.
+      )///gi
+      
+      @concat = (a) ->
+        $.on a, 'click', (e) ->
+          # Shift + CTRL + Click
+          if e.shiftKey and e.ctrlKey
+
+            # Let's not accidentally open the link while we're editting it.
+            e.preventDefault()
+            e.stopPropagation()
+
+            # We essentially check for a <br> and make sure we're not merging non-post content.
+            if ("br" == @.nextSibling.tagName.toLowerCase() or "spoiler" == @.nextSibling.className) and @.nextSibling.nextSibling.className != "abbr"
+              el = @.nextSibling
+              if el.textContent
+                content = (@textContent + el.textContent + el.nextSibling.textContent)
+              else
+                content = (@textContent + el.nextSibling.textContent)
+              a = $.el 'a'
+                textContent: content
+                href: content
+              $.rm el
+              $.rm @.nextSibling
+              $.replace @, a
+    
+      if Conf['Youtube Embed']
+        @sites =
+          yt:
+            regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
+            url:     "http://www.youtube.com/embed/"
+            safeurl: "http://www.youtube.com/watch/"
+          vm:
+            regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
+            url:     "https://player.vimeo.com/video/"
+            safeurl: "http://www.vimeo.com/"
+    else
+      @regString = /^>>>\/([a-z\d]+)/
+    
     Main.callbacks.push @node
+    
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
+    
+    while (spoiler = $ '.spoiler', post.blockquote) and (p = spoiler.previousSibling) and (n = spoiler.nextSibling) and not /\w/.test(spoiler.textContent) and (n and p).nodeName is '#text'
+      p.textContent += n.textContent
+      $.rm n
+      $.rm spoiler
 
     # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
     # Get all the text nodes that are not inside an anchor.
@@ -2233,9 +2294,9 @@ Quotify =
 
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
-      data = node.data
+      {data} = node
 
-      unless quotes = data.match />>(>\/[a-z\d]+\/)?\d+/g
+      unless quotes = data.match(Quotify.regString)
         # Only accept nodes with potentially valid links
         continue
 
@@ -2247,38 +2308,50 @@ Quotify =
           # Potential text before this valid quote.
           nodes.push $.tn text
 
-        id = quote.match(/\d+$/)[0]
-        board =
-          if m = quote.match /^>>>\/([a-z\d]+)/
-            m[1]
+        if quote.match /^>>.+/
+          id = quote.match(/\d+$/)[0]
+          board =
+            if m = quote.match 
+              m[1]
+            else
+              # Get the post's board, whether it's inlined or not.
+              $('a[title="Highlight this post"]', post.el).pathname.split('/')[1]
+
+          nodes.push a = $.el 'a',
+            # \u00A0 is nbsp
+            textContent: "#{quote}\u00A0(Dead)"
+
+          if board is g.BOARD and $.id "p#{id}"
+            a.href      = "#p#{id}"
+            a.className = 'quotelink'
           else
-            # Get the post's board, whether it's inlined or not.
-            $('a[title="Highlight this post"]', post.el).pathname.split('/')[1]
-
-        nodes.push a = $.el 'a',
-          # \u00A0 is nbsp
-          textContent: "#{quote}\u00A0(Dead)"
-
-        if board is g.BOARD and $.id "p#{id}"
-          a.href      = "#p#{id}"
-          a.className = 'quotelink'
+            a.href =
+              Redirect.to
+                board:    board
+                threadID: 0
+                postID:   id
+            a.className = 'deadlink'
+            a.target    = '_blank'
+            if Redirect.post board, id
+              $.addClass a, 'quotelink'
+              # XXX WTF Scriptish/Greasemonkey?
+              # Setting dataset attributes that way doesn't affect the HTML,
+              # but are, I suspect, kept as object key/value pairs and GC'd later.
+              # a.dataset.board = board
+              # a.dataset.id    = id
+              a.setAttribute 'data-board', board
+              a.setAttribute 'data-id',    id
+        
         else
-          a.href =
-            Redirect.to
-              board:    board
-              threadID: 0
-              postID:   id
-          a.className = 'deadlink'
-          a.target    = '_blank'
-          if Redirect.post board, id
-            $.addClass a, 'quotelink'
-            # XXX WTF Scriptish/Greasemonkey?
-            # Setting dataset attributes that way doesn't affect the HTML,
-            # but are, I suspect, kept as object key/value pairs and GC'd later.
-            # a.dataset.board = board
-            # a.dataset.id    = id
-            a.setAttribute 'data-board', board
-            a.setAttribute 'data-id',    id
+          nodes.push a = $.el 'a'
+            textContent: quote
+            className: 'linkify'
+            rel:       'nofollow noreferrer'
+            target:    'blank'
+            # I haven't found a situation where not having a slash in the conditional breaks anything.
+            href:      if quote.indexOf(":") < 0 then (if quote.indexOf("@") > 0 then "mailto:" + quote else "http://" + quote) else quote
+          
+          Quotify.concat a
 
         data = data[index + quote.length..]
 
@@ -2287,7 +2360,67 @@ Quotify =
         nodes.push $.tn data
 
       $.replace node, nodes
+
+      if Conf['Youtube Embed'] and a
+        for key, site of Quotify.sites
+          if match = a.href.match(site.regExp)
+            embed = $.el 'a'
+              name:         match[1]
+              className:    key
+              href:         'javascript:;'
+              textContent:  '(embed)'
+            $.on embed, 'click', Quotify.embed
+            $.after a, embed
+            $.after a, $.tn ' '
+            break
     return
+
+  embed: ->
+    # We setup the link to be replaced by the embedded video
+    link = @.previousSibling.previousSibling
+
+    # We create an iframe to embed
+    iframe = $.el 'iframe'
+      src: Quotify.sites[@className].url + @name
+
+    # We style the iframe with respectable boundaries.
+    iframe.style.border = '0'
+    iframe.style.width  = '640px'
+    iframe.style.height = '390px'
+
+    # We replace the link with the iframe and kill the embedding element.
+    $.replace link, iframe
+
+    unembed = $.el 'a'
+      name:        @name
+      className:   @className
+      href:        'javascript:;'
+      textContent: '(unembed)'
+
+    $.on unembed, 'click', Quotify.unembed
+
+    $.replace @, unembed
+
+  unembed: ->
+    url = Quotify.sites[@className].safeurl + @name
+    embedded = @.previousSibling.previousSibling
+
+    a = $.el 'a'
+      textContent: url
+      rel:         'nofollow noreferrer'
+      target:      'blank'
+      href:        url
+
+    embed = $.el 'a'
+      name:         @name
+      className:    @className
+      href:         'javascript:;'
+      textContent:  '(embed)'
+
+    $.on embed, 'click', Quotify.embed
+
+    $.replace embedded, a
+    $.replace @, embed
 
 DeleteLink =
   init: ->

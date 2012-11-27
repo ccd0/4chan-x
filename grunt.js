@@ -25,7 +25,6 @@ module.exports = function(grunt) {
           'src/jscolor.coffee',
           'src/mascotoptions.coffee',
           'src/customnavigation.coffee',
-          'src/linkify.coffee',
           'src/appchan.coffee',
           'src/iconpositions.coffee',
           'src/style.coffee',
