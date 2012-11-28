@@ -3439,7 +3439,7 @@
               $.on(div, 'click', function() {
                 if (Conf[g.MASCOTSTRING].remove(this.id)) {
                   $.rmClass(this.parentElement.parentElement, 'enabled');
-                  if (Conf['mascot'] = this.id) {
+                  if (Conf['mascot'] === this.id) {
                     MascotTools.init();
                   }
                 } else {
