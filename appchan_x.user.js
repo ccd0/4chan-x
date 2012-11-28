@@ -3465,7 +3465,7 @@
             enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]));
             for (_k = 0, _len2 = enabledMascots.length; _k < _len2; _k++) {
               name = enabledMascots[_k];
-              $.rmClass($.id(name).parentElement, 'enabled');
+              $.rmClass($.id(name).parentElement.parentElement, 'enabled');
             }
             return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING] = []);
           });
@@ -3473,7 +3473,7 @@
             for (name in userMascots) {
               mascot = userMascots[name];
               if (!(Conf["Hidden Categories"].contains(mascot.category) || Conf[g.MASCOTSTRING].contains(name) || Conf["Deleted Mascots"].contains(name))) {
-                $.addClass($.id(name).parentElement, 'enabled');
+                $.addClass($.id(name).parentElement.parentElement, 'enabled');
                 Conf[g.MASCOTSTRING].push(name);
               }
             }

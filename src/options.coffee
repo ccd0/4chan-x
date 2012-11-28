@@ -682,13 +682,13 @@ Options =
         $.on $('#clear', batchmascots), 'click', ->
           enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]))
           for name in enabledMascots
-            $.rmClass $.id(name).parentElement, 'enabled'
+            $.rmClass $.id(name).parentElement.parentElement, 'enabled'
           $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING] = []
 
         $.on $('#selectAll', batchmascots), 'click', ->
           for name, mascot of userMascots
             unless Conf["Hidden Categories"].contains(mascot.category) or Conf[g.MASCOTSTRING].contains(name) or Conf["Deleted Mascots"].contains(name)
-              $.addClass $.id(name).parentElement, 'enabled'
+              $.addClass $.id(name).parentElement.parentElement, 'enabled'
               Conf[g.MASCOTSTRING].push name
           $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
 
