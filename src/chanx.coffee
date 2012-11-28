@@ -2258,9 +2258,7 @@ Quotify =
                 content = (@textContent + el.textContent + el.nextSibling.textContent)
               else
                 content = (@textContent + el.nextSibling.textContent)
-              a = $.el 'a'
-                textContent: content
-                href: content
+              @href = @textContent =content
               $.rm el
               $.rm @.nextSibling
               $.replace @, a
@@ -2276,7 +2274,7 @@ Quotify =
             url:     "https://player.vimeo.com/video/"
             safeurl: "http://www.vimeo.com/"
     else
-      @regString = /^>>>\/([a-z\d]+)/
+      @regString = />>(>\/[a-z\d]+\/)?\d+/g
     
     Main.callbacks.push @node
     
@@ -2313,15 +2311,18 @@ Quotify =
         if quote.match /^>>.+/
           id = quote.match(/\d+$/)[0]
           board =
-            if m = quote.match 
+            if m = quote.match /^>>>\/([a-z\d]+)/
               m[1]
             else
               # Get the post's board, whether it's inlined or not.
               $('a[title="Highlight this post"]', post.el).pathname.split('/')[1]
 
-          nodes.push a = $.el 'a',
+          nodes.push a = $.el 'a'
             # \u00A0 is nbsp
             textContent: "#{quote}\u00A0(Dead)"
+          
+          $.log quote
+          $.log a
 
           if board is g.BOARD and $.id "p#{id}"
             a.href      = "#p#{id}"
@@ -2343,7 +2344,6 @@ Quotify =
               # a.dataset.id    = id
               a.setAttribute 'data-board', board
               a.setAttribute 'data-id',    id
-        
         else
           nodes.push a = $.el 'a'
             textContent: quote
@@ -2363,7 +2363,7 @@ Quotify =
 
       $.replace node, nodes
 
-      if Conf['Youtube Embed'] and a
+      if Conf['Youtube Embed'] and a.className is "linkify"
         for key, site of Quotify.sites
           if match = a.href.match(site.regExp)
             embed = $.el 'a'
@@ -2379,7 +2379,7 @@ Quotify =
 
   embed: ->
     # We setup the link to be replaced by the embedded video
-    link = @.previousSibling.previousSibling
+    link = @previousSibling.previousSibling
 
     # We create an iframe to embed
     iframe = $.el 'iframe'

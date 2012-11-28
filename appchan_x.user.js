@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.16 - 2012-11-27
+ * appchan x - Version 1.0.16 - 2012-11-28
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -6600,10 +6600,7 @@
                 } else {
                   content = this.textContent + el.nextSibling.textContent;
                 }
-                a = $.el('a', {
-                  textContent: content,
-                  href: content
-                });
+                this.href = this.textContent = content;
                 $.rm(el);
                 $.rm(this.nextSibling);
                 return $.replace(this, a);
@@ -6626,7 +6623,7 @@
           };
         }
       } else {
-        this.regString = /^>>>\/([a-z\d]+)/;
+        this.regString = />>(>\/[a-z\d]+\/)?\d+/g;
       }
       return Main.callbacks.push(this.node);
     },
@@ -6660,10 +6657,12 @@
           }
           if (quote.match(/^>>.+/)) {
             id = quote.match(/\d+$/)[0];
-            board = (m = quote.match) ? m[1] : $('a[title="Highlight this post"]', post.el).pathname.split('/')[1];
+            board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('a[title="Highlight this post"]', post.el).pathname.split('/')[1];
             nodes.push(a = $.el('a', {
               textContent: "" + quote + "\u00A0(Dead)"
             }));
+            $.log(quote);
+            $.log(a);
             if (board === g.BOARD && $.id("p" + id)) {
               a.href = "#p" + id;
               a.className = 'quotelink';
@@ -6697,7 +6696,7 @@
           nodes.push($.tn(data));
         }
         $.replace(node, nodes);
-        if (Conf['Youtube Embed'] && a) {
+        if (Conf['Youtube Embed'] && a.className === "linkify") {
           _ref2 = Quotify.sites;
           for (key in _ref2) {
             site = _ref2[key];
