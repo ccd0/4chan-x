@@ -29,7 +29,7 @@
     else
       Style.sidebarOffsetW = 0
       Style.sidebarOffsetH = 0
-    
+
     Style.logoOffset = if Conf["4chan Banner"] is "at sidebar top" then 83 + Style.sidebarOffsetH else 0
 
     if Conf["Sidebar Location"] is "left"
@@ -425,32 +425,31 @@ input[type="submit"] {
   text-align: center;
 }
 #options .mascot,
-#options .mascot > div:first-child {
+#options .mascot .container {
   overflow: hidden;
-  display: inline-block;
 
 }
 #options .mascot {
-  position: relative;
-  width: 200px;
-  padding: 3px;
-  height: 250px;
   margin: 5px;
-  text-align: left;
-  border: 1px solid transparent;
+  padding: 0;
+  width: 200px;
+  display: inline-block;
 }
-#options .mascot > div:first-child {
+#options .mascot .container {
+  height: 250px;
   border: 0;
   margin: 0;
   max-height: 250px;
   cursor: pointer;
-  position: absolute;
   bottom: 0;
+  border-width: 0 1px;
+  border-style: solid;
+  border-color: transparent;
+  overflow: hidden;
 }
 #options .mascot img {
   max-width: 200px;
   image-rendering: optimizeQuality;
-  vertical-align: top;
 }
 #options ul li.mascot {
   background-color: transparent;
@@ -502,7 +501,12 @@ input[type="submit"] {
   bottom: 1.5em;
   left: 0;
 }
-.suboptions {
+.mAlign {
+  height: 250px;
+  vertical-align: middle;
+  display: table-cell;
+}
+#style_tab + div .suboptions {
   bottom: 0;
 }
 #themecontent {
@@ -524,16 +528,8 @@ input[type="submit"] {
 }
 .mascotname,
 .mascotoptions {
-  margin: 5px;
-  border-radius: 10px;
   padding: 1px 5px;
-}
-.mascotmetadata {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  text-align: center;
+  width: 100%;
 }
 #close,
 #mascots_batch {
@@ -1350,7 +1346,7 @@ input[value="Report"] {
   background: #{theme["Buttons Background"]};
   border: 1px solid #{theme["Buttons Border"]};
 }
-#options ul li.mascot.enabled {
+#options ul li.mascot.enabled .container {
   background: #{theme["Buttons Background"]};
   border-color: #{theme["Buttons Border"]};
 }
@@ -1436,6 +1432,7 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > 
 .mascotname,
 .mascotoptions {
   background: #{theme["Dialog Background"]};
+  border: 1px solid #{theme["Dialog Border"]};
 }
 .inline .post {
   box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
@@ -1901,7 +1898,7 @@ input,
 }\n
 """
         )
-      else ""  
+      else ""
     ) + (
       if Conf["Fit Width Replies"]
         """
@@ -1962,7 +1959,7 @@ div.reply.post {
   position: relative;
   overflow: visible;
   display: table;
-  
+
 }\n
 """
     ) + (
@@ -2089,7 +2086,7 @@ img[src^="//static.4chan.org/support/"] {
 body::before {
   background: none repeat scroll 0% 0% rgba(#{background.shiftRGB -18}, 0.8);
   border-#{Style.sidebarLocation[1]}: 2px solid #{theme["Background Color"]};
-  box-shadow: 
+  box-shadow:
     #{if Conf["Sidebar Location"] is "right" then "inset" else ""}  1px 0px 0px #{theme["Thread Wrapper Border"]},
     #{if Conf["Sidebar Location"] is "left"  then "inset" else ""} -1px 0px 0px #{theme["Thread Wrapper Border"]};
   content: "";

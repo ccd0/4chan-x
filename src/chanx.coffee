@@ -1185,7 +1185,7 @@ Updater =
         break if post.no <= id # Make sure to not insert older posts.
         nodes.push Build.postFromObject post, g.BOARD
         Updater.save.push post.no if Updater.postID
-        
+
       count = nodes.length
       if Conf['Verbose']
         Updater.set 'count', "+#{count}"
@@ -2241,7 +2241,7 @@ Quotify =
         |
         \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails.
       )///gi
-      
+
       @concat = (a) ->
         $.on a, 'click', (e) ->
           # Shift + CTRL + Click
@@ -2261,7 +2261,7 @@ Quotify =
               @href = @textContent = content
               $.rm el
               $.rm @.nextSibling
-    
+
       if Conf['Youtube Embed']
         @types =
           yt:
@@ -2279,24 +2279,24 @@ Quotify =
               border: '0'
               width:  '640px'
               height: '390px'
-            el: ->     
+            el: ->
               $.el 'iframe'
                 src:   "https://player.vimeo.com/video/#{@name}"
           audio:
-            regExp:  /(?:.*\/)(.*\.(mp3|ogg|wav))$/
-            el: -> 
+            regExp:  /(.*\.(mp3|ogg|wav))$/
+            el: ->
               $.el 'audio'
                 controls:    'controls'
                 src:         @previousSibling.previousSibling.href
                 textContent: 'You should get a better browser.'
     else
       @regString = />>(>\/[a-z\d]+\/)?\d+/g
-    
+
     Main.callbacks.push @node
-    
+
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
-    
+
     # Remove blank spoilers.
     for spoiler in $$ '.spoiler', post.blockquote
       if (spoiler.textContent.length is 0) and (p = spoiler.previousSibling) and (n = spoiler.nextSibling) and (n.nodeType and p.nodeType is Node.TEXT_NODE)
@@ -2311,7 +2311,7 @@ Quotify =
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
       {data} = node
-      
+
 
       unless quotes = data.match Quotify.regString
         # Only accept nodes with potentially valid links
@@ -2366,7 +2366,7 @@ Quotify =
             target:    'blank'
             # I haven't found a situation where not having a slash in the conditional breaks anything.
             href:      if quote.indexOf(":") < 0 then (if quote.indexOf("@") > 0 then "mailto:" + quote else "http://" + quote) else quote
-          
+
           Quotify.concat a
 
         data = data[index + quote.length..]
@@ -2399,7 +2399,7 @@ Quotify =
     el = (type = Quotify.types[@className]).el.call @
 
     $.log type.style
-    
+
     if type.style
       for key, value of type.style
         el.style[key] = value
