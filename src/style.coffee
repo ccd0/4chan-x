@@ -430,6 +430,7 @@ input[type="submit"] {
 
 }
 #options .mascot {
+  border: none;
   margin: 5px;
   padding: 0;
   width: 200px;
