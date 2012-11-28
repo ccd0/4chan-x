@@ -2283,10 +2283,12 @@ Quotify =
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
     
-    while (spoiler = $ '.spoiler', post.blockquote) and (p = spoiler.previousSibling) and (n = spoiler.nextSibling) and not /\w/.test(spoiler.textContent) and (n and p).nodeName is '#text'
-      p.textContent += n.textContent
-      $.rm n
-      $.rm spoiler
+    # Remove blank spoilers.
+    for spoiler in $$ '.spoiler', post.blockquote
+      if (spoiler.textContent.length is 0) and (p = spoiler.previousSibling) and (n = spoiler.nextSibling) and (n.nodeType and p.nodeType is Node.TEXT_NODE)
+        p.textContent += n.textContent
+        $.rm n
+        $.rm spoiler
 
     # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
     # Get all the text nodes that are not inside an anchor.

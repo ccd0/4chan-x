@@ -6631,25 +6631,29 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var a, board, data, embed, i, id, index, key, m, match, n, node, nodes, p, quote, quotes, site, snapshot, spoiler, text, _i, _j, _len, _ref, _ref1;
+      var a, board, data, embed, i, id, index, key, m, match, n, node, nodes, p, quote, quotes, site, snapshot, spoiler, text, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2;
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
-      while ((spoiler = $('.spoiler', post.blockquote)) && (p = spoiler.previousSibling) && (n = spoiler.nextSibling) && !/\w/.test(spoiler.textContent) && (n && p).nodeName === '#text') {
-        p.textContent += n.textContent;
-        $.rm(n);
-        $.rm(spoiler);
+      _ref = $$('.spoiler', post.blockquote);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        spoiler = _ref[_i];
+        if ((spoiler.textContent.length === 0) && (p = spoiler.previousSibling) && (n = spoiler.nextSibling) && (n.nodeType && p.nodeType === Node.TEXT_NODE)) {
+          p.textContent += n.textContent;
+          $.rm(n);
+          $.rm(spoiler);
+        }
       }
       snapshot = d.evaluate('.//text()[not(parent::a)]', post.blockquote, null, 6, null);
-      for (i = _i = 0, _ref = snapshot.snapshotLength; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+      for (i = _j = 0, _ref1 = snapshot.snapshotLength; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
         node = snapshot.snapshotItem(i);
         data = node.data;
         if (!(quotes = data.match(Quotify.regString))) {
           continue;
         }
         nodes = [];
-        for (_j = 0, _len = quotes.length; _j < _len; _j++) {
-          quote = quotes[_j];
+        for (_k = 0, _len1 = quotes.length; _k < _len1; _k++) {
+          quote = quotes[_k];
           index = data.indexOf(quote);
           if (text = data.slice(0, index)) {
             nodes.push($.tn(text));
@@ -6694,9 +6698,9 @@
         }
         $.replace(node, nodes);
         if (Conf['Youtube Embed'] && a) {
-          _ref1 = Quotify.sites;
-          for (key in _ref1) {
-            site = _ref1[key];
+          _ref2 = Quotify.sites;
+          for (key in _ref2) {
+            site = _ref2[key];
             if (match = a.href.match(site.regExp)) {
               embed = $.el('a', {
                 name: match[1],
