@@ -6602,8 +6602,7 @@
                 }
                 this.href = this.textContent = content;
                 $.rm(el);
-                $.rm(this.nextSibling);
-                return $.replace(this, a);
+                return $.rm(this.nextSibling);
               }
             }
           });

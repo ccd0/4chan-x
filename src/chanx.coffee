@@ -2258,10 +2258,9 @@ Quotify =
                 content = (@textContent + el.textContent + el.nextSibling.textContent)
               else
                 content = (@textContent + el.nextSibling.textContent)
-              @href = @textContent =content
+              @href = @textContent = content
               $.rm el
               $.rm @.nextSibling
-              $.replace @, a
     
       if Conf['Youtube Embed']
         @sites =
