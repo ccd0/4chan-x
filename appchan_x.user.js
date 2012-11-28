@@ -323,8 +323,6 @@
     mascot: ''
   };
 
-  console.log(location.hostname);
-
   if (!/^[a-z]+\.4chan\.org$/.test(location.hostname)) {
     return;
   }
@@ -6592,7 +6590,7 @@
   Quotify = {
     init: function() {
       if (Conf['Linkify']) {
-        this.regString = /(^>>(>\/[a-z\d]+\/)?\d+|\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s'"<>()]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi;
+        this.regString = /(>>(>\/[a-z\d]+\/)?\d+|\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s'"<>()]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi;
         this.concat = function(a) {
           return $.on(a, 'click', function(e) {
             var content, el;

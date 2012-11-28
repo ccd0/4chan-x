@@ -2224,7 +2224,7 @@ Quotify =
     # Extend Quotify to include linkification, if it should be enabled.
     if Conf['Linkify']
       @regString = ///(
-        ^>>(>/[a-z\d]+/)?\d+
+        >>(>/[a-z\d]+/)?\d+
         |
         \b(
           [a-z][-a-z0-9+.]+:// # Leading handler (http://, ftp://). Matches any *://
@@ -2294,8 +2294,9 @@ Quotify =
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
       {data} = node
+      
 
-      unless quotes = data.match(Quotify.regString)
+      unless quotes = data.match Quotify.regString
         # Only accept nodes with potentially valid links
         continue
 
