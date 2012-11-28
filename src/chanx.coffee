@@ -2320,9 +2320,6 @@ Quotify =
           nodes.push a = $.el 'a'
             # \u00A0 is nbsp
             textContent: "#{quote}\u00A0(Dead)"
-          
-          $.log quote
-          $.log a
 
           if board is g.BOARD and $.id "p#{id}"
             a.href      = "#p#{id}"
