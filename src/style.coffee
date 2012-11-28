@@ -528,7 +528,7 @@ input[type="submit"] {
 }
 .mascotname,
 .mascotoptions {
-  padding: 1px 5px;
+  padding: 1px 0;
   width: 100%;
 }
 #close,
@@ -1210,6 +1210,7 @@ img[alt="Closed"] {
   background-color: transparent;
   border: none;
 }
+.mascotname,
 input[type="submit"]:hover {
   cursor: pointer;
 }

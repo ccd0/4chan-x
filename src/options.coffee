@@ -618,20 +618,22 @@ Options =
             mascot = userMascots[name]
             li = $.el 'li',
               className: 'mascot'
+              id:        name
               innerHTML: "
 <div class='mascotname'>#{name.replace /_/g, " "}</div>
 <div class='container'><div id='#{name}' class='mAlign #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div></div>
 <div class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a> / <a class=export name='#{name}' href='javascript:;'>Export</a></div>"
-            div = $("##{name}", li)
             if Conf[g.MASCOTSTRING].contains name
               $.addClass li, 'enabled'
 
-            $.on $('a.edit', li), 'click', ->
+            $.on $('a.edit', li), 'click', (e) ->
+              e.stopPropagation()
               MascotTools.dialog @name
               Options.close()
 
-            $.on $('a.delete', li), 'click', ->
-              container = @.parentElement.parentElement.parentElement.parentElement
+            $.on $('a.delete', li), 'click', (e) ->
+              e.stopPropagation()
+              container = $.id @name
               if confirm "Are you sure you want to delete \"#{@name}\"?"
                 if Conf['mascot'] is @name
                   MascotTools.init()
@@ -643,7 +645,8 @@ Options =
                 $.rm container
 
             # Mascot Exporting
-            $.on $('a.export', li), 'click', ->
+            $.on $('a.export', li), 'click', (e) ->
+              e.stopPropagation()
               exportMascot = userMascots[@.name]
               exportMascot['Mascot'] = @.name
               exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot))
@@ -653,13 +656,13 @@ Options =
               else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
                 window.location exportedMascot
 
-            $.on div, 'click', ->
+            $.on li, 'click', ->
               if Conf[g.MASCOTSTRING].remove @id
-                $.rmClass @.parentElement.parentElement, 'enabled'
+                $.rmClass @, 'enabled'
                 if Conf['mascot'] is @id
                   MascotTools.init()
               else
-                $.addClass @.parentElement.parentElement, 'enabled'
+                $.addClass @, 'enabled'
                 Conf[g.MASCOTSTRING].push @id
                 MascotTools.init @id
               $.set "Enabled Mascots", Conf["Enabled Mascots"]
@@ -682,13 +685,13 @@ Options =
         $.on $('#clear', batchmascots), 'click', ->
           enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]))
           for name in enabledMascots
-            $.rmClass $.id(name).parentElement.parentElement, 'enabled'
+            $.rmClass $.id(name), 'enabled'
           $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING] = []
 
         $.on $('#selectAll', batchmascots), 'click', ->
           for name, mascot of userMascots
             unless Conf["Hidden Categories"].contains(mascot.category) or Conf[g.MASCOTSTRING].contains(name) or Conf["Deleted Mascots"].contains(name)
-              $.addClass $.id(name).parentElement.parentElement, 'enabled'
+              $.addClass $.id(name), 'enabled'
               Conf[g.MASCOTSTRING].push name
           $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
 
