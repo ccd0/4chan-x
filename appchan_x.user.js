@@ -323,6 +323,12 @@
     mascot: ''
   };
 
+  console.log(location.hostname);
+
+  if (!/^[a-z]+\.4chan\.org$/.test(location.hostname)) {
+    return;
+  }
+
   Conf = {};
 
   userThemes = {};
