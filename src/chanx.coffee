@@ -2263,15 +2263,32 @@ Quotify =
               $.rm @.nextSibling
     
       if Conf['Youtube Embed']
-        @sites =
+        @types =
           yt:
             regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
-            url:     "http://www.youtube.com/embed/"
-            safeurl: "http://www.youtube.com/watch/"
+            style:
+              border: '0'
+              width:  '640px'
+              height: '390px'
+            el: ->
+              $.el 'iframe'
+                src:  "http://www.youtube.com/embed/#{@name}"
           vm:
             regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
-            url:     "https://player.vimeo.com/video/"
-            safeurl: "http://www.vimeo.com/"
+            style:
+              border: '0'
+              width:  '640px'
+              height: '390px'
+            el: ->     
+              $.el 'iframe'
+                src:   "https://player.vimeo.com/video/#{@name}"
+          audio:
+            regExp:  /(?:.*\/)(.*\.(mp3|ogg|wav))$/
+            el: -> 
+              $.el 'audio'
+                controls:    'controls'
+                src:         @previousSibling.previousSibling.href
+                textContent: 'You should get a better browser.'
     else
       @regString = />>(>\/[a-z\d]+\/)?\d+/g
     
@@ -2361,8 +2378,8 @@ Quotify =
       $.replace node, nodes
 
       if Conf['Youtube Embed'] and a.className is "linkify"
-        for key, site of Quotify.sites
-          if match = a.href.match(site.regExp)
+        for key, type of Quotify.types
+          if match = a.href.match(type.regExp)
             embed = $.el 'a'
               name:         match[1]
               className:    key
@@ -2379,16 +2396,18 @@ Quotify =
     link = @previousSibling.previousSibling
 
     # We create an iframe to embed
-    iframe = $.el 'iframe'
-      src: Quotify.sites[@className].url + @name
+    el = (type = Quotify.types[@className]).el.call @
 
-    # We style the iframe with respectable boundaries.
-    iframe.style.border = '0'
-    iframe.style.width  = '640px'
-    iframe.style.height = '390px'
+    $.log type.style
+    
+    if type.style
+      for key, value of type.style
+        el.style[key] = value
+
+    el.setAttribute 'data-originalURL', link.textContent
 
     # We replace the link with the iframe and kill the embedding element.
-    $.replace link, iframe
+    $.replace link, el
 
     unembed = $.el 'a'
       name:        @name
@@ -2401,8 +2420,8 @@ Quotify =
     $.replace @, unembed
 
   unembed: ->
-    url = Quotify.sites[@className].safeurl + @name
     embedded = @.previousSibling.previousSibling
+    url = embedded.getAttribute("data-originalURL")
 
     a = $.el 'a'
       textContent: url

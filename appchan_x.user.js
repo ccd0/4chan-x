@@ -6612,16 +6612,42 @@
           });
         };
         if (Conf['Youtube Embed']) {
-          this.sites = {
+          this.types = {
             yt: {
               regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
-              url: "http://www.youtube.com/embed/",
-              safeurl: "http://www.youtube.com/watch/"
+              style: {
+                border: '0',
+                width: '640px',
+                height: '390px'
+              },
+              el: function() {
+                return $.el('iframe', {
+                  src: "http://www.youtube.com/embed/" + this.name
+                });
+              }
             },
             vm: {
               regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
-              url: "https://player.vimeo.com/video/",
-              safeurl: "http://www.vimeo.com/"
+              style: {
+                border: '0',
+                width: '640px',
+                height: '390px'
+              },
+              el: function() {
+                return $.el('iframe', {
+                  src: "https://player.vimeo.com/video/" + this.name
+                });
+              }
+            },
+            audio: {
+              regExp: /(?:.*\/)(.*\.(mp3|ogg|wav))$/,
+              el: function() {
+                return $.el('audio', {
+                  controls: 'controls',
+                  src: this.previousSibling.previousSibling.href,
+                  textContent: 'You should get a better browser.'
+                });
+              }
             }
           };
         }
@@ -6631,7 +6657,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var a, board, data, embed, i, id, index, key, m, match, n, node, nodes, p, quote, quotes, site, snapshot, spoiler, text, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2;
+      var a, board, data, embed, i, id, index, key, m, match, n, node, nodes, p, quote, quotes, snapshot, spoiler, text, type, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2;
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
@@ -6698,10 +6724,10 @@
         }
         $.replace(node, nodes);
         if (Conf['Youtube Embed'] && a.className === "linkify") {
-          _ref2 = Quotify.sites;
+          _ref2 = Quotify.types;
           for (key in _ref2) {
-            site = _ref2[key];
-            if (match = a.href.match(site.regExp)) {
+            type = _ref2[key];
+            if (match = a.href.match(type.regExp)) {
               embed = $.el('a', {
                 name: match[1],
                 className: key,
@@ -6718,15 +6744,19 @@
       }
     },
     embed: function() {
-      var iframe, link, unembed;
+      var el, key, link, type, unembed, value, _ref;
       link = this.previousSibling.previousSibling;
-      iframe = $.el('iframe', {
-        src: Quotify.sites[this.className].url + this.name
-      });
-      iframe.style.border = '0';
-      iframe.style.width = '640px';
-      iframe.style.height = '390px';
-      $.replace(link, iframe);
+      el = (type = Quotify.types[this.className]).el.call(this);
+      $.log(type.style);
+      if (type.style) {
+        _ref = type.style;
+        for (key in _ref) {
+          value = _ref[key];
+          el.style[key] = value;
+        }
+      }
+      el.setAttribute('data-originalURL', link.textContent);
+      $.replace(link, el);
       unembed = $.el('a', {
         name: this.name,
         className: this.className,
@@ -6738,8 +6768,8 @@
     },
     unembed: function() {
       var a, embed, embedded, url;
-      url = Quotify.sites[this.className].safeurl + this.name;
       embedded = this.previousSibling.previousSibling;
+      url = embedded.getAttribute("data-originalURL");
       a = $.el('a', {
         textContent: url,
         rel: 'nofollow noreferrer',
