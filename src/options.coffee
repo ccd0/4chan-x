@@ -147,7 +147,7 @@ Options =
   <div></div>
   <input type=radio name=tab hidden id=mascot_tab>
   <div></div>
-  <input type=radio name=tab hidden onClick="javascript:location.reload(true)" id=apply>
+  <input type=radio name=tab hidden onClick="document.location.reload()" id=apply>
   <div>Reloading page with new settings.</div>
 </div>'
 
