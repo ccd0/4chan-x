@@ -2159,29 +2159,31 @@ IDColor =
 
   init: ->
     return unless g.BOARD in ['b', 'q', 'soc']
-    @ids = {}
-    css = 'padding: 0 5px; border-radius: 6px; font-size: 0.8em;'
-    $.addStyle ".posteruid .hand {#{css}}", 'appchan'
     Main.callbacks.push @node
 
+    $.ready ->
+      css = 'padding: 0 5px; border-radius: 6px; font-size: 0.8em;'
+      $.addStyle ".posteruid .hand {#{css}}", 'idcolor'
+
   node: (post) ->
-    uid = $$ '.posteruid', post.el
-    return unless uid[1]
-    uid = uid[1].firstElementChild
+    uid = $ '.desktop .posteruid', post.el
+    return unless uid
+    uid = uid.firstElementChild
     uid.style.cssText = IDColor.apply str = uid.textContent
     $.on uid, 'click', -> IDColor.idClick str
     if str is $.get "highlightedID/#{g.BOARD}/"
-      $.addClass /\binline\b/.test el.parentNode.parentNode.parentNode.parentNode.parentNode.className
+      $.addClass uid.parentNode.parentNode.parentNode.parentNode, 'highlight'
       IDColor.highlighted.push uid.parentNode
       IDColor.clicked = true
 
   compute: (str) ->
-    rgb = []
     hash = @hash str
 
-    rgb[0] = (hash >> 24) & 0xFF
-    rgb[1] = (hash >> 16) & 0xFF
-    rgb[2] = (hash >> 8)  & 0xFF
+    rgb = [
+      (hash >> 24) & 0xFF
+      (hash >> 16) & 0xFF
+      (hash >> 8)  & 0xFF
+    ]
     rgb[3] = ((rgb[0] * 0.299) + (rgb[1] * 0.587) + (rgb[2] * 0.114)) > 125
 
     @ids[str] = rgb
@@ -2200,9 +2202,11 @@ IDColor =
       ++i
     msg
 
-  highlighted: []
+  highlighted:  []
 
-  clicked:     false
+  ids:  {}
+
+  clicked:  false
 
   idClick: (uid) ->
     for el in @highlighted
@@ -2213,7 +2217,7 @@ IDColor =
       $.delete value
       return @clicked = false
     for el in d.getElementsByClassName 'id_' + uid
-      continue if el.parentNode.parentNode.parentNode.parentNode.parentNode.className is 'inline'
+      continue if /\binline\b/.test el.parentNode.parentNode.parentNode.parentNode.parentNode.className
       $.addClass el.parentNode.parentNode.parentNode, 'highlight'
       @highlighted.push el
     $.set value, uid

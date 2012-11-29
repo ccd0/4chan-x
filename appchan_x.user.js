@@ -6509,39 +6509,38 @@
 
   IDColor = {
     init: function() {
-      var css, _ref;
+      var _ref;
       if ((_ref = g.BOARD) !== 'b' && _ref !== 'q' && _ref !== 'soc') {
         return;
       }
-      this.ids = {};
-      css = 'padding: 0 5px; border-radius: 6px; font-size: 0.8em;';
-      $.addStyle(".posteruid .hand {" + css + "}", 'appchan');
-      return Main.callbacks.push(this.node);
+      Main.callbacks.push(this.node);
+      return $.ready(function() {
+        var css;
+        css = 'padding: 0 5px; border-radius: 6px; font-size: 0.8em;';
+        return $.addStyle(".posteruid .hand {" + css + "}", 'idcolor');
+      });
     },
     node: function(post) {
       var str, uid;
-      uid = $$('.posteruid', post.el);
-      if (!uid[1]) {
+      uid = $('.desktop .posteruid', post.el);
+      if (!uid) {
         return;
       }
-      uid = uid[1].firstElementChild;
+      uid = uid.firstElementChild;
       uid.style.cssText = IDColor.apply(str = uid.textContent);
       $.on(uid, 'click', function() {
         return IDColor.idClick(str);
       });
       if (str === $.get("highlightedID/" + g.BOARD + "/")) {
-        $.addClass(/\binline\b/.test(el.parentNode.parentNode.parentNode.parentNode.parentNode.className));
+        $.addClass(uid.parentNode.parentNode.parentNode.parentNode, 'highlight');
         IDColor.highlighted.push(uid.parentNode);
         return IDColor.clicked = true;
       }
     },
     compute: function(str) {
       var hash, rgb;
-      rgb = [];
       hash = this.hash(str);
-      rgb[0] = (hash >> 24) & 0xFF;
-      rgb[1] = (hash >> 16) & 0xFF;
-      rgb[2] = (hash >> 8) & 0xFF;
+      rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
       rgb[3] = ((rgb[0] * 0.299) + (rgb[1] * 0.587) + (rgb[2] * 0.114)) > 125;
       this.ids[str] = rgb;
       return rgb;
@@ -6563,6 +6562,7 @@
       return msg;
     },
     highlighted: [],
+    ids: {},
     clicked: false,
     idClick: function(uid) {
       var el, value, _i, _j, _len, _len1, _ref, _ref1;
@@ -6580,7 +6580,7 @@
       _ref1 = d.getElementsByClassName('id_' + uid);
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         el = _ref1[_j];
-        if (el.parentNode.parentNode.parentNode.parentNode.parentNode.className === 'inline') {
+        if (/\binline\b/.test(el.parentNode.parentNode.parentNode.parentNode.parentNode.className)) {
           continue;
         }
         $.addClass(el.parentNode.parentNode.parentNode, 'highlight');
