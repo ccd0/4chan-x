@@ -10028,7 +10028,7 @@
         if (!((Conf['Emoji'] === "disable ponies" && item[2] === "pony") || (Conf['Emoji'] === "only ponies" && item[2] !== "pony"))) {
           name = item[0];
           image = Icons.header.png + item[1];
-          css += "a.useremail[href*='" + name + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toLowerCase()) + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toUpperCase()) + "']:last-of-type::" + position + " {\n  content: url('" + image + "') \" \";\n  vertical-align: top;\n}\n";
+          css += "a.useremail[href*='" + name + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toLowerCase()) + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toUpperCase()) + "']:last-of-type::" + position + " {\n  content: \" \" url('" + image + "') \" \";\n  vertical-align: top;\n}\n";
         }
       }
       return css;
@@ -10146,14 +10146,16 @@
     },
     padding: function() {
       var css, sheet;
-      css = "body::before {\n";
-      sheet = Style.paddingSheet;
+      if (!(sheet = Style.paddingSheet)) {
+        return;
+      }
       Style.padding.nav.property = Conf["Boards Navigation"].split(" ");
       Style.padding.nav.property = Style.padding.nav.property[Style.padding.nav.property.length - 1];
       if (Style.padding.pages != null) {
         Style.padding.pages.property = Conf["Pagination"].split(" ");
         Style.padding.pages.property = Style.padding.pages.property[Style.padding.pages.property.length - 1];
       }
+      css = "body::before {\n";
       if (Conf["4chan SS Emulation"]) {
         if ((Style.padding.pages != null) && (Conf["Pagination"] === "sticky top" || Conf["Pagination"] === "sticky bottom")) {
           css += "  " + Style.padding.pages.property + ": " + Style.padding.pages.offsetHeight + "px !important;\n";

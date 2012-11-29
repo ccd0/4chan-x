@@ -20,8 +20,7 @@
           else
             "left"
 
-    icons =
-      Icons.header.png + Icons.themes[Conf["Icons"]][if theme["Dark Theme"] then "dark" else "light"]
+    icons = Icons.header.png + Icons.themes[Conf["Icons"]][if theme["Dark Theme"] then "dark" else "light"]
 
     if Conf["Sidebar"] is "large"
       Style.sidebarOffsetW = 51
@@ -30,7 +29,11 @@
       Style.sidebarOffsetW = 0
       Style.sidebarOffsetH = 0
 
-    Style.logoOffset = if Conf["4chan Banner"] is "at sidebar top" then 83 + Style.sidebarOffsetH else 0
+    Style.logoOffset = 
+      if Conf["4chan Banner"] is "at sidebar top"
+        83 + Style.sidebarOffsetH 
+      else
+        0
 
     if Conf["Sidebar Location"] is "left"
       Style.sidebarLocation = ["left",  "right"]

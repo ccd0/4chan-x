@@ -382,9 +382,9 @@ JSColor =
     getPickerDims = (o) ->
       dims = [
         (
-          2 * o.pickerInset               +
-          2 * o.pickerFace                +
-          JSColor.images.pad[0]           +
+          2 * o.pickerInset             +
+          2 * o.pickerFace              +
+          JSColor.images.pad[0]         +
           (
             2 * o.pickerInset           +
             2 * JSColor.images.arrow[0] +
