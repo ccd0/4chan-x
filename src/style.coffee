@@ -202,6 +202,8 @@ h1 {
 #threadselect select,
 .field,
 .file,
+.mascotname,
+.mascotoptions,
 .postInfo,
 .thumbnail,
 div.post,
@@ -430,9 +432,9 @@ input[type="submit"] {
 #options .mascot,
 #options .mascot .container {
   overflow: hidden;
-
 }
 #options .mascot {
+  position: relative;
   border: none;
   margin: 5px;
   padding: 0;
@@ -446,7 +448,7 @@ input[type="submit"] {
   max-height: 250px;
   cursor: pointer;
   bottom: 0;
-  border-width: 0 1px;
+  border-width: 0 1px 1px;
   border-style: solid;
   border-color: transparent;
   overflow: hidden;
@@ -532,8 +534,27 @@ input[type="submit"] {
 }
 .mascotname,
 .mascotoptions {
-  padding: 1px 0;
+  padding: 0;
   width: 100%;
+  background: #{theme["Dialog Background"]};
+  border: 1px solid #{theme["Buttons Border"]};
+}
+.mascot .mascotoptions {
+  opacity: 0;
+  #{Style.agent}transition: opacity .3s linear;
+}
+.mascot:hover .mascotoptions {
+  opacity: 1;
+}
+.mascotoptions {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+.mascotoptions a {
+  display: inline-block;
+  width: 33%;
 }
 #close,
 #mascots_batch {
@@ -1434,11 +1455,6 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > 
   border-color: transparent;
   background-color: transparent;
 }
-.mascotname,
-.mascotoptions {
-  background: #{theme["Dialog Background"]};
-  border: 1px solid #{theme["Dialog Border"]};
-}
 .inline .post {
   box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
   padding-bottom: 2px;
@@ -2021,8 +2037,6 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   height: 0;
   width: #{(248 + Style.sidebarOffsetW)}px !important;
   overflow: hidden;
-  #{Style.agent}box-sizing: border-box;
-  box-sizing: border-box;
   padding: 0 10px;
 }
 #watcher:hover {

@@ -622,7 +622,7 @@ Options =
               innerHTML: "
 <div class='mascotname'>#{name.replace /_/g, " "}</div>
 <div class='container'><div id='#{name}' class='mAlign #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div></div>
-<div class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a> / <a class=delete name='#{name}' href='javascript:;'>Delete</a> / <a class=export name='#{name}' href='javascript:;'>Export</a></div>"
+<div class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a><a class=delete name='#{name}' href='javascript:;'>Delete</a><a class=export name='#{name}' href='javascript:;'>Export</a></div>"
             if Conf[g.MASCOTSTRING].contains name
               $.addClass li, 'enabled'
 
