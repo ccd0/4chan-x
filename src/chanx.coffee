@@ -2264,7 +2264,7 @@ Quotify =
 
       if Conf['Youtube Embed']
         @types =
-          yt:
+          youtube:
             regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
             style:
               border: '0'
@@ -2273,7 +2273,16 @@ Quotify =
             el: ->
               $.el 'iframe'
                 src:  "http://www.youtube.com/embed/#{@name}"
-          vm:
+          vocaroo:
+            regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
+            style:
+              border: '0'
+              width:  '148px'
+              height: '44px'
+            el: ->
+              $.el 'iframe'
+                src:  "http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0"
+          vimeo:
             regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
             style:
               border: '0'

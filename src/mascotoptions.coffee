@@ -2,8 +2,6 @@ MascotTools =
   init: (mascot = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]) ->
   
     Conf['mascot'] = mascot
-
-    if el = $('#mascot', d.body) then $.rm el
     
     return unless Conf['Mascots']
 
@@ -308,15 +306,17 @@ MascotTools =
 
   addMascot: (mascot) ->
 
-    el = $('#mascot', d.body)
-    $.rm el if el
+    el = $('#mascot img', d.body)
 
-    div = $.el 'div',
-      id: "mascot"
-      innerHTML: "<img src='#{if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'>"
+    if el
+      el.src = if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image
+    else
+      div = $.el 'div',
+        id: "mascot"
+        innerHTML: "<img src='#{if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'>"
 
-    $.ready ->
-      $.add d.body, div
+      $.ready ->
+        $.add d.body, div
 
   save: (mascot) ->
     if typeof (aname = mascot.name) == "undefined" or aname == ""

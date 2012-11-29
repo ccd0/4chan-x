@@ -6616,7 +6616,7 @@
         };
         if (Conf['Youtube Embed']) {
           this.types = {
-            yt: {
+            youtube: {
               regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
               style: {
                 border: '0',
@@ -6629,7 +6629,20 @@
                 });
               }
             },
-            vm: {
+            vocaroo: {
+              regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
+              style: {
+                border: '0',
+                width: '148px',
+                height: '44px'
+              },
+              el: function() {
+                return $.el('iframe', {
+                  src: "http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0"
+                });
+              }
+            },
+            vimeo: {
               regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
               style: {
                 border: '0',
@@ -9652,14 +9665,11 @@
 
   MascotTools = {
     init: function(mascot) {
-      var el, filters, location, names, position;
+      var filters, location, names, position;
       if (mascot == null) {
         mascot = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)];
       }
       Conf['mascot'] = mascot;
-      if (el = $('#mascot', d.body)) {
-        $.rm(el);
-      }
       if (!Conf['Mascots']) {
         return;
       }
@@ -9854,17 +9864,18 @@
     },
     addMascot: function(mascot) {
       var div, el;
-      el = $('#mascot', d.body);
+      el = $('#mascot img', d.body);
       if (el) {
-        $.rm(el);
+        return el.src = Array.isArray(mascot.image) ? (userThemes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image;
+      } else {
+        div = $.el('div', {
+          id: "mascot",
+          innerHTML: "<img src='" + (Array.isArray(mascot.image) ? (userThemes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'>"
+        });
+        return $.ready(function() {
+          return $.add(d.body, div);
+        });
       }
-      div = $.el('div', {
-        id: "mascot",
-        innerHTML: "<img src='" + (Array.isArray(mascot.image) ? (userThemes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'>"
-      });
-      return $.ready(function() {
-        return $.add(d.body, div);
-      });
     },
     save: function(mascot) {
       var aname, type, _i, _len, _ref;
