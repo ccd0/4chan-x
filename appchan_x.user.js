@@ -4766,7 +4766,7 @@
       return $.on(d, 'keydown', Keybinds.keydown);
     },
     keydown: function(e) {
-      var key, link, o, target, thread;
+      var form, key, o, target, thread;
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
@@ -4859,13 +4859,13 @@
           window.location = "/" + g.BOARD + "/0#delform";
           break;
         case Conf.nextPage:
-          if (link = $('link[rel=next]', d.head)) {
-            window.location = link.href + '#delform';
+          if (form = $('.next form')) {
+            window.location = form.action;
           }
           break;
         case Conf.previousPage:
-          if (link = $('link[rel=prev]', d.head)) {
-            window.location = link.href + '#delform';
+          if (form = $('.prev form')) {
+            window.location = form.action;
           }
           break;
         case Conf.nextThread:

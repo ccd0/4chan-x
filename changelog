@@ -1,4 +1,7 @@
 master
+- Mayhem
+  Fix next/previous page keybinds.
+
 - noface
   Improved checking for own post directly after posting. This should sort out a number of small hiccups.
   Fixed crossquotes not showing the correct archiver.

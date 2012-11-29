@@ -822,11 +822,11 @@ Keybinds =
       when Conf.zero
         window.location = "/#{g.BOARD}/0#delform"
       when Conf.nextPage
-        if link = $ 'link[rel=next]', d.head
-          window.location = link.href + '#delform'
-      when Conf.previousPage
-        if link = $ 'link[rel=prev]', d.head
-          window.location = link.href + '#delform'
+        if form = $ '.next form'
+          window.location = form.action
+       when Conf.previousPage
+        if form = $ '.prev form'
+          window.location = form.action
       # Thread Navigation
       when Conf.nextThread
         return if g.REPLY
