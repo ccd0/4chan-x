@@ -2304,7 +2304,7 @@ Quotify =
                 className: "soundcloud"
                 name:      "soundcloud"
               $.ajax(
-                "https://soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@previousSibling.previousSibling.textContent}&color=#{Style.colorToHex userThemes[Conf['theme']]['Background Color']}"
+                "https://soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@previousSibling.previousSibling.textContent}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
                 div: div
                 onloadend: ->
                   @div.innerHTML = JSON.parse(this.responseText).html

@@ -57,12 +57,12 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         $.on div, 'click', ->
           checkbox.click()
 
-  addStyle: (theme = userThemes[Conf['theme']]) ->
+  addStyle: (theme = Themes[Conf['theme']]) ->
     $.off d, 'DOMNodeInserted', Style.addStyle
     unless Conf['styleInit']
       if d.head
         Conf['styleInit']  = true
-        Style.appchan      = $.addStyle Style.css(userThemes[Conf['theme']]), 'appchan'
+        Style.appchan      = $.addStyle Style.css(Themes[Conf['theme']]), 'appchan'
         Style.icons        = $.addStyle Style.iconPositions(), 'icons'
         Style.paddingSheet = $.addStyle "", 'padding'
         Style.mascot       = $.addStyle "", 'mascotSheet'

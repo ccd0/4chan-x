@@ -26,45 +26,18 @@ Main =
       g.MASCOTSTRING = "Enabled Mascots"
 
     # Load user themes, mascots, and their various statuses.
-    userNavigation                = $.get "userNavigation", Navigation
-    userThemes                    = $.get "userThemes",     Themes
-    userMascots                   = $.get "userMascots",    Mascots
+    userNavigation = $.get "userNavigation", Navigation
+
+    for name, theme of $.get "userThemes", {}
+      Themes[name] = theme
+
+    for name, mascot of $.get "userMascots", {}
+      Mascots[name] = mascot
 
     Conf["Enabled Mascots"]       = $.get "Enabled Mascots",      []
     Conf["Enabled Mascots sfw"]   = $.get "Enabled Mascots sfw",  []
     Conf["Enabled Mascots nsfw"]  = $.get "Enabled Mascots nsfw", []
     Conf["Deleted Mascots"]       = $.get "Deleted Mascots",      []
-
-    # To allow updating of the mascots object, I iterate through the hard-coded mascots
-    for name, mascot of Mascots
-      # ...and check if the mascot already exists
-      if userMascots[name]
-
-        # I can refresh it if code has changed, but don't if it hasn't.
-        # I also don't replace the mascot if the user has customized it.
-        # That would be mean.
-        if userMascots[name] == mascot or userMascots[name]["Customized"]
-          continue
-
-      # If I'm here, I can shove a fresh mascot into the mascot object.
-      userMascots[name] = mascot
-      
-      # And I track that I have done so.
-      mascotToggle = true
-
-    # ...so I can save only if something has been updated.
-    if mascotToggle
-      $.set "userMascots", userMascots
-
-    # Same thing with themes.
-    unless userThemes == Themes
-      for name, theme of Themes
-        if userThemes[name]
-          if userThemes[name]["Customized"] and not userThemes[name]["Deleted"]
-            continue
-          if userThemes[name]["Deleted"]
-            theme["Deleted"] = true
-        userThemes[name] = theme
 
     # Setup Fill some per board configuration values with their global equivalents.
     if Conf["Interval per board"]

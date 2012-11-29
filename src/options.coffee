@@ -393,7 +393,7 @@ Options =
       id:        "themes"
 
     # Get the names of all mascots and sort them alphabetically...
-    keys = Object.keys(userThemes)
+    keys = Object.keys(Themes)
     keys.sort()
 
     # And use the sorted list to display all available themes to the user.
@@ -401,7 +401,7 @@ Options =
     if mode is "default"
 
       for name in keys
-        theme = userThemes[name]
+        theme = Themes[name]
 
         # Themes aren't actually deleted, but are marked as such.
         # Megaupload did something similar with illegal files and got in trouble for it.
@@ -446,7 +446,7 @@ Options =
           $.on $('a.export', div), 'click', (e) ->
             e.preventDefault()
             e.stopPropagation()
-            exportTheme = userThemes[@.name]
+            exportTheme = Themes[@.name]
             exportTheme['Theme'] = @.name
             exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme))
 
@@ -468,12 +468,14 @@ Options =
               return
 
             if confirm "Are you sure you want to delete \"#{container.id}\"?"
-              if container.id is Conf['theme']
+              if (name = container.id) is Conf['theme']
                 if settheme = container.previousSibling or container.nextSibling
                   Conf['theme'] = settheme.id
                   $.addClass settheme, 'selectedtheme'
                   $.set 'theme', Conf['theme']
-              userThemes[container.id]["Deleted"] = true
+              Themes[container.id]["Deleted"] = true
+              userThemes = $.get "userThemes", {}
+              userThemes[name] = Themes[name]
               $.set 'userThemes', userThemes
               $.rm container
 
@@ -521,7 +523,7 @@ Options =
     else
 
       for name in keys
-        theme = userThemes[name]
+        theme = Themes[name]
 
         if theme["Deleted"]
 
@@ -545,8 +547,10 @@ Options =
 </div>"
 
           $.on div, 'click', ->
-            if confirm "Are you sure you want to undelete \"#{@id}\"?"
-              userThemes[@id]["Deleted"] = false
+            if confirm "Are you sure you want to undelete \"#{name = @id}\"?"
+              Themes[@id]["Deleted"] = false
+              userThemes = $.get "userThemes", {}
+              userThemes[name] = Themes[name]
               $.set 'userThemes', userThemes
               $.rm @
 
@@ -585,7 +589,7 @@ Options =
         className: "reply"
         innerHTML: "Hide Categories <span></span><div></div>"
 
-      keys = Object.keys(userMascots)
+      keys = Object.keys(Mascots)
       keys.sort()
 
       if mode is 'default'
@@ -615,13 +619,13 @@ Options =
 
         for name in keys
           unless Conf["Deleted Mascots"].contains name
-            mascot = userMascots[name]
+            mascot = Mascots[name]
             li = $.el 'li',
               className: 'mascot'
               id:        name
               innerHTML: "
 <div class='mascotname'>#{name.replace /_/g, " "}</div>
-<div class='container'><div id='#{name}' class='mAlign #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div></div>
+<div class='container'><div id='#{name}' class='mAlign #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Themes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div></div>
 <div class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a><a class=delete name='#{name}' href='javascript:;'>Delete</a><a class=export name='#{name}' href='javascript:;'>Export</a></div>"
             if Conf[g.MASCOTSTRING].contains name
               $.addClass li, 'enabled'
@@ -647,7 +651,7 @@ Options =
             # Mascot Exporting
             $.on $('a.export', li), 'click', (e) ->
               e.stopPropagation()
-              exportMascot = userMascots[@.name]
+              exportMascot = Mascots[@.name]
               exportMascot['Mascot'] = @.name
               exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot))
 
@@ -689,7 +693,7 @@ Options =
           $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING] = []
 
         $.on $('#selectAll', batchmascots), 'click', ->
-          for name, mascot of userMascots
+          for name, mascot of Mascots
             unless Conf["Hidden Categories"].contains(mascot.category) or Conf[g.MASCOTSTRING].contains(name) or Conf["Deleted Mascots"].contains(name)
               $.addClass $.id(name), 'enabled'
               Conf[g.MASCOTSTRING].push name
@@ -719,12 +723,12 @@ Options =
 
         for name in keys
           if Conf["Deleted Mascots"].contains name
-            mascot = userMascots[name]
+            mascot = Mascots[name]
             li = $.el 'li',
               className: 'mascot'
               innerHTML: "
 <div class='mascotname'>#{name.replace /_/g, " "}</span>
-<div id='#{name}' class='container #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div>
+<div id='#{name}' class='container #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Themes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div>
 "
             div = $('div', li)
 
@@ -762,7 +766,7 @@ Options =
       if el.checked
         category.hidden = true
         Conf["Hidden Categories"].push name
-        for mName, mascot of userMascots
+        for mName, mascot of Mascots
           if mascot.category is name
             for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
               if Conf[type].contains mName

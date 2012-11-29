@@ -12,7 +12,7 @@ MascotTools =
 
     # If we're editting anything, let's not change mascots any time we change a value.
     if Conf['editMode']
-      unless mascot = editMascot or mascot = userMascots[Conf["mascot"]]
+      unless mascot = editMascot or mascot = Mascots[Conf["mascot"]]
         return
 
     else
@@ -21,7 +21,7 @@ MascotTools =
       unless Conf["mascot"]
         return
 
-      unless mascot = userMascots[Conf["mascot"]]
+      unless mascot = Mascots[Conf["mascot"]]
         Conf[gMASCOTSTRING].remove Conf["mascot"]
         return
 
@@ -105,8 +105,8 @@ MascotTools =
 
   dialog: (key) ->
     Conf['editMode'] = "mascot"
-    if userMascots[key]
-      editMascot = JSON.parse(JSON.stringify(userMascots[key]))
+    if Mascots[key]
+      editMascot = JSON.parse(JSON.stringify(Mascots[key]))
     else
       editMascot = {}
     editMascot.name = key or ''
@@ -276,7 +276,7 @@ MascotTools =
 
   input: (item, name) ->
     if Array.isArray(editMascot[name])
-      if userThemes[Conf['theme']]['Dark Theme']
+      if Themes[Conf['theme']]['Dark Theme']
         value = editMascot[name][0]
       else
         value = editMascot[name][1]
@@ -309,17 +309,17 @@ MascotTools =
     el = $('#mascot img', d.body)
 
     if el
-      el.src = if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image
+      el.src = if Array.isArray(mascot.image) then (if Themes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image
     else
       div = $.el 'div',
         id: "mascot"
-        innerHTML: "<img src='#{if Array.isArray(mascot.image) then (if userThemes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'>"
+        innerHTML: "<img src='#{if Array.isArray(mascot.image) then (if Themes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'>"
 
       $.ready ->
         $.add d.body, div
 
   save: (mascot) ->
-    if typeof (aname = mascot.name) == "undefined" or aname == ""
+    if typeof ({name} = mascot) == "undefined" or name == ""
       alert "Please name your mascot."
       return
 
@@ -330,29 +330,31 @@ MascotTools =
     unless mascot.category
       mascot.category = MascotTools.categories[0]
 
-    if userMascots[aname]
+    if Mascots[name]
 
-      if Conf["Deleted Mascots"].contains aname
-        Conf["Deleted Mascots"].remove aname
+      if Conf["Deleted Mascots"].contains name
+        Conf["Deleted Mascots"].remove name
         $.set "Deleted Mascots", Conf["Deleted Mascots"]
 
       else
-        if confirm "A mascot named \"#{aname}\" already exists. Would you like to over-write?"
-          delete userMascots[aname]
+        if confirm "A mascot named \"#{name}\" already exists. Would you like to over-write?"
+          delete Mascots[name]
         else
-          alert "Creation of \"#{aname}\" aborted."
+          alert "Creation of \"#{name}\" aborted."
           return
 
     for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
-      unless Conf[type].contains aname
-        Conf[type].push aname
+      unless Conf[type].contains name
+        Conf[type].push name
         $.set type, Conf[type]
     mascot["Customized"] = true;
-    userMascots[aname]   = JSON.parse(JSON.stringify(mascot))
-    delete userMascots[aname].name
-    Conf["mascot"]       = aname
+    Mascots[name]        = JSON.parse(JSON.stringify(mascot))
+    delete Mascots[name].name
+    Conf["mascot"]       = name
+    userMascots = $.get "userMascots", {}
+    userMascots[name] = Mascots[name]
     $.set 'userMascots', userMascots
-    alert "Mascot \"#{aname}\" saved."
+    alert "Mascot \"#{name}\" saved."
 
   close: ->
     Conf['editMode'] = false
@@ -379,13 +381,16 @@ MascotTools =
       name = imported["Mascot"]
       delete imported["Mascot"]
 
-      if userMascots[name] and not Conf["Deleted Mascots"].remove name
+      if Mascots[name] and not Conf["Deleted Mascots"].remove name
         unless confirm "A mascot with this name already exists. Would you like to over-write?"
           return
 
-      userMascots[name] = imported
+      Mascots[name] = imported
 
+      userMascots = $.get "userMascots", {}
+      userMascots[name] = Mascots[name]
       $.set 'userMascots', userMascots
+
       alert "Mascot \"#{name}\" imported!"
       $.rm $("#mascotContainer", d.body)
       Options.mascotTab.dialog()

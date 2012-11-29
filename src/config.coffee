@@ -779,9 +779,7 @@ http://www.google.com/searchbyimage?image_url=$1
 return unless /^[a-z]+\.4chan\.org$/.test(location.hostname)
   
 Conf             = {}       # User configuration.
-userThemes       = {}       # Installed themes.
 editTheme        = {}       # Currently editted theme.
-userMascots      = {}       # Installed mascots.
 editMascot       = {}       # Which mascot we're editting.
 userNavigation   = {}       # ...
 d                = document # Shortcut

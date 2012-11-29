@@ -5,8 +5,8 @@ ThemeTools =
   init: (key) ->
     Conf['editMode'] = "theme"
 
-    if userThemes[key]
-      editTheme = JSON.parse(JSON.stringify(userThemes[key]))
+    if Themes[key]
+      editTheme = JSON.parse(JSON.stringify(Themes[key]))
       editTheme["Theme"] = key
     else
       editTheme = {}
@@ -227,9 +227,9 @@ ThemeTools =
       name = imported.name or imported["Theme"]
       delete imported.name
 
-      if userThemes[name] and not userThemes[name]["Deleted"]
+      if Themes[name] and not Themes[name]["Deleted"]
         if confirm "A theme with this name already exists. Would you like to over-write?"
-          delete userThemes[name]
+          delete Themes[name]
         else
           return
 
@@ -257,7 +257,7 @@ ThemeTools =
           bgRPA = ['no-repeat', 'bottom', 'left', 'fixed']
 
         if origin == "oneechan"
-          userThemes[name] = {
+          Themes[name] = {
             'Author'                      : "Anonymous"
             'Author Tripcode'             : "!POMF.9waa"
             'Background Image'            : 'url("' + (imported.bgImg or '') + '")'
@@ -337,7 +337,7 @@ textarea,
 }""" + (imported.customCSS or '') }
 
         else if origin == "SS"
-          userThemes[name] = {
+          Themes[name] = {
             'Author'                      : "Anonymous"
             'Author Tripcode'             : "!.pC/AHOKAg"
             'Background Image'            : 'url("' + (imported.bgImg or '') + '")'
@@ -420,8 +420,10 @@ textarea,
 }""" + (imported.customCSS or '') }
 
       else if origin == 'appchan'
-        userThemes[name] = imported
+        Themes[name] = imported
 
+      userThemes = $.get "userThemes", {}
+      userThemes[name] = Themes[name]
       $.set 'userThemes', userThemes
       alert "Theme \"#{name}\" imported!"
       $.rm $("#themes", d.body)
@@ -432,17 +434,19 @@ textarea,
   save: (theme) ->
     name = theme["Theme"]
 
-    if userThemes[name] and not userThemes[name]["Deleted"]
+    if Themes[name] and not Themes[name]["Deleted"]
       if confirm "A theme with this name already exists. Would you like to over-write?"
-        delete userThemes[name]
+        delete Themes[name]
       else
         return
 
     theme["Customized"] = true
-    userThemes[name] = theme
-    delete userThemes[name]
+    Themes[name] = JSON.parse(JSON.stringify(theme))
+    delete Themes[name]["Theme"]
+    userThemes = $.get "userThemes", {}
+    userThemes[name] = Themes[name]
     $.set 'userThemes', userThemes
-    $.set "theme", name
+    $.set "theme", Conf['theme'] = name
     alert "Theme \"#{name}\" saved."
 
   close: ->

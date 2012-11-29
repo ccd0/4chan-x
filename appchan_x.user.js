@@ -102,7 +102,7 @@
  * @link      http://JSColor.com
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, JSColor, Keybinds, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userMascots, userNavigation, userThemes, _base;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, JSColor, Keybinds, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
 
   Config = {
     main: {
@@ -329,11 +329,7 @@
 
   Conf = {};
 
-  userThemes = {};
-
   editTheme = {};
-
-  userMascots = {};
 
   editMascot = {};
 
@@ -2391,7 +2387,7 @@
       center: true
     },
     'Yoko_Littner': {
-      category: 'Anime',
+      category: 'Questionable',
       image: 'https://i.minus.com/i0mtOEsBC9GlY.png',
       position: 'bottom'
     },
@@ -3221,12 +3217,12 @@
         className: "suboptions",
         id: "themes"
       });
-      keys = Object.keys(userThemes);
+      keys = Object.keys(Themes);
       keys.sort();
       if (mode === "default") {
         for (_i = 0, _len = keys.length; _i < _len; _i++) {
           name = keys[_i];
-          theme = userThemes[name];
+          theme = Themes[name];
           if (!theme["Deleted"]) {
             div = $.el('div', {
               className: name === Conf['theme'] ? 'selectedtheme' : '',
@@ -3243,7 +3239,7 @@
               var exportTheme, exportedTheme;
               e.preventDefault();
               e.stopPropagation();
-              exportTheme = userThemes[this.name];
+              exportTheme = Themes[this.name];
               exportTheme['Theme'] = this.name;
               exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme));
               if (window.open(exportedTheme, "_blank")) {
@@ -3253,7 +3249,7 @@
               }
             });
             $.on($('a.delete', div), 'click', function(e) {
-              var container, settheme;
+              var container, settheme, userThemes;
               e.preventDefault();
               e.stopPropagation();
               container = this.parentElement.parentElement;
@@ -3262,14 +3258,16 @@
                 return;
               }
               if (confirm("Are you sure you want to delete \"" + container.id + "\"?")) {
-                if (container.id === Conf['theme']) {
+                if ((name = container.id) === Conf['theme']) {
                   if (settheme = container.previousSibling || container.nextSibling) {
                     Conf['theme'] = settheme.id;
                     $.addClass(settheme, 'selectedtheme');
                     $.set('theme', Conf['theme']);
                   }
                 }
-                userThemes[container.id]["Deleted"] = true;
+                Themes[container.id]["Deleted"] = true;
+                userThemes = $.get("userThemes", {});
+                userThemes[name] = Themes[name];
                 $.set('userThemes', userThemes);
                 return $.rm(container);
               }
@@ -3311,15 +3309,18 @@
       } else {
         for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
           name = keys[_j];
-          theme = userThemes[name];
+          theme = Themes[name];
           if (theme["Deleted"]) {
             div = $.el('div', {
               id: name,
               innerHTML: "<div style='position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:" + theme['Checkbox Background'] + ";border: 1px solid " + theme['Checkbox Border'] + ";'></div>  <span style='color:" + theme['Subjects'] + "!important; font-weight: 700 !important'> " + name + "</span>  <span style='color:" + theme['Names'] + "!important; font-weight: 700 !important'> " + theme['Author'] + "</span>  <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>  <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>  <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  <br>  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>    <a style='color:" + theme['Quotelinks'] + "!important; font-weight: 800;'>&gt;&gt;27582902</a>    <br>    I forgive you for using VLC to open me. ;__;  </blockquote></div>"
             });
             $.on(div, 'click', function() {
-              if (confirm("Are you sure you want to undelete \"" + this.id + "\"?")) {
-                userThemes[this.id]["Deleted"] = false;
+              var userThemes;
+              if (confirm("Are you sure you want to undelete \"" + (name = this.id) + "\"?")) {
+                Themes[this.id]["Deleted"] = false;
+                userThemes = $.get("userThemes", {});
+                userThemes[name] = Themes[name];
                 $.set('userThemes', userThemes);
                 return $.rm(this);
               }
@@ -3363,7 +3364,7 @@
           className: "reply",
           innerHTML: "Hide Categories <span></span><div></div>"
         });
-        keys = Object.keys(userMascots);
+        keys = Object.keys(Mascots);
         keys.sort();
         if (mode === 'default') {
           _ref = MascotTools.categories;
@@ -3394,11 +3395,11 @@
           for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
             name = keys[_j];
             if (!Conf["Deleted Mascots"].contains(name)) {
-              mascot = userMascots[name];
+              mascot = Mascots[name];
               li = $.el('li', {
                 className: 'mascot',
                 id: name,
-                innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</div><div class='container'><div id='" + name + "' class='mAlign " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (userThemes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'></div></div><div class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a><a class=delete name='" + name + "' href='javascript:;'>Delete</a><a class=export name='" + name + "' href='javascript:;'>Export</a></div>"
+                innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</div><div class='container'><div id='" + name + "' class='mAlign " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (Themes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'></div></div><div class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a><a class=delete name='" + name + "' href='javascript:;'>Delete</a><a class=export name='" + name + "' href='javascript:;'>Export</a></div>"
               });
               if (Conf[g.MASCOTSTRING].contains(name)) {
                 $.addClass(li, 'enabled');
@@ -3430,7 +3431,7 @@
               $.on($('a.export', li), 'click', function(e) {
                 var exportMascot, exportedMascot;
                 e.stopPropagation();
-                exportMascot = userMascots[this.name];
+                exportMascot = Mascots[this.name];
                 exportMascot['Mascot'] = this.name;
                 exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot));
                 if (window.open(exportedMascot, "_blank")) {
@@ -3473,8 +3474,8 @@
             return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING] = []);
           });
           $.on($('#selectAll', batchmascots), 'click', function() {
-            for (name in userMascots) {
-              mascot = userMascots[name];
+            for (name in Mascots) {
+              mascot = Mascots[name];
               if (!(Conf["Hidden Categories"].contains(mascot.category) || Conf[g.MASCOTSTRING].contains(name) || Conf["Deleted Mascots"].contains(name))) {
                 $.addClass($.id(name), 'enabled');
                 Conf[g.MASCOTSTRING].push(name);
@@ -3508,10 +3509,10 @@
           for (_k = 0, _len2 = keys.length; _k < _len2; _k++) {
             name = keys[_k];
             if (Conf["Deleted Mascots"].contains(name)) {
-              mascot = userMascots[name];
+              mascot = Mascots[name];
               li = $.el('li', {
                 className: 'mascot',
-                innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</span><div id='" + name + "' class='container " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (userThemes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'></div>"
+                innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</span><div id='" + name + "' class='container " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (Themes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'></div>"
               });
               div = $('div', li);
               $.on(div, 'click', function() {
@@ -3550,8 +3551,8 @@
         if (el.checked) {
           category.hidden = true;
           Conf["Hidden Categories"].push(name);
-          for (mName in userMascots) {
-            mascot = userMascots[mName];
+          for (mName in Mascots) {
+            mascot = Mascots[mName];
             if (mascot.category === name) {
               _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
               for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -6672,7 +6673,7 @@
                   className: "soundcloud",
                   name: "soundcloud"
                 });
-                $.ajax("https://soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousSibling.previousSibling.textContent + "&color=" + (Style.colorToHex(userThemes[Conf['theme']]['Background Color'])), {
+                $.ajax("https://soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousSibling.previousSibling.textContent + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
                   div: div,
                   onloadend: function() {
                     return this.div.innerHTML = JSON.parse(this.responseText).html;
@@ -8901,8 +8902,8 @@
     init: function(key) {
       var colorInput, div, fileInput, header, input, item, layout, themecontent, _i, _j, _len, _len1, _ref;
       Conf['editMode'] = "theme";
-      if (userThemes[key]) {
-        editTheme = JSON.parse(JSON.stringify(userThemes[key]));
+      if (Themes[key]) {
+        editTheme = JSON.parse(JSON.stringify(Themes[key]));
         editTheme["Theme"] = key;
       } else {
         editTheme = {};
@@ -9050,7 +9051,7 @@
       file = evt.target.files[0];
       reader = new FileReader();
       reader.onload = function(e) {
-        var bgColor, bgRPA, blinkColor, brderColor, imported, inputColor, inputbColor, jlinkColor, linkColor, linkHColor, mainColor, name, nameColor, quoteColor, sageColor, textColor, timeColor, titleColor, tripColor;
+        var bgColor, bgRPA, blinkColor, brderColor, imported, inputColor, inputbColor, jlinkColor, linkColor, linkHColor, mainColor, name, nameColor, quoteColor, sageColor, textColor, timeColor, titleColor, tripColor, userThemes;
         try {
           imported = JSON.parse(e.target.result);
         } catch (err) {
@@ -9063,9 +9064,9 @@
         }
         name = imported.name || imported["Theme"];
         delete imported.name;
-        if (userThemes[name] && !userThemes[name]["Deleted"]) {
+        if (Themes[name] && !Themes[name]["Deleted"]) {
           if (confirm("A theme with this name already exists. Would you like to over-write?")) {
-            delete userThemes[name];
+            delete Themes[name];
           } else {
             return;
           }
@@ -9093,7 +9094,7 @@
             bgRPA = ['no-repeat', 'bottom', 'left', 'fixed'];
           }
           if (origin === "oneechan") {
-            userThemes[name] = {
+            Themes[name] = {
               'Author': "Anonymous",
               'Author Tripcode': "!POMF.9waa",
               'Background Image': 'url("' + (imported.bgImg || '') + '")',
@@ -9146,7 +9147,7 @@
               'Custom CSS': ".rice {\n  box-shadow:rgba(" + mainColor.shiftRGB(32) + ",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + (imported.customCSS || '')
             };
           } else if (origin === "SS") {
-            userThemes[name] = {
+            Themes[name] = {
               'Author': "Anonymous",
               'Author Tripcode': "!.pC/AHOKAg",
               'Background Image': 'url("' + (imported.bgImg || '') + '")',
@@ -9200,8 +9201,10 @@
             };
           }
         } else if (origin === 'appchan') {
-          userThemes[name] = imported;
+          Themes[name] = imported;
         }
+        userThemes = $.get("userThemes", {});
+        userThemes[name] = Themes[name];
         $.set('userThemes', userThemes);
         alert("Theme \"" + name + "\" imported!");
         $.rm($("#themes", d.body));
@@ -9210,20 +9213,22 @@
       return reader.readAsText(file);
     },
     save: function(theme) {
-      var name;
+      var name, userThemes;
       name = theme["Theme"];
-      if (userThemes[name] && !userThemes[name]["Deleted"]) {
+      if (Themes[name] && !Themes[name]["Deleted"]) {
         if (confirm("A theme with this name already exists. Would you like to over-write?")) {
-          delete userThemes[name];
+          delete Themes[name];
         } else {
           return;
         }
       }
       theme["Customized"] = true;
-      userThemes[name] = theme;
-      delete userThemes[name];
+      Themes[name] = JSON.parse(JSON.stringify(theme));
+      delete Themes[name]["Theme"];
+      userThemes = $.get("userThemes", {});
+      userThemes[name] = Themes[name];
       $.set('userThemes', userThemes);
-      $.set("theme", name);
+      $.set("theme", Conf['theme'] = name);
       return alert("Theme \"" + name + "\" saved.");
     },
     close: function() {
@@ -9694,7 +9699,7 @@
         position = 248;
       }
       if (Conf['editMode']) {
-        if (!(mascot = editMascot || (mascot = userMascots[Conf["mascot"]]))) {
+        if (!(mascot = editMascot || (mascot = Mascots[Conf["mascot"]]))) {
           return;
         }
       } else {
@@ -9702,7 +9707,7 @@
         if (!Conf["mascot"]) {
           return;
         }
-        if (!(mascot = userMascots[Conf["mascot"]])) {
+        if (!(mascot = Mascots[Conf["mascot"]])) {
           Conf[gMASCOTSTRING].remove(Conf["mascot"]);
           return;
         }
@@ -9729,8 +9734,8 @@
     dialog: function(key) {
       var dialog, div, fileInput, input, item, layout, name, option, optionHTML, setting, value, _i, _len, _ref;
       Conf['editMode'] = "mascot";
-      if (userMascots[key]) {
-        editMascot = JSON.parse(JSON.stringify(userMascots[key]));
+      if (Mascots[key]) {
+        editMascot = JSON.parse(JSON.stringify(Mascots[key]));
       } else {
         editMascot = {};
       }
@@ -9849,7 +9854,7 @@
     input: function(item, name) {
       var div, value;
       if (Array.isArray(editMascot[name])) {
-        if (userThemes[Conf['theme']]['Dark Theme']) {
+        if (Themes[Conf['theme']]['Dark Theme']) {
           value = editMascot[name][0];
         } else {
           value = editMascot[name][1];
@@ -9881,11 +9886,11 @@
       var div, el;
       el = $('#mascot img', d.body);
       if (el) {
-        return el.src = Array.isArray(mascot.image) ? (userThemes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image;
+        return el.src = Array.isArray(mascot.image) ? (Themes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image;
       } else {
         div = $.el('div', {
           id: "mascot",
-          innerHTML: "<img src='" + (Array.isArray(mascot.image) ? (userThemes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'>"
+          innerHTML: "<img src='" + (Array.isArray(mascot.image) ? (Themes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'>"
         });
         return $.ready(function() {
           return $.add(d.body, div);
@@ -9893,8 +9898,8 @@
       }
     },
     save: function(mascot) {
-      var aname, type, _i, _len, _ref;
-      if (typeof (aname = mascot.name) === "undefined" || aname === "") {
+      var name, type, userMascots, _i, _len, _ref;
+      if (typeof (name = mascot.name, mascot) === "undefined" || name === "") {
         alert("Please name your mascot.");
         return;
       }
@@ -9905,15 +9910,15 @@
       if (!mascot.category) {
         mascot.category = MascotTools.categories[0];
       }
-      if (userMascots[aname]) {
-        if (Conf["Deleted Mascots"].contains(aname)) {
-          Conf["Deleted Mascots"].remove(aname);
+      if (Mascots[name]) {
+        if (Conf["Deleted Mascots"].contains(name)) {
+          Conf["Deleted Mascots"].remove(name);
           $.set("Deleted Mascots", Conf["Deleted Mascots"]);
         } else {
-          if (confirm("A mascot named \"" + aname + "\" already exists. Would you like to over-write?")) {
-            delete userMascots[aname];
+          if (confirm("A mascot named \"" + name + "\" already exists. Would you like to over-write?")) {
+            delete Mascots[name];
           } else {
-            alert("Creation of \"" + aname + "\" aborted.");
+            alert("Creation of \"" + name + "\" aborted.");
             return;
           }
         }
@@ -9921,17 +9926,19 @@
       _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         type = _ref[_i];
-        if (!Conf[type].contains(aname)) {
-          Conf[type].push(aname);
+        if (!Conf[type].contains(name)) {
+          Conf[type].push(name);
           $.set(type, Conf[type]);
         }
       }
       mascot["Customized"] = true;
-      userMascots[aname] = JSON.parse(JSON.stringify(mascot));
-      delete userMascots[aname].name;
-      Conf["mascot"] = aname;
+      Mascots[name] = JSON.parse(JSON.stringify(mascot));
+      delete Mascots[name].name;
+      Conf["mascot"] = name;
+      userMascots = $.get("userMascots", {});
+      userMascots[name] = Mascots[name];
       $.set('userMascots', userMascots);
-      return alert("Mascot \"" + aname + "\" saved.");
+      return alert("Mascot \"" + name + "\" saved.");
     },
     close: function() {
       Conf['editMode'] = false;
@@ -9945,7 +9952,7 @@
       file = evt.target.files[0];
       reader = new FileReader();
       reader.onload = function(e) {
-        var imported, name;
+        var imported, name, userMascots;
         try {
           imported = JSON.parse(e.target.result);
         } catch (err) {
@@ -9957,12 +9964,14 @@
         }
         name = imported["Mascot"];
         delete imported["Mascot"];
-        if (userMascots[name] && !Conf["Deleted Mascots"].remove(name)) {
+        if (Mascots[name] && !Conf["Deleted Mascots"].remove(name)) {
           if (!confirm("A mascot with this name already exists. Would you like to over-write?")) {
             return;
           }
         }
-        userMascots[name] = imported;
+        Mascots[name] = imported;
+        userMascots = $.get("userMascots", {});
+        userMascots[name] = Mascots[name];
         $.set('userMascots', userMascots);
         alert("Mascot \"" + name + "\" imported!");
         $.rm($("#mascotContainer", d.body));
@@ -10082,13 +10091,13 @@
     },
     addStyle: function(theme) {
       if (theme == null) {
-        theme = userThemes[Conf['theme']];
+        theme = Themes[Conf['theme']];
       }
       $.off(d, 'DOMNodeInserted', Style.addStyle);
       if (!Conf['styleInit']) {
         if (d.head) {
           Conf['styleInit'] = true;
-          Style.appchan = $.addStyle(Style.css(userThemes[Conf['theme']]), 'appchan');
+          Style.appchan = $.addStyle(Style.css(Themes[Conf['theme']]), 'appchan');
           Style.icons = $.addStyle(Style.iconPositions(), 'icons');
           Style.paddingSheet = $.addStyle("", 'padding');
           return Style.mascot = $.addStyle("", 'mascotSheet');
@@ -10539,7 +10548,7 @@
 
   Main = {
     init: function() {
-      var key, mascot, mascotToggle, name, now, path, pathname, settings, temp, theme, val;
+      var key, mascot, name, now, path, pathname, settings, temp, theme, val, _ref, _ref1;
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
@@ -10562,39 +10571,20 @@
         g.MASCOTSTRING = "Enabled Mascots";
       }
       userNavigation = $.get("userNavigation", Navigation);
-      userThemes = $.get("userThemes", Themes);
-      userMascots = $.get("userMascots", Mascots);
+      _ref = $.get("userThemes", {});
+      for (name in _ref) {
+        theme = _ref[name];
+        Themes[name] = theme;
+      }
+      _ref1 = $.get("userMascots", {});
+      for (name in _ref1) {
+        mascot = _ref1[name];
+        Mascots[name] = mascot;
+      }
       Conf["Enabled Mascots"] = $.get("Enabled Mascots", []);
       Conf["Enabled Mascots sfw"] = $.get("Enabled Mascots sfw", []);
       Conf["Enabled Mascots nsfw"] = $.get("Enabled Mascots nsfw", []);
       Conf["Deleted Mascots"] = $.get("Deleted Mascots", []);
-      for (name in Mascots) {
-        mascot = Mascots[name];
-        if (userMascots[name]) {
-          if (userMascots[name] === mascot || userMascots[name]["Customized"]) {
-            continue;
-          }
-        }
-        userMascots[name] = mascot;
-        mascotToggle = true;
-      }
-      if (mascotToggle) {
-        $.set("userMascots", userMascots);
-      }
-      if (userThemes !== Themes) {
-        for (name in Themes) {
-          theme = Themes[name];
-          if (userThemes[name]) {
-            if (userThemes[name]["Customized"] && !userThemes[name]["Deleted"]) {
-              continue;
-            }
-            if (userThemes[name]["Deleted"]) {
-              theme["Deleted"] = true;
-            }
-          }
-          userThemes[name] = theme;
-        }
-      }
       if (Conf["Interval per board"]) {
         Conf["Interval_" + g.BOARD] = $.get("Interval_" + g.BOARD, Conf["Interval"]);
         Conf["BGInterval_" + g.BOARD] = $.get("BGInterval_" + g.BOARD, Conf["BGInteval"]);

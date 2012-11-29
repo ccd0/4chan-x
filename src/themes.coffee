@@ -2761,7 +2761,7 @@ Mascots =
     image:      'https://i.minus.com/izkTpyjr1XlLR.png'
     center:     true
   'Yoko_Littner':
-    category:   'Anime'
+    category:   'Questionable'
     image:      'https://i.minus.com/i0mtOEsBC9GlY.png'
     position:   'bottom'
   'Yoko_Littner_2':
