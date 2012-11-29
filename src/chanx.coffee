@@ -2262,7 +2262,7 @@ Quotify =
               $.rm el
               $.rm @.nextSibling
 
-      if Conf['Youtube Embed']
+      if Conf['Embedding']
         @types =
           youtube:
             regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
@@ -2296,7 +2296,7 @@ Quotify =
             el: ->
               $.el 'audio'
                 controls:    'controls'
-                src:         @previousSibling.previousSibling.href
+                src:         @previousElementSibling.href
           soundcloud:
             regExp:  /.*(?:soundcloud.com\/)([^#\&\?]*).*/
             el: ->
@@ -2304,7 +2304,7 @@ Quotify =
                 className: "soundcloud"
                 name:      "soundcloud"
               $.ajax(
-                "https://soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@previousSibling.previousSibling.textContent}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
+                "https://soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@previousElementSibling.textContent}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
                 div: div
                 onloadend: ->
                   @div.innerHTML = JSON.parse(this.responseText).html
@@ -2398,7 +2398,7 @@ Quotify =
 
       $.replace node, nodes
 
-      if Conf['Youtube Embed'] and a.className is "linkify"
+      if Conf['Embedding'] and a.className is "linkify"
         for key, type of Quotify.types
           if match = a.href.match(type.regExp)
             embed = $.el 'a'
@@ -2414,7 +2414,7 @@ Quotify =
 
   embed: ->
     # We setup the link to be replaced by the embedded video
-    link = @previousSibling.previousSibling
+    link = @previousElementSibling
 
     # We create an iframe to embed
     el = (type = Quotify.types[@className]).el.call @
@@ -2439,7 +2439,7 @@ Quotify =
     $.replace @, unembed
 
   unembed: ->
-    embedded = @.previousSibling.previousSibling
+    embedded = @previousElementSibling
     url = embedded.getAttribute("data-originalURL")
 
     a = $.el 'a'

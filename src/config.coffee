@@ -24,9 +24,9 @@ Config =
         true
         'Convert text into links where applicable. If a link is too long and only partially linkified, shift+ctrl+click it to merge the next line.'
       ]
-      'Youtube Embed': [
+      'Embedding': [
         true
-        'Add a link to linkified youtube links to embed the video inline.'
+        'Add a link to linkified audio and video links. Supported sites: YouTube, Vimeo, SoundCloud, Vocaroo, and some audio links, depending on your browser.'
       ]
       'Comment Expansion': [
         true

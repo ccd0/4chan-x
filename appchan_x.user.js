@@ -112,7 +112,7 @@
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'File Info Formatting': [true, 'Reformats the file information'],
         'Linkify': [true, 'Convert text into links where applicable. If a link is too long and only partially linkified, shift+ctrl+click it to merge the next line.'],
-        'Youtube Embed': [true, 'Add a link to linkified youtube links to embed the video inline.'],
+        'Embedding': [true, 'Add a link to linkified audio and video links. Supported sites: YouTube, Vimeo, SoundCloud, Vocaroo, and some audio links, depending on your browser.'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
@@ -6615,7 +6615,7 @@
             }
           });
         };
-        if (Conf['Youtube Embed']) {
+        if (Conf['Embedding']) {
           this.types = {
             youtube: {
               regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
@@ -6661,7 +6661,7 @@
               el: function() {
                 return $.el('audio', {
                   controls: 'controls',
-                  src: this.previousSibling.previousSibling.href
+                  src: this.previousElementSibling.href
                 });
               }
             },
@@ -6673,7 +6673,7 @@
                   className: "soundcloud",
                   name: "soundcloud"
                 });
-                $.ajax("https://soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousSibling.previousSibling.textContent + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
+                $.ajax("https://soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousElementSibling.textContent + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
                   div: div,
                   onloadend: function() {
                     return this.div.innerHTML = JSON.parse(this.responseText).html;
@@ -6756,7 +6756,7 @@
           nodes.push($.tn(data));
         }
         $.replace(node, nodes);
-        if (Conf['Youtube Embed'] && a.className === "linkify") {
+        if (Conf['Embedding'] && a.className === "linkify") {
           _ref2 = Quotify.types;
           for (key in _ref2) {
             type = _ref2[key];
@@ -6778,7 +6778,7 @@
     },
     embed: function() {
       var el, key, link, type, unembed, value, _ref;
-      link = this.previousSibling.previousSibling;
+      link = this.previousElementSibling;
       el = (type = Quotify.types[this.className]).el.call(this);
       if (type.style) {
         _ref = type.style;
@@ -6800,7 +6800,7 @@
     },
     unembed: function() {
       var a, embed, embedded, url;
-      embedded = this.previousSibling.previousSibling;
+      embedded = this.previousElementSibling;
       url = embedded.getAttribute("data-originalURL");
       a = $.el('a', {
         textContent: url,
