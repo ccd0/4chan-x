@@ -548,7 +548,7 @@ Options =
 
           $.on div, 'click', ->
             if confirm "Are you sure you want to undelete \"#{name = @id}\"?"
-              Themes[@id]["Deleted"] = false
+              Themes[name]["Deleted"] = false
               userThemes = $.get "userThemes", {}
               userThemes[name] = Themes[name]
               $.set 'userThemes', userThemes

@@ -7,7 +7,10 @@ ThemeTools =
 
     if Themes[key]
       editTheme = JSON.parse(JSON.stringify(Themes[key]))
-      editTheme["Theme"] = key
+      if ($.get "userThemes", {})[key]
+        editTheme["Theme"] = key
+      else
+        editTheme["Theme"] = key += " [custom]"
     else
       editTheme = {}
       editTheme["Theme"] = "Untitled"
@@ -16,6 +19,7 @@ ThemeTools =
 
     # Objects are not guaranteed to have any type of arrangement, so we use a presorted
     # array to generate the layout of of the theme editor.
+    # (Themes aren't even guaranteed to have any of these values, actually)
     layout = [
       "Background Image"
       "Background Attachment"
@@ -440,7 +444,6 @@ textarea,
       else
         return
 
-    theme["Customized"] = true
     Themes[name] = JSON.parse(JSON.stringify(theme))
     delete Themes[name]["Theme"]
     userThemes = $.get "userThemes", {}

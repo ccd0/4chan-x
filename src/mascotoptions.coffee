@@ -347,7 +347,6 @@ MascotTools =
       unless Conf[type].contains name
         Conf[type].push name
         $.set type, Conf[type]
-    mascot["Customized"] = true;
     Mascots[name]        = JSON.parse(JSON.stringify(mascot))
     delete Mascots[name].name
     Conf["mascot"]       = name

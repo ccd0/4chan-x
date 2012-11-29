@@ -3318,7 +3318,7 @@
             $.on(div, 'click', function() {
               var userThemes;
               if (confirm("Are you sure you want to undelete \"" + (name = this.id) + "\"?")) {
-                Themes[this.id]["Deleted"] = false;
+                Themes[name]["Deleted"] = false;
                 userThemes = $.get("userThemes", {});
                 userThemes[name] = Themes[name];
                 $.set('userThemes', userThemes);
@@ -8904,7 +8904,11 @@
       Conf['editMode'] = "theme";
       if (Themes[key]) {
         editTheme = JSON.parse(JSON.stringify(Themes[key]));
-        editTheme["Theme"] = key;
+        if (($.get("userThemes", {}))[key]) {
+          editTheme["Theme"] = key;
+        } else {
+          editTheme["Theme"] = key += " [custom]";
+        }
       } else {
         editTheme = {};
         editTheme["Theme"] = "Untitled";
@@ -9222,7 +9226,6 @@
           return;
         }
       }
-      theme["Customized"] = true;
       Themes[name] = JSON.parse(JSON.stringify(theme));
       delete Themes[name]["Theme"];
       userThemes = $.get("userThemes", {});
@@ -9931,7 +9934,6 @@
           $.set(type, Conf[type]);
         }
       }
-      mascot["Customized"] = true;
       Mascots[name] = JSON.parse(JSON.stringify(mascot));
       delete Mascots[name].name;
       Conf["mascot"] = name;
