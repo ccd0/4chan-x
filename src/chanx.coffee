@@ -2297,7 +2297,19 @@ Quotify =
               $.el 'audio'
                 controls:    'controls'
                 src:         @previousSibling.previousSibling.href
-                textContent: 'You should get a better browser.'
+          soundcloud:
+            regExp:  /.*(?:soundcloud.com\/)([^#\&\?]*).*/
+            el: ->
+              div   = $.el 'div'
+                className: "soundcloud"
+                name:      "soundcloud"
+              $.ajax(
+                "https://soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@previousSibling.previousSibling.textContent}&color=#{Style.colorToHex userThemes[Conf['theme']]['Background Color']}"
+                div: div
+                onloadend: ->
+                  @div.innerHTML = JSON.parse(this.responseText).html
+                false)
+              div
     else
       @regString = />>(>\/[a-z\d]+\/)?\d+/g
 
@@ -2406,8 +2418,6 @@ Quotify =
 
     # We create an iframe to embed
     el = (type = Quotify.types[@className]).el.call @
-
-    $.log type.style
 
     if type.style
       for key, value of type.style

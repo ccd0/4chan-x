@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.16 - 2012-11-28
+ * appchan x - Version 1.0.16 - 2012-11-29
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -6660,9 +6660,25 @@
               el: function() {
                 return $.el('audio', {
                   controls: 'controls',
-                  src: this.previousSibling.previousSibling.href,
-                  textContent: 'You should get a better browser.'
+                  src: this.previousSibling.previousSibling.href
                 });
+              }
+            },
+            soundcloud: {
+              regExp: /.*(?:soundcloud.com\/)([^#\&\?]*).*/,
+              el: function() {
+                var div;
+                div = $.el('div', {
+                  className: "soundcloud",
+                  name: "soundcloud"
+                });
+                $.ajax("https://soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousSibling.previousSibling.textContent + "&color=" + (Style.colorToHex(userThemes[Conf['theme']]['Background Color'])), {
+                  div: div,
+                  onloadend: function() {
+                    return this.div.innerHTML = JSON.parse(this.responseText).html;
+                  }
+                }, false);
+                return div;
               }
             }
           };
@@ -6763,7 +6779,6 @@
       var el, key, link, type, unembed, value, _ref;
       link = this.previousSibling.previousSibling;
       el = (type = Quotify.types[this.className]).el.call(this);
-      $.log(type.style);
       if (type.style) {
         _ref = type.style;
         for (key in _ref) {
