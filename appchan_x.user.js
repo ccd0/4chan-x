@@ -6617,6 +6617,7 @@
           });
         };
         if (Conf['Embedding']) {
+          this.protocol = d.location.protocol;
           this.types = {
             youtube: {
               regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
@@ -6627,20 +6628,15 @@
               },
               el: function() {
                 return $.el('iframe', {
-                  src: "http://www.youtube.com/embed/" + this.name
+                  src: "" + this.protocol + "//www.youtube.com/embed/" + this.name
                 });
               }
             },
             vocaroo: {
               regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
-              style: {
-                border: '0',
-                width: '148px',
-                height: '44px'
-              },
               el: function() {
-                return $.el('iframe', {
-                  src: "http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0"
+                return $.el('object', {
+                  innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
                 });
               }
             },
@@ -6653,7 +6649,7 @@
               },
               el: function() {
                 return $.el('iframe', {
-                  src: "https://player.vimeo.com/video/" + this.name
+                  src: "" + this.protocol + "//player.vimeo.com/video/" + this.name
                 });
               }
             },
@@ -6674,7 +6670,7 @@
                   className: "soundcloud",
                   name: "soundcloud"
                 });
-                $.ajax("https://soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousElementSibling.textContent + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
+                $.ajax("" + this.protocol + "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousElementSibling.textContent + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
                   div: div,
                   onloadend: function() {
                     return this.div.innerHTML = JSON.parse(this.responseText).html;

@@ -2267,6 +2267,7 @@ Quotify =
               $.rm @.nextSibling
 
       if Conf['Embedding']
+        @protocol = d.location.protocol
         @types =
           youtube:
             regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
@@ -2276,16 +2277,12 @@ Quotify =
               height: '390px'
             el: ->
               $.el 'iframe'
-                src:  "http://www.youtube.com/embed/#{@name}"
+                src:  "#{@protocol}//www.youtube.com/embed/#{@name}"
           vocaroo:
             regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
-            style:
-              border: '0'
-              width:  '148px'
-              height: '44px'
             el: ->
-              $.el 'iframe'
-                src:  "http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0"
+              $.el 'object'
+                innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
           vimeo:
             regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
             style:
@@ -2294,7 +2291,7 @@ Quotify =
               height: '390px'
             el: ->
               $.el 'iframe'
-                src:   "https://player.vimeo.com/video/#{@name}"
+                src:   "#{@protocol}//player.vimeo.com/video/#{@name}"
           audio:
             regExp:  /(.*\.(mp3|ogg|wav))$/
             el: ->
@@ -2308,7 +2305,7 @@ Quotify =
                 className: "soundcloud"
                 name:      "soundcloud"
               $.ajax(
-                "https://soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@previousElementSibling.textContent}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
+                "#{@protocol}//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@previousElementSibling.textContent}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
                 div: div
                 onloadend: ->
                   @div.innerHTML = JSON.parse(this.responseText).html
