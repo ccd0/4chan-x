@@ -141,6 +141,10 @@ Config =
         true
         'Add an archive link to the menu.'
       ]
+      'Embed Link': [
+        true
+        'Add an embed link to the menu to embed all supported formats in a post.'
+      ]
       'Thread Hiding Link': [
         true
         'Add a link to hide entire threads.'

@@ -2430,6 +2430,7 @@ Quotify =
     $.replace link, el
 
     unembed = @
+    @className =   'embed embedded'
     @textContent = '(unembed)'
 
     $.off unembed, 'click', Quotify.embed
@@ -2448,6 +2449,7 @@ Quotify =
     $.replace embedded, a
 
     embed = @
+    @className =   'embed'
     @textContent = '(embed)'
 
     $.off embed, 'click', Quotify.unembed
@@ -2711,6 +2713,36 @@ ReplyHideLink =
 
     if post.ID of g.hiddenReplies
       ReplyHiding.hide post.root
+
+EmbedLink =
+  init: ->
+    a = $.el 'a',
+      className: 'embed_link'
+      textContent: 'Embed all in post'
+    
+    $.on a, 'click', EmbedLink.toggle
+
+    Menu.addEntry
+      el: a
+      open: (post) ->
+        if $ '.embed', post.blockquote
+          return true
+
+  toggle: ->
+    menu   = $.id 'menu'
+    id     = menu.dataset.id
+    root   = $.id "pc#{id}"
+
+    unless EmbedLink[id]
+      EmbedLink[id] = true
+      for embed in $$ '.embed', root
+        unless /\bembedded\b/.test embed.className
+          Quotify.embed.call embed
+    else
+      EmbedLink[id] = false
+      for embed in $$ '.embed', root
+        if /\bembedded\b/.test embed.className
+          Quotify.unembed.call embed
 
 ThreadStats =
   init: ->

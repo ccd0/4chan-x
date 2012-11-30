@@ -102,7 +102,7 @@
  * @link      http://JSColor.com
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, JSColor, Keybinds, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, EmbedLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, JSColor, Keybinds, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
 
   Config = {
     main: {
@@ -146,6 +146,7 @@
         'Delete Link': [true, 'Add post and image deletion links to the menu.'],
         'Download Link': [true, 'Add a download with original filename link to the menu. Chrome-only currently.'],
         'Archive Link': [true, 'Add an archive link to the menu.'],
+        'Embed Link': [true, 'Add an embed link to the menu to embed all supported formats in a post.'],
         'Thread Hiding Link': [true, 'Add a link to hide entire threads.'],
         'Reply Hiding Link': [true, 'Add a link to hide single replies.']
       },
@@ -6787,6 +6788,7 @@
       el.setAttribute('data-originalURL', link.textContent);
       $.replace(link, el);
       unembed = this;
+      this.className = 'embed embedded';
       this.textContent = '(unembed)';
       $.off(unembed, 'click', Quotify.embed);
       return $.on(unembed, 'click', Quotify.unembed);
@@ -6803,6 +6805,7 @@
       });
       $.replace(embedded, a);
       embed = this;
+      this.className = 'embed';
       this.textContent = '(embed)';
       $.off(embed, 'click', Quotify.unembed);
       return $.on(embed, 'click', Quotify.embed);
@@ -7138,6 +7141,58 @@
       }
       if (post.ID in g.hiddenReplies) {
         return ReplyHiding.hide(post.root);
+      }
+    }
+  };
+
+  EmbedLink = {
+    init: function() {
+      var a;
+      a = $.el('a', {
+        className: 'embed_link',
+        textContent: 'Embed all in post'
+      });
+      $.on(a, 'click', EmbedLink.toggle);
+      return Menu.addEntry({
+        el: a,
+        open: function(post) {
+          if ($('.embed', post.blockquote)) {
+            return true;
+          }
+        }
+      });
+    },
+    toggle: function() {
+      var embed, id, menu, root, _i, _j, _len, _len1, _ref, _ref1, _results, _results1;
+      menu = $.id('menu');
+      id = menu.dataset.id;
+      root = $.id("pc" + id);
+      if (!EmbedLink[id]) {
+        EmbedLink[id] = true;
+        _ref = $$('.embed', root);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          embed = _ref[_i];
+          if (!/\bembedded\b/.test(embed.className)) {
+            _results.push(Quotify.embed.call(embed));
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      } else {
+        EmbedLink[id] = false;
+        _ref1 = $$('.embed', root);
+        _results1 = [];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          embed = _ref1[_j];
+          if (/\bembedded\b/.test(embed.className)) {
+            _results1.push(Quotify.unembed.call(embed));
+          } else {
+            _results1.push(void 0);
+          }
+        }
+        return _results1;
       }
     }
   };
@@ -10689,6 +10744,9 @@
         }
         if (Conf['Archive Link']) {
           ArchiveLink.init();
+        }
+        if (Conf['Embed Link']) {
+          EmbedLink.init();
         }
         if (Conf['Thread Hiding Link']) {
           ThreadHideLink.init();

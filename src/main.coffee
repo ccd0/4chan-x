@@ -142,6 +142,9 @@ Main =
       if Conf['Archive Link']
         ArchiveLink.init()
 
+      if Conf['Embed Link']
+        EmbedLink.init()
+
       if Conf['Thread Hiding Link']
         ThreadHideLink.init()
 
