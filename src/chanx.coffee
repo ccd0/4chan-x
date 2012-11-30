@@ -2403,10 +2403,11 @@ Quotify =
         for key, type of Quotify.types
           if match = a.href.match(type.regExp)
             embed = $.el 'a'
-              name:         key
+              name:         match[1]
               className:    'embed'
               href:         'javascript:;'
               textContent:  '(embed)'
+            embed.setAttribute 'data-service', key
             $.on embed, 'click', Quotify.toggle
             $.after a, embed
             $.after a, $.tn ' '
@@ -2422,9 +2423,10 @@ Quotify =
   embed: ->
     # We setup the link to be replaced by the embedded video
     link = @previousElementSibling
+    service = @getAttribute("data-service")
 
-    # We create an iframe to embed
-    el = (type = Quotify.types[@name]).el.call @
+    # We create an element to embed
+    el = (type = Quotify.types[service]).el.call @
 
     if type.style
       for key, value of type.style
@@ -2432,9 +2434,10 @@ Quotify =
 
     el.setAttribute 'data-originalURL', link.textContent
 
-    # We replace the link with the iframe and kill the embedding element.
+    # We replace the link with the element
     $.replace link, el
 
+    # Reflect unembed functionality
     @className =   'embed embedded'
     @textContent = '(unembed)'
 

@@ -6760,11 +6760,12 @@
             type = _ref2[key];
             if (match = a.href.match(type.regExp)) {
               embed = $.el('a', {
-                name: key,
+                name: match[1],
                 className: 'embed',
                 href: 'javascript:;',
                 textContent: '(embed)'
               });
+              embed.setAttribute('data-service', key);
               $.on(embed, 'click', Quotify.toggle);
               $.after(a, embed);
               $.after(a, $.tn(' '));
@@ -6782,9 +6783,10 @@
       }
     },
     embed: function() {
-      var el, key, link, type, value, _ref;
+      var el, key, link, service, type, value, _ref;
       link = this.previousElementSibling;
-      el = (type = Quotify.types[this.name]).el.call(this);
+      service = this.getAttribute("data-service");
+      el = (type = Quotify.types[service]).el.call(this);
       if (type.style) {
         _ref = type.style;
         for (key in _ref) {
