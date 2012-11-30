@@ -10101,7 +10101,11 @@
       if (!Conf['styleInit']) {
         if (d.head) {
           Conf['styleInit'] = true;
-          Style.appchan = $.addStyle(Style.css(Themes[Conf['theme']]), 'appchan');
+          if (!(theme = Themes[Conf['theme']])) {
+            theme = Themes["Yotsuba B"];
+            $.log("Invalid Theme " + Conf['theme'] + "!");
+          }
+          Style.appchan = $.addStyle(Style.css(theme), 'appchan');
           Style.icons = $.addStyle(Style.iconPositions(), 'icons');
           Style.paddingSheet = $.addStyle("", 'padding');
           return Style.mascot = $.addStyle("", 'mascotSheet');
