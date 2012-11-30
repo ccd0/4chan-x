@@ -646,6 +646,11 @@ http://www.google.com/searchbyimage?image_url=$1
         'Position of emoji icons, like sega and neko.'
         ['before', 'after']
       ]
+      'Emoji Spacing': [
+        '5'
+        'Add some spacing between emoji and text.'
+        'text'
+      ]
       'Font': [
         'Helvetica'
         'The font used by all elements of 4chan.'

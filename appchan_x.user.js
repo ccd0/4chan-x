@@ -285,6 +285,7 @@
         'Checkboxes': ['show', 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide', 'do not style checkboxes']],
         'Emoji': ['enabled', 'Enable emoji', ['enabled', 'disable ponies', 'only ponies', 'disable']],
         'Emoji Position': ['before', 'Position of emoji icons, like sega and neko.', ['before', 'after']],
+        'Emoji Spacing': ['5', 'Add some spacing between emoji and text.', 'text'],
         'Font': ['Helvetica', 'The font used by all elements of 4chan.', 'text'],
         'Font Size': ['12', 'The font size of posts and various UI. This changes most, but not all, font sizes.', 'text'],
         'Icons': ['oneechan', 'Icon theme which Appchan will use.', ['oneechan', '4chan SS']],
@@ -10058,14 +10059,15 @@
       });
     },
     emoji: function(position) {
-      var css, image, item, name, _i, _len;
+      var css, image, item, margin, name, _i, _len;
       css = '';
+      margin = position === "before" ? "right" : "left";
       for (_i = 0, _len = Emoji.length; _i < _len; _i++) {
         item = Emoji[_i];
         if (!((Conf['Emoji'] === "disable ponies" && item[2] === "pony") || (Conf['Emoji'] === "only ponies" && item[2] !== "pony"))) {
           name = item[0];
           image = Icons.header.png + item[1];
-          css += "a.useremail[href*='" + name + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toLowerCase()) + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toUpperCase()) + "']:last-of-type::" + position + " {\n  content: \" \" url('" + image + "') \" \";\n  vertical-align: top;\n}\n";
+          css += "a.useremail[href*='" + name + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toLowerCase()) + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toUpperCase()) + "']:last-of-type::" + position + " {\n  content: url('" + image + "');\n  vertical-align: top;\n  margin-" + margin + ": " + (parseInt(Conf['Emoji Spacing'])) + "px;\n}\n";
         }
       }
       return css;
@@ -10458,7 +10460,7 @@
           case "text":
             return "a.useremail[href*=\"sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"Sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"SAGE\"]:last-of-type::" + Conf["Sage Highlight Position"] + " {\n  content: \" (sage) \";\n  color: " + theme["Sage"] + ";\n}\n";
           case "image":
-            return "a.useremail[href*=\"sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"Sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"SAGE\"]:last-of-type::" + Conf["Sage Highlight Position"] + " {\n  content: url(\"" + Icons.header.png + "A4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=\") \"  \";\n  vertical-align: top;\n}\n";
+            return "a.useremail[href*=\"sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"Sage\"]:last-of-type::" + Conf["Sage Highlight Position"] + ",\na.useremail[href*=\"SAGE\"]:last-of-type::" + Conf["Sage Highlight Position"] + " {\n  content: url(\"" + Icons.header.png + "A4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=\");\n  vertical-align: top;\n  margin" + (position === "before" ? "right" : "left") + ": 5px;\n}\n";
           default:
             return "";
         }

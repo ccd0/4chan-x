@@ -32,6 +32,7 @@ Style =
 
   emoji: (position) ->
     css = ''
+    margin = if position is "before" then "right" else "left"
     for item in Emoji
       unless (Conf['Emoji'] is "disable ponies" and item[2] is "pony") or (Conf['Emoji'] is "only ponies" and item[2] != "pony")
         name  = item[0]
@@ -40,8 +41,9 @@ Style =
 a.useremail[href*='#{name}']:last-of-type::#{position},
 a.useremail[href*='#{name.toLowerCase()}']:last-of-type::#{position},
 a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
-  content: " " url('#{image}') " ";
+  content: url('#{image}');
   vertical-align: top;
+  margin-#{margin}: #{parseInt Conf['Emoji Spacing']}px;
 }\n
 """
     return css
