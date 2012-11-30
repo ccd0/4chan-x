@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.16 - 2012-11-29
+ * appchan x - Version 1.0.16 - 2012-11-30
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -6628,7 +6628,7 @@
               },
               el: function() {
                 return $.el('iframe', {
-                  src: "" + this.protocol + "//www.youtube.com/embed/" + this.name
+                  src: "" + Quotify.protocol + "//www.youtube.com/embed/" + this.name
                 });
               }
             },
@@ -6649,7 +6649,7 @@
               },
               el: function() {
                 return $.el('iframe', {
-                  src: "" + this.protocol + "//player.vimeo.com/video/" + this.name
+                  src: "" + Quotify.protocol + "//player.vimeo.com/video/" + this.name
                 });
               }
             },
@@ -6670,7 +6670,7 @@
                   className: "soundcloud",
                   name: "soundcloud"
                 });
-                $.ajax("" + this.protocol + "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousElementSibling.textContent + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
+                $.ajax("" + Quotify.protocol + "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousElementSibling.textContent + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
                   div: div,
                   onloadend: function() {
                     return this.div.innerHTML = JSON.parse(this.responseText).html;

@@ -2277,7 +2277,7 @@ Quotify =
               height: '390px'
             el: ->
               $.el 'iframe'
-                src:  "#{@protocol}//www.youtube.com/embed/#{@name}"
+                src:  "#{Quotify.protocol}//www.youtube.com/embed/#{@name}"
           vocaroo:
             regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
             el: ->
@@ -2291,7 +2291,7 @@ Quotify =
               height: '390px'
             el: ->
               $.el 'iframe'
-                src:   "#{@protocol}//player.vimeo.com/video/#{@name}"
+                src:   "#{Quotify.protocol}//player.vimeo.com/video/#{@name}"
           audio:
             regExp:  /(.*\.(mp3|ogg|wav))$/
             el: ->
@@ -2305,7 +2305,7 @@ Quotify =
                 className: "soundcloud"
                 name:      "soundcloud"
               $.ajax(
-                "#{@protocol}//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@previousElementSibling.textContent}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
+                "#{Quotify.protocol}//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@previousElementSibling.textContent}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
                 div: div
                 onloadend: ->
                   @div.innerHTML = JSON.parse(this.responseText).html
