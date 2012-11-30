@@ -2407,11 +2407,17 @@ Quotify =
               className:    'embed'
               href:         'javascript:;'
               textContent:  '(embed)'
-            $.on embed, 'click', Quotify.embed
+            $.on embed, 'click', Quotify.toggle
             $.after a, embed
             $.after a, $.tn ' '
             break
     return
+  
+  toggle: ->
+    if /\bembedded\b/.test @className
+      Quotify.unembed.call @
+    else
+      Quotify.embed.call @
 
   embed: ->
     # We setup the link to be replaced by the embedded video
@@ -2432,9 +2438,6 @@ Quotify =
     @className =   'embed embedded'
     @textContent = '(unembed)'
 
-    $.off @, 'click', Quotify.embed
-    $.on  @, 'click', Quotify.unembed
-
   unembed: ->
     embedded = @previousElementSibling
     url = embedded.getAttribute("data-originalURL")
@@ -2449,9 +2452,6 @@ Quotify =
 
     @className =   'embed'
     @textContent = '(embed)'
-
-    $.off @, 'click', Quotify.unembed
-    $.on  @, 'click', Quotify.embed
 
 DeleteLink =
   init: ->

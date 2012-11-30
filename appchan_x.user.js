@@ -6765,7 +6765,7 @@
                 href: 'javascript:;',
                 textContent: '(embed)'
               });
-              $.on(embed, 'click', Quotify.embed);
+              $.on(embed, 'click', Quotify.toggle);
               $.after(a, embed);
               $.after(a, $.tn(' '));
               break;
@@ -6774,8 +6774,15 @@
         }
       }
     },
+    toggle: function() {
+      if (/\bembedded\b/.test(this.className)) {
+        return Quotify.unembed.call(this);
+      } else {
+        return Quotify.embed.call(this);
+      }
+    },
     embed: function() {
-      var el, key, link, type, unembed, value, _ref;
+      var el, key, link, type, value, _ref;
       link = this.previousElementSibling;
       el = (type = Quotify.types[this.name]).el.call(this);
       if (type.style) {
@@ -6787,14 +6794,11 @@
       }
       el.setAttribute('data-originalURL', link.textContent);
       $.replace(link, el);
-      unembed = this;
       this.className = 'embed embedded';
-      this.textContent = '(unembed)';
-      $.off(unembed, 'click', Quotify.embed);
-      return $.on(unembed, 'click', Quotify.unembed);
+      return this.textContent = '(unembed)';
     },
     unembed: function() {
-      var a, embed, embedded, url;
+      var a, embedded, url;
       embedded = this.previousElementSibling;
       url = embedded.getAttribute("data-originalURL");
       a = $.el('a', {
@@ -6804,11 +6808,8 @@
         textContent: url
       });
       $.replace(embedded, a);
-      embed = this;
       this.className = 'embed';
-      this.textContent = '(embed)';
-      $.off(embed, 'click', Quotify.unembed);
-      return $.on(embed, 'click', Quotify.embed);
+      return this.textContent = '(embed)';
     }
   };
 
