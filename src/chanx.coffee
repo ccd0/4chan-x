@@ -2429,12 +2429,11 @@ Quotify =
     # We replace the link with the iframe and kill the embedding element.
     $.replace link, el
 
-    unembed = @
     @className =   'embed embedded'
     @textContent = '(unembed)'
 
-    $.off unembed, 'click', Quotify.embed
-    $.on  unembed, 'click', Quotify.unembed
+    $.off @, 'click', Quotify.embed
+    $.on  @, 'click', Quotify.unembed
 
   unembed: ->
     embedded = @previousElementSibling
@@ -2448,12 +2447,11 @@ Quotify =
 
     $.replace embedded, a
 
-    embed = @
     @className =   'embed'
     @textContent = '(embed)'
 
-    $.off embed, 'click', Quotify.unembed
-    $.on  embed, 'click', Quotify.embed
+    $.off @, 'click', Quotify.unembed
+    $.on  @, 'click', Quotify.embed
 
 DeleteLink =
   init: ->
