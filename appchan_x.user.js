@@ -6759,8 +6759,8 @@
             type = _ref2[key];
             if (match = a.href.match(type.regExp)) {
               embed = $.el('a', {
-                name: match[1],
-                className: key,
+                name: key,
+                className: 'embed',
                 href: 'javascript:;',
                 textContent: '(embed)'
               });
@@ -6776,7 +6776,7 @@
     embed: function() {
       var el, key, link, type, unembed, value, _ref;
       link = this.previousElementSibling;
-      el = (type = Quotify.types[this.className]).el.call(this);
+      el = (type = Quotify.types[this.name]).el.call(this);
       if (type.style) {
         _ref = type.style;
         for (key in _ref) {
@@ -6786,34 +6786,26 @@
       }
       el.setAttribute('data-originalURL', link.textContent);
       $.replace(link, el);
-      unembed = $.el('a', {
-        name: this.name,
-        className: this.className,
-        href: 'javascript:;',
-        textContent: '(unembed)'
-      });
-      $.on(unembed, 'click', Quotify.unembed);
-      return $.replace(this, unembed);
+      unembed = this;
+      this.textContent = '(unembed)';
+      $.off(unembed, 'click', Quotify.embed);
+      return $.on(unembed, 'click', Quotify.unembed);
     },
     unembed: function() {
       var a, embed, embedded, url;
       embedded = this.previousElementSibling;
       url = embedded.getAttribute("data-originalURL");
       a = $.el('a', {
-        textContent: url,
         rel: 'nofollow noreferrer',
         target: 'blank',
-        href: url
+        href: url,
+        textContent: url
       });
-      embed = $.el('a', {
-        name: this.name,
-        className: this.className,
-        href: 'javascript:;',
-        textContent: '(embed)'
-      });
-      $.on(embed, 'click', Quotify.embed);
       $.replace(embedded, a);
-      return $.replace(this, embed);
+      embed = this;
+      this.textContent = '(embed)';
+      $.off(embed, 'click', Quotify.unembed);
+      return $.on(embed, 'click', Quotify.embed);
     }
   };
 

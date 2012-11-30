@@ -2403,8 +2403,8 @@ Quotify =
         for key, type of Quotify.types
           if match = a.href.match(type.regExp)
             embed = $.el 'a'
-              name:         match[1]
-              className:    key
+              name:         key
+              className:    'embed'
               href:         'javascript:;'
               textContent:  '(embed)'
             $.on embed, 'click', Quotify.embed
@@ -2418,7 +2418,7 @@ Quotify =
     link = @previousElementSibling
 
     # We create an iframe to embed
-    el = (type = Quotify.types[@className]).el.call @
+    el = (type = Quotify.types[@name]).el.call @
 
     if type.style
       for key, value of type.style
@@ -2429,36 +2429,29 @@ Quotify =
     # We replace the link with the iframe and kill the embedding element.
     $.replace link, el
 
-    unembed = $.el 'a'
-      name:        @name
-      className:   @className
-      href:        'javascript:;'
-      textContent: '(unembed)'
+    unembed = @
+    @textContent = '(unembed)'
 
-    $.on unembed, 'click', Quotify.unembed
-
-    $.replace @, unembed
+    $.off unembed, 'click', Quotify.embed
+    $.on  unembed, 'click', Quotify.unembed
 
   unembed: ->
     embedded = @previousElementSibling
     url = embedded.getAttribute("data-originalURL")
 
     a = $.el 'a'
-      textContent: url
       rel:         'nofollow noreferrer'
       target:      'blank'
       href:        url
-
-    embed = $.el 'a'
-      name:         @name
-      className:    @className
-      href:         'javascript:;'
-      textContent:  '(embed)'
-
-    $.on embed, 'click', Quotify.embed
+      textContent: url
 
     $.replace embedded, a
-    $.replace @, embed
+
+    embed = @
+    @textContent = '(embed)'
+
+    $.off embed, 'click', Quotify.unembed
+    $.on  embed, 'click', Quotify.embed
 
 DeleteLink =
   init: ->
