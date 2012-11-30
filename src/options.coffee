@@ -35,14 +35,14 @@ Options =
     | <a target=_blank href=http://zixaphir.github.com/appchan-x/#bug-report>Issues</a>
   </div>
   <div>
-    <label for=style_tab>Style</label>
-    | <label for=theme_tab>Themes</label>
-    | <label for=mascot_tab>Mascots</label>
-    | <label for=main_tab>Script</label>
-    | <label for=filter_tab>Filter</label>
-    | <label for=sauces_tab>Sauce</label>
-    | <label for=keybinds_tab>Keybinds</label>
-    | <label for=rice_tab>Rice</label>
+    <label for=style_tab id=selected_tab>Style</label>
+    <label for=theme_tab>Themes</label>
+    <label for=mascot_tab>Mascots</label>
+    <label for=main_tab>Script</label>
+    <label for=filter_tab>Filter</label>
+    <label for=sauces_tab>Sauce</label>
+    <label for=keybinds_tab>Keybinds</label>
+    <label for=rice_tab>Rice</label>
   </div>
 </div>
 <div id=content>
@@ -150,6 +150,12 @@ Options =
   <input type=radio name=tab hidden onClick="document.location.reload()" id=apply>
   <div>Reloading page with new settings.</div>
 </div>'
+
+    for label in $$ 'label[for]', dialog
+      $.on label, 'click', ->
+        if previous = $.id 'selected_tab'
+          previous.id = ''
+        @id = 'selected_tab'
 
     # Main
     # I start by gathering all of the main configuration category objects

@@ -141,7 +141,7 @@ label,
 }
 #mascot_hide label {
   width: 100%;
-  border-bottom: 1px solid;
+  border-bottom: 1px solid #{theme["Reply Border"]};
   display: block;
   clear: both;
   text-decoration: none;
@@ -188,6 +188,12 @@ div.subMenu.reply {
 #style_tab + div .suboptions,
 .center,
 h1 {
+  text-align: center;
+}
+#keybinds_tab + div > table {
+  margin: auto;
+}
+#keybinds_tab + div > div {
   text-align: center;
 }
 #mascotConf input::#{Style.agent}placeholder {
@@ -263,8 +269,10 @@ input[type="submit"] {
   border: 1px solid #666;
   cursor: move;
   display: inline-block;
-  height: 90px; width: 90px;
-  margin: 5px; padding: 2px;
+  height: 90px;
+  width: 90px;
+  margin: 5px;
+  padding: 2px;
   opacity: .5;
   outline: none;
   overflow: hidden;
@@ -383,6 +391,17 @@ input[type="submit"] {
 #options h3 {
   margin: 0;
 }
+#optionsbar {
+  padding: 0 3px;
+}
+#optionsbar label[for] {
+  position: relative;
+  padding: 0 2px 1px;
+  z-index: 1;
+  border-width: 1px 1px 0 1px;
+  border-color: transparent;
+  border-style: solid;
+}
 #theme_tab + div h1 {
   opacity: 0;
 }
@@ -483,9 +502,8 @@ input[type="submit"] {
 }
 #style_tab + div .suboptions ul,
 #main_tab + div ul {
-  display: inline-block;
   vertical-align: top;
-  margin: 0 3px 6px;
+  margin: 0 auto 6px;
 }
 #style_tab + div .suboptions ul li,
 #main_tab + div ul li {
@@ -1341,6 +1359,11 @@ html {
   background: #{theme["Background Color"]};
   border: 1px solid #{theme["Reply Border"]};
   padding: 5px;
+}
+#optionsbar label[for]#selected_tab {
+  background: #{theme["Background Color"]};
+  border-color: #{theme["Reply Border"]};
+  border-style: solid;
 }
 .suboptions {
   padding: 5px;
@@ -2270,6 +2293,7 @@ h2,
 td[style="border: 1px dashed;"] {
   border-radius: 3px;
 }
+#optionsbar label[for],
 .reply .postInfo {
   border-radius: 3px 3px 0 0;
 }
@@ -2283,9 +2307,11 @@ td[style="border: 1px dashed;"] {
       switch Conf["Slideout Navigation"]
         when "compact"
           """
+#boardNavDesktopFoot {
+  word-spacing: 1px;
+}
 #boardNavDesktopFoot:hover {
   height: 84px;
-  word-spacing: 1px;
 }\n
 """
 
