@@ -493,6 +493,10 @@ http://www.google.com/searchbyimage?image_url=$1
     # If it doesn't exist, it is a boolean, if it does, it's either an array of the select options or "text".
 
     Interface:
+      'Single Column Mode': [
+        true
+        'Presents options in a single column, rather than in blocks.'
+      ]
       'Sidebar': [
         'normal'
         'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.'

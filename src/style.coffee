@@ -507,7 +507,7 @@ input[type="submit"] {
 #style_tab + div .suboptions ul,
 #main_tab + div ul {
   vertical-align: top;
-  margin: 0 auto 6px;
+  #{if Conf["Single Column Mode"] then "margin: 0 auto 6px;" else "margin: 0 3px 6px;\n  display: inline-block;"}
 }
 #style_tab + div .suboptions ul li,
 #main_tab + div ul li {
