@@ -206,6 +206,7 @@ h1 {
 #qr .warning,
 #qr > .move,
 #threadselect select,
+.captchaimg img,
 .field,
 .file,
 .mascotname,
@@ -396,7 +397,7 @@ input[type="submit"] {
 }
 #optionsbar label[for] {
   position: relative;
-  padding: 0 2px 1px;
+  padding: 0 4px 1px;
   z-index: 1;
   border-width: 1px 1px 0 1px;
   border-color: transparent;
@@ -423,6 +424,7 @@ input[type="submit"] {
   overflow: auto;
   padding: 0 5px 0 7px;
 }
+#options table > tr:nth-of-type(2n+1),
 #options ul li:nth-of-type(2n+1) {
   background-color: rgba(0, 0, 0, 0.05)
 }
@@ -718,6 +720,7 @@ textarea {
 #qp .rice
 #qp input,
 #{unless Conf["Hide Show QR"] then "#showQR," else ""}
+#threadselect:empty,
 #updater:not(:hover) > :not(.move),
 #{unless Conf["Board Subtitle"] then ".boardSubtitle," else ""}
 .deleteform,
@@ -919,7 +922,7 @@ body > a[style="cursor: pointer; float: right;"]:hover::after,
 div.navLinks > a:first-of-type:hover::after {
   opacity: 1;
 }
-#boardTitle,
+.boardTitle,
 .boardTitle > a {
   font-size: 22px;
   font-weight: 400;
@@ -1019,10 +1022,10 @@ a,
 input:not([type=radio]),
 .field,
 input[type="submit"] {
-  height: 20px;
+  height: 1.7em;
 }
 #qr .warning {
-  min-height: 20px;
+  min-height: 1.7em;
 }
 #qr .warning,
 #threadselect select,
@@ -1033,7 +1036,6 @@ input[type="submit"] {
   padding: 1px;
 }
 input[type="submit"] {
-  height: 20px;
   padding: 0;
 }
 #qr input[type="file"] {
@@ -1104,7 +1106,7 @@ div.post {
   background: transparent;
 }
 .name {
-  font-weight: 700;
+  font-weight: 600;
 }
 #navtopright {
   position: fixed;
@@ -1168,9 +1170,8 @@ div.navLinks {
   bottom: 0px;
 }
 #options ul {
-  margin: 0;
+  margin: 3px;
   margin-bottom: 6px;
-  padding: 3px;
 }
 #stats,
 #navlinks {
@@ -1181,9 +1182,7 @@ div.navLinks {
   border: 0;
   border-radius: 0;
 }
-#prefetch {
-  position: fixed;
-}
+#prefetch,
 #stats {
   position: fixed;
   cursor: default;
@@ -1287,7 +1286,7 @@ html .subMenu {
   right: 2px;
   top: auto;
   bottom: 0;
-  height: 20px;
+  height: 1.7em;
 }
 #qr #charCount.warning {
   color: rgb(255,0,0);
@@ -1311,7 +1310,6 @@ html .subMenu {
 #dump {
   width: 20px;
   margin: 0;
-  font-size: 14px;
   outline: none;
   padding: 0 0 3px;
 }
@@ -1387,6 +1385,7 @@ html {
 #options .dialog,
 #exlinks-options,
 #qrtab,
+#{if Conf["Post Form Decorations"] then "#qr," else ""}
 #updater:hover,
 html body span[style="left: 5px; position: absolute;"] a,
 input[type="submit"],
@@ -1484,6 +1483,9 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > 
 }
 #qr .warning {
   background: #{theme["Input Background"]};
+  border: 1px solid #{theme["Input Border"]};
+}
+.captcha img {
   border: 1px solid #{theme["Input Border"]};
 }
 [style='color: red !important;'] *,
@@ -1821,15 +1823,17 @@ hr {
   height: 47px;
   width: #{(248 + Style.sidebarOffsetW)}px;
 }
-#threadselect {
-  position: absolute;
-  bottom: 100%;
-  left: 0;
+#qr > form > #threadselect,
+#spoilerLabel {
+  display: inline-block;
 }
 #spoilerLabel {
-  position: absolute;
-  bottom: 100%;
-  right: 0;
+  width: 100%;
+  text-align: right;
+}
+#qr > form > #threadselect,
+#threadselect + #spoilerLabel {
+  width: 49%;
 }
 #threadselect select {
   margin-top: 0;
@@ -1842,13 +1846,14 @@ textarea.field,
   width: #{(248 + Style.sidebarOffsetW)}px;
 }
 #qr {
+  padding: 1px;
+  border: 1px solid #{if Conf["Post Form Decorations"] then theme["Buttons Border"] else "transparent"};
   overflow: visible;
   top: auto !important;
-  bottom: 22px !important;
+  bottom: 1.6em !important;
   width: #{(248 + Style.sidebarOffsetW)}px;
   margin: 0;
   z-index: 5 !important;
-  background-color: transparent !important;
 }
 input[title="Verification"],
 .captchaimg img {
@@ -1869,31 +1874,32 @@ input,
 }""" + (
           if Conf["Compact Post Form Inputs"] then """
 #qr textarea.field {
-  height: 184px;
-  min-height: 184px;
+  height: 15em;
+  min-height: 9em;
   min-width: #{248 + Style.sidebarOffsetW}px;
 }
 #qr.captcha textarea.field {
-  height: 114px;
-  min-height: 114px;
+  height: 9em;
+  min-height: 9em;
 }
 #qr .field[name="name"],
 #qr .field[name="email"],
 #qr .field[name="sub"] {
   width: #{(75 + (Style.sidebarOffsetW / 3))}px !important;
+  margin-top: 0 !important;
   margin-left: 1px !important;
 }\n
 """
           else
             """
 #qr textarea.field {
-  height: 158px;
-  min-height: 158px;
+  height: 11.4em;
+  min-height: 11.4em;
   min-width: #{248 + Style.sidebarOffsetW}px
 }
 #qr.captcha textarea.field {
-  height: 88px;
-  min-height: 88px;
+  height: 5.4em;
+  min-height: 5.4em;
 }
 #qr .field[name="email"],
 #qr .field[name="sub"] {
@@ -1902,6 +1908,7 @@ input,
 #qr .field[name="name"] {
   width: #{(227 + Style.sidebarOffsetW)}px !important;
   margin-left: 1px !important;
+  margin-top: 0 !important;
 }
 #qr .field[name="email"],
 #qr .field[name="sub"] {
@@ -2122,7 +2129,7 @@ img[src^="//static.4chan.org/support/"] {
         Style.emoji Conf["Emoji Position"]
       else ""
     ) + (
-      if Conf["4chan SS Emulation"]
+      if Conf["4chan SS Sidebar"]
         background = new Style.color Style.colorToHex theme["Background Color"]
         """
 body::before {
@@ -2142,6 +2149,11 @@ body::before {
   box-sizing: border-box;
   display: block;
 }
+"""
+      else ""
+    ) + (
+      if Conf["4chan SS Navigation"]
+        """
 #{if Conf["Pagination"] is "sticky top" or Conf["Pagination"] is "sticky bottom" then ".pagelist," else ""}
 #boardNavDesktop {
   left: 0;
@@ -2281,6 +2293,7 @@ body::before {
 #options,
 #qp,
 #qp div.post,
+#{if Conf["Post Form Decorations"] then "#qr," else ""}
 #stats,
 #updater,
 #watcher,
@@ -2387,7 +2400,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 #globalMessage {
   bottom: auto;
   position: fixed;
-  #{Style.sidebarLocation[0]}: 2px;
+  #{Style.sidebarLocation[0]}: 0;
   #{Style.sidebarLocation[1]}: auto;
   width: #{(248 + Style.sidebarOffsetW)}px;
   background: #{theme["Dialog Background"]};
@@ -2497,7 +2510,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   display: none;
 }
 #qr {
-  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[0]}: 0 !important;
   #{Style.sidebarLocation[1]}: auto !important;
 }\n
 """
@@ -2526,13 +2539,13 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   display: none;
 }
 #qr {
-  #{Style.sidebarLocation[0]}: -#{(249 + Style.sidebarOffsetW)}px !important;
+  #{Style.sidebarLocation[0]}: -#{(251 + Style.sidebarOffsetW)}px !important;
   #{Style.sidebarLocation[1]}: auto !important;
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
-  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[0]}: 0 !important;
   #{Style.sidebarLocation[1]}: auto !important;
 }
 #qr #qrtab {

@@ -35,14 +35,7 @@ Options =
     | <a target=_blank href=http://zixaphir.github.com/appchan-x/#bug-report>Issues</a>
   </div>
   <div>
-    <label for=style_tab id=selected_tab>Style</label>
-    <label for=theme_tab>Themes</label>
-    <label for=mascot_tab>Mascots</label>
-    <label for=main_tab>Script</label>
-    <label for=filter_tab>Filter</label>
-    <label for=sauces_tab>Sauce</label>
-    <label for=keybinds_tab>Keybinds</label>
-    <label for=rice_tab>Rice</label>
+    <label for=style_tab id=selected_tab>Style</label><label for=theme_tab>Themes</label><label for=mascot_tab>Mascots</label><label for=main_tab>Script</label><label for=filter_tab>Filter</label><label for=sauces_tab>Sauce</label><label for=keybinds_tab>Keybinds</label><label for=rice_tab>Rice</label>
   </div>
 </div>
 <div id=content>
@@ -423,18 +416,19 @@ Options =
             id:        name
             innerHTML: "
 <div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
-  <span style='color:#{theme['Subjects']}!important; font-weight: 700 !important'> #{name}</span>
-  <span style='color:#{theme['Names']}!important; font-weight: 700 !important'> #{theme['Author']}</span>
-  <span style='color:#{theme['Sage']}!important'> (SAGE)</span>
-  <span style='color:#{theme['Tripcodes']}!important'> #{theme['Author Tripcode']}</span>
-  <time style='color:#{theme['Timestamps']}'> 20XX.01.01 12:00 </time>
-  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important;' href='javascript:;'>No.27583594</a>
-  <a class=edit name='#{name}' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot; font-weight: 800;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important; font-weight: 800;' href='javascript:;'> &gt;&gt;edit</a>
-  <a class=export name='#{name}' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important; font-weight: 800;&quot;)' style='color:#{theme['Backlinks']}!important; font-weight: 800;' href='javascript:;'> &gt;&gt;export</a>
-  <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important; font-weight: 800;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important; font-weight: 800;&quot;)' style='color:#{theme['Backlinks']}!important; font-weight: 800;' href='javascript:;'> &gt;&gt;delete</a>
-  <br>
-  <blockquote style='margin: 0; padding: 12px 40px'>
-    <a style='color:#{theme['Quotelinks']}!important; font-weight: 800;'>&gt;&gt;27582902</a>
+  <div style='padding: 3px 0px 0px 8px;'>
+    <span style='color:#{theme['Subjects']}!important; font-weight: 600 !important'>#{name}</span>
+    <span style='color:#{theme['Names']}!important; font-weight: 600 !important'>#{theme['Author']}</span>
+    <span style='color:#{theme['Sage']}!important'>(SAGE)</span>
+    <span style='color:#{theme['Tripcodes']}!important'>#{theme['Author Tripcode']}</span>
+    <time style='color:#{theme['Timestamps']}'>20XX.01.01 12:00</time>
+    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important;' href='javascript:;'>No.27583594</a>
+    <a class=edit name='#{name}' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important;' href='javascript:;'>&gt;&gt;edit</a>
+    <a class=export name='#{name}' onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important;' href='javascript:;'>&gt;&gt;export</a>
+    <a class=delete onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important;' href='javascript:;'> &gt;&gt;delete</a>
+  </div>
+  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>
+    <a style='color:#{theme['Quotelinks']}!important; text-shadow: none;'>&gt;&gt;27582902</a>
     <br>
     Post content is right here.
   </blockquote>
@@ -536,17 +530,17 @@ Options =
           div = $.el 'div',
             id:        name
             innerHTML: "
-<div style='position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
-  <div class='rice' style='cursor: pointer; width: 12px;height: 12px;margin: 0 3px;vertical-align: middle;display: inline-block;background-color:#{theme['Checkbox Background']};border: 1px solid #{theme['Checkbox Border']};'></div>
-  <span style='color:#{theme['Subjects']}!important; font-weight: 700 !important'> #{name}</span>
-  <span style='color:#{theme['Names']}!important; font-weight: 700 !important'> #{theme['Author']}</span>
-  <span style='color:#{theme['Sage']}!important'> (SAGE)</span>
-  <span style='color:#{theme['Tripcodes']}!important'> #{theme['Author Tripcode']}</span>
-  <time style='color:#{theme['Timestamps']}'> 20XX.01.01 12:00 </time>
-  <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important;' href='javascript:;'>No.27583594</a>
-  <br>
-  <blockquote style='cursor: pointer; margin: 0; padding: 12px 40px'>
-    <a style='color:#{theme['Quotelinks']}!important; font-weight: 800;'>&gt;&gt;27582902</a>
+<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
+  <div style='padding: 3px 0px 0px 8px;'>
+    <span style='color:#{theme['Subjects']}!important; font-weight: 600 !important'> #{name}</span>
+    <span style='color:#{theme['Names']}!important; font-weight: 600 !important'> #{theme['Author']}</span>
+    <span style='color:#{theme['Sage']}!important'> (SAGE)</span>
+    <span style='color:#{theme['Tripcodes']}!important'> #{theme['Author Tripcode']}</span>
+    <time style='color:#{theme['Timestamps']}'> 20XX.01.01 12:00 </time>
+    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important;' href='javascript:;'>No.27583594</a>
+  </div>
+  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>
+    <a style='color:#{theme['Quotelinks']}!important; text-shadow: none;'>&gt;&gt;27582902</a>
     <br>
     I forgive you for using VLC to open me. ;__;
   </blockquote>

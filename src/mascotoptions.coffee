@@ -8,7 +8,7 @@ MascotTools =
     if Conf['Mascot Position'] == 'bottom'
       position = 0
     else
-      position = 248
+      position = 250
 
     # If we're editting anything, let's not change mascots any time we change a value.
     if Conf['editMode']
@@ -154,7 +154,7 @@ MascotTools =
       vOffset: [
         "Vertical Offset"
         "0"
-        "This value moves the mascot vertically away from the anchor point, in pixels (the post form is exactly \"248\" pixels tall if you'd like to force the mascot to sit above it)."
+        "This value moves the mascot vertically away from the anchor point."
         "number"
       ]
       hOffset: [

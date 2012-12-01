@@ -100,8 +100,8 @@ div.navLinks > a:first-of-type::after {
 #stats {
   #{Style.sidebarLocation[0]}: 2px !important;
   #{Style.sidebarLocation[1]}: auto !important;
-  top: #{if Conf["Updater Position"] == "top" then "20px" else "auto"} !important;
-  bottom: #{if Conf["Updater Position"] == "bottom" then "2px" else "auto"} !important;
+  top: #{if Conf["Updater Position"] == "top" then "1.6em" else "auto"} !important;
+  bottom: #{if Conf["Updater Position"] == "bottom" then "1.6em" else "auto"} !important;
 }
 #prefetch {
   width: #{248 + Style.sidebarOffsetW}px;
@@ -207,8 +207,8 @@ div.navLinks > a:first-of-type::after {
   #{Style.sidebarLocation[1]}: auto !important;
 }
 /* Updater + Stats */
-#stats,
-#updater {
+#updater,
+#stats {
   #{Style.sidebarLocation[0]}: #{if Conf["Updater Position"] is "top" then "24" else "2"}px !important;
   #{Style.sidebarLocation[1]}: auto !important;
   top: #{if Conf["Updater Position"] == "top" then "1px" else "auto"} !important;

@@ -623,9 +623,13 @@ http://www.google.com/searchbyimage?image_url=$1
       ]
 
     Aesthetics:
-      '4chan SS Emulation': [
+      '4chan SS Navigation': [
         false
-        'Try to emulate the appearance of 4chan SS.'
+        'Try to emulate the appearance of 4chan SS\'s Navigation.'
+      ]
+      '4chan SS Sidebar': [
+        false
+        'Try to emulate the appearance of 4chan SS\'s Sidebar.'
       ]
       'Block Ads': [
         false
@@ -769,6 +773,10 @@ http://www.google.com/searchbyimage?image_url=$1
         'tabbed slideout'
         'How the post form will sit on the page.'
         ['fixed', 'slideout', 'tabbed slideout', 'transparent fade', 'float']
+      ]
+      'Post Form Decorations': [
+        false
+        'Add a border and background to the post form (does not apply to the "float" post form style.'
       ]
       'Textarea Resize': [
         'vertical'
