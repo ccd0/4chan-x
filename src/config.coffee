@@ -710,9 +710,9 @@ http://www.google.com/searchbyimage?image_url=$1
         ['sidebar', 'opposite']
       ]
       'Mascot Position': [
-        'bottom'
-        'Change where your mascot is placed in relation to the post form if the mascot isn\'t manually placed.'
-        ['above post form', 'bottom']
+        'default'
+        'Change where your mascot is placed in relation to the post form.'
+        ['above post form', 'default', 'bottom']
       ]
       'Mascots Overlap Posts': [
         true

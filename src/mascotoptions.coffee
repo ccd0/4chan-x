@@ -5,7 +5,7 @@ MascotTools =
     
     return unless Conf['Mascots']
 
-    if Conf['Mascot Position'] == 'bottom'
+    if Conf['Mascot Position'] is 'bottom'
       position = 0
     else
       position = 250
@@ -19,6 +19,11 @@ MascotTools =
       names = []
 
       unless Conf["mascot"]
+        el = $('#mascot img', d.body)
+
+        if el
+          return el.src = ""
+
         return
 
       unless mascot = Mascots[Conf["mascot"]]
@@ -27,12 +32,12 @@ MascotTools =
 
       @addMascot mascot
 
-    if Conf["Sidebar Location"] == 'left'
-      if Conf["Mascot Location"] == "sidebar"
+    if Conf["Sidebar Location"] is 'left'
+      if Conf["Mascot Location"] is "sidebar"
         location = 'left'
       else
         location = 'right'
-    else if Conf["Mascot Location"] == "sidebar"
+    else if Conf["Mascot Location"] is "sidebar"
       location = 'right'
     else
       location = 'left'
@@ -52,7 +57,7 @@ MascotTools =
       '-1'
   };
   bottom: #{
-    if mascot.position is 'bottom'
+    if mascot.position is 'bottom' and Conf['Mascot Position'] is 'default'
       ((mascot.vOffset or 0) + 0) + "px"
     else if mascot.position is 'top'
       "auto"
@@ -194,7 +199,7 @@ MascotTools =
           div = @input item, name
           input = $ 'input', div
 
-          if name == 'image'
+          if name is 'image'
 
             $.on input, 'blur', ->
               editMascot[@name] = @value
@@ -216,7 +221,7 @@ MascotTools =
 
             $.after input, fileInput
 
-          if name == 'name'
+          if name is 'name'
             
             $.on input, 'blur', ->
               @value = @value.replace /[^A-Za-z-_0-9]/g, "_"
@@ -319,11 +324,11 @@ MascotTools =
         $.add d.body, div
 
   save: (mascot) ->
-    if typeof ({name} = mascot) == "undefined" or name == ""
+    if typeof ({name} = mascot) is "undefined" or name is ""
       alert "Please name your mascot."
       return
 
-    if typeof mascot.image == "undefined" or mascot.image == ""
+    if typeof mascot.image is "undefined" or mascot.image is ""
       alert "Your mascot must contain an image."
       return
 

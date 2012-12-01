@@ -301,7 +301,7 @@
       Mascots: {
         'Mascots': [true, 'Add a pretty picture of your waifu to Appchan.'],
         'Mascot Location': ['sidebar', 'Change where your mascot is located.', ['sidebar', 'opposite']],
-        'Mascot Position': ['bottom', 'Change where your mascot is placed in relation to the post form if the mascot isn\'t manually placed.', ['above post form', 'bottom']],
+        'Mascot Position': ['default', 'Change where your mascot is placed in relation to the post form.', ['above post form', 'default', 'bottom']],
         'Mascots Overlap Posts': [true, 'Mascots overlap threads and posts.'],
         'NSFW/SFW Mascots': [false, 'Enable or disable mascots based on the SFW status of the board you are viewing.'],
         'Grayscale Mascots': [false, 'Force mascots to be monochrome.'],
@@ -9742,7 +9742,7 @@
 
   MascotTools = {
     init: function(mascot) {
-      var filters, location, names, position;
+      var el, filters, location, names, position;
       if (mascot == null) {
         mascot = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)];
       }
@@ -9762,6 +9762,10 @@
       } else {
         names = [];
         if (!Conf["mascot"]) {
+          el = $('#mascot img', d.body);
+          if (el) {
+            return el.src = "";
+          }
           return;
         }
         if (!(mascot = Mascots[Conf["mascot"]])) {
@@ -9785,7 +9789,7 @@
       if (Conf["Grayscale Mascots"]) {
         filters.push('<feColorMatrix id="color" type="saturate" values="0" />');
       }
-      return Style.mascot.textContent = "#mascot img {\n  position: fixed;\n  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\n  bottom: " + (mascot.position === 'bottom' ? ((mascot.vOffset || 0) + 0) + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + position) + "px") + ";\n  " + location + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\n  top: " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";\n  height: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + "px" : "auto") + ";\n  width: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + "px" : "auto") + ";\n  opacity: " + Conf['Mascot Opacity'] + ";\n  " + (filters.length > 0 ? "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" : "") + "\n  pointer-events: none;\n}";
+      return Style.mascot.textContent = "#mascot img {\n  position: fixed;\n  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\n  bottom: " + (mascot.position === 'bottom' && Conf['Mascot Position'] === 'default' ? ((mascot.vOffset || 0) + 0) + "px" : mascot.position === 'top' ? "auto" : ((mascot.vOffset || 0) + position) + "px") + ";\n  " + location + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\n  top: " + (mascot.position === 'top' ? (mascot.vOffset || 0) + "px" : 'auto') + ";\n  height: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + "px" : "auto") + ";\n  width: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + "px" : "auto") + ";\n  opacity: " + Conf['Mascot Opacity'] + ";\n  " + (filters.length > 0 ? "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" : "") + "\n  pointer-events: none;\n}";
     },
     categories: ["Anime", "Ponies", "Questionable", "Silhouette", "Western"],
     dialog: function(key) {
