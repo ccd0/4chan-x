@@ -15,6 +15,36 @@ master
   Embedding:
     - Adds support for SoundCloud, Vocaroo, mp3/ogg/wav files.
     - Adds a menu button 'Embed all in post'.
+- Zixaphir
+  Settings editor now applies changes on setting change
+    (when you unfocus the text input on text inputs)
+  Selecting a mascot or theme now changes the current mascot to that mascot
+    Likewise, deselecting the current mascot sets a random mascot from enabled (or none if none are)
+  Theme Editor color selector now supports click and drag (as changes are reflected in real-time, this can be slow)
+  "white" shadows have been removed from all themes
+  Browse button has been removed from the post form
+    Clicking the file input does the same thing.
+  Extended embedder to allow ease of adding new types of embeds
+  Theme editor now appends " [modded]" to included themes when you edit them
+    If you remove it and save the theme, it will not be added if you edit it again.
+  Default font is now "sans-serif", which uses the browser's configurable "sans-serif" font.
+  Updated settings menu aesthetics
+  - Mascot menu redone
+  - Tabs stylings now reflect the active tab
+  - Single-column layout as opposed to suboption "blocks"
+  - Theme previews should now properly reflect appchan font weights
+  Removed Options:
+  - 4chan SS Emulation
+  New Options:
+  - Hide Show Post Form
+  - Greyscale Mascots
+  - Mascot Opacity
+  - Emoji Spacing
+  - 4chan SS Navigation
+  - 4chan SS Sidebar
+  - Post Form Decorations
+  - Youtube Embed -> Embedding
+  
 
 1.0.16
 - Zixaphir

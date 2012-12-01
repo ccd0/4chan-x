@@ -351,7 +351,7 @@ Options =
 
     # For theme and mascot edit dialogs, mostly. Allows the user to return to the tab that opened the edit dialog.
     if tab
-      $("##{tab}_tab", dialog).click()
+      $("[for='#{tab}_tab']", dialog).click()
 
     # Fill values, mostly. See each section for the value of the variable used as an argument.
     # Argument will be treated as 'this' by each method.

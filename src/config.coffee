@@ -660,7 +660,7 @@ http://www.google.com/searchbyimage?image_url=$1
         'text'
       ]
       'Font': [
-        'Helvetica'
+        'sans-serif'
         'The font used by all elements of 4chan.'
         'text'
       ]
@@ -765,7 +765,7 @@ http://www.google.com/searchbyimage?image_url=$1
         true
         'Use compact inputs on the post form.'
       ]
-      'Hide Show QR': [
+      'Hide Show Post Form': [
         false
         'Hides the "Show Post Form" button when Persistent QR is disabled.'
       ]
