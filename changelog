@@ -1,5 +1,8 @@
 master
 
+1.0.18
+- Fix "Hide Show Post Form" doing opposite of what it said it did.
+
 1.0.17
 - Mayhem
   Fix next/previous page keybinds.

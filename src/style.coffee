@@ -719,7 +719,7 @@ textarea {
 #qr:not(.dump) #replies,
 #qp .rice
 #qp input,
-#{unless Conf["Hide Show Post Form"] then "#showQR," else ""}
+#{if Conf["Hide Show Post Form"] then "#showQR," else ""}
 #threadselect:empty,
 #updater:not(:hover) > :not(.move),
 #{unless Conf["Board Subtitle"] then ".boardSubtitle," else ""}
