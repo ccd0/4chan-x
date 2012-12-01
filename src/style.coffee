@@ -382,7 +382,7 @@ input[type="submit"] {
 }
 #options {
   position: fixed;
-  padding: 5px;
+  padding: .3em;
   width: auto;
   left: 15%;
   right: 15%;
@@ -397,8 +397,10 @@ input[type="submit"] {
 }
 #optionsbar label[for] {
   position: relative;
-  padding: 0 4px 1px;
+  padding: 0 4px;
   z-index: 1;
+  height: 1.4em;
+  display: inline-block;
   border-width: 1px 1px 0 1px;
   border-color: transparent;
   border-style: solid;
