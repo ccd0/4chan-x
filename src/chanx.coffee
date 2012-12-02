@@ -1001,19 +1001,24 @@ Nav =
 BanChecker =
   init: ->
     @now = Date.now()
-    if $.get 'isBanned'
-      return @prepend()
-    @load() if $.get('lastBanCheck', 0) < @now - 6*$.HOUR
+    return if $.get 'isBanned'
+      @prepend()
+    else if Conf['Check for Bans constantly'] or $.get('lastBanCheck', 0) < @now - 6*$.HOUR
+      @load()
 
   load: ->
     $.ajax 'https://www.4chan.org/banned',
       onloadend: ->
         if @status is 200 or 304
-          $.set 'lastBanCheck', BanChecker.now
+          $.set 'lastBanCheck', BanChecker.now unless Conf['Check for Bans constantly']
           doc = d.implementation.createHTMLDocument ''
           doc.documentElement.innerHTML = @response
           if /no entry in our database/i.test (msg = $('.boxcontent', doc).textContent.trim())
-            return $.delete 'isBanned'
+            if $.get 'isBanned', false
+              $.delete 'isBanned'
+              $.rm BanChecker.el
+              delete BanChecker.el
+            return
           $.set 'isBanned',
             if /This ban will not expire/i.test msg
               'You are permabanned!'
@@ -1022,14 +1027,14 @@ BanChecker =
           BanChecker.prepend()
 
   prepend: ->
-    unless Banchecker.el
+    unless BanChecker.el
       Banchecker.el = $.el 'h2',
         textContent: $.get 'isBanned'
         href:        'javascript:;'
         title:       'Click to recheck.'
         id:          'banmessage'
       $.on el, 'click', ->
-        $.delete 'lastBanCheck'
+        $.delete 'lastBanCheck' unless Conf['Check for Bans constantly']
         $.delete 'isBanned'
         @style.opacity = '.5'
         BanChecker.load()

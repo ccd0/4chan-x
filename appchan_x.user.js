@@ -119,7 +119,8 @@
         'Reply Navigation': [false, 'Navigate to top / bottom of thread'],
         'Custom Navigation': [false, 'Customize your Navigation bar.'],
         'Check for Updates': [true, 'Check for updated versions of Appchan X'],
-        'Check for Bans': [false, 'Check ban status and prepend it to the top of the page.']
+        'Check for Bans': [false, 'Check ban status and prepend it to the top of the page.'],
+        'Check for Bans constantly': [false, 'Optain ban status on every refresh.']
       },
       Filtering: {
         'Anonymize': [false, 'Make everybody anonymous'],
@@ -5118,8 +5119,7 @@
       this.now = Date.now();
       if ($.get('isBanned')) {
         return this.prepend();
-      }
-      if ($.get('lastBanCheck', 0) < this.now - 6 * $.HOUR) {
+      } else if (Conf['Check for Bans constantly'] || $.get('lastBanCheck', 0) < this.now - 6 * $.HOUR) {
         return this.load();
       }
     },
@@ -5128,11 +5128,18 @@
         onloadend: function() {
           var doc, msg;
           if (this.status === 200 || 304) {
-            $.set('lastBanCheck', BanChecker.now);
+            if (!Conf['Check for Bans constantly']) {
+              $.set('lastBanCheck', BanChecker.now);
+            }
             doc = d.implementation.createHTMLDocument('');
             doc.documentElement.innerHTML = this.response;
             if (/no entry in our database/i.test((msg = $('.boxcontent', doc).textContent.trim()))) {
-              return $["delete"]('isBanned');
+              if ($.get('isBanned', false)) {
+                $["delete"]('isBanned');
+                $.rm(BanChecker.el);
+                delete BanChecker.el;
+              }
+              return;
             }
             $.set('isBanned', /This ban will not expire/i.test(msg) ? 'You are permabanned!' : 'You are banned!');
             return BanChecker.prepend();
@@ -5141,7 +5148,7 @@
       });
     },
     prepend: function() {
-      if (!Banchecker.el) {
+      if (!BanChecker.el) {
         Banchecker.el = $.el('h2', {
           textContent: $.get('isBanned'),
           href: 'javascript:;',
@@ -5149,7 +5156,9 @@
           id: 'banmessage'
         });
         $.on(el, 'click', function() {
-          $["delete"]('lastBanCheck');
+          if (!Conf['Check for Bans constantly']) {
+            $["delete"]('lastBanCheck');
+          }
           $["delete"]('isBanned');
           this.style.opacity = '.5';
           return BanChecker.load();

@@ -56,6 +56,10 @@ Config =
         false
         'Check ban status and prepend it to the top of the page.'
       ]
+      'Check for Bans constantly': [
+        false
+        'Optain ban status on every refresh.'
+      ]
 
     Filtering:
       'Anonymize': [
