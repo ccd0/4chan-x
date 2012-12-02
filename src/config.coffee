@@ -52,6 +52,10 @@ Config =
         true
         'Check for updated versions of Appchan X'
       ]
+      'Check for Bans': [
+        false
+        'Check ban status on every refresh.'
+      ]
 
     Filtering:
       'Anonymize': [

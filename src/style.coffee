@@ -178,6 +178,7 @@ div.subMenu.reply {
   #{position}: 100%;
   top: -1px;
 }
+#banmessage,
 #boardTitle,
 #main_tab + div,
 #mascotConf input,
