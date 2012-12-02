@@ -98,6 +98,8 @@ MascotTools =
     else
       'auto'
   };
+  margin-#{location}: #{mascot.hOffset or 0}px;
+  margin-bottom: #{mascot.vOffset or 0}px;
   opacity: #{Conf['Mascot Opacity']};
   pointer-events: none;
   #{if filters.length > 0 then "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" else ""}
