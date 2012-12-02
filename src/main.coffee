@@ -204,6 +204,8 @@ Main =
     # Major features.
     QR.init()
 
+    MascotTools.init()
+
     if Conf['Image Expansion']
       ImageExpand.init()
 

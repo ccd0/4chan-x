@@ -27,7 +27,6 @@ Style =
       Style.padding.nav   = $ "#boardNavDesktop", d.body
       Style.padding.pages = $(".pagelist", d.body)
       Style.padding()
-      MascotTools.init()
       $.on (window or unsafeWindow), "resize", Style.padding
 
   emoji: (position) ->

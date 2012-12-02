@@ -7958,14 +7958,11 @@
 
   QR = {
     init: function() {
+      var link;
       if (!$.id('postForm')) {
         return;
       }
       Main.callbacks.push(this.node);
-      return setTimeout(this.asyncInit);
-    },
-    asyncInit: function() {
-      var link;
       if (!Conf['Persistent QR']) {
         link = $.el('a', {
           innerHTML: "Open Post Form",
@@ -10127,7 +10124,6 @@
         Style.padding.nav = $("#boardNavDesktop", d.body);
         Style.padding.pages = $(".pagelist", d.body);
         Style.padding();
-        MascotTools.init();
         return $.on(window || unsafeWindow, "resize", Style.padding);
       });
     },
@@ -10826,6 +10822,7 @@
       Favicon.init();
       Options.init();
       QR.init();
+      MascotTools.init();
       if (Conf['Image Expansion']) {
         ImageExpand.init();
       }
