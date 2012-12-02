@@ -9764,7 +9764,11 @@
       if (Conf['Mascot Position'] === 'bottom' || !(Conf['Mascot Position'] === "default" && Conf['Post Form Style'] === "fixed")) {
         position = 0;
       } else {
-        position = "21.1em";
+        if (!g.REPLY || !!QR.spoiler) {
+          position = "21.1em";
+        } else {
+          position = "19.7em";
+        }
       }
       if (Conf['editMode']) {
         if (!(mascot = editMascot || (mascot = Mascots[Conf["mascot"]]))) {
@@ -9967,9 +9971,7 @@
           id: "mascot",
           innerHTML: "<img src='" + (Array.isArray(mascot.image) ? (Themes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'>"
         });
-        return $.ready(function() {
-          return $.add(d.body, div);
-        });
+        return $.add(d.body, div);
       }
     },
     save: function(mascot) {

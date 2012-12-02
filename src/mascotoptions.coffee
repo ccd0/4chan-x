@@ -8,7 +8,11 @@ MascotTools =
     if Conf['Mascot Position'] is 'bottom' or !(Conf['Mascot Position'] is "default" and Conf['Post Form Style'] is "fixed")
       position = 0
     else
-      position = "21.1em"
+      if !g.REPLY or !!QR.spoiler
+        position = "21.1em"
+      else
+        position = "19.7em"
+        
       
     # If we're editting anything, let's not change mascots any time we change a value.
     if Conf['editMode']
@@ -322,8 +326,7 @@ MascotTools =
         id: "mascot"
         innerHTML: "<img src='#{if Array.isArray(mascot.image) then (if Themes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'>"
 
-      $.ready ->
-        $.add d.body, div
+      $.add d.body, div
 
   save: (mascot) ->
     if typeof ({name} = mascot) is "undefined" or name is ""
