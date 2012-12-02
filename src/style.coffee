@@ -1024,7 +1024,7 @@ a,
 input:not([type=radio]),
 .field,
 input[type="submit"] {
-  height: 1.7em;
+  height: 1.5em;
 }
 #qr .warning {
   min-height: 1.7em;
@@ -1035,7 +1035,7 @@ input,
 .field,
 input[type="submit"] {
   vertical-align: bottom;
-  padding: 1px;
+  padding: 0 1px;
 }
 input[type="submit"] {
   padding: 0;
@@ -1822,7 +1822,7 @@ hr {
       unless Conf["Post Form Style"] is "float"
         """
 #qr img {
-  height: 47px;
+  height: 3.9em;
   width: #{(248 + Style.sidebarOffsetW)}px;
 }
 #qr > form > #threadselect,
@@ -1895,13 +1895,13 @@ input,
           else
             """
 #qr textarea.field {
-  height: 11.4em;
-  min-height: 11.4em;
+  height: 12em;
+  min-height: 12em;
   min-width: #{248 + Style.sidebarOffsetW}px
 }
 #qr.captcha textarea.field {
-  height: 5.4em;
-  min-height: 5.4em;
+  height: 6em;
+  min-height: 6em;
 }
 #qr .field[name="email"],
 #qr .field[name="sub"] {

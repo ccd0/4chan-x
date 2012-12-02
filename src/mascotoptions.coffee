@@ -8,8 +8,8 @@ MascotTools =
     if Conf['Mascot Position'] is 'bottom' or !(Conf['Mascot Position'] is "default" and Conf['Post Form Style'] is "fixed")
       position = 0
     else
-      position = 250
-
+      position = "21.1em"
+      
     # If we're editting anything, let's not change mascots any time we change a value.
     if Conf['editMode']
       unless mascot = editMascot or mascot = Mascots[Conf["mascot"]]
@@ -62,7 +62,7 @@ MascotTools =
     else if mascot.position is 'top'
       'auto'
     else
-      '0'
+      position
   };
   #{location}: #{
     (mascot.hOffset or 0) + (
@@ -95,8 +95,8 @@ MascotTools =
       'auto'
   };
   opacity: #{Conf['Mascot Opacity']};
-  #{if filters.length > 0 then "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" else ""}
   pointer-events: none;
+  #{if filters.length > 0 then "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" else ""}
 }
 """
 

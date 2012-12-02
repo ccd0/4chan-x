@@ -796,7 +796,7 @@ Options =
           $.set type, setting
       else
         $.id(@name).hidden = false
-        Conf["Hidden Categories"].remove name
+        Conf["Hidden Categories"].remove @name
       $.set "Hidden Categories", Conf["Hidden Categories"]
 
   customNavigation:

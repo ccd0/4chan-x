@@ -2219,6 +2219,7 @@ Mascots =
   'Asuka_Langley_Soryu_6':
     category:   'Anime'
     image:      'https://i.minus.com/ibzbnBcaEtoqck.png'
+    position:   'bottom'
   'Ayanami_Rei':
     category:   'Anime'
     image:      'https://i.minus.com/ib0ft5OmqRZx2r.png'
@@ -2273,7 +2274,6 @@ Mascots =
   'Doppleganger':
     category:   'Anime'
     image:      'https://i.minus.com/iPvv86W9r3Rxm.png'
-    position:   'bottom'
   'Dragonkid':
     category:   'Anime'
     image:      'https://i.minus.com/iq9fuyWSjIDWf.png'
@@ -2315,7 +2315,6 @@ Mascots =
     category:   'Anime'
     image:      'https://i.minus.com/iblWZGuSlWtDI6.png'
     center:     true
-    position:   'bottom'
   'Gasai_Yuno':
     category:   'Anime'
     image:      'https://i.minus.com/iEQsK6K85jX2n.png'
@@ -2344,7 +2343,6 @@ Mascots =
     category:   'Anime'
     image:      'https://i.minus.com/iLJ4uDTcg1T8r.png'
     center:     true
-    position:   'bottom'
   'Hatsune_Miku_4':
     category:   'Anime'
     image:      'https://i.minus.com/ibjkPMLT8Uxitp.png'
@@ -2458,7 +2456,7 @@ Mascots =
   'Konjiki_no_Yami':
     category:   'Questionable'
     image:      'https://i.minus.com/imy7iv5fuym8b.png'
-    bottom:     '0'
+    position:   'bottom'
   'Kotobuki_Tsumugi':
     category:   'Anime'
     image:      'https://i.minus.com/i6doAUnM6jMAY.png'
@@ -2494,15 +2492,12 @@ Mascots =
   'Lizardgirl':
     category:   'Anime'
     image:      'https://i.minus.com/is7h27Q6lsmyx.png'
-    position:   'bottom'
   'Luka':
     category:   'Anime'
     image:      'https://i.minus.com/inds5h2BOmVBy.png'
-    position:   'bottom'
   'Madotsuki':
     category:   'Anime'
     image:      'https://i.minus.com/ik6QYfTfgx9Za.png'
-    position:   'bottom'
   'Makoto':
     category:   'Anime'
     image:      'https://i.minus.com/i7q6aOuUqqA9F.png'
@@ -2656,7 +2651,6 @@ Mascots =
   'Saber':
     category:   'Questionable'
     image:      'https://i.minus.com/i62cv3csQaqgk.png'
-    position:   'bottom'
     center:     true
   'Sakurazaki_Setsuna':
     category:   'Questionable'
@@ -2744,7 +2738,6 @@ Mascots =
   'Wanwan':
     category:   'Questionable'
     image:      'https://i.minus.com/iTdBWYMCXULLT.png'
-    position:   'bottom'
     center:     true
   'White_Curious':
     category:   'Anime'
@@ -2763,16 +2756,13 @@ Mascots =
   'Yoko_Littner':
     category:   'Questionable'
     image:      'https://i.minus.com/i0mtOEsBC9GlY.png'
-    position:   'bottom'
   'Yoko_Littner_2':
     category:   'Anime'
     image:      'https://i.minus.com/i7aUDY4h9uB1T.png'
-    position:   'bottom'
     center:     true
   'Yoko_Littner_3':
     category:   'Anime'
     image:      'https://i.minus.com/iYVd5DhCmB7VJ.png'
-    position:   'bottom'
     center:     true
   'Yozora_Mikazuki':
     category:   'Anime'
