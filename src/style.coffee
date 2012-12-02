@@ -2784,4 +2784,4 @@ input[type=checkbox] {
 input[type=checkbox] {
   display: none;
 }\n
-""" )
+""") + (if Conf["Custom CSS"] then Conf["customCSS"] else "")

@@ -88,7 +88,6 @@ div.navLinks > a:first-of-type::after {
   #{if Style.sidebarLocation[0] == "left" then "left: #{leftStart + Style.sidebarOffsetW - positioner[8]}px" else "right:  #{rightStart + positioner[8]}px"};
   #{Style.sidebarLocation[1]}: auto !important;
   top: 0 !important;
-  font-size: 0;
   width: 40px;
 }
 #navlinks a {

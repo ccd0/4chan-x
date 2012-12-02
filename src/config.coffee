@@ -350,6 +350,31 @@ http://www.google.com/searchbyimage?image_url=$1
   updateIncrease:   '5,10,15,20,30,60,90,120,240,300'
   updateIncreaseB:  '5,10,15,20,30,60,90,120,240,300'
 
+  customCSS: """
+/* Tripcode Italics: */
+/*
+span.postertrip {
+  font-style: italic;
+}
+*/
+
+/* Add a rounded border to thumbnails (but not expanded images): */
+/*
+.fileThumb > img:first-child {
+  border: solid 2px rgba(0,0,100,0.5);
+  border-radius: 10px;
+}
+*/
+
+/* Make highlighted posts look inset on the page: */
+/*
+div.post:target,
+div.post.highlight {
+  box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
+}
+*/
+"""
+
   hotkeys:
     # QR & Options
     openQR: [
@@ -647,6 +672,10 @@ http://www.google.com/searchbyimage?image_url=$1
         'show'
         'Alter checkboxes.'
         ['show', 'make checkboxes circular', 'hide', 'do not style checkboxes']
+      ]
+      'Custom CSS': [
+        false
+        'Add (more) custom CSS to Appchan X'
       ]
       'Emoji': [
         'enabled'

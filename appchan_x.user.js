@@ -207,6 +207,7 @@
     favicon: 'ferongr',
     updateIncrease: '5,10,15,20,30,60,90,120,240,300',
     updateIncreaseB: '5,10,15,20,30,60,90,120,240,300',
+    customCSS: "/* Tripcode Italics: */\n/*\nspan.postertrip {\n  font-style: italic;\n}\n*/\n\n/* Add a rounded border to thumbnails (but not expanded images): */\n/*\n.fileThumb > img:first-child {\n  border: solid 2px rgba(0,0,100,0.5);\n  border-radius: 10px;\n}\n*/\n\n/* Make highlighted posts look inset on the page: */\n/*\ndiv.post:target,\ndiv.post.highlight {\n  box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);\n}\n*/",
     hotkeys: {
       openQR: ['I', 'Open QR with post number inserted'],
       openEmptyQR: ['i', 'Open QR without post number inserted'],
@@ -286,6 +287,7 @@
         'Block Ads': [false, 'Block advertisements. It\'s probably better to use AdBlock for this.'],
         'Sidebar Glow': [false, 'Adds a glow to the sidebar\'s text.'],
         'Checkboxes': ['show', 'Alter checkboxes.', ['show', 'make checkboxes circular', 'hide', 'do not style checkboxes']],
+        'Custom CSS': [false, 'Add (more) custom CSS to Appchan X'],
         'Emoji': ['enabled', 'Enable emoji', ['enabled', 'disable ponies', 'only ponies', 'disable']],
         'Emoji Position': ['before', 'Position of emoji icons, like sega and neko.', ['before', 'after']],
         'Emoji Spacing': ['5', 'Add some spacing between emoji and text.', 'text'],
@@ -2864,7 +2866,7 @@
       return _results;
     },
     dialog: function(tab) {
-      var archiver, arr, back, category, checked, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, label, li, liHTML, name, obj, option, optionname, optionvalue, overlay, sauce, select, selectoption, styleSetting, time, tr, ul, updateIncrease, value, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+      var archiver, arr, back, category, checked, customCSS, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, label, li, liHTML, name, obj, option, optionname, optionvalue, overlay, sauce, select, selectoption, styleSetting, time, tr, ul, updateIncrease, value, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
       if (Conf['editMode'] === "theme") {
         if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
           ThemeTools.close();
@@ -2966,6 +2968,9 @@
     <div class=warning><code>Custom Navigation</code> is disabled.</div>\
     <div id=customNavigation>\
     </div>\
+    <div class=warning><code>Custom CSS</code> is disabled.</div>\
+    Remove Comment blocks to use! ( "/*" and "*/" around CSS blocks )\
+    <textarea name=customCSS id=customCSS class=field></textarea>\
     <ul>\
       <div class=warning><code>Unread Favicon</code> is disabled.</div>\
       Unread favicons<br>\
@@ -3072,6 +3077,12 @@
       $.on(time, 'input', Options.time);
       $.on(fileInfo, 'input', $.cb.value);
       $.on(fileInfo, 'input', Options.fileInfo);
+      customCSS = $('#customCSS', dialog);
+      customCSS.value = $.get(customCSS.name, Conf[customCSS.name]);
+      $.on(customCSS, 'change', function() {
+        $.cb.value.call(this);
+        return Style.addStyle();
+      });
       favicon = $('select[name=favicon]', dialog);
       favicon.value = $.get('favicon', Conf['favicon']);
       $.on(favicon, 'change', $.cb.value);
@@ -3111,7 +3122,7 @@
             styleSetting.value = $.get(optionname, Conf[optionname]);
             $.on(styleSetting, 'blur', function() {
               $.cb.value.call(this);
-              return Style.addStyle.call(this);
+              return Style.addStyle();
             });
           } else if (arr[2]) {
             liHTML = "<div class=\"option\"><span class=\"optionlabel\">" + optionname + "</span><div style=\"display: none\">" + description + "</div></div><div class =\"option\"><select name=\"" + optionname + "\"></div>";
@@ -3129,7 +3140,7 @@
             styleSetting.value = $.get(optionname, Conf[optionname]);
             $.on(styleSetting, 'change', function() {
               $.cb.value.call(this);
-              return Style.addStyle.call(this);
+              return Style.addStyle();
             });
           } else {
             checked = $.get(optionname, Conf[optionname]) ? 'checked' : '';
@@ -3139,7 +3150,7 @@
             });
             $.on($('input', li), 'click', function() {
               $.cb.checked.call(this);
-              return Style.addStyle.call(this);
+              return Style.addStyle();
             });
           }
           $.on($(".optionlabel", li), 'mouseover', Options.mouseover);
@@ -6593,7 +6604,7 @@
   Quotify = {
     init: function() {
       if (Conf['Linkify']) {
-        this.regString = /(>>(>\/[a-z\d]+\/)?\d+|\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s'"<>()]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi;
+        this.regString = /(>>(>\/[a-z\d]+\/)?\d+|\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s'"<>]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi;
         this.concat = function(a) {
           return $.on(a, 'click', function(e) {
             var content, el;
@@ -10351,7 +10362,7 @@
         }
         leftStart = 231;
         rightStart = 2;
-        css = "div.navLinks > a:first-of-type::after {\n  z-index: 99 !important;\n}\n#prefetch {\n  z-index: 9;\n}\n/* 4chan X Options */\n#navtopright .settingsWindowLink::after {\n  visibility: visible;\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW) + "px" : "right:  " + rightStart + "px") + ";\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[1]) + "px" : "right:  " + (rightStart + positioner[1]) + "px") + ";\n}\n/* Global Message */\n#globalMessage::after {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[2]) + "px" : "right:  " + (rightStart + positioner[2]) + "px") + ";\n}\n/* Watcher */\n#watcher::after {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[3]) + "px" : "right:  " + (rightStart + positioner[3]) + "px") + ";\n  cursor: pointer;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  visibility: visible;\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[4]) + "px" : "right:  " + (rightStart + positioner[4]) + "px") + ";\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[5]) + "px" : "right:  " + (rightStart + positioner[5]) + "px") + ";\n}\n/* Expand Images */\n#imgControls {\n  position: fixed;\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[6]) + "px" : "right:  " + (rightStart + positioner[6]) + "px") + ";\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  cursor: pointer;\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[7]) + "px" : "right:  " + (rightStart + positioner[7]) + "px") + ";\n}\n/* Thread Navigation Links */\n#navlinks {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[8]) + "px" : "right:  " + (rightStart + positioner[8]) + "px") + ";\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: 0 !important;\n  font-size: 0;\n  width: 40px;\n}\n#navlinks a {\n  margin-left: 4px;\n}\n/* Updater + Stats */\n#updater,\n#stats {\n  " + Style.sidebarLocation[0] + ": 2px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: " + (Conf["Updater Position"] === "top" ? "1.6em" : "auto") + " !important;\n  bottom: " + (Conf["Updater Position"] === "bottom" ? "1.6em" : "auto") + " !important;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n  " + Style.sidebarLocation[0] + ": 2px;\n  top: 20px;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#boardNavDesktopFoot::after,\n#navtopright .exlinksOptionsLink::after,\n#navtopright .settingsWindowLink::after,\n#watcher::after,\n#globalMessage::after,\n#imgControls,\ndiv.navLinks > a:first-of-type::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: 2px !important;\n}\n" + (Conf["Announcements"] === "slideout" ? "#globalMessage," : "") + "\n" + (Conf["Slideout Watcher"] ? "#watcher," : "") + "\n#boardNavDesktopFoot {\n  top: 16px !important;\n  z-index: 98 !important;\n}\n#globalMessage:hover,\n" + (Conf["Slideout Watcher"] ? "#watcher:hover," : "") + "\n#boardNavDesktopFoot:hover {\n  z-index: 99 !important;\n}";
+        css = "div.navLinks > a:first-of-type::after {\n  z-index: 99 !important;\n}\n#prefetch {\n  z-index: 9;\n}\n/* 4chan X Options */\n#navtopright .settingsWindowLink::after {\n  visibility: visible;\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW) + "px" : "right:  " + rightStart + "px") + ";\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[1]) + "px" : "right:  " + (rightStart + positioner[1]) + "px") + ";\n}\n/* Global Message */\n#globalMessage::after {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[2]) + "px" : "right:  " + (rightStart + positioner[2]) + "px") + ";\n}\n/* Watcher */\n#watcher::after {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[3]) + "px" : "right:  " + (rightStart + positioner[3]) + "px") + ";\n  cursor: pointer;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  visibility: visible;\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[4]) + "px" : "right:  " + (rightStart + positioner[4]) + "px") + ";\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[5]) + "px" : "right:  " + (rightStart + positioner[5]) + "px") + ";\n}\n/* Expand Images */\n#imgControls {\n  position: fixed;\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[6]) + "px" : "right:  " + (rightStart + positioner[6]) + "px") + ";\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  cursor: pointer;\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[7]) + "px" : "right:  " + (rightStart + positioner[7]) + "px") + ";\n}\n/* Thread Navigation Links */\n#navlinks {\n  " + (Style.sidebarLocation[0] === "left" ? "left: " + (leftStart + Style.sidebarOffsetW - positioner[8]) + "px" : "right:  " + (rightStart + positioner[8]) + "px") + ";\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: 0 !important;\n  width: 40px;\n}\n#navlinks a {\n  margin-left: 4px;\n}\n/* Updater + Stats */\n#updater,\n#stats {\n  " + Style.sidebarLocation[0] + ": 2px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: " + (Conf["Updater Position"] === "top" ? "1.6em" : "auto") + " !important;\n  bottom: " + (Conf["Updater Position"] === "bottom" ? "1.6em" : "auto") + " !important;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n  " + Style.sidebarLocation[0] + ": 2px;\n  top: 20px;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#boardNavDesktopFoot::after,\n#navtopright .exlinksOptionsLink::after,\n#navtopright .settingsWindowLink::after,\n#watcher::after,\n#globalMessage::after,\n#imgControls,\ndiv.navLinks > a:first-of-type::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: 2px !important;\n}\n" + (Conf["Announcements"] === "slideout" ? "#globalMessage," : "") + "\n" + (Conf["Slideout Watcher"] ? "#watcher," : "") + "\n#boardNavDesktopFoot {\n  top: 16px !important;\n  z-index: 98 !important;\n}\n#globalMessage:hover,\n" + (Conf["Slideout Watcher"] ? "#watcher:hover," : "") + "\n#boardNavDesktopFoot:hover {\n  z-index: 99 !important;\n}";
       } else {
         if (Conf['Icon Positions'] === 'auto-align') {
           positioner = aligner(2, [Conf['Image Expansion'], true, (Conf['Slideout Navigation'] !== 'hide' ? true : false), (Conf['Announcements'] === 'slideout' ? true : false), (Conf['Slideout Watcher'] && Conf['Thread Watcher'] ? true : false), $('body > a[style="cursor: pointer; float: right;"]', d.body) != null, $('#navtopright .exlinksOptionsLink', d.body) != null, g.REPLY, Conf['Index Navigation'] || (g.REPLY && Conf['Reply Navigation'])]);
@@ -10602,7 +10613,7 @@
           case "hide":
             return "input[type=checkbox] {\n  display: none;\n}\n";
         }
-      })());
+      })()) + (Conf["Custom CSS"] ? Conf["customCSS"] : "");
     }
   };
 

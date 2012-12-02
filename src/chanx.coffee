@@ -2241,7 +2241,7 @@ Quotify =
           |
           news:
         )
-        [^\s'"<>()]+ # Non-URL characters. We cut of the string here.
+        [^\s'"<>]+ # Non-URL characters. We cut of the string here.
         |
         \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails.
       )///gi

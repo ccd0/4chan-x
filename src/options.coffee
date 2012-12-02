@@ -113,6 +113,9 @@ Options =
     <div class=warning><code>Custom Navigation</code> is disabled.</div>
     <div id=customNavigation>
     </div>
+    <div class=warning><code>Custom CSS</code> is disabled.</div>
+    Remove Comment blocks to use! ( "/*" and "*/" around CSS blocks )
+    <textarea name=customCSS id=customCSS class=field></textarea>
     <ul>
       <div class=warning><code>Unread Favicon</code> is disabled.</div>
       Unread favicons<br>
@@ -221,7 +224,7 @@ Options =
     $.on sauce, 'change', $.cb.value
 
     # Rice
-    # See sauce comment above. This is not a goto.
+    # See sauce comment above.
     (back     = $ '[name=backlink]', dialog).value = $.get 'backlink', Conf['backlink']
     (time     = $ '[name=time]',     dialog).value = $.get 'time',     Conf['time']
     (fileInfo = $ '[name=fileInfo]', dialog).value = $.get 'fileInfo', Conf['fileInfo']
@@ -231,6 +234,13 @@ Options =
     $.on time,     'input', Options.time
     $.on fileInfo, 'input', $.cb.value
     $.on fileInfo, 'input', Options.fileInfo
+
+    customCSS = $ '#customCSS', dialog
+    customCSS.value = $.get customCSS.name, Conf[customCSS.name]
+    $.on customCSS, 'change', ->
+      $.cb.value.call @
+      Style.addStyle()
+      
 
     favicon = $ 'select[name=favicon]', dialog
     favicon.value = $.get 'favicon', Conf['favicon']
@@ -284,7 +294,7 @@ Options =
           styleSetting.value = $.get optionname, Conf[optionname]
           $.on styleSetting, 'blur', ->
             $.cb.value.call @
-            Style.addStyle.call @
+            Style.addStyle()
 
         else if arr[2]
           liHTML = "<div class=\"option\"><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></div><div class =\"option\"><select name=\"#{optionname}\"></div>"
@@ -298,7 +308,7 @@ Options =
           styleSetting.value = $.get optionname, Conf[optionname]
           $.on styleSetting, 'change', ->
             $.cb.value.call @
-            Style.addStyle.call @
+            Style.addStyle()
 
         else
           checked = if $.get(optionname, Conf[optionname]) then 'checked' else ''
@@ -307,7 +317,7 @@ Options =
             innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></label>"
           $.on $('input', li), 'click', ->
             $.cb.checked.call @
-            Style.addStyle.call @
+            Style.addStyle()
 
         # Mouseover Labels.
         $.on $(".optionlabel", li), 'mouseover', Options.mouseover
