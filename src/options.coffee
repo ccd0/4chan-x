@@ -361,7 +361,6 @@ Options =
     Options.fileInfo.call fileInfo
     Options.favicon.call  favicon
 
-
   indicators: (dialog) ->
     indicators = {}
     for indicator in $$ '.warning', dialog
@@ -377,7 +376,6 @@ Options =
       indicators[key] = indicator
       $.on $("[name='#{key}']", dialog), 'click', ->
         Options.indicators dialog
-
 
   themeTab: (dialog = Options.el, mode) ->
 
@@ -517,8 +515,8 @@ Options =
         @nextSibling.click()
 
       $.on $('#tUndelete', div), 'click', ->
-        $.rm $("#themeContainer", d.body)
-        Options.themeTab false, 'undelete'
+        $.rm $.id "themeContainer"
+        Options.themeTab Options.el, 'undelete'
 
     else
 
@@ -532,15 +530,17 @@ Options =
             innerHTML: "
 <div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
   <div style='padding: 3px 0px 0px 8px;'>
-    <span style='color:#{theme['Subjects']}!important; font-weight: 600 !important'> #{name}</span>
-    <span style='color:#{theme['Names']}!important; font-weight: 600 !important'> #{theme['Author']}</span>
-    <span style='color:#{theme['Sage']}!important'> (SAGE)</span>
-    <span style='color:#{theme['Tripcodes']}!important'> #{theme['Author Tripcode']}</span>
-    <time style='color:#{theme['Timestamps']}'> 20XX.01.01 12:00 </time>
+    <span style='color:#{theme['Subjects']}!important; font-weight: 600 !important'>#{name}</span>
+    <span style='color:#{theme['Names']}!important; font-weight: 600 !important'>#{theme['Author']}</span>
+    <span style='color:#{theme['Sage']}!important'>(SAGE)</span>
+    <span style='color:#{theme['Tripcodes']}!important'>#{theme['Author Tripcode']}</span>
+    <time style='color:#{theme['Timestamps']}'>20XX.01.01 12:00</time>
     <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important;' href='javascript:;'>No.27583594</a>
   </div>
   <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>
-    <a style='color:#{theme['Quotelinks']}!important; text-shadow: none;'>&gt;&gt;27582902</a>
+    <a style='color:#{theme['Quotelinks']}!important; text-shadow: none;'>
+      &gt;&gt;27582902
+    </a>
     <br>
     I forgive you for using VLC to open me. ;__;
   </blockquote>
@@ -561,7 +561,7 @@ Options =
         innerHTML: "<a href='javascript:;'>Return</a>"
 
       $.on $('a', div), 'click', ->
-        $.rm $("#themeContainer", d.body)
+        $.rm $.id "themeContainer"
         Options.themeTab()
 
     $.add parentdiv, suboptions
@@ -712,7 +712,7 @@ Options =
           unless Conf["Deleted Mascots"].length > 0
             alert "No mascots have been deleted."
             return
-          $.rm $("#mascotContainer", d.body)
+          $.rm $.id "mascotContainer"
           Options.mascotTab.dialog Options.el, 'undelete'
 
       else
@@ -747,7 +747,7 @@ Options =
           innerHTML: "<a href=\"javascript:;\" id=\"return\">Return</a>"
 
         $.on $('#return', batchmascots), 'click', ->
-          $.rm $("#mascotContainer", d.body)
+          $.rm $.id "mascotContainer"
           Options.mascotTab.dialog()
 
       $.add parentdiv, suboptions
@@ -907,8 +907,9 @@ Options =
       Options.customNavigation.dialog $("#options", d.body)
 
   close: ->
-    $.rm $('#options', d.body)
-    $.rm $('#overlay', d.body)
+    $.rm $.id 'options'
+    $.rm $.id 'overlay'
+    delete Options.el
 
   clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,

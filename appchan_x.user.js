@@ -3312,8 +3312,8 @@
           return this.nextSibling.click();
         });
         $.on($('#tUndelete', div), 'click', function() {
-          $.rm($("#themeContainer", d.body));
-          return Options.themeTab(false, 'undelete');
+          $.rm($.id("themeContainer"));
+          return Options.themeTab(Options.el, 'undelete');
         });
       } else {
         for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
@@ -3322,7 +3322,7 @@
           if (theme["Deleted"]) {
             div = $.el('div', {
               id: name,
-              innerHTML: "<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div style='padding: 3px 0px 0px 8px;'>    <span style='color:" + theme['Subjects'] + "!important; font-weight: 600 !important'> " + name + "</span>    <span style='color:" + theme['Names'] + "!important; font-weight: 600 !important'> " + theme['Author'] + "</span>    <span style='color:" + theme['Sage'] + "!important'> (SAGE)</span>    <span style='color:" + theme['Tripcodes'] + "!important'> " + theme['Author Tripcode'] + "</span>    <time style='color:" + theme['Timestamps'] + "'> 20XX.01.01 12:00 </time>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  </div>  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>    <a style='color:" + theme['Quotelinks'] + "!important; text-shadow: none;'>&gt;&gt;27582902</a>    <br>    I forgive you for using VLC to open me. ;__;  </blockquote></div>"
+              innerHTML: "<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div style='padding: 3px 0px 0px 8px;'>    <span style='color:" + theme['Subjects'] + "!important; font-weight: 600 !important'>" + name + "</span>    <span style='color:" + theme['Names'] + "!important; font-weight: 600 !important'>" + theme['Author'] + "</span>    <span style='color:" + theme['Sage'] + "!important'>(SAGE)</span>    <span style='color:" + theme['Tripcodes'] + "!important'>" + theme['Author Tripcode'] + "</span>    <time style='color:" + theme['Timestamps'] + "'>20XX.01.01 12:00</time>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  </div>  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>    <a style='color:" + theme['Quotelinks'] + "!important; text-shadow: none;'>      &gt;&gt;27582902    </a>    <br>    I forgive you for using VLC to open me. ;__;  </blockquote></div>"
             });
             $.on(div, 'click', function() {
               var userThemes;
@@ -3342,7 +3342,7 @@
           innerHTML: "<a href='javascript:;'>Return</a>"
         });
         $.on($('a', div), 'click', function() {
-          $.rm($("#themeContainer", d.body));
+          $.rm($.id("themeContainer"));
           return Options.themeTab();
         });
       }
@@ -3506,7 +3506,7 @@
               alert("No mascots have been deleted.");
               return;
             }
-            $.rm($("#mascotContainer", d.body));
+            $.rm($.id("mascotContainer"));
             return Options.mascotTab.dialog(Options.el, 'undelete');
           });
         } else {
@@ -3540,7 +3540,7 @@
             innerHTML: "<a href=\"javascript:;\" id=\"return\">Return</a>"
           });
           $.on($('#return', batchmascots), 'click', function() {
-            $.rm($("#mascotContainer", d.body));
+            $.rm($.id("mascotContainer"));
             return Options.mascotTab.dialog();
           });
         }
@@ -3695,8 +3695,9 @@
       }
     },
     close: function() {
-      $.rm($('#options', d.body));
-      return $.rm($('#overlay', d.body));
+      $.rm($.id('options'));
+      $.rm($.id('overlay'));
+      return delete Options.el;
     },
     clearHidden: function() {
       $["delete"]("hiddenReplies/" + g.BOARD + "/");
