@@ -795,10 +795,8 @@ Options =
         $.id(@name).hidden = true
         Conf["Hidden Categories"].push @name
         for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
-          clear = []
-          for name in (setting = Conf[type])
-            if Mascots[name].category is @name
-              clear.push name
+          clear = for name in (setting = Conf[type])
+            if Mascots[name].category is @name then name else continue
           for name in clear
             setting.remove name
             if type is g.MASCOTSTRING

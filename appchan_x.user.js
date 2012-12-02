@@ -3553,23 +3553,29 @@
         return Options.indicators(dialog);
       },
       toggle: function() {
-        var clear, name, setting, type, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+        var clear, name, setting, type, _i, _j, _len, _len1, _ref;
         if (this.checked) {
           $.id(this.name).hidden = true;
           Conf["Hidden Categories"].push(this.name);
           _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             type = _ref[_i];
-            clear = [];
-            _ref1 = (setting = Conf[type]);
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              name = _ref1[_j];
-              if (Mascots[name].category === this.name) {
-                clear.push(name);
+            clear = (function() {
+              var _j, _len1, _ref1, _results;
+              _ref1 = (setting = Conf[type]);
+              _results = [];
+              for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+                name = _ref1[_j];
+                if (Mascots[name].category === this.name) {
+                  _results.push(name);
+                } else {
+                  continue;
+                }
               }
-            }
-            for (_k = 0, _len2 = clear.length; _k < _len2; _k++) {
-              name = clear[_k];
+              return _results;
+            }).call(this);
+            for (_j = 0, _len1 = clear.length; _j < _len1; _j++) {
+              name = clear[_j];
               setting.remove(name);
               if (type === g.MASCOTSTRING) {
                 $.rmClass($.id(name), 'enabled');
