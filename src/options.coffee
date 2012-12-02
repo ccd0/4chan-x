@@ -174,7 +174,7 @@ Options =
 
         # The option is both changed and saved on click.
         $.on $('input', li), 'click', $.cb.checked
-        
+
         # Mouseover Labels
         $.on $(".optionlabel", li), 'mouseover', Options.mouseover
 
@@ -198,7 +198,7 @@ Options =
     # I pull the correct data from the Options.filter method.
     filter = $ 'select[name=filter]', dialog
     $.on filter, 'change', Options.filter
-    
+
     # Archiver
     archiver = $ 'select[name=archiver]', dialog
     select = Redirect.select()
@@ -240,7 +240,7 @@ Options =
     $.on customCSS, 'change', ->
       $.cb.value.call @
       Style.addStyle()
-      
+
 
     favicon = $ 'select[name=favicon]', dialog
     favicon.value = $.get 'favicon', Conf['favicon']
@@ -354,7 +354,7 @@ Options =
 
     # Rice checkboxes.
     Style.rice dialog
-    
+
     # Add options dialog to the DOM.
     $.add d.body, dialog
     dialog.style.visibility = 'visible'
@@ -839,7 +839,7 @@ Options =
 
       # Description of Syntax.
       li = $.el "li"
-        textContent: "Navigation Syntax: Display Name | Title / Alternate Text | URL"
+        innerHTML: "Navigation Syntax:<br>Display Name | Title / Alternate Text | URL"
       $.add ul, li
 
       # Names and Placeholders for custom navigation inputs.
@@ -919,15 +919,17 @@ Options =
       # Final addLink Button. Allows the user to add a new item
       # to the bottom of the list or add an item if none exist.
       li = $.el "li"
-      addLink = $.el "a"
-        textContent: " + "
-        href: "javascript:;"
-      $.on addLink, "click", ->
+        innerHTML: "<a name='add' href='javascript:;'>+</a> | <a name='reset' href='javascript:;'>Reset</a>"
+
+      $.on $('a[name=add]', li), "click", ->
         blankLink = ["ex","example","http://www.example.com/"]
         userNavigation.links.push blankLink
         Options.customNavigation.cleanup()
 
-      $.add li, addLink
+      $.on $('a[name=reset]', li), "click", ->
+        userNavigation = Navigation
+        Options.customNavigation.cleanup()
+
       $.add ul, li
 
       $.add div, ul
@@ -1058,8 +1060,8 @@ Options =
     $.on @, 'mouseout',       Options.mouseout
 
     return
-    
+
   mouseout: (e) ->
-  
+
     UI.hoverend()
     $.off @, 'mousemove',     Options.cb

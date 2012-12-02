@@ -1828,7 +1828,7 @@ hr {
   text-align: right;
 }
 #qr > form > #threadselect,
-#threadselect + #spoilerLabel {
+#threadselect:not(:empty) + #spoilerLabel {
   width: 49%;
 }
 #threadselect select {
