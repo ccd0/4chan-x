@@ -90,7 +90,6 @@ div.navLinks > a:first-of-type::after {
   top: 0 !important;
   font-size: 0;
   width: 40px;
-  line-height: 15px;
 }
 #navlinks a {
   margin-left: 4px;
