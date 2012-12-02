@@ -41,21 +41,13 @@
       Style.sidebarLocation = ["right", "left" ]
 
     if Conf['editMode'] is "theme"
-      pagemargin = 300
+      editSpace = []
+      editSpace[Style.sidebarLocation[0]] = 300
+      editSpace[Style.sidebarLocation[1]] = 0
     else
-      switch Conf["Page Margin"]
-        when "none"
-          pagemargin = 2
-        when "minimal"
-          pagemargin = 20
-        when "small"
-          pagemargin = 50
-        when "medium"
-          pagemargin = 150
-        when "fully centered"
-          pagemargin = 252 + Style.sidebarOffsetW
-        when "large"
-          pagemargin = 350
+      editSpace =
+        "left":  0
+        "right": 0
 
     if Conf["Sidebar"]  is "minimal"
       sidebar = 20
@@ -64,7 +56,7 @@
       sidebar = (252 + Style.sidebarOffsetW)
 
     else
-      sidebar = pagemargin
+      sidebar = 2
 
     switch Conf["Reply Spacing"]
       when "none"
@@ -675,7 +667,9 @@ body {
   margin-top: 1px;
   margin-bottom: 1px;
   margin-#{Style.sidebarLocation[0]}: #{sidebar}px;
-  margin-#{Style.sidebarLocation[1]}: #{pagemargin}px;
+  margin-#{Style.sidebarLocation[1]}: 2px;
+  padding-left: #{parseInt(Conf["Left Thread Padding"], 10) + editSpace["left"]}px;
+  padding-right: #{parseInt(Conf["Right Thread Padding"], 10) + editSpace["right"]}px;
 }
 #exlinks-options > *,
 html,
@@ -1371,7 +1365,7 @@ html {
 #boardTitle,
 #prefetch,
 #showQR,
-#spoilerLabel,
+#{unless Conf["Post Form Decorations"] then '#spoilerLabel,' else ''}
 #stats,
 #updater:not(:hover) .move {
   text-shadow:
@@ -1456,8 +1450,8 @@ div.reply.post:target {
 .pagelist {
   background: #{theme["Navigation Background"]};
   border: 1px solid #{theme["Navigation Border"]};
-  #{Style.sidebarLocation[0]}: #{sidebar}px;
-  #{Style.sidebarLocation[1]}: #{pagemargin}px;
+  #{Style.sidebarLocation[0]}: #{sidebar + parseInt(Conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  #{Style.sidebarLocation[1]}: #{parseInt(Conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;
 }
 #delform {
   background: #{theme["Thread Wrapper Background"]};

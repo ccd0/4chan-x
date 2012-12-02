@@ -532,10 +532,15 @@ div.post.highlight {
         'The side of the page the sidebar content is on. It is highly recommended that you do not hide the sidebar if you change this option.'
         ['left', 'right']
       ]
-      'Page Margin': [
-        'none'
-        'Additional layout options, allowing you to center the page or use additional page margins.'
-        ['none', 'minimal', 'small', 'medium', 'large', 'fully centered']
+      'Left Thread Padding': [
+        '0'
+        'Add some spacing between the left edge of document and the threads.'
+        'text'
+      ]
+      'Right Thread Padding': [
+        '0'
+        'Add some spacing between the right edge of document and the threads.'
+        'text'
       ]
       'Announcements': [
         'slideout'
