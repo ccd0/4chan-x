@@ -5,7 +5,7 @@ MascotTools =
     
     return unless Conf['Mascots']
 
-    if Conf['Mascot Position'] is 'bottom'
+    if Conf['Mascot Position'] is 'bottom' or !(Conf['Mascot Position'] is "default" and Conf['Post Form Style'] is "fixed")
       position = 0
     else
       position = 250
@@ -58,11 +58,11 @@ MascotTools =
   };
   bottom: #{
     if mascot.position is 'bottom' and Conf['Mascot Position'] is 'default'
-      ((mascot.vOffset or 0) + 0) + "px"
+      '0'
     else if mascot.position is 'top'
-      "auto"
+      'auto'
     else
-      ((mascot.vOffset or 0) + position) + "px"
+      '0'
   };
   #{location}: #{
     (mascot.hOffset or 0) + (
@@ -74,7 +74,7 @@ MascotTools =
   }px;
   top: #{
     if mascot.position is 'top'
-      (mascot.vOffset or 0) + "px"
+      '0'
     else
       'auto'
   };
@@ -82,17 +82,17 @@ MascotTools =
     if mascot.height and isNaN parseFloat mascot.height
       mascot.height
     else if mascot.height
-      parseInt(mascot.height, 10) + "px"
+      parseInt(mascot.height, 10) + 'px'
     else
-      "auto"
+      'auto'
   };
   width: #{
     if mascot.width and isNaN parseFloat mascot.width
       mascot.width
     else if mascot.width
-      parseInt(mascot.width,  10) + "px"
+      parseInt(mascot.width,  10) + 'px'
     else
-      "auto"
+      'auto'
   };
   opacity: #{Conf['Mascot Opacity']};
   #{if filters.length > 0 then "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" else ""}
@@ -101,15 +101,15 @@ MascotTools =
 """
 
   categories: [
-    "Anime"
-    "Ponies"
-    "Questionable"
-    "Silhouette"
-    "Western"
+    'Anime'
+    'Ponies'
+    'Questionable'
+    'Silhouette'
+    'Western'
   ]
 
   dialog: (key) ->
-    Conf['editMode'] = "mascot"
+    Conf['editMode'] = 'mascot'
     if Mascots[key]
       editMascot = JSON.parse(JSON.stringify(Mascots[key]))
     else

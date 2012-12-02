@@ -1858,7 +1858,7 @@ textarea.field,
   z-index: 5 !important;
 }
 input[title="Verification"],
-.captchaimg img {
+.captchaimg {
   margin-top: 1px;
 }
 #qr .warning,
