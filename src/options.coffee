@@ -467,15 +467,15 @@ Options =
               alert "Cannot delete theme (No other themes available)."
               return
 
-            if confirm "Are you sure you want to delete \"#{container.id}\"?"
-              if (name = container.id) is Conf['theme']
+            if confirm "Are you sure you want to delete \"#{@name}\"?"
+              if @name is Conf['theme']
                 if settheme = container.previousSibling or container.nextSibling
                   Conf['theme'] = settheme.id
                   $.addClass settheme, 'selectedtheme'
                   $.set 'theme', Conf['theme']
-              Themes[container.id]["Deleted"] = true
+              Themes[@name]["Deleted"] = true
               userThemes = $.get "userThemes", {}
-              userThemes[name] = Themes[name]
+              userThemes[@name] = Themes[@name]
               $.set 'userThemes', userThemes
               $.rm container
 
@@ -637,7 +637,6 @@ Options =
 
             $.on $('a.delete', li), 'click', (e) ->
               e.stopPropagation()
-              container = @parentElement.parentElement
               if confirm "Are you sure you want to delete \"#{@name}\"?"
                 if Conf['mascot'] is @name
                   MascotTools.init()
@@ -646,7 +645,7 @@ Options =
                   $.set type, Conf[type]
                 Conf["Deleted Mascots"].push @name
                 $.set "Deleted Mascots", Conf["Deleted Mascots"]
-                $.rm container
+                $.rm $.id @name
 
             # Mascot Exporting
             $.on $('a.export', li), 'click', (e) ->
@@ -669,7 +668,7 @@ Options =
                 $.addClass @, 'enabled'
                 Conf[g.MASCOTSTRING].push @id
                 MascotTools.init @id
-              $.set g.MASCOTSTRING, Conf["Enabled Mascots"]
+              $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
 
             if MascotTools.categories.contains mascot.category
               $.add ul[mascot.category], li
@@ -689,13 +688,13 @@ Options =
         $.on $('#clear', batchmascots), 'click', ->
           enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]))
           for name in enabledMascots
-            $.rmClass $("name=#{name}"), 'enabled'
+            $.rmClass $.id(name), 'enabled'
           $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING] = []
 
         $.on $('#selectAll', batchmascots), 'click', ->
           for name, mascot of Mascots
             unless Conf["Hidden Categories"].contains(mascot.category) or Conf[g.MASCOTSTRING].contains(name) or Conf["Deleted Mascots"].contains(name)
-              $.addClass $("name=#{name}"), 'enabled'
+              $.addClass $.id(name), 'enabled'
               Conf[g.MASCOTSTRING].push name
           $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
 
@@ -726,14 +725,14 @@ Options =
             mascot = Mascots[name]
             li = $.el 'li',
               className: 'mascot'
+              id:        name
               innerHTML: "
 <div class='mascotname'>#{name.replace /_/g, " "}</span>
-<div id='#{name}' class='container #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Themes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div>
+<div class='container #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Themes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div>
 "
             div = $('div', li)
 
-            $.on div, 'click', ->
-              container = @parentElement
+            $.on div, 'li', ->
               if confirm "Are you sure you want to undelete \"#{@id}\"?"
                 Conf["Deleted Mascots"].remove @id
                 $.set "Deleted Mascots", Conf["Deleted Mascots"]
@@ -761,24 +760,21 @@ Options =
       Options.indicators dialog
 
     toggle: ->
-      catName = @name
-      category = $.id catName
       if @checked
-        category.hidden = true
-        Conf["Hidden Categories"].push catName
+        $.id(@name).hidden = true
+        Conf["Hidden Categories"].push @name
         for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
           clear = []
           for name in (setting = Conf[type])
-            if Mascots[name].category is catName
+            if Mascots[name].category is @name
               clear.push name
           for name in clear
             setting.remove name
             if type is g.MASCOTSTRING
               $.rmClass $.id(name), 'enabled'
           $.set type, setting
-          
       else
-        category.hidden = false
+        $.id(@name).hidden = false
         Conf["Hidden Categories"].remove name
       $.set "Hidden Categories", Conf["Hidden Categories"]
 
