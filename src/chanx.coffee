@@ -995,18 +995,6 @@ Nav =
     unless (delta is -1 and Math.ceil(top) < 0) or (delta is +1 and top > 1)
       i += delta
 
-    if Conf['Rollover']
-      if i is -1
-        if link = $ 'link[rel=prev]', d.head
-          window.location = link.href + '#delform'
-        else
-          window.location = "/#{g.BOARD}/0#delform"
-        return
-      if (delta is +1) and ( (i is Nav.threads.length) or (innerHeight + pageYOffset == d.body.scrollHeight) )
-        if link = $ 'link[rel=next]', d.head
-          window.location = link.href + '#delform'
-          return
-
     {top} = Nav.threads[i]?.getBoundingClientRect()
     window.scrollBy 0, top
 

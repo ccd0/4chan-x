@@ -40,10 +40,6 @@ Config =
         true
         'Navigate to previous / next thread'
       ]
-      'Rollover': [
-        true
-        'Index navigation will fallback to page navigation.'
-      ]
       'Reply Navigation': [
         false
         'Navigate to top / bottom of thread'

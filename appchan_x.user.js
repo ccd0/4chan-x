@@ -116,7 +116,6 @@
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
-        'Rollover': [true, 'Index navigation will fallback to page navigation.'],
         'Reply Navigation': [false, 'Navigate to top / bottom of thread'],
         'Custom Navigation': [false, 'Customize your Navigation bar.'],
         'Check for Updates': [true, 'Check for updated versions of Appchan X']
@@ -5102,27 +5101,11 @@
       return $('.board');
     },
     scroll: function(delta) {
-      var i, link, rect, thread, top, _ref, _ref1;
+      var i, rect, thread, top, _ref, _ref1;
       _ref = Nav.getThread(true), thread = _ref[0], i = _ref[1], rect = _ref[2];
       top = rect.top;
       if (!((delta === -1 && Math.ceil(top) < 0) || (delta === +1 && top > 1))) {
         i += delta;
-      }
-      if (Conf['Rollover']) {
-        if (i === -1) {
-          if (link = $('link[rel=prev]', d.head)) {
-            window.location = link.href + '#delform';
-          } else {
-            window.location = "/" + g.BOARD + "/0#delform";
-          }
-          return;
-        }
-        if ((delta === +1) && ((i === Nav.threads.length) || (innerHeight + pageYOffset === d.body.scrollHeight))) {
-          if (link = $('link[rel=next]', d.head)) {
-            window.location = link.href + '#delform';
-            return;
-          }
-        }
       }
       top = (_ref1 = Nav.threads[i]) != null ? _ref1.getBoundingClientRect().top : void 0;
       return window.scrollBy(0, top);
