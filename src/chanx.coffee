@@ -998,6 +998,35 @@ Nav =
     {top} = Nav.threads[i]?.getBoundingClientRect()
     window.scrollBy 0, top
 
+BanChecker =
+  init: ->
+    return unless @postform = $.id 'postForm'
+    @now = Date.now()
+    if @msg = $.get 'isBanned'
+      return @prepend()
+    if $.get('lastBanCheck', 0) < @now - 6*$.HOUR
+      @load()
+
+  load: ->
+    $.ajax 'https://www.4chan.org/banned',
+      onloadend: ->
+        if @status is 200 or 304
+          $.set 'lastBanCheck', BanChecker.now
+          doc = d.implementation.createHTMLDocument ''
+          doc.documentElement.innerHTML = @response
+          if /no entry in our database/i.test (msg = $('.boxcontent', doc).textContent.trim())
+            $.delete 'isBanned'
+          else
+            $.set 'isBanned',
+              if /This ban will not expire/i.test msg
+                'You are banned, forever! ;_;'
+              else
+                'You are banned! ;_;'
+              BanChecker.prepend()
+
+  prepend: ->
+    $.before @postform, $.el 'h2', textContent: @msg
+
 Updater =
   init: ->
     # Setup basic HTML layout.

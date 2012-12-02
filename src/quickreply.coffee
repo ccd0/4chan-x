@@ -5,20 +5,6 @@ QR =
     setTimeout @asyncInit
 
   asyncInit: ->
-    if Conf['Check for Bans']
-      $.ajax 'https://www.4chan.org/banned',
-        onloadend: ->
-          if @status is 200 or 304
-            doc = d.implementation.createHTMLDocument ''
-            doc.documentElement.innerHTML = @response
-            unless /There was no entry in our database for your ban/i.test (msg = $('.boxcontent', doc).textContent.trim())
-              $.before $.id('postForm'), $.el 'h2',
-                id: "banmessage"
-                textContent:
-                  if /This ban will not expire./i.test msg
-                    'You are banned, forever! ;_;'
-                  else
-                    'You are banned! ;_;'
     unless Conf['Persistent QR']
       link = $.el 'a'
         innerHTML: "Open Post Form"
@@ -813,6 +799,9 @@ QR =
             "You were issued a warning on #{bs[0].innerHTML} as #{bs[3].innerHTML}.<br>Warning reason: #{bs[1].innerHTML}"
           else
             "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
+    if /You are banned/.test err.textContent
+      $.set 'lastBanCheck', 0
+      BanChecker.init()
     else if err = doc.getElementById 'errmsg' # error!
       $('a', err)?.target = '_blank' # duplicate image link
     else unless msg = $ 'b', doc
