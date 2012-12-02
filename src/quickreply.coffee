@@ -7,19 +7,18 @@ QR =
   asyncInit: ->
     if Conf['Check for Bans']
       $.ajax 'https://www.4chan.org/banned',
-        callbacks =
-          onloadend: ->
-            if @status is 200 or 304
-              doc = d.implementation.createHTMLDocument ''
-              doc.documentElement.innerHTML = @response
-              unless /There was no entry in our database for your ban/i.test (msg = $('.boxcontent', doc).textContent.trim())
-                $.before $.id('postForm'), h2 = $.el 'h2',
-                  id: "banmessage"
-                  textContent:
-                    if /This ban will not expire./i.test msg
-                      'You are banned, forever! ;_;'
-                    else
-                      'You are banned! ;_;'
+        onloadend: ->
+          if @status is 200 or 304
+            doc = d.implementation.createHTMLDocument ''
+            doc.documentElement.innerHTML = @response
+            unless /There was no entry in our database for your ban/i.test (msg = $('.boxcontent', doc).textContent.trim())
+              $.before $.id('postForm'), $.el 'h2',
+                id: "banmessage"
+                textContent:
+                  if /This ban will not expire./i.test msg
+                    'You are banned, forever! ;_;'
+                  else
+                    'You are banned! ;_;'
     unless Conf['Persistent QR']
       link = $.el 'a'
         innerHTML: "Open Post Form"
