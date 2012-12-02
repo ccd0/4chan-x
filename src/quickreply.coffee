@@ -3,6 +3,7 @@ QR =
     return unless $.id 'postForm'
     Main.callbacks.push @node
     setTimeout @asyncInit
+    setTimeout BanChecker.init
 
   asyncInit: ->
     unless Conf['Persistent QR']
@@ -775,6 +776,8 @@ QR =
           href: '//www.4chan.org/banned',
           target: '_blank',
           textContent: 'Connection error, or you are banned.'
+        $.delete 'lastBanCheck'
+        BanChecker.init()
 
     opts =
       form: $.formData post
@@ -800,7 +803,7 @@ QR =
           else
             "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
     if /You are banned/.test err.textContent
-      $.set 'lastBanCheck', 0
+      $.delete 'lastBanCheck'
       BanChecker.init()
     else if err = doc.getElementById 'errmsg' # error!
       $('a', err)?.target = '_blank' # duplicate image link

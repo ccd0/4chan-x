@@ -54,7 +54,7 @@ Config =
       ]
       'Check for Bans': [
         false
-        'Check ban status on every refresh.'
+        'Check ban status and prepend it to the top of the page.'
       ]
 
     Filtering:

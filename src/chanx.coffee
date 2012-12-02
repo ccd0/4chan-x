@@ -1000,12 +1000,10 @@ Nav =
 
 BanChecker =
   init: ->
-    return unless @postform = $.id 'postForm'
     @now = Date.now()
-    if @msg = $.get 'isBanned'
+    if $.get 'isBanned'
       return @prepend()
-    if $.get('lastBanCheck', 0) < @now - 6*$.HOUR
-      @load()
+    @load() if $.get('lastBanCheck', 0) < @now - 6*$.HOUR
 
   load: ->
     $.ajax 'https://www.4chan.org/banned',
@@ -1015,17 +1013,30 @@ BanChecker =
           doc = d.implementation.createHTMLDocument ''
           doc.documentElement.innerHTML = @response
           if /no entry in our database/i.test (msg = $('.boxcontent', doc).textContent.trim())
-            $.delete 'isBanned'
-          else
-            $.set 'isBanned',
-              if /This ban will not expire/i.test msg
-                'You are banned, forever! ;_;'
-              else
-                'You are banned! ;_;'
-              BanChecker.prepend()
+            return $.delete 'isBanned'
+          $.set 'isBanned',
+            if /This ban will not expire/i.test msg
+              'You are permabanned!'
+            else
+              'You are banned!'
+          BanChecker.prepend()
 
   prepend: ->
-    $.before @postform, $.el 'h2', textContent: @msg
+    unless Banchecker.el
+      Banchecker.el = $.el 'h2',
+        textContent: $.get 'isBanned'
+        href:        'javascript:;'
+        title:       'Click to recheck.'
+        id:          'banmessage'
+      $.on el, 'click', ->
+        $.delete 'lastBanCheck'
+        $.delete 'isBanned'
+        @style.opacity = '.5'
+        BanChecker.load()
+      $.before $.id('postForm'), el
+    else
+      Banchecker.el.textContent = $.get 'isBanned'
+    
 
 Updater =
   init: ->

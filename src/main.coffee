@@ -200,8 +200,6 @@ Main =
     Options.init()
 
     # Major features.
-    if Conf['Check for Bans']
-      setTimeout BanChecker.init
 
     QR.init()
 
