@@ -3326,10 +3326,10 @@
             });
             $.on(div, 'click', function() {
               var userThemes;
-              if (confirm("Are you sure you want to undelete \"" + (name = this.id) + "\"?")) {
-                Themes[name]["Deleted"] = false;
+              if (confirm("Are you sure you want to undelete \"" + this.id + "\"?")) {
+                Themes[this.id]["Deleted"] = false;
                 userThemes = $.get("userThemes", {});
-                userThemes[name] = Themes[name];
+                userThemes[this.id] = Themes[this.id];
                 $.set('userThemes', userThemes);
                 return $.rm(this);
               }
@@ -3353,7 +3353,7 @@
     },
     mascotTab: {
       dialog: function(dialog, mode) {
-        var batchmascots, category, div, header, keys, li, mascot, mascotHide, name, option, parentdiv, suboptions, ul, _i, _j, _k, _len, _len1, _len2, _ref;
+        var batchmascots, category, header, keys, li, mascot, mascotHide, name, option, parentdiv, suboptions, ul, _i, _j, _k, _len, _len1, _len2, _ref;
         if (dialog == null) {
           dialog = Options.el;
         }
@@ -3523,12 +3523,11 @@
                 id: name,
                 innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</span><div class='container " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (Themes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'></div>"
               });
-              div = $('div', li);
-              $.on(div, 'li', function() {
+              $.on(li, 'click', function() {
                 if (confirm("Are you sure you want to undelete \"" + this.id + "\"?")) {
                   Conf["Deleted Mascots"].remove(this.id);
                   $.set("Deleted Mascots", Conf["Deleted Mascots"]);
-                  return $.rm(container);
+                  return $.rm(this);
                 }
               });
               $.add(ul, li);

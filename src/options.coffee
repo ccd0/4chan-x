@@ -547,10 +547,10 @@ Options =
 </div>"
 
           $.on div, 'click', ->
-            if confirm "Are you sure you want to undelete \"#{name = @id}\"?"
-              Themes[name]["Deleted"] = false
+            if confirm "Are you sure you want to undelete \"#{@id}\"?"
+              Themes[@id]["Deleted"] = false
               userThemes = $.get "userThemes", {}
-              userThemes[name] = Themes[name]
+              userThemes[@id] = Themes[@id]
               $.set 'userThemes', userThemes
               $.rm @
 
@@ -730,13 +730,12 @@ Options =
 <div class='mascotname'>#{name.replace /_/g, " "}</span>
 <div class='container #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Themes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div>
 "
-            div = $('div', li)
 
-            $.on div, 'li', ->
+            $.on li, 'click', ->
               if confirm "Are you sure you want to undelete \"#{@id}\"?"
                 Conf["Deleted Mascots"].remove @id
                 $.set "Deleted Mascots", Conf["Deleted Mascots"]
-                $.rm container
+                $.rm @
 
             $.add ul, li
 
