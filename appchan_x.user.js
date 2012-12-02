@@ -3261,7 +3261,7 @@
               var container, settheme, userThemes;
               e.preventDefault();
               e.stopPropagation();
-              container = this.parentElement.parentElement;
+              container = $.id(this.name);
               if (!(container.previousSibling || container.nextSibling)) {
                 alert("Cannot delete theme (No other themes available).");
                 return;
@@ -3395,7 +3395,7 @@
               innerHTML: "<input name='" + category + "' type=checkbox " + (Conf["Hidden Categories"].contains(category) ? 'checked' : '') + ">" + category
             });
             $.on($('input', option), 'change', function() {
-              return Options.mascotTab.toggle(this);
+              return Options.mascotTab.toggle.call(this);
             });
             $.add(ul[category], header);
             $.add(suboptions, ul[category]);
@@ -3408,7 +3408,7 @@
               li = $.el('li', {
                 className: 'mascot',
                 id: name,
-                innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</div><div class='container'><div id='" + name + "' class='mAlign " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (Themes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'></div></div><div class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a><a class=delete name='" + name + "' href='javascript:;'>Delete</a><a class=export name='" + name + "' href='javascript:;'>Export</a></div>"
+                innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</div><div class='container'><div class='mAlign " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (Themes[Conf['theme']]['Dark Theme'] ? mascot.image[0] : mascot.image[1]) : mascot.image) + "'></div></div><div class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a><a class=delete name='" + name + "' href='javascript:;'>Delete</a><a class=export name='" + name + "' href='javascript:;'>Export</a></div>"
               });
               if (Conf[g.MASCOTSTRING].contains(name)) {
                 $.addClass(li, 'enabled');
@@ -3421,7 +3421,7 @@
               $.on($('a.delete', li), 'click', function(e) {
                 var container, type, _k, _len2, _ref1;
                 e.stopPropagation();
-                container = $.id(this.name);
+                container = this.parentElement.parentElement;
                 if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
                   if (Conf['mascot'] === this.name) {
                     MascotTools.init();
@@ -3460,7 +3460,7 @@
                   Conf[g.MASCOTSTRING].push(this.id);
                   MascotTools.init(this.id);
                 }
-                return $.set("Enabled Mascots", Conf["Enabled Mascots"]);
+                return $.set(g.MASCOTSTRING, Conf["Enabled Mascots"]);
               });
               if (MascotTools.categories.contains(mascot.category)) {
                 $.add(ul[mascot.category], li);
@@ -3471,14 +3471,14 @@
           }
           batchmascots = $.el('div', {
             id: "mascots_batch",
-            innerHTML: "  <a href=\"javascript:;\" id=clear>Clear All</a> /   <a href=\"javascript:;\" id=selectAll>Select All</a> /   <a href=\"javascript:;\" id=createNew>Add Mascot</a> /   <a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden> /   <a href=\"javascript:;\" id=undelete>Undelete Mascots</a>  "
+            innerHTML: "<a href=\"javascript:;\" id=clear>Clear All</a> / <a href=\"javascript:;\" id=selectAll>Select All</a> / <a href=\"javascript:;\" id=createNew>Add Mascot</a> / <a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden> / <a href=\"javascript:;\" id=undelete>Undelete Mascots</a>"
           });
           $.on($('#clear', batchmascots), 'click', function() {
             var enabledMascots, _k, _len2;
             enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]));
             for (_k = 0, _len2 = enabledMascots.length; _k < _len2; _k++) {
               name = enabledMascots[_k];
-              $.rmClass($.id(name), 'enabled');
+              $.rmClass($("name=" + name), 'enabled');
             }
             return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING] = []);
           });
@@ -3486,7 +3486,7 @@
             for (name in Mascots) {
               mascot = Mascots[name];
               if (!(Conf["Hidden Categories"].contains(mascot.category) || Conf[g.MASCOTSTRING].contains(name) || Conf["Deleted Mascots"].contains(name))) {
-                $.addClass($.id(name), 'enabled');
+                $.addClass($("name=" + name), 'enabled');
                 Conf[g.MASCOTSTRING].push(name);
               }
             }
@@ -3553,28 +3553,32 @@
         $.add($('#mascot_tab + div', dialog), parentdiv);
         return Options.indicators(dialog);
       },
-      toggle: function(el) {
-        var category, mName, mascot, name, type, _i, _len, _ref;
-        name = el.name;
-        category = $("#options .suboptions #" + name, d.body);
-        if (el.checked) {
+      toggle: function() {
+        var catName, category, clear, name, setting, type, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+        catName = this.name;
+        category = $.id(catName);
+        if (this.checked) {
           category.hidden = true;
-          Conf["Hidden Categories"].push(name);
-          for (mName in Mascots) {
-            mascot = Mascots[mName];
-            if (mascot.category === name) {
-              _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
-              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-                type = _ref[_i];
-                if (Conf[type].contains(mName)) {
-                  Conf[type].remove(mName);
-                  $.set(type, Conf[type]);
-                }
-                if (type === g.MASCOTSTRING) {
-                  $.rmClass($.id(mName).parentElement, 'enabled');
-                }
+          Conf["Hidden Categories"].push(catName);
+          _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            type = _ref[_i];
+            clear = [];
+            _ref1 = (setting = Conf[type]);
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              name = _ref1[_j];
+              if (Mascots[name].category === catName) {
+                clear.push(name);
               }
             }
+            for (_k = 0, _len2 = clear.length; _k < _len2; _k++) {
+              name = clear[_k];
+              setting.remove(name);
+              if (type === g.MASCOTSTRING) {
+                $.rmClass($.id(name), 'enabled');
+              }
+            }
+            $.set(type, setting);
           }
         } else {
           category.hidden = false;
@@ -6624,73 +6628,75 @@
             }
           });
         };
-        if (Conf['Embedding']) {
-          this.protocol = d.location.protocol;
-          this.types = {
-            youtube: {
-              regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
-              style: {
-                border: '0',
-                width: '640px',
-                height: '390px'
-              },
-              el: function() {
-                return $.el('iframe', {
-                  src: "" + Quotify.protocol + "//www.youtube.com/embed/" + this.name
-                });
-              }
-            },
-            vocaroo: {
-              regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
-              el: function() {
-                return $.el('object', {
-                  innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-                });
-              }
-            },
-            vimeo: {
-              regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
-              style: {
-                border: '0',
-                width: '640px',
-                height: '390px'
-              },
-              el: function() {
-                return $.el('iframe', {
-                  src: "" + Quotify.protocol + "//player.vimeo.com/video/" + this.name
-                });
-              }
-            },
-            audio: {
-              regExp: /(.*\.(mp3|ogg|wav))$/,
-              el: function() {
-                return $.el('audio', {
-                  controls: 'controls',
-                  src: this.previousElementSibling.href
-                });
-              }
-            },
-            soundcloud: {
-              regExp: /.*(?:soundcloud.com\/)([^#\&\?]*).*/,
-              el: function() {
-                var div;
-                div = $.el('div', {
-                  className: "soundcloud",
-                  name: "soundcloud"
-                });
-                $.ajax("" + Quotify.protocol + "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousElementSibling.textContent + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
-                  div: div,
-                  onloadend: function() {
-                    return this.div.innerHTML = JSON.parse(this.responseText).html;
-                  }
-                }, false);
-                return div;
-              }
-            }
-          };
-        }
+      } else if (Conf[Embedding]) {
+        this.regString = /(>>(>\/[a-z\d]+\/)?\d+|\b([a-z][-a-z0-9+.]+:\/\/|www\.)[^\s'"<>()]+)/gi;
       } else {
         this.regString = />>(>\/[a-z\d]+\/)?\d+/g;
+      }
+      if (Conf['Embedding']) {
+        this.protocol = d.location.protocol;
+        this.types = {
+          youtube: {
+            regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
+            style: {
+              border: '0',
+              width: '640px',
+              height: '390px'
+            },
+            el: function() {
+              return $.el('iframe', {
+                src: "" + Quotify.protocol + "//www.youtube.com/embed/" + this.name
+              });
+            }
+          },
+          vocaroo: {
+            regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
+            el: function() {
+              return $.el('object', {
+                innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+              });
+            }
+          },
+          vimeo: {
+            regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
+            style: {
+              border: '0',
+              width: '640px',
+              height: '390px'
+            },
+            el: function() {
+              return $.el('iframe', {
+                src: "" + Quotify.protocol + "//player.vimeo.com/video/" + this.name
+              });
+            }
+          },
+          audio: {
+            regExp: /(.*\.(mp3|ogg|wav))$/,
+            el: function() {
+              return $.el('audio', {
+                controls: 'controls',
+                src: this.previousElementSibling.href
+              });
+            }
+          },
+          soundcloud: {
+            regExp: /.*(?:soundcloud.com\/)([^#\&\?]*).*/,
+            el: function() {
+              var div;
+              div = $.el('div', {
+                className: "soundcloud",
+                name: "soundcloud"
+              });
+              $.ajax("" + Quotify.protocol + "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousElementSibling.textContent + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
+                div: div,
+                onloadend: function() {
+                  return this.div.innerHTML = JSON.parse(this.responseText).html;
+                }
+              }, false);
+              return div;
+            }
+          }
+        };
       }
       return Main.callbacks.push(this.node);
     },
@@ -9849,7 +9855,10 @@
             }
             if (name === 'name') {
               $.on(input, 'blur', function() {
-                this.value = this.value.replace(/[^A-Za-z-_0-9]/g, "_");
+                this.value = this.value.replace(/[^a-z-_0-9]/ig, "_");
+                if (this.value.text(/^[a-z]/i)) {
+                  return alert("Mascot names must start with a letter.");
+                }
                 editMascot[this.name] = this.value;
                 MascotTools.addMascot(editMascot);
                 return Style.addStyle();

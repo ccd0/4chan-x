@@ -224,7 +224,9 @@ MascotTools =
           if name is 'name'
             
             $.on input, 'blur', ->
-              @value = @value.replace /[^A-Za-z-_0-9]/g, "_"
+              @value = @value.replace /[^a-z-_0-9]/ig, "_"
+              if @value.text /^[a-z]/i
+                return alert "Mascot names must start with a letter."
               editMascot[@name] = @value
               MascotTools.addMascot editMascot
               Style.addStyle()

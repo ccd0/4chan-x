@@ -439,15 +439,15 @@ Options =
           $.on $('a.edit', div), 'click', (e) ->
             e.preventDefault()
             e.stopPropagation()
-            ThemeTools.init @.name
+            ThemeTools.init @name
             Options.close()
 
           # Theme Exporting
           $.on $('a.export', div), 'click', (e) ->
             e.preventDefault()
             e.stopPropagation()
-            exportTheme = Themes[@.name]
-            exportTheme['Theme'] = @.name
+            exportTheme = Themes[@name]
+            exportTheme['Theme'] = @name
             exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme))
 
             if window.open exportedTheme, "_blank"
@@ -459,7 +459,7 @@ Options =
           $.on $('a.delete', div), 'click', (e) ->
             e.preventDefault()
             e.stopPropagation()
-            container = @.parentElement.parentElement
+            container = $.id @name
 
             # We don't let the user delete a theme if there is no other theme available
             # because themes can't function without one.
@@ -502,19 +502,19 @@ Options =
       # Essentially, you can't open a file dialog without a file input,
       # but I don't want to show the user a file input.
       $.on $("#import", div), 'click', ->
-        @.nextSibling.click()
+        @nextSibling.click()
       $.on $("#importbutton", div), 'change', (evt) ->
         ThemeTools.importtheme "appchan", evt
 
       $.on $("#OCimport", div), 'click', ->
-        @.nextSibling.click()
+        @nextSibling.click()
       $.on $("#OCimportbutton", div), 'change', (evt) ->
         ThemeTools.importtheme "oneechan", evt
 
       $.on $("#SSimportbutton", div), 'change', (evt) ->
         ThemeTools.importtheme "SS", evt
       $.on $("#SSimport", div), 'click', ->
-        @.nextSibling.click()
+        @nextSibling.click()
 
       $.on $('#tUndelete', div), 'click', ->
         $.rm $("#themeContainer", d.body)
@@ -611,7 +611,7 @@ Options =
             innerHTML: "<input name='#{category}' type=checkbox #{if Conf["Hidden Categories"].contains(category) then 'checked' else ''}>#{category}"
 
           $.on $('input', option), 'change', ->
-            Options.mascotTab.toggle @
+            Options.mascotTab.toggle.call @
 
           $.add ul[category], header
           $.add suboptions, ul[category]
@@ -625,7 +625,7 @@ Options =
               id:        name
               innerHTML: "
 <div class='mascotname'>#{name.replace /_/g, " "}</div>
-<div class='container'><div id='#{name}' class='mAlign #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Themes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div></div>
+<div class='container'><div class='mAlign #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Themes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div></div>
 <div class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a><a class=delete name='#{name}' href='javascript:;'>Delete</a><a class=export name='#{name}' href='javascript:;'>Export</a></div>"
             if Conf[g.MASCOTSTRING].contains name
               $.addClass li, 'enabled'
@@ -637,7 +637,7 @@ Options =
 
             $.on $('a.delete', li), 'click', (e) ->
               e.stopPropagation()
-              container = $.id @name
+              container = @parentElement.parentElement
               if confirm "Are you sure you want to delete \"#{@name}\"?"
                 if Conf['mascot'] is @name
                   MascotTools.init()
@@ -651,8 +651,8 @@ Options =
             # Mascot Exporting
             $.on $('a.export', li), 'click', (e) ->
               e.stopPropagation()
-              exportMascot = Mascots[@.name]
-              exportMascot['Mascot'] = @.name
+              exportMascot = Mascots[@name]
+              exportMascot['Mascot'] = @name
               exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot))
 
               if window.open exportedMascot, "_blank"
@@ -669,7 +669,7 @@ Options =
                 $.addClass @, 'enabled'
                 Conf[g.MASCOTSTRING].push @id
                 MascotTools.init @id
-              $.set "Enabled Mascots", Conf["Enabled Mascots"]
+              $.set g.MASCOTSTRING, Conf["Enabled Mascots"]
 
             if MascotTools.categories.contains mascot.category
               $.add ul[mascot.category], li
@@ -679,23 +679,23 @@ Options =
         batchmascots = $.el 'div',
           id:        "mascots_batch"
           innerHTML: "
-  <a href=\"javascript:;\" id=clear>Clear All</a> /
-   <a href=\"javascript:;\" id=selectAll>Select All</a> /
-   <a href=\"javascript:;\" id=createNew>Add Mascot</a> /
-   <a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden> /
-   <a href=\"javascript:;\" id=undelete>Undelete Mascots</a>
-  "
+<a href=\"javascript:;\" id=clear>Clear All</a> /
+ <a href=\"javascript:;\" id=selectAll>Select All</a> /
+ <a href=\"javascript:;\" id=createNew>Add Mascot</a> /
+ <a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden> /
+ <a href=\"javascript:;\" id=undelete>Undelete Mascots</a>
+"
 
         $.on $('#clear', batchmascots), 'click', ->
           enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]))
           for name in enabledMascots
-            $.rmClass $.id(name), 'enabled'
+            $.rmClass $("name=#{name}"), 'enabled'
           $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING] = []
 
         $.on $('#selectAll', batchmascots), 'click', ->
           for name, mascot of Mascots
             unless Conf["Hidden Categories"].contains(mascot.category) or Conf[g.MASCOTSTRING].contains(name) or Conf["Deleted Mascots"].contains(name)
-              $.addClass $.id(name), 'enabled'
+              $.addClass $("name=#{name}"), 'enabled'
               Conf[g.MASCOTSTRING].push name
           $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
 
@@ -704,7 +704,7 @@ Options =
           Options.close()
 
         $.on $("#importMascot", batchmascots), 'click', ->
-          @.nextSibling.click()
+          @nextSibling.click()
 
         $.on $("#importMascotButton", batchmascots), 'change', (evt) ->
           MascotTools.importMascot evt
@@ -733,7 +733,7 @@ Options =
             div = $('div', li)
 
             $.on div, 'click', ->
-              container = @.parentElement
+              container = @parentElement
               if confirm "Are you sure you want to undelete \"#{@id}\"?"
                 Conf["Deleted Mascots"].remove @id
                 $.set "Deleted Mascots", Conf["Deleted Mascots"]
@@ -760,20 +760,23 @@ Options =
       $.add $('#mascot_tab + div', dialog), parentdiv
       Options.indicators dialog
 
-    toggle: (el) ->
-      name = el.name
-      category = $ "#options .suboptions ##{name}", d.body
-      if el.checked
+    toggle: ->
+      catName = @name
+      category = $.id catName
+      if @checked
         category.hidden = true
-        Conf["Hidden Categories"].push name
-        for mName, mascot of Mascots
-          if mascot.category is name
-            for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
-              if Conf[type].contains mName
-                Conf[type].remove mName
-                $.set type, Conf[type]
-              if type is g.MASCOTSTRING
-                $.rmClass $.id(mName).parentElement, 'enabled'
+        Conf["Hidden Categories"].push catName
+        for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
+          clear = []
+          for name in (setting = Conf[type])
+            if Mascots[name].category is catName
+              clear.push name
+          for name in clear
+            setting.remove name
+            if type is g.MASCOTSTRING
+              $.rmClass $.id(name), 'enabled'
+          $.set type, setting
+          
       else
         category.hidden = false
         Conf["Hidden Categories"].remove name
