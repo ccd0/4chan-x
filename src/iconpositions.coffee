@@ -29,12 +29,13 @@
           $('body > a[style="cursor: pointer; float: right;"]', d.body)?
           Conf['Image Expansion']
           g.REPLY
-          Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation'])
+          navlinks = (Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation']))
+          navlinks
         ])
 
       else
 
-        positioner = [0, 19, 38, 57, 76, 95, 114, 229, 191]
+        positioner = [0, 19, 38, 57, 76, 95, 114, 229, 191, 172]
 
       leftStart  = 231
       rightStart = 2
@@ -84,14 +85,15 @@ div.navLinks > a:first-of-type::after {
   #{if Style.sidebarLocation[0] == "left" then "left: #{leftStart + Style.sidebarOffsetW - positioner[7]}px" else "right:  #{rightStart + positioner[7]}px"};
 }
 /* Thread Navigation Links */
-#navlinks {
-  #{if Style.sidebarLocation[0] == "left" then "left: #{leftStart + Style.sidebarOffsetW - positioner[8]}px" else "right:  #{rightStart + positioner[8]}px"};
-  #{Style.sidebarLocation[1]}: auto !important;
-  top: 0 !important;
-  width: 40px;
-}
 #navlinks a {
-  margin-left: 4px;
+  margin: 2px;
+  top: 2px;
+}
+#navlinks a:last-of-type {
+  #{if Style.sidebarLocation[0] == "left" then "left: #{leftStart + Style.sidebarOffsetW - positioner[8]}px" else "right:  #{rightStart + positioner[8]}px"};
+}
+#navlinks a:first-of-type {
+  #{if Style.sidebarLocation[0] == "left" then "left: #{leftStart + Style.sidebarOffsetW - positioner[9]}px" else "right:  #{rightStart + positioner[9]}px"};
 }
 /* Updater + Stats */
 #updater,
@@ -128,6 +130,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #boardNavDesktopFoot:hover {
   z-index: 99 !important;
 }
+
 """
     else
 
@@ -141,10 +144,11 @@ body > a[style="cursor: pointer; float: right;"]::after {
           $('body > a[style="cursor: pointer; float: right;"]', d.body)?
           $('#navtopright .exlinksOptionsLink', d.body)?
           g.REPLY
-          Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation'])
+          navlinks = (Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation']))
+          navlinks
         ])
       else
-        positioner = [2, 21, 40, 59, 78, 97, 116, 135, 156]
+        positioner = [2, 21, 40, 59, 78, 97, 116, 135, 156, 135]
 
       if Conf["4chan Banner"] is "at sidebar top"
         iLogoOffset = Style.logoOffset + 19
@@ -171,7 +175,6 @@ div.navLinks > a:first-of-type::after {
 /* Slideout Navigation */
 #boardNavDesktopFoot,
 #boardNavDesktopFoot::after {
-  border: none;
   top: #{positioner[2] + iLogoOffset}px !important;
 }
 /* Global Message */
@@ -182,7 +185,6 @@ div.navLinks > a:first-of-type::after {
 /* Watcher */
 #{if Conf["Slideout Watcher"] then "#watcher, #watcher::after" else ""} {
   top: #{positioner[4] + iLogoOffset}px !important;
-  cursor: pointer;
 }
 /* 4sight */
 body > a[style="cursor: pointer; float: right;"]::after {
@@ -190,7 +192,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 /* ExLinks */
 #navtopright .exlinksOptionsLink::after {
-  visibility: visible;
   top: #{positioner[6] + iLogoOffset}px !important;
 }
 /* Back */
@@ -200,9 +201,15 @@ div.navLinks > a:first-of-type::after {
   cursor: pointer;
   top: #{positioner[7] + iLogoOffset}px !important;
 }
-#navlinks {
+/* Thread Navigation Links */
+#navlinks a {
+  margin: 1px;
+}
+#navlinks a:first-of-type {
   top: #{positioner[8] + iLogoOffset}px !important;
-  #{Style.sidebarLocation[1]}: auto !important;
+}
+#navlinks a:last-of-type {
+  top: #{positioner[9] + iLogoOffset}px !important;
 }
 /* Updater + Stats */
 #updater,
@@ -219,19 +226,13 @@ div.navLinks > a:first-of-type::after {
   top: 1px;
   text-align: #{Style.sidebarLocation[1]};
 }
-#navlinks a {
-  display: block;
-  clear: both;
-}
-#navlinks,
+#navlinks a,
 #navtopright .exlinksOptionsLink::after,
 #navtopright .settingsWindowLink::after,
-#boardNavDesktopFoot,
 #boardNavDesktopFoot::after,
-#{if Conf["Slideout Watcher"] then "#watcher, #watcher::after," else ""}
-#globalMessage,
 #globalMessage::after,
 #imgControls,
+#{if Conf["Slideout Watcher"] then "#watcher::after," else ""}
 body > a[style="cursor: pointer; float: right;"]::after,
 div.navLinks > a:first-of-type::after {
   #{Style.sidebarLocation[0]}: 3px !important;
@@ -244,6 +245,12 @@ div.navLinks > a:first-of-type::after {
 }
 #watcher {
   z-index: #{if Conf["Slideout Watcher"] then "99" else "10"} !important;
+}
+#boardNavDesktopFoot,
+#globalMessage,
+#watcher {
+  width: #{233 + Style.sidebarOffsetW}px !important;
+  #{Style.sidebarLocation[0]}: 18px !important;
 }
 """
 

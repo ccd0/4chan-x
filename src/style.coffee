@@ -198,6 +198,7 @@ h1 {
 #qr .warning,
 #qr > .move,
 #threadselect select,
+#watcher,
 .captchaimg img,
 .field,
 .file,
@@ -1498,13 +1499,22 @@ span.postNum > .replylink {
   color: #{theme["Links"]};
 }
 #navlinks a {
-  color: rgb(#{if theme["Dark Theme"] then "230,230,230" else "130,130,130"});
+  position: fixed;
+  color: transparent;
   opacity: 0.5;
   display: inline-block;
-  font-size: 15px;
-  height: 15px;
+  font-size: 0;
+  height: 0;
   text-align: center;
-  width: 15px;
+  width: 0;
+  border-right: 6px solid transparent;
+  border-left: 6px solid transparent;
+}
+#navlinks a:first-of-type {
+  border-bottom: 11px solid rgb(#{if theme["Dark Theme"] then "230,230,230" else "130,130,130"});
+}
+#navlinks a:last-of-type {
+  border-top: 11px solid rgb(#{if theme["Dark Theme"] then "230,230,230" else "130,130,130"});
 }
 .postNum a {
   color: #{theme["Post Numbers"]};
@@ -1712,7 +1722,7 @@ span.lit {
   border: 1px solid #dcdcdc;
 }
 span.com {
-  color: #d00;
+  color: #dd0000;
 }
 span.str,
 span.atv {
