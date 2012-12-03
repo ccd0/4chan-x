@@ -855,6 +855,11 @@ QR =
       detail:
         threadID: threadID
         postID:   postID
+        
+    if $.get 'isBanned'
+      $.rm BanChecker.el
+      delete BanChecker.el
+      $.delete 'isBanned'
 
     QR.cooldown.set
       post:    reply
