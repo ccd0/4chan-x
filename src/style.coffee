@@ -1565,6 +1565,9 @@ span.pln {
   border-bottom: 1px solid #{theme["Reply Border"]};
   box-shadow: inset #{theme["Shadow Color"]} 0 0 5px;
 }
+.selectrice li {
+  list-style-type: none;
+}
 .quote + .spoiler:hover,
 .quote {
   color: #{theme["Greentext"]};
