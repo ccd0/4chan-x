@@ -1599,12 +1599,21 @@ div.subMenu,
 .selectrice::after {
   display: block;
   content: "";
-  border-right: .4em solid transparent;
-  border-left: .4em solid transparent;
-  border-top: .6em solid #{theme["Inputs"]};
+  border-right: .25em solid transparent;
+  border-left: .25em solid transparent;
+  border-top: .45em solid #{theme["Inputs"]};
   position: absolute;
   right: .4em;
   top: .4em;
+}
+.selectrice::before {
+  display: block;
+  content: "";
+  height: 1.4em;
+  border-left: 1px solid #{theme["Input Border"]};
+  position: absolute;
+  right: 1.3em;
+  top: 0;
 }
 .selectrice ul {
   padding: 0;
