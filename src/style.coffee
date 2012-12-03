@@ -195,9 +195,11 @@ h1 {
   text-align: center;
 }
 #boardNavDesktopFoot,
+#selectrice,
+#selectrice *,
 #qr .warning,
 #qr > .move,
-#threadselect select,
+#threadselect .selectrice,
 #watcher,
 .captchaimg img,
 .field,
@@ -223,15 +225,15 @@ input[type="submit"] {
   float: right;
 }
 #autohide,
-.close,
-#qr select,
 #dump,
+#qr .selectrice,
+.close,
 .remove,
 .captchaimg,
 #qr div.warning {
   cursor: pointer;
 }
-#qr select,
+#qr .selectrice,
 #qr > form {
   margin: 0;
 }
@@ -336,7 +338,7 @@ input[type="submit"] {
 .fitwidth img[data-md5] + img {
   max-width: 100%;
 }
-#style_tab + div select,
+#style_tab + div .selectrice,
 .fitwidth img[data-md5] + img,
 .themevar .field,
 .themevar textarea {
@@ -416,8 +418,9 @@ input[type="submit"] {
   margin-bottom: 3px;
 }
 #options ul li {
-  overflow: auto;
+  overflow: visible;
   padding: 0 5px 0 7px;
+  list-style-type: none;
 }
 #options table > tr:nth-of-type(2n+1),
 #options ul li:nth-of-type(2n+1) {
@@ -673,12 +676,12 @@ body {
   padding-right: #{parseInt(Conf["Right Thread Padding"], 10) + editSpace["right"]}px;
 }
 #exlinks-options > *,
+.selectrice,
 html,
 body,
 a,
 body,
 input,
-select,
 textarea {
   font-family: '#{Conf["Font"]}';
 }
@@ -691,10 +694,10 @@ textarea {
 #boardNavDesktopFoot a,
 .container::before,
 .fileText span:not([class])::after,
+.selectrice,
 a,
 body,
 input,
-select,
 textarea {
   font-size: #{parseInt(Conf["Font Size"], 10)}px;
 }
@@ -1011,11 +1014,11 @@ a,
   line-height: 17px;
 }
 #file,
-#threadselect select {
+#threadselect .selectrice {
   cursor: pointer;
   display: inline-block;
 }
-#threadselect select,
+#threadselect .selectrice,
 input:not([type=radio]),
 .field,
 input[type="submit"] {
@@ -1025,7 +1028,7 @@ input[type="submit"] {
   min-height: 1.7em;
 }
 #qr .warning,
-#threadselect select,
+#threadselect .selectrice,
 input,
 .field,
 input[type="submit"] {
@@ -1092,6 +1095,9 @@ div.thread {
   position: relative;
   #{(unless Conf['Images Overlap Post Form'] then "z-index: 0;" else "")}
 }
+#selectrice {
+  margin: 0 !important;
+}
 div.post {
   margin: 0;
 }
@@ -1113,8 +1119,8 @@ div.post {
 /* Expand Images */
 #imgControls {
   width: 15px;
-  height: 20px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 #imgContainer {
   width: 110px;
@@ -1128,11 +1134,9 @@ div.post {
   color: transparent;
   float: #{Style.sidebarLocation[0]};
 }
-#imgControls select {
+#imgControls .selectrice {
   float: #{Style.sidebarLocation[1]};
-}
-#imgControls select > option {
-  font-size: 80%;
+  width: 90px;
 }
 /* Reply Previews */
 #mouseover,
@@ -1398,11 +1402,10 @@ input[value="Report"] {
 #dump,
 #file,
 #options input,
-#threadselect select,
 .dump #dump:not(:hover):not(:focus),
+.selectrice,
 input,
 input.field,
-select,
 textarea,
 textarea.field {
   background: #{theme["Input Background"]};
@@ -1412,10 +1415,10 @@ textarea.field {
 }
 #dump:hover,
 #file:hover,
+.selectrice:hover,
 input:hover,
 input.field:hover,
 input[type="submit"]:hover,
-select:hover,
 textarea:hover,
 textarea.field:hover {
   background: #{theme["Hovered Input Background"]};
@@ -1424,10 +1427,10 @@ textarea.field:hover {
 }
 #dump:active,
 #dump:focus,
+.selectrice:focus,
 input:focus,
 input.field:focus,
 input[type="submit"]:focus,
-select:focus,
 textarea:focus,
 textarea.field:focus {
   background: #{theme["Focused Input Background"]};
@@ -1462,6 +1465,7 @@ div.reply.post:target {
 #mascotConf,
 #mascot_hide,
 #menu,
+#selectrice,
 #themeConf,
 #watcher,
 #watcher:hover,
@@ -1469,6 +1473,9 @@ div.subMenu,
 body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Dialog Border"]};
+}
+#selectrice li {
+  border-bottom: 1px solid #{theme["Dialog Border"]};
 }
 #boardNavDesktopFoot:not(:hover) {
   border-color: transparent;
@@ -1504,9 +1511,6 @@ span.postNum > .replylink {
   opacity: 0.5;
   display: inline-block;
   font-size: 0;
-  height: 0;
-  text-align: center;
-  width: 0;
   border-right: 6px solid transparent;
   border-left: 6px solid transparent;
 }
@@ -1579,6 +1583,27 @@ div.subMenu,
   background: #{theme["Checkbox Background"]};
   border: 1px solid #{theme["Checkbox Border"]};
   vertical-align: bottom;
+}
+.selectrice {
+  position: relative;
+}
+.selectrice::after {
+  display: block;
+  content: "";
+  border-right: .4em solid transparent;
+  border-left: .4em solid transparent;
+  border-top: .6em solid #{theme["Inputs"]};
+  position: absolute;
+  right: .4em;
+  top: .4em;
+}
+.selectrice ul {
+  padding: 0;
+  position: fixed;
+  max-height: 120px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 99999;
 }
 #qr label input,
 #updater input,
@@ -1841,8 +1866,9 @@ hr {
 #threadselect:not(:empty) + #spoilerLabel {
   width: 49%;
 }
-#threadselect select {
+#threadselect .selectrice {
   margin-top: 0;
+  width: 100%;
 }
 input[title="Verification"] {
   width: 100%;
@@ -1866,7 +1892,7 @@ input[title="Verification"],
   margin-top: 1px;
 }
 #qr .warning,
-#threadselect select,
+#threadselect .selectrice,
 input,
 .field {
   margin: 1px 0 0;
@@ -2762,15 +2788,15 @@ textarea.field,
         else ""
     ) + (
       switch Conf["Checkboxes"]
-        when "show"
+        when "show", "hide"
           """
-input[type=checkbox] {
+.riced {
   display: none;
 }\n
 """
         when "make checkboxes circular"
           """
-input[type=checkbox] {
+.riced {
   display: none;
 }
 .rice {
@@ -2780,12 +2806,6 @@ input[type=checkbox] {
         when "do not style checkboxes"
           """
 .rice {
-  display: none;
-}\n
-"""
-        when "hide"
-          """
-input[type=checkbox] {
   display: none;
 }\n
 """) + (if Conf["Custom CSS"] then Conf["customCSS"] else "")

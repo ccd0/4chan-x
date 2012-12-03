@@ -241,7 +241,6 @@ Options =
       $.cb.value.call @
       Style.addStyle()
 
-
     favicon = $ 'select[name=favicon]', dialog
     favicon.value = $.get 'favicon', Conf['favicon']
     $.on favicon, 'change', $.cb.value

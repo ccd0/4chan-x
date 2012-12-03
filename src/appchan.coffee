@@ -57,6 +57,52 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       if div.parentElement.tagName.toLowerCase() != 'label'
         $.on div, 'click', ->
           checkbox.click()
+    selects = $$('select:not(.riced)', source)
+    for select in selects
+      $.addClass select, 'riced'
+      div = $.el 'div',
+        className: 'selectrice'
+        innerHTML: "<div>#{select.options[select.selectedIndex].textContent}</div>"
+      $.on div, "click", (e) ->
+        e.stopPropagation()
+        if Style.ul
+          return Style.rmOption()
+        rect = @getBoundingClientRect()
+        {clientHeight} = d.documentElement
+        ul = Style.ul = $.el 'ul'
+          id: "selectrice"
+        {style} = ul
+        style.width = "#{rect.width}px"
+        if clientHeight - rect.bottom < 200
+          style.bottom = "#{clientHeight - rect.top}px"
+        else
+          style.top = "#{rect.bottom}px"
+        style.left = "#{rect.left}px"
+        select = @previousSibling
+        for option in select.options
+          li = $.el 'li'
+            textContent: option.textContent
+          li.setAttribute 'data-value', option.value
+          $.on li, 'click', (e) ->
+            e.stopPropagation()
+            container = @parentElement.parentElement
+            select = container.previousSibling
+            container.firstChild.textContent = @textContent
+            select.value  = @getAttribute 'data-value'
+            ev = document.createEvent 'HTMLEvents'
+            ev.initEvent "change", true, true
+            $.event select, ev
+            Style.rmOption()
+          $.add ul, li
+        $.on ul, 'click scroll blur', (e) ->
+          e.stopPropagation()
+        Style.rmOption = ->
+          $.off d.body, 'click scroll blur resize', Style.rmOption
+          $.rm Style.ul
+          delete Style.ul
+        $.on d.body, 'click scroll blur resize', Style.rmOption
+        $.add @, ul
+      $.after select, div
 
   addStyle: (theme = Themes[Conf['theme']]) ->
     $.off d, 'DOMNodeInserted', Style.addStyle
