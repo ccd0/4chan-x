@@ -208,6 +208,7 @@ h1 {
 .mascotoptions,
 .postInfo,
 .thumbnail,
+button,
 div.post,
 div.post.highlight,
 input,
@@ -682,6 +683,7 @@ html,
 body,
 a,
 body,
+button,
 input,
 textarea {
   font-family: '#{Conf["Font"]}';
@@ -698,6 +700,7 @@ textarea {
 .selectrice,
 a,
 body,
+button,
 input,
 textarea {
   font-size: #{parseInt(Conf["Font Size"], 10)}px;
@@ -1030,6 +1033,7 @@ input[type="submit"] {
 }
 #qr .warning,
 #threadselect .selectrice,
+button,
 input,
 .field,
 input[type="submit"] {
@@ -1405,6 +1409,7 @@ input[value="Report"] {
 #options input,
 .dump #dump:not(:hover):not(:focus),
 .selectrice,
+button,
 input,
 input.field,
 textarea,
@@ -1537,6 +1542,7 @@ span.postNum > .replylink {
 .summary,
 body > form,
 body,
+button,
 html body span[style="left: 5px; position: absolute;"] a,
 input,
 textarea,

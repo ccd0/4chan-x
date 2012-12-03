@@ -47,7 +47,7 @@ MascotTools =
       location = 'left'
     
     filters = []
-    
+
     if Conf["Grayscale Mascots"]
       filters.push '<feColorMatrix id="color" type="saturate" values="0" />'
 
