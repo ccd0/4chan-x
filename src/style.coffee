@@ -423,8 +423,9 @@ input[type="submit"] {
   list-style-type: none;
 }
 #options table > tr:nth-of-type(2n+1),
-#options ul li:nth-of-type(2n+1) {
-  background-color: rgba(0, 0, 0, 0.05)
+#options ul li:nth-of-type(2n+1),
+.selectrice li:nth-of-type(2n+1) {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 #rice_tab + div input {
   margin: 1px;
@@ -1015,7 +1016,7 @@ a,
 }
 #file,
 #threadselect .selectrice {
-  cursor: pointer;
+  cursor: default;
   display: inline-block;
 }
 #threadselect .selectrice,
@@ -1415,7 +1416,9 @@ textarea.field {
 }
 #dump:hover,
 #file:hover,
+#options .selectrice li:nth-of-type(2n+1):hover,
 .selectrice:hover,
+.selectrice li:hover,
 input:hover,
 input.field:hover,
 input[type="submit"]:hover,
@@ -1428,6 +1431,7 @@ textarea.field:hover {
 #dump:active,
 #dump:focus,
 .selectrice:focus,
+.selectrice li:focus,
 input:focus,
 input.field:focus,
 input[type="submit"]:focus,
@@ -1473,9 +1477,6 @@ div.subMenu,
 body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Dialog Border"]};
-}
-#selectrice li {
-  border-bottom: 1px solid #{theme["Dialog Border"]};
 }
 #boardNavDesktopFoot:not(:hover) {
   border-color: transparent;
@@ -1553,7 +1554,8 @@ span.pln {
   color: #{theme["Text"]};
 }
 #exlinks-options-content > table,
-#options ul {
+#options ul,
+.selectrice ul {
   border-bottom: 1px solid #{theme["Reply Border"]};
   box-shadow: inset #{theme["Shadow Color"]} 0 0 5px;
 }
@@ -1586,6 +1588,7 @@ div.subMenu,
 }
 .selectrice {
   position: relative;
+  cursor: default;
 }
 .selectrice::after {
   display: block;
@@ -1672,10 +1675,12 @@ div.post.qphl {
   color: #{(if theme["Dark Theme"] then "rgba(255,255,255,0.2)" else "rgba(0,0,0,0.3)")} !important;
 }
 .boxcontent dd,
-#options ul {
+#options ul,
+.selectrice ul {
   border-color: #{(if theme["Dark Theme"] then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)")};
 }
-#options li {
+#options li,
+.selectrice li:not(:first-of-type) {
   border-top: 1px solid #{(if theme["Dark Theme"] then "rgba(255,255,255,0.025)" else "rgba(0,0,0,0.05)")};
 }
 #mascot img {
@@ -2338,6 +2343,9 @@ h2,
 td[style="border: 1px dashed;"] {
   border-radius: 3px;
 }
+#options .selectrice ul {
+  border-radius: 0;
+}
 #optionsbar label[for],
 .reply .postInfo {
   border-radius: 3px 3px 0 0;
@@ -2417,7 +2425,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   position: static;
   background: none;
   border: none;
-  margin-top: 0px;
+  margin: 0 auto;
 }
 #globalMessage::after {
   display: none;

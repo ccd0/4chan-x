@@ -97,10 +97,10 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         $.on ul, 'click scroll blur', (e) ->
           e.stopPropagation()
         Style.rmOption = ->
-          $.off d.body, 'click scroll blur resize', Style.rmOption
+          $.off d, 'click scroll blur resize', Style.rmOption
           $.rm Style.ul
           delete Style.ul
-        $.on d.body, 'click scroll blur resize', Style.rmOption
+        $.on d, 'click scroll blur resize', Style.rmOption
         $.add @, ul
       $.after select, div
 
