@@ -5124,7 +5124,8 @@
       }
     },
     load: function() {
-      return $.ajax('https://www.4chan.org/banned', {
+      this.url = 'https://www.4chan.org/banned';
+      return $.ajax(this.url, {
         onloadend: function() {
           var doc, msg;
           if (this.status === 200 || 304) {
@@ -5141,31 +5142,39 @@
               }
               return;
             }
-            $.set('isBanned', /This ban will not expire/i.test(msg) ? 'You are permabanned!' : 'You are banned!');
+            $.set('isBanned', /This ban will not expire/i.test(msg) ? 'You are permabanned.' : 'You are banned.');
             return BanChecker.prepend();
           }
         }
       });
     },
     prepend: function() {
+      var el, text, _i, _len, _ref;
       if (!BanChecker.el) {
-        Banchecker.el = $.el('h2', {
-          textContent: $.get('isBanned'),
-          href: 'javascript:;',
-          title: 'Click to recheck.',
-          id: 'banmessage'
+        text = $.get('isBanned');
+        Banchecker.el = el = $.el('h2', {
+          id: "banmessage",
+          "class": "warning",
+          innerHTML: "          <span>" + text + "</span>          <a href=" + this.url + " title='Click to find out why.' target=_blank>Click to find out why.</a>",
+          title: 'Click to recheck.'
         });
-        $.on(el, 'click', function() {
-          if (!Conf['Check for Bans constantly']) {
-            $["delete"]('lastBanCheck');
-          }
-          $["delete"]('isBanned');
-          this.style.opacity = '.5';
-          return BanChecker.load();
-        });
-        return $.before($.id('postForm'), el);
+        _ref = [el.firstChild, el.lastChild];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          text = _ref[_i];
+          $.on(text, 'click', function() {
+            if (!Conf['Check for Bans constantly']) {
+              $["delete"]('lastBanCheck');
+            }
+            $["delete"]('isBanned');
+            delete this.parentNode.firstChild.href;
+            delete this.parentNode.lastChild.href;
+            this.parentNode.style.opacity = '.5';
+            return BanChecker.load();
+          });
+        }
+        return $.before($.id('delform'), el);
       } else {
-        return Banchecker.el.textContent = $.get('isBanned');
+        return Banchecker.el.firstChild.textContent = $.get('isBanned');
       }
     }
   };

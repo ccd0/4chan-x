@@ -1007,7 +1007,8 @@ BanChecker =
       @load()
 
   load: ->
-    $.ajax 'https://www.4chan.org/banned',
+    @url = 'https://www.4chan.org/banned'
+    $.ajax @url,
       onloadend: ->
         if @status is 200 or 304
           $.set 'lastBanCheck', BanChecker.now unless Conf['Check for Bans constantly']
@@ -1021,26 +1022,32 @@ BanChecker =
             return
           $.set 'isBanned',
             if /This ban will not expire/i.test msg
-              'You are permabanned!'
+              'You are permabanned.'
             else
-              'You are banned!'
+              'You are banned.'
           BanChecker.prepend()
 
   prepend: ->
     unless BanChecker.el
-      Banchecker.el = $.el 'h2',
-        textContent: $.get 'isBanned'
-        href:        'javascript:;'
-        title:       'Click to recheck.'
-        id:          'banmessage'
-      $.on el, 'click', ->
-        $.delete 'lastBanCheck' unless Conf['Check for Bans constantly']
-        $.delete 'isBanned'
-        @style.opacity = '.5'
-        BanChecker.load()
-      $.before $.id('postForm'), el
+      text = $.get('isBanned')
+      Banchecker.el = el = $.el 'h2'
+        id: "banmessage"
+        class: "warning"
+        innerHTML: "
+          <span>#{text}</span>
+          <a href=#{@url} title='Click to find out why.' target=_blank>Click to find out why.</a>"
+        title:  'Click to recheck.'
+      for text in [el.firstChild, el.lastChild]
+        $.on text, 'click', ->
+          $.delete 'lastBanCheck' unless Conf['Check for Bans constantly']
+          $.delete 'isBanned'
+          delete @parentNode.firstChild.href
+          delete @parentNode.lastChild.href
+          @parentNode.style.opacity = '.5'
+          BanChecker.load()
+      $.before $.id('delform'), el
     else
-      Banchecker.el.textContent = $.get 'isBanned'
+      Banchecker.el.firstChild.textContent = $.get 'isBanned'
     
 
 Updater =
