@@ -58,7 +58,7 @@ Config =
       ]
       'Check for Bans constantly': [
         false
-        'Optain ban status on every refresh.'
+        'Optain ban status on every refresh. Note that this will cause delay on getting the result.'
       ]
 
     Filtering:

@@ -1001,7 +1001,7 @@ Nav =
 BanChecker =
   init: ->
     @now = Date.now()
-    return if $.get 'isBanned'
+    return if not Conf['Check for Bans constantly'] and $.get 'isBanned'
       @prepend()
     else if Conf['Check for Bans constantly'] or $.get('lastBanCheck', 0) < @now - 6*$.HOUR
       @load()

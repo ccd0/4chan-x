@@ -120,7 +120,7 @@
         'Custom Navigation': [false, 'Customize your Navigation bar.'],
         'Check for Updates': [true, 'Check for updated versions of Appchan X'],
         'Check for Bans': [false, 'Check ban status and prepend it to the top of the page.'],
-        'Check for Bans constantly': [false, 'Optain ban status on every refresh.']
+        'Check for Bans constantly': [false, 'Optain ban status on every refresh. Note that this will cause delay on getting the result.']
       },
       Filtering: {
         'Anonymize': [false, 'Make everybody anonymous'],
@@ -5117,7 +5117,7 @@
   BanChecker = {
     init: function() {
       this.now = Date.now();
-      if ($.get('isBanned')) {
+      if (!Conf['Check for Bans constantly'] && $.get('isBanned')) {
         return this.prepend();
       } else if (Conf['Check for Bans constantly'] || $.get('lastBanCheck', 0) < this.now - 6 * $.HOUR) {
         return this.load();
