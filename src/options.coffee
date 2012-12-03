@@ -191,7 +191,7 @@ Options =
       innerHTML: "<span class=\"optionlabel\"><button>hidden: #{hiddenNum}</button></span><div style=\"display: none\">Forget all hidden posts. Useful if you accidentally hide a post and have \"Show Stubs\" disabled.</div>"
     $.on $('button', li), 'click', Options.clearHidden
     $.on $('.optionlabel', li), 'mouseover', Options.mouseover
-    $.add $('ul:nth-child(2)', dialog), li
+    $.add $('ul:nth-child(3)', dialog), li
 
     # Filter
     # The filter is a bit weird because it consists of a select, and when that select changes,

@@ -1002,9 +1002,9 @@ BanChecker =
   init: ->
     @now = Date.now()
     return if not Conf['Check for Bans constantly'] and $.get 'isBanned'
-      @prepend()
+      BanChecker.prepend()
     else if Conf['Check for Bans constantly'] or $.get('lastBanCheck', 0) < @now - 6*$.HOUR
-      @load()
+      BanChecker.load()
 
   load: ->
     @url = 'https://www.4chan.org/banned'
@@ -2321,12 +2321,20 @@ Quotify =
                 src:  "#{Quotify.protocol}//www.youtube.com/embed/#{@name}"
             title: ->
               node = @
+              name = @nextElementSibling.name
               $.ajax(
-                "https://gdata.youtube.com/feeds/api/videos/#{@nextElementSibling.name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
+                "https://gdata.youtube.com/feeds/api/videos/#{name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
                 node: node
+                name: name
                 onloadend: ->
                   if @status is 200 or 304
-                    node.textContent = "[YouTube] #{JSON.parse(@responseText).entry.title.$t}"
+                    titles = $.get 'embedtitles', {}
+                    title  = "[YouTube] #{JSON.parse(@responseText).entry.title.$t}"
+                    node.textContent = title
+                    titles[name] = [title, Date.now()]
+                    $.set 'embedtitles', titles  # maybe store key for each service later on
+                  else
+                    node.textContent = "[YouTube] #{@status}'d"
               )
           vocaroo:
             regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
@@ -2459,11 +2467,18 @@ Quotify =
               className:    'embed'
               href:         'javascript:;'
               textContent:  '(embed)'
-            embed.setAttribute 'data-service', key
+            embed.setAttribute 'data-service',       key
             $.on embed, 'click', Quotify.toggle
             $.after a, embed
             $.after a, $.tn ' '
-            Quotify.types[key].title.call a if Conf['Link Title']
+
+            if Conf['Link Title']
+              title = $.get 'embedtitles', {}
+              if title[match[1]]
+                a.textContent = title[match[1]][0]
+              else
+                type.title?.call a
+
             break
     return
   
@@ -2485,7 +2500,9 @@ Quotify =
       for key, value of type.style
         el.style[key] = value
 
-    el.setAttribute 'data-originalURL', link.textContent
+    el.setAttribute 'data-originalURL',   link.href
+    el.setAttribute 'data-originalTEXT',  link.textContent
+    el.setAttribute 'data-originalCLASS', link.className
 
     # We replace the link with the element
     $.replace link, el

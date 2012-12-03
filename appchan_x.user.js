@@ -3017,7 +3017,7 @@
       });
       $.on($('button', li), 'click', Options.clearHidden);
       $.on($('.optionlabel', li), 'mouseover', Options.mouseover);
-      $.add($('ul:nth-child(2)', dialog), li);
+      $.add($('ul:nth-child(3)', dialog), li);
       filter = $('select[name=filter]', dialog);
       $.on(filter, 'change', Options.filter);
       archiver = $('select[name=archiver]', dialog);
@@ -5121,9 +5121,9 @@
     init: function() {
       this.now = Date.now();
       if (!Conf['Check for Bans constantly'] && $.get('isBanned')) {
-        return this.prepend();
+        return BanChecker.prepend();
       } else if (Conf['Check for Bans constantly'] || $.get('lastBanCheck', 0) < this.now - 6 * $.HOUR) {
-        return this.load();
+        return BanChecker.load();
       }
     },
     load: function() {
@@ -6675,13 +6675,22 @@
                 });
               },
               title: function() {
-                var node;
+                var name, node;
                 node = this;
-                return $.ajax("https://gdata.youtube.com/feeds/api/videos/" + this.nextElementSibling.name + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode", {
+                name = this.nextElementSibling.name;
+                return $.ajax("https://gdata.youtube.com/feeds/api/videos/" + name + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode", {
                   node: node,
+                  name: name,
                   onloadend: function() {
+                    var title, titles;
                     if (this.status === 200 || 304) {
-                      return node.textContent = "[YouTube] " + (JSON.parse(this.responseText).entry.title.$t);
+                      titles = $.get('embedtitles', {});
+                      title = "[YouTube] " + (JSON.parse(this.responseText).entry.title.$t);
+                      node.textContent = title;
+                      titles[name] = [title, Date.now()];
+                      return $.set('embedtitles', titles);
+                    } else {
+                      return node.textContent = "[YouTube] " + this.status + "'d";
                     }
                   }
                 });
@@ -6743,7 +6752,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var a, board, data, embed, i, id, index, key, m, match, n, node, nodes, p, quote, quotes, snapshot, spoiler, text, type, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2;
+      var a, board, data, embed, i, id, index, key, m, match, n, node, nodes, p, quote, quotes, snapshot, spoiler, text, title, type, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2, _ref3;
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
@@ -6825,7 +6834,14 @@
               $.after(a, embed);
               $.after(a, $.tn(' '));
               if (Conf['Link Title']) {
-                Quotify.types[key].title.call(a);
+                title = $.get('embedtitles', {});
+                if (title[match[1]]) {
+                  a.textContent = title[match[1]][0];
+                } else {
+                  if ((_ref3 = type.title) != null) {
+                    _ref3.call(a);
+                  }
+                }
               }
               break;
             }
@@ -6852,7 +6868,9 @@
           el.style[key] = value;
         }
       }
-      el.setAttribute('data-originalURL', link.textContent);
+      el.setAttribute('data-originalURL', link.href);
+      el.setAttribute('data-originalTEXT', link.textContent);
+      el.setAttribute('data-originalCLASS', link.className);
       $.replace(link, el);
       this.className = 'embed embedded';
       return this.textContent = '(unembed)';
