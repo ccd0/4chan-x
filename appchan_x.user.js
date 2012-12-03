@@ -6685,8 +6685,7 @@
                     var title, titles;
                     if (this.status === 200 || 304) {
                       titles = $.get('embedtitles', {});
-                      title = "[YouTube] " + (JSON.parse(this.responseText).entry.title.$t);
-                      node.textContent = title;
+                      node.textContent = title = "[YouTube] " + (JSON.parse(this.responseText).entry.title.$t);
                       titles[name] = [title, Date.now()];
                       return $.set('embedtitles', titles);
                     } else {
@@ -6830,6 +6829,7 @@
                 textContent: '(embed)'
               });
               embed.setAttribute('data-service', key);
+              embed.setAttribute('data-originalURL', a.href);
               $.on(embed, 'click', Quotify.toggle);
               $.after(a, embed);
               $.after(a, $.tn(' '));
@@ -6868,25 +6868,23 @@
           el.style[key] = value;
         }
       }
-      el.setAttribute('data-originalURL', link.href);
-      el.setAttribute('data-originalTEXT', link.textContent);
-      el.setAttribute('data-originalCLASS', link.className);
       $.replace(link, el);
-      this.className = 'embed embedded';
+      $.addClass(this, 'embedded');
       return this.textContent = '(unembed)';
     },
     unembed: function() {
       var a, embedded, url;
       embedded = this.previousElementSibling;
-      url = embedded.getAttribute("data-originalURL");
+      url = this.getAttribute("data-originalURL");
       a = $.el('a', {
         rel: 'nofollow noreferrer',
         target: 'blank',
+        className: 'linkify',
         href: url,
         textContent: url
       });
       $.replace(embedded, a);
-      this.className = 'embed';
+      $.rmClass(this, 'embedded');
       return this.textContent = '(embed)';
     }
   };

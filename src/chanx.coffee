@@ -2329,13 +2329,13 @@ Quotify =
                 onloadend: ->
                   if @status is 200 or 304
                     titles = $.get 'embedtitles', {}
-                    title  = "[YouTube] #{JSON.parse(@responseText).entry.title.$t}"
-                    node.textContent = title
+                    node.textContent = title = "[YouTube] #{JSON.parse(@responseText).entry.title.$t}"
                     titles[name] = [title, Date.now()]
                     $.set 'embedtitles', titles  # maybe store key for each service later on
                   else
                     node.textContent = "[YouTube] #{@status}'d"
               )
+          
           vocaroo:
             regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
             el: ->
@@ -2467,7 +2467,8 @@ Quotify =
               className:    'embed'
               href:         'javascript:;'
               textContent:  '(embed)'
-            embed.setAttribute 'data-service',       key
+            embed.setAttribute 'data-service', key
+            embed.setAttribute 'data-originalURL', a.href
             $.on embed, 'click', Quotify.toggle
             $.after a, embed
             $.after a, $.tn ' '
@@ -2500,30 +2501,28 @@ Quotify =
       for key, value of type.style
         el.style[key] = value
 
-    el.setAttribute 'data-originalURL',   link.href
-    el.setAttribute 'data-originalTEXT',  link.textContent
-    el.setAttribute 'data-originalCLASS', link.className
 
     # We replace the link with the element
     $.replace link, el
 
     # Reflect unembed functionality
-    @className =   'embed embedded'
+    $.addClass @, 'embedded'
     @textContent = '(unembed)'
 
   unembed: ->
     embedded = @previousElementSibling
-    url = embedded.getAttribute("data-originalURL")
+    url = @getAttribute("data-originalURL")
 
     a = $.el 'a'
       rel:         'nofollow noreferrer'
       target:      'blank'
+      className:   'linkify'
       href:        url
       textContent: url
 
     $.replace embedded, a
 
-    @className =   'embed'
+    $.rmClass @, 'embedded'
     @textContent = '(embed)'
 
 DeleteLink =
