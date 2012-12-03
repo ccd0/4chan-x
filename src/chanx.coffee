@@ -2307,67 +2307,64 @@ Quotify =
               $.rm el
               $.rm @.nextSibling
 
-    else if Conf[Embedding]
-      @regString = ///(
-        >>(>/[a-z\d]+/)?\d+
-        |
-        \b(
-          [a-z][-a-z0-9+.]+://
-          |
-          www\.
-        )
-        [^\s'"<>()]+
-      )///gi
+      if Conf['Embedding']
+        @protocol = d.location.protocol
+        @types =
+          youtube:
+            regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
+            style:
+              border: '0'
+              width:  '640px'
+              height: '390px'
+            el: ->
+              $.el 'iframe'
+                src:  "#{Quotify.protocol}//www.youtube.com/embed/#{@name}"
+            title: ->
+              node = @
+              $.ajax(
+                "https://gdata.youtube.com/feeds/api/videos/#{@nextElementSibling.name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
+                node: node
+                onloadend: ->
+                  if @status is 200 or 304
+                    node.textContent = "[YouTube] #{JSON.parse(@responseText).entry.title.$t}"
+              )
+          vocaroo:
+            regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
+            el: ->
+              $.el 'object'
+                innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          vimeo:
+            regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
+            style:
+              border: '0'
+              width:  '640px'
+              height: '390px'
+            el: ->
+              $.el 'iframe'
+                src:   "#{Quotify.protocol}//player.vimeo.com/video/#{@name}"
+          audio:
+            regExp:  /(.*\.(mp3|ogg|wav))$/
+            el: ->
+              $.el 'audio'
+                controls:    'controls'
+                preload:     'auto'
+                src:         @name
+          soundcloud:
+            regExp:  /.*(?:soundcloud.com\/)([^#\&\?]*).*/
+            el: ->
+              div   = $.el 'div'
+                className: "soundcloud"
+                name:      "soundcloud"
+              $.ajax(
+                "#{Quotify.protocol}//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@previousElementSibling.textContent}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
+                div: div
+                onloadend: ->
+                  @div.innerHTML = JSON.parse(this.responseText).html
+                false)
+              div
 
     else
       @regString = />>(>\/[a-z\d]+\/)?\d+/g
-    
-    if Conf['Embedding']
-      @protocol = d.location.protocol
-      @types =
-        youtube:
-          regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
-          style:
-            border: '0'
-            width:  '640px'
-            height: '390px'
-          el: ->
-            $.el 'iframe'
-              src:  "#{Quotify.protocol}//www.youtube.com/embed/#{@name}"
-        vocaroo:
-          regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
-          el: ->
-            $.el 'object'
-              innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-        vimeo:
-          regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
-          style:
-            border: '0'
-            width:  '640px'
-            height: '390px'
-          el: ->
-            $.el 'iframe'
-              src:   "#{Quotify.protocol}//player.vimeo.com/video/#{@name}"
-        audio:
-          regExp:  /(.*\.(mp3|ogg|wav))$/
-          el: ->
-            $.el 'audio'
-              controls:    'controls'
-              preload:     'auto'
-              src:         @name
-        soundcloud:
-          regExp:  /.*(?:soundcloud.com\/)([^#\&\?]*).*/
-          el: ->
-            div   = $.el 'div'
-              className: "soundcloud"
-              name:      "soundcloud"
-            $.ajax(
-              "#{Quotify.protocol}//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@previousElementSibling.textContent}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
-              div: div
-              onloadend: ->
-                @div.innerHTML = JSON.parse(this.responseText).html
-              false)
-            div
 
     Main.callbacks.push @node
 
@@ -2456,7 +2453,7 @@ Quotify =
 
       if Conf['Embedding'] and a.className is "linkify"
         for key, type of Quotify.types
-          if match = a.href.match(type.regExp)
+          if match = a.href.match type.regExp
             embed = $.el 'a'
               name:         match[1]
               className:    'embed'
@@ -2466,6 +2463,7 @@ Quotify =
             $.on embed, 'click', Quotify.toggle
             $.after a, embed
             $.after a, $.tn ' '
+            Quotify.types[key].title.call a if Conf['Link Title']
             break
     return
   

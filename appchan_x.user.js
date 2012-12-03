@@ -111,8 +111,6 @@
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
         'File Info Formatting': [true, 'Reformats the file information'],
-        'Linkify': [true, 'Convert text into links where applicable. If a link is too long and only partially linkified, shift+ctrl+click it to merge the next line.'],
-        'Embedding': [true, 'Add a link to linkified audio and video links. Supported sites: YouTube, Vimeo, SoundCloud, Vocaroo, and some audio links, depending on your browser.'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
         'Index Navigation': [true, 'Navigate to previous / next thread'],
@@ -121,6 +119,11 @@
         'Check for Updates': [true, 'Check for updated versions of Appchan X'],
         'Check for Bans': [false, 'Check ban status and prepend it to the top of the page.'],
         'Check for Bans constantly': [false, 'Optain ban status on every refresh. Note that this will cause delay on getting the result.']
+      },
+      Linkification: {
+        'Linkify': [true, 'Convert text into links where applicable. If a link is too long and only partially linkified, shift+ctrl+click it to merge the next line.'],
+        'Embedding': [true, 'Add a link to linkified audio and video links. Supported sites: YouTube, Vimeo, SoundCloud, Vocaroo, and some audio links, depending on your browser.'],
+        'Link Title': [true, 'Replace the Link of a supported site with its actual title.']
       },
       Filtering: {
         'Anonymize': [false, 'Make everybody anonymous'],
@@ -6656,76 +6659,86 @@
             }
           });
         };
-      } else if (Conf[Embedding]) {
-        this.regString = /(>>(>\/[a-z\d]+\/)?\d+|\b([a-z][-a-z0-9+.]+:\/\/|www\.)[^\s'"<>()]+)/gi;
+        if (Conf['Embedding']) {
+          this.protocol = d.location.protocol;
+          this.types = {
+            youtube: {
+              regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
+              style: {
+                border: '0',
+                width: '640px',
+                height: '390px'
+              },
+              el: function() {
+                return $.el('iframe', {
+                  src: "" + Quotify.protocol + "//www.youtube.com/embed/" + this.name
+                });
+              },
+              title: function() {
+                var node;
+                node = this;
+                return $.ajax("https://gdata.youtube.com/feeds/api/videos/" + this.nextElementSibling.name + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode", {
+                  node: node,
+                  onloadend: function() {
+                    if (this.status === 200 || 304) {
+                      return node.textContent = "[YouTube] " + (JSON.parse(this.responseText).entry.title.$t);
+                    }
+                  }
+                });
+              }
+            },
+            vocaroo: {
+              regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
+              el: function() {
+                return $.el('object', {
+                  innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+                });
+              }
+            },
+            vimeo: {
+              regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
+              style: {
+                border: '0',
+                width: '640px',
+                height: '390px'
+              },
+              el: function() {
+                return $.el('iframe', {
+                  src: "" + Quotify.protocol + "//player.vimeo.com/video/" + this.name
+                });
+              }
+            },
+            audio: {
+              regExp: /(.*\.(mp3|ogg|wav))$/,
+              el: function() {
+                return $.el('audio', {
+                  controls: 'controls',
+                  preload: 'auto',
+                  src: this.name
+                });
+              }
+            },
+            soundcloud: {
+              regExp: /.*(?:soundcloud.com\/)([^#\&\?]*).*/,
+              el: function() {
+                var div;
+                div = $.el('div', {
+                  className: "soundcloud",
+                  name: "soundcloud"
+                });
+                $.ajax("" + Quotify.protocol + "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousElementSibling.textContent + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
+                  div: div,
+                  onloadend: function() {
+                    return this.div.innerHTML = JSON.parse(this.responseText).html;
+                  }
+                }, false);
+                return div;
+              }
+            }
+          };
+        }
       } else {
         this.regString = />>(>\/[a-z\d]+\/)?\d+/g;
-      }
-      if (Conf['Embedding']) {
-        this.protocol = d.location.protocol;
-        this.types = {
-          youtube: {
-            regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
-            style: {
-              border: '0',
-              width: '640px',
-              height: '390px'
-            },
-            el: function() {
-              return $.el('iframe', {
-                src: "" + Quotify.protocol + "//www.youtube.com/embed/" + this.name
-              });
-            }
-          },
-          vocaroo: {
-            regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
-            el: function() {
-              return $.el('object', {
-                innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-              });
-            }
-          },
-          vimeo: {
-            regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
-            style: {
-              border: '0',
-              width: '640px',
-              height: '390px'
-            },
-            el: function() {
-              return $.el('iframe', {
-                src: "" + Quotify.protocol + "//player.vimeo.com/video/" + this.name
-              });
-            }
-          },
-          audio: {
-            regExp: /(.*\.(mp3|ogg|wav))$/,
-            el: function() {
-              return $.el('audio', {
-                controls: 'controls',
-                preload: 'auto',
-                src: this.name
-              });
-            }
-          },
-          soundcloud: {
-            regExp: /.*(?:soundcloud.com\/)([^#\&\?]*).*/,
-            el: function() {
-              var div;
-              div = $.el('div', {
-                className: "soundcloud",
-                name: "soundcloud"
-              });
-              $.ajax("" + Quotify.protocol + "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousElementSibling.textContent + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
-                div: div,
-                onloadend: function() {
-                  return this.div.innerHTML = JSON.parse(this.responseText).html;
-                }
-              }, false);
-              return div;
-            }
-          }
-        };
       }
       return Main.callbacks.push(this.node);
     },
@@ -6811,6 +6824,9 @@
               $.on(embed, 'click', Quotify.toggle);
               $.after(a, embed);
               $.after(a, $.tn(' '));
+              if (Conf['Link Title']) {
+                Quotify.types[key].title.call(a);
+              }
               break;
             }
           }

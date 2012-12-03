@@ -20,14 +20,6 @@ Config =
         true
         'Reformats the file information'
       ]
-      'Linkify': [
-        true
-        'Convert text into links where applicable. If a link is too long and only partially linkified, shift+ctrl+click it to merge the next line.'
-      ]
-      'Embedding': [
-        true
-        'Add a link to linkified audio and video links. Supported sites: YouTube, Vimeo, SoundCloud, Vocaroo, and some audio links, depending on your browser.'
-      ]
       'Comment Expansion': [
         true
         'Expand too long comments'
@@ -59,6 +51,20 @@ Config =
       'Check for Bans constantly': [
         false
         'Optain ban status on every refresh. Note that this will cause delay on getting the result.'
+      ]
+
+    Linkification:
+      'Linkify': [
+        true
+        'Convert text into links where applicable. If a link is too long and only partially linkified, shift+ctrl+click it to merge the next line.'
+      ]
+      'Embedding': [
+        true
+        'Add a link to linkified audio and video links. Supported sites: YouTube, Vimeo, SoundCloud, Vocaroo, and some audio links, depending on your browser.'
+      ]
+      'Link Title': [
+        true
+        'Replace the Link of a supported site with its actual title.'
       ]
 
     Filtering:
