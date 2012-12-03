@@ -2346,7 +2346,8 @@ Quotify =
           el: ->
             $.el 'audio'
               controls:    'controls'
-              src:         @previousElementSibling.href
+              preload:     'auto'
+              src:         @name
         soundcloud:
           regExp:  /.*(?:soundcloud.com\/)([^#\&\?]*).*/
           el: ->

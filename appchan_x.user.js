@@ -6694,7 +6694,8 @@
             el: function() {
               return $.el('audio', {
                 controls: 'controls',
-                src: this.previousElementSibling.href
+                preload: 'auto',
+                src: this.name
               });
             }
           },
