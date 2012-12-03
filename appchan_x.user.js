@@ -7958,11 +7958,14 @@
 
   QR = {
     init: function() {
-      var link;
       if (!$.id('postForm')) {
         return;
       }
       Main.callbacks.push(this.node);
+      return setTimeout(this.asyncInit);
+    },
+    asyncInit: function() {
+      var link;
       if (!Conf['Persistent QR']) {
         link = $.el('a', {
           innerHTML: "Open Post Form",
@@ -9761,7 +9764,7 @@
       if (Conf['Mascot Position'] === 'bottom' || !(Conf['Mascot Position'] === "default" && Conf['Post Form Style'] === "fixed")) {
         position = 0;
       } else {
-        if (!g.REPLY || !!QR.spoiler) {
+        if (!g.REPLY || !!$('input[name=spoiler]')) {
           position = "21.1em";
         } else {
           position = "19.7em";

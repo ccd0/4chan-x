@@ -2,12 +2,15 @@ QR =
   init: ->
     return unless $.id 'postForm'
     Main.callbacks.push @node
+    setTimeout @asyncInit
 
+  asyncInit: ->
     unless Conf['Persistent QR']
       link = $.el 'a'
         innerHTML: "Open Post Form"
         id: "showQR"
         href: "javascript:;"
+
       $.on link, 'click', ->
         QR.open()
         unless g.REPLY

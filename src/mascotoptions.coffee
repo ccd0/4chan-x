@@ -8,7 +8,7 @@ MascotTools =
     if Conf['Mascot Position'] is 'bottom' or !(Conf['Mascot Position'] is "default" and Conf['Post Form Style'] is "fixed")
       position = 0
     else
-      if !g.REPLY or !!QR.spoiler
+      if !g.REPLY or !!$ 'input[name=spoiler]'
         position = "21.1em"
       else
         position = "19.7em"
