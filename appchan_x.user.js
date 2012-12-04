@@ -8016,7 +8016,7 @@
     init: function() {
       var el;
       el = $.el('span', {
-        innerHTML: "[<a id=toggleCatalog title='Toggle Catalog Links on.'>Catalog On</a>]"
+        innerHTML: /catalog$/.test(($('#boardNavDesktop a')).href) ? "[<a id=toggleCatalog title='Toggle Catalog Links off.'>Catalog Off</a>]" : "[<a id=toggleCatalog title='Toggle Catalog Links on.'>Catalog On</a>]"
       });
       $.on(el.firstElementChild, 'click', this.toggle);
       return $.add($.id('boardNavDesktop'), el);
