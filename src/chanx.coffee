@@ -3359,16 +3359,17 @@ CatalogLinks =
     $.add $.id('boardNavDesktop'), el
 
   toggle: ->
-    a = $.id('boardNavDesktop').firstElementChild
-    while a.href and split = a.href.split '/'
-      unless /^rs|status/.test split[2]
+    links = $.id('boardNavDesktop').children
+    for a in links
+      continue unless a.href
+      split = a.href.split '/'
+      unless /boards\.4chan\.org/.test split[1]
         if split[4]
           a.href  = a.href.replace  /catalog$/, ''
           a.title = a.title.replace /\ -\ Catalog$/, ''
         else
           a.href  += 'catalog'
           a.title += ' - Catalog'
-      a = a.nextElementSibling
     if /On$/.test @textContent
       @textContent = 'Catalog Off'
       @title =       'Turn Catalog Links off.'

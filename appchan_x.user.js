@@ -8022,10 +8022,15 @@
       return $.add($.id('boardNavDesktop'), el);
     },
     toggle: function() {
-      var a, split;
-      a = $.id('boardNavDesktop').firstElementChild;
-      while (a.href && (split = a.href.split('/'))) {
-        if (!/^rs|status/.test(split[2])) {
+      var a, links, split, _i, _len;
+      links = $.id('boardNavDesktop').children;
+      for (_i = 0, _len = links.length; _i < _len; _i++) {
+        a = links[_i];
+        if (!a.href) {
+          continue;
+        }
+        split = a.href.split('/');
+        if (!/boards\.4chan\.org/.test(split[1])) {
           if (split[4]) {
             a.href = a.href.replace(/catalog$/, '');
             a.title = a.title.replace(/\ -\ Catalog$/, '');
@@ -8034,7 +8039,6 @@
             a.title += ' - Catalog';
           }
         }
-        a = a.nextElementSibling;
       }
       if (/On$/.test(this.textContent)) {
         this.textContent = 'Catalog Off';
