@@ -289,10 +289,10 @@ MascotTools =
 
   input: (item, name) ->
     if Array.isArray(editMascot[name])
-      if Themes[Conf['theme']]['Dark Theme']
-        value = editMascot[name][0]
-      else
+      if Style.lightTheme
         value = editMascot[name][1]
+      else
+        value = editMascot[name][0]
     else
       value = editMascot[name] or item[1]
 
@@ -322,11 +322,11 @@ MascotTools =
     el = $('#mascot img', d.body)
 
     if el
-      el.src = if Array.isArray(mascot.image) then (if Themes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image
+      el.src = if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image
     else
       div = $.el 'div',
         id: "mascot"
-        innerHTML: "<img src='#{if Array.isArray(mascot.image) then (if Themes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'>"
+        innerHTML: "<img src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'>"
 
       $.add d.body, div
 

@@ -20,7 +20,11 @@
           else
             "left"
 
-    icons = Icons.header.png + Icons.themes[Conf["Icons"]][if theme["Dark Theme"] then "dark" else "light"]
+    bgColor = new Style.color Style.colorToHex theme["Background Color"]
+    
+    Style.lightTheme = bgColor.isLight()
+
+    icons = Icons.header.png + Icons.themes[Conf["Icons"]][if Style.lightTheme then "light" else "dark"]
 
     if Conf["Sidebar"] is "large"
       Style.sidebarOffsetW = 51
@@ -1343,7 +1347,7 @@ html .subMenu {
   position: relative;
 }
 #qr #charCount {
-  color: #{(if theme["Dark Theme"] then "rgba(255,255,255,0.7)" else "rgba(0,0,0,0.7)")};
+  color: #{(if Style.lightTheme then "rgba(0,0,0,0.7)" else "rgba(255,255,255,0.7)")};
   background: none;
   font-size: 10px;
   pointer-events: none;
@@ -1581,10 +1585,10 @@ span.postNum > .replylink {
   border-left: 6px solid transparent;
 }
 #navlinks a:first-of-type {
-  border-bottom: 11px solid rgb(#{if theme["Dark Theme"] then "230,230,230" else "130,130,130"});
+  border-bottom: 11px solid rgb(#{if Style.lightTheme then "130,130,130" else "230,230,230"});
 }
 #navlinks a:last-of-type {
-  border-top: 11px solid rgb(#{if theme["Dark Theme"] then "230,230,230" else "130,130,130"});
+  border-top: 11px solid rgb(#{if Style.lightTheme then "130,130,130" else "230,230,230"});
 }
 .postNum a {
   color: #{theme["Post Numbers"]};
@@ -1700,7 +1704,7 @@ div.subMenu,
 }
 input[type=checkbox]:checked + .rice {
   background: #{theme["Checkbox Checked Background"]};
-  background-image: url(#{(if theme["Dark Theme"] then Icons.header.png + "AkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" else Icons.header.png + "AkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==")});
+  background-image: url(#{Icons.header.png + (if Style.lightTheme then "AkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" else "AkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==")});
   background-attachment: scroll;
   background-repeat: no-repeat;
   background-position: bottom right;
@@ -1747,21 +1751,21 @@ div.post.qphl {
 .placeholder,
 #qr input::#{Style.agent}placeholder,
 #qr textarea::#{Style.agent}placeholder {
-  color: #{(if theme["Dark Theme"] then "rgba(255,255,255,0.2)" else "rgba(0,0,0,0.3)")} !important;
+  color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
 }
 .placeholder,
 #qr input:#{Style.agent}placeholder,
 #qr textarea:#{Style.agent}placeholder {
-  color: #{(if theme["Dark Theme"] then "rgba(255,255,255,0.2)" else "rgba(0,0,0,0.3)")} !important;
+  color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
 }
 .boxcontent dd,
 #options ul,
 .selectrice ul {
-  border-color: #{(if theme["Dark Theme"] then "rgba(255,255,255,0.1)" else "rgba(0,0,0,0.1)")};
+  border-color: #{if Style.lightTheme then "rgba(0,0,0,0.1)" else "rgba(255,255,255,0.1)"};
 }
 #options li,
 .selectrice li:not(:first-of-type) {
-  border-top: 1px solid #{(if theme["Dark Theme"] then "rgba(255,255,255,0.025)" else "rgba(0,0,0,0.05)")};
+  border-top: 1px solid #{if Style.lightTheme then "rgba(0,0,0,0.05)" else "rgba(255,255,255,0.025)"};
 }
 #mascot img {
   #{Style.agent}transform: scaleX(#{(if Style.sidebarLocation[0] is "left" then "-" else "")}1);
@@ -1795,37 +1799,7 @@ div.post.qphl {
 """
       else ""
     ) + (
-      if theme["Dark Theme"]
-        """
-.prettyprint {
-  background-color: rgba(0,0,0,.1);
-  border: 1px solid rgba(0,0,0,0.5);
-}
-span.tag {
-  color: #96562c;
-}
-span.pun {
-  color: #5b6f2a;
-}
-span.com {
-  color: #a34443;
-}
-span.str,
-span.atv {
-  color: #8ba446;
-}
-span.kwd {
-  color: #987d3e;
-}
-span.typ,
-span.atn {
-  color: #897399;
-}
-span.lit {
-  color: #558773;
-}\n
-"""
-      else
+      if Style.lightTheme
         """
 .prettyprint {
   background-color: #e7e7e7;
@@ -1853,6 +1827,36 @@ span.atn {
 }
 span.lit {
   color: #368c72;
+}\n
+"""
+      else
+        """
+.prettyprint {
+  background-color: rgba(0,0,0,.1);
+  border: 1px solid rgba(0,0,0,0.5);
+}
+span.tag {
+  color: #96562c;
+}
+span.pun {
+  color: #5b6f2a;
+}
+span.com {
+  color: #a34443;
+}
+span.str,
+span.atv {
+  color: #8ba446;
+}
+span.kwd {
+  color: #987d3e;
+}
+span.typ,
+span.atn {
+  color: #897399;
+}
+span.lit {
+  color: #558773;
 }\n
 """
     ) + (
@@ -2143,7 +2147,7 @@ div.reply.post {
       if Conf["Alternate Post Colors"]
         """
 div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
-  background-image: #{Style.agent}linear-gradient(#{(if theme["Dark Theme"] then "rgba(255,255,255,0.02), rgba(255,255,255,0.02)" else "rgba(0,0,0,0.05), rgba(0,0,0,0.05)")});
+  background-image: #{Style.agent}linear-gradient(#{if Style.lightTheme then "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" else "rgba(255,255,255,0.02), rgba(255,255,255,0.02)"});
 }\n
 """
       else ""
@@ -2151,14 +2155,14 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
       if Conf["Color Reply Headings"]
         """
 .postInfo {
-  background: #{if (replyHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgb(" + (replyHeading.shiftRGB 16, true) + ")" else (if theme["Dark Theme"] then "rgba(255,255,255,0.05)" else "rgba(0,0,0,0.1)")};
+  background: #{if (replyHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgb(" + (replyHeading.shiftRGB 16, true) + ")" else "rgba(0,0,0,0.1)"};
 }\n"""
       else ""
     ) + (
       if Conf["Color File Info"]
         """
 .file {
-  background: #{if (fileHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgb(" + (fileHeading.shiftRGB 8, true) + ")" else (if theme["Dark Theme"] then "rgba(255,255,255,0.05)" else "rgba(0,0,0,0.1)")};
+  background: #{if (fileHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgb(" + (fileHeading.shiftRGB 8, true) + ")" else "rgba(0,0,0,0.1)"};
 }\n"""
       else ""
     ) + (

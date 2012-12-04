@@ -93,7 +93,6 @@ Themes =
     'Timestamps'                  : 'rgb(170,170,170)'
     'Warnings'                    : 'rgb(102,136,170)'
     'Shadow Color'                : 'rgba(0,0,0,.1)'
-    'Dark Theme'                  : true
     'Custom CSS'                  : ''
 
   'BakaBT':
@@ -145,7 +144,6 @@ Themes =
     'Timestamps'                  : 'rgb(0,0,0)'
     'Warnings'                    : 'rgb(133,76,158)'
     'Shadow Color'                : 'rgba(0,0,0,.05)'
-    'Dark Theme'                  : false
     'Custom CSS'                  : """
 .board {
 box-shadow: 0px 10px 10px 2px rgba(128,128,128,0.5);
@@ -215,7 +213,6 @@ border-radius: 3px;
     'Inputs'                      : 'rgb(218,105,224)'
     'Warnings'                    : 'rgb(103,204,232)'
     'Shadow Color'                : 'rgba(0,0,0,.1)'
-    'Dark Theme'                  : true
     'Custom CSS'                  : """
 div.replyContainer div.reply {
   box-shadow: inset 0px 1px 2px 1px #111;
@@ -281,7 +278,6 @@ div.replyContainer div.reply {
     'Timestamps'                  : 'rgb(144,144,144)'
     'Warnings'                    : 'rgb(87,87,123)'
     'Shadow Color'                : 'rgba(0,0,0,.1)'
-    'Dark Theme'                  : true
     'Custom CSS'                  : ''
 
   'Minimalistic Mayhem':
@@ -330,7 +326,6 @@ div.replyContainer div.reply {
     'Inputs'                      : 'rgb(187,187,187)'
     'Warnings'                    : 'rgb(87,87,123)'
     'Shadow Color'                : 'rgba(0,0,0,.1)'
-    'Dark Theme'                  : true
     'Custom CSS'                  : """
 .nameBlock > .useremail > postertrip {
   color: rgb(137,115,153);
@@ -439,7 +434,6 @@ div.post:hover .name {
     'Inputs'                      : 'rgb(253,254,255)'
     'Warnings'                    : 'rgb(0,255,255)'
     'Shadow Color'                : 'rgba(0,0,0,.1)'
-    'Dark Theme'                  : true
     'Custom CSS'                  : """
 #qp div.post{
   background-color:rgba(0,0,0,0.8);
@@ -499,7 +493,6 @@ div.post:hover .name {
     'Inputs'                      : 'rgb(153,153,153)'
     'Warnings'                    : 'rgb(187,187,187)'
     'Shadow Color'                : 'rgba(0,0,0,.1)'
-    'Dark Theme'                  : true
     'Custom CSS'                  : """
 #options{
   background-color: rgba(16,16,16,1) !important;
@@ -668,7 +661,6 @@ div.reply.highlight div.reply {
     'Inputs'                      : 'rgb(0,0,0)'
     'Warnings'                    : 'rgb(51,51,51)'
     'Shadow Color'                : 'rgba(0,0,0,.05)'
-    'Dark Theme'                  : false
     'Custom CSS'                  : """
 .fileText{
   color: rgb(102,102,102);
@@ -732,7 +724,6 @@ div.reply.highlight div.reply {
     'Timestamps'                  : 'rgb(0,0,0)'
     'Warnings'                    : 'rgb(87,87,123)'
     'Shadow Color'                : 'rgba(0,0,0,.07)'
-    'Dark Theme'                  : false
     'Custom CSS'                  : """
 .replyContainer div.reply.post {
   background-color: transparent;
@@ -874,7 +865,6 @@ div.reply.highlight div.reply {
     'Inputs'                      : 'rgb(147,161,161)'
     'Warnings'                    : 'rgb(108,113,196)'
     'Shadow Color'                : 'rgba(0,0,0,.1)'
-    'Dark Theme'                  : true
     'Custom CSS'                  : """
 #qp div.post{
   background-color:rgba(7,54,66,0.9);
@@ -928,7 +918,6 @@ div.reply.highlight div.reply {
     'Inputs'                      : 'rgb(0,0,0)'
     'Warnings'                    : 'rgb(128,0,0)'
     'Shadow Color'                : 'rgba(0,0,0,.05)'
-    'Dark Theme'                  : false
     'Custom CSS'                  : """
 #qp div.post{
   background-color:rgba(240,192,176,1);
@@ -985,7 +974,6 @@ div.reply.highlight div.reply {
     'Inputs'                      : 'rgb(0,0,0)'
     'Warnings'                    : 'rgb(87,87,123)'
     'Shadow Color'                : 'rgba(0,0,0,.05)'
-    'Dark Theme'                  : false
     'Custom CSS'                  : """
 #qp div.post{
   background-color:rgba(214,186,208,1);
@@ -1041,7 +1029,6 @@ div.reply.highlight div.reply {
     'Inputs'                      : 'rgb(220,220,204)'
     'Warnings'                    : 'rgb(239,220,188)'
     'Shadow Color'                : 'rgba(0,0,0,.1)'
-    'Dark Theme'                  : true
     'Custom CSS'                  : ''
 
   "ピンク":
@@ -1089,7 +1076,6 @@ div.reply.highlight div.reply {
     "Inputs"                      : "rgb(77,77,76)"
     "Warnings"                    : "rgb(200,40,41)"
     "Shadow Color"                : "rgba(0,0,0,0.05)"
-    "Dark Theme"                  : false
     "Custom CSS"                  : """
 .rice {
   box-shadow:rgba(255,255,255,.3) 0 1px;
@@ -1174,7 +1160,6 @@ textarea,
     "Inputs"                      : "rgb(0,0,0)"
     "Warnings"                    : "rgb(153,0,0)"
     "Shadow Color"                : "rgba(0,0,0,.05)"
-    "Dark Theme"                  : false
     "Custom CSS"                  : """
 .rice {
   box-shadow:rgba(255,253,255,.3) 0 1px;
@@ -1272,7 +1257,6 @@ textarea,
     "Inputs"                      : "rgb(248,248,248)"
     "Warnings"                    : "rgb(79,79,79)"
     "Shadow Color"                : "rgba(0,0,0,.1)"
-    "Dark Theme"                  : true
     "Custom CSS"                  : """
 .board {
   padding: 1px 2px;
@@ -1351,7 +1335,6 @@ textarea,
     "Inputs"                      : "rgb(197,200,198)"
     "Warnings"                    : "rgb(204,102,102)"
     "Shadow Color"                : "rgba(0,0,0,.1)"
-    "Dark Theme"                  : true
     "Custom CSS"                  : """
 .board {
   padding: 1px 2px;
@@ -1430,7 +1413,6 @@ textarea,
     "Inputs"                      : "rgb(101,123,131)"
     "Warnings"                    : "rgb(153,0,0)"
     "Shadow Color"                : "rgba(0,0,0,.05)"
-    "Dark Theme"                  : false
     "Custom CSS"                  : """
 .rice {
   box-shadow:rgba(255,255,255,.3) 0 1px;
@@ -1517,7 +1499,6 @@ textarea,
     "Inputs"                      : "rgb(57,55,53)"
     "Warnings"                    : "rgb(153,0,0)"
     "Shadow Color"                : "rgba(0,0,0,.05)"
-    "Dark Theme"                  : false
     "Custom CSS"                  : """
 .board {
   padding: 1px 2px;
@@ -1610,7 +1591,6 @@ div.reply a.quotelink{
     "Inputs"                      : "rgb(248,248,242)"
     "Warnings"                    : "rgb(79,79,79)"
     "Shadow Color"                : "rgba(0,0,0,.12)"
-    "Dark Theme"                  : true
     "Custom CSS"                  : """
 .rice {
   box-shadow:rgba(71,72,66,.3) 0 1px;
@@ -1690,7 +1670,6 @@ textarea,
     "Inputs"                      : "rgb(221,221,221)"
     "Warnings"                    : "rgb(201,144,144)"
     "Shadow Color"                : "rgba(0,0,0,.1)"
-    "Dark Theme"                  : true
     "Custom CSS"                  : """
 .board {
   padding: 1px 2px;
@@ -1772,7 +1751,6 @@ textarea,
     "Inputs"                      : "rgb(248,248,248)"
     "Warnings"                    : "rgb(79,79,79)"
     "Shadow Color"                : "rgba(0,0,0,.1)"
-    "Dark Theme"                  : true
     "Custom CSS"                  : """
 .rice {
   box-shadow:rgba(44,48,65,.3) 0 1px;
@@ -1851,7 +1829,6 @@ thread>.replyContainer>.reply>div.postInfo {
     "Inputs"                      : "rgba(0,0,0,.7)"
     "Warnings"                    : "rgb(204,102,102)"
     "Shadow Color"                : "rgba(0,0,0,.07)"
-    "Dark Theme"                  : false
     "Custom CSS"                  : """
 .rice {
   box-shadow:rgba(255,255,255,.3) 0 1px;
@@ -1952,7 +1929,6 @@ textarea,
     "Inputs"                      : "rgb(255,255,255)"
     "Warnings"                    : "rgb(177,115,133)"
     "Shadow Color"                : "rgba(0,0,0,0.2)"
-    "Dark Theme"                  : true
     "Custom CSS"                  : """
 html {
 }
@@ -2055,7 +2031,6 @@ a:not([href='javascript:;']){
     "Inputs"                      : "rgb(77,77,76)"
     "Warnings"                    : "rgb(200,40,41)"
     "Shadow Color"                : "rgba(0,0,0,.05)"
-    "Dark Theme"                  : false
     "Custom CSS"                  : """
 .board {
   padding: 1px 2px;
@@ -2133,7 +2108,6 @@ textarea,
     "Inputs"                      : "rgb(221,221,221)"
     "Warnings"                    : "rgb(79,79,79)"
     "Shadow Color"                : "rgba(0,0,0,.1)"
-    "Dark Theme"                  : true
     "Custom CSS"                  : """
 .board {
   padding: 1px 2px;

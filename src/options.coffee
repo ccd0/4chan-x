@@ -656,7 +656,7 @@ Options =
               id:        name
               innerHTML: "
 <div class='mascotname'>#{name.replace /_/g, " "}</div>
-<div class='container'><div class='mAlign #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Themes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div></div>
+<div class='container'><div class='mAlign #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'></div></div>
 <div class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a><a class=delete name='#{name}' href='javascript:;'>Delete</a><a class=export name='#{name}' href='javascript:;'>Export</a></div>"
             if Conf[g.MASCOTSTRING].contains name
               $.addClass li, 'enabled'
@@ -760,7 +760,7 @@ Options =
               id:        name
               innerHTML: "
 <div class='mascotname'>#{name.replace /_/g, " "}</span>
-<div class='container #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Themes[Conf['theme']]['Dark Theme'] then mascot.image[0] else mascot.image[1]) else mascot.image}'></div>
+<div class='container #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'></div>
 "
 
             $.on li, 'click', ->
