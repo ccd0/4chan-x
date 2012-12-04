@@ -206,6 +206,7 @@ h1 {
 .file,
 .mascotname,
 .mascotoptions,
+.selectrice,
 .postInfo,
 .thumbnail,
 button,
@@ -1032,10 +1033,10 @@ input[type="submit"] {
   min-height: 1.7em;
 }
 #qr .warning,
-#threadselect .selectrice,
+.field,
+.selectrice,
 button,
 input,
-.field,
 input[type="submit"] {
   vertical-align: bottom;
   padding: 0 1px;
@@ -1598,6 +1599,7 @@ div.subMenu,
 .selectrice {
   position: relative;
   cursor: default;
+  overflow: hidden;
 }
 .selectrice::after {
   display: block;
@@ -1607,12 +1609,12 @@ div.subMenu,
   border-top: .45em solid #{theme["Inputs"]};
   position: absolute;
   right: .4em;
-  top: .4em;
+  top: .5em;
 }
 .selectrice::before {
   display: block;
   content: "";
-  height: 1.4em;
+  height: 1.5em;
   border-left: 1px solid #{theme["Input Border"]};
   position: absolute;
   right: 1.3em;

@@ -119,13 +119,13 @@ Options =
     <ul>
       <div class=warning><code>Unread Favicon</code> is disabled.</div>
       Unread favicons<br>
+     <span></span>
       <select name=favicon>
         <option value=ferongr>ferongr</option>
         <option value=xat->xat-</option>
         <option value=Mayhem>Mayhem</option>
         <option value=Original>Original</option>
       </select>
-     <span></span>
     </ul>
     <span></span>
   </div>
@@ -713,7 +713,8 @@ Options =
  <a href=\"javascript:;\" id=selectAll>Select All</a> /
  <a href=\"javascript:;\" id=createNew>Add Mascot</a> /
  <a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden> /
- <a href=\"javascript:;\" id=undelete>Undelete Mascots</a>
+ <a href=\"javascript:;\" id=undelete>Undelete Mascots</a> /
+ <a href=\"http://appchan.booru.org/\" target=_blank>Get More Mascots!</a>
 "
 
         $.on $('#clear', batchmascots), 'click', ->
@@ -1021,7 +1022,7 @@ Options =
   favicon: ->
     Favicon.switch()
     Unread.update true
-    @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
+    @previousElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
 
   selectTheme: ->
     if currentTheme = $.id(Conf['theme'])
