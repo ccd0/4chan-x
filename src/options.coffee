@@ -925,7 +925,7 @@ Options =
         Options.customNavigation.cleanup()
 
       $.on $('a[name=reset]', li), "click", ->
-        userNavigation = Navigation
+        userNavigation = JSON.parse JSON.stringify Navigation
         Options.customNavigation.cleanup()
 
       $.add ul, li

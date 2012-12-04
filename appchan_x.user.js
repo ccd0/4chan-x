@@ -3690,7 +3690,7 @@
           return Options.customNavigation.cleanup();
         });
         $.on($('a[name=reset]', li), "click", function() {
-          userNavigation = Navigation;
+          userNavigation = JSON.parse(JSON.stringify(Navigation));
           return Options.customNavigation.cleanup();
         });
         $.add(ul, li);
