@@ -61,10 +61,10 @@ MascotTools =
       '-1'
   };
   bottom: #{
-    if mascot.position is 'bottom' and Conf['Mascot Position'] is 'default'
-      '0'
-    else if mascot.position is 'top'
+    if mascot.position is 'top'
       'auto'
+    else if (mascot.position is 'bottom' and Conf['Mascot Position'] is 'default') or !$.id 'postForm'
+      '0'
     else
       position
   };

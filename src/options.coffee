@@ -38,7 +38,7 @@ Options =
     <label for=style_tab id=selected_tab>Style</label><label for=theme_tab>Themes</label><label for=mascot_tab>Mascots</label><label for=main_tab>Script</label><label for=filter_tab>Filter</label><label for=sauces_tab>Sauce</label><label for=keybinds_tab>Keybinds</label><label for=rice_tab>Rice</label>
   </div>
 </div>
-<div id=content>
+<div id=optionsContent>
   <input type=radio name=tab hidden id=main_tab>
   <div></div>
   <input type=radio name=tab hidden id=sauces_tab>

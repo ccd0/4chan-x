@@ -279,6 +279,59 @@ input[type="submit"] {
   #{Style.agent}transition: opacity .25s ease-in-out;
   vertical-align: top;
 }
+/* Catalog */
+#content .navLinks,
+#info .navLinks,
+.btn-wrap {
+  display: block;
+}
+.navLinks > .btn-wrap:not(:first-of-type)::before {
+  content: ' - ';
+}
+.button {
+  cursor: pointer;
+}
+#content .btn-wrap,
+#info .btn-wrap {
+  display: inline-block;
+}
+#settings .selectrice {
+  width: 100px;
+  display: inline-block;
+}
+#settings,
+#threads,
+#info .navLinks,
+#content .navLinks {
+  text-align: center;
+}
+#threads .thread {
+  vertical-align: top;
+  display: inline-block;
+  word-wrap: break-word;
+  overflow: hidden;
+  margin-top: 5px;
+  padding: 5px 0px 3px;
+  text-align: center;
+}
+.extended-small .thread,
+.small .thread {
+  width: 165px;
+  max-height: 320px;
+}
+.extended-large .thread,
+.large .thread {
+  width: 270px;
+  max-height: 410px;
+}
+.extended-small .thumb,
+.small .thumb {
+  max-width: 150px;
+  max-height: 150px;
+}
+#content .thumb {
+  box-shadow: 0px 0px 5px #{theme["Reply Border"]};
+}
 .thumbnail:hover,
 .thumbnail:focus {
   opacity: .9;
@@ -495,7 +548,7 @@ input[type="submit"] {
   margin: 10px 0 0;
   font-size: 14px;
 }
-#content {
+#optionsContent {
   overflow: auto;
   position: absolute;
   top:    1.7em;
@@ -591,7 +644,7 @@ input[type="submit"] {
   text-align: center;
   bottom: 0;
 }
-#content textarea {
+#optionsContent textarea {
   font-family: monospace;
   min-height: 350px;
   resize: vertical;
@@ -713,8 +766,9 @@ textarea {
 /* Cleanup */
 #absbot,
 #autohide,
-#content > [name=tab]:not(:checked) + div,
+#optionsContent > [name=tab]:not(:checked) + div,
 #delform > hr,
+#filters-ctrl,
 #imgControls label:first-of-type input,
 #imgControls .rice,
 #logo,
@@ -725,6 +779,7 @@ textarea {
 #qp .rice
 #qp input,
 #{if Conf["Hide Show Post Form"] then "#showQR," else ""}
+#styleSwitcher,
 #threadselect:empty,
 #updater:not(:hover) > :not(.move),
 #{unless Conf["Board Subtitle"] then ".boardSubtitle," else ""}
@@ -736,9 +791,11 @@ textarea {
 .hasSubMenu:not(.focused) > .subMenu,
 .hidden_thread > .summary,
 .inline input,
+.large .teaser,
 .mobile,
 .navLinksBot,
 .next,
+.panel,
 .postInfo input,
 .postInfo .rice,
 .postingMode,
@@ -747,6 +804,7 @@ textarea {
 .replyContainer > .hide_reply_button.stub ~ .reply,
 .replymode,
 .sideArrows:not(.hide_reply_button),
+.small .teaser,
 .stub ~ *,
 .stylechanger,
 .thread > .hidden_thread ~ *,
@@ -1357,7 +1415,7 @@ html {
   background-attachment: #{theme["Background Attachment"] or ''};
   background-position: #{theme["Background Position"] or ''};
 }
-#content,
+#optionsContent,
 #exlinks-options-content,
 #mascotcontent,
 #themecontent {
@@ -1504,11 +1562,12 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > 
 .warning {
   color: #{theme["Warnings"]};
 }
-a,
 #dump,
+.button,
 .entry,
-div.post > blockquote a[href^="//"],
 .sideArrows a,
+a,
+div.post > blockquote a[href^="//"],
 span.postNum > .replylink {
   color: #{theme["Links"]};
 }
@@ -1600,6 +1659,7 @@ div.subMenu,
   position: relative;
   cursor: default;
   overflow: hidden;
+  text-align: left;
 }
 .selectrice::after {
   display: block;
@@ -2175,6 +2235,7 @@ input.field.tripped:not(:hover):not(:focus) {
       if Conf["Block Ads"]
         """
 /* AdBlock Minus */
+.bottomad + hr,
 a[href*="jlist"],
 img[src^="//static.4chan.org/support/"] {
   display: none;
@@ -2344,7 +2405,7 @@ body::before {
   border-radius: 2px;
 }
 #boardNavDesktopFoot,
-#content,
+#optionsContent,
 #options .mascot,
 #options ul,
 #options,
