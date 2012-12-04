@@ -8016,8 +8016,7 @@
     init: function() {
       var el;
       el = $.el('span', {
-        textContent: 'Catalog On',
-        innerHTML: "[<a id=toggleCatalog>Catalog On</a>]"
+        innerHTML: "[<a id=toggleCatalog title='Toggle Catalog Links on.'>Catalog On</a>]"
       });
       $.on(el.firstElementChild, 'click', this.toggle);
       return $.add($.id('boardNavDesktop'), el);
@@ -8037,7 +8036,13 @@
         }
         a = a.nextElementSibling;
       }
-      return this.textContent = /Off$/.test(this.textContent) ? 'Catalog On' : 'Catalog Off';
+      if (/On$/.test(this.textContent)) {
+        this.textContent = 'Catalog Off';
+        this.title = 'Turn Catalog Links off.';
+        return;
+      }
+      this.textContent = 'Catalog On';
+      return this.title = 'Turn Catalog Links on.';
     }
   };
 

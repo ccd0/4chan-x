@@ -3354,7 +3354,7 @@ ImageExpand =
 CatalogLinks =
   init: ->
     el = $.el 'span',
-      innerHTML: "[<a id=toggleCatalog>Catalog On</a>]"
+      innerHTML: "[<a id=toggleCatalog title='Toggle Catalog Links on.'>Catalog On</a>]"
     $.on el.firstElementChild, 'click', @toggle
     $.add $.id('boardNavDesktop'), el
 
@@ -3369,8 +3369,9 @@ CatalogLinks =
           a.href  += 'catalog'
           a.title += ' - Catalog'
       a = a.nextElementSibling
-    @textContent =
-      if /Off$/.test @textContent
-        'Catalog On'
-      else
-        'Catalog Off'
+    if /On$/.test @textContent
+      @textContent = 'Catalog Off'
+      @title =       'Turn Catalog Links off.'
+      return
+    @textContent =   'Catalog On'
+    @title =         'Turn Catalog Links on.'
