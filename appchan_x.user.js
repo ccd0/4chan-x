@@ -5169,8 +5169,6 @@
               $["delete"]('lastBanCheck');
             }
             $["delete"]('isBanned');
-            delete this.parentNode.firstChild.href;
-            delete this.parentNode.lastChild.href;
             this.parentNode.style.opacity = '.5';
             return BanChecker.load();
           });
