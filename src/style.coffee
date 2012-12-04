@@ -315,7 +315,7 @@ input[type="submit"] {
   word-wrap: break-word;
   overflow: hidden;
   margin-top: 5px;
-  padding: 5px 0px 3px;
+  padding: 5px 0 3px;
   text-align: center;
 }
 .extended-small .thread,
@@ -334,7 +334,7 @@ input[type="submit"] {
   max-height: 150px;
 }
 #content .thumb {
-  box-shadow: 0px 0px 5px #{theme["Reply Border"]};
+  box-shadow: 0 0 5px #{theme["Reply Border"]};
 }
 .thumbnail:hover,
 .thumbnail:focus {
@@ -405,12 +405,12 @@ input[type="submit"] {
 }
 .themevar .colorfield {
   width: 90%;
-  border-right-width: 0px;
+  border-right: none;
 }
 .themevar .color {
   width: 10%;
   color: transparent;
-  border-left-width: 0px;
+  border-left: none;
 }
 #ihover,
 #mouseover,
@@ -1139,7 +1139,7 @@ div.file {
 .fileText ~ a > img + img {
   margin: 0 0 25px;
   position: relative;
-  top: 0px;
+  top: 0;
 }
 .fileText {
   margin-top: 17px;
@@ -1236,7 +1236,7 @@ div.navLinks {
 #autoPagerBorderPaging {
   position: fixed !important;
   right: 300px !important;
-  bottom: 0px;
+  bottom: 0;
 }
 #options ul {
   margin: 3px;
@@ -1334,14 +1334,14 @@ input[type="submit"]:hover {
   color: transparent;
 }
 #boardNavDesktop .current {
-  font-weight: bold;
+  font-weight: 800;
 }
 .focused.entry {
   background-color: transparent;
 }
 #menu.reply.dialog,
 html .subMenu {
-  padding: 0px;
+  padding: 0;
 }
 .textarea {
   position: relative;
@@ -1442,14 +1442,14 @@ html {
 #stats,
 #updater:not(:hover) .move {
   text-shadow:
-     1px  1px 0 #{theme["Background Color"]},
+    1px 1px 0 #{theme["Background Color"]},
     -1px -1px 0 #{theme["Background Color"]},
-     1px -1px 0 #{theme["Background Color"]},
-    -1px  1px 0 #{theme["Background Color"]},
-     0px  1px 0 #{theme["Background Color"]},
-     0px -1px 0 #{theme["Background Color"]},
-     1px  0px 0 #{theme["Background Color"]},
-    -1px  0px 0 #{theme["Background Color"]}#{if Conf["Sidebar Glow"] then "\n, 0 2px 5px #{theme['Text']};" else ";"}
+    1px -1px 0 #{theme["Background Color"]},
+    -1px 1px 0 #{theme["Background Color"]},
+    0 1px 0 #{theme["Background Color"]},
+    0 -1px 0 #{theme["Background Color"]},
+    1px 0 0 #{theme["Background Color"]},
+    -1px 0 0 #{theme["Background Color"]}#{if Conf["Sidebar Glow"] then "\n, 0 2px 5px #{theme['Text']};" else ";"}
 }
 #options .dialog,
 #exlinks-options,
@@ -2258,8 +2258,8 @@ body::before {
   background: none repeat scroll 0% 0% rgba(#{background.shiftRGB -18}, 0.8);
   border-#{Style.sidebarLocation[1]}: 2px solid #{theme["Background Color"]};
   box-shadow:
-    #{if Conf["Sidebar Location"] is "right" then "inset" else ""}  1px 0px 0px #{theme["Thread Wrapper Border"]},
-    #{if Conf["Sidebar Location"] is "left"  then "inset" else ""} -1px 0px 0px #{theme["Thread Wrapper Border"]};
+    #{if Conf["Sidebar Location"] is "right" then "inset" else ""}  1px 0 0 #{theme["Thread Wrapper Border"]},
+    #{if Conf["Sidebar Location"] is "left"  then "inset" else ""} -1px 0 0 #{theme["Thread Wrapper Border"]};
   content: "";
   position: fixed;
   top: 0;
@@ -2530,7 +2530,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   width: #{(248 + Style.sidebarOffsetW)}px;
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Dialog Border"]};
-  height: 0px;
+  height: 0;
   overflow: hidden;
   #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;

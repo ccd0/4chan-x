@@ -249,7 +249,22 @@ Main =
     nodes = []
     for node in $$ '.postContainer', board
       nodes.push Main.preParse node
-    Main.node nodes, true
+    Main.node nodes, ->
+      if d.readyState is "complete"
+        return true
+      false
+
+    # Execute these scripts on inserted posts, not page init.
+    Main.hasCodeTags = !! $ 'script[src^="//static.4chan.org/js/prettify/prettify"]'
+
+    if MutationObserver = window.MutationObserver or window.WebKitMutationObserver or window.OMutationObserver
+      observer = new MutationObserver Main.observer
+      observer.observe board,
+        childList: true
+        subtree: true
+    else
+      $.on board, 'DOMNodeInserted', Main.listener
+    return
 
     Main.observe()
 
@@ -355,6 +370,7 @@ Main =
       Main.node [Main.preParse target]
 
   prettify: (bq) ->
+    return unless Main.hasCodeTags
     switch g.BOARD
       when 'g'
         code = ->
