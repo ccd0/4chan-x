@@ -8014,12 +8014,16 @@
 
   CatalogLinks = {
     init: function() {
-      var el;
+      var el, toggled;
+      toggled = /catalog$/.test(($('#boardNavDesktop a')).href) ? "off" : "on";
       el = $.el('span', {
-        innerHTML: /catalog$/.test(($('#boardNavDesktop a')).href) ? "[<a id=toggleCatalog title='Toggle Catalog Links off.'>Catalog Off</a>]" : "[<a id=toggleCatalog title='Toggle Catalog Links on.'>Catalog On</a>]"
+        innerHTML: "[<a id=toggleCatalog title='Toggle Catalog Links " + toggled + "'>Catalog " + toggled + "</a>]"
       });
       $.on(el.firstElementChild, 'click', this.toggle);
-      return $.add($.id('boardNavDesktop'), el);
+      $.add($.id('boardNavDesktop'), el);
+      if ($.get('CatalogIsToggled')) {
+        return this.toggle.call(el.firstElementChild);
+      }
     },
     toggle: function() {
       var a, links, split, _i, _len;
@@ -8043,10 +8047,12 @@
       if (/On$/.test(this.textContent)) {
         this.textContent = 'Catalog Off';
         this.title = 'Turn Catalog Links off.';
+        $.set('CatalogIsToggled', true);
         return;
       }
       this.textContent = 'Catalog On';
-      return this.title = 'Turn Catalog Links on.';
+      this.title = 'Turn Catalog Links on.';
+      return $["delete"]('CatalogIsToggled');
     }
   };
 
