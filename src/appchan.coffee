@@ -20,14 +20,12 @@ Style =
       if exLink = $ "#navtopright .exlinksOptionsLink", d.body
         $.on exLink, "click", ->
           setTimeout Style.rice, 50
-      iconPositions = ->
-        Style.icons.textContent = Style.iconPositions()
-      # Give ExLinks and 4sight a little time to append their dialog links
-      setTimeout iconPositions, 1000
       Style.padding.nav   = $ "#boardNavDesktop", d.body
       Style.padding.pages = $(".pagelist", d.body)
       Style.padding()
       $.on (window or unsafeWindow), "resize", Style.padding
+      # Give ExLinks and 4sight a little time to append their dialog links
+      Style.iconPositions()
 
   emoji: (position) ->
     css = ''
@@ -113,7 +111,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
           theme = Themes["Yotsuba B"]
           $.log "Invalid Theme #{Conf['theme']}!"
         Style.appchan      = $.addStyle Style.css(theme), 'appchan'
-        Style.icons        = $.addStyle Style.iconPositions(), 'icons'
+        Style.icons        = $.addStyle "", 'icons'
         Style.paddingSheet = $.addStyle "", 'padding'
         Style.mascot       = $.addStyle "", 'mascotSheet'
       else # XXX fox
@@ -121,7 +119,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
     else
       MascotTools.init Conf["mascot"]
       Style.appchan.textContent = Style.css(theme)
-      Style.icons.textContent   = Style.iconPositions()
+      Style.iconPositions()
 
   headCount: 0
   

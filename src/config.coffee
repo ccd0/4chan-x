@@ -578,11 +578,6 @@ div.post.highlight {
         'Change the orientation of the appchan x icons.'
         ['horizontal', 'vertical']
       ]
-      'Icon Positions': [
-        'auto-align'
-        'Change the orientation of the appchan x icons.'
-        ['auto-align', 'manual (old)']
-      ]
       'Slideout Watcher': [
         true
         'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.'

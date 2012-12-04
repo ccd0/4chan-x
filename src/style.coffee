@@ -941,7 +941,8 @@ div.navLinks > a:first-of-type::after,
 #globalMessage::after,
 #boardNavDesktopFoot::after,
 body > a[style="cursor: pointer; float: right;"]::after,
-#imgControls label:first-of-type::after {
+#imgControls label:first-of-type::after,
+.cataloglink a::after {
   position: fixed;
   display: block;
   width: 15px;
@@ -951,10 +952,16 @@ body > a[style="cursor: pointer; float: right;"]::after,
   background-image: url('#{icons}');
   opacity: 0.5;
 }
+#imgControls {
+  position: fixed;
+}
 #navtopright .settingsWindowLink::after {
+  visibility: visible;
   background-position: 0 0;
 }
 div.navLinks > a:first-of-type::after {
+  visibility: visible;
+  cursor: pointer;
   background-position: 0 -15px;
 }
 #watcher::after {
@@ -967,6 +974,8 @@ div.navLinks > a:first-of-type::after {
   background-position: 0 -60px;
 }
 body > a[style="cursor: pointer; float: right;"]::after {
+  visibility: visible;
+  cursor: pointer;
   background-position: 0 -75px;
 }
 #imgControls label:first-of-type::after {
@@ -975,6 +984,9 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 #navtopright .exlinksOptionsLink::after {
   background-position: 0 -105px;
+}
+.cataloglink a::after {
+  background-position: 0 -120px;
 }
 #boardNavDesktopFoot:hover::after,
 #globalMessage:hover::after,
@@ -986,7 +998,8 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #watcher:hover::after,
 .thumbnail#selected,
 body > a[style="cursor: pointer; float: right;"]:hover::after,
-div.navLinks > a:first-of-type:hover::after {
+div.navLinks > a:first-of-type:hover::after,
+.cataloglink a:hover::after {
   opacity: 1;
 }
 .boardTitle,
@@ -1179,6 +1192,7 @@ div.post {
 .name {
   font-weight: 600;
 }
+.cataloglink,
 #navtopright {
   position: fixed;
   bottom: -1000px;

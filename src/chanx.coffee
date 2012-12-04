@@ -3290,6 +3290,7 @@ ImageExpand =
     $.on select, 'change', $.cb.value
     $.on select, 'change', ImageExpand.cb.typeChange
     $.on $('input', controls), 'click', ImageExpand.cb.all
+    Style.rice controls
 
     $.prepend $.id('delform'), controls
 
