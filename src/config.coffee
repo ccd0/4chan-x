@@ -4,6 +4,10 @@ Config =
   main:
 
     Enhancing:
+      'Catalog Links': [
+        true
+        'Turn Navigation links into links to each board\'s catalog.'
+      ]
       '404 Redirect': [
         true
         'Redirect dead threads and images'

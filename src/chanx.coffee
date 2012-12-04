@@ -3350,3 +3350,27 @@ ImageExpand =
 
   resize: ->
     ImageExpand.style.textContent = ".fitheight img[data-md5] + img {max-height:#{d.documentElement.clientHeight}px;}"
+
+CatalogLinks =
+  init: ->
+    el = $.el 'span',
+      innerHTML: "[<a id=toggleCatalog>Catalog On</a>]"
+    $.on el.firstElementChild, 'click', @toggle
+    $.add $.id('boardNavDesktop'), el
+
+  toggle: ->
+    a = $.id('boardNavDesktop').firstElementChild
+    while a.href and split = a.href.split '/'
+      unless /^rs|status/.test split[2]
+        if split[4]
+          a.href  = a.href.replace  /catalog$/, ''
+          a.title = a.title.replace /\ -\ Catalog$/, ''
+        else
+          a.href  += 'catalog'
+          a.title += ' - Catalog'
+      a = a.nextElementSibling
+    @textContent =
+      if /Off$/.test @textContent
+        'Catalog On'
+      else
+        'Catalog Off'

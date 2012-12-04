@@ -1,4 +1,9 @@
 master
+- noface
+  Added Catalog Links.
+  Exclude 4chan x from executing on catalogs.
+  Added Link Title for Youtube links.
+  Added Ban Checker.
 
 1.0.18
 - Fix "Hide Show Post Form" doing opposite of what it said it did.

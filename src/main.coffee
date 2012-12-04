@@ -5,7 +5,7 @@ Main =
 
     # Load user configuration from localStorage.
     for key, val of Conf
-      Conf[key]    = $.get key, val
+      Conf[key] = $.get key, val
 
     Conf['Hidden Categories'] = $.get "Hidden Categories", ["Questionable"]
       
@@ -207,6 +207,9 @@ Main =
 
     if Conf['Image Expansion']
       ImageExpand.init()
+
+    if Conf['Catalog Links']
+      CatalogLinks.init()
 
     if Conf['Thread Watcher']
       Watcher.init()

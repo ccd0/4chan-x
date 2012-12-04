@@ -102,11 +102,12 @@
  * @link      http://JSColor.com
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, BanChecker, Build, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, EmbedLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, JSColor, Keybinds, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, EmbedLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, JSColor, Keybinds, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
 
   Config = {
     main: {
       Enhancing: {
+        'Catalog Links': [true, 'Turn Navigation links into links to each board\'s catalog.'],
         '404 Redirect': [true, 'Redirect dead threads and images'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
@@ -8011,6 +8012,35 @@
     }
   };
 
+  CatalogLinks = {
+    init: function() {
+      var el;
+      el = $.el('span', {
+        textContent: 'Catalog On',
+        innerHTML: "[<a id=toggleCatalog>Catalog On</a>]"
+      });
+      $.on(el.firstElementChild, 'click', this.toggle);
+      return $.add($.id('boardNavDesktop'), el);
+    },
+    toggle: function() {
+      var a, split;
+      a = $.id('boardNavDesktop').firstElementChild;
+      while (a.href && (split = a.href.split('/'))) {
+        if (!/^rs|status/.test(split[2])) {
+          if (split[4]) {
+            a.href = a.href.replace(/catalog$/, '');
+            a.title = a.title.replace(/\ -\ Catalog$/, '');
+          } else {
+            a.href += 'catalog';
+            a.title += ' - Catalog';
+          }
+        }
+        a = a.nextElementSibling;
+      }
+      return this.textContent = /Off$/.test(this.textContent) ? 'Catalog On' : 'Catalog Off';
+    }
+  };
+
   QR = {
     init: function() {
       if (!$.id('postForm')) {
@@ -10930,6 +10960,9 @@
       MascotTools.init();
       if (Conf['Image Expansion']) {
         ImageExpand.init();
+      }
+      if (Conf['Catalog Links']) {
+        CatalogLinks.init();
       }
       if (Conf['Thread Watcher']) {
         Watcher.init();
