@@ -8017,7 +8017,7 @@
       var el, toggled;
       toggled = /catalog$/.test(($('#boardNavDesktop a')).href) ? "off" : "on";
       el = $.el('span', {
-        innerHTML: "[<a id=toggleCatalog title='Toggle Catalog Links " + toggled + "'>Catalog " + toggled + "</a>]"
+        innerHTML: "[<a id=toggleCatalog href='javascript;' title='Toggle Catalog Links " + toggled + "'>Catalog " + toggled + "</a>]"
       });
       $.on(el.firstElementChild, 'click', this.toggle);
       $.add($.id('boardNavDesktop'), el);
@@ -8035,7 +8035,7 @@
         }
         split = a.href.split('/');
         if (!/boards\.4chan\.org/.test(split[1])) {
-          if (split[4]) {
+          if (split[4] === 'catalog') {
             a.href = a.href.replace(/catalog$/, '');
             a.title = a.title.replace(/\ -\ Catalog$/, '');
           } else {

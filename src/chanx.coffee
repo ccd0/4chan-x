@@ -3355,7 +3355,7 @@ CatalogLinks =
   init: ->
     toggled = if /catalog$/.test ($ '#boardNavDesktop a').href then "off" else "on"
     el = $.el 'span',
-      innerHTML: "[<a id=toggleCatalog title='Toggle Catalog Links #{toggled}'>Catalog #{toggled}</a>]"
+      innerHTML: "[<a id=toggleCatalog href='javascript;' title='Toggle Catalog Links #{toggled}'>Catalog #{toggled}</a>]"
     $.on el.firstElementChild, 'click', @toggle
     $.add $.id('boardNavDesktop'), el
     if $.get 'CatalogIsToggled'
@@ -3367,7 +3367,7 @@ CatalogLinks =
       continue unless a.href
       split = a.href.split '/'
       unless /boards\.4chan\.org/.test split[1]
-        if split[4]
+        if split[4] is 'catalog'
           a.href  = a.href.replace  /catalog$/, ''
           a.title = a.title.replace /\ -\ Catalog$/, ''
         else
