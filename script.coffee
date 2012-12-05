@@ -2,6 +2,7 @@ Config =
   main:
     Enhancing:
       'Disable 4chan\'s extension':   [true,  'Avoid conflicts between 4chan X and 4chan\'s inline extension.']
+      'Catalog Links':                [true,  'Turn Navigation links into links to each board\'s catalog.']
       '404 Redirect':                 [true,  'Redirect dead threads and images']
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
@@ -4171,6 +4172,48 @@ ImageExpand =
   resize: ->
     ImageExpand.style.textContent = ".fitheight img[data-md5] + img {max-height:#{d.documentElement.clientHeight}px;}"
 
+CatalogLinks =
+  init: ->
+    el = $.el 'span',
+      innerHTML:
+        "[<a href=javascript:; title='Toggle Catalog Links #{unless g.CATALOG then 'on.' else 'off.'}'>Catalog #{unless g.CATALOG then 'On' else 'Off'}</a>]"
+      id: 'toggleCatalog'
+    for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
+      $.on el.firstElementChild, 'click', @toggle
+      $.add $.id(nav), el
+      el = $.el 'span', innerHTML: el.innerHTML, id: 'toggleCatalogFoot'
+
+    if $.get 'CatalogIsToggled'
+      i = if g.CATALOG then 0 else 1
+      while i < 2
+        @toggle()
+        i++
+      return
+    @toggle() if g.CATALOG
+
+  toggle: ->
+    for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
+      a = $.id(nav).firstElementChild
+      while a.href and split = a.href.split '/'
+        unless /^rs|status/.test split[2]
+          if (isDead = split[3] is 'f') and g.CATALOG or split[4] is 'catalog'
+            a.href  = a.href.replace  /catalog$/, ''
+            a.title = a.title.replace /\ -\ Catalog$/, ''
+          else if not isDead
+            a.href  += 'catalog'
+            a.title += ' - Catalog'
+        a = a.nextElementSibling
+
+      if /On$/.test (el = a.parentNode.lastChild.firstElementChild).textContent
+        el.textContent = 'Catalog Off'
+        el.title =       'Turn Catalog Links off.'
+        $.set 'CatalogIsToggled', true
+      else
+        el.textContent = 'Catalog On'
+        el.title =       'Turn Catalog Links on.'
+        $.delete 'CatalogIsToggled'
+    return
+
 Main =
   init: ->
     Main.flatten null, Config
@@ -4181,6 +4224,8 @@ Main =
     if temp is 'res'
       g.REPLY = true
       g.THREAD_ID = pathname[2]
+    else if temp is 'catalog'
+      g.CATALOG = true
 
     # Load values from localStorage.
     for key, val of Conf
@@ -4334,6 +4379,9 @@ Main =
         # Gotta make it work in temporary boards.
         $.addClass a, 'current'
     Favicon.init()
+
+    if Conf['Catalog Links']
+      CatalogLinks.init()
 
     # Major features.
     if Conf['Quick Reply']
