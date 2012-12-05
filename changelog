@@ -1,4 +1,10 @@
 master
+
+1.0.21
+- Zixaphir
+  Fixed QR not refreshing properly
+  Some fixes to the catalogy
+
 1.0.20
 - Zixaphir
   Typo
