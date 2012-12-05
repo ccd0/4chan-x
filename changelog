@@ -1,9 +1,27 @@
 master
 - noface
-  Added Catalog Links.
+  Added Catalog Links toggle.
   Exclude 4chan x from executing on catalogs.
   Added Link Title for Youtube links.
   Added Ban Checker.
+- Zixaphir
+  Fix #optionsbar height
+  'Mascot Position' is now an override.
+  Fix undeleting
+  Switched a lot of pixel metrics to "em"s.
+  Fix thread and reply navigation link vertical alignments and size
+  Better mascot positioning
+  Select inputs are now implemented in HTML and JS rather than left to the user agent.
+  Button elements are now styled.
+  Added an advertisement for Appchan's mascot booru.
+  Style catalog
+  New Options:
+  - Custom CSS (with examples)
+  - Single Column mode
+  - Reset Custom Navigation
+  Removed:
+  - Manual Icon Positioning (was broken anyways)
+  - Manual selection of theme luminance
 
 1.0.18
 - Fix "Hide Show Post Form" doing opposite of what it said it did.
