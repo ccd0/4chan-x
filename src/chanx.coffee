@@ -3355,7 +3355,7 @@ CatalogLinks =
   init: ->
     toggled = if /catalog$/.test ($ '#boardNavDesktop a').href then "off" else "on"
     el = $.el 'span',
-      innerHTML: "[<a id=toggleCatalog href='javascript;' title='Toggle Catalog Links #{toggled}'>Catalog #{toggled}</a>]"
+      innerHTML: "[<a id=toggleCatalog href='javascript:;' title='Toggle Catalog Links #{toggled}'>Catalog #{toggled}</a>]"
     $.on el.firstElementChild, 'click', @toggle
     $.add $.id('boardNavDesktop'), el
     if $.get 'CatalogIsToggled'
