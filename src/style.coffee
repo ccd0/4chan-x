@@ -46,8 +46,8 @@
 
     if Conf['editMode'] is "theme"
       editSpace = []
-      editSpace[Style.sidebarLocation[0]] = 300
-      editSpace[Style.sidebarLocation[1]] = 0
+      editSpace[Style.sidebarLocation[1]] = 300
+      editSpace[Style.sidebarLocation[0]] = 0
     else
       editSpace =
         "left":  0
@@ -142,7 +142,8 @@ label,
   clear: both;
   text-decoration: none;
 }
-#menu {
+#menu,
+#post-preview {
   position: absolute;
   outline: none;
 }
@@ -882,6 +883,7 @@ span.postNum > .replylink {
 #themeConf {
   z-index: 998;
 }
+#post-preview,
 #qp {
   z-index: 104;
 }
@@ -1190,9 +1192,6 @@ div.post {
 .postertrip {
   background: transparent;
 }
-.name {
-  font-weight: 600;
-}
 .cataloglink,
 #navtopright {
   position: fixed;
@@ -1226,10 +1225,14 @@ div.post {
 #qp {
   max-width: 70%;
 }
+#post-preview {
+  max-width: 400px;
+}
 #qp .replyContainer,
 #qp .opContainer {
   visibility: visible;
 }
+#post-preview,
 #qp div.op {
   display: table;
 }
@@ -1525,6 +1528,7 @@ textarea.field:focus {
   color: #{theme["Inputs"]};
 }
 #mouseover,
+#post-preview,
 #qp div.post,
 #xupdater,
 div.reply.post {
@@ -1612,7 +1616,8 @@ span.postNum > .replylink {
   color: #{theme["Subjects"]} !important;
   font-weight: 600;
 }
-.dateTime {
+.dateTime,
+.post-ago {
   color: #{theme["Timestamps"]} !important;
 }
 #fs_status a,
@@ -1660,6 +1665,7 @@ a.quotelink {
 }
 div.subMenu,
 #menu,
+#post-preview,
 #qp .opContainer,
 #qp .replyContainer {
   box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else ""};
@@ -1742,9 +1748,11 @@ span.postNum > .replylink:hover,
 #boardTitle {
   color: #{theme["Board Title"]};
 }
-.name {
+.name,
+.post-author {
   color: #{theme["Names"]} !important;
 }
+.post-tripcode,
 .postertrip,
 .trip {
   color: #{theme["Tripcodes"]} !important;
@@ -1754,8 +1762,12 @@ span.postNum > .replylink:hover,
   color: #{theme["Emails"]};
 }
 .nameBlock > .useremail > .name,
-.name {
+.name,
+.post-author {
   font-weight: 600;
+}
+.post-author .post-tripcode {
+  font-weight: 400;
 }
 a.forwardlink {
   border-bottom: 1px dashed;
@@ -2428,6 +2440,7 @@ body::before {
 #options .mascot,
 #options ul,
 #options,
+#post-preview,
 #qp,
 #qp div.post,
 #{if Conf["Post Form Decorations"] then "#qr," else ""}

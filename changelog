@@ -1,4 +1,9 @@
 master
+1.0.20
+- Zixaphir
+  Typo
+
+1.0.19
 - noface
   Added Catalog Links toggle.
   Exclude 4chan x from executing on catalogs.
