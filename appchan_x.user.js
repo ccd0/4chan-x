@@ -8992,7 +8992,7 @@
           innerHTML: /^You were issued a warning/.test($('.boxcontent', doc).textContent.trim()) ? "You were issued a warning on " + bs[0].innerHTML + " as " + bs[3].innerHTML + ".<br>Warning reason: " + bs[1].innerHTML : "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
         });
       }
-      if (/You are banned/.test(err.textContent)) {
+      if (/You are banned/.test(err != null ? err.textContent : void 0)) {
         $["delete"]('lastBanCheck');
         BanChecker.init();
       } else if (err = doc.getElementById('errmsg')) {
