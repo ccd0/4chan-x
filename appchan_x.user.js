@@ -6673,25 +6673,13 @@
                   src: "" + Quotify.protocol + "//www.youtube.com/embed/" + this.name
                 });
               },
-              title: function() {
-                var name, node;
-                node = this;
-                name = this.nextElementSibling.name;
-                return $.ajax("https://gdata.youtube.com/feeds/api/videos/" + name + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode", {
-                  node: node,
-                  name: name,
-                  onloadend: function() {
-                    var title, titles;
-                    if (this.status === 200 || 304) {
-                      titles = $.get('embedtitles', {});
-                      node.textContent = title = "[YouTube] " + (JSON.parse(this.responseText).entry.title.$t);
-                      titles[name] = [title, Date.now()];
-                      return $.set('embedtitles', titles);
-                    } else {
-                      return node.textContent = "[YouTube] " + this.status + "'d";
-                    }
-                  }
-                });
+              title: {
+                api: function() {
+                  return "https://gdata.youtube.com/feeds/api/videos/" + this.nextElementSibling.name + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
+                },
+                text: function() {
+                  return JSON.parse(this.responseText).entry.title.$t;
+                }
               }
             },
             vocaroo: {
@@ -6712,6 +6700,27 @@
               el: function() {
                 return $.el('iframe', {
                   src: "" + Quotify.protocol + "//player.vimeo.com/video/" + this.name
+                });
+              },
+              title: {
+                api: function() {
+                  return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + this.nextElementSibling.name;
+                },
+                text: function() {
+                  return JSON.parse(this.responseText).title;
+                }
+              }
+            },
+            liveleak: {
+              regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
+              style: {
+                boder: '0',
+                width: '640px',
+                height: '390px'
+              },
+              el: function() {
+                return $.el('iframe', {
+                  src: "http://www.liveleak.com/e/" + this.name + "?autostart=true"
                 });
               }
             },
@@ -6750,7 +6759,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var a, board, data, embed, i, id, index, key, m, match, n, node, nodes, p, quote, quotes, snapshot, spoiler, text, title, type, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+      var a, board, data, embed, i, id, index, key, m, match, n, node, nodes, p, quote, quotes, service, snapshot, spoiler, text, title, titles, type, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
       if (post.isInlined && !post.isCrosspost) {
         if (Conf['Linkify'] && Conf['Embedding']) {
           _ref = $$('.embed', post.el);
@@ -6842,12 +6851,25 @@
               $.after(a, embed);
               $.after(a, $.tn(' '));
               if (Conf['Link Title']) {
-                title = $.get('embedtitles', {});
-                if (title[match[1]]) {
-                  a.textContent = title[match[1]][0];
-                } else {
-                  if ((_ref4 = type.title) != null) {
-                    _ref4.call(a);
+                if (service = type.title) {
+                  titles = $.get('CachedTitles', {});
+                  if (title = titles[match[1]]) {
+                    a.textContent = title[0];
+                    embed.setAttribute('data-title', title[0]);
+                  } else {
+                    $.ajax(service.api.call(a), {
+                      onloadend: function() {
+                        if (this.status === 200 || 304) {
+                          titles = $.get('CachedTitles', {});
+                          a.textContent = title = "[" + key + "] " + (service.text.call(this));
+                          embed.setAttribute('data-title', title);
+                          titles[match[1]] = [title, Date.now()];
+                          return $.set('CachedTitles', titles);
+                        } else {
+                          return node.textContent = "[" + key + "] " + this.status + "'d";
+                        }
+                      }
+                    });
                   }
                 }
               }
@@ -6881,15 +6903,16 @@
       return this.textContent = '(unembed)';
     },
     unembed: function() {
-      var a, embedded, url;
+      var a, embedded, title, url;
       embedded = this.previousElementSibling;
       url = this.getAttribute("data-originalURL");
+      title = this.getAttribute("data-title");
       a = $.el('a', {
         rel: 'nofollow noreferrer',
         target: 'blank',
         className: 'linkify',
         href: url,
-        textContent: url
+        textContent: title || url
       });
       $.replace(embedded, a);
       $.rmClass(this, 'embedded');

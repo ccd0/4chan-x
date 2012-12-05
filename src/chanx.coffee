@@ -2316,24 +2316,10 @@ Quotify =
               height: '390px'
             el: ->
               $.el 'iframe'
-                src:  "#{Quotify.protocol}//www.youtube.com/embed/#{@name}"
-            title: ->
-              node = @
-              name = @nextElementSibling.name
-              $.ajax(
-                "https://gdata.youtube.com/feeds/api/videos/#{name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
-                node: node
-                name: name
-                onloadend: ->
-                  if @status is 200 or 304
-                    titles = $.get 'embedtitles', {}
-                    node.textContent = title = "[YouTube] #{JSON.parse(@responseText).entry.title.$t}"
-                    titles[name] = [title, Date.now()]
-                    $.set 'embedtitles', titles  # maybe store key for each service later on
-                  else
-                    node.textContent = "[YouTube] #{@status}'d"
-              )
-
+                src: "#{Quotify.protocol}//www.youtube.com/embed/#{@name}"
+            title:
+              api:  -> "https://gdata.youtube.com/feeds/api/videos/#{@nextElementSibling.name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
+              text: -> JSON.parse(@responseText).entry.title.$t
           vocaroo:
             regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
             el: ->
@@ -2347,7 +2333,19 @@ Quotify =
               height: '390px'
             el: ->
               $.el 'iframe'
-                src:   "#{Quotify.protocol}//player.vimeo.com/video/#{@name}"
+                src: "#{Quotify.protocol}//player.vimeo.com/video/#{@name}"
+            title:
+              api:  -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{@nextElementSibling.name}"
+              text: -> JSON.parse(@responseText).title
+          liveleak:
+            regExp:  /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
+            style:
+              boder:  '0'
+              width:  '640px'
+              height: '390px'
+            el: ->
+              $.el 'iframe'
+                src: "http://www.liveleak.com/e/#{@name}?autostart=true"
           audio:
             regExp:  /(.*\.(mp3|ogg|wav))$/
             el: ->
@@ -2396,7 +2394,6 @@ Quotify =
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
       {data} = node
-
 
       unless quotes = data.match Quotify.regString
         # Only accept nodes with potentially valid links
@@ -2477,11 +2474,24 @@ Quotify =
             $.after a, $.tn ' '
 
             if Conf['Link Title']
-              title = $.get 'embedtitles', {}
-              if title[match[1]]
-                a.textContent = title[match[1]][0]
-              else
-                type.title?.call a
+              if service = type.title
+                titles = $.get 'CachedTitles', {}
+                if title = titles[match[1]]
+                  a.textContent = title[0]
+                  embed.setAttribute 'data-title', title[0]
+                else
+                  $.ajax(
+                    service.api.call a
+                    onloadend: ->
+                      if @status is 200 or 304
+                        titles = $.get 'CachedTitles', {}
+                        a.textContent = title = "[#{key}] #{service.text.call @}"
+                        embed.setAttribute 'data-title', title
+                        titles[match[1]] = [title, Date.now()]
+                        $.set 'CachedTitles', titles
+                      else
+                        node.textContent = "[#{key}] #{@status}'d"
+                    )
 
             break
     return
@@ -2515,13 +2525,14 @@ Quotify =
   unembed: ->
     embedded = @previousElementSibling
     url = @getAttribute("data-originalURL")
+    title = @getAttribute("data-title")
 
     a = $.el 'a'
       rel:         'nofollow noreferrer'
       target:      'blank'
       className:   'linkify'
       href:        url
-      textContent: url
+      textContent: title or url
 
     $.replace embedded, a
 
