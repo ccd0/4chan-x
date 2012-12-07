@@ -4198,7 +4198,10 @@
           FileInfo.node(post);
         }
         if (Conf['Resurrect Quotes']) {
-          return Quotify.node(post);
+          Quotify.node(post);
+        }
+        if (Conf['Anonymize']) {
+          return Anonymize.node(post);
         }
       });
       $.on(this, 'mousemove', UI.hover);
