@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.21 - 2012-12-05
+ * appchan x - Version 1.0.21 - 2012-12-07
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -3153,7 +3153,6 @@
       $.on(overlay, 'click', Options.close);
       $.add(d.body, overlay);
       dialog.style.visibility = 'hidden';
-      Style.rice(dialog);
       $.add(d.body, dialog);
       dialog.style.visibility = 'visible';
       if (tab) {
@@ -3163,7 +3162,8 @@
       Options.backlink.call(back);
       Options.time.call(time);
       Options.fileInfo.call(fileInfo);
-      return Options.favicon.call(favicon);
+      Options.favicon.call(favicon);
+      return Style.rice(dialog);
     },
     indicators: function(dialog) {
       var indicator, indicators, key, _i, _j, _len, _len1, _ref, _ref1, _results;
@@ -6750,13 +6750,22 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var a, board, data, embed, i, id, index, key, m, match, n, node, nodes, p, quote, quotes, snapshot, spoiler, text, title, type, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var a, board, data, embed, i, id, index, key, m, match, n, node, nodes, p, quote, quotes, snapshot, spoiler, text, title, type, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
       if (post.isInlined && !post.isCrosspost) {
+        if (Conf['Linkify'] && Conf['Embedding']) {
+          _ref = $$('.embed', post.el);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            embed = _ref[_i];
+            $.on(embed, 'click', function() {
+              return Quotify.toggle;
+            });
+          }
+        }
         return;
       }
-      _ref = $$('.spoiler', post.blockquote);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        spoiler = _ref[_i];
+      _ref1 = $$('.spoiler', post.blockquote);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        spoiler = _ref1[_j];
         if ((spoiler.textContent.length === 0) && (p = spoiler.previousSibling) && (n = spoiler.nextSibling) && (n.nodeType && p.nodeType === Node.TEXT_NODE)) {
           p.textContent += n.textContent;
           $.rm(n);
@@ -6764,15 +6773,15 @@
         }
       }
       snapshot = d.evaluate('.//text()[not(parent::a)]', post.blockquote, null, 6, null);
-      for (i = _j = 0, _ref1 = snapshot.snapshotLength; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
+      for (i = _k = 0, _ref2 = snapshot.snapshotLength; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
         node = snapshot.snapshotItem(i);
         data = node.data;
         if (!(quotes = data.match(Quotify.regString))) {
           continue;
         }
         nodes = [];
-        for (_k = 0, _len1 = quotes.length; _k < _len1; _k++) {
-          quote = quotes[_k];
+        for (_l = 0, _len2 = quotes.length; _l < _len2; _l++) {
+          quote = quotes[_l];
           index = data.indexOf(quote);
           if (text = data.slice(0, index)) {
             nodes.push($.tn(text));
@@ -6817,9 +6826,9 @@
         }
         $.replace(node, nodes);
         if (Conf['Embedding'] && a.className === "linkify") {
-          _ref2 = Quotify.types;
-          for (key in _ref2) {
-            type = _ref2[key];
+          _ref3 = Quotify.types;
+          for (key in _ref3) {
+            type = _ref3[key];
             if (match = a.href.match(type.regExp)) {
               embed = $.el('a', {
                 name: match[1],
@@ -6837,8 +6846,8 @@
                 if (title[match[1]]) {
                   a.textContent = title[match[1]][0];
                 } else {
-                  if ((_ref3 = type.title) != null) {
-                    _ref3.call(a);
+                  if ((_ref4 = type.title) != null) {
+                    _ref4.call(a);
                   }
                 }
               }
@@ -8991,10 +9000,10 @@
         err = $.el('span', {
           innerHTML: /^You were issued a warning/.test($('.boxcontent', doc).textContent.trim()) ? "You were issued a warning on " + bs[0].innerHTML + " as " + bs[3].innerHTML + ".<br>Warning reason: " + bs[1].innerHTML : "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
         });
-      }
-      if (/You are banned/.test(err != null ? err.textContent : void 0)) {
-        $["delete"]('lastBanCheck');
-        BanChecker.init();
+        if (/You are banned/.test(err.textContent)) {
+          $["delete"]('lastBanCheck');
+          BanChecker.init();
+        }
       } else if (err = doc.getElementById('errmsg')) {
         if ((_ref = $('a', err)) != null) {
           _ref.target = '_blank';
@@ -10266,7 +10275,7 @@
         $.addClass(select, 'riced');
         div = $.el('div', {
           className: 'selectrice',
-          innerHTML: "<div>" + select.options[select.selectedIndex].textContent + "</div>"
+          innerHTML: "<div>" + (select.options[select.selectedIndex].textContent || null) + "</div>"
         });
         $.on(div, "click", function(e) {
           var clientHeight, li, option, rect, style, ul, _k, _len2, _ref;

@@ -60,7 +60,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       $.addClass select, 'riced'
       div = $.el 'div',
         className: 'selectrice'
-        innerHTML: "<div>#{select.options[select.selectedIndex].textContent}</div>"
+        innerHTML: "<div>#{select.options[select.selectedIndex].textContent or null}</div>"
       $.on div, "click", (e) ->
         e.stopPropagation()
         if Style.ul

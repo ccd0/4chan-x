@@ -351,9 +351,6 @@ Options =
     $.add d.body, overlay
     dialog.style.visibility = 'hidden'
 
-    # Rice checkboxes.
-    Style.rice dialog
-
     # Add options dialog to the DOM.
     $.add d.body, dialog
     dialog.style.visibility = 'visible'
@@ -369,6 +366,9 @@ Options =
     Options.time.call     time
     Options.fileInfo.call fileInfo
     Options.favicon.call  favicon
+
+    # Rice checkboxes.
+    Style.rice dialog
 
   indicators: (dialog) ->
     indicators = {}

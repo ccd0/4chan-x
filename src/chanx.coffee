@@ -1046,7 +1046,7 @@ BanChecker =
       $.before $.id('delform'), el
     else
       Banchecker.el.firstChild.textContent = $.get 'isBanned'
-    
+
 
 Updater =
   init: ->
@@ -2333,7 +2333,7 @@ Quotify =
                   else
                     node.textContent = "[YouTube] #{@status}'d"
               )
-          
+
           vocaroo:
             regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
             el: ->
@@ -2375,7 +2375,12 @@ Quotify =
     Main.callbacks.push @node
 
   node: (post) ->
-    return if post.isInlined and not post.isCrosspost
+    if post.isInlined and not post.isCrosspost
+      if Conf['Linkify'] and Conf['Embedding']
+        for embed in $$('.embed', post.el)
+          $.on embed, 'click', ->
+            Quotify.toggle
+      return
 
     # Remove blank spoilers.
     for spoiler in $$ '.spoiler', post.blockquote
@@ -2480,7 +2485,7 @@ Quotify =
 
             break
     return
-  
+
   toggle: ->
     if /\bembedded\b/.test @className
       Quotify.unembed.call @
@@ -2787,7 +2792,7 @@ EmbedLink =
     a = $.el 'a',
       className: 'embed_link'
       textContent: 'Embed all in post'
-    
+
     $.on a, 'click', EmbedLink.toggle
 
     Menu.addEntry
@@ -3247,6 +3252,7 @@ ImageExpand =
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       e.preventDefault()
       ImageExpand.toggle @
+
     all: ->
       ImageExpand.on = @checked
       if ImageExpand.on # Expand
@@ -3263,6 +3269,7 @@ ImageExpand =
         for thumb in $$ 'img[data-md5][hidden]'
           ImageExpand.contract thumb
       return
+
     typeChange: ->
       switch @value
         when 'full'
