@@ -1,5 +1,10 @@
 master
 
+1.0.22
+- Zixaphir
+  Fix embedding in inlined posts
+  Fix options menu on Chrome
+
 1.0.21
 - Zixaphir
   Fixed QR not refreshing properly
