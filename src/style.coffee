@@ -905,7 +905,8 @@ html .subMenu {
 #boardNavDesktop,
 #menu.reply.dialog,
 #navlinks,
-body > a[style="cursor: pointer; float: right;"]::after {
+body > a[style="cursor: pointer; float: right;"]::after,
+.cataloglink a::after {
   z-index: 94;
 }
 .fileThumb img + img {
@@ -1034,7 +1035,7 @@ img {
   margin-right: 1px;
 }
 /* Navigation */
-#{(if Conf["Custom Navigation"] then "" else "#boardNavDesktop")} {
+#{(if Conf["Hide Navigation Decorations"] then "#boardNavDesktop, .pages" else "")} {
   font-size: 0;
   color: transparent;
   word-spacing: 2px;

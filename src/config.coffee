@@ -801,6 +801,10 @@ div.post.highlight {
         'Change the text alignment of the pagination.'
         ['left', 'center', 'right']
       ]
+      'Hide Navigation Decorations': [
+        false
+        'Hide non-link text in the board navigation and pagination. This also disables the delimiter in <code>Custom Navigation</code>'
+      ]
 
     'Post Form':
       'Captcha Opacity': [
