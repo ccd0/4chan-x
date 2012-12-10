@@ -4799,6 +4799,8 @@
         case 'toy':
         case 'x':
           return "http://archive.heinessen.com/" + board + "/full_image/" + filename;
+        case 'c':
+          return "//archive.nyafuu.org/" + board + "/full_image/" + filename;
       }
     },
     post: function(board, postID) {
@@ -4846,21 +4848,21 @@
           break;
         case 'u':
         case 'kuku':
-          url = Redirect.path("//nsfw.foolz.us", 'foolfuuka', data);
+          url = Redirect.path('//nsfw.foolz.us', 'foolfuuka', data);
           break;
         case 'ck':
         case 'lit':
-          url = Redirect.path("//fuuka.warosu.org", 'fuuka', data);
+          url = Redirect.path('//fuuka.warosu.org', 'fuuka', data);
           break;
         case 'diy':
         case 'sci':
-          url = Redirect.path("//archive.installgentoo.net", 'fuuka', data);
+          url = Redirect.path('//archive.installgentoo.net', 'fuuka', data);
           break;
         case 'cgl':
         case 'g':
         case 'mu':
         case 'w':
-          url = Redirect.path("//rbt.asia", 'fuuka', data);
+          url = Redirect.path('//rbt.asia', 'fuuka', data);
           break;
         case 'an':
         case 'fit':
@@ -4869,7 +4871,10 @@
         case 'r9k':
         case 'toy':
         case 'x':
-          url = Redirect.path("http://archive.heinessen.com", 'fuuka', data);
+          url = Redirect.path('http://archive.heinessen.com', 'fuuka', data);
+          break;
+        case 'c':
+          url = Redirect.path('//archive.nyafuu.org', 'fuuka', data);
           break;
         default:
           if (threadID) {

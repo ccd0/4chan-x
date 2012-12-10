@@ -4,6 +4,7 @@ master
 - Mayhem
   Added catalog support:
     Sync thread hiding between index and catalog.
+  Add /c/ archived thread and image redirection.
 
 2.36.3
 - Mayhem

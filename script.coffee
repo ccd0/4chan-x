@@ -3945,6 +3945,8 @@ Redirect =
         "//rbt.asia/#{board}/full_image/#{filename}"
       when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
+      when 'c'
+        "//archive.nyafuu.org/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
@@ -3959,15 +3961,17 @@ Redirect =
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
       when 'u', 'kuku'
-        url = Redirect.path "//nsfw.foolz.us", 'foolfuuka', data
+        url = Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
       when 'ck', 'lit'
-        url = Redirect.path "//fuuka.warosu.org", 'fuuka', data
+        url = Redirect.path '//fuuka.warosu.org', 'fuuka', data
       when 'diy', 'sci'
-        url = Redirect.path "//archive.installgentoo.net", 'fuuka', data
+        url = Redirect.path '//archive.installgentoo.net', 'fuuka', data
       when 'cgl', 'g', 'mu', 'w'
-        url = Redirect.path "//rbt.asia", 'fuuka', data
+        url = Redirect.path '//rbt.asia', 'fuuka', data
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
-        url = Redirect.path "http://archive.heinessen.com", 'fuuka', data
+        url = Redirect.path 'http://archive.heinessen.com', 'fuuka', data
+      when 'c'
+        url = Redirect.path '//archive.nyafuu.org', 'fuuka', data
       else
         if threadID
           url = "//boards.4chan.org/#{board}/"
