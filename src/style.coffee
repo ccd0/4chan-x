@@ -863,6 +863,9 @@ a {
 .sideArrows a {
   text-decoration: none;
 }
+.inlined {
+  font-style: italic;
+}
 #watcher > .move,
 .backlink:not(.filtered),
 a,
