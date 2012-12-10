@@ -1603,6 +1603,7 @@ span.postNum > .replylink {
   font-size: 0;
   border-right: 6px solid transparent;
   border-left: 6px solid transparent;
+  margin: 1.5px;
 }
 #navlinks a:first-of-type {
   border-bottom: 11px solid rgb(#{if Style.lightTheme then "130,130,130" else "230,230,230"});
