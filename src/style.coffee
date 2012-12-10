@@ -860,7 +860,8 @@ a {
 #navlinks a,
 .pages a,
 .quotelink.deadlink,
-.sideArrows a {
+.sideArrows a,
+s {
   text-decoration: none;
 }
 .inlined {
@@ -1173,7 +1174,9 @@ div.file {
 }
 /* Fixes text spoilers */
 .spoiler:not(:hover),
-.spoiler:not(:hover) * {
+.spoiler:not(:hover) *,
+s:not(:hover),
+s:not(:hover) * {
   color: rgb(0,0,0) !important;
   background-color: rgb(0,0,0) !important;
   text-shadow: none !important;
