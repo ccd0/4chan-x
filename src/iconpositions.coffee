@@ -3,11 +3,10 @@
     i = 0
     align = Style.sidebarLocation[0]
 
-    aligner = (first, offset, checks) ->
+    aligner = (first, offset, spacer, checks) ->
       first += offset
       # Create a position to hold values
       position = [first]
-      spacer = if align is "left" then -19 else 19
 
       # Check which elements we actually have. Some are easy, because the script creates them so we'd know they're here
       # Some are hard, like 4sight, which we have no way of knowing if available without looking for it.
@@ -20,19 +19,39 @@
       return position
 
     if Conf["Icon Orientation"] is "horizontal"
+      if align is 'left'
+        first  = 231
+        offset = Style.sidebarOffsetW
+        spacer = -19
 
-      position = aligner((if align is 'left' then 231 else 2), offset = (if align is "left" then Style.sidebarOffsetW else 0), [
-        true
-        (if Conf['Slideout Navigation'] isnt 'hide' then true else false)
-        (if Conf['Announcements'] is 'slideout' and $('#globalMessage', d.body)? then true else false)
-        (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
-        $('#navtopright .exlinksOptionsLink', d.body)?
-        $('body > a[style="cursor: pointer; float: right;"]', d.body)?
-        Conf['Image Expansion']
-        true
-        navlinks = (Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation']))
-        navlinks
-      ])
+      else
+        first  = 2
+        offset = 0
+        spacer = 19
+
+      position = aligner(
+        first
+        offset
+        spacer
+        [
+          true
+          (if Conf['Slideout Navigation'] isnt 'hide' then true else false)
+          (if Conf['Announcements'] is 'slideout' and $('#globalMessage', d.body)? then true else false)
+          (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
+          $('#navtopright .exlinksOptionsLink', d.body)?
+          $('body > a[style="cursor: pointer; float: right;"]', d.body)?
+          Conf['Image Expansion']
+          true
+          navlinks = (Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation']))
+          navlinks
+        ]
+      )
+
+      if align is 'left'
+        iconOffset = 250 - Style.sidebar
+      else
+        iconOffset = position[position.length - 1] - Style.sidebar - parseInt(Conf["Right Thread Padding"], 10)
+      if iconOffset < 0 then iconOffset = 0
 
       css = """
 div.navLinks > a:first-of-type::after {
@@ -121,22 +140,35 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #boardNavDesktopFoot:hover {
   z-index: 99 !important;
 }
-
+#{if Conf['Boards Navigation'] is 'top' or Conf['Boards Navigation'] is 'sticky top' then '#boardNavDesktop' else if Conf['Pagination'] is 'top' or Conf['Pagination'] is 'sticky top' then '.pagelist'} {
+  padding-#{align}: #{iconOffset}px;
+}
 """
     else
 
-      position = aligner(2, offset = (if Conf["4chan Banner"] is "at sidebar top" then (Style.logoOffset + 19) else 0), [
-        Conf['Image Expansion']
-        true
-        (if Conf['Slideout Navigation'] isnt 'hide' then true else false)
-        (if Conf['Announcements'] is 'slideout' then true else false)
-        (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
-        $('body > a[style="cursor: pointer; float: right;"]', d.body)?
-        $('#navtopright .exlinksOptionsLink', d.body)?
-        true
-        navlinks = (Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation']))
-        navlinks
-      ])
+      position = aligner(
+        2
+        (if Conf["4chan Banner"] is "at sidebar top" then (Style.logoOffset + 19) else 0)
+        19
+        [
+          Conf['Image Expansion']
+          true
+          (if Conf['Slideout Navigation'] isnt 'hide' then true else false)
+          (if Conf['Announcements'] is 'slideout' then true else false)
+          (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
+          $('body > a[style="cursor: pointer; float: right;"]', d.body)?
+          $('#navtopright .exlinksOptionsLink', d.body)?
+          true
+          navlinks = (Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation']))
+          navlinks
+        ]
+      )
+
+      if align is 'left'
+        iconOffset = 20 - Style.sidebar - parseInt(Conf["Left Thread Padding"], 10)
+      else
+        iconOffset = 20 - Style.sidebar - parseInt(Conf["Right Thread Padding"], 10)
+      if iconOffset < 0 then iconOffset = 0
 
       css = """
 div.navLinks > a:first-of-type::after {
@@ -228,6 +260,9 @@ div.navLinks > a:first-of-type::after {
 #watcher {
   width: #{233 + Style.sidebarOffsetW}px !important;
   #{align}: 18px !important;
+}
+#{if Conf['Boards Navigation'] is 'top' or Conf['Boards Navigation'] is 'sticky top' then '#boardNavDesktop' else if Conf['Pagination'] is 'top' or Conf['Pagination'] is 'sticky top' then '.pagelist'} {
+  padding-#{align}: #{iconOffset}px;
 }
 """
 

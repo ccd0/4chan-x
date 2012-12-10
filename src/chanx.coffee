@@ -3383,7 +3383,6 @@ CatalogLinks =
     for a in links
       continue unless a.href
       split = a.href.split '/'
-      $.log split
       if split[2] is 'boards.4chan.org' and split[3] isnt 'f'
         if split[4] is 'catalog'
           a.href  = a.href.replace  /catalog$/, ''

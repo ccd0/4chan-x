@@ -167,12 +167,12 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
     return unless sheet = Style.paddingSheet
     Style.padding.nav.property = Conf["Boards Navigation"].split(" ")
     Style.padding.nav.property = Style.padding.nav.property[Style.padding.nav.property.length - 1]
-    if Style.padding.pages?
+    if Style.padding.pages
       Style.padding.pages.property = Conf["Pagination"].split(" ")
       Style.padding.pages.property = Style.padding.pages.property[Style.padding.pages.property.length - 1]
     css = "body::before {\n"
     if Conf["4chan SS Emulation"]
-      if Style.padding.pages? and (Conf["Pagination"] is "sticky top"  or Conf["Pagination"] is "sticky bottom")
+      if Style.padding.pages and (Conf["Pagination"] is "sticky top"  or Conf["Pagination"] is "sticky bottom")
         css += "  #{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight}px !important;\n"
 
       if Conf["Boards Navigation"] is "sticky top" or Conf["Boards Navigation"] is "sticky bottom"

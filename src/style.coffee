@@ -54,13 +54,13 @@
         "right": 0
 
     if Conf["Sidebar"]  is "minimal"
-      sidebar = 20
+      Style.sidebar = 20
 
     else if Conf["Sidebar"] != "hide"
-      sidebar = (252 + Style.sidebarOffsetW)
+      Style.sidebar = (252 + Style.sidebarOffsetW)
 
     else
-      sidebar = 2
+      Style.sidebar = 2
 
     switch Conf["Reply Spacing"]
       when "none"
@@ -732,7 +732,7 @@ body {
 body {
   margin-top: 1px;
   margin-bottom: 1px;
-  margin-#{Style.sidebarLocation[0]}: #{sidebar}px;
+  margin-#{Style.sidebarLocation[0]}: #{Style.sidebar}px;
   margin-#{Style.sidebarLocation[1]}: 2px;
   padding-left: #{parseInt(Conf["Left Thread Padding"], 10) + editSpace["left"]}px;
   padding-right: #{parseInt(Conf["Right Thread Padding"], 10) + editSpace["right"]}px;
@@ -895,7 +895,8 @@ html .subMenu {
   z-index: 102;
 }
 #navtopright .exlinksOptionsLink::after,
-#navtopright .settingsWindowLink::after {
+#navtopright .settingsWindowLink::after,
+.cataloglink a::after {
   z-index: 101;
 }
 #imgControls {
@@ -905,8 +906,7 @@ html .subMenu {
 #boardNavDesktop,
 #menu.reply.dialog,
 #navlinks,
-body > a[style="cursor: pointer; float: right;"]::after,
-.cataloglink a::after {
+body > a[style="cursor: pointer; float: right;"]::after {
   z-index: 94;
 }
 .fileThumb img + img {
@@ -1546,7 +1546,7 @@ div.reply.post:target {
 .pagelist {
   background: #{theme["Navigation Background"]};
   border: 1px solid #{theme["Navigation Border"]};
-  #{Style.sidebarLocation[0]}: #{sidebar + parseInt(Conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  #{Style.sidebarLocation[0]}: #{Style.sidebar + parseInt(Conf["Right Thread Padding"], 10) + editSpace["right"]}px;
   #{Style.sidebarLocation[1]}: #{parseInt(Conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;
 }
 #delform {
@@ -2613,7 +2613,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 .pagelist {
   position: fixed;
   top: 0;
-  z-index: 4;
+  z-index: 94;
 }\n
 """
         when "sticky bottom"
@@ -2621,7 +2621,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 .pagelist {
   position: fixed;
   bottom: 0;
-  z-index: 4;
+  z-index: 94;
 }\n
 """
         when "top"
