@@ -318,8 +318,9 @@
       return $.on(d, 'DOMContentLoaded', cb);
     },
     sync: function(key, cb) {
+      key = Main.namespace + key;
       return $.on(window, 'storage', function(e) {
-        if (e.key === ("" + Main.namespace + key)) {
+        if (e.key === key) {
           return cb(JSON.parse(e.newValue));
         }
       });
@@ -1042,7 +1043,10 @@
   ThreadHiding = {
     init: function() {
       var a, hiddenThreads, thread, _i, _len, _ref;
-      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
+      hiddenThreads = ThreadHiding.sync();
+      if (g.CATALOG) {
+        return;
+      }
       _ref = $$('.thread');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         thread = _ref[_i];
@@ -1057,6 +1061,25 @@
           ThreadHiding.hide(thread);
         }
       }
+    },
+    sync: function() {
+      var hiddenThreads, hiddenThreadsCatalog, id;
+      hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
+      hiddenThreadsCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD));
+      if (g.CATALOG) {
+        for (id in hiddenThreads) {
+          hiddenThreadsCatalog[id] = true;
+        }
+        localStorage.setItem("4chan-hide-t-" + g.BOARD, JSON.stringify(hiddenThreadsCatalog));
+      } else {
+        for (id in hiddenThreadsCatalog) {
+          if (!(id in hiddenThreads)) {
+            hiddenThreads[id] = Date.now();
+          }
+        }
+        $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
+      }
+      return hiddenThreads;
     },
     cb: function() {
       return ThreadHiding.toggle($.x('ancestor::div[parent::div[@class="board"]]', this));
@@ -5157,14 +5180,18 @@
 
   Main = {
     init: function() {
-      var cutoff, hiddenThreads, id, key, now, path, pathname, settings, temp, timestamp, val, _ref;
+      var key, path, pathname, settings, temp, val;
       Main.flatten(null, Config);
       path = location.pathname;
       pathname = path.slice(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
-      if (temp === 'res') {
-        g.REPLY = true;
-        g.THREAD_ID = pathname[2];
+      switch (temp) {
+        case 'res':
+          g.REPLY = true;
+          g.THREAD_ID = pathname[2];
+          break;
+        case 'catalog':
+          g.CATALOG = true;
       }
       for (key in Conf) {
         val = Conf[key];
@@ -5212,6 +5239,19 @@
         settings.disableAll = true;
         localStorage.setItem('4chan-settings', JSON.stringify(settings));
       }
+      if (g.CATALOG) {
+        return $.ready(Main.catalog);
+      } else {
+        return Main.features();
+      }
+    },
+    catalog: function() {
+      if (Conf['Thread Hiding']) {
+        return ThreadHiding.init();
+      }
+    },
+    features: function() {
+      var cutoff, hiddenThreads, id, now, timestamp, _ref;
       Options.init();
       if (Conf['Quick Reply'] && Conf['Hide Original Post Form']) {
         Main.css += '#postForm { display: none; }';
@@ -5314,9 +5354,9 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.init();
       }
-      return $.ready(Main.ready);
+      return $.ready(Main.featuresReady);
     },
-    ready: function() {
+    featuresReady: function() {
       var MutationObserver, a, board, nav, node, nodes, observer, _i, _j, _len, _len1, _ref, _ref1;
       if (/^4chan - 404/.test(d.title)) {
         if (Conf['404 Redirect'] && /^\d+$/.test(g.THREAD_ID)) {

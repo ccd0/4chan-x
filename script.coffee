@@ -269,8 +269,9 @@ $.extend $,
       fc()
     $.on d, 'DOMContentLoaded', cb
   sync: (key, cb) ->
+    key = Main.namespace + key
     $.on window, 'storage', (e) ->
-      cb JSON.parse e.newValue if e.key is "#{Main.namespace}#{key}"
+      cb JSON.parse e.newValue if e.key is key
   id: (id) ->
     d.getElementById id
   formData: (arg) ->
@@ -832,7 +833,8 @@ ExpandThread =
 
 ThreadHiding =
   init: ->
-    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    hiddenThreads = ThreadHiding.sync()
+    return if g.CATALOG
     for thread in $$ '.thread'
       a = $.el 'a',
         className: 'hide_thread_button'
@@ -844,6 +846,20 @@ ThreadHiding =
       if thread.id[1..] of hiddenThreads
         ThreadHiding.hide thread
     return
+
+  sync: ->
+    hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    hiddenThreadsCatalog = JSON.parse localStorage.getItem "4chan-hide-t-#{g.BOARD}"
+    if g.CATALOG
+      for id of hiddenThreads
+        hiddenThreadsCatalog[id] = true
+      localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify hiddenThreadsCatalog
+    else
+      for id of hiddenThreadsCatalog
+        unless id of hiddenThreads
+          hiddenThreads[id] = Date.now()
+      $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
+    hiddenThreads
 
   cb: ->
     ThreadHiding.toggle $.x 'ancestor::div[parent::div[@class="board"]]', @
@@ -4178,9 +4194,12 @@ Main =
     path = location.pathname
     pathname = path[1..].split '/'
     [g.BOARD, temp] = pathname
-    if temp is 'res'
-      g.REPLY = true
-      g.THREAD_ID = pathname[2]
+    switch temp
+      when 'res'
+        g.REPLY = true
+        g.THREAD_ID = pathname[2]
+      when 'catalog'
+        g.CATALOG = true
 
     # Load values from localStorage.
     for key, val of Conf
@@ -4213,6 +4232,16 @@ Main =
       settings.disableAll = true
       localStorage.setItem '4chan-settings', JSON.stringify settings
 
+    if g.CATALOG
+      $.ready Main.catalog
+    else
+      Main.features()
+
+  catalog: ->
+    if Conf['Thread Hiding']
+      ThreadHiding.init()
+
+  features: ->
     Options.init()
 
     if Conf['Quick Reply'] and Conf['Hide Original Post Form']
@@ -4314,9 +4343,9 @@ Main =
     if Conf['Indicate Cross-thread Quotes']
       QuoteCT.init()
 
-    $.ready Main.ready
+    $.ready Main.featuresReady
 
-  ready: ->
+  featuresReady: ->
     if /^4chan - 404/.test d.title
       if Conf['404 Redirect'] and /^\d+$/.test g.THREAD_ID
         location.href =
