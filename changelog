@@ -1,4 +1,6 @@
 master
+- noface
+  Fix Anonymize not working on hovered posts.
 - Mayhem
   Added catalog support:
     Sync thread hiding between index and catalog.

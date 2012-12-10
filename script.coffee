@@ -3464,6 +3464,8 @@ QuotePreview =
         FileInfo.node       post
       if Conf['Resurrect Quotes']
         Quotify.node        post
+      if Conf['Anonymize']
+        Anonymize.node      post
 
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
