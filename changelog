@@ -1,6 +1,18 @@
 master
 - noface
   Added liveleak embedding and Vimeo Link Title.
+- Mayhem
+  Added catalog support:
+    Sync thread hiding between index and catalog.
+
+1.0.23
+- Zixaphir
+  Fixed catalog links bug
+  Fixed catalog button being being overlapped by the navbar (and therefore unclickable)
+  Fixed themes with transparent replies from having their background colors changed in the theme previews
+  Navigation links should no longer be able to overlap or underlap appchan's icons
+  Added an italic indicators for inlined post quotelinks/backlinks/forwardlinks.
+  
 
 1.0.22
 - Zixaphir

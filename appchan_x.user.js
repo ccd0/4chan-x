@@ -2561,8 +2561,9 @@
       return $.on(d, 'DOMContentLoaded', cb);
     },
     sync: function(key, cb) {
+      key = Main.namespace + key;
       return $.on(window, 'storage', function(e) {
-        if (e.key === ("" + Main.namespace + key)) {
+        if (e.key === key) {
           return cb(JSON.parse(e.newValue));
         }
       });
@@ -4408,7 +4409,11 @@
   ThreadHiding = {
     init: function() {
       var a, thread, _i, _len, _ref;
-      ThreadHiding.hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
+      this.hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
+      ThreadHiding.sync();
+      if (g.CATALOG) {
+        return;
+      }
       _ref = $$('.thread');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         thread = _ref[_i];
@@ -4421,9 +4426,26 @@
           return ThreadHiding.toggle(this.parentElement);
         });
         $.prepend(thread, a);
-        if (thread.id.slice(1) in ThreadHiding.hiddenThreads) {
+        if (thread.id.slice(1) in this.hiddenThreads) {
           ThreadHiding.hide(thread);
         }
+      }
+    },
+    sync: function() {
+      var hiddenThreadsCatalog, id;
+      hiddenThreadsCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD));
+      if (g.CATALOG) {
+        for (id in this.hiddenThreads) {
+          hiddenThreadsCatalog[id] = true;
+        }
+        return localStorage.setItem("4chan-hide-t-" + g.BOARD, JSON.stringify(hiddenThreadsCatalog));
+      } else {
+        for (id in hiddenThreadsCatalog) {
+          if (!(id in this.hiddenThreads)) {
+            this.hiddenThreads[id] = Date.now();
+          }
+        }
+        return $.set("hiddenThreads/" + g.BOARD + "/", this.hiddenThreads);
       }
     },
     toggle: function(thread) {
@@ -10854,10 +10876,15 @@
       path = location.pathname;
       pathname = path.slice(1).split('/');
       g.BOARD = pathname[0], temp = pathname[1];
-      if (temp === 'res') {
-        g.REPLY = true;
-        g.THREAD_ID = pathname[2];
+      switch (temp) {
+        case 'res':
+          g.REPLY = true;
+          g.THREAD_ID = pathname[2];
+          break;
+        case 'catalog':
+          g.CATALOG = true;
       }
+      $.log(temp);
       if (['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains(g.BOARD)) {
         g.TYPE = 'nsfw';
       }
@@ -10940,6 +10967,21 @@
       settings = JSON.parse(localStorage.getItem('4chan-settings')) || {};
       settings.disableAll = true;
       localStorage.setItem('4chan-settings', JSON.stringify(settings));
+      if (g.CATALOG) {
+        return $.ready(Main.catalog);
+      } else {
+        return Main.features();
+      }
+    },
+    catalog: function() {
+      if (Conf['Catalog Links']) {
+        CatalogLinks.init();
+      }
+      if (Conf['Thread Hiding']) {
+        return ThreadHiding.init();
+      }
+    },
+    features: function() {
       if (Conf['Filter']) {
         Filter.init();
         StrikethroughQuotes.init();
@@ -11021,9 +11063,9 @@
       if (Conf['Color user IDs']) {
         IDColor.init();
       }
-      return $.ready(Main.ready);
+      return $.ready(Main.featuresReady);
     },
-    ready: function() {
+    featuresReady: function() {
       var MutationObserver, a, board, nav, node, nodes, now, observer, _i, _j, _len, _len1, _ref, _ref1;
       if (/^4chan - 404/.test(d.title)) {
         if (Conf['404 Redirect'] && /^\d+$/.test(g.THREAD_ID)) {

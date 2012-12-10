@@ -142,8 +142,9 @@ $.extend $,
       fc()
     $.on d, 'DOMContentLoaded', cb
   sync: (key, cb) ->
+    key = Main.namespace + key
     $.on window, 'storage', (e) ->
-      cb JSON.parse e.newValue if e.key is "#{Main.namespace}#{key}"
+      cb JSON.parse e.newValue if e.key is key
   id: (id) ->
     d.getElementById id
   formData: (arg) ->

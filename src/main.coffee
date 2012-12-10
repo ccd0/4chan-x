@@ -12,9 +12,14 @@ Main =
     path = location.pathname
     pathname = path[1..].split '/'
     [g.BOARD, temp] = pathname
-    if temp is 'res'
-      g.REPLY = true
-      g.THREAD_ID = pathname[2]
+    switch temp
+      when 'res'
+        g.REPLY = true
+        g.THREAD_ID = pathname[2]
+      when 'catalog'
+        g.CATALOG = true
+    
+    $.log temp
 
     # Check if the current board we're on is SFW or not, so we can handle options that need to know that.
     if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains g.BOARD
@@ -89,6 +94,19 @@ Main =
     settings.disableAll = true
     localStorage.setItem '4chan-settings', JSON.stringify settings
 
+    if g.CATALOG
+      $.ready Main.catalog
+    else
+      Main.features()
+
+  catalog: ->
+    if Conf['Catalog Links']
+      CatalogLinks.init()
+
+    if Conf['Thread Hiding']
+      ThreadHiding.init()
+
+  features: ->
     if Conf['Filter']
       Filter.init()
       StrikethroughQuotes.init()
@@ -170,9 +188,9 @@ Main =
     if Conf['Color user IDs']
       IDColor.init()
 
-    $.ready Main.ready
+    $.ready Main.featuresReady
 
-  ready: ->
+  featuresReady: ->
     if /^4chan - 404/.test d.title
       if Conf['404 Redirect'] and /^\d+$/.test g.THREAD_ID
         location.href =

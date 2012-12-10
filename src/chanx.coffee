@@ -492,7 +492,9 @@ ExpandThread =
 
 ThreadHiding =
   init: ->
-    ThreadHiding.hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    @hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+    ThreadHiding.sync()
+    return if g.CATALOG
     for thread in $$ '.thread'
       a = $.el 'a',
         className: 'hide_thread_button'
@@ -502,10 +504,21 @@ ThreadHiding =
         ThreadHiding.toggle @parentElement
       $.prepend thread, a
 
-      if thread.id[1..] of ThreadHiding.hiddenThreads
+      if thread.id[1..] of @hiddenThreads
         ThreadHiding.hide thread
     return
 
+  sync: ->
+    hiddenThreadsCatalog = JSON.parse localStorage.getItem "4chan-hide-t-#{g.BOARD}"
+    if g.CATALOG
+      for id of @hiddenThreads
+        hiddenThreadsCatalog[id] = true
+      localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify hiddenThreadsCatalog
+    else
+      for id of hiddenThreadsCatalog
+        unless id of @hiddenThreads
+          @hiddenThreads[id] = Date.now()
+      $.set "hiddenThreads/#{g.BOARD}/", @hiddenThreads
 
   toggle: (thread) ->
     id = thread.id[1..]
