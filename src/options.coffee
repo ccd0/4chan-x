@@ -464,6 +464,8 @@ Options =
   </h1>
 </div>"
 
+          div.style.backgroundColor = theme['Background Color']
+
           # Theme Editting. themeoptions.coffee.
           $.on $('a.edit', div), 'click', (e) ->
             e.preventDefault()
