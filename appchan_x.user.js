@@ -6765,9 +6765,7 @@
                 return JSON.parse(this.responseText).title;
               }
             }
-          }
-        };
-        ({
+          },
           liveleak: {
             regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
             style: {
@@ -6808,7 +6806,7 @@
               return div;
             }
           }
-        });
+        };
         this.embedder = function(a) {
           var embed, key, match, service, title, titles, type, _ref;
           _ref = Linkify.types;
@@ -6920,7 +6918,7 @@
             className: 'linkify',
             rel: 'nofollow noreferrer',
             target: 'blank',
-            href: link.indexOf(":") < 0 ? (link.indexOf("@") > 0 ? "mailto:" + link : "http://" + link) : link
+            href: link.indexOf(":") < 0 ? (link.contains("@") ? "mailto:" + link : "http://" + link) : link
           });
           Linkify.concat(a);
           nodes = nodes.concat(Linkify.embedder(a));

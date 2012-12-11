@@ -2368,15 +2368,15 @@ Linkify =
           title:
             api:  -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{@name}"
             text: -> JSON.parse(@responseText).title
-       liveleak:
-         regExp:  /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
-         style:
-           boder:  '0'
-           width:  '640px'
-           height: '390px'
-         el: ->
-           $.el 'iframe'
-             src: "http://www.liveleak.com/e/#{@name}?autostart=true"
+        liveleak:
+          regExp:  /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
+          style:
+            boder:  '0'
+            width:  '640px'
+            height: '390px'
+          el: ->
+            $.el 'iframe'
+              src: "http://www.liveleak.com/e/#{@name}?autostart=true"
         audio:
           regExp:  /(.*\.(mp3|ogg|wav))$/
           el: ->
@@ -2519,7 +2519,7 @@ Linkify =
           rel:       'nofollow noreferrer'
           target:    'blank'
           # I haven't found a situation where not having a slash in the conditional breaks anything.
-          href:      if link.indexOf(":") < 0 then (if link.contains "@") then "mailto:" + link else "http://" + link) else link
+          href:      if link.indexOf(":") < 0 then (if (link.contains "@") then "mailto:" + link else "http://" + link) else link
 
         Linkify.concat a
 
