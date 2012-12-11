@@ -2226,7 +2226,8 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   padding: 0 10px;
 }
 #watcher:hover {
-  height: 250px;
+  height: #{if Conf["Slideout Transitions"] then '250px' else 'auto'};
+  overflow: auto;
   padding-bottom: 4px;
 }\n
 """
@@ -2485,7 +2486,7 @@ td[style="border: 1px dashed;"] {
   word-spacing: 1px;
 }
 #boardNavDesktopFoot:hover {
-  height: 84px;
+  height: #{if Conf["Slideout Transitions"] then '84px' else 'auto'};
 }\n
 """
 
@@ -2573,7 +2574,8 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   padding: 0 10px;
 }
 #globalMessage:hover {
-  height: 250px;
+  height: #{if Conf["Slideout Transitions"] then '250px' else 'auto'};
+  overflow: auto;
 }\n
 """
         when "hide"
