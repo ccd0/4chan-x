@@ -778,7 +778,6 @@ QR =
           textContent: 'Connection error, or you are banned.'
         $.delete 'lastBanCheck'
         BanChecker.init()
-
     opts =
       form: $.formData post
       upCallbacks:

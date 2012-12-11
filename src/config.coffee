@@ -8,6 +8,10 @@ Config =
         true
         'Turn Navigation links into links to each board\'s catalog.'
       ]
+      'External Catalog': [
+        false
+        'Link to external catalog instead of the internal one.'
+      ]
       '404 Redirect': [
         true
         'Redirect dead threads and images'
@@ -68,7 +72,7 @@ Config =
       ]
       'Link Title': [
         true
-        'Replace the Link of a supported site with its actual title.'
+        'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud'
       ]
 
     Filtering:
@@ -98,14 +102,6 @@ Config =
       ]
 
     Imaging:
-      'Image Auto-Gif': [
-        false
-        'Animate gif thumbnails'
-      ]
-      'Png Thumbnail Fix': [
-        false
-        'Fixes transparent png thumbnails'
-      ]
       'Image Expansion': [
         true
         'Expand images'
@@ -132,7 +128,20 @@ Config =
       ]
       'Prefetch': [
         false
-        'Prefetch images.']
+        'Prefetch images.'
+      ]
+      'Replace GIF': [
+        false
+        'Replace thumbnail of gifs with its actual image.'
+      ]
+      'Replace PNG': [
+        false
+        'Replace pngs.'
+      ]
+      'Replace JPG': [
+        false
+        'Replace jpgs.'
+      ]
 
     Menu:
       'Menu': [
@@ -434,6 +443,10 @@ div.post.highlight {
     hideQR: [
       'h'
       'Toggle hide status of QR'
+    ]
+    toggleCatalog: [
+      'alt+t'
+      'Toggle links in nav bar'
     ]
     # Thread related
     watch: [

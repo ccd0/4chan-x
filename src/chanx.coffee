@@ -6,30 +6,37 @@ Markdown =
       i:    /(\*|_)(?=\S)([^\r\n]*?\S)\1/g
       code: /(`)(?=\S)([^\r\n]*?\S)\1/g
       ds:   /(\|\||__)(?=\S)([^\r\n]*?\S)\1/g
-    if text?
-      for tag, pattern of tag_patterns
-        text = text.replace pattern, Markdown.unicode_convert
-      text
+    
+    for tag, pattern of tag_patterns
+      text =
+        if text
+          text.replace pattern, Markdown.unicode_convert
+        else
+          '\u0020'
+    text
 
   unicode_convert: (str, tag, inner) ->
-    if tag is "_" or tag is "*"
-      fmt = "i"
-    else if tag is "__" or tag is "**"
-      fmt = "b"
-    else if tag is "***" or tag is "___"
-      fmt = "bi"
-    else if tag is "||"
-      fmt = "ds"
-    else fmt = "code"  if tag is "`" or tag is "```"
+    fmt =
+      switch tag
+        when '_', '*'
+          'i'
+        when '__', '**'
+          'b'
+        when '___', '***'
+          'bi'
+        when '||'
+          'ds'
+        when '`', '```'
+          'code'
 
     #Unicode codepoints for the characters '0', 'A', and 'a'
     #http://en.wikipedia.org/wiki/Mathematical_Alphanumeric_Symbols
     codepoints =
-      b:    [ 0x1D7CE, 0x1D400, 0x1D41A ] #MATHEMATICAL BOLD
-      i:    [ 0x1D7F6, 0x1D434, 0x1D44E ] #MATHEMATICAL ITALIC
-      bi:   [ 0x1D7CE, 0x1D468, 0x1D482 ] #MATHEMATICAL BOLD ITALIC
-      code: [ 0x1D7F6, 0x1D670, 0x1D68A ] #MATHEMATICAL MONOSPACE
-      ds:   [ 0x1D7D8, 0x1D538, 0x1D552 ] #I FUCKING LOVE CAPS LOCK
+      b:    [ 0x1D7CE, 0x1D400, 0x1D41A ] # MATHEMATICAL BOLD
+      i:    [ 0x1D7F6, 0x1D434, 0x1D44E ] # MATHEMATICAL ITALIC
+      bi:   [ 0x1D7CE, 0x1D468, 0x1D482 ] # MATHEMATICAL BOLD ITALIC
+      code: [ 0x1D7F6, 0x1D670, 0x1D68A ] # MATHEMATICAL MONOSPACE
+      ds:   [ 0x1D7D8, 0x1D538, 0x1D552 ] # I FUCKING LOVE CAPS LOCK
 
     charcodes = (inner.charCodeAt i for c, i in inner)
 
@@ -39,21 +46,21 @@ Markdown =
       else if charcode >= 65 and charcode <= 90
         charcode - 65 + codepoints[fmt][1]
       else if charcode >= 97 and charcode <= 122
-        if charcode is 104 and tag is "i"
-          #http://blogs.msdn.com/b/michkap/archive/2006/04/21/580328.aspx
-          #mathematical small h -> planck constant
+        if charcode is 104 and tag is 'i'
+          # http://blogs.msdn.com/b/michkap/archive/2006/04/21/580328.aspx
+          # Mathematical small h -> planck constant
           0x210E
         else
           charcode - 97 + codepoints[fmt][2]
       else
         charcode
 
-    unicode_text = codes.map(Markdown.ucs2_encode).join ""
-    unicode_text = unicode_text.replace(/\x20/g, "\xA0")  if tag is "code"
+    unicode_text = codes.map(Markdown.ucs2_encode).join ''
+    unicode_text = unicode_text.replace(/\x20/g, '\xA0')  if tag is 'code'
     unicode_text
 
   ucs2_encode: (value) ->
-    #translates Unicode codepoint integers directly into text. Javascript does this in an ugly fashion by default.
+    # Translates Unicode codepoint integers directly into text. Javascript does this in an ugly fashion by default.
     ###
     From Punycode.js: https://github.com/bestiejs/punycode.js
 
@@ -78,13 +85,13 @@ Markdown =
     OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
     WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     ###
-    output = ""
+
+    output = ''
     if value > 0xFFFF
-      value -= 0x10000
+      value  -= 0x10000
       output += String.fromCharCode value >>> 10 & 0x3FF | 0xD800
-      value = 0xDC00 | value & 0x3FF
+      value  =  0xDC00 | value & 0x3FF
     output += String.fromCharCode value
-    output
 
 Filter =
   filters: {}
@@ -404,7 +411,7 @@ ExpandComment =
       threadID:   threadID
       quotes:     quotes
       backlinks:  []
-    if Conf['Resurrect Quotes']
+    if Conf['Resurrect Quotes'] or Conf['Linkify']
       Quotify.node      post
     if Conf['Quote Preview']
       QuotePreview.node post
@@ -790,6 +797,8 @@ Keybinds =
           return QR.el.hidden = false if QR.el.hidden
           QR.autohide.click()
         else QR.open()
+      when Conf.toggleCatalog
+        CatalogLinks.toggle()
       when Conf.spoiler
         return unless ($ '[name=spoiler]') and target.nodeName is 'TEXTAREA'
         Keybinds.tags 'spoiler', target
@@ -2140,8 +2149,10 @@ QuotePreview =
         Time.node           post
       if Conf['File Info Formatting']
         FileInfo.node       post
-      if Conf['Resurrect Quotes']
+      if Conf['Resurrect Quotes'] or Conf['Linkify']
         Quotify.node        post
+      if Conf['Anonymize']
+        Anonymize.node      post
       if Conf['Color user IDs'] and board in ['b', 'q', 'soc']
         IDColor.node        post
 
@@ -2295,15 +2306,13 @@ Quotify =
             e.stopPropagation()
 
             # We essentially check for a <br> and make sure we're not merging non-post content.
-            if ("br" == @.nextSibling.tagName.toLowerCase() or "spoiler" == @.nextSibling.className) and @.nextSibling.nextSibling.className != "abbr"
-              el = @.nextSibling
+            if ("br" is (el = @nextSibling).tagName.toLowerCase() or el.className is 'spoiler') and el.nextSibling.className isnt "abbr"
               if el.textContent
                 content = (@textContent + el.textContent + el.nextSibling.textContent)
               else
                 content = (@textContent + el.nextSibling.textContent)
               @href = @textContent = content
               $.rm el
-              $.rm @.nextSibling
 
       if Conf['Embedding']
         @protocol = d.location.protocol
@@ -2407,7 +2416,7 @@ Quotify =
           # Potential text before this valid quote.
           nodes.push $.tn text
 
-        if quote.match /^>>.+/
+        if Conf['Resurrect Quotes'] and quote.match /^>>.+/
           id = quote.match(/\d+$/)[0]
           board =
             if m = quote.match /^>>>\/([a-z\d]+)/
@@ -2483,14 +2492,19 @@ Quotify =
                   $.ajax(
                     service.api.call a
                     onloadend: ->
-                      if @status is 200 or 304
-                        titles = $.get 'CachedTitles', {}
-                        a.textContent = title = "[#{key}] #{service.text.call @}"
-                        embed.setAttribute 'data-title', title
-                        titles[match[1]] = [title, Date.now()]
-                        $.set 'CachedTitles', titles
-                      else
-                        node.textContent = "[#{key}] #{@status}'d"
+                      switch @status
+                        when 200, 304
+                          titles = $.get 'CachedTitles', {}
+                          a.textContent = title = "[#{key}] #{service.text.call @}"
+                          embed.setAttribute 'data-title', title
+                          titles[match[1]] = [title, Date.now()]
+                          $.set 'CachedTitles', titles
+                        when 404
+                          node.textContent = "[#{key}] Not Found"
+                        when 403
+                          node.textContent = "[#{key}] Forbidden or Private"
+                        else
+                          node.textContent = "[#{key}] #{@status}'d"
                     )
 
             break
@@ -3035,7 +3049,7 @@ Redirect =
       type:    'fuuka'
     'RebeccaBlackTech':
       base:    '//rbt.asia'
-      boards:  ['cgl', 'g', 'mu', 'soc', 'w']
+      boards:  ['cgl', 'g', 'mu', 'w']
       type:    'fuuka_mail'
     'InstallGentoo':
       base:    '//archive.installgentoo.net'
@@ -3164,20 +3178,6 @@ ImageHover =
     $.off @, 'mousemove', UI.hover
     $.off @, 'mouseout',  ImageHover.mouseout
 
-AutoGif =
-  init: ->
-    Main.callbacks.push @node
-  node: (post) ->
-    {img} = post
-    return if post.el.hidden or not img
-    src = img.parentNode.href
-    if /gif$/.test(src) and !/spoiler/.test img.src
-      gif = $.el 'img'
-      $.on gif, 'load', ->
-        # Replace the thumbnail once the GIF has finished loading.
-        img.src = src
-      gif.src = src
-
 Prefetch =
   init: ->
     return if g.BOARD is 'f'
@@ -3200,28 +3200,31 @@ Prefetch =
   change: ->
     $.off @, 'change', Prefetch.change
     for thumb in $$ 'a.fileThumb'
-      img = $.el 'img',
+      $.el 'img',
         src: thumb.href
     Main.callbacks.push Prefetch.node
 
   node: (post) ->
     {img} = post
-    return unless img
+    return if post.el.hidden or not img
     $.el 'img',
       src: img.parentNode.href
 
-PngFix =
+ImageReplace =
   init: ->
+    return if g.BOARD is 'f'
     Main.callbacks.push @node
+
   node: (post) ->
     {img} = post
-    return if post.el.hidden or not img
-    src = img.parentNode.href
-    if /png$/.test(src) and !/spoiler/.test img.src
-      png = $.el 'img'
-      $.on png, 'load', ->
-        img.src = src
-      png.src = src
+    return if post.el.hidden or !img or /spoiler/.test img.src
+    if Conf["Replace #{if (type = ((href = img.parentNode.href).match /\w{3}$/)[0].toUpperCase()) is 'PEG' then 'JPG' else type}"]
+      el = $.el 'img'
+      el.setAttribute 'data-id', post.ID
+      $.on el, 'load', ->
+        img.src = el.src
+      el.src = href
+        
 
 ImageExpand =
   init: ->
@@ -3234,9 +3237,8 @@ ImageExpand =
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
 
-    if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers']
-      # Detect Spoilers in this post.
-      return if /\bimgspoiler\b/.test a.className
+    # Detect Spoilers in this post.
+    return if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers'] and /^spoiler\ image/i.test a.firstChild.alt
 
     # Expand the image if "Expand All" is enabled.
     if ImageExpand.on and !post.el.hidden
@@ -3258,7 +3260,7 @@ ImageExpand =
               break
           thumbs = thumbs[i...]
         for thumb in thumbs
-          continue if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers'] and /\bimgspoiler\b/.test thumb.parentElement.className
+          continue if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers'] and /^spoiler\ image/i.test thumb.alt
           ImageExpand.expand thumb
       else # Contract
         for thumb in $$ 'img[data-md5][hidden]'
@@ -3356,7 +3358,8 @@ ImageExpand =
 CatalogLinks =
   init: ->
     el = $.el 'span',
-      innerHTML: "[<a id=toggleCatalog href='javascript:;' title='Toggle Catalog Links On'>Catalog On</a>]"
+      innerHTML: "[<a href=javascript:; title='Toggle Catalog Links #{unless g.CATALOG then 'on.' else 'off.'}'>Catalog #{unless g.CATALOG then 'On' else 'Off'}</a>]"
+      id:        'toggleCatalog'
     $.on el.firstElementChild, 'click', @toggle
     $.add $.id('boardNavDesktop'), el
     if $.get 'CatalogIsToggled'
@@ -3367,13 +3370,12 @@ CatalogLinks =
     for a in links
       continue unless a.href
       split = a.href.split '/'
-      if split[2] is 'boards.4chan.org' and split[3] isnt 'f'
-        if split[4] is 'catalog'
-          a.href  = a.href.replace  /catalog$/, ''
-          a.title = a.title.replace /\ -\ Catalog$/, ''
-        else
-          a.href  += 'catalog'
-          a.title += ' - Catalog'
+      if (isDead = split[3] is 'f') and g.CATALOG or split[4] is 'catalog' or /Catalog$/.test a.title
+        a.href   = "//boards.4chan.org/#{split[3]}/"
+        a.title  = a.title.replace /\ -\ Catalog$/, ''
+      else if not isDead
+        a.href   = if Conf['External Catalog'] then CatalogLinks.external split[3] else a.href += 'catalog'
+        a.title += ' - Catalog'
     if /On$/.test @textContent
       @textContent = 'Catalog Off'
       @title =       'Toggle Catalog Links off.'
@@ -3382,3 +3384,12 @@ CatalogLinks =
     @textContent =   'Catalog On'
     @title =         'Toggle Catalog Links on.'
     $.delete 'CatalogIsToggled'
+
+  external: (board) ->
+    switch board
+      when 'a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'
+        "http://catalog.neet.tv/#{board}"
+      when 'd', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'
+        "http://4index.gropes.us/#{board}"
+      else
+        "//boards.4chan.org/#{board}/catalog"

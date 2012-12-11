@@ -25,7 +25,7 @@ Style =
       Style.padding()
       $.on (window or unsafeWindow), "resize", Style.padding
       # Give ExLinks and 4sight a little time to append their dialog links
-      Style.iconPositions()
+      setTimeout Style.iconPositions, 100
 
   emoji: (position) ->
     css = ''

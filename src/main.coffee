@@ -149,7 +149,7 @@ Main =
       if Conf['Reply Hiding Link']
         ReplyHideLink.init()
 
-    if Conf['Resurrect Quotes']
+    if Conf['Resurrect Quotes'] or Conf['Linkify']
       Quotify.init()
 
     if Conf['Quote Inline']
@@ -216,6 +216,9 @@ Main =
 
     if Conf['Keybinds']
       Keybinds.init()
+      
+    if Conf['Replace GIF'] or Conf['Replace PNG'] or Conf['Replace JPG']
+      ImageReplace.init()
 
     if g.REPLY
       if Conf['Prefetch']

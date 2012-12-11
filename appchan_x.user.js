@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.23 - 2012-12-10
+ * appchan x - Version 1.0.23 - 2012-12-11
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -102,12 +102,13 @@
  * @link      http://JSColor.com
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, EmbedLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, JSColor, Keybinds, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, PngFix, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
+  var $, $$, Anonymize, ArchiveLink, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, EmbedLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
 
   Config = {
     main: {
       Enhancing: {
         'Catalog Links': [true, 'Turn Navigation links into links to each board\'s catalog.'],
+        'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
         '404 Redirect': [true, 'Redirect dead threads and images'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
@@ -124,7 +125,7 @@
       Linkification: {
         'Linkify': [true, 'Convert text into links where applicable. If a link is too long and only partially linkified, shift+ctrl+click it to merge the next line.'],
         'Embedding': [true, 'Add a link to linkified audio and video links. Supported sites: YouTube, Vimeo, SoundCloud, Vocaroo, and some audio links, depending on your browser.'],
-        'Link Title': [true, 'Replace the Link of a supported site with its actual title.']
+        'Link Title': [true, 'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud']
       },
       Filtering: {
         'Anonymize': [false, 'Make everybody anonymous'],
@@ -135,15 +136,16 @@
         'Show Stubs': [true, 'Of hidden threads / replies']
       },
       Imaging: {
-        'Image Auto-Gif': [false, 'Animate gif thumbnails'],
-        'Png Thumbnail Fix': [false, 'Fixes transparent png thumbnails'],
         'Image Expansion': [true, 'Expand images'],
         'Image Hover': [false, 'Show full image on mouseover'],
         'Sauce': [true, 'Add sauce to images'],
         'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail'],
         'Don\'t Expand Spoilers': [true, 'Don\'t expand spoilers when using ImageExpand.'],
         'Expand From Current': [false, 'Expand images from current position to thread end.'],
-        'Prefetch': [false, 'Prefetch images.']
+        'Prefetch': [false, 'Prefetch images.'],
+        'Replace GIF': [false, 'Replace thumbnail of gifs with its actual image.'],
+        'Replace PNG': [false, 'Replace pngs.'],
+        'Replace JPG': [false, 'Replace jpgs.']
       },
       Menu: {
         'Menu': [true, 'Add a drop-down menu in posts.'],
@@ -225,6 +227,7 @@
       sageru: ['alt+n', 'Sage keybind'],
       submit: ['alt+s', 'Submit post'],
       hideQR: ['h', 'Toggle hide status of QR'],
+      toggleCatalog: ['alt+t', 'Toggle links in nav bar'],
       watch: ['w', 'Watch thread'],
       update: ['u', 'Update now'],
       unreadCountTo0: ['z', 'Mark thread as read'],
@@ -2829,19 +2832,18 @@
         }
         Options.dialog();
       }
-      _ref = ['navtopright', 'navbotright'];
+      _ref = ['settingsWindowLink', 'settingsWindowLinkBot'];
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         settings = _ref[_i];
         a = $.el('a', {
           href: 'javascript:;',
-          className: 'settingsWindowLink',
-          textContent: 'AppChan X Settings'
+          className: 'settingsWindowLink'
         });
         $.on(a, 'click', function() {
           return Options.dialog();
         });
-        _results.push($.prepend($.id(settings), [$.tn('['), a, $.tn('] ')]));
+        _results.push($.replace($.id(settings), a));
       }
       return _results;
     },
@@ -3823,29 +3825,32 @@
         code: /(`)(?=\S)([^\r\n]*?\S)\1/g,
         ds: /(\|\||__)(?=\S)([^\r\n]*?\S)\1/g
       };
-      if (text != null) {
-        for (tag in tag_patterns) {
-          pattern = tag_patterns[tag];
-          text = text.replace(pattern, Markdown.unicode_convert);
-        }
-        return text;
+      for (tag in tag_patterns) {
+        pattern = tag_patterns[tag];
+        text = text ? text.replace(pattern, Markdown.unicode_convert) : '\u0020';
       }
+      return text;
     },
     unicode_convert: function(str, tag, inner) {
       var c, charcode, charcodes, codepoints, codes, fmt, i, unicode_text;
-      if (tag === "_" || tag === "*") {
-        fmt = "i";
-      } else if (tag === "__" || tag === "**") {
-        fmt = "b";
-      } else if (tag === "***" || tag === "___") {
-        fmt = "bi";
-      } else if (tag === "||") {
-        fmt = "ds";
-      } else {
-        if (tag === "`" || tag === "```") {
-          fmt = "code";
+      fmt = (function() {
+        switch (tag) {
+          case '_':
+          case '*':
+            return 'i';
+          case '__':
+          case '**':
+            return 'b';
+          case '___':
+          case '***':
+            return 'bi';
+          case '||':
+            return 'ds';
+          case '`':
+          case '```':
+            return 'code';
         }
-      }
+      })();
       codepoints = {
         b: [0x1D7CE, 0x1D400, 0x1D41A],
         i: [0x1D7F6, 0x1D434, 0x1D44E],
@@ -3872,7 +3877,7 @@
           } else if (charcode >= 65 && charcode <= 90) {
             _results.push(charcode - 65 + codepoints[fmt][1]);
           } else if (charcode >= 97 && charcode <= 122) {
-            if (charcode === 104 && tag === "i") {
+            if (charcode === 104 && tag === 'i') {
               _results.push(0x210E);
             } else {
               _results.push(charcode - 97 + codepoints[fmt][2]);
@@ -3883,9 +3888,9 @@
         }
         return _results;
       })();
-      unicode_text = codes.map(Markdown.ucs2_encode).join("");
-      if (tag === "code") {
-        unicode_text = unicode_text.replace(/\x20/g, "\xA0");
+      unicode_text = codes.map(Markdown.ucs2_encode).join('');
+      if (tag === 'code') {
+        unicode_text = unicode_text.replace(/\x20/g, '\xA0');
       }
       return unicode_text;
     },
@@ -3916,14 +3921,13 @@
       */
 
       var output;
-      output = "";
+      output = '';
       if (value > 0xFFFF) {
         value -= 0x10000;
         output += String.fromCharCode(value >>> 10 & 0x3FF | 0xD800);
         value = 0xDC00 | value & 0x3FF;
       }
-      output += String.fromCharCode(value);
-      return output;
+      return output += String.fromCharCode(value);
     }
   };
 
@@ -4285,7 +4289,7 @@
         quotes: quotes,
         backlinks: []
       };
-      if (Conf['Resurrect Quotes']) {
+      if (Conf['Resurrect Quotes'] || Conf['Linkify']) {
         Quotify.node(post);
       }
       if (Conf['Quote Preview']) {
@@ -4801,6 +4805,9 @@
           } else {
             QR.open();
           }
+          break;
+        case Conf.toggleCatalog:
+          CatalogLinks.toggle();
           break;
         case Conf.spoiler:
           if (!(($('[name=spoiler]')) && target.nodeName === 'TEXTAREA')) {
@@ -6464,8 +6471,11 @@
         if (Conf['File Info Formatting']) {
           FileInfo.node(post);
         }
-        if (Conf['Resurrect Quotes']) {
+        if (Conf['Resurrect Quotes'] || Conf['Linkify']) {
           Quotify.node(post);
+        }
+        if (Conf['Anonymize']) {
+          Anonymize.node(post);
         }
         if (Conf['Color user IDs'] && (board === 'b' || board === 'q' || board === 'soc')) {
           return IDColor.node(post);
@@ -6640,16 +6650,14 @@
             if (e.shiftKey && e.ctrlKey) {
               e.preventDefault();
               e.stopPropagation();
-              if (("br" === this.nextSibling.tagName.toLowerCase() || "spoiler" === this.nextSibling.className) && this.nextSibling.nextSibling.className !== "abbr") {
-                el = this.nextSibling;
+              if (("br" === (el = this.nextSibling).tagName.toLowerCase() || el.className === 'spoiler') && el.nextSibling.className !== "abbr") {
                 if (el.textContent) {
                   content = this.textContent + el.textContent + el.nextSibling.textContent;
                 } else {
                   content = this.textContent + el.nextSibling.textContent;
                 }
                 this.href = this.textContent = content;
-                $.rm(el);
-                return $.rm(this.nextSibling);
+                return $.rm(el);
               }
             }
           });
@@ -6791,7 +6799,7 @@
           if (text = data.slice(0, index)) {
             nodes.push($.tn(text));
           }
-          if (quote.match(/^>>.+/)) {
+          if (Conf['Resurrect Quotes'] && quote.match(/^>>.+/)) {
             id = quote.match(/\d+$/)[0];
             board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('a[title="Highlight this post"]', post.el).pathname.split('/')[1];
             nodes.push(a = $.el('a', {
@@ -6855,14 +6863,20 @@
                   } else {
                     $.ajax(service.api.call(a), {
                       onloadend: function() {
-                        if (this.status === 200 || 304) {
-                          titles = $.get('CachedTitles', {});
-                          a.textContent = title = "[" + key + "] " + (service.text.call(this));
-                          embed.setAttribute('data-title', title);
-                          titles[match[1]] = [title, Date.now()];
-                          return $.set('CachedTitles', titles);
-                        } else {
-                          return node.textContent = "[" + key + "] " + this.status + "'d";
+                        switch (this.status) {
+                          case 200:
+                          case 304:
+                            titles = $.get('CachedTitles', {});
+                            a.textContent = title = "[" + key + "] " + (service.text.call(this));
+                            embed.setAttribute('data-title', title);
+                            titles[match[1]] = [title, Date.now()];
+                            return $.set('CachedTitles', titles);
+                          case 404:
+                            return node.textContent = "[" + key + "] Not Found";
+                          case 403:
+                            return node.textContent = "[" + key + "] Forbidden or Private";
+                          default:
+                            return node.textContent = "[" + key + "] " + this.status + "'d";
                         }
                       }
                     });
@@ -7565,7 +7579,7 @@
       },
       'RebeccaBlackTech': {
         base: '//rbt.asia',
-        boards: ['cgl', 'g', 'mu', 'soc', 'w'],
+        boards: ['cgl', 'g', 'mu', 'w'],
         type: 'fuuka_mail'
       },
       'InstallGentoo': {
@@ -7741,27 +7755,6 @@
     }
   };
 
-  AutoGif = {
-    init: function() {
-      return Main.callbacks.push(this.node);
-    },
-    node: function(post) {
-      var gif, img, src;
-      img = post.img;
-      if (post.el.hidden || !img) {
-        return;
-      }
-      src = img.parentNode.href;
-      if (/gif$/.test(src) && !/spoiler/.test(img.src)) {
-        gif = $.el('img');
-        $.on(gif, 'load', function() {
-          return img.src = src;
-        });
-        return gif.src = src;
-      }
-    }
-  };
-
   Prefetch = {
     init: function() {
       if (g.BOARD === 'f') {
@@ -7786,12 +7779,12 @@
       return Style.rice(controls);
     },
     change: function() {
-      var img, thumb, _i, _len, _ref;
+      var thumb, _i, _len, _ref;
       $.off(this, 'change', Prefetch.change);
       _ref = $$('a.fileThumb');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         thumb = _ref[_i];
-        img = $.el('img', {
+        $.el('img', {
           src: thumb.href
         });
       }
@@ -7800,7 +7793,7 @@
     node: function(post) {
       var img;
       img = post.img;
-      if (!img) {
+      if (post.el.hidden || !img) {
         return;
       }
       return $.el('img', {
@@ -7809,23 +7802,26 @@
     }
   };
 
-  PngFix = {
+  ImageReplace = {
     init: function() {
+      if (g.BOARD === 'f') {
+        return;
+      }
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var img, png, src;
+      var el, href, img, type;
       img = post.img;
-      if (post.el.hidden || !img) {
+      if (post.el.hidden || !img || /spoiler/.test(img.src)) {
         return;
       }
-      src = img.parentNode.href;
-      if (/png$/.test(src) && !/spoiler/.test(img.src)) {
-        png = $.el('img');
-        $.on(png, 'load', function() {
-          return img.src = src;
+      if (Conf["Replace " + ((type = ((href = img.parentNode.href).match(/\w{3}$/))[0].toUpperCase()) === 'PEG' ? 'JPG' : type)]) {
+        el = $.el('img');
+        el.setAttribute('data-id', post.ID);
+        $.on(el, 'load', function() {
+          return img.src = el.src;
         });
-        return png.src = src;
+        return el.src = href;
       }
     }
   };
@@ -7845,10 +7841,8 @@
       }
       a = post.img.parentNode;
       $.on(a, 'click', ImageExpand.cb.toggle);
-      if (Conf['Don\'t Expand Spoilers'] && !Conf['Reveal Spoilers']) {
-        if (/\bimgspoiler\b/.test(a.className)) {
-          return;
-        }
+      if (Conf['Don\'t Expand Spoilers'] && !Conf['Reveal Spoilers'] && /^spoiler\ image/i.test(a.firstChild.alt)) {
+        return;
       }
       if (ImageExpand.on && !post.el.hidden) {
         return ImageExpand.expand(post.img);
@@ -7878,7 +7872,7 @@
           }
           for (_j = 0, _len1 = thumbs.length; _j < _len1; _j++) {
             thumb = thumbs[_j];
-            if (Conf['Don\'t Expand Spoilers'] && !Conf['Reveal Spoilers'] && /\bimgspoiler\b/.test(thumb.parentElement.className)) {
+            if (Conf['Don\'t Expand Spoilers'] && !Conf['Reveal Spoilers'] && /^spoiler\ image/i.test(thumb.alt)) {
               continue;
             }
             ImageExpand.expand(thumb);
@@ -8020,7 +8014,8 @@
     init: function() {
       var el;
       el = $.el('span', {
-        innerHTML: "[<a id=toggleCatalog href='javascript:;' title='Toggle Catalog Links On'>Catalog On</a>]"
+        innerHTML: "[<a href=javascript:; title='Toggle Catalog Links " + (!g.CATALOG ? 'on.' : 'off.') + "'>Catalog " + (!g.CATALOG ? 'On' : 'Off') + "</a>]",
+        id: 'toggleCatalog'
       });
       $.on(el.firstElementChild, 'click', this.toggle);
       $.add($.id('boardNavDesktop'), el);
@@ -8029,7 +8024,7 @@
       }
     },
     toggle: function() {
-      var a, links, split, _i, _len;
+      var a, isDead, links, split, _i, _len;
       links = $.id('boardNavDesktop').children;
       for (_i = 0, _len = links.length; _i < _len; _i++) {
         a = links[_i];
@@ -8037,14 +8032,12 @@
           continue;
         }
         split = a.href.split('/');
-        if (split[2] === 'boards.4chan.org' && split[3] !== 'f') {
-          if (split[4] === 'catalog') {
-            a.href = a.href.replace(/catalog$/, '');
-            a.title = a.title.replace(/\ -\ Catalog$/, '');
-          } else {
-            a.href += 'catalog';
-            a.title += ' - Catalog';
-          }
+        if ((isDead = split[3] === 'f') && g.CATALOG || split[4] === 'catalog' || /Catalog$/.test(a.title)) {
+          a.href = "//boards.4chan.org/" + split[3] + "/";
+          a.title = a.title.replace(/\ -\ Catalog$/, '');
+        } else if (!isDead) {
+          a.href = Conf['External Catalog'] ? CatalogLinks.external(split[3]) : a.href += 'catalog';
+          a.title += ' - Catalog';
         }
       }
       if (/On$/.test(this.textContent)) {
@@ -8056,6 +8049,68 @@
       this.textContent = 'Catalog On';
       this.title = 'Toggle Catalog Links on.';
       return $["delete"]('CatalogIsToggled');
+    },
+    external: function(board) {
+      switch (board) {
+        case 'a':
+        case 'c':
+        case 'g':
+        case 'co':
+        case 'k':
+        case 'm':
+        case 'o':
+        case 'p':
+        case 'v':
+        case 'vg':
+        case 'w':
+        case 'cm':
+        case '3':
+        case 'adv':
+        case 'an':
+        case 'cgl':
+        case 'ck':
+        case 'diy':
+        case 'fa':
+        case 'fit':
+        case 'int':
+        case 'jp':
+        case 'mlp':
+        case 'lit':
+        case 'mu':
+        case 'n':
+        case 'po':
+        case 'sci':
+        case 'toy':
+        case 'trv':
+        case 'tv':
+        case 'vp':
+        case 'x':
+        case 'q':
+          return "http://catalog.neet.tv/" + board;
+        case 'd':
+        case 'e':
+        case 'gif':
+        case 'h':
+        case 'hr':
+        case 'hc':
+        case 'r9k':
+        case 's':
+        case 'pol':
+        case 'soc':
+        case 'u':
+        case 'i':
+        case 'ic':
+        case 'hm':
+        case 'r':
+        case 'w':
+        case 'wg':
+        case 'wsg':
+        case 't':
+        case 'y':
+          return "http://4index.gropes.us/" + board;
+        default:
+          return "//boards.4chan.org/" + board + "/catalog";
+      }
     }
   };
 
@@ -10229,7 +10284,7 @@
         Style.padding.pages = $(".pagelist", d.body);
         Style.padding();
         $.on(window || unsafeWindow, "resize", Style.padding);
-        return Style.iconPositions();
+        return setTimeout(Style.iconPositions, 100);
       });
     },
     emoji: function(position) {
@@ -10945,7 +11000,7 @@
           ReplyHideLink.init();
         }
       }
-      if (Conf['Resurrect Quotes']) {
+      if (Conf['Resurrect Quotes'] || Conf['Linkify']) {
         Quotify.init();
       }
       if (Conf['Quote Inline']) {
@@ -11011,6 +11066,9 @@
       }
       if (Conf['Keybinds']) {
         Keybinds.init();
+      }
+      if (Conf['Replace GIF'] || Conf['Replace PNG'] || Conf['Replace JPG']) {
+        ImageReplace.init();
       }
       if (g.REPLY) {
         if (Conf['Prefetch']) {
