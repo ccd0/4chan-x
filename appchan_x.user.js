@@ -8032,43 +8032,40 @@
 
   CatalogLinks = {
     init: function() {
-      var el;
+      var a, el;
       el = $.el('span', {
-        innerHTML: "[<a href=javascript:; title='Toggle Catalog Links " + (!g.CATALOG ? 'on.' : 'off.') + "'>Catalog " + (!g.CATALOG ? 'On' : 'Off') + "</a>]",
-        id: 'toggleCatalog'
+        id: 'toggleCatalog',
+        innerHTML: '[<a href=javascript:;></a>]'
       });
-      $.on(el.firstElementChild, 'click', this.toggle);
+      $.on((a = el.firstElementChild), 'click', this.toggle);
       $.add($.id('boardNavDesktop'), el);
-      if ($.get('CatalogIsToggled')) {
-        return this.toggle.call(el.firstElementChild);
-      }
+      return this.toggle.call(a, true);
     },
-    toggle: function() {
-      var a, isDead, links, split, _i, _len;
-      links = $.id('boardNavDesktop').children;
-      for (_i = 0, _len = links.length; _i < _len; _i++) {
-        a = links[_i];
-        if (!a.href) {
+    toggle: function(onLoad) {
+      var a, board, nav, useCatalog, _i, _len, _ref;
+      if (onLoad === true) {
+        useCatalog = $.get('CatalogIsToggled', g.CATALOG);
+      } else {
+        useCatalog = this.textContent === 'Catalog Off';
+        $.set('CatalogIsToggled', useCatalog);
+      }
+      nav = $.id('boardNavDesktop');
+      _ref = $$('a[href*="boards.4chan.org"]', nav);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        a = _ref[_i];
+        board = a.pathname.split('/')[1];
+        if (board === 'f') {
+          a.pathname = '/f/';
           continue;
+        } else if (Conf['External Catalog']) {
+          a.href = useCatalog ? CatalogLinks.external(board) : "//boards.4chan.org/" + board + "/";
+        } else {
+          a.pathname = "/" + board + "/" + (useCatalog ? 'catalog' : '');
         }
-        split = a.href.split('/');
-        if ((isDead = split[3] === 'f') && g.CATALOG || split[4] === 'catalog' || /Catalog$/.test(a.title)) {
-          a.href = "//boards.4chan.org/" + split[3] + "/";
-          a.title = a.title.replace(/\ -\ Catalog$/, '');
-        } else if (!isDead) {
-          a.href = Conf['External Catalog'] ? CatalogLinks.external(split[3]) : a.href += 'catalog';
-          a.title += ' - Catalog';
-        }
+        a.title = useCatalog ? a.title.replace(/\ -\ Catalog$/, '') : "" + a.title + " - Catalog";
       }
-      if (/On$/.test(this.textContent)) {
-        this.textContent = 'Catalog Off';
-        this.title = 'Toggle Catalog Links off.';
-        $.set('CatalogIsToggled', true);
-        return;
-      }
-      this.textContent = 'Catalog On';
-      this.title = 'Toggle Catalog Links on.';
-      return $["delete"]('CatalogIsToggled');
+      this.textContent = "Catalog " + (useCatalog ? 'On' : 'Off');
+      return this.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
     },
     external: function(board) {
       switch (board) {

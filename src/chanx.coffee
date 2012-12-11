@@ -3370,32 +3370,34 @@ ImageExpand =
 CatalogLinks =
   init: ->
     el = $.el 'span',
-      innerHTML: "[<a href=javascript:; title='Toggle Catalog Links #{unless g.CATALOG then 'on.' else 'off.'}'>Catalog #{unless g.CATALOG then 'On' else 'Off'}</a>]"
       id:        'toggleCatalog'
-    $.on el.firstElementChild, 'click', @toggle
+      innerHTML: '[<a href=javascript:;></a>]'
+    $.on (a = el.firstElementChild), 'click', @toggle
     $.add $.id('boardNavDesktop'), el
-    if $.get 'CatalogIsToggled'
-      @toggle.call el.firstElementChild
 
-  toggle: ->
-    links = $.id('boardNavDesktop').children
-    for a in links
-      continue unless a.href
-      split = a.href.split '/'
-      if (isDead = split[3] is 'f') and g.CATALOG or split[4] is 'catalog' or /Catalog$/.test a.title
-        a.href   = "//boards.4chan.org/#{split[3]}/"
-        a.title  = a.title.replace /\ -\ Catalog$/, ''
-      else if not isDead
-        a.href   = if Conf['External Catalog'] then CatalogLinks.external split[3] else a.href += 'catalog'
-        a.title += ' - Catalog'
-    if /On$/.test @textContent
-      @textContent = 'Catalog Off'
-      @title =       'Toggle Catalog Links off.'
-      $.set 'CatalogIsToggled', true
-      return
-    @textContent =   'Catalog On'
-    @title =         'Toggle Catalog Links on.'
-    $.delete 'CatalogIsToggled'
+    # Set links on load.
+    @toggle.call a, true
+
+  toggle: (onLoad) ->
+    if onLoad is true
+      useCatalog = $.get 'CatalogIsToggled', g.CATALOG
+    else
+      useCatalog = @textContent is 'Catalog Off'
+      $.set 'CatalogIsToggled', useCatalog
+    nav = $.id('boardNavDesktop')
+    for a in $$ 'a[href*="boards.4chan.org"]', nav
+      board = a.pathname.split('/')[1]
+      if board is 'f'
+        # 4chan links to /f/'s catalog even if it doesn't have one.
+        a.pathname = '/f/'
+        continue
+      else if Conf['External Catalog']
+        a.href = if useCatalog then CatalogLinks.external(board) else "//boards.4chan.org/#{board}/"
+      else
+        a.pathname = "/#{board}/#{if useCatalog then 'catalog' else ''}"
+      a.title = if useCatalog then a.title.replace(/\ -\ Catalog$/, '') else "#{a.title} - Catalog"
+    @textContent = "Catalog #{if useCatalog then 'On' else 'Off'}"
+    @title       = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
 
   external: (board) ->
     switch board
