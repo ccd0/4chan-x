@@ -2696,7 +2696,7 @@
       return $.ready(Options.initReady);
     },
     initReady: function() {
-      var a, settings, _i, _len, _ref;
+      var a, setting, settings, _i, _len, _ref;
       _ref = ['navtopright', 'navbotright'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         settings = _ref[_i];
@@ -2706,7 +2706,12 @@
           textContent: '4chan X Settings'
         });
         $.on(a, 'click', Options.dialog);
-        $.prepend($.id(settings), [$.tn('['), a, $.tn('] ')]);
+        setting = $.id(settings);
+        if (Conf['Disable 4chan\'s extension']) {
+          $.replace(setting.childNodes[1], a);
+          continue;
+        }
+        $.prepend(setting, [$.tn('['), a, $.tn('] ')]);
       }
       if (!$.get('firstrun')) {
         $.set('firstrun', true);
