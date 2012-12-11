@@ -856,12 +856,13 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if ((el = $.id(quote.hash.slice(1))) && el.hidden) {
-          $.addClass(quote, 'filtered');
-          if (Conf['Recursive Filtering'] && post.ID !== post.threadID) {
-            show_stub = !!$.x('preceding-sibling::div[contains(@class,"stub")]', el);
-            ReplyHiding.hide(post.root, show_stub);
-          }
+        if (!((el = $.id(quote.hash.slice(1))) && !/catalog$/.test(quote.pathname) && el.hidden)) {
+          continue;
+        }
+        $.addClass(quote, 'filtered');
+        if (Conf['Recursive Filtering'] && post.ID !== post.threadID) {
+          show_stub = !!$.x('preceding-sibling::div[contains(@class,"stub")]', el);
+          ReplyHiding.hide(post.root, show_stub);
         }
       }
     }
@@ -4024,7 +4025,7 @@
         if (quote.parentNode.parentNode.className === 'capcodeReplies') {
           break;
         }
-        if (qid = quote.hash.slice(2)) {
+        if (!/catalog$/.test(quote.pathname) && (qid = quote.hash.slice(2))) {
           quotes[qid] = true;
         }
       }
@@ -4065,7 +4066,7 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (!(quote.hash || /\bdeadlink\b/.test(quote.className))) {
+        if (!(quote.hash && !/catalog$/.test(quote.pathname) || /\bdeadlink\b/.test(quote.className))) {
           continue;
         }
         $.on(quote, 'click', QuoteInline.toggle);
@@ -4158,9 +4159,10 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (quote.hash || /\bdeadlink\b/.test(quote.className)) {
-          $.on(quote, 'mouseover', QuotePreview.mouseover);
+        if (!(quote.hash && !/catalog$/.test(quote.pathname) || /\bdeadlink\b/.test(quote.className))) {
+          continue;
         }
+        $.on(quote, 'mouseover', QuotePreview.mouseover);
       }
       _ref1 = post.backlinks;
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
@@ -4297,7 +4299,7 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (!quote.hash) {
+        if (!(quote.hash && !/catalog$/.test(quote.pathname))) {
           continue;
         }
         path = quote.pathname.split('/');

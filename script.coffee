@@ -706,11 +706,11 @@ StrikethroughQuotes =
   node: (post) ->
     return if post.isInlined
     for quote in post.quotes
-      if (el = $.id quote.hash[1..]) and el.hidden
-        $.addClass quote, 'filtered'
-        if Conf['Recursive Filtering'] and post.ID isnt post.threadID
-          show_stub = !!$.x 'preceding-sibling::div[contains(@class,"stub")]', el
-          ReplyHiding.hide post.root, show_stub
+      continue unless (el = $.id quote.hash[1..]) and !/catalog$/.test(quote.pathname) and el.hidden
+      $.addClass quote, 'filtered'
+      if Conf['Recursive Filtering'] and post.ID isnt post.threadID
+        show_stub = !!$.x 'preceding-sibling::div[contains(@class,"stub")]', el
+        ReplyHiding.hide post.root, show_stub
     return
 
 ExpandComment =
@@ -3319,7 +3319,7 @@ QuoteBacklink =
       # Stop at 'Admin/Mod/Dev Replies:' on /q/
       break if quote.parentNode.parentNode.className is 'capcodeReplies'
       # Don't process >>>/b/.
-      if qid = quote.hash[2..]
+      if !/catalog$/.test(quote.pathname) and qid = quote.hash[2..]
         # Duplicate quotes get overwritten.
         quotes[qid] = true
     a = $.el 'a',
@@ -3347,7 +3347,7 @@ QuoteInline =
     Main.callbacks.push @node
   node: (post) ->
     for quote in post.quotes
-      continue unless quote.hash or /\bdeadlink\b/.test quote.className
+      continue unless quote.hash and !/catalog$/.test(quote.pathname) or /\bdeadlink\b/.test quote.className
       $.on quote, 'click', QuoteInline.toggle
     for quote in post.backlinks
       $.on quote, 'click', QuoteInline.toggle
@@ -3416,7 +3416,8 @@ QuotePreview =
     Main.callbacks.push @node
   node: (post) ->
     for quote in post.quotes
-      $.on quote, 'mouseover', QuotePreview.mouseover if quote.hash or /\bdeadlink\b/.test quote.className
+      continue unless quote.hash and !/catalog$/.test(quote.pathname) or /\bdeadlink\b/.test quote.className
+      $.on quote, 'mouseover', QuotePreview.mouseover
     for quote in post.backlinks
       $.on quote, 'mouseover', QuotePreview.mouseover
     return
@@ -3511,7 +3512,7 @@ QuoteCT =
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
     for quote in post.quotes
-      unless quote.hash
+      unless quote.hash and !/catalog$/.test quote.pathname
         # Make sure this isn't a link to the board we're on.
         continue
       path = quote.pathname.split '/'
