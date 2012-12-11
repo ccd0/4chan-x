@@ -3080,7 +3080,7 @@ Redirect =
   to: (data) ->
 
     unless aboard = @archive[{board} = data] = @archiver[current = $.get "archiver/#{board}/"]
-      if names = @select board and (!current or !names.contains current)
+      if (names = @select board) and not (current and names.contains current)
         $.set "archiver/#{board}/", names[0]
       aboard = if names[0] isnt @noarch
         @archive[board] = @archiver[current]

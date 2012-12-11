@@ -7627,7 +7627,7 @@
     to: function(data) {
       var aboard, board, current, names;
       if (!(aboard = this.archive[board = data.board, data] = this.archiver[current = $.get("archiver/" + board + "/")])) {
-        if (names = this.select(board && (!current || !names.contains(current)))) {
+        if ((names = this.select(board)) && !(current && names.contains(current))) {
           $.set("archiver/" + board + "/", names[0]);
         }
         aboard = names[0] !== this.noarch ? this.archive[board] = this.archiver[current] : this.archive[board] = true;
