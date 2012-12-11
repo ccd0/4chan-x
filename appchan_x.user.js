@@ -9092,8 +9092,10 @@
         }
       }));
       if ($.get('isBanned')) {
-        $.rm(BanChecker.el);
-        delete BanChecker.el;
+        if (BanChecker.el) {
+          $.rm(BanChecker.el);
+          delete BanChecker.el;
+        }
         $["delete"]('isBanned');
       }
       QR.cooldown.set({
