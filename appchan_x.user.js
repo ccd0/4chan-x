@@ -3026,23 +3026,17 @@
       select = Redirect.select();
       for (_j = 0, _len1 = select.length; _j < _len1; _j++) {
         name = select[_j];
-        if (archiver.length >= select.length) {
-          return;
-        }
         (option = d.createElement('option')).textContent = name;
         $.add(archiver, option);
       }
       if (select[1]) {
         value = "archiver/" + g.BOARD + "/";
         archiver.value = $.get(value);
-        $.on(archiver, 'mouseup', function() {
+        $.on(archiver, 'change', function() {
           if (Redirect.archive[g.BOARD]) {
-            delete Redirect.archive[g.BOARD];
+            Redirect.archive[g.BOARD] = Redirect.archiver[this.value];
           }
-          $.set(value, this.value);
-          if (select[0] === $.get(value)) {
-            return $["delete"](value);
-          }
+          return $.set(value, this.value);
         });
       }
       sauce = $('#sauces', dialog);
@@ -7520,6 +7514,10 @@
         case 'toy':
         case 'x':
           return "http://archive.heinessen.com/" + board + "/full_image/" + filename;
+        case 'e':
+          return "//www.xn--clich-fsa.net/4chan/cgi-board.pl/" + board + "/img/" + filename;
+        case 'c':
+          return "//archive.nyafuu.org/" + board + "/full_image/" + filename;
       }
     },
     post: function(board, postID) {
@@ -7544,114 +7542,86 @@
       }
     },
     archive: {},
-    archiver: [
-      {
-        name: 'Foolz',
+    archiver: {
+      'Foolz': {
         base: '//archive.foolz.us',
         boards: ['a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'],
         type: 'foolfuuka'
-      }, {
-        name: 'NSFWFoolz',
+      },
+      'NSFWFoolz': {
         base: '//nsfw.foolz.us',
         boards: ['u', 'kuku'],
         type: 'foolfuuka'
-      }, {
-        name: 'TheDarkCave',
+      },
+      'TheDarkCave': {
         base: 'http://archive.thedarkcave.org',
         boards: ['c', 'po'],
         type: 'foolfuuka'
-      }, {
-        name: 'Warosu',
+      },
+      'Warosu': {
         base: '//fuuka.warosu.org',
         boards: ['cgl', 'ck', 'jp', 'lit', 'q', 'tg'],
         type: 'fuuka'
-      }, {
-        name: 'RebeccaBlackTech',
+      },
+      'RebeccaBlackTech': {
         base: '//rbt.asia',
         boards: ['cgl', 'g', 'mu', 'soc', 'w'],
         type: 'fuuka_mail'
-      }, {
-        name: 'InstallGentoo',
+      },
+      'InstallGentoo': {
         base: '//archive.installgentoo.net',
         boards: ['diy', 'g', 'sci'],
         type: 'fuuka'
-      }, {
-        name: 'Heinessen',
+      },
+      'Heinessen': {
         base: 'http://archive.heinessen.com',
         boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'],
         type: 'fuuka'
-      }
-    ],
-    select: function(data, board) {
-      var arch, current, name, noarch, type, _i, _j, _len, _len1, _ref, _ref1;
-      noarch = 'No archiver available.';
-      if (!data) {
-        arch = (function() {
-          var _i, _len, _ref, _results;
-          _ref = this.archiver;
-          _results = [];
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            type = _ref[_i];
-            if (!type.boards.contains(board || g.BOARD)) {
-              continue;
-            } else {
-              _results.push(type.name);
-            }
-          }
-          return _results;
-        }).call(this);
-        if (arch.length > 0) {
-          return arch;
-        } else {
-          return [noarch];
-        }
-      }
-      if ((name = this.select(false, board))[1]) {
-        if (!name.contains(current = $.get("archiver/" + board + "/"))) {
-          $.set("archiver/" + board + "/", name[0]);
-        }
-        _ref = data.boards;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          type = _ref[_i];
-          if (data.name === name[name.indexOf(current)]) {
-            return board;
-          }
-        }
-      } else if (name[0] !== noarch) {
-        _ref1 = data.boards;
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          type = _ref1[_j];
-          if (name[0] === data.name) {
-            return board;
-          }
-        }
+      },
+      'Cliché': {
+        base: '//www.xn--clich-fsa.net/4chan/cgi-board.pl',
+        boards: ['e'],
+        type: 'fuuka'
+      },
+      'NyaFuu': {
+        base: '//archive.nyafuu.org',
+        boards: ['c', 'w'],
+        type: 'fuuka'
       }
     },
-    to: function(data) {
-      var aboard, archiver, board, threadID, _i, _len, _ref;
-      if (!data.isSearch) {
-        threadID = data.threadID;
-      }
-      board = data.board;
-      aboard = Redirect.archive[board];
-      if (!aboard) {
-        aboard = true;
+    select: function(board) {
+      var arch, name, type;
+      this.noarch = 'No archiver available.';
+      arch = (function() {
+        var _ref, _results;
         _ref = this.archiver;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          archiver = _ref[_i];
-          if (board === this.select(archiver, board)) {
-            aboard = archiver;
-            break;
+        _results = [];
+        for (name in _ref) {
+          type = _ref[name];
+          if (!type.boards.contains(board || g.BOARD)) {
+            continue;
           }
+          _results.push(name);
         }
-        Redirect.archive[board] = aboard;
+        return _results;
+      }).call(this);
+      if (arch.length > 0) {
+        return arch;
       }
-      if (aboard.base && !(board === 'soc')) {
-        return this.path(aboard.base, aboard.type, data);
-      } else {
-        if (threadID) {
-          return "//boards.4chan.org/" + board + "/";
+      return [this.noarch];
+    },
+    to: function(data) {
+      var aboard, board, current, names;
+      if (!(aboard = this.archive[board = data.board, data] = this.archiver[current = $.get("archiver/" + board + "/")])) {
+        if (names = this.select(board && (!current || !names.contains(current)))) {
+          $.set("archiver/" + board + "/", names[0]);
         }
+        aboard = names[0] !== this.noarch ? this.archive[board] = this.archiver[current] : this.archive[board] = true;
+      }
+      if (aboard.base) {
+        return this.path(aboard.base, aboard.type, data);
+      } else if (!data.isSearch && data.threadID) {
+        return "//boards.4chan.org/" + board + "/";
       }
     },
     path: function(base, archiver, data) {

@@ -3002,97 +3002,81 @@ Redirect =
         "//rbt.asia/#{board}/full_image/#{filename}"
       when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
+      when 'e'
+        "//www.xn--clich-fsa.net/4chan/cgi-board.pl/#{board}/img/#{filename}"
+      when 'c'
+        "//archive.nyafuu.org/#{board}/full_image/#{filename}"
+
   post: (board, postID) ->
     switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
+
   archive: {}
-  archiver: [
-    {
-      name:    'Foolz'
+
+  archiver:
+    'Foolz':
       base:    '//archive.foolz.us'
       boards:  ['a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz']
       type:    'foolfuuka'
-    }
-    {
-      name:    'NSFWFoolz'
+    'NSFWFoolz':
       base:    '//nsfw.foolz.us'
       boards:  ['u', 'kuku']
       type:    'foolfuuka'
-    }
-    {
-      name:    'TheDarkCave'
+    'TheDarkCave':
       base:    'http://archive.thedarkcave.org'
       boards:  ['c', 'po']
       type:    'foolfuuka'
-    }
-    {
-      name:    'Warosu'
+    'Warosu':
       base:    '//fuuka.warosu.org'
       boards:  ['cgl', 'ck', 'jp', 'lit', 'q', 'tg']
       type:    'fuuka'
-    }
-    {
-      name:    'RebeccaBlackTech'
+    'RebeccaBlackTech':
       base:    '//rbt.asia'
       boards:  ['cgl', 'g', 'mu', 'soc', 'w']
       type:    'fuuka_mail'
-    }
-    {
-      name:    'InstallGentoo'
+    'InstallGentoo':
       base:    '//archive.installgentoo.net'
       boards:  ['diy', 'g', 'sci']
       type:    'fuuka'
-    }
-    {
-      name:    'Heinessen'
+    'Heinessen':
       base:    'http://archive.heinessen.com'
       boards:  ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x']
       type:    'fuuka'
-    }
-  ]
-  select: (data, board) ->
-    noarch = 'No archiver available.'
-    unless data
-      arch = for type in @archiver
-        unless type.boards.contains(board or g.BOARD)
-          continue
-        else
-          type.name
-      return if arch.length > 0 then arch else [noarch]
-    if (name = @select false, board)[1]
-      unless name.contains(current = $.get "archiver/#{board}/")
-        $.set "archiver/#{board}/", name[0]
-      for type in data.boards
-        if data.name is name[name.indexOf current]
-          return board
-    else if name[0] isnt noarch
-      for type in data.boards
-        if name[0] is data.name
-          return board
+    'Cliché':
+      base: '//www.xn--clich-fsa.net/4chan/cgi-board.pl'
+      boards: ['e']
+      type: 'fuuka'
+    'NyaFuu':
+      base: '//archive.nyafuu.org'
+      boards: ['c', 'w']
+      type: 'fuuka'
+
+  select: (board) ->
+    @noarch = 'No archiver available.'
+    arch = for name, type of @archiver
+      unless type.boards.contains board or g.BOARD
+        continue
+      name
+    return arch if arch.length > 0
+    [@noarch]
 
   to: (data) ->
-    unless data.isSearch
-      {threadID} = data
-    {board} = data
-    aboard  = Redirect.archive[board]
 
-    unless aboard
-      aboard = true
-      for archiver in @archiver
-        if board is @select archiver, board
-          aboard = archiver
-          break
+    unless aboard = @archive[{board} = data] = @archiver[current = $.get "archiver/#{board}/"]
+      if names = @select board and (!current or !names.contains current)
+        $.set "archiver/#{board}/", names[0]
+      aboard = if names[0] isnt @noarch
+        @archive[board] = @archiver[current]
+      else
+        @archive[board] = true
 
-      Redirect.archive[board] = aboard
-
-    if aboard.base and !(board is 'soc')
-      return @path aboard.base, aboard.type, data
-    else
-      if threadID
-        return "//boards.4chan.org/#{board}/"
+    return if aboard.base
+      @path aboard.base, aboard.type, data
+    else if not data.isSearch and data.threadID
+      "//boards.4chan.org/#{board}/"
 
   path: (base, archiver, data) ->
     if data.isSearch
