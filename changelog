@@ -1,5 +1,6 @@
 master
 - noface
+  Add Catalog Links toggle.
   Fix Anonymize not working on hovered posts.
 - Mayhem
   Added catalog support:

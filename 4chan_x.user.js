@@ -81,12 +81,13 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, CatalogLinks, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
 
   Config = {
     main: {
       Enhancing: {
         'Disable 4chan\'s extension': [true, 'Avoid conflicts between 4chan X and 4chan\'s inline extension.'],
+        'Catalog Links': [true, 'Turn Navigation links into links to each board\'s catalog.'],
         '404 Redirect': [true, 'Redirect dead threads and images'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
@@ -5186,6 +5187,66 @@
     }
   };
 
+  CatalogLinks = {
+    init: function() {
+      var el, i, nav, _i, _len, _ref;
+      el = $.el('span', {
+        innerHTML: "[<a href=javascript:; title='Toggle Catalog Links " + (!g.CATALOG ? 'on.' : 'off.') + "'>Catalog " + (!g.CATALOG ? 'On' : 'Off') + "</a>]",
+        id: 'toggleCatalog'
+      });
+      _ref = ['boardNavDesktop', 'boardNavDesktopFoot'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        nav = _ref[_i];
+        $.on(el.firstElementChild, 'click', this.toggle);
+        $.add($.id(nav), el);
+        el = $.el('span', {
+          innerHTML: el.innerHTML,
+          id: 'toggleCatalogFoot'
+        });
+      }
+      if ($.get('CatalogIsToggled')) {
+        i = g.CATALOG ? 0 : 1;
+        while (i < 2) {
+          this.toggle();
+          i++;
+        }
+        return;
+      }
+      if (g.CATALOG) {
+        return this.toggle();
+      }
+    },
+    toggle: function() {
+      var a, el, isDead, nav, split, _i, _len, _ref;
+      _ref = ['boardNavDesktop', 'boardNavDesktopFoot'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        nav = _ref[_i];
+        a = $.id(nav).firstElementChild;
+        while (a.href && (split = a.href.split('/'))) {
+          if (!/^rs|status/.test(split[2])) {
+            if ((isDead = split[3] === 'f') && g.CATALOG || split[4] === 'catalog') {
+              a.href = a.href.replace(/catalog$/, '');
+              a.title = a.title.replace(/\ -\ Catalog$/, '');
+            } else if (!isDead) {
+              a.href += 'catalog';
+              a.title += ' - Catalog';
+            }
+          }
+          a = a.nextElementSibling;
+        }
+        if (/On$/.test((el = a.parentNode.lastChild.firstElementChild).textContent)) {
+          el.textContent = 'Catalog Off';
+          el.title = 'Turn Catalog Links off.';
+          $.set('CatalogIsToggled', true);
+        } else {
+          el.textContent = 'Catalog On';
+          el.title = 'Turn Catalog Links on.';
+          $["delete"]('CatalogIsToggled');
+        }
+      }
+    }
+  };
+
   Main = {
     init: function() {
       var key, path, pathname, settings, temp, val;
@@ -5254,6 +5315,9 @@
       }
     },
     catalog: function() {
+      if (Conf['Catalog Links']) {
+        CatalogLinks.init();
+      }
       if (Conf['Thread Hiding']) {
         return ThreadHiding.init();
       }
@@ -5394,6 +5458,9 @@
       }
       if (Conf['Image Expansion']) {
         ImageExpand.init();
+      }
+      if (Conf['Catalog Links']) {
+        CatalogLinks.init();
       }
       if (Conf['Thread Watcher']) {
         setTimeout(function() {
