@@ -4197,43 +4197,36 @@ ImageExpand =
 CatalogLinks =
   init: ->
     el = $.el 'span',
-      innerHTML:
-        "[<a href=javascript:; title='Toggle Catalog Links #{unless g.CATALOG then 'on.' else 'off.'}'>Catalog #{unless g.CATALOG then 'On' else 'Off'}</a>]"
-      id: 'toggleCatalog'
+      className: 'toggleCatalog'
+      innerHTML: '[<a href=javascript:;></a>]'
     for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
-      $.on el.firstElementChild, 'click', @toggle
-      $.add $.id(nav), el
-      el = $.el 'span', innerHTML: el.innerHTML, id: 'toggleCatalogFoot'
+      clone = el.cloneNode true
+      $.on clone.firstElementChild, 'click', @toggle
+      $.add $.id(nav), clone
 
-    if $.get 'CatalogIsToggled'
-      i = if g.CATALOG then 0 else 1
-      while i < 2
-        @toggle()
-        i++
-      return
-    @toggle() if g.CATALOG
+    # Set links on load.
+    @toggle true
 
-  toggle: ->
+  toggle: (onLoad) ->
+    if onLoad is true
+      useCatalog = $.get 'CatalogIsToggled', g.CATALOG
+    else
+      useCatalog = @textContent is 'Catalog Off'
+      $.set 'CatalogIsToggled', useCatalog
+
     for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
-      a = $.id(nav).firstElementChild
-      while a.href and split = a.href.split '/'
-        unless /^rs|status/.test split[2]
-          if (isDead = split[3] is 'f') and g.CATALOG or split[4] is 'catalog'
-            a.href   = a.href.replace  /catalog$/, ''
-            a.title  = a.title.replace /\ -\ Catalog$/, ''
-          else if not isDead
-            a.href  += 'catalog'
-            a.title += ' - Catalog'
-        a = a.nextElementSibling
+      root = $.id nav
+      for a in $$ 'a[href*="boards.4chan.org"]', root
+        board = a.pathname.split('/')[1]
+        if board is 'f'
+          # 4chan links to /f/'s catalog even if it doesn't have one.
+          a.pathname = '/f/'
+          continue
+        a.pathname = "/#{board}/#{if useCatalog then 'catalog' else ''}"
 
-      if /On$/.test (el = a.parentNode.lastChild.firstElementChild).textContent
-        el.textContent  = 'Catalog Off'
-        el.title        = 'Turn Catalog Links off.'
-        $.set 'CatalogIsToggled', true
-      else
-        el.textContent  = 'Catalog On'
-        el.title        = 'Turn Catalog Links on.'
-        $.delete 'CatalogIsToggled'
+      a = $('.toggleCatalog', root).firstElementChild
+      a.textContent = "Catalog #{if useCatalog then 'On' else 'Off'}"
+      a.title       = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
     return
 
 Main =
