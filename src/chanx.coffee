@@ -2162,8 +2162,10 @@ QuotePreview =
         Time.node           post
       if Conf['File Info Formatting']
         FileInfo.node       post
-      if Conf['Resurrect Quotes'] or Conf['Linkify']
+      if Conf['Resurrect Quotes']
         Quotify.node        post
+      if Conf['Linkify']
+        Linkify.node        post
       if Conf['Anonymize']
         Anonymize.node      post
       if Conf['Color user IDs'] and board in ['b', 'q', 'soc']
@@ -2286,214 +2288,129 @@ IDColor =
     $.set value, uid
     @clicked = true
 
+
 Quotify =
   init: ->
-    # Extend Quotify to include linkification, if it should be enabled.
-    if Conf['Linkify']
-      @regString = ///(
-        >>(>/[a-z\d]+/)?\d+
-        |
-        \b(
-          [a-z][-a-z0-9+.]+:// # Leading handler (http://, ftp://). Matches any *://
-          |
-          www\.
-          |
-          magnet:
-          |
-          mailto:
-          |
-          news:
-        )
-        [^\s'"<>]+ # Non-URL characters. We cut of the string here.
-        |
-        \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails.
-      )///gi
-
-      @concat = (a) ->
-        $.on a, 'click', (e) ->
-          # Shift + CTRL + Click
-          if e.shiftKey and e.ctrlKey
-
-            # Let's not accidentally open the link while we're editting it.
-            e.preventDefault()
-            e.stopPropagation()
-
-            # We essentially check for a <br> and make sure we're not merging non-post content.
-            if ("br" is (el = @nextSibling).tagName.toLowerCase() or el.className is 'spoiler') and el.nextSibling.className isnt "abbr"
-              if el.textContent
-                content = (@textContent + el.textContent + el.nextSibling.textContent)
-              else
-                content = (@textContent + el.nextSibling.textContent)
-              @href = @textContent = content
-              $.rm el
-
-      if Conf['Embedding']
-        @protocol = d.location.protocol
-        @types =
-          youtube:
-            regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
-            style:
-              border: '0'
-              width:  '640px'
-              height: '390px'
-            el: ->
-              $.el 'iframe'
-                src: "#{Quotify.protocol}//www.youtube.com/embed/#{@name}"
-            title:
-              api:  -> "https://gdata.youtube.com/feeds/api/videos/#{@nextElementSibling.name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
-              text: -> JSON.parse(@responseText).entry.title.$t
-          vocaroo:
-            regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
-            el: ->
-              $.el 'object'
-                innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-          vimeo:
-            regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
-            style:
-              border: '0'
-              width:  '640px'
-              height: '390px'
-            el: ->
-              $.el 'iframe'
-                src: "#{Quotify.protocol}//player.vimeo.com/video/#{@name}"
-            title:
-              api:  -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{@nextElementSibling.name}"
-              text: -> JSON.parse(@responseText).title
-          liveleak:
-            regExp:  /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
-            style:
-              boder:  '0'
-              width:  '640px'
-              height: '390px'
-            el: ->
-              $.el 'iframe'
-                src: "http://www.liveleak.com/e/#{@name}?autostart=true"
-          audio:
-            regExp:  /(.*\.(mp3|ogg|wav))$/
-            el: ->
-              $.el 'audio'
-                controls:    'controls'
-                preload:     'auto'
-                src:         @name
-          soundcloud:
-            regExp:  /.*(?:soundcloud.com\/)([^#\&\?]*).*/
-            el: ->
-              div   = $.el 'div'
-                className: "soundcloud"
-                name:      "soundcloud"
-              $.ajax(
-                "#{Quotify.protocol}//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@previousElementSibling.textContent}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
-                div: div
-                onloadend: ->
-                  @div.innerHTML = JSON.parse(this.responseText).html
-                false)
-              div
-
-    else
-      @regString = />>(>\/[a-z\d]+\/)?\d+/g
-
     Main.callbacks.push @node
-
   node: (post) ->
-    if post.isInlined and not post.isCrosspost
-      if Conf['Linkify'] and Conf['Embedding']
-        for embed in $$('.embed', post.el)
-          $.on embed, 'click', Quotify.toggle
-      return
+    return if post.isInlined and not post.isCrosspost
+    for deadlink in $$ '.quote.deadlink', post.blockquote
+      quote = deadlink.textContent
+      a = $.el 'a',
+        # \u00A0 is nbsp
+        textContent: "#{quote}\u00A0(Dead)"
 
-    # Remove blank spoilers.
-    for spoiler in $$ '.spoiler', post.blockquote
-      if (spoiler.textContent.length is 0) and (p = spoiler.previousSibling) and (n = spoiler.nextSibling) and (n.nodeType and p.nodeType is Node.TEXT_NODE)
-        p.textContent += n.textContent
-        $.rm n
-        $.rm spoiler
+      id = quote.match(/\d+$/)[0]
 
-    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
-    # Get all the text nodes that are not inside an anchor.
-    snapshot = d.evaluate './/text()[not(parent::a)]', post.blockquote, null, 6, null
+      if m = quote.match /^>>>\/([a-z\d]+)/
+        board = m[1]
+      else if postBoard
+        board = postBoard
+      else
+        # Get the post's board, whether it's inlined or not.
+        board = postBoard = $('a[title="Highlight this post"]', post.el).pathname.split('/')[1]
 
-    for i in [0...snapshot.snapshotLength]
-      node = snapshot.snapshotItem i
-      {data} = node
+      if board is g.BOARD and $.id "p#{id}"
+        a.href = "#p#{id}"
+        a.className = 'quotelink'
+      else
+        a.href =
+          Redirect.to
+            board: board
+            threadID: 0
+            postID: id
+        a.className = 'deadlink'
+        a.target = '_blank'
+        if Redirect.post board, id
+          $.addClass a, 'quotelink'
+          # XXX WTF Scriptish/Greasemonkey?
+          # Setting dataset attributes that way doesn't affect the HTML,
+          # but are, I suspect, kept as object key/value pairs and GC'd later.
+          # a.dataset.board = board
+          # a.dataset.id = id
+          a.setAttribute 'data-board', board
+          a.setAttribute 'data-id', id
+      $.replace deadlink, a
+    return
 
-      unless quotes = data.match Quotify.regString
-        # Only accept nodes with potentially valid links
-        continue
+Linkify =
+  init: ->
+    if Conf['Embedding']
+      @protocol = d.location.protocol
 
-      nodes = []
+      @types =
+        youtube:
+          regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
+          style:
+            border: '0'
+            width:  '640px'
+            height: '390px'
+          el: ->
+            $.el 'iframe'
+              src: "#{Linkify.protocol}//www.youtube.com/embed/#{@name}"
+          title:
+            api:  -> "https://gdata.youtube.com/feeds/api/videos/#{@name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
+            text: -> JSON.parse(@responseText).entry.title.$t
+        vocaroo:
+          regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
+          el: ->
+            $.el 'object'
+              innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+        vimeo:
+          regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
+          style:
+            border: '0'
+            width:  '640px'
+            height: '390px'
+          el: ->
+            $.el 'iframe'
+              src: "#{Linkify.protocol}//player.vimeo.com/video/#{@name}"
+          title:
+            api:  -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{@name}"
+            text: -> JSON.parse(@responseText).title
+       liveleak:
+         regExp:  /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
+         style:
+           boder:  '0'
+           width:  '640px'
+           height: '390px'
+         el: ->
+           $.el 'iframe'
+             src: "http://www.liveleak.com/e/#{@name}?autostart=true"
+        audio:
+          regExp:  /(.*\.(mp3|ogg|wav))$/
+          el: ->
+            $.el 'audio'
+              controls:    'controls'
+              preload:     'auto'
+              src:         @name
+        soundcloud:
+          regExp:  /.*(?:soundcloud.com\/)([^#\&\?]*).*/
+          el: ->
+            div   = $.el 'div'
+              className: "soundcloud"
+              name:      "soundcloud"
+            $.ajax(
+              "#{Linkify.protocol}//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@previousElementSibling.textContent}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
+              div: div
+              onloadend: ->
+                @div.innerHTML = JSON.parse(this.responseText).html
+              false)
+            div
 
-      for quote in quotes
-        index   = data.indexOf quote
-        if text = data[...index]
-          # Potential text before this valid quote.
-          nodes.push $.tn text
-
-        if Conf['Resurrect Quotes'] and quote.match /^>>.+/
-          id = quote.match(/\d+$/)[0]
-          board =
-            if m = quote.match /^>>>\/([a-z\d]+)/
-              m[1]
-            else
-              # Get the post's board, whether it's inlined or not.
-              $('a[title="Highlight this post"]', post.el).pathname.split('/')[1]
-
-          nodes.push a = $.el 'a'
-            # \u00A0 is nbsp
-            textContent: "#{quote}\u00A0(Dead)"
-
-          if board is g.BOARD and $.id "p#{id}"
-            a.href      = "#p#{id}"
-            a.className = 'quotelink'
-          else
-            a.href =
-              Redirect.to
-                board:    board
-                threadID: 0
-                postID:   id
-            a.className = 'deadlink'
-            a.target    = '_blank'
-            if Redirect.post board, id
-              $.addClass a, 'quotelink'
-              # XXX WTF Scriptish/Greasemonkey?
-              # Setting dataset attributes that way doesn't affect the HTML,
-              # but are, I suspect, kept as object key/value pairs and GC'd later.
-              # a.dataset.board = board
-              # a.dataset.id    = id
-              a.setAttribute 'data-board', board
-              a.setAttribute 'data-id',    id
-        else
-          nodes.push a = $.el 'a'
-            textContent: quote
-            className: 'linkify'
-            rel:       'nofollow noreferrer'
-            target:    'blank'
-            # I haven't found a situation where not having a slash in the conditional breaks anything.
-            href:      if quote.indexOf(":") < 0 then (if quote.indexOf("@") > 0 then "mailto:" + quote else "http://" + quote) else quote
-
-          Quotify.concat a
-
-        data = data[index + quote.length..]
-
-      if data
-        # Potential text after the last valid quote.
-        nodes.push $.tn data
-
-      $.replace node, nodes
-
-      if Conf['Embedding'] and a.className is "linkify"
-        for key, type of Quotify.types
+      @embedder = (a) ->
+        for key, type of Linkify.types
           if match = a.href.match type.regExp
+            a.name = match[1]
             embed = $.el 'a'
-              name:         match[1]
+              name:         a.name
               className:    'embed'
               href:         'javascript:;'
               textContent:  '(embed)'
             embed.setAttribute 'data-service', key
             embed.setAttribute 'data-originalURL', a.href
-            $.on embed, 'click', Quotify.toggle
-            $.after a, embed
-            $.after a, $.tn ' '
-
+            $.on embed, 'click', Linkify.toggle
+   
             if Conf['Link Title']
               if service = type.title
                 titles = $.get 'CachedTitles', {}
@@ -2518,15 +2435,110 @@ Quotify =
                         else
                           node.textContent = "[#{key}] #{@status}'d"
                     )
+   
+            return [a, $.tn(' '), embed]
+        return [a]
+    else
+      @embedder = (a) ->
+        return [a]
+      
 
-            break
+    Main.callbacks.push @node
+
+  regString: ///(
+    \b(
+      [a-z][-a-z0-9+.]+:// # Leading handler (http://, ftp://). Matches any *://
+      |
+      www\.
+      |
+      magnet:
+      |
+      mailto:
+      |
+      news:
+    )
+    [^\s'"<>]+ # Non-URL characters. We cut of the string here.
+    |
+    \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails.
+  )///gi
+
+  concat: (a) ->
+    $.on a, 'click', (e) ->
+      # Shift + CTRL + Click
+      if e.shiftKey and e.ctrlKey
+        # Let's not accidentally open the link while we're editting it.
+        e.preventDefault()
+        e.stopPropagation()
+
+        # We essentially check for a <br> and make sure we're not merging non-post content.
+        if ("br" is (el = @nextSibling).tagName.toLowerCase() or el.className is 'spoiler') and el.nextSibling.className isnt "abbr"
+          @href = if el.textContent
+            @textContent += el.textContent + el.nextSibling.textContent
+          else
+            @textContent += el.nextSibling.textContent
+          $.rm el
+
+  node: (post) ->
+    if post.isInlined and not post.isCrosspost
+      if Conf['Embedding']
+        for embed in $$('.embed', post.el)
+          $.on embed, 'click', Linkify.toggle
+      return
+
+    # Remove blank spoilers.
+    for spoiler in $$ 's', post.blockquote
+      if (spoiler.textContent.length is 0) and (p = spoiler.previousSibling) and (n = spoiler.nextSibling) and (n.nodeType and p.nodeType is Node.TEXT_NODE)
+        p.textContent += n.textContent
+        $.rm n
+        $.rm spoiler
+
+    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
+    # Get all the text nodes that are not inside an anchor.
+    snapshot = d.evaluate './/text()', post.blockquote, null, 6, null #|//s
+
+    for i in [0...snapshot.snapshotLength]
+      node = snapshot.snapshotItem i
+      {data} = node
+
+      unless links = data.match Linkify.regString
+        # Only accept nodes with potentially valid links
+        continue
+
+      nodes = []
+
+      for link in links
+        index = data.indexOf link
+
+        if text = data[...index]
+          # Potential text before this valid link.
+          nodes.push $.tn text
+
+        a = $.el 'a'
+          textContent: link
+          className: 'linkify'
+          rel:       'nofollow noreferrer'
+          target:    'blank'
+          # I haven't found a situation where not having a slash in the conditional breaks anything.
+          href:      if link.indexOf(":") < 0 then (if link.contains "@") then "mailto:" + link else "http://" + link) else link
+
+        Linkify.concat a
+
+        nodes = nodes.concat Linkify.embedder(a)
+
+      data = data[index + link.length..]
+
+      if data
+        # Potential text after the last valid link.
+        nodes.push $.tn data
+
+      $.replace node, nodes
     return
 
   toggle: ->
     if /\bembedded\b/.test @className
-      Quotify.unembed.call @
+      Linkify.unembed.call @
     else
-      Quotify.embed.call @
+      Linkify.embed.call @
 
   embed: ->
     # We setup the link to be replaced by the embedded video
@@ -2534,7 +2546,7 @@ Quotify =
     service = @getAttribute("data-service")
 
     # We create an element to embed
-    el = (type = Quotify.types[service]).el.call @
+    el = (type = Linkify.types[service]).el.call @
 
     if type.style
       for key, value of type.style
@@ -2847,12 +2859,12 @@ EmbedLink =
       EmbedLink[id] = true
       for embed in $$ '.embed', root
         unless /\bembedded\b/.test embed.className
-          Quotify.embed.call embed
+          Linkify.embed.call embed
     else
       EmbedLink[id] = false
       for embed in $$ '.embed', root
         if /\bembedded\b/.test embed.className
-          Quotify.unembed.call embed
+          Linkify.unembed.call embed
 
 ThreadStats =
   init: ->

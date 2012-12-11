@@ -102,7 +102,7 @@
  * @link      http://JSColor.com
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, EmbedLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
+  var $, $$, Anonymize, ArchiveLink, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, EmbedLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
 
   Config = {
     main: {
@@ -6493,8 +6493,11 @@
         if (Conf['File Info Formatting']) {
           FileInfo.node(post);
         }
-        if (Conf['Resurrect Quotes'] || Conf['Linkify']) {
+        if (Conf['Resurrect Quotes']) {
           Quotify.node(post);
+        }
+        if (Conf['Linkify']) {
+          Linkify.node(post);
         }
         if (Conf['Anonymize']) {
           Anonymize.node(post);
@@ -6664,216 +6667,164 @@
 
   Quotify = {
     init: function() {
-      if (Conf['Linkify']) {
-        this.regString = /(>>(>\/[a-z\d]+\/)?\d+|\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s'"<>]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi;
-        this.concat = function(a) {
-          return $.on(a, 'click', function(e) {
-            var content, el;
-            if (e.shiftKey && e.ctrlKey) {
-              e.preventDefault();
-              e.stopPropagation();
-              if (("br" === (el = this.nextSibling).tagName.toLowerCase() || el.className === 'spoiler') && el.nextSibling.className !== "abbr") {
-                if (el.textContent) {
-                  content = this.textContent + el.textContent + el.nextSibling.textContent;
-                } else {
-                  content = this.textContent + el.nextSibling.textContent;
-                }
-                this.href = this.textContent = content;
-                return $.rm(el);
-              }
-            }
-          });
-        };
-        if (Conf['Embedding']) {
-          this.protocol = d.location.protocol;
-          this.types = {
-            youtube: {
-              regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
-              style: {
-                border: '0',
-                width: '640px',
-                height: '390px'
-              },
-              el: function() {
-                return $.el('iframe', {
-                  src: "" + Quotify.protocol + "//www.youtube.com/embed/" + this.name
-                });
-              },
-              title: {
-                api: function() {
-                  return "https://gdata.youtube.com/feeds/api/videos/" + this.nextElementSibling.name + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
-                },
-                text: function() {
-                  return JSON.parse(this.responseText).entry.title.$t;
-                }
-              }
-            },
-            vocaroo: {
-              regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
-              el: function() {
-                return $.el('object', {
-                  innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-                });
-              }
-            },
-            vimeo: {
-              regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
-              style: {
-                border: '0',
-                width: '640px',
-                height: '390px'
-              },
-              el: function() {
-                return $.el('iframe', {
-                  src: "" + Quotify.protocol + "//player.vimeo.com/video/" + this.name
-                });
-              },
-              title: {
-                api: function() {
-                  return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + this.nextElementSibling.name;
-                },
-                text: function() {
-                  return JSON.parse(this.responseText).title;
-                }
-              }
-            },
-            liveleak: {
-              regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
-              style: {
-                boder: '0',
-                width: '640px',
-                height: '390px'
-              },
-              el: function() {
-                return $.el('iframe', {
-                  src: "http://www.liveleak.com/e/" + this.name + "?autostart=true"
-                });
-              }
-            },
-            audio: {
-              regExp: /(.*\.(mp3|ogg|wav))$/,
-              el: function() {
-                return $.el('audio', {
-                  controls: 'controls',
-                  preload: 'auto',
-                  src: this.name
-                });
-              }
-            },
-            soundcloud: {
-              regExp: /.*(?:soundcloud.com\/)([^#\&\?]*).*/,
-              el: function() {
-                var div;
-                div = $.el('div', {
-                  className: "soundcloud",
-                  name: "soundcloud"
-                });
-                $.ajax("" + Quotify.protocol + "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousElementSibling.textContent + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
-                  div: div,
-                  onloadend: function() {
-                    return this.div.innerHTML = JSON.parse(this.responseText).html;
-                  }
-                }, false);
-                return div;
-              }
-            }
-          };
-        }
-      } else {
-        this.regString = />>(>\/[a-z\d]+\/)?\d+/g;
-      }
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var a, board, data, embed, i, id, index, key, m, match, n, node, nodes, p, quote, quotes, service, snapshot, spoiler, text, title, titles, type, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+      var a, board, deadlink, id, m, postBoard, quote, _i, _len, _ref;
       if (post.isInlined && !post.isCrosspost) {
-        if (Conf['Linkify'] && Conf['Embedding']) {
-          _ref = $$('.embed', post.el);
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            embed = _ref[_i];
-            $.on(embed, 'click', Quotify.toggle);
-          }
-        }
         return;
       }
-      _ref1 = $$('.spoiler', post.blockquote);
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        spoiler = _ref1[_j];
-        if ((spoiler.textContent.length === 0) && (p = spoiler.previousSibling) && (n = spoiler.nextSibling) && (n.nodeType && p.nodeType === Node.TEXT_NODE)) {
-          p.textContent += n.textContent;
-          $.rm(n);
-          $.rm(spoiler);
+      _ref = $$('.quote.deadlink', post.blockquote);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        deadlink = _ref[_i];
+        quote = deadlink.textContent;
+        a = $.el('a', {
+          textContent: "" + quote + "\u00A0(Dead)"
+        });
+        id = quote.match(/\d+$/)[0];
+        if (m = quote.match(/^>>>\/([a-z\d]+)/)) {
+          board = m[1];
+        } else if (postBoard) {
+          board = postBoard;
+        } else {
+          board = postBoard = $('a[title="Highlight this post"]', post.el).pathname.split('/')[1];
         }
-      }
-      snapshot = d.evaluate('.//text()[not(parent::a)]', post.blockquote, null, 6, null);
-      for (i = _k = 0, _ref2 = snapshot.snapshotLength; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
-        node = snapshot.snapshotItem(i);
-        data = node.data;
-        if (!(quotes = data.match(Quotify.regString))) {
-          continue;
-        }
-        nodes = [];
-        for (_l = 0, _len2 = quotes.length; _l < _len2; _l++) {
-          quote = quotes[_l];
-          index = data.indexOf(quote);
-          if (text = data.slice(0, index)) {
-            nodes.push($.tn(text));
+        if (board === g.BOARD && $.id("p" + id)) {
+          a.href = "#p" + id;
+          a.className = 'quotelink';
+        } else {
+          a.href = Redirect.to({
+            board: board,
+            threadID: 0,
+            postID: id
+          });
+          a.className = 'deadlink';
+          a.target = '_blank';
+          if (Redirect.post(board, id)) {
+            $.addClass(a, 'quotelink');
+            a.setAttribute('data-board', board);
+            a.setAttribute('data-id', id);
           }
-          if (Conf['Resurrect Quotes'] && quote.match(/^>>.+/)) {
-            id = quote.match(/\d+$/)[0];
-            board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : $('a[title="Highlight this post"]', post.el).pathname.split('/')[1];
-            nodes.push(a = $.el('a', {
-              textContent: "" + quote + "\u00A0(Dead)"
-            }));
-            if (board === g.BOARD && $.id("p" + id)) {
-              a.href = "#p" + id;
-              a.className = 'quotelink';
-            } else {
-              a.href = Redirect.to({
-                board: board,
-                threadID: 0,
-                postID: id
+        }
+        $.replace(deadlink, a);
+      }
+    }
+  };
+
+  Linkify = {
+    init: function() {
+      if (Conf['Embedding']) {
+        this.protocol = d.location.protocol;
+        this.types = {
+          youtube: {
+            regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
+            style: {
+              border: '0',
+              width: '640px',
+              height: '390px'
+            },
+            el: function() {
+              return $.el('iframe', {
+                src: "" + Linkify.protocol + "//www.youtube.com/embed/" + this.name
               });
-              a.className = 'deadlink';
-              a.target = '_blank';
-              if (Redirect.post(board, id)) {
-                $.addClass(a, 'quotelink');
-                a.setAttribute('data-board', board);
-                a.setAttribute('data-id', id);
+            },
+            title: {
+              api: function() {
+                return "https://gdata.youtube.com/feeds/api/videos/" + this.name + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
+              },
+              text: function() {
+                return JSON.parse(this.responseText).entry.title.$t;
               }
             }
-          } else {
-            nodes.push(a = $.el('a', {
-              textContent: quote,
-              className: 'linkify',
-              rel: 'nofollow noreferrer',
-              target: 'blank',
-              href: quote.indexOf(":") < 0 ? (quote.indexOf("@") > 0 ? "mailto:" + quote : "http://" + quote) : quote
-            }));
-            Quotify.concat(a);
+          },
+          vocaroo: {
+            regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
+            el: function() {
+              return $.el('object', {
+                innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+              });
+            }
+          },
+          vimeo: {
+            regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
+            style: {
+              border: '0',
+              width: '640px',
+              height: '390px'
+            },
+            el: function() {
+              return $.el('iframe', {
+                src: "" + Linkify.protocol + "//player.vimeo.com/video/" + this.name
+              });
+            },
+            title: {
+              api: function() {
+                return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + this.name;
+              },
+              text: function() {
+                return JSON.parse(this.responseText).title;
+              }
+            }
           }
-          data = data.slice(index + quote.length);
-        }
-        if (data) {
-          nodes.push($.tn(data));
-        }
-        $.replace(node, nodes);
-        if (Conf['Embedding'] && a.className === "linkify") {
-          _ref3 = Quotify.types;
-          for (key in _ref3) {
-            type = _ref3[key];
+        };
+        ({
+          liveleak: {
+            regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
+            style: {
+              boder: '0',
+              width: '640px',
+              height: '390px'
+            },
+            el: function() {
+              return $.el('iframe', {
+                src: "http://www.liveleak.com/e/" + this.name + "?autostart=true"
+              });
+            }
+          },
+          audio: {
+            regExp: /(.*\.(mp3|ogg|wav))$/,
+            el: function() {
+              return $.el('audio', {
+                controls: 'controls',
+                preload: 'auto',
+                src: this.name
+              });
+            }
+          },
+          soundcloud: {
+            regExp: /.*(?:soundcloud.com\/)([^#\&\?]*).*/,
+            el: function() {
+              var div;
+              div = $.el('div', {
+                className: "soundcloud",
+                name: "soundcloud"
+              });
+              $.ajax("" + Linkify.protocol + "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousElementSibling.textContent + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
+                div: div,
+                onloadend: function() {
+                  return this.div.innerHTML = JSON.parse(this.responseText).html;
+                }
+              }, false);
+              return div;
+            }
+          }
+        });
+        this.embedder = function(a) {
+          var embed, key, match, service, title, titles, type, _ref;
+          _ref = Linkify.types;
+          for (key in _ref) {
+            type = _ref[key];
             if (match = a.href.match(type.regExp)) {
+              a.name = match[1];
               embed = $.el('a', {
-                name: match[1],
+                name: a.name,
                 className: 'embed',
                 href: 'javascript:;',
                 textContent: '(embed)'
               });
               embed.setAttribute('data-service', key);
               embed.setAttribute('data-originalURL', a.href);
-              $.on(embed, 'click', Quotify.toggle);
-              $.after(a, embed);
-              $.after(a, $.tn(' '));
+              $.on(embed, 'click', Linkify.toggle);
               if (Conf['Link Title']) {
                 if (service = type.title) {
                   titles = $.get('CachedTitles', {});
@@ -6903,24 +6854,96 @@
                   }
                 }
               }
-              break;
+              return [a, $.tn(' '), embed];
             }
           }
+          return [a];
+        };
+      } else {
+        this.embedder = function(a) {
+          return [a];
+        };
+      }
+      return Main.callbacks.push(this.node);
+    },
+    regString: /(\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s'"<>]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi,
+    concat: function(a) {
+      return $.on(a, 'click', function(e) {
+        var el;
+        if (e.shiftKey && e.ctrlKey) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (("br" === (el = this.nextSibling).tagName.toLowerCase() || el.className === 'spoiler') && el.nextSibling.className !== "abbr") {
+            this.href = el.textContent ? this.textContent += el.textContent + el.nextSibling.textContent : this.textContent += el.nextSibling.textContent;
+            return $.rm(el);
+          }
         }
+      });
+    },
+    node: function(post) {
+      var a, data, embed, i, index, link, links, n, node, nodes, p, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2;
+      if (post.isInlined && !post.isCrosspost) {
+        if (Conf['Embedding']) {
+          _ref = $$('.embed', post.el);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            embed = _ref[_i];
+            $.on(embed, 'click', Linkify.toggle);
+          }
+        }
+        return;
+      }
+      _ref1 = $$('s', post.blockquote);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        spoiler = _ref1[_j];
+        if ((spoiler.textContent.length === 0) && (p = spoiler.previousSibling) && (n = spoiler.nextSibling) && (n.nodeType && p.nodeType === Node.TEXT_NODE)) {
+          p.textContent += n.textContent;
+          $.rm(n);
+          $.rm(spoiler);
+        }
+      }
+      snapshot = d.evaluate('.//text()', post.blockquote, null, 6, null);
+      for (i = _k = 0, _ref2 = snapshot.snapshotLength; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
+        node = snapshot.snapshotItem(i);
+        data = node.data;
+        if (!(links = data.match(Linkify.regString))) {
+          continue;
+        }
+        nodes = [];
+        for (_l = 0, _len2 = links.length; _l < _len2; _l++) {
+          link = links[_l];
+          index = data.indexOf(link);
+          if (text = data.slice(0, index)) {
+            nodes.push($.tn(text));
+          }
+          a = $.el('a', {
+            textContent: link,
+            className: 'linkify',
+            rel: 'nofollow noreferrer',
+            target: 'blank',
+            href: link.indexOf(":") < 0 ? (link.indexOf("@") > 0 ? "mailto:" + link : "http://" + link) : link
+          });
+          Linkify.concat(a);
+          nodes = nodes.concat(Linkify.embedder(a));
+        }
+        data = data.slice(index + link.length);
+        if (data) {
+          nodes.push($.tn(data));
+        }
+        $.replace(node, nodes);
       }
     },
     toggle: function() {
       if (/\bembedded\b/.test(this.className)) {
-        return Quotify.unembed.call(this);
+        return Linkify.unembed.call(this);
       } else {
-        return Quotify.embed.call(this);
+        return Linkify.embed.call(this);
       }
     },
     embed: function() {
       var el, key, link, service, type, value, _ref;
       link = this.previousElementSibling;
       service = this.getAttribute("data-service");
-      el = (type = Quotify.types[service]).el.call(this);
+      el = (type = Linkify.types[service]).el.call(this);
       if (type.style) {
         _ref = type.style;
         for (key in _ref) {
@@ -7312,7 +7335,7 @@
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           embed = _ref[_i];
           if (!/\bembedded\b/.test(embed.className)) {
-            _results.push(Quotify.embed.call(embed));
+            _results.push(Linkify.embed.call(embed));
           } else {
             _results.push(void 0);
           }
@@ -7325,7 +7348,7 @@
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           embed = _ref1[_j];
           if (/\bembedded\b/.test(embed.className)) {
-            _results1.push(Quotify.unembed.call(embed));
+            _results1.push(Linkify.unembed.call(embed));
           } else {
             _results1.push(void 0);
           }
@@ -11038,8 +11061,11 @@
           ReplyHideLink.init();
         }
       }
-      if (Conf['Resurrect Quotes'] || Conf['Linkify']) {
+      if (Conf['Resurrect Quotes']) {
         Quotify.init();
+      }
+      if (Conf['Linkify']) {
+        Linkify.init();
       }
       if (Conf['Quote Inline']) {
         QuoteInline.init();

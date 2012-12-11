@@ -165,8 +165,11 @@ Main =
       if Conf['Reply Hiding Link']
         ReplyHideLink.init()
 
-    if Conf['Resurrect Quotes'] or Conf['Linkify']
+    if Conf['Resurrect Quotes']
       Quotify.init()
+    
+    if Conf['Linkify']
+      Linkify.init()
 
     if Conf['Quote Inline']
       QuoteInline.init()
