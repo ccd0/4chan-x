@@ -1,10 +1,12 @@
 master
+
+2.37.0
 - noface
   Add Catalog Links toggle.
   Fix Anonymize not working on hovered posts.
 - Mayhem
-  Added catalog support:
-    Sync thread hiding between index and catalog.
+  Added catalog support.
+  Sync thread hiding between index and catalog.
   Add /c/ archived thread and image redirection.
 
 2.36.3
