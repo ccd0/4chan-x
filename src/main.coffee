@@ -18,8 +18,6 @@ Main =
         g.THREAD_ID = pathname[2]
       when 'catalog'
         g.CATALOG = true
-    
-    $.log temp
 
     # Check if the current board we're on is SFW or not, so we can handle options that need to know that.
     if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains g.BOARD

@@ -255,6 +255,11 @@ div.navLinks > a:first-of-type::after {
 #watcher {
   z-index: #{if Conf["Slideout Watcher"] then "99" else "10"} !important;
 }
+#{if Conf["Slideout Watcher"] then "#watcher:hover," else ""}
+#boardNavDesktopFoot:hover,
+#globalMessage:hover {
+  z-index: 100 !important;
+}
 #boardNavDesktopFoot,
 #globalMessage,
 #watcher {
