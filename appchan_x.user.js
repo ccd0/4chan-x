@@ -6769,9 +6769,7 @@
           _ref = $$('.embed', post.el);
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             embed = _ref[_i];
-            $.on(embed, 'click', function() {
-              return Quotify.toggle;
-            });
+            $.on(embed, 'click', Quotify.toggle);
           }
         }
         return;

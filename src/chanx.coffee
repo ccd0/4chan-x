@@ -2385,8 +2385,7 @@ Quotify =
     if post.isInlined and not post.isCrosspost
       if Conf['Linkify'] and Conf['Embedding']
         for embed in $$('.embed', post.el)
-          $.on embed, 'click', ->
-            Quotify.toggle
+          $.on embed, 'click', Quotify.toggle
       return
 
     # Remove blank spoilers.
