@@ -7655,11 +7655,7 @@
         }
         return _results;
       }).call(this);
-      if (arch.length > 0) {
-        return arch;
-      } else {
-        return [this.noarch];
-      }
+      return (arch.length > 0 ? arch : [this.noarch]);
     },
     to: function(data) {
       var aboard, board, name, names;

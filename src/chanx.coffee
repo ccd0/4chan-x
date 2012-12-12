@@ -3092,7 +3092,7 @@ Redirect =
     arch = for name, type of @archiver
       continue unless type.boards.contains board or g.BOARD
       name
-    return if arch.length > 0 then arch else [@noarch]
+    return (if arch.length > 0 then arch else [@noarch])
    
   to: (data) ->
     aboard = (@archive[{board} = data] = @archiver[$.get("archiver/#{board}/")]) or
