@@ -3090,20 +3090,14 @@ Redirect =
 
   select: (board) ->
     arch = for name, type of @archiver
-      unless type.boards.contains board or g.BOARD
-        continue
+      continue unless type.boards.contains board or g.BOARD
       name
-    return arch if arch.length > 0
-    [@noarch]
-
+    return if arch.length > 0 then arch else [@noarch]
+   
   to: (data) ->
-    unless aboard = @archive[{board} = data] = @archiver[current = $.get "archiver/#{board}/"]
-      if (names = @select board) and not (current and names.contains current)
-        $.set "archiver/#{board}/", names[0]
-      aboard = @archive[board] = if names[0] isnt @noarch
-        @archiver[current]
-      else
-        true
+    aboard = (@archive[{board} = data] = @archiver[$.get("archiver/#{board}/")]) or
+      if (names = @select board) then $.set "archiver/#{board}/", names[0]
+      @archive[board] = if names[0] isnt @noarch then @archiver[names[0]] else {}
 
     return if aboard.base
       @path aboard.base, aboard.type, data

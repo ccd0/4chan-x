@@ -7657,17 +7657,14 @@
       }).call(this);
       if (arch.length > 0) {
         return arch;
+      } else {
+        return [this.noarch];
       }
-      return [this.noarch];
     },
     to: function(data) {
-      var aboard, board, current, names;
-      if (!(aboard = this.archive[board = data.board, data] = this.archiver[current = $.get("archiver/" + board + "/")])) {
-        if ((names = this.select(board)) && !(current && names.contains(current))) {
-          $.set("archiver/" + board + "/", names[0]);
-        }
-        aboard = this.archive[board] = names[0] !== this.noarch ? this.archiver[current] : true;
-      }
+      var aboard, board, names;
+      aboard = (this.archive[board = data.board, data] = this.archiver[$.get("archiver/" + board + "/")]) || ((names = this.select(board)) ? $.set("archiver/" + board + "/", names[0]) : void 0);
+      this.archive[board] = names[0] !== this.noarch ? this.archiver[names[0]] : {};
       if (aboard.base) {
         return this.path(aboard.base, aboard.type, data);
       } else if (!data.isSearch && data.threadID) {
