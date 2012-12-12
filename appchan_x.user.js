@@ -315,7 +315,8 @@
         'Mascots Overlap Posts': [true, 'Mascots overlap threads and posts.'],
         'NSFW/SFW Mascots': [false, 'Enable or disable mascots based on the SFW status of the board you are viewing.'],
         'Grayscale Mascots': [false, 'Force mascots to be monochrome.'],
-        'Mascot Opacity': ['1.00', 'Make Mascots transparent.', 'text']
+        'Mascot Opacity': ['1.00', 'Make Mascots transparent.', 'text'],
+        'Hide Mascots on Catalog': [false, 'Do not show mascots on the official catalog pages.']
       },
       Navigation: {
         'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']],
@@ -9952,7 +9953,7 @@
         mascot = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)];
       }
       Conf['mascot'] = mascot;
-      if (!Conf['Mascots']) {
+      if (!Conf['Mascots'] || (g.CATALOG && Conf['Hide Mascots on Catalog'])) {
         return;
       }
       if (Conf['Mascot Position'] === 'bottom' || !(Conf['Mascot Position'] === "default" && Conf['Post Form Style'] === "fixed")) {
@@ -10625,7 +10626,7 @@
           offset = 0;
           spacer = 19;
         }
-        position = aligner(first, offset, spacer, [true, (Conf['Slideout Navigation'] !== 'hide' ? true : false), (Conf['Announcements'] === 'slideout' && ($('#globalMessage', d.body) != null) ? true : false), (Conf['Slideout Watcher'] && Conf['Thread Watcher'] ? true : false), $('#navtopright .exlinksOptionsLink', d.body) != null, $('body > a[style="cursor: pointer; float: right;"]', d.body) != null, Conf['Image Expansion'], true, navlinks = Conf['Index Navigation'] || (g.REPLY && Conf['Reply Navigation']), navlinks]);
+        position = aligner(first, offset, spacer, [true, (Conf['Slideout Navigation'] !== 'hide' ? true : false), (Conf['Announcements'] === 'slideout' && ($('#globalMessage', d.body) != null) ? true : false), !g.CATALOG && (Conf['Slideout Watcher'] && Conf['Thread Watcher'] ? true : false), $('#navtopright .exlinksOptionsLink', d.body) != null, !g.CATALOG && ($('body > a[style="cursor: pointer; float: right;"]', d.body) != null), !g.CATALOG && Conf['Image Expansion'], !g.CATALOG, !g.CATALOG && (navlinks = (!g.REPLY && Conf['Index Navigation']) || (g.REPLY && Conf['Reply Navigation'])), !g.CATALOG && navlinks]);
         if (align === 'left') {
           iconOffset = 250 - Style.sidebar;
         } else {
@@ -10636,7 +10637,7 @@
         }
         css = "div.navLinks > a:first-of-type::after {\n  z-index: 99 !important;\n}\n#prefetch {\n  z-index: 9;\n}\n/* 4chan X Options */\n#navtopright .settingsWindowLink::after {\n  " + align + ": " + position[i] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  " + align + ": " + position[++i] + "px;\n}\n/* Global Message */\n#globalMessage::after {\n  " + align + ": " + position[++i] + "px;\n}\n/* Watcher */\n#watcher::after {\n  " + align + ": " + position[++i] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  " + align + ": " + position[++i] + "px;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  " + align + ": " + position[++i] + "px;\n}\n/* Expand Images */\n#imgControls {\n  " + align + ": " + position[++i] + "px;\n}\n/* Back / 4chan Catalog */\n.cataloglink a::after,\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": " + position[++i] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a {\n  margin: 2px;\n  top: 2px;\n}\n#navlinks a:last-of-type {\n  " + align + ": " + position[++i] + "px;\n}\n#navlinks a:first-of-type {\n  " + align + ": " + position[++i] + "px;\n}\n/* Updater + Stats */\n#updater,\n#stats {\n  " + align + ": 2px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: " + (Conf["Updater Position"] === "top" ? "1.6em" : "auto") + " !important;\n  bottom: " + (Conf["Updater Position"] === "bottom" ? "1.6em" : "auto") + " !important;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n  " + align + ": 2px;\n  top: 20px;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#boardNavDesktopFoot::after,\n#navtopright .exlinksOptionsLink::after,\n#navtopright .settingsWindowLink::after,\n#watcher::after,\n#globalMessage::after,\n#imgControls,\ndiv.navLinks > a:first-of-type::after,\n.cataloglink a::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: 2px !important;\n}\n" + (Conf["Announcements"] === "slideout" ? "#globalMessage," : "") + "\n" + (Conf["Slideout Watcher"] ? "#watcher," : "") + "\n#boardNavDesktopFoot {\n  top: 16px !important;\n  z-index: 98 !important;\n}\n#globalMessage:hover,\n" + (Conf["Slideout Watcher"] ? "#watcher:hover," : "") + "\n#boardNavDesktopFoot:hover {\n  z-index: 99 !important;\n}\n" + (Conf['Boards Navigation'] === 'top' || Conf['Boards Navigation'] === 'sticky top' ? '#boardNavDesktop' : Conf['Pagination'] === 'top' || Conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  padding-" + align + ": " + iconOffset + "px;\n}";
       } else {
-        position = aligner(2, (Conf["4chan Banner"] === "at sidebar top" ? Style.logoOffset + 19 : 0), 19, [Conf['Image Expansion'], true, (Conf['Slideout Navigation'] !== 'hide' ? true : false), (Conf['Announcements'] === 'slideout' ? true : false), (Conf['Slideout Watcher'] && Conf['Thread Watcher'] ? true : false), $('body > a[style="cursor: pointer; float: right;"]', d.body) != null, $('#navtopright .exlinksOptionsLink', d.body) != null, true, navlinks = Conf['Index Navigation'] || (g.REPLY && Conf['Reply Navigation']), navlinks]);
+        position = aligner(2, (Conf["4chan Banner"] === "at sidebar top" ? Style.logoOffset + 19 : 0), 19, [!g.CATALOG && Conf['Image Expansion'], true, (Conf['Slideout Navigation'] !== 'hide' ? true : false), (Conf['Announcements'] === 'slideout' ? true : false), !g.CATALOG && (Conf['Slideout Watcher'] && Conf['Thread Watcher'] ? true : false), !g.CATALOG && ($('body > a[style="cursor: pointer; float: right;"]', d.body) != null), $('#navtopright .exlinksOptionsLink', d.body) != null, !g.CATALOG, !g.CATALOG && (navlinks = Conf['Index Navigation'] || (g.REPLY && Conf['Reply Navigation'])), !g.CATALOG && navlinks]);
         if (align === 'left') {
           iconOffset = 20 - Style.sidebar - parseInt(Conf["Left Thread Padding"], 10);
         } else {
@@ -10989,8 +10990,15 @@
         CatalogLinks.init();
       }
       if (Conf['Thread Hiding']) {
-        return ThreadHiding.init();
+        ThreadHiding.init();
       }
+      return $.ready(function() {
+        Options.init();
+        MascotTools.init();
+        if (Conf['Custom Navigation']) {
+          return CustomNavigation.init();
+        }
+      });
     },
     features: function() {
       if (Conf['Filter']) {

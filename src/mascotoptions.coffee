@@ -3,7 +3,7 @@ MascotTools =
   
     Conf['mascot'] = mascot
     
-    return unless Conf['Mascots']
+    return if !Conf['Mascots'] or (g.CATALOG and Conf['Hide Mascots on Catalog'])
 
     if Conf['Mascot Position'] is 'bottom' or !(Conf['Mascot Position'] is "default" and Conf['Post Form Style'] is "fixed")
       position = 0

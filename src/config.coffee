@@ -787,6 +787,10 @@ div.post.highlight {
         'Make Mascots transparent.'
         'text'
       ]
+      'Hide Mascots on Catalog': [
+        false
+        'Do not show mascots on the official catalog pages.'
+      ]
 
     Navigation:
       'Boards Navigation': [

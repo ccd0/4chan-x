@@ -103,6 +103,13 @@ Main =
 
     if Conf['Thread Hiding']
       ThreadHiding.init()
+    
+    $.ready ->
+      Options.init()
+      MascotTools.init()
+
+      if Conf['Custom Navigation']
+        CustomNavigation.init()
 
   features: ->
     if Conf['Filter']

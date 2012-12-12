@@ -37,13 +37,13 @@
           true
           (if Conf['Slideout Navigation'] isnt 'hide' then true else false)
           (if Conf['Announcements'] is 'slideout' and $('#globalMessage', d.body)? then true else false)
-          (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
+          !g.CATALOG and (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
           $('#navtopright .exlinksOptionsLink', d.body)?
-          $('body > a[style="cursor: pointer; float: right;"]', d.body)?
-          Conf['Image Expansion']
-          true
-          navlinks = (Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation']))
-          navlinks
+          !g.CATALOG and $('body > a[style="cursor: pointer; float: right;"]', d.body)?
+          !g.CATALOG and Conf['Image Expansion']
+          !g.CATALOG
+          !g.CATALOG and navlinks = ((!g.REPLY and Conf['Index Navigation']) or (g.REPLY and Conf['Reply Navigation']))
+          !g.CATALOG and navlinks
         ]
       )
 
@@ -151,16 +151,16 @@ body > a[style="cursor: pointer; float: right;"]::after {
         (if Conf["4chan Banner"] is "at sidebar top" then (Style.logoOffset + 19) else 0)
         19
         [
-          Conf['Image Expansion']
+          !g.CATALOG and Conf['Image Expansion']
           true
           (if Conf['Slideout Navigation'] isnt 'hide' then true else false)
           (if Conf['Announcements'] is 'slideout' then true else false)
-          (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
-          $('body > a[style="cursor: pointer; float: right;"]', d.body)?
+          !g.CATALOG and (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
+          !g.CATALOG and $('body > a[style="cursor: pointer; float: right;"]', d.body)?
           $('#navtopright .exlinksOptionsLink', d.body)?
-          true
-          navlinks = (Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation']))
-          navlinks
+          !g.CATALOG
+          !g.CATALOG and navlinks = (Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation']))
+          !g.CATALOG and navlinks
         ]
       )
 
