@@ -6871,7 +6871,7 @@
         if (e.shiftKey && e.ctrlKey) {
           e.preventDefault();
           e.stopPropagation();
-          if (("br" === (el = this.nextSibling).tagName.toLowerCase() || el.className === 'spoiler') && el.nextSibling.className !== "abbr") {
+          if (((el = this.nextSibling).tagName.toLowerCase() === "br" || el.className === 'spoiler') && el.nextSibling.className !== "abbr") {
             this.href = el.textContent ? this.textContent += el.textContent + el.nextSibling.textContent : this.textContent += el.nextSibling.textContent;
             return $.rm(el);
           }
@@ -6879,7 +6879,7 @@
       });
     },
     node: function(post) {
-      var a, data, embed, i, index, link, links, n, node, nodes, p, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2;
+      var a, data, embed, i, index, link, links, node, nodes, snapshot, text, _i, _j, _k, _len, _len1, _ref, _ref1;
       if (post.isInlined && !post.isCrosspost) {
         if (Conf['Embedding']) {
           _ref = $$('.embed', post.el);
@@ -6890,25 +6890,16 @@
         }
         return;
       }
-      _ref1 = $$('s', post.blockquote);
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        spoiler = _ref1[_j];
-        if ((spoiler.textContent.length === 0) && (p = spoiler.previousSibling) && (n = spoiler.nextSibling) && (n.nodeType && p.nodeType === Node.TEXT_NODE)) {
-          p.textContent += n.textContent;
-          $.rm(n);
-          $.rm(spoiler);
-        }
-      }
       snapshot = d.evaluate('.//text()', post.blockquote, null, 6, null);
-      for (i = _k = 0, _ref2 = snapshot.snapshotLength; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
+      for (i = _j = 0, _ref1 = snapshot.snapshotLength; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
         node = snapshot.snapshotItem(i);
         data = node.data;
         if (!(links = data.match(Linkify.regString))) {
           continue;
         }
         nodes = [];
-        for (_l = 0, _len2 = links.length; _l < _len2; _l++) {
-          link = links[_l];
+        for (_k = 0, _len1 = links.length; _k < _len1; _k++) {
+          link = links[_k];
           index = data.indexOf(link);
           if (text = data.slice(0, index)) {
             nodes.push($.tn(text));
@@ -7644,9 +7635,9 @@
         type: 'fuuka'
       }
     },
+    noarch: 'No archiver available.',
     select: function(board) {
       var arch, name, type;
-      this.noarch = 'No archiver available.';
       arch = (function() {
         var _ref, _results;
         _ref = this.archiver;
@@ -7671,13 +7662,14 @@
         if ((names = this.select(board)) && !(current && names.contains(current))) {
           $.set("archiver/" + board + "/", names[0]);
         }
-        aboard = names[0] !== this.noarch ? this.archive[board] = this.archiver[current] : this.archive[board] = true;
+        aboard = this.archive[board] = names[0] !== this.noarch ? this.archiver[current] : true;
       }
       if (aboard.base) {
         return this.path(aboard.base, aboard.type, data);
       } else if (!data.isSearch && data.threadID) {
         return "//boards.4chan.org/" + board + "/";
       }
+      return null;
     },
     path: function(base, archiver, data) {
       var board, path, postID, threadID, type, value;

@@ -2471,7 +2471,7 @@ Linkify =
         e.stopPropagation()
 
         # We essentially check for a <br> and make sure we're not merging non-post content.
-        if ("br" is (el = @nextSibling).tagName.toLowerCase() or el.className is 'spoiler') and el.nextSibling.className isnt "abbr"
+        if ((el = @nextSibling).tagName.toLowerCase() is "br" or el.className is 'spoiler') and el.nextSibling.className isnt "abbr"
           @href = if el.textContent
             @textContent += el.textContent + el.nextSibling.textContent
           else
@@ -2485,16 +2485,9 @@ Linkify =
           $.on embed, 'click', Linkify.toggle
       return
 
-    # Remove blank spoilers.
-    for spoiler in $$ 's', post.blockquote
-      if (spoiler.textContent.length is 0) and (p = spoiler.previousSibling) and (n = spoiler.nextSibling) and (n.nodeType and p.nodeType is Node.TEXT_NODE)
-        p.textContent += n.textContent
-        $.rm n
-        $.rm spoiler
-
     # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
     # Get all the text nodes that are not inside an anchor.
-    snapshot = d.evaluate './/text()', post.blockquote, null, 6, null #|//s
+    snapshot = d.evaluate './/text()', post.blockquote, null, 6, null
 
     for i in [0...snapshot.snapshotLength]
       node = snapshot.snapshotItem i
@@ -3091,9 +3084,10 @@ Redirect =
       base: '//archive.nyafuu.org'
       boards: ['c', 'w']
       type: 'fuuka'
+      
+  noarch: 'No archiver available.'
 
   select: (board) ->
-    @noarch = 'No archiver available.'
     arch = for name, type of @archiver
       unless type.boards.contains board or g.BOARD
         continue
@@ -3102,19 +3096,19 @@ Redirect =
     [@noarch]
 
   to: (data) ->
-
     unless aboard = @archive[{board} = data] = @archiver[current = $.get "archiver/#{board}/"]
       if (names = @select board) and not (current and names.contains current)
         $.set "archiver/#{board}/", names[0]
-      aboard = if names[0] isnt @noarch
-        @archive[board] = @archiver[current]
+      aboard = @archive[board] = if names[0] isnt @noarch
+        @archiver[current]
       else
-        @archive[board] = true
+        true
 
     return if aboard.base
       @path aboard.base, aboard.type, data
     else if not data.isSearch and data.threadID
       "//boards.4chan.org/#{board}/"
+    null
 
   path: (base, archiver, data) ->
     if data.isSearch
