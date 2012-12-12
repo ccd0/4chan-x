@@ -7658,8 +7658,8 @@
       return (arch.length > 0 ? arch : [this.noarch]);
     },
     to: function(data) {
-      var aboard, board, name, names;
-      aboard = this.archive[board = data.board, data] = this.archiver[$.get("archiver/" + board + "/")] || ($.set("archiver/" + board + "/", (name = (names = this.select(board)))[0]) && name !== this.noarch ? this.archiver[name] : {});
+      var aboard, board, name;
+      aboard = this.archive[board = data.board] = this.archiver[$.get("archiver/" + board + "/", false)] || ($.set("archiver/" + board + "/", name = this.select(board)[0]) && name !== this.noarch ? this.archiver[name] : {});
       return (aboard.base ? this.path(aboard.base, aboard.type, data) : !data.isSearch && data.threadID ? "//boards.4chan.org/" + board + "/" : null);
     },
     path: function(base, archiver, data) {
