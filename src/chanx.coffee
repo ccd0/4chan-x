@@ -3095,7 +3095,7 @@ Redirect =
     return (if arch.length > 0 then arch else [@noarch])
    
   to: (data) ->
-    aboard = (@archive[{board} = data] = @archiver[$.get("archiver/#{board}/")]) or
+    aboard = @archive[{board} = data] = @archiver[$.get("archiver/#{board}/")] or
       if $.set("archiver/#{board}/", (name = (names = @select board))[0]) and name isnt @noarch
         @archiver[name]
       else
