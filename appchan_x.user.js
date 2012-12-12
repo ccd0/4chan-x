@@ -7660,12 +7660,7 @@
     to: function(data) {
       var aboard, board, name, names;
       aboard = (this.archive[board = data.board, data] = this.archiver[$.get("archiver/" + board + "/")]) || ($.set("archiver/" + board + "/", (name = (names = this.select(board)))[0]) && name !== this.noarch ? this.archiver[name] : {});
-      if (aboard.base) {
-        return this.path(aboard.base, aboard.type, data);
-      } else if (!data.isSearch && data.threadID) {
-        return "//boards.4chan.org/" + board + "/";
-      }
-      return null;
+      return (aboard.base ? this.path(aboard.base, aboard.type, data) : !data.isSearch && data.threadID ? "//boards.4chan.org/" + board + "/" : null);
     },
     path: function(base, archiver, data) {
       var board, path, postID, threadID, type, value;
