@@ -691,6 +691,10 @@ div.post.highlight {
         false
         'Block advertisements. It\'s probably better to use AdBlock for this.'
       ]
+      'Shrink Ads': [
+        false
+        'Make 4chan advertisements smaller.'
+      ]
       'Sidebar Glow': [
         false
         'Adds a glow to the sidebar\'s text.'

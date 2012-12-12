@@ -2283,6 +2283,16 @@ img[src^="//static.4chan.org/support/"] {
 """
       else ""
     ) + (
+      if Conf["Shrink Ads"]
+        """
+a[href*="jlist"],
+img[src^="//static.4chan.org/support/"] {
+  width: 500px;
+  height: auto;
+}\n
+"""
+      else ""
+    ) + (
       unless Conf["Emoji"] is "disable"
         Style.emoji Conf["Emoji Position"]
       else ""
