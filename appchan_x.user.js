@@ -9954,16 +9954,16 @@
       }
       Conf['mascot'] = mascot;
       if (!Conf['Mascots'] || (g.CATALOG && Conf['Hide Mascots on Catalog'])) {
-        return;
+        if (el = $('#mascot img', d.body)) {
+          return el.src = "";
+        } else {
+          return null;
+        }
       }
       if (Conf['Mascot Position'] === 'bottom' || !(Conf['Mascot Position'] === "default" && Conf['Post Form Style'] === "fixed")) {
         position = 0;
       } else {
-        if (!g.REPLY || !!$('#postForm input[name=spoiler]')) {
-          position = "21.1em";
-        } else {
-          position = "19.7em";
-        }
+        position = !g.REPLY || !!$('#postForm input[name=spoiler]') ? "21.1em" : "19.7em";
       }
       if (Conf['editMode']) {
         if (!(mascot = editMascot || (mascot = Mascots[Conf["mascot"]]))) {
@@ -9972,15 +9972,14 @@
       } else {
         names = [];
         if (!Conf["mascot"]) {
-          el = $('#mascot img', d.body);
-          if (el) {
+          if (el = $('#mascot img', d.body)) {
             return el.src = "";
+          } else {
+            return null;
           }
-          return;
         }
         if (!(mascot = Mascots[Conf["mascot"]])) {
-          Conf[gMASCOTSTRING].remove(Conf["mascot"]);
-          return;
+          return Conf[gMASCOTSTRING].remove(Conf["mascot"]);
         }
         this.addMascot(mascot);
       }

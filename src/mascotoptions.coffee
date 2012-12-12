@@ -1,19 +1,18 @@
 MascotTools =
   init: (mascot = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]) ->
-  
+
     Conf['mascot'] = mascot
-    
-    return if !Conf['Mascots'] or (g.CATALOG and Conf['Hide Mascots on Catalog'])
+
+    if !Conf['Mascots'] or (g.CATALOG and Conf['Hide Mascots on Catalog'])
+      return if el = $('#mascot img', d.body) then el.src = "" else null
 
     if Conf['Mascot Position'] is 'bottom' or !(Conf['Mascot Position'] is "default" and Conf['Post Form Style'] is "fixed")
       position = 0
     else
-      if !g.REPLY or !!$ '#postForm input[name=spoiler]'
-        position = "21.1em"
-      else
-        position = "19.7em"
-        
-      
+      position = if !g.REPLY or !!$ '#postForm input[name=spoiler]'
+        "21.1em"
+      else "19.7em"
+
     # If we're editting anything, let's not change mascots any time we change a value.
     if Conf['editMode']
       unless mascot = editMascot or mascot = Mascots[Conf["mascot"]]
@@ -23,16 +22,10 @@ MascotTools =
       names = []
 
       unless Conf["mascot"]
-        el = $('#mascot img', d.body)
-
-        if el
-          return el.src = ""
-
-        return
+        return if el = $('#mascot img', d.body) then el.src = "" else null
 
       unless mascot = Mascots[Conf["mascot"]]
-        Conf[gMASCOTSTRING].remove Conf["mascot"]
-        return
+        return Conf[gMASCOTSTRING].remove Conf["mascot"]
 
       @addMascot mascot
 
@@ -45,7 +38,7 @@ MascotTools =
       location = 'right'
     else
       location = 'left'
-    
+
     filters = []
 
     if Conf["Grayscale Mascots"]
@@ -71,7 +64,7 @@ MascotTools =
   #{location}: #{
     (mascot.hOffset or 0) + (
       if Conf['Sidebar'] is 'large' and mascot.center
-        25 
+        25
       else
         0
     )
@@ -228,7 +221,7 @@ MascotTools =
             $.after input, fileInput
 
           if name is 'name'
-            
+
             $.on input, 'blur', ->
               @value = @value.replace /[^a-z-_0-9]/ig, "_"
               unless /^[a-z]/i.test @value
@@ -236,9 +229,9 @@ MascotTools =
               editMascot[@name] = @value
               MascotTools.addMascot editMascot
               Style.addStyle()
-            
+
           else
-          
+
             $.on input, 'blur', ->
               editMascot[@name] = @value
               MascotTools.addMascot editMascot
