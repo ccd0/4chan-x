@@ -3096,8 +3096,10 @@ Redirect =
    
   to: (data) ->
     aboard = (@archive[{board} = data] = @archiver[$.get("archiver/#{board}/")]) or
-      if (names = @select board) then $.set "archiver/#{board}/", names[0]
-      @archive[board] = if names[0] isnt @noarch then @archiver[names[0]] else {}
+      if $.set("archiver/#{board}/", (name = (names = @select board))[0]) and name isnt @noarch
+        @archiver[name]
+      else
+        {}
 
     return if aboard.base
       @path aboard.base, aboard.type, data

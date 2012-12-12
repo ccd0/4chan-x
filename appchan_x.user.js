@@ -7662,9 +7662,8 @@
       }
     },
     to: function(data) {
-      var aboard, board, names;
-      aboard = (this.archive[board = data.board, data] = this.archiver[$.get("archiver/" + board + "/")]) || ((names = this.select(board)) ? $.set("archiver/" + board + "/", names[0]) : void 0);
-      this.archive[board] = names[0] !== this.noarch ? this.archiver[names[0]] : {};
+      var aboard, board, name, names;
+      aboard = (this.archive[board = data.board, data] = this.archiver[$.get("archiver/" + board + "/")]) || ($.set("archiver/" + board + "/", (name = (names = this.select(board)))[0]) && name !== this.noarch ? this.archiver[name] : {});
       if (aboard.base) {
         return this.path(aboard.base, aboard.type, data);
       } else if (!data.isSearch && data.threadID) {
