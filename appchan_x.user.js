@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.23 - 2012-12-11
+ * appchan x - Version 1.0.23 - 2012-12-12
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -10065,7 +10065,7 @@
             if (name === 'name') {
               $.on(input, 'blur', function() {
                 this.value = this.value.replace(/[^a-z-_0-9]/ig, "_");
-                if (this.value.text(/^[a-z]/i)) {
+                if (!/^[a-z]/i.test(this.value)) {
                   return alert("Mascot names must start with a letter.");
                 }
                 editMascot[this.name] = this.value;
