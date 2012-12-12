@@ -1,4 +1,11 @@
 master
+
+1.0.24
+- Zixaphir
+  Fixed a mascot bug which reported the mascot had no name
+  New Options:
+  - Shrink Ads
+  - Hide Mascots on Catalog
 - noface
   Added liveleak embedding and Vimeo Link Title.
 - Mayhem
