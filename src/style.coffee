@@ -757,6 +757,7 @@ textarea {
 #boardNavDesktopFoot a,
 .container::before,
 .fileText span:not([class])::after,
+.pages strong,
 .selectrice,
 a,
 body,
@@ -800,12 +801,10 @@ textarea {
 .large .teaser,
 .mobile,
 .navLinksBot,
-.next,
 .panel,
 .postInfo input,
 .postInfo .rice,
 .postingMode,
-.prev,
 .qrHeader,
 .replyContainer > .hide_reply_button.stub ~ .reply,
 .replymode,
@@ -1039,13 +1038,14 @@ img {
   margin-right: 1px;
 }
 /* Navigation */
-#{(if Conf["Hide Navigation Decorations"] then "#boardNavDesktop, .pages" else "")} {
-  font-size: 0;
-  color: transparent;
-  word-spacing: 2px;
-}
-.pages {
+.pagelist {
   text-align: #{Conf["Pagination Alignment"]};
+}
+.next,
+.pages,
+.prev {
+  display: inline-block;
+  margin: 0 3px;
 }
 #boardNavDesktop {
   text-align: #{Conf["Navigation Alignment"]};
@@ -1807,6 +1807,22 @@ div.post.qphl {
 }
 #{theme["Custom CSS"]}\n
 """ + (
+      if Conf["Hide Navigation Decorations"]
+         """
+#boardNavDesktop, .pages {
+  font-size: 0;
+  color: transparent;
+  word-spacing: 2px;
+}
+.pages {
+  word-spacing: 0;
+}
+.pages a {
+  margin: 1px;
+}\n
+"""
+      else ""
+    ) + (
       if Conf["Image Expansion"]
         """
 .fileThumb img {
