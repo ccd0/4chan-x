@@ -4293,8 +4293,11 @@
         quotes: quotes,
         backlinks: []
       };
-      if (Conf['Resurrect Quotes'] || Conf['Linkify']) {
+      if (Conf['Resurrect Quotes']) {
         Quotify.node(post);
+      }
+      if (Conf['Linkify']) {
+        Linkify.node(post);
       }
       if (Conf['Quote Preview']) {
         QuotePreview.node(post);
@@ -6003,9 +6006,9 @@
           case '[/b]':
             return '</b>';
           case '[spoiler]':
-            return '<span class=spoiler>';
+            return '<s>';
           case '[/spoiler]':
-            return '</span>';
+            return '</s>';
           case '[code]':
             return '<pre class=prettyprint>';
           case '[/code]':
@@ -6718,9 +6721,8 @@
   Linkify = {
     init: function() {
       if (Conf['Embedding']) {
-        this.protocol = d.location.protocol;
         this.types = {
-          youtube: {
+          YouTube: {
             regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
             style: {
               border: '0',
@@ -6729,7 +6731,7 @@
             },
             el: function() {
               return $.el('iframe', {
-                src: "" + Linkify.protocol + "//www.youtube.com/embed/" + this.name
+                src: "//www.youtube.com/embed/" + this.name
               });
             },
             title: {
@@ -6741,7 +6743,7 @@
               }
             }
           },
-          vocaroo: {
+          Vocaroo: {
             regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
             el: function() {
               return $.el('object', {
@@ -6749,7 +6751,7 @@
               });
             }
           },
-          vimeo: {
+          Vimeo: {
             regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
             style: {
               border: '0',
@@ -6758,7 +6760,7 @@
             },
             el: function() {
               return $.el('iframe', {
-                src: "" + Linkify.protocol + "//player.vimeo.com/video/" + this.name
+                src: "//player.vimeo.com/video/" + this.name
               });
             },
             title: {
@@ -6770,7 +6772,7 @@
               }
             }
           },
-          liveleak: {
+          LiveLeak: {
             regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
             style: {
               boder: '0',
@@ -6793,15 +6795,15 @@
               });
             }
           },
-          soundcloud: {
-            regExp: /.*(?:soundcloud.com\/)([^#\&\?]*).*/,
+          SoundCloud: {
+            regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
             el: function() {
               var div;
               div = $.el('div', {
                 className: "soundcloud",
                 name: "soundcloud"
               });
-              $.ajax("" + Linkify.protocol + "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + this.previousElementSibling.textContent + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
+              $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + (this.getAttribute('data-originalURL')) + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
                 div: div,
                 onloadend: function() {
                   return this.div.innerHTML = JSON.parse(this.responseText).html;
@@ -6834,25 +6836,29 @@
                     a.textContent = title[0];
                     embed.setAttribute('data-title', title[0]);
                   } else {
-                    $.ajax(service.api.call(a), {
-                      onloadend: function() {
-                        switch (this.status) {
-                          case 200:
-                          case 304:
-                            titles = $.get('CachedTitles', {});
-                            a.textContent = title = "[" + key + "] " + (service.text.call(this));
-                            embed.setAttribute('data-title', title);
-                            titles[match[1]] = [title, Date.now()];
-                            return $.set('CachedTitles', titles);
-                          case 404:
-                            return node.textContent = "[" + key + "] Not Found";
-                          case 403:
-                            return node.textContent = "[" + key + "] Forbidden or Private";
-                          default:
-                            return node.textContent = "[" + key + "] " + this.status + "'d";
+                    try {
+                      $.ajax(service.api.call(a), {
+                        onloadend: function() {
+                          switch (this.status) {
+                            case 200:
+                            case 304:
+                              titles = $.get('CachedTitles', {});
+                              a.textContent = title = "[" + key + "] " + (service.text.call(this));
+                              embed.setAttribute('data-title', title);
+                              titles[match[1]] = [title, Date.now()];
+                              return $.set('CachedTitles', titles);
+                            case 404:
+                              return node.textContent = "[" + key + "] Not Found";
+                            case 403:
+                              return node.textContent = "[" + key + "] Forbidden or Private";
+                            default:
+                              return node.textContent = "[" + key + "] " + this.status + "'d";
+                          }
                         }
-                      }
-                    });
+                      });
+                    } catch (err) {
+                      $.log("Unable to fetch the title of this " + key + " link. You may be blocking scripts from " + key + ".");
+                    }
                   }
                 }
               }
@@ -6875,7 +6881,7 @@
         if (e.shiftKey && e.ctrlKey) {
           e.preventDefault();
           e.stopPropagation();
-          if (((el = this.nextSibling).tagName.toLowerCase() === "br" || el.className === 'spoiler') && el.nextSibling.className !== "abbr") {
+          if (((el = this.nextSibling).tagName.toLowerCase() === "br" || el.tagName.toLowerCase() === 's') && el.nextSibling.className !== "abbr") {
             this.href = el.textContent ? this.textContent += el.textContent + el.nextSibling.textContent : this.textContent += el.nextSibling.textContent;
             return $.rm(el);
           }

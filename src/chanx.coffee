@@ -6,7 +6,7 @@ Markdown =
       i:    /(\*|_)(?=\S)([^\r\n]*?\S)\1/g
       code: /(`)(?=\S)([^\r\n]*?\S)\1/g
       ds:   /(\|\||__)(?=\S)([^\r\n]*?\S)\1/g
-    
+
     for tag, pattern of tag_patterns
       text =
         if text
@@ -411,8 +411,10 @@ ExpandComment =
       threadID:   threadID
       quotes:     quotes
       backlinks:  []
-    if Conf['Resurrect Quotes'] or Conf['Linkify']
+    if Conf['Resurrect Quotes']
       Quotify.node      post
+    if Conf['Linkify']
+      Linkify.node      post
     if Conf['Quote Preview']
       QuotePreview.node post
     if Conf['Quote Inline']
@@ -1670,9 +1672,9 @@ Get =
           when '[/b]'
             '</b>'
           when '[spoiler]'
-            '<span class=spoiler>'
+            '<s>'
           when '[/spoiler]'
-            '</span>'
+            '</s>'
           when '[code]'
             '<pre class=prettyprint>'
           when '[/code]'
@@ -2337,10 +2339,8 @@ Quotify =
 Linkify =
   init: ->
     if Conf['Embedding']
-      @protocol = d.location.protocol
-
       @types =
-        youtube:
+        YouTube:
           regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
           style:
             border: '0'
@@ -2348,16 +2348,16 @@ Linkify =
             height: '390px'
           el: ->
             $.el 'iframe'
-              src: "#{Linkify.protocol}//www.youtube.com/embed/#{@name}"
+              src: "//www.youtube.com/embed/#{@name}"
           title:
             api:  -> "https://gdata.youtube.com/feeds/api/videos/#{@name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
             text: -> JSON.parse(@responseText).entry.title.$t
-        vocaroo:
+        Vocaroo:
           regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
           el: ->
             $.el 'object'
               innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-        vimeo:
+        Vimeo:
           regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
           style:
             border: '0'
@@ -2365,11 +2365,11 @@ Linkify =
             height: '390px'
           el: ->
             $.el 'iframe'
-              src: "#{Linkify.protocol}//player.vimeo.com/video/#{@name}"
+              src: "//player.vimeo.com/video/#{@name}"
           title:
             api:  -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{@name}"
             text: -> JSON.parse(@responseText).title
-        liveleak:
+        LiveLeak:
           regExp:  /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
           style:
             boder:  '0'
@@ -2385,14 +2385,14 @@ Linkify =
               controls:    'controls'
               preload:     'auto'
               src:         @name
-        soundcloud:
-          regExp:  /.*(?:soundcloud.com\/)([^#\&\?]*).*/
+        SoundCloud:
+          regExp:  /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
           el: ->
             div   = $.el 'div'
               className: "soundcloud"
               name:      "soundcloud"
             $.ajax(
-              "#{Linkify.protocol}//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@previousElementSibling.textContent}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
+              "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@getAttribute 'data-originalURL'}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
               div: div
               onloadend: ->
                 @div.innerHTML = JSON.parse(this.responseText).html
@@ -2411,7 +2411,7 @@ Linkify =
             embed.setAttribute 'data-service', key
             embed.setAttribute 'data-originalURL', a.href
             $.on embed, 'click', Linkify.toggle
-   
+
             if Conf['Link Title']
               if service = type.title
                 titles = $.get 'CachedTitles', {}
@@ -2419,30 +2419,32 @@ Linkify =
                   a.textContent = title[0]
                   embed.setAttribute 'data-title', title[0]
                 else
-                  $.ajax(
-                    service.api.call a
-                    onloadend: ->
-                      switch @status
-                        when 200, 304
-                          titles = $.get 'CachedTitles', {}
-                          a.textContent = title = "[#{key}] #{service.text.call @}"
-                          embed.setAttribute 'data-title', title
-                          titles[match[1]] = [title, Date.now()]
-                          $.set 'CachedTitles', titles
-                        when 404
-                          node.textContent = "[#{key}] Not Found"
-                        when 403
-                          node.textContent = "[#{key}] Forbidden or Private"
-                        else
-                          node.textContent = "[#{key}] #{@status}'d"
-                    )
-   
+                  try
+                    $.ajax(
+                      service.api.call a
+                      onloadend: ->
+                        switch @status
+                          when 200, 304
+                            titles = $.get 'CachedTitles', {}
+                            a.textContent = title = "[#{key}] #{service.text.call @}"
+                            embed.setAttribute 'data-title', title
+                            titles[match[1]] = [title, Date.now()]
+                            $.set 'CachedTitles', titles
+                          when 404
+                            node.textContent = "[#{key}] Not Found"
+                          when 403
+                            node.textContent = "[#{key}] Forbidden or Private"
+                          else
+                            node.textContent = "[#{key}] #{@status}'d"
+                      )
+                  catch err
+                    $.log "Unable to fetch the title of this #{key} link. You may be blocking scripts from #{key}."
+                    
             return [a, $.tn(' '), embed]
         return [a]
     else
       @embedder = (a) ->
         return [a]
-      
 
     Main.callbacks.push @node
 
@@ -2472,7 +2474,7 @@ Linkify =
         e.stopPropagation()
 
         # We essentially check for a <br> and make sure we're not merging non-post content.
-        if ((el = @nextSibling).tagName.toLowerCase() is "br" or el.className is 'spoiler') and el.nextSibling.className isnt "abbr"
+        if ((el = @nextSibling).tagName.toLowerCase() is "br" or el.tagName.toLowerCase() is 's') and el.nextSibling.className isnt "abbr"
           @href = if el.textContent
             @textContent += el.textContent + el.nextSibling.textContent
           else
@@ -2512,7 +2514,6 @@ Linkify =
           className: 'linkify'
           rel:       'nofollow noreferrer'
           target:    'blank'
-          # I haven't found a situation where not having a slash in the conditional breaks anything.
           href:      if link.indexOf(":") < 0 then (if (link.contains "@") then "mailto:" + link else "http://" + link) else link
 
         Linkify.concat a
@@ -3085,7 +3086,7 @@ Redirect =
       base: '//archive.nyafuu.org'
       boards: ['c', 'w']
       type: 'fuuka'
-      
+
   noarch: 'No archiver available.'
 
   select: (board) ->
@@ -3093,7 +3094,7 @@ Redirect =
       continue unless type.boards.contains board or g.BOARD
       name
     return (if arch.length > 0 then arch else [@noarch])
-   
+
   to: (data) ->
     aboard = @archive[board = data.board] = @archiver[$.get "archiver/#{board}/", false] or
       if $.set("archiver/#{board}/", name = @select(board)[0]) and name isnt @noarch
@@ -3240,7 +3241,7 @@ ImageReplace =
       $.on el, 'load', ->
         img.src = el.src
       el.src = href
-        
+
 
 ImageExpand =
   init: ->
