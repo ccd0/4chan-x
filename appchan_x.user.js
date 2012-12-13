@@ -8638,7 +8638,9 @@
         persona = $.get('persona', {
           global: {}
         });
-        persona[key = Conf['Per Board Persona'] ? g.BOARD : 'global'];
+        if (!persona[key = Conf['Per Board Persona'] ? g.BOARD : 'global']) {
+          persona[key] = persona.global;
+        }
         this.name = prev ? prev.name : persona[key].name || null;
         this.email = prev && (Conf["Remember Sage"] || !/^sage$/.test(prev.email)) ? prev.email : persona[key].email || null;
         this.sub = prev && Conf['Remember Subject'] ? prev.sub : Conf['Remember Subject'] ? persona[key].sub : null;

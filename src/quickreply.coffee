@@ -316,7 +316,8 @@ QR =
       prev     = QR.replies[QR.replies.length-1]
       persona  = $.get 'persona', 
         global: {}
-      persona[key = if Conf['Per Board Persona'] then g.BOARD else 'global']
+      unless persona[key = if Conf['Per Board Persona'] then g.BOARD else 'global']
+        persona[key] = persona.global
       @name    = if prev then prev.name else persona[key].name or null
       @email   = if prev and (Conf["Remember Sage"] or !/^sage$/.test prev.email) then prev.email else persona[key].email or null
       @sub     = if prev and Conf['Remember Subject'] then prev.sub else if Conf['Remember Subject'] then persona[key].sub else null
