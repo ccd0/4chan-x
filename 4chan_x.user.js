@@ -1991,23 +1991,17 @@
       }
       id = this.previousSibling.hash.slice(2);
       text = ">>" + id + "\n";
-      sel = window.getSelection();
+      sel = d.getSelection();
       if ((s = sel.toString().trim()) && id === ((_ref = $.x('ancestor-or-self::blockquote', sel.anchorNode)) != null ? _ref.id.match(/\d+$/)[0] : void 0)) {
-        if ($.engine === 'presto') {
-          s = d.getSelection().trim();
-        }
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
       }
       ta = $('textarea', QR.el);
       caretPos = ta.selectionStart;
       ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
-      ta.focus();
       range = caretPos + text.length;
-      if ($.engine === 'presto') {
-        range += text.match(/\n/g).length;
-      }
       ta.setSelectionRange(range, range);
+      ta.focus();
       return $.event(ta, new Event('input'));
     },
     characterCount: function() {
