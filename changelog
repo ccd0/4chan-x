@@ -1,5 +1,11 @@
 master
 
+1.0.25
+- Zixaphir
+  Fixed a bug in the Archive Redirector that was causing an error popup (but was otherwise behaving correctly)
+  Added a crunchbang emoji
+  Added error-checking for the embedder title link
+
 1.0.24
 - Zixaphir
   Fixed a mascot bug which reported the mascot had no name
