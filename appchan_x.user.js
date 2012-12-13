@@ -175,6 +175,7 @@
         'Persistent QR': [true, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [false, 'Automatically hide the quick reply when posting.'],
         'Open Reply in New Tab': [false, 'Open replies in a new tab that are made from the main board.'],
+        'Per Board Persona': [false, 'Remember Name, Email, Subject, etc per board instead of globally.'],
         'Remember QR size': [false, 'Remember the size of the Quick reply (Firefox only).'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
@@ -2990,6 +2991,45 @@
     <div class=warning><code>Custom Navigation</code> is disabled.</div>\
     <div id=customNavigation>\
     </div>\
+    <div class=warning><code>Per Board Persona</code> is disabled.</div>\
+    <div id=persona>\
+      <select name=personaboards></select>\
+      <ul>\
+        <li>\
+          <div class=option>\
+            Name:\
+          </div>\
+        </li>\
+        <li>\
+          <div class=option>\
+            <input name=name>\
+          </div>\
+        </li>\
+        <li>\
+          <div class=option>\
+            Email:\
+          </div>\
+        </li>\
+        <li>\
+          <div class=option>\
+            <input name=email>\
+          </div>\
+        </li>\
+        <li>\
+          <div class=option>\
+            Subject:\
+          </div>\
+        </li>\
+        <li>\
+          <div class=option>\
+            <input name=sub>\
+          </div>\
+        </li>\
+        <li>\
+          <button></button>\
+        </li>\
+      </ul>\
+    </div>\
     <div class=warning><code>Custom CSS</code> is disabled.</div>\
     Remove Comment blocks to use! ( "/*" and "*/" around CSS blocks )\
     <textarea name=customCSS id=customCSS class=field></textarea>\
@@ -3093,6 +3133,20 @@
       $.on(time, 'input', Options.time);
       $.on(fileInfo, 'input', $.cb.value);
       $.on(fileInfo, 'input', Options.fileInfo);
+      this.persona.select = $('[name=personaboards]', dialog);
+      this.persona.button = $('#persona button', dialog);
+      this.persona.data = $.get('persona', {
+        global: {}
+      });
+      if (!this.persona.data[g.BOARD]) {
+        this.persona.data[g.BOARD] = JSON.parse(JSON.stringify(this.persona.data.global));
+      }
+      for (name in this.persona.data) {
+        this.persona.select.innerHTML += "<option value=" + name + ">" + name + "</option>";
+      }
+      this.persona.select.value = Conf['Per Board Persona'] ? g.BOARD : 'global';
+      this.persona.init();
+      $.on(this.persona.select, 'change', Options.persona.change);
       customCSS = $('#customCSS', dialog);
       customCSS.value = $.get(customCSS.name, Conf[customCSS.name]);
       $.on(customCSS, 'change', function() {
@@ -3716,6 +3770,54 @@
         $.set("userNavigation", userNavigation);
         $.rm($("#customNavigation > ul", d.body));
         return Options.customNavigation.dialog($("#options", d.body));
+      }
+    },
+    persona: {
+      init: function() {
+        var input, item, key, _i, _len, _ref;
+        key = Conf['Per Board Persona'] ? g.BOARD : 'global';
+        Options.persona.newButton();
+        _ref = Options.persona.array;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
+          input = $("input[name=" + item + "]", Options.el);
+          input.value = this.data[key][item] || "";
+          $.on(input, 'blur', function() {
+            var pers;
+            pers = Options.persona;
+            pers.data[pers.select.value][this.name] = this.value;
+            return $.set('persona', pers.data);
+          });
+        }
+        return $.on(Options.persona.button, 'click', Options.persona.copy);
+      },
+      array: ['name', 'email', 'sub'],
+      change: function() {
+        var input, item, key, _i, _len, _ref, _results;
+        key = this.value;
+        Options.persona.newButton();
+        _ref = Options.persona.array;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          item = _ref[_i];
+          input = $("input[name=" + item + "]", Options.el);
+          _results.push(input.value = Options.persona.data[key][item]);
+        }
+        return _results;
+      },
+      copy: function() {
+        var change, data, select, _ref;
+        _ref = Options.persona, select = _ref.select, data = _ref.data, change = _ref.change;
+        if (select.value === 'global') {
+          data.global = JSON.parse(JSON.stringify(data[select.value]));
+        } else {
+          data[select.value] = JSON.parse(JSON.stringify(data.global));
+        }
+        $.set('persona', Options.persona.data = data);
+        return change.call(select);
+      },
+      newButton: function() {
+        return Options.persona.button.textContent = "Copy from " + (Options.persona.select.value === 'global' ? 'current board' : 'global');
       }
     },
     close: function() {
@@ -8530,13 +8632,16 @@
     reply: (function() {
 
       function _Class() {
-        var persona, prev,
+        var key, persona, prev,
           _this = this;
         prev = QR.replies[QR.replies.length - 1];
-        persona = $.get('QR.persona', {});
-        this.name = prev ? prev.name : persona.name || null;
-        this.email = prev && (Conf["Remember Sage"] || !/^sage$/.test(prev.email)) ? prev.email : persona.email || null;
-        this.sub = prev && Conf['Remember Subject'] ? prev.sub : Conf['Remember Subject'] ? persona.sub : null;
+        persona = $.get('persona', {
+          global: {}
+        });
+        persona[key = Conf['Per Board Persona'] ? g.BOARD : 'global'];
+        this.name = prev ? prev.name : persona[key].name || null;
+        this.email = prev && (Conf["Remember Sage"] || !/^sage$/.test(prev.email)) ? prev.email : persona[key].email || null;
+        this.sub = prev && Conf['Remember Subject'] ? prev.sub : Conf['Remember Subject'] ? persona[key].sub : null;
         this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
         this.com = null;
         this.el = $.el('a', {
@@ -9105,7 +9210,7 @@
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(html) {
-      var bs, doc, err, msg, persona, postID, reply, threadID, _, _ref, _ref1;
+      var bs, doc, err, key, msg, persona, postID, reply, threadID, _, _ref, _ref1;
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = html;
       if (doc.title === '4chan - Banned') {
@@ -9141,13 +9246,15 @@
         return;
       }
       reply = QR.replies[0];
-      persona = $.get('QR.persona', {});
-      persona = {
+      persona = $.get('persona', {
+        global: {}
+      });
+      persona[key = Conf['Per Board Persona'] ? g.BOARD : 'global'] = {
         name: reply.name,
-        email: !Conf["Remember Sage"] && /^sage$/.test(reply.email) ? /^sage$/.test(persona.email) ? null : persona.email : reply.email,
+        email: !Conf["Remember Sage"] && /^sage$/.test(reply.email) ? /^sage$/.test(persona[key].email) ? null : persona[key].email : reply.email,
         sub: Conf['Remember Subject'] ? reply.sub : null
       };
-      $.set('QR.persona', persona);
+      $.set('persona', persona);
       _ref1 = msg.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
       Updater.postID = postID;
       $.event(QR.el, new CustomEvent('QRPostSuccessful', {

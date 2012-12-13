@@ -240,6 +240,10 @@ Config =
         false
         'Open replies in a new tab that are made from the main board.'
       ]
+      'Per Board Persona': [
+        false
+        'Remember Name, Email, Subject, etc per board instead of globally.'
+      ]
       'Remember QR size': [
         false
         'Remember the size of the Quick reply (Firefox only).'

@@ -314,12 +314,14 @@ QR =
     constructor: ->
       # set values, or null, to avoid 'undefined' values in inputs
       prev     = QR.replies[QR.replies.length-1]
-      persona  = $.get 'QR.persona', {}
-      @name    = if prev then prev.name else persona.name or null
-      @email   = if prev and (Conf["Remember Sage"] or !/^sage$/.test prev.email) then prev.email else persona.email or null
-      @sub     = if prev and Conf['Remember Subject'] then prev.sub else if Conf['Remember Subject'] then persona.sub else null
+      persona  = $.get 'persona', 
+        global: {}
+      persona[key = if Conf['Per Board Persona'] then g.BOARD else 'global']
+      @name    = if prev then prev.name else persona[key].name or null
+      @email   = if prev and (Conf["Remember Sage"] or !/^sage$/.test prev.email) then prev.email else persona[key].email or null
+      @sub     = if prev and Conf['Remember Subject'] then prev.sub else if Conf['Remember Subject'] then persona[key].sub else null
       @spoiler = if prev and Conf['Remember Spoiler'] then prev.spoiler else false
-      @com = null
+      @com     = null
 
       @el = $.el 'a',
         className: 'thumbnail'
@@ -831,19 +833,21 @@ QR =
 
     reply = QR.replies[0]
 
-    persona = $.get 'QR.persona', {}
-    persona =
+    
+    persona = $.get 'persona', 
+      global: {}
+    persona[key = if Conf['Per Board Persona'] then g.BOARD else 'global'] =
       name:  reply.name
       email:
         if !Conf["Remember Sage"] and /^sage$/.test reply.email
-          if /^sage$/.test persona.email
+          if /^sage$/.test persona[key].email
             null
           else
-            persona.email
+            persona[key].email
         else
           reply.email
       sub:   if Conf['Remember Subject']  then reply.sub     else null
-    $.set 'QR.persona', persona
+    $.set 'persona', persona
 
     [_, threadID, postID] = msg.lastChild.textContent.match /thread:(\d+),no:(\d+)/
     Updater.postID = postID

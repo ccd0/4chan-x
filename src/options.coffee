@@ -112,6 +112,45 @@ Options =
     <div class=warning><code>Custom Navigation</code> is disabled.</div>
     <div id=customNavigation>
     </div>
+    <div class=warning><code>Per Board Persona</code> is disabled.</div>
+    <div id=persona>
+      <select name=personaboards></select>
+      <ul>
+        <li>
+          <div class=option>
+            Name:
+          </div>
+        </li>
+        <li>
+          <div class=option>
+            <input name=name>
+          </div>
+        </li>
+        <li>
+          <div class=option>
+            Email:
+          </div>
+        </li>
+        <li>
+          <div class=option>
+            <input name=email>
+          </div>
+        </li>
+        <li>
+          <div class=option>
+            Subject:
+          </div>
+        </li>
+        <li>
+          <div class=option>
+            <input name=sub>
+          </div>
+        </li>
+        <li>
+          <button></button>
+        </li>
+      </ul>
+    </div>
     <div class=warning><code>Custom CSS</code> is disabled.</div>
     Remove Comment blocks to use! ( "/*" and "*/" around CSS blocks )
     <textarea name=customCSS id=customCSS class=field></textarea>
@@ -230,6 +269,23 @@ Options =
     $.on time,     'input', Options.time
     $.on fileInfo, 'input', $.cb.value
     $.on fileInfo, 'input', Options.fileInfo
+
+    
+    @persona.select = $ '[name=personaboards]', dialog
+    @persona.button = $ '#persona button', dialog
+    @persona.data = $.get 'persona',
+      global: {}
+
+    unless @persona.data[g.BOARD]
+      @persona.data[g.BOARD] = JSON.parse JSON.stringify @persona.data.global
+
+    for name of @persona.data
+      @persona.select.innerHTML += "<option value=#{name}>#{name}</option>"
+
+    @persona.select.value = if Conf['Per Board Persona'] then g.BOARD else 'global'
+
+    @persona.init()
+    $.on @persona.select, 'change', Options.persona.change
 
     customCSS = $ '#customCSS', dialog
     customCSS.value = $.get customCSS.name, Conf[customCSS.name]
@@ -809,9 +865,7 @@ Options =
     dialog: (dialog) ->
       div = $ "#customNavigation", dialog
       ul = $.el "ul"
-      ul.innerHTML = """
-  Custom Navigation
-  """
+      ul.innerHTML = "Custom Navigation"
 
       # Delimiter
       li = $.el "li"
@@ -934,6 +988,42 @@ Options =
       $.set "userNavigation", userNavigation
       $.rm $("#customNavigation > ul", d.body)
       Options.customNavigation.dialog $("#options", d.body)
+
+  persona:
+    init: ->
+      key = if Conf['Per Board Persona'] then g.BOARD else 'global'
+      Options.persona.newButton()
+      for item in Options.persona.array
+        input = $ "input[name=#{item}]", Options.el
+        input.value = @data[key][item] or ""
+
+        $.on input, 'blur', ->
+          pers = Options.persona
+          pers.data[pers.select.value][@name] = @value
+          $.set 'persona', pers.data
+      
+      $.on Options.persona.button, 'click', Options.persona.copy
+
+    array: ['name', 'email', 'sub']
+
+    change: ->
+      key = @value
+      Options.persona.newButton()
+      for item in Options.persona.array
+        input = $ "input[name=#{item}]", Options.el
+        input.value = Options.persona.data[key][item]
+    
+    copy: ->
+      {select, data, change} = Options.persona
+      if select.value is 'global'
+        data.global = JSON.parse JSON.stringify data[select.value]
+      else
+        data[select.value] = JSON.parse JSON.stringify data.global
+      $.set 'persona', Options.persona.data = data
+      change.call select
+
+    newButton: -> 
+      Options.persona.button.textContent = "Copy from #{if Options.persona.select.value is 'global' then 'current board' else 'global'}"
 
   close: ->
     $.rm $.id 'options'
