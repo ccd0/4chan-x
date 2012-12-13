@@ -1840,7 +1840,7 @@ QR =
       @input.alt = count # For XTRM RICE.
     reload: (focus) ->
       # the "t" argument prevents the input from being focused
-      window.location = 'javascript:Recaptcha.reload("t")'
+      $.globalEval 'javascript:Recaptcha.reload("t")'
       # Focus if we meant to.
       QR.captcha.input.focus() if focus
     keydown: (e) ->
