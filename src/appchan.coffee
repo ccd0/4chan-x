@@ -30,15 +30,14 @@ Style =
   emoji: (position) ->
     css = ''
     margin = if position is "before" then "right" else "left"
-    for item in Emoji
-      unless (Conf['Emoji'] is "disable ponies" and item[2] is "pony") or (Conf['Emoji'] is "only ponies" and item[2] != "pony")
-        name  = item[0]
-        image = Icons.header.png + item[1]
-        css   += """
+    for key, category of Emoji
+      unless (Conf['Emoji'] is "disable ponies" and key is "pony") or (Conf['Emoji'] is "only ponies" and key is "not")
+        for name, image of category
+          css   += """
 a.useremail[href*='#{name}']:last-of-type::#{position},
 a.useremail[href*='#{name.toLowerCase()}']:last-of-type::#{position},
 a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
-  content: url('#{image}');
+  content: url('#{Icons.header.png + image}');
   vertical-align: top;
   margin-#{margin}: #{parseInt Conf['Emoji Spacing']}px;
 }\n
