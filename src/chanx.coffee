@@ -3110,8 +3110,8 @@ Redirect =
       null)
 
   path: (base, archiver, data) ->
+    {board, type, value, threadID, postID} = data
     if data.isSearch
-      {board, type, value} = data
       type = switch type
         when 'name'
           'username'
@@ -3128,18 +3128,18 @@ Redirect =
           "#{base}/#{board}/?task=search2&search_#{type}=#{value}"
         else
           false)
-
-    {board, threadID, postID} = data
     # keep the number only if the location.hash was sent f.e.
     postID = postID.match(/\d+/)[0] if postID
-    path =
+    return base + "/" + board + "/" + (
       if threadID
-        "#{board}/thread/#{threadID}"
+        "thread/#{threadID}"
       else
-        "#{board}/post/#{postID}"
-    if threadID and postID
-      path += "##{if archiver is 'foolfuuka' then 'p' else ''}#{postID}"
-    "#{base}/#{path}"
+        "post/#{postID}"
+    ) + (
+      if threadID and postID
+        "##{if archiver is 'foolfuuka' then 'p' else ''}#{postID}"
+      else ""
+    )
 
 ImageHover =
   init: ->

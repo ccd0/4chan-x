@@ -7798,9 +7798,9 @@
       return (aboard.base ? this.path(aboard.base, aboard.type, data) : !data.isSearch && data.threadID ? "//boards.4chan.org/" + board + "/" : null);
     },
     path: function(base, archiver, data) {
-      var board, path, postID, threadID, type, value;
+      var board, postID, threadID, type, value;
+      board = data.board, type = data.type, value = data.value, threadID = data.threadID, postID = data.postID;
       if (data.isSearch) {
-        board = data.board, type = data.type, value = data.value;
         type = (function() {
           switch (type) {
             case 'name':
@@ -7814,15 +7814,10 @@
         value = encodeURIComponent(value);
         return (archiver === 'foolfuuka' ? "" + base + "/" + board + "/search/" + type + "/" + value : type === 'image' ? "" + base + "/" + board + "/?task=search2&search_media_hash=" + value : type !== 'email' || archiver === 'fuuka_mail' ? "" + base + "/" + board + "/?task=search2&search_" + type + "=" + value : false);
       }
-      board = data.board, threadID = data.threadID, postID = data.postID;
       if (postID) {
         postID = postID.match(/\d+/)[0];
       }
-      path = threadID ? "" + board + "/thread/" + threadID : "" + board + "/post/" + postID;
-      if (threadID && postID) {
-        path += "#" + (archiver === 'foolfuuka' ? 'p' : '') + postID;
-      }
-      return "" + base + "/" + path;
+      return base + "/" + board + "/" + (threadID ? "thread/" + threadID : "post/" + postID) + (threadID && postID ? "#" + (archiver === 'foolfuuka' ? 'p' : '') + postID : "");
     }
   };
 
