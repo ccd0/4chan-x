@@ -3041,12 +3041,16 @@ Redirect =
         "//archive.nyafuu.org/#{board}/full_image/#{filename}"
 
   post: (board, postID) ->
-    base = ".foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-    return (if /a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz/.test board
-      "//archive" + base
-    else if /u|kuku/.test board
-      "//nsfw" + base
-    else null)
+    return (if (
+      base = if /a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz/.test board
+        "archive"
+      else if /u|kuku/.test board
+        "nsfw"
+      else null
+    )
+      "//#{base}.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
+    else
+      base)
 
   archiver:
     'Foolz':
@@ -3086,7 +3090,7 @@ Redirect =
       boards: ['c', 'w']
       type: 'fuuka'
 
-  noarch: 'No archiver available.'
+  noarch: 'No archive available.'
 
   select: (board) ->
     arch = for name, type of @archiver
@@ -3120,14 +3124,15 @@ Redirect =
         else
           type
       value = encodeURIComponent value
-      return (if archiver is 'foolfuuka'
-          "#{base}/#{board}/search/#{type}/#{value}"
-        else if type is 'image'
-          "#{base}/#{board}/?task=search2&search_media_hash=#{value}"
-        else if type isnt 'email' or archiver is 'fuuka_mail'
-          "#{base}/#{board}/?task=search2&search_#{type}=#{value}"
-        else
-          false)
+      return (if (url = if archiver is 'foolfuuka'
+        "search/#{type}/"
+      else if type is 'image'
+        "?task=search2&search_media_hash="
+      else if type isnt 'email' or archiver is 'fuuka_mail'
+        "?task=search2&search_#{type}="
+      else
+        false
+      ) then "#{base}/#{board}/#{url}#{value}" else url)
     # keep the number only if the location.hash was sent f.e.
     postID = postID.match(/\d+/)[0] if postID
     return base + "/" + board + "/" + (

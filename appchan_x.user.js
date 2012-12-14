@@ -7724,8 +7724,7 @@
     },
     post: function(board, postID) {
       var base;
-      base = ".foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
-      return (/a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz/.test(board) ? "//archive" + base : /u|kuku/.test(board) ? "//nsfw" + base : null);
+      return ((base = /a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz/.test(board) ? "archive" : /u|kuku/.test(board) ? "nsfw" : null) ? "//" + base + ".foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID : base);
     },
     archiver: {
       'Foolz': {
@@ -7774,7 +7773,7 @@
         type: 'fuuka'
       }
     },
-    noarch: 'No archiver available.',
+    noarch: 'No archive available.',
     select: function(board) {
       var arch, name, type;
       arch = (function() {
@@ -7798,7 +7797,7 @@
       return (aboard.base ? this.path(aboard.base, aboard.type, data) : !data.isSearch && data.threadID ? "//boards.4chan.org/" + board + "/" : null);
     },
     path: function(base, archiver, data) {
-      var board, postID, threadID, type, value;
+      var board, postID, threadID, type, url, value;
       board = data.board, type = data.type, value = data.value, threadID = data.threadID, postID = data.postID;
       if (data.isSearch) {
         type = (function() {
@@ -7812,7 +7811,7 @@
           }
         })();
         value = encodeURIComponent(value);
-        return (archiver === 'foolfuuka' ? "" + base + "/" + board + "/search/" + type + "/" + value : type === 'image' ? "" + base + "/" + board + "/?task=search2&search_media_hash=" + value : type !== 'email' || archiver === 'fuuka_mail' ? "" + base + "/" + board + "/?task=search2&search_" + type + "=" + value : false);
+        return ((url = archiver === 'foolfuuka' ? "search/" + type + "/" : type === 'image' ? "?task=search2&search_media_hash=" : type !== 'email' || archiver === 'fuuka_mail' ? "?task=search2&search_" + type + "=" : false) ? "" + base + "/" + board + "/" + url + value : url);
       }
       if (postID) {
         postID = postID.match(/\d+/)[0];
