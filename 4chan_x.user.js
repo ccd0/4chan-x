@@ -2609,13 +2609,13 @@
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(html) {
-      var bs, doc, err, msg, persona, postID, reply, threadID, _, _ref, _ref1;
+      var ban, board, doc, err, msg, persona, postID, reply, threadID, _, _ref, _ref1;
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = html;
-      if (doc.title === '4chan - Banned') {
-        bs = $$('b', doc);
+      if (ban = $('.banType', doc)) {
+        board = $('.board', doc).innerHTML;
         err = $.el('span', {
-          innerHTML: /^You were issued a warning/.test($('.boxcontent', doc).textContent.trim()) ? "You were issued a warning on " + bs[0].innerHTML + " as " + bs[3].innerHTML + ".<br>Warning reason: " + bs[1].innerHTML : "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
+          innerHTML: ban.textContent.toLowerCase() === 'banned' ? ("You are banned on " + board + "! ;_;<br>") + "Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason." : ("You were issued a warning on " + board + " as " + ($('.nameBlock', doc).innerHTML) + ".<br>") + ("Reason: " + ($('.reason', doc).innerHTML))
         });
       } else if (err = doc.getElementById('errmsg')) {
         if ((_ref = $('a', err)) != null) {

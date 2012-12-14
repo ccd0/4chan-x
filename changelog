@@ -2,6 +2,7 @@ master
 - Mayhem
   Fix selection quoting on Opera.
   Fix history bug with Persistent QR enabled on Chrome.
+  Fix posting warning not displaying the reason.
 
 2.37.0
 - noface
