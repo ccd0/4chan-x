@@ -2976,11 +2976,11 @@ Unread =
     if g.dead
       $.addClass    Favicon.el, 'dead'
     else
-      $.rmClass Favicon.el, 'dead'
+      $.rmClass     Favicon.el, 'dead'
     if count
       $.addClass    Favicon.el, 'unread'
     else
-      $.rmClass Favicon.el, 'unread'
+      $.rmClass     Favicon.el, 'unread'
 
     # `favicon.href = href` doesn't work on Firefox
     # `favicon.href = href` isn't enough on Opera
@@ -3041,16 +3041,17 @@ Redirect =
         "//archive.nyafuu.org/#{board}/full_image/#{filename}"
 
   post: (board, postID) ->
-    return (if (
-      base = if /a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz/.test board
-        "archive"
-      else if /u|kuku/.test board
-        "nsfw"
-      else null
-    )
-      "//#{base}.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-    else
-      base)
+    return (
+      if (base = 
+        if /a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz/.test board
+          "archive"
+        else if /u|kuku/.test board
+          "nsfw"
+        else
+          null)
+        "//#{base}.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
+      else
+        base)
 
   archiver:
     'Foolz':
