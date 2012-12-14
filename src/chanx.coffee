@@ -3042,9 +3042,9 @@ Redirect =
 
   post: (board, postID) ->
     base = ".foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-    return (if /(a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz)/.test board
+    return (if /a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz/.test board
       "//archive" + base
-    else if /(u|kuku)/.test board
+    else if /u|kuku/.test board
       "//nsfw" + base
     else null)
 

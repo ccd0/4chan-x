@@ -7725,7 +7725,7 @@
     post: function(board, postID) {
       var base;
       base = ".foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
-      return (/(a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz)/.test(board) ? "//archive" + base : /(u|kuku)/.test(board) ? "//nsfw" + base : null);
+      return (/a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz/.test(board) ? "//archive" + base : /u|kuku/.test(board) ? "//nsfw" + base : null);
     },
     archiver: {
       'Foolz': {

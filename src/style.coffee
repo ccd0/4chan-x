@@ -1823,17 +1823,6 @@ div.post.qphl {
 """
       else ""
     ) + (
-      if Conf["Image Expansion"]
-        """
-.fileThumb img {
-  cursor: #{Style.agent}zoom-in;
-}
-.fileThumb img + img {
-  cursor: #{Style.agent}zoom-out;
-}\n
-"""
-      else ""
-    ) + (
       if Conf["Recursive Filtering"]
         """
 .hidden + .threadContainer {
