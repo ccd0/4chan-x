@@ -89,6 +89,12 @@ UI =
     delete UI.el
 
 # Various prototypes I've wanted or needed to add.
+Array::indexOf = (object) ->
+  for cell, i in @
+    if cell is object
+      return i
+  return -1
+
 Array::contains = (object) ->
   @indexOf(object) > -1
 

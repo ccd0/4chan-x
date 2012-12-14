@@ -2534,6 +2534,17 @@
     }
   };
 
+  Array.prototype.indexOf = function(object) {
+    var cell, i, _i, _len;
+    for (i = _i = 0, _len = this.length; _i < _len; i = ++_i) {
+      cell = this[i];
+      if (cell === object) {
+        return i;
+      }
+    }
+    return -1;
+  };
+
   Array.prototype.contains = function(object) {
     return this.indexOf(object) > -1;
   };
@@ -7717,11 +7728,6 @@
         case 'vg':
         case 'wsg':
           return "//archive.foolz.us/" + board + "/full_image/" + filename;
-        case 'u':
-          return "//nsfw.foolz.us/" + board + "/full_image/" + filename;
-        case 'ck':
-        case 'lit':
-          return "//fuuka.warosu.org/" + board + "/full_image/" + filename;
         case 'cgl':
         case 'g':
         case 'mu':
@@ -7732,6 +7738,11 @@
         case 'toy':
         case 'x':
           return "http://archive.heinessen.com/" + board + "/full_image/" + filename;
+        case 'ck':
+        case 'lit':
+          return "//fuuka.warosu.org/" + board + "/full_image/" + filename;
+        case 'u':
+          return "//nsfw.foolz.us/" + board + "/full_image/" + filename;
         case 'e':
           return "//www.xn--clich-fsa.net/4chan/cgi-board.pl/" + board + "/img/" + filename;
         case 'c':
@@ -7740,7 +7751,7 @@
     },
     post: function(board, postID) {
       var base;
-      return ((base = /\b(a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz)\b/.test(board) ? "archive" : /\b(u|kuku)\b/.test(board) ? "nsfw" : null) ? "//" + base + ".foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID : base);
+      return ((base = ['a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'wsg', 'dev', 'foolz'].contains(board) ? "archive" : ['u', 'kuku'].contains(board) ? "nsfw" : null) ? "//" + base + ".foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID : base);
     },
     archiver: {
       'Foolz': {
@@ -8196,7 +8207,7 @@
       return this.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
     },
     external: function(board) {
-      return (/\b(a|c|g|co|k|m|o|p|v|vg|w|cm|3|adv|an|cgl|ck|diy|fa|fit|int|jp|mlp|lit|mu|n|po|sci|toy|trv|tv|vp|x|q)\b/.test(board) ? "http://catalog.neet.tv/" + board : /\b(d|e|gif|h|hr|hc|r9k|s|pol|soc|u|i|ic|hm|r|w|wg|wsg|t|y)\b/.test(board) ? "http://4index.gropes.us/" + board : "//boards.4chan.org/" + board + "/catalog");
+      return (['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'].contains(board) ? "http://catalog.neet.tv/" + board : ['d', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'].contains(board) ? "http://4index.gropes.us/" + board : "//boards.4chan.org/" + board + "/catalog");
     }
   };
 

@@ -3029,14 +3029,14 @@ Redirect =
     switch board
       when 'a', 'jp', 'm', 'q', 'sp', 'tg', 'vg', 'wsg'
         "//archive.foolz.us/#{board}/full_image/#{filename}"
-      when 'u'
-        "//nsfw.foolz.us/#{board}/full_image/#{filename}"
-      when 'ck', 'lit'
-        "//fuuka.warosu.org/#{board}/full_image/#{filename}"
       when 'cgl', 'g', 'mu', 'w'
         "//rbt.asia/#{board}/full_image/#{filename}"
       when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
+      when 'ck', 'lit'
+        "//fuuka.warosu.org/#{board}/full_image/#{filename}"
+      when 'u'
+        "//nsfw.foolz.us/#{board}/full_image/#{filename}"
       when 'e'
         "//www.xn--clich-fsa.net/4chan/cgi-board.pl/#{board}/img/#{filename}"
       when 'c'
@@ -3045,9 +3045,9 @@ Redirect =
   post: (board, postID) ->
     return (
       if (base = 
-        if /\b(a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz)\b/.test board
+        if ['a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'wsg', 'dev', 'foolz'].contains board
           "archive"
-        else if /\b(u|kuku)\b/.test board
+        else if ['u', 'kuku'].contains board
           "nsfw"
         else
           null)
@@ -3407,9 +3407,9 @@ CatalogLinks =
 
   external: (board) ->
     return (
-      if /\b(a|c|g|co|k|m|o|p|v|vg|w|cm|3|adv|an|cgl|ck|diy|fa|fit|int|jp|mlp|lit|mu|n|po|sci|toy|trv|tv|vp|x|q)\b/.test board
+      if ['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'].contains board
         "http://catalog.neet.tv/#{board}"
-      else if /\b(d|e|gif|h|hr|hc|r9k|s|pol|soc|u|i|ic|hm|r|w|wg|wsg|t|y)\b/.test board
+      else if ['d', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'].contains board
         "http://4index.gropes.us/#{board}"
       else
         "//boards.4chan.org/#{board}/catalog"
