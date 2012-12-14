@@ -1,5 +1,9 @@
 master
 
+1.0.26
+- Zixaphir
+  Fixed a prototyping bug resulting in an error with Embedding.
+
 1.0.25
 - Zixaphir
   Fixed a bug in the Archive Redirector that was causing an error popup (but was otherwise behaving correctly)
