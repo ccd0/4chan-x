@@ -7023,13 +7023,14 @@
     regString: /(\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s'"<>]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi,
     concat: function(a) {
       return $.on(a, 'click', function(e) {
-        var el;
+        var el, next;
         if (e.shiftKey && e.ctrlKey) {
           e.preventDefault();
           e.stopPropagation();
-          if (((el = this.nextSibling).tagName.toLowerCase() === "br" || el.tagName.toLowerCase() === 's') && el.nextSibling.className !== "abbr") {
-            this.href = el.textContent ? this.textContent += el.textContent + el.nextSibling.textContent : this.textContent += el.nextSibling.textContent;
-            return $.rm(el);
+          if (((el = this.nextSibling).tagName.toLowerCase() === "br" || el.tagName.toLowerCase() === 's') && (next = el.nextSibling).className !== "abbr") {
+            this.href = this.textContent += (el.textContent ? el.textContent + next.textContent : next.textContent);
+            $.rm(next);
+            $.rm(el);
           }
         }
       });
@@ -7085,16 +7086,23 @@
       }
     },
     embed: function() {
-      var el, key, link, service, type, value, _ref;
+      var el, key, link, service, type, value;
       link = this.previousElementSibling;
       service = this.getAttribute("data-service");
       el = (type = Linkify.types[service]).el.call(this);
       if (type.style) {
-        _ref = type.style;
-        for (key in _ref) {
-          value = _ref[key];
-          el.style[key] = value;
-        }
+        el.style = (function() {
+          var _ref, _results;
+          _ref = type.style;
+          _results = [];
+          for (key in _ref) {
+            value = _ref[key];
+            _results.push({
+              key: value
+            });
+          }
+          return _results;
+        })();
       }
       $.replace(link, el);
       $.addClass(this, 'embedded');
@@ -7304,7 +7312,7 @@
 
   ArchiveLink = {
     init: function() {
-      var div, entry, type, _i, _len, _ref;
+      var div, entry, key, type, _ref;
       div = $.el('div', {
         textContent: 'Archive'
       });
@@ -7325,10 +7333,18 @@
         },
         children: []
       };
-      _ref = [['Post', 'apost'], ['Name', 'name'], ['Tripcode', 'tripcode'], ['E-mail', 'email'], ['Subject', 'subject'], ['Filename', 'filename'], ['Image MD5', 'md5']];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        type = _ref[_i];
-        entry.children.push(this.createSubEntry(type[0], type[1]));
+      _ref = {
+        Post: 'apost',
+        Name: 'name',
+        Tripcode: 'tripcode',
+        'E-mail': 'email',
+        Subject: 'subject',
+        Filename: 'filename',
+        'Image MD5': 'md5'
+      };
+      for (key in _ref) {
+        type = _ref[key];
+        entry.children.push(this.createSubEntry(key, type));
       }
       return Menu.addEntry(entry);
     },
@@ -7488,7 +7504,7 @@
         return _results;
       } else {
         EmbedLink[id] = false;
-        _ref1 = $$('.embed', root);
+        _ref1 = $$('.embedded', root);
         _results1 = [];
         for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
           embed = _ref1[_j];
@@ -7724,7 +7740,7 @@
     },
     post: function(board, postID) {
       var base;
-      return ((base = /a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz/.test(board) ? "archive" : /u|kuku/.test(board) ? "nsfw" : null) ? "//" + base + ".foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID : base);
+      return ((base = /\b(a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz)\b/.test(board) ? "archive" : /\b(u|kuku)\b/.test(board) ? "nsfw" : null) ? "//" + base + ".foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID : base);
     },
     archiver: {
       'Foolz': {
@@ -7797,19 +7813,10 @@
       return (aboard.base ? this.path(aboard.base, aboard.type, data) : !data.isSearch && data.threadID ? "//boards.4chan.org/" + board + "/" : null);
     },
     path: function(base, archiver, data) {
-      var board, postID, threadID, type, url, value;
-      board = data.board, type = data.type, value = data.value, threadID = data.threadID, postID = data.postID;
-      if (data.isSearch) {
-        type = (function() {
-          switch (type) {
-            case 'name':
-              return 'username';
-            case 'md5':
-              return 'image';
-            default:
-              return type;
-          }
-        })();
+      var board, isSearch, postID, threadID, type, url, value;
+      board = data.board, type = data.type, value = data.value, threadID = data.threadID, postID = data.postID, isSearch = data.isSearch;
+      if (isSearch) {
+        type = type === 'name' ? 'username' : type === 'md5' ? 'image' : type;
         value = encodeURIComponent(value);
         return ((url = archiver === 'foolfuuka' ? "search/" + type + "/" : type === 'image' ? "?task=search2&search_media_hash=" : type !== 'email' || archiver === 'fuuka_mail' ? "?task=search2&search_" + type + "=" : false) ? "" + base + "/" + board + "/" + url + value : url);
       }
@@ -8030,19 +8037,18 @@
       },
       typeChange: function() {
         var klass;
-        switch (this.value) {
-          case 'full':
-            klass = '';
-            break;
-          case 'fit width':
-            klass = 'fitwidth';
-            break;
-          case 'fit height':
-            klass = 'fitheight';
-            break;
-          case 'fit screen':
-            klass = 'fitwidth fitheight';
-        }
+        klass = (function() {
+          switch (this.value) {
+            case 'full':
+              return '';
+            case 'fit width':
+              return 'fitwidth';
+            case 'fit height':
+              return 'fitheight';
+            case 'fit screen':
+              return 'fitwidth fitheight';
+          }
+        }).call(this);
         $.id('delform').className = klass;
         if (/\bfitheight\b/.test(klass)) {
           $.on(window, 'resize', ImageExpand.resize);
@@ -8169,8 +8175,7 @@
       if (onLoad === true) {
         useCatalog = $.get('CatalogIsToggled', g.CATALOG);
       } else {
-        useCatalog = this.textContent === 'Catalog Off';
-        $.set('CatalogIsToggled', useCatalog);
+        $.set('CatalogIsToggled', useCatalog = this.textContent === 'Catalog Off');
       }
       nav = $.id('boardNavDesktop');
       _ref = $$('a[href*="boards.4chan.org"]', nav);
@@ -8191,66 +8196,7 @@
       return this.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
     },
     external: function(board) {
-      switch (board) {
-        case 'a':
-        case 'c':
-        case 'g':
-        case 'co':
-        case 'k':
-        case 'm':
-        case 'o':
-        case 'p':
-        case 'v':
-        case 'vg':
-        case 'w':
-        case 'cm':
-        case '3':
-        case 'adv':
-        case 'an':
-        case 'cgl':
-        case 'ck':
-        case 'diy':
-        case 'fa':
-        case 'fit':
-        case 'int':
-        case 'jp':
-        case 'mlp':
-        case 'lit':
-        case 'mu':
-        case 'n':
-        case 'po':
-        case 'sci':
-        case 'toy':
-        case 'trv':
-        case 'tv':
-        case 'vp':
-        case 'x':
-        case 'q':
-          return "http://catalog.neet.tv/" + board;
-        case 'd':
-        case 'e':
-        case 'gif':
-        case 'h':
-        case 'hr':
-        case 'hc':
-        case 'r9k':
-        case 's':
-        case 'pol':
-        case 'soc':
-        case 'u':
-        case 'i':
-        case 'ic':
-        case 'hm':
-        case 'r':
-        case 'w':
-        case 'wg':
-        case 'wsg':
-        case 't':
-        case 'y':
-          return "http://4index.gropes.us/" + board;
-        default:
-          return "//boards.4chan.org/" + board + "/catalog";
-      }
+      return (/\b(a|c|g|co|k|m|o|p|v|vg|w|cm|3|adv|an|cgl|ck|diy|fa|fit|int|jp|mlp|lit|mu|n|po|sci|toy|trv|tv|vp|x|q)\b/.test(board) ? "http://catalog.neet.tv/" + board : /\b(d|e|gif|h|hr|hc|r9k|s|pol|soc|u|i|ic|hm|r|w|wg|wsg|t|y)\b/.test(board) ? "http://4index.gropes.us/" + board : "//boards.4chan.org/" + board + "/catalog");
     }
   };
 

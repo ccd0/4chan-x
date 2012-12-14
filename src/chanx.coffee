@@ -289,7 +289,7 @@ Filter =
       ['Image MD5',        'md5']
     ]
       # Add a sub entry for each filter type.
-      entry.children.push(this.createSubEntry(type[0], type[1]));
+      entry.children.push(@createSubEntry(type[0], type[1]));
 
     Menu.addEntry entry
 
@@ -2474,12 +2474,14 @@ Linkify =
         e.stopPropagation()
 
         # We essentially check for a <br> and make sure we're not merging non-post content.
-        if ((el = @nextSibling).tagName.toLowerCase() is "br" or el.tagName.toLowerCase() is 's') and el.nextSibling.className isnt "abbr"
-          @href = if el.textContent
-            @textContent += el.textContent + el.nextSibling.textContent
+        if ((el = @nextSibling).tagName.toLowerCase() is "br" or el.tagName.toLowerCase() is 's') and (next = el.nextSibling).className isnt "abbr"
+          @href = @textContent += (if el.textContent
+            el.textContent + next.textContent
           else
-            @textContent += el.nextSibling.textContent
+            next.textContent)
+          $.rm next
           $.rm el
+      return
 
   node: (post) ->
     if post.isInlined and not post.isCrosspost
@@ -2544,8 +2546,8 @@ Linkify =
     el = (type = Linkify.types[service]).el.call @
 
     if type.style
-      for key, value of type.style
-        el.style[key] = value
+      el.style = for key, value of type.style
+        key: value
 
 
     # We replace the link with the element
@@ -2557,8 +2559,8 @@ Linkify =
 
   unembed: ->
     embedded = @previousElementSibling
-    url = @getAttribute("data-originalURL")
-    title = @getAttribute("data-title")
+    url =      @getAttribute("data-originalURL")
+    title =    @getAttribute("data-title")
 
     a = $.el 'a'
       rel:         'nofollow noreferrer'
@@ -2737,17 +2739,17 @@ ArchiveLink =
         true
       children: []
 
-    for type in [
-      ['Post',      'apost']
-      ['Name',      'name']
-      ['Tripcode',  'tripcode']
-      ['E-mail',    'email']
-      ['Subject',   'subject']
-      ['Filename',  'filename']
-      ['Image MD5', 'md5']
-    ]
+    for key, type of {
+      Post:        'apost'
+      Name:        'name'
+      Tripcode:    'tripcode'
+      'E-mail':    'email'
+      Subject:     'subject'
+      Filename:    'filename'
+      'Image MD5': 'md5'
+    }
       # Add a sub entry for each type.
-      entry.children.push @createSubEntry type[0], type[1]
+      entry.children.push @createSubEntry key, type
 
     Menu.addEntry entry
 
@@ -2857,7 +2859,7 @@ EmbedLink =
           Linkify.embed.call embed
     else
       EmbedLink[id] = false
-      for embed in $$ '.embed', root
+      for embed in $$ '.embedded', root
         if /\bembedded\b/.test embed.className
           Linkify.unembed.call embed
 
@@ -3043,9 +3045,9 @@ Redirect =
   post: (board, postID) ->
     return (
       if (base = 
-        if /a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz/.test board
+        if /\b(a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz)\b/.test board
           "archive"
-        else if /u|kuku/.test board
+        else if /\b(u|kuku)\b/.test board
           "nsfw"
         else
           null)
@@ -3115,15 +3117,14 @@ Redirect =
       null)
 
   path: (base, archiver, data) ->
-    {board, type, value, threadID, postID} = data
-    if data.isSearch
-      type = switch type
-        when 'name'
-          'username'
-        when 'md5'
-          'image'
-        else
-          type
+    {board, type, value, threadID, postID, isSearch} = data
+    if isSearch
+      type = if type is 'name'
+        'username'
+      else if type is 'md5'
+        'image'
+      else
+        type
       value = encodeURIComponent value
       return (if (url = if archiver is 'foolfuuka'
         "search/#{type}/"
@@ -3286,15 +3287,15 @@ ImageExpand =
       return
 
     typeChange: ->
-      switch @value
+      klass = switch @value
         when 'full'
-          klass = ''
+          ''
         when 'fit width'
-          klass = 'fitwidth'
+          'fitwidth'
         when 'fit height'
-          klass = 'fitheight'
+          'fitheight'
         when 'fit screen'
-          klass = 'fitwidth fitheight'
+          'fitwidth fitheight'
       $.id('delform').className = klass
       if /\bfitheight\b/.test klass
         $.on window, 'resize', ImageExpand.resize
@@ -3388,8 +3389,7 @@ CatalogLinks =
     if onLoad is true
       useCatalog = $.get 'CatalogIsToggled', g.CATALOG
     else
-      useCatalog = @textContent is 'Catalog Off'
-      $.set 'CatalogIsToggled', useCatalog
+      $.set 'CatalogIsToggled', useCatalog = @textContent is 'Catalog Off'
     nav = $.id('boardNavDesktop')
     for a in $$ 'a[href*="boards.4chan.org"]', nav
       board = a.pathname.split('/')[1]
@@ -3406,10 +3406,11 @@ CatalogLinks =
     @title       = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
 
   external: (board) ->
-    switch board
-      when 'a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'
+    return (
+      if /\b(a|c|g|co|k|m|o|p|v|vg|w|cm|3|adv|an|cgl|ck|diy|fa|fit|int|jp|mlp|lit|mu|n|po|sci|toy|trv|tv|vp|x|q)\b/.test board
         "http://catalog.neet.tv/#{board}"
-      when 'd', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'
+      else if /\b(d|e|gif|h|hr|hc|r9k|s|pol|soc|u|i|ic|hm|r|w|wg|wsg|t|y)\b/.test board
         "http://4index.gropes.us/#{board}"
       else
         "//boards.4chan.org/#{board}/catalog"
+    )
