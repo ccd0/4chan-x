@@ -1,4 +1,6 @@
 master
+- noface
+  Fix Anonymize not working on stubs.
 - Mayhem
   Fix selection quoting on Opera.
   Fix history bug with Persistent QR enabled on Chrome.
