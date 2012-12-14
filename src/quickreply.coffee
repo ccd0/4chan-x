@@ -473,7 +473,8 @@ QR =
 
   captcha:
     init: ->
-      return if d.cookie.contains('pass_enabled=') and !(QR.captchaIsEnabled = !!$.id 'captchaFormPart')
+      return if d.cookie.contains('pass_enabled=') or !(QR.captchaIsEnabled = !!$.id 'captchaFormPart')
+
       if $.id 'recaptcha_challenge_field_holder'
         @ready()
       else
@@ -571,7 +572,7 @@ QR =
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
 </form>'
 
-    if Conf['Remember QR size'] and $.engine is 'gecko'
+    if Conf['Remember QR size']
       $.on ta = $('textarea', QR.el), 'mouseup', ->
         $.set 'QR.size', @style.cssText
       ta.style.cssText = $.get 'QR.size', ''
