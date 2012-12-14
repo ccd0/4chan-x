@@ -3041,11 +3041,12 @@ Redirect =
         "//archive.nyafuu.org/#{board}/full_image/#{filename}"
 
   post: (board, postID) ->
-    switch board
-      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
-        "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-      when 'u', 'kuku'
-        "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
+    base = ".foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
+    return (if /(a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz)/.test board
+      "//archive" + base
+    else if /(u|kuku)/.test board
+      "//nsfw" + base
+    else null)
 
   archiver:
     'Foolz':
@@ -3119,15 +3120,14 @@ Redirect =
         else
           type
       value = encodeURIComponent value
-      return if archiver is 'foolfuuka'
+      return (if archiver is 'foolfuuka'
           "#{base}/#{board}/search/#{type}/#{value}"
-      else if type is 'image'
-        "#{base}/#{board}/?task=search2&search_media_hash=#{value}"
-      else if /fuuka/.test archiver
-        unless type is 'email' and archiver isnt 'fuuka_mail'
+        else if type is 'image'
+          "#{base}/#{board}/?task=search2&search_media_hash=#{value}"
+        else if type isnt 'email' or archiver is 'fuuka_mail'
           "#{base}/#{board}/?task=search2&search_#{type}=#{value}"
         else
-          false
+          false)
 
     {board, threadID, postID} = data
     # keep the number only if the location.hash was sent f.e.
@@ -3138,11 +3138,7 @@ Redirect =
       else
         "#{board}/post/#{postID}"
     if threadID and postID
-      path +=
-        if archiver is 'foolfuuka'
-          "##{postID}"
-        else
-          "#p#{postID}"
+      path += "##{if archiver is 'foolfuuka' then 'p' else ''}#{postID}"
     "#{base}/#{path}"
 
 ImageHover =

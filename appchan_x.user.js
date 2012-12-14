@@ -7723,25 +7723,9 @@
       }
     },
     post: function(board, postID) {
-      switch (board) {
-        case 'a':
-        case 'co':
-        case 'jp':
-        case 'm':
-        case 'q':
-        case 'sp':
-        case 'tg':
-        case 'tv':
-        case 'v':
-        case 'vg':
-        case 'wsg':
-        case 'dev':
-        case 'foolz':
-          return "//archive.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
-        case 'u':
-        case 'kuku':
-          return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
-      }
+      var base;
+      base = ".foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
+      return (/(a|co|jp|m|q|sp|tg|tv|v|wsg|dev|foolz)/.test(board) ? "//archive" + base : /(u|kuku)/.test(board) ? "//nsfw" + base : null);
     },
     archiver: {
       'Foolz': {
@@ -7828,17 +7812,7 @@
           }
         })();
         value = encodeURIComponent(value);
-        if (archiver === 'foolfuuka') {
-          return "" + base + "/" + board + "/search/" + type + "/" + value;
-        } else if (type === 'image') {
-          return "" + base + "/" + board + "/?task=search2&search_media_hash=" + value;
-        } else if (/fuuka/.test(archiver)) {
-          if (!(type === 'email' && archiver !== 'fuuka_mail')) {
-            return "" + base + "/" + board + "/?task=search2&search_" + type + "=" + value;
-          } else {
-            return false;
-          }
-        }
+        return (archiver === 'foolfuuka' ? "" + base + "/" + board + "/search/" + type + "/" + value : type === 'image' ? "" + base + "/" + board + "/?task=search2&search_media_hash=" + value : type !== 'email' || archiver === 'fuuka_mail' ? "" + base + "/" + board + "/?task=search2&search_" + type + "=" + value : false);
       }
       board = data.board, threadID = data.threadID, postID = data.postID;
       if (postID) {
@@ -7846,7 +7820,7 @@
       }
       path = threadID ? "" + board + "/thread/" + threadID : "" + board + "/post/" + postID;
       if (threadID && postID) {
-        path += archiver === 'foolfuuka' ? "#" + postID : "#p" + postID;
+        path += "#" + (archiver === 'foolfuuka' ? 'p' : '') + postID;
       }
       return "" + base + "/" + path;
     }
