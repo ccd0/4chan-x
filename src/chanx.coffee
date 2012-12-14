@@ -111,7 +111,7 @@ Filter =
         # and it's not specifically applicable to the current board.
         # Defaults to global.
         boards = filter.match(/boards:([^;]+)/)?[1].toLowerCase() or 'global'
-        if boards isnt 'global' and boards.split(',').indexOf(g.BOARD) is -1
+        unless boards is 'global' or boards.split(',').contains(g.BOARD)
           continue
 
         if key is 'md5'
@@ -2514,7 +2514,7 @@ Linkify =
           className: 'linkify'
           rel:       'nofollow noreferrer'
           target:    'blank'
-          href:      if link.indexOf(":") < 0 then (if (link.contains "@") then "mailto:" + link else "http://" + link) else link
+          href:      unless link.contains(":") then (if (link.contains "@") then "mailto:" + link else "http://" + link) else link
 
         Linkify.concat a
 
@@ -3031,7 +3031,7 @@ Redirect =
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
       when 'ck', 'lit'
         "//fuuka.warosu.org/#{board}/full_image/#{filename}"
-      when 'cgl', 'g', mu, 'w'
+      when 'cgl', 'g', 'mu', 'w'
         "//rbt.asia/#{board}/full_image/#{filename}"
       when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
@@ -3046,8 +3046,6 @@ Redirect =
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-
-  archive: {}
 
   archiver:
     'Foolz':
@@ -3096,7 +3094,8 @@ Redirect =
     return (if arch.length > 0 then arch else [@noarch])
 
   to: (data) ->
-    aboard = @archive[board = data.board] = @archiver[$.get "archiver/#{board}/", false] or
+    
+    aboard = @archiver[$.get "archiver/#{board = data.board}/", false] or
       if $.set("archiver/#{board}/", name = @select(board)[0]) and name isnt @noarch
         @archiver[name]
       else

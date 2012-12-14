@@ -107,6 +107,9 @@ Array::remove = (object) ->
 String::capitalize = ->
   @charAt(0).toUpperCase() + @slice(1);
 
+String::contains = (string) ->
+  @indexOf(string) > -1
+
 
 ###
 loosely follows the jquery api:
