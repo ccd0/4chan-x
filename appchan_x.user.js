@@ -8847,7 +8847,7 @@
     captcha: {
       init: function() {
         var _this = this;
-        if (d.cookie.contains('pass_enabled=' && !(QR.captchaIsEnabled = !!$.id('captchaFormPart')))) {
+        if (d.cookie.contains('pass_enabled=') && !(QR.captchaIsEnabled = !!$.id('captchaFormPart'))) {
           return;
         }
         if ($.id('recaptcha_challenge_field_holder')) {
