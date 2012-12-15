@@ -1,11 +1,11 @@
 master
 - noface
   Fix Anonymize not working on stubs.
-  Fix deadquotes showing up in code-tags.
 - Mayhem
   Fix selection quoting on Opera.
   Fix history bug with Persistent QR enabled on Chrome.
   Fix posting warning not displaying the reason.
+  Fix deadquotes showing up in code-tags.
 
 2.37.0
 - noface

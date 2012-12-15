@@ -3527,8 +3527,8 @@ Quotify =
     return if post.isInlined and not post.isCrosspost
     for deadlink in $$ '.quote.deadlink', post.blockquote
 
-      if deadlink.parentElement.className is 'prettyprint'
-        $.replace deadlink, deadlink.firstChild
+      if deadlink.parentNode.className is 'prettyprint'
+        $.replace deadlink, Array::slice.call deadlink.childNodes
         continue
 
       quote = deadlink.textContent

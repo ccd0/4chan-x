@@ -4316,8 +4316,8 @@
       _ref = $$('.quote.deadlink', post.blockquote);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         deadlink = _ref[_i];
-        if (deadlink.parentElement.className === 'prettyprint') {
-          $.replace(deadlink, deadlink.firstChild);
+        if (deadlink.parentNode.className === 'prettyprint') {
+          $.replace(deadlink, Array.prototype.slice.call(deadlink.childNodes));
           continue;
         }
         quote = deadlink.textContent;
