@@ -4899,6 +4899,9 @@
         postID = postID.match(/\d+/)[0];
       }
       path = threadID ? "" + board + "/thread/" + threadID : "" + board + "/post/" + postID;
+      if (archiver === 'foolfuuka') {
+        path += '/';
+      }
       if (threadID && postID) {
         path += archiver === 'foolfuuka' ? "#" + postID : "#p" + postID;
       }

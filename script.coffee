@@ -3988,6 +3988,8 @@ Redirect =
         "#{board}/thread/#{threadID}"
       else
         "#{board}/post/#{postID}"
+    if archiver is 'foolfuuka'
+      path += '/'
     if threadID and postID
       path +=
         if archiver is 'foolfuuka'
