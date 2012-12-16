@@ -1256,6 +1256,7 @@ Keybinds =
     $('textarea', QR.el).focus()
 
   open: (thread, tab) ->
+    return if g.REPLY
     id = thread.id[1..]
     url = "//boards.4chan.org/#{g.BOARD}/res/#{id}"
     if tab

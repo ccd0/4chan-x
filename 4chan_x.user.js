@@ -1633,6 +1633,9 @@
     },
     open: function(thread, tab) {
       var id, url;
+      if (g.REPLY) {
+        return;
+      }
       id = thread.id.slice(1);
       url = "//boards.4chan.org/" + g.BOARD + "/res/" + id;
       if (tab) {
