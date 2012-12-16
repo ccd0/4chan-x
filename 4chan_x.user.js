@@ -4312,7 +4312,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var a, board, deadlink, id, m, postBoard, quote, _i, _len, _ref;
+      var a, board, deadlink, id, m, postBoard, quote, _i, _len, _ref, _ref1;
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
@@ -4327,7 +4327,9 @@
         a = $.el('a', {
           textContent: "" + quote + "\u00A0(Dead)"
         });
-        id = quote.match(/\d+$/)[0];
+        if (!(id = (_ref1 = quote.match(/\d+$/)) != null ? _ref1[0] : void 0)) {
+          continue;
+        }
         if (m = quote.match(/^>>>\/([a-z\d]+)/)) {
           board = m[1];
         } else if (postBoard) {

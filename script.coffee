@@ -3537,7 +3537,7 @@ Quotify =
         # \u00A0 is nbsp
         textContent: "#{quote}\u00A0(Dead)"
 
-      id = quote.match(/\d+$/)[0]
+      continue unless id = quote.match(/\d+$/)?[0]
 
       if m = quote.match /^>>>\/([a-z\d]+)/
         board = m[1]
