@@ -3390,18 +3390,20 @@ CatalogLinks =
       useCatalog = $.get 'CatalogIsToggled', g.CATALOG
     else
       $.set 'CatalogIsToggled', useCatalog = @textContent is 'Catalog Off'
-    nav = $.id('boardNavDesktop')
-    for a in $$ 'a[href*="boards.4chan.org"]', nav
+    for a in $$ 'a', $.id('boardNavDesktop')
       board = a.pathname.split('/')[1]
-      if board is 'f'
-        # 4chan links to /f/'s catalog even if it doesn't have one.
-        a.pathname = '/f/'
+      if ['f', 'status', '4chan'].contains(board) or !board
+        if board is 'f'
+          a.pathname = '/f/'
         continue
-      else if Conf['External Catalog']
-        a.href = if useCatalog then CatalogLinks.external(board) else "//boards.4chan.org/#{board}/"
+      if Conf['External Catalog']
+        a.href = if useCatalog
+          CatalogLinks.external(board)
+        else
+          "//boards.4chan.org/#{board}/"
       else
         a.pathname = "/#{board}/#{if useCatalog then 'catalog' else ''}"
-      a.title = if useCatalog then a.title.replace(/\ -\ Catalog$/, '') else "#{a.title} - Catalog"
+      a.title = if useCatalog then "#{a.title} - Catalog" else a.title.replace(/\ -\ Catalog$/, '')
     @textContent = "Catalog #{if useCatalog then 'On' else 'Off'}"
     @title       = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
 

@@ -324,11 +324,12 @@ MascotTools =
       $.add d.body, div
 
   save: (mascot) ->
-    if typeof ({name} = mascot) is "undefined" or name is ""
+    {name, image} = mascot
+    if !name? or name is ""
       alert "Please name your mascot."
       return
 
-    if typeof mascot.image is "undefined" or mascot.image is ""
+    if !image? or image is ""
       alert "Your mascot must contain an image."
       return
 
@@ -345,16 +346,15 @@ MascotTools =
         if confirm "A mascot named \"#{name}\" already exists. Would you like to over-write?"
           delete Mascots[name]
         else
-          alert "Creation of \"#{name}\" aborted."
-          return
+          return alert "Creation of \"#{name}\" aborted."
 
     for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
       unless Conf[type].contains name
         Conf[type].push name
         $.set type, Conf[type]
     Mascots[name]        = JSON.parse(JSON.stringify(mascot))
-    delete Mascots[name].name
     Conf["mascot"]       = name
+    delete Mascots[name].name
     userMascots = $.get "userMascots", {}
     userMascots[name] = Mascots[name]
     $.set 'userMascots', userMascots

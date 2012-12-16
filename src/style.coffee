@@ -2327,11 +2327,11 @@ body::before {
     ) + (
       if Conf["4chan SS Navigation"]
         """
-#{if Conf["Pagination"] is "sticky top" or Conf["Pagination"] is "sticky bottom" then ".pagelist," else ""}
+#{if ["sticky top", "sticky bottom"].contains(Conf["Pagination"]) then ".pagelist," else ""}
 #boardNavDesktop {
   left: 0;
   right: 0;
-  padding-#{Conf["Sidebar Location"]}: #{sidebar}px;
+  padding-#{Conf["Sidebar Location"]}: #{Style.sidebar}px;
   border-left: 0;
   border-right: 0;
   border-radius: 0 !important;
