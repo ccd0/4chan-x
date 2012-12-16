@@ -5094,19 +5094,21 @@
       thumb = a.firstChild;
       if (thumb.hidden) {
         rect = a.getBoundingClientRect();
-        if ($.engine === 'webkit') {
-          if (rect.top < 0) {
-            d.body.scrollTop += rect.top - 42;
-          }
-          if (rect.left < 0) {
-            d.body.scrollLeft += rect.left;
-          }
-        } else {
-          if (rect.top < 0) {
-            d.documentElement.scrollTop += rect.top - 42;
-          }
-          if (rect.left < 0) {
-            d.documentElement.scrollLeft += rect.left;
+        if (rect.bottom > 0) {
+          if ($.engine === 'webkit') {
+            if (rect.top < 0) {
+              d.body.scrollTop += rect.top - 42;
+            }
+            if (rect.left < 0) {
+              d.body.scrollLeft += rect.left;
+            }
+          } else {
+            if (rect.top < 0) {
+              d.documentElement.scrollTop += rect.top - 42;
+            }
+            if (rect.left < 0) {
+              d.documentElement.scrollLeft += rect.left;
+            }
           }
         }
         return ImageExpand.contract(thumb);
