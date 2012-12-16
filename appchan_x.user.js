@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.26 - 2012-12-14
+ * appchan x - Version 1.0.26 - 2012-12-16
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -4946,12 +4946,12 @@
       return $.on(d, 'keydown', Keybinds.keydown);
     },
     keydown: function(e) {
-      var form, key, o, target, thread;
+      var form, key, nodeName, o, target, thread;
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
       target = e.target;
-      if (/TEXTAREA|INPUT/.test(target.nodeName)) {
+      if ((nodeName = target.nodeName.toLowerCase()) === textarea || nodeName === input) {
         if (!((key === 'Esc') || (/\+/.test(key)))) {
           return;
         }
@@ -4995,25 +4995,25 @@
           CatalogLinks.toggle();
           break;
         case Conf.spoiler:
-          if (!(($('[name=spoiler]')) && target.nodeName === 'TEXTAREA')) {
+          if (!(($('[name=spoiler]')) && nodeName === 'textarea')) {
             return;
           }
           Keybinds.tags('spoiler', target);
           break;
         case Conf.math:
-          if (!(g.BOARD === (!!$('script[src^="//boards.4chan.org/jsMath/"]', d.head)) && target.nodeName === 'TEXTAREA')) {
+          if (!(g.BOARD === (!!$('script[src^="//boards.4chan.org/jsMath/"]', d.head)) && nodeName === 'textarea')) {
             return;
           }
           Keybinds.tags('math', target);
           break;
         case Conf.eqn:
-          if (!(g.BOARD === (!!$('script[src^="//boards.4chan.org/jsMath/"]', d.head)) && target.nodeName === 'TEXTAREA')) {
+          if (!(g.BOARD === (!!$('script[src^="//boards.4chan.org/jsMath/"]', d.head)) && nodeName === 'textarea')) {
             return;
           }
           Keybinds.tags('eqn', target);
           break;
         case Conf.code:
-          if (!(g.BOARD === Main.hasCodeTags && target.nodeName === 'TEXTAREA')) {
+          if (!(g.BOARD === Main.hasCodeTags && nodeName === 'textarea')) {
             return;
           }
           Keybinds.tags('code', target);
@@ -5090,8 +5090,8 @@
     },
     keyCode: function(e) {
       var c, kc, key;
-      key = (function() {
-        switch (kc = e.keyCode) {
+      key = [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90].contains(kc = e.keyCode) ? (c = String.fromCharCode(kc), e.shiftKey ? c : c.toLowerCase()) : ((function() {
+        switch (kc) {
           case 8:
             return '';
           case 13:
@@ -5106,53 +5106,10 @@
             return 'Right';
           case 40:
             return 'Down';
-          case 48:
-          case 49:
-          case 50:
-          case 51:
-          case 52:
-          case 53:
-          case 54:
-          case 55:
-          case 56:
-          case 57:
-          case 65:
-          case 66:
-          case 67:
-          case 68:
-          case 69:
-          case 70:
-          case 71:
-          case 72:
-          case 73:
-          case 74:
-          case 75:
-          case 76:
-          case 77:
-          case 78:
-          case 79:
-          case 80:
-          case 81:
-          case 82:
-          case 83:
-          case 84:
-          case 85:
-          case 86:
-          case 87:
-          case 88:
-          case 89:
-          case 90:
-            c = String.fromCharCode(kc);
-            if (e.shiftKey) {
-              return c;
-            } else {
-              return c.toLowerCase();
-            }
-            break;
           default:
             return null;
         }
-      })();
+      })());
       if (key) {
         if (e.altKey) {
           key = 'alt+' + key;

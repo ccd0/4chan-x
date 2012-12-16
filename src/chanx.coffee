@@ -788,7 +788,7 @@ Keybinds =
   keydown: (e) ->
     return unless key = Keybinds.keyCode e
     {target} = e
-    if /TEXTAREA|INPUT/.test target.nodeName
+    if (nodeName = target.nodeName.toLowerCase()) is textarea or nodeName is input 
       return unless (key is 'Esc') or (/\+/.test key)
 
     thread = Nav.getThread()
@@ -815,16 +815,16 @@ Keybinds =
       when Conf.toggleCatalog
         CatalogLinks.toggle()
       when Conf.spoiler
-        return unless ($ '[name=spoiler]') and target.nodeName is 'TEXTAREA'
+        return unless ($ '[name=spoiler]') and nodeName is 'textarea'
         Keybinds.tags 'spoiler', target
       when Conf.math
-        return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and target.nodeName is 'TEXTAREA'
+        return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and nodeName is 'textarea'
         Keybinds.tags 'math', target
       when Conf.eqn
-        return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and target.nodeName is 'TEXTAREA'
+        return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and nodeName is 'textarea'
         Keybinds.tags 'eqn', target
       when Conf.code
-        return unless g.BOARD is Main.hasCodeTags and target.nodeName is 'TEXTAREA'
+        return unless g.BOARD is Main.hasCodeTags and nodeName is 'textarea'
         Keybinds.tags 'code', target
       when Conf.sageru
         $("[name=email]", QR.el).value = "sage"
@@ -876,7 +876,10 @@ Keybinds =
     e.preventDefault()
 
   keyCode: (e) ->
-    key = switch kc = e.keyCode
+    key = if [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90].contains(kc = e.keyCode)
+      c = String.fromCharCode kc
+      if e.shiftKey then c else c.toLowerCase()
+    else (switch kc
       when 8
         ''
       when 13
@@ -891,11 +894,8 @@ Keybinds =
         'Right'
       when 40
         'Down'
-      when 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90 #0-9, A-Z
-        c = String.fromCharCode kc
-        if e.shiftKey then c else c.toLowerCase()
       else
-        null
+        null)
     if key
       if e.altKey  then key = 'alt+'  + key
       if e.ctrlKey then key = 'ctrl+' + key
