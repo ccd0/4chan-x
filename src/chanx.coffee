@@ -788,7 +788,7 @@ Keybinds =
   keydown: (e) ->
     return unless key = Keybinds.keyCode e
     {target} = e
-    if (nodeName = target.nodeName.toLowerCase()) is textarea or nodeName is input 
+    if (nodeName = target.nodeName.toLowerCase()) is 'textarea' or nodeName is 'input'
       return unless (key is 'Esc') or (/\+/.test key)
 
     thread = Nav.getThread()

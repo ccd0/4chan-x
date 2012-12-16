@@ -4951,7 +4951,7 @@
         return;
       }
       target = e.target;
-      if ((nodeName = target.nodeName.toLowerCase()) === textarea || nodeName === input) {
+      if ((nodeName = target.nodeName.toLowerCase()) === 'textarea' || nodeName === 'input') {
         if (!((key === 'Esc') || (/\+/.test(key)))) {
           return;
         }
