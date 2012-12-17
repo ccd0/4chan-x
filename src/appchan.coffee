@@ -201,9 +201,8 @@ body {
     @hex = "#" + hex
 
     @calc_rgb = (hex) ->
-      rgb = []
       hex = parseInt hex, 16
-      rgb[0] = (hex >> 16) & 0xFF
+      rgb = [(hex >> 16) & 0xFF]
       rgb[1] = (hex >> 8) & 0xFF
       rgb[2] = hex & 0xFF
       return rgb;

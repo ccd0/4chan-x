@@ -1,3 +1,32 @@
+# Various prototypes I've wanted or needed to add.
+Array::indexOf = (object) ->
+  i = @length
+  while i--
+    if @[i] is object
+      break
+  return i
+
+Array::contains = (object) ->
+  @indexOf(object) > -1
+
+Array::add = (object, position) ->
+  keep = @slice position
+  @length = position
+  @push object
+  @push.apply userNavigation.links, keep
+
+Array::remove = (object) ->
+  if (index = @indexOf object) > -1
+    @splice index, 1
+  else
+    false
+
+String::capitalize = ->
+  @charAt(0).toUpperCase() + @slice(1);
+
+String::contains = (string) ->
+  @indexOf(string) > -1
+
 UI =
   dialog: (id, position, html) ->
     el = d.createElement 'div'
@@ -87,35 +116,6 @@ UI =
   hoverend: ->
     $.rm UI.el
     delete UI.el
-
-# Various prototypes I've wanted or needed to add.
-Array::indexOf = (object) ->
-  for cell, i in @
-    if cell is object
-      return i
-  return -1
-
-Array::contains = (object) ->
-  @indexOf(object) > -1
-
-Array::add = (object, position) ->
-  keep = @slice position
-  @length = position
-  @push object
-  @push.apply userNavigation.links, keep
-
-Array::remove = (object) ->
-  if (index = @indexOf object) > -1
-    @splice index, 1
-  else
-    false
-
-String::capitalize = ->
-  @charAt(0).toUpperCase() + @slice(1);
-
-String::contains = (string) ->
-  @indexOf(string) > -1
-
 
 ###
 loosely follows the jquery api:

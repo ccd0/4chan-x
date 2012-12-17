@@ -401,8 +401,7 @@ ExpandComment =
     bq = $.id "m#{replyID}"
     clone = bq.cloneNode false
     clone.innerHTML = post.com
-    quotes = clone.getElementsByClassName 'quotelink'
-    for quote in quotes
+    for quote in quotes = clone.getElementsByClassName 'quotelink'
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote
       quote.href = "res/#{href}" # Fix pathnames
@@ -463,8 +462,8 @@ ExpandThread =
     return
 
   parse: (req, thread, a) ->
-    if req.status isnt 200
-      a.textContent = "#{req.status} #{req.statusText}"
+    if (status = req.status) isnt 200
+      a.textContent = "#{status} #{req.statusText}"
       $.off a, 'click', ExpandThread.cb.toggle
       return
 
