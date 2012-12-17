@@ -2854,12 +2854,12 @@ EmbedLink =
     unless EmbedLink[id]
       EmbedLink[id] = true
       for embed in $$ '.embed', root
-        unless /\bembedded\b/.test embed.className
+        unless embed.className.contains 'embedded'
           Linkify.embed.call embed
     else
       EmbedLink[id] = false
       for embed in $$ '.embedded', root
-        if /\bembedded\b/.test embed.className
+        if embed.className.contains 'embedded'
           Linkify.unembed.call embed
 
 ThreadStats =

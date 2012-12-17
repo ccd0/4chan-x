@@ -1,32 +1,3 @@
-# Various prototypes I've wanted or needed to add.
-Array::indexOf = (object) ->
-  i = @length
-  while i--
-    if @[i] is object
-      break
-  return i
-
-Array::contains = (object) ->
-  @indexOf(object) > -1
-
-Array::add = (object, position) ->
-  keep = @slice position
-  @length = position
-  @push object
-  @push.apply userNavigation.links, keep
-
-Array::remove = (object) ->
-  if (index = @indexOf object) > -1
-    @splice index, 1
-  else
-    false
-
-String::capitalize = ->
-  @charAt(0).toUpperCase() + @slice(1);
-
-String::contains = (string) ->
-  @indexOf(string) > -1
-
 UI =
   dialog: (id, position, html) ->
     el = d.createElement 'div'
@@ -130,6 +101,37 @@ $.extend = (object, properties) ->
   for key, val of properties
     object[key] = val
   return
+
+# Various prototypes I've wanted or needed to add.
+$.extend Array::,
+  indexOf: (object) ->
+    i = @length
+    while i--
+      if @[i] is object
+        break
+    return i
+  
+  contains: (object) ->
+    @indexOf(object) > -1
+  
+  add: (object, position) ->
+    keep = @slice position
+    @length = position
+    @push object
+    @push.apply userNavigation.links, keep
+  
+  remove: (object) ->
+    if (index = @indexOf object) > -1
+      @splice index, 1
+    else
+      false
+
+$.extend String::,
+  capitalize: ->
+    @charAt(0).toUpperCase() + @slice(1);
+
+  contains: (string) ->
+    @indexOf(string) > -1
 
 $.extend $,
   NBSP: '\u00A0'
