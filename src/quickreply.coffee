@@ -837,7 +837,11 @@ QR =
     
     persona = $.get 'persona', 
       global: {}
-    persona[key = if Conf['Per Board Persona'] then g.BOARD else 'global'] =
+
+    unless persona[key = if Conf['Per Board Persona'] then g.BOARD else 'global']
+      persona[key] = persona.global
+      
+    persona[key] =
       name:  reply.name
       email:
         if !Conf["Remember Sage"] and /^sage$/.test reply.email

@@ -2531,7 +2531,7 @@ Linkify =
     return
 
   toggle: ->
-    if /\bembedded\b/.test @className
+    if @className.contains "embedded"
       Linkify.unembed.call @
     else
       Linkify.embed.call @
@@ -2539,15 +2539,13 @@ Linkify =
   embed: ->
     # We setup the link to be replaced by the embedded video
     link = @previousElementSibling
-    service = @getAttribute("data-service")
 
     # We create an element to embed
-    el = (type = Linkify.types[service]).el.call @
+    el = (type = Linkify.types[@getAttribute("data-service")]).el.call @
 
-    if type.style
-      el.style = for key, value of type.style
-        key: value
-
+    # Set style values.
+    for style, value of type.style
+      el.style[style] = value
 
     # We replace the link with the element
     $.replace link, el

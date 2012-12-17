@@ -7047,30 +7047,20 @@
       }
     },
     toggle: function() {
-      if (/\bembedded\b/.test(this.className)) {
+      if (this.className.contains("embedded")) {
         return Linkify.unembed.call(this);
       } else {
         return Linkify.embed.call(this);
       }
     },
     embed: function() {
-      var el, key, link, service, type, value;
+      var el, link, style, type, value, _ref;
       link = this.previousElementSibling;
-      service = this.getAttribute("data-service");
-      el = (type = Linkify.types[service]).el.call(this);
-      if (type.style) {
-        el.style = (function() {
-          var _ref, _results;
-          _ref = type.style;
-          _results = [];
-          for (key in _ref) {
-            value = _ref[key];
-            _results.push({
-              key: value
-            });
-          }
-          return _results;
-        })();
+      el = (type = Linkify.types[this.getAttribute("data-service")]).el.call(this);
+      _ref = type.style;
+      for (style in _ref) {
+        value = _ref[style];
+        el.style[style] = value;
       }
       $.replace(link, el);
       $.addClass(this, 'embedded');
@@ -9139,7 +9129,10 @@
       persona = $.get('persona', {
         global: {}
       });
-      persona[key = Conf['Per Board Persona'] ? g.BOARD : 'global'] = {
+      if (!persona[key = Conf['Per Board Persona'] ? g.BOARD : 'global']) {
+        persona[key] = persona.global;
+      }
+      persona[key] = {
         name: reply.name,
         email: !Conf["Remember Sage"] && /^sage$/.test(reply.email) ? /^sage$/.test(persona[key].email) ? null : persona[key].email : reply.email,
         sub: Conf['Remember Subject'] ? reply.sub : null
