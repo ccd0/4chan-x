@@ -2077,7 +2077,7 @@ QR =
       if /captcha|verification/i.test(err.textContent) or err is 'Connection error with sys.4chan.org.'
         # Remove the obnoxious 4chan Pass ad.
         if /mistyped/i.test err.textContent
-          err.textContent = 'Error: You seem to have mistyped the CAPTCHA.'
+          err = 'Error: You seem to have mistyped the CAPTCHA.'
         # Enable auto-post if we have some cached captchas.
         QR.cooldown.auto =
           if QR.captchaIsEnabled
@@ -4529,7 +4529,7 @@ Main =
     $.globalEval "(#{code})()".replace '_id_', bq.id
 
   namespace: '4chan_x.'
-  version: '2.37.0'
+  version: '2.37.1'
   callbacks: []
   css: '
 /* dialog styling */
