@@ -9201,7 +9201,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      if (post.img) {
+      if (post.img || post.isInlined) {
         return;
       }
       return post.el.parentElement.classList.add("noFile");
