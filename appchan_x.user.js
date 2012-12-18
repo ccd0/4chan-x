@@ -2736,6 +2736,9 @@
     rmClass: function(el, className) {
       return el.classList.remove(className);
     },
+    toggleClass: function(el, className) {
+      return el.classList.toggle(className);
+    },
     rm: function(el) {
       return el.parentNode.removeChild(el);
     },
@@ -6480,7 +6483,7 @@
         }
         QuoteInline.add(this, id);
       }
-      return this.classList.toggle('inlined');
+      return $.toggleClass(this, 'inlined');
     },
     add: function(q, id) {
       var board, el, i, inline, isBacklink, path, postID, root, threadID;
@@ -6648,6 +6651,9 @@
         if (quote.hash.slice(2) === quoterID) {
           $.addClass(quote, 'forwardlink');
         }
+      }
+      if (Conf['Fappe Tyme'] && !$('img[data-md5]', qp)) {
+        $.rmClass(qp.firstElementChild, 'noFile');
       }
     },
     mouseout: function(e) {
@@ -8927,7 +8933,7 @@
       $.on(QR.autohide, 'change', QR.toggleHide);
       $.on($('.close', QR.el), 'click', QR.close);
       $.on($('#dump', QR.el), 'click', function() {
-        return QR.el.classList.toggle('dump');
+        return $.toggleClass(QR.el, 'dump');
       });
       $.on($('#addReply', QR.el), 'click', function() {
         return new QR.reply().select();
@@ -9194,7 +9200,8 @@
       var el;
       el = $.el('a', {
         href: 'javascript:;',
-        id: 'fappeTyme'
+        id: 'fappeTyme',
+        title: 'Fappe Tyme'
       });
       $.on(el, 'click', FappeTyme.toggle);
       $.add($.id('navtopright'), el);
@@ -9210,7 +9217,7 @@
       return post.el.parentElement.classList.add("noFile");
     },
     toggle: function() {
-      return d.body.classList.toggle('fappeTyme');
+      return $.toggleClass(d.body, 'fappeTyme');
     }
   };
 

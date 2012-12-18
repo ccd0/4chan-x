@@ -642,7 +642,7 @@ QR =
 
     $.on QR.autohide,             'change',    QR.toggleHide
     $.on $('.close',    QR.el),   'click',     QR.close
-    $.on $('#dump',     QR.el),   'click',     -> QR.el.classList.toggle 'dump'
+    $.on $('#dump',     QR.el),   'click',     -> $.toggleClass QR.el, 'dump'
     $.on $('#addReply', QR.el),   'click',     -> new QR.reply().select()
     $.on $('form',      QR.el),   'submit',    QR.submit
     $.on ta,                      'input',     -> QR.selected.el.lastChild.textContent = @value

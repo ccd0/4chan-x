@@ -215,6 +215,8 @@ $.extend $,
     el.classList.add className
   rmClass: (el, className) ->
     el.classList.remove className
+  toggleClass: (el, className) ->
+    el.classList.toggle className
   rm: (el) ->
     el.parentNode.removeChild el
   tn: (s) ->

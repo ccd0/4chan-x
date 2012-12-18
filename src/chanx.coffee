@@ -2057,7 +2057,7 @@ QuoteInline =
     else
       return if $.x "ancestor::div[contains(@id,'p#{id}')]", @
       QuoteInline.add @, id
-    @classList.toggle 'inlined'
+    $.toggleClass @, 'inlined'
 
   add: (q, id) ->
     if q.host is 'boards.4chan.org'
@@ -2182,10 +2182,14 @@ QuotePreview =
         $.addClass el.parentNode, 'qphl'
       else
         $.addClass el, 'qphl'
+        
     quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
     for quote in $$ '.quotelink, .backlink', qp
       if quote.hash[2..] is quoterID
         $.addClass quote, 'forwardlink'
+    
+    if Conf['Fappe Tyme'] and not $('img[data-md5]', qp)
+      $.rmClass qp.firstElementChild, 'noFile'
     return
   mouseout: (e) ->
     UI.hoverend()
