@@ -8,7 +8,9 @@ FappeTyme =
     Main.callbacks.push @node
 
   node: (post) ->
-    return if post.img or post.isInlined
+    return if post.img
+    if post.isInlined
+      return post.el.parentElement.classList.remove "noFile"
     post.el.parentElement.classList.add "noFile"
 
   toggle: ->

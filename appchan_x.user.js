@@ -9201,8 +9201,11 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      if (post.img || post.isInlined) {
+      if (post.img) {
         return;
+      }
+      if (post.isInlined) {
+        return post.el.parentElement.classList.remove("noFile");
       }
       return post.el.parentElement.classList.add("noFile");
     },
