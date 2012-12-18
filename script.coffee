@@ -2995,7 +2995,7 @@ Get =
         when 'D' then 'developer'
       tripcode: data.trip
       uniqueID: data.poster_hash
-      email:    if data.email then encodeURIComponent data.email else ''
+      email:    if data.email then encodeURI data.email else ''
       subject:  data.title_processed
       flagCode: data.poster_country
       flagName: data.poster_country_name_processed
@@ -3076,7 +3076,7 @@ Build =
       capcode:  data.capcode
       tripcode: data.trip
       uniqueID: data.id
-      email:    if data.email then encodeURIComponent data.email.replace /&quot;/g, '"' else ''
+      email:    if data.email then encodeURI data.email.replace /&quot;/g, '"' else ''
       subject:  data.sub
       flagCode: data.country
       flagName: data.country_name
