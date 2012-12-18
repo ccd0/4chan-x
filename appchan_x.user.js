@@ -8835,7 +8835,7 @@
     },
     dialog: function() {
       var i, id, mimeTypes, name, size, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
-      QR.el = UI.dialog('qr', '', '\
+      QR.el = UI.dialog('qr', 'bottom: 0; right: 0;', '\
 <div id=qrtab class=move>\
   <label><input type=checkbox id=autohide title=Auto-hide> Post Form</label>\
   <span> <a class=close title=Close>×</a> </span>\

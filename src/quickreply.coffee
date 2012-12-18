@@ -557,7 +557,7 @@ QR =
       e.preventDefault()
 
   dialog: ->
-    QR.el = UI.dialog 'qr', '', '
+    QR.el = UI.dialog 'qr', 'bottom: 0; right: 0;', '
 <div id=qrtab class=move>
   <label><input type=checkbox id=autohide title=Auto-hide> Post Form</label>
   <span> <a class=close title=Close>×</a> </span>
