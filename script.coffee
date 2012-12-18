@@ -1416,7 +1416,7 @@ QR =
       el.innerHTML = null
       $.add el, err
     QR.open()
-    if QR.captchaIsEnabled and /captcha|verification/i.test el.textContent
+    if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
     alert el.textContent if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
@@ -1780,7 +1780,7 @@ QR =
   captcha:
     init: ->
       return if -1 isnt d.cookie.indexOf 'pass_enabled='
-      return unless QR.captchaIsEnabled = !!$.id 'captchaFormPart'
+      return unless @isEnabled = !!$.id 'captchaFormPart'
       if $.id 'recaptcha_challenge_field_holder'
         @ready()
       else
@@ -1975,7 +1975,7 @@ QR =
     else unless reply.com or reply.file
         err = 'No file selected.'
 
-    if QR.captchaIsEnabled and !err
+    if QR.captcha.isEnabled and !err
       # get oldest valid captcha
       captchas = $.get 'captchas', []
       # remove old captchas
@@ -2080,10 +2080,14 @@ QR =
           err = 'Error: You seem to have mistyped the CAPTCHA.'
         # Enable auto-post if we have some cached captchas.
         QR.cooldown.auto =
-          if QR.captchaIsEnabled
+          if QR.captcha.isEnabled
             !!$.get('captchas', []).length
-          else
+          else if err is 'Connection error with sys.4chan.org.'
             true
+          else
+            # Something must've gone terribly wrong if you get captcha errors without captchas.
+            # Don't auto-post indefinitely in that case.
+            false
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
         QR.cooldown.set delay: 2

@@ -1834,7 +1834,7 @@
         $.add(el, err);
       }
       QR.open();
-      if (QR.captchaIsEnabled && /captcha|verification/i.test(el.textContent)) {
+      if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
         $('[autocomplete]', QR.el).focus();
       }
       if (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) {
@@ -2286,7 +2286,7 @@
         if (-1 !== d.cookie.indexOf('pass_enabled=')) {
           return;
         }
-        if (!(QR.captchaIsEnabled = !!$.id('captchaFormPart'))) {
+        if (!(this.isEnabled = !!$.id('captchaFormPart'))) {
           return;
         }
         if ($.id('recaptcha_challenge_field_holder')) {
@@ -2523,7 +2523,7 @@
       } else if (!(reply.com || reply.file)) {
         err = 'No file selected.';
       }
-      if (QR.captchaIsEnabled && !err) {
+      if (QR.captcha.isEnabled && !err) {
         captchas = $.get('captchas', []);
         while ((captcha = captchas[0]) && captcha.time < Date.now()) {
           captchas.shift();
@@ -2632,7 +2632,7 @@
           if (/mistyped/i.test(err.textContent)) {
             err = 'Error: You seem to have mistyped the CAPTCHA.';
           }
-          QR.cooldown.auto = QR.captchaIsEnabled ? !!$.get('captchas', []).length : true;
+          QR.cooldown.auto = QR.captcha.isEnabled ? !!$.get('captchas', []).length : err === 'Connection error with sys.4chan.org.' ? true : false;
           QR.cooldown.set({
             delay: 2
           });
