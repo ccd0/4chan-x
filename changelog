@@ -1,5 +1,9 @@
 master
 
+1.0.27
+- Zixaphir
+  Fixed a bug involving malformed quotes generating an error. MOOOOOOOOT!!
+
 1.0.26
 - Zixaphir
   Fixed a prototyping bug resulting in an error with Embedding.
