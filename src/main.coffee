@@ -250,6 +250,9 @@ Main =
       
     if Conf['Replace GIF'] or Conf['Replace PNG'] or Conf['Replace JPG']
       ImageReplace.init()
+    
+    if Conf['Fappe Tyme']
+      FappeTyme.init()
 
     if g.REPLY
       if Conf['Prefetch']

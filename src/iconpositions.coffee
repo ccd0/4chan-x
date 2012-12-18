@@ -42,6 +42,7 @@
           !g.CATALOG and $('body > a[style="cursor: pointer; float: right;"]', d.body)?
           !g.CATALOG and Conf['Image Expansion']
           !g.CATALOG
+          Conf['Fappe Tyme']
           !g.CATALOG and navlinks = ((!g.REPLY and Conf['Index Navigation']) or (g.REPLY and Conf['Reply Navigation']))
           !g.CATALOG and navlinks
         ]
@@ -93,6 +94,10 @@ body > a[style="cursor: pointer; float: right;"]::after {
 div.navLinks > a:first-of-type::after {
   #{align}: #{position[++i]}px;
 }
+/* Fappe Tyme */
+#fappeTyme {
+  #{align}: #{position[++i]}px;
+}
 /* Thread Navigation Links */
 #navlinks a {
   margin: 2px;
@@ -124,6 +129,7 @@ div.navLinks > a:first-of-type::after {
 #watcher::after,
 #globalMessage::after,
 #imgControls,
+#fappeTyme,
 div.navLinks > a:first-of-type::after,
 .cataloglink a::after,
 body > a[style="cursor: pointer; float: right;"]::after {
@@ -159,6 +165,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
           !g.CATALOG and $('body > a[style="cursor: pointer; float: right;"]', d.body)?
           $('#navtopright .exlinksOptionsLink', d.body)?
           !g.CATALOG
+          Conf['Fappe Tyme']
           !g.CATALOG and navlinks = (Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation']))
           !g.CATALOG and navlinks
         ]
@@ -212,6 +219,10 @@ body > a[style="cursor: pointer; float: right;"]::after {
 div.navLinks > a:first-of-type::after {
   top: #{position[++i]}px;
 }
+/* Fappe Tyme */
+#fappeTyme {
+  top: #{position[++i]}px;
+}
 /* Thread Navigation Links */
 #navlinks a:first-of-type {
   top: #{position[++i]}px !important;
@@ -240,6 +251,7 @@ div.navLinks > a:first-of-type::after {
 #boardNavDesktopFoot::after,
 #globalMessage::after,
 #imgControls,
+#fappeTyme,
 #{if Conf["Slideout Watcher"] then "#watcher::after," else ""}
 body > a[style="cursor: pointer; float: right;"]::after,
 .cataloglink a::after,

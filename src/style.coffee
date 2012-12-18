@@ -800,6 +800,7 @@ h2 a {
 #{unless Conf["Board Subtitle"] then ".boardSubtitle," else ""}
 .deleteform,
 .dump > form > label,
+.fappeTyme .noFile,
 .fileText:hover .fntrunc,
 .fileText:not(:hover) .fnfull,
 .forwarded,
@@ -957,7 +958,8 @@ div.navLinks > a:first-of-type::after,
 #boardNavDesktopFoot::after,
 body > a[style="cursor: pointer; float: right;"]::after,
 #imgControls label:first-of-type::after,
-.cataloglink a::after {
+.cataloglink a::after,
+#fappeTyme {
   position: fixed;
   display: block;
   width: 15px;
@@ -1003,6 +1005,9 @@ body > a[style="cursor: pointer; float: right;"]::after {
 .cataloglink a::after {
   background-position: 0 -120px;
 }
+#fappeTyme {
+  background-position: 0 -135px;
+}
 #boardNavDesktopFoot:hover::after,
 #globalMessage:hover::after,
 #imgControls label:hover:first-of-type::after,
@@ -1014,7 +1019,8 @@ body > a[style="cursor: pointer; float: right;"]::after {
 .thumbnail#selected,
 body > a[style="cursor: pointer; float: right;"]:hover::after,
 div.navLinks > a:first-of-type:hover::after,
-.cataloglink a:hover::after {
+.cataloglink a:hover::after,
+#fappeTyme:hover {
   opacity: 1;
 }
 .boardTitle,

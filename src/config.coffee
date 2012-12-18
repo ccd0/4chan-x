@@ -126,6 +126,10 @@ Config =
         false
         'Expand images from current position to thread end.'
       ]
+      'Fappe Tyme': [
+        false
+        'Toggle display of posts without images.'
+      ]
       'Prefetch': [
         false
         'Prefetch images.'
