@@ -751,8 +751,12 @@ div.post.highlight {
         'Round the edges of various 4chan elements.'
       ]
       'Slideout Transitions' : [
-        true
+        false
         'Animate slideouts.'
+      ]
+      'Post Form Slideout Transitions' : [
+        true
+        'Animate slideouts for the post form.'
       ]
       'Underline Links': [
         false

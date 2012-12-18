@@ -108,6 +108,11 @@ Main =
       Options.init()
       MascotTools.init()
 
+      for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
+        if a = $ "a[href*='/#{g.BOARD}/']", $.id nav
+          # Gotta make it work in temporary boards.
+          $.addClass a, 'current'
+
       if Conf['Custom Navigation']
         CustomNavigation.init()
 
@@ -216,7 +221,7 @@ Main =
       CustomNavigation.init()
 
     for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
-      if a = $ "a[href$='/#{g.BOARD}/']", $.id nav
+      if a = $ "a[href*='/#{g.BOARD}/']", $.id nav
         # Gotta make it work in temporary boards.
         $.addClass a, 'current'
 

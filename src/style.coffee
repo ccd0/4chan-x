@@ -188,6 +188,10 @@ div.subMenu.reply {
 h1 {
   text-align: center;
 }
+#rice_tab + div .selectrice {
+  width: 150px;
+  display: inline-block;
+}
 #keybinds_tab + div > table {
   margin: auto;
 }
@@ -769,6 +773,10 @@ textarea {
 .boardSubtitle,
 .boardSubtitle a {
   font-size: #{parseInt(Conf["Font Size"], 10) - 1}px;
+}
+h2,
+h2 a {
+  font-size: #{parseInt(Conf["Font Size"], 10) + 4}px;
 }
 /* Cleanup */
 #absbot,
@@ -1952,6 +1960,14 @@ img.middlead,
 img.bottomad {
   #{Style.agent}transition: opacity .3s linear;
 }
+#imgControls {
+  #{Style.agent}transition: width .2s linear;
+}\n
+"""
+      else ""
+    ) + (
+      if Conf["Post Form Slideout Transitions"]
+        """
 #qr {
   #{Style.agent}transition: #{Style.sidebarLocation[0]} .3s ease-in-out 1s;
 }
@@ -1962,9 +1978,6 @@ img.bottomad {
 }
 #qrtab {
   #{Style.agent}transition: opacity .3s ease-in-out 1s, #{Style.sidebarLocation[0]} .3s ease-in-out 1s;
-}
-#imgControls {
-  #{Style.agent}transition: width .2s linear;
 }\n
 """
       else ""
@@ -2228,7 +2241,6 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   height: 0;
   width: #{(248 + Style.sidebarOffsetW)}px !important;
   overflow: hidden;
-  padding: 0 10px;
 }
 #watcher:hover {
   height: #{if Conf["Slideout Transitions"] then '250px' else 'auto'};
@@ -2586,7 +2598,6 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   overflow: hidden;
   #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
-  padding: 0 10px;
 }
 #globalMessage:hover {
   height: #{if Conf["Slideout Transitions"] then '250px' else 'auto'};
