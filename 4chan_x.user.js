@@ -3752,7 +3752,7 @@
             return '</b>';
         }
       });
-      comment = bq.innerHTML.replace(/(^|>)(&gt;[^<$]+)(<|$)/g, '$1<span class=quote>$2</span>$3');
+      comment = bq.innerHTML.replace(/(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3');
       o = {
         postID: postID,
         threadID: data.thread_num,

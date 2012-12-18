@@ -2976,7 +2976,7 @@ Get =
           when '[/banned]'
             '</b>'
     # greentext
-    comment = bq.innerHTML.replace /(^|>)(&gt;[^<$]+)(<|$)/g, '$1<span class=quote>$2</span>$3'
+    comment = bq.innerHTML.replace /(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3'
 
     o =
       # id
