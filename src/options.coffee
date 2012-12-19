@@ -6,13 +6,13 @@ Options =
       Favicon.init() unless Favicon.el
       Options.dialog()
 
-    for settings in ['settingsWindowLink', 'settingsWindowLinkBot']
-      a = $.el 'a',
-        href: 'javascript:;'
-        className: 'settingsWindowLink'
-      $.on a, 'click', ->
-        Options.dialog()
-      $.replace $.id(settings), a
+    a = $.el 'a',
+      id:    'settingsWindowLink'
+      title: 'Appchan X Settings'
+      href:  'javascript:;'
+    $.on a, 'click', ->
+      Options.dialog()
+    $.replace $.id('settingsWindowLink'), a
 
   dialog: (tab) ->
     if Conf['editMode'] is "theme"

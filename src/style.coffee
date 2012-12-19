@@ -907,7 +907,7 @@ html .subMenu {
   z-index: 102;
 }
 #navtopright .exlinksOptionsLink::after,
-#navtopright .settingsWindowLink::after,
+#settingsWindowLink,
 .cataloglink a::after {
   z-index: 101;
 }
@@ -951,7 +951,7 @@ div.post.highlight {
   z-index: 0;
 }
 #navtopright .exlinksOptionsLink::after,
-#navtopright .settingsWindowLink::after,
+#settingsWindowLink,
 div.navLinks > a:first-of-type::after,
 #watcher::after,
 #globalMessage::after,
@@ -972,7 +972,7 @@ body > a[style="cursor: pointer; float: right;"]::after,
 #imgControls {
   position: fixed;
 }
-#navtopright .settingsWindowLink::after {
+#settingsWindowLink {
   visibility: visible;
   background-position: 0 0;
 }
@@ -1012,7 +1012,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #globalMessage:hover::after,
 #imgControls label:hover:first-of-type::after,
 #navlinks a:hover,
-#navtopright .settingsWindowLink:hover::after,
+#settingsWindowLink:hover,
 #navtopright .exlinksOptionsLink:hover::after,
 #qr #qrtab,
 #watcher:hover::after,

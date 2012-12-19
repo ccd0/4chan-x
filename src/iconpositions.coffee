@@ -62,7 +62,7 @@ div.navLinks > a:first-of-type::after {
   z-index: 9;
 }
 /* 4chan X Options */
-#navtopright .settingsWindowLink::after {
+#settingsWindowLink {
   #{align}: #{position[i]}px;
 }
 /* Slideout Navigation */
@@ -125,7 +125,7 @@ div.navLinks > a:first-of-type::after {
 }
 #boardNavDesktopFoot::after,
 #navtopright .exlinksOptionsLink::after,
-#navtopright .settingsWindowLink::after,
+#settingsWindowLink,
 #watcher::after,
 #globalMessage::after,
 #imgControls,
@@ -189,7 +189,7 @@ div.navLinks > a:first-of-type::after {
   top: #{position[i]}px;
 }
 /* 4chan X Options */
-#navtopright .settingsWindowLink::after {
+#settingsWindowLink {
   top: #{position[++i]}px;
 }
 /* Slideout Navigation */
@@ -247,7 +247,7 @@ div.navLinks > a:first-of-type::after {
 }
 #navlinks a,
 #navtopright .exlinksOptionsLink::after,
-#navtopright .settingsWindowLink::after,
+#settingsWindowLink,
 #boardNavDesktopFoot::after,
 #globalMessage::after,
 #imgControls,

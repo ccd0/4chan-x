@@ -970,19 +970,17 @@ Keybinds =
 Nav =
   # ▲ ▼
   init: ->
-    span = $.el 'span',
+    span = $.el 'span'
       id: 'navlinks'
-    prev = $.el 'a',
-      textContent: '▲',
+    prev = $.el 'a'
       href: 'javascript:;'
-    next = $.el 'a',
-      textContent: '▼'
+    next = $.el 'a'
       href: 'javascript:;'
 
     $.on prev, 'click', @prev
     $.on next, 'click', @next
 
-    $.add span, [prev, $.tn(' '), next]
+    $.add span, [prev, next]
     $.add d.body, span
 
   prev: ->
@@ -1002,7 +1000,7 @@ Nav =
     for thread, i in Nav.threads
       rect = thread.getBoundingClientRect()
       {bottom} = rect
-      if bottom > 0 #we have not scrolled past
+      if bottom > 0 # We have not scrolled past
         if full
           return [thread, i, rect]
         return thread
@@ -1024,14 +1022,14 @@ Nav =
 BanChecker =
   init: ->
     @now = Date.now()
-    return if not Conf['Check for Bans constantly'] and $.get 'isBanned'
-      BanChecker.prepend()
-    else if Conf['Check for Bans constantly'] or $.get('lastBanCheck', 0) < @now - 6*$.HOUR
+    return if not Conf['Check for Bans constantly'] and reason = $.get 'isBanned'
+      BanChecker.prepend(reason)
+    else if Conf['Check for Bans constantly'] or $.get('lastBanCheck', 0) < @now - 6 * $.HOUR
       BanChecker.load()
 
   load: ->
     @url = 'https://www.4chan.org/banned'
-    $.ajax @url,
+    $.ajax @url
       onloadend: ->
         if @status is 200 or 304
           $.set 'lastBanCheck', BanChecker.now unless Conf['Check for Bans constantly']
@@ -1043,32 +1041,30 @@ BanChecker =
               $.rm BanChecker.el
               delete BanChecker.el
             return
-          $.set 'isBanned',
+          $.set 'isBanned', reason =
             if /This ban will not expire/i.test msg
               'You are permabanned.'
             else
               'You are banned.'
-          BanChecker.prepend()
+          BanChecker.prepend(reason)
 
-  prepend: ->
+  prepend: (reason) ->
     unless BanChecker.el
-      text = $.get('isBanned')
       Banchecker.el = el = $.el 'h2'
-        id: "banmessage"
-        class: "warning"
+        id:    'banmessage'
+        class: 'warning'
         innerHTML: "
-          <span>#{text}</span>
+          <span>#{reason}</span>
           <a href=#{@url} title='Click to find out why.' target=_blank>Click to find out why.</a>"
         title:  'Click to recheck.'
-      for text in [el.firstChild, el.lastChild]
-        $.on text, 'click', ->
+        $.on el.lastChild, 'click', ->
           $.delete 'lastBanCheck' unless Conf['Check for Bans constantly']
           $.delete 'isBanned'
           @parentNode.style.opacity = '.5'
           BanChecker.load()
       $.before $.id('delform'), el
     else
-      Banchecker.el.firstChild.textContent = $.get 'isBanned'
+      Banchecker.el.firstChild.textContent = reason
 
 
 Updater =
@@ -1227,7 +1223,7 @@ Updater =
             Updater.set 'count', @statusText
             Updater.count.className = 'warning'
       if Updater.postID
-        unless Updater.save.join(' ').contains(Updater.postID)
+        unless Updater.save.contains(Updater.postID)
           return Updater.update()
         Updater.checkPostCount = 0
         Updater.save = []
@@ -1242,11 +1238,10 @@ Updater =
 
       lastPost = Updater.thread.lastElementChild
       id = +lastPost.id[2..]
-      nodes = []
-      for post in posts.reverse()
+      nodes = for post in posts.reverse()
         break if post.no <= id # Make sure to not insert older posts.
-        nodes.push Build.postFromObject post, g.BOARD
         Updater.save.push post.no if Updater.postID
+        Build.postFromObject post, g.BOARD
 
       count = nodes.length
       if Conf['Verbose']
@@ -2191,6 +2186,7 @@ QuotePreview =
     if Conf['Fappe Tyme'] and not $('img[data-md5]', qp)
       $.rmClass qp.firstElementChild, 'noFile'
     return
+
   mouseout: (e) ->
     UI.hoverend()
     if el = $.id @hash[1..]
