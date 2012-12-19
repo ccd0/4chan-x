@@ -850,7 +850,7 @@ ThreadHiding =
 
   sync: ->
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-    hiddenThreadsCatalog = JSON.parse localStorage.getItem "4chan-hide-t-#{g.BOARD}"
+    hiddenThreadsCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
     if g.CATALOG
       for id of hiddenThreads
         hiddenThreadsCatalog[id] = true

@@ -1067,7 +1067,7 @@
     sync: function() {
       var hiddenThreads, hiddenThreadsCatalog, id;
       hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
-      hiddenThreadsCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD));
+      hiddenThreadsCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
       if (g.CATALOG) {
         for (id in hiddenThreads) {
           hiddenThreadsCatalog[id] = true;
