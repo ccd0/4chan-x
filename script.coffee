@@ -1623,20 +1623,7 @@ QR =
     $.addClass QR.el, 'dump'
     QR.resetFileInput() # reset input
   resetFileInput: ->
-    input = $ '[type=file]', QR.el
-    input.value = null
-    return unless $.engine is 'presto'
-    # XXX Opera needs extra care to reset its file input's value
-    clone = $.el 'input',
-      type: 'file'
-      accept:   input.accept
-      max:      input.max
-      multiple: input.multiple
-      size:     input.size
-      title:    input.title
-    $.on clone, 'change', QR.fileInput
-    $.on clone, 'click',  (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
-    $.replace input, clone
+    $('[type=file]', QR.el).value = null
 
   replies: []
   reply: class
@@ -1680,9 +1667,9 @@ QR =
       unless /^image/.test file.type
         @el.style.backgroundImage = null
         return
-      url = window.URL or window.webkitURL
-      # XXX Opera does not support window.URL.revokeObjectURL
-      url.revokeObjectURL? @url
+      # XXX Opera does not support window.URL
+      return unless url = window.URL or window.webkitURL
+      url.revokeObjectURL @url
 
       # Create a redimensioned thumbnail.
       fileUrl = url.createObjectURL file

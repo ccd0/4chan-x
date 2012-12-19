@@ -2070,27 +2070,7 @@
       return QR.resetFileInput();
     },
     resetFileInput: function() {
-      var clone, input;
-      input = $('[type=file]', QR.el);
-      input.value = null;
-      if ($.engine !== 'presto') {
-        return;
-      }
-      clone = $.el('input', {
-        type: 'file',
-        accept: input.accept,
-        max: input.max,
-        multiple: input.multiple,
-        size: input.size,
-        title: input.title
-      });
-      $.on(clone, 'change', QR.fileInput);
-      $.on(clone, 'click', function(e) {
-        if (e.shiftKey) {
-          return QR.selected.rmFile() || e.preventDefault();
-        }
-      });
-      return $.replace(input, clone);
+      return $('[type=file]', QR.el).value = null;
     },
     replies: [],
     reply: (function() {
@@ -2150,10 +2130,10 @@
           this.el.style.backgroundImage = null;
           return;
         }
-        url = window.URL || window.webkitURL;
-        if (typeof url.revokeObjectURL === "function") {
-          url.revokeObjectURL(this.url);
+        if (!(url = window.URL || window.webkitURL)) {
+          return;
         }
+        url.revokeObjectURL(this.url);
         fileUrl = url.createObjectURL(file);
         img = $.el('img');
         $.on(img, 'load', function() {
