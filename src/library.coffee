@@ -103,22 +103,21 @@ $.extend = (object, properties) ->
   return
 
 # Various prototypes I've wanted or needed to add.
-$.extend Array::,
-  indexOf: (object) ->
-    i = @length
-    while i--
-      if @[i] is object
-        break
-    return i
-  
-  contains: (object) ->
-    @indexOf(object) > -1
-  
+$.extend Array::,  
   add: (object, position) ->
     keep = @slice position
     @length = position
     @push object
-    @push.apply userNavigation.links, keep
+    @push.apply @, keep
+  
+  contains: (object) ->
+    @indexOf(object) > -1
+
+  indexOf: (object) ->
+    i = @length
+    while i--
+      break if @[i] is object
+    return i
   
   remove: (object) ->
     if (index = @indexOf object) > -1
@@ -133,12 +132,10 @@ $.extend String::,
   contains: (string) ->
     @indexOf(string) > -1
 
+$.DAY = ($.HOUR = ($.MINUTE = ($.SECOND = 1000) * 60) * 60) * 24
+
 $.extend $,
-  NBSP: '\u00A0'
-  SECOND: 1000
-  MINUTE: 1000*60
-  HOUR  : 1000*60*60
-  DAY   : 1000*60*60*24
+  NBSP:   '\u00A0'
   log:
     # XXX GreaseMonkey can't into console.log.bind
     console.log.bind? console
