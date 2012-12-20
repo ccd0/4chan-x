@@ -2454,88 +2454,6 @@
     links: [["a", "Anime & Manga", "//boards.4chan.org/a/"], ["b", "Random", "//boards.4chan.org/b/"], ["c", "Cute/Anime", "//boards.4chan.org/c/"], ["d", "Hentai/Alternative", "//boards.4chan.org/d/"], ["e", "Ecchi", "//boards.4chan.org/e/"], ["f", "Flash", "//boards.4chan.org/f/"], ["g", "Technology", "//boards.4chan.org/g/"], ["gif", "Animated Gifs", "//boards.4chan.org/gif/"], ["h", "Hentai", "//boards.4chan.org/h/"], ["hr", "High Resolution", "//boards.4chan.org/hr/"], ["k", "Weapons", "//boards.4chan.org/k/"], ["l", "Lolicon", "http://7chan.org/cake/"], ["m", "Mecha", "//boards.4chan.org/m/"], ["o", "Auto", "//boards.4chan.org/o/"], ["p", "Pictures", "//boards.4chan.org/p/"], ["r", "Requests", "//boards.4chan.org/r/"], ["s", "Sexy Beautiful Women", "//boards.4chan.org/s/"], ["t", "Torrents", "//boards.4chan.org/t/"], ["u", "Yuri", "//boards.4chan.org/u/"], ["v", "Video Games", "//boards.4chan.org/v/"], ["vg", "Video Game Generals", "//boards.4chan.org/vg/"], ["w", "Anime/Wallpapers", "//boards.4chan.org/w/"], ["wg", "Wallpapers/General", "//boards.4chan.org/wg/"], ["i", "Oekaki", "//boards.4chan.org/i/"], ["ic", "Artwork/Critique", "//boards.4chan.org/ic/"], ["r9k", "Robot 9K", "//boards.4chan.org/r9k/"], ["cm", "Cute/Male", "//boards.4chan.org/cm/"], ["hm", "Handsome Men", "//boards.4chan.org/hm/"], ["y", "Yaoi", "//boards.4chan.org/y/"], ["3", "3DCG", "//boards.4chan.org/3/"], ["adv", "Advice", "//boards.4chan.org/adv/"], ["an", "Animals", "//boards.4chan.org/an/"], ["cgl", "Cosplay & EGL", "//boards.4chan.org/cgl/"], ["ck", "Food & Cooking", "//boards.4chan.org/ck/"], ["co", "Comics & Cartoons", "//boards.4chan.org/co/"], ["diy", "Do It Yourself", "//boards.4chan.org/diy/"], ["fa", "Fashion", "//boards.4chan.org/fa/"], ["fit", "Health & Fitness", "//boards.4chan.org/fit/"], ["hc", "Hardcore", "//boards.4chan.org/hc/"], ["int", "International", "//boards.4chan.org/int/"], ["jp", "Otaku Culture", "//boards.4chan.org/jp/"], ["lit", "Literature", "//boards.4chan.org/lit/"], ["mlp", "My Little Pony", "//boards.4chan.org/mlp/"], ["mu", "Music", "//boards.4chan.org/mu/"], ["n", "Transportation", "//boards.4chan.org/n/"], ["po", "Papercraft & Origami", "//boards.4chan.org/po/"], ["pol", "Politically Incorrect", "//boards.4chan.org/pol/"], ["sci", "Science & Math", "//boards.4chan.org/sci/"], ["soc", "Social", "//boards.4chan.org/soc/"], ["sp", "Sports", "//boards.4chan.org/sp/"], ["tg", "Traditional Games", "//boards.4chan.org/tg/"], ["toy", "Toys", "//boards.4chan.org/toys/"], ["trv", "Travel", "//boards.4chan.org/trv/"], ["tv", "Television & Film", "//boards.4chan.org/tv/"], ["vp", "Pok&eacute;mon", "//boards.4chan.org/vp/"], ["wsg", "Worksafe GIF", "//boards.4chan.org/wsg/"], ["x", "Paranormal", "//boards.4chan.org/x/"], ["rs", "Rapidshares", "http://rs.4chan.org/"], ["status", "4chan Status", "http://status.4chan.org/"], ["q", "4chan Discussion", "//boards.4chan.org/q/"], ["@", "4chan Twitter", "http://www.twitter.com/4chan"]]
   };
 
-  UI = {
-    dialog: function(id, position, html) {
-      var el, _ref;
-      el = d.createElement('div');
-      el.className = 'reply dialog';
-      el.innerHTML = html;
-      el.id = id;
-      el.style.cssText = localStorage.getItem("" + Main.namespace + id + ".position") || position;
-      if ((_ref = el.querySelector('.move')) != null) {
-        _ref.addEventListener('mousedown', UI.dragstart, false);
-      }
-      return el;
-    },
-    dragstart: function(e) {
-      var el, rect;
-      e.preventDefault();
-      UI.el = el = this.parentNode;
-      d.addEventListener('mousemove', UI.drag, false);
-      d.addEventListener('mouseup', UI.dragend, false);
-      rect = el.getBoundingClientRect();
-      UI.dx = e.clientX - rect.left;
-      UI.dy = e.clientY - rect.top;
-      UI.width = d.documentElement.clientWidth - rect.width;
-      return UI.height = d.documentElement.clientHeight - rect.height;
-    },
-    drag: function(e) {
-      var left, style, top;
-      left = e.clientX - UI.dx;
-      top = e.clientY - UI.dy;
-      left = left < 10 ? '0px' : UI.width - left < 10 ? null : left + 'px';
-      top = top < 10 ? '0px' : UI.height - top < 10 ? null : top + 'px';
-      style = UI.el.style;
-      style.left = left;
-      style.top = top;
-      style.right = left === null ? '0px' : null;
-      return style.bottom = top === null ? '0px' : null;
-    },
-    dragend: function() {
-      localStorage.setItem("" + Main.namespace + UI.el.id + ".position", UI.el.style.cssText);
-      d.removeEventListener('mousemove', UI.drag, false);
-      d.removeEventListener('mouseup', UI.dragend, false);
-      return delete UI.el;
-    },
-    hover: function(e, mode) {
-      var clientHeight, clientWidth, clientX, clientY, height, style, top, _ref;
-      if (mode == null) {
-        mode = "default";
-      }
-      clientX = e.clientX, clientY = e.clientY;
-      style = UI.el.style;
-      _ref = d.documentElement, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
-      height = UI.el.offsetHeight;
-      if (mode === "default") {
-        top = clientY - 120;
-        style.top = clientHeight <= height || top <= 0 ? '0px' : top + height >= clientHeight ? clientHeight - height + 'px' : top + 'px';
-        if (clientX <= clientWidth - 400) {
-          style.left = clientX + 45 + 'px';
-          return style.right = null;
-        } else {
-          style.left = null;
-          style.right = clientWidth - clientX + 20 + 'px';
-          return top = clientY - 120;
-        }
-      } else {
-        if (clientX <= clientWidth - 400) {
-          style.left = clientX + 20 + 'px';
-          style.right = null;
-          top = clientY;
-        } else {
-          style.left = null;
-          style.right = clientWidth - clientX + 20 + 'px';
-          top = clientY - 120;
-        }
-        return style.top = clientHeight <= height || top <= 0 ? '0px' : top + height >= clientHeight ? clientHeight - height + 'px' : top + 'px';
-      }
-    },
-    hoverend: function() {
-      $.rm(UI.el);
-      return delete UI.el;
-    }
-  };
-
   /*
   loosely follows the jquery api:
   http://api.jquery.com/
@@ -2601,7 +2519,7 @@
     }
   });
 
-  $.DAY = ($.HOUR = ($.MINUTE = ($.SECOND = 1000) * 60) * 60) * 24;
+  $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)));
 
   $.extend($, {
     NBSP: '\u00A0',
@@ -2609,7 +2527,7 @@
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     ready: function(fc) {
       var cb;
-      if (/interactive|complete/.test(d.readyState)) {
+      if (['interactive', 'complete'].contains(d.readyState)) {
         return setTimeout(fc);
       }
       cb = function() {
@@ -2881,6 +2799,90 @@
       return result;
     } else {
       return null;
+    }
+  };
+
+  UI = {
+    dialog: function(id, position, html) {
+      var el, move;
+      el = $.el('div', {
+        className: 'reply dialog',
+        innerHTML: html,
+        id: id
+      });
+      el.style.cssText = localStorage.getItem("" + Main.namespace + id + ".position") || position;
+      if (move = $('.move', el)) {
+        move.addEventListener('mousedown', UI.dragstart, false);
+      }
+      return el;
+    },
+    dragstart: function(e) {
+      var el, rect;
+      e.preventDefault();
+      UI.el = el = this.parentNode;
+      d.addEventListener('mousemove', UI.drag, false);
+      d.addEventListener('mouseup', UI.dragend, false);
+      rect = el.getBoundingClientRect();
+      UI.dx = e.clientX - rect.left;
+      UI.dy = e.clientY - rect.top;
+      UI.width = d.documentElement.clientWidth - rect.width;
+      return UI.height = d.documentElement.clientHeight - rect.height;
+    },
+    drag: function(e) {
+      var left, style, top;
+      left = e.clientX - UI.dx;
+      top = e.clientY - UI.dy;
+      left = left < 10 ? '0px' : UI.width - left < 10 ? null : left + 'px';
+      top = top < 10 ? '0px' : UI.height - top < 10 ? null : top + 'px';
+      style = UI.el.style;
+      style.left = left;
+      style.top = top;
+      style.right = left === null ? '0px' : null;
+      return style.bottom = top === null ? '0px' : null;
+    },
+    dragend: function() {
+      $.set("" + Main.namespace + UI.el.id + ".position", UI.el.style.cssText);
+      d.removeEventListener('mousemove', UI.drag, false);
+      d.removeEventListener('mouseup', UI.dragend, false);
+      $.rm(UI.el);
+      return delete UI.el;
+    },
+    hover: function(e, mode) {
+      var clientHeight, clientWidth, clientX, clientY, height, style, top, _ref;
+      if (mode == null) {
+        mode = "default";
+      }
+      clientX = e.clientX, clientY = e.clientY;
+      style = UI.el.style;
+      _ref = d.documentElement, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
+      height = UI.el.offsetHeight;
+      if (mode === "default") {
+        top = clientY - 120;
+        style.top = clientHeight <= height || top <= 0 ? '0px' : top + height >= clientHeight ? clientHeight - height + 'px' : top + 'px';
+        if (clientX <= clientWidth - 400) {
+          style.left = clientX + 45 + 'px';
+          return style.right = null;
+        } else {
+          style.left = null;
+          style.right = clientWidth - clientX + 20 + 'px';
+          return top = clientY - 120;
+        }
+      } else {
+        if (clientX <= clientWidth - 400) {
+          style.left = clientX + 20 + 'px';
+          style.right = null;
+          top = clientY;
+        } else {
+          style.left = null;
+          style.right = clientWidth - clientX + 20 + 'px';
+          top = clientY - 120;
+        }
+        return style.top = clientHeight <= height || top <= 0 ? '0px' : top + height >= clientHeight ? clientHeight - height + 'px' : top + 'px';
+      }
+    },
+    hoverend: function() {
+      $.rm(UI.el);
+      return delete UI.el;
     }
   };
 
@@ -6835,177 +6837,10 @@
 
   Linkify = {
     init: function() {
-      if (Conf['Embedding']) {
-        this.types = {
-          YouTube: {
-            regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
-            style: {
-              border: '0',
-              width: '640px',
-              height: '390px'
-            },
-            el: function() {
-              return $.el('iframe', {
-                src: "//www.youtube.com/embed/" + this.name
-              });
-            },
-            title: {
-              api: function() {
-                return "https://gdata.youtube.com/feeds/api/videos/" + this.name + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
-              },
-              text: function() {
-                return JSON.parse(this.responseText).entry.title.$t;
-              }
-            }
-          },
-          Vocaroo: {
-            regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
-            el: function() {
-              return $.el('object', {
-                innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-              });
-            }
-          },
-          Vimeo: {
-            regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
-            style: {
-              border: '0',
-              width: '640px',
-              height: '390px'
-            },
-            el: function() {
-              return $.el('iframe', {
-                src: "//player.vimeo.com/video/" + this.name
-              });
-            },
-            title: {
-              api: function() {
-                return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + this.name;
-              },
-              text: function() {
-                return JSON.parse(this.responseText).title;
-              }
-            }
-          },
-          LiveLeak: {
-            regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
-            style: {
-              boder: '0',
-              width: '640px',
-              height: '390px'
-            },
-            el: function() {
-              return $.el('iframe', {
-                src: "http://www.liveleak.com/e/" + this.name + "?autostart=true"
-              });
-            }
-          },
-          audio: {
-            regExp: /(.*\.(mp3|ogg|wav))$/,
-            el: function() {
-              return $.el('audio', {
-                controls: 'controls',
-                preload: 'auto',
-                src: this.name
-              });
-            }
-          },
-          SoundCloud: {
-            regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
-            el: function() {
-              var div;
-              div = $.el('div', {
-                className: "soundcloud",
-                name: "soundcloud"
-              });
-              $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + (this.getAttribute('data-originalURL')) + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
-                div: div,
-                onloadend: function() {
-                  return this.div.innerHTML = JSON.parse(this.responseText).html;
-                }
-              }, false);
-              return div;
-            }
-          }
-        };
-        this.embedder = function(a) {
-          var embed, key, match, service, title, titles, type, _ref;
-          _ref = Linkify.types;
-          for (key in _ref) {
-            type = _ref[key];
-            if (match = a.href.match(type.regExp)) {
-              a.name = match[1];
-              embed = $.el('a', {
-                name: a.name,
-                className: 'embed',
-                href: 'javascript:;',
-                textContent: '(embed)'
-              });
-              embed.setAttribute('data-service', key);
-              embed.setAttribute('data-originalURL', a.href);
-              $.on(embed, 'click', Linkify.toggle);
-              if (Conf['Link Title']) {
-                if (service = type.title) {
-                  titles = $.get('CachedTitles', {});
-                  if (title = titles[match[1]]) {
-                    a.textContent = title[0];
-                    embed.setAttribute('data-title', title[0]);
-                  } else {
-                    try {
-                      $.ajax(service.api.call(a), {
-                        onloadend: function() {
-                          switch (this.status) {
-                            case 200:
-                            case 304:
-                              titles = $.get('CachedTitles', {});
-                              a.textContent = title = "[" + key + "] " + (service.text.call(this));
-                              embed.setAttribute('data-title', title);
-                              titles[match[1]] = [title, Date.now()];
-                              return $.set('CachedTitles', titles);
-                            case 404:
-                              return node.textContent = "[" + key + "] Not Found";
-                            case 403:
-                              return node.textContent = "[" + key + "] Forbidden or Private";
-                            default:
-                              return node.textContent = "[" + key + "] " + this.status + "'d";
-                          }
-                        }
-                      });
-                    } catch (err) {
-                      $.log("Unable to fetch the title of this " + key + " link. You may be blocking scripts from " + key + ".");
-                    }
-                  }
-                }
-              }
-              return [a, $.tn(' '), embed];
-            }
-          }
-          return [a];
-        };
-      } else {
-        this.embedder = function(a) {
-          return [a];
-        };
-      }
       return Main.callbacks.push(this.node);
     },
-    regString: /(\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s'"<>]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi,
-    concat: function(a) {
-      return $.on(a, 'click', function(e) {
-        var el, next;
-        if (e.shiftKey && e.ctrlKey) {
-          e.preventDefault();
-          e.stopPropagation();
-          if (((el = this.nextSibling).tagName.toLowerCase() === "br" || el.tagName.toLowerCase() === 's') && (next = el.nextSibling).className !== "abbr") {
-            this.href = this.textContent += (el.textContent ? el.textContent + next.textContent : next.textContent);
-            $.rm(next);
-            $.rm(el);
-          }
-        }
-      });
-    },
     node: function(post) {
-      var a, data, embed, i, index, link, links, node, nodes, snapshot, text, _i, _j, _k, _len, _len1, _ref, _ref1;
+      var a, data, el, embed, i, index, link, links, n, node, nodes, p, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2;
       if (post.isInlined && !post.isCrosspost) {
         if (Conf['Embedding']) {
           _ref = $$('.embed', post.el);
@@ -7016,16 +6851,25 @@
         }
         return;
       }
+      _ref1 = $$('s', post.blockquote);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        spoiler = _ref1[_j];
+        if (!/\w/.test(spoiler.textContent) && (p = spoiler.previousSibling) && (n = spoiler.nextSibling) && (n && p).nodeName === '#text') {
+          el = $.tn(p.textContent + spoiler.textContent + n.textContent);
+          $.rm(p) && $.rm(n);
+          $.replace(spoiler, el);
+        }
+      }
       snapshot = d.evaluate('.//text()', post.blockquote, null, 6, null);
-      for (i = _j = 0, _ref1 = snapshot.snapshotLength; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
+      for (i = _k = 0, _ref2 = snapshot.snapshotLength; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
         node = snapshot.snapshotItem(i);
         data = node.data;
         if (!(links = data.match(Linkify.regString))) {
           continue;
         }
         nodes = [];
-        for (_k = 0, _len1 = links.length; _k < _len1; _k++) {
-          link = links[_k];
+        for (_l = 0, _len2 = links.length; _l < _len2; _l++) {
+          link = links[_l];
           index = data.indexOf(link);
           if (text = data.slice(0, index)) {
             nodes.push($.tn(text));
@@ -7047,41 +6891,178 @@
         $.replace(node, nodes);
       }
     },
-    toggle: function() {
-      if (this.className.contains("embedded")) {
-        return Linkify.unembed.call(this);
-      } else {
-        return Linkify.embed.call(this);
-      }
-    },
-    embed: function() {
-      var el, link, style, type, value, _ref;
-      link = this.previousElementSibling;
-      el = (type = Linkify.types[this.getAttribute("data-service")]).el.call(this);
-      _ref = type.style;
-      for (style in _ref) {
-        value = _ref[style];
-        el.style[style] = value;
-      }
-      $.replace(link, el);
-      $.addClass(this, 'embedded');
-      return this.textContent = '(unembed)';
-    },
-    unembed: function() {
-      var a, embedded, title, url;
-      embedded = this.previousElementSibling;
-      url = this.getAttribute("data-originalURL");
-      title = this.getAttribute("data-title");
-      a = $.el('a', {
-        rel: 'nofollow noreferrer',
-        target: 'blank',
-        className: 'linkify',
-        href: url,
-        textContent: title || url
+    regString: /(\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s'"<>]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi,
+    concat: function(a) {
+      return $.on(a, 'click', function(e) {
+        var el, next, text;
+        if (e.shiftKey && e.ctrlKey) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (((el = this.nextSibling).tagName.toLowerCase() === "br" || el.tagName.toLowerCase() === 's') && (next = el.nextSibling).className !== "abbr") {
+            this.href = this.textContent += ((text = el.textContent) ? text + next.textContent : next.textContent);
+            $.rm(next);
+            return $.rm(el);
+          }
+        }
       });
-      $.replace(embedded, a);
-      $.rmClass(this, 'embedded');
-      return this.textContent = '(embed)';
+    },
+    toggle: function() {
+      var el, embed, style, type, url;
+      embed = this.previousElementSibling;
+      if (this.className.contains("embedded")) {
+        el = $.el('a', {
+          rel: 'nofollow noreferrer',
+          target: 'blank',
+          className: 'linkify',
+          href: url = this.getAttribute("data-originalURL"),
+          textContent: this.getAttribute("data-title") || url
+        });
+        this.textContent = '(embed)';
+      } else {
+        el = (type = Linkify.types[this.getAttribute("data-service")]).el.call(this);
+        if (style = type.style) {
+          el.style.cssText = style;
+        }
+        this.textContent = '(unembed)';
+      }
+      $.replace(embed, el);
+      return $.toggleClass(this, 'embedded');
+    },
+    types: {
+      YouTube: {
+        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
+        style: "border: 0; width: 640px; height: 390px",
+        el: function() {
+          return $.el('iframe', {
+            src: "//www.youtube.com/embed/" + this.name
+          });
+        },
+        title: {
+          api: function() {
+            return "https://gdata.youtube.com/feeds/api/videos/" + this.name + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
+          },
+          text: function() {
+            return JSON.parse(this.responseText).entry.title.$t;
+          }
+        }
+      },
+      Vocaroo: {
+        regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
+        el: function() {
+          return $.el('object', {
+            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          });
+        }
+      },
+      Vimeo: {
+        regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
+        style: "border: 0; width: 640px; height: 390px",
+        el: function() {
+          return $.el('iframe', {
+            src: "//player.vimeo.com/video/" + this.name
+          });
+        },
+        title: {
+          api: function() {
+            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + this.name;
+          },
+          text: function() {
+            return JSON.parse(this.responseText).title;
+          }
+        }
+      },
+      LiveLeak: {
+        regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
+        style: "border: 0; width: 640px; height: 390px",
+        el: function() {
+          return $.el('iframe', {
+            src: "http://www.liveleak.com/e/" + this.name + "?autostart=true"
+          });
+        }
+      },
+      audio: {
+        regExp: /(.*\.(mp3|ogg|wav))$/,
+        el: function() {
+          return $.el('audio', {
+            controls: 'controls',
+            preload: 'auto',
+            src: this.name
+          });
+        }
+      },
+      SoundCloud: {
+        regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
+        el: function() {
+          var div;
+          div = $.el('div', {
+            className: "soundcloud",
+            name: "soundcloud"
+          });
+          $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + (this.getAttribute('data-originalURL')) + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
+            div: div,
+            onloadend: function() {
+              return this.div.innerHTML = JSON.parse(this.responseText).html;
+            }
+          }, false);
+          return div;
+        }
+      }
+    },
+    embedder: function(a) {
+      var embed, key, match, service, title, titles, type, _ref;
+      if (Conf['Embed']) {
+        _ref = Linkify.types;
+        for (key in _ref) {
+          type = _ref[key];
+          if (match = a.href.match(type.regExp)) {
+            a.name = match[1];
+            embed = $.el('a', {
+              name: a.name,
+              className: 'embed',
+              href: 'javascript:;',
+              textContent: '(embed)'
+            });
+            embed.setAttribute('data-service', key);
+            embed.setAttribute('data-originalURL', a.href);
+            $.on(embed, 'click', Linkify.toggle);
+            if (Conf['Link Title']) {
+              if (service = type.title) {
+                titles = $.get('CachedTitles', {});
+                if (title = titles[match[1]]) {
+                  a.textContent = title[0];
+                  embed.setAttribute('data-title', title[0]);
+                } else {
+                  try {
+                    $.ajax(service.api.call(a), {
+                      onloadend: function() {
+                        switch (this.status) {
+                          case 200:
+                          case 304:
+                            titles = $.get('CachedTitles', {});
+                            a.textContent = title = "[" + key + "] " + (service.text.call(this));
+                            embed.setAttribute('data-title', title);
+                            titles[match[1]] = [title, Date.now()];
+                            return $.set('CachedTitles', titles);
+                          case 404:
+                            return node.textContent = "[" + key + "] Not Found";
+                          case 403:
+                            return node.textContent = "[" + key + "] Forbidden or Private";
+                          default:
+                            return node.textContent = "[" + key + "] " + this.status + "'d";
+                        }
+                      }
+                    });
+                  } catch (err) {
+                    $.log("Unable to fetch the title of this " + key + " link. You may be blocking scripts from " + key + ".");
+                  }
+                }
+              }
+            }
+            return [a, $.tn(' '), embed];
+          }
+        }
+      }
+      return [a];
     }
   };
 

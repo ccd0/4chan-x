@@ -1,93 +1,3 @@
-UI =
-  dialog: (id, position, html) ->
-    el = d.createElement 'div'
-    el.className = 'reply dialog'
-    el.innerHTML = html
-    el.id        = id
-    el.style.cssText = localStorage.getItem("#{Main.namespace}#{id}.position") or position
-    el.querySelector('.move')?.addEventListener 'mousedown', UI.dragstart, false
-    el
-  dragstart: (e) ->
-    # Prevent text selection
-    e.preventDefault()
-    UI.el = el = @parentNode
-    d.addEventListener 'mousemove', UI.drag,    false
-    d.addEventListener 'mouseup',   UI.dragend, false
-    # Distance from pointer to el edge is constant; calculate it here.
-    rect      = el.getBoundingClientRect()
-    UI.dx     = e.clientX - rect.left
-    UI.dy     = e.clientY - rect.top
-    UI.width  = d.documentElement.clientWidth  - rect.width
-    UI.height = d.documentElement.clientHeight - rect.height
-  drag: (e) ->
-    left = e.clientX - UI.dx
-    top  = e.clientY - UI.dy
-    left =
-      if left < 10 then '0px'
-      else if UI.width - left < 10 then null
-      else left + 'px'
-    top =
-      if top < 10 then '0px'
-      else if UI.height - top < 10 then null
-      else top + 'px'
-    {style} = UI.el
-    style.left   = left
-    style.top    = top
-    style.right  = if left is null then '0px' else null
-    style.bottom = if top  is null then '0px' else null
-  dragend: ->
-    localStorage.setItem "#{Main.namespace}#{UI.el.id}.position", UI.el.style.cssText
-    d.removeEventListener 'mousemove', UI.drag,    false
-    d.removeEventListener 'mouseup',   UI.dragend, false
-    delete UI.el
-  hover: (e, mode = "default") ->
-    {clientX, clientY} = e
-    {style} = UI.el
-    {clientHeight, clientWidth} = d.documentElement
-    height = UI.el.offsetHeight
-
-    if mode is "default"
-
-      top = clientY - 120
-      style.top =
-        if clientHeight <= height or top <= 0
-          '0px'
-        else if top + height >= clientHeight
-          clientHeight - height + 'px'
-        else
-          top + 'px'
-
-      if clientX <= clientWidth - 400
-        style.left = clientX + 45 + 'px'
-        style.right = null
-      else
-        style.left  = null
-        style.right = clientWidth - clientX + 20 + 'px'
-        top = clientY - 120
-
-    else
-
-      if clientX <= clientWidth - 400
-        style.left  = clientX + 20 + 'px'
-        style.right = null
-        top = clientY
-      else
-        style.left  = null
-        style.right = clientWidth - clientX + 20 + 'px'
-        top = clientY - 120
-
-      style.top =
-        if clientHeight <= height or top <= 0
-          '0px'
-        else if top + height >= clientHeight
-          clientHeight - height + 'px'
-        else
-          top + 'px'
-
-  hoverend: ->
-    $.rm UI.el
-    delete UI.el
-
 ###
 loosely follows the jquery api:
 http://api.jquery.com/
@@ -132,7 +42,8 @@ $.extend String::,
   contains: (string) ->
     @indexOf(string) > -1
 
-$.DAY = ($.HOUR = ($.MINUTE = ($.SECOND = 1000) * 60) * 60) * 24
+# A day is 24 hours is 60 minutes is 60 seconds.
+$.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)))
 
 $.extend $,
   NBSP:   '\u00A0'
@@ -141,7 +52,7 @@ $.extend $,
     console.log.bind? console
   engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
   ready: (fc) ->
-    if /interactive|complete/.test d.readyState
+    if ['interactive' , 'complete'].contains d.readyState
       # Execute the functions in parallel.
       # If one fails, do not stop the others.
       return setTimeout fc
@@ -320,3 +231,95 @@ $$ = (selector, root=d.body) ->
     return result
   else
     return null
+
+UI =
+  dialog: (id, position, html) ->
+    el = $.el 'div',
+      className: 'reply dialog'
+      innerHTML: html
+      id:        id
+    el.style.cssText = localStorage.getItem("#{Main.namespace}#{id}.position") or position
+    if move = $ '.move',  el
+      move.addEventListener 'mousedown', UI.dragstart, false
+    el
+  dragstart: (e) ->
+    # Prevent text selection
+    e.preventDefault()
+    UI.el = el = @parentNode
+    d.addEventListener 'mousemove', UI.drag,    false
+    d.addEventListener 'mouseup',   UI.dragend, false
+    # Distance from pointer to el edge is constant; calculate it here.
+    rect      = el.getBoundingClientRect()
+    UI.dx     = e.clientX - rect.left
+    UI.dy     = e.clientY - rect.top
+    UI.width  = d.documentElement.clientWidth  - rect.width
+    UI.height = d.documentElement.clientHeight - rect.height
+  drag: (e) ->
+    left = e.clientX - UI.dx
+    top  = e.clientY - UI.dy
+    left =
+      if left < 10 then '0px'
+      else if UI.width - left < 10 then null
+      else left + 'px'
+    top =
+      if top < 10 then '0px'
+      else if UI.height - top < 10 then null
+      else top + 'px'
+    {style} = UI.el
+    style.left   = left
+    style.top    = top
+    style.right  = if left is null then '0px' else null
+    style.bottom = if top  is null then '0px' else null
+  dragend: ->
+    $.set "#{Main.namespace}#{UI.el.id}.position", UI.el.style.cssText
+    d.removeEventListener 'mousemove', UI.drag,    false
+    d.removeEventListener 'mouseup',   UI.dragend, false
+    $.rm UI.el
+    delete UI.el
+  hover: (e, mode = "default") ->
+    {clientX, clientY} = e
+    {style} = UI.el
+    {clientHeight, clientWidth} = d.documentElement
+    height = UI.el.offsetHeight
+
+    if mode is "default"
+
+      top = clientY - 120
+      style.top =
+        if clientHeight <= height or top <= 0
+          '0px'
+        else if top + height >= clientHeight
+          clientHeight - height + 'px'
+        else
+          top + 'px'
+
+      if clientX <= clientWidth - 400
+        style.left = clientX + 45 + 'px'
+        style.right = null
+      else
+        style.left  = null
+        style.right = clientWidth - clientX + 20 + 'px'
+        top = clientY - 120
+
+    else
+
+      if clientX <= clientWidth - 400
+        style.left  = clientX + 20 + 'px'
+        style.right = null
+        top = clientY
+      else
+        style.left  = null
+        style.right = clientWidth - clientX + 20 + 'px'
+        top = clientY - 120
+
+      style.top =
+        if clientHeight <= height or top <= 0
+          '0px'
+        else if top + height >= clientHeight
+          clientHeight - height + 'px'
+        else
+          top + 'px'
+
+  hoverend: ->
+    $.rm UI.el
+    delete UI.el

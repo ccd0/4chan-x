@@ -2338,115 +2338,61 @@ Quotify =
 
 Linkify =
   init: ->
-    if Conf['Embedding']
-      @types =
-        YouTube:
-          regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
-          style:
-            border: '0'
-            width:  '640px'
-            height: '390px'
-          el: ->
-            $.el 'iframe'
-              src: "//www.youtube.com/embed/#{@name}"
-          title:
-            api:  -> "https://gdata.youtube.com/feeds/api/videos/#{@name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
-            text: -> JSON.parse(@responseText).entry.title.$t
-        Vocaroo:
-          regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
-          el: ->
-            $.el 'object'
-              innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
-        Vimeo:
-          regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
-          style:
-            border: '0'
-            width:  '640px'
-            height: '390px'
-          el: ->
-            $.el 'iframe'
-              src: "//player.vimeo.com/video/#{@name}"
-          title:
-            api:  -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{@name}"
-            text: -> JSON.parse(@responseText).title
-        LiveLeak:
-          regExp:  /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
-          style:
-            boder:  '0'
-            width:  '640px'
-            height: '390px'
-          el: ->
-            $.el 'iframe'
-              src: "http://www.liveleak.com/e/#{@name}?autostart=true"
-        audio:
-          regExp:  /(.*\.(mp3|ogg|wav))$/
-          el: ->
-            $.el 'audio'
-              controls:    'controls'
-              preload:     'auto'
-              src:         @name
-        SoundCloud:
-          regExp:  /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
-          el: ->
-            div   = $.el 'div'
-              className: "soundcloud"
-              name:      "soundcloud"
-            $.ajax(
-              "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@getAttribute 'data-originalURL'}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
-              div: div
-              onloadend: ->
-                @div.innerHTML = JSON.parse(this.responseText).html
-              false)
-            div
-
-      @embedder = (a) ->
-        for key, type of Linkify.types
-          if match = a.href.match type.regExp
-            a.name = match[1]
-            embed = $.el 'a'
-              name:         a.name
-              className:    'embed'
-              href:         'javascript:;'
-              textContent:  '(embed)'
-            embed.setAttribute 'data-service', key
-            embed.setAttribute 'data-originalURL', a.href
-            $.on embed, 'click', Linkify.toggle
-
-            if Conf['Link Title']
-              if service = type.title
-                titles = $.get 'CachedTitles', {}
-                if title = titles[match[1]]
-                  a.textContent = title[0]
-                  embed.setAttribute 'data-title', title[0]
-                else
-                  try
-                    $.ajax(
-                      service.api.call a
-                      onloadend: ->
-                        switch @status
-                          when 200, 304
-                            titles = $.get 'CachedTitles', {}
-                            a.textContent = title = "[#{key}] #{service.text.call @}"
-                            embed.setAttribute 'data-title', title
-                            titles[match[1]] = [title, Date.now()]
-                            $.set 'CachedTitles', titles
-                          when 404
-                            node.textContent = "[#{key}] Not Found"
-                          when 403
-                            node.textContent = "[#{key}] Forbidden or Private"
-                          else
-                            node.textContent = "[#{key}] #{@status}'d"
-                      )
-                  catch err
-                    $.log "Unable to fetch the title of this #{key} link. You may be blocking scripts from #{key}."
-                    
-            return [a, $.tn(' '), embed]
-        return [a]
-    else
-      @embedder = (a) ->
-        return [a]
-
     Main.callbacks.push @node
+
+  node: (post) ->
+    if post.isInlined and not post.isCrosspost
+      if Conf['Embedding']
+        for embed in $$('.embed', post.el)
+          $.on embed, 'click', Linkify.toggle
+      return
+
+    for spoiler in $$ 's', post.blockquote
+      if not /\w/.test(spoiler.textContent) and (p = spoiler.previousSibling) and (n = spoiler.nextSibling) and (n and p).nodeName is '#text'
+        el = $.tn p.textContent + spoiler.textContent + n.textContent
+        $.rm(p) and $.rm n
+        $.replace spoiler, el
+
+    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
+    # Get all the text nodes that are not inside an anchor.
+    snapshot = d.evaluate './/text()', post.blockquote, null, 6, null
+
+    for i in [0...snapshot.snapshotLength]
+      node = snapshot.snapshotItem i
+      data = node.data
+
+      unless links = data.match Linkify.regString
+        # Only accept nodes with potentially valid links
+        continue
+
+      nodes = []
+
+      for link in links
+        index = data.indexOf link
+
+        if text = data[...index]
+          # Potential text before this valid link.
+          nodes.push $.tn text
+
+        a = $.el 'a'
+          textContent: link
+          className:   'linkify'
+          rel:         'nofollow noreferrer'
+          target:      'blank'
+          href:        unless link.contains(":") then (if (link.contains "@") then "mailto:" + link else "http://" + link) else link
+
+        Linkify.concat a
+
+        nodes = nodes.concat Linkify.embedder(a)
+
+      data = data[index + link.length..]
+
+      if data
+        # Potential text after the last valid link.
+        nodes.push $.tn data
+
+      $.replace node, nodes
+    return
 
   regString: ///(
     \b(
@@ -2475,102 +2421,141 @@ Linkify =
 
         # We essentially check for a <br> and make sure we're not merging non-post content.
         if ((el = @nextSibling).tagName.toLowerCase() is "br" or el.tagName.toLowerCase() is 's') and (next = el.nextSibling).className isnt "abbr"
-          @href = @textContent += (if el.textContent
-            el.textContent + next.textContent
+          @href = @textContent += (if text = el.textContent
+            text + next.textContent
           else
             next.textContent)
           $.rm next
           $.rm el
-      return
-
-  node: (post) ->
-    if post.isInlined and not post.isCrosspost
-      if Conf['Embedding']
-        for embed in $$('.embed', post.el)
-          $.on embed, 'click', Linkify.toggle
-      return
-
-    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
-    # Get all the text nodes that are not inside an anchor.
-    snapshot = d.evaluate './/text()', post.blockquote, null, 6, null
-
-    for i in [0...snapshot.snapshotLength]
-      node = snapshot.snapshotItem i
-      {data} = node
-
-      unless links = data.match Linkify.regString
-        # Only accept nodes with potentially valid links
-        continue
-
-      nodes = []
-
-      for link in links
-        index = data.indexOf link
-
-        if text = data[...index]
-          # Potential text before this valid link.
-          nodes.push $.tn text
-
-        a = $.el 'a'
-          textContent: link
-          className: 'linkify'
-          rel:       'nofollow noreferrer'
-          target:    'blank'
-          href:      unless link.contains(":") then (if (link.contains "@") then "mailto:" + link else "http://" + link) else link
-
-        Linkify.concat a
-
-        nodes = nodes.concat Linkify.embedder(a)
-
-      data = data[index + link.length..]
-
-      if data
-        # Potential text after the last valid link.
-        nodes.push $.tn data
-
-      $.replace node, nodes
-    return
 
   toggle: ->
-    if @className.contains "embedded"
-      Linkify.unembed.call @
-    else
-      Linkify.embed.call @
-
-  embed: ->
     # We setup the link to be replaced by the embedded video
-    link = @previousElementSibling
+    embed = @previousElementSibling
 
-    # We create an element to embed
-    el = (type = Linkify.types[@getAttribute("data-service")]).el.call @
+    # Unembed.
+    if @className.contains "embedded"
+      # Recreate the original link.
+      el = $.el 'a'
+        rel:         'nofollow noreferrer'
+        target:      'blank'
+        className:   'linkify'
+        href:        url = @getAttribute("data-originalURL")
+        textContent: @getAttribute("data-title") or url
 
-    # Set style values.
-    for style, value of type.style
-      el.style[style] = value
+      @textContent = '(embed)'
 
-    # We replace the link with the element
-    $.replace link, el
+    # Embed
+    else
+      # We create an element to embed
+      el = (type = Linkify.types[@getAttribute("data-service")]).el.call @
 
-    # Reflect unembed functionality
-    $.addClass @, 'embedded'
-    @textContent = '(unembed)'
+      # Set style values.
+      if style = type.style
+        el.style.cssText = style
 
-  unembed: ->
-    embedded = @previousElementSibling
-    url =      @getAttribute("data-originalURL")
-    title =    @getAttribute("data-title")
+      @textContent = '(unembed)'
 
-    a = $.el 'a'
-      rel:         'nofollow noreferrer'
-      target:      'blank'
-      className:   'linkify'
-      href:        url
-      textContent: title or url
+    $.replace embed, el
+    $.toggleClass @, 'embedded'
+    
+  types:
+    YouTube:
+      regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
+      style:  "border: 0; width: 640px; height: 390px"
+      el: ->
+        $.el 'iframe'
+          src: "//www.youtube.com/embed/#{@name}"
+      title:
+        api:  -> "https://gdata.youtube.com/feeds/api/videos/#{@name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
+        text: -> JSON.parse(@responseText).entry.title.$t
+    Vocaroo:
+      regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
+      el: ->
+        $.el 'object'
+          innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+    Vimeo:
+      regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
+      style:  "border: 0; width: 640px; height: 390px"
+      el: ->
+        $.el 'iframe'
+          src: "//player.vimeo.com/video/#{@name}"
+      title:
+        api:  -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{@name}"
+        text: -> JSON.parse(@responseText).title
+    LiveLeak:
+      regExp:  /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
+      style:  "border: 0; width: 640px; height: 390px"
+      el: ->
+        $.el 'iframe'
+          src: "http://www.liveleak.com/e/#{@name}?autostart=true"
+    audio:
+      regExp:  /(.*\.(mp3|ogg|wav))$/
+      el: ->
+        $.el 'audio'
+          controls:    'controls'
+          preload:     'auto'
+          src:         @name
+    SoundCloud:
+      regExp:  /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
+      el: ->
+        div   = $.el 'div'
+          className: "soundcloud"
+          name:      "soundcloud"
+        $.ajax(
+          "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@getAttribute 'data-originalURL'}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
+          div: div
+          onloadend: ->
+            @div.innerHTML = JSON.parse(this.responseText).html
+          false)
+        div
 
-    $.replace embedded, a
+  embedder: (a) ->
+    if Conf['Embed']
+      for key, type of Linkify.types
+        if match = a.href.match type.regExp
+          a.name = match[1]
 
-    $.rmClass @, 'embedded'
-    @textContent = '(embed)'
+          embed = $.el 'a'
+            name:         a.name
+            className:    'embed'
+            href:         'javascript:;'
+            textContent:  '(embed)'
+
+          embed.setAttribute 'data-service', key
+          embed.setAttribute 'data-originalURL', a.href
+
+          $.on embed, 'click', Linkify.toggle
+
+          if Conf['Link Title']
+            if service = type.title
+              titles = $.get 'CachedTitles', {}
+              if title = titles[match[1]]
+                a.textContent = title[0]
+                embed.setAttribute 'data-title', title[0]
+              else
+                try
+                  $.ajax(
+                    service.api.call a
+                    onloadend: ->
+                      switch @status
+                        when 200, 304
+                          titles = $.get 'CachedTitles', {}
+                          a.textContent = title = "[#{key}] #{service.text.call @}"
+                          embed.setAttribute 'data-title', title
+                          titles[match[1]] = [title, Date.now()]
+                          $.set 'CachedTitles', titles
+                        when 404
+                          node.textContent = "[#{key}] Not Found"
+                        when 403
+                          node.textContent = "[#{key}] Forbidden or Private"
+                        else
+                          node.textContent = "[#{key}] #{@status}'d"
+                    )
+                catch err
+                  $.log "Unable to fetch the title of this #{key} link. You may be blocking scripts from #{key}."
+                    
+          return [a, $.tn(' '), embed]
+    return [a]
 
 DeleteLink =
   init: ->
