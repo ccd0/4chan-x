@@ -1,4 +1,17 @@
 master
+- Zixaphir
+  Added Per-Board Personas.
+  Fappe Tyme
+- noface
+  Added new feature 'Remove Spoilers'.
+  Added input to specify height and width of embeds.
+  Fixed Anonymize not working on stubs.
+  Fixed deadquotes showing up in code-tags.
+- Mayhem
+  Fix posting warning not displaying the reason.
+  Fix selection quoting on Opera.
+  Fix history bug with Persistent QR enabled on Chrome.
+  
 
 1.0.27
 - Zixaphir

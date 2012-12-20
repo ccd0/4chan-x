@@ -411,17 +411,21 @@ ExpandComment =
       quotes:     quotes
       backlinks:  []
     if Conf['Resurrect Quotes']
-      Quotify.node      post
+      Quotify.node        post
     if Conf['Linkify']
-      Linkify.node      post
+      Linkify.node        post
     if Conf['Quote Preview']
-      QuotePreview.node post
+      QuotePreview.node   post
     if Conf['Quote Inline']
-      QuoteInline.node  post
+      QuoteInline.node    post
     if Conf['Indicate OP quote']
-      QuoteOP.node      post
+      QuoteOP.node        post
     if Conf['Indicate Cross-thread Quotes']
-      QuoteCT.node      post
+      QuoteCT.node        post
+    if Conf['RemoveSpoilers']
+      RemoveSpoilers.node post
+    if Conf['Color user IDs']
+      IDColor.node        post
     $.replace bq, clone
     Main.prettify clone
 
@@ -510,7 +514,7 @@ ThreadHiding =
     return
 
   sync: ->
-    hiddenThreadsCatalog = JSON.parse localStorage.getItem "4chan-hide-t-#{g.BOARD}"
+    hiddenThreadsCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
     if g.CATALOG
       for id of @hiddenThreads
         hiddenThreadsCatalog[id] = true
@@ -613,7 +617,7 @@ ReplyHiding =
     a = stub.firstChild
     $.on  a, 'click', ->
       ReplyHiding.toggle button = @parentNode, root = button.parentNode, id = root.id[2..]
-    $.add a, $.tn $('.desktop > .nameBlock', el).textContent
+    $.add a, $.tn if Conf['Anonymize'] then 'Anonymous' else $('.desktop > .nameBlock', el).textContent
     if Conf['Menu']
       menuButton = Menu.a.cloneNode true
       $.on menuButton, 'click', Menu.toggle
@@ -933,6 +937,7 @@ Keybinds =
     $('textarea', QR.el).focus()
 
   open: (thread, tab) ->
+    return if g.REPLY
     id = thread.id[1..]
     url = "//boards.4chan.org/#{g.BOARD}/res/#{id}"
     if tab
@@ -1055,7 +1060,7 @@ BanChecker =
         class: 'warning'
         innerHTML: "
           <span>#{reason}</span>
-          <a href=#{@url} title='Click to find out why.' target=_blank>Click to find out why.</a>"
+          <a href=#{BanChecker.url} title='Click to find out why.' target=_blank>Click to find out why.</a>"
         title:  'Click to recheck.'
         $.on el.lastChild, 'click', ->
           $.delete 'lastBanCheck' unless Conf['Check for Bans constantly']
@@ -1143,8 +1148,13 @@ Updater =
     post: ->
       return unless Conf['Auto Update This']
       Updater.unsuccessfulFetchCount = 0
-
       setTimeout Updater.update, 500
+    checkpost: (status) ->
+      unless status is 404 and Updater.save.contains(Updater.postID) and Updater.checkPostCount >= 10
+        return ( -> setTimeout Updater.update, @ ).call ++Updater.checkPostCount * 500
+      Updater.save = []
+      Updater.checkPostCount = 0
+      delete Updater.postID
     visibility: ->
       state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
       return if state isnt 'visible'
@@ -1206,12 +1216,6 @@ Updater =
           if Conf['Verbose']
             Updater.set 'count', '+0'
             Updater.count.className = null
-          if Updater.postID
-            if Updater.checkPostCount > 15
-              delete Updater.postID
-              break
-            Updater.checkPostCount++
-            return setTimeout Updater.update, (Updater.checkPostCount * 20)
         when 200
           Updater.lastModified = @getResponseHeader 'Last-Modified'
           Updater.cb.update JSON.parse(@response).posts
@@ -1223,11 +1227,7 @@ Updater =
             Updater.set 'count', @statusText
             Updater.count.className = 'warning'
       if Updater.postID
-        unless Updater.save.contains(Updater.postID)
-          return Updater.update()
-        Updater.checkPostCount = 0
-        Updater.save = []
-        delete Updater.postI
+        Updater.cb.checkpost @status
       delete Updater.request
       Updater.checkPostCount = 0
       Updater.save = []
@@ -1304,8 +1304,7 @@ Updater =
       Updater.set 'timer', n
 
   update: ->
-    unless Updater.postID
-      Updater.set 'timer', 0
+    Updater.set 'timer', 0
     {request} = Updater
     if request
       # Don't reset the counter when aborting.
@@ -1473,6 +1472,16 @@ RevealSpoilers =
     s = img.style
     s.maxHeight = s.maxWidth = if /\bop\b/.test post.class then '250px' else '125px'
     img.src = "//thumbs.4chan.org#{img.parentNode.pathname.replace /src(\/\d+).+$/, 'thumb$1s.jpg'}"
+
+RemoveSpoilers =
+  init: ->
+    Main.callbacks.push @node
+
+  node: (post) ->
+    spoilers = $$ 's', post.el
+    for spoiler in spoilers
+      $.replace spoiler, $.tn spoiler.textContent
+    return
 
 Time =
   init: ->
@@ -1682,7 +1691,7 @@ Get =
           when '[/banned]'
             '</b>'
     # greentext
-    comment = bq.innerHTML.replace /(^|>)(&gt;[^<$]+)(<|$)/g, '$1<span class=quote>$2</span>$3'
+    comment = bq.innerHTML.replace /(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3'
 
     o =
       # id
@@ -1697,7 +1706,7 @@ Get =
         when 'D' then 'developer'
       tripcode: data.trip
       uniqueID: data.poster_hash
-      email:    if data.email then encodeURIComponent data.email.replace /&quot;/g, '"' else ''
+      email:    if data.email then encodeURI data.email.replace /&quot;/g, '"' else ''
       subject:  data.title_processed
       flagCode: data.poster_country
       flagName: data.poster_country_name_processed
@@ -1778,7 +1787,7 @@ Build =
       capcode:  data.capcode
       tripcode: data.trip
       uniqueID: data.id
-      email:    if data.email then encodeURIComponent data.email.replace /&quot;/g, '"' else ''
+      email:    if data.email then encode data.email.replace /&quot;/g, '"' else ''
       subject:  data.sub
       flagCode: data.country
       flagName: data.country_name
@@ -2089,6 +2098,9 @@ QuoteInline =
     if (i = Unread.replies.indexOf el) isnt -1
       Unread.replies.splice i, 1
       Unread.update true
+      
+    if Conf['Color user IDs'] and ['b', 'q', 'soc'].contains board
+      setTimeout -> $.rmClass $('.reply.highlight', inline), 'highlight'
 
   rm: (q, id) ->
     # select the corresponding inlined quote or loading quote
@@ -2165,8 +2177,10 @@ QuotePreview =
         Linkify.node        post
       if Conf['Anonymize']
         Anonymize.node      post
-      if Conf['Color user IDs'] and board in ['b', 'q', 'soc']
+      if Conf['Color user IDs'] and ['b', 'q', 'soc'].contains board
         IDColor.node        post
+      if Conf['RemoveSpoilers']
+        RemoveSpoilers.node post
 
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
@@ -2223,25 +2237,27 @@ QuoteCT =
     return
 
 IDColor =
-
   init: ->
-    return unless g.BOARD in ['b', 'q', 'soc']
+    return unless ['b', 'q', 'soc'].contains g.BOARD
     Main.callbacks.push @node
 
-    $.ready ->
-      css = 'padding: 0 5px; border-radius: 6px; font-size: 0.8em;'
-      $.addStyle ".posteruid .hand {#{css}}", 'idcolor'
-
   node: (post) ->
-    uid = $ '.desktop .posteruid', post.el
-    return unless uid
-    uid = uid.firstElementChild
-    uid.style.cssText = IDColor.apply str = uid.textContent
-    $.on uid, 'click', -> IDColor.idClick str
+    return unless uid = post.el.getElementsByClassName('hand')[1]
+    str = uid.textContent
+    if uid.nodeName is 'SPAN'
+      uid.style.cssText = IDColor.apply.call str
+
+    unless IDColor.highlight[str]
+      IDColor.highlight[str] = []
+
     if str is $.get "highlightedID/#{g.BOARD}/"
-      $.addClass uid.parentNode.parentNode.parentNode.parentNode, 'highlight'
-      IDColor.highlighted.push uid.parentNode
-      IDColor.clicked = true
+      IDColor.highlight.current.push post
+      $.addClass post.el, 'highlight'
+
+    IDColor.highlight[str].push post
+    $.on uid, 'click', -> IDColor.idClick str
+
+  ids: {}
 
   compute: (str) ->
     hash = @hash str
@@ -2256,8 +2272,8 @@ IDColor =
     @ids[str] = rgb
     rgb
 
-  apply: (uid) ->
-    rgb = @ids[uid] or @compute uid
+  apply: ->
+    rgb = IDColor.ids[@] or IDColor.compute @
     "background-color: rgb(#{rgb[0]},#{rgb[1]},#{rgb[2]}); color: " + if rgb[3] then "black;" else "white;"
 
   hash: (str) ->
@@ -2268,28 +2284,22 @@ IDColor =
       msg = ((msg << 5) - msg) + str.charCodeAt i
       ++i
     msg
+  highlight:
+    current: []
 
-  highlighted:  []
+  idClick: (str) ->
+    for post in @highlight.current
+      $.rmClass post.el, 'highlight'
+    last = $.get value = "highlightedID/#{g.BOARD}/", false
+    if str is last
+      @highlight.current = []
+      return $.delete value
 
-  ids:  {}
-
-  clicked:  false
-
-  idClick: (uid) ->
-    for el in @highlighted
-      $.rmClass el.parentNode.parentNode.parentNode, 'highlight'
-    @highlighted = []
-    value = "highlightedID/#{g.BOARD}/"
-    if @clicked and uid is $.get value
-      $.delete value
-      return @clicked = false
-    for el in d.getElementsByClassName 'id_' + uid
-      continue if /\binline\b/.test el.parentNode.parentNode.parentNode.parentNode.parentNode.className
-      $.addClass el.parentNode.parentNode.parentNode, 'highlight'
-      @highlighted.push el
-    $.set value, uid
-    @clicked = true
-
+    for post in @highlight[str]
+      continue if post.isInlined
+      $.addClass post.el, 'highlight'
+      @highlight.current.push post
+    $.set value, str
 
 Quotify =
   init: ->
@@ -2450,8 +2460,10 @@ Linkify =
       el = (type = Linkify.types[@getAttribute("data-service")]).el.call @
 
       # Set style values.
-      if style = type.style
-        el.style.cssText = style
+      el.style.cssText = if style = type.style
+        style
+      else
+        "border: 0; width: #{$.get 'embedWidth', Config['embedWidth']}px; height: #{$.get 'embedHeight', Config['embedHeight']}px"
 
       @textContent = '(unembed)'
 
@@ -2461,7 +2473,6 @@ Linkify =
   types:
     YouTube:
       regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
-      style:  "border: 0; width: 640px; height: 390px"
       el: ->
         $.el 'iframe'
           src: "//www.youtube.com/embed/#{@name}"
@@ -2471,13 +2482,13 @@ Linkify =
 
     Vocaroo:
       regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
+      style: 'border: 0; width: 150px; height: 45px;'
       el: ->
         $.el 'object'
           innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
 
     Vimeo:
       regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
-      style:  "border: 0; width: 640px; height: 390px"
       el: ->
         $.el 'iframe'
           src: "//player.vimeo.com/video/#{@name}"
@@ -2487,7 +2498,6 @@ Linkify =
 
     LiveLeak:
       regExp:  /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
-      style:  "border: 0; width: 640px; height: 390px"
       el: ->
         $.el 'iframe'
           src: "http://www.liveleak.com/e/#{@name}?autostart=true"
@@ -2817,7 +2827,7 @@ ReplyHideLink =
 
 EmbedLink =
   init: ->
-    a = $.el 'a',
+    a = $.el 'a'
       className: 'embed_link'
       textContent: 'Embed all in post'
 
@@ -2826,24 +2836,24 @@ EmbedLink =
     Menu.addEntry
       el: a
       open: (post) ->
-        if $ '.embed', post.blockquote
+        if $ '.embed', (quote = post.blockquote)
+          if $ '.embedded', quote
+            @el.textContent = 'Unembed all in post'
+            EmbedLink[post.id] = true
+          $.on @el, 'click', @toggle
           return true
+        false
 
   toggle: ->
     menu   = $.id 'menu'
     id     = menu.dataset.id
-    root   = $.id "pc#{id}"
+    root   = $.id "m#{id}"
 
-    unless EmbedLink[id]
-      EmbedLink[id] = true
-      for embed in $$ '.embed', root
-        unless embed.className.contains 'embedded'
-          Linkify.embed.call embed
-    else
-      EmbedLink[id] = false
-      for embed in $$ '.embedded', root
-        if embed.className.contains 'embedded'
-          Linkify.unembed.call embed
+    for embed in $$ '.embed', root
+      if (!EmbedLink[id] and embed.className.contains 'embedded') or (EmbedLink[id] and !embed.className.contains 'embedded')
+        continue
+      embed.click()
+    EmbedLink[id] = !EmbedLink[id]
 
 ThreadStats =
   init: ->
@@ -3079,10 +3089,10 @@ Redirect =
   noarch: 'No archive available.'
 
   select: (board) ->
-    arch = for name, type of @archiver
+    names = for name, type of @archiver
       continue unless type.boards.contains board or g.BOARD
       name
-    return (if arch.length > 0 then arch else [@noarch])
+    return (if names.length > 0 then names else [@noarch])
 
   to: (data) ->
     
@@ -3292,12 +3302,15 @@ ImageExpand =
     thumb = a.firstChild
     if thumb.hidden
       rect = a.getBoundingClientRect()
-      if $.engine is 'webkit'
-        d.body.scrollTop  += rect.top - 42 if rect.top < 0
-        d.body.scrollLeft += rect.left     if rect.left < 0
-      else
-        d.documentElement.scrollTop  += rect.top - 42 if rect.top < 0
-        d.documentElement.scrollLeft += rect.left     if rect.left < 0
+      if rect.bottom > 0 # should be at least partially visible.
+        # Scroll back to the thumbnail when contracting the image
+        # to avoid being left miles away from the relevant post.
+        if $.engine is 'webkit'
+          d.body.scrollTop  += rect.top - 42 if rect.top < 0
+          d.body.scrollLeft += rect.left     if rect.left < 0
+        else
+          d.documentElement.scrollTop  += rect.top - 42 if rect.top < 0
+          d.documentElement.scrollLeft += rect.left     if rect.left < 0
       ImageExpand.contract thumb
     else
       ImageExpand.expand thumb

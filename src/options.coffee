@@ -76,7 +76,10 @@ Options =
   <div>
     <ul>
       Archiver
-      <li>Select an Archiver for this board: <select name=archiver></select></li>
+      <li>
+        Select an Archiver for this board:
+        <select name=archiver></select>
+      </li>
     </ul>
     <div class=warning><code>Quote Backlinks</code> are disabled.</div>
     <ul>
@@ -106,8 +109,18 @@ Options =
       <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>
     </ul>
     <ul>
-      Amounts for Optional Increase<br>
-      <input name=updateIncrease class=field>
+      Specify size of video embeds<br>
+      Height: <input name=embedHeight type=number />px
+      |
+      Width:  <input name=embedWidth  type=number />px
+      <button name=resetSize>Reset</button>
+    </ul>
+    <ul>
+      <li>Amounts for Optional Increase</li>
+      <li>Visible tab</li>
+      <li><input name=updateIncrease class=field></li>
+      <li>Background tab</li>
+      <li><input name=updateIncreaseB class=field></li>
     </ul>
     <div class=warning><code>Custom Navigation</code> is disabled.</div>
     <div id=customNavigation>
@@ -239,16 +252,13 @@ Options =
 
     # Archiver
     archiver = $ 'select[name=archiver]', dialog
-    select = Redirect.select()
-    for name in select
-      (option = d.createElement 'option').textContent = name
-      $.add archiver, option
-    if select[1]
-      value = "archiver/#{g.BOARD}/"
-      archiver.value = $.get value
+    toSelect = Redirect.select g.BOARD
+    for name in toSelect
+      $.add archiver, $.el 'option'
+        textContent: name
+    if toSelect[1]
+      archiver.value = $.get value = "archiver/#{g.BOARD}/", toSelect[0]
       $.on archiver, 'change', ->
-        if Redirect.archive[g.BOARD]
-          Redirect.archive[g.BOARD] = Redirect.archiver[@value]
         $.set value, @value
 
     # Sauce
@@ -258,7 +268,7 @@ Options =
     sauce.value = $.get sauce.name, Conf[sauce.name]
     $.on sauce, 'change', $.cb.value
 
-    # Rice
+    # Rice General
     # See sauce comment above.
     (back     = $ '[name=backlink]', dialog).value = $.get 'backlink', Conf['backlink']
     (time     = $ '[name=time]',     dialog).value = $.get 'time',     Conf['time']
@@ -270,7 +280,7 @@ Options =
     $.on fileInfo, 'input', $.cb.value
     $.on fileInfo, 'input', Options.fileInfo
 
-    
+    # Persona
     @persona.select = $ '[name=personaboards]', dialog
     @persona.button = $ '#persona button', dialog
     @persona.data = $.get 'persona',
@@ -283,23 +293,36 @@ Options =
       @persona.select.innerHTML += "<option value=#{name}>#{name}</option>"
 
     @persona.select.value = if Conf['Per Board Persona'] then g.BOARD else 'global'
-
     @persona.init()
     $.on @persona.select, 'change', Options.persona.change
 
+    # Custom CSS
     customCSS = $ '#customCSS', dialog
     customCSS.value = $.get customCSS.name, Conf[customCSS.name]
     $.on customCSS, 'change', ->
       $.cb.value.call @
       Style.addStyle()
 
+    # Embed Dimensions
+    (width  = $ '[name=embedWidth]',  dialog).value = $.get 'embedWidth',  Conf['embedWidth']
+    (height = $ '[name=embedHeight]', dialog).value = $.get 'embedHeight', Conf['embedHeight']
+    $.on width,  'input', $.cb.value
+    $.on height, 'input', $.cb.value
+    $.on $('[name=resetSize]', dialog), 'click', ->
+      $.set 'embedWidth',  width.value  = Config.embedWidth
+      $.set 'embedHeight', height.value = Config.embedHeight
+
+    # Favicons
     favicon = $ 'select[name=favicon]', dialog
     favicon.value = $.get 'favicon', Conf['favicon']
     $.on favicon, 'change', $.cb.value
     $.on favicon, 'change', Options.favicon
 
-    (updateIncrease = $ '[name=updateIncrease]', dialog).value = $.get 'updateIncrease', Conf['updateIncrease']
-    $.on updateIncrease, 'input', $.cb.value
+    # Updater Increase
+    (updateIncrease =  $ '[name=updateIncrease]', dialog).value  = $.get 'updateIncrease',  Conf['updateIncrease']
+    (updateIncreaseB = $ '[name=updateIncreaseB]', dialog).value = $.get 'updateIncreaseB', Conf['updateIncreaseB']
+    $.on updateIncrease,  'input', $.cb.value
+    $.on updateIncreaseB, 'input', $.cb.value
 
     # The custom navigation has its own method. I pass it this dialog so it doesn't have to find the dialog itself
     # (it finds the dialog itself when we change its settings)

@@ -226,6 +226,10 @@ Config =
         false
         'Assign unique colors to user IDs on boards that use them'
       ]
+      'Remove Spoilers': [
+        false
+        'Remove all spoilers in text.'
+      ]
 
     Posting:
       'Cooldown': [
@@ -544,8 +548,10 @@ div.post.highlight {
         true
         'Automatically fetch new posts'
       ]
-    'Interval':       30
-    'BGInterval':     60
+    Interval:       30
+    BGInterval:     60
+  embedWidth:  640
+  embedHeight: 390
 
   style:
 

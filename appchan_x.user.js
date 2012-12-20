@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.27 - 2012-12-19
+ * appchan x - Version 1.0.27 - 2012-12-20
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -102,7 +102,7 @@
  * @link      http://JSColor.com
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, EmbedLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
+  var $, $$, Anonymize, ArchiveLink, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, EmbedLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, Markdown, MascotTools, Mascots, Menu, Nav, Navigation, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RemoveSpoilers, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
 
   Config = {
     main: {
@@ -169,7 +169,8 @@
         'Thread Watcher': [true, 'Bookmark threads'],
         'Auto Watch': [true, 'Automatically watch threads that you start'],
         'Auto Watch Reply': [false, 'Automatically watch threads that you reply to'],
-        'Color user IDs': [false, 'Assign unique colors to user IDs on boards that use them']
+        'Color user IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
+        'Remove Spoilers': [false, 'Remove all spoilers in text.']
       },
       Posting: {
         'Cooldown': [true, 'Prevent "flood detected" errors.'],
@@ -254,9 +255,11 @@
         'Verbose': [true, 'Show countdown timer, new post count'],
         'Auto Update': [true, 'Automatically fetch new posts']
       },
-      'Interval': 30,
-      'BGInterval': 60
+      Interval: 30,
+      BGInterval: 60
     },
+    embedWidth: 640,
+    embedHeight: 390,
     style: {
       Interface: {
         'Single Column Mode': [true, 'Presents options in a single column, rather than in blocks.'],
@@ -2907,7 +2910,7 @@
       return $.replace($.id('settingsWindowLink'), a);
     },
     dialog: function(tab) {
-      var archiver, arr, back, category, checked, customCSS, description, dialog, div, favicon, fileInfo, filter, hiddenNum, hiddenThreads, input, key, label, li, liHTML, name, obj, option, optionname, optionvalue, overlay, sauce, select, selectoption, styleSetting, time, tr, ul, updateIncrease, value, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+      var archiver, arr, back, category, checked, customCSS, description, dialog, div, favicon, fileInfo, filter, height, hiddenNum, hiddenThreads, input, key, label, li, liHTML, name, obj, optionname, optionvalue, overlay, sauce, selectoption, styleSetting, time, toSelect, tr, ul, updateIncrease, updateIncreaseB, value, width, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
       if (Conf['editMode'] === "theme") {
         if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
           ThemeTools.close();
@@ -2973,7 +2976,10 @@
   <div>\
     <ul>\
       Archiver\
-      <li>Select an Archiver for this board: <select name=archiver></select></li>\
+      <li>\
+        Select an Archiver for this board:\
+        <select name=archiver></select>\
+      </li>\
     </ul>\
     <div class=warning><code>Quote Backlinks</code> are disabled.</div>\
     <ul>\
@@ -3003,8 +3009,18 @@
       <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>\
     </ul>\
     <ul>\
-      Amounts for Optional Increase<br>\
-      <input name=updateIncrease class=field>\
+      Specify size of video embeds<br>\
+      Height: <input name=embedHeight type=number />px\
+      |\
+      Width:  <input name=embedWidth  type=number />px\
+      <button name=resetSize>Reset</button>\
+    </ul>\
+    <ul>\
+      <li>Amounts for Optional Increase</li>\
+      <li>Visible tab</li>\
+      <li><input name=updateIncrease class=field></li>\
+      <li>Background tab</li>\
+      <li><input name=updateIncreaseB class=field></li>\
     </ul>\
     <div class=warning><code>Custom Navigation</code> is disabled.</div>\
     <div id=customNavigation>\
@@ -3123,19 +3139,16 @@
       filter = $('select[name=filter]', dialog);
       $.on(filter, 'change', Options.filter);
       archiver = $('select[name=archiver]', dialog);
-      select = Redirect.select();
-      for (_j = 0, _len1 = select.length; _j < _len1; _j++) {
-        name = select[_j];
-        (option = d.createElement('option')).textContent = name;
-        $.add(archiver, option);
+      toSelect = Redirect.select(g.BOARD);
+      for (_j = 0, _len1 = toSelect.length; _j < _len1; _j++) {
+        name = toSelect[_j];
+        $.add(archiver, $.el('option', {
+          textContent: name
+        }));
       }
-      if (select[1]) {
-        value = "archiver/" + g.BOARD + "/";
-        archiver.value = $.get(value);
+      if (toSelect[1]) {
+        archiver.value = $.get(value = "archiver/" + g.BOARD + "/", toSelect[0]);
         $.on(archiver, 'change', function() {
-          if (Redirect.archive[g.BOARD]) {
-            Redirect.archive[g.BOARD] = Redirect.archiver[this.value];
-          }
           return $.set(value, this.value);
         });
       }
@@ -3171,12 +3184,22 @@
         $.cb.value.call(this);
         return Style.addStyle();
       });
+      (width = $('[name=embedWidth]', dialog)).value = $.get('embedWidth', Conf['embedWidth']);
+      (height = $('[name=embedHeight]', dialog)).value = $.get('embedHeight', Conf['embedHeight']);
+      $.on(width, 'input', $.cb.value);
+      $.on(height, 'input', $.cb.value);
+      $.on($('[name=resetSize]', dialog), 'click', function() {
+        $.set('embedWidth', width.value = Config.embedWidth);
+        return $.set('embedHeight', height.value = Config.embedHeight);
+      });
       favicon = $('select[name=favicon]', dialog);
       favicon.value = $.get('favicon', Conf['favicon']);
       $.on(favicon, 'change', $.cb.value);
       $.on(favicon, 'change', Options.favicon);
       (updateIncrease = $('[name=updateIncrease]', dialog)).value = $.get('updateIncrease', Conf['updateIncrease']);
+      (updateIncreaseB = $('[name=updateIncreaseB]', dialog)).value = $.get('updateIncreaseB', Conf['updateIncreaseB']);
       $.on(updateIncrease, 'input', $.cb.value);
+      $.on(updateIncreaseB, 'input', $.cb.value);
       this.customNavigation.dialog(dialog);
       _ref2 = Config.hotkeys;
       for (key in _ref2) {
@@ -4468,6 +4491,12 @@
       if (Conf['Indicate Cross-thread Quotes']) {
         QuoteCT.node(post);
       }
+      if (Conf['RemoveSpoilers']) {
+        RemoveSpoilers.node(post);
+      }
+      if (Conf['Color user IDs']) {
+        IDColor.node(post);
+      }
       $.replace(bq, clone);
       return Main.prettify(clone);
     }
@@ -4596,7 +4625,7 @@
     },
     sync: function() {
       var hiddenThreadsCatalog, id;
-      hiddenThreadsCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD));
+      hiddenThreadsCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
       if (g.CATALOG) {
         for (id in this.hiddenThreads) {
           hiddenThreadsCatalog[id] = true;
@@ -4736,7 +4765,7 @@
         var button, id;
         return ReplyHiding.toggle(button = this.parentNode, root = button.parentNode, id = root.id.slice(2));
       });
-      $.add(a, $.tn($('.desktop > .nameBlock', el).textContent));
+      $.add(a, $.tn(Conf['Anonymize'] ? 'Anonymous' : $('.desktop > .nameBlock', el).textContent));
       if (Conf['Menu']) {
         menuButton = Menu.a.cloneNode(true);
         $.on(menuButton, 'click', Menu.toggle);
@@ -5152,6 +5181,9 @@
     },
     open: function(thread, tab) {
       var id, url;
+      if (g.REPLY) {
+        return;
+      }
       id = thread.id.slice(1);
       url = "//boards.4chan.org/" + g.BOARD + "/res/" + id;
       if (tab) {
@@ -5302,7 +5334,7 @@
         Banchecker.el = el = $.el('h2', {
           id: 'banmessage',
           "class": 'warning',
-          innerHTML: "          <span>" + reason + "</span>          <a href=" + this.url + " title='Click to find out why.' target=_blank>Click to find out why.</a>",
+          innerHTML: "          <span>" + reason + "</span>          <a href=" + BanChecker.url + " title='Click to find out why.' target=_blank>Click to find out why.</a>",
           title: 'Click to recheck.'
         }, $.on(el.lastChild, 'click', function() {
           if (!Conf['Check for Bans constantly']) {
@@ -5383,6 +5415,16 @@
         Updater.unsuccessfulFetchCount = 0;
         return setTimeout(Updater.update, 500);
       },
+      checkpost: function(status) {
+        if (!(status === 404 && Updater.save.contains(Updater.postID) && Updater.checkPostCount >= 10)) {
+          return (function() {
+            return setTimeout(Updater.update, this);
+          }).call(++Updater.checkPostCount * 500);
+        }
+        Updater.save = [];
+        Updater.checkPostCount = 0;
+        return delete Updater.postID;
+      },
       visibility: function() {
         var state;
         state = d.visibilityState || d.oVisibilityState || d.mozVisibilityState || d.webkitVisibilityState;
@@ -5461,14 +5503,6 @@
               Updater.set('count', '+0');
               Updater.count.className = null;
             }
-            if (Updater.postID) {
-              if (Updater.checkPostCount > 15) {
-                delete Updater.postID;
-                break;
-              }
-              Updater.checkPostCount++;
-              return setTimeout(Updater.update, Updater.checkPostCount * 20);
-            }
             break;
           case 200:
             Updater.lastModified = this.getResponseHeader('Last-Modified');
@@ -5484,12 +5518,7 @@
             }
         }
         if (Updater.postID) {
-          if (!Updater.save.contains(Updater.postID)) {
-            return Updater.update();
-          }
-          Updater.checkPostCount = 0;
-          Updater.save = [];
-          delete Updater.postI;
+          Updater.cb.checkpost(this.status);
         }
         delete Updater.request;
         Updater.checkPostCount = 0;
@@ -5596,9 +5625,7 @@
     },
     update: function() {
       var request, url;
-      if (!Updater.postID) {
-        Updater.set('timer', 0);
-      }
+      Updater.set('timer', 0);
       request = Updater.request;
       if (request) {
         request.onloadend = null;
@@ -5829,6 +5856,20 @@
       s = img.style;
       s.maxHeight = s.maxWidth = /\bop\b/.test(post["class"]) ? '250px' : '125px';
       return img.src = "//thumbs.4chan.org" + (img.parentNode.pathname.replace(/src(\/\d+).+$/, 'thumb$1s.jpg'));
+    }
+  };
+
+  RemoveSpoilers = {
+    init: function() {
+      return Main.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var spoiler, spoilers, _i, _len;
+      spoilers = $$('s', post.el);
+      for (_i = 0, _len = spoilers.length; _i < _len; _i++) {
+        spoiler = spoilers[_i];
+        $.replace(spoiler, $.tn(spoiler.textContent));
+      }
     }
   };
 
@@ -6134,7 +6175,7 @@
             return '</b>';
         }
       });
-      comment = bq.innerHTML.replace(/(^|>)(&gt;[^<$]+)(<|$)/g, '$1<span class=quote>$2</span>$3');
+      comment = bq.innerHTML.replace(/(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3');
       o = {
         postID: postID,
         threadID: data.thread_num,
@@ -6152,7 +6193,7 @@
         })(),
         tripcode: data.trip,
         uniqueID: data.poster_hash,
-        email: data.email ? encodeURIComponent(data.email.replace(/&quot;/g, '"')) : '',
+        email: data.email ? encodeURI(data.email.replace(/&quot;/g, '"')) : '',
         subject: data.title_processed,
         flagCode: data.poster_country,
         flagName: data.poster_country_name_processed,
@@ -6252,7 +6293,7 @@
         capcode: data.capcode,
         tripcode: data.trip,
         uniqueID: data.id,
-        email: data.email ? encodeURIComponent(data.email.replace(/&quot;/g, '"')) : '',
+        email: data.email ? encode(data.email.replace(/&quot;/g, '"')) : '',
         subject: data.sub,
         flagCode: data.country,
         flagName: data.country_name,
@@ -6506,7 +6547,12 @@
       }
       if ((i = Unread.replies.indexOf(el)) !== -1) {
         Unread.replies.splice(i, 1);
-        return Unread.update(true);
+        Unread.update(true);
+      }
+      if (Conf['Color user IDs'] && ['b', 'q', 'soc'].contains(board)) {
+        return setTimeout(function() {
+          return $.rmClass($('.reply.highlight', inline), 'highlight');
+        });
       }
     },
     rm: function(q, id) {
@@ -6620,8 +6666,11 @@
         if (Conf['Anonymize']) {
           Anonymize.node(post);
         }
-        if (Conf['Color user IDs'] && (board === 'b' || board === 'q' || board === 'soc')) {
-          return IDColor.node(post);
+        if (Conf['Color user IDs'] && ['b', 'q', 'soc'].contains(board)) {
+          IDColor.node(post);
+        }
+        if (Conf['RemoveSpoilers']) {
+          return RemoveSpoilers.node(post);
         }
       });
       $.on(this, 'mousemove', UI.hover);
@@ -6704,34 +6753,33 @@
 
   IDColor = {
     init: function() {
-      var _ref;
-      if ((_ref = g.BOARD) !== 'b' && _ref !== 'q' && _ref !== 'soc') {
+      if (!['b', 'q', 'soc'].contains(g.BOARD)) {
         return;
       }
-      Main.callbacks.push(this.node);
-      return $.ready(function() {
-        var css;
-        css = 'padding: 0 5px; border-radius: 6px; font-size: 0.8em;';
-        return $.addStyle(".posteruid .hand {" + css + "}", 'idcolor');
-      });
+      return Main.callbacks.push(this.node);
     },
     node: function(post) {
       var str, uid;
-      uid = $('.desktop .posteruid', post.el);
-      if (!uid) {
+      if (!(uid = post.el.getElementsByClassName('hand')[1])) {
         return;
       }
-      uid = uid.firstElementChild;
-      uid.style.cssText = IDColor.apply(str = uid.textContent);
-      $.on(uid, 'click', function() {
+      str = uid.textContent;
+      if (uid.nodeName === 'SPAN') {
+        uid.style.cssText = IDColor.apply.call(str);
+      }
+      if (!IDColor.highlight[str]) {
+        IDColor.highlight[str] = [];
+      }
+      if (str === $.get("highlightedID/" + g.BOARD + "/")) {
+        IDColor.highlight.current.push(post);
+        $.addClass(post.el, 'highlight');
+      }
+      IDColor.highlight[str].push(post);
+      return $.on(uid, 'click', function() {
         return IDColor.idClick(str);
       });
-      if (str === $.get("highlightedID/" + g.BOARD + "/")) {
-        $.addClass(uid.parentNode.parentNode.parentNode.parentNode, 'highlight');
-        IDColor.highlighted.push(uid.parentNode);
-        return IDColor.clicked = true;
-      }
     },
+    ids: {},
     compute: function(str) {
       var hash, rgb;
       hash = this.hash(str);
@@ -6740,9 +6788,9 @@
       this.ids[str] = rgb;
       return rgb;
     },
-    apply: function(uid) {
+    apply: function() {
       var rgb;
-      rgb = this.ids[uid] || this.compute(uid);
+      rgb = IDColor.ids[this] || IDColor.compute(this);
       return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black;" : "white;");
     },
     hash: function(str) {
@@ -6756,33 +6804,31 @@
       }
       return msg;
     },
-    highlighted: [],
-    ids: {},
-    clicked: false,
-    idClick: function(uid) {
-      var el, value, _i, _j, _len, _len1, _ref, _ref1;
-      _ref = this.highlighted;
+    highlight: {
+      current: []
+    },
+    idClick: function(str) {
+      var last, post, value, _i, _j, _len, _len1, _ref, _ref1;
+      _ref = this.highlight.current;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        el = _ref[_i];
-        $.rmClass(el.parentNode.parentNode.parentNode, 'highlight');
+        post = _ref[_i];
+        $.rmClass(post.el, 'highlight');
       }
-      this.highlighted = [];
-      value = "highlightedID/" + g.BOARD + "/";
-      if (this.clicked && uid === $.get(value)) {
-        $["delete"](value);
-        return this.clicked = false;
+      last = $.get(value = "highlightedID/" + g.BOARD + "/", false);
+      if (str === last) {
+        this.highlight.current = [];
+        return $["delete"](value);
       }
-      _ref1 = d.getElementsByClassName('id_' + uid);
+      _ref1 = this.highlight[str];
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        el = _ref1[_j];
-        if (/\binline\b/.test(el.parentNode.parentNode.parentNode.parentNode.parentNode.className)) {
+        post = _ref1[_j];
+        if (post.isInlined) {
           continue;
         }
-        $.addClass(el.parentNode.parentNode.parentNode, 'highlight');
-        this.highlighted.push(el);
+        $.addClass(post.el, 'highlight');
+        this.highlight.current.push(post);
       }
-      $.set(value, uid);
-      return this.clicked = true;
+      return $.set(value, str);
     }
   };
 
@@ -6920,9 +6966,7 @@
         this.textContent = '(embed)';
       } else {
         el = (type = Linkify.types[this.getAttribute("data-service")]).el.call(this);
-        if (style = type.style) {
-          el.style.cssText = style;
-        }
+        el.style.cssText = (style = type.style) ? style : "border: 0; width: " + ($.get('embedWidth', Config['embedWidth'])) + "px; height: " + ($.get('embedHeight', Config['embedHeight'])) + "px";
         this.textContent = '(unembed)';
       }
       $.replace(embed, el);
@@ -6931,7 +6975,6 @@
     types: {
       YouTube: {
         regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
-        style: "border: 0; width: 640px; height: 390px",
         el: function() {
           return $.el('iframe', {
             src: "//www.youtube.com/embed/" + this.name
@@ -6948,6 +6991,7 @@
       },
       Vocaroo: {
         regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
+        style: 'border: 0; width: 150px; height: 45px;',
         el: function() {
           return $.el('object', {
             innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
@@ -6956,7 +7000,6 @@
       },
       Vimeo: {
         regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
-        style: "border: 0; width: 640px; height: 390px",
         el: function() {
           return $.el('iframe', {
             src: "//player.vimeo.com/video/" + this.name
@@ -6973,7 +7016,6 @@
       },
       LiveLeak: {
         regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
-        style: "border: 0; width: 640px; height: 390px",
         el: function() {
           return $.el('iframe', {
             src: "http://www.liveleak.com/e/" + this.name + "?autostart=true"
@@ -7411,44 +7453,33 @@
       return Menu.addEntry({
         el: a,
         open: function(post) {
-          if ($('.embed', post.blockquote)) {
+          var quote;
+          if ($('.embed', (quote = post.blockquote))) {
+            if ($('.embedded', quote)) {
+              this.el.textContent = 'Unembed all in post';
+              EmbedLink[post.id] = true;
+            }
+            $.on(this.el, 'click', this.toggle);
             return true;
           }
+          return false;
         }
       });
     },
     toggle: function() {
-      var embed, id, menu, root, _i, _j, _len, _len1, _ref, _ref1, _results, _results1;
+      var embed, id, menu, root, _i, _len, _ref;
       menu = $.id('menu');
       id = menu.dataset.id;
-      root = $.id("pc" + id);
-      if (!EmbedLink[id]) {
-        EmbedLink[id] = true;
-        _ref = $$('.embed', root);
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          embed = _ref[_i];
-          if (!embed.className.contains('embedded')) {
-            _results.push(Linkify.embed.call(embed));
-          } else {
-            _results.push(void 0);
-          }
+      root = $.id("m" + id);
+      _ref = $$('.embed', root);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        embed = _ref[_i];
+        if ((!EmbedLink[id] && embed.className.contains('embedded')) || (EmbedLink[id] && !embed.className.contains('embedded'))) {
+          continue;
         }
-        return _results;
-      } else {
-        EmbedLink[id] = false;
-        _ref1 = $$('.embedded', root);
-        _results1 = [];
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          embed = _ref1[_j];
-          if (embed.className.contains('embedded')) {
-            _results1.push(Linkify.unembed.call(embed));
-          } else {
-            _results1.push(void 0);
-          }
-        }
-        return _results1;
+        embed.click();
       }
+      return EmbedLink[id] = !EmbedLink[id];
     }
   };
 
@@ -7725,8 +7756,8 @@
     },
     noarch: 'No archive available.',
     select: function(board) {
-      var arch, name, type;
-      arch = (function() {
+      var name, names, type;
+      names = (function() {
         var _ref, _results;
         _ref = this.archiver;
         _results = [];
@@ -7739,7 +7770,7 @@
         }
         return _results;
       }).call(this);
-      return (arch.length > 0 ? arch : [this.noarch]);
+      return (names.length > 0 ? names : [this.noarch]);
     },
     to: function(data) {
       var aboard, board, name;
@@ -8000,19 +8031,21 @@
       thumb = a.firstChild;
       if (thumb.hidden) {
         rect = a.getBoundingClientRect();
-        if ($.engine === 'webkit') {
-          if (rect.top < 0) {
-            d.body.scrollTop += rect.top - 42;
-          }
-          if (rect.left < 0) {
-            d.body.scrollLeft += rect.left;
-          }
-        } else {
-          if (rect.top < 0) {
-            d.documentElement.scrollTop += rect.top - 42;
-          }
-          if (rect.left < 0) {
-            d.documentElement.scrollLeft += rect.left;
+        if (rect.bottom > 0) {
+          if ($.engine === 'webkit') {
+            if (rect.top < 0) {
+              d.body.scrollTop += rect.top - 42;
+            }
+            if (rect.left < 0) {
+              d.body.scrollLeft += rect.left;
+            }
+          } else {
+            if (rect.top < 0) {
+              d.documentElement.scrollTop += rect.top - 42;
+            }
+            if (rect.left < 0) {
+              d.documentElement.scrollLeft += rect.left;
+            }
           }
         }
         return ImageExpand.contract(thumb);
@@ -8142,8 +8175,7 @@
         return;
       }
       Main.callbacks.push(this.node);
-      setTimeout(this.asyncInit);
-      return setTimeout(BanChecker.init);
+      return setTimeout(this.asyncInit);
     },
     asyncInit: function() {
       var link;
@@ -8161,6 +8193,9 @@
           return $('textarea', QR.el).focus();
         });
         $.before($.id('postForm'), link);
+        if (Conf['Check for Bans']) {
+          BanChecker.init();
+        }
       }
       if (Conf['Persistent QR']) {
         QR.dialog();
@@ -8193,7 +8228,7 @@
       }
       QR.cooldown.auto = false;
       QR.status();
-      QR.resetFileInput();
+      QR.fileEl.value = null;
       if (!Conf['Remember Spoiler'] && (spoiler = $.id('spoiler')).checked) {
         spoiler.click();
       }
@@ -8219,7 +8254,7 @@
         $.add(QR.warning, err);
       }
       QR.open();
-      if (QR.captchaIsEnabled && /captcha|verification/i.test(QR.warning.textContent)) {
+      if (QR.captcha.isEnabled && /captcha|verification/i.test(QR.warning.textContent)) {
         $('[autocomplete]', QR.el).focus();
       }
       if (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) {
@@ -8265,7 +8300,7 @@
                 return 300;
             }
           })(),
-          sage: g.BOARD === 'q' ? 600 : 60,
+          sage: 60,
           file: g.BOARD === 'q' ? 300 : 30,
           post: g.BOARD === 'q' ? 60 : 30
         };
@@ -8379,23 +8414,17 @@
       }
       id = this.previousSibling.hash.slice(2);
       text = ">>" + id + "\n";
-      sel = window.getSelection();
+      sel = d.getSelection();
       if ((s = sel.toString().trim()) && id === ((_ref = $.x('ancestor-or-self::blockquote', sel.anchorNode)) != null ? _ref.id.match(/\d+$/)[0] : void 0)) {
-        if ($.engine === 'presto') {
-          s = d.getSelection().trim();
-        }
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
       }
       ta = $('textarea', QR.el);
       caretPos = ta.selectionStart;
       ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
-      ta.focus();
       range = caretPos + text.length;
-      if ($.engine === 'presto') {
-        range += text.match(/\n/g).length;
-      }
       ta.setSelectionRange(range, range);
+      ta.focus();
       return $.event(ta, new Event('input'));
     },
     characterCount: function() {
@@ -8432,7 +8461,7 @@
         file = this.files[0];
         if (file.size > this.max) {
           QR.error('File too large.');
-          QR.resetFileInput();
+          QR.fileEl.value = null;
         } else if (!QR.mimeTypes.contains(file.type)) {
           QR.error('Unsupported file type.');
           QR.resetFileInput();
@@ -8458,31 +8487,7 @@
         }
       }
       $.addClass(QR.el, 'dump');
-      return QR.resetFileInput();
-    },
-    resetFileInput: function() {
-      var clone, input;
-      input = $('[type=file]', QR.el);
-      input.value = null;
-      QR.riceFile.innerHTML = QR.defaultMessage;
-      if ($.engine !== 'presto') {
-        return;
-      }
-      clone = $.el('input', {
-        type: 'file',
-        accept: input.accept,
-        max: input.max,
-        multiple: input.multiple,
-        size: input.size,
-        title: input.title
-      });
-      $.on(clone, 'change', QR.fileInput);
-      $.on(clone, 'click', function(e) {
-        if (e.shiftKey) {
-          return QR.selected.rmFile() || e.preventDefault();
-        }
-      });
-      return $.replace(input, clone);
+      return QR.fileEl.value = null;
     },
     replies: [],
     reply: (function() {
@@ -8495,7 +8500,7 @@
           global: {}
         });
         if (!persona[key = Conf['Per Board Persona'] ? g.BOARD : 'global']) {
-          persona[key] = persona.global;
+          persona[key] = JSON.parse(JSON.stringify(persona.global));
         }
         this.name = prev ? prev.name : persona[key].name || null;
         this.email = prev && (Conf["Remember Sage"] || !/^sage$/.test(prev.email)) ? prev.email : persona[key].email || null;
@@ -8547,10 +8552,10 @@
           this.el.style.backgroundImage = null;
           return;
         }
-        url = window.URL || window.webkitURL;
-        if (typeof url.revokeObjectURL === "function") {
-          url.revokeObjectURL(this.url);
+        if (!(url = window.URL || window.webkitURL)) {
+          return;
         }
+        url.revokeObjectURL(this.url);
         fileUrl = url.createObjectURL(file);
         img = $.el('img');
         $.on(img, 'load', function() {
@@ -8589,7 +8594,7 @@
 
       _Class.prototype.rmFile = function() {
         var _base1;
-        QR.resetFileInput();
+        QR.fileEl.value = null;
         delete this.file;
         this.el.title = null;
         this.el.style.backgroundImage = null;
@@ -8679,7 +8684,7 @@
 
       _Class.prototype.rm = function() {
         var index, _base1;
-        QR.resetFileInput();
+        QR.fileEl.value = null;
         $.rm(this.el);
         index = QR.replies.indexOf(this);
         if (QR.replies.length === 1) {
@@ -8697,7 +8702,7 @@
     captcha: {
       init: function() {
         var _this = this;
-        if (d.cookie.contains('pass_enabled=') || !(QR.captchaIsEnabled = !!$.id('captchaFormPart'))) {
+        if (d.cookie.contains('pass_enabled=') || !(this.isEnabled = !!$.id('captchaFormPart'))) {
           return;
         }
         if ($.id('recaptcha_challenge_field_holder')) {
@@ -8786,7 +8791,7 @@
         return this.input.alt = count;
       },
       reload: function(focus) {
-        window.location = 'javascript:Recaptcha.reload("t")';
+        $.globalEval('javascript:Recaptcha.reload("t")');
         if (focus) {
           return QR.captcha.input.focus();
         }
@@ -8928,10 +8933,10 @@
             return QR.cooldown.auto = false;
           }
         });
-        $.on($("[type=file]", QR.el), 'focus', function() {
+        $.on(QR.fileEl, 'focus', function() {
           return QR.el.classList.add('focus');
         });
-        $.on($("[type=file]", QR.el), 'blur', function() {
+        $.on(QR.fileEl, 'blur', function() {
           return QR.el.classList.remove('focus');
         });
       }
@@ -8945,7 +8950,7 @@
       }));
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, filetag, m, opts, post, reply, response, textOnly, threadID, _ref;
+      var callbacks, captcha, captchas, challenge, err, filetag, m, opts, post, reply, response, textOnly, threadID;
       if (e != null) {
         e.preventDefault();
       }
@@ -8964,7 +8969,7 @@
       }
       if (threadID === 'new') {
         threadID = null;
-        if (((_ref = g.BOARD) === 'vg' || _ref === 'q') && !reply.sub) {
+        if (['vg', 'q'].contains(g.BOARD) && !reply.sub) {
           err = 'New threads require a subject.';
         } else if (!(reply.file || (textOnly = !!$('input[name=textonly]', $.id('postForm'))))) {
           err = 'No file selected.';
@@ -8974,7 +8979,7 @@
       } else if (!(reply.com || reply.file)) {
         err = 'No file selected.';
       }
-      if (QR.captchaIsEnabled && !err) {
+      if (QR.isEnabled && !err) {
         captchas = $.get('captchas', []);
         while ((captcha = captchas[0]) && captcha.time < Date.now()) {
           captchas.shift();
@@ -9043,8 +9048,10 @@
             target: '_blank',
             textContent: 'Connection error, or you are banned.'
           }));
-          $["delete"]('lastBanCheck');
-          return BanChecker.init();
+          if (Conf['Check for Bans']) {
+            $["delete"]('lastBanCheck');
+            return BanChecker.init();
+          }
         }
       };
       opts = {
@@ -9065,21 +9072,24 @@
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(html) {
-      var bs, doc, err, key, msg, persona, postID, reply, threadID, _, _ref, _ref1;
+      var ban, board, doc, el, err, key, msg, persona, postID, reply, threadID, _, _ref;
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = html;
-      if (doc.title === '4chan - Banned') {
-        bs = $$('b', doc);
-        err = $.el('span', {
-          innerHTML: /^You were issued a warning/.test($('.boxcontent', doc).textContent.trim()) ? "You were issued a warning on " + bs[0].innerHTML + " as " + bs[3].innerHTML + ".<br>Warning reason: " + bs[1].innerHTML : "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
-        });
-        if (/You are banned/.test(err.textContent)) {
-          $["delete"]('lastBanCheck');
-          BanChecker.init();
+      if (ban = $('.banType', doc)) {
+        board = $('.board', doc).innerHTML;
+        err = $.el('span');
+        if (ban.textContent.toLowerCase() === 'banned') {
+          if (Conf['Check for Bans']) {
+            $["delete"]('lastBanCheck');
+            BanChecker.init();
+          }
+          err.innerHTML = "You are banned on " + board + "! ;_;<br>\nClick <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason.";
+        } else {
+          err.innerHTML = "You were issued a warning on " + board + " as " + ($('.nameBlock', doc).innerHTML) + ".<br>\nReason: " + ($('.reason', doc).innerHTML);
         }
       } else if (err = doc.getElementById('errmsg')) {
-        if ((_ref = $('a', err)) != null) {
-          _ref.target = '_blank';
+        if (el = $('a', err)) {
+          el.target = '_blank';
         }
       } else if (!(msg = $('b', doc))) {
         err = 'Connection error with sys.4chan.org.';
@@ -9089,7 +9099,7 @@
           if (/mistyped/i.test(err.textContent)) {
             err.textContent = 'You seem to have mistyped the CAPTCHA.';
           }
-          QR.cooldown.auto = QR.captchaIsEnabled ? !!$.get('captchas', []).length : true;
+          QR.cooldown.auto = QR.captcha.isEnabled ? !!$.get('captchas', []).length : err === 'Connection error with sys.4chan.org.' ? true : false;
           QR.cooldown.set({
             delay: 2
           });
@@ -9105,7 +9115,7 @@
         global: {}
       });
       if (!persona[key = Conf['Per Board Persona'] ? g.BOARD : 'global']) {
-        persona[key] = persona.global;
+        persona[key] = JSON.parse(JSON.stringify(persona.global));
       }
       persona[key] = {
         name: reply.name,
@@ -9113,7 +9123,7 @@
         sub: Conf['Remember Subject'] ? reply.sub : null
       };
       $.set('persona', persona);
-      _ref1 = msg.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
+      _ref = msg.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], threadID = _ref[1], postID = _ref[2];
       Updater.postID = postID;
       $.event(QR.el, new CustomEvent('QRPostSuccessful', {
         bubbles: true,
@@ -9147,7 +9157,7 @@
         QR.close();
       }
       QR.status();
-      return QR.resetFileInput();
+      return QR.fileEl.value = null;
     },
     abort: function() {
       var _ref;
@@ -10751,7 +10761,7 @@
         case "large":
           Style.replyMargin = 8;
       }
-      return css = ("/* dialog styling */\n.dialog.reply {\n  display: block;\n}\n.move {\n  cursor: move;\n}\nlabel,\n.favicon {\n  cursor: pointer;\n}\n.hide_thread_button:not(.hidden_thread) {\n  padding: 0 5px;\n  float: left;\n}\n.menu_button {\n  display: inline-block;\n}\n.menu_button > span,\n#mascot_hide > span,\n.hide_thread_button span > span,\n.hide_reply_button span > span {\n  display: inline-block;\n  margin: 2px 2px 3px;\n  vertical-align: middle;\n}\n.menu_button > span,\n#mascot_hide > span {\n  border-top:   .5em solid;\n  border-right: .3em solid transparent;\n  border-left:  .3em solid transparent;\n}\n.hide_thread_button span > span,\n.hide_reply_button span > span {\n  width: .4em;\n  height: 1px;\n  background-color: " + theme["Links"] + ";\n}\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide input,\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#mascot_hide label {\n  width: 100%;\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n#menu,\n#post-preview {\n  position: absolute;\n  outline: none;\n}\n.themevar textarea {\n  height: 300px;\n}\n.entry {\n  border-bottom: 1px solid rgba(0,0,0,.25);\n  cursor: pointer;\n  display: block;\n  outline: none;\n  padding: 3px 7px;\n  position: relative;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.focused.entry {\n  background: rgba(255,255,255,.33);\n}\n.hasSubMenu::after {\n  content: \"\";\n  border-" + position + ": .5em solid;\n  border-top: .3em solid transparent;\n  border-bottom: .3em solid transparent;\n  display: inline-block;\n  margin: .3em;\n  position: absolute;\n  right: 3px;\n}\ndiv.subMenu.reply {\n  padding: 0;\n  position: absolute;\n  " + position + ": 100%;\n  top: -1px;\n}\n#banmessage,\n#boardTitle,\n#main_tab + div,\n#mascotConf input,\n#style_tab + div .suboptions,\n.center,\nh1 {\n  text-align: center;\n}\n#rice_tab + div .selectrice {\n  width: 150px;\n  display: inline-block;\n}\n#keybinds_tab + div > table {\n  margin: auto;\n}\n#keybinds_tab + div > div {\n  text-align: center;\n}\n#mascotConf input::" + Style.agent + "placeholder {\n  text-align: center;\n}\n#mascotConf input:" + Style.agent + "placeholder {\n  text-align: center;\n}\n#boardNavDesktopFoot,\n#selectrice,\n#selectrice *,\n#qr .warning,\n#qr > .move,\n#threadselect .selectrice,\n#watcher,\n.captchaimg img,\n.field,\n.file,\n.mascotname,\n.mascotoptions,\n.selectrice,\n.postInfo,\n.thumbnail,\nbutton,\ndiv.post,\ndiv.post.highlight,\ninput,\ninput[type=\"submit\"] {\n  " + Style.agent + "box-sizing: border-box;\n  box-sizing: border-box;\n}\n#updater .move,\n#qr > .move {\n  overflow: hidden;\n  padding: 0 2px;\n}\n#credits,\n#qr > .move > span {\n  float: right;\n}\n#autohide,\n#dump,\n#qr .selectrice,\n.close,\n.remove,\n.captchaimg,\n#qr div.warning {\n  cursor: pointer;\n}\n#qr .selectrice,\n#qr > form {\n  margin: 0;\n}\n#replies {\n  display: block;\n  height: 100px;\n  position: relative;\n}\n#replies > div {\n  counter-reset: thumbnails;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  margin: 0;\n  padding: 0;\n  overflow: hidden;\n  position: absolute;\n  white-space: pre;\n}\n#replies > div:hover {\n  bottom: -10px;\n  overflow-x: auto;\n}\n.thumbnail {\n  background-color: rgba(0,0,0,.2);\n  background-position: 50% 20%;\n  background-size: cover;\n  border: 1px solid #666;\n  cursor: move;\n  display: inline-block;\n  height: 90px;\n  width: 90px;\n  margin: 5px;\n  padding: 2px;\n  opacity: .5;\n  outline: none;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + Style.agent + "transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n/* Catalog */\n#content .navLinks,\n#info .navLinks,\n.btn-wrap {\n  display: block;\n}\n.navLinks > .btn-wrap:not(:first-of-type)::before {\n  content: ' - ';\n}\n.button {\n  cursor: pointer;\n}\n#content .btn-wrap,\n#info .btn-wrap {\n  display: inline-block;\n}\n#settings .selectrice {\n  width: 100px;\n  display: inline-block;\n}\n#settings,\n#threads,\n#info .navLinks,\n#content .navLinks {\n  text-align: center;\n}\n#threads .thread {\n  vertical-align: top;\n  display: inline-block;\n  word-wrap: break-word;\n  overflow: hidden;\n  margin-top: 5px;\n  padding: 5px 0 3px;\n  text-align: center;\n}\n.extended-small .thread,\n.small .thread {\n  width: 165px;\n  max-height: 320px;\n}\n.extended-large .thread,\n.large .thread {\n  width: 270px;\n  max-height: 410px;\n}\n.extended-small .thumb,\n.small .thumb {\n  max-width: 150px;\n  max-height: 150px;\n}\n#content .thumb {\n  box-shadow: 0 0 5px " + theme["Reply Border"] + ";\n}\n.thumbnail:hover,\n.thumbnail:focus {\n  opacity: .9;\n}\n.thumbnail::before {\n  counter-increment: thumbnails;\n  content: counter(thumbnails);\n  color: #FFF;\n  font-weight: 700;\n  padding: 3px;\n  position: absolute;\n  top: 0;\n  right: 0;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.thumbnail.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.thumbnail.over {\n  border-color: #FFF;\n}\n.thumbnail > span {\n  color: #FFF;\n}\n.remove {\n  background: none;\n  color: #E00;\n  font-weight: 700;\n  padding: 3px;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.thumbnail > label {\n  background: rgba(0,0,0,.5);\n  color: #FFF;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.thumbnail > label > input {\n  margin: 0;\n}\n#addReply {\n  font-size: 3.5em;\n  line-height: 100px;\n}\n#addReply:hover,\n#addReply:focus {\n  color: #000;\n}\n.field {\n  " + Style.agent + "transition: color .25s, border .25s;\n}\n.field:hover,\n.field:focus {\n  outline: none;\n}\n.fitwidth img[data-md5] + img {\n  max-width: 100%;\n}\n#style_tab + div .selectrice,\n.fitwidth img[data-md5] + img,\n.themevar .field,\n.themevar textarea {\n  width: 100%;\n}\n.themevar .colorfield {\n  width: 90%;\n  border-right: none;\n}\n.themevar .color {\n  width: 10%;\n  color: transparent;\n  border-left: none;\n}\n#ihover,\n#mouseover,\n#navlinks,\n#overlay,\n#qr,\n#qp,\n#stats,\n#updater {\n  position: fixed;\n}\n#ihover {\n  max-height: 97%;\n  max-width: 75%;\n  padding-bottom: 18px;\n}\n#overlay {\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n}\n#options {\n  position: fixed;\n  padding: .3em;\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n}\n#options h3 {\n  margin: 0;\n}\n#optionsbar {\n  padding: 0 3px;\n}\n#optionsbar label[for] {\n  position: relative;\n  padding: 0 4px;\n  z-index: 1;\n  height: 1.4em;\n  display: inline-block;\n  border-width: 1px 1px 0 1px;\n  border-color: transparent;\n  border-style: solid;\n}\n#theme_tab + div h1 {\n  opacity: 0;\n}\n#theme_tab + div div.selectedtheme h1 {\n  right: 11px;\n  opacity: 1;\n}\n#theme_tab + div > div h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  " + Style.agent + "transition: all .2s ease-in-out;\n}\n#theme_tab + div > div:not(.stylesettings) {\n  margin-bottom: 3px;\n}\n#options ul li {\n  overflow: visible;\n  padding: 0 5px 0 7px;\n  list-style-type: none;\n}\n#options table > tr:nth-of-type(2n+1),\n#options ul li:nth-of-type(2n+1),\n.selectrice li:nth-of-type(2n+1) {\n  background-color: rgba(0, 0, 0, 0.05);\n}\n#rice_tab + div input {\n  margin: 1px;\n}\n#options article li {\n  margin: 10px 0 10px 2em;\n}\n#options code {\n  background: hsla(0, 0%, 100%, .5);\n  color: #000;\n  padding: 0 1px;\n}\n#options .option {\n  width: 50%;\n  display: inline-block;\n}\n#options .option .optionlabel {\n  padding-left: 18px;\n}\n#options .mascots {\n  padding: 0;\n  text-align: center;\n}\n#options .mascot,\n#options .mascot .container {\n  overflow: hidden;\n}\n#options .mascot {\n  position: relative;\n  border: none;\n  margin: 5px;\n  padding: 0;\n  width: 200px;\n  display: inline-block;\n}\n#options .mascot .container {\n  height: 250px;\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  bottom: 0;\n  border-width: 0 1px 1px;\n  border-style: solid;\n  border-color: transparent;\n  overflow: hidden;\n}\n#options .mascot img {\n  max-width: 200px;\n  image-rendering: optimizeQuality;\n}\n#options ul li.mascot {\n  background-color: transparent;\n}\n#mascotConf {\n  position: fixed;\n  height: 400px;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n}\n#mascotConf h2 {\n  margin: 10px 0 0;\n  font-size: 14px;\n}\n#optionsContent {\n  overflow: auto;\n  position: absolute;\n  top:    1.7em;\n  right:  5px;\n  bottom: 5px;\n  left:   5px;\n}\n#style_tab + div .suboptions ul,\n#main_tab + div ul {\n  vertical-align: top;\n  " + (Conf["Single Column Mode"] ? "margin: 0 auto 6px;" : "margin: 0 3px 6px;\n  display: inline-block;") + "\n}\n#style_tab + div .suboptions ul li,\n#main_tab + div ul li {\n  text-align: left;\n}\n#style_tab + div .suboptions ul {\n  width: 370px;\n}\n#main_tab + div ul {\n  width: 200px;\n}\n.suboptions,\n#mascotcontent,\n#themecontent {\n  overflow: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 1.5em;\n  left: 0;\n}\n.mAlign {\n  height: 250px;\n  vertical-align: middle;\n  display: table-cell;\n}\n#style_tab + div .suboptions {\n  bottom: 0;\n}\n#themecontent {\n  top: 1.5em;\n}\n#mascotcontent {\n  text-align: center;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.mascotname,\n.mascotoptions {\n  padding: 0;\n  width: 100%;\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.mascot .mascotoptions {\n  opacity: 0;\n  " + Style.agent + "transition: opacity .3s linear;\n}\n.mascot:hover .mascotoptions {\n  opacity: 1;\n}\n.mascotoptions {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n}\n.mascotoptions a {\n  display: inline-block;\n  width: 33%;\n}\n#close,\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#optionsContent textarea {\n  font-family: monospace;\n  min-height: 350px;\n  resize: vertical;\n  width: 100%;\n}\n#updater:not(:hover) {\n  border-color: transparent;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#watcher {\n  padding-bottom: 5px;\n  position: fixed;\n  overflow: hidden;\n  white-space: nowrap;\n}\n#watcher:not(:hover) {\n  max-height: 200px;\n}\n#watcher > div {\n  max-width: 200px;\n  overflow: hidden;\n  padding-left: 5px;\n  padding-right: 5px;\n  text-overflow: ellipsis;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#mouseover,\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.center,\n.replyContainer.image_expanded {\n  clear: both;\n}\n.inline {\n  display: table;\n}\ndiv.opContainer {\n  display: block;\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.threadContainer {\n  margin-left: 20px;\n  border-left: 1px solid black;\n}\n::" + Style.agent + "selection {\n  background: " + theme["Text"] + ";\n  color: " + theme["Background Color"] + ";\n}\n#copyright,\n#boardNavDesktop a,\n#options ul,\n#qr,\n.menubutton a,\nbody {\n  padding: 0;\n}\nhtml,\nbody {\n  min-height: 100%;\n}\nbody {\n  margin-top: 1px;\n  margin-bottom: 1px;\n  margin-" + Style.sidebarLocation[0] + ": " + Style.sidebar + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding-left: " + (parseInt(Conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n  padding-right: " + (parseInt(Conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;\n}\n#exlinks-options > *,\n.selectrice,\nhtml,\nbody,\na,\nbody,\nbutton,\ninput,\ntextarea {\n  font-family: '" + Conf["Font"] + "';\n}\n#qr .captchaimg {\n  opacity: " + Conf["Captcha Opacity"] + ";\n  background-color: #fff;\n}\n#boardNavDesktopFoot a[href*=\"//boards.4chan.org/\"]::after,\n#boardNavDesktopFoot a[href*=\"//boards.4chan.org/\"]::before,\n#boardNavDesktopFoot a,\n.container::before,\n.fileText span:not([class])::after,\n.pages strong,\n.selectrice,\na,\nbody,\nbutton,\ninput,\ntextarea {\n  font-size: " + (parseInt(Conf["Font Size"], 10)) + "px;\n}\n.boardSubtitle,\n.boardSubtitle a {\n  font-size: " + (parseInt(Conf["Font Size"], 10) - 1) + "px;\n}\nh2,\nh2 a {\n  font-size: " + (parseInt(Conf["Font Size"], 10) + 4) + "px;\n}\n/* Cleanup */\n#absbot,\n#autohide,\n#optionsContent > [name=tab]:not(:checked) + div,\n#delform > hr,\n#filters-ctrl,\n#imgControls label:first-of-type input,\n#imgControls .rice,\n#logo,\n#navbotright,\n#postForm,\n#postPassword + span,\n#qr:not(.dump) #replies,\n#qp .rice\n#qp input,\n" + (Conf["Hide Show Post Form"] ? "#showQR," : "") + "\n#styleSwitcher,\n#threadselect:empty,\n#updater:not(:hover) > :not(.move),\n" + (!Conf["Board Subtitle"] ? ".boardSubtitle," : "") + "\n.deleteform,\n.dump > form > label,\n.fappeTyme .noFile,\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.forwarded,\n.hasSubMenu:not(.focused) > .subMenu,\n.hidden_thread > .summary,\n.inline input,\n.large .teaser,\n.mobile,\n.navLinksBot,\n.panel,\n.postInfo input,\n.postInfo .rice,\n.postingMode,\n.qrHeader,\n.replyContainer > .hide_reply_button.stub ~ .reply,\n.replymode,\n.sideArrows:not(.hide_reply_button),\n.small .teaser,\n.stub ~ *,\n.stylechanger,\n.thread > .hidden_thread ~ *,\n.warnicon,\n.warning:empty,\n[hidden],\nbody > .postingMode ~ #delform hr,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr,\nbody > script + hr + div,\ndiv.reply[hidden],\nhtml body > span[style=\"left: 5px; position: absolute;\"]:nth-of-type(0),\ntable[style=\"text-align:center;width:100%;height:300px;\"] {\n  display: none !important;\n}\n#mascot img,\n#replies,\n#spoilerLabel,\n.captchaimg,\n.sideArrows,\n.sideArrows a,\n.menu_button,\n.move {\n  user-select: none;\n  " + Style.agent + "user-select: none;\n}\ndiv.post > blockquote .prettyprint span {\n  font-family: monospace;\n}\ndiv.post div.file .fileThumb {\n  float: left;\n  margin: 3px 20px 0;\n}\n.exthumbnail {\n  image-rendering: optimizeQuality;\n}\na {\n  outline: none;\n}\n.board > hr:last-of-type {\n  margin: 0;\n  border-bottom-color: transparent;\n}\n#boardNavDesktop a,\n#boardNavDesktopFoot a,\n#navlinks a,\n.pages a,\n.quotelink.deadlink,\n.sideArrows a,\ns {\n  text-decoration: none;\n}\n.inlined {\n  font-style: italic;\n}\n#watcher > .move,\n.backlink:not(.filtered),\na,\nspan.postNum > .replylink {\n  text-decoration: " + (Conf["Underline Links"] ? "underline" : "none") + ";\n}\n.filtered,\n.quotelink.filtered,\n[alt=\"closed\"] + a {\n  text-decoration: line-through;\n}\n/* Z-INDEXES */\n#mouseover {\n  z-index: 999;\n}\n#mascotConf,\n#options.reply.dialog,\n#themeConf {\n  z-index: 998;\n}\n#post-preview,\n#qp {\n  z-index: 104;\n}\n#ihover,\n#overlay,\n#updater:hover,\n.exPopup,\nhtml .subMenu {\n  z-index: 102;\n}\n#navtopright .exlinksOptionsLink::after,\n#settingsWindowLink,\n.cataloglink a::after {\n  z-index: 101;\n}\n#imgControls {\n  z-index: 100;\n}\n#autoPagerBorderPaging,\n#boardNavDesktop,\n#menu.reply.dialog,\n#navlinks,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  z-index: 94;\n}\n.fileThumb img + img {\n  position: relative;\n  z-index: " + (Conf["Images Overlap Post Form"] ? "90" : "1") + ";\n}\n#stats,\n#updater {\n  z-index: 10;\n}\n#navtopright,\n#showQR {\n  z-index: 6;\n}\n#boardTitle,\n#watcher,\n#watcher::after,\n.boardBanner,\n.menu_button,\n.sideArrows a {\n  z-index: 4;\n}\n#globalMessage::after,\n.boardBanner,\n.replyhider a {\n  z-index: 1;\n}\ndiv.post,\ndiv.post.highlight {\n  z-index: 0;\n}\n#navtopright .exlinksOptionsLink::after,\n#settingsWindowLink,\ndiv.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#imgControls label:first-of-type::after,\n.cataloglink a::after,\n#fappeTyme {\n  position: fixed;\n  display: block;\n  width: 15px;\n  height: 15px;\n  content: \" \";\n  overflow: hidden;\n  background-image: url('" + icons + "');\n  opacity: 0.5;\n}\n#imgControls {\n  position: fixed;\n}\n#settingsWindowLink {\n  visibility: visible;\n  background-position: 0 0;\n}\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  cursor: pointer;\n  background-position: 0 -15px;\n}\n#watcher::after {\n  background-position: 0 -30px;\n}\n#globalMessage::after {\n  background-position: 0 -45px;\n}\n#boardNavDesktopFoot::after {\n  background-position: 0 -60px;\n}\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  visibility: visible;\n  cursor: pointer;\n  background-position: 0 -75px;\n}\n#imgControls label:first-of-type::after {\n  position: static;\n  background-position: 0 -90px;\n}\n#navtopright .exlinksOptionsLink::after {\n  background-position: 0 -105px;\n}\n.cataloglink a::after {\n  background-position: 0 -120px;\n}\n#fappeTyme {\n  background-position: 0 -135px;\n}\n#boardNavDesktopFoot:hover::after,\n#globalMessage:hover::after,\n#imgControls label:hover:first-of-type::after,\n#navlinks a:hover,\n#settingsWindowLink:hover,\n#navtopright .exlinksOptionsLink:hover::after,\n#qr #qrtab,\n#watcher:hover::after,\n.thumbnail#selected,\nbody > a[style=\"cursor: pointer; float: right;\"]:hover::after,\ndiv.navLinks > a:first-of-type:hover::after,\n.cataloglink a:hover::after,\n#fappeTyme:hover {\n  opacity: 1;\n}\n.boardTitle,\n.boardTitle > a {\n  font-size: 22px;\n  font-weight: 400;\n}\n.boardBanner {\n  line-height: 0;\n}\nhr {\n  padding: 0;\n  height: 0;\n  width: 100%;\n  clear: both;\n  border: none;\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n.boxcontent > hr,\n.entry:last-child,\na.forwardlink,\nh3,\nimg {\n  border: none;\n}\n.boxcontent input {\n  height: 18px;\n  vertical-align: bottom;\n  margin-right: 1px;\n}\n/* Navigation */\n.pagelist {\n  text-align: " + Conf["Pagination Alignment"] + ";\n}\n.next,\n.pages,\n.prev {\n  display: inline-block;\n  margin: 0 3px;\n}\n#boardNavDesktop {\n  text-align: " + Conf["Navigation Alignment"] + ";\n}\n#boardNavDesktopFoot {\n  visibility: visible;\n  position: fixed;\n  " + Style.sidebarLocation[0] + ": 2px;\n  bottom: auto;\n  color: transparent;\n  font-size: 0;\n  border-width: 1px;\n  text-align: center;\n  height: 0;\n  width: " + (248 + Style.sidebarOffsetW) + "px !important;\n  overflow: hidden;\n}\nimg.topad,\nimg.middlead,\nimg.bottomad {\n  opacity: 0.3;\n}\nimg.topad:hover,\nimg.middlead:hover,\nimg.bottomad:hover {\n  opacity: 1;\n  " + Style.agent + "transition: opacity .3s linear;\n}\n/* moots announcements */\n#globalMessage {\n  text-align: center;\n  font-weight: 200;\n}\n#xupdater {\n  padding: 2px;\n  text-align: center;\n  margin: 1px;\n}\n#xupdater a {\n  font-size: " + (parseInt(Conf["Font Size"], 10) + 3) + "px;\n}\n.pages strong,\na,\n.new {\n  " + Style.agent + "transition: background .1s linear;\n}\n/* Post Form */\n#qr div.captchainput,\n#file {\n  overflow: hidden;\n}\n/* Formatting for all postarea elements */\n#file {\n  line-height: 17px;\n}\n#file,\n#threadselect .selectrice {\n  cursor: default;\n  display: inline-block;\n}\n#threadselect .selectrice,\ninput:not([type=radio]),\n.field,\ninput[type=\"submit\"] {\n  height: 1.5em;\n}\n#qr .warning {\n  min-height: 1.7em;\n}\n#qr .warning,\n.field,\n.selectrice,\nbutton,\ninput,\ninput[type=\"submit\"] {\n  vertical-align: bottom;\n  padding: 0 1px;\n}\ninput[type=\"submit\"] {\n  padding: 0;\n}\n#qr input[type=\"file\"] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n/* Image Hover and Image Expansion */\n#ihover {\n  max-width: 85%;\n  max-height: 85%;\n}\n#imageType {\n  border: none;\n  width: 90px;\n  position: relative;\n  bottom: 1px;\n  margin: 0;\n  height: 17px;\n}\n/* Posts */\ndiv.post div.postInfo {\n  padding: 3px 0 0 8px;\n  display: block !important;\n  width: auto;\n}\ndiv.file {\n  padding-left: 8px;\n}\n.postContainer blockquote {\n  min-height: " + (parseInt(Conf["Font Size"], 10) + 3) + "px;\n}\n.fileText ~ a > img + img {\n  margin: 0 0 25px;\n  position: relative;\n  top: 0;\n}\n.fileText {\n  margin-top: 17px;\n}\n.summary,\n.postContainer {\n  margin-bottom: " + Style.replyMargin + "px;\n}\n.summary {\n  display: table;\n}\n/* Fixes text spoilers */\n.spoiler:not(:hover),\n.spoiler:not(:hover) *,\ns:not(:hover),\ns:not(:hover) * {\n  color: rgb(0,0,0) !important;\n  background-color: rgb(0,0,0) !important;\n  text-shadow: none !important;\n}\ndiv.thread {\n  padding: 0;\n  position: relative;\n  " + (!Conf['Images Overlap Post Form'] ? "z-index: 0;" : "") + "\n}\n#selectrice {\n  margin: 0 !important;\n}\ndiv.post {\n  margin: 0;\n}\n/* Remove default \"inherit\" background declaration */\n.span.subject,\n.subject,\n.name,\n.postertrip {\n  background: transparent;\n}\n.cataloglink,\n#navtopright {\n  position: fixed;\n  bottom: -1000px;\n  left: -1000px;\n}\n/* Expand Images */\n#imgControls {\n  width: 15px;\n  overflow-x: hidden;\n  overflow-y: visible;\n}\n#imgContainer {\n  width: 110px;\n  float: " + Style.sidebarLocation[0] + ";\n}\n#imgControls:hover {\n  width: 110px;\n}\n#imgControls label {\n  font-size: 0;\n  color: transparent;\n  float: " + Style.sidebarLocation[0] + ";\n}\n#imgControls .selectrice {\n  float: " + Style.sidebarLocation[1] + ";\n  width: 90px;\n}\n/* Reply Previews */\n#mouseover,\n#qp {\n  max-width: 70%;\n}\n#post-preview {\n  max-width: 400px;\n}\n#qp .replyContainer,\n#qp .opContainer {\n  visibility: visible;\n}\n#post-preview,\n#qp div.op {\n  display: table;\n}\n#qp div.post img {\n  max-width: 300px;\n  height: auto;\n}\n.inline div.post,\n#qp div.post {\n  padding-bottom: 0 !important;\n}\ndiv.navLinks {\n  visibility: hidden;\n  height: 0;\n  width: 0;\n  overflow: hidden;\n}\n/* AutoPager */\n#autoPagerBorderPaging {\n  position: fixed !important;\n  right: 300px !important;\n  bottom: 0;\n}\n#options ul {\n  margin: 3px;\n  margin-bottom: 6px;\n}\n#stats,\n#navlinks {\n  left: auto !important;\n  bottom: auto !important;\n  text-align: right;\n  padding: 0;\n  border: 0;\n  border-radius: 0;\n}\n#prefetch,\n#stats {\n  position: fixed;\n  cursor: default;\n}\n#updater {\n  overflow: hidden;\n  background: none;\n  text-align: right;\n}\n#watcher {\n  padding: 1px 0;\n  border-radius: 0;\n}\n#options .move,\n#updater .move,\n#watcher .move,\n#stats .move {\n  cursor: default !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"] {\n  position: fixed;\n  top: -1000px;\n  left: -1000px;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] {\n  display: block;\n  position: fixed !important;\n  top: 117px !important;\n  " + Style.sidebarLocation[1] + ": 4px !important;\n  " + Style.sidebarLocation[0] + ": " + (252 + Style.sidebarOffsetW) + "px !important;\n  width: auto !important;\n  margin: 0 !important;\n  z-index: 2;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + theme["Background Color"] + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n  vertical-align: top;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] {\n  height: 95% !important;\n  margin-top: 5px !important;\n  margin-bottom: 5px !important;\n}\n#fs_status {\n  width: auto !important;\n  height: auto !important;\n  background: " + theme["Dialog Background"] + " !important;\n  padding: 10px !important;\n  white-space: normal !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data * {\n  border-color: " + theme["Reply Border"] + " !important;\n}\n.identityIcon,\nimg[alt=\"Sticky\"],\nimg[alt=\"Closed\"] {\n  vertical-align: top;\n}\n.inline,\n#qp {\n  background-color: transparent;\n  border: none;\n}\n.mascotname,\ninput[type=\"submit\"]:hover {\n  cursor: pointer;\n}\n#qr input:focus::" + Style.agent + "placeholder,\n#qr textarea:focus::" + Style.agent + "placeholder {\n  color: transparent;\n}\n#qr input:focus:" + Style.agent + "placeholder,\n#qr textarea:focus:" + Style.agent + "placeholder {\n  color: transparent;\n}\n#boardNavDesktop .current {\n  font-weight: 800;\n}\n.focused.entry {\n  background-color: transparent;\n}\n#menu.reply.dialog,\nhtml .subMenu {\n  padding: 0;\n}\n.textarea {\n  position: relative;\n}\n#qr #charCount {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + ";\n  background: none;\n  font-size: 10px;\n  pointer-events: none;\n  position: absolute;\n  right: 2px;\n  top: auto;\n  bottom: 0;\n  height: 1.7em;\n}\n#qr #charCount.warning {\n  color: rgb(255,0,0);\n  padding: 0;\n  margin: 0;\n  border: none;\n  background: none;\n}\n/* Position and Dimensions of the #qr */\n#showQR {\n  display: block;\n  " + Style.sidebarLocation[0] + ": 2px;\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n  background-color: transparent;\n  text-align: center;\n  position: fixed;\n  top: auto;\n  bottom: 2px !important;\n}\n/* Width and height of all #qr elements (excluding some captcha elements) */\n#dump {\n  width: 20px;\n  margin: 0;\n  outline: none;\n  padding: 0 0 3px;\n}\n.captchaimg {\n  line-height: 0;\n}\n#qr div {\n  min-width: 0;\n}\n#updater input,\n#options input,\n#qr {\n  border: none;\n}\n.prettyprint {\n  display: table;\n  clear: right;\n  white-space: pre-wrap;\n  border-radius: 2px;\n  overflow-x: auto;\n  padding: 3px;\n}\n#themeConf {\n  position: fixed;\n  " + Style.sidebarLocation[1] + ": 2px;\n  " + Style.sidebarLocation[0] + ": auto;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n}\n#themebar input {\n  width: 30%;\n}\nhtml {\n  background: " + (theme["Background Color"] || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n#optionsContent,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + theme["Background Color"] + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n#optionsbar label[for]#selected_tab {\n  background: " + theme["Background Color"] + ";\n  border-color: " + theme["Reply Border"] + ";\n  border-style: solid;\n}\n.suboptions {\n  padding: 5px;\n}\n#boardTitle,\n#prefetch,\n#showQR,\n" + (!Conf["Post Form Decorations"] ? '#spoilerLabel,' : '') + "\n#stats,\n#updater:not(:hover) .move {\n  text-shadow:\n    1px 1px 0 " + theme["Background Color"] + ",\n    -1px -1px 0 " + theme["Background Color"] + ",\n    1px -1px 0 " + theme["Background Color"] + ",\n    -1px 1px 0 " + theme["Background Color"] + ",\n    0 1px 0 " + theme["Background Color"] + ",\n    0 -1px 0 " + theme["Background Color"] + ",\n    1px 0 0 " + theme["Background Color"] + ",\n    -1px 0 0 " + theme["Background Color"] + (Conf["Sidebar Glow"] ? "\n, 0 2px 5px " + theme['Text'] + ";" : ";") + "\n}\n#options .dialog,\n#exlinks-options,\n#qrtab,\n" + (Conf["Post Form Decorations"] ? "#qr," : "") + "\n#updater:hover,\nhtml body span[style=\"left: 5px; position: absolute;\"] a,\ninput[type=\"submit\"],\n#options.reply.dialog,\ninput[value=\"Report\"] {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n#options ul li.mascot.enabled .container {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#file,\n#options input,\n.dump #dump:not(:hover):not(:focus),\n.selectrice,\nbutton,\ninput,\ninput.field,\ntextarea,\ntextarea.field {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n  " + Style.agent + "transition: all .2s linear;\n}\n#dump:hover,\n#file:hover,\n#options .selectrice li:nth-of-type(2n+1):hover,\n.selectrice:hover,\n.selectrice li:hover,\ninput:hover,\ninput.field:hover,\ninput[type=\"submit\"]:hover,\ntextarea:hover,\ntextarea.field:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:active,\n#dump:focus,\n.selectrice:focus,\n.selectrice li:focus,\ninput:focus,\ninput.field:focus,\ninput[type=\"submit\"]:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#mouseover,\n#post-preview,\n#qp div.post,\n#xupdater,\ndiv.reply.post {\n  border: 1px solid " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.exblock.reply,\ndiv.reply.post.highlight,\ndiv.reply.post:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#boardNavDesktop,\n.pagelist {\n  background: " + theme["Navigation Background"] + ";\n  border: 1px solid " + theme["Navigation Border"] + ";\n  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(Conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;\n  " + Style.sidebarLocation[1] + ": " + (parseInt(Conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;\n}\n#delform {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#selectrice,\n#themeConf,\n#watcher,\n#watcher:hover,\ndiv.subMenu,\nbody > a[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n#boardNavDesktopFoot:not(:hover) {\n  border-color: transparent;\n  background-color: transparent;\n}\n.inline .post {\n  box-shadow: " + (Conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n  padding-bottom: 2px;\n}\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n}\n.captcha img {\n  border: 1px solid " + theme["Input Border"] + ";\n}\n[style='color: red !important;'] *,\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\n#dump,\n.button,\n.entry,\n.sideArrows a,\na,\ndiv.post > blockquote a[href^=\"//\"],\nspan.postNum > .replylink {\n  color: " + theme["Links"] + ";\n}\n#navlinks a {\n  position: fixed;\n  color: transparent;\n  opacity: 0.5;\n  display: inline-block;\n  font-size: 0;\n  border-right: 6px solid transparent;\n  border-left: 6px solid transparent;\n  margin: 1.5px;\n}\n#navlinks a:first-of-type {\n  border-bottom: 11px solid rgb(" + (Style.lightTheme ? "130,130,130" : "230,230,230") + ");\n}\n#navlinks a:last-of-type {\n  border-top: 11px solid rgb(" + (Style.lightTheme ? "130,130,130" : "230,230,230") + ");\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n  font-weight: 600;\n}\n.dateTime,\n.post-ago {\n  color: " + theme["Timestamps"] + " !important;\n}\n#fs_status a,\n#showQR,\n#updater,\n.summary,\nbody > form,\nbody,\nbutton,\nhtml body span[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea,\n.abbr,\n.boxbar,\n.boxcontent,\n.pages strong,\n.reply,\n.reply.highlight,\n#boardNavDesktop .title,\n#imgControls label::after,\n#updater #count:not(.new)::after,\n#qr > form > label::after,\nspan.pln {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#options ul,\n.selectrice ul {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.selectrice li {\n  list-style-type: none;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\na.backlink {\n  color: " + theme["Backlinks"] + ";\n}\nspan.quote > a.quotelink,\na.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\ndiv.subMenu,\n#menu,\n#post-preview,\n#qp .opContainer,\n#qp .replyContainer {\n  box-shadow: " + (Conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  cursor: pointer;\n  width: 10px;\n  height: 10px;\n  margin: 2px 3px;\n  display: inline-block;\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n  vertical-align: bottom;\n}\n.selectrice {\n  position: relative;\n  cursor: default;\n  overflow: hidden;\n  text-align: left;\n}\n.selectrice::after {\n  display: block;\n  content: \"\";\n  border-right: .25em solid transparent;\n  border-left: .25em solid transparent;\n  border-top: .45em solid " + theme["Inputs"] + ";\n  position: absolute;\n  right: .4em;\n  top: .5em;\n}\n.selectrice::before {\n  display: block;\n  content: \"\";\n  height: 1.5em;\n  border-left: 1px solid " + theme["Input Border"] + ";\n  position: absolute;\n  right: 1.3em;\n  top: 0;\n}\n.selectrice ul {\n  padding: 0;\n  position: fixed;\n  max-height: 120px;\n  overflow-y: auto;\n  overflow-x: hidden;\n  z-index: 99999;\n}\n#qr label input,\n#updater input,\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#boardNavDesktop a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  background: " + theme["Checkbox Checked Background"] + ";\n  background-image: url(" + (Icons.header.png + (Style.lightTheme ? "AkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" : "AkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==")) + ");\n  background-attachment: scroll;\n  background-repeat: no-repeat;\n  background-position: bottom right;\n}\na:hover,\n#dump:hover,\n.entry:hover,\ndiv.post > blockquote a[href^=\"//\"]:hover,\n.sideArrows a:hover,\ndiv.post div.postInfo span.postNum a:hover,\nspan.postNum > .replylink:hover,\n.nameBlock > .useremail > .name:hover,\n.nameBlock > .useremail > .postertrip:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#boardNavDesktop a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name,\n.post-author {\n  color: " + theme["Names"] + " !important;\n}\n.post-tripcode,\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\n.nameBlock > .useremail > .postertrip,\n.nameBlock > .useremail > .name {\n  color: " + theme["Emails"] + ";\n}\n.nameBlock > .useremail > .name,\n.name,\n.post-author {\n  font-weight: 600;\n}\n.post-author .post-tripcode {\n  font-weight: 400;\n}\na.forwardlink {\n  border-bottom: 1px dashed;\n}\ndiv.post.qphl {\n  border-color: " + theme["Backlinked Reply Outline"] + ";\n}\n.placeholder,\n#qr input::" + Style.agent + "placeholder,\n#qr textarea::" + Style.agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n.placeholder,\n#qr input:" + Style.agent + "placeholder,\n#qr textarea:" + Style.agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n.boxcontent dd,\n#options ul,\n.selectrice ul {\n  border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + ";\n}\n#options li,\n.selectrice li:not(:first-of-type) {\n  border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + ";\n}\n#mascot img {\n  " + Style.agent + "transform: scaleX(" + (Style.sidebarLocation[0] === "left" ? "-" : "") + "1);\n}\n" + theme["Custom CSS"] + "\n") + (Conf["Hide Navigation Decorations"] ? "#boardNavDesktop, .pages {\n  font-size: 0;\n  color: transparent;\n  word-spacing: 2px;\n}\n.pages {\n  word-spacing: 0;\n}\n.pages a {\n  margin: 1px;\n}\n" : "") + (Conf["Recursive Filtering"] ? ".hidden + .threadContainer {\n  display: none;\n}\n" : "") + (Conf["Reply Spacing"] === "none" ? ".thread > .replyContainer:not(:last-of-type) .post.reply:not(:target) {\n  border-bottom-width: 0;\n}\n" : "") + (Style.lightTheme ? ".prettyprint {\n  background-color: #e7e7e7;\n  border: 1px solid #dcdcdc;\n}\nspan.com {\n  color: #dd0000;\n}\nspan.str,\nspan.atv {\n  color: #7fa61b;\n}\nspan.pun {\n  color: #61663a;\n}\nspan.tag {\n  color: #117743;\n}\nspan.kwd {\n  color: #5a6F9e;\n}\nspan.typ,\nspan.atn {\n  color: #9474bd;\n}\nspan.lit {\n  color: #368c72;\n}\n" : ".prettyprint {\n  background-color: rgba(0,0,0,.1);\n  border: 1px solid rgba(0,0,0,0.5);\n}\nspan.tag {\n  color: #96562c;\n}\nspan.pun {\n  color: #5b6f2a;\n}\nspan.com {\n  color: #a34443;\n}\nspan.str,\nspan.atv {\n  color: #8ba446;\n}\nspan.kwd {\n  color: #987d3e;\n}\nspan.typ,\nspan.atn {\n  color: #897399;\n}\nspan.lit {\n  color: #558773;\n}\n") + (Conf["Faded 4chan Banner"] ? ".boardBanner {\n  opacity: 0.5;\n  " + Style.agent + "transition: opacity 0.3s ease-in-out .5s;\n}\n.boardBanner:hover {\n  opacity: 1;\n  " + Style.agent + "transition: opacity 0.3s ease-in;\n}\n" : "") + (Conf["4chan Banner Reflection"] ? "/* From 4chan SS / OneeChan */\n.gecko .boardBanner::after {\n  background-image: -moz-element(#Banner);\n  bottom: -100%;\n  content: '';\n  left: 0;\n  mask: url(\"data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask\");\n  opacity: 0.3;\n  position: absolute;\n  right: 0;\n  top: 100%;\n  z-index: 1;\n  -moz-transform: scaleY(-1);\n}\n.webkit #Banner {\n  -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));\n}\n" : "") + (Conf["Slideout Transitions"] ? "#globalMessage,\n#watcher,\n#boardNavDesktopFoot {\n  " + Style.agent + "transition: height .3s linear, border .3s linear, background-color .3s step-end;\n}\n#globalMessage:hover,\n#watcher:hover,\n#boardNavDesktopFoot:hover {\n  " + Style.agent + "transition: height .3s linear, border .3s linear, background-color .3s step-start;\n}\nimg.topad,\nimg.middlead,\nimg.bottomad {\n  " + Style.agent + "transition: opacity .3s linear;\n}\n#imgControls {\n  " + Style.agent + "transition: width .2s linear;\n}\n" : "") + (Conf["Post Form Slideout Transitions"] ? "#qr {\n  " + Style.agent + "transition: " + Style.sidebarLocation[0] + " .3s ease-in-out 1s;\n}\n#qr:hover,\n#qr.focus,\n#qr.dump {\n  " + Style.agent + "transition: " + Style.sidebarLocation[0] + " .3s linear;\n}\n#qrtab {\n  " + Style.agent + "transition: opacity .3s ease-in-out 1s, " + Style.sidebarLocation[0] + " .3s ease-in-out 1s;\n}\n" : "") + (Conf["Hide Horizontal Rules"] ? "hr {\n  visibility: hidden;\n}\n" : "") + (Conf["Post Form Style"] !== "float" ? ("#qr img {\n  height: 3.9em;\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n}\n#qr > form > #threadselect,\n#spoilerLabel {\n  display: inline-block;\n}\n#spoilerLabel {\n  width: 100%;\n  text-align: right;\n}\n#qr > form > #threadselect,\n#threadselect:not(:empty) + #spoilerLabel {\n  width: 49%;\n}\n#threadselect .selectrice {\n  margin-top: 0;\n  width: 100%;\n}\ninput[title=\"Verification\"] {\n  width: 100%;\n}\ntextarea.field,\n#qr > form > div {\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n}\n#qr {\n  padding: 1px;\n  border: 1px solid " + (Conf["Post Form Decorations"] ? theme["Buttons Border"] : "transparent") + ";\n  overflow: visible;\n  top: auto !important;\n  bottom: 1.6em !important;\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n  margin: 0;\n  z-index: 5 !important;\n}\ninput[title=\"Verification\"],\n.captchaimg {\n  margin-top: 1px;\n}\n#qr .warning,\n#threadselect .selectrice,\ninput,\n.field {\n  margin: 1px 0 0;\n}\n#file {\n  width: " + (177 + Style.sidebarOffsetW) + "px;\n}\n#buttons input {\n  width: 70px;\n  margin: 1px 0 0 1px;\n}") + (Conf["Compact Post Form Inputs"] ? "#qr textarea.field {\n  height: 15em;\n  min-height: 9em;\n  min-width: " + (248 + Style.sidebarOffsetW) + "px;\n}\n#qr.captcha textarea.field {\n  height: 9em;\n  min-height: 9em;\n}\n#qr .field[name=\"name\"],\n#qr .field[name=\"email\"],\n#qr .field[name=\"sub\"] {\n  width: " + (75 + (Style.sidebarOffsetW / 3)) + "px !important;\n  margin-top: 0 !important;\n  margin-left: 1px !important;\n}\n" : "#qr textarea.field {\n  height: 12em;\n  min-height: 12em;\n  min-width: " + (248 + Style.sidebarOffsetW) + "px\n}\n#qr.captcha textarea.field {\n  height: 6em;\n  min-height: 6em;\n}\n#qr .field[name=\"email\"],\n#qr .field[name=\"sub\"] {\n  width: " + (248 + Style.sidebarOffsetW) + "px !important;\n}\n#qr .field[name=\"name\"] {\n  width: " + (227 + Style.sidebarOffsetW) + "px !important;\n  margin-left: 1px !important;\n  margin-top: 0 !important;\n}\n#qr .field[name=\"email\"],\n#qr .field[name=\"sub\"] {\n  margin-top: 1px;\n}\n") + (Conf["Textarea Resize"] === "auto-expand" ? "#qr textarea {\n  display: block;\n  " + Style.agent + "transition:\n    color 0.25s linear,\n    background-color 0.25s linear,\n    background-image 0.25s linear,\n    height step-end,\n    width " + (Conf["Slideout Transitions"] ? ".3s ease-in-out .3s" : "step-end") + ";\n  float: " + Style.sidebarLocation[0] + ";\n  resize: vertical;\n}\n#qr textarea:focus {\n  width: 400px;\n}\n" : "#qr textarea {\n  display: block;\n  " + Style.agent + "transition:\n    color 0.25s linear,\n    background-color 0.25s linear,\n    background-image 0.25s linear,\n    border-color 0.25s linear,\n    height step-end,\n    width step-end;\n  float: " + Style.sidebarLocation[0] + ";\n  resize: " + Conf["Textarea Resize"] + "\n}\n") : "") + (Conf["Fit Width Replies"] ? ".thread .replyContainer {\n  position: relative;\n  clear: both;\n  display: table;\n  width: 100%;\n}\n.replyContainer div.reply.post {\n  display: table;\n  width: 100%;\n  height: 100%\n}\n.sideArrows a,\n.menu_button {\n  position: absolute;\n  right: 6px;\n  top: 2px;\n  font-size: 9px;\n}\n.sideArrows a {\n  " + (Conf["Menu"] ? "right: 27px;" : "") + "\n}\n.summary {\n  padding-left: 20px;\n  clear: both;\n}\n.sideArrows {\n  width: 0;\n}\n.sideArrows a,\n.menu_button {\n  opacity: 0;\n  " + Style.agent + "transition: opacity .3s ease-out 0s;\n}\ndiv.op:hover .menu_button,\n.replyContainer:hover div.reply .menu_button,\n.replyContainer:hover .sideArrows a {\n  opacity: 1;\n  " + Style.agent + "transition: opacity .3s ease-in 0s;\n}\n.inline .menu_button {\n  position: static;\n  opacity: 1;\n}\n#options.reply {\n  display: inline-block;\n}\n" : ".sideArrows {\n  padding: 3px;\n  float: left;\n}\ndiv.reply.post {\n  position: relative;\n  overflow: visible;\n  display: table;\n\n}\n") + (Conf['Force Reply Break'] ? ".summary,\n.replyContainer {\n  clear: both;\n}\n" : "") + (Conf["Alternate Post Colors"] ? "div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {\n  background-image: " + Style.agent + "linear-gradient(" + (Style.lightTheme ? "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" : "rgba(255,255,255,0.02), rgba(255,255,255,0.02)") + ");\n}\n" : "") + (Conf["Color Reply Headings"] ? ".postInfo {\n  background: " + ((replyHeading = new Style.color(Style.colorToHex(theme["Reply Background"]))) ? "rgb(" + (replyHeading.shiftRGB(16, true)) + ")" : "rgba(0,0,0,0.1)") + ";\n}\n" : "") + (Conf["Color File Info"] ? ".file {\n  background: " + ((fileHeading = new Style.color(Style.colorToHex(theme["Reply Background"]))) ? "rgb(" + (fileHeading.shiftRGB(8, true)) + ")" : "rgba(0,0,0,0.1)") + ";\n}\n" : "") + (Conf["Filtered Backlinks"] ? ".filtered.backlink {\n  display: none;\n}\n" : "") + (Conf["Slideout Watcher"] ? "#watcher:not(:hover) {\n  border-color: transparent;\n  background-color: transparent;\n}\n#watcher {\n  position: fixed;\n  " + Style.sidebarLocation[0] + ": 2px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  bottom: auto !important;\n  height: 0;\n  width: " + (248 + Style.sidebarOffsetW) + "px !important;\n  overflow: hidden;\n}\n#watcher:hover {\n  height: " + (Conf["Slideout Transitions"] ? '250px' : 'auto') + ";\n  overflow: auto;\n  padding-bottom: 4px;\n}\n" : "#watcher::after {\n  display: none;\n}\n#watcher {\n  width: " + (246 + Style.sidebarOffsetW) + "px;\n  padding-bottom: 4px;\n  z-index: 96;\n}\n#watcher > .move {\n  cursor: pointer !important;\n}\n") + (Conf["OP Background"] ? ".opContainer div.post {\n  background: " + theme["Reply Background"] + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n  " + Style.agent + "box-sizing: border-box;\n  box-sizing: border-box;\n}\n.opContainer div.post:target\n.opContainer div.post.highlight {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n" : "") + (Conf["Tripcode Hider"] ? "input.field.tripped:not(:hover):not(:focus) {\n  color: transparent !important;\n  text-shadow: none !important;\n}\n" : "") + (Conf["Block Ads"] ? "/* AdBlock Minus */\n.bottomad + hr,\na[href*=\"jlist\"],\nimg[src^=\"//static.4chan.org/support/\"] {\n  display: none;\n}\n" : "") + (Conf["Shrink Ads"] ? "a[href*=\"jlist\"],\nimg[src^=\"//static.4chan.org/support/\"] {\n  width: 500px;\n  height: auto;\n}\n" : "") + (Conf["Emoji"] !== "disable" ? Style.emoji(Conf["Emoji Position"]) : "") + (Conf["4chan SS Sidebar"] ? (background = new Style.color(Style.colorToHex(theme["Background Color"])), "body::before {\n  background: none repeat scroll 0% 0% rgba(" + (background.shiftRGB(-18)) + ", 0.8);\n  border-" + Style.sidebarLocation[1] + ": 2px solid " + theme["Background Color"] + ";\n  box-shadow:\n    " + (Conf["Sidebar Location"] === "right" ? "inset" : "") + "  1px 0 0 " + theme["Thread Wrapper Border"] + ",\n    " + (Conf["Sidebar Location"] === "left" ? "inset" : "") + " -1px 0 0 " + theme["Thread Wrapper Border"] + ";\n  content: \"\";\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  " + Style.sidebarLocation[0] + ": 0;\n  width: " + (Conf["Sidebar"] === "large" ? 305 : Conf["Sidebar"] === "normal" ? 254 : Conf["Sidebar"] === "minimal" ? 27 : 0) + "px;\n  z-index: 1;\n  " + Style.agent + "box-sizing: border-box;\n  box-sizing: border-box;\n  display: block;\n}") : "") + (Conf["4chan SS Navigation"] ? "" + (["sticky top", "sticky bottom"].contains(Conf["Pagination"]) ? ".pagelist," : "") + "\n#boardNavDesktop {\n  left: 0;\n  right: 0;\n  padding-" + Conf["Sidebar Location"] + ": " + Style.sidebar + "px;\n  border-left: 0;\n  border-right: 0;\n  border-radius: 0 !important;\n}\n#delform {\n  margin-top: -2px;\n}\n#delform,\n.board,\n.thread {\n  padding-" + Style.sidebarLocation[0] + ": 0 !important;\n}" : "") + ((function() {
+      return css = ("/* dialog styling */\n.dialog.reply {\n  display: block;\n}\n.move {\n  cursor: move;\n}\nlabel,\n.favicon {\n  cursor: pointer;\n}\n.hide_thread_button:not(.hidden_thread) {\n  padding: 0 5px;\n  float: left;\n}\n.menu_button {\n  display: inline-block;\n}\n.menu_button > span,\n#mascot_hide > span,\n.hide_thread_button span > span,\n.hide_reply_button span > span {\n  display: inline-block;\n  margin: 2px 2px 3px;\n  vertical-align: middle;\n}\n.menu_button > span,\n#mascot_hide > span {\n  border-top:   .5em solid;\n  border-right: .3em solid transparent;\n  border-left:  .3em solid transparent;\n}\n.hide_thread_button span > span,\n.hide_reply_button span > span {\n  width: .4em;\n  height: 1px;\n  background-color: " + theme["Links"] + ";\n}\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide input,\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#mascot_hide label {\n  width: 100%;\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n#menu,\n#post-preview {\n  position: absolute;\n  outline: none;\n}\n.themevar textarea {\n  height: 300px;\n}\n.entry {\n  border-bottom: 1px solid rgba(0,0,0,.25);\n  cursor: pointer;\n  display: block;\n  outline: none;\n  padding: 3px 7px;\n  position: relative;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.focused.entry {\n  background: rgba(255,255,255,.33);\n}\n.hasSubMenu::after {\n  content: \"\";\n  border-" + position + ": .5em solid;\n  border-top: .3em solid transparent;\n  border-bottom: .3em solid transparent;\n  display: inline-block;\n  margin: .3em;\n  position: absolute;\n  right: 3px;\n}\ndiv.subMenu.reply {\n  padding: 0;\n  position: absolute;\n  " + position + ": 100%;\n  top: -1px;\n}\n#banmessage,\n#boardTitle,\n#main_tab + div,\n#mascotConf input,\n#style_tab + div .suboptions,\n.center,\nh1 {\n  text-align: center;\n}\n#rice_tab + div .selectrice {\n  width: 150px;\n  display: inline-block;\n}\n#keybinds_tab + div > table {\n  margin: auto;\n}\n#keybinds_tab + div > div {\n  text-align: center;\n}\n#mascotConf input::" + Style.agent + "placeholder {\n  text-align: center;\n}\n#mascotConf input:" + Style.agent + "placeholder {\n  text-align: center;\n}\n#boardNavDesktopFoot,\n#selectrice,\n#selectrice *,\n#qr .warning,\n#qr > .move,\n#threadselect .selectrice,\n#watcher,\n.captchaimg img,\n.field,\n.file,\n.mascotname,\n.mascotoptions,\n.selectrice,\n.postInfo,\n.thumbnail,\nbutton,\ndiv.post,\ndiv.post.highlight,\ninput,\ninput[type=\"submit\"] {\n  " + Style.agent + "box-sizing: border-box;\n  box-sizing: border-box;\n}\n#updater .move,\n#qr > .move {\n  overflow: hidden;\n  padding: 0 2px;\n}\n#credits,\n#qr > .move > span {\n  float: right;\n}\n#autohide,\n#dump,\n#qr .selectrice,\n.close,\n.remove,\n.captchaimg,\n#qr div.warning {\n  cursor: pointer;\n}\n#qr .selectrice,\n#qr > form {\n  margin: 0;\n}\n#replies {\n  display: block;\n  height: 100px;\n  position: relative;\n}\n#replies > div {\n  counter-reset: thumbnails;\n  top: 0;\n  right: 0;\n  bottom: 0;\n  left: 0;\n  margin: 0;\n  padding: 0;\n  overflow: hidden;\n  position: absolute;\n  white-space: pre;\n}\n#replies > div:hover {\n  bottom: -10px;\n  overflow-x: auto;\n}\n.thumbnail {\n  background-color: rgba(0,0,0,.2);\n  background-position: 50% 20%;\n  background-size: cover;\n  border: 1px solid #666;\n  cursor: move;\n  display: inline-block;\n  height: 90px;\n  width: 90px;\n  margin: 5px;\n  padding: 2px;\n  opacity: .5;\n  outline: none;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + Style.agent + "transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n/* Catalog */\n#content .navLinks,\n#info .navLinks,\n.btn-wrap {\n  display: block;\n}\n.navLinks > .btn-wrap:not(:first-of-type)::before {\n  content: ' - ';\n}\n.button {\n  cursor: pointer;\n}\n#content .btn-wrap,\n#info .btn-wrap {\n  display: inline-block;\n}\n#settings .selectrice {\n  width: 100px;\n  display: inline-block;\n}\n#settings,\n#threads,\n#info .navLinks,\n#content .navLinks {\n  text-align: center;\n}\n#threads .thread {\n  vertical-align: top;\n  display: inline-block;\n  word-wrap: break-word;\n  overflow: hidden;\n  margin-top: 5px;\n  padding: 5px 0 3px;\n  text-align: center;\n}\n.extended-small .thread,\n.small .thread {\n  width: 165px;\n  max-height: 320px;\n}\n.extended-large .thread,\n.large .thread {\n  width: 270px;\n  max-height: 410px;\n}\n.extended-small .thumb,\n.small .thumb {\n  max-width: 150px;\n  max-height: 150px;\n}\n#content .thumb {\n  box-shadow: 0 0 5px " + theme["Reply Border"] + ";\n}\n.thumbnail:hover,\n.thumbnail:focus {\n  opacity: .9;\n}\n.thumbnail::before {\n  counter-increment: thumbnails;\n  content: counter(thumbnails);\n  color: #FFF;\n  font-weight: 700;\n  padding: 3px;\n  position: absolute;\n  top: 0;\n  right: 0;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.thumbnail.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.thumbnail.over {\n  border-color: #FFF;\n}\n.thumbnail > span {\n  color: #FFF;\n}\n.remove {\n  background: none;\n  color: #E00;\n  font-weight: 700;\n  padding: 3px;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.thumbnail > label {\n  background: rgba(0,0,0,.5);\n  color: #FFF;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.thumbnail > label > input {\n  margin: 0;\n}\n#addReply {\n  font-size: 3.5em;\n  line-height: 100px;\n}\n#addReply:hover,\n#addReply:focus {\n  color: #000;\n}\n.field {\n  " + Style.agent + "transition: color .25s, border .25s;\n}\n.field:hover,\n.field:focus {\n  outline: none;\n}\n.fitwidth img[data-md5] + img {\n  max-width: 100%;\n}\n#style_tab + div .selectrice,\n.fitwidth img[data-md5] + img,\n.themevar .field,\n.themevar textarea {\n  width: 100%;\n}\n.themevar .colorfield {\n  width: 90%;\n  border-right: none;\n}\n.themevar .color {\n  width: 10%;\n  color: transparent;\n  border-left: none;\n}\n#ihover,\n#mouseover,\n#navlinks,\n#overlay,\n#qr,\n#qp,\n#stats,\n#updater {\n  position: fixed;\n}\n#ihover {\n  max-height: 97%;\n  max-width: 75%;\n  padding-bottom: 18px;\n}\n#overlay {\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n}\n#options {\n  position: fixed;\n  padding: .3em;\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n}\n#options h3 {\n  margin: 0;\n}\n#optionsbar {\n  padding: 0 3px;\n}\n#optionsbar label[for] {\n  position: relative;\n  padding: 0 4px;\n  z-index: 1;\n  height: 1.4em;\n  display: inline-block;\n  border-width: 1px 1px 0 1px;\n  border-color: transparent;\n  border-style: solid;\n}\n#theme_tab + div h1 {\n  opacity: 0;\n}\n#theme_tab + div div.selectedtheme h1 {\n  right: 11px;\n  opacity: 1;\n}\n#theme_tab + div > div h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  " + Style.agent + "transition: all .2s ease-in-out;\n}\n#theme_tab + div > div:not(.stylesettings) {\n  margin-bottom: 3px;\n}\n#options ul li {\n  overflow: visible;\n  padding: 0 5px 0 7px;\n  list-style-type: none;\n}\n#options table > tr:nth-of-type(2n+1),\n#options ul li:nth-of-type(2n+1),\n.selectrice li:nth-of-type(2n+1) {\n  background-color: rgba(0, 0, 0, 0.05);\n}\n#rice_tab + div input {\n  margin: 1px;\n}\n#options article li {\n  margin: 10px 0 10px 2em;\n}\n#options code {\n  background: hsla(0, 0%, 100%, .5);\n  color: #000;\n  padding: 0 1px;\n}\n#options .option {\n  width: 50%;\n  display: inline-block;\n}\n#options .option .optionlabel {\n  padding-left: 18px;\n}\n#options .mascots {\n  padding: 0;\n  text-align: center;\n}\n#options .mascot,\n#options .mascot .container {\n  overflow: hidden;\n}\n#options .mascot {\n  position: relative;\n  border: none;\n  margin: 5px;\n  padding: 0;\n  width: 200px;\n  display: inline-block;\n}\n#options .mascot .container {\n  height: 250px;\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  bottom: 0;\n  border-width: 0 1px 1px;\n  border-style: solid;\n  border-color: transparent;\n  overflow: hidden;\n}\n#options .mascot img {\n  max-width: 200px;\n  image-rendering: optimizeQuality;\n}\n#options ul li.mascot {\n  background-color: transparent;\n}\n#mascotConf {\n  position: fixed;\n  height: 400px;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n}\n#mascotConf h2 {\n  margin: 10px 0 0;\n  font-size: 14px;\n}\n#optionsContent {\n  overflow: auto;\n  position: absolute;\n  top:    1.7em;\n  right:  5px;\n  bottom: 5px;\n  left:   5px;\n}\n#style_tab + div .suboptions ul,\n#main_tab + div ul {\n  vertical-align: top;\n  " + (Conf["Single Column Mode"] ? "margin: 0 auto 6px;" : "margin: 0 3px 6px;\n  display: inline-block;") + "\n}\n#style_tab + div .suboptions ul li,\n#main_tab + div ul li {\n  text-align: left;\n}\n#style_tab + div .suboptions ul {\n  width: 370px;\n}\n#main_tab + div ul {\n  width: 200px;\n}\n.suboptions,\n#mascotcontent,\n#themecontent {\n  overflow: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 1.5em;\n  left: 0;\n}\n.mAlign {\n  height: 250px;\n  vertical-align: middle;\n  display: table-cell;\n}\n#style_tab + div .suboptions {\n  bottom: 0;\n}\n#themecontent {\n  top: 1.5em;\n}\n#mascotcontent {\n  text-align: center;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.mascotname,\n.mascotoptions {\n  padding: 0;\n  width: 100%;\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.mascot .mascotoptions {\n  opacity: 0;\n  " + Style.agent + "transition: opacity .3s linear;\n}\n.mascot:hover .mascotoptions {\n  opacity: 1;\n}\n.mascotoptions {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n}\n.mascotoptions a {\n  display: inline-block;\n  width: 33%;\n}\n#close,\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#optionsContent textarea {\n  font-family: monospace;\n  min-height: 350px;\n  resize: vertical;\n  width: 100%;\n}\n#updater:not(:hover) {\n  border-color: transparent;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#watcher {\n  padding-bottom: 5px;\n  position: fixed;\n  overflow: hidden;\n  white-space: nowrap;\n}\n#watcher:not(:hover) {\n  max-height: 200px;\n}\n#watcher > div {\n  max-width: 200px;\n  overflow: hidden;\n  padding-left: 5px;\n  padding-right: 5px;\n  text-overflow: ellipsis;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#mouseover,\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.center,\n.replyContainer.image_expanded {\n  clear: both;\n}\n.inline {\n  display: table;\n}\ndiv.opContainer {\n  display: block;\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.threadContainer {\n  margin-left: 20px;\n  border-left: 1px solid black;\n}\n::" + Style.agent + "selection {\n  background: " + theme["Text"] + ";\n  color: " + theme["Background Color"] + ";\n}\n#copyright,\n#boardNavDesktop a,\n#options ul,\n#qr,\n.menubutton a,\nbody {\n  padding: 0;\n}\nhtml,\nbody {\n  min-height: 100%;\n}\nbody {\n  margin-top: 1px;\n  margin-bottom: 1px;\n  margin-" + Style.sidebarLocation[0] + ": " + Style.sidebar + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding-left: " + (parseInt(Conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n  padding-right: " + (parseInt(Conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;\n}\n#exlinks-options > *,\n.selectrice,\nhtml,\nbody,\na,\nbody,\nbutton,\ninput,\ntextarea {\n  font-family: '" + Conf["Font"] + "';\n}\n#qr .captchaimg {\n  opacity: " + Conf["Captcha Opacity"] + ";\n  background-color: #fff;\n}\n#boardNavDesktopFoot a[href*=\"//boards.4chan.org/\"]::after,\n#boardNavDesktopFoot a[href*=\"//boards.4chan.org/\"]::before,\n#boardNavDesktopFoot a,\n.container::before,\n.fileText span:not([class])::after,\n.pages strong,\n.selectrice,\na,\nbody,\nbutton,\ninput,\ntextarea {\n  font-size: " + (parseInt(Conf["Font Size"], 10)) + "px;\n}\n.boardSubtitle,\n.boardSubtitle a {\n  font-size: " + (parseInt(Conf["Font Size"], 10) - 1) + "px;\n}\nh2,\nh2 a {\n  font-size: " + (parseInt(Conf["Font Size"], 10) + 4) + "px;\n}\n/* Cleanup */\n#absbot,\n#autohide,\n#optionsContent > [name=tab]:not(:checked) + div,\n#delform > hr,\n#filters-ctrl,\n#imgControls label:first-of-type input,\n#imgControls .rice,\n#logo,\n#navbotright,\n#postForm,\n#postPassword + span,\n#qr:not(.dump) #replies,\n#qp .rice\n#qp input,\n" + (Conf["Hide Show Post Form"] ? "#showQR," : "") + "\n#styleSwitcher,\n#threadselect:empty,\n#updater:not(:hover) > :not(.move),\n" + (!Conf["Board Subtitle"] ? ".boardSubtitle," : "") + "\n.deleteform,\n.dump > form > label,\n.fappeTyme .noFile,\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.forwarded,\n.hasSubMenu:not(.focused) > .subMenu,\n.hidden_thread > .summary,\n.inline input,\n.large .teaser,\n.mobile,\n.navLinksBot,\n.panel,\n.postInfo input,\n.postInfo .rice,\n.postingMode,\n.qrHeader,\n.replyContainer > .hide_reply_button.stub ~ .reply,\n.replymode,\n.sideArrows:not(.hide_reply_button),\n.small .teaser,\n.stub ~ *,\n.stylechanger,\n.thread > .hidden_thread ~ *,\n.warnicon,\n.warning:empty,\n[hidden],\nbody > .postingMode ~ #delform hr,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr,\nbody > script + hr + div,\ndiv.reply[hidden],\nhtml body > span[style=\"left: 5px; position: absolute;\"]:nth-of-type(0),\ntable[style=\"text-align:center;width:100%;height:300px;\"] {\n  display: none !important;\n}\n#mascot img,\n#replies,\n#spoilerLabel,\n.captchaimg,\n.sideArrows,\n.sideArrows a,\n.menu_button,\n.move {\n  user-select: none;\n  " + Style.agent + "user-select: none;\n}\ndiv.post > blockquote .prettyprint span {\n  font-family: monospace;\n}\ndiv.post div.file .fileThumb {\n  float: left;\n  margin: 3px 20px 0;\n}\n.exthumbnail {\n  image-rendering: optimizeQuality;\n}\na {\n  outline: none;\n}\n.board > hr:last-of-type {\n  margin: 0;\n  border-bottom-color: transparent;\n}\n#boardNavDesktop a,\n#boardNavDesktopFoot a,\n#navlinks a,\n.pages a,\n.quotelink.deadlink,\n.sideArrows a,\ns {\n  text-decoration: none;\n}\n.inlined {\n  font-style: italic;\n}\n#watcher > .move,\n.backlink:not(.filtered),\na,\nspan.postNum > .replylink {\n  text-decoration: " + (Conf["Underline Links"] ? "underline" : "none") + ";\n}\n.filtered,\n.quotelink.filtered,\n[alt=\"closed\"] + a {\n  text-decoration: line-through;\n}\n/* Z-INDEXES */\n#mouseover {\n  z-index: 999;\n}\n#mascotConf,\n#options.reply.dialog,\n#themeConf {\n  z-index: 998;\n}\n#post-preview,\n#qp {\n  z-index: 104;\n}\n#ihover,\n#overlay,\n#updater:hover,\n.exPopup,\nhtml .subMenu {\n  z-index: 102;\n}\n#navtopright .exlinksOptionsLink::after,\n#settingsWindowLink,\n.cataloglink a::after {\n  z-index: 101;\n}\n#imgControls {\n  z-index: 100;\n}\n#autoPagerBorderPaging,\n#boardNavDesktop,\n#menu.reply.dialog,\n#navlinks,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  z-index: 94;\n}\n.fileThumb img + img {\n  position: relative;\n  z-index: " + (Conf["Images Overlap Post Form"] ? "90" : "1") + ";\n}\n#stats,\n#updater {\n  z-index: 10;\n}\n#navtopright,\n#showQR {\n  z-index: 6;\n}\n#boardTitle,\n#watcher,\n#watcher::after,\n.boardBanner,\n.menu_button,\n.sideArrows a {\n  z-index: 4;\n}\n#globalMessage::after,\n.boardBanner,\n.replyhider a {\n  z-index: 1;\n}\ndiv.post,\ndiv.post.highlight {\n  z-index: 0;\n}\n#navtopright .exlinksOptionsLink::after,\n#settingsWindowLink,\ndiv.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#imgControls label:first-of-type::after,\n.cataloglink a::after,\n#fappeTyme {\n  position: fixed;\n  display: block;\n  width: 15px;\n  height: 15px;\n  content: \" \";\n  overflow: hidden;\n  background-image: url('" + icons + "');\n  opacity: 0.5;\n}\n#imgControls {\n  position: fixed;\n}\n#settingsWindowLink {\n  visibility: visible;\n  background-position: 0 0;\n}\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  cursor: pointer;\n  background-position: 0 -15px;\n}\n#watcher::after {\n  background-position: 0 -30px;\n}\n#globalMessage::after {\n  background-position: 0 -45px;\n}\n#boardNavDesktopFoot::after {\n  background-position: 0 -60px;\n}\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  visibility: visible;\n  cursor: pointer;\n  background-position: 0 -75px;\n}\n#imgControls label:first-of-type::after {\n  position: static;\n  background-position: 0 -90px;\n}\n#navtopright .exlinksOptionsLink::after {\n  background-position: 0 -105px;\n}\n.cataloglink a::after {\n  background-position: 0 -120px;\n}\n#fappeTyme {\n  background-position: 0 -135px;\n}\n#boardNavDesktopFoot:hover::after,\n#globalMessage:hover::after,\n#imgControls label:hover:first-of-type::after,\n#navlinks a:hover,\n#settingsWindowLink:hover,\n#navtopright .exlinksOptionsLink:hover::after,\n#qr #qrtab,\n#watcher:hover::after,\n.thumbnail#selected,\nbody > a[style=\"cursor: pointer; float: right;\"]:hover::after,\ndiv.navLinks > a:first-of-type:hover::after,\n.cataloglink a:hover::after,\n#fappeTyme:hover {\n  opacity: 1;\n}\n.boardTitle,\n.boardTitle > a {\n  font-size: 22px;\n  font-weight: 400;\n}\n.boardBanner {\n  line-height: 0;\n}\nhr {\n  padding: 0;\n  height: 0;\n  width: 100%;\n  clear: both;\n  border: none;\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n.boxcontent > hr,\n.entry:last-child,\na.forwardlink,\nh3,\nimg {\n  border: none;\n}\n.boxcontent input {\n  height: 18px;\n  vertical-align: bottom;\n  margin-right: 1px;\n}\n/* Navigation */\n.pagelist {\n  text-align: " + Conf["Pagination Alignment"] + ";\n}\n.next,\n.pages,\n.prev {\n  display: inline-block;\n  margin: 0 3px;\n}\n#boardNavDesktop {\n  text-align: " + Conf["Navigation Alignment"] + ";\n}\n#boardNavDesktopFoot {\n  visibility: visible;\n  position: fixed;\n  " + Style.sidebarLocation[0] + ": 2px;\n  bottom: auto;\n  color: transparent;\n  font-size: 0;\n  border-width: 1px;\n  text-align: center;\n  height: 0;\n  width: " + (248 + Style.sidebarOffsetW) + "px !important;\n  overflow: hidden;\n}\nimg.topad,\nimg.middlead,\nimg.bottomad {\n  opacity: 0.3;\n}\nimg.topad:hover,\nimg.middlead:hover,\nimg.bottomad:hover {\n  opacity: 1;\n  " + Style.agent + "transition: opacity .3s linear;\n}\n/* moots announcements */\n#globalMessage {\n  text-align: center;\n  font-weight: 200;\n}\n#xupdater {\n  padding: 2px;\n  text-align: center;\n  margin: 1px;\n}\n#xupdater a {\n  font-size: " + (parseInt(Conf["Font Size"], 10) + 3) + "px;\n}\n.pages strong,\na,\n.new {\n  " + Style.agent + "transition: background .1s linear;\n}\n/* Post Form */\n#qr div.captchainput,\n#file {\n  overflow: hidden;\n}\n/* Formatting for all postarea elements */\n#file {\n  line-height: 17px;\n}\n#file,\n#threadselect .selectrice {\n  cursor: default;\n  display: inline-block;\n}\n#threadselect .selectrice,\ninput:not([type=radio]),\n.field,\ninput[type=\"submit\"] {\n  height: 1.5em;\n}\n#qr .warning {\n  min-height: 1.7em;\n}\n#qr .warning,\n.field,\n.selectrice,\nbutton,\ninput,\ninput[type=\"submit\"] {\n  vertical-align: bottom;\n  padding: 0 1px;\n}\ninput[type=\"submit\"] {\n  padding: 0;\n}\n#qr input[type=\"file\"] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n/* Image Hover and Image Expansion */\n#ihover {\n  max-width: 85%;\n  max-height: 85%;\n}\n#imageType {\n  border: none;\n  width: 90px;\n  position: relative;\n  bottom: 1px;\n  margin: 0;\n  height: 17px;\n}\n/* Posts */\ndiv.post div.postInfo {\n  padding: 3px 0 0 8px;\n  display: block !important;\n  width: auto;\n}\ndiv.file {\n  padding-left: 8px;\n}\n.postContainer blockquote {\n  min-height: " + (parseInt(Conf["Font Size"], 10) + 3) + "px;\n}\n.fileText ~ a > img + img {\n  margin: 0 0 25px;\n  position: relative;\n  top: 0;\n}\n.fileText {\n  margin-top: 17px;\n}\n.summary,\n.postContainer {\n  margin-bottom: " + Style.replyMargin + "px;\n}\n.summary {\n  display: table;\n}\n/* Fixes text spoilers */\n.spoiler:not(:hover),\n.spoiler:not(:hover) *,\ns:not(:hover),\ns:not(:hover) * {\n  color: rgb(0,0,0) !important;\n  background-color: rgb(0,0,0) !important;\n  text-shadow: none !important;\n}\ndiv.thread {\n  padding: 0;\n  position: relative;\n  " + (!Conf['Images Overlap Post Form'] ? "z-index: 0;" : "") + "\n}\n#selectrice {\n  margin: 0 !important;\n}\ndiv.post {\n  margin: 0;\n}\n/* Remove default \"inherit\" background declaration */\n.span.subject,\n.subject,\n.name,\n.postertrip {\n  background: transparent;\n}\n.cataloglink,\n#navtopright {\n  position: fixed;\n  bottom: -1000px;\n  left: -1000px;\n}\n/* Expand Images */\n#imgControls {\n  width: 15px;\n  overflow-x: hidden;\n  overflow-y: visible;\n}\n#imgContainer {\n  width: 110px;\n  float: " + Style.sidebarLocation[0] + ";\n}\n#imgControls:hover {\n  width: 110px;\n}\n#imgControls label {\n  font-size: 0;\n  color: transparent;\n  float: " + Style.sidebarLocation[0] + ";\n}\n#imgControls .selectrice {\n  float: " + Style.sidebarLocation[1] + ";\n  width: 90px;\n}\n/* Reply Previews */\n#mouseover,\n#qp {\n  max-width: 70%;\n}\n#post-preview {\n  max-width: 400px;\n}\n#qp .replyContainer,\n#qp .opContainer {\n  visibility: visible;\n}\n#post-preview,\n#qp div.op {\n  display: table;\n}\n#qp div.post img {\n  max-width: 300px;\n  height: auto;\n}\n.inline div.post,\n#qp div.post {\n  padding-bottom: 0 !important;\n}\ndiv.navLinks {\n  visibility: hidden;\n  height: 0;\n  width: 0;\n  overflow: hidden;\n}\n/* AutoPager */\n#autoPagerBorderPaging {\n  position: fixed !important;\n  right: 300px !important;\n  bottom: 0;\n}\n#options ul {\n  margin: 3px;\n  margin-bottom: 6px;\n}\n#stats,\n#navlinks {\n  left: auto !important;\n  bottom: auto !important;\n  text-align: right;\n  padding: 0;\n  border: 0;\n  border-radius: 0;\n}\n#prefetch,\n#stats {\n  position: fixed;\n  cursor: default;\n}\n#updater {\n  overflow: hidden;\n  background: none;\n  text-align: right;\n}\n#watcher {\n  padding: 1px 0;\n  border-radius: 0;\n}\n#options .move,\n#updater .move,\n#watcher .move,\n#stats .move {\n  cursor: default !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"] {\n  position: fixed;\n  top: -1000px;\n  left: -1000px;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] {\n  display: block;\n  position: fixed !important;\n  top: 117px !important;\n  " + Style.sidebarLocation[1] + ": 4px !important;\n  " + Style.sidebarLocation[0] + ": " + (252 + Style.sidebarOffsetW) + "px !important;\n  width: auto !important;\n  margin: 0 !important;\n  z-index: 2;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + theme["Background Color"] + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n  vertical-align: top;\n}\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] {\n  height: 95% !important;\n  margin-top: 5px !important;\n  margin-bottom: 5px !important;\n}\n#fs_status {\n  width: auto !important;\n  height: auto !important;\n  background: " + theme["Dialog Background"] + " !important;\n  padding: 10px !important;\n  white-space: normal !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data * {\n  border-color: " + theme["Reply Border"] + " !important;\n}\n.identityIcon,\nimg[alt=\"Sticky\"],\nimg[alt=\"Closed\"] {\n  vertical-align: top;\n}\n.inline,\n#qp {\n  background-color: transparent;\n  border: none;\n}\n.mascotname,\ninput[type=\"submit\"]:hover {\n  cursor: pointer;\n}\n#qr input:focus::" + Style.agent + "placeholder,\n#qr textarea:focus::" + Style.agent + "placeholder {\n  color: transparent;\n}\n#qr input:focus:" + Style.agent + "placeholder,\n#qr textarea:focus:" + Style.agent + "placeholder {\n  color: transparent;\n}\n#boardNavDesktop .current {\n  font-weight: 800;\n}\n.focused.entry {\n  background-color: transparent;\n}\n#menu.reply.dialog,\nhtml .subMenu {\n  padding: 0;\n}\n.textarea {\n  position: relative;\n}\n#qr #charCount {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + ";\n  background: none;\n  font-size: 10px;\n  pointer-events: none;\n  position: absolute;\n  right: 2px;\n  top: auto;\n  bottom: 0;\n  height: 1.7em;\n}\n#qr #charCount.warning {\n  color: rgb(255,0,0);\n  padding: 0;\n  margin: 0;\n  border: none;\n  background: none;\n}\n/* Position and Dimensions of the #qr */\n#showQR {\n  display: block;\n  " + Style.sidebarLocation[0] + ": 2px;\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n  background-color: transparent;\n  text-align: center;\n  position: fixed;\n  top: auto;\n  bottom: 2px !important;\n}\n/* Width and height of all #qr elements (excluding some captcha elements) */\n#dump {\n  width: 20px;\n  margin: 0;\n  outline: none;\n  padding: 0 0 3px;\n}\n.captchaimg {\n  line-height: 0;\n}\n#qr div {\n  min-width: 0;\n}\n#updater input,\n#options input,\n#qr {\n  border: none;\n}\n.prettyprint {\n  display: table;\n  clear: right;\n  white-space: pre-wrap;\n  border-radius: 2px;\n  overflow-x: auto;\n  padding: 3px;\n}\n#themeConf {\n  position: fixed;\n  " + Style.sidebarLocation[1] + ": 2px;\n  " + Style.sidebarLocation[0] + ": auto;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n}\n#themebar input {\n  width: 30%;\n}\nhtml {\n  background: " + (theme["Background Color"] || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n#optionsContent,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + theme["Background Color"] + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n#optionsbar label[for]#selected_tab {\n  background: " + theme["Background Color"] + ";\n  border-color: " + theme["Reply Border"] + ";\n  border-style: solid;\n}\n.suboptions {\n  padding: 5px;\n}\n#boardTitle,\n#prefetch,\n#showQR,\n" + (!Conf["Post Form Decorations"] ? '#spoilerLabel,' : '') + "\n#stats,\n#updater:not(:hover) .move {\n  text-shadow:\n    1px 1px 0 " + theme["Background Color"] + ",\n    -1px -1px 0 " + theme["Background Color"] + ",\n    1px -1px 0 " + theme["Background Color"] + ",\n    -1px 1px 0 " + theme["Background Color"] + ",\n    0 1px 0 " + theme["Background Color"] + ",\n    0 -1px 0 " + theme["Background Color"] + ",\n    1px 0 0 " + theme["Background Color"] + ",\n    -1px 0 0 " + theme["Background Color"] + (Conf["Sidebar Glow"] ? "\n, 0 2px 5px " + theme['Text'] + ";" : ";") + "\n}\n#options .dialog,\n#exlinks-options,\n#qrtab,\n" + (Conf["Post Form Decorations"] ? "#qr," : "") + "\n#updater:hover,\nhtml body span[style=\"left: 5px; position: absolute;\"] a,\ninput[type=\"submit\"],\n#options.reply.dialog,\ninput[value=\"Report\"] {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n#options ul li.mascot.enabled .container {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#file,\n#options input,\n.dump #dump:not(:hover):not(:focus),\n.selectrice,\nbutton,\ninput,\ninput.field,\ntextarea,\ntextarea.field {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n  " + Style.agent + "transition: all .2s linear;\n}\n#dump:hover,\n#file:hover,\n#options .selectrice li:nth-of-type(2n+1):hover,\n.selectrice:hover,\n.selectrice li:hover,\ninput:hover,\ninput.field:hover,\ninput[type=\"submit\"]:hover,\ntextarea:hover,\ntextarea.field:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:active,\n#dump:focus,\n.selectrice:focus,\n.selectrice li:focus,\ninput:focus,\ninput.field:focus,\ninput[type=\"submit\"]:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#mouseover,\n#post-preview,\n#qp div.post,\n#xupdater,\ndiv.reply.post {\n  border: 1px solid " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.exblock.reply,\ndiv.reply.post.highlight,\ndiv.reply.post:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#boardNavDesktop,\n.pagelist {\n  background: " + theme["Navigation Background"] + ";\n  border: 1px solid " + theme["Navigation Border"] + ";\n  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(Conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;\n  " + Style.sidebarLocation[1] + ": " + (parseInt(Conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;\n}\n#delform {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#selectrice,\n#themeConf,\n#watcher,\n#watcher:hover,\ndiv.subMenu,\nbody > a[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n#boardNavDesktopFoot:not(:hover) {\n  border-color: transparent;\n  background-color: transparent;\n}\n.inline .post {\n  box-shadow: " + (Conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n  padding-bottom: 2px;\n}\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n}\n.captcha img {\n  border: 1px solid " + theme["Input Border"] + ";\n}\n[style='color: red !important;'] *,\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\n#dump,\n.button,\n.entry,\n.sideArrows a,\na,\ndiv.post > blockquote a[href^=\"//\"],\nspan.postNum > .replylink {\n  color: " + theme["Links"] + ";\n}\n#navlinks a {\n  position: fixed;\n  color: transparent;\n  opacity: 0.5;\n  display: inline-block;\n  font-size: 0;\n  border-right: 6px solid transparent;\n  border-left: 6px solid transparent;\n  margin: 1.5px;\n}\n#navlinks a:first-of-type {\n  border-bottom: 11px solid rgb(" + (Style.lightTheme ? "130,130,130" : "230,230,230") + ");\n}\n#navlinks a:last-of-type {\n  border-top: 11px solid rgb(" + (Style.lightTheme ? "130,130,130" : "230,230,230") + ");\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n  font-weight: 600;\n}\n.dateTime,\n.post-ago {\n  color: " + theme["Timestamps"] + " !important;\n}\n#fs_status a,\n#showQR,\n#updater,\n.summary,\nbody > form,\nbody,\nbutton,\nhtml body span[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea,\n.abbr,\n.boxbar,\n.boxcontent,\n.pages strong,\n.reply,\n.reply.highlight,\n#boardNavDesktop .title,\n#imgControls label::after,\n#updater #count:not(.new)::after,\n#qr > form > label::after,\nspan.pln {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#options ul,\n.selectrice ul {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.selectrice li {\n  list-style-type: none;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\na.backlink {\n  color: " + theme["Backlinks"] + ";\n}\nspan.quote > a.quotelink,\na.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\ndiv.subMenu,\n#menu,\n#post-preview,\n#qp .opContainer,\n#qp .replyContainer {\n  box-shadow: " + (Conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  cursor: pointer;\n  width: 10px;\n  height: 10px;\n  margin: 2px 3px;\n  display: inline-block;\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n  vertical-align: bottom;\n}\n.selectrice {\n  position: relative;\n  cursor: default;\n  overflow: hidden;\n  text-align: left;\n}\n.selectrice::after {\n  display: block;\n  content: \"\";\n  border-right: .25em solid transparent;\n  border-left: .25em solid transparent;\n  border-top: .45em solid " + theme["Inputs"] + ";\n  position: absolute;\n  right: .4em;\n  top: .5em;\n}\n.selectrice::before {\n  display: block;\n  content: \"\";\n  height: 1.5em;\n  border-left: 1px solid " + theme["Input Border"] + ";\n  position: absolute;\n  right: 1.3em;\n  top: 0;\n}\n.selectrice ul {\n  padding: 0;\n  position: fixed;\n  max-height: 120px;\n  overflow-y: auto;\n  overflow-x: hidden;\n  z-index: 99999;\n}\n#qr label input,\n#updater input,\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#boardNavDesktop a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  background: " + theme["Checkbox Checked Background"] + ";\n  background-image: url(" + (Icons.header.png + (Style.lightTheme ? "AkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" : "AkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==")) + ");\n  background-attachment: scroll;\n  background-repeat: no-repeat;\n  background-position: bottom right;\n}\na:hover,\n#dump:hover,\n.entry:hover,\ndiv.post > blockquote a[href^=\"//\"]:hover,\n.sideArrows a:hover,\ndiv.post div.postInfo span.postNum a:hover,\nspan.postNum > .replylink:hover,\n.nameBlock > .useremail > .name:hover,\n.nameBlock > .useremail > .postertrip:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#boardNavDesktop a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name,\n.post-author {\n  color: " + theme["Names"] + " !important;\n}\n.post-tripcode,\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\n.nameBlock > .useremail > .postertrip,\n.nameBlock > .useremail > .name {\n  color: " + theme["Emails"] + ";\n}\n.nameBlock > .useremail > .name,\n.name,\n.post-author {\n  font-weight: 600;\n}\n.post-author .post-tripcode {\n  font-weight: 400;\n}\na.forwardlink {\n  border-bottom: 1px dashed;\n}\ndiv.post.qphl {\n  border-color: " + theme["Backlinked Reply Outline"] + ";\n}\n.placeholder,\n#qr input::" + Style.agent + "placeholder,\n#qr textarea::" + Style.agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n.placeholder,\n#qr input:" + Style.agent + "placeholder,\n#qr textarea:" + Style.agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n.boxcontent dd,\n#options ul,\n.selectrice ul {\n  border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + ";\n}\n#options li,\n.selectrice li:not(:first-of-type) {\n  border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + ";\n}\n#mascot img {\n  " + Style.agent + "transform: scaleX(" + (Style.sidebarLocation[0] === "left" ? "-" : "") + "1);\n}\n" + theme["Custom CSS"] + "\n") + (Conf["Hide Navigation Decorations"] ? "#boardNavDesktop, .pages {\n  font-size: 0;\n  color: transparent;\n  word-spacing: 2px;\n}\n.pages {\n  word-spacing: 0;\n}\n.pages a {\n  margin: 1px;\n}\n" : "") + (Conf['Color user IDs'] ? ".posteruid .hand { padding: 0 5px; border-radius: 6px; font-size: 0.8em; }" : "") + (Conf["Recursive Filtering"] ? ".hidden + .threadContainer {\n  display: none;\n}\n" : "") + (Conf["Reply Spacing"] === "none" ? ".thread > .replyContainer:not(:last-of-type) .post.reply:not(:target) {\n  border-bottom-width: 0;\n}\n" : "") + (Style.lightTheme ? ".prettyprint {\n  background-color: #e7e7e7;\n  border: 1px solid #dcdcdc;\n}\nspan.com {\n  color: #dd0000;\n}\nspan.str,\nspan.atv {\n  color: #7fa61b;\n}\nspan.pun {\n  color: #61663a;\n}\nspan.tag {\n  color: #117743;\n}\nspan.kwd {\n  color: #5a6F9e;\n}\nspan.typ,\nspan.atn {\n  color: #9474bd;\n}\nspan.lit {\n  color: #368c72;\n}\n" : ".prettyprint {\n  background-color: rgba(0,0,0,.1);\n  border: 1px solid rgba(0,0,0,0.5);\n}\nspan.tag {\n  color: #96562c;\n}\nspan.pun {\n  color: #5b6f2a;\n}\nspan.com {\n  color: #a34443;\n}\nspan.str,\nspan.atv {\n  color: #8ba446;\n}\nspan.kwd {\n  color: #987d3e;\n}\nspan.typ,\nspan.atn {\n  color: #897399;\n}\nspan.lit {\n  color: #558773;\n}\n") + (Conf["Faded 4chan Banner"] ? ".boardBanner {\n  opacity: 0.5;\n  " + Style.agent + "transition: opacity 0.3s ease-in-out .5s;\n}\n.boardBanner:hover {\n  opacity: 1;\n  " + Style.agent + "transition: opacity 0.3s ease-in;\n}\n" : "") + (Conf["4chan Banner Reflection"] ? "/* From 4chan SS / OneeChan */\n.gecko .boardBanner::after {\n  background-image: -moz-element(#Banner);\n  bottom: -100%;\n  content: '';\n  left: 0;\n  mask: url(\"data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask\");\n  opacity: 0.3;\n  position: absolute;\n  right: 0;\n  top: 100%;\n  z-index: 1;\n  -moz-transform: scaleY(-1);\n}\n.webkit #Banner {\n  -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));\n}\n" : "") + (Conf["Slideout Transitions"] ? "#globalMessage,\n#watcher,\n#boardNavDesktopFoot {\n  " + Style.agent + "transition: height .3s linear, border .3s linear, background-color .3s step-end;\n}\n#globalMessage:hover,\n#watcher:hover,\n#boardNavDesktopFoot:hover {\n  " + Style.agent + "transition: height .3s linear, border .3s linear, background-color .3s step-start;\n}\nimg.topad,\nimg.middlead,\nimg.bottomad {\n  " + Style.agent + "transition: opacity .3s linear;\n}\n#imgControls {\n  " + Style.agent + "transition: width .2s linear;\n}\n" : "") + (Conf["Post Form Slideout Transitions"] ? "#qr {\n  " + Style.agent + "transition: " + Style.sidebarLocation[0] + " .3s ease-in-out 1s;\n}\n#qr:hover,\n#qr.focus,\n#qr.dump {\n  " + Style.agent + "transition: " + Style.sidebarLocation[0] + " .3s linear;\n}\n#qrtab {\n  " + Style.agent + "transition: opacity .3s ease-in-out 1s, " + Style.sidebarLocation[0] + " .3s ease-in-out 1s;\n}\n" : "") + (Conf["Hide Horizontal Rules"] ? "hr {\n  visibility: hidden;\n}\n" : "") + (Conf["Post Form Style"] !== "float" ? ("#qr img {\n  height: 3.9em;\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n}\n#qr > form > #threadselect,\n#spoilerLabel {\n  display: inline-block;\n}\n#spoilerLabel {\n  width: 100%;\n  text-align: right;\n}\n#qr > form > #threadselect,\n#threadselect:not(:empty) + #spoilerLabel {\n  width: 49%;\n}\n#threadselect .selectrice {\n  margin-top: 0;\n  width: 100%;\n}\ninput[title=\"Verification\"] {\n  width: 100%;\n}\ntextarea.field,\n#qr > form > div {\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n}\n#qr {\n  padding: 1px;\n  border: 1px solid " + (Conf["Post Form Decorations"] ? theme["Buttons Border"] : "transparent") + ";\n  overflow: visible;\n  top: auto !important;\n  bottom: 1.6em !important;\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n  margin: 0;\n  z-index: 5 !important;\n}\ninput[title=\"Verification\"],\n.captchaimg {\n  margin-top: 1px;\n}\n#qr .warning,\n#threadselect .selectrice,\ninput,\n.field {\n  margin: 1px 0 0;\n}\n#file {\n  width: " + (177 + Style.sidebarOffsetW) + "px;\n}\n#buttons input {\n  width: 70px;\n  margin: 1px 0 0 1px;\n}") + (Conf["Compact Post Form Inputs"] ? "#qr textarea.field {\n  height: 15em;\n  min-height: 9em;\n  min-width: " + (248 + Style.sidebarOffsetW) + "px;\n}\n#qr.captcha textarea.field {\n  height: 9em;\n  min-height: 9em;\n}\n#qr .field[name=\"name\"],\n#qr .field[name=\"email\"],\n#qr .field[name=\"sub\"] {\n  width: " + (75 + (Style.sidebarOffsetW / 3)) + "px !important;\n  margin-top: 0 !important;\n  margin-left: 1px !important;\n}\n" : "#qr textarea.field {\n  height: 12em;\n  min-height: 12em;\n  min-width: " + (248 + Style.sidebarOffsetW) + "px\n}\n#qr.captcha textarea.field {\n  height: 6em;\n  min-height: 6em;\n}\n#qr .field[name=\"email\"],\n#qr .field[name=\"sub\"] {\n  width: " + (248 + Style.sidebarOffsetW) + "px !important;\n}\n#qr .field[name=\"name\"] {\n  width: " + (227 + Style.sidebarOffsetW) + "px !important;\n  margin-left: 1px !important;\n  margin-top: 0 !important;\n}\n#qr .field[name=\"email\"],\n#qr .field[name=\"sub\"] {\n  margin-top: 1px;\n}\n") + (Conf["Textarea Resize"] === "auto-expand" ? "#qr textarea {\n  display: block;\n  " + Style.agent + "transition:\n    color 0.25s linear,\n    background-color 0.25s linear,\n    background-image 0.25s linear,\n    height step-end,\n    width " + (Conf["Slideout Transitions"] ? ".3s ease-in-out .3s" : "step-end") + ";\n  float: " + Style.sidebarLocation[0] + ";\n  resize: vertical;\n}\n#qr textarea:focus {\n  width: 400px;\n}\n" : "#qr textarea {\n  display: block;\n  " + Style.agent + "transition:\n    color 0.25s linear,\n    background-color 0.25s linear,\n    background-image 0.25s linear,\n    border-color 0.25s linear,\n    height step-end,\n    width step-end;\n  float: " + Style.sidebarLocation[0] + ";\n  resize: " + Conf["Textarea Resize"] + "\n}\n") : "") + (Conf["Fit Width Replies"] ? ".thread .replyContainer {\n  position: relative;\n  clear: both;\n  display: table;\n  width: 100%;\n}\n.replyContainer div.reply.post {\n  display: table;\n  width: 100%;\n  height: 100%\n}\n.sideArrows a,\n.menu_button {\n  position: absolute;\n  right: 6px;\n  top: 2px;\n  font-size: 9px;\n}\n.sideArrows a {\n  " + (Conf["Menu"] ? "right: 27px;" : "") + "\n}\n.summary {\n  padding-left: 20px;\n  clear: both;\n}\n.sideArrows {\n  width: 0;\n}\n.sideArrows a,\n.menu_button {\n  opacity: 0;\n  " + Style.agent + "transition: opacity .3s ease-out 0s;\n}\ndiv.op:hover .menu_button,\n.replyContainer:hover div.reply .menu_button,\n.replyContainer:hover .sideArrows a {\n  opacity: 1;\n  " + Style.agent + "transition: opacity .3s ease-in 0s;\n}\n.inline .menu_button {\n  position: static;\n  opacity: 1;\n}\n#options.reply {\n  display: inline-block;\n}\n" : ".sideArrows {\n  padding: 3px;\n  float: left;\n}\ndiv.reply.post {\n  position: relative;\n  overflow: visible;\n  display: table;\n\n}\n") + (Conf['Force Reply Break'] ? ".summary,\n.replyContainer {\n  clear: both;\n}\n" : "") + (Conf["Alternate Post Colors"] ? "div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {\n  background-image: " + Style.agent + "linear-gradient(" + (Style.lightTheme ? "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" : "rgba(255,255,255,0.02), rgba(255,255,255,0.02)") + ");\n}\n" : "") + (Conf["Color Reply Headings"] ? ".postInfo {\n  background: " + ((replyHeading = new Style.color(Style.colorToHex(theme["Reply Background"]))) ? "rgb(" + (replyHeading.shiftRGB(16, true)) + ")" : "rgba(0,0,0,0.1)") + ";\n}\n" : "") + (Conf["Color File Info"] ? ".file {\n  background: " + ((fileHeading = new Style.color(Style.colorToHex(theme["Reply Background"]))) ? "rgb(" + (fileHeading.shiftRGB(8, true)) + ")" : "rgba(0,0,0,0.1)") + ";\n}\n" : "") + (Conf["Filtered Backlinks"] ? ".filtered.backlink {\n  display: none;\n}\n" : "") + (Conf["Slideout Watcher"] ? "#watcher:not(:hover) {\n  border-color: transparent;\n  background-color: transparent;\n}\n#watcher {\n  position: fixed;\n  " + Style.sidebarLocation[0] + ": 2px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  bottom: auto !important;\n  height: 0;\n  width: " + (248 + Style.sidebarOffsetW) + "px !important;\n  overflow: hidden;\n}\n#watcher:hover {\n  height: " + (Conf["Slideout Transitions"] ? '250px' : 'auto') + ";\n  overflow: auto;\n  padding-bottom: 4px;\n}\n" : "#watcher::after {\n  display: none;\n}\n#watcher {\n  width: " + (246 + Style.sidebarOffsetW) + "px;\n  padding-bottom: 4px;\n  z-index: 96;\n}\n#watcher > .move {\n  cursor: pointer !important;\n}\n") + (Conf["OP Background"] ? ".opContainer div.post {\n  background: " + theme["Reply Background"] + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n  " + Style.agent + "box-sizing: border-box;\n  box-sizing: border-box;\n}\n.opContainer div.post:target\n.opContainer div.post.highlight {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n" : "") + (Conf["Tripcode Hider"] ? "input.field.tripped:not(:hover):not(:focus) {\n  color: transparent !important;\n  text-shadow: none !important;\n}\n" : "") + (Conf["Block Ads"] ? "/* AdBlock Minus */\n.bottomad + hr,\na[href*=\"jlist\"],\nimg[src^=\"//static.4chan.org/support/\"] {\n  display: none;\n}\n" : "") + (Conf["Shrink Ads"] ? "a[href*=\"jlist\"],\nimg[src^=\"//static.4chan.org/support/\"] {\n  width: 500px;\n  height: auto;\n}\n" : "") + (Conf["Emoji"] !== "disable" ? Style.emoji(Conf["Emoji Position"]) : "") + (Conf["4chan SS Sidebar"] ? (background = new Style.color(Style.colorToHex(theme["Background Color"])), "body::before {\n  background: none repeat scroll 0% 0% rgba(" + (background.shiftRGB(-18)) + ", 0.8);\n  border-" + Style.sidebarLocation[1] + ": 2px solid " + theme["Background Color"] + ";\n  box-shadow:\n    " + (Conf["Sidebar Location"] === "right" ? "inset" : "") + "  1px 0 0 " + theme["Thread Wrapper Border"] + ",\n    " + (Conf["Sidebar Location"] === "left" ? "inset" : "") + " -1px 0 0 " + theme["Thread Wrapper Border"] + ";\n  content: \"\";\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  " + Style.sidebarLocation[0] + ": 0;\n  width: " + (Conf["Sidebar"] === "large" ? 305 : Conf["Sidebar"] === "normal" ? 254 : Conf["Sidebar"] === "minimal" ? 27 : 0) + "px;\n  z-index: 1;\n  " + Style.agent + "box-sizing: border-box;\n  box-sizing: border-box;\n  display: block;\n}") : "") + (Conf["4chan SS Navigation"] ? "" + (["sticky top", "sticky bottom"].contains(Conf["Pagination"]) ? ".pagelist," : "") + "\n#boardNavDesktop {\n  left: 0;\n  right: 0;\n  padding-" + Conf["Sidebar Location"] + ": " + Style.sidebar + "px;\n  border-left: 0;\n  border-right: 0;\n  border-radius: 0 !important;\n}\n#delform {\n  margin-top: -2px;\n}\n#delform,\n.board,\n.thread {\n  padding-" + Style.sidebarLocation[0] + ": 0 !important;\n}" : "") + ((function() {
         switch (Conf["Board Title"]) {
           case "at sidebar top":
             return "#boardTitle {\n  position: fixed;\n  " + Style.sidebarLocation[0] + ": 2px;\n  top: " + ((Style.logoOffset === 0 && Conf["Icon Orientation"] !== "vertical" ? 40 : 21) + Style.logoOffset) + "px;\n  width: " + (248 + Style.sidebarOffsetW) + "px;\n}\n";
@@ -11074,11 +11084,11 @@
         if (Conf['Filter']) {
           Filter.menuInit();
         }
-        if (Conf['Download Link']) {
-          DownloadLink.init();
-        }
         if (Conf['Archive Link']) {
           ArchiveLink.init();
+        }
+        if (Conf['Download Link']) {
+          DownloadLink.init();
         }
         if (Conf['Embed Link']) {
           EmbedLink.init();
@@ -11095,6 +11105,9 @@
       }
       if (Conf['Linkify']) {
         Linkify.init();
+      }
+      if (Conf['Remove Spoilers']) {
+        RemoveSpoilers.init();
       }
       if (Conf['Quote Inline']) {
         QuoteInline.init();

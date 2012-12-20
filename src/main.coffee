@@ -162,11 +162,11 @@ Main =
       if Conf['Filter']
         Filter.menuInit()
 
-      if Conf['Download Link']
-        DownloadLink.init()
-
       if Conf['Archive Link']
         ArchiveLink.init()
+
+      if Conf['Download Link']
+        DownloadLink.init()
 
       if Conf['Embed Link']
         EmbedLink.init()
@@ -182,6 +182,9 @@ Main =
     
     if Conf['Linkify']
       Linkify.init()
+
+    if Conf['Remove Spoilers']
+      RemoveSpoilers.init()
 
     if Conf['Quote Inline']
       QuoteInline.init()

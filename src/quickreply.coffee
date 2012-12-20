@@ -3,7 +3,6 @@ QR =
     return unless $.id 'postForm'
     Main.callbacks.push @node
     setTimeout @asyncInit
-    setTimeout BanChecker.init
 
   asyncInit: ->
     unless Conf['Persistent QR']
@@ -22,6 +21,8 @@ QR =
               'new'
         $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
+   
+      BanChecker.init() if Conf['Check for Bans']
 
     if Conf['Persistent QR']
       QR.dialog()
@@ -49,7 +50,7 @@ QR =
       QR.replies[0].rm()
     QR.cooldown.auto = false
     QR.status()
-    QR.resetFileInput()
+    QR.fileEl.value = null
     if not Conf['Remember Spoiler'] and (spoiler = $.id 'spoiler').checked
       spoiler.click()
     QR.cleanError()
@@ -73,7 +74,7 @@ QR =
       QR.warning.innerHTML = null
       $.add QR.warning, err
     QR.open()
-    if QR.captchaIsEnabled and /captcha|verification/i.test QR.warning.textContent
+    if QR.captcha.isEnabled and /captcha|verification/i.test QR.warning.textContent
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
     alert QR.warning.textContent if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
@@ -104,7 +105,7 @@ QR =
           when 'q' then 86400
           when 'b', 'soc', 'r9k' then 600
           else 300
-        sage: if g.BOARD is 'q' then 600 else 60
+        sage: 60
         file: if g.BOARD is 'q' then 300 else 30
         post: if g.BOARD is 'q' then 60  else 30
       QR.cooldown.cooldowns = $.get "#{g.BOARD}.cooldown", {}
@@ -216,10 +217,9 @@ QR =
     id   = @previousSibling.hash[2..]
     text = ">>#{id}\n"
 
-    sel = window.getSelection()
+    sel = d.getSelection()
     if (s = sel.toString().trim()) and id is $.x('ancestor-or-self::blockquote', sel.anchorNode)?.id.match(/\d+$/)[0]
-      # XXX Opera needs d.getSelection() to retain linebreaks from the selected text
-      s = d.getSelection().trim() if $.engine is 'presto'
+      # XXX Opera doesn't retain `\n`s?
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
 
@@ -227,12 +227,10 @@ QR =
     caretPos = ta.selectionStart
     # Replace selection for text.
     ta.value = ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
-    ta.focus()
     # Move the caret to the end of the new quote.
     range = caretPos + text.length
-    # XXX Opera counts newlines as double
-    range += text.match(/\n/g).length if $.engine is 'presto'
     ta.setSelectionRange range, range
+    ta.focus()
 
     # Fire the 'input' event
     $.event ta, new Event 'input'
@@ -269,7 +267,7 @@ QR =
       file = @files[0]
       if file.size > @max
         QR.error 'File too large.'
-        QR.resetFileInput()
+        QR.fileEl.value = null
       else unless QR.mimeTypes.contains file.type
         QR.error 'Unsupported file type.'
         QR.resetFileInput()
@@ -290,24 +288,7 @@ QR =
       else
         new QR.reply().setFile file
     $.addClass QR.el, 'dump'
-    QR.resetFileInput() # reset input
-
-  resetFileInput: ->
-    input = $ '[type=file]', QR.el
-    input.value = null
-    QR.riceFile.innerHTML = QR.defaultMessage
-    return unless $.engine is 'presto'
-    # XXX Opera needs extra care to reset its file input's value
-    clone = $.el 'input',
-      type: 'file'
-      accept:   input.accept
-      max:      input.max
-      multiple: input.multiple
-      size:     input.size
-      title:    input.title
-    $.on clone, 'change', QR.fileInput
-    $.on clone, 'click',  (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
-    $.replace input, clone
+    QR.fileEl.value = null # reset input
 
   replies: []
   reply: class
@@ -317,7 +298,7 @@ QR =
       persona  = $.get 'persona', 
         global: {}
       unless persona[key = if Conf['Per Board Persona'] then g.BOARD else 'global']
-        persona[key] = persona.global
+        persona[key] = JSON.parse JSON.stringify persona.global
       @name    = if prev then prev.name else persona[key].name or null
       @email   = if prev and (Conf["Remember Sage"] or !/^sage$/.test prev.email) then prev.email else persona[key].email or null
       @sub     = if prev and Conf['Remember Subject'] then prev.sub else if Conf['Remember Subject'] then persona[key].sub else null
@@ -355,9 +336,9 @@ QR =
       unless /^image/.test file.type
         @el.style.backgroundImage = null
         return
-      url = window.URL or window.webkitURL
-      # XXX Opera does not support window.URL.revokeObjectURL
-      url.revokeObjectURL? @url
+      # XXX Opera does not support window.URL
+      return unless url = window.URL or window.webkitURL
+      url.revokeObjectURL @url
 
       # Create a redimensioned thumbnail.
       fileUrl = url.createObjectURL file
@@ -400,7 +381,7 @@ QR =
 
 
     rmFile: ->
-      QR.resetFileInput()
+      QR.fileEl.value = null
       delete @file
       @el.title = null
       @el.style.backgroundImage = null
@@ -461,7 +442,7 @@ QR =
         $.rmClass el, 'over'
 
     rm: ->
-      QR.resetFileInput()
+      QR.fileEl.value = null
       $.rm @el
       index = QR.replies.indexOf @
       if QR.replies.length is 1
@@ -473,7 +454,7 @@ QR =
 
   captcha:
     init: ->
-      return if d.cookie.contains('pass_enabled=') or !(QR.captchaIsEnabled = !!$.id 'captchaFormPart')
+      return if d.cookie.contains('pass_enabled=') or !(@isEnabled = !!$.id 'captchaFormPart')
 
       if $.id 'recaptcha_challenge_field_holder'
         @ready()
@@ -542,7 +523,7 @@ QR =
 
     reload: (focus) ->
       # the "t" argument prevents the input from being focused
-      window.location = 'javascript:Recaptcha.reload("t")'
+      $.globalEval 'javascript:Recaptcha.reload("t")'
       # Focus if we meant to.
       QR.captcha.input.focus() if focus
 
@@ -667,8 +648,8 @@ QR =
           QR.cooldown.auto = false
 
       # Add a listener for bubbling to the file input.
-      $.on $("[type=file]", QR.el), 'focus', -> QR.el.classList.add    'focus'
-      $.on $("[type=file]", QR.el), 'blur',  -> QR.el.classList.remove 'focus'
+      $.on QR.fileEl, 'focus', -> QR.el.classList.add    'focus'
+      $.on QR.fileEl, 'blur',  -> QR.el.classList.remove 'focus'
 
     QR.status.input = $ 'input[type=submit]', QR.el
     QR.status()
@@ -701,7 +682,7 @@ QR =
     # prevent errors
     if threadID is 'new'
       threadID = null
-      if g.BOARD in ['vg', 'q'] and !reply.sub
+      if ['vg', 'q'].contains(g.BOARD) and !reply.sub
         err = 'New threads require a subject.'
       else unless reply.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
         err = 'No file selected.'
@@ -710,7 +691,7 @@ QR =
     else unless reply.com or reply.file
       err = 'No file selected.'
 
-    if QR.captchaIsEnabled and !err
+    if QR.isEnabled and !err
       # get oldest valid captcha
       captchas = $.get 'captchas', []
       # remove old captchas
@@ -779,8 +760,9 @@ QR =
           href: '//www.4chan.org/banned',
           target: '_blank',
           textContent: 'Connection error, or you are banned.'
-        $.delete 'lastBanCheck'
-        BanChecker.init()
+        if Conf['Check for Bans']
+          $.delete 'lastBanCheck'
+          BanChecker.init()
     opts =
       form: $.formData post
       upCallbacks:
@@ -796,19 +778,25 @@ QR =
   response: (html) ->
     doc = d.implementation.createHTMLDocument ''
     doc.documentElement.innerHTML = html
-    if doc.title is '4chan - Banned' # Ban/warn check
-      bs  = $$ 'b', doc
-      err = $.el 'span',
-        innerHTML:
-          if /^You were issued a warning/.test $('.boxcontent', doc).textContent.trim()
-            "You were issued a warning on #{bs[0].innerHTML} as #{bs[3].innerHTML}.<br>Warning reason: #{bs[1].innerHTML}"
-          else
-            "You are banned! ;_;<br>Please click <a href=//www.4chan.org/banned target=_blank>HERE</a> to see the reason."
-      if /You are banned/.test err.textContent
-        $.delete 'lastBanCheck'
-        BanChecker.init()
+    if ban  = $ '.banType', doc # banned/warning
+      board = $('.board', doc).innerHTML
+      err   = $.el 'span'
+      if ban.textContent.toLowerCase() is 'banned'
+        if Conf['Check for Bans']
+          $.delete 'lastBanCheck'
+          BanChecker.init()
+        err.innerHTML = """
+You are banned on #{board}! ;_;<br>
+Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason.
+"""
+      else
+        err.innerHTML = """
+You were issued a warning on #{board} as #{$('.nameBlock', doc).innerHTML}.<br>
+Reason: #{$('.reason', doc).innerHTML}
+"""
     else if err = doc.getElementById 'errmsg' # error!
-      $('a', err)?.target = '_blank' # duplicate image link
+      if el = $('a', err)
+        el.target = '_blank' # duplicate image link
     else unless msg = $ 'b', doc
       err = 'Connection error with sys.4chan.org.'
 
@@ -819,10 +807,14 @@ QR =
           err.textContent = 'You seem to have mistyped the CAPTCHA.'
         # Enable auto-post if we have some cached captchas.
         QR.cooldown.auto =
-          if QR.captchaIsEnabled
+          if QR.captcha.isEnabled
             !!$.get('captchas', []).length
-          else
+          else if err is 'Connection error with sys.4chan.org.'
             true
+          else
+            # Something must've gone terribly wrong if you get captcha errors without captchas.
+            # Don't auto-post indefinitely in that case.
+            false
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
         QR.cooldown.set delay: 2
@@ -839,7 +831,7 @@ QR =
       global: {}
 
     unless persona[key = if Conf['Per Board Persona'] then g.BOARD else 'global']
-      persona[key] = persona.global
+      persona[key] = JSON.parse JSON.stringify persona.global
       
     persona[key] =
       name:  reply.name
@@ -889,7 +881,7 @@ QR =
       QR.close()
 
     QR.status()
-    QR.resetFileInput()
+    QR.fileEl.value = null
 
   abort: ->
     QR.ajax?.abort()

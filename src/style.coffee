@@ -1837,6 +1837,10 @@ div.post.qphl {
 """
       else ""
     ) + (
+      if Conf['Color user IDs']
+        ".posteruid .hand { padding: 0 5px; border-radius: 6px; font-size: 0.8em; }"
+      else ""
+    ) + (
       if Conf["Recursive Filtering"]
         """
 .hidden + .threadContainer {
