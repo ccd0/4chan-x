@@ -523,7 +523,7 @@ QR =
 
     reload: (focus) ->
       # the "t" argument prevents the input from being focused
-      $.globalEval 'javascript:Recaptcha.reload("t")'
+      $.globalEval 'Recaptcha.reload("t")'
       # Focus if we meant to.
       QR.captcha.input.focus() if focus
 

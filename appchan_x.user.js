@@ -6293,7 +6293,7 @@
         capcode: data.capcode,
         tripcode: data.trip,
         uniqueID: data.id,
-        email: data.email ? encode(data.email.replace(/&quot;/g, '"')) : '',
+        email: data.email ? encodeURI(data.email.replace(/&quot;/g, '"')) : '',
         subject: data.sub,
         flagCode: data.country,
         flagName: data.country_name,
@@ -8791,7 +8791,7 @@
         return this.input.alt = count;
       },
       reload: function(focus) {
-        $.globalEval('javascript:Recaptcha.reload("t")');
+        $.globalEval('Recaptcha.reload("t")');
         if (focus) {
           return QR.captcha.input.focus();
         }

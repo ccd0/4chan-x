@@ -1787,7 +1787,7 @@ Build =
       capcode:  data.capcode
       tripcode: data.trip
       uniqueID: data.id
-      email:    if data.email then encode data.email.replace /&quot;/g, '"' else ''
+      email:    if data.email then encodeURI data.email.replace /&quot;/g, '"' else ''
       subject:  data.sub
       flagCode: data.country
       flagName: data.country_name
