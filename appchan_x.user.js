@@ -5273,7 +5273,7 @@
     },
     load: function() {
       this.url = 'https://www.4chan.org/banned';
-      return $.ajax(this.url({
+      return $.ajax(this.url, {
         onloadend: function() {
           var doc, msg, reason;
           if (this.status === 200 || 304) {
@@ -5294,7 +5294,7 @@
             return BanChecker.prepend(reason);
           }
         }
-      }));
+      });
     },
     prepend: function(reason) {
       var el;
@@ -7010,7 +7010,7 @@
     },
     embedder: function(a) {
       var embed, key, match, service, title, titles, type, _ref;
-      if (Conf['Embed']) {
+      if (Conf['Embedding']) {
         _ref = Linkify.types;
         for (key in _ref) {
           type = _ref[key];
@@ -7026,35 +7026,28 @@
             embed.setAttribute('data-originalURL', a.href);
             $.on(embed, 'click', Linkify.toggle);
             if (Conf['Link Title']) {
+              titles = $.get('CachedTitles', {});
               if (service = type.title) {
-                titles = $.get('CachedTitles', {});
                 if (title = titles[match[1]]) {
                   a.textContent = title[0];
                   embed.setAttribute('data-title', title[0]);
                 } else {
-                  try {
-                    $.ajax(service.api.call(a), {
-                      onloadend: function() {
-                        switch (this.status) {
-                          case 200:
-                          case 304:
-                            titles = $.get('CachedTitles', {});
-                            a.textContent = title = "[" + key + "] " + (service.text.call(this));
-                            embed.setAttribute('data-title', title);
-                            titles[match[1]] = [title, Date.now()];
-                            return $.set('CachedTitles', titles);
-                          case 404:
-                            return node.textContent = "[" + key + "] Not Found";
-                          case 403:
-                            return node.textContent = "[" + key + "] Forbidden or Private";
-                          default:
-                            return node.textContent = "[" + key + "] " + this.status + "'d";
-                        }
-                      }
-                    });
-                  } catch (err) {
-                    $.log("Unable to fetch the title of this " + key + " link. You may be blocking scripts from " + key + ".");
-                  }
+                  $.cache(service.api.call(a), function() {
+                    switch (this.status) {
+                      case 200:
+                      case 304:
+                        a.textContent = title = "[" + key + "] " + (service.text.call(this));
+                        embed.setAttribute('data-title', title);
+                        titles[match[1]] = [title, Date.now()];
+                        return $.set('CachedTitles', titles);
+                      case 404:
+                        return node.textContent = "[" + key + "] Not Found";
+                      case 403:
+                        return node.textContent = "[" + key + "] Forbidden or Private";
+                      default:
+                        return node.textContent = "[" + key + "] " + this.status + "'d";
+                    }
+                  });
                 }
               }
             }
@@ -10992,7 +10985,7 @@
           });
           return;
       }
-      Main.pruneHidden();
+      Main.prune();
       Style.init();
       now = Date.now();
       if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 18 * $.HOUR) {
@@ -11254,14 +11247,15 @@
         return $.off(board, 'DOMNodeInserted', Main.listener);
       }
     },
-    pruneHidden: function() {
-      var cutoff, hiddenThreads, id, now, timestamp, _ref;
+    prune: function() {
+      var cutoff, hiddenThreads, id, now, timestamp, titles, _ref;
       now = Date.now();
       g.hiddenReplies = $.get("hiddenReplies/" + g.BOARD + "/", {});
       if ($.get('lastChecked', 0) < now - 1 * $.DAY) {
         $.set('lastChecked', now);
         cutoff = now - 7 * $.DAY;
         hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
+        titles = $.get('CachedTitles', {});
         for (id in hiddenThreads) {
           timestamp = hiddenThreads[id];
           if (timestamp < cutoff) {
@@ -11275,8 +11269,14 @@
             delete g.hiddenReplies[id];
           }
         }
+        for (id in titles) {
+          if (titles[id][1] < cutoff) {
+            delete titles[id];
+          }
+        }
         $.set("hiddenThreads/" + g.BOARD + "/", hiddenThreads);
-        return $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
+        $.set("hiddenReplies/" + g.BOARD + "/", g.hiddenReplies);
+        return $.set('CachedTitles', titles);
       }
     },
     flatten: function(parent, obj) {

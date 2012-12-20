@@ -1029,7 +1029,7 @@ BanChecker =
 
   load: ->
     @url = 'https://www.4chan.org/banned'
-    $.ajax @url
+    $.ajax @url,
       onloadend: ->
         if @status is 200 or 304
           $.set 'lastBanCheck', BanChecker.now unless Conf['Check for Bans constantly']
@@ -2468,11 +2468,13 @@ Linkify =
       title:
         api:  -> "https://gdata.youtube.com/feeds/api/videos/#{@name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
         text: -> JSON.parse(@responseText).entry.title.$t
+
     Vocaroo:
       regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
       el: ->
         $.el 'object'
           innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+
     Vimeo:
       regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
       style:  "border: 0; width: 640px; height: 390px"
@@ -2482,12 +2484,14 @@ Linkify =
       title:
         api:  -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{@name}"
         text: -> JSON.parse(@responseText).title
+
     LiveLeak:
       regExp:  /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
       style:  "border: 0; width: 640px; height: 390px"
       el: ->
         $.el 'iframe'
           src: "http://www.liveleak.com/e/#{@name}?autostart=true"
+
     audio:
       regExp:  /(.*\.(mp3|ogg|wav))$/
       el: ->
@@ -2495,22 +2499,23 @@ Linkify =
           controls:    'controls'
           preload:     'auto'
           src:         @name
+
     SoundCloud:
       regExp:  /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
       el: ->
-        div   = $.el 'div'
+        div = $.el 'div'
           className: "soundcloud"
           name:      "soundcloud"
         $.ajax(
           "//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=#{@getAttribute 'data-originalURL'}&color=#{Style.colorToHex Themes[Conf['theme']]['Background Color']}"
           div: div
           onloadend: ->
-            @div.innerHTML = JSON.parse(this.responseText).html
+            @div.innerHTML = JSON.parse(@responseText).html
           false)
         div
 
   embedder: (a) ->
-    if Conf['Embed']
+    if Conf['Embedding']
       for key, type of Linkify.types
         if match = a.href.match type.regExp
           a.name = match[1]
@@ -2527,33 +2532,27 @@ Linkify =
           $.on embed, 'click', Linkify.toggle
 
           if Conf['Link Title']
+            titles = $.get 'CachedTitles', {}
             if service = type.title
-              titles = $.get 'CachedTitles', {}
+
               if title = titles[match[1]]
                 a.textContent = title[0]
                 embed.setAttribute 'data-title', title[0]
               else
-                try
-                  $.ajax(
-                    service.api.call a
-                    onloadend: ->
-                      switch @status
-                        when 200, 304
-                          titles = $.get 'CachedTitles', {}
-                          a.textContent = title = "[#{key}] #{service.text.call @}"
-                          embed.setAttribute 'data-title', title
-                          titles[match[1]] = [title, Date.now()]
-                          $.set 'CachedTitles', titles
-                        when 404
-                          node.textContent = "[#{key}] Not Found"
-                        when 403
-                          node.textContent = "[#{key}] Forbidden or Private"
-                        else
-                          node.textContent = "[#{key}] #{@status}'d"
-                    )
-                catch err
-                  $.log "Unable to fetch the title of this #{key} link. You may be blocking scripts from #{key}."
-                    
+                $.cache service.api.call(a), ->
+                  switch @status
+                    when 200, 304
+                      a.textContent = title = "[#{key}] #{service.text.call @}"
+                      embed.setAttribute 'data-title', title
+                      titles[match[1]] = [title, Date.now()]
+                      $.set 'CachedTitles', titles
+                    when 404
+                      node.textContent = "[#{key}] Not Found"
+                    when 403
+                      node.textContent = "[#{key}] Forbidden or Private"
+                    else
+                      node.textContent = "[#{key}] #{@status}'d"
+
           return [a, $.tn(' '), embed]
     return [a]
 

@@ -73,8 +73,8 @@ Main =
             location.href = url if url
         return
 
-    # Prune hidden objects that have expired.
-    Main.pruneHidden()
+    # Prune objects that have expired.
+    Main.prune()
 
     # Major features
 
@@ -326,14 +326,15 @@ Main =
       board = $ '.board'
       $.off board, 'DOMNodeInserted', Main.listener
 
-  pruneHidden: ->
+  prune: ->
     now = Date.now()
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}
     if $.get('lastChecked', 0) < now - 1*$.DAY
       $.set 'lastChecked', now
 
-      cutoff = now - 7*$.DAY
+      cutoff        = now - 7*$.DAY
       hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+      titles        = $.get 'CachedTitles', {}
 
       for id, timestamp of hiddenThreads
         if timestamp < cutoff
@@ -342,9 +343,14 @@ Main =
       for id, timestamp of g.hiddenReplies
         if timestamp < cutoff
           delete g.hiddenReplies[id]
+          
+      for id of titles
+        if titles[id][1] < cutoff
+          delete titles[id]
 
       $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
       $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
+      $.set 'CachedTitles',              titles
 
   flatten: (parent, obj) ->
     if obj instanceof Array
