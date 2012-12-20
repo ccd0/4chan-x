@@ -691,7 +691,7 @@ QR =
     else unless reply.com or reply.file
       err = 'No file selected.'
 
-    if QR.isEnabled and !err
+    if QR.captcha.isEnabled and !err
       # get oldest valid captcha
       captchas = $.get 'captchas', []
       # remove old captchas

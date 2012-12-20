@@ -8979,7 +8979,7 @@
       } else if (!(reply.com || reply.file)) {
         err = 'No file selected.';
       }
-      if (QR.isEnabled && !err) {
+      if (QR.captcha.isEnabled && !err) {
         captchas = $.get('captchas', []);
         while ((captcha = captchas[0]) && captcha.time < Date.now()) {
           captchas.shift();
