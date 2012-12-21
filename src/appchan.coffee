@@ -202,9 +202,11 @@ body {
 
     @calc_rgb = (hex) ->
       hex = parseInt hex, 16
-      rgb = [(hex >> 16) & 0xFF]
-      rgb[1] = (hex >> 8) & 0xFF
-      rgb[2] = hex & 0xFF
+      rgb = [
+        (hex >> 16) & 0xFF
+        (hex >> 8) & 0xFF
+        hex & 0xFF
+      ]
       return rgb;
 
     @private_rgb = @calc_rgb(hex)
@@ -238,9 +240,9 @@ body {
   colorToHex: (color) ->
     if color.substr(0, 1) is '#'
       return color.slice 1, color.length
-
+      
     if digits = /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/.exec color
-
+      
       red   = parseInt digits[2], 10
       green = parseInt digits[3], 10
       blue  = parseInt digits[4], 10
@@ -248,9 +250,10 @@ body {
       rgb = blue | (green << 8) | (red << 16)
       hex = rgb.toString 16
 
-      while hex.length < 4
-        hex += 0
-
+      while hex.length < 6
+        hex = "0#{hex}"
+      
       hex
 
-    else return false
+    else
+      false

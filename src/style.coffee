@@ -793,6 +793,7 @@ h2 a {
 #qr:not(.dump) #replies,
 #qp .rice
 #qp input,
+#settingsMenu,
 #{if Conf["Hide Show Post Form"] then "#showQR," else ""}
 #styleSwitcher,
 #threadselect:empty,
