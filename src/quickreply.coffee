@@ -50,7 +50,7 @@ QR =
       QR.replies[0].rm()
     QR.cooldown.auto = false
     QR.status()
-    QR.fileEl.value = null
+    QR.resetFileInput()
     if not Conf['Remember Spoiler'] and (spoiler = $.id 'spoiler').checked
       spoiler.click()
     QR.cleanError()
@@ -267,7 +267,7 @@ QR =
       file = @files[0]
       if file.size > @max
         QR.error 'File too large.'
-        QR.fileEl.value = null
+        QR.resetFileInput()
       else unless QR.mimeTypes.contains file.type
         QR.error 'Unsupported file type.'
         QR.resetFileInput()
@@ -288,7 +288,11 @@ QR =
       else
         new QR.reply().setFile file
     $.addClass QR.el, 'dump'
-    QR.fileEl.value = null # reset input
+    QR.resetFileInput() # reset input
+
+  resetFileInput: ->
+    QR.fileEl.value = null
+    QR.riceFile.innerHTML = QR.defaultMessage
 
   replies: []
   reply: class
@@ -381,7 +385,7 @@ QR =
 
 
     rmFile: ->
-      QR.fileEl.value = null
+      QR.resetFileInput()
       delete @file
       @el.title = null
       @el.style.backgroundImage = null
@@ -442,7 +446,7 @@ QR =
         $.rmClass el, 'over'
 
     rm: ->
-      QR.fileEl.value = null
+      QR.resetFileInput()
       $.rm @el
       index = QR.replies.indexOf @
       if QR.replies.length is 1
@@ -881,7 +885,7 @@ Reason: #{$('.reason', doc).innerHTML}
       QR.close()
 
     QR.status()
-    QR.fileEl.value = null
+    QR.resetFileInput()
 
   abort: ->
     QR.ajax?.abort()

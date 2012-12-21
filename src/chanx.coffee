@@ -2098,7 +2098,7 @@ QuoteInline =
     if (i = Unread.replies.indexOf el) isnt -1
       Unread.replies.splice i, 1
       Unread.update true
-      
+
     if Conf['Color user IDs'] and ['b', 'q', 'soc'].contains board
       setTimeout -> $.rmClass $('.reply.highlight', inline), 'highlight'
 
@@ -2191,12 +2191,12 @@ QuotePreview =
         $.addClass el.parentNode, 'qphl'
       else
         $.addClass el, 'qphl'
-        
+
     quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
     for quote in $$ '.quotelink, .backlink', qp
       if quote.hash[2..] is quoterID
         $.addClass quote, 'forwardlink'
-    
+
     if Conf['Fappe Tyme'] and not $('img[data-md5]', qp)
       $.rmClass qp.firstElementChild, 'noFile'
     return
@@ -2469,7 +2469,7 @@ Linkify =
 
     $.replace embed, el
     $.toggleClass @, 'embedded'
-    
+
   types:
     YouTube:
       regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
@@ -2527,41 +2527,40 @@ Linkify =
   embedder: (a) ->
     if Conf['Embedding']
       for key, type of Linkify.types
-        if match = a.href.match type.regExp
-          a.name = match[1]
+        continue unless match = a.href.match type.regExp
 
-          embed = $.el 'a'
-            name:         a.name
-            className:    'embed'
-            href:         'javascript:;'
-            textContent:  '(embed)'
+        embed = $.el 'a'
+          name:         (a.name = match[1])
+          className:    'embed'
+          href:         'javascript:;'
+          textContent:  '(embed)'
 
-          embed.setAttribute 'data-service', key
-          embed.setAttribute 'data-originalURL', a.href
+        embed.setAttribute 'data-service', key
+        embed.setAttribute 'data-originalURL', a.href
 
-          $.on embed, 'click', Linkify.toggle
+        $.on embed, 'click', Linkify.toggle
 
-          if Conf['Link Title']
-            titles = $.get 'CachedTitles', {}
-            if service = type.title
+        if Conf['Link Title'] and (service = type.title)
+          titles = $.get 'CachedTitles', {}
 
-              if title = titles[match[1]]
-                a.textContent = title[0]
-                embed.setAttribute 'data-title', title[0]
-              else
-                $.cache service.api.call(a), ->
-                  switch @status
-                    when 200, 304
-                      a.textContent = title = "[#{key}] #{service.text.call @}"
-                      embed.setAttribute 'data-title', title
-                      titles[match[1]] = [title, Date.now()]
-                      $.set 'CachedTitles', titles
-                    when 404
-                      node.textContent = "[#{key}] Not Found"
-                    when 403
-                      node.textContent = "[#{key}] Forbidden or Private"
-                    else
-                      node.textContent = "[#{key}] #{@status}'d"
+          if title = titles[match[1]]
+            a.textContent = title[0]
+            embed.setAttribute 'data-title', title[0]
+          else
+            $.cache service.api.call(a), ->
+              a.textContent = switch @status
+                when 200, 304
+                  title = "[#{key}] #{service.text.call @}"
+                  embed.setAttribute 'data-title', title
+                  titles[match[1]] = [title, Date.now()]
+                  $.set 'CachedTitles', titles
+                  title
+                when 404
+                  "[#{key}] Not Found"
+                when 403
+                  "[#{key}] Forbidden or Private"
+                else
+                  "[#{key}] #{@status}'d"
 
           return [a, $.tn(' '), embed]
     return [a]
@@ -3037,7 +3036,7 @@ Redirect =
 
   post: (board, postID) ->
     return (
-      if (base = 
+      if (base =
         if ['a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'wsg', 'dev', 'foolz'].contains board
           "archive"
         else if ['u', 'kuku'].contains board
@@ -3095,7 +3094,7 @@ Redirect =
     return (if names.length > 0 then names else [@noarch])
 
   to: (data) ->
-    
+
     aboard = @archiver[$.get "archiver/#{board = data.board}/", false] or
       if $.set("archiver/#{board}/", name = @select(board)[0]) and name isnt @noarch
         @archiver[name]

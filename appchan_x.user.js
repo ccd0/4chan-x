@@ -7056,42 +7056,43 @@
         _ref = Linkify.types;
         for (key in _ref) {
           type = _ref[key];
-          if (match = a.href.match(type.regExp)) {
-            a.name = match[1];
-            embed = $.el('a', {
-              name: a.name,
-              className: 'embed',
-              href: 'javascript:;',
-              textContent: '(embed)'
-            });
-            embed.setAttribute('data-service', key);
-            embed.setAttribute('data-originalURL', a.href);
-            $.on(embed, 'click', Linkify.toggle);
-            if (Conf['Link Title']) {
-              titles = $.get('CachedTitles', {});
-              if (service = type.title) {
-                if (title = titles[match[1]]) {
-                  a.textContent = title[0];
-                  embed.setAttribute('data-title', title[0]);
-                } else {
-                  $.cache(service.api.call(a), function() {
-                    switch (this.status) {
-                      case 200:
-                      case 304:
-                        a.textContent = title = "[" + key + "] " + (service.text.call(this));
-                        embed.setAttribute('data-title', title);
-                        titles[match[1]] = [title, Date.now()];
-                        return $.set('CachedTitles', titles);
-                      case 404:
-                        return node.textContent = "[" + key + "] Not Found";
-                      case 403:
-                        return node.textContent = "[" + key + "] Forbidden or Private";
-                      default:
-                        return node.textContent = "[" + key + "] " + this.status + "'d";
-                    }
-                  });
-                }
-              }
+          if (!(match = a.href.match(type.regExp))) {
+            continue;
+          }
+          embed = $.el('a', {
+            name: (a.name = match[1]),
+            className: 'embed',
+            href: 'javascript:;',
+            textContent: '(embed)'
+          });
+          embed.setAttribute('data-service', key);
+          embed.setAttribute('data-originalURL', a.href);
+          $.on(embed, 'click', Linkify.toggle);
+          if (Conf['Link Title'] && (service = type.title)) {
+            titles = $.get('CachedTitles', {});
+            if (title = titles[match[1]]) {
+              a.textContent = title[0];
+              embed.setAttribute('data-title', title[0]);
+            } else {
+              $.cache(service.api.call(a), function() {
+                return a.textContent = (function() {
+                  switch (this.status) {
+                    case 200:
+                    case 304:
+                      title = "[" + key + "] " + (service.text.call(this));
+                      embed.setAttribute('data-title', title);
+                      titles[match[1]] = [title, Date.now()];
+                      $.set('CachedTitles', titles);
+                      return title;
+                    case 404:
+                      return "[" + key + "] Not Found";
+                    case 403:
+                      return "[" + key + "] Forbidden or Private";
+                    default:
+                      return "[" + key + "] " + this.status + "'d";
+                  }
+                }).call(this);
+              });
             }
             return [a, $.tn(' '), embed];
           }
@@ -8228,7 +8229,7 @@
       }
       QR.cooldown.auto = false;
       QR.status();
-      QR.fileEl.value = null;
+      QR.resetFileInput();
       if (!Conf['Remember Spoiler'] && (spoiler = $.id('spoiler')).checked) {
         spoiler.click();
       }
@@ -8461,7 +8462,7 @@
         file = this.files[0];
         if (file.size > this.max) {
           QR.error('File too large.');
-          QR.fileEl.value = null;
+          QR.resetFileInput();
         } else if (!QR.mimeTypes.contains(file.type)) {
           QR.error('Unsupported file type.');
           QR.resetFileInput();
@@ -8487,7 +8488,11 @@
         }
       }
       $.addClass(QR.el, 'dump');
-      return QR.fileEl.value = null;
+      return QR.resetFileInput();
+    },
+    resetFileInput: function() {
+      QR.fileEl.value = null;
+      return QR.riceFile.innerHTML = QR.defaultMessage;
     },
     replies: [],
     reply: (function() {
@@ -8594,7 +8599,7 @@
 
       _Class.prototype.rmFile = function() {
         var _base1;
-        QR.fileEl.value = null;
+        QR.resetFileInput();
         delete this.file;
         this.el.title = null;
         this.el.style.backgroundImage = null;
@@ -8684,7 +8689,7 @@
 
       _Class.prototype.rm = function() {
         var index, _base1;
-        QR.fileEl.value = null;
+        QR.resetFileInput();
         $.rm(this.el);
         index = QR.replies.indexOf(this);
         if (QR.replies.length === 1) {
@@ -9157,7 +9162,7 @@
         QR.close();
       }
       QR.status();
-      return QR.fileEl.value = null;
+      return QR.resetFileInput();
     },
     abort: function() {
       var _ref;
@@ -10610,7 +10615,6 @@
       if (color.substr(0, 1) === '#') {
         return color.slice(1, color.length);
       }
-      $.log(color);
       if (digits = /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/.exec(color)) {
         red = parseInt(digits[2], 10);
         green = parseInt(digits[3], 10);
@@ -10620,7 +10624,6 @@
         while (hex.length < 6) {
           hex = "0" + hex;
         }
-        $.log(hex);
         return hex;
       } else {
         return false;
