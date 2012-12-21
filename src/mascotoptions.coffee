@@ -2,9 +2,10 @@ MascotTools =
   init: (mascot = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)]) ->
 
     Conf['mascot'] = mascot
+    @el = el = $('#mascot img', d.body)
 
     if !Conf['Mascots'] or (g.CATALOG and Conf['Hide Mascots on Catalog'])
-      return if el = $('#mascot img', d.body) then el.src = "" else null
+      return if el then el.src = "" else null
 
     if Conf['Mascot Position'] is 'bottom' or !(Conf['Mascot Position'] is "default" and Conf['Post Form Style'] is "fixed")
       position = 0
@@ -19,13 +20,12 @@ MascotTools =
         return
 
     else
-      names = []
-
       unless Conf["mascot"]
-        return if el = $('#mascot img', d.body) then el.src = "" else null
+        return if el then el.src = "" else null
 
       unless mascot = Mascots[Conf["mascot"]]
-        return Conf[gMASCOTSTRING].remove Conf["mascot"]
+        Conf[g.MASCOTSTRING].remove Conf["mascot"]
+        return @init()
 
       @addMascot mascot
 
@@ -311,17 +311,14 @@ MascotTools =
     reader.readAsDataURL file
 
   addMascot: (mascot) ->
-
-    el = $('#mascot img', d.body)
-
-    if el
+    if el = @el
       el.src = if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image
     else
-      div = $.el 'div',
+      @el = el = $.el 'div',
         id: "mascot"
         innerHTML: "<img src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'>"
 
-      $.add d.body, div
+      $.add d.body, el
 
   save: (mascot) ->
     {name, image} = mascot

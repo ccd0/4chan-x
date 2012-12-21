@@ -121,7 +121,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       Style.iconPositions()
 
   headCount: 0
-  
+
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle
     if Style.headCount < 11 and head = d.head
@@ -202,19 +202,19 @@ body {
 
     @calc_rgb = (hex) ->
       hex = parseInt hex, 16
-      rgb = [
+      [
         (hex >> 16) & 0xFF
         (hex >> 8) & 0xFF
         hex & 0xFF
       ]
-      return rgb;
 
     @private_rgb = @calc_rgb(hex)
 
     @rgb = @private_rgb.join ","
 
     @isLight = ->
-      @private_rgb[0] + @private_rgb[1] + @private_rgb[2] >= 400
+      rgb = @private_rgb
+      return (rgb[0] + rgb[1] + rgb[2]) >= 400
 
     @shiftRGB = (shift, smart) ->
       rgb = @private_rgb.slice 0
@@ -228,31 +228,27 @@ body {
           Math.abs shift
 
       else
-        shift;
+        shift
 
-      rgb[0] = Math.min Math.max(rgb[0] + shift, 0), 255
-      rgb[1] = Math.min Math.max(rgb[1] + shift, 0), 255
-      rgb[2] = Math.min Math.max(rgb[2] + shift, 0), 255
-      return rgb.join ","
+      return [ 
+        Math.min Math.max(rgb[0] + shift, 0), 255
+        Math.min Math.max(rgb[1] + shift, 0), 255
+        Math.min Math.max(rgb[2] + shift, 0), 255
+      ].join ","
 
     @hover = @shiftRGB 16, true
 
   colorToHex: (color) ->
     if color.substr(0, 1) is '#'
       return color.slice 1, color.length
-      
-    if digits = /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/.exec color
-      
-      red   = parseInt digits[2], 10
-      green = parseInt digits[3], 10
-      blue  = parseInt digits[4], 10
 
-      rgb = blue | (green << 8) | (red << 16)
+    if digits = color.match /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/
+      rgb = parseInt(digits[2], 10) | (parseInt(digits[3], 10) << 8) | (parseInt(digits[4], 10) << 16)
       hex = rgb.toString 16
 
       while hex.length < 6
         hex = "0#{hex}"
-      
+
       hex
 
     else

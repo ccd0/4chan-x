@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.27 - 2012-12-20
+ * appchan x - Version 1.0.27 - 2012-12-21
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -9983,13 +9983,14 @@
 
   MascotTools = {
     init: function(mascot) {
-      var el, filters, location, names, position;
+      var el, filters, location, position;
       if (mascot == null) {
         mascot = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)];
       }
       Conf['mascot'] = mascot;
+      this.el = el = $('#mascot img', d.body);
       if (!Conf['Mascots'] || (g.CATALOG && Conf['Hide Mascots on Catalog'])) {
-        if (el = $('#mascot img', d.body)) {
+        if (el) {
           return el.src = "";
         } else {
           return null;
@@ -10005,16 +10006,16 @@
           return;
         }
       } else {
-        names = [];
         if (!Conf["mascot"]) {
-          if (el = $('#mascot img', d.body)) {
+          if (el) {
             return el.src = "";
           } else {
             return null;
           }
         }
         if (!(mascot = Mascots[Conf["mascot"]])) {
-          return Conf[gMASCOTSTRING].remove(Conf["mascot"]);
+          Conf[g.MASCOTSTRING].remove(Conf["mascot"]);
+          return this.init();
         }
         this.addMascot(mascot);
       }
@@ -10191,16 +10192,15 @@
       return reader.readAsDataURL(file);
     },
     addMascot: function(mascot) {
-      var div, el;
-      el = $('#mascot img', d.body);
-      if (el) {
+      var el;
+      if (el = this.el) {
         return el.src = Array.isArray(mascot.image) ? (Style.lightTheme ? mascot.image[1] : mascot.image[0]) : mascot.image;
       } else {
-        div = $.el('div', {
+        this.el = el = $.el('div', {
           id: "mascot",
           innerHTML: "<img src='" + (Array.isArray(mascot.image) ? (Style.lightTheme ? mascot.image[1] : mascot.image[0]) : mascot.image) + "'>"
         });
-        return $.add(d.body, div);
+        return $.add(d.body, el);
       }
     },
     save: function(mascot) {
@@ -10589,37 +10589,31 @@
     color: function(hex) {
       this.hex = "#" + hex;
       this.calc_rgb = function(hex) {
-        var rgb;
         hex = parseInt(hex, 16);
-        rgb = [(hex >> 16) & 0xFF, (hex >> 8) & 0xFF, hex & 0xFF];
-        return rgb;
+        return [(hex >> 16) & 0xFF, (hex >> 8) & 0xFF, hex & 0xFF];
       };
       this.private_rgb = this.calc_rgb(hex);
       this.rgb = this.private_rgb.join(",");
       this.isLight = function() {
-        return this.private_rgb[0] + this.private_rgb[1] + this.private_rgb[2] >= 400;
+        var rgb;
+        rgb = this.private_rgb;
+        return (rgb[0] + rgb[1] + rgb[2]) >= 400;
       };
       this.shiftRGB = function(shift, smart) {
         var rgb;
         rgb = this.private_rgb.slice(0);
         shift = smart ? this.isLight(rgb) ? shift < 0 ? shift : -shift : Math.abs(shift) : shift;
-        rgb[0] = Math.min(Math.max(rgb[0] + shift, 0), 255);
-        rgb[1] = Math.min(Math.max(rgb[1] + shift, 0), 255);
-        rgb[2] = Math.min(Math.max(rgb[2] + shift, 0), 255);
-        return rgb.join(",");
+        return [Math.min(Math.max(rgb[0] + shift, 0), 255), Math.min(Math.max(rgb[1] + shift, 0), 255), Math.min(Math.max(rgb[2] + shift, 0), 255)].join(",");
       };
       return this.hover = this.shiftRGB(16, true);
     },
     colorToHex: function(color) {
-      var blue, digits, green, hex, red, rgb;
+      var digits, hex, rgb;
       if (color.substr(0, 1) === '#') {
         return color.slice(1, color.length);
       }
-      if (digits = /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/.exec(color)) {
-        red = parseInt(digits[2], 10);
-        green = parseInt(digits[3], 10);
-        blue = parseInt(digits[4], 10);
-        rgb = blue | (green << 8) | (red << 16);
+      if (digits = color.match(/(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/)) {
+        rgb = parseInt(digits[2], 10) | (parseInt(digits[3], 10) << 8) | (parseInt(digits[4], 10) << 16);
         hex = rgb.toString(16);
         while (hex.length < 6) {
           hex = "0" + hex;
