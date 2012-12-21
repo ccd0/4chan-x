@@ -1446,7 +1446,7 @@ QR =
           when 'q' then 86400
           when 'b', 'soc', 'r9k' then 600
           else 300
-        sage: 60
+        sage: if g.BOARD is 'q' then 600 else 60
         file: if g.BOARD is 'q' then 300 else 30
         post: if g.BOARD is 'q' then 60  else 30
       QR.cooldown.cooldowns = $.get "#{g.BOARD}.cooldown", {}

@@ -1880,7 +1880,7 @@
                 return 300;
             }
           })(),
-          sage: 60,
+          sage: g.BOARD === 'q' ? 600 : 60,
           file: g.BOARD === 'q' ? 300 : 30,
           post: g.BOARD === 'q' ? 60 : 30
         };
