@@ -2,6 +2,7 @@ master
 - Zixaphir
   Added Per-Board Personas.
   Fappe Tyme
+  Theme Editor slider now properly reflects current hue.
 - noface
   Added new feature 'Remove Spoilers'.
   Added input to specify height and width of embeds.

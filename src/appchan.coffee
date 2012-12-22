@@ -260,9 +260,16 @@ body {
   width: 251px;
   height: 155px;
 }
-.jscBoxB {
+.jscBoxB,
+.jscPadB,
+.jscPadM,
+.jscSldB,
+.jscSldM,
+.jscBtn {
   position: absolute;
   clear: both;
+}
+.jscBoxB {
   left: 320px;
   bottom: 20px;
   z-index: 1000;
@@ -278,14 +285,12 @@ body {
   background-position: 0 0;
 }
 .jscPadB {
-  position: absolute; 
   left: 10px; 
   top: 10px; 
   border: 1px solid; 
   border-color: ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow;
 }
 .jscPadM {
-  position: absolute;
   left: 0;
   top: 0;
   width: 200px;
@@ -300,16 +305,12 @@ body {
   background-image: #{Style.agent}linear-gradient(rgba(0,0,0,0), rgba(0,0,0,1));
 }
 .jscSldB {
-  display: block;
-  position: absolute;
   right: 10px;
   top: 10px;
   border: 1px solid;
   border-color: ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow;
 }
 .jscSldM {
-  display: block;
-  position: absolute;
   right: 0;
   top: 0;
   width: 36px;
@@ -319,8 +320,6 @@ body {
   background-repeat: no-repeat;
 }
 .jscBtn {
-  display: block;
-  position: absolute;
   right: 10px;
   bottom: 10px;
   padding: 0 15px;

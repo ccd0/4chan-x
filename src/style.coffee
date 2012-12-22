@@ -1,10 +1,12 @@
   css: (theme) ->
 
+    conf = Conf
+  
     position =
-      if Conf["Sidebar Location"] is "right"
-        switch Conf["Sidebar"]
+      if conf["Sidebar Location"] is "right"
+        switch conf["Sidebar"]
           when "hide"
-            switch Conf["Page Margin"]
+            switch conf["Page Margin"]
               when "none", "minimal", "small"
                 "right"
               else
@@ -14,7 +16,7 @@
           else
             "left"
       else
-        switch Conf["Page Margin"]
+        switch conf["Page Margin"]
           when "none", "minimal", "small"
             "right"
           else
@@ -24,9 +26,9 @@
     
     Style.lightTheme = bgColor.isLight()
 
-    icons = Icons.header.png + Icons.themes[Conf["Icons"]][if Style.lightTheme then "light" else "dark"]
+    icons = Icons.header.png + Icons.themes[conf["Icons"]][if Style.lightTheme then "light" else "dark"]
 
-    if Conf["Sidebar"] is "large"
+    if conf["Sidebar"] is "large"
       Style.sidebarOffsetW = 51
       Style.sidebarOffsetH = 17
     else
@@ -34,17 +36,17 @@
       Style.sidebarOffsetH = 0
 
     Style.logoOffset = 
-      if Conf["4chan Banner"] is "at sidebar top"
+      if conf["4chan Banner"] is "at sidebar top"
         83 + Style.sidebarOffsetH 
       else
         0
 
-    if Conf["Sidebar Location"] is "left"
+    if conf["Sidebar Location"] is "left"
       Style.sidebarLocation = ["left",  "right"]
     else
       Style.sidebarLocation = ["right", "left" ]
 
-    if Conf['editMode'] is "theme"
+    if conf['editMode'] is "theme"
       editSpace = []
       editSpace[Style.sidebarLocation[1]] = 300
       editSpace[Style.sidebarLocation[0]] = 0
@@ -53,16 +55,16 @@
         "left":  0
         "right": 0
 
-    if Conf["Sidebar"]  is "minimal"
+    if conf["Sidebar"]  is "minimal"
       Style.sidebar = 20
 
-    else if Conf["Sidebar"] != "hide"
+    else if conf["Sidebar"] != "hide"
       Style.sidebar = (252 + Style.sidebarOffsetW)
 
     else
       Style.sidebar = 2
 
-    switch Conf["Reply Spacing"]
+    switch conf["Reply Spacing"]
       when "none"
         Style.replyMargin = 0
 
@@ -182,7 +184,7 @@ div.subMenu.reply {
 #banmessage,
 #boardTitle,
 #main_tab + div,
-#mascotConf input,
+#mascotconf input,
 #style_tab + div .suboptions,
 .center,
 h1 {
@@ -198,10 +200,10 @@ h1 {
 #keybinds_tab + div > div {
   text-align: center;
 }
-#mascotConf input::#{Style.agent}placeholder {
+#mascotconf input::#{Style.agent}placeholder {
   text-align: center;
 }
-#mascotConf input:#{Style.agent}placeholder {
+#mascotconf input:#{Style.agent}placeholder {
   text-align: center;
 }
 #boardNavDesktopFoot,
@@ -545,7 +547,7 @@ input[type="submit"] {
 #options ul li.mascot {
   background-color: transparent;
 }
-#mascotConf {
+#mascotconf {
   position: fixed;
   height: 400px;
   bottom: 0;
@@ -554,7 +556,7 @@ input[type="submit"] {
   margin-left: -250px;
   overflow: auto;
 }
-#mascotConf h2 {
+#mascotconf h2 {
   margin: 10px 0 0;
   font-size: 14px;
 }
@@ -569,7 +571,7 @@ input[type="submit"] {
 #style_tab + div .suboptions ul,
 #main_tab + div ul {
   vertical-align: top;
-  #{if Conf["Single Column Mode"] then "margin: 0 auto 6px;" else "margin: 0 3px 6px;\n  display: inline-block;"}
+  #{if conf["Single Column Mode"] then "margin: 0 auto 6px;" else "margin: 0 3px 6px;\n  display: inline-block;"}
 }
 #style_tab + div .suboptions ul li,
 #main_tab + div ul li {
@@ -738,8 +740,8 @@ body {
   margin-bottom: 1px;
   margin-#{Style.sidebarLocation[0]}: #{Style.sidebar}px;
   margin-#{Style.sidebarLocation[1]}: 2px;
-  padding-left: #{parseInt(Conf["Left Thread Padding"], 10) + editSpace["left"]}px;
-  padding-right: #{parseInt(Conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  padding-left: #{parseInt(conf["Left Thread Padding"], 10) + editSpace["left"]}px;
+  padding-right: #{parseInt(conf["Right Thread Padding"], 10) + editSpace["right"]}px;
 }
 #exlinks-options > *,
 .selectrice,
@@ -750,10 +752,10 @@ body,
 button,
 input,
 textarea {
-  font-family: '#{Conf["Font"]}';
+  font-family: '#{conf["Font"]}';
 }
 #qr .captchaimg {
-  opacity: #{Conf["Captcha Opacity"]};
+  opacity: #{conf["Captcha Opacity"]};
   background-color: #fff;
 }
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::after,
@@ -768,15 +770,15 @@ body,
 button,
 input,
 textarea {
-  font-size: #{parseInt(Conf["Font Size"], 10)}px;
+  font-size: #{parseInt(conf["Font Size"], 10)}px;
 }
 .boardSubtitle,
 .boardSubtitle a {
-  font-size: #{parseInt(Conf["Font Size"], 10) - 1}px;
+  font-size: #{parseInt(conf["Font Size"], 10) - 1}px;
 }
 h2,
 h2 a {
-  font-size: #{parseInt(Conf["Font Size"], 10) + 4}px;
+  font-size: #{parseInt(conf["Font Size"], 10) + 4}px;
 }
 /* Cleanup */
 #absbot,
@@ -794,11 +796,11 @@ h2 a {
 #qp .rice
 #qp input,
 #settingsMenu,
-#{if Conf["Hide Show Post Form"] then "#showQR," else ""}
+#{if conf["Hide Show Post Form"] then "#showQR," else ""}
 #styleSwitcher,
 #threadselect:empty,
 #updater:not(:hover) > :not(.move),
-#{unless Conf["Board Subtitle"] then ".boardSubtitle," else ""}
+#{unless conf["Board Subtitle"] then ".boardSubtitle," else ""}
 .deleteform,
 .dump > form > label,
 .fappeTyme .noFile,
@@ -880,7 +882,7 @@ s {
 .backlink:not(.filtered),
 a,
 span.postNum > .replylink {
-  text-decoration: #{if Conf["Underline Links"] then "underline" else "none"};
+  text-decoration: #{if conf["Underline Links"] then "underline" else "none"};
 }
 .filtered,
 .quotelink.filtered,
@@ -891,9 +893,9 @@ span.postNum > .replylink {
 #mouseover {
   z-index: 999;
 }
-#mascotConf,
+#mascotconf,
 #options.reply.dialog,
-#themeConf {
+#themeconf {
   z-index: 998;
 }
 #post-preview,
@@ -924,7 +926,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 .fileThumb img + img {
   position: relative;
-  z-index: #{(if Conf["Images Overlap Post Form"] then "90" else "1")};
+  z-index: #{(if conf["Images Overlap Post Form"] then "90" else "1")};
 }
 #stats,
 #updater {
@@ -1054,7 +1056,7 @@ img {
 }
 /* Navigation */
 .pagelist {
-  text-align: #{Conf["Pagination Alignment"]};
+  text-align: #{conf["Pagination Alignment"]};
 }
 .next,
 .pages,
@@ -1063,7 +1065,7 @@ img {
   margin: 0 3px;
 }
 #boardNavDesktop {
-  text-align: #{Conf["Navigation Alignment"]};
+  text-align: #{conf["Navigation Alignment"]};
 }
 #boardNavDesktopFoot {
   visibility: visible;
@@ -1100,7 +1102,7 @@ img.bottomad:hover {
   margin: 1px;
 }
 #xupdater a {
-  font-size: #{parseInt(Conf["Font Size"], 10) + 3}px;
+  font-size: #{parseInt(conf["Font Size"], 10) + 3}px;
 }
 .pages strong,
 a,
@@ -1170,7 +1172,7 @@ div.file {
   padding-left: 8px;
 }
 .postContainer blockquote {
-  min-height: #{parseInt(Conf["Font Size"], 10) + 3}px;
+  min-height: #{parseInt(conf["Font Size"], 10) + 3}px;
 }
 .fileText ~ a > img + img {
   margin: 0 0 25px;
@@ -1199,7 +1201,7 @@ s:not(:hover) * {
 div.thread {
   padding: 0;
   position: relative;
-  #{(unless Conf['Images Overlap Post Form'] then "z-index: 0;" else "")}
+  #{(unless conf['Images Overlap Post Form'] then "z-index: 0;" else "")}
 }
 #selectrice {
   margin: 0 !important;
@@ -1441,7 +1443,7 @@ html .subMenu {
   overflow-x: auto;
   padding: 3px;
 }
-#themeConf {
+#themeconf {
   position: fixed;
   #{Style.sidebarLocation[1]}: 2px;
   #{Style.sidebarLocation[0]}: auto;
@@ -1478,7 +1480,7 @@ html {
 #boardTitle,
 #prefetch,
 #showQR,
-#{unless Conf["Post Form Decorations"] then '#spoilerLabel,' else ''}
+#{unless conf["Post Form Decorations"] then '#spoilerLabel,' else ''}
 #stats,
 #updater:not(:hover) .move {
   text-shadow:
@@ -1489,12 +1491,12 @@ html {
     0 1px 0 #{theme["Background Color"]},
     0 -1px 0 #{theme["Background Color"]},
     1px 0 0 #{theme["Background Color"]},
-    -1px 0 0 #{theme["Background Color"]}#{if Conf["Sidebar Glow"] then "\n, 0 2px 5px #{theme['Text']};" else ";"}
+    -1px 0 0 #{theme["Background Color"]}#{if conf["Sidebar Glow"] then "\n, 0 2px 5px #{theme['Text']};" else ";"}
 }
 #options .dialog,
 #exlinks-options,
 #qrtab,
-#{if Conf["Post Form Decorations"] then "#qr," else ""}
+#{if conf["Post Form Decorations"] then "#qr," else ""}
 #updater:hover,
 html body span[style="left: 5px; position: absolute;"] a,
 input[type="submit"],
@@ -1567,19 +1569,19 @@ div.reply.post:target {
 .pagelist {
   background: #{theme["Navigation Background"]};
   border: 1px solid #{theme["Navigation Border"]};
-  #{Style.sidebarLocation[0]}: #{Style.sidebar + parseInt(Conf["Right Thread Padding"], 10) + editSpace["right"]}px;
-  #{Style.sidebarLocation[1]}: #{parseInt(Conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;
+  #{Style.sidebarLocation[0]}: #{Style.sidebar + parseInt(conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  #{Style.sidebarLocation[1]}: #{parseInt(conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;
 }
 #delform {
   background: #{theme["Thread Wrapper Background"]};
   border: 1px solid #{theme["Thread Wrapper Border"]};
 }
 #boardNavDesktopFoot,
-#mascotConf,
+#mascotconf,
 #mascot_hide,
 #menu,
 #selectrice,
-#themeConf,
+#themeconf,
 #watcher,
 #watcher:hover,
 div.subMenu,
@@ -1592,7 +1594,7 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > 
   background-color: transparent;
 }
 .inline .post {
-  box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
+  box-shadow: #{if conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
   padding-bottom: 2px;
 }
 #qr .warning {
@@ -1691,7 +1693,7 @@ div.subMenu,
 #post-preview,
 #qp .opContainer,
 #qp .replyContainer {
-  box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else ""};
+  box-shadow: #{if conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else ""};
 }
 .rice {
   cursor: pointer;
@@ -1822,7 +1824,7 @@ div.post.qphl {
 }
 #{theme["Custom CSS"]}\n
 """ + (
-      if Conf["Hide Navigation Decorations"]
+      if conf["Hide Navigation Decorations"]
          """
 #boardNavDesktop, .pages {
   font-size: 0;
@@ -1838,11 +1840,11 @@ div.post.qphl {
 """
       else ""
     ) + (
-      if Conf['Color user IDs']
+      if conf['Color user IDs']
         ".posteruid .hand { padding: 0 5px; border-radius: 6px; font-size: 0.8em; }"
       else ""
     ) + (
-      if Conf["Recursive Filtering"]
+      if conf["Recursive Filtering"]
         """
 .hidden + .threadContainer {
   display: none;
@@ -1850,7 +1852,7 @@ div.post.qphl {
 """
       else ""
     ) + (
-      if Conf["Reply Spacing"] is "none"
+      if conf["Reply Spacing"] is "none"
         """
 .thread > .replyContainer:not(:last-of-type) .post.reply:not(:target) {
   border-bottom-width: 0;
@@ -1919,7 +1921,7 @@ span.lit {
 }\n
 """
     ) + (
-      if Conf["Faded 4chan Banner"]
+      if conf["Faded 4chan Banner"]
         """
 .boardBanner {
   opacity: 0.5;
@@ -1932,7 +1934,7 @@ span.lit {
 """
       else ""
     ) + (
-      if Conf["4chan Banner Reflection"]
+      if conf["4chan Banner Reflection"]
         """
 /* From 4chan SS / OneeChan */
 .gecko .boardBanner::after {
@@ -1954,7 +1956,7 @@ span.lit {
 """
       else ""
     ) + (
-      if Conf["Slideout Transitions"]
+      if conf["Slideout Transitions"]
         """
 #globalMessage,
 #watcher,
@@ -1977,7 +1979,7 @@ img.bottomad {
 """
       else ""
     ) + (
-      if Conf["Post Form Slideout Transitions"]
+      if conf["Post Form Slideout Transitions"]
         """
 #qr {
   #{Style.agent}transition: #{Style.sidebarLocation[0]} .3s ease-in-out 1s;
@@ -1993,7 +1995,7 @@ img.bottomad {
 """
       else ""
     ) + (
-      if Conf["Hide Horizontal Rules"]
+      if conf["Hide Horizontal Rules"]
         """
 hr {
   visibility: hidden;
@@ -2001,7 +2003,7 @@ hr {
 """
       else ""
     ) + (
-      unless Conf["Post Form Style"] is "float"
+      unless conf["Post Form Style"] is "float"
         """
 #qr img {
   height: 3.9em;
@@ -2032,7 +2034,7 @@ textarea.field,
 }
 #qr {
   padding: 1px;
-  border: 1px solid #{if Conf["Post Form Decorations"] then theme["Buttons Border"] else "transparent"};
+  border: 1px solid #{if conf["Post Form Decorations"] then theme["Buttons Border"] else "transparent"};
   overflow: visible;
   top: auto !important;
   bottom: 1.6em !important;
@@ -2057,7 +2059,7 @@ input,
   width: 70px;
   margin: 1px 0 0 1px;
 }""" + (
-          if Conf["Compact Post Form Inputs"] then """
+          if conf["Compact Post Form Inputs"] then """
 #qr textarea.field {
   height: 15em;
   min-height: 9em;
@@ -2101,7 +2103,7 @@ input,
 }\n
 """
         ) + (
-          if Conf["Textarea Resize"] is "auto-expand"
+          if conf["Textarea Resize"] is "auto-expand"
             """
 #qr textarea {
   display: block;
@@ -2110,7 +2112,7 @@ input,
     background-color 0.25s linear,
     background-image 0.25s linear,
     height step-end,
-    width #{if Conf["Slideout Transitions"] then ".3s ease-in-out .3s" else "step-end"};
+    width #{if conf["Slideout Transitions"] then ".3s ease-in-out .3s" else "step-end"};
   float: #{Style.sidebarLocation[0]};
   resize: vertical;
 }
@@ -2130,13 +2132,13 @@ input,
     height step-end,
     width step-end;
   float: #{Style.sidebarLocation[0]};
-  resize: #{Conf["Textarea Resize"]}
+  resize: #{conf["Textarea Resize"]}
 }\n
 """
         )
       else ""
     ) + (
-      if Conf["Fit Width Replies"]
+      if conf["Fit Width Replies"]
         """
 .thread .replyContainer {
   position: relative;
@@ -2157,7 +2159,7 @@ input,
   font-size: 9px;
 }
 .sideArrows a {
-  #{if Conf["Menu"] then "right: 27px;" else ""}
+  #{if conf["Menu"] then "right: 27px;" else ""}
 }
 .summary {
   padding-left: 20px;
@@ -2199,7 +2201,7 @@ div.reply.post {
 }\n
 """
     ) + (
-      if Conf['Force Reply Break']
+      if conf['Force Reply Break']
         """
 .summary,
 .replyContainer {
@@ -2208,7 +2210,7 @@ div.reply.post {
 """
       else ""
     ) + (
-      if Conf["Alternate Post Colors"]
+      if conf["Alternate Post Colors"]
         """
 div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   background-image: #{Style.agent}linear-gradient(#{if Style.lightTheme then "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" else "rgba(255,255,255,0.02), rgba(255,255,255,0.02)"});
@@ -2216,21 +2218,21 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
 """
       else ""
     ) + (
-      if Conf["Color Reply Headings"]
+      if conf["Color Reply Headings"]
         """
 .postInfo {
   background: #{if (replyHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgb(" + (replyHeading.shiftRGB 16, true) + ")" else "rgba(0,0,0,0.1)"};
 }\n"""
       else ""
     ) + (
-      if Conf["Color File Info"]
+      if conf["Color File Info"]
         """
 .file {
   background: #{if (fileHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgb(" + (fileHeading.shiftRGB 8, true) + ")" else "rgba(0,0,0,0.1)"};
 }\n"""
       else ""
     ) + (
-      if Conf["Filtered Backlinks"]
+      if conf["Filtered Backlinks"]
        """
 .filtered.backlink {
   display: none;
@@ -2238,7 +2240,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
 """
       else ""
     ) + (
-      if Conf["Slideout Watcher"]
+      if conf["Slideout Watcher"]
         """
 #watcher:not(:hover) {
   border-color: transparent;
@@ -2254,7 +2256,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   overflow: hidden;
 }
 #watcher:hover {
-  height: #{if Conf["Slideout Transitions"] then '250px' else 'auto'};
+  height: #{if conf["Slideout Transitions"] then '250px' else 'auto'};
   overflow: auto;
   padding-bottom: 4px;
 }\n
@@ -2274,7 +2276,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
 }\n
 """
     ) + (
-      if Conf["OP Background"]
+      if conf["OP Background"]
         """
 .opContainer div.post {
   background: #{theme["Reply Background"]};
@@ -2291,7 +2293,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
 """
       else ""
     ) + (
-      if Conf["Tripcode Hider"]
+      if conf["Tripcode Hider"]
         """
 input.field.tripped:not(:hover):not(:focus) {
   color: transparent !important;
@@ -2300,7 +2302,7 @@ input.field.tripped:not(:hover):not(:focus) {
 """
       else ""
     ) + (
-      if Conf["Block Ads"]
+      if conf["Block Ads"]
         """
 /* AdBlock Minus */
 .bottomad + hr,
@@ -2311,7 +2313,7 @@ img[src^="//static.4chan.org/support/"] {
 """
       else ""
     ) + (
-      if Conf["Shrink Ads"]
+      if conf["Shrink Ads"]
         """
 a[href*="jlist"],
 img[src^="//static.4chan.org/support/"] {
@@ -2321,25 +2323,25 @@ img[src^="//static.4chan.org/support/"] {
 """
       else ""
     ) + (
-      unless Conf["Emoji"] is "disable"
-        Style.emoji Conf["Emoji Position"]
+      unless conf["Emoji"] is "disable"
+        Style.emoji conf["Emoji Position"]
       else ""
     ) + (
-      if Conf["4chan SS Sidebar"]
+      if conf["4chan SS Sidebar"]
         background = new Style.color Style.colorToHex theme["Background Color"]
         """
 body::before {
   background: none repeat scroll 0% 0% rgba(#{background.shiftRGB -18}, 0.8);
   border-#{Style.sidebarLocation[1]}: 2px solid #{theme["Background Color"]};
   box-shadow:
-    #{if Conf["Sidebar Location"] is "right" then "inset" else ""}  1px 0 0 #{theme["Thread Wrapper Border"]},
-    #{if Conf["Sidebar Location"] is "left"  then "inset" else ""} -1px 0 0 #{theme["Thread Wrapper Border"]};
+    #{if conf["Sidebar Location"] is "right" then "inset" else ""}  1px 0 0 #{theme["Thread Wrapper Border"]},
+    #{if conf["Sidebar Location"] is "left"  then "inset" else ""} -1px 0 0 #{theme["Thread Wrapper Border"]};
   content: "";
   position: fixed;
   top: 0;
   bottom: 0;
   #{Style.sidebarLocation[0]}: 0;
-  width: #{if Conf["Sidebar"] is "large" then 305 else if Conf["Sidebar"] is "normal" then 254 else if Conf["Sidebar"] is "minimal" then 27 else 0}px;
+  width: #{if conf["Sidebar"] is "large" then 305 else if conf["Sidebar"] is "normal" then 254 else if conf["Sidebar"] is "minimal" then 27 else 0}px;
   z-index: 1;
   #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
@@ -2348,13 +2350,13 @@ body::before {
 """
       else ""
     ) + (
-      if Conf["4chan SS Navigation"]
+      if conf["4chan SS Navigation"]
         """
-#{if ["sticky top", "sticky bottom"].contains(Conf["Pagination"]) then ".pagelist," else ""}
+#{if ["sticky top", "sticky bottom"].contains(conf["Pagination"]) then ".pagelist," else ""}
 #boardNavDesktop {
   left: 0;
   right: 0;
-  padding-#{Conf["Sidebar Location"]}: #{Style.sidebar}px;
+  padding-#{conf["Sidebar Location"]}: #{Style.sidebar}px;
   border-left: 0;
   border-right: 0;
   border-radius: 0 !important;
@@ -2370,13 +2372,13 @@ body::before {
 """
       else ""
     ) + (
-      switch Conf["Board Title"]
+      switch conf["Board Title"]
         when "at sidebar top"
           """
 #boardTitle {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
-  top: #{(if Style.logoOffset is 0 and Conf["Icon Orientation"] isnt "vertical" then 40 else 21) + Style.logoOffset}px;
+  top: #{(if Style.logoOffset is 0 and conf["Icon Orientation"] isnt "vertical" then 40 else 21) + Style.logoOffset}px;
   width: #{248 + Style.sidebarOffsetW}px;
 }\n
 """
@@ -2407,7 +2409,7 @@ body::before {
 }\n
 """
     ) + (
-      switch Conf["Reply Padding"]
+      switch conf["Reply Padding"]
         when "phat"
           """
 .postContainer blockquote {
@@ -2439,9 +2441,9 @@ body::before {
 }\n
 """
     ) + (
-      if Conf["Rounded Edges"]
+      if conf["Rounded Edges"]
         (
-          if Conf["Post Form Style"] is "float"
+          if conf["Post Form Style"] is "float"
             """
 #qr {
   border-radius: 6px 6px 0 0;
@@ -2449,7 +2451,7 @@ body::before {
 """
           else ""
         ) + (
-          switch Conf["Boards Navigation"]
+          switch conf["Boards Navigation"]
             when "sticky top", "top"
               """
 #boardNavDesktop {
@@ -2463,7 +2465,7 @@ body::before {
 }\n
 """
         ) + (
-          switch Conf["Pagination"]
+          switch conf["Pagination"]
             when "sticky top", "top"
               """
 .pagelist {
@@ -2490,7 +2492,7 @@ body::before {
 #post-preview,
 #qp,
 #qp div.post,
-#{if Conf["Post Form Decorations"] then "#qr," else ""}
+#{if conf["Post Form Decorations"] then "#qr," else ""}
 #stats,
 #updater,
 #watcher,
@@ -2516,14 +2518,14 @@ td[style="border: 1px dashed;"] {
         )
       else ""
     ) + (
-      switch Conf["Slideout Navigation"]
+      switch conf["Slideout Navigation"]
         when "compact"
           """
 #boardNavDesktopFoot {
   word-spacing: 1px;
 }
 #boardNavDesktopFoot:hover {
-  height: #{if Conf["Slideout Transitions"] then '84px' else 'auto'};
+  height: #{if conf["Slideout Transitions"] then '84px' else 'auto'};
 }\n
 """
 
@@ -2555,29 +2557,29 @@ td[style="border: 1px dashed;"] {
 }\n
 """
     ) + (
-      switch Conf["Sage Highlighting"]
+      switch conf["Sage Highlighting"]
         when "text"
           """
-a.useremail[href*="sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
-a.useremail[href*="Sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
-a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
+a.useremail[href*="sage"]:last-of-type::#{conf["Sage Highlight Position"]},
+a.useremail[href*="Sage"]:last-of-type::#{conf["Sage Highlight Position"]},
+a.useremail[href*="SAGE"]:last-of-type::#{conf["Sage Highlight Position"]} {
   content: " (sage) ";
   color: #{theme["Sage"]};
 }\n
 """
         when "image"
           """
-a.useremail[href*="sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
-a.useremail[href*="Sage"]:last-of-type::#{Conf["Sage Highlight Position"]},
-a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
+a.useremail[href*="sage"]:last-of-type::#{conf["Sage Highlight Position"]},
+a.useremail[href*="Sage"]:last-of-type::#{conf["Sage Highlight Position"]},
+a.useremail[href*="SAGE"]:last-of-type::#{conf["Sage Highlight Position"]} {
   content: url("#{Icons.header.png}A4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=");
   vertical-align: top;
-  margin#{if position is "before" then "right" else "left"}: #{parseInt Conf['Emoji Spacing']}px;
+  margin#{if position is "before" then "right" else "left"}: #{parseInt conf['Emoji Spacing']}px;
 }\n
 """
         else ""
     ) + (
-      switch Conf["Announcements"]
+      switch conf["Announcements"]
         when "4chan default"
           """
 #globalMessage {
@@ -2610,7 +2612,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   box-sizing: border-box;
 }
 #globalMessage:hover {
-  height: #{if Conf["Slideout Transitions"] then '250px' else 'auto'};
+  height: #{if conf["Slideout Transitions"] then '250px' else 'auto'};
   overflow: auto;
 }\n
 """
@@ -2622,7 +2624,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 }\n
 """
     ) + (
-      switch Conf["Boards Navigation"]
+      switch conf["Boards Navigation"]
         when "sticky top"
           """
 #boardNavDesktop {
@@ -2652,7 +2654,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 }\n
 """
     ) + (
-      switch Conf["Pagination"]
+      switch conf["Pagination"]
         when "sticky top"
           """
 .pagelist {
@@ -2702,7 +2704,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
 }\n
 """
     ) + (
-      switch Conf["Post Form Style"]
+      switch conf["Post Form Style"]
         when "fixed"
           """
 #qrtab {
@@ -2793,7 +2795,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{Conf["Sage Highlight Position"]} {
   z-index: 103;
   border: 1px solid #{theme["Background Color"]};
   background: #{theme["Background Color"]};
-  box-shadow: #{if Conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
+  box-shadow: #{if conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
 }
 #qr > .move,
 #qr textarea {
@@ -2839,7 +2841,7 @@ textarea.field,
 }\n
 """
     ) + (
-      switch Conf["4chan Banner"]
+      switch conf["4chan Banner"]
         when "at sidebar top"
           """
 .boardBanner {
@@ -2891,7 +2893,7 @@ textarea.field,
 }\n
 """
     ) + (
-      switch Conf["Backlinks Position"]
+      switch conf["Backlinks Position"]
         when 'lower left'
           """
 #delform .op .container {
@@ -2954,7 +2956,7 @@ textarea.field,
 """
         else ""
     ) + (
-      switch Conf["Checkboxes"]
+      switch conf["Checkboxes"]
         when "show", "hide"
           """
 .riced {
@@ -2975,4 +2977,4 @@ textarea.field,
 .rice {
   display: none;
 }\n
-""") + (if Conf["Custom CSS"] then Conf["customCSS"] else "")
+""") + (if conf["Custom CSS"] then conf["customCSS"] else "")
