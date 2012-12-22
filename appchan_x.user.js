@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.27 - 2012-12-21
+ * appchan x - Version 1.0.27 - 2012-12-22
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -9587,7 +9587,7 @@
       };
     },
     color: function(target) {
-      var HSV_RGB, RGB_HSV, THIS, abortBlur, blurTarget, blurValue, drawPicker, getPickerDims, holdPad, holdSld, isPickerOwner, leavePad, leaveSld, leaveStyle, leaveValue, redrawPad, redrawSld, removePicker, setPad, setSld, styleElement, updateField, valueElement;
+      var HSV_RGB, RGB_HSV, THIS, abortBlur, blurTarget, blurValue, drawPicker, holdPad, holdSld, isPickerOwner, leavePad, leaveSld, leaveStyle, leaveValue, redrawPad, redrawSld, removePicker, setPad, setSld, styleElement, updateField, valueElement;
       this.valueElement = target;
       this.styleElement = target;
       this.hsv = [0, 0, 1];
@@ -9598,15 +9598,8 @@
       this.maxS = 1;
       this.minV = 0;
       this.maxV = 1;
-      this.pickerButtonHeight = 20;
-      this.pickerButtonColor = 'ButtonText';
       this.pickerFace = 10;
-      this.pickerFaceColor = 'ThreeDFace';
-      this.pickerBorder = 1;
-      this.pickerBorderColor = 'ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight';
       this.pickerInset = 1;
-      this.pickerInsetColor = 'ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow';
-      this.pickerZIndex = 1000;
       abortBlur = false;
       holdPad = false;
       holdSld = false;
@@ -9650,41 +9643,25 @@
         }
       };
       this.fromHSV = function(h, s, v, flags) {
-        if (h !== null) {
-          h = Math.max(0.0, this.minH, Math.min(6.0, this.maxH, h));
-        }
-        if (s !== null) {
-          s = Math.max(0.0, this.minS, Math.min(1.0, this.maxS, s));
-        }
-        if (v !== null) {
-          v = Math.max(0.0, this.minV, Math.min(1.0, this.maxV, v));
-        }
-        this.rgb = HSV_RGB(h === null ? this.hsv[0] : (this.hsv[0] = h), s === null ? this.hsv[1] : (this.hsv[1] = s), v === null ? this.hsv[2] : (this.hsv[2] = v));
+        this.hsv = [h = h ? Math.max(0.0, this.minH, Math.min(6.0, this.maxH, h)) : this.hsv[0], s = s ? Math.max(0.0, this.minS, Math.min(1.0, this.maxS, s)) : this.hsv[1], v = v ? Math.max(0.0, this.minV, Math.min(1.0, this.maxV, v)) : this.hsv[2]];
+        this.rgb = HSV_RGB(h, s, v);
         return this.exportColor(flags);
       };
       this.fromRGB = function(r, g, b, flags) {
         var hsv, rgb;
-        if (r !== null) {
-          r = Math.max(0.0, Math.min(1.0, r));
-        }
-        if (g !== null) {
-          g = Math.max(0.0, Math.min(1.0, g));
-        }
-        if (b !== null) {
-          b = Math.max(0.0, Math.min(1.0, b));
-        }
-        hsv = RGB_HSV(r === null ? this.rgb[0] : r, g === null ? this.rgb[1] : g, b === null ? this.rgb[2] : b);
-        if (hsv[0] !== null) {
+        r = r ? Math.max(0.0, Math.min(1.0, r)) : this.rgb[0];
+        g = g ? Math.max(0.0, Math.min(1.0, g)) : this.rgb[1];
+        b = b ? Math.max(0.0, Math.min(1.0, b)) : this.rgb[2];
+        hsv = RGB_HSV(r, g, b);
+        if (hsv[0]) {
           this.hsv[0] = Math.max(0.0, this.minH, Math.min(6.0, this.maxH, hsv[0]));
         }
-        if (hsv[2] !== 0) {
-          this.hsv[1] = hsv[1] === null ? null : Math.max(0.0, this.minS, Math.min(1.0, this.maxS, hsv[1]));
+        if (hsv[2]) {
+          this.hsv[1] = !hsv[1] ? null : Math.max(0.0, this.minS, Math.min(1.0, this.maxS, hsv[1]));
         }
-        this.hsv[2] = hsv[2] === null ? null : Math.max(0.0, this.minV, Math.min(1.0, this.maxV, hsv[2]));
+        this.hsv[2] = !hsv[2] ? null : Math.max(0.0, this.minV, Math.min(1.0, this.maxV, hsv[2]));
         rgb = HSV_RGB(this.hsv[0], this.hsv[1], this.hsv[2]);
-        this.rgb[0] = rgb[0];
-        this.rgb[1] = rgb[1];
-        this.rgb[2] = rgb[2];
+        this.rgb = rgb;
         return this.exportColor(flags);
       };
       this.fromString = function(number, flags) {
@@ -9745,33 +9722,41 @@
         return $.rm(JSColor.picker.boxB);
       };
       drawPicker = function(x, y) {
-        var box, boxB, btn, btnS, dims, i, p, pad, padB, padImg, padM, seg, segSize, setBtnBorder, sld, sldB, sldM, slider;
+        var box, boxB, btn, btnS, p, pad, padB, padM, sld, sldB, sldM;
         if (!(p = JSColor.picker)) {
           JSColor.picker = p = {
-            box: $.el('div'),
-            boxB: $.el('div'),
-            pad: $.el('div'),
-            padB: $.el('div'),
-            padM: $.el('div'),
-            sld: $.el('div'),
-            sldB: $.el('div'),
-            sldM: $.el('div'),
-            btn: $.el('div'),
-            btnS: $.el('span'),
+            box: $.el('div', {
+              className: 'jscBox'
+            }),
+            boxB: $.el('div', {
+              className: 'jscBoxB'
+            }),
+            pad: $.el('div', {
+              className: 'jscPad'
+            }),
+            padB: $.el('div', {
+              className: 'jscPadB'
+            }),
+            padM: $.el('div', {
+              className: 'jscPadM'
+            }),
+            sld: $.el('div', {
+              className: 'jscSld'
+            }),
+            sldB: $.el('div', {
+              className: 'jscSldB'
+            }),
+            sldM: $.el('div', {
+              className: 'jscSldM'
+            }),
+            btn: $.el('div', {
+              className: 'jscBtn'
+            }),
+            btnS: $.el('span', {
+              className: 'jscBtnS'
+            }),
             btnT: $.tn('Close')
           };
-          slider = (function() {
-            var _i, _len, _ref, _results, _step;
-            _ref = JSColor.images.sld[1];
-            _results = [];
-            for (_i = 0, _len = _ref.length, _step = (segSize = 4); _i < _len; _i += _step) {
-              i = _ref[_i];
-              seg = $.el('div');
-              _results.push(seg.style.cssText = "height: " + segSize + "px; font-size: 1px; line-height: 0;");
-            }
-            return _results;
-          })();
-          $.add(p.sld, slider);
           $.add(p.box, [p.sldB, p.sldM, p.padB, p.padM, p.btn]);
           $.add(p.sldB, p.sld);
           $.add(p.padB, p.pad);
@@ -9820,97 +9805,22 @@
           holdSld = true;
           return setSld(e);
         };
-        dims = getPickerDims(THIS);
-        box.style.width = dims[0] + 'px';
-        box.style.height = dims[1] + 'px';
-        boxB.style.position = 'absolute';
-        boxB.style.clear = 'both';
-        boxB.style.left = '320px';
-        boxB.style.bottom = '20px';
-        boxB.style.zIndex = THIS.pickerZIndex;
-        boxB.style.border = THIS.pickerBorder + 'px solid';
-        boxB.style.borderColor = THIS.pickerBorderColor;
-        boxB.style.background = THIS.pickerFaceColor;
-        pad.style.width = JSColor.images.pad[0] + 'px';
-        pad.style.height = JSColor.images.pad[1] + 'px';
-        padB.style.position = 'absolute';
-        padB.style.left = THIS.pickerFace + 'px';
-        padB.style.top = THIS.pickerFace + 'px';
-        padB.style.border = THIS.pickerInset + 'px solid';
-        padB.style.borderColor = THIS.pickerInsetColor;
-        padM.style.position = 'absolute';
-        padM.style.left = '0';
-        padM.style.top = '0';
-        padM.style.width = THIS.pickerFace + 2 * THIS.pickerInset + JSColor.images.pad[0] + JSColor.images.arrow[0] + 'px';
-        padM.style.height = p.box.style.height;
-        padM.style.cursor = 'crosshair';
-        sld.style.overflow = 'hidden';
-        sld.style.width = JSColor.images.sld[0] + 'px';
-        sld.style.height = JSColor.images.sld[1] + 'px';
-        sldB.style.display = 'block';
-        sldB.style.position = 'absolute';
-        sldB.style.right = THIS.pickerFace + 'px';
-        sldB.style.top = THIS.pickerFace + 'px';
-        sldB.style.border = THIS.pickerInset + 'px solid';
-        sldB.style.borderColor = THIS.pickerInsetColor;
-        sldB.style.backgroundImage = "" + Style.agent + "linear-gradient(#fff, #000)";
-        sldM.style.display = 'block';
-        sldM.style.position = 'absolute';
-        sldM.style.right = '0';
-        sldM.style.top = '0';
-        sldM.style.width = JSColor.images.sld[0] + JSColor.images.arrow[0] + THIS.pickerFace + 2 * THIS.pickerInset + 'px';
-        sldM.style.height = p.box.style.height;
-        sldM.style.cursor = 'pointer';
-        setBtnBorder = function() {
-          var insetColors, pickerOutsetColor;
-          insetColors = THIS.pickerInsetColor.split(/\s+/);
-          pickerOutsetColor = insetColors.length < 2 ? insetColors[0] : insetColors[1] + ' ' + insetColors[0] + ' ' + insetColors[0] + ' ' + insetColors[1];
-          return p.btn.style.borderColor = pickerOutsetColor;
-        };
-        btn.style.display = 'block';
-        btn.style.position = 'absolute';
-        btn.style.left = THIS.pickerFace + 'px';
-        btn.style.bottom = THIS.pickerFace + 'px';
-        btn.style.padding = '0 15px';
-        btn.style.height = '18px';
-        btn.style.border = THIS.pickerInset + 'px solid';
-        setBtnBorder();
-        btn.style.color = THIS.pickerButtonColor;
-        btn.style.textAlign = 'center';
-        btn.style.cursor = 'pointer';
         btn.onmousedown = function() {
           return THIS.hidePicker();
         };
-        btnS.style.lineHeight = p.btn.style.height;
-        padImg = "" + Style.agent + "linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), " + Style.agent + "linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)";
-        padM.style.backgroundImage = "url('data:image/gif;base64,R0lGODlhDwAPAKEBAAAAAP///////////yH5BAEKAAIALAAAAAAPAA8AAAIklB8Qx53b4otSUWcvyiz4/4AeQJbmKY4p1HHapBlwPL/uVRsFADs=')";
-        padM.style.backgroundRepeat = "no-repeat";
-        sldM.style.backgroundImage = "url('data:image/gif;base64,R0lGODlhBwALAKECAAAAAP///6g8eKg8eCH5BAEKAAIALAAAAAAHAAsAAAITTIQYcLnsgGxvijrxqdQq6DRJAQA7')";
-        sldM.style.backgroundRepeat = "no-repeat";
-        pad.style.backgroundImage = padImg;
-        pad.style.backgroundRepeat = "no-repeat";
-        pad.style.backgroundPosition = "0 0";
         redrawPad();
         redrawSld();
         JSColor.picker.owner = THIS;
         return $.add(ThemeTools.dialog, p.boxB);
       };
-      getPickerDims = function(o) {
-        var dims;
-        return dims = [2 * o.pickerInset + 2 * o.pickerFace + JSColor.images.pad[0] + (2 * o.pickerInset + 2 * JSColor.images.arrow[0] + JSColor.images.sld[0]), 4 * o.pickerInset + 3 * o.pickerFace + JSColor.images.pad[1] + o.pickerButtonHeight];
-      };
       redrawPad = function() {
-        var item, rgb, seg, x, y, yComponent, _i, _len;
+        var rgb, x, y, yComponent;
         yComponent = 1;
         x = Math.round((THIS.hsv[0] / 6) * (JSColor.images.pad[0] - 1));
         y = Math.round((1 - THIS.hsv[yComponent]) * (JSColor.images.pad[1] - 1));
         JSColor.picker.padM.style.backgroundPosition = "" + (THIS.pickerFace + THIS.pickerInset + x - Math.floor(JSColor.images.cross[0] / 2)) + "px " + (THIS.pickerFace + THIS.pickerInset + y - Math.floor(JSColor.images.cross[1] / 2)) + "px";
-        seg = JSColor.picker.sld.childNodes;
         rgb = HSV_RGB(THIS.hsv[0], THIS.hsv[1], 1);
-        for (_i = 0, _len = seg.length; _i < _len; _i++) {
-          item = seg[_i];
-          item.style.backgroundColor = "rgb(" + (rgb[0] * (1 - i / seg.length) * 100) + "%, " + (rgb[1] * (1 - i / seg.length) * 100) + "%, " + (rgb[2] * (1 - i / seg.length) * 100) + "%)";
-        }
+        JSColor.picker.sld.style.backgroundColor = "rgb(" + (rgb[0] * 100) + "%, " + (rgb[1] * 100) + "%, " + (rgb[2] * 100) + "%)";
       };
       redrawSld = function() {
         var y, yComponent;
@@ -10467,7 +10377,8 @@
           Style.appchan = $.addStyle(Style.css(theme), 'appchan');
           Style.icons = $.addStyle("", 'icons');
           Style.paddingSheet = $.addStyle("", 'padding');
-          return Style.mascot = $.addStyle("", 'mascotSheet');
+          Style.mascot = $.addStyle("", 'mascotSheet');
+          return $.addStyle(Style.jsColorCSS(), 'jsColor');
         } else {
           return $.on(d, 'DOMNodeInserted', Style.addStyle);
         }
@@ -10622,6 +10533,9 @@
       } else {
         return false;
       }
+    },
+    jsColorCSS: function() {
+      return ".jscBox {\n  width: 251px;\n  height: 155px;\n}\n.jscBoxB {\n  position: absolute;\n  clear: both;\n  left: 320px;\n  bottom: 20px;\n  z-index: 1000;\n  border: 1px solid;\n  border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;\n  background: ThreeDFace;\n}\n.jscPad {\n  width: 181px;\n  height: 101px;\n  background-image: " + Style.agent + "linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), " + Style.agent + "linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);\n  background-repeat: no-repeat;\n  background-position: 0 0;\n}\n.jscPadB {\n  position: absolute; \n  left: 10px; \n  top: 10px; \n  border: 1px solid; \n  border-color: ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow;\n}\n.jscPadM {\n  position: absolute;\n  left: 0;\n  top: 0;\n  width: 200px;\n  height: 101px;\n  cursor: crosshair;\n  background-image: url('data:image/gif;base64,R0lGODlhDwAPAKEBAAAAAP///////////yH5BAEKAAIALAAAAAAPAA8AAAIklB8Qx53b4otSUWcvyiz4/4AeQJbmKY4p1HHapBlwPL/uVRsFADs=');\n  background-repeat: no-repeat;\n}\n.jscSld {\n  width: 16px;\n  height: 101px;\n  background-image: " + Style.agent + "linear-gradient(rgba(0,0,0,0), rgba(0,0,0,1));\n}\n.jscSldB {\n  display: block;\n  position: absolute;\n  right: 10px;\n  top: 10px;\n  border: 1px solid;\n  border-color: ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow;\n}\n.jscSldM {\n  display: block;\n  position: absolute;\n  right: 0;\n  top: 0;\n  width: 36px;\n  height: 101px;\n  cursor: pointer;\n  background-image: url('data:image/gif;base64,R0lGODlhBwALAKECAAAAAP///6g8eKg8eCH5BAEKAAIALAAAAAAHAAsAAAITTIQYcLnsgGxvijrxqdQq6DRJAQA7');\n  background-repeat: no-repeat;\n}\n.jscBtn {\n  display: block;\n  position: absolute;\n  right: 10px;\n  bottom: 10px;\n  padding: 0 15px;\n  height: 18px;\n  border: 1px solid;\n  border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;\n  color: ButtonText;\n  text-align: center;\n  cursor: pointer;\n}\n.jscBtnS {\n  line-height: 10px;\n}";
     },
     iconPositions: function() {
       var align, aligner, css, first, i, iconOffset, navlinks, offset, position, spacer;
@@ -10800,7 +10714,7 @@
           case "bottom":
             return ".pagelist {\n  border-radius: 3px 3px 0 0;\n}\n";
         }
-      })()) + (".rice {\n  border-radius: 2px;\n}\n#boardNavDesktopFoot,\n#optionsContent,\n#options .mascot,\n#options ul,\n#options,\n#post-preview,\n#qp,\n#qp div.post,\n" + (Conf["Post Form Decorations"] ? "#qr," : "") + "\n#stats,\n#updater,\n#watcher,\n#globalMessage,\n.inline div.reply,\ndiv.opContainer,\ndiv.replyContainer,\ndiv.post,\nh2,\ntd[style=\"border: 1px dashed;\"] {\n  border-radius: 3px;\n}\n#options .selectrice ul {\n  border-radius: 0;\n}\n#optionsbar label[for],\n.reply .postInfo {\n  border-radius: 3px 3px 0 0;\n}\n#qrtab {\n  border-radius: 6px 6px 0 0;\n}") : "") + ((function() {
+      })()) + (".rice {\n  border-radius: 2px;\n}\n#boardNavDesktopFoot,\n#optionsContent,\n#options .mascot,\n#options ul,\n#options,\n#post-preview,\n#qp,\n#qp div.post,\n" + (Conf["Post Form Decorations"] ? "#qr," : "") + "\n#stats,\n#updater,\n#watcher,\n#globalMessage,\n.inline div.reply,\ndiv.opContainer,\ndiv.replyContainer,\ndiv.post,\nh2,\ntd[style=\"border: 1px dashed;\"] {\n  border-radius: 3px;\n}\n#options .selectrice ul {\n  border-radius: 0;\n}\n#optionsbar label[for] {\n  border-radius: 3px 3px 0 0;\n}\n#qrtab {\n  border-radius: 6px 6px 0 0;\n}") : "") + ((function() {
         switch (Conf["Slideout Navigation"]) {
           case "compact":
             return "#boardNavDesktopFoot {\n  word-spacing: 1px;\n}\n#boardNavDesktopFoot:hover {\n  height: " + (Conf["Slideout Transitions"] ? '84px' : 'auto') + ";\n}\n";

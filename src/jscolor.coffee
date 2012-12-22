@@ -42,15 +42,8 @@ JSColor =
     @maxS               = 1              # read-only  0-1
     @minV               = 0              # read-only  0-1
     @maxV               = 1              # read-only  0-1
-    @pickerButtonHeight = 20             # px
-    @pickerButtonColor  = 'ButtonText'   # px
     @pickerFace         = 10             # px
-    @pickerFaceColor    = 'ThreeDFace'   # CSS color
-    @pickerBorder       = 1              # px
-    @pickerBorderColor  = 'ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight' # CSS color
     @pickerInset        = 1              # px
-    @pickerInsetColor   = 'ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow' # CSS color
-    @pickerZIndex       = 1000
     abortBlur    = false
     holdPad      = false
     holdSld      = false
@@ -78,7 +71,7 @@ JSColor =
         valueElement.previousSibling.value = value
         editTheme[valueElement.previousSibling.name] = value
 
-        Style.addStyle(editTheme)
+        Style.addStyle editTheme
 
       if not (flags & leaveStyle) and styleElement
         styleElement.style.backgroundColor = '#' + @toString()
@@ -90,55 +83,56 @@ JSColor =
         redrawSld()
 
     @fromHSV = (h, s, v, flags) -> # null = don't change
-      if h isnt null then h = Math.max(0.0, @minH, Math.min(6.0, @maxH, h))
-      if s isnt null then s = Math.max(0.0, @minS, Math.min(1.0, @maxS, s))
-      if v isnt null then v = Math.max(0.0, @minV, Math.min(1.0, @maxV, v))
+      @hsv = [
+        h = if h then Math.max(0.0, @minH, Math.min(6.0, @maxH, h)) else @hsv[0]
+        s = if s then Math.max(0.0, @minS, Math.min(1.0, @maxS, s)) else @hsv[1]
+        v = if v then Math.max(0.0, @minV, Math.min(1.0, @maxV, v)) else @hsv[2]
+      ]
 
-      @rgb = HSV_RGB(
-        if h is null then @hsv[0] else (@hsv[0] = h)
-        if s is null then @hsv[1] else (@hsv[1] = s)
-        if v is null then @hsv[2] else (@hsv[2] = v)
-      )
+      @rgb = HSV_RGB(h, s, v)
 
       @exportColor flags
 
     @fromRGB = (r, g, b, flags) -> # null = don't change
-      if r isnt null then r = Math.max(0.0, Math.min(1.0, r))
-      if g isnt null then g = Math.max(0.0, Math.min(1.0, g))
-      if b isnt null then b = Math.max(0.0, Math.min(1.0, b))
+      r = if r 
+        Math.max 0.0, Math.min 1.0, r
+      else
+        @rgb[0]
+      g = if g
+        Math.max 0.0, Math.min 1.0, g
+      else
+        @rgb[1]
+      b = if b
+        Math.max 0.0, Math.min 1.0, b
+      else
+        @rgb[2]
 
-      hsv = RGB_HSV(
-        if r is null then @rgb[0] else r
-        if g is null then @rgb[1] else g
-        if b is null then @rgb[2] else b
-      )
+      hsv = RGB_HSV(r, g, b)
 
-      if hsv[0] isnt null
-        @hsv[0] = Math.max(0.0, @minH, Math.min(6.0, @maxH, hsv[0]))
+      if hsv[0]
+        @hsv[0] = Math.max 0.0, @minH, Math.min 6.0, @maxH, hsv[0]
 
-      if hsv[2] isnt 0
+      if hsv[2]
         @hsv[1] =
-          if hsv[1] is null
+          unless hsv[1]
             null
           else
             Math.max 0.0, @minS, Math.min 1.0, @maxS, hsv[1]
 
       @hsv[2] =
-        if hsv[2] is null
+        unless hsv[2]
           null
         else
           Math.max 0.0, @minV, Math.min 1.0, @maxV, hsv[2]
 
       # update RGB according to final HSV, as some values might be trimmed
-      rgb = HSV_RGB(@hsv[0], @hsv[1], @hsv[2])
-      @rgb[0] = rgb[0]
-      @rgb[1] = rgb[1]
-      @rgb[2] = rgb[2]
+      rgb = HSV_RGB @hsv[0], @hsv[1], @hsv[2]
+      @rgb = rgb
 
       @exportColor flags
 
     @fromString = (number, flags) ->
-      m = number.match(/^\W*([0-9A-F]{3}([0-9A-F]{3})?)\W*$/i)
+      m = number.match /^\W*([0-9A-F]{3}([0-9A-F]{3})?)\W*$/i
       unless m
         return false
       else
@@ -178,12 +172,11 @@ JSColor =
             5 + (r - b) / m
           else
             1 + (g - r) / m
-      [if h is 6
-          0
-        else
-          h
+      [
+        if h is 6 then 0 else h
         m / v
-        v]
+        v
+      ]
 
     HSV_RGB = (h, s, v) ->
 
@@ -220,22 +213,26 @@ JSColor =
       unless p = JSColor.picker
         JSColor.picker = p =
           box:  $.el 'div'
+            className: 'jscBox'
           boxB: $.el 'div'
+            className: 'jscBoxB'
           pad:  $.el 'div'
+            className: 'jscPad'
           padB: $.el 'div'
+            className: 'jscPadB'
           padM: $.el 'div'
+            className: 'jscPadM'
           sld:  $.el 'div'
+            className: 'jscSld'
           sldB: $.el 'div'
+            className: 'jscSldB'
           sldM: $.el 'div'
+            className: 'jscSldM'
           btn:  $.el 'div'
+            className: 'jscBtn'
           btnS: $.el 'span'
+            className: 'jscBtnS'
           btnT: $.tn 'Close'
-
-        slider = for i in JSColor.images.sld[1] by (segSize = 4)
-          seg = $.el 'div'
-          seg.style.cssText = "height: #{segSize}px; font-size: 1px; line-height: 0;"
-
-        $.add p.sld, slider
 
         $.add p.box,  [p.sldB, p.sldM, p.padB, p.padM, p.btn]
         $.add p.sldB, p.sld
@@ -280,100 +277,8 @@ JSColor =
         holdSld = true
         setSld e
 
-      # picker
-      dims                          = getPickerDims THIS
-      box.style.width             = dims[0] + 'px'
-      box.style.height            = dims[1] + 'px'
-
-      # picker border
-      boxB.style.position         = 'absolute'
-      boxB.style.clear            = 'both'
-      boxB.style.left             = '320px'
-      boxB.style.bottom           = '20px'
-      boxB.style.zIndex           = THIS.pickerZIndex
-      boxB.style.border           = THIS.pickerBorder + 'px solid'
-      boxB.style.borderColor      = THIS.pickerBorderColor
-      boxB.style.background       = THIS.pickerFaceColor
-
-      # pad image
-      pad.style.width             = JSColor.images.pad[0] + 'px'
-      pad.style.height            = JSColor.images.pad[1] + 'px'
-
-      # pad border
-      padB.style.position         = 'absolute'
-      padB.style.left             = THIS.pickerFace  + 'px'
-      padB.style.top              = THIS.pickerFace  + 'px'
-      padB.style.border           = THIS.pickerInset + 'px solid'
-      padB.style.borderColor      = THIS.pickerInsetColor
-
-      # pad mouse area
-      padM.style.position         = 'absolute'
-      padM.style.left             = '0'
-      padM.style.top              = '0'
-      padM.style.width            = THIS.pickerFace + 2 * THIS.pickerInset + JSColor.images.pad[0] + JSColor.images.arrow[0] + 'px'
-      padM.style.height           = p.box.style.height
-      padM.style.cursor           = 'crosshair'
-
-      # slider image
-      sld.style.overflow          = 'hidden'
-      sld.style.width             = JSColor.images.sld[0] + 'px'
-      sld.style.height            = JSColor.images.sld[1] + 'px'
-
-      # slider border
-      sldB.style.display          = 'block'
-      sldB.style.position         = 'absolute'
-      sldB.style.right            = THIS.pickerFace  + 'px'
-      sldB.style.top              = THIS.pickerFace  + 'px'
-      sldB.style.border           = THIS.pickerInset + 'px solid'
-      sldB.style.borderColor      = THIS.pickerInsetColor
-      sldB.style.backgroundImage  = "#{Style.agent}linear-gradient(#fff, #000)"
-
-      # slider mouse area
-      sldM.style.display          = 'block'
-      sldM.style.position         = 'absolute'
-      sldM.style.right            = '0'
-      sldM.style.top              = '0'
-      sldM.style.width            = JSColor.images.sld[0] + JSColor.images.arrow[0] + THIS.pickerFace + 2 * THIS.pickerInset + 'px'
-      sldM.style.height           = p.box.style.height
-
-      sldM.style.cursor           = 'pointer'
-
-      # "close" button
-      setBtnBorder = ->
-        insetColors = THIS.pickerInsetColor.split /\s+/
-        pickerOutsetColor = if insetColors.length < 2
-          insetColors[0]
-        else
-          insetColors[1] + ' ' + insetColors[0] + ' ' + insetColors[0] + ' ' + insetColors[1]
-        p.btn.style.borderColor = pickerOutsetColor
-
-      btn.style.display       = 'block'
-      btn.style.position      = 'absolute'
-      btn.style.left          = THIS.pickerFace + 'px'
-      btn.style.bottom        = THIS.pickerFace + 'px'
-      btn.style.padding       = '0 15px'
-      btn.style.height        = '18px'
-      btn.style.border        = THIS.pickerInset + 'px solid'
-      setBtnBorder()
-      btn.style.color         = THIS.pickerButtonColor
-      btn.style.textAlign     = 'center'
-
-      btn.style.cursor = 'pointer'
-
       btn.onmousedown = ->
         THIS.hidePicker()
-
-      btnS.style.lineHeight   = p.btn.style.height
-
-      padImg = "#{Style.agent}linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), #{Style.agent}linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00)"
-
-      padM.style.backgroundImage   = "url('data:image/gif;base64,R0lGODlhDwAPAKEBAAAAAP///////////yH5BAEKAAIALAAAAAAPAA8AAAIklB8Qx53b4otSUWcvyiz4/4AeQJbmKY4p1HHapBlwPL/uVRsFADs=')"
-      padM.style.backgroundRepeat  = "no-repeat"
-      sldM.style.backgroundImage   = "url('data:image/gif;base64,R0lGODlhBwALAKECAAAAAP///6g8eKg8eCH5BAEKAAIALAAAAAAHAAsAAAITTIQYcLnsgGxvijrxqdQq6DRJAQA7')"
-      sldM.style.backgroundRepeat  = "no-repeat"
-      pad.style.backgroundImage    = padImg
-      pad.style.backgroundRepeat   = "no-repeat"
-      pad.style.backgroundPosition = "0 0"
 
       # place pointers
       redrawPad()
@@ -381,26 +286,6 @@ JSColor =
 
       JSColor.picker.owner = THIS
       $.add ThemeTools.dialog, p.boxB
-
-    getPickerDims = (o) ->
-      dims = [
-        (
-          2 * o.pickerInset             +
-          2 * o.pickerFace              +
-          JSColor.images.pad[0]         +
-          (
-            2 * o.pickerInset           +
-            2 * JSColor.images.arrow[0] +
-            JSColor.images.sld[0]
-          )
-        )
-        (
-          4 * o.pickerInset       +
-          3*o.pickerFace          +
-          JSColor.images.pad[1]   +
-          o.pickerButtonHeight
-        )
-      ]
 
     # redraw the pad pointer
     redrawPad = ->
@@ -413,13 +298,8 @@ JSColor =
       JSColor.picker.padM.style.backgroundPosition =
         "#{THIS.pickerFace + THIS.pickerInset + x - Math.floor(JSColor.images.cross[0] / 2)}px #{THIS.pickerFace + THIS.pickerInset + y - Math.floor(JSColor.images.cross[1] / 2)}px"
 
-      # redraw the slider image
-      seg = JSColor.picker.sld.childNodes
-
       rgb = HSV_RGB(THIS.hsv[0], THIS.hsv[1], 1)
-      for item in seg
-        item.style.backgroundColor =
-          "rgb(#{rgb[0] * (1 - i / seg.length) * 100}%, #{rgb[1] * (1 - i / seg.length) * 100}%, #{rgb[2] * (1 - i / seg.length) * 100}%)"
+      JSColor.picker.sld.style.backgroundColor = "rgb(#{rgb[0] * 100}%, #{rgb[1] * 100}%, #{rgb[2] * 100}%)"
 
       return
 

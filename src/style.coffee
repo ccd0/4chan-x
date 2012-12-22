@@ -2506,8 +2506,7 @@ td[style="border: 1px dashed;"] {
 #options .selectrice ul {
   border-radius: 0;
 }
-#optionsbar label[for],
-.reply .postInfo {
+#optionsbar label[for] {
   border-radius: 3px 3px 0 0;
 }
 #qrtab {

@@ -113,6 +113,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         Style.icons        = $.addStyle "", 'icons'
         Style.paddingSheet = $.addStyle "", 'padding'
         Style.mascot       = $.addStyle "", 'mascotSheet'
+        $.addStyle Style.jsColorCSS(), 'jsColor'
       else # XXX fox
         $.on d, 'DOMNodeInserted', Style.addStyle
     else
@@ -253,3 +254,83 @@ body {
 
     else
       false
+
+  jsColorCSS: -> """
+.jscBox {
+  width: 251px;
+  height: 155px;
+}
+.jscBoxB {
+  position: absolute;
+  clear: both;
+  left: 320px;
+  bottom: 20px;
+  z-index: 1000;
+  border: 1px solid;
+  border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;
+  background: ThreeDFace;
+}
+.jscPad {
+  width: 181px;
+  height: 101px;
+  background-image: #{Style.agent}linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), #{Style.agent}linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+  background-repeat: no-repeat;
+  background-position: 0 0;
+}
+.jscPadB {
+  position: absolute; 
+  left: 10px; 
+  top: 10px; 
+  border: 1px solid; 
+  border-color: ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow;
+}
+.jscPadM {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200px;
+  height: 101px;
+  cursor: crosshair;
+  background-image: url('data:image/gif;base64,R0lGODlhDwAPAKEBAAAAAP///////////yH5BAEKAAIALAAAAAAPAA8AAAIklB8Qx53b4otSUWcvyiz4/4AeQJbmKY4p1HHapBlwPL/uVRsFADs=');
+  background-repeat: no-repeat;
+}
+.jscSld {
+  width: 16px;
+  height: 101px;
+  background-image: #{Style.agent}linear-gradient(rgba(0,0,0,0), rgba(0,0,0,1));
+}
+.jscSldB {
+  display: block;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  border: 1px solid;
+  border-color: ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow;
+}
+.jscSldM {
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 36px;
+  height: 101px;
+  cursor: pointer;
+  background-image: url('data:image/gif;base64,R0lGODlhBwALAKECAAAAAP///6g8eKg8eCH5BAEKAAIALAAAAAAHAAsAAAITTIQYcLnsgGxvijrxqdQq6DRJAQA7');
+  background-repeat: no-repeat;
+}
+.jscBtn {
+  display: block;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 0 15px;
+  height: 18px;
+  border: 1px solid;
+  border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;
+  color: ButtonText;
+  text-align: center;
+  cursor: pointer;
+}
+.jscBtnS {
+  line-height: 10px;
+}"""
