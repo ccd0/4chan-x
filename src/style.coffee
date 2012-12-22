@@ -184,7 +184,7 @@ div.subMenu.reply {
 #banmessage,
 #boardTitle,
 #main_tab + div,
-#mascotconf input,
+#mascotConf input,
 #style_tab + div .suboptions,
 .center,
 h1 {
@@ -200,10 +200,10 @@ h1 {
 #keybinds_tab + div > div {
   text-align: center;
 }
-#mascotconf input::#{Style.agent}placeholder {
+#mascotConf input::#{Style.agent}placeholder {
   text-align: center;
 }
-#mascotconf input:#{Style.agent}placeholder {
+#mascotConf input:#{Style.agent}placeholder {
   text-align: center;
 }
 #boardNavDesktopFoot,
@@ -547,7 +547,7 @@ input[type="submit"] {
 #options ul li.mascot {
   background-color: transparent;
 }
-#mascotconf {
+#mascotConf {
   position: fixed;
   height: 400px;
   bottom: 0;
@@ -556,7 +556,7 @@ input[type="submit"] {
   margin-left: -250px;
   overflow: auto;
 }
-#mascotconf h2 {
+#mascotConf h2 {
   margin: 10px 0 0;
   font-size: 14px;
 }
@@ -893,9 +893,9 @@ span.postNum > .replylink {
 #mouseover {
   z-index: 999;
 }
-#mascotconf,
+#mascotConf,
 #options.reply.dialog,
-#themeconf {
+#themeConf {
   z-index: 998;
 }
 #post-preview,
@@ -1443,7 +1443,7 @@ html .subMenu {
   overflow-x: auto;
   padding: 3px;
 }
-#themeconf {
+#themeConf {
   position: fixed;
   #{Style.sidebarLocation[1]}: 2px;
   #{Style.sidebarLocation[0]}: auto;
@@ -1577,11 +1577,11 @@ div.reply.post:target {
   border: 1px solid #{theme["Thread Wrapper Border"]};
 }
 #boardNavDesktopFoot,
-#mascotconf,
+#mascotConf,
 #mascot_hide,
 #menu,
 #selectrice,
-#themeconf,
+#themeConf,
 #watcher,
 #watcher:hover,
 div.subMenu,
