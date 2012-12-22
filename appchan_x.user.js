@@ -10523,7 +10523,7 @@
         return color.slice(1, color.length);
       }
       if (digits = color.match(/(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/)) {
-        rgb = parseInt(digits[2], 10) | (parseInt(digits[3], 10) << 8) | (parseInt(digits[4], 10) << 16);
+        rgb = parseInt(digits[4], 10) | (parseInt(digits[3], 10) << 8) | (parseInt(digits[2], 10) << 16);
         hex = rgb.toString(16);
         while (hex.length < 6) {
           hex = "0" + hex;
