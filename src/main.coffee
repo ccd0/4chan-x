@@ -23,7 +23,10 @@ Main =
     if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains g.BOARD
       g.TYPE = 'nsfw'
 
-    if Conf["NSFW/SFW Mascots"]
+    # Scope a local _conf variable for performance.
+    _conf = Conf
+    
+    if _conf["NSFW/SFW Mascots"]
       g.MASCOTSTRING = "Enabled Mascots #{g.TYPE}"
     else
       g.MASCOTSTRING = "Enabled Mascots"
@@ -43,11 +46,11 @@ Main =
     Conf["Deleted Mascots"]       = $.get "Deleted Mascots",      []
 
     # Setup Fill some per board configuration values with their global equivalents.
-    if Conf["Interval per board"]
+    if _conf["Interval per board"]
       Conf["Interval_"   + g.BOARD] = $.get "Interval_"   + g.BOARD, Conf["Interval"]
       Conf["BGInterval_" + g.BOARD] = $.get "BGInterval_" + g.BOARD, Conf["BGInteval"]
 
-    if Conf["NSFW/SFW Themes"]
+    if _conf["NSFW/SFW Themes"]
       Conf["theme"] = $.get "theme_#{g.TYPE}", Conf["theme"]
 
     switch location.hostname
@@ -67,7 +70,7 @@ Main =
 
       when 'images.4chan.org'
         $.ready ->
-          if /^4chan - 404/.test(d.title) and Conf['404 Redirect']
+          if /^4chan - 404/.test(d.title) and _conf['404 Redirect']
             path = location.pathname.split '/'
             url  = Redirect.image path[1], path[3]
             location.href = url if url
@@ -81,7 +84,7 @@ Main =
     Style.init()
 
     now = Date.now()
-    if Conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 18 * $.HOUR
+    if _conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 18 * $.HOUR
       $.ready ->
         $.on window, 'message', Main.message
         $.set 'lastUpdate', now
@@ -98,10 +101,11 @@ Main =
       Main.features()
 
   catalog: ->
-    if Conf['Catalog Links']
+    _conf = Conf
+    if _conf['Catalog Links']
       CatalogLinks.init()
 
-    if Conf['Thread Hiding']
+    if _conf['Thread Hiding']
       ThreadHiding.init()
     
     $.ready ->
@@ -113,102 +117,104 @@ Main =
           # Gotta make it work in temporary boards.
           $.addClass a, 'current'
 
-      if Conf['Custom Navigation']
+      if _conf['Custom Navigation']
         CustomNavigation.init()
 
   features: ->
-    if Conf['Filter']
+    _conf = Conf
+    if _conf['Filter']
       Filter.init()
       StrikethroughQuotes.init()
-    else if Conf['Reply Hiding'] or Conf['Reply Hiding Link']
+    else if _conf['Reply Hiding'] or _conf['Reply Hiding Link']
       StrikethroughQuotes.init()
 
-    if Conf['Reply Hiding']
+    if _conf['Reply Hiding']
       ReplyHiding.init()
 
-    if Conf['Anonymize']
+    if _conf['Anonymize']
       Anonymize.init()
 
-    if Conf['Time Formatting']
+    if _conf['Time Formatting']
       Time.init()
 
-    if Conf['File Info Formatting']
+    if _conf['File Info Formatting']
       FileInfo.init()
 
-    if Conf['Sauce']
+    if _conf['Sauce']
       Sauce.init()
 
-    if Conf['Reveal Spoilers']
+    if _conf['Reveal Spoilers']
       RevealSpoilers.init()
 
-    if Conf['Image Auto-Gif']
+    if _conf['Image Auto-Gif']
       AutoGif.init()
 
-    if Conf['Png Thumbnail Fix']
+    if _conf['Png Thumbnail Fix']
       PngFix.init()
 
-    if Conf['Image Hover']
+    if _conf['Image Hover']
       ImageHover.init()
 
-    if Conf['Menu']
+    if _conf['Menu']
       Menu.init()
 
-      if Conf['Report Link']
+      if _conf['Report Link']
         ReportLink.init()
 
-      if Conf['Delete Link']
+      if _conf['Delete Link']
         DeleteLink.init()
 
-      if Conf['Filter']
+      if _conf['Filter']
         Filter.menuInit()
 
-      if Conf['Archive Link']
+      if _conf['Archive Link']
         ArchiveLink.init()
 
-      if Conf['Download Link']
+      if _conf['Download Link']
         DownloadLink.init()
 
-      if Conf['Embed Link']
+      if _conf['Embed Link']
         EmbedLink.init()
 
-      if Conf['Thread Hiding Link']
+      if _conf['Thread Hiding Link']
         ThreadHideLink.init()
 
-      if Conf['Reply Hiding Link']
+      if _conf['Reply Hiding Link']
         ReplyHideLink.init()
 
-    if Conf['Resurrect Quotes']
+    if _conf['Resurrect Quotes']
       Quotify.init()
     
-    if Conf['Linkify']
+    if _conf['Linkify']
       Linkify.init()
 
-    if Conf['Remove Spoilers']
+    if _conf['Remove Spoilers']
       RemoveSpoilers.init()
 
-    if Conf['Quote Inline']
+    if _conf['Quote Inline']
       QuoteInline.init()
 
-    if Conf['Quote Preview']
+    if _conf['Quote Preview']
       QuotePreview.init()
 
-    if Conf['Quote Backlinks']
+    if _conf['Quote Backlinks']
       QuoteBacklink.init()
 
-    if Conf['Indicate OP quote']
+    if _conf['Indicate OP quote']
       QuoteOP.init()
 
-    if Conf['Indicate Cross-thread Quotes']
+    if _conf['Indicate Cross-thread Quotes']
       QuoteCT.init()
   
-    if Conf['Color user IDs']
+    if _conf['Color user IDs']
       IDColor.init()
 
     $.ready Main.featuresReady
 
   featuresReady: ->
+    _conf = Conf
     if /^4chan - 404/.test d.title
-      if Conf['404 Redirect'] and /^\d+$/.test g.THREAD_ID
+      if _conf['404 Redirect'] and /^\d+$/.test g.THREAD_ID
         location.href =
           Redirect.to
             board:    g.BOARD
@@ -220,7 +226,7 @@ Main =
     $.addClass d.body, $.engine
     $.addClass d.body, 'fourchan_x'
 
-    if Conf['Custom Navigation']
+    if _conf['Custom Navigation']
       CustomNavigation.init()
 
     for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
@@ -239,54 +245,54 @@ Main =
 
     MascotTools.init()
 
-    if Conf['Image Expansion']
+    if _conf['Image Expansion']
       ImageExpand.init()
 
-    if Conf['Catalog Links']
+    if _conf['Catalog Links']
       CatalogLinks.init()
 
-    if Conf['Thread Watcher']
+    if _conf['Thread Watcher']
       Watcher.init()
 
-    if Conf['Keybinds']
+    if _conf['Keybinds']
       Keybinds.init()
       
-    if Conf['Replace GIF'] or Conf['Replace PNG'] or Conf['Replace JPG']
+    if _conf['Replace GIF'] or _conf['Replace PNG'] or _conf['Replace JPG']
       ImageReplace.init()
     
-    if Conf['Fappe Tyme']
+    if _conf['Fappe Tyme']
       FappeTyme.init()
 
     if g.REPLY
-      if Conf['Prefetch']
+      if _conf['Prefetch']
         Prefetch.init()
 
-      if Conf['Thread Updater']
+      if _conf['Thread Updater']
         Updater.init()
 
-      if Conf['Thread Stats']
+      if _conf['Thread Stats']
         ThreadStats.init()
 
-      if Conf['Reply Navigation']
+      if _conf['Reply Navigation']
         Nav.init()
 
-      if Conf['Post in Title']
+      if _conf['Post in Title']
         TitlePost.init()
 
-      if Conf['Unread Count'] or Conf['Unread Favicon']
+      if _conf['Unread Count'] or _conf['Unread Favicon']
         Unread.init()
 
     else # not reply
-      if Conf['Thread Hiding']
+      if _conf['Thread Hiding']
         ThreadHiding.init()
 
-      if Conf['Thread Expansion']
+      if _conf['Thread Expansion']
         ExpandThread.init()
 
-      if Conf['Comment Expansion']
+      if _conf['Comment Expansion']
         ExpandComment.init()
 
-      if Conf['Index Navigation']
+      if _conf['Index Navigation']
         Nav.init()
 
     board = $ '.board'

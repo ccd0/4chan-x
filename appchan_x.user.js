@@ -4434,7 +4434,8 @@
       });
     },
     parse: function(req, a, threadID, replyID) {
-      var bq, clone, href, post, posts, quote, quotes, spoilerRange, _i, _j, _len, _len1, _ref;
+      var bq, clone, href, post, posts, quote, quotes, spoilerRange, _conf, _i, _j, _len, _len1, _ref;
+      _conf = Conf;
       if (req.status !== 200) {
         a.textContent = "" + req.status + " " + req.statusText;
         return;
@@ -4472,28 +4473,28 @@
         quotes: quotes,
         backlinks: []
       };
-      if (Conf['Resurrect Quotes']) {
+      if (_conf['Resurrect Quotes']) {
         Quotify.node(post);
       }
-      if (Conf['Linkify']) {
+      if (_conf['Linkify']) {
         Linkify.node(post);
       }
-      if (Conf['Quote Preview']) {
+      if (_conf['Quote Preview']) {
         QuotePreview.node(post);
       }
-      if (Conf['Quote Inline']) {
+      if (_conf['Quote Inline']) {
         QuoteInline.node(post);
       }
-      if (Conf['Indicate OP quote']) {
+      if (_conf['Indicate OP quote']) {
         QuoteOP.node(post);
       }
-      if (Conf['Indicate Cross-thread Quotes']) {
+      if (_conf['Indicate Cross-thread Quotes']) {
         QuoteCT.node(post);
       }
-      if (Conf['RemoveSpoilers']) {
+      if (_conf['RemoveSpoilers']) {
         RemoveSpoilers.node(post);
       }
-      if (Conf['Color user IDs']) {
+      if (_conf['Color user IDs']) {
         IDColor.node(post);
       }
       $.replace(bq, clone);
@@ -4974,7 +4975,7 @@
       return $.on(d, 'keydown', Keybinds.keydown);
     },
     keydown: function(e) {
-      var form, key, nodeName, o, target, thread;
+      var form, key, nodeName, o, target, thread, _conf;
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
@@ -4985,31 +4986,32 @@
         }
       }
       thread = Nav.getThread();
+      _conf = Conf;
       switch (key) {
-        case Conf.openQR:
+        case _conf.openQR:
           Keybinds.qr(thread, true);
           break;
-        case Conf.openEmptyQR:
+        case _conf.openEmptyQR:
           Keybinds.qr(thread);
           break;
-        case Conf.openOptions:
+        case _conf.openOptions:
           if (!$.id('overlay')) {
             Options.dialog();
           }
           break;
-        case Conf.close:
+        case _conf.close:
           if (o = $.id('overlay')) {
             Options.close.call(o);
           } else if (QR.el) {
             QR.close();
           }
           break;
-        case Conf.submit:
+        case _conf.submit:
           if (QR.el && !QR.status()) {
             QR.submit();
           }
           break;
-        case Conf.hideQR:
+        case _conf.hideQR:
           if (QR.el) {
             if (QR.el.hidden) {
               return QR.el.hidden = false;
@@ -5019,94 +5021,94 @@
             QR.open();
           }
           break;
-        case Conf.toggleCatalog:
+        case _conf.toggleCatalog:
           CatalogLinks.toggle();
           break;
-        case Conf.spoiler:
+        case _conf.spoiler:
           if (!(($('[name=spoiler]')) && nodeName === 'textarea')) {
             return;
           }
           Keybinds.tags('spoiler', target);
           break;
-        case Conf.math:
+        case _conf.math:
           if (!(g.BOARD === (!!$('script[src^="//boards.4chan.org/jsMath/"]', d.head)) && nodeName === 'textarea')) {
             return;
           }
           Keybinds.tags('math', target);
           break;
-        case Conf.eqn:
+        case _conf.eqn:
           if (!(g.BOARD === (!!$('script[src^="//boards.4chan.org/jsMath/"]', d.head)) && nodeName === 'textarea')) {
             return;
           }
           Keybinds.tags('eqn', target);
           break;
-        case Conf.code:
+        case _conf.code:
           if (!(g.BOARD === Main.hasCodeTags && nodeName === 'textarea')) {
             return;
           }
           Keybinds.tags('code', target);
           break;
-        case Conf.sageru:
+        case _conf.sageru:
           $("[name=email]", QR.el).value = "sage";
           QR.selected.email = "sage";
           break;
-        case Conf.watch:
+        case _conf.watch:
           Watcher.toggle(thread);
           break;
-        case Conf.update:
+        case _conf.update:
           Updater.update();
           break;
-        case Conf.unreadCountTo0:
+        case _conf.unreadCountTo0:
           Unread.replies = [];
           Unread.update(true);
           break;
-        case Conf.expandImage:
+        case _conf.expandImage:
           Keybinds.img(thread);
           break;
-        case Conf.expandAllImages:
+        case _conf.expandAllImages:
           Keybinds.img(thread, true);
           break;
-        case Conf.zero:
+        case _conf.zero:
           window.location = "/" + g.BOARD + "/0#delform";
           break;
-        case Conf.nextPage:
+        case _conf.nextPage:
           if (form = $('.next form')) {
             window.location = form.action;
           }
           break;
-        case Conf.previousPage:
+        case _conf.previousPage:
           if (form = $('.prev form')) {
             window.location = form.action;
           }
           break;
-        case Conf.nextThread:
+        case _conf.nextThread:
           if (g.REPLY) {
             return;
           }
           Nav.scroll(+1);
           break;
-        case Conf.previousThread:
+        case _conf.previousThread:
           if (g.REPLY) {
             return;
           }
           Nav.scroll(-1);
           break;
-        case Conf.expandThread:
+        case _conf.expandThread:
           ExpandThread.toggle(thread);
           break;
-        case Conf.openThread:
+        case _conf.openThread:
           Keybinds.open(thread);
           break;
-        case Conf.openThreadTab:
+        case _conf.openThreadTab:
           Keybinds.open(thread, true);
           break;
-        case Conf.nextReply:
+        case _conf.nextReply:
           Keybinds.hl(+1, thread);
           break;
-        case Conf.previousReply:
+        case _conf.previousReply:
           Keybinds.hl(-1, thread);
           break;
-        case Conf.hide:
+        case _conf.hide:
           if (/\bthread\b/.test(thread.className)) {
             ThreadHiding.toggle(thread);
           }
@@ -6599,7 +6601,7 @@
       }
     },
     mouseover: function(e) {
-      var board, el, path, postID, qp, quote, quoterID, threadID, _i, _len, _ref;
+      var board, el, path, postID, qp, quote, quoterID, threadID, _conf, _i, _len, _ref;
       if (/\binlined\b/.test(this.className)) {
         return;
       }
@@ -6612,6 +6614,7 @@
       if (UI.el) {
         return;
       }
+      _conf = Conf;
       if (this.host === 'boards.4chan.org') {
         path = this.pathname.split('/');
         board = path[1];
@@ -6644,31 +6647,31 @@
           post.fileInfo = img.parentNode.previousElementSibling;
           post.img = img;
         }
-        if (Conf['Reveal Spoilers']) {
+        if (_conf['Reveal Spoilers']) {
           RevealSpoilers.node(post);
         }
-        if (Conf['Image Auto-Gif']) {
+        if (_conf['Image Auto-Gif']) {
           AutoGif.node(post);
         }
-        if (Conf['Time Formatting']) {
+        if (_conf['Time Formatting']) {
           Time.node(post);
         }
-        if (Conf['File Info Formatting']) {
+        if (_conf['File Info Formatting']) {
           FileInfo.node(post);
         }
-        if (Conf['Resurrect Quotes']) {
+        if (_conf['Resurrect Quotes']) {
           Quotify.node(post);
         }
-        if (Conf['Linkify']) {
+        if (_conf['Linkify']) {
           Linkify.node(post);
         }
-        if (Conf['Anonymize']) {
+        if (_conf['Anonymize']) {
           Anonymize.node(post);
         }
-        if (Conf['Color user IDs'] && ['b', 'q', 'soc'].contains(board)) {
+        if (_conf['Color user IDs'] && ['b', 'q', 'soc'].contains(board)) {
           IDColor.node(post);
         }
-        if (Conf['RemoveSpoilers']) {
+        if (_conf['RemoveSpoilers']) {
           return RemoveSpoilers.node(post);
         }
       });
@@ -6677,7 +6680,7 @@
       if (!el) {
         return;
       }
-      if (Conf['Quote Highlighting']) {
+      if (_conf['Quote Highlighting']) {
         if (/\bop\b/.test(el.className)) {
           $.addClass(el.parentNode, 'qphl');
         } else {
@@ -6692,7 +6695,7 @@
           $.addClass(quote, 'forwardlink');
         }
       }
-      if (Conf['Fappe Tyme'] && !$('img[data-md5]', qp)) {
+      if (_conf['Fappe Tyme'] && !$('img[data-md5]', qp)) {
         $.rmClass(qp.firstElementChild, 'noFile');
       }
     },
@@ -10247,15 +10250,16 @@
       });
     },
     emoji: function(position) {
-      var category, css, image, key, margin, name;
+      var category, css, image, key, margin, name, _conf;
       css = '';
       margin = position === "before" ? "right" : "left";
+      _conf = Conf;
       for (key in Emoji) {
         category = Emoji[key];
-        if (!((Conf['Emoji'] === "disable ponies" && key === "pony") || (Conf['Emoji'] === "only ponies" && key === "not"))) {
+        if (!((_conf['Emoji'] === "disable ponies" && key === "pony") || (_conf['Emoji'] === "only ponies" && key === "not"))) {
           for (name in category) {
             image = category[name];
-            css += "a.useremail[href*='" + name + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toLowerCase()) + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toUpperCase()) + "']:last-of-type::" + position + " {\n  content: url('" + (Icons.header.png + image) + "');\n  vertical-align: top;\n  margin-" + margin + ": " + (parseInt(Conf['Emoji Spacing'])) + "px;\n}\n";
+            css += "a.useremail[href*='" + name + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toLowerCase()) + "']:last-of-type::" + position + ",\na.useremail[href*='" + (name.toUpperCase()) + "']:last-of-type::" + position + " {\n  content: url('" + (Icons.header.png + image) + "');\n  vertical-align: top;\n  margin-" + margin + ": " + (parseInt(_conf['Emoji Spacing'])) + "px;\n}\n";
           }
         }
       }
@@ -10343,16 +10347,18 @@
       return _results;
     },
     addStyle: function(theme) {
-      if (theme == null) {
-        theme = Themes[Conf['theme']];
+      var _conf;
+      _conf = Conf;
+      if (!theme) {
+        theme = Themes[_conf['theme']];
       }
       $.off(d, 'DOMNodeInserted', Style.addStyle);
-      if (!Conf['styleInit']) {
+      if (!_conf['styleInit']) {
         if (d.head) {
-          Conf['styleInit'] = true;
-          if (!(theme = Themes[Conf['theme']])) {
+          _conf['styleInit'] = true;
+          if (!(theme = Themes[_conf['theme']])) {
             theme = Themes["Yotsuba B"];
-            $.log("Invalid Theme " + Conf['theme'] + "!");
+            $.log("Invalid Theme " + _conf['theme'] + "!");
           }
           Style.appchan = $.addStyle(Style.css(theme), 'appchan');
           Style.icons = $.addStyle("", 'icons');
@@ -10363,7 +10369,7 @@
           return $.on(d, 'DOMNodeInserted', Style.addStyle);
         }
       } else {
-        MascotTools.init(Conf["mascot"]);
+        MascotTools.init(_conf["mascot"]);
         Style.appchan.textContent = Style.css(theme);
         return Style.iconPositions();
       }
@@ -10436,30 +10442,31 @@
       return $.after(banner, title);
     },
     padding: function() {
-      var css, sheet;
+      var css, sheet, _conf;
       if (!(sheet = Style.paddingSheet)) {
         return;
       }
-      Style.padding.nav.property = Conf["Boards Navigation"].split(" ");
+      _conf = Conf;
+      Style.padding.nav.property = _conf["Boards Navigation"].split(" ");
       Style.padding.nav.property = Style.padding.nav.property[Style.padding.nav.property.length - 1];
       if (Style.padding.pages) {
-        Style.padding.pages.property = Conf["Pagination"].split(" ");
+        Style.padding.pages.property = _conf["Pagination"].split(" ");
         Style.padding.pages.property = Style.padding.pages.property[Style.padding.pages.property.length - 1];
       }
       css = "body::before {\n";
-      if (Conf["4chan SS Emulation"]) {
-        if (Style.padding.pages && (Conf["Pagination"] === "sticky top" || Conf["Pagination"] === "sticky bottom")) {
+      if (_conf["4chan SS Emulation"]) {
+        if (Style.padding.pages && (_conf["Pagination"] === "sticky top" || _conf["Pagination"] === "sticky bottom")) {
           css += "  " + Style.padding.pages.property + ": " + Style.padding.pages.offsetHeight + "px !important;\n";
         }
-        if (Conf["Boards Navigation"] === "sticky top" || Conf["Boards Navigation"] === "sticky bottom") {
+        if (_conf["Boards Navigation"] === "sticky top" || _conf["Boards Navigation"] === "sticky bottom") {
           css += "  " + Style.padding.nav.property + ": " + Style.padding.nav.offsetHeight + "px !important;\n";
         }
       }
       css += "}\nbody {\n  padding-bottom: 15px;\n";
-      if ((Style.padding.pages != null) && (Conf["Pagination"] === "sticky top" || Conf["Pagination"] === "sticky bottom" || Conf["Pagination"] === "top")) {
+      if ((Style.padding.pages != null) && (_conf["Pagination"] === "sticky top" || _conf["Pagination"] === "sticky bottom" || _conf["Pagination"] === "top")) {
         css += "  padding-" + Style.padding.pages.property + ": " + Style.padding.pages.offsetHeight + "px;\n";
       }
-      if (Conf["Boards Navigation"] !== "hide") {
+      if (_conf["Boards Navigation"] !== "hide") {
         css += "  padding-" + Style.padding.nav.property + ": " + Style.padding.nav.offsetHeight + "px;\n";
       }
       css += "}";
@@ -10802,7 +10809,7 @@
 
   Main = {
     init: function() {
-      var key, mascot, name, now, path, pathname, settings, temp, theme, val, _ref, _ref1;
+      var key, mascot, name, now, path, pathname, settings, temp, theme, val, _conf, _ref, _ref1;
       Main.flatten(null, Config);
       for (key in Conf) {
         val = Conf[key];
@@ -10823,7 +10830,8 @@
       if (['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains(g.BOARD)) {
         g.TYPE = 'nsfw';
       }
-      if (Conf["NSFW/SFW Mascots"]) {
+      _conf = Conf;
+      if (_conf["NSFW/SFW Mascots"]) {
         g.MASCOTSTRING = "Enabled Mascots " + g.TYPE;
       } else {
         g.MASCOTSTRING = "Enabled Mascots";
@@ -10843,11 +10851,11 @@
       Conf["Enabled Mascots sfw"] = $.get("Enabled Mascots sfw", []);
       Conf["Enabled Mascots nsfw"] = $.get("Enabled Mascots nsfw", []);
       Conf["Deleted Mascots"] = $.get("Deleted Mascots", []);
-      if (Conf["Interval per board"]) {
+      if (_conf["Interval per board"]) {
         Conf["Interval_" + g.BOARD] = $.get("Interval_" + g.BOARD, Conf["Interval"]);
         Conf["BGInterval_" + g.BOARD] = $.get("BGInterval_" + g.BOARD, Conf["BGInteval"]);
       }
-      if (Conf["NSFW/SFW Themes"]) {
+      if (_conf["NSFW/SFW Themes"]) {
         Conf["theme"] = $.get("theme_" + g.TYPE, Conf["theme"]);
       }
       switch (location.hostname) {
@@ -10877,7 +10885,7 @@
         case 'images.4chan.org':
           $.ready(function() {
             var url;
-            if (/^4chan - 404/.test(d.title) && Conf['404 Redirect']) {
+            if (/^4chan - 404/.test(d.title) && _conf['404 Redirect']) {
               path = location.pathname.split('/');
               url = Redirect.image(path[1], path[3]);
               if (url) {
@@ -10890,7 +10898,7 @@
       Main.prune();
       Style.init();
       now = Date.now();
-      if (Conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 18 * $.HOUR) {
+      if (_conf['Check for Updates'] && $.get('lastUpdate', 0) < now - 18 * $.HOUR) {
         $.ready(function() {
           $.on(window, 'message', Main.message);
           $.set('lastUpdate', now);
@@ -10909,10 +10917,12 @@
       }
     },
     catalog: function() {
-      if (Conf['Catalog Links']) {
+      var _conf;
+      _conf = Conf;
+      if (_conf['Catalog Links']) {
         CatalogLinks.init();
       }
-      if (Conf['Thread Hiding']) {
+      if (_conf['Thread Hiding']) {
         ThreadHiding.init();
       }
       return $.ready(function() {
@@ -10926,105 +10936,108 @@
             $.addClass(a, 'current');
           }
         }
-        if (Conf['Custom Navigation']) {
+        if (_conf['Custom Navigation']) {
           return CustomNavigation.init();
         }
       });
     },
     features: function() {
-      if (Conf['Filter']) {
+      var _conf;
+      _conf = Conf;
+      if (_conf['Filter']) {
         Filter.init();
         StrikethroughQuotes.init();
-      } else if (Conf['Reply Hiding'] || Conf['Reply Hiding Link']) {
+      } else if (_conf['Reply Hiding'] || _conf['Reply Hiding Link']) {
         StrikethroughQuotes.init();
       }
-      if (Conf['Reply Hiding']) {
+      if (_conf['Reply Hiding']) {
         ReplyHiding.init();
       }
-      if (Conf['Anonymize']) {
+      if (_conf['Anonymize']) {
         Anonymize.init();
       }
-      if (Conf['Time Formatting']) {
+      if (_conf['Time Formatting']) {
         Time.init();
       }
-      if (Conf['File Info Formatting']) {
+      if (_conf['File Info Formatting']) {
         FileInfo.init();
       }
-      if (Conf['Sauce']) {
+      if (_conf['Sauce']) {
         Sauce.init();
       }
-      if (Conf['Reveal Spoilers']) {
+      if (_conf['Reveal Spoilers']) {
         RevealSpoilers.init();
       }
-      if (Conf['Image Auto-Gif']) {
+      if (_conf['Image Auto-Gif']) {
         AutoGif.init();
       }
-      if (Conf['Png Thumbnail Fix']) {
+      if (_conf['Png Thumbnail Fix']) {
         PngFix.init();
       }
-      if (Conf['Image Hover']) {
+      if (_conf['Image Hover']) {
         ImageHover.init();
       }
-      if (Conf['Menu']) {
+      if (_conf['Menu']) {
         Menu.init();
-        if (Conf['Report Link']) {
+        if (_conf['Report Link']) {
           ReportLink.init();
         }
-        if (Conf['Delete Link']) {
+        if (_conf['Delete Link']) {
           DeleteLink.init();
         }
-        if (Conf['Filter']) {
+        if (_conf['Filter']) {
           Filter.menuInit();
         }
-        if (Conf['Archive Link']) {
+        if (_conf['Archive Link']) {
           ArchiveLink.init();
         }
-        if (Conf['Download Link']) {
+        if (_conf['Download Link']) {
           DownloadLink.init();
         }
-        if (Conf['Embed Link']) {
+        if (_conf['Embed Link']) {
           EmbedLink.init();
         }
-        if (Conf['Thread Hiding Link']) {
+        if (_conf['Thread Hiding Link']) {
           ThreadHideLink.init();
         }
-        if (Conf['Reply Hiding Link']) {
+        if (_conf['Reply Hiding Link']) {
           ReplyHideLink.init();
         }
       }
-      if (Conf['Resurrect Quotes']) {
+      if (_conf['Resurrect Quotes']) {
         Quotify.init();
       }
-      if (Conf['Linkify']) {
+      if (_conf['Linkify']) {
         Linkify.init();
       }
-      if (Conf['Remove Spoilers']) {
+      if (_conf['Remove Spoilers']) {
         RemoveSpoilers.init();
       }
-      if (Conf['Quote Inline']) {
+      if (_conf['Quote Inline']) {
         QuoteInline.init();
       }
-      if (Conf['Quote Preview']) {
+      if (_conf['Quote Preview']) {
         QuotePreview.init();
       }
-      if (Conf['Quote Backlinks']) {
+      if (_conf['Quote Backlinks']) {
         QuoteBacklink.init();
       }
-      if (Conf['Indicate OP quote']) {
+      if (_conf['Indicate OP quote']) {
         QuoteOP.init();
       }
-      if (Conf['Indicate Cross-thread Quotes']) {
+      if (_conf['Indicate Cross-thread Quotes']) {
         QuoteCT.init();
       }
-      if (Conf['Color user IDs']) {
+      if (_conf['Color user IDs']) {
         IDColor.init();
       }
       return $.ready(Main.featuresReady);
     },
     featuresReady: function() {
-      var MutationObserver, a, board, nav, node, nodes, now, observer, _i, _j, _len, _len1, _ref, _ref1;
+      var MutationObserver, a, board, nav, node, nodes, now, observer, _conf, _i, _j, _len, _len1, _ref, _ref1;
+      _conf = Conf;
       if (/^4chan - 404/.test(d.title)) {
-        if (Conf['404 Redirect'] && /^\d+$/.test(g.THREAD_ID)) {
+        if (_conf['404 Redirect'] && /^\d+$/.test(g.THREAD_ID)) {
           location.href = Redirect.to({
             board: g.BOARD,
             threadID: g.THREAD_ID,
@@ -11038,7 +11051,7 @@
       }
       $.addClass(d.body, $.engine);
       $.addClass(d.body, 'fourchan_x');
-      if (Conf['Custom Navigation']) {
+      if (_conf['Custom Navigation']) {
         CustomNavigation.init();
       }
       _ref = ['boardNavDesktop', 'boardNavDesktopFoot'];
@@ -11053,54 +11066,54 @@
       Options.init();
       QR.init();
       MascotTools.init();
-      if (Conf['Image Expansion']) {
+      if (_conf['Image Expansion']) {
         ImageExpand.init();
       }
-      if (Conf['Catalog Links']) {
+      if (_conf['Catalog Links']) {
         CatalogLinks.init();
       }
-      if (Conf['Thread Watcher']) {
+      if (_conf['Thread Watcher']) {
         Watcher.init();
       }
-      if (Conf['Keybinds']) {
+      if (_conf['Keybinds']) {
         Keybinds.init();
       }
-      if (Conf['Replace GIF'] || Conf['Replace PNG'] || Conf['Replace JPG']) {
+      if (_conf['Replace GIF'] || _conf['Replace PNG'] || _conf['Replace JPG']) {
         ImageReplace.init();
       }
-      if (Conf['Fappe Tyme']) {
+      if (_conf['Fappe Tyme']) {
         FappeTyme.init();
       }
       if (g.REPLY) {
-        if (Conf['Prefetch']) {
+        if (_conf['Prefetch']) {
           Prefetch.init();
         }
-        if (Conf['Thread Updater']) {
+        if (_conf['Thread Updater']) {
           Updater.init();
         }
-        if (Conf['Thread Stats']) {
+        if (_conf['Thread Stats']) {
           ThreadStats.init();
         }
-        if (Conf['Reply Navigation']) {
+        if (_conf['Reply Navigation']) {
           Nav.init();
         }
-        if (Conf['Post in Title']) {
+        if (_conf['Post in Title']) {
           TitlePost.init();
         }
-        if (Conf['Unread Count'] || Conf['Unread Favicon']) {
+        if (_conf['Unread Count'] || _conf['Unread Favicon']) {
           Unread.init();
         }
       } else {
-        if (Conf['Thread Hiding']) {
+        if (_conf['Thread Hiding']) {
           ThreadHiding.init();
         }
-        if (Conf['Thread Expansion']) {
+        if (_conf['Thread Expansion']) {
           ExpandThread.init();
         }
-        if (Conf['Comment Expansion']) {
+        if (_conf['Comment Expansion']) {
           ExpandComment.init();
         }
-        if (Conf['Index Navigation']) {
+        if (_conf['Index Navigation']) {
           Nav.init();
         }
       }

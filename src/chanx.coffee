@@ -383,6 +383,7 @@ ExpandComment =
     a = @
     $.cache "//api.4chan.org#{@pathname}.json", -> ExpandComment.parse @, a, threadID, replyID
   parse: (req, a, threadID, replyID) ->
+    _conf = Conf
     if req.status isnt 200
       a.textContent = "#{req.status} #{req.statusText}"
       return
@@ -410,21 +411,21 @@ ExpandComment =
       threadID:   threadID
       quotes:     quotes
       backlinks:  []
-    if Conf['Resurrect Quotes']
+    if _conf['Resurrect Quotes']
       Quotify.node        post
-    if Conf['Linkify']
+    if _conf['Linkify']
       Linkify.node        post
-    if Conf['Quote Preview']
+    if _conf['Quote Preview']
       QuotePreview.node   post
-    if Conf['Quote Inline']
+    if _conf['Quote Inline']
       QuoteInline.node    post
-    if Conf['Indicate OP quote']
+    if _conf['Indicate OP quote']
       QuoteOP.node        post
-    if Conf['Indicate Cross-thread Quotes']
+    if _conf['Indicate Cross-thread Quotes']
       QuoteCT.node        post
-    if Conf['RemoveSpoilers']
+    if _conf['RemoveSpoilers']
       RemoveSpoilers.node post
-    if Conf['Color user IDs']
+    if _conf['Color user IDs']
       IDColor.node        post
     $.replace bq, clone
     Main.prettify clone
@@ -795,84 +796,85 @@ Keybinds =
       return unless (key is 'Esc') or (/\+/.test key)
 
     thread = Nav.getThread()
+    _conf  = Conf
     switch key
       # QR & Options
-      when Conf.openQR
+      when _conf.openQR
         Keybinds.qr thread, true
-      when Conf.openEmptyQR
+      when _conf.openEmptyQR
         Keybinds.qr thread
-      when Conf.openOptions
+      when _conf.openOptions
         Options.dialog() unless $.id 'overlay'
-      when Conf.close
+      when _conf.close
         if o = $.id 'overlay'
           Options.close.call o
         else if QR.el
           QR.close()
-      when Conf.submit
+      when _conf.submit
         QR.submit() if QR.el and !QR.status()
-      when Conf.hideQR
+      when _conf.hideQR
         if QR.el
           return QR.el.hidden = false if QR.el.hidden
           QR.autohide.click()
         else QR.open()
-      when Conf.toggleCatalog
+      when _conf.toggleCatalog
         CatalogLinks.toggle()
-      when Conf.spoiler
+      when _conf.spoiler
         return unless ($ '[name=spoiler]') and nodeName is 'textarea'
         Keybinds.tags 'spoiler', target
-      when Conf.math
+      when _conf.math
         return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and nodeName is 'textarea'
         Keybinds.tags 'math', target
-      when Conf.eqn
+      when _conf.eqn
         return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and nodeName is 'textarea'
         Keybinds.tags 'eqn', target
-      when Conf.code
+      when _conf.code
         return unless g.BOARD is Main.hasCodeTags and nodeName is 'textarea'
         Keybinds.tags 'code', target
-      when Conf.sageru
+      when _conf.sageru
         $("[name=email]", QR.el).value = "sage"
         QR.selected.email = "sage"
       # Thread related
-      when Conf.watch
+      when _conf.watch
         Watcher.toggle thread
-      when Conf.update
+      when _conf.update
         Updater.update()
-      when Conf.unreadCountTo0
+      when _conf.unreadCountTo0
         Unread.replies = []
         Unread.update true
       # Images
-      when Conf.expandImage
+      when _conf.expandImage
         Keybinds.img thread
-      when Conf.expandAllImages
+      when _conf.expandAllImages
         Keybinds.img thread, true
       # Board Navigation
-      when Conf.zero
+      when _conf.zero
         window.location = "/#{g.BOARD}/0#delform"
-      when Conf.nextPage
+      when _conf.nextPage
         if form = $ '.next form'
           window.location = form.action
-       when Conf.previousPage
+       when _conf.previousPage
         if form = $ '.prev form'
           window.location = form.action
       # Thread Navigation
-      when Conf.nextThread
+      when _conf.nextThread
         return if g.REPLY
         Nav.scroll +1
-      when Conf.previousThread
+      when _conf.previousThread
         return if g.REPLY
         Nav.scroll -1
-      when Conf.expandThread
+      when _conf.expandThread
         ExpandThread.toggle thread
-      when Conf.openThread
+      when _conf.openThread
         Keybinds.open thread
-      when Conf.openThreadTab
+      when _conf.openThreadTab
         Keybinds.open thread, true
       # Reply Navigation
-      when Conf.nextReply
+      when _conf.nextReply
         Keybinds.hl +1, thread
-      when Conf.previousReply
+      when _conf.previousReply
         Keybinds.hl -1, thread
-      when Conf.hide
+      when _conf.hide
         ThreadHiding.toggle thread if /\bthread\b/.test thread.className
       else
         return
@@ -2137,6 +2139,7 @@ QuotePreview =
     # Don't stop other elements from dragging
     return if UI.el
 
+    _conf = Conf
     if @host is 'boards.4chan.org'
       path     = @pathname.split '/'
       board    = path[1]
@@ -2163,30 +2166,30 @@ QuotePreview =
       if img = $ 'img[data-md5]', qp
         post.fileInfo = img.parentNode.previousElementSibling
         post.img      = img
-      if Conf['Reveal Spoilers']
+      if _conf['Reveal Spoilers']
         RevealSpoilers.node post
-      if Conf['Image Auto-Gif']
+      if _conf['Image Auto-Gif']
         AutoGif.node        post
-      if Conf['Time Formatting']
+      if _conf['Time Formatting']
         Time.node           post
-      if Conf['File Info Formatting']
+      if _conf['File Info Formatting']
         FileInfo.node       post
-      if Conf['Resurrect Quotes']
+      if _conf['Resurrect Quotes']
         Quotify.node        post
-      if Conf['Linkify']
+      if _conf['Linkify']
         Linkify.node        post
-      if Conf['Anonymize']
+      if _conf['Anonymize']
         Anonymize.node      post
-      if Conf['Color user IDs'] and ['b', 'q', 'soc'].contains board
+      if _conf['Color user IDs'] and ['b', 'q', 'soc'].contains board
         IDColor.node        post
-      if Conf['RemoveSpoilers']
+      if _conf['RemoveSpoilers']
         RemoveSpoilers.node post
 
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
 
     return unless el
-    if Conf['Quote Highlighting']
+    if _conf['Quote Highlighting']
       if /\bop\b/.test el.className
         $.addClass el.parentNode, 'qphl'
       else
@@ -2197,7 +2200,7 @@ QuotePreview =
       if quote.hash[2..] is quoterID
         $.addClass quote, 'forwardlink'
 
-    if Conf['Fappe Tyme'] and not $('img[data-md5]', qp)
+    if _conf['Fappe Tyme'] and not $('img[data-md5]', qp)
       $.rmClass qp.firstElementChild, 'noFile'
     return
 

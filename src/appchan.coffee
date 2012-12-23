@@ -30,8 +30,9 @@ Style =
   emoji: (position) ->
     css = ''
     margin = if position is "before" then "right" else "left"
+    _conf = Conf
     for key, category of Emoji
-      unless (Conf['Emoji'] is "disable ponies" and key is "pony") or (Conf['Emoji'] is "only ponies" and key is "not")
+      unless (_conf['Emoji'] is "disable ponies" and key is "pony") or (_conf['Emoji'] is "only ponies" and key is "not")
         for name, image of category
           css   += """
 a.useremail[href*='#{name}']:last-of-type::#{position},
@@ -39,7 +40,7 @@ a.useremail[href*='#{name.toLowerCase()}']:last-of-type::#{position},
 a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
   content: url('#{Icons.header.png + image}');
   vertical-align: top;
-  margin-#{margin}: #{parseInt Conf['Emoji Spacing']}px;
+  margin-#{margin}: #{parseInt _conf['Emoji Spacing']}px;
 }\n
 """
     return css
@@ -101,14 +102,17 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         $.add @, ul
       $.after select, div
 
-  addStyle: (theme = Themes[Conf['theme']]) ->
+  addStyle: (theme) ->
+    _conf = Conf
+    unless theme
+      theme = Themes[_conf['theme']]
     $.off d, 'DOMNodeInserted', Style.addStyle
-    unless Conf['styleInit']
+    unless _conf['styleInit']
       if d.head
-        Conf['styleInit']  = true
-        unless theme = Themes[Conf['theme']]
+        _conf['styleInit']  = true
+        unless theme = Themes[_conf['theme']]
           theme = Themes["Yotsuba B"]
-          $.log "Invalid Theme #{Conf['theme']}!"
+          $.log "Invalid Theme #{_conf['theme']}!"
         Style.appchan      = $.addStyle Style.css(theme), 'appchan'
         Style.icons        = $.addStyle "", 'icons'
         Style.paddingSheet = $.addStyle "", 'padding'
@@ -117,7 +121,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       else # XXX fox
         $.on d, 'DOMNodeInserted', Style.addStyle
     else
-      MascotTools.init Conf["mascot"]
+      MascotTools.init _conf["mascot"]
       Style.appchan.textContent = Style.css(theme)
       Style.iconPositions()
 
@@ -165,17 +169,18 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
 
   padding: ->
     return unless sheet = Style.paddingSheet
-    Style.padding.nav.property = Conf["Boards Navigation"].split(" ")
+    _conf = Conf
+    Style.padding.nav.property = _conf["Boards Navigation"].split(" ")
     Style.padding.nav.property = Style.padding.nav.property[Style.padding.nav.property.length - 1]
     if Style.padding.pages
-      Style.padding.pages.property = Conf["Pagination"].split(" ")
+      Style.padding.pages.property = _conf["Pagination"].split(" ")
       Style.padding.pages.property = Style.padding.pages.property[Style.padding.pages.property.length - 1]
     css = "body::before {\n"
-    if Conf["4chan SS Emulation"]
-      if Style.padding.pages and (Conf["Pagination"] is "sticky top"  or Conf["Pagination"] is "sticky bottom")
+    if _conf["4chan SS Emulation"]
+      if Style.padding.pages and (_conf["Pagination"] is "sticky top"  or _conf["Pagination"] is "sticky bottom")
         css += "  #{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight}px !important;\n"
 
-      if Conf["Boards Navigation"] is "sticky top" or Conf["Boards Navigation"] is "sticky bottom"
+      if _conf["Boards Navigation"] is "sticky top" or _conf["Boards Navigation"] is "sticky bottom"
         css += "  #{Style.padding.nav.property}: #{Style.padding.nav.offsetHeight}px !important;\n"
 
     css += """
@@ -184,10 +189,10 @@ body {
   padding-bottom: 15px;\n
 """
 
-    if Style.padding.pages? and (Conf["Pagination"] is "sticky top" or Conf["Pagination"] is "sticky bottom" or Conf["Pagination"] is "top")
+    if Style.padding.pages? and (_conf["Pagination"] is "sticky top" or _conf["Pagination"] is "sticky bottom" or _conf["Pagination"] is "top")
       css += "  padding-#{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight}px;\n"
 
-    unless Conf["Boards Navigation"] is "hide"
+    unless _conf["Boards Navigation"] is "hide"
       css += "  padding-#{Style.padding.nav.property}: #{Style.padding.nav.offsetHeight}px;\n"
 
     css += "}"
