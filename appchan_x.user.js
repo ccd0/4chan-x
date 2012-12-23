@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.27 - 2012-12-22
+ * appchan x - Version 1.0.27 - 2012-12-23
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -9807,7 +9807,6 @@
         JSColor.picker.sld.style.backgroundColor = "rgb(" + (rgb[0] * 100) + "%, " + (rgb[1] * 100) + "%, " + (rgb[2] * 100) + "%)";
       };
       redrawSld = function() {
-        $.log(THIS.hsv[2]);
         return JSColor.picker.sldM.style.backgroundPosition = "0 " + (6 + Math.round((1 - THIS.hsv[2]) * 100)) + "px";
       };
       isPickerOwner = function() {

@@ -293,7 +293,6 @@ JSColor =
 
     redrawSld = ->
       # redraw the slider pointer. X will always be 0, Y will always be a percentage of the HSV 'Value' value.
-      $.log THIS.hsv[2]
       JSColor.picker.sldM.style.backgroundPosition =
         "0 #{6 + Math.round (1 - THIS.hsv[2]) * 100}px"
 
