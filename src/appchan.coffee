@@ -203,7 +203,7 @@ body {
 
     @calc_rgb = (hex) ->
       hex = parseInt hex, 16
-      [
+      [ # 0xRRGGBB to [R, G, B]
         (hex >> 16) & 0xFF
         (hex >> 8) & 0xFF
         hex & 0xFF
@@ -244,8 +244,12 @@ body {
       return color.slice 1, color.length
 
     if digits = color.match /(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/
-      rgb = parseInt(digits[4], 10) | (parseInt(digits[3], 10) << 8) | (parseInt(digits[2], 10) << 16)
-      hex = rgb.toString 16
+      # [R, G, B] to 0xRRGGBB
+      hex = (
+        (parseInt(digits[2], 10) << 16) |
+        (parseInt(digits[3], 10) << 8)  |
+        (parseInt(digits[4], 10))
+      ).toString 16
 
       while hex.length < 6
         hex = "0#{hex}"
@@ -294,7 +298,7 @@ body {
   left: 0;
   top: 0;
   width: 200px;
-  height: 101px;
+  height: 121px;
   cursor: crosshair;
   background-image: url('data:image/gif;base64,R0lGODlhDwAPAKEBAAAAAP///////////yH5BAEKAAIALAAAAAAPAA8AAAIklB8Qx53b4otSUWcvyiz4/4AeQJbmKY4p1HHapBlwPL/uVRsFADs=');
   background-repeat: no-repeat;
@@ -314,7 +318,7 @@ body {
   right: 0;
   top: 0;
   width: 36px;
-  height: 101px;
+  height: 121px;
   cursor: pointer;
   background-image: url('data:image/gif;base64,R0lGODlhBwALAKECAAAAAP///6g8eKg8eCH5BAEKAAIALAAAAAAHAAsAAAITTIQYcLnsgGxvijrxqdQq6DRJAQA7');
   background-repeat: no-repeat;

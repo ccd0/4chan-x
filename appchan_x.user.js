@@ -10518,13 +10518,12 @@
       return this.hover = this.shiftRGB(16, true);
     },
     colorToHex: function(color) {
-      var digits, hex, rgb;
+      var digits, hex;
       if (color.substr(0, 1) === '#') {
         return color.slice(1, color.length);
       }
       if (digits = color.match(/(.*?)rgba?\((\d+), ?(\d+), ?(\d+)(.*?)\)/)) {
-        rgb = parseInt(digits[4], 10) | (parseInt(digits[3], 10) << 8) | (parseInt(digits[2], 10) << 16);
-        hex = rgb.toString(16);
+        hex = ((parseInt(digits[2], 10) << 16) | (parseInt(digits[3], 10) << 8) | (parseInt(digits[4], 10))).toString(16);
         while (hex.length < 6) {
           hex = "0" + hex;
         }
@@ -10534,7 +10533,7 @@
       }
     },
     jsColorCSS: function() {
-      return ".jscBox {\n  width: 251px;\n  height: 155px;\n}\n.jscBoxB,\n.jscPadB,\n.jscPadM,\n.jscSldB,\n.jscSldM,\n.jscBtn {\n  position: absolute;\n  clear: both;\n}\n.jscBoxB {\n  left: 320px;\n  bottom: 20px;\n  z-index: 1000;\n  border: 1px solid;\n  border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;\n  background: ThreeDFace;\n}\n.jscPad {\n  width: 181px;\n  height: 101px;\n  background-image: " + Style.agent + "linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), " + Style.agent + "linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);\n  background-repeat: no-repeat;\n  background-position: 0 0;\n}\n.jscPadB {\n  left: 10px; \n  top: 10px; \n  border: 1px solid; \n  border-color: ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow;\n}\n.jscPadM {\n  left: 0;\n  top: 0;\n  width: 200px;\n  height: 101px;\n  cursor: crosshair;\n  background-image: url('data:image/gif;base64,R0lGODlhDwAPAKEBAAAAAP///////////yH5BAEKAAIALAAAAAAPAA8AAAIklB8Qx53b4otSUWcvyiz4/4AeQJbmKY4p1HHapBlwPL/uVRsFADs=');\n  background-repeat: no-repeat;\n}\n.jscSld {\n  width: 16px;\n  height: 101px;\n  background-image: " + Style.agent + "linear-gradient(rgba(0,0,0,0), rgba(0,0,0,1));\n}\n.jscSldB {\n  right: 10px;\n  top: 10px;\n  border: 1px solid;\n  border-color: ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow;\n}\n.jscSldM {\n  right: 0;\n  top: 0;\n  width: 36px;\n  height: 101px;\n  cursor: pointer;\n  background-image: url('data:image/gif;base64,R0lGODlhBwALAKECAAAAAP///6g8eKg8eCH5BAEKAAIALAAAAAAHAAsAAAITTIQYcLnsgGxvijrxqdQq6DRJAQA7');\n  background-repeat: no-repeat;\n}\n.jscBtn {\n  right: 10px;\n  bottom: 10px;\n  padding: 0 15px;\n  height: 18px;\n  border: 1px solid;\n  border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;\n  color: ButtonText;\n  text-align: center;\n  cursor: pointer;\n}\n.jscBtnS {\n  line-height: 10px;\n}";
+      return ".jscBox {\n  width: 251px;\n  height: 155px;\n}\n.jscBoxB,\n.jscPadB,\n.jscPadM,\n.jscSldB,\n.jscSldM,\n.jscBtn {\n  position: absolute;\n  clear: both;\n}\n.jscBoxB {\n  left: 320px;\n  bottom: 20px;\n  z-index: 1000;\n  border: 1px solid;\n  border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;\n  background: ThreeDFace;\n}\n.jscPad {\n  width: 181px;\n  height: 101px;\n  background-image: " + Style.agent + "linear-gradient(rgba(255,255,255,0), rgba(255,255,255,1)), " + Style.agent + "linear-gradient(left, #f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);\n  background-repeat: no-repeat;\n  background-position: 0 0;\n}\n.jscPadB {\n  left: 10px; \n  top: 10px; \n  border: 1px solid; \n  border-color: ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow;\n}\n.jscPadM {\n  left: 0;\n  top: 0;\n  width: 200px;\n  height: 121px;\n  cursor: crosshair;\n  background-image: url('data:image/gif;base64,R0lGODlhDwAPAKEBAAAAAP///////////yH5BAEKAAIALAAAAAAPAA8AAAIklB8Qx53b4otSUWcvyiz4/4AeQJbmKY4p1HHapBlwPL/uVRsFADs=');\n  background-repeat: no-repeat;\n}\n.jscSld {\n  width: 16px;\n  height: 101px;\n  background-image: " + Style.agent + "linear-gradient(rgba(0,0,0,0), rgba(0,0,0,1));\n}\n.jscSldB {\n  right: 10px;\n  top: 10px;\n  border: 1px solid;\n  border-color: ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow;\n}\n.jscSldM {\n  right: 0;\n  top: 0;\n  width: 36px;\n  height: 121px;\n  cursor: pointer;\n  background-image: url('data:image/gif;base64,R0lGODlhBwALAKECAAAAAP///6g8eKg8eCH5BAEKAAIALAAAAAAHAAsAAAITTIQYcLnsgGxvijrxqdQq6DRJAQA7');\n  background-repeat: no-repeat;\n}\n.jscBtn {\n  right: 10px;\n  bottom: 10px;\n  padding: 0 15px;\n  height: 18px;\n  border: 1px solid;\n  border-color: ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight;\n  color: ButtonText;\n  text-align: center;\n  cursor: pointer;\n}\n.jscBtnS {\n  line-height: 10px;\n}";
     },
     iconPositions: function() {
       var align, aligner, css, first, i, iconOffset, navlinks, offset, position, spacer;
