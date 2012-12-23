@@ -3,14 +3,8 @@ JSColor =
   bind: (el) ->
     el.color = new JSColor.color(el) if not el.color
 
-  images:
-    pad:        [ 181, 101 ]
-    sld:        [ 16, 101 ]
-    cross:      [ 15, 15 ]
-    arrow:      [ 7, 11 ]
-
   fetchElement: (mixed) ->
-    if typeof mixed is "string" then document.getElementById(mixed) else mixed
+    if typeof mixed is "string" then $.id mixed else mixed
 
   fireEvent: (el, evnt) ->
     return unless el
@@ -32,29 +26,28 @@ JSColor =
     y: y
 
   color: (target) ->
-    @valueElement       = target         # value holder
-    @styleElement       = target         # where to reflect current color
-    @hsv                = [0, 0, 1]      # read-only  0-6, 0-1, 0-1
-    @rgb                = [1, 1, 1]      # read-only  0-1, 0-1, 0-1
-    @minH               = 0              # read-only  0-6
-    @maxH               = 6              # read-only  0-6
-    @minS               = 0              # read-only  0-1
-    @maxS               = 1              # read-only  0-1
-    @minV               = 0              # read-only  0-1
-    @maxV               = 1              # read-only  0-1
-    @pickerFace         = 10             # px
-    @pickerInset        = 1              # px
-    abortBlur    = false
-    holdPad      = false
-    holdSld      = false
+    # Read Only
+    @hsv  = [0, 0, 1] # 0-6, 0-1, 0-1
+    @rgb  = [1, 1, 1] # 0-1, 0-1, 0-1
+    @minH = 0         # 0-6
+    @maxH = 6         # 0-6
+    @minS = 0         # 0-1
+    @maxS = 1         # 0-1
+    @minV = 0         # 0-1
+    @maxV = 1         # 0-1
+    
+    # Writable.
+    # Value holder / Where to reflect current color
+    @valueElement = @styleElement = target
+
+    # Blur / Drag trackers
+    abortBlur = holdPad = holdSld = false
 
     @hidePicker = ->
-      if isPickerOwner()
-        removePicker()
+      if isPickerOwner() then removePicker()
 
     @showPicker = ->
-      unless isPickerOwner()
-        drawPicker()
+      unless isPickerOwner() then drawPicker()
 
     @importColor = ->
       unless valueElement
@@ -65,7 +58,7 @@ JSColor =
           @exportColor leaveValue | leaveStyle
 
     @exportColor = (flags) ->
-      if not (flags & leaveValue) and valueElement
+      if !(flags & leaveValue) and valueElement
         value = '#' + @toString()
         valueElement.value = value
         valueElement.previousSibling.value = value
@@ -126,8 +119,7 @@ JSColor =
           Math.max 0.0, @minV, Math.min 1.0, @maxV, hsv[2]
 
       # update RGB according to final HSV, as some values might be trimmed
-      rgb = HSV_RGB @hsv[0], @hsv[1], @hsv[2]
-      @rgb = rgb
+      @rgb = HSV_RGB @hsv[0], @hsv[1], @hsv[2]
 
       @exportColor flags
 
@@ -138,16 +130,17 @@ JSColor =
       else
         if m[1].length is 6 # 6-char notation
           @fromRGB(
-            parseInt(m[1].substr(0,2),16) / 255
-            parseInt(m[1].substr(2,2),16) / 255
-            parseInt(m[1].substr(4,2),16) / 255
+            parseInt(m[1].substr(0, 2), 16) / 255
+            parseInt(m[1].substr(2, 2), 16) / 255
+            parseInt(m[1].substr(4, 2), 16) / 255
             flags
           )
         else # 3-char notation
           @fromRGB(
-            parseInt(m[1].charAt(0)+m[1].charAt(0),16) / 255
-            parseInt(m[1].charAt(1)+m[1].charAt(1),16) / 255
-            parseInt(m[1].charAt(2)+m[1].charAt(2),16) / 255
+            # Double-up each character to fake 6-char notation.
+            parseInt((val = m[1].charAt 0) + val, 16) / 255
+            parseInt((val = m[1].charAt 1) + val, 16) / 255
+            parseInt((val = m[1].charAt 2) + val, 16) / 255
             flags
           )
         true
@@ -158,8 +151,8 @@ JSColor =
       (0x100 | Math.round(255 * @rgb[2])).toString(16).substr(1)
 
     RGB_HSV = (r, g, b) ->
-      n = Math.min(Math.min(r,g),b)
-      v = Math.max(Math.max(r,g),b)
+      n = Math.min Math.min(r, g), b
+      v = Math.max Math.max(r, g), b
       m = v - n
 
       return [ null, 0, v ] if m is 0
@@ -289,14 +282,9 @@ JSColor =
 
     # redraw the pad pointer
     redrawPad = ->
-
-      yComponent = 1
-
-      x = Math.round (THIS.hsv[0] / 6)          * (JSColor.images.pad[0] - 1)
-      y = Math.round (1 - THIS.hsv[yComponent]) * (JSColor.images.pad[1] - 1)
-
+      # The X and Y positions of the picker crosshair, based on the hsv Hue and Saturation values as percentages and the picker's dimensions.
       JSColor.picker.padM.style.backgroundPosition =
-        "#{THIS.pickerFace + THIS.pickerInset + x - Math.floor(JSColor.images.cross[0] / 2)}px #{THIS.pickerFace + THIS.pickerInset + y - Math.floor(JSColor.images.cross[1] / 2)}px"
+        "#{4 + Math.round (THIS.hsv[0] / 6) * 180}px #{4 + Math.round (1 - THIS.hsv[1]) * 100}px"
 
       rgb = HSV_RGB(THIS.hsv[0], THIS.hsv[1], 1)
       JSColor.picker.sld.style.backgroundColor = "rgb(#{rgb[0] * 100}%, #{rgb[1] * 100}%, #{rgb[2] * 100}%)"
@@ -304,16 +292,14 @@ JSColor =
       return
 
     redrawSld = ->
-      # redraw the slider pointer
-      yComponent = 2
-
-      y = Math.round (1 - THIS.hsv[yComponent]) * (JSColor.images.sld[1] - 1)
+      # redraw the slider pointer. X will always be 0, Y will always be a percentage of the HSV 'Value' value.
+      $.log THIS.hsv[2]
       JSColor.picker.sldM.style.backgroundPosition =
-        "0 #{THIS.pickerFace + THIS.pickerInset+y - Math.floor(JSColor.images.arrow[1] / 2)}px"
+        "0 #{6 + Math.round (1 - THIS.hsv[2]) * 100}px"
 
 
     isPickerOwner = ->
-      JSColor.picker and JSColor.picker.owner is THIS
+      return JSColor.picker and JSColor.picker.owner is THIS
 
     blurTarget = ->
       if valueElement is target
@@ -325,30 +311,22 @@ JSColor =
 
     setPad = (e) ->
       mpos = JSColor.getRelMousePos e
-      x = mpos.x - THIS.pickerFace - THIS.pickerInset
-      y = mpos.y - THIS.pickerFace - THIS.pickerInset
+      x = mpos.x - 11
+      y = mpos.y - 11
       THIS.fromHSV(
-        x * (
-          6 / (
-            JSColor.images.pad[0] - 1
-          )
-        )
-        1 - y / (
-          JSColor.images.pad[1] - 1
-        )
+        x * (1 / 30)
+        1 - y / 100
         null
         leaveSld
       )
 
     setSld = (e) ->
       mpos  = JSColor.getRelMousePos e
-      y     = mpos.y - THIS.pickerFace - THIS.pickerInset
+      y     = mpos.y - 9
       THIS.fromHSV(
         null
         null
-        1 - y / (
-          JSColor.images.sld[1] - 1
-        )
+        1 - y / 100
         leavePad
       )
 
@@ -375,11 +353,11 @@ JSColor =
 
     # valueElement
     if valueElement
-      updateField = ->
+      $.on valueElement, 'keyup input', ->
         THIS.fromString valueElement.value, leaveValue
 
-      $.on valueElement, 'keyup input', updateField
-      $.on valueElement, 'blur',  blurValue
+      $.on valueElement, 'blur', blurValue
+
       valueElement.setAttribute 'autocomplete', 'off'
 
     # styleElement

@@ -218,6 +218,8 @@ body {
       return (rgb[0] + rgb[1] + rgb[2]) >= 400
 
     @shiftRGB = (shift, smart) ->
+      minmax = (base) ->
+        Math.min Math.max(base, 0), 255
       rgb = @private_rgb.slice 0
       shift = if smart
         if @isLight rgb
@@ -232,9 +234,9 @@ body {
         shift
 
       return [ 
-        Math.min Math.max(rgb[0] + shift, 0), 255
-        Math.min Math.max(rgb[1] + shift, 0), 255
-        Math.min Math.max(rgb[2] + shift, 0), 255
+        minmax rgb[0] + shift
+        minmax rgb[1] + shift
+        minmax rgb[2] + shift
       ].join ","
 
     @hover = @shiftRGB 16, true
