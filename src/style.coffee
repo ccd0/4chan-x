@@ -2,6 +2,7 @@
 
     _conf = Conf
 
+    # Position of submenus in relation to the post menu.
     position = {
       right:
         {
@@ -25,6 +26,8 @@
 
     icons = Icons.header.png + Icons.themes[_conf["Icons"]][if Style.lightTheme then "light" else "dark"]
 
+    # Offsets various UI of the sidebar depending on the sidebar's width.
+    # Only really used for the board banner or right sidebar.
     $.extend Style, (if _conf["Sidebar"] is "large"
       {
         sidebarOffsetW: 51
@@ -2362,9 +2365,8 @@ body::before {
 """
       else ""
     ) + (
-      switch _conf["Board Title"]
-        when "at sidebar top"
-          """
+      {
+        "at sidebar top": """
 #boardTitle {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
@@ -2372,8 +2374,7 @@ body::before {
   width: #{248 + Style.sidebarOffsetW}px;
 }\n
 """
-        when "at sidebar bottom"
-          """
+        "at sidebar bottom": """
 #boardTitle {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
@@ -2381,8 +2382,7 @@ body::before {
   width: #{(248 + Style.sidebarOffsetW)}px;
 }\n
 """
-        when "under post form"
-          """
+        "under post form": """
 #boardTitle {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
@@ -2390,46 +2390,41 @@ body::before {
   width: #{(248 + Style.sidebarOffsetW)}px;
 }\n
 """
-        when "at top"
-          ""
-        when "hide"
-          """
+        "at top": ""
+        "hide": """
 #boardTitle {
   display: none;
 }\n
 """
+      }[_conf["Board Title"]]
     ) + (
-      switch _conf["Reply Padding"]
-        when "phat"
-          """
+      {
+        "phat": """
 .postContainer blockquote {
   margin: 24px 60px 24px 58px;
 }\n
 """
-        when "normal"
-          """
+        "normal": """
 .postContainer blockquote {
   margin: 12px 40px 12px 38px;
 }\n
 """
-        when "slim"
-          """
+        "slim": """
 .postContainer blockquote {
   margin: 6px 20px 6px 23px;
 }\n
 """
-        when "super slim"
-          """
+        "super slim": """
 .postContainer blockquote {
   margin: 3px 10px 3px 15px;
 }\n
 """
-        when "anorexia"
-          """
+        "anorexia": """
 .postContainer blockquote {
   margin: 1px 5px 1px 11px;
 }\n
 """
+      }[_conf["Reply Padding"]]
     ) + (
       if _conf["Rounded Edges"]
         (
@@ -2440,21 +2435,14 @@ body::before {
 }\n
 """
           else ""
-        ) + (
+        ) + """#boardNavDesktop {
+  border-radius: """ + ((
           switch _conf["Boards Navigation"]
             when "sticky top", "top"
-              """
-#boardNavDesktop {
-  border-radius: 0 0 3px 3px;
-}\n
-"""
-            when "sticky bottom", "bottom"
-              """
-#boardNavDesktop {
-  border-radius: 3px 3px 0 0;
-}\n
-"""
-        ) + (
+              "0 0 3px 3px;"
+            when "sticky bottom"
+              "3px 3px 0 0;")
+        + "\n}\n") + (
           switch _conf["Pagination"]
             when "sticky top", "top"
               """
@@ -2508,9 +2496,8 @@ td[style="border: 1px dashed;"] {
         )
       else ""
     ) + (
-      switch _conf["Slideout Navigation"]
-        when "compact"
-          """
+      {
+        compact: """
 #boardNavDesktopFoot {
   word-spacing: 1px;
 }
@@ -2518,9 +2505,7 @@ td[style="border: 1px dashed;"] {
   height: #{if _conf["Slideout Transitions"] then '84px' else 'auto'};
 }\n
 """
-
-        when "list"
-          """
+        list: """
 #boardNavDesktopFoot a {
   display: block;
 }
@@ -2540,16 +2525,14 @@ td[style="border: 1px dashed;"] {
   content: "/";
 }\n
 """
-        when "hide"
-          """
+        hide: """
 #boardNavDesktopFoot {
   display: none;
 }\n
-"""
+"""}[_conf["Slideout Navigation"]]
     ) + (
-      switch _conf["Sage Highlighting"]
-        when "text"
-          """
+      {
+        text: """
 a.useremail[href*="sage"]:last-of-type::#{_conf["Sage Highlight Position"]},
 a.useremail[href*="Sage"]:last-of-type::#{_conf["Sage Highlight Position"]},
 a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
@@ -2557,8 +2540,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
   color: #{theme["Sage"]};
 }\n
 """
-        when "image"
-          """
+        image: """
 a.useremail[href*="sage"]:last-of-type::#{_conf["Sage Highlight Position"]},
 a.useremail[href*="Sage"]:last-of-type::#{_conf["Sage Highlight Position"]},
 a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
@@ -2567,11 +2549,11 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
   margin#{if position is "before" then "right" else "left"}: #{parseInt _conf['Emoji Spacing']}px;
 }\n
 """
-        else ""
+        none: ""
+      }[_conf["Sage Highlighting"]]
     ) + (
-      switch _conf["Announcements"]
-        when "4chan default"
-          """
+      {
+        "4chan default": """
 #globalMessage {
   position: static;
   background: none;
@@ -2582,8 +2564,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
   display: none;
 }\n
 """
-        when "slideout"
-          """
+        "slideout": """
 #globalMessage:not(:hover) {
   border-color: transparent;
   background-color: transparent;
@@ -2606,72 +2587,62 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
   overflow: auto;
 }\n
 """
-        when "hide"
-          """
+        "hide": """
 #globalMessage,
 #globalMessage::after {
   display: none;
 }\n
-"""
+"""}[_conf["Announcements"]]
     ) + (
-      switch _conf["Boards Navigation"]
-        when "sticky top"
-          """
+      {
+        "sticky top": """
 #boardNavDesktop {
   position: fixed;
   top: 0;
 }\n
 """
-        when "sticky bottom"
-          """
+        "sticky bottom": """
 #boardNavDesktop {
   position: fixed;
   bottom: 0;
 }\n
 """
-        when "top"
-          """
+        "top": """
 #boardNavDesktop {
   position: absolute;
   top: 0;
 }\n
 """
-        when "hide"
-          """
+        "hide": """
 #boardNavDesktop {
   position: absolute;
   top: -100px;
 }\n
-"""
+"""}[_conf["Boards Navigation"]]
     ) + (
-      switch _conf["Pagination"]
-        when "sticky top"
-          """
+      {
+        "sticky top": """
 .pagelist {
   position: fixed;
   top: 0;
   z-index: 94;
 }\n
 """
-        when "sticky bottom"
-          """
+        "sticky bottom": """
 .pagelist {
   position: fixed;
   bottom: 0;
   z-index: 94;
 }\n
 """
-        when "top"
-          """
+        "top": """
 .pagelist {
   position: absolute;
   top: 0;
 }\n
 """
-        when "bottom"
-          ""
-        when "on side"
-          """
+        "bottom": ""
+        "on side": """
 .pagelist {
   padding: 0;
   top: auto;
@@ -2687,16 +2658,14 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
   border: 0 none;
 }\n
 """
-        when "hide"
-          """
+        "hide": """
 .pagelist {
   display: none;
 }\n
-"""
+"""}[_conf["Pagination"]]
     ) + (
-      switch _conf["Post Form Style"]
-        when "fixed"
-          """
+      {
+        "fixed": """
 #qrtab {
   display: none;
 }
@@ -2705,9 +2674,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
   #{Style.sidebarLocation[1]}: auto !important;
 }\n
 """
-
-        when "slideout"
-          """
+        "slideout": """
 #qrtab {
   display: none;
 }
@@ -2722,8 +2689,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
   #{Style.sidebarLocation[1]}: auto !important;
 }\n
 """
-        when "tabbed slideout"
-          """
+        "tabbed slideout": """
 #qrtab input,
 #qrtab .rice,
 #qrtab span {
@@ -2761,8 +2727,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
   #{Style.agent}transition: opacity .3s linear, #{Style.sidebarLocation[0]} .3s linear;
 }\n
 """
-        when "transparent fade"
-          """
+        "transparent fade": """
 #qrtab {
   display: none;
 }
@@ -2779,8 +2744,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
   #{Style.agent}transition: opacity .3s linear;
 }\n
 """
-        when "float"
-          """
+        "float": """
 #qr {
   z-index: 103;
   border: 1px solid #{theme["Background Color"]};
@@ -2829,11 +2793,10 @@ textarea.field,
     width step-end;
   margin: 0;
 }\n
-"""
+"""}[_conf["Post Form Style"]]
     ) + (
-      switch _conf["4chan Banner"]
-        when "at sidebar top"
-          """
+      {
+        "at sidebar top": """
 .boardBanner {
   position: fixed;
   top: 18px;
@@ -2843,8 +2806,7 @@ textarea.field,
   width: #{(248 + Style.sidebarOffsetW)}px;
 }\n
 """
-        when "at sidebar bottom"
-          """
+        "at sidebar bottom": """
 .boardBanner {
   position: fixed;
   bottom: 270px;
@@ -2854,8 +2816,7 @@ textarea.field,
   width: #{(248 + Style.sidebarOffsetW)}px;
 }\n
 """
-        when "under post form"
-          """
+        "under post form": """
 .boardBanner {
   position: fixed;
   bottom: 130px;
@@ -2865,8 +2826,7 @@ textarea.field,
   width: #{(248 + Style.sidebarOffsetW)}px;
 }\n
 """
-        when "at top"
-          """
+        "at top": """
 .boardBanner {
   position: relative;
   display: table;
@@ -2875,17 +2835,14 @@ textarea.field,
   z-index: -1;
 }\n
 """
-        when "hide"
-          Style.logoOffset = 0
-          """
+        "hide": """
 .boardBanner {
   display: none;
 }\n
-"""
+"""}[_conf["4chan Banner"]]
     ) + (
-      switch _conf["Backlinks Position"]
-        when 'lower left'
-          """
+      {
+        'lower left': """
 #delform .op .container {
   padding: 0 5px;
 }
@@ -2913,8 +2870,7 @@ textarea.field,
   content: "";
 }\n
 """
-        when 'lower right'
-          """
+        'lower right': """
 #delform .reply.quoted {
   padding-bottom: 15px;
 }
@@ -2944,7 +2900,8 @@ textarea.field,
   content: "";
 }\n
 """
-        else ""
+        'default': ""
+      }[_conf["Backlinks Position"]]
     ) + (
       switch _conf["Checkboxes"]
         when "show", "hide"
