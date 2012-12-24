@@ -10473,15 +10473,13 @@
       return sheet.textContent = css;
     },
     trimGlobalMessage: function() {
-      var child, el, _i, _len, _ref, _results;
+      var child, el, _i, _len, _ref;
       if (el = $("#globalMessage", d.body)) {
         _ref = el.children;
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           child = _ref[_i];
-          _results.push(child.style.color = "");
+          child.style.color = "";
         }
-        return _results;
       }
     },
     color: function(hex) {
@@ -10503,7 +10501,7 @@
           return Math.min(Math.max(base, 0), 255);
         };
         rgb = this.private_rgb.slice(0);
-        shift = smart ? this.isLight(rgb) ? shift < 0 ? shift : -shift : Math.abs(shift) : shift;
+        shift = smart ? (this.isLight(rgb) ? -1 : 1) * Math.abs(shift) : shift;
         return [minmax(rgb[0] + shift), minmax(rgb[1] + shift), minmax(rgb[2] + shift)].join(",");
       };
       return this.hover = this.shiftRGB(16, true);

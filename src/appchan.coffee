@@ -206,6 +206,7 @@ body {
     if el = $ "#globalMessage", d.body
       for child in el.children
         child.style.color = ""
+    return
 
   color: (hex) ->
     @hex = "#" + hex
@@ -231,16 +232,15 @@ body {
         Math.min Math.max(base, 0), 255
       rgb = @private_rgb.slice 0
       shift = if smart
-        if @isLight rgb
-          if shift < 0
-            shift
+        (
+          if @isLight rgb
+            -1
           else
-            -shift
-        else
-          Math.abs shift
-
+            1
+        ) * Math.abs shift
       else
         shift
+          
 
       return [ 
         minmax rgb[0] + shift
