@@ -1,4 +1,4 @@
-  css: (theme) ->
+  layout: ->
 
     _conf = Conf
 
@@ -20,29 +20,22 @@
           "left"
     }[_conf["Sidebar Location"]]
 
-    bgColor = new Style.color Style.colorToHex theme["Background Color"]
-
-    Style.lightTheme = bgColor.isLight()
-
-    icons = Icons.header.png + Icons.themes[_conf["Icons"]][if Style.lightTheme then "light" else "dark"]
-
     # Offsets various UI of the sidebar depending on the sidebar's width.
     # Only really used for the board banner or right sidebar.
-    $.extend Style, (if _conf["Sidebar"] is "large"
+    Style['sidebarOffset'] = if _conf["Sidebar"] is "large"
       {
-        sidebarOffsetW: 51
-        sidebarOffsetH: 17
+        W: 51
+        H: 17
       }
     else
       {
-        sidebarOffsetW: 0
-        sidebarOffsetH: 0
+        W: 0
+        H: 0
       }
-    )
 
     Style.logoOffset =
       if _conf["4chan Banner"] is "at sidebar top"
-        83 + Style.sidebarOffsetH
+        83 + Style.sidebarOffset.H
       else
         0
 
@@ -63,7 +56,7 @@
     Style.sidebar = {
       minimal:  20
       hide:     2
-    }[_conf.Sidebar] or (252 + Style.sidebarOffsetW)
+    }[_conf.Sidebar] or (252 + Style.sidebarOffset.W)
 
     Style.replyMargin = {
       none:     0
@@ -110,7 +103,6 @@ label,
 .hide_reply_button span > span {
   width: .4em;
   height: 1px;
-  background-color: #{theme["Links"]};
 }
 #mascot_hide {
   padding: 3px;
@@ -132,7 +124,6 @@ label,
 }
 #mascot_hide label {
   width: 100%;
-  border-bottom: 1px solid #{theme["Reply Border"]};
   display: block;
   clear: both;
   text-decoration: none;
@@ -333,9 +324,6 @@ input[type="submit"] {
 .small .thumb {
   max-width: 150px;
   max-height: 150px;
-}
-#content .thumb {
-  box-shadow: 0 0 5px #{theme["Reply Border"]};
 }
 .thumbnail:hover,
 .thumbnail:focus {
@@ -615,8 +603,6 @@ input[type="submit"] {
 .mascotoptions {
   padding: 0;
   width: 100%;
-  background: #{theme["Dialog Background"]};
-  border: 1px solid #{theme["Buttons Border"]};
 }
 .mascot .mascotoptions {
   opacity: 0;
@@ -697,12 +683,6 @@ input[type="submit"] {
 div.opContainer {
   display: block;
 }
-.opContainer.filter_highlight {
-  box-shadow: inset 5px 0 #{theme["Backlinked Reply Outline"]};
-}
-.filter_highlight > .reply {
-  box-shadow: -5px 0 #{theme["Backlinked Reply Outline"]};
-}
 .quotelink.forwardlink,
 .backlink.forwardlink {
   text-decoration: none;
@@ -711,10 +691,6 @@ div.opContainer {
 .threadContainer {
   margin-left: 20px;
   border-left: 1px solid black;
-}
-::#{Style.agent}selection {
-  background: #{theme["Text"]};
-  color: #{theme["Background Color"]};
 }
 #copyright,
 #boardNavDesktop a,
@@ -813,6 +789,7 @@ h2 a {
 .qrHeader,
 .replyContainer > .hide_reply_button.stub ~ .reply,
 .replymode,
+.riced,
 .sideArrows:not(.hide_reply_button),
 .small .teaser,
 .stub ~ *,
@@ -946,79 +923,6 @@ div.post,
 div.post.highlight {
   z-index: 0;
 }
-#navtopright .exlinksOptionsLink::after,
-#settingsWindowLink,
-div.navLinks > a:first-of-type::after,
-#watcher::after,
-#globalMessage::after,
-#boardNavDesktopFoot::after,
-body > a[style="cursor: pointer; float: right;"]::after,
-#imgControls label:first-of-type::after,
-.cataloglink a::after,
-#fappeTyme {
-  position: fixed;
-  display: block;
-  width: 15px;
-  height: 15px;
-  content: " ";
-  overflow: hidden;
-  background-image: url('#{icons}');
-  opacity: 0.5;
-}
-#imgControls {
-  position: fixed;
-}
-#settingsWindowLink {
-  visibility: visible;
-  background-position: 0 0;
-}
-div.navLinks > a:first-of-type::after {
-  visibility: visible;
-  cursor: pointer;
-  background-position: 0 -15px;
-}
-#watcher::after {
-  background-position: 0 -30px;
-}
-#globalMessage::after {
-  background-position: 0 -45px;
-}
-#boardNavDesktopFoot::after {
-  background-position: 0 -60px;
-}
-body > a[style="cursor: pointer; float: right;"]::after {
-  visibility: visible;
-  cursor: pointer;
-  background-position: 0 -75px;
-}
-#imgControls label:first-of-type::after {
-  position: static;
-  background-position: 0 -90px;
-}
-#navtopright .exlinksOptionsLink::after {
-  background-position: 0 -105px;
-}
-.cataloglink a::after {
-  background-position: 0 -120px;
-}
-#fappeTyme {
-  background-position: 0 -135px;
-}
-#boardNavDesktopFoot:hover::after,
-#globalMessage:hover::after,
-#imgControls label:hover:first-of-type::after,
-#navlinks a:hover,
-#settingsWindowLink:hover,
-#navtopright .exlinksOptionsLink:hover::after,
-#qr #qrtab,
-#watcher:hover::after,
-.thumbnail#selected,
-body > a[style="cursor: pointer; float: right;"]:hover::after,
-div.navLinks > a:first-of-type:hover::after,
-.cataloglink a:hover::after,
-#fappeTyme:hover {
-  opacity: 1;
-}
 .boardTitle,
 .boardTitle > a {
   font-size: 22px;
@@ -1033,7 +937,6 @@ hr {
   width: 100%;
   clear: both;
   border: none;
-  border-bottom: 1px solid #{theme["Reply Border"]};
 }
 .boxcontent > hr,
 .entry:last-child,
@@ -1070,7 +973,7 @@ img {
   border-width: 1px;
   text-align: center;
   height: 0;
-  width: #{(248 + Style.sidebarOffsetW)}px !important;
+  width: #{width = 248 + Style.sidebarOffset.W}px !important;
   overflow: hidden;
 }
 img.topad,
@@ -1317,14 +1220,12 @@ body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
   position: fixed !important;
   top: 117px !important;
   #{Style.sidebarLocation[1]}: 4px !important;
-  #{Style.sidebarLocation[0]}: #{(252 + Style.sidebarOffsetW)}px !important;
+  #{Style.sidebarLocation[0]}: #{(252 + Style.sidebarOffset.W)}px !important;
   width: auto !important;
   margin: 0 !important;
   z-index: 2;
 }
 body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] > table > tbody > tr > td {
-  background: #{theme["Background Color"]} !important;
-  border: 1px solid #{theme["Reply Border"]} !important;
   vertical-align: top;
 }
 body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
@@ -1335,16 +1236,8 @@ body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
 #fs_status {
   width: auto !important;
   height: auto !important;
-  background: #{theme["Dialog Background"]} !important;
   padding: 10px !important;
   white-space: normal !important;
-}
-#fs_data tr[style="background-color: #EA8;"] {
-  background: #{theme["Reply Background"]} !important;
-}
-#fs_data,
-#fs_data * {
-  border-color: #{theme["Reply Border"]} !important;
 }
 .identityIcon,
 img[alt="Sticky"],
@@ -1382,7 +1275,6 @@ html .subMenu {
   position: relative;
 }
 #qr #charCount {
-  color: #{(if Style.lightTheme then "rgba(0,0,0,0.7)" else "rgba(255,255,255,0.7)")};
   background: none;
   font-size: 10px;
   pointer-events: none;
@@ -1403,7 +1295,7 @@ html .subMenu {
 #showQR {
   display: block;
   #{Style.sidebarLocation[0]}: 2px;
-  width: #{(248 + Style.sidebarOffsetW)}px;
+  width: #{width}px;
   background-color: transparent;
   text-align: center;
   position: fixed;
@@ -1447,60 +1339,8 @@ html .subMenu {
 #themebar input {
   width: 30%;
 }
-html {
-  background: #{theme["Background Color"] or ''};
-  background-image: #{theme["Background Image"] or ''};
-  background-repeat: #{theme["Background Repeat"] or ''};
-  background-attachment: #{theme["Background Attachment"] or ''};
-  background-position: #{theme["Background Position"] or ''};
-}
-#optionsContent,
-#exlinks-options-content,
-#mascotcontent,
-#themecontent {
-  background: #{theme["Background Color"]};
-  border: 1px solid #{theme["Reply Border"]};
-  padding: 5px;
-}
-#optionsbar label[for]#selected_tab {
-  background: #{theme["Background Color"]};
-  border-color: #{theme["Reply Border"]};
-  border-style: solid;
-}
 .suboptions {
   padding: 5px;
-}
-#boardTitle,
-#prefetch,
-#showQR,
-#{unless _conf["Post Form Decorations"] then '#spoilerLabel,' else ''}
-#stats,
-#updater:not(:hover) .move {
-  text-shadow:
-    1px 1px 0 #{theme["Background Color"]},
-    -1px -1px 0 #{theme["Background Color"]},
-    1px -1px 0 #{theme["Background Color"]},
-    -1px 1px 0 #{theme["Background Color"]},
-    0 1px 0 #{theme["Background Color"]},
-    0 -1px 0 #{theme["Background Color"]},
-    1px 0 0 #{theme["Background Color"]},
-    -1px 0 0 #{theme["Background Color"]}#{if _conf["Sidebar Glow"] then "\n, 0 2px 5px #{theme['Text']};" else ";"}
-}
-#options .dialog,
-#exlinks-options,
-#qrtab,
-#{if _conf["Post Form Decorations"] then "#qr," else ""}
-#updater:hover,
-html body span[style="left: 5px; position: absolute;"] a,
-input[type="submit"],
-#options.reply.dialog,
-input[value="Report"] {
-  background: #{theme["Buttons Background"]};
-  border: 1px solid #{theme["Buttons Border"]};
-}
-#options ul li.mascot.enabled .container {
-  background: #{theme["Buttons Background"]};
-  border-color: #{theme["Buttons Border"]};
 }
 #dump,
 #file,
@@ -1512,104 +1352,19 @@ input,
 input.field,
 textarea,
 textarea.field {
-  background: #{theme["Input Background"]};
-  border: 1px solid #{theme["Input Border"]};
-  color: #{theme["Inputs"]};
   #{Style.agent}transition: all .2s linear;
-}
-#dump:hover,
-#file:hover,
-#options .selectrice li:nth-of-type(2n+1):hover,
-.selectrice:hover,
-.selectrice li:hover,
-input:hover,
-input.field:hover,
-input[type="submit"]:hover,
-textarea:hover,
-textarea.field:hover {
-  background: #{theme["Hovered Input Background"]};
-  border-color: #{theme["Hovered Input Border"]};
-  color: #{theme["Inputs"]};
-}
-#dump:active,
-#dump:focus,
-.selectrice:focus,
-.selectrice li:focus,
-input:focus,
-input.field:focus,
-input[type="submit"]:focus,
-textarea:focus,
-textarea.field:focus {
-  background: #{theme["Focused Input Background"]};
-  border-color: #{theme["Focused Input Border"]};
-  color: #{theme["Inputs"]};
-}
-#mouseover,
-#post-preview,
-#qp div.post,
-#xupdater,
-div.reply.post {
-  border: 1px solid #{theme["Reply Border"]};
-  background: #{theme["Reply Background"]};
-}
-.exblock.reply,
-div.reply.post.highlight,
-div.reply.post:target {
-  background: #{theme["Highlighted Reply Background"]};
-  border: 1px solid #{theme["Highlighted Reply Border"]};
 }
 #boardNavDesktop,
 .pagelist {
-  background: #{theme["Navigation Background"]};
-  border: 1px solid #{theme["Navigation Border"]};
   #{Style.sidebarLocation[0]}: #{Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
   #{Style.sidebarLocation[1]}: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;
 }
-#delform {
-  background: #{theme["Thread Wrapper Background"]};
-  border: 1px solid #{theme["Thread Wrapper Border"]};
-}
-#boardNavDesktopFoot,
-#mascotConf,
-#mascot_hide,
-#menu,
-#selectrice,
-#themeConf,
-#watcher,
-#watcher:hover,
-div.subMenu,
-body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
-  background: #{theme["Dialog Background"]};
-  border: 1px solid #{theme["Dialog Border"]};
+.inline .post {
+  padding-bottom: 2px;
 }
 #boardNavDesktopFoot:not(:hover) {
   border-color: transparent;
   background-color: transparent;
-}
-.inline .post {
-  box-shadow: #{if _conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
-  padding-bottom: 2px;
-}
-#qr .warning {
-  background: #{theme["Input Background"]};
-  border: 1px solid #{theme["Input Border"]};
-}
-.captcha img {
-  border: 1px solid #{theme["Input Border"]};
-}
-[style='color: red !important;'] *,
-.disabledwarning,
-.warning {
-  color: #{theme["Warnings"]};
-}
-#dump,
-.button,
-.entry,
-.sideArrows a,
-a,
-div.post > blockquote a[href^="//"],
-span.postNum > .replylink {
-  color: #{theme["Links"]};
 }
 #navlinks a {
   position: fixed;
@@ -1621,72 +1376,8 @@ span.postNum > .replylink {
   border-left: 6px solid transparent;
   margin: 1.5px;
 }
-#navlinks a:first-of-type {
-  border-bottom: 11px solid rgb(#{if Style.lightTheme then "130,130,130" else "230,230,230"});
-}
-#navlinks a:last-of-type {
-  border-top: 11px solid rgb(#{if Style.lightTheme then "130,130,130" else "230,230,230"});
-}
-.postNum a {
-  color: #{theme["Post Numbers"]};
-}
-.subject {
-  color: #{theme["Subjects"]} !important;
-  font-weight: 600;
-}
-.dateTime,
-.post-ago {
-  color: #{theme["Timestamps"]} !important;
-}
-#fs_status a,
-#showQR,
-#updater,
-.summary,
-body > form,
-body,
-button,
-html body span[style="left: 5px; position: absolute;"] a,
-input,
-textarea,
-.abbr,
-.boxbar,
-.boxcontent,
-.pages strong,
-.reply,
-.reply.highlight,
-#boardNavDesktop .title,
-#imgControls label::after,
-#updater #count:not(.new)::after,
-#qr > form > label::after,
-span.pln {
-  color: #{theme["Text"]};
-}
-#exlinks-options-content > table,
-#options ul,
-.selectrice ul {
-  border-bottom: 1px solid #{theme["Reply Border"]};
-  box-shadow: inset #{theme["Shadow Color"]} 0 0 5px;
-}
 .selectrice li {
   list-style-type: none;
-}
-.quote + .spoiler:hover,
-.quote {
-  color: #{theme["Greentext"]};
-}
-a.backlink {
-  color: #{theme["Backlinks"]};
-}
-span.quote > a.quotelink,
-a.quotelink {
-  color: #{theme["Quotelinks"]};
-}
-div.subMenu,
-#menu,
-#post-preview,
-#qp .opContainer,
-#qp .replyContainer {
-  box-shadow: #{if _conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else ""};
 }
 .rice {
   cursor: pointer;
@@ -1694,8 +1385,6 @@ div.subMenu,
   height: 10px;
   margin: 2px 3px;
   display: inline-block;
-  background: #{theme["Checkbox Background"]};
-  border: 1px solid #{theme["Checkbox Border"]};
   vertical-align: bottom;
 }
 .selectrice {
@@ -1709,7 +1398,6 @@ div.subMenu,
   content: "";
   border-right: .25em solid transparent;
   border-left: .25em solid transparent;
-  border-top: .45em solid #{theme["Inputs"]};
   position: absolute;
   right: .4em;
   top: .5em;
@@ -1718,7 +1406,6 @@ div.subMenu,
   display: block;
   content: "";
   height: 1.5em;
-  border-left: 1px solid #{theme["Input Border"]};
   position: absolute;
   right: 1.3em;
   top: 0;
@@ -1731,53 +1418,10 @@ div.subMenu,
   overflow-x: hidden;
   z-index: 99999;
 }
-#qr label input,
-#updater input,
-.bd {
-  background: #{theme["Buttons Background"]};
-  border: 1px solid #{theme["Buttons Border"]};
-}
-.pages a,
-#boardNavDesktop a {
-  color: #{theme["Navigation Links"]};
-}
 input[type=checkbox]:checked + .rice {
-  background: #{theme["Checkbox Checked Background"]};
-  background-image: url(#{Icons.header.png + (if Style.lightTheme then "AkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" else "AkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==")});
   background-attachment: scroll;
   background-repeat: no-repeat;
   background-position: bottom right;
-}
-a:hover,
-#dump:hover,
-.entry:hover,
-div.post > blockquote a[href^="//"]:hover,
-.sideArrows a:hover,
-div.post div.postInfo span.postNum a:hover,
-span.postNum > .replylink:hover,
-.nameBlock > .useremail > .name:hover,
-.nameBlock > .useremail > .postertrip:hover {
-  color: #{theme["Hovered Links"]};
-}
-#boardNavDesktop a:hover,
-#boardTitle a:hover {
-  color: #{theme["Hovered Navigation Links"]};
-}
-#boardTitle {
-  color: #{theme["Board Title"]};
-}
-.name,
-.post-author {
-  color: #{theme["Names"]} !important;
-}
-.post-tripcode,
-.postertrip,
-.trip {
-  color: #{theme["Tripcodes"]} !important;
-}
-.nameBlock > .useremail > .postertrip,
-.nameBlock > .useremail > .name {
-  color: #{theme["Emails"]};
 }
 .nameBlock > .useremail > .name,
 .name,
@@ -1789,33 +1433,7 @@ span.postNum > .replylink:hover,
 }
 a.forwardlink {
   border-bottom: 1px dashed;
-}
-div.post.qphl {
-  border-color: #{theme["Backlinked Reply Outline"]};
-}
-.placeholder,
-#qr input::#{Style.agent}placeholder,
-#qr textarea::#{Style.agent}placeholder {
-  color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
-}
-.placeholder,
-#qr input:#{Style.agent}placeholder,
-#qr textarea:#{Style.agent}placeholder {
-  color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
-}
-.boxcontent dd,
-#options ul,
-.selectrice ul {
-  border-color: #{if Style.lightTheme then "rgba(0,0,0,0.1)" else "rgba(255,255,255,0.1)"};
-}
-#options li,
-.selectrice li:not(:first-of-type) {
-  border-top: 1px solid #{if Style.lightTheme then "rgba(0,0,0,0.05)" else "rgba(255,255,255,0.025)"};
-}
-#mascot img {
-  #{Style.agent}transform: scaleX(#{(if Style.sidebarLocation[0] is "left" then "-" else "")}1);
-}
-#{theme["Custom CSS"]}\n
+}\n
 """ + (
       if _conf["Hide Navigation Decorations"]
          """
@@ -1833,8 +1451,25 @@ div.post.qphl {
 """
       else ""
     ) + (
+      if _conf["Circle Checkboxes"]
+          """
+.riced {
+  display: none;
+}
+.rice {
+  border-radius: 6px;
+}\n
+"""
+      else ""
+    ) + (
       if _conf['Color user IDs']
-        ".posteruid .hand { padding: 0 5px; border-radius: 6px; font-size: 0.8em; }"
+        """
+.posteruid .hand {
+  padding: 0 5px;
+  border-radius: 6px;
+  font-size: 0.8em;
+}\n
+"""
       else ""
     ) + (
       if _conf["Recursive Filtering"]
@@ -1852,67 +1487,6 @@ div.post.qphl {
 }\n
 """
       else ""
-    ) + (
-      if Style.lightTheme
-        """
-.prettyprint {
-  background-color: #e7e7e7;
-  border: 1px solid #dcdcdc;
-}
-span.com {
-  color: #dd0000;
-}
-span.str,
-span.atv {
-  color: #7fa61b;
-}
-span.pun {
-  color: #61663a;
-}
-span.tag {
-  color: #117743;
-}
-span.kwd {
-  color: #5a6F9e;
-}
-span.typ,
-span.atn {
-  color: #9474bd;
-}
-span.lit {
-  color: #368c72;
-}\n
-"""
-      else
-        """
-.prettyprint {
-  background-color: rgba(0,0,0,.1);
-  border: 1px solid rgba(0,0,0,0.5);
-}
-span.tag {
-  color: #96562c;
-}
-span.pun {
-  color: #5b6f2a;
-}
-span.com {
-  color: #a34443;
-}
-span.str,
-span.atv {
-  color: #8ba446;
-}
-span.kwd {
-  color: #987d3e;
-}
-span.typ,
-span.atn {
-  color: #897399;
-}
-span.lit {
-  color: #558773;
-}\n
-"""
     ) + (
       if _conf["Faded 4chan Banner"]
         """
@@ -2000,7 +1574,7 @@ hr {
         """
 #qr img {
   height: 3.9em;
-  width: #{(248 + Style.sidebarOffsetW)}px;
+  width: #{width}px;
 }
 #qr > form > #threadselect,
 #spoilerLabel {
@@ -2023,15 +1597,14 @@ input[title="Verification"] {
 }
 textarea.field,
 #qr > form > div {
-  width: #{(248 + Style.sidebarOffsetW)}px;
+  width: #{width}px;
 }
 #qr {
   padding: 1px;
-  border: 1px solid #{if _conf["Post Form Decorations"] then theme["Buttons Border"] else "transparent"};
   overflow: visible;
   top: auto !important;
   bottom: 1.6em !important;
-  width: #{(248 + Style.sidebarOffsetW)}px;
+  width: #{width}px;
   margin: 0;
   z-index: 5 !important;
 }
@@ -2046,7 +1619,7 @@ input,
   margin: 1px 0 0;
 }
 #file {
-  width: #{(177 + Style.sidebarOffsetW)}px;
+  width: #{(177 + Style.sidebarOffset.W)}px;
 }
 #buttons input {
   width: 70px;
@@ -2056,7 +1629,7 @@ input,
 #qr textarea.field {
   height: 15em;
   min-height: 9em;
-  min-width: #{248 + Style.sidebarOffsetW}px;
+  min-width: #{width}px;
 }
 #qr.captcha textarea.field {
   height: 9em;
@@ -2065,7 +1638,7 @@ input,
 #qr .field[name="name"],
 #qr .field[name="email"],
 #qr .field[name="sub"] {
-  width: #{(75 + (Style.sidebarOffsetW / 3))}px !important;
+  width: #{(75 + (Style.sidebarOffset.W / 3))}px !important;
   margin-top: 0 !important;
   margin-left: 1px !important;
 }\n
@@ -2075,7 +1648,7 @@ input,
 #qr textarea.field {
   height: 12em;
   min-height: 12em;
-  min-width: #{248 + Style.sidebarOffsetW}px
+  min-width: #{width}px
 }
 #qr.captcha textarea.field {
   height: 6em;
@@ -2083,10 +1656,10 @@ input,
 }
 #qr .field[name="email"],
 #qr .field[name="sub"] {
-  width: #{(248 + Style.sidebarOffsetW)}px !important;
+  width: #{width}px !important;
 }
 #qr .field[name="name"] {
-  width: #{(227 + Style.sidebarOffsetW)}px !important;
+  width: #{(227 + Style.sidebarOffset.W)}px !important;
   margin-left: 1px !important;
   margin-top: 0 !important;
 }
@@ -2203,28 +1776,6 @@ div.reply.post {
 """
       else ""
     ) + (
-      if _conf["Alternate Post Colors"]
-        """
-div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
-  background-image: #{Style.agent}linear-gradient(#{if Style.lightTheme then "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" else "rgba(255,255,255,0.02), rgba(255,255,255,0.02)"});
-}\n
-"""
-      else ""
-    ) + (
-      if _conf["Color Reply Headings"]
-        """
-.postInfo {
-  background: #{if (replyHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgb(" + (replyHeading.shiftRGB 16, true) + ")" else "rgba(0,0,0,0.1)"};
-}\n"""
-      else ""
-    ) + (
-      if _conf["Color File Info"]
-        """
-.file {
-  background: #{if (fileHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgb(" + (fileHeading.shiftRGB 8, true) + ")" else "rgba(0,0,0,0.1)"};
-}\n"""
-      else ""
-    ) + (
       if _conf["Filtered Backlinks"]
        """
 .filtered.backlink {
@@ -2245,7 +1796,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   #{Style.sidebarLocation[1]}: auto !important;
   bottom: auto !important;
   height: 0;
-  width: #{(248 + Style.sidebarOffsetW)}px !important;
+  width: #{width}px !important;
   overflow: hidden;
 }
 #watcher:hover {
@@ -2260,7 +1811,7 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
   display: none;
 }
 #watcher {
-  width: #{(246 + Style.sidebarOffsetW)}px;
+  width: #{(246 + Style.sidebarOffset.W)}px;
   padding-bottom: 4px;
   z-index: 96;
 }
@@ -2272,16 +1823,9 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
       if _conf["OP Background"]
         """
 .opContainer div.post {
-  background: #{theme["Reply Background"]};
-  border: 1px solid #{theme["Reply Border"]};
   padding: 5px;
   #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
-}
-.opContainer div.post:target
-.opContainer div.post.highlight {
-  background: #{theme["Highlighted Reply Background"]};
-  border: 1px solid #{theme["Highlighted Reply Border"]};
 }\n
 """
       else ""
@@ -2321,14 +1865,8 @@ img[src^="//static.4chan.org/support/"] {
       else ""
     ) + (
       if _conf["4chan SS Sidebar"]
-        background = new Style.color Style.colorToHex theme["Background Color"]
         """
 body::before {
-  background: none repeat scroll 0% 0% rgba(#{background.shiftRGB -18}, 0.8);
-  border-#{Style.sidebarLocation[1]}: 2px solid #{theme["Background Color"]};
-  box-shadow:
-    #{if _conf["Sidebar Location"] is "right" then "inset" else ""}  1px 0 0 #{theme["Thread Wrapper Border"]},
-    #{if _conf["Sidebar Location"] is "left"  then "inset" else ""} -1px 0 0 #{theme["Thread Wrapper Border"]};
   content: "";
   position: fixed;
   top: 0;
@@ -2371,7 +1909,7 @@ body::before {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
   top: #{(if Style.logoOffset is 0 and _conf["Icon Orientation"] isnt "vertical" then 40 else 21) + Style.logoOffset}px;
-  width: #{248 + Style.sidebarOffsetW}px;
+  width: #{width}px;
 }\n
 """
         "at sidebar bottom": """
@@ -2379,7 +1917,7 @@ body::before {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
   bottom: 280px;
-  width: #{(248 + Style.sidebarOffsetW)}px;
+  width: #{width}px;
 }\n
 """
         "under post form": """
@@ -2387,7 +1925,7 @@ body::before {
   position: fixed;
   #{Style.sidebarLocation[0]}: 2px;
   bottom: 140px;
-  width: #{(248 + Style.sidebarOffsetW)}px;
+  width: #{width}px;
 }\n
 """
         "at top": ""
@@ -2435,14 +1973,21 @@ body::before {
 }\n
 """
           else ""
-        ) + """#boardNavDesktop {
-  border-radius: """ + ((
+        ) + (
           switch _conf["Boards Navigation"]
             when "sticky top", "top"
-              "0 0 3px 3px;"
+              """
+#boardNavDesktop {
+  border-radius: 0 0 3px 3px;
+}\n
+"""
             when "sticky bottom"
-              "3px 3px 0 0;")
-        + "\n}\n") + (
+              """
+#boardNavDesktop {
+  border-radius: 3px 3px 0 0;
+}\n
+"""
+        ) + (
           switch _conf["Pagination"]
             when "sticky top", "top"
               """
@@ -2491,7 +2036,7 @@ td[style="border: 1px dashed;"] {
 }
 #qrtab {
   border-radius: 6px 6px 0 0;
-}
+}\n
 """
         )
       else ""
@@ -2532,27 +2077,6 @@ td[style="border: 1px dashed;"] {
 """}[_conf["Slideout Navigation"]]
     ) + (
       {
-        text: """
-a.useremail[href*="sage"]:last-of-type::#{_conf["Sage Highlight Position"]},
-a.useremail[href*="Sage"]:last-of-type::#{_conf["Sage Highlight Position"]},
-a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
-  content: " (sage) ";
-  color: #{theme["Sage"]};
-}\n
-"""
-        image: """
-a.useremail[href*="sage"]:last-of-type::#{_conf["Sage Highlight Position"]},
-a.useremail[href*="Sage"]:last-of-type::#{_conf["Sage Highlight Position"]},
-a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
-  content: url("#{Icons.header.png}A4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII=");
-  vertical-align: top;
-  margin#{if position is "before" then "right" else "left"}: #{parseInt _conf['Emoji Spacing']}px;
-}\n
-"""
-        none: ""
-      }[_conf["Sage Highlighting"]]
-    ) + (
-      {
         "4chan default": """
 #globalMessage {
   position: static;
@@ -2574,9 +2098,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
   position: fixed;
   #{Style.sidebarLocation[0]}: 0;
   #{Style.sidebarLocation[1]}: auto;
-  width: #{(248 + Style.sidebarOffsetW)}px;
-  background: #{theme["Dialog Background"]};
-  border: 1px solid #{theme["Dialog Border"]};
+  width: #{width}px;
   height: 0;
   overflow: hidden;
   #{Style.agent}box-sizing: border-box;
@@ -2648,7 +2170,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
   top: auto;
   bottom: 269px;
   #{Style.sidebarLocation[1]}: auto;
-  #{(if Style.sidebarLocation[0] is "left" then "left: 0" else "right: " + (250 + Style.sidebarOffsetW) + "px")};
+  #{(if Style.sidebarLocation[0] is "left" then "left: 0" else "right: " + (250 + Style.sidebarOffset.W) + "px")};
   position: fixed;
   #{Style.agent}transform: rotate(90deg);
   #{Style.agent}transform-origin: bottom right;
@@ -2679,7 +2201,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
   display: none;
 }
 #qr {
-  #{Style.sidebarLocation[0]}: -#{(233 + Style.sidebarOffsetW)}px !important;
+  #{Style.sidebarLocation[0]}: -#{233 + Style.sidebarOffset.W}px !important;
   #{Style.sidebarLocation[1]}: auto !important;
 }
 #qr:hover,
@@ -2696,7 +2218,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
   display: none;
 }
 #qr {
-  #{Style.sidebarLocation[0]}: -#{(251 + Style.sidebarOffsetW)}px !important;
+  #{Style.sidebarLocation[0]}: -#{251 + Style.sidebarOffset.W}px !important;
   #{Style.sidebarLocation[1]}: auto !important;
 }
 #qr:hover,
@@ -2723,7 +2245,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
 #qr.focus #qrtab,
 #qr.dump #qrtab {
   opacity: 0;
-  #{Style.sidebarLocation[0]}: #{(252 + Style.sidebarOffsetW)}px;
+  #{Style.sidebarLocation[0]}: #{252 + Style.sidebarOffset.W}px;
   #{Style.agent}transition: opacity .3s linear, #{Style.sidebarLocation[0]} .3s linear;
 }\n
 """
@@ -2747,9 +2269,6 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
         "float": """
 #qr {
   z-index: 103;
-  border: 1px solid #{theme["Background Color"]};
-  background: #{theme["Background Color"]};
-  box-shadow: #{if _conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
 }
 #qr > .move,
 #qr textarea {
@@ -2803,7 +2322,7 @@ textarea.field,
   #{Style.sidebarLocation[0]}: 2px;
 }
 .boardBanner img {
-  width: #{(248 + Style.sidebarOffsetW)}px;
+  width: #{width}px;
 }\n
 """
         "at sidebar bottom": """
@@ -2813,7 +2332,7 @@ textarea.field,
   #{Style.sidebarLocation[0]}: 2px;
 }
 .boardBanner img {
-  width: #{(248 + Style.sidebarOffsetW)}px;
+  width: #{width}px;
 }\n
 """
         "under post form": """
@@ -2823,7 +2342,7 @@ textarea.field,
   #{Style.sidebarLocation[0]}: 2px;
 }
 .boardBanner img {
-  width: #{(248 + Style.sidebarOffsetW)}px;
+  width: #{width}px;
 }\n
 """
         "at top": """
@@ -2857,7 +2376,6 @@ textarea.field,
 }
 #delform .reply .container::before {
   content: "REPLIES: ";
-  color: #{theme["Timestamps"]};
 }
 #delform .container {
   max-width: 100%;
@@ -2886,7 +2404,6 @@ textarea.field,
 }
 #delform .container::before {
   content: "REPLIES: ";
-  color: #{theme["Timestamps"]};
 }
 #delform .container {
   max-width: 100%;
@@ -2901,27 +2418,4 @@ textarea.field,
 }\n
 """
         'default': ""
-      }[_conf["Backlinks Position"]]
-    ) + (
-      switch _conf["Checkboxes"]
-        when "show", "hide"
-          """
-.riced {
-  display: none;
-}\n
-"""
-        when "make checkboxes circular"
-          """
-.riced {
-  display: none;
-}
-.rice {
-  border-radius: 6px;
-}\n
-"""
-        when "do not style checkboxes"
-          """
-.rice {
-  display: none;
-}\n
-""") + (if _conf["Custom CSS"] then _conf["customCSS"] else "")
+      }[_conf["Backlinks Position"]]) + (if _conf["Custom CSS"] then _conf["customCSS"] else "")

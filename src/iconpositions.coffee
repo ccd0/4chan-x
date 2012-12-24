@@ -1,5 +1,78 @@
   iconPositions: ->
-    css = '';
+    css = """
+#navtopright .exlinksOptionsLink::after,
+#settingsWindowLink,
+div.navLinks > a:first-of-type::after,
+#watcher::after,
+#globalMessage::after,
+#boardNavDesktopFoot::after,
+body > a[style="cursor: pointer; float: right;"]::after,
+#imgControls label:first-of-type::after,
+.cataloglink a::after,
+#fappeTyme {
+  position: fixed;
+  display: block;
+  width: 15px;
+  height: 15px;
+  content: " ";
+  overflow: hidden;
+  opacity: 0.5;
+}
+#imgControls {
+  position: fixed;
+}
+#settingsWindowLink {
+  visibility: visible;
+  background-position: 0 0;
+}
+div.navLinks > a:first-of-type::after {
+  visibility: visible;
+  cursor: pointer;
+  background-position: 0 -15px;
+}
+#watcher::after {
+  background-position: 0 -30px;
+}
+#globalMessage::after {
+  background-position: 0 -45px;
+}
+#boardNavDesktopFoot::after {
+  background-position: 0 -60px;
+}
+body > a[style="cursor: pointer; float: right;"]::after {
+  visibility: visible;
+  cursor: pointer;
+  background-position: 0 -75px;
+}
+#imgControls label:first-of-type::after {
+  position: static;
+  background-position: 0 -90px;
+}
+#navtopright .exlinksOptionsLink::after {
+  background-position: 0 -105px;
+}
+.cataloglink a::after {
+  background-position: 0 -120px;
+}
+#fappeTyme {
+  background-position: 0 -135px;
+}
+#boardNavDesktopFoot:hover::after,
+#globalMessage:hover::after,
+#imgControls label:hover:first-of-type::after,
+#navlinks a:hover,
+#settingsWindowLink:hover,
+#navtopright .exlinksOptionsLink:hover::after,
+#qr #qrtab,
+#watcher:hover::after,
+.thumbnail#selected,
+body > a[style="cursor: pointer; float: right;"]:hover::after,
+div.navLinks > a:first-of-type:hover::after,
+.cataloglink a:hover::after,
+#fappeTyme:hover {
+  opacity: 1;
+}
+"""
     i = 0
     align = Style.sidebarLocation[0]
 
@@ -21,7 +94,7 @@
     if Conf["Icon Orientation"] is "horizontal"
       if align is 'left'
         first  = 231
-        offset = Style.sidebarOffsetW
+        offset = Style.sidebarOffset.W
         spacer = -19
 
       else
@@ -54,7 +127,7 @@
         iconOffset = position[position.length - 1] - Style.sidebar - parseInt(Conf["Right Thread Padding"], 10)
       if iconOffset < 0 then iconOffset = 0
 
-      css = """
+      css += """
 div.navLinks > a:first-of-type::after {
   z-index: 99 !important;
 }
@@ -118,7 +191,7 @@ div.navLinks > a:first-of-type::after {
   bottom: #{if Conf["Updater Position"] == "bottom" then "1.6em" else "auto"} !important;
 }
 #prefetch {
-  width: #{248 + Style.sidebarOffsetW}px;
+  width: #{248 + Style.sidebarOffset.W}px;
   #{align}: 2px;
   top: 20px;
   text-align: #{Style.sidebarLocation[1]};
@@ -177,7 +250,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
         iconOffset = 20 - Style.sidebar - parseInt(Conf["Right Thread Padding"], 10)
       if iconOffset < 0 then iconOffset = 0
 
-      css = """
+      css = +"""
 div.navLinks > a:first-of-type::after {
   z-index: 89 !important;
 }
@@ -240,7 +313,7 @@ div.navLinks > a:first-of-type::after {
   #{if Conf["Updater Position"] == "top" then "z-index: 96 !important;"}
 }
 #prefetch {
-  width: #{248 + Style.sidebarOffsetW}px;
+  width: #{248 + Style.sidebarOffset.W}px;
   #{align}: 2px;
   top: 1px;
   text-align: #{Style.sidebarLocation[1]};
@@ -275,7 +348,7 @@ div.navLinks > a:first-of-type::after {
 #boardNavDesktopFoot,
 #globalMessage,
 #watcher {
-  width: #{233 + Style.sidebarOffsetW}px !important;
+  width: #{233 + Style.sidebarOffset.W}px !important;
   #{align}: 18px !important;
 }
 #{if Conf['Boards Navigation'] is 'top' or Conf['Boards Navigation'] is 'sticky top' then '#boardNavDesktop' else if Conf['Pagination'] is 'top' or Conf['Pagination'] is 'sticky top' then '.pagelist'} {

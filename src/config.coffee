@@ -713,10 +713,9 @@ div.post.highlight {
         false
         'Adds a glow to the sidebar\'s text.'
       ]
-      'Checkboxes': [
-        'show'
-        'Alter checkboxes.'
-        ['show', 'make checkboxes circular', 'hide', 'do not style checkboxes']
+      'Circle Checkboxes': [
+        false
+        'Make checkboxes circular.'
       ]
       'Custom CSS': [
         false

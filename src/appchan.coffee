@@ -113,16 +113,18 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         unless theme = Themes[_conf['theme']]
           theme = Themes["Yotsuba B"]
           $.log "Invalid Theme #{_conf['theme']}!"
-        Style.appchan      = $.addStyle Style.css(theme), 'appchan'
-        Style.icons        = $.addStyle "", 'icons'
-        Style.paddingSheet = $.addStyle "", 'padding'
-        Style.mascot       = $.addStyle "", 'mascotSheet'
-        $.addStyle Style.jsColorCSS(), 'jsColor'
+        Style.layoutCSS    = $.addStyle Style.layout(),     'layout'
+        Style.themeCSS     = $.addStyle Style.theme(theme), 'theme'
+        Style.icons        = $.addStyle "",                 'icons'
+        Style.paddingSheet = $.addStyle "",                 'padding'
+        Style.mascot       = $.addStyle "",                 'mascotSheet'
+        $.addStyle Style.jsColorCSS(),                      'jsColor'
       else # XXX fox
         $.on d, 'DOMNodeInserted', Style.addStyle
     else
       MascotTools.init _conf["mascot"]
-      Style.appchan.textContent = Style.css(theme)
+      Style.layoutCSS.textContent = Style.layout()
+      Style.themeCSS.textContent  = Style.theme(theme)
       Style.iconPositions()
 
   headCount: 0

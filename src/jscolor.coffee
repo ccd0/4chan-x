@@ -64,7 +64,7 @@ JSColor =
         valueElement.previousSibling.value = value
         editTheme[valueElement.previousSibling.name] = value
 
-        Style.addStyle editTheme
+        setTimeout -> Style.themeCSS.textContent  = Style.theme editTheme
 
       if not (flags & leaveStyle) and styleElement
         styleElement.style.backgroundColor = '#' + @toString()
