@@ -1,7 +1,7 @@
   theme: (theme) ->
     _conf = Conf
 
-    bgColor = new Style.color Style.colorToHex (backgroundC = theme["Background Color"])
+    bgColor = new Style.color Style.colorToHex backgroundC = theme["Background Color"]
 
     Style.lightTheme = bgColor.isLight()
 

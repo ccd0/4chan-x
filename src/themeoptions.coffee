@@ -165,8 +165,8 @@ ThemeTools =
           @nextSibling.color.importColor()
 
         editTheme[@name] = @value
-        Style.addStyle(editTheme)
 
+      Style.addStyle(editTheme)
 
       $.add themecontent, div
 
@@ -181,7 +181,7 @@ ThemeTools =
 
     $.on $('textarea', div), 'blur', ->
       editTheme["Custom CSS"] = @value
-      Style.addStyle(editTheme)
+      Style.themeCSS.textContent  = Style.theme editTheme
 
     $.add themecontent, div
 
@@ -190,7 +190,7 @@ ThemeTools =
 
     $.on  $('#close > a', ThemeTools.dialog), 'click', ThemeTools.close
     $.add d.body, ThemeTools.dialog
-    Style.addStyle(editTheme)
+    Style.themeCSS.textContent  = Style.theme editTheme
 
   uploadImage: (evt, el) ->
     file = evt.target.files[0]
@@ -201,7 +201,7 @@ ThemeTools =
 
       el.previousSibling.value = val
       editTheme["Background Image"] = val
-      Style.addStyle(editTheme)
+      Style.themeCSS.textContent  = Style.theme editTheme
 
     reader.readAsDataURL file
 

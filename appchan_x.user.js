@@ -9313,9 +9313,9 @@
             this.nextSibling.value = "#" + (Style.colorToHex(this.value));
             this.nextSibling.color.importColor();
           }
-          editTheme[this.name] = this.value;
-          return Style.addStyle(editTheme);
+          return editTheme[this.name] = this.value;
         });
+        Style.addStyle(editTheme);
         $.add(themecontent, div);
       }
       $.add(themecontent, div);
@@ -9328,7 +9328,7 @@
       });
       $.on($('textarea', div), 'blur', function() {
         editTheme["Custom CSS"] = this.value;
-        return Style.addStyle(editTheme);
+        return Style.themeCSS.textContent = Style.theme(editTheme);
       });
       $.add(themecontent, div);
       $.on($('#save > a', ThemeTools.dialog), 'click', function() {
@@ -9336,7 +9336,7 @@
       });
       $.on($('#close > a', ThemeTools.dialog), 'click', ThemeTools.close);
       $.add(d.body, ThemeTools.dialog);
-      return Style.addStyle(editTheme);
+      return Style.themeCSS.textContent = Style.theme(editTheme);
     },
     uploadImage: function(evt, el) {
       var file, reader;
@@ -9347,7 +9347,7 @@
         val = 'url("' + evt.target.result + '")';
         el.previousSibling.value = val;
         editTheme["Background Image"] = val;
-        return Style.addStyle(editTheme);
+        return Style.themeCSS.textContent = Style.theme(editTheme);
       };
       return reader.readAsDataURL(file);
     },
@@ -10348,34 +10348,30 @@
       }
       return _results;
     },
-    addStyle: function(theme) {
-      var _conf;
-      _conf = Conf;
-      if (!theme) {
-        theme = Themes[_conf['theme']];
-      }
+    addStyle: function() {
+      var theme;
+      theme = Themes[Conf['theme']];
       $.off(d, 'DOMNodeInserted', Style.addStyle);
-      if (!_conf['styleInit']) {
-        if (d.head) {
-          _conf['styleInit'] = true;
-          if (!(theme = Themes[_conf['theme']])) {
-            theme = Themes["Yotsuba B"];
-            $.log("Invalid Theme " + _conf['theme'] + "!");
+      if (d.head) {
+        Style.layoutCSS = $.addStyle(Style.layout(), 'layout');
+        Style.themeCSS = $.addStyle(Style.theme(theme), 'theme');
+        Style.icons = $.addStyle("", 'icons');
+        Style.paddingSheet = $.addStyle("", 'padding');
+        Style.mascot = $.addStyle("", 'mascotSheet');
+        $.addStyle(Style.jsColorCSS(), 'jsColor');
+        return Style.addStyle = function(theme) {
+          var _conf;
+          _conf = Conf;
+          if (!theme) {
+            theme = Themes[_conf['theme']];
           }
-          Style.layoutCSS = $.addStyle(Style.layout(), 'layout');
-          Style.themeCSS = $.addStyle(Style.theme(theme), 'theme');
-          Style.icons = $.addStyle("", 'icons');
-          Style.paddingSheet = $.addStyle("", 'padding');
-          Style.mascot = $.addStyle("", 'mascotSheet');
-          return $.addStyle(Style.jsColorCSS(), 'jsColor');
-        } else {
-          return $.on(d, 'DOMNodeInserted', Style.addStyle);
-        }
+          MascotTools.init(_conf["mascot"]);
+          Style.layoutCSS.textContent = Style.layout();
+          Style.themeCSS.textContent = Style.theme(theme);
+          return Style.iconPositions();
+        };
       } else {
-        MascotTools.init(_conf["mascot"]);
-        Style.layoutCSS.textContent = Style.layout();
-        Style.themeCSS.textContent = Style.theme(theme);
-        return Style.iconPositions();
+        return $.on(d, 'DOMNodeInserted', Style.addStyle);
       }
     },
     headCount: 0,
@@ -10693,7 +10689,7 @@
     theme: function(theme) {
       var background, backgroundC, bgColor, css, fileHeading, icons, replyHeading, _conf;
       _conf = Conf;
-      bgColor = new Style.color(Style.colorToHex((backgroundC = theme["Background Color"])));
+      bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]));
       Style.lightTheme = bgColor.isLight();
       icons = Icons.header.png + Icons.themes[_conf["Icons"]][Style.lightTheme ? "light" : "dark"];
       css = ".hide_thread_button span > span,\n.hide_reply_button span > span {\n  background-color: " + theme["Links"] + ";\n}\n#mascot_hide label {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n#content .thumb {\n  box-shadow: 0 0 5px " + theme["Reply Border"] + ";\n}\n.mascotname,\n.mascotoptions {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n::" + Style.agent + "selection {\n  background: " + theme["Text"] + ";\n  color: " + backgroundC + ";\n}\nhr {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\nbody > a[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + backgroundC + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n}\n#fs_status {\n  background: " + theme["Dialog Background"] + " !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data * {\n  border-color: " + theme["Reply Border"] + " !important;\n}\nhtml {\n  background: " + (backgroundC || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n#optionsContent,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + backgroundC + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n#optionsbar label[for]#selected_tab {\n  background: " + backgroundC + ";\n  border-color: " + theme["Reply Border"] + ";\n  border-style: solid;\n}\n#boardTitle,\n#prefetch,\n#showQR,\n" + (!_conf["Post Form Decorations"] ? '#spoilerLabel,' : '') + "\n#stats,\n#updater:not(:hover) .move {\n  text-shadow:\n    1px 1px 0 " + backgroundC + ",\n    -1px -1px 0 " + backgroundC + ",\n    1px -1px 0 " + backgroundC + ",\n    -1px 1px 0 " + backgroundC + ",\n    0 1px 0 " + backgroundC + ",\n    0 -1px 0 " + backgroundC + ",\n    1px 0 0 " + backgroundC + ",\n    -1px 0 0 " + backgroundC + "\n    " + (_conf["Sidebar Glow"] ? ", 0 2px 5px " + theme['Text'] + ";" : ";") + "\n}\n#options .dialog,\n#exlinks-options,\n#qrtab,\n" + (_conf["Post Form Decorations"] ? "#qr," : "") + "\n#updater:hover,\nhtml body span[style=\"left: 5px; position: absolute;\"] a,\ninput[type=\"submit\"],\n#options.reply.dialog,\ninput[value=\"Report\"] {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n#options ul li.mascot.enabled .container {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#file,\n#options input,\n.dump #dump:not(:hover):not(:focus),\n.selectrice,\nbutton,\ninput,\ninput.field,\ntextarea,\ntextarea.field {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:hover,\n#file:hover,\n#options .selectrice li:nth-of-type(2n+1):hover,\n.selectrice:hover,\n.selectrice li:hover,\ninput:hover,\ninput.field:hover,\ninput[type=\"submit\"]:hover,\ntextarea:hover,\ntextarea.field:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:active,\n#dump:focus,\n.selectrice:focus,\n.selectrice li:focus,\ninput:focus,\ninput.field:focus,\ninput[type=\"submit\"]:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#mouseover,\n#post-preview,\n#qp div.post,\n#xupdater,\ndiv.reply.post {\n  border: 1px solid " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.exblock.reply,\ndiv.reply.post.highlight,\ndiv.reply.post:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#boardNavDesktop,\n.pagelist {\n  background: " + theme["Navigation Background"] + ";\n  border: 1px solid " + theme["Navigation Border"] + ";\n}\n#delform {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#selectrice,\n#themeConf,\n#watcher,\n#watcher:hover,\ndiv.subMenu,\nbody > a[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n}\n.captcha img {\n  border: 1px solid " + theme["Input Border"] + ";\n}\n[style='color: red !important;'] *,\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\n#dump,\n.button,\n.entry,\n.sideArrows a,\na,\ndiv.post > blockquote a[href^=\"//\"],\nspan.postNum > .replylink {\n  color: " + theme["Links"] + ";\n}\n#navlinks a:first-of-type {\n  border-bottom: 11px solid rgb(" + (Style.lightTheme ? "130,130,130" : "230,230,230") + ");\n}\n#navlinks a:last-of-type {\n  border-top: 11px solid rgb(" + (Style.lightTheme ? "130,130,130" : "230,230,230") + ");\n}\n#qr #charCount {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + ";\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n  font-weight: 600;\n}\n.dateTime,\n.post-ago {\n  color: " + theme["Timestamps"] + " !important;\n}\n#fs_status a,\n#showQR,\n#updater,\n.summary,\nbody > form,\nbody,\nbutton,\nhtml body span[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea,\n.abbr,\n.boxbar,\n.boxcontent,\n.pages strong,\n.reply,\n.reply.highlight,\n#boardNavDesktop .title,\n#imgControls label::after,\n#updater #count:not(.new)::after,\n#qr > form > label::after,\nspan.pln {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#options ul,\n.selectrice ul {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\na.backlink {\n  color: " + theme["Backlinks"] + ";\n}\nspan.quote > a.quotelink,\na.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\n#delform .reply .container::before {\n  color: " + theme["Timestamps"] + ";\n}\ndiv.subMenu,\n#menu,\n#post-preview,\n#qp .opContainer,\n#qp .replyContainer {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n}\n.selectrice::before {\n  border-left: 1px solid " + theme["Input Border"] + ";\n}\n.selectrice::after {\n  border-top: .45em solid " + theme["Inputs"] + ";\n}\n#qr label input,\n#updater input,\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#boardNavDesktop a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  background: " + theme["Checkbox Checked Background"] + ";\n  background-image: url(" + (Icons.header.png + (Style.lightTheme ? "AkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" : "AkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==")) + ");\n}\na:hover,\n#dump:hover,\n.entry:hover,\ndiv.post > blockquote a[href^=\"//\"]:hover,\n.sideArrows a:hover,\ndiv.post div.postInfo span.postNum a:hover,\nspan.postNum > .replylink:hover,\n.nameBlock > .useremail > .name:hover,\n.nameBlock > .useremail > .postertrip:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#boardNavDesktop a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name,\n.post-author {\n  color: " + theme["Names"] + " !important;\n}\n.post-tripcode,\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\n.nameBlock > .useremail > .postertrip,\n.nameBlock > .useremail > .name {\n  color: " + theme["Emails"] + ";\n}\ndiv.post.qphl {\n  border-color: " + theme["Backlinked Reply Outline"] + ";\n}\n.inline .post {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.placeholder,\n#qr input::" + Style.agent + "placeholder,\n#qr textarea::" + Style.agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n.placeholder,\n#qr input:" + Style.agent + "placeholder,\n#qr textarea:" + Style.agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n.boxcontent dd,\n#options ul,\n.selectrice ul {\n  border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + ";\n}\n#options li,\n.selectrice li:not(:first-of-type) {\n  border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + ";\n}\n#mascot img {\n  " + Style.agent + "transform: scaleX(" + (Style.sidebarLocation[0] === "left" ? "-" : "") + "1);\n}\n\n#navtopright .exlinksOptionsLink::after,\n#settingsWindowLink,\ndiv.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#imgControls label:first-of-type::after,\n.cataloglink a::after,\n#fappeTyme {\n  background-image: url('" + icons + "');\n}\n" + theme["Custom CSS"] + "\n";

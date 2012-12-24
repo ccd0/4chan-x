@@ -102,30 +102,32 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         $.add @, ul
       $.after select, div
 
-  addStyle: (theme) ->
-    _conf = Conf
-    unless theme
-      theme = Themes[_conf['theme']]
+  addStyle: ->
+    theme = Themes[Conf['theme']]
     $.off d, 'DOMNodeInserted', Style.addStyle
-    unless _conf['styleInit']
-      if d.head
-        _conf['styleInit']  = true
-        unless theme = Themes[_conf['theme']]
-          theme = Themes["Yotsuba B"]
-          $.log "Invalid Theme #{_conf['theme']}!"
-        Style.layoutCSS    = $.addStyle Style.layout(),     'layout'
-        Style.themeCSS     = $.addStyle Style.theme(theme), 'theme'
-        Style.icons        = $.addStyle "",                 'icons'
-        Style.paddingSheet = $.addStyle "",                 'padding'
-        Style.mascot       = $.addStyle "",                 'mascotSheet'
-        $.addStyle Style.jsColorCSS(),                      'jsColor'
-      else # XXX fox
-        $.on d, 'DOMNodeInserted', Style.addStyle
-    else
-      MascotTools.init _conf["mascot"]
-      Style.layoutCSS.textContent = Style.layout()
-      Style.themeCSS.textContent  = Style.theme(theme)
-      Style.iconPositions()
+    if d.head
+      Style.layoutCSS    = $.addStyle Style.layout(),     'layout'
+      Style.themeCSS     = $.addStyle Style.theme(theme), 'theme'
+      Style.icons        = $.addStyle "",                 'icons'
+      Style.paddingSheet = $.addStyle "",                 'padding'
+      Style.mascot       = $.addStyle "",                 'mascotSheet'
+
+      # As JSColor doesn't really have any customization,
+      # we don't save its sheet as a variable.
+      $.addStyle Style.jsColorCSS(),                 'jsColor'
+      
+      # After this has run correctly, this function becomes our go-to function for changing options.
+      Style.addStyle = (theme) ->
+        _conf = Conf
+        unless theme
+          theme = Themes[_conf['theme']]
+
+        MascotTools.init _conf["mascot"]
+        Style.layoutCSS.textContent = Style.layout()
+        Style.themeCSS.textContent  = Style.theme(theme)
+        Style.iconPositions()
+    else # XXX fox
+      $.on d, 'DOMNodeInserted', Style.addStyle
 
   headCount: 0
 
