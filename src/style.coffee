@@ -1709,19 +1709,17 @@ input,
 .thread .replyContainer {
   position: relative;
   clear: both;
-  display: table;
-  width: 100%;
 }
+.thread .replyContainer,
 .replyContainer div.reply.post {
   display: table;
   width: 100%;
-  height: 100%
 }
 .sideArrows a,
 .menu_button {
   position: absolute;
   right: 6px;
-  top: 2px;
+  top: 4px;
   font-size: 9px;
 }
 .sideArrows a {
@@ -1763,7 +1761,6 @@ div.reply.post {
   position: relative;
   overflow: visible;
   display: table;
-
 }\n
 """
     ) + (

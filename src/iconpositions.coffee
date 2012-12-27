@@ -75,56 +75,58 @@ div.navLinks > a:first-of-type:hover::after,
 """
     i = 0
     align = Style.sidebarLocation[0]
+    
+    _conf = Conf
+    notCatalog = !g.CATALOG
+    notFlash   = g.BOARD isnt 'f'
 
-    aligner = (first, offset, spacer, checks) ->
-      first += offset
+    aligner = (first, spacer, checks) ->
       # Create a position to hold values
       position = [first]
 
       # Check which elements we actually have. Some are easy, because the script creates them so we'd know they're here
       # Some are hard, like 4sight, which we have no way of knowing if available without looking for it.
       for enabled in checks
-        if enabled
-          position[position.length] = first += spacer
-        else
-          position[position.length] = first
+        position[position.length] = 
+          if enabled
+            first += spacer
+          else
+            first
 
-      return position
+      position
 
-    if Conf["Icon Orientation"] is "horizontal"
+    if _conf["Icon Orientation"] is "horizontal"
       if align is 'left'
-        first  = 231
-        offset = Style.sidebarOffset.W
+        first  = 231 + Style.sidebarOffset.W
         spacer = -19
 
       else
         first  = 2
-        offset = 0
         spacer = 19
 
       position = aligner(
         first
-        offset
         spacer
         [
           true
-          (if Conf['Slideout Navigation'] isnt 'hide' then true else false)
-          (if Conf['Announcements'] is 'slideout' and $('#globalMessage', d.body)? then true else false)
-          !g.CATALOG and (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
+          (if _conf['Slideout Navigation'] isnt 'hide' then true else false)
+          (if _conf['Announcements'] is 'slideout' and $('#globalMessage', d.body)? then true else false)
+          notCatalog and (if _conf['Slideout Watcher'] and _conf['Thread Watcher'] then true else false)
           $('#navtopright .exlinksOptionsLink', d.body)?
-          !g.CATALOG and $('body > a[style="cursor: pointer; float: right;"]', d.body)?
-          !g.CATALOG and Conf['Image Expansion']
-          !g.CATALOG
-          Conf['Fappe Tyme']
-          !g.CATALOG and navlinks = ((!g.REPLY and Conf['Index Navigation']) or (g.REPLY and Conf['Reply Navigation']))
-          !g.CATALOG and navlinks
+          notCatalog and $('body > a[style="cursor: pointer; float: right;"]', d.body)?
+          notCatalog and notFlash and _conf['Image Expansion']
+          notCatalog and notFlash
+          notCatalog and notFlash and _conf['Fappe Tyme']
+          notCatalog and navlinks = ((!g.REPLY and _conf['Index Navigation']) or (g.REPLY and _conf['Reply Navigation']))
+          notCatalog and navlinks
         ]
       )
 
-      if align is 'left'
-        iconOffset = 250 - Style.sidebar
-      else
-        iconOffset = position[position.length - 1] - Style.sidebar - parseInt(Conf["Right Thread Padding"], 10)
+      iconOffset = 
+        if align is 'left'
+          250 - Style.sidebar
+        else
+          position[position.length - 1] - Style.sidebar - parseInt(_conf["Right Thread Padding"], 10)
       if iconOffset < 0 then iconOffset = 0
 
       css += """
@@ -187,8 +189,8 @@ div.navLinks > a:first-of-type::after {
 #stats {
   #{align}: 2px !important;
   #{Style.sidebarLocation[1]}: auto !important;
-  top: #{if Conf["Updater Position"] == "top" then "1.6em" else "auto"} !important;
-  bottom: #{if Conf["Updater Position"] == "bottom" then "1.6em" else "auto"} !important;
+  top: #{if _conf["Updater Position"] == "top" then "1.6em" else "auto"} !important;
+  bottom: #{if _conf["Updater Position"] == "bottom" then "1.6em" else "auto"} !important;
 }
 #prefetch {
   width: #{248 + Style.sidebarOffset.W}px;
@@ -208,47 +210,42 @@ div.navLinks > a:first-of-type::after,
 body > a[style="cursor: pointer; float: right;"]::after {
   top: 2px !important;
 }
-#{if Conf["Announcements"] is "slideout" then "#globalMessage," else ""}
-#{if Conf["Slideout Watcher"] then "#watcher," else ""}
+#{if _conf["Announcements"] is "slideout" then "#globalMessage," else ""}
+#{if _conf["Slideout Watcher"] then "#watcher," else ""}
 #boardNavDesktopFoot {
   top: 16px !important;
   z-index: 98 !important;
 }
 #globalMessage:hover,
-#{if Conf["Slideout Watcher"] then "#watcher:hover," else ""}
+#{if _conf["Slideout Watcher"] then "#watcher:hover," else ""}
 #boardNavDesktopFoot:hover {
   z-index: 99 !important;
 }
-#{if Conf['Boards Navigation'] is 'top' or Conf['Boards Navigation'] is 'sticky top' then '#boardNavDesktop' else if Conf['Pagination'] is 'top' or Conf['Pagination'] is 'sticky top' then '.pagelist'} {
+#{if _conf['Boards Navigation'] is 'top' or _conf['Boards Navigation'] is 'sticky top' then '#boardNavDesktop' else if _conf['Pagination'] is 'top' or _conf['Pagination'] is 'sticky top' then '.pagelist'} {
   padding-#{align}: #{iconOffset}px;
 }
 """
     else
 
       position = aligner(
-        2
-        (if Conf["4chan Banner"] is "at sidebar top" then (Style.logoOffset + 19) else 0)
+        2 + (if _conf["4chan Banner"] is "at sidebar top" then (Style.logoOffset + 19) else 0)
         19
         [
-          !g.CATALOG and Conf['Image Expansion']
+          notCatalog and notFlash and _conf['Image Expansion']
           true
-          (if Conf['Slideout Navigation'] isnt 'hide' then true else false)
-          (if Conf['Announcements'] is 'slideout' then true else false)
-          !g.CATALOG and (if Conf['Slideout Watcher'] and Conf['Thread Watcher'] then true else false)
-          !g.CATALOG and $('body > a[style="cursor: pointer; float: right;"]', d.body)?
+          (if _conf['Slideout Navigation'] isnt 'hide' then true else false)
+          (if _conf['Announcements'] is 'slideout' then true else false)
+          notCatalog and (if _conf['Slideout Watcher'] and _conf['Thread Watcher'] then true else false)
+          notCatalog and $('body > a[style="cursor: pointer; float: right;"]', d.body)?
           $('#navtopright .exlinksOptionsLink', d.body)?
-          !g.CATALOG
-          Conf['Fappe Tyme']
-          !g.CATALOG and navlinks = (Conf['Index Navigation'] or (g.REPLY and Conf['Reply Navigation']))
-          !g.CATALOG and navlinks
+          notCatalog and notFlash
+          notCatalog and notFlash and _conf['Fappe Tyme']
+          notCatalog and navlinks = (_conf['Index Navigation'] or (g.REPLY and _conf['Reply Navigation']))
+          notCatalog and navlinks
         ]
       )
 
-      if align is 'left'
-        iconOffset = 20 - Style.sidebar - parseInt(Conf["Left Thread Padding"], 10)
-      else
-        iconOffset = 20 - Style.sidebar - parseInt(Conf["Right Thread Padding"], 10)
-      if iconOffset < 0 then iconOffset = 0
+      iconOffset = 20 - Style.sidebar - parseInt _conf[align.capitalize() + " Thread Padding"], 10
 
       css = +"""
 div.navLinks > a:first-of-type::after {
@@ -276,7 +273,7 @@ div.navLinks > a:first-of-type::after {
   top: #{position[++i]}px;
 }
 /* Watcher */
-#{if Conf["Slideout Watcher"] then "#watcher, #watcher::after" else ""} {
+#{if _conf["Slideout Watcher"] then "#watcher, #watcher::after" else ""} {
   top: #{position[++i]}px !important;
 }
 /* 4sight */
@@ -306,11 +303,11 @@ div.navLinks > a:first-of-type::after {
 /* Updater + Stats */
 #updater,
 #stats {
-  #{align}: #{if Conf["Updater Position"] is "top" then "24" else "2"}px !important;
+  #{align}: #{if _conf["Updater Position"] is "top" then "24" else "2"}px !important;
   #{Style.sidebarLocation[1]}: auto !important;
-  top: #{if Conf["Updater Position"] == "top" then "1px" else "auto"} !important;
-  bottom: #{if Conf["Updater Position"] == "bottom" then "2px" else "auto"} !important;
-  #{if Conf["Updater Position"] == "top" then "z-index: 96 !important;"}
+  top: #{if _conf["Updater Position"] == "top" then "1px" else "auto"} !important;
+  bottom: #{if _conf["Updater Position"] == "bottom" then "2px" else "auto"} !important;
+  #{if _conf["Updater Position"] == "top" then "z-index: 96 !important;"}
 }
 #prefetch {
   width: #{248 + Style.sidebarOffset.W}px;
@@ -325,7 +322,7 @@ div.navLinks > a:first-of-type::after {
 #globalMessage::after,
 #imgControls,
 #fappeTyme,
-#{if Conf["Slideout Watcher"] then "#watcher::after," else ""}
+#{if _conf["Slideout Watcher"] then "#watcher::after," else ""}
 body > a[style="cursor: pointer; float: right;"]::after,
 .cataloglink a::after,
 div.navLinks > a:first-of-type::after {
@@ -338,9 +335,9 @@ div.navLinks > a:first-of-type::after {
   z-index: 98 !important;
 }
 #watcher {
-  z-index: #{if Conf["Slideout Watcher"] then "99" else "10"} !important;
+  z-index: #{if _conf["Slideout Watcher"] then "99" else "10"} !important;
 }
-#{if Conf["Slideout Watcher"] then "#watcher:hover," else ""}
+#{if _conf["Slideout Watcher"] then "#watcher:hover," else ""}
 #boardNavDesktopFoot:hover,
 #globalMessage:hover {
   z-index: 100 !important;
@@ -351,7 +348,7 @@ div.navLinks > a:first-of-type::after {
   width: #{233 + Style.sidebarOffset.W}px !important;
   #{align}: 18px !important;
 }
-#{if Conf['Boards Navigation'] is 'top' or Conf['Boards Navigation'] is 'sticky top' then '#boardNavDesktop' else if Conf['Pagination'] is 'top' or Conf['Pagination'] is 'sticky top' then '.pagelist'} {
+#{if _conf['Boards Navigation'] is 'top' or _conf['Boards Navigation'] is 'sticky top' then '#boardNavDesktop' else if _conf['Pagination'] is 'top' or _conf['Pagination'] is 'sticky top' then '.pagelist'} {
   padding-#{align}: #{iconOffset}px;
 }
 """

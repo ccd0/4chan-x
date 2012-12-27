@@ -77,9 +77,21 @@ JSColor =
 
     @fromHSV = (h, s, v, flags) -> # null = don't change
       @hsv = [
-        h = if h then Math.max(0.0, @minH, Math.min(6.0, @maxH, h)) else @hsv[0]
-        s = if s then Math.max(0.0, @minS, Math.min(1.0, @maxS, s)) else @hsv[1]
-        v = if v then Math.max(0.0, @minV, Math.min(1.0, @maxV, v)) else @hsv[2]
+        h =
+          if h 
+            Math.max(0.0, @minH, Math.min(6.0, @maxH, h))
+          else
+            @hsv[0]
+        s =
+          if s
+            Math.max(0.0, @minS, Math.min(1.0, @maxS, s))
+          else
+            @hsv[1]
+        v =
+          if v
+            Math.max(0.0, @minV, Math.min(1.0, @maxV, v))
+          else
+            @hsv[2]
       ]
 
       @rgb = HSV_RGB(h, s, v)
@@ -87,18 +99,21 @@ JSColor =
       @exportColor flags
 
     @fromRGB = (r, g, b, flags) -> # null = don't change
-      r = if r 
-        Math.max 0.0, Math.min 1.0, r
-      else
-        @rgb[0]
-      g = if g
-        Math.max 0.0, Math.min 1.0, g
-      else
-        @rgb[1]
-      b = if b
-        Math.max 0.0, Math.min 1.0, b
-      else
-        @rgb[2]
+      r = 
+        if r 
+          Math.max 0.0, Math.min 1.0, r
+        else
+          @rgb[0]
+      g =
+        if g
+          Math.max 0.0, Math.min 1.0, g
+        else
+          @rgb[1]
+      b = 
+        if b
+          Math.max 0.0, Math.min 1.0, b
+        else
+          @rgb[2]
 
       hsv = RGB_HSV(r, g, b)
 

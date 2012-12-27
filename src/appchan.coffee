@@ -240,7 +240,6 @@ body {
         ) * Math.abs shift
       else
         shift
-          
 
       return [ 
         minmax rgb[0] + shift

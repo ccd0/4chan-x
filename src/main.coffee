@@ -391,9 +391,9 @@ Main =
       class:       el.className
       ID:          el.id.match(/\d+$/)[0]
       threadID:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0]
-      isArchived:  /\barchivedPost\b/.test parentClass
+      isArchived:  parentClass.contains    'archivedPost'
       isInlined:   /\binline\b/.test       parentClass
-      isCrosspost: /\bcrosspost\b/.test    parentClass
+      isCrosspost: parentClass.contains    'crosspost'
       blockquote:  el.lastElementChild
       quotes:      el.getElementsByClassName 'quotelink'
       backlinks:   el.getElementsByClassName 'backlink'

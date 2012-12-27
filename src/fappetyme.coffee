@@ -1,5 +1,6 @@
 FappeTyme = 
   init: ->
+    return if g.CATALOG or g.BOARD is 'f'
     el = $.el 'a'
       href:  'javascript:;'
       id:    'fappeTyme'
