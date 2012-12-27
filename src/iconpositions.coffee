@@ -247,7 +247,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 
       iconOffset = 20 - Style.sidebar - parseInt _conf[align.capitalize() + " Thread Padding"], 10
 
-      css = +"""
+      css += """
 div.navLinks > a:first-of-type::after {
   z-index: 89 !important;
 }
