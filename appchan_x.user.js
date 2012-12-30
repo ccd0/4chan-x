@@ -2597,14 +2597,12 @@
       } else {
         req = $.ajax(url, {
           onload: function() {
-            var _i, _len, _ref, _results;
+            var _i, _len, _ref;
             _ref = this.callbacks;
-            _results = [];
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               cb = _ref[_i];
-              _results.push(cb.call(this));
+              cb.call(this);
             }
-            return _results;
           },
           onabort: function() {
             return delete $.cache.requests[url];
@@ -2699,14 +2697,12 @@
       return el;
     },
     on: function(el, events, handler) {
-      var event, _i, _len, _ref, _results;
+      var event, _i, _len, _ref;
       _ref = events.split(' ');
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         event = _ref[_i];
-        _results.push(el.addEventListener(event, handler, false));
+        el.addEventListener(event, handler, false);
       }
-      return _results;
     },
     off: function(el, events, handler) {
       var event, _i, _len, _ref;
@@ -3297,7 +3293,7 @@
       return Style.rice(dialog);
     },
     indicators: function(dialog) {
-      var indicator, indicators, key, _i, _j, _len, _len1, _ref, _ref1, _results;
+      var indicator, indicators, key, _i, _j, _len, _len1, _ref, _ref1;
       indicators = {};
       _ref = $$('.warning', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3310,17 +3306,15 @@
         });
       }
       _ref1 = $$('.disabledwarning', dialog);
-      _results = [];
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         indicator = _ref1[_j];
         key = indicator.firstChild.textContent;
         indicator.hidden = !$.get(key, Conf[key]);
         indicators[key] = indicator;
-        _results.push($.on($("[name='" + key + "']", dialog), 'click', function() {
+        $.on($("[name='" + key + "']", dialog), 'click', function() {
           return Options.indicators(dialog);
-        }));
+        });
       }
-      return _results;
     },
     themeTab: function(dialog, mode) {
       var div, keys, name, parentdiv, suboptions, theme, _i, _j, _len, _len1;
@@ -3833,17 +3827,15 @@
       },
       array: ['name', 'email', 'sub'],
       change: function() {
-        var input, item, key, _i, _len, _ref, _results;
+        var input, item, key, _i, _len, _ref;
         key = this.value;
         Options.persona.newButton();
         _ref = Options.persona.array;
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           item = _ref[_i];
           input = $("input[name=" + item + "]", Options.el);
-          _results.push(input.value = Options.persona.data[key][item]);
+          input.value = Options.persona.data[key][item];
         }
-        return _results;
       },
       copy: function() {
         var change, data, select, _ref;
@@ -4504,9 +4496,8 @@
 
   ExpandThread = {
     init: function() {
-      var a, span, _i, _len, _ref, _results;
+      var a, span, _i, _len, _ref;
       _ref = $$('.summary');
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         span = _ref[_i];
         a = $.el('a', {
@@ -4517,9 +4508,8 @@
         $.on(a, 'click', function() {
           return ExpandThread.toggle(this.parentNode);
         });
-        _results.push($.replace(span, a));
+        $.replace(span, a);
       }
-      return _results;
     },
     toggle: function(thread) {
       var a, num, replies, reply, url, _i, _len;
@@ -7389,19 +7379,15 @@
       });
     },
     iterate: function() {
-      var thread, _i, _len, _ref, _results;
+      var thread, _i, _len, _ref;
       ThreadHiding.hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
       _ref = $$('.thread');
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         thread = _ref[_i];
         if (thread.id.slice(1) in ThreadHiding.hiddenThreads) {
-          _results.push(ThreadHiding.hide(thread));
-        } else {
-          _results.push(void 0);
+          ThreadHiding.hide(thread);
         }
       }
-      return _results;
     }
   };
 
@@ -10187,40 +10173,29 @@
 
   CustomNavigation = {
     init: function() {
-      var a, link, navigation, node, nodes, _i, _j, _len, _len1, _ref, _results;
+      var a, i, link, navNodes, navigation, node, _i, _len, _ref;
       navigation = $("#boardNavDesktop", d.body);
-      nodes = (function() {
-        var _i, _len, _ref, _results;
-        _ref = navigation.childNodes;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          node = _ref[_i];
-          if (node.id !== "navtopright") {
-            _results.push(node);
-          } else {
-            continue;
-          }
+      navNodes = navigation.childNodes;
+      i = navNodes.length;
+      while (i--) {
+        node = navNodes[i];
+        if (node.id === "navtopright") {
+          continue;
         }
-        return _results;
-      })();
-      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
-        node = nodes[_i];
         $.rm(node);
       }
       $.add(navigation, $.tn("" + userNavigation.delimiter + " "));
       _ref = userNavigation.links;
-      _results = [];
-      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-        link = _ref[_j];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
         a = $.el('a', {
           textContent: link[0],
           title: link[1],
           href: link[2]
         });
         $.add(navigation, a);
-        _results.push($.add(navigation, $.tn(" " + userNavigation.delimiter + " ")));
+        $.add(navigation, $.tn(" " + userNavigation.delimiter + " "));
       }
-      return _results;
     }
   };
 
@@ -10378,21 +10353,17 @@
     },
     headCount: 0,
     remStyle: function() {
-      var head, node, nodes, _i, _j, _len, _len1, _ref;
+      var head, i, node, nodes;
       $.off(d, 'DOMNodeInserted', this.remStyle);
       if (Style.headCount < 11 && (head = d.head)) {
-        nodes = [];
-        _ref = head.children;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          node = _ref[_i];
+        nodes = head.children;
+        i = nodes.length;
+        while (i--) {
+          node = nodes[i];
           if (/^.*\bstylesheet\b.*/.test(node.rel) || (/style/i.test(node.tagName) && !node.id)) {
             Style.headCount++;
-            nodes.push(node);
+            $.rm(node);
           }
-        }
-        for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
-          node = nodes[_j];
-          $.rm(node);
         }
         if (Style.headCount < 10) {
           return $.on(d, 'DOMNodeInserted', this.remStyle);

@@ -1,18 +1,13 @@
 CustomNavigation =
   init: ->
-    navigation = $ "#boardNavDesktop", d.body
+    navigation  = $ "#boardNavDesktop", d.body
+    navNodes    = navigation.childNodes
+    i           = navNodes.length
 
-    # Gather default navigation
-    nodes = for node in navigation.childNodes
-      unless node.id == "navtopright"
-        node
-      else
-        continue
-
-    # And remove it.
-    # We do this in two operations because gathering nodes while deleting them is _messy_
-    # And mostly doesn't work.
-    for node in nodes
+    # Gather default navigation and remove it.
+    while i--
+      node = navNodes[i]
+      continue if node.id is "navtopright"
       $.rm node
 
     # Add the first delimiter outside the for loop so we don't end up with hundreds.
@@ -27,3 +22,5 @@ CustomNavigation =
         href:           link[2]
       $.add navigation, a
       $.add navigation, $.tn " #{userNavigation.delimiter} "
+
+    return

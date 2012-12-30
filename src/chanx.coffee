@@ -439,6 +439,7 @@ ExpandThread =
         href: 'javascript:;'
       $.on a, 'click', -> ExpandThread.toggle @parentNode
       $.replace span, a
+    return
 
   toggle: (thread) ->
     url = "//api.4chan.org/#{g.BOARD}/res/#{thread.id[1..]}.json"
@@ -2797,6 +2798,7 @@ ThreadHideLink =
     for thread in $$ '.thread'
       if thread.id[1..] of ThreadHiding.hiddenThreads
         ThreadHiding.hide thread
+    return
 
 ReplyHideLink =
   init: ->

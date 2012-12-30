@@ -135,13 +135,13 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle
     if Style.headCount < 11 and head = d.head
-      nodes = []
-      for node in head.children
+      nodes = head.children
+      i     = nodes.length
+      while i--
+        node = nodes[i]
         if /^.*\bstylesheet\b.*/.test(node.rel) or (/style/i.test(node.tagName) and !node.id)
-            Style.headCount++
-            nodes.push node
-      for node in nodes
-        $.rm node
+          Style.headCount++
+          $.rm node
       if Style.headCount < 10
         $.on d, 'DOMNodeInserted', @remStyle
     else

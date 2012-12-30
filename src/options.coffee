@@ -461,6 +461,8 @@ Options =
       $.on $("[name='#{key}']", dialog), 'click', ->
         Options.indicators dialog
 
+    return
+
   themeTab: (dialog = Options.el, mode) ->
 
     unless mode
@@ -871,9 +873,14 @@ Options =
       if @checked
         $.id(@name).hidden = true
         Conf["Hidden Categories"].push @name
+        
+        # Gather all names of enabled mascots in the hidden category in every context it could be enabled.
         for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
           clear = for name in (setting = Conf[type])
-            if Mascots[name].category is @name then name else continue
+            if Mascots[name].category is @name 
+              name
+            else
+              continue
           for name in clear
             setting.remove name
             if type is g.MASCOTSTRING
@@ -1035,6 +1042,7 @@ Options =
       for item in Options.persona.array
         input = $ "input[name=#{item}]", Options.el
         input.value = Options.persona.data[key][item]
+      return
     
     copy: ->
       {select, data, change} = Options.persona

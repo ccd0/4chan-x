@@ -96,7 +96,9 @@ $.extend $,
         req.callbacks.push cb
     else
       req = $.ajax url,
-        onload:  -> cb.call @ for cb in @callbacks
+        onload:  -> 
+          cb.call @ for cb in @callbacks
+          return
         onabort: -> delete $.cache.requests[url]
         onerror: -> delete $.cache.requests[url]
       req.callbacks = [cb]
@@ -156,6 +158,7 @@ $.extend $,
   on: (el, events, handler) ->
     for event in events.split ' '
       el.addEventListener event, handler, false
+    return
   off: (el, events, handler) ->
     for event in events.split ' '
       el.removeEventListener event, handler, false
