@@ -2818,7 +2818,7 @@
         innerHTML: html,
         id: id
       });
-      el.style.cssText = localStorage.getItem("" + Main.namespace + id + ".position") || position;
+      el.style.cssText = $.get(id + ".position", position);
       if (move = $('.move', el)) {
         move.addEventListener('mousedown', UI.dragstart, false);
       }
@@ -2849,7 +2849,7 @@
       return style.bottom = top === null ? '0px' : null;
     },
     dragend: function() {
-      $.set("" + Main.namespace + UI.el.id + ".position", UI.el.style.cssText);
+      $.set(UI.el.id + ".position", UI.el.style.cssText);
       d.removeEventListener('mousemove', UI.drag, false);
       d.removeEventListener('mouseup', UI.dragend, false);
       return delete UI.el;
