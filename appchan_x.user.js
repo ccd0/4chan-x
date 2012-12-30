@@ -2509,6 +2509,16 @@
       } else {
         return false;
       }
+    },
+    pushArrays: function() {
+      var arg, args, _i, _len, _results;
+      args = arguments;
+      _results = [];
+      for (_i = 0, _len = args.length; _i < _len; _i++) {
+        arg = args[_i];
+        _results.push(this.push.apply(this, arg));
+      }
+      return _results;
     }
   });
 
@@ -6877,8 +6887,9 @@
     init: function() {
       return Main.callbacks.push(this.node);
     },
+    regString: /(\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s'"<>]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi,
     node: function(post) {
-      var a, data, el, embed, i, index, link, links, n, node, nodes, p, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1, _ref2;
+      var a, crop, cut, data, el, embed, i, index, link, links, n, node, nodes, p, snapshot, text, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1;
       if (post.isInlined && !post.isCrosspost) {
         if (Conf['Embedding']) {
           _ref = $$('.embed', post.el);
@@ -6889,17 +6900,20 @@
         }
         return;
       }
-      _ref1 = $$('s', post.blockquote);
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        spoiler = _ref1[_j];
-        if (!/\w/.test(spoiler.textContent) && (p = spoiler.previousSibling) && (n = spoiler.nextSibling) && (n && p).nodeName === '#text') {
-          el = $.tn(p.textContent + spoiler.textContent + n.textContent);
-          $.rm(p) && $.rm(n);
-          $.replace(spoiler, el);
+      crop = [];
+      crop.pushArrays($$('s', post.blockquote), $$('wbr', post.blockquote));
+      for (_j = 0, _len1 = crop.length; _j < _len1; _j++) {
+        cut = crop[_j];
+        $.log(cut);
+        if (!/\w/.test(cut.textContent) && (n = cut.nextSibling).nodeName === '#text' && (p = cut.previousSibling).nodeName === '#text') {
+          el = $.tn(p.textContent + n.textContent);
+          $.rm(p);
+          $.rm(n);
+          $.replace(cut, el);
         }
       }
       snapshot = d.evaluate('.//text()', post.blockquote, null, 6, null);
-      for (i = _k = 0, _ref2 = snapshot.snapshotLength; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
+      for (i = _k = 0, _ref1 = snapshot.snapshotLength; 0 <= _ref1 ? _k < _ref1 : _k > _ref1; i = 0 <= _ref1 ? ++_k : --_k) {
         node = snapshot.snapshotItem(i);
         data = node.data;
         if (!(links = data.match(Linkify.regString))) {
@@ -6929,7 +6943,6 @@
         $.replace(node, nodes);
       }
     },
-    regString: /(\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s'"<>]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi,
     concat: function(a) {
       return $.on(a, 'click', function(e) {
         var el, next, text;
@@ -10373,45 +10386,40 @@
       }
     },
     banner: function() {
-      var banner, child, children, title;
+      var banner, child, children, i, title;
       banner = $(".boardBanner", d.body);
       title = $.el("div", {
         id: "boardTitle"
       });
-      children = (function() {
-        var _i, _len, _ref, _results;
-        _ref = banner.children;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          child = _ref[_i];
-          if (child.tagName.toLowerCase() === "img") {
-            child.id = "Banner";
-            continue;
-          }
-          if (Conf['Custom Board Titles']) {
-            child.innerHTML = $.get("" + g.BOARD + child.className, child.innerHTML);
-            $.on(child, 'click', function(e) {
-              if (e.shiftKey) {
-                return this.contentEditable = true;
-              }
-            });
-            $.on(child, 'keydown', function(e) {
-              return e.stopPropagation();
-            });
-            $.on(child, 'focus', function() {
-              return this.textContent = this.innerHTML;
-            });
-            $.on(child, 'blur', function() {
-              $.set("" + g.BOARD + this.className, this.textContent);
-              this.innerHTML = this.textContent;
-              return this.contentEditable = false;
-            });
-          }
-          _results.push(child);
+      children = banner.children;
+      i = children.length;
+      while (i--) {
+        child = children[i];
+        if (child.tagName.toLowerCase() === "img") {
+          child.id = "Banner";
+          continue;
         }
-        return _results;
-      })();
-      $.add(title, children);
+        if (Conf['Custom Board Titles']) {
+          child.innerHTML = $.get("" + g.BOARD + child.className, child.innerHTML);
+          $.on(child, 'click', function(e) {
+            if (e.shiftKey) {
+              return this.contentEditable = true;
+            }
+          });
+          $.on(child, 'keydown', function(e) {
+            return e.stopPropagation();
+          });
+          $.on(child, 'focus', function() {
+            return this.textContent = this.innerHTML;
+          });
+          $.on(child, 'blur', function() {
+            $.set("" + g.BOARD + this.className, this.textContent);
+            this.innerHTML = this.textContent;
+            return this.contentEditable = false;
+          });
+        }
+        $.add(title, child);
+      }
       return $.after(banner, title);
     },
     padding: function() {

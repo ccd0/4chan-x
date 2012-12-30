@@ -2354,18 +2354,41 @@ Linkify =
   init: ->
     Main.callbacks.push @node
 
+  regString: ///(
+    \b(
+      [a-z][-a-z0-9+.]+:// # Leading handler (http://, ftp://). Matches any *://
+      |
+      www\.
+      |
+      magnet:
+      |
+      mailto:
+      |
+      news:
+    )
+    [^\s'"<>]+ # Non-URL characters. We cut of the string here.
+    |
+    \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails.
+  )///gi
+
   node: (post) ->
     if post.isInlined and not post.isCrosspost
       if Conf['Embedding']
         for embed in $$('.embed', post.el)
           $.on embed, 'click', Linkify.toggle
       return
-
-    for spoiler in $$ 's', post.blockquote
-      if not /\w/.test(spoiler.textContent) and (p = spoiler.previousSibling) and (n = spoiler.nextSibling) and (n and p).nodeName is '#text'
-        el = $.tn p.textContent + spoiler.textContent + n.textContent
-        $.rm(p) and $.rm n
-        $.replace spoiler, el
+    
+    crop = []
+    
+    crop.pushArrays $$('s', post.blockquote), $$('wbr', post.blockquote)
+    
+    for cut in crop 
+      $.log cut
+      if not /\w/.test(cut.textContent) and (n = cut.nextSibling).nodeName is '#text' and (p = cut.previousSibling).nodeName is '#text'
+        el = $.tn p.textContent + n.textContent
+        $.rm p
+        $.rm n
+        $.replace cut, el
 
     # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
     # Get all the text nodes that are not inside an anchor.
@@ -2407,23 +2430,6 @@ Linkify =
 
       $.replace node, nodes
     return
-
-  regString: ///(
-    \b(
-      [a-z][-a-z0-9+.]+:// # Leading handler (http://, ftp://). Matches any *://
-      |
-      www\.
-      |
-      magnet:
-      |
-      mailto:
-      |
-      news:
-    )
-    [^\s'"<>]+ # Non-URL characters. We cut of the string here.
-    |
-    \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails.
-  )///gi
 
   concat: (a) ->
     $.on a, 'click', (e) ->

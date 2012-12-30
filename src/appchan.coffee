@@ -148,28 +148,37 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       $.on d, 'DOMNodeInserted', @remStyle
 
   banner: ->
-    banner = $ ".boardBanner", d.body
-    title  = $.el "div"
-      id:   "boardTitle"
-    children = for child in banner.children
+    banner   = $ ".boardBanner", d.body
+    title    = $.el "div"
+      id:    "boardTitle"
+    children = banner.children
+    i        = children.length
+    while i--
+      child = children[i]
       if child.tagName.toLowerCase() is "img"
         child.id = "Banner"
-        continue;
+        continue
+        
       if Conf['Custom Board Titles']
         child.innerHTML = $.get "#{g.BOARD}#{child.className}", child.innerHTML
+        
         $.on child, 'click', (e) ->
           if e.shiftKey
             @contentEditable = true
+          
         $.on child, 'keydown', (e) ->
           e.stopPropagation()
+          
         $.on child, 'focus', ->
           @textContent = @innerHTML
+          
         $.on child, 'blur', ->
           $.set "#{g.BOARD}#{@className}", @textContent
           @innerHTML = @textContent
           @contentEditable = false
-      child
-    $.add title, children
+          
+      $.add title, child
+      
     $.after banner, title
 
   padding: ->

@@ -34,6 +34,11 @@ $.extend Array::,
       @splice index, 1
     else
       false
+      
+  pushArrays: () ->
+    args = arguments
+    for arg in args
+      @push.apply @, arg
 
 $.extend String::,
   capitalize: ->
