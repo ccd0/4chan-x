@@ -78,7 +78,7 @@ div.navLinks > a:first-of-type:hover::after,
     
     _conf = Conf
     notCatalog = !g.CATALOG
-    notFlash   = g.BOARD isnt 'f'
+    notEither  = notCatalog and g.BOARD isnt 'f'
 
     aligner = (first, spacer, checks) ->
       # Create a position to hold values
@@ -109,16 +109,16 @@ div.navLinks > a:first-of-type:hover::after,
         spacer
         [
           true
-          (if _conf['Slideout Navigation'] isnt 'hide' then true else false)
-          (if _conf['Announcements'] is 'slideout' and $('#globalMessage', d.body)? then true else false)
-          notCatalog and (if _conf['Slideout Watcher'] and _conf['Thread Watcher'] then true else false)
-          $('#navtopright .exlinksOptionsLink', d.body)?
-          notCatalog and $('body > a[style="cursor: pointer; float: right;"]', d.body)?
-          notCatalog and notFlash and _conf['Image Expansion']
-          notCatalog and notFlash
-          notCatalog and notFlash and _conf['Fappe Tyme']
-          notCatalog and navlinks = ((!g.REPLY and _conf['Index Navigation']) or (g.REPLY and _conf['Reply Navigation']))
-          notCatalog and navlinks
+          _conf['Slideout Navigation'] isnt 'hide'
+          _conf['Announcements'] is 'slideout' and $ '#globalMessage', d.body
+          notCatalog and _conf['Slideout Watcher'] and _conf['Thread Watcher']
+          $ '#navtopright .exlinksOptionsLink', d.body
+          notCatalog and $ 'body > a[style="cursor: pointer; float: right;"]', d.body
+          notEither and _conf['Image Expansion']
+          notEither
+          notEither and _conf['Fappe Tyme']
+          navlinks = ((!g.REPLY and _conf['Index Navigation']) or (g.REPLY and _conf['Reply Navigation'])) and notCatalog
+          navlinks
         ]
       )
 
@@ -142,36 +142,36 @@ div.navLinks > a:first-of-type::after {
 }
 /* Slideout Navigation */
 #boardNavDesktopFoot::after {
-  #{align}: #{position[++i]}px;
+  #{align}: #{position[i++]}px;
 }
 /* Global Message */
 #globalMessage::after {
-  #{align}: #{position[++i]}px;
+  #{align}: #{position[i++]}px;
 }
 /* Watcher */
 #watcher::after {
-  #{align}: #{position[++i]}px;
+  #{align}: #{position[i++]}px;
 }
 /* ExLinks */
 #navtopright .exlinksOptionsLink::after {
-  #{align}: #{position[++i]}px;
+  #{align}: #{position[i++]}px;
 }
 /* 4sight */
 body > a[style="cursor: pointer; float: right;"]::after {
-  #{align}: #{position[++i]}px;
+  #{align}: #{position[i++]}px;
 }
 /* Expand Images */
 #imgControls {
-  #{align}: #{position[++i]}px;
+  #{align}: #{position[i++]}px;
 }
 /* Back / 4chan Catalog */
 .cataloglink a::after,
 div.navLinks > a:first-of-type::after {
-  #{align}: #{position[++i]}px;
+  #{align}: #{position[i++]}px;
 }
 /* Fappe Tyme */
 #fappeTyme {
-  #{align}: #{position[++i]}px;
+  #{align}: #{position[i++]}px;
 }
 /* Thread Navigation Links */
 #navlinks a {
@@ -179,10 +179,10 @@ div.navLinks > a:first-of-type::after {
   top: 2px;
 }
 #navlinks a:last-of-type {
-  #{align}: #{position[++i]}px;
+  #{align}: #{position[i++]}px;
 }
 #navlinks a:first-of-type {
-  #{align}: #{position[++i]}px;
+  #{align}: #{position[i++]}px;
 }
 /* Updater + Stats */
 #updater,
@@ -231,17 +231,17 @@ body > a[style="cursor: pointer; float: right;"]::after {
         2 + (if _conf["4chan Banner"] is "at sidebar top" then (Style.logoOffset + 19) else 0)
         19
         [
-          notCatalog and notFlash and _conf['Image Expansion']
+          notEither and _conf['Image Expansion']
           true
-          (if _conf['Slideout Navigation'] isnt 'hide' then true else false)
-          (if _conf['Announcements'] is 'slideout' then true else false)
-          notCatalog and (if _conf['Slideout Watcher'] and _conf['Thread Watcher'] then true else false)
-          notCatalog and $('body > a[style="cursor: pointer; float: right;"]', d.body)?
-          $('#navtopright .exlinksOptionsLink', d.body)?
-          notCatalog and notFlash
-          notCatalog and notFlash and _conf['Fappe Tyme']
-          notCatalog and navlinks = (_conf['Index Navigation'] or (g.REPLY and _conf['Reply Navigation']))
-          notCatalog and navlinks
+          _conf['Slideout Navigation'] isnt 'hide'
+          _conf['Announcements'] is 'slideout' and $ '#globalMessage', d.body
+          notCatalog and _conf['Slideout Watcher'] and _conf['Thread Watcher']
+          notCatalog and $ 'body > a[style="cursor: pointer; float: right;"]', d.body
+          $ '#navtopright .exlinksOptionsLink', d.body
+          notEither
+          notEither and _conf['Fappe Tyme']
+          navlinks = ((!g.REPLY and _conf['Index Navigation']) or (g.REPLY and _conf['Reply Navigation'])) and notCatalog
+          navlinks
         ]
       )
 
@@ -256,49 +256,49 @@ div.navLinks > a:first-of-type::after {
 }
 /* Image Expansion */
 #imgControls {
-  top: #{position[i]}px;
+  top: #{position[i++]}px;
 }
 /* 4chan X Options */
 #settingsWindowLink {
-  top: #{position[++i]}px;
+  top: #{position[i++]}px;
 }
 /* Slideout Navigation */
 #boardNavDesktopFoot,
 #boardNavDesktopFoot::after {
-  top: #{position[++i]}px;
+  top: #{position[i++]}px;
 }
 /* Global Message */
 #globalMessage,
 #globalMessage::after {
-  top: #{position[++i]}px;
+  top: #{position[i++]}px;
 }
 /* Watcher */
 #{if _conf["Slideout Watcher"] then "#watcher, #watcher::after" else ""} {
-  top: #{position[++i]}px !important;
+  top: #{position[i++]}px !important;
 }
 /* 4sight */
 body > a[style="cursor: pointer; float: right;"]::after {
-  top: #{position[++i]}px;
+  top: #{position[i++]}px;
 }
 /* ExLinks */
 #navtopright .exlinksOptionsLink::after {
-  top: #{position[++i]}px;
+  top: #{position[i++]}px;
 }
 /* Back / 4chan Catalog */
 .cataloglink a::after,
 div.navLinks > a:first-of-type::after {
-  top: #{position[++i]}px;
+  top: #{position[i++]}px;
 }
 /* Fappe Tyme */
 #fappeTyme {
-  top: #{position[++i]}px;
+  top: #{position[i++]}px;
 }
 /* Thread Navigation Links */
 #navlinks a:first-of-type {
-  top: #{position[++i]}px !important;
+  top: #{position[i++]}px !important;
 }
 #navlinks a:last-of-type {
-  top: #{position[++i]}px !important;
+  top: #{position[i++]}px !important;
 }
 /* Updater + Stats */
 #updater,

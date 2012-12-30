@@ -101,6 +101,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         $.on d, 'click scroll blur resize', Style.rmOption
         $.add @, ul
       $.after select, div
+    return
 
   addStyle: ->
     theme = Themes[Conf['theme']]

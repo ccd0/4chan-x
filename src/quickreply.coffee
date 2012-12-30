@@ -605,6 +605,8 @@ QR =
           $.el 'select'
             innerHTML: threads
             title: 'Create a new thread / Reply to a thread'
+      
+      QR.threadSelector.className = null
 
       $.prepend $('#threadselect', QR.el), QR.threadSelector
 
