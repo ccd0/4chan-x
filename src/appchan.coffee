@@ -177,7 +177,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
           @innerHTML = @textContent
           @contentEditable = false
           
-      $.add title, child
+      $.prepend title, child
       
     $.after banner, title
 

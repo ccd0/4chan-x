@@ -874,7 +874,8 @@ span.postNum > .replylink {
 }
 #ihover,
 #overlay,
-#updater:hover,
+#stats,
+#updater,
 .exPopup,
 html .subMenu {
   z-index: 102;
@@ -897,10 +898,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
 .fileThumb img + img {
   position: relative;
   z-index: #{(if _conf["Images Overlap Post Form"] then "90" else "1")};
-}
-#stats,
-#updater {
-  z-index: 10;
 }
 #navtopright,
 #showQR {
@@ -1203,8 +1200,8 @@ div.navLinks {
   padding: 1px 0;
   border-radius: 0;
 }
+#{unless _conf['Updater Position'] is 'moveable' then '#updater .move,' else ''}
 #options .move,
-#updater .move,
 #watcher .move,
 #stats .move {
   cursor: default !important;

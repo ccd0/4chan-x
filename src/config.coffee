@@ -626,7 +626,7 @@ div.post.highlight {
       'Updater Position': [
         'top'
         'The position of 4chan thread updater and stats'
-        ['top', 'bottom']
+        ['top', 'bottom', 'moveable']
       ]
 
     Posts:

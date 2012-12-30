@@ -184,14 +184,6 @@ div.navLinks > a:first-of-type::after {
 #navlinks a:first-of-type {
   #{align}: #{position[i++]}px;
 }
-/* Updater + Stats */
-#updater,
-#stats {
-  #{align}: 2px !important;
-  #{Style.sidebarLocation[1]}: auto !important;
-  top: #{if _conf["Updater Position"] == "top" then "1.6em" else "auto"} !important;
-  bottom: #{if _conf["Updater Position"] == "bottom" then "1.6em" else "auto"} !important;
-}
 #prefetch {
   width: #{248 + Style.sidebarOffset.W}px;
   #{align}: 2px;
@@ -223,6 +215,19 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 #{if _conf['Boards Navigation'] is 'top' or _conf['Boards Navigation'] is 'sticky top' then '#boardNavDesktop' else if _conf['Pagination'] is 'top' or _conf['Pagination'] is 'sticky top' then '.pagelist'} {
   padding-#{align}: #{iconOffset}px;
+}\n
+"""
+
+      if _conf["Updater Position"] isnt 'moveable'
+        css += """
+/* Updater + Stats */
+#updater,
+#stats {
+  #{align}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  #{_conf["Updater Position"]}: 1.6em !important;
 }
 """
     else
@@ -300,15 +305,6 @@ div.navLinks > a:first-of-type::after {
 #navlinks a:last-of-type {
   top: #{position[i++]}px !important;
 }
-/* Updater + Stats */
-#updater,
-#stats {
-  #{align}: #{if _conf["Updater Position"] is "top" then "24" else "2"}px !important;
-  #{Style.sidebarLocation[1]}: auto !important;
-  top: #{if _conf["Updater Position"] == "top" then "1px" else "auto"} !important;
-  bottom: #{if _conf["Updater Position"] == "bottom" then "2px" else "auto"} !important;
-  #{if _conf["Updater Position"] == "top" then "z-index: 96 !important;"}
-}
 #prefetch {
   width: #{248 + Style.sidebarOffset.W}px;
   #{align}: 2px;
@@ -350,6 +346,19 @@ div.navLinks > a:first-of-type::after {
 }
 #{if _conf['Boards Navigation'] is 'top' or _conf['Boards Navigation'] is 'sticky top' then '#boardNavDesktop' else if _conf['Pagination'] is 'top' or _conf['Pagination'] is 'sticky top' then '.pagelist'} {
   padding-#{align}: #{iconOffset}px;
+}
+"""
+
+      if _conf["Updater Position"] isnt 'moveable'
+        css += """
+/* Updater + Stats */
+#updater,
+#stats {
+  #{align}: #{if _conf["Updater Position"] is "top" then "24" else "2"}px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+  top: #{if _conf["Updater Position"] == "top" then "1px" else "auto"} !important;
+  bottom: #{if _conf["Updater Position"] == "bottom" then "2px" else "auto"} !important;
+  #{if _conf["Updater Position"] == "top" then "z-index: 96 !important;"}
 }
 """
 

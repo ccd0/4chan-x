@@ -282,7 +282,6 @@ UI =
     $.set "#{Main.namespace}#{UI.el.id}.position", UI.el.style.cssText
     d.removeEventListener 'mousemove', UI.drag,    false
     d.removeEventListener 'mouseup',   UI.dragend, false
-    $.rm UI.el
     delete UI.el
   hover: (e, mode = "default") ->
     {clientX, clientY} = e

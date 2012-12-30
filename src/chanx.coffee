@@ -1099,9 +1099,8 @@ Updater =
     html += "
       <div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox #{checked}></label></div>
       <div><label>Interval (s)<input type=number name=Interval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>
-      <div><label>BGInterval<input type=number name=BGInterval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>"
-
-    html += "<div><input value='Update Now' type=button name='Update Now'></div>"
+      <div><label>BGInterval<input type=number name=BGInterval#{if Conf['Interval per board'] then "_" + g.BOARD else ''} class=field min=1></label></div>
+      <div><input value='Update Now' type=button name='Update Now'></div>"
 
     # Create a moveable dialog. See UI.dialog for more information.
     dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
@@ -2382,8 +2381,7 @@ Linkify =
     
     crop.pushArrays $$('s', post.blockquote), $$('wbr', post.blockquote)
     
-    for cut in crop 
-      $.log cut
+    for cut in crop
       if not /\w/.test(cut.textContent) and (n = cut.nextSibling).nodeName is '#text' and (p = cut.previousSibling).nodeName is '#text'
         el = $.tn p.textContent + n.textContent
         $.rm p
