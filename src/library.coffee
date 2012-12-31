@@ -214,6 +214,8 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
+  hidden: ->
+    d.hidden or d.mozHidden or d.webkitHidden or d.oHidden
 
 $.cache.requests = {}
 

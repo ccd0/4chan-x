@@ -1159,8 +1159,7 @@ Updater =
       Updater.checkPostCount = 0
       delete Updater.postID
     visibility: ->
-      state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
-      return if state isnt 'visible'
+      return if $.hidden
       # Reset the counter when we focus this tab.
       Updater.unsuccessfulFetchCount = 0
       if Conf['Interval per board']
@@ -1192,7 +1191,7 @@ Updater =
         if @checked
           -> true
         else
-          -> !(d.hidden or d.oHidden or d.mozHidden or d.webkitHidden)
+          -> ! $.hidden
     load: ->
       switch @status
         when 404
@@ -1285,7 +1284,7 @@ Updater =
       i  = +Conf['Interval']
       bg = +Conf['BGInterval']
     j = if (count = @unsuccessfulFetchCount) > 9 then 9 else count
-    return (unless d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
+    return (unless $.hidden
       if Conf['Optional Increase']
         (if i > increase = Updater.getInput(Conf['updateIncrease'].split ',')[j] then i else increase)
       else
