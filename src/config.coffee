@@ -536,6 +536,10 @@ div.post.highlight {
 
   updater:
     checkbox:
+      'Beep': [
+        false
+        'Beep on new post to completely read thread'
+      ]
       'Scrolling': [
         false
         'Scroll updated posts into view. Only enabled at bottom of page.'
