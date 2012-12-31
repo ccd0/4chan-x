@@ -980,7 +980,7 @@ div.reply.highlight div.reply {
     'Warnings'                    : 'rgb(87,87,123)'
     'Shadow Color'                : 'rgba(0,0,0,.05)'
     'Custom CSS'                  : """
-#qp div.post{
+#qp div.post {
   background-color:rgba(214,186,208,1);
   box-shadow:5px 5px 5px rgba(128,128,128,0.5);
 }

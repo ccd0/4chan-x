@@ -1378,8 +1378,8 @@ textarea.field {
 }
 .rice {
   cursor: pointer;
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   margin: 2px 3px;
   display: inline-block;
   vertical-align: bottom;

@@ -1,15 +1,6 @@
 Style =
   init: ->
 
-    Style.agent = (->
-      switch $.engine
-        when 'gecko'
-          return '-moz-'
-        when 'webkit'
-          return '-webkit-'
-        when 'presto'
-          return '-o-')()
-
     Style.remStyle()
     Style.addStyle()
 
@@ -17,15 +8,24 @@ Style =
       Style.rice(d.body)
       Style.banner()
       Style.trimGlobalMessage()
-      if exLink = $ "#navtopright .exlinksOptionsLink", d.body
-        $.on exLink, "click", ->
-          setTimeout Style.rice, 50
       Style.padding.nav   = $ "#boardNavDesktop", d.body
       Style.padding.pages = $(".pagelist", d.body)
       Style.padding()
       $.on (window or unsafeWindow), "resize", Style.padding
       # Give ExLinks and 4sight a little time to append their dialog links
-      setTimeout Style.iconPositions, 100
+      setTimeout (->
+        Style.iconPositions()
+        if exLink = $ "#navtopright .exlinksOptionsLink", d.body
+          $.on exLink, "click", ->
+            setTimeout Style.rice, 100
+        ), 500
+  
+
+  agent: {
+    'gecko':  '-moz-'
+    'webkit': '-webkit-'
+    'presto': '-o-'
+  }[$.engine]
 
   emoji: (position) ->
     css = ''
@@ -134,10 +134,11 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
 
   remStyle: ->
     $.off d, 'DOMNodeInserted', @remStyle
-    if Style.headCount < 11 and head = d.head
+    if Style.headCount < 10 and head = d.head
       nodes = head.children
       i     = nodes.length
       while i--
+        break if Style.headCount > 10
         node = nodes[i]
         if /^.*\bstylesheet\b.*/.test(node.rel) or (/style/i.test(node.tagName) and !node.id)
           Style.headCount++

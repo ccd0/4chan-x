@@ -2382,7 +2382,7 @@ Linkify =
     crop.pushArrays $$('s', post.blockquote), $$('wbr', post.blockquote)
     
     for cut in crop
-      if not /\w/.test(cut.textContent) and (n = cut.nextSibling).nodeName is '#text' and (p = cut.previousSibling).nodeName is '#text'
+      if not /\w/.test(cut.textContent) and (n = cut.nextSibling) and n.nodeName is '#text' and (p = cut.previousSibling) and p.nodeName is '#text'
         el = $.tn p.textContent + n.textContent
         $.rm p
         $.rm n
