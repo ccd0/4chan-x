@@ -514,6 +514,9 @@
       }
       size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
       return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
+    },
+    hidden: function() {
+      return d.hidden || d.oHidden || d.mozHidden || d.webkitHidden;
     }
   });
 
@@ -1837,7 +1840,7 @@
       if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
         $('[autocomplete]', QR.el).focus();
       }
-      if (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) {
+      if ($.hidden()) {
         return alert(el.textContent);
       }
     },
@@ -3040,9 +3043,7 @@
         return setTimeout(Updater.update, 500);
       },
       visibility: function() {
-        var state;
-        state = d.visibilityState || d.oVisibilityState || d.mozVisibilityState || d.webkitVisibilityState;
-        if (state !== 'visible') {
+        if ($.hidden()) {
           return;
         }
         Updater.unsuccessfulFetchCount = 0;
@@ -3078,7 +3079,7 @@
         return Updater.scrollBG = this.checked ? function() {
           return true;
         } : function() {
-          return !(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden);
+          return !$.hidden();
         };
       },
       load: function() {
@@ -3174,7 +3175,7 @@
       var i, j;
       i = +Conf['Interval'];
       j = Math.min(this.unsuccessfulFetchCount, 9);
-      if (!(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden)) {
+      if (!$.hidden()) {
         j = Math.min(j, 6);
       }
       return Math.max(i, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);

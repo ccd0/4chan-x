@@ -396,6 +396,8 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
+  hidden: ->
+    d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
 
 $.cache.requests = {}
 
@@ -1419,7 +1421,7 @@ QR =
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
-    alert el.textContent if d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
+    alert el.textContent if $.hidden()
   cleanError: ->
     $('.warning', QR.el).textContent = null
 
@@ -2463,8 +2465,7 @@ Updater =
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 500
     visibility: ->
-      state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
-      return if state isnt 'visible'
+      return if $.hidden()
       # Reset the counter when we focus this tab.
       Updater.unsuccessfulFetchCount = 0
       if Updater.timer.textContent < -Conf['Interval']
@@ -2492,7 +2493,7 @@ Updater =
         if @checked
           -> true
         else
-          -> !(d.hidden or d.oHidden or d.mozHidden or d.webkitHidden)
+          -> ! $.hidden()
     load: ->
       switch @status
         when 404
@@ -2570,7 +2571,7 @@ Updater =
   getInterval: ->
     i = +Conf['Interval']
     j = Math.min @unsuccessfulFetchCount, 9
-    unless d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
+    unless $.hidden()
       # Don't increase the refresh rate too much on visible tabs.
       j = Math.min j, 6
     Math.max i, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
