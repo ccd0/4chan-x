@@ -1,8 +1,12 @@
 master
 - Zixaphir
   Added Per-Board Personas.
-  Fappe Tyme
+  Fappe Tyme.
   Theme Editor slider now properly reflects current hue.
+  QR has a default position in 'float' mode now.
+  Added an option to make the updater moveable.
+  Cached embed titles are now pruned after seven days.
+  Fix Linkifier and <wbr>. Linkifier should now handle multi-lined links, I think.
 - noface
   Added new feature 'Remove Spoilers'.
   Added input to specify height and width of embeds.
