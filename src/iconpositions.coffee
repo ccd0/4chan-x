@@ -138,7 +138,7 @@ div.navLinks > a:first-of-type::after {
 }
 /* 4chan X Options */
 #settingsWindowLink {
-  #{align}: #{position[i]}px;
+  #{align}: #{position[i++]}px;
 }
 /* Slideout Navigation */
 #boardNavDesktopFoot::after {
