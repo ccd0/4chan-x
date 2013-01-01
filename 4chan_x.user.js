@@ -129,8 +129,7 @@
         'Thread Stats': [true, 'Display reply and image count'],
         'Thread Watcher': [true, 'Bookmark threads'],
         'Auto Watch': [true, 'Automatically watch threads that you start'],
-        'Auto Watch Reply': [false, 'Automatically watch threads that you reply to'],
-        'Beep': [false, 'Beep on new post to completely read thread']
+        'Auto Watch Reply': [false, 'Automatically watch threads that you reply to']
       },
       Posting: {
         'Quick Reply': [true, 'Reply without leaving the page'],
@@ -201,6 +200,7 @@
     },
     updater: {
       checkbox: {
+        'Beep': [false, 'Beep on new post to completely read thread'],
         'Scrolling': [false, 'Scroll updated posts into view. Only enabled at bottom of page.'],
         'Scroll BG': [false, 'Scroll background tabs'],
         'Verbose': [true, 'Show countdown timer, new post count'],
