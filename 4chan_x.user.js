@@ -130,7 +130,7 @@
         'Thread Watcher': [true, 'Bookmark threads'],
         'Auto Watch': [true, 'Automatically watch threads that you start'],
         'Auto Watch Reply': [false, 'Automatically watch threads that you reply to'],
-        'Beep': [false, 'Beep, beep, motherfucker']
+        'Beep': [false, 'Beep on new post to completely read thread']
       },
       Posting: {
         'Quick Reply': [true, 'Reply without leaving the page'],
@@ -3036,8 +3036,8 @@
       return $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility);
     },
     /*
-      # http://freesound.org/people/pierrecartoons1979/sounds/90112/
-      # cc-by-nc-3.0
+      http://freesound.org/people/pierrecartoons1979/sounds/90112/
+      cc-by-nc-3.0
     */
 
     audio: $.el('audio', {
@@ -3159,7 +3159,7 @@
           Updater.count.className = count ? 'new' : null;
         }
         if (count) {
-          if (Conf['Beep'] && (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) && (Unread.replies.length === 0)) {
+          if (Conf['Beep'] && $.hidden() && (Unread.replies.length === 0)) {
             Updater.audio.play();
           }
           Updater.unsuccessfulFetchCount = 0;
