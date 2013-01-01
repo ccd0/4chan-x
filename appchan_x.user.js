@@ -10712,7 +10712,7 @@
         case 'catalog':
           g.CATALOG = true;
       }
-      if (['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains(g.BOARD)) {
+      if (['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains(g.BOARD)) {
         g.TYPE = 'nsfw';
       }
       _conf = Conf;
