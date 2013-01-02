@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.29 - 2013-01-01
+ * appchan x - Version 1.0.29 - 2013-01-02
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -6841,7 +6841,7 @@
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
-      _ref = $$('.quote.deadlink', post.blockquote);
+      _ref = $$('.deadlink', post.blockquote);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         deadlink = _ref[_i];
         quote = deadlink.textContent;
