@@ -1,5 +1,12 @@
 master
 
+1.0.29
+- Zixaphir
+  Bugfix release
+  - Icon Overlapping fixed
+  - No themes being applied should be fixed
+  - /pol/ is now correctly detected as a NSFW board
+
 1.0.28
 - Zixaphir
   Added Per-Board Personas.
