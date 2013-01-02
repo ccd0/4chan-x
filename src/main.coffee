@@ -84,7 +84,7 @@ Main =
     Style.init()
 
     now = Date.now()
-    if _conf['Check for Updates'] and $.get('lastUpdate',  0) < now - 18 * $.HOUR
+    if _conf['Check for Updates'] and $.get('lastUpdate', 0) < now - 18 * $.HOUR
       $.ready ->
         $.on window, 'message', Main.message
         $.set 'lastUpdate', now

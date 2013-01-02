@@ -2018,7 +2018,7 @@ QuoteBacklink =
       # Stop at 'Admin/Mod/Dev Replies:' on /q/
       break if quote.parentNode.parentNode.className is 'capcodeReplies'
       # Don't process >>>/b/.
-      if !/catalog$/.test(quote.pathname) and qid = quote.hash[2..]
+      if !/catalog$/.test(quote.pathname) and qid = quote.hash?[2..]
         # Duplicate quotes get overwritten.
         quotes[qid] = true
     a = $.el 'a',

@@ -3,9 +3,9 @@
 // @namespace           zixaphir
 // @version             1.0.28
 // @description         Cross-browser userscript for maximum lurking on 4chan.
-// @copyright           2012 Zixaphir <zixaphirmoxphar@gmail.com>
+// @copyright           2013 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2009-2011 James Campos <james.r.campos@gmail.com>
-// @copyright           2012 Nicolas Stepien <stepien.nicolas@gmail.com>
+// @copyright           2013 Nicolas Stepien <stepien.nicolas@gmail.com>
 // @license             MIT; http://en.wikipedia.org/wiki/Mit_license
 // @match               *://*.4chan.org/*
 // @grant               GM_getValue
@@ -19,22 +19,22 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.28 - 2012-12-31
+ * appchan x - Version 1.0.28 - 2013-01-01
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
  *
- * Appchan X Copyright © 2012 Zixaphir <zixaphirmoxphar@gmail.com>
+ * Appchan X Copyright © 2013 Zixaphir <zixaphirmoxphar@gmail.com>
  *   http://zixaphir.github.com/appchan-x/
  * 4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
  *   http://aeosynth.github.com/4chan-x/
- * 4chan x Copyright © 2012 Nicolas Stepien <stepien.nicolas@gmail.com>
+ * 4chan x Copyright © 2013 Nicolas Stepien <stepien.nicolas@gmail.com>
  *   http://mayhemydg.github.com/4chan-x/
- * OneeChan Copyright © 2012 Jordan Bates
+ * OneeChan Copyright © 2013 Jordan Bates
  *   http://seaweedchan.github.com/oneechan/
- * 4chan SS Copyright © 2012 Ahodesuka
+ * 4chan SS Copyright © 2013 Ahodesuka
  *   http://ahodesuka.github.com/4chan-Style-Script
- * Raphael Icons Copyright © 2012 Dmitry Baranovskiy
+ * Raphael Icons Copyright © 2013 Dmitry Baranovskiy
  *   http://raphaeljs.com/icons/
  *
  * Permission is hereby granted, free of charge, to any person
@@ -6433,7 +6433,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var a, container, el, link, qid, quote, quotes, _i, _len, _ref;
+      var a, container, el, link, qid, quote, quotes, _i, _len, _ref, _ref1;
       if (post.isInlined) {
         return;
       }
@@ -6444,7 +6444,7 @@
         if (quote.parentNode.parentNode.className === 'capcodeReplies') {
           break;
         }
-        if (!/catalog$/.test(quote.pathname) && (qid = quote.hash.slice(2))) {
+        if (!/catalog$/.test(quote.pathname) && (qid = (_ref1 = quote.hash) != null ? _ref1.slice(2) : void 0)) {
           quotes[qid] = true;
         }
       }
