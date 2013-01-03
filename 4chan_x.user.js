@@ -86,8 +86,8 @@
   Config = {
     main: {
       Enhancing: {
-        'Disable 4chan\'s extension': [true, 'Avoid conflicts between 4chan X and 4chan\'s inline extension.'],
-        'Catalog Links': [true, 'Turn Navigation links into links to each board\'s catalog.'],
+        'Disable 4chan\'s extension': [true, 'Avoid conflicts between 4chan X and 4chan\'s inline extension'],
+        'Catalog Links': [true, 'Turn Navigation links into links to each board\'s catalog'],
         '404 Redirect': [true, 'Redirect dead threads and images'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
@@ -112,14 +112,14 @@
         'Image Hover': [false, 'Show full image on mouseover'],
         'Sauce': [true, 'Add sauce to images'],
         'Reveal Spoilers': [false, 'Replace spoiler thumbnails by the original thumbnail'],
-        'Expand From Current': [false, 'Expand images from current position to thread end.']
+        'Expand From Current': [false, 'Expand images from current position to thread end']
       },
       Menu: {
-        'Menu': [true, 'Add a drop-down menu in posts.'],
-        'Report Link': [true, 'Add a report link to the menu.'],
-        'Delete Link': [true, 'Add post and image deletion links to the menu.'],
-        'Download Link': [true, 'Add a download with original filename link to the menu. Chrome-only currently.'],
-        'Archive Link': [true, 'Add an archive link to the menu.']
+        'Menu': [true, 'Add a drop-down menu in posts'],
+        'Report Link': [true, 'Add a report link to the menu'],
+        'Delete Link': [true, 'Add post and image deletion links to the menu'],
+        'Download Link': [true, 'Add a download with original filename link to the menu (Chrome only)'],
+        'Archive Link': [true, 'Add an archive link to the menu']
       },
       Monitoring: {
         'Thread Updater': [true, 'Update threads. Has more options in its own dialog.'],
@@ -132,15 +132,15 @@
         'Auto Watch Reply': [false, 'Automatically watch threads that you reply to']
       },
       Posting: {
-        'Quick Reply': [true, 'Reply without leaving the page.'],
-        'Cooldown': [true, 'Prevent "flood detected" errors.'],
-        'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
-        'Auto Hide QR': [true, 'Automatically hide the quick reply when posting.'],
-        'Open Reply in New Tab': [false, 'Open replies in a new tab that are made from the main board.'],
-        'Remember QR size': [false, 'Remember the size of the Quick reply (Firefox only).'],
-        'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
-        'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
-        'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR.']
+        'Quick Reply': [true, 'Reply without leaving the page'],
+        'Cooldown': [true, 'Prevent "flood detected" errors'],
+        'Persistent QR': [false, 'The Quick reply won\'t disappear after posting'],
+        'Auto Hide QR': [true, 'Automatically hide the quick reply when posting'],
+        'Open Reply in New Tab': [false, 'Open replies in a new tab that are made from the main board'],
+        'Remember QR size': [false, 'Remember the size of the Quick reply (Firefox only)'],
+        'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting'],
+        'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting'],
+        'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR']
       },
       Quoting: {
         'Quote Backlinks': [true, 'Add quote backlinks'],
@@ -200,6 +200,7 @@
     },
     updater: {
       checkbox: {
+        'Beep': [false, 'Beep on new post to completely read thread'],
         'Scrolling': [false, 'Scroll updated posts into view. Only enabled at bottom of page.'],
         'Scroll BG': [false, 'Scroll background tabs'],
         'Verbose': [true, 'Show countdown timer, new post count'],
@@ -514,6 +515,9 @@
       }
       size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
       return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
+    },
+    hidden: function() {
+      return d.hidden || d.oHidden || d.mozHidden || d.webkitHidden;
     }
   });
 
@@ -1837,7 +1841,7 @@
       if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
         $('[autocomplete]', QR.el).focus();
       }
-      if (d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) {
+      if ($.hidden()) {
         return alert(el.textContent);
       }
     },
@@ -3031,6 +3035,14 @@
       $.on(d, 'QRPostSuccessful', this.cb.post);
       return $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility);
     },
+    /*
+      http://freesound.org/people/pierrecartoons1979/sounds/90112/
+      cc-by-nc-3.0
+    */
+
+    audio: $.el('audio', {
+      src: 'data:audio/wav;base64,UklGRjQDAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAc21wbDwAAABBAAADAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkYXRhzAIAAGMms8em0tleMV4zIpLVo8nhfSlcPR102Ki+5JspVEkdVtKzs+K1NEhUIT7DwKrcy0g6WygsrM2k1NpiLl0zIY/WpMrjgCdbPhxw2Kq+5Z4qUkkdU9K1s+K5NkVTITzBwqnczko3WikrqM+l1NxlLF0zIIvXpsnjgydZPhxs2ay95aIrUEkdUdC3suK8N0NUIjq+xKrcz002WioppdGm091pK1w0IIjYp8jkhydXPxxq2K295aUrTkoeTs65suK+OUFUIzi7xqrb0VA0WSoootKm0t5tKlo1H4TYqMfkiydWQBxm16+85actTEseS8y7seHAPD9TIza5yKra01QyWSson9On0d5wKVk2H4DYqcfkjidUQB1j1rG75KsvSkseScu8seDCPz1TJDW2yara1FYxWSwnm9Sn0N9zKVg2H33ZqsXkkihSQR1g1bK65K0wSEsfR8i+seDEQTxUJTOzy6rY1VowWC0mmNWoz993KVc3H3rYq8TklSlRQh1d1LS647AyR0wgRMbAsN/GRDpTJTKwzKrX1l4vVy4lldWpzt97KVY4IXbUr8LZljVPRCxhw7W3z6ZISkw1VK+4sMWvXEhSPk6buay9sm5JVkZNiLWqtrJ+TldNTnquqbCwilZXU1BwpKirrpNgWFhTaZmnpquZbFlbVmWOpaOonHZcXlljhaGhpZ1+YWBdYn2cn6GdhmdhYGN3lp2enIttY2Jjco+bnJuOdGZlZXCImJqakHpoZ2Zug5WYmZJ/bGlobX6RlpeSg3BqaW16jZSVkoZ0bGtteImSk5KIeG5tbnaFkJKRinxxbm91gY2QkIt/c3BwdH6Kj4+LgnZxcXR8iI2OjIR5c3J0e4WLjYuFe3VzdHmCioyLhn52dHR5gIiKioeAeHV1eH+GiYqHgXp2dnh9hIiJh4J8eHd4fIKHiIeDfXl4eHyBhoeHhH96eHmA'
+    }),
     cb: {
       post: function() {
         if (!Conf['Auto Update This']) {
@@ -3040,9 +3052,7 @@
         return setTimeout(Updater.update, 500);
       },
       visibility: function() {
-        var state;
-        state = d.visibilityState || d.oVisibilityState || d.mozVisibilityState || d.webkitVisibilityState;
-        if (state !== 'visible') {
+        if ($.hidden()) {
           return;
         }
         Updater.unsuccessfulFetchCount = 0;
@@ -3078,7 +3088,7 @@
         return Updater.scrollBG = this.checked ? function() {
           return true;
         } : function() {
-          return !(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden);
+          return !$.hidden();
         };
       },
       load: function() {
@@ -3149,6 +3159,9 @@
           Updater.count.className = count ? 'new' : null;
         }
         if (count) {
+          if (Conf['Beep'] && $.hidden() && (Unread.replies.length === 0)) {
+            Updater.audio.play();
+          }
           Updater.unsuccessfulFetchCount = 0;
         } else {
           Updater.unsuccessfulFetchCount++;
@@ -3174,7 +3187,7 @@
       var i, j;
       i = +Conf['Interval'];
       j = Math.min(this.unsuccessfulFetchCount, 9);
-      if (!(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden)) {
+      if (!$.hidden()) {
         j = Math.min(j, 6);
       }
       return Math.max(i, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
