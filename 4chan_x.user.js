@@ -1993,7 +1993,8 @@
         e.preventDefault();
       }
       QR.open();
-      if (!g.REPLY) {
+      ta = $('textarea', QR.el);
+      if (!(g.REPLY || ta.value)) {
         QR.threadSelector.value = $.x('ancestor::div[parent::div[@class="board"]]', this).id.slice(1);
       }
       id = this.previousSibling.hash.slice(2);
@@ -2003,7 +2004,6 @@
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
       }
-      ta = $('textarea', QR.el);
       caretPos = ta.selectionStart;
       ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
       range = caretPos + text.length;

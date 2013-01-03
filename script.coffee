@@ -1550,7 +1550,8 @@ QR =
   quote: (e) ->
     e?.preventDefault()
     QR.open()
-    unless g.REPLY
+    ta = $ 'textarea', QR.el
+    unless g.REPLY or ta.value
       QR.threadSelector.value = $.x('ancestor::div[parent::div[@class="board"]]', @).id[1..]
     # Make sure we get the correct number, even with XXX censors
     id   = @previousSibling.hash[2..]
@@ -1562,7 +1563,6 @@ QR =
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
 
-    ta = $ 'textarea', QR.el
     caretPos = ta.selectionStart
     # Replace selection for text.
     ta.value = ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
