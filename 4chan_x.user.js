@@ -3746,6 +3746,7 @@
         }
       });
       comment = bq.innerHTML.replace(/(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3');
+      comment = comment.replace(/((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class=deadlink>$1</span>');
       o = {
         postID: postID,
         threadID: data.thread_num,
