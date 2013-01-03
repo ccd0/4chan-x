@@ -4296,7 +4296,7 @@
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
-      _ref = $$('.quote.deadlink', post.blockquote);
+      _ref = $$('.deadlink', post.blockquote);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         deadlink = _ref[_i];
         if (deadlink.parentNode.className === 'prettyprint') {
