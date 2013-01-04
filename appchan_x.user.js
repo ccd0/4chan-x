@@ -2465,10 +2465,10 @@
 
   $ = function(selector, root) {
     var result;
-    if (root == null) {
+    if (!root) {
       root = d.body;
     }
-    if ((root != null) && (result = root.querySelector(selector))) {
+    if (result = root.querySelector(selector)) {
       return result;
     }
   };
@@ -2487,7 +2487,7 @@
       keep = this.slice(position);
       this.length = position;
       this.push(object);
-      return this.push.apply(this, keep);
+      return this.pushArrays(keep);
     },
     contains: function(object) {
       return this.indexOf(object) > -1;
@@ -2502,14 +2502,6 @@
       }
       return i;
     },
-    remove: function(object) {
-      var index;
-      if ((index = this.indexOf(object)) > -1) {
-        return this.splice(index, 1);
-      } else {
-        return false;
-      }
-    },
     pushArrays: function() {
       var arg, args, _i, _len, _results;
       args = arguments;
@@ -2519,6 +2511,14 @@
         _results.push(this.push.apply(this, arg));
       }
       return _results;
+    },
+    remove: function(object) {
+      var index;
+      if ((index = this.indexOf(object)) > -1) {
+        return this.splice(index, 1);
+      } else {
+        return false;
+      }
     }
   });
 
@@ -2645,13 +2645,13 @@
       return style;
     },
     x: function(path, root) {
-      if (root == null) {
+      if (!root) {
         root = d.body;
       }
       return d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
     },
     X: function(path, root) {
-      if (root == null) {
+      if (!root) {
         root = d.body;
       }
       return d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
@@ -2668,9 +2668,7 @@
     rm: function(el) {
       return el.parentNode.removeChild(el);
     },
-    tn: function(s) {
-      return d.createTextNode(s);
-    },
+    tn: d.createTextNode,
     nodes: function(nodes) {
       var frag, node, _i, _len;
       if (!(nodes instanceof Array)) {
@@ -2698,28 +2696,31 @@
     replace: function(root, el) {
       return root.parentNode.replaceChild($.nodes(el), root);
     },
+    create: d.createElement,
     el: function(tag, properties) {
       var el;
-      el = d.createElement(tag);
+      el = $.create(tag);
       if (properties) {
         $.extend(el, properties);
       }
       return el;
     },
     on: function(el, events, handler) {
-      var event, _i, _len, _ref;
+      var add, event, _i, _len, _ref;
+      add = el.addEventListener;
       _ref = events.split(' ');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         event = _ref[_i];
-        el.addEventListener(event, handler, false);
+        add(event, handler, false);
       }
     },
     off: function(el, events, handler) {
-      var event, _i, _len, _ref;
+      var event, rm, _i, _len, _ref;
+      rm = el.removeEventListener;
       _ref = events.split(' ');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         event = _ref[_i];
-        el.removeEventListener(event, handler, false);
+        rm(event, handler, false);
       }
     },
     event: function(el, e) {
@@ -2800,10 +2801,10 @@
 
   $$ = function(selector, root) {
     var result;
-    if (root == null) {
+    if (!root) {
       root = d.body;
     }
-    if ((root != null) && (result = Array.prototype.slice.call(root.querySelectorAll(selector)))) {
+    if (result = Array.prototype.slice.call(root.querySelectorAll(selector))) {
       return result;
     } else {
       return null;

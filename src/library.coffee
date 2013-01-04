@@ -3,8 +3,10 @@ loosely follows the jquery api:
 http://api.jquery.com/
 not chainable
 ###
-$ = (selector, root=d.body) ->
-  if root? and result = root.querySelector selector
+$ = (selector, root) ->
+  unless root
+    root = d.body
+  if result = root.querySelector selector
     return result
 
 $.extend = (object, properties) ->
@@ -13,13 +15,14 @@ $.extend = (object, properties) ->
   return
 
 # Various prototypes I've wanted or needed to add.
-$.extend Array::,  
+$.extend Array::,
+
   add: (object, position) ->
     keep = @slice position
     @length = position
     @push object
-    @push.apply @, keep
-  
+    @pushArrays keep
+
   contains: (object) ->
     @indexOf(object) > -1
 
@@ -28,17 +31,17 @@ $.extend Array::,
     while i--
       break if @[i] is object
     return i
-  
+
+  pushArrays: () ->
+    args = arguments
+    for arg in args
+      @push.apply @, arg
+
   remove: (object) ->
     if (index = @indexOf object) > -1
       @splice index, 1
     else
       false
-      
-  pushArrays: () ->
-    args = arguments
-    for arg in args
-      @push.apply @, arg
 
 $.extend String::,
   capitalize: ->
@@ -47,7 +50,7 @@ $.extend String::,
   contains: (string) ->
     @indexOf(string) > -1
 
-# A day is 24 hours is 60 minutes is 60 seconds.
+# A day is 24 times hour which is 60 times minute which is 60 times second which is 1000 ms (which we won't get into).
 $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)))
 
 $.extend $,
@@ -101,7 +104,7 @@ $.extend $,
         req.callbacks.push cb
     else
       req = $.ajax url,
-        onload:  -> 
+        onload:  ->
           cb.call @ for cb in @callbacks
           return
         onabort: -> delete $.cache.requests[url]
@@ -121,10 +124,13 @@ $.extend $,
       id:          identifier
     $.add d.head, style
     return style
-  x: (path, root=d.body) ->
-    d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).
-      singleNodeValue
-  X: (path, root=d.body) ->
+  x: (path, root) ->
+    unless root
+      root = d.body
+    d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue
+  X: (path, root) ->
+    unless root
+      root = d.body
     d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null)
   addClass: (el, className) ->
     el.classList.add className
@@ -134,8 +140,8 @@ $.extend $,
     el.classList.toggle className
   rm: (el) ->
     el.parentNode.removeChild el
-  tn: (s) ->
-    d.createTextNode s
+  tn: 
+    d.createTextNode
   nodes: (nodes) ->
     # In (at least) Chrome, elements created inside different
     # scripts/window contexts inherit from unequal prototypes.
@@ -156,17 +162,20 @@ $.extend $,
     root.parentNode.insertBefore $.nodes(el), root
   replace: (root, el) ->
     root.parentNode.replaceChild $.nodes(el), root
+  create: d.createElement
   el: (tag, properties) ->
-    el = d.createElement tag
+    el = $.create tag
     $.extend el, properties if properties
     el
   on: (el, events, handler) ->
+    add = el.addEventListener
     for event in events.split ' '
-      el.addEventListener event, handler, false
+      add event, handler, false
     return
   off: (el, events, handler) ->
+    rm = el.removeEventListener
     for event in events.split ' '
-      el.removeEventListener event, handler, false
+      rm event, handler, false
     return
   event: (el, e) ->
     el.dispatchEvent e
@@ -234,8 +243,10 @@ $.extend $,
     open: (url) ->
       window.open location.protocol + url, '_blank'
 
-$$ = (selector, root=d.body) ->
-  if root? and result = Array::slice.call root.querySelectorAll selector
+$$ = (selector, root) ->
+  unless root
+    root = d.body
+  if result = Array::slice.call root.querySelectorAll selector
     return result
   else
     return null
