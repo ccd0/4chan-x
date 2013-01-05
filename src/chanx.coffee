@@ -578,7 +578,7 @@ ReplyHiding =
   node: (post) ->
     return if post.isInlined or post.ID is post.threadID
     side = $ '.sideArrows', post.root
-    $.addClass side, 'hide_reply_button'
+    side.className = 'hide_reply_button'
     side.innerHTML = '<a href="javascript:;"><span>[<span></span>]</span></a>'
     $.on side.firstChild, 'click', ->
       ReplyHiding.toggle button = @parentNode, root = button.parentNode, id = root.id[2..]
@@ -602,7 +602,7 @@ ReplyHiding =
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
   hide: (root, show_stub=Conf['Show Stubs']) ->
-    side = $ '.sideArrows', root
+    side = $('.hide_reply_button', root) or $('.sideArrows', root)
     $.addClass side.parentNode, 'hidden'
     return if side.hidden # already hidden once by the filter
     side.hidden = true
@@ -629,7 +629,7 @@ ReplyHiding =
   show: (root) ->
     if stub = $ '.stub', root
       $.rm stub
-    $('.sideArrows', root).hidden = false
+    ($('.hide_reply_button', root) or $('.sideArrows', root)).hidden = false
     $('.post',       root).hidden = false
 
     $.rmClass root, 'hidden'

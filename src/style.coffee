@@ -1704,10 +1704,17 @@ input,
 .hide_reply_button {
   width: 0;
 }
+.hide_reply_button.stub {
+  width: auto;
+}
 .hide_reply_button a,
 .menu_button {
   opacity: 0;
   #{Style.agent}transition: opacity .3s ease-out 0s;
+}
+.hide_reply_button.stub a {
+  position: static;
+  opacity: 1;
 }
 .op:hover .menu_button,
 .replyContainer:hover .menu_button,
