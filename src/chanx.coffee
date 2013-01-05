@@ -1112,6 +1112,7 @@ Updater =
     @save   = []
 
     @checkPostCount = 0
+    @unsuccessfulFetchCount = 0
     @lastModified = '0'
 
     # Add event listeners to updater dialogs.
@@ -1271,9 +1272,9 @@ Updater =
     else
       el.textContent = text
   getInput: (input) ->
-    while input.length < 10
-      input.push input[input.length - 1]
-    Number number for number in input
+    while (i = input.length) < 10
+      input[i] = input[i - 1]
+    parseInt(number, 10) for number in input
 
   getInterval: ->
     if Conf['Interval per board']
@@ -1282,18 +1283,22 @@ Updater =
     else
       i  = +Conf['Interval']
       bg = +Conf['BGInterval']
-      j = Math.min @unsuccessfulFetchCount, 9
-    unless d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
+    j = if count = @unsuccessfulFetchCount > 9 then 9 else count
+    return (unless d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
       if Conf['Optional Increase']
-        return Math.max i, Updater.getInput(Conf['updateIncrease'].split ',')[j]
-      return i
-    if Conf['Optional Increase']
-      return Math.max bg, Updater.getInput(Conf['updateIncreaseB'].split ',')[j]
-    bg
+        (if i > increase = Updater.getInput(Conf['updateIncrease'].split ',')[j] then i else increase)
+      else
+        i
+    else
+      if Conf['Optional Increase']
+        (if bg > increase = Updater.getInput(Conf['updateIncreaseB'].split ',')[j] then bg else increase)
+      else
+        bg
+    )
 
   timeout: ->
     Updater.timeoutID = setTimeout Updater.timeout, 1000
-    n = 1 + Number Updater.timer.firstChild.data
+    n = 1 + parseInt Updater.timer.firstChild.data, 10
 
     if n is 0
       Updater.update()

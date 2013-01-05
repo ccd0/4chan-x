@@ -5327,6 +5327,7 @@
       this.thread = $.id("t" + g.THREAD_ID);
       this.save = [];
       this.checkPostCount = 0;
+      this.unsuccessfulFetchCount = 0;
       this.lastModified = '0';
       _ref = $$('input', dialog);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -5533,42 +5534,33 @@
       }
     },
     getInput: function(input) {
-      var number, _i, _len, _results;
-      while (input.length < 10) {
-        input.push(input[input.length - 1]);
+      var i, number, _i, _len, _results;
+      while ((i = input.length) < 10) {
+        input[i] = input[i - 1];
       }
       _results = [];
       for (_i = 0, _len = input.length; _i < _len; _i++) {
         number = input[_i];
-        _results.push(Number(number));
+        _results.push(parseInt(number, 10));
       }
       return _results;
     },
     getInterval: function() {
-      var bg, i, j;
+      var bg, count, i, increase, j;
       if (Conf['Interval per board']) {
         i = +Conf['Interval_' + g.BOARD];
         bg = +Conf['BGInterval_' + g.BOARD];
       } else {
         i = +Conf['Interval'];
         bg = +Conf['BGInterval'];
-        j = Math.min(this.unsuccessfulFetchCount, 9);
       }
-      if (!(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden)) {
-        if (Conf['Optional Increase']) {
-          return Math.max(i, Updater.getInput(Conf['updateIncrease'].split(','))[j]);
-        }
-        return i;
-      }
-      if (Conf['Optional Increase']) {
-        return Math.max(bg, Updater.getInput(Conf['updateIncreaseB'].split(','))[j]);
-      }
-      return bg;
+      j = (count = this.unsuccessfulFetchCount > 9) ? 9 : count;
+      return (!(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) ? Conf['Optional Increase'] ? (i > (increase = Updater.getInput(Conf['updateIncrease'].split(','))[j]) ? i : increase) : i : Conf['Optional Increase'] ? (bg > (increase = Updater.getInput(Conf['updateIncreaseB'].split(','))[j]) ? bg : increase) : bg);
     },
     timeout: function() {
       var n;
       Updater.timeoutID = setTimeout(Updater.timeout, 1000);
-      n = 1 + Number(Updater.timer.firstChild.data);
+      n = 1 + parseInt(Updater.timer.firstChild.data, 10);
       if (n === 0) {
         return Updater.update();
       } else if (n >= Updater.getInterval()) {
