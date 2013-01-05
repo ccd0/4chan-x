@@ -1284,7 +1284,7 @@ Updater =
     else
       i  = +Conf['Interval']
       bg = +Conf['BGInterval']
-    j = if count = @unsuccessfulFetchCount > 9 then 9 else count
+    j = if (count = @unsuccessfulFetchCount) > 9 then 9 else count
     return (unless d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
       if Conf['Optional Increase']
         (if i > increase = Updater.getInput(Conf['updateIncrease'].split ',')[j] then i else increase)

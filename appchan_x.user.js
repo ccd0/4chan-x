@@ -5554,7 +5554,7 @@
         i = +Conf['Interval'];
         bg = +Conf['BGInterval'];
       }
-      j = (count = this.unsuccessfulFetchCount > 9) ? 9 : count;
+      j = (count = this.unsuccessfulFetchCount) > 9 ? 9 : count;
       return (!(d.hidden || d.oHidden || d.mozHidden || d.webkitHidden) ? Conf['Optional Increase'] ? (i > (increase = Updater.getInput(Conf['updateIncrease'].split(','))[j]) ? i : increase) : i : Conf['Optional Increase'] ? (bg > (increase = Updater.getInput(Conf['updateIncreaseB'].split(','))[j]) ? bg : increase) : bg);
     },
     timeout: function() {
