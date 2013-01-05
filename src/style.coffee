@@ -1911,9 +1911,9 @@ body::before {
       {
         "phat":       '24px 60px 24px 58px;'
         "normal":     '12px 40px 12px 38px;'
-        "slim":       '6px 20px 6px 23px;'
-        "super slim": '3px 10px 3px 15px;'
-        "anorexia":   '1px 5px 1px 11px;'
+        "slim":        '6px 20px  6px 23px;'
+        "super slim":  '3px 10px  3px 15px;'
+        "anorexia":    '1px  5px  1px 11px;'
       }[_conf["Reply Padding"]] + '\n}\n'
     ) + (
       if _conf["Rounded Edges"]

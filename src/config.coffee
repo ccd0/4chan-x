@@ -48,6 +48,10 @@ Config =
         false
         'Customize your Navigation bar.'
       ]
+      'Append Delimiters': [
+        false
+        'Adds delimiters before and after custom navgiation.'
+      ]
       'Check for Updates': [
         true
         'Check for updated versions of Appchan X'

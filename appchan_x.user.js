@@ -118,6 +118,7 @@
         'Index Navigation': [true, 'Navigate to previous / next thread'],
         'Reply Navigation': [false, 'Navigate to top / bottom of thread'],
         'Custom Navigation': [false, 'Customize your Navigation bar.'],
+        'Append Delimiters': [false, 'Adds delimiters before and after custom navgiation.'],
         'Check for Updates': [true, 'Check for updated versions of Appchan X'],
         'Check for Bans': [false, 'Check ban status and prepend it to the top of the page.'],
         'Check for Bans constantly': [false, 'Optain ban status on every refresh. Note that this will cause delay on getting the result.']
@@ -10128,28 +10129,31 @@
 
   CustomNavigation = {
     init: function() {
-      var a, i, link, navNodes, navigation, node, _i, _len, _ref;
+      var a, i, len, link, navNodes, navigation, node;
       navigation = $("#boardNavDesktop", d.body);
       navNodes = navigation.childNodes;
       i = navNodes.length;
       while (i--) {
-        node = navNodes[i];
-        if (node.id === "navtopright") {
+        if ((node = navNodes[i]).id === "navtopright") {
           continue;
         }
         $.rm(node);
       }
-      $.add(navigation, $.tn("" + userNavigation.delimiter + " "));
-      _ref = userNavigation.links;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
+      if (Conf['Append Delimiters']) {
+        $.add(navigation, $.tn("" + userNavigation.delimiter + " "));
+      }
+      len = userNavigation.links.length - 1;
+      while (i++ < len) {
+        link = userNavigation.links[i];
         a = $.el('a', {
           textContent: link[0],
           title: link[1],
           href: link[2]
         });
         $.add(navigation, a);
-        $.add(navigation, $.tn(" " + userNavigation.delimiter + " "));
+        if (Conf['Append Delimiters'] || i !== len) {
+          $.add(navigation, $.tn(" " + userNavigation.delimiter + " "));
+        }
       }
     }
   };
@@ -10543,9 +10547,9 @@
       }[_conf["Board Title"]] + (".postContainer blockquote {\n  margin: " + {
         "phat": '24px 60px 24px 58px;',
         "normal": '12px 40px 12px 38px;',
-        "slim": '6px 20px 6px 23px;',
-        "super slim": '3px 10px 3px 15px;',
-        "anorexia": '1px 5px 1px 11px;'
+        "slim": '6px 20px  6px 23px;',
+        "super slim": '3px 10px  3px 15px;',
+        "anorexia": '1px  5px  1px 11px;'
       }[_conf["Reply Padding"]] + '\n}\n') + (_conf["Rounded Edges"] ? (_conf["Post Form Style"] === "float" ? "#qr {\n  border-radius: 6px 6px 0 0;\n}\n" : "") + ((function() {
         switch (_conf["Boards Navigation"]) {
           case "sticky top":
