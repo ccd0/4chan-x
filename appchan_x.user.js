@@ -2549,16 +2549,16 @@
       return $.on(d, 'DOMContentLoaded', cb);
     },
     sync: function(key, cb) {
+      var parse;
       key = Main.namespace + key;
+      parse = JSON.parse;
       return $.on(window, 'storage', function(e) {
         if (e.key === key) {
-          return cb(JSON.parse(e.newValue));
+          return cb(parse(e.newValue));
         }
       });
     },
-    id: function(id) {
-      return d.getElementById(id);
-    },
+    id: d.getElementById,
     formData: function(arg) {
       var fd, key, val;
       if (arg instanceof HTMLFormElement) {
@@ -2575,7 +2575,7 @@
       return fd;
     },
     ajax: function(url, callbacks, opts) {
-      var form, headers, key, r, type, upCallbacks, val;
+      var form, headers, key, r, setHeader, type, upCallbacks, val;
       if (opts == null) {
         opts = {};
       }
@@ -2584,9 +2584,10 @@
       r.overrideMimeType('text/html');
       type || (type = form && 'post' || 'get');
       r.open(type, url, true);
+      setHeader = r.setRequestHeader;
       for (key in headers) {
         val = headers[key];
-        r.setRequestHeader(key, val);
+        setHeader(key, val);
       }
       $.extend(r, callbacks);
       $.extend(r.upload, upCallbacks);
@@ -2806,9 +2807,8 @@
     }
     if (result = Array.prototype.slice.call(root.querySelectorAll(selector))) {
       return result;
-    } else {
-      return null;
     }
+    return null;
   };
 
   UI = {

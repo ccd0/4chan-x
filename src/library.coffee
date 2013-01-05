@@ -70,10 +70,11 @@ $.extend $,
     $.on d, 'DOMContentLoaded', cb
   sync: (key, cb) ->
     key = Main.namespace + key
+    parse = JSON.parse
     $.on window, 'storage', (e) ->
-      cb JSON.parse e.newValue if e.key is key
-  id: (id) ->
-    d.getElementById id
+      cb parse e.newValue if e.key is key
+  id:
+    d.getElementById
   formData: (arg) ->
     if arg instanceof HTMLFormElement
       fd = new FormData arg
@@ -89,8 +90,9 @@ $.extend $,
     r.overrideMimeType 'text/html'
     type or= form and 'post' or 'get'
     r.open type, url, true
+    setHeader = r.setRequestHeader
     for key, val of headers
-      r.setRequestHeader key, val
+      setHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
     r.withCredentials = true if type is 'post'
@@ -248,8 +250,7 @@ $$ = (selector, root) ->
     root = d.body
   if result = Array::slice.call root.querySelectorAll selector
     return result
-  else
-    return null
+  return null
 
 UI =
   dialog: (id, position, html) ->
