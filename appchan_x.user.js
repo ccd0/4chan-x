@@ -118,7 +118,7 @@
         'Index Navigation': [true, 'Navigate to previous / next thread'],
         'Reply Navigation': [false, 'Navigate to top / bottom of thread'],
         'Custom Navigation': [false, 'Customize your Navigation bar.'],
-        'Append Delimiters': [false, 'Adds delimiters before and after custom navgiation.'],
+        'Append Delimiters': [false, 'Adds delimiters before and after custom navigation.'],
         'Check for Updates': [true, 'Check for updated versions of Appchan X'],
         'Check for Bans': [false, 'Check ban status and prepend it to the top of the page.'],
         'Check for Bans constantly': [false, 'Optain ban status on every refresh. Note that this will cause delay on getting the result.']

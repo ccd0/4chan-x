@@ -50,7 +50,7 @@ Config =
       ]
       'Append Delimiters': [
         false
-        'Adds delimiters before and after custom navgiation.'
+        'Adds delimiters before and after custom navigation.'
       ]
       'Check for Updates': [
         true
