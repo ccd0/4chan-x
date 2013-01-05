@@ -7,14 +7,14 @@
       right:
         {
           hide:
-            if ["none", "minimal", "small"].contains _conf["Page Margin"]
+            if parseInt(_conf['Right Thread Padding'], 10) < 100
               "right"
             else
               "left"
           minimal: "right"
         }[_conf["Sidebar"]] or "left"
       left:
-        if ["none", "minimal", "small"].contains _conf["Page Margin"]
+        if parseInt(_conf['Right Thread Padding'], 10) < 100
           "right"
         else
           "left"

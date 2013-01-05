@@ -10503,10 +10503,10 @@
       _conf = Conf;
       position = {
         right: {
-          hide: ["none", "minimal", "small"].contains(_conf["Page Margin"]) ? "right" : "left",
+          hide: parseInt(_conf['Right Thread Padding'], 10) < 100 ? "right" : "left",
           minimal: "right"
         }[_conf["Sidebar"]] || "left",
-        left: ["none", "minimal", "small"].contains(_conf["Page Margin"]) ? "right" : "left"
+        left: parseInt(_conf['Right Thread Padding'], 10) < 100 ? "right" : "left"
       }[_conf["Sidebar Location"]];
       Style['sidebarOffset'] = _conf["Sidebar"] === "large" ? {
         W: 51,
