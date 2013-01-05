@@ -924,7 +924,7 @@
     'Yotsuba B': {
       'Author': 'moot',
       'Author Tripcode': '!Ep8pui8Vw2',
-      'Background Image': 'linear-gradient(rgb(209,213,238), rgb(238,242,255) 200px, rgb(255,255,238))',
+      'Background Image': 'linear-gradient(rgb(209,213,238), rgb(238,242,255) 200px, rgb(238,242,255))',
       'Background Color': 'rgba(238,242,255,1)',
       'Dialog Background': 'rgba(214,218,240,1)',
       'Dialog Border': 'rgba(183,197,217,1)',

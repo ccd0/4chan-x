@@ -1214,6 +1214,7 @@ Updater =
           By sending the `If-Modified-Since` header we get a proper status code, and no response.
           This saves bandwidth for both the user and the servers and avoid unnecessary computation.
           ###
+
           Updater.unsuccessfulFetchCount++
           Updater.set 'timer', -Updater.getInterval()
           if Conf['Verbose']
