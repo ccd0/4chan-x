@@ -60,7 +60,7 @@ Main =
             form  = $ 'form'
             field = $.id 'recaptcha_response_field'
             $.on field, 'keydown', (e) ->
-              window.location = 'javascript:Recaptcha.reload()' if e.keyCode is 8 and not e.target.value
+              $.globalEval('Recaptcha.reload()') if e.keyCode is 8 and not e.target.value
             $.on form, 'submit', (e) ->
               e.preventDefault()
               response = field.value.trim()

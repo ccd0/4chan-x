@@ -107,11 +107,12 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
     theme = Themes[Conf['theme']]
     $.off d, 'DOMNodeInserted', Style.addStyle
     if d.head
-      Style.layoutCSS    = $.addStyle Style.layout(),     'layout'
-      Style.themeCSS     = $.addStyle Style.theme(theme), 'theme'
-      Style.icons        = $.addStyle "",                 'icons'
-      Style.paddingSheet = $.addStyle "",                 'padding'
-      Style.mascot       = $.addStyle "",                 'mascotSheet'
+      $.extend Style,
+        layoutCSS:    $.addStyle Style.layout(),     'layout'
+        themeCSS:     $.addStyle Style.theme(theme), 'theme'
+        icons:        $.addStyle "",                 'icons'
+        paddingSheet: $.addStyle "",                 'padding'
+        mascot:       $.addStyle "",                 'mascotSheet'
 
       # As JSColor doesn't really have any customization,
       # we don't save its sheet as a variable.

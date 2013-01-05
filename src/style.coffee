@@ -159,7 +159,7 @@ label,
   position: absolute;
   right: 3px;
 }
-div.subMenu.reply {
+.subMenu.reply {
   padding: 0;
   position: absolute;
   #{position}: 100%;
@@ -167,28 +167,34 @@ div.subMenu.reply {
 }
 #banmessage,
 #boardTitle,
-#main_tab + div,
 #mascotConf input,
-#style_tab + div .suboptions,
+.keybinds_tab > div,
+.main_tab,
+.style_tab .suboptions,
 .center,
 h1 {
   text-align: center;
 }
-#rice_tab + div .selectrice {
+.rice_tab .selectrice {
   width: 150px;
   display: inline-block;
 }
-#keybinds_tab + div > table {
+.keybinds_tab > table {
   margin: auto;
-}
-#keybinds_tab + div > div {
-  text-align: center;
 }
 #mascotConf input::#{Style.agent}placeholder {
   text-align: center;
 }
 #mascotConf input:#{Style.agent}placeholder {
   text-align: center;
+}
+#qr input:focus::#{Style.agent}placeholder,
+#qr textarea:focus::#{Style.agent}placeholder {
+  color: transparent;
+}
+#qr input:focus:#{Style.agent}placeholder,
+#qr textarea:focus:#{Style.agent}placeholder {
+  color: transparent;
 }
 #boardNavDesktopFoot,
 #selectrice,
@@ -206,10 +212,8 @@ h1 {
 .postInfo,
 .thumbnail,
 button,
-div.post,
-div.post.highlight,
-input,
-input[type="submit"] {
+.post,
+input {
   #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
 }
@@ -228,7 +232,7 @@ input[type="submit"] {
 .close,
 .remove,
 .captchaimg,
-#qr div.warning {
+#qr .warning {
   cursor: pointer;
 }
 #qr .selectrice,
@@ -383,11 +387,11 @@ input[type="submit"] {
 .field:focus {
   outline: none;
 }
-.fitwidth img[data-md5] + img {
+.fitwidth .fullSize {
   max-width: 100%;
 }
-#style_tab + div .selectrice,
-.fitwidth img[data-md5] + img,
+.style_tab .selectrice,
+.fitwidth .fullSize,
 .themevar .field,
 .themevar textarea {
   width: 100%;
@@ -448,37 +452,35 @@ input[type="submit"] {
   border-color: transparent;
   border-style: solid;
 }
-#theme_tab + div h1 {
-  opacity: 0;
-}
-#theme_tab + div div.selectedtheme h1 {
-  right: 11px;
-  opacity: 1;
-}
-#theme_tab + div > div h1 {
+.theme_tab h1 {
   position: absolute;
   right: 300px;
   bottom: 10px;
   margin: 0;
   #{Style.agent}transition: all .2s ease-in-out;
+  opacity: 0;
 }
-#theme_tab + div > div:not(.stylesettings) {
+.theme_tab .selectedtheme h1 {
+  right: 11px;
+  opacity: 1;
+}
+#themeContainer {
   margin-bottom: 3px;
 }
-#options ul li {
+#options li {
   overflow: visible;
   padding: 0 5px 0 7px;
   list-style-type: none;
 }
-#options table > tr:nth-of-type(2n+1),
-#options ul li:nth-of-type(2n+1),
+#options tr:nth-of-type(2n+1),
+#options li:nth-of-type(2n+1),
 .selectrice li:nth-of-type(2n+1) {
   background-color: rgba(0, 0, 0, 0.05);
 }
-#rice_tab + div input {
+.rice_tab input {
   margin: 1px;
 }
-#options article li {
+article li {
   margin: 10px 0 10px 2em;
 }
 #options code {
@@ -486,30 +488,34 @@ input[type="submit"] {
   color: #000;
   padding: 0 1px;
 }
-#options .option {
+.option {
   width: 50%;
   display: inline-block;
 }
-#options .option .optionlabel {
+.optionlabel {
   padding-left: 18px;
 }
-#options .mascots {
+.rice + .optionlabel {
+  padding-left: 0;
+}
+.mascots {
   padding: 0;
   text-align: center;
 }
-#options .mascot,
-#options .mascot .container {
+.mascot,
+.mascotcontainer {
   overflow: hidden;
 }
-#options .mascot {
+.mascot {
   position: relative;
   border: none;
   margin: 5px;
   padding: 0;
   width: 200px;
   display: inline-block;
+  background-color: transparent;
 }
-#options .mascot .container {
+.mascotcontainer {
   height: 250px;
   border: 0;
   margin: 0;
@@ -521,12 +527,9 @@ input[type="submit"] {
   border-color: transparent;
   overflow: hidden;
 }
-#options .mascot img {
+.mascot img {
   max-width: 200px;
   image-rendering: optimizeQuality;
-}
-#options ul li.mascot {
-  background-color: transparent;
 }
 #mascotConf {
   position: fixed;
@@ -549,19 +552,19 @@ input[type="submit"] {
   bottom: 5px;
   left:   5px;
 }
-#style_tab + div .suboptions ul,
-#main_tab + div ul {
+.style_tab .suboptions ul,
+.main_tab ul {
   vertical-align: top;
   #{if _conf["Single Column Mode"] then "margin: 0 auto 6px;" else "margin: 0 3px 6px;\n  display: inline-block;"}
 }
-#style_tab + div .suboptions ul li,
-#main_tab + div ul li {
+.main_tab li,
+.styleoption {
   text-align: left;
 }
-#style_tab + div .suboptions ul {
+.style_tab .suboptions ul {
   width: 370px;
 }
-#main_tab + div ul {
+.main_tab ul {
   width: 200px;
 }
 .suboptions,
@@ -579,7 +582,7 @@ input[type="submit"] {
   vertical-align: middle;
   display: table-cell;
 }
-#style_tab + div .suboptions {
+.style_tab .suboptions {
   bottom: 0;
 }
 #themecontent {
@@ -652,9 +655,10 @@ input[type="submit"] {
   position: fixed;
   overflow: hidden;
   white-space: nowrap;
-}
-#watcher:not(:hover) {
   max-height: 200px;
+}
+#watcher:hover {
+  max-height: none;
 }
 #watcher > div {
   max-width: 200px;
@@ -680,17 +684,12 @@ input[type="submit"] {
 .inline {
   display: table;
 }
-div.opContainer {
+.opContainer {
   display: block;
 }
-.quotelink.forwardlink,
-.backlink.forwardlink {
+.forwardlink, {
   text-decoration: none;
   border-bottom: 1px dashed;
-}
-.threadContainer {
-  margin-left: 20px;
-  border-left: 1px solid black;
 }
 #copyright,
 #boardNavDesktop a,
@@ -755,12 +754,11 @@ h2 a {
 #optionsContent > [name=tab]:not(:checked) + div,
 #delform > hr,
 #filters-ctrl,
-#imgControls label:first-of-type input,
 #imgControls .rice,
 #logo,
 #navbotright,
 #postForm,
-#postPassword + span,
+#postPassword,
 #qr:not(.dump) #replies,
 #qp .rice
 #qp input,
@@ -790,7 +788,7 @@ h2 a {
 .replyContainer > .hide_reply_button.stub ~ .reply,
 .replymode,
 .riced,
-.sideArrows:not(.hide_reply_button),
+.sideArrows,
 .small .teaser,
 .stub ~ *,
 .stylechanger,
@@ -803,7 +801,7 @@ body > br,
 body > div[style^="text-align"],
 body > hr,
 body > script + hr + div,
-div.reply[hidden],
+.post[hidden],
 html body > span[style="left: 5px; position: absolute;"]:nth-of-type(0),
 table[style="text-align:center;width:100%;height:300px;"] {
   display: none !important;
@@ -812,17 +810,16 @@ table[style="text-align:center;width:100%;height:300px;"] {
 #replies,
 #spoilerLabel,
 .captchaimg,
-.sideArrows,
-.sideArrows a,
+.hide_reply_button,
 .menu_button,
 .move {
   user-select: none;
   #{Style.agent}user-select: none;
 }
-div.post > blockquote .prettyprint span {
+.prettyprint span {
   font-family: monospace;
 }
-div.post div.file .fileThumb {
+.fileThumb {
   float: left;
   margin: 3px 20px 0;
 }
@@ -840,8 +837,8 @@ a {
 #boardNavDesktopFoot a,
 #navlinks a,
 .pages a,
-.quotelink.deadlink,
-.sideArrows a,
+.deadlink,
+.hide_reply_button a,
 s {
   text-decoration: none;
 }
@@ -895,7 +892,7 @@ html .subMenu {
 body > a[style="cursor: pointer; float: right;"]::after {
   z-index: 94;
 }
-.fileThumb img + img {
+.fileThumb .fullSize {
   position: relative;
   z-index: #{(if _conf["Images Overlap Post Form"] then "90" else "1")};
 }
@@ -908,7 +905,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #watcher::after,
 .boardBanner,
 .menu_button,
-.sideArrows a {
+.hide_reply_button a {
   z-index: 4;
 }
 #globalMessage::after,
@@ -916,8 +913,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 .replyhider a {
   z-index: 1;
 }
-div.post,
-div.post.highlight {
+.post {
   z-index: 0;
 }
 .boardTitle,
@@ -1003,7 +999,7 @@ a,
   #{Style.agent}transition: background .1s linear;
 }
 /* Post Form */
-#qr div.captchainput,
+.captchainput,
 #file {
   overflow: hidden;
 }
@@ -1056,18 +1052,18 @@ input[type="submit"] {
   height: 17px;
 }
 /* Posts */
-div.post div.postInfo {
+.postInfo {
   padding: 3px 0 0 8px;
   display: block !important;
   width: auto;
 }
-div.file {
+.file {
   padding-left: 8px;
 }
-.postContainer blockquote {
+blockquote {
   min-height: #{parseInt(_conf["Font Size"], 10) + 3}px;
 }
-.fileText ~ a > img + img {
+.fullSize {
   margin: 0 0 25px;
   position: relative;
   top: 0;
@@ -1082,16 +1078,7 @@ div.file {
 .summary {
   display: table;
 }
-/* Fixes text spoilers */
-.spoiler:not(:hover),
-.spoiler:not(:hover) *,
-s:not(:hover),
-s:not(:hover) * {
-  color: rgb(0,0,0) !important;
-  background-color: rgb(0,0,0) !important;
-  text-shadow: none !important;
-}
-div.thread {
+.thread {
   padding: 0;
   position: relative;
   #{(unless _conf['Images Overlap Post Form'] then "z-index: 0;" else "")}
@@ -1099,11 +1086,10 @@ div.thread {
 #selectrice {
   margin: 0 !important;
 }
-div.post {
+.post {
   margin: 0;
 }
 /* Remove default "inherit" background declaration */
-.span.subject,
 .subject,
 .name,
 .postertrip {
@@ -1122,17 +1108,16 @@ div.post {
   overflow-y: visible;
 }
 #imgContainer {
-  width: 110px;
   float: #{Style.sidebarLocation[0]};
 }
+#imgContainer,
 #imgControls:hover {
   width: 110px;
 }
 #imgControls label {
-  font-size: 0;
-  color: transparent;
   float: #{Style.sidebarLocation[0]};
 }
+
 #imgControls .selectrice {
   float: #{Style.sidebarLocation[1]};
   width: 90px;
@@ -1150,18 +1135,18 @@ div.post {
   visibility: visible;
 }
 #post-preview,
-#qp div.op {
+#qp .op {
   display: table;
 }
-#qp div.post img {
+#qp .post img {
   max-width: 300px;
   height: auto;
 }
-.inline div.post,
-#qp div.post {
+.inline .post,
+#qp .post {
   padding-bottom: 0 !important;
 }
-div.navLinks {
+.navLinks {
   visibility: hidden;
   height: 0;
   width: 0;
@@ -1227,8 +1212,7 @@ body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] > 
 }
 body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
   height: 95% !important;
-  margin-top: 5px !important;
-  margin-bottom: 5px !important;
+  margin: 0 5px !important;
 }
 #fs_status {
   width: auto !important;
@@ -1249,14 +1233,6 @@ img[alt="Closed"] {
 .mascotname,
 input[type="submit"]:hover {
   cursor: pointer;
-}
-#qr input:focus::#{Style.agent}placeholder,
-#qr textarea:focus::#{Style.agent}placeholder {
-  color: transparent;
-}
-#qr input:focus:#{Style.agent}placeholder,
-#qr textarea:focus:#{Style.agent}placeholder {
-  color: transparent;
 }
 #boardNavDesktop .current {
   font-weight: 800;
@@ -1342,7 +1318,7 @@ html .subMenu {
 #dump,
 #file,
 #options input,
-.dump #dump:not(:hover):not(:focus),
+.dump #dump,
 .selectrice,
 button,
 input,
@@ -1707,36 +1683,35 @@ input,
   position: relative;
   clear: both;
 }
-.thread .replyContainer,
-.replyContainer div.reply.post {
+.replyContainer > .post {
   display: table;
   width: 100%;
 }
-.sideArrows a,
+.hide_reply_button a,
 .menu_button {
   position: absolute;
   right: 6px;
   top: 4px;
   font-size: 9px;
 }
-.sideArrows a {
+.hide_reply_button a {
   #{if _conf["Menu"] then "right: 27px;" else ""}
 }
 .summary {
   padding-left: 20px;
   clear: both;
 }
-.sideArrows {
+.hide_reply_button {
   width: 0;
 }
-.sideArrows a,
+.hide_reply_button a,
 .menu_button {
   opacity: 0;
   #{Style.agent}transition: opacity .3s ease-out 0s;
 }
-div.op:hover .menu_button,
-.replyContainer:hover div.reply .menu_button,
-.replyContainer:hover .sideArrows a {
+.op:hover .menu_button,
+.replyContainer:hover .menu_button,
+.replyContainer:hover .hide_reply_button a {
   opacity: 1;
   #{Style.agent}transition: opacity .3s ease-in 0s;
 }
@@ -1750,11 +1725,11 @@ div.op:hover .menu_button,
 """
       else
         """
-.sideArrows {
+.hide_reply_button {
   padding: 3px;
   float: left;
 }
-div.reply.post {
+.reply.post {
   position: relative;
   overflow: visible;
   display: table;
@@ -1816,7 +1791,7 @@ div.reply.post {
     ) + (
       if _conf["OP Background"]
         """
-.opContainer div.post {
+.opContainer .post {
   padding: 5px;
   #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
@@ -1930,33 +1905,16 @@ body::before {
 """
       }[_conf["Board Title"]]
     ) + (
+      """
+.postContainer blockquote {
+  margin: """ +
       {
-        "phat": """
-.postContainer blockquote {
-  margin: 24px 60px 24px 58px;
-}\n
-"""
-        "normal": """
-.postContainer blockquote {
-  margin: 12px 40px 12px 38px;
-}\n
-"""
-        "slim": """
-.postContainer blockquote {
-  margin: 6px 20px 6px 23px;
-}\n
-"""
-        "super slim": """
-.postContainer blockquote {
-  margin: 3px 10px 3px 15px;
-}\n
-"""
-        "anorexia": """
-.postContainer blockquote {
-  margin: 1px 5px 1px 11px;
-}\n
-"""
-      }[_conf["Reply Padding"]]
+        "phat":       '24px 60px 24px 58px;'
+        "normal":     '12px 40px 12px 38px;'
+        "slim":       '6px 20px 6px 23px;'
+        "super slim": '3px 10px 3px 15px;'
+        "anorexia":   '1px 5px 1px 11px;'
+      }[_conf["Reply Padding"]] + '\n}\n'
     ) + (
       if _conf["Rounded Edges"]
         (
@@ -2008,16 +1966,16 @@ body::before {
 #options,
 #post-preview,
 #qp,
-#qp div.post,
+#qp .post,
 #{if _conf["Post Form Decorations"] then "#qr," else ""}
 #stats,
 #updater,
 #watcher,
 #globalMessage,
-.inline div.reply,
-div.opContainer,
-div.replyContainer,
-div.post,
+.inline .reply,
+.opContainer,
+.replyContainer,
+.post,
 h2,
 td[style="border: 1px dashed;"] {
   border-radius: 3px;
@@ -2282,7 +2240,7 @@ textarea.field,
 #dump {
   width: 10%;
 }
-#qr div.userInfo .field:not(#dump) {
+#qr .userInfo .field:not(#dump) {
   width: 30%;
 }
 #buttons input {
@@ -2356,58 +2314,58 @@ textarea.field,
     ) + (
       {
         'lower left': """
-#delform .op .container {
+.op .container {
   padding: 0 5px;
 }
-#delform .reply.quoted {
+.post.quoted {
   padding-bottom: 15px;
 }
-#delform .reply .container {
+.post .container {
   position: absolute;
   left: 0;
   bottom: 0;
   padding: 0 5px;
 }
-#delform .reply .container::before {
+.post .container::before {
   content: "REPLIES: ";
 }
-#delform .container {
+.container {
   max-width: 100%;
 }
-#delform .inline .container {
+.inline .container {
   position: static;
   max-width: 100%;
 }
-#delform .inline .container::before {
+.inline .container::before {
   content: "";
 }\n
 """
         'lower right': """
-#delform .reply.quoted {
+.post.quoted {
   padding-bottom: 15px;
 }
-#delform .op .container {
+.op .container {
   float: right;
   padding: 0 5px;
 }
-#delform .reply .container {
+.post .container {
   position: absolute;
   right: 0;
   bottom: 0;
   padding: 0 5px;
 }
-#delform .container::before {
+.container::before {
   content: "REPLIES: ";
 }
-#delform .container {
+.container {
   max-width: 100%;
 }
-#delform .inline .container {
+.inline .container {
   position: static;
   float: none;
   max-width: 100%;
 }
-#delform .inline .container::before {
+.inline .container::before {
   content: "";
 }\n
 """

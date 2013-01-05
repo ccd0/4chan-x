@@ -2119,6 +2119,7 @@ QuoteInline =
 QuotePreview =
   init: ->
     Main.callbacks.push @node
+
   node: (post) ->
     for quote in post.quotes
       continue unless quote.hash and !/catalog$/.test(quote.pathname) or /\bdeadlink\b/.test quote.className
@@ -2126,6 +2127,7 @@ QuotePreview =
     for quote in post.backlinks
       $.on quote, 'mouseover', QuotePreview.mouseover
     return
+
   mouseover: (e) ->
     return if /\binlined\b/.test @className
 
@@ -2162,7 +2164,7 @@ QuotePreview =
       post =
         el: qp
         blockquote: bq
-        isArchived: /\barchivedPost\b/.test qp.className
+        isArchived: qp.className.contains 'archivedPost'
       if img = $ 'img[data-md5]', qp
         post.fileInfo = img.parentNode.previousElementSibling
         post.img      = img
@@ -2373,7 +2375,7 @@ Linkify =
   node: (post) ->
     if post.isInlined and not post.isCrosspost
       if Conf['Embedding']
-        for embed in $$('.embed', post.el)
+        for embed in $$('.embed', post.blockquote)
           $.on embed, 'click', Linkify.toggle
       return
     
@@ -3266,7 +3268,7 @@ ImageExpand =
 
   cb:
     toggle: (e) ->
-      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button
       e.preventDefault()
       ImageExpand.toggle @
 
@@ -3276,8 +3278,7 @@ ImageExpand =
         thumbs = $$ 'img[data-md5]'
         if Conf['Expand From Current']
           for thumb, i in thumbs
-            if thumb.getBoundingClientRect().top > 0
-              break
+            break unless thumb.getBoundingClientRect().top
           thumbs = thumbs[i...]
         for thumb in thumbs
           continue if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers'] and /^spoiler\ image/i.test thumb.alt
@@ -3338,8 +3339,9 @@ ImageExpand =
       img.hidden = false
       return
     a = thumb.parentNode
-    img = $.el 'img',
-      src: url or a.href
+    img = $.el 'img'
+      src:       url or a.href
+      className: 'fullSize'
     $.on img, 'error', ImageExpand.error
     $.add a, img
 
@@ -3363,7 +3365,7 @@ ImageExpand =
     controls = $.el 'div',
       id: 'imgControls'
       innerHTML:
-        "<div id=imgContainer><select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label>Expand Images<input type=checkbox id=imageExpand></label></div>"
+        "<div id=imgContainer><select id=imageType name=imageType><option value=full>Full</option><option value='fit width'>Fit Width</option><option value='fit height'>Fit Height</option value='fit screen'><option value='fit screen'>Fit Screen</option></select><label><input type=checkbox id=imageExpand></label></div>"
     imageType = $.get 'imageType', 'full'
     select = $ 'select', controls
     select.value = imageType

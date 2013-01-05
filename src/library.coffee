@@ -3,9 +3,9 @@ loosely follows the jquery api:
 http://api.jquery.com/
 not chainable
 ###
+
 $ = (selector, root) ->
-  unless root
-    root = d.body
+  root or= d.body
   if result = root.querySelector selector
     return result
 
@@ -32,7 +32,7 @@ $.extend Array::,
       break if @[i] is object
     return i
 
-  pushArrays: () ->
+  pushArrays: ->
     args = arguments
     for arg in args
       @push.apply @, arg
@@ -73,8 +73,7 @@ $.extend $,
     parse = JSON.parse
     $.on window, 'storage', (e) ->
       cb parse e.newValue if e.key is key
-  id:
-    d.getElementById
+  id: d.getElementById
   formData: (arg) ->
     if arg instanceof HTMLFormElement
       fd = new FormData arg
@@ -83,16 +82,17 @@ $.extend $,
       for key, val of arg
         fd.append key, val if val
     fd
-  ajax: (url, callbacks, opts={}) ->
+  ajax: (url, callbacks, opts) ->
+    unless opts
+      opts = {}
     #XXX `form` should be `data`
     {type, headers, upCallbacks, form} = opts
     r = new XMLHttpRequest()
     r.overrideMimeType 'text/html'
     type or= form and 'post' or 'get'
     r.open type, url, true
-    setHeader = r.setRequestHeader
     for key, val of headers
-      setHeader key, val
+      r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
     r.withCredentials = true if type is 'post'
@@ -127,12 +127,10 @@ $.extend $,
     $.add d.head, style
     return style
   x: (path, root) ->
-    unless root
-      root = d.body
+    root or= d.body
     d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue
   X: (path, root) ->
-    unless root
-      root = d.body
+    root or= d.body
     d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null)
   addClass: (el, className) ->
     el.classList.add className
@@ -170,14 +168,12 @@ $.extend $,
     $.extend el, properties if properties
     el
   on: (el, events, handler) ->
-    add = el.addEventListener
     for event in events.split ' '
-      add event, handler, false
+      el.addEventListener event, handler, false
     return
   off: (el, events, handler) ->
-    rm = el.removeEventListener
     for event in events.split ' '
-      rm event, handler, false
+      el.removeEventListener event, handler, false
     return
   event: (el, e) ->
     el.dispatchEvent e
@@ -246,8 +242,7 @@ $.extend $,
       window.open location.protocol + url, '_blank'
 
 $$ = (selector, root) ->
-  unless root
-    root = d.body
+  root or= d.body
   if result = Array::slice.call root.querySelectorAll selector
     return result
   return null

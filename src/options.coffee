@@ -39,9 +39,9 @@ Options =
 </div>
 <div id=optionsContent>
   <input type=radio name=tab hidden id=main_tab>
-  <div></div>
+  <div class=main_tab></div>
   <input type=radio name=tab hidden id=sauces_tab>
-  <div>
+  <div class=sauces_tab>
     <div class=warning><code>Sauce</code> is disabled.</div>
     Lines starting with a <code>#</code> will be ignored.<br>
     You can specify a certain display text by appending <code>;text:[text]</code> to the url.
@@ -73,7 +73,7 @@ Options =
     </select>
   </div>
   <input type=radio name=tab hidden id=rice_tab>
-  <div>
+  <div class=rice_tab>
     <ul>
       Archiver
       <li>
@@ -181,7 +181,7 @@ Options =
     <span></span>
   </div>
   <input type=radio name=tab hidden id=keybinds_tab>
-  <div>
+  <div class=keybinds_tab>
     <div class=warning><code>Keybinds</code> are disabled.</div>
     <div>Allowed keys: Ctrl, Alt, Meta, a-z, A-Z, 0-9, Up, Down, Right, Left.</div>
     <table><tbody>
@@ -189,11 +189,11 @@ Options =
     </tbody></table>
   </div>
   <input type=radio name=tab hidden id=style_tab checked>
-  <div></div>
+  <div class=style_tab></div>
   <input type=radio name=tab hidden id=theme_tab>
-  <div></div>
+  <div class=theme_tab></div>
   <input type=radio name=tab hidden id=mascot_tab>
-  <div></div>
+  <div class=mascot_tab></div>
   <input type=radio name=tab hidden onClick="document.location.reload()" id=apply>
   <div>Reloading page with new settings.</div>
 </div>'
@@ -735,7 +735,7 @@ Options =
               id:        name
               innerHTML: "
 <div class='mascotname'>#{name.replace /_/g, " "}</div>
-<div class='container'><div class='mAlign #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'></div></div>
+<div class='mascotcontainer'><div class='mAlign #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'></div></div>
 <div class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a><a class=delete name='#{name}' href='javascript:;'>Delete</a><a class=export name='#{name}' href='javascript:;'>Export</a></div>"
             if Conf[g.MASCOTSTRING].contains name
               $.addClass li, 'enabled'
