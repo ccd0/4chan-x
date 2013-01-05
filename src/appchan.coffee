@@ -12,6 +12,7 @@ Style =
       Style.padding.pages = $(".pagelist", d.body)
       Style.padding()
       $.on (window or unsafeWindow), "resize", Style.padding
+
       # Give ExLinks and 4sight a little time to append their dialog links
       setTimeout (->
         Style.iconPositions()
@@ -28,22 +29,24 @@ Style =
   }[$.engine]
 
   emoji: (position) ->
-    css = ''
-    margin = if position is "before" then "right" else "left"
     _conf = Conf
+    css = []
+    margin = "margin-#{if position is "before" then "right" else "left"}: #{parseInt _conf['Emoji Spacing']}px;"
+
     for key, category of Emoji
-      unless (_conf['Emoji'] is "disable ponies" and key is "pony") or (_conf['Emoji'] is "only ponies" and key is "not")
-        for name, image of category
-          css   += """
+      if (_conf['Emoji'] isnt "disable ponies" and key is "pony") or (_conf['Emoji'] isnt "only ponies" and key is "not")
+        for icon in category
+          name = icon[0]
+          css[css.length] = """
 a.useremail[href*='#{name}']:last-of-type::#{position},
 a.useremail[href*='#{name.toLowerCase()}']:last-of-type::#{position},
 a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
-  content: url('#{Icons.header.png + image}');
+  content: url('#{Icons.header.png + icon[1]}');
   vertical-align: top;
-  margin-#{margin}: #{parseInt _conf['Emoji Spacing']}px;
+  #{margin}
 }\n
 """
-    return css
+    css.join ""
 
   rice: (source)->
     checkboxes = $$('[type=checkbox]:not(.riced)', source)
