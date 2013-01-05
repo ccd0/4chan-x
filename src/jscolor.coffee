@@ -29,12 +29,6 @@ JSColor =
     # Read Only
     @hsv  = [0, 0, 1] # 0-6, 0-1, 0-1
     @rgb  = [1, 1, 1] # 0-1, 0-1, 0-1
-    @minH = 0         # 0-6
-    @maxH = 6         # 0-6
-    @minS = 0         # 0-1
-    @maxS = 1         # 0-1
-    @minV = 0         # 0-1
-    @maxV = 1         # 0-1
     
     # Writable.
     # Value holder / Where to reflect current color
@@ -79,17 +73,17 @@ JSColor =
       @hsv = [
         h =
           if h 
-            Math.max(0.0, @minH, Math.min(6.0, @maxH, h))
+            $.minmax h, 0.0, 6.0
           else
             @hsv[0]
         s =
           if s
-            Math.max(0.0, @minS, Math.min(1.0, @maxS, s))
+            $.minmax s, 0.0, 1.0
           else
             @hsv[1]
         v =
           if v
-            Math.max(0.0, @minV, Math.min(1.0, @maxV, v))
+            $.minmax v, 0.0, 1.0
           else
             @hsv[2]
       ]
@@ -101,37 +95,37 @@ JSColor =
     @fromRGB = (r, g, b, flags) -> # null = don't change
       r = 
         if r 
-          Math.max 0.0, Math.min 1.0, r
+          $.minmax r, 0.0, 1.0
         else
           @rgb[0]
       g =
         if g
-          Math.max 0.0, Math.min 1.0, g
+          $.minmax g, 0.0, 1.0
         else
           @rgb[1]
       b = 
         if b
-          Math.max 0.0, Math.min 1.0, b
+          $.minmax b, 0.0, 1.0
         else
           @rgb[2]
 
       hsv = RGB_HSV(r, g, b)
 
       if hsv[0]
-        @hsv[0] = Math.max 0.0, @minH, Math.min 6.0, @maxH, hsv[0]
+        @hsv[0] = $.minmax hsv[0], 0.0, 6.0
 
       if hsv[2]
         @hsv[1] =
           unless hsv[1]
             null
           else
-            Math.max 0.0, @minS, Math.min 1.0, @maxS, hsv[1]
+            $.minmax hsv[1], 0.0, 1.0
 
       @hsv[2] =
         unless hsv[2]
           null
         else
-          Math.max 0.0, @minV, Math.min 1.0, @maxV, hsv[2]
+          $.minmax hsv[2], 0.0, 1.0
 
       # update RGB according to final HSV, as some values might be trimmed
       @rgb = HSV_RGB @hsv[0], @hsv[1], @hsv[2]
@@ -166,8 +160,8 @@ JSColor =
       (0x100 | Math.round(255 * @rgb[2])).toString(16).substr(1)
 
     RGB_HSV = (r, g, b) ->
-      n = Math.min Math.min(r, g), b
-      v = Math.max Math.max(r, g), b
+      n = if (n = if r < g then r else g) < b then n else b
+      v = if (v = if r > g then r else g) > b then v else b
       m = v - n
 
       return [ null, 0, v ] if m is 0

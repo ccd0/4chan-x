@@ -55,6 +55,16 @@ $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)))
 
 $.extend $,
   NBSP:   '\u00A0'
+  minmax: (value, min, max) ->
+    return (
+      if value < min 
+        min
+      else
+        if value > max
+          max
+        else
+          value
+    )
   log:
     # XXX GreaseMonkey can't into console.log.bind
     console.log.bind? console

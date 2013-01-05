@@ -2498,6 +2498,9 @@
 
   $.extend($, {
     NBSP: '\u00A0',
+    minmax: function(value, min, max) {
+      return (value < min ? min : value > max ? max : value);
+    },
     log: typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0,
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     ready: function(fc) {
@@ -9542,12 +9545,6 @@
       var HSV_RGB, RGB_HSV, THIS, abortBlur, blurTarget, blurValue, drawPicker, holdPad, holdSld, isPickerOwner, leavePad, leaveSld, leaveStyle, leaveValue, redrawPad, redrawSld, removePicker, setPad, setSld, styleElement, valueElement;
       this.hsv = [0, 0, 1];
       this.rgb = [1, 1, 1];
-      this.minH = 0;
-      this.maxH = 6;
-      this.minS = 0;
-      this.maxS = 1;
-      this.minV = 0;
-      this.maxV = 1;
       this.valueElement = this.styleElement = target;
       abortBlur = holdPad = holdSld = false;
       this.hidePicker = function() {
@@ -9592,23 +9589,23 @@
         }
       };
       this.fromHSV = function(h, s, v, flags) {
-        this.hsv = [h = h ? Math.max(0.0, this.minH, Math.min(6.0, this.maxH, h)) : this.hsv[0], s = s ? Math.max(0.0, this.minS, Math.min(1.0, this.maxS, s)) : this.hsv[1], v = v ? Math.max(0.0, this.minV, Math.min(1.0, this.maxV, v)) : this.hsv[2]];
+        this.hsv = [h = h ? $.minmax(h, 0.0, 6.0) : this.hsv[0], s = s ? $.minmax(s, 0.0, 1.0) : this.hsv[1], v = v ? $.minmax(v, 0.0, 1.0) : this.hsv[2]];
         this.rgb = HSV_RGB(h, s, v);
         return this.exportColor(flags);
       };
       this.fromRGB = function(r, g, b, flags) {
         var hsv;
-        r = r ? Math.max(0.0, Math.min(1.0, r)) : this.rgb[0];
-        g = g ? Math.max(0.0, Math.min(1.0, g)) : this.rgb[1];
-        b = b ? Math.max(0.0, Math.min(1.0, b)) : this.rgb[2];
+        r = r ? $.minmax(r, 0.0, 1.0) : this.rgb[0];
+        g = g ? $.minmax(g, 0.0, 1.0) : this.rgb[1];
+        b = b ? $.minmax(b, 0.0, 1.0) : this.rgb[2];
         hsv = RGB_HSV(r, g, b);
         if (hsv[0]) {
-          this.hsv[0] = Math.max(0.0, this.minH, Math.min(6.0, this.maxH, hsv[0]));
+          this.hsv[0] = $.minmax(hsv[0], 0.0, 6.0);
         }
         if (hsv[2]) {
-          this.hsv[1] = !hsv[1] ? null : Math.max(0.0, this.minS, Math.min(1.0, this.maxS, hsv[1]));
+          this.hsv[1] = !hsv[1] ? null : $.minmax(hsv[1], 0.0, 1.0);
         }
-        this.hsv[2] = !hsv[2] ? null : Math.max(0.0, this.minV, Math.min(1.0, this.maxV, hsv[2]));
+        this.hsv[2] = !hsv[2] ? null : $.minmax(hsv[2], 0.0, 1.0);
         this.rgb = HSV_RGB(this.hsv[0], this.hsv[1], this.hsv[2]);
         return this.exportColor(flags);
       };
@@ -9631,8 +9628,8 @@
       };
       RGB_HSV = function(r, g, b) {
         var h, m, n, v;
-        n = Math.min(Math.min(r, g), b);
-        v = Math.max(Math.max(r, g), b);
+        n = (n = r < g ? r : g) < b ? n : b;
+        v = (v = r > g ? r : g) > b ? v : b;
         m = v - n;
         if (m === 0) {
           return [null, 0, v];
