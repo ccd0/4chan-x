@@ -1,4 +1,6 @@
 master
+- Mayhem
+  Fix successful posting causing errors.
 
 2.37.2
 - aeosynth

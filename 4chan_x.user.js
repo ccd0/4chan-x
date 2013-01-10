@@ -2596,7 +2596,7 @@
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(html) {
-      var ban, board, doc, err, msg, persona, postID, reply, threadID, _, _ref, _ref1;
+      var ban, board, doc, err, persona, postID, reply, threadID, _, _ref, _ref1;
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = html;
       if (ban = $('.banType', doc)) {
@@ -2608,7 +2608,7 @@
         if ((_ref = $('a', err)) != null) {
           _ref.target = '_blank';
         }
-      } else if (!(msg = $('b', doc))) {
+      } else if (doc.title !== 'Post successful!') {
         err = 'Connection error with sys.4chan.org.';
       }
       if (err) {
@@ -2635,7 +2635,7 @@
         sub: Conf['Remember Subject'] ? reply.sub : null
       };
       $.set('QR.persona', persona);
-      _ref1 = msg.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
+      _ref1 = doc.body.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
       $.event(QR.el, new CustomEvent('QRPostSuccessful', {
         bubbles: true,
         detail: {

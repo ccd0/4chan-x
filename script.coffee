@@ -2060,7 +2060,7 @@ QR =
           "Reason: #{$('.reason', doc).innerHTML}"
     else if err = doc.getElementById 'errmsg' # error!
       $('a', err)?.target = '_blank' # duplicate image link
-    else unless msg = $ 'b', doc
+    else if doc.title isnt 'Post successful!'
       err = 'Connection error with sys.4chan.org.'
 
     if err
@@ -2096,7 +2096,7 @@ QR =
       sub:   if Conf['Remember Subject']  then reply.sub     else null
     $.set 'QR.persona', persona
 
-    [_, threadID, postID] = msg.lastChild.textContent.match /thread:(\d+),no:(\d+)/
+    [_, threadID, postID] = doc.body.lastChild.textContent.match /thread:(\d+),no:(\d+)/
 
     # Post/upload confirmed as successful.
     $.event QR.el, new CustomEvent 'QRPostSuccessful',
