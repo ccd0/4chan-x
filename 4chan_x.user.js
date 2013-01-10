@@ -4782,6 +4782,8 @@
           return "//archive.foolz.us/" + board + "/full_image/" + filename;
         case 'u':
           return "//nsfw.foolz.us/" + board + "/full_image/" + filename;
+        case 'po':
+          return "http://archive.thedarkcave.org/" + board + "/full_image/" + filename;
         case 'ck':
         case 'lit':
           return "//fuuka.warosu.org/" + board + "/full_image/" + filename;
@@ -4818,6 +4820,8 @@
         case 'u':
         case 'kuku':
           return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
+        case 'po':
+          return "http://archive.thedarkcave.org/_/api/chan/post/?board=" + board + "&num=" + postID;
       }
     },
     to: function(data) {
@@ -4845,6 +4849,9 @@
         case 'u':
         case 'kuku':
           url = Redirect.path('//nsfw.foolz.us', 'foolfuuka', data);
+          break;
+        case 'po':
+          url = Redirect.path('http://archive.thedarkcave.org', 'foolfuuka', data);
           break;
         case 'ck':
         case 'lit':
