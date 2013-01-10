@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.30 - 2013-01-05
+ * appchan x - Version 1.0.30 - 2013-01-10
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -375,7 +375,7 @@
 
   Icons = {
     header: {
-      png: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA"
+      png: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA'
     },
     themes: {
       oneechan: {
@@ -9028,7 +9028,7 @@
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(html) {
-      var ban, board, doc, el, err, key, msg, persona, postID, reply, threadID, _, _ref;
+      var ban, board, doc, el, err, key, persona, postID, reply, threadID, _, _ref;
       doc = d.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = html;
       if (ban = $('.banType', doc)) {
@@ -9047,7 +9047,7 @@
         if (el = $('a', err)) {
           el.target = '_blank';
         }
-      } else if (!(msg = $('b', doc))) {
+      } else if (doc.title !== 'Post successful!') {
         err = 'Connection error with sys.4chan.org.';
       }
       if (err) {
@@ -9079,7 +9079,7 @@
         sub: Conf['Remember Subject'] ? reply.sub : null
       };
       $.set('persona', persona);
-      _ref = msg.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], threadID = _ref[1], postID = _ref[2];
+      _ref = doc.body.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref[0], threadID = _ref[1], postID = _ref[2];
       Updater.postID = postID;
       $.event(QR.el, new CustomEvent('QRPostSuccessful', {
         bubbles: true,
