@@ -1,6 +1,7 @@
 master
 - Mayhem
   Fix successful posting causing errors.
+  Fix 4chan X trying to interact with >>>/board/rules links.
 
 2.37.2
 - aeosynth
