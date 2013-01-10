@@ -1,4 +1,6 @@
 master
+- Zixaphir
+  Added an option to prepend / append navigation delimiters
 - Mayhem
   Fix successful posting causing errors.
   Fix 4chan X trying to interact with >>>/board/rules links.
