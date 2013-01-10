@@ -4362,7 +4362,7 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (!((el = $.id(quote.hash.slice(1))) && !/catalog$/.test(quote.pathname) && el.hidden)) {
+        if (!((el = $.id(quote.hash.slice(1))) && quote.hostname === 'boards.4chan.org' && !/catalog$/.test(quote.pathname) && el.hidden)) {
           continue;
         }
         $.addClass(quote, 'filtered');
@@ -6395,7 +6395,7 @@
         if (quote.parentNode.parentNode.className === 'capcodeReplies') {
           break;
         }
-        if (!/catalog$/.test(quote.pathname) && (qid = (_ref1 = quote.hash) != null ? _ref1.slice(2) : void 0)) {
+        if (quote.hostname === 'boards.4chan.org' && !/catalog$/.test(quote.pathname) && (qid = (_ref1 = quote.hash) != null ? _ref1.slice(2) : void 0)) {
           quotes[qid] = true;
         }
       }
@@ -6440,7 +6440,7 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (!(quote.hash && !/catalog$/.test(quote.pathname) || /\bdeadlink\b/.test(quote.className))) {
+        if (!(quote.hash && quote.hostname === 'boards.4chan.org' && !/catalog$/.test(quote.pathname) || /\bdeadlink\b/.test(quote.className))) {
           continue;
         }
         $.on(quote, 'click', QuoteInline.toggle);
@@ -6538,7 +6538,7 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (!(quote.hash && !/catalog$/.test(quote.pathname) || /\bdeadlink\b/.test(quote.className))) {
+        if (!(quote.hostname === 'boards.4chan.org' && quote.hash && !/catalog$/.test(quote.pathname) || /\bdeadlink\b/.test(quote.className))) {
           continue;
         }
         $.on(quote, 'mouseover', QuotePreview.mouseover);
@@ -6691,7 +6691,7 @@
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (!(quote.hash && !/catalog$/.test(quote.pathname))) {
+        if (!(quote.hash && quote.hostname === 'boards.4chan.org' && !/catalog$/.test(quote.pathname))) {
           continue;
         }
         path = quote.pathname.split('/');
