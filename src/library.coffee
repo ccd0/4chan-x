@@ -172,9 +172,8 @@ $.extend $,
     root.parentNode.insertBefore $.nodes(el), root
   replace: (root, el) ->
     root.parentNode.replaceChild $.nodes(el), root
-  create: d.createElement
   el: (tag, properties) ->
-    el = $.create tag
+    el = d.createElement tag
     $.extend el, properties if properties
     el
   on: (el, events, handler) ->

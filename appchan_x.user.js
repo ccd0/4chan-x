@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.31 - 2013-01-10
+ * appchan x - Version 1.0.31 - 2013-01-11
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -2659,10 +2659,9 @@
     replace: function(root, el) {
       return root.parentNode.replaceChild($.nodes(el), root);
     },
-    create: d.createElement,
     el: function(tag, properties) {
       var el;
-      el = $.create(tag);
+      el = d.createElement(tag);
       if (properties) {
         $.extend(el, properties);
       }
