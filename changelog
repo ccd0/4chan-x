@@ -1,4 +1,10 @@
 master
+
+1.0.32
+- Zixaphir
+  Fix Chrome support
+
+1.0.31
 - Zixaphir
   Added an option to prepend / append navigation delimiters
 - Mayhem
