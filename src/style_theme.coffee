@@ -77,14 +77,14 @@ html {
 #stats,
 #updater:not(:hover) .move {
   text-shadow:
-    1px 1px 0 #{backgroundC},
+     1px  1px 0 #{backgroundC},
     -1px -1px 0 #{backgroundC},
-    1px -1px 0 #{backgroundC},
-    -1px 1px 0 #{backgroundC},
-    0 1px 0 #{backgroundC},
-    0 -1px 0 #{backgroundC},
-    1px 0 0 #{backgroundC},
-    -1px 0 0 #{backgroundC}
+     1px -1px 0 #{backgroundC},
+    -1px  1px 0 #{backgroundC},
+     0    1px 0 #{backgroundC},
+     0   -1px 0 #{backgroundC},
+     1px  0   0 #{backgroundC},
+    -1px  0   0 #{backgroundC}
     #{if _conf["Sidebar Glow"] then ", 0 2px 5px #{theme['Text']};" else ";"}
 }
 /* Fixes text spoilers */
@@ -112,14 +112,14 @@ s:hover .quote {
 #qrtab,
 #{if _conf["Post Form Decorations"] then "#qr," else ""}
 #updater:hover,
-html body span[style="left: 5px; position: absolute;"] a,
+span[style="left: 5px; position: absolute;"] a,
 input[type="submit"],
-#options.reply.dialog,
+#options.dialog,
 input[value="Report"] {
   background: #{theme["Buttons Background"]};
   border: 1px solid #{theme["Buttons Border"]};
 }
-#options ul li.mascot.enabled .container {
+.enabled .mascotcontainer {
   background: #{theme["Buttons Background"]};
   border-color: #{theme["Buttons Border"]};
 }
@@ -130,7 +130,6 @@ input[value="Report"] {
 .selectrice,
 button,
 input,
-input.field,
 textarea,
 textarea.field {
   background: #{theme["Input Background"]};
@@ -143,8 +142,6 @@ textarea.field {
 .selectrice:hover,
 .selectrice li:hover,
 input:hover,
-input.field:hover,
-input[type="submit"]:hover,
 textarea:hover,
 textarea.field:hover {
   background: #{theme["Hovered Input Background"]};
@@ -156,8 +153,6 @@ textarea.field:hover {
 .selectrice:focus,
 .selectrice li:focus,
 input:focus,
-input.field:focus,
-input[type="submit"]:focus,
 textarea:focus,
 textarea.field:focus {
   background: #{theme["Focused Input Background"]};
@@ -166,15 +161,15 @@ textarea.field:focus {
 }
 #mouseover,
 #post-preview,
-#qp div.post,
+#qp .post,
 #xupdater,
-div.reply.post {
+.reply.post {
   border: 1px solid #{theme["Reply Border"]};
   background: #{theme["Reply Background"]};
 }
 .exblock.reply,
-div.reply.post.highlight,
-div.reply.post:target {
+.post.highlight,
+.post:target {
   background: #{theme["Highlighted Reply Background"]};
   border: 1px solid #{theme["Highlighted Reply Border"]};
 }
@@ -195,7 +190,7 @@ div.reply.post:target {
 #themeConf,
 #watcher,
 #watcher:hover,
-div.subMenu,
+.subMenu,
 body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Dialog Border"]};
@@ -207,7 +202,6 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > 
 .captcha img {
   border: 1px solid #{theme["Input Border"]};
 }
-[style='color: red !important;'] *,
 .disabledwarning,
 .warning {
   color: #{theme["Warnings"]};
@@ -215,9 +209,8 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > 
 #dump,
 .button,
 .entry,
-.sideArrows a,
 a,
-div.post > blockquote a[href^="//"],
+.post blockquote a[href^="//"],
 span.postNum > .replylink {
   color: #{theme["Links"]};
 }
@@ -227,7 +220,7 @@ span.postNum > .replylink {
 #navlinks a:last-of-type {
   border-top: 11px solid rgb(#{if Style.lightTheme then "130,130,130" else "230,230,230"});
 }
-#qr #charCount {
+#charCount {
   color: #{(if Style.lightTheme then "rgba(0,0,0,0.7)" else "rgba(255,255,255,0.7)")};
 }
 .postNum a {
@@ -245,10 +238,9 @@ span.postNum > .replylink {
 #showQR,
 #updater,
 .summary,
-body > form,
 body,
 button,
-html body span[style="left: 5px; position: absolute;"] a,
+span[style="left: 5px; position: absolute;"] a,
 input,
 textarea,
 .abbr,
@@ -257,11 +249,10 @@ textarea,
 .pages strong,
 .reply,
 .reply.highlight,
-#boardNavDesktop .title,
 #imgControls label::after,
 #updater #count:not(.new)::after,
 #qr > form > label::after,
-span.pln {
+.pln {
   color: #{theme["Text"]};
 }
 #exlinks-options-content > table,
@@ -274,17 +265,16 @@ span.pln {
 .quote {
   color: #{theme["Greentext"]};
 }
-a.backlink {
+.backlink {
   color: #{theme["Backlinks"]};
 }
-span.quote > a.quotelink,
-a.quotelink {
+.quotelink {
   color: #{theme["Quotelinks"]};
 }
-#delform .reply .container::before {
+.container::before {
   color: #{theme["Timestamps"]};
 }
-div.subMenu,
+.subMenu,
 #menu,
 #post-preview,
 #qp .opContainer,
@@ -318,9 +308,9 @@ input[type=checkbox]:checked + .rice {
 a:hover,
 #dump:hover,
 .entry:hover,
-div.post > blockquote a[href^="//"]:hover,
+.post > blockquote a[href^="//"]:hover,
 .sideArrows a:hover,
-div.post div.postInfo span.postNum a:hover,
+.post .postInfo span.postNum a:hover,
 span.postNum > .replylink:hover,
 .nameBlock > .useremail > .name:hover,
 .nameBlock > .useremail > .postertrip:hover {
@@ -342,11 +332,11 @@ span.postNum > .replylink:hover,
 .trip {
   color: #{theme["Tripcodes"]} !important;
 }
-.nameBlock > .useremail > .postertrip,
-.nameBlock > .useremail > .name {
+.useremail .postertrip,
+.useremail .name {
   color: #{theme["Emails"]};
 }
-div.post.qphl {
+.post.qphl {
   border-color: #{theme["Backlinked Reply Outline"]};
 }
 .inline .post {
@@ -377,7 +367,7 @@ div.post.qphl {
 
 #navtopright .exlinksOptionsLink::after,
 #settingsWindowLink,
-div.navLinks > a:first-of-type::after,
+.navLinks > a:first-of-type::after,
 #watcher::after,
 #globalMessage::after,
 #boardNavDesktopFoot::after,
@@ -395,27 +385,27 @@ body > a[style="cursor: pointer; float: right;"]::after,
   background-color: #e7e7e7;
   border: 1px solid #dcdcdc;
 }
-span.com {
+.com {
   color: #dd0000;
 }
-span.str,
-span.atv {
+.str,
+.atv {
   color: #7fa61b;
 }
-span.pun {
+.pun {
   color: #61663a;
 }
-span.tag {
+.tag {
   color: #117743;
 }
-span.kwd {
+.kwd {
   color: #5a6F9e;
 }
-span.typ,
-span.atn {
+.typ,
+.atn {
   color: #9474bd;
 }
-span.lit {
+.lit {
   color: #368c72;
 }\n
 """ else """
@@ -423,34 +413,34 @@ span.lit {
   background-color: rgba(0,0,0,.1);
   border: 1px solid rgba(0,0,0,0.5);
 }
-span.tag {
+.tag {
   color: #96562c;
 }
-span.pun {
+.pun {
   color: #5b6f2a;
 }
-span.com {
+.com {
   color: #a34443;
 }
-span.str,
-span.atv {
+.str,
+.atv {
   color: #8ba446;
 }
-span.kwd {
+.kwd {
   color: #987d3e;
 }
-span.typ,
-span.atn {
+.typ,
+.atn {
   color: #897399;
 }
-span.lit {
+.lit {
   color: #558773;
 }\n
 """)
 
     if _conf["Alternate Post Colors"]
       css += """
-div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
+.replyContainer:not(.hidden):nth-of-type(2n+1) .post {
   background-image: #{Style.agent}linear-gradient(#{if Style.lightTheme then "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" else "rgba(255,255,255,0.02), rgba(255,255,255,0.02)"});
 }\n
 """
@@ -469,12 +459,12 @@ div.replyContainer:not(.hidden):nth-of-type(2n+1) div.post {
 """
     if _conf["OP Background"]
       css += """
-.opContainer div.post {
+.opContainer .post {
   background: #{theme["Reply Background"]};
   border: 1px solid #{theme["Reply Border"]};
 }
-.opContainer div.post:target
-.opContainer div.post.highlight {
+.opContainer .post:target
+.opContainer .post.highlight {
   background: #{theme["Highlighted Reply Background"]};
   border: 1px solid #{theme["Highlighted Reply Border"]};
 }\n

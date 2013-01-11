@@ -802,7 +802,7 @@ body > div[style^="text-align"],
 body > hr,
 body > script + hr + div,
 .post[hidden],
-html body > span[style="left: 5px; position: absolute;"]:nth-of-type(0),
+span[style="left: 5px; position: absolute;"]:nth-of-type(0),
 table[style="text-align:center;width:100%;height:300px;"] {
   display: none !important;
 }
@@ -2321,8 +2321,9 @@ textarea.field,
     ) + (
       {
         'lower left': """
-.op .container {
+.container {
   padding: 0 5px;
+  max-width: 100%;
 }
 .post.quoted {
   padding-bottom: 15px;
@@ -2335,9 +2336,6 @@ textarea.field,
 }
 .post .container::before {
   content: "REPLIES: ";
-}
-.container {
-  max-width: 100%;
 }
 .inline .container {
   position: static;
@@ -2353,24 +2351,22 @@ textarea.field,
 }
 .op .container {
   float: right;
-  padding: 0 5px;
 }
 .post .container {
   position: absolute;
   right: 0;
   bottom: 0;
-  padding: 0 5px;
 }
 .container::before {
   content: "REPLIES: ";
 }
 .container {
   max-width: 100%;
+  padding: 0 5px;
 }
 .inline .container {
   position: static;
   float: none;
-  max-width: 100%;
 }
 .inline .container::before {
   content: "";
