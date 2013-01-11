@@ -83,7 +83,8 @@ $.extend $,
     parse = JSON.parse
     $.on window, 'storage', (e) ->
       cb parse e.newValue if e.key is key
-  id: d.getElementById
+  id: (id) ->
+    d.getElementById id
   formData: (arg) ->
     if arg instanceof HTMLFormElement
       fd = new FormData arg
@@ -150,8 +151,8 @@ $.extend $,
     el.classList.toggle className
   rm: (el) ->
     el.parentNode.removeChild el
-  tn: 
-    d.createTextNode
+  tn: (s) ->
+    d.createTextNode s
   nodes: (nodes) ->
     # In (at least) Chrome, elements created inside different
     # scripts/window contexts inherit from unequal prototypes.

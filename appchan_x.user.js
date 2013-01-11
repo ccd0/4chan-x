@@ -2525,7 +2525,9 @@
         }
       });
     },
-    id: d.getElementById,
+    id: function(id) {
+      return d.getElementById(id);
+    },
     formData: function(arg) {
       var fd, key, val;
       if (arg instanceof HTMLFormElement) {
@@ -2631,7 +2633,9 @@
     rm: function(el) {
       return el.parentNode.removeChild(el);
     },
-    tn: d.createTextNode,
+    tn: function(s) {
+      return d.createTextNode(s);
+    },
     nodes: function(nodes) {
       var frag, node, _i, _len;
       if (!(nodes instanceof Array)) {
