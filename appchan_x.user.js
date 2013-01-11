@@ -2525,9 +2525,7 @@
         }
       });
     },
-    id: function(id) {
-      return d.getElementById(id);
-    },
+    id: d.getElementById.bind(d),
     formData: function(arg) {
       var fd, key, val;
       if (arg instanceof HTMLFormElement) {
@@ -2633,9 +2631,7 @@
     rm: function(el) {
       return el.parentNode.removeChild(el);
     },
-    tn: function(s) {
-      return d.createTextNode(s);
-    },
+    tn: d.createTextNode.bind(d),
     nodes: function(nodes) {
       var frag, node, _i, _len;
       if (!(nodes instanceof Array)) {
@@ -2663,9 +2659,10 @@
     replace: function(root, el) {
       return root.parentNode.replaceChild($.nodes(el), root);
     },
+    create: d.createElement.bind(d),
     el: function(tag, properties) {
       var el;
-      el = d.createElement(tag);
+      el = $.create(tag);
       if (properties) {
         $.extend(el, properties);
       }
