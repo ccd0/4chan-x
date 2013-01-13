@@ -7,6 +7,47 @@ alpha
   Fix Quote Highlighting not affecting inlined quotes.
 
 master
+- Mayhem
+  Add /po/ archive redirection for threads, images and post resurrection.
+
+2.37.3
+- Mayhem
+  Fix successful posting causing errors.
+  Fix 4chan X trying to interact with >>>/board/rules links.
+
+2.37.2
+- aeosynth
+  Beep on new post to completely read thread
+- Mayhem
+  Fix dead quotes.
+
+2.37.1
+- noface
+  Fix Anonymize not working on stubs.
+- Mayhem
+  Fix selection quoting on Opera.
+  Fix history bug with Persistent QR enabled on Chrome.
+  Fix posting warning not displaying the reason.
+  Fix deadquotes showing up in code-tags.
+
+2.37.0
+- noface
+  Add Catalog Links toggle.
+  Fix Anonymize not working on hovered posts.
+- Mayhem
+  Added catalog support.
+  Sync thread hiding between index and catalog.
+  Add /c/ archived thread and image redirection.
+
+2.36.3
+- Mayhem
+  Fix next/previous page keybinds.
+
+2.36.2
+- noface
+  Add tags support on /f/.
+- Mayhem
+  Add /mu/ archived image redirection.
 
 2.36.1
 - noface

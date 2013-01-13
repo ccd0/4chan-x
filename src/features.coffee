@@ -7,20 +7,26 @@ Redirect =
         "//archive.foolz.us/#{board}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
+      when 'po'
+        "http://archive.thedarkcave.org/#{board}/full_image/#{filename}"
       when 'ck', 'lit'
         "//fuuka.warosu.org/#{board}/full_image/#{filename}"
       when 'diy', 'sci'
         "//archive.installgentoo.net/#{board}/full_image/#{filename}"
-      when 'cgl', 'g', 'mu', 'soc', 'w'
+      when 'cgl', 'g', 'mu', 'w'
         "//rbt.asia/#{board}/full_image/#{filename}"
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
+      when 'c'
+        "//archive.nyafuu.org/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
+      when 'po'
+        "http://archive.thedarkcave.org/_/api/chan/post/?board=#{board}&num=#{postID}"
     # for fuuka-based archives:
     # https://github.com/eksopl/fuuka/issues/27
   to: (data) ->
@@ -30,14 +36,18 @@ Redirect =
         url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
       when 'u', 'kuku'
         url = Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
+      when 'po'
+        url = Redirect.path 'http://archive.thedarkcave.org', 'foolfuuka', data
       when 'ck', 'lit'
         url = Redirect.path '//fuuka.warosu.org', 'fuuka', data
       when 'diy', 'sci'
         url = Redirect.path '//archive.installgentoo.net', 'fuuka', data
-      when 'cgl', 'g', 'mu', 'soc', 'w'
+      when 'cgl', 'g', 'mu', 'w'
         url = Redirect.path '//rbt.asia', 'fuuka', data
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
         url = Redirect.path 'http://archive.heinessen.com', 'fuuka', data
+      when 'c'
+        url = Redirect.path '//archive.nyafuu.org', 'fuuka', data
       else
         if data.threadID
           url = "//boards.4chan.org/#{board}/"
@@ -68,6 +78,8 @@ Redirect =
         "#{board}/thread/#{threadID}"
       else
         "#{board}/post/#{postID}"
+    if archiver is 'foolfuuka'
+      path += '/'
     if threadID and postID
       path +=
         if archiver is 'foolfuuka'
@@ -98,7 +110,7 @@ Build =
       capcode:  data.capcode
       tripcode: data.trip
       uniqueID: data.id
-      email:    if data.email then encodeURIComponent data.email.replace /&quot;/g, '"' else ''
+      email:    if data.email then encodeURI data.email.replace /&quot;/g, '"' else ''
       subject:  data.sub
       flagCode: data.country
       flagName: data.country_name
@@ -474,8 +486,12 @@ Get =
             '<b style="color: red;">'
           when '[/banned]'
             '</b>'
-    # greentext
-    comment = bq.innerHTML.replace /(^|>)(&gt;[^<$]+)(<|$)/g, '$1<span class=quote>$2</span>$3'
+
+    comment = bq.innerHTML
+      # greentext
+      .replace(/(^|>)(&gt;[^<$]*)(<|$)/g, '$1<span class=quote>$2</span>$3')
+      # quotes
+      .replace /((&gt;){2}(&gt;\/[a-z\d]+\/)?\d+)/g, '<span class=deadlink>$1</span>'
 
     threadID = data.thread_num
     o =
@@ -491,7 +507,7 @@ Get =
         when 'D' then 'developer'
       tripcode: data.trip
       uniqueID: data.poster_hash
-      email:    if data.email then encodeURIComponent data.email else ''
+      email:    if data.email then encodeURI data.email else ''
       subject:  data.title_processed
       flagCode: data.poster_country
       flagName: data.poster_country_name_processed
@@ -529,82 +545,63 @@ Quotify =
       cb:   @node
   node: ->
     return if @isClone
+    for deadlink in $$ '.deadlink', post.blockquote
+      if deadlink.parentNode.className is 'prettyprint'
+        # Don't quotify deadlinks inside code tags,
+        # un-`span` them.
+        $.replace deadlink, Array::slice.call deadlink.childNodes
+        continue
 
-    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE === 6
-    # Get all the text nodes that are not inside an anchor.
-    snapshot = d.evaluate './/text()[not(parent::a)]', @nodes.comment, null, 6, null
-
-    for i in [0...snapshot.snapshotLength]
-      node = snapshot.snapshotItem i
-      data = node.data
-
-      # Only accept nodes with potentially valid links
-      continue unless quotes = data.match />>(>\/[a-z\d]+\/)?\d+/g
-
-      nodes = []
-
-      for quote in quotes
-        index   = data.indexOf quote
-        if text = data[...index]
-          # Potential text before this valid quote.
-          nodes.push $.tn text
-
-        ID = quote.match(/\d+$/)[0]
-        board =
-          if m = quote.match /^>>>\/([a-z\d]+)/
-            m[1]
-          else
-            @board.ID
-
-        quoteID = "#{board}.#{ID}"
-
-        # \u00A0 is nbsp
-        if post = g.posts[quoteID]
-          if post.isDead
-            a = $.el 'a',
-              href: Redirect.to
-                board: board
-                threadID: 0
-                postID: ID
-              className:   'quotelink deadlink'
-              textContent: "#{quote}\u00A0(Dead)"
-              target:      '_blank'
-            a.setAttribute 'data-board',    board
-            a.setAttribute 'data-threadid', post.thread.ID
-            a.setAttribute 'data-postid',   ID
-          else
-            # Don't (Dead) when quotifying in an archived post,
-            # and we know the post still exists.
-            a = $.el 'a',
-              href:        "/#{board}/#{post.thread}/res/#p#{ID}"
-              className:   'quotelink'
-              textContent: quote
+      quote = deadlink.textContent
+      continue unless ID = quote.match(/\d+$/)?[0]
+      board =
+        if m = quote.match /^>>>\/([a-z\d]+)/
+          m[1]
         else
+          @board.ID
+      quoteID = "#{board}.#{ID}"
+
+      # \u00A0 is nbsp
+      if post = g.posts[quoteID]
+        unless post.isDead
+          # Don't (Dead) when quotifying in an archived post,
+          # and we know the post still exists.
           a = $.el 'a',
-            href: Redirect.to
-              board: board
-              threadID: 0
-              postID: ID
-            className:   'deadlink'
+            href:        "/#{board}/#{post.thread}/res/#p#{ID}"
+            className:   'quotelink'
+            textContent: quote
+        else if redirect = Redirect.to {board: board, threadID: post.thread.ID, postID: ID}
+          # Replace the .deadlink span if we can redirect.
+          a = $.el 'a',
+            href:        redirect
+            className:   'quotelink deadlink'
             target:      '_blank'
             textContent: "#{quote}\u00A0(Dead)"
-          if Redirect.post board, ID
-            $.addClass a, 'quotelink'
-            a.setAttribute 'data-board',  board
-            a.setAttribute 'data-postid', ID
+          a.setAttribute 'data-board',    board
+          a.setAttribute 'data-threadid', post.thread.ID
+          a.setAttribute 'data-postid',   ID
+      else if redirect = Redirect.to {board: board, threadID: 0, postID: ID}
+        # Replace the .deadlink span if we can redirect.
+        a = $.el 'a',
+          href:        redirect
+          className:   'deadlink'
+          target:      '_blank'
+          textContent: "#{quote}\u00A0(Dead)"
+        if Redirect.post board, ID
+          # Make it function as a normal quote if we can fetch the post.
+          $.addClass a,  'quotelink'
+          a.setAttribute 'data-board',  board
+          a.setAttribute 'data-postid', ID
 
-        if @quotes.indexOf(quoteID) is -1
-          @quotes.push quoteID
-        if $.hasClass a, 'quotelink'
-          @nodes.quotelinks.push a
-        nodes.push a
-        data = data[index + quote.length..]
+      if a
+        $.replace deadlink, a
+      else
+        deadlink.textContent += "\u00A0(Dead)"
 
-      if data
-        # Potential text after the last valid quote.
-        nodes.push $.tn data
-
-      $.replace node, nodes
+      if @quotes.indexOf(quoteID) is -1
+        @quotes.push quoteID
+      if $.hasClass a, 'quotelink'
+        @nodes.quotelinks.push a
     return
 
 QuoteInline =
@@ -1109,6 +1106,12 @@ ThreadUpdater =
       cb:   @node
   node: ->
     new ThreadUpdater.Updater @
+  ###
+  http://freesound.org/people/pierrecartoons1979/sounds/90112/
+  cc-by-nc-3.0
+  ###
+  beep: 'data:audio/wav;base64,UklGRjQDAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAc21wbDwAAABBAAADAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkYXRhzAIAAGMms8em0tleMV4zIpLVo8nhfSlcPR102Ki+5JspVEkdVtKzs+K1NEhUIT7DwKrcy0g6WygsrM2k1NpiLl0zIY/WpMrjgCdbPhxw2Kq+5Z4qUkkdU9K1s+K5NkVTITzBwqnczko3WikrqM+l1NxlLF0zIIvXpsnjgydZPhxs2ay95aIrUEkdUdC3suK8N0NUIjq+xKrcz002WioppdGm091pK1w0IIjYp8jkhydXPxxq2K295aUrTkoeTs65suK+OUFUIzi7xqrb0VA0WSoootKm0t5tKlo1H4TYqMfkiydWQBxm16+85actTEseS8y7seHAPD9TIza5yKra01QyWSson9On0d5wKVk2H4DYqcfkjidUQB1j1rG75KsvSkseScu8seDCPz1TJDW2yara1FYxWSwnm9Sn0N9zKVg2H33ZqsXkkihSQR1g1bK65K0wSEsfR8i+seDEQTxUJTOzy6rY1VowWC0mmNWoz993KVc3H3rYq8TklSlRQh1d1LS647AyR0wgRMbAsN/GRDpTJTKwzKrX1l4vVy4lldWpzt97KVY4IXbUr8LZljVPRCxhw7W3z6ZISkw1VK+4sMWvXEhSPk6buay9sm5JVkZNiLWqtrJ+TldNTnquqbCwilZXU1BwpKirrpNgWFhTaZmnpquZbFlbVmWOpaOonHZcXlljhaGhpZ1+YWBdYn2cn6GdhmdhYGN3lp2enIttY2Jjco+bnJuOdGZlZXCImJqakHpoZ2Zug5WYmZJ/bGlobX6RlpeSg3BqaW16jZSVkoZ0bGtteImSk5KIeG5tbnaFkJKRinxxbm91gY2QkIt/c3BwdH6Kj4+LgnZxcXR8iI2OjIR5c3J0e4WLjYuFe3VzdHmCioyLhn52dHR5gIiKioeAeHV1eH+GiYqHgXp2dnh9hIiJh4J8eHd4fIKHiIeDfXl4eHyBhoeHhH96eHmA'
+
 
   Updater: class
     constructor: (@thread) ->
@@ -1175,8 +1178,7 @@ ThreadUpdater =
         @unsuccessfulFetchCount = 0
         setTimeout @update.bind(@), 1000 if @seconds > 2
       visibility: ->
-        state = d.visibilityState or d.oVisibilityState or d.mozVisibilityState or d.webkitVisibilityState
-        return if state isnt 'visible'
+        return if $.hidden()
         # Reset the counter when we focus this tab.
         @unsuccessfulFetchCount = 0
         if @seconds > @interval
@@ -1191,7 +1193,7 @@ ThreadUpdater =
           if @['Scroll BG']
             -> true
           else
-            -> !(d.hidden or d.oHidden or d.mozHidden or d.webkitHidden)
+            -> not $.hidden()
       autoUpdate: ->
         if @['Auto Update This'] and @online
           @timeoutID = setTimeout @timeout.bind(@), 1000
@@ -1241,7 +1243,7 @@ ThreadUpdater =
     getInterval: ->
       i = @interval
       j = Math.min @unsuccessfulFetchCount, 10
-      unless d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
+      unless $.hidden()
         # Lower the max refresh rate limit on visible tabs.
         j = Math.min j, 7
       @seconds = Math.max i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
@@ -1308,6 +1310,10 @@ ThreadUpdater =
           post.kill true
 
       if count
+        if Conf['Beep'] and $.hidden() and (Unread.replies.length is 0)
+          unless @audio
+            @audio = $.el 'audio', src: ThreadUpdater.beep
+          audio.play()
         @set 'status', "+#{count}"
         @status.className = 'new'
         @unsuccessfulFetchCount = 0

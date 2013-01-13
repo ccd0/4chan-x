@@ -88,13 +88,24 @@ class Post
     quotes = {}
     for quotelink in $$ '.quotelink', @nodes.comment
       # Don't add board links. (>>>/b/)
+      hash = quotelink.hash
+      continue unless hash
+
+      # Don't add catalog links. (>>>/b/catalog or >>>/b/search)
+      pathname = quotelink.pathname
+      continue if /catalog$/.test pathname
+
+      # Don't add rules links. (>>>/a/rules)
       # Don't add text-board quotelinks. (>>>/img/1234)
+      continue if quotelink.hostname isnt 'boards.4chan.org'
+
+      @nodes.quotelinks.push quotelink
+
       # Don't count capcode replies as quotes. (Admin/Mod/Dev Replies: ...)
-      # Only add quotes that link to posts on an imageboard.
-      if quotelink.hash
-        @nodes.quotelinks.push quotelink
-        continue if quotelink.parentNode.parentNode.className is 'capcodeReplies'
-        quotes["#{quotelink.pathname.split('/')[1]}.#{quotelink.hash[2..]}"] = true
+      continue if quotelink.parentNode.parentNode.className is 'capcodeReplies'
+
+      # Basically, only add quotes that link to posts on an imageboard.
+      quotes["#{pathname.split('/')[1]}.#{hash[2..]}"] = true
     @quotes = Object.keys quotes
 
     if (file = $ '.file', post) and thumb = $ 'img[data-md5]', file

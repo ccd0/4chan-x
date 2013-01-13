@@ -156,6 +156,7 @@ Config =
     'hide':               ['x',      'Hide thread.']
   updater:
     checkbox:
+      'Beep':        [false, 'Beep on new post to completely read thread.']
       'Auto Scroll': [false, 'Scroll updated posts into view. Only enabled at bottom of page.']
       'Scroll BG':   [false, 'Auto-scroll background tabs.']
       'Auto Update': [true,  'Automatically fetch new posts.']

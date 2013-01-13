@@ -138,6 +138,8 @@ $.extend $,
     return
   open: (url) ->
     (GM_openInTab or window.open) url, '_blank'
+  hidden: ->
+    d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
   queueTask: (->
     # inspired by https://www.w3.org/Bugs/Public/show_bug.cgi?id=15007
     taskQueue = []
