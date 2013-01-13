@@ -2163,7 +2163,7 @@ QuotePreview =
       className: 'reply dialog'
     UI.hover e
     $.add d.body, qp
-    el = $.id "p#{postID}" if board is g.BOARD
+
     Get.post board, threadID, postID, qp, ->
       bq = $ 'blockquote', qp
       Main.prettify bq
@@ -2196,7 +2196,8 @@ QuotePreview =
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
 
-    return unless el
+    return unless board is g.BOARD and el = $.id "p#{postID}"
+
     if _conf['Quote Highlighting']
       if /\bop\b/.test el.className
         $.addClass el.parentNode, 'qphl'

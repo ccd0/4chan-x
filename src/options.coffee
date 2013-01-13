@@ -681,8 +681,10 @@ Options =
 
 
   mascotTab:
-    dialog: (dialog = Options.el, mode) ->
+    dialog: (dialog, mode) ->
+      dialog or= Options.el
       ul = {}
+      categories = []
 
       unless mode
         mode = "default"
@@ -699,7 +701,7 @@ Options =
         className: "reply"
         innerHTML: "Hide Categories <span></span><div></div>"
 
-      keys = Object.keys(Mascots)
+      keys = Object.keys Mascots
       keys.sort()
 
       if mode is 'default'
@@ -716,7 +718,7 @@ Options =
             className:   "mascotHeader"
             textContent: category
 
-          option = $.el "label"
+          categories.push option = $.el "label"
             name:     category
             innerHTML: "<input name='#{category}' type=checkbox #{if Conf["Hidden Categories"].contains(category) then 'checked' else ''}>#{category}"
 
@@ -725,7 +727,6 @@ Options =
 
           $.add ul[category], header
           $.add suboptions, ul[category]
-          $.add $('div', mascotHide), option
 
         for name in keys
           unless Conf["Deleted Mascots"].contains name
@@ -737,6 +738,7 @@ Options =
 <div class='mascotname'>#{name.replace /_/g, " "}</div>
 <div class='mascotcontainer'><div class='mAlign #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'></div></div>
 <div class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a><a class=delete name='#{name}' href='javascript:;'>Delete</a><a class=export name='#{name}' href='javascript:;'>Export</a></div>"
+
             if Conf[g.MASCOTSTRING].contains name
               $.addClass li, 'enabled'
 
@@ -771,19 +773,21 @@ Options =
 
             $.on li, 'click', ->
               if Conf[g.MASCOTSTRING].remove @id
-                $.rmClass @, 'enabled'
                 if Conf['mascot'] is @id
                   MascotTools.init()
               else
-                $.addClass @, 'enabled'
                 Conf[g.MASCOTSTRING].push @id
                 MascotTools.init @id
+              $.toggleClass @, 'enabled'
               $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
 
             if MascotTools.categories.contains mascot.category
               $.add ul[mascot.category], li
             else
               $.add ul[MascotTools.categories[0]], li
+        
+        
+        $.add $('div', mascotHide), categories
 
         batchmascots = $.el 'div',
           id:        "mascots_batch"
@@ -860,9 +864,7 @@ Options =
           $.rm $.id "mascotContainer"
           Options.mascotTab.dialog()
 
-      $.add parentdiv, suboptions
-      $.add parentdiv, batchmascots
-      $.add parentdiv, mascotHide
+      $.add parentdiv, [suboptions, batchmascots, mascotHide]
 
       Style.rice parentdiv
 
@@ -876,19 +878,21 @@ Options =
         
         # Gather all names of enabled mascots in the hidden category in every context it could be enabled.
         for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
-          clear = for name in (setting = Conf[type])
-            if Mascots[name].category is @name 
-              name
-            else
-              continue
-          for name in clear
+        
+          i = (setting = Conf[type]).length
+          
+          while i--
+            name = setting[i]
+            continue unless Mascot[name].category is @name
             setting.remove name
-            if type is g.MASCOTSTRING
-              $.rmClass $.id(name), 'enabled'
+            continue unless type is g.MASCOTSTRING
+            $.rmClass $.id(name), 'enabled'
           $.set type, setting
+
       else
         $.id(@name).hidden = false
         Conf["Hidden Categories"].remove @name
+
       $.set "Hidden Categories", Conf["Hidden Categories"]
 
   customNavigation:

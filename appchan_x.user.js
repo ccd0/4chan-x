@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.33 - 2013-01-11
+ * appchan x - Version 1.0.33 - 2013-01-13
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -3427,11 +3427,10 @@
     },
     mascotTab: {
       dialog: function(dialog, mode) {
-        var batchmascots, category, header, keys, li, mascot, mascotHide, name, option, parentdiv, suboptions, ul, _i, _j, _k, _len, _len1, _len2, _ref;
-        if (dialog == null) {
-          dialog = Options.el;
-        }
+        var batchmascots, categories, category, header, keys, li, mascot, mascotHide, name, option, parentdiv, suboptions, ul, _i, _j, _k, _len, _len1, _len2, _ref;
+        dialog || (dialog = Options.el);
         ul = {};
+        categories = [];
         if (!mode) {
           mode = "default";
         }
@@ -3464,16 +3463,15 @@
               className: "mascotHeader",
               textContent: category
             });
-            option = $.el("label", {
+            categories.push(option = $.el("label", {
               name: category,
               innerHTML: "<input name='" + category + "' type=checkbox " + (Conf["Hidden Categories"].contains(category) ? 'checked' : '') + ">" + category
-            });
+            }));
             $.on($('input', option), 'change', function() {
               return Options.mascotTab.toggle.call(this);
             });
             $.add(ul[category], header);
             $.add(suboptions, ul[category]);
-            $.add($('div', mascotHide), option);
           }
           for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
             name = keys[_j];
@@ -3524,15 +3522,14 @@
               });
               $.on(li, 'click', function() {
                 if (Conf[g.MASCOTSTRING].remove(this.id)) {
-                  $.rmClass(this, 'enabled');
                   if (Conf['mascot'] === this.id) {
                     MascotTools.init();
                   }
                 } else {
-                  $.addClass(this, 'enabled');
                   Conf[g.MASCOTSTRING].push(this.id);
                   MascotTools.init(this.id);
                 }
+                $.toggleClass(this, 'enabled');
                 return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING]);
               });
               if (MascotTools.categories.contains(mascot.category)) {
@@ -3542,6 +3539,7 @@
               }
             }
           }
+          $.add($('div', mascotHide), categories);
           batchmascots = $.el('div', {
             id: "mascots_batch",
             innerHTML: "<a href=\"javascript:;\" id=clear>Clear All</a> / <a href=\"javascript:;\" id=selectAll>Select All</a> / <a href=\"javascript:;\" id=createNew>Add Mascot</a> / <a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden> / <a href=\"javascript:;\" id=undelete>Undelete Mascots</a> / <a href=\"http://appchan.booru.org/\" target=_blank>Get More Mascots!</a>"
@@ -3617,41 +3615,30 @@
             return Options.mascotTab.dialog();
           });
         }
-        $.add(parentdiv, suboptions);
-        $.add(parentdiv, batchmascots);
-        $.add(parentdiv, mascotHide);
+        $.add(parentdiv, [suboptions, batchmascots, mascotHide]);
         Style.rice(parentdiv);
         $.add($('#mascot_tab + div', dialog), parentdiv);
         return Options.indicators(dialog);
       },
       toggle: function() {
-        var clear, name, setting, type, _i, _j, _len, _len1, _ref;
+        var i, name, setting, type, _i, _len, _ref;
         if (this.checked) {
           $.id(this.name).hidden = true;
           Conf["Hidden Categories"].push(this.name);
           _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             type = _ref[_i];
-            clear = (function() {
-              var _j, _len1, _ref1, _results;
-              _ref1 = (setting = Conf[type]);
-              _results = [];
-              for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-                name = _ref1[_j];
-                if (Mascots[name].category === this.name) {
-                  _results.push(name);
-                } else {
-                  continue;
-                }
+            i = (setting = Conf[type]).length;
+            while (i--) {
+              name = setting[i];
+              if (Mascot[name].category !== this.name) {
+                continue;
               }
-              return _results;
-            }).call(this);
-            for (_j = 0, _len1 = clear.length; _j < _len1; _j++) {
-              name = clear[_j];
               setting.remove(name);
-              if (type === g.MASCOTSTRING) {
-                $.rmClass($.id(name), 'enabled');
+              if (type !== g.MASCOTSTRING) {
+                continue;
               }
+              $.rmClass($.id(name), 'enabled');
             }
             $.set(type, setting);
           }
@@ -6580,9 +6567,6 @@
       });
       UI.hover(e);
       $.add(d.body, qp);
-      if (board === g.BOARD) {
-        el = $.id("p" + postID);
-      }
       Get.post(board, threadID, postID, qp, function() {
         var bq, img, post;
         bq = $('blockquote', qp);
@@ -6626,7 +6610,7 @@
       });
       $.on(this, 'mousemove', UI.hover);
       $.on(this, 'mouseout click', QuotePreview.mouseout);
-      if (!el) {
+      if (!(board === g.BOARD && (el = $.id("p" + postID)))) {
         return;
       }
       if (_conf['Quote Highlighting']) {
