@@ -30,8 +30,9 @@ $.extend $,
       fc()
     $.on d, 'DOMContentLoaded', cb
   sync: (key, cb) ->
+    key = "#{g.NAMESPACE}#{key}"
     $.on window, 'storage', (e) ->
-      if e.key is "#{g.NAMESPACE}#{key}"
+      if e.key is key
         cb JSON.parse e.newValue
   formData: (form) ->
     if form instanceof HTMLFormElement

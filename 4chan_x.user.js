@@ -20,7 +20,7 @@
 // @icon         https://github.com/MayhemYDG/4chan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2013-01-13
+/* 4chan X Alpha - Version 3.0.0 - 2013-01-14
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -398,8 +398,9 @@
       return $.on(d, 'DOMContentLoaded', cb);
     },
     sync: function(key, cb) {
+      key = "" + g.NAMESPACE + key;
       return $.on(window, 'storage', function(e) {
-        if (e.key === ("" + g.NAMESPACE + key)) {
+        if (e.key === key) {
           return cb(JSON.parse(e.newValue));
         }
       });
@@ -964,7 +965,7 @@
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + '<br><em>' + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.REPLY && g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</em></span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.REPLY && +g.THREAD_ID === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
+        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + '<br><em>' + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREAD === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</em></span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREAD === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1988,7 +1989,7 @@
 
   ThreadUpdater = {
     init: function() {
-      if (!g.REPLY) {
+      if (g.VIEW !== 'thread') {
         return;
       }
       return Thread.prototype.callbacks.push({
@@ -2622,21 +2623,33 @@
       }
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
-      if (g.REPLY = pathname[2] === 'res') {
+      g.VIEW = (function() {
+        switch (pathname[2]) {
+          case 'res':
+            return 'thread';
+          case 'catalog':
+            return 'catalog';
+          default:
+            return 'index';
+        }
+      })();
+      if (g.VIEW === 'thread') {
         g.THREAD = +pathname[3];
       }
       switch (location.hostname) {
         case 'boards.4chan.org':
           Main.initHeader();
+          if (g.VIEW === 'catalog') {
+            return;
+          }
           return Main.initFeatures();
         case 'sys.4chan.org':
           break;
         case 'images.4chan.org':
           $.ready(function() {
-            var path, url;
+            var url;
             if (Conf['404 Redirect'] && d.title === '4chan - 404 Not Found') {
-              path = location.pathname.split('/');
-              url = Redirect.image(path[1], path[3]);
+              url = Redirect.image(pathname[1], pathname[3]);
               if (url) {
                 return location.href = url;
               }
@@ -2821,7 +2834,7 @@
     initFeaturesReady: function() {
       var boardChild, posts, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1;
       if (d.title === '4chan - 404 Not Found') {
-        if (Conf['404 Redirect'] && g.REPLY) {
+        if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           location.href = Redirect.to({
             board: g.BOARD,
             threadID: g.THREAD,

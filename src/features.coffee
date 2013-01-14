@@ -302,7 +302,7 @@ Build =
           '<br><em>' +
             "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"}>No.</a>" +
             "<a href='#{
-              if g.REPLY and g.THREAD_ID is threadID
+              if g.VIEW is 'thread' and g.THREAD is threadID
                 "javascript:quote(#{postID})"
               else
                 "/#{board}/res/#{threadID}#q#{postID}"
@@ -324,7 +324,7 @@ Build =
           "<span class='postNum desktop'>" +
             "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
             "<a href='#{
-              if g.REPLY and +g.THREAD_ID is threadID
+              if g.VIEW is 'thread' and g.THREAD is threadID
                 "javascript:quote(#{postID})"
               else
                 "/#{board}/res/#{threadID}#q#{postID}"
@@ -1100,7 +1100,7 @@ ImageHover =
 
 ThreadUpdater =
   init: ->
-    return unless g.REPLY
+    return if g.VIEW isnt 'thread'
     Thread::callbacks.push
       name: 'Thread Updater'
       cb:   @node

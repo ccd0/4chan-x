@@ -283,20 +283,28 @@ Main =
 
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
-    if g.REPLY = pathname[2] is 'res'
+    g.VIEW   =
+      switch pathname[2]
+        when 'res'
+          'thread'
+        when 'catalog'
+          'catalog'
+        else
+          'index'
+    if g.VIEW is 'thread'
       g.THREAD = +pathname[3]
 
     switch location.hostname
       when 'boards.4chan.org'
         Main.initHeader()
+        return if g.VIEW is 'catalog'
         Main.initFeatures()
       when 'sys.4chan.org'
         return
       when 'images.4chan.org'
         $.ready ->
           if Conf['404 Redirect'] and d.title is '4chan - 404 Not Found'
-            path = location.pathname.split '/'
-            url  = Redirect.image path[1], path[3]
+            url = Redirect.image pathname[1], pathname[3]
             location.href = url if url
         return
 
@@ -473,7 +481,7 @@ Main =
     $.ready Main.initFeaturesReady
   initFeaturesReady: ->
     if d.title is '4chan - 404 Not Found'
-      if Conf['404 Redirect'] and g.REPLY
+      if Conf['404 Redirect'] and g.VIEW is 'thread'
         location.href = Redirect.to
           board: g.BOARD
           threadID: g.THREAD
