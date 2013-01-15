@@ -277,10 +277,6 @@ Main =
     for key, val of Conf
       Conf[key] = $.get key, val
 
-    if unitTesting
-      Main.initUnitTesting()
-      return
-
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
     g.VIEW   =
@@ -307,43 +303,6 @@ Main =
             url = Redirect.image pathname[1], pathname[3]
             location.href = url if url
         return
-
-  initUnitTesting: ->
-    window.x =
-      # globals.coffee
-      Conf: Conf
-      g: g
-      # ui.coffee
-      UI: UI
-      # $.coffee
-      $: $
-      # main.coffee
-      Board:  Board
-      Thread: Thread
-      Post:   Post
-      Clone:  Clone
-      Main:   Main
-      # features.coffee
-      Redirect: Redirect
-      Build: Build
-      Get: Get
-      Quotify: Quotify
-      QuoteInline: QuoteInline
-      QuotePreview: QuotePreview
-      QuoteBacklink: QuoteBacklink
-      QuoteOP: QuoteOP
-      QuoteCT: QuoteCT
-      Anonymize: Anonymize
-      Time: Time
-      FileInfo: FileInfo
-      Sauce: Sauce
-      RevealSpoilers: RevealSpoilers
-      AutoGIF: AutoGIF
-      ImageHover: ImageHover
-      ThreadUpdater: ThreadUpdater
-    g.BOARD  = new Board 'a'
-    g.REPLY  = true
-    g.THREAD = '123456789'
 
   initHeader: ->
     $.addStyle Main.css

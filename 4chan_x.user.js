@@ -20,7 +20,7 @@
 // @icon         https://github.com/MayhemYDG/4chan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2013-01-14
+/* 4chan X Alpha - Version 3.0.0 - 2013-01-15
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, ThreadUpdater, Time, UI, d, g, unitTesting, _base,
+  var $, $$, Anonymize, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, ThreadUpdater, Time, UI, d, g, _base,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -171,9 +171,7 @@
     imageFit: 'fit width'
   };
 
-  unitTesting = !!window.QUnit;
-
-  if (!(/^(boards|images|sys)\.4chan\.org$/.test(location.hostname) || unitTesting)) {
+  if (!/^(boards|images|sys)\.4chan\.org$/.test(location.hostname)) {
     return;
   }
 
@@ -2617,10 +2615,6 @@
         val = Conf[key];
         Conf[key] = $.get(key, val);
       }
-      if (unitTesting) {
-        Main.initUnitTesting();
-        return;
-      }
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
       g.VIEW = (function() {
@@ -2656,39 +2650,6 @@
             }
           });
       }
-    },
-    initUnitTesting: function() {
-      window.x = {
-        Conf: Conf,
-        g: g,
-        UI: UI,
-        $: $,
-        Board: Board,
-        Thread: Thread,
-        Post: Post,
-        Clone: Clone,
-        Main: Main,
-        Redirect: Redirect,
-        Build: Build,
-        Get: Get,
-        Quotify: Quotify,
-        QuoteInline: QuoteInline,
-        QuotePreview: QuotePreview,
-        QuoteBacklink: QuoteBacklink,
-        QuoteOP: QuoteOP,
-        QuoteCT: QuoteCT,
-        Anonymize: Anonymize,
-        Time: Time,
-        FileInfo: FileInfo,
-        Sauce: Sauce,
-        RevealSpoilers: RevealSpoilers,
-        AutoGIF: AutoGIF,
-        ImageHover: ImageHover,
-        ThreadUpdater: ThreadUpdater
-      };
-      g.BOARD = new Board('a');
-      g.REPLY = true;
-      return g.THREAD = '123456789';
     },
     initHeader: function() {
       $.addStyle(Main.css);
