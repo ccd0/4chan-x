@@ -545,7 +545,7 @@ Quotify =
       cb:   @node
   node: ->
     return if @isClone
-    for deadlink in $$ '.deadlink', post.blockquote
+    for deadlink in $$ '.deadlink', @nodes.comment
       if deadlink.parentNode.className is 'prettyprint'
         # Don't quotify deadlinks inside code tags,
         # un-`span` them.

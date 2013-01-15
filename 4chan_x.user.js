@@ -606,7 +606,7 @@
       $.add(d.head, script);
       return $.rm(script);
     },
-    unsafeWindow: unitTesting || window.opera ? window : unsafeWindow !== window ? unsafeWindow : (function() {
+    unsafeWindow: window.opera ? window : unsafeWindow !== window ? unsafeWindow : (function() {
       var p;
       p = d.createElement('p');
       p.setAttribute('onclick', 'return window');
@@ -1191,7 +1191,7 @@
       if (this.isClone) {
         return;
       }
-      _ref = $$('.deadlink', post.blockquote);
+      _ref = $$('.deadlink', this.nodes.comment);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         deadlink = _ref[_i];
         if (deadlink.parentNode.className === 'prettyprint') {
