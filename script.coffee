@@ -4144,18 +4144,19 @@ ImageExpand =
     thumb.nextSibling.hidden = true
     $.rmClass thumb.parentNode.parentNode.parentNode, 'image_expanded'
 
-  expand: (thumb, url) ->
+  expand: (thumb, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
     return if $.x 'ancestor-or-self::*[@hidden]', thumb
+    a = thumb.parentNode
+    src or= a.href
+    return if /\.pdf$/.test src
     thumb.hidden = true
     $.addClass thumb.parentNode.parentNode.parentNode, 'image_expanded'
     if img = thumb.nextSibling
       # Expand already loaded picture
       img.hidden = false
       return
-    a = thumb.parentNode
-    img = $.el 'img',
-      src: url or a.href
+    img = $.el 'img', { src }
     $.on img, 'error', ImageExpand.error
     $.add a, img
 

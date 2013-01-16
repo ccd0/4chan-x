@@ -5127,9 +5127,14 @@
       thumb.nextSibling.hidden = true;
       return $.rmClass(thumb.parentNode.parentNode.parentNode, 'image_expanded');
     },
-    expand: function(thumb, url) {
+    expand: function(thumb, src) {
       var a, img;
       if ($.x('ancestor-or-self::*[@hidden]', thumb)) {
+        return;
+      }
+      a = thumb.parentNode;
+      src || (src = a.href);
+      if (/\.pdf$/.test(src)) {
         return;
       }
       thumb.hidden = true;
@@ -5138,9 +5143,8 @@
         img.hidden = false;
         return;
       }
-      a = thumb.parentNode;
       img = $.el('img', {
-        src: url || a.href
+        src: src
       });
       $.on(img, 'error', ImageExpand.error);
       return $.add(a, img);
