@@ -2923,7 +2923,7 @@ ThreadStats =
   node: (post) ->
     return if post.isInlined
     ThreadStats.postcount.textContent = ++ThreadStats.posts
-    return if (!post.img or post.hasPDF)
+    return unless post.img
 
     ThreadStats.imagecount.textContent = ++ThreadStats.images
     if ThreadStats.images > ThreadStats.imgLimit

@@ -7480,7 +7480,7 @@
         return;
       }
       ThreadStats.postcount.textContent = ++ThreadStats.posts;
-      if (!post.img || post.hasPDF) {
+      if (!post.img) {
         return;
       }
       ThreadStats.imagecount.textContent = ++ThreadStats.images;
