@@ -3796,7 +3796,7 @@ ThreadStats =
   node: (post) ->
     return if post.isInlined
     $.id('postcount').textContent = ++ThreadStats.posts
-    return if (!post.img or post.hasPdf)
+    return unless post.img
     imgcount = $.id 'imagecount'
     imgcount.textContent = ++ThreadStats.images
     if ThreadStats.images > ThreadStats.imgLimit
