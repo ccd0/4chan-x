@@ -402,8 +402,10 @@ Main =
     if img = $ 'img[data-md5]', el
       # Make sure to not add deleted images,
       # those do not have a data-md5 attribute.
-      post.fileInfo = img.parentNode.previousElementSibling
+      imgParent     = img.parentNode
       post.img      = img
+      post.fileInfo = imgParent.previousElementSibling
+      post.hasPdf   = /\.pdf$/.test imgParent.href
     Main.prettify post.blockquote
     post
   node: (nodes, notify) ->

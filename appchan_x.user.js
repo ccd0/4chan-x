@@ -7480,7 +7480,7 @@
         return;
       }
       ThreadStats.postcount.textContent = ++ThreadStats.posts;
-      if (!post.img) {
+      if (!post.img || post.hasPDF) {
         return;
       }
       ThreadStats.imagecount.textContent = ++ThreadStats.images;
@@ -7745,7 +7745,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      if (!post.img) {
+      if (!post.img || post.hasPDF) {
         return;
       }
       return $.on(post.img, 'mouseover', ImageHover.mouseover);
@@ -7899,7 +7899,7 @@
     },
     node: function(post) {
       var a;
-      if (!post.img) {
+      if (!post.img || post.hasPDF) {
         return;
       }
       a = post.img.parentNode;
@@ -11061,7 +11061,7 @@
       }
     },
     preParse: function(node) {
-      var el, img, parentClass, post;
+      var el, img, imgParent, parentClass, post;
       parentClass = node.parentNode.className;
       el = $('.post', node);
       post = {
@@ -11080,8 +11080,10 @@
         img: false
       };
       if (img = $('img[data-md5]', el)) {
-        post.fileInfo = img.parentNode.previousElementSibling;
+        imgParent = img.parentNode;
         post.img = img;
+        post.fileInfo = imgParent.previousElementSibling;
+        post.hasPdf = /\.pdf$/.test(imgParent.href);
       }
       Main.prettify(post.blockquote);
       return post;

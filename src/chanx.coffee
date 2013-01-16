@@ -2923,7 +2923,7 @@ ThreadStats =
   node: (post) ->
     return if post.isInlined
     ThreadStats.postcount.textContent = ++ThreadStats.posts
-    return unless post.img
+    return if (!post.img or post.hasPDF)
 
     ThreadStats.imagecount.textContent = ++ThreadStats.images
     if ThreadStats.images > ThreadStats.imgLimit
@@ -3177,7 +3177,7 @@ ImageHover =
   init: ->
     Main.callbacks.push @node
   node: (post) ->
-    return unless post.img
+    return if (!post.img or post.hasPDF)
     $.on post.img, 'mouseover', ImageHover.mouseover
   mouseover: ->
     # Make sure to remove the previous image hover
@@ -3277,7 +3277,7 @@ ImageExpand =
     @dialog()
 
   node: (post) ->
-    return unless post.img
+    return if (!post.img or post.hasPDF)
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
 
