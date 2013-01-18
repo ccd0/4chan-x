@@ -4012,7 +4012,7 @@ ImageHover =
   init: ->
     Main.callbacks.push @node
   node: (post) ->
-    return unless post.img
+    return if (!post.img or post.hasPdf)
     $.on post.img, 'mouseover', ImageHover.mouseover
   mouseover: ->
     # Make sure to remove the previous image hover
@@ -4078,7 +4078,7 @@ ImageExpand =
     @dialog()
 
   node: (post) ->
-    return unless post.img
+    return if (!post.img or post.hasPdf)
     a = post.img.parentNode
     $.on a, 'click', ImageExpand.cb.toggle
     if ImageExpand.on and !post.el.hidden
@@ -4144,18 +4144,19 @@ ImageExpand =
     thumb.nextSibling.hidden = true
     $.rmClass thumb.parentNode.parentNode.parentNode, 'image_expanded'
 
-  expand: (thumb, url) ->
+  expand: (thumb, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
     return if $.x 'ancestor-or-self::*[@hidden]', thumb
+    a = thumb.parentNode
+    src or= a.href
+    return if /\.pdf$/.test src
     thumb.hidden = true
     $.addClass thumb.parentNode.parentNode.parentNode, 'image_expanded'
     if img = thumb.nextSibling
       # Expand already loaded picture
       img.hidden = false
       return
-    a = thumb.parentNode
-    img = $.el 'img',
-      src: url or a.href
+    img = $.el 'img', { src }
     $.on img, 'error', ImageExpand.error
     $.add a, img
 
@@ -4506,8 +4507,10 @@ Main =
     if img = $ 'img[data-md5]', el
       # Make sure to not add deleted images,
       # those do not have a data-md5 attribute.
-      post.fileInfo = img.parentNode.previousElementSibling
+      imgParent = img.parentNode
       post.img      = img
+      post.fileInfo = imgParent.previousElementSibling
+      post.hasPdf   = /\.pdf$/.test imgParent.href
     Main.prettify post.blockquote
     post
   node: (nodes, notify) ->

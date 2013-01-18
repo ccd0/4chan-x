@@ -4920,7 +4920,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      if (!post.img) {
+      if (!post.img || post.hasPdf) {
         return;
       }
       return $.on(post.img, 'mouseover', ImageHover.mouseover);
@@ -5025,7 +5025,7 @@
     },
     node: function(post) {
       var a;
-      if (!post.img) {
+      if (!post.img || post.hasPdf) {
         return;
       }
       a = post.img.parentNode;
@@ -5127,9 +5127,14 @@
       thumb.nextSibling.hidden = true;
       return $.rmClass(thumb.parentNode.parentNode.parentNode, 'image_expanded');
     },
-    expand: function(thumb, url) {
+    expand: function(thumb, src) {
       var a, img;
       if ($.x('ancestor-or-self::*[@hidden]', thumb)) {
+        return;
+      }
+      a = thumb.parentNode;
+      src || (src = a.href);
+      if (/\.pdf$/.test(src)) {
         return;
       }
       thumb.hidden = true;
@@ -5138,9 +5143,8 @@
         img.hidden = false;
         return;
       }
-      a = thumb.parentNode;
       img = $.el('img', {
-        src: url || a.href
+        src: src
       });
       $.on(img, 'error', ImageExpand.error);
       return $.add(a, img);
@@ -5544,7 +5548,7 @@
       }
     },
     preParse: function(node) {
-      var el, img, parentClass, post;
+      var el, img, imgParent, parentClass, post;
       parentClass = node.parentNode.className;
       el = $('.post', node);
       post = {
@@ -5563,8 +5567,10 @@
         img: false
       };
       if (img = $('img[data-md5]', el)) {
-        post.fileInfo = img.parentNode.previousElementSibling;
+        imgParent = img.parentNode;
         post.img = img;
+        post.fileInfo = imgParent.previousElementSibling;
+        post.hasPdf = /\.pdf$/.test(imgParent.href);
       }
       Main.prettify(post.blockquote);
       return post;
