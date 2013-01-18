@@ -32,7 +32,7 @@ QR =
     $.on d, 'dragstart dragend', QR.drag
 
   node: (post) ->
-    $.on $('a[title="Quote this post"]', post.el), 'click', QR.quote
+    $.on $('.postInfo a[title="Quote this post"]', post.el), 'click', QR.quote
 
   open: ->
     if QR.el
