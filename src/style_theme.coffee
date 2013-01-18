@@ -36,7 +36,7 @@
 hr {
   border-bottom: 1px solid #{theme["Reply Border"]};
 }
-body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] > table > tbody > tr > td {
+a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] > table > tbody > tr > td {
   background: #{backgroundC} !important;
   border: 1px solid #{theme["Reply Border"]} !important;
 }
@@ -65,7 +65,7 @@ html {
   border: 1px solid #{theme["Reply Border"]};
   padding: 5px;
 }
-#optionsbar label[for]#selected_tab {
+#selected_tab {
   background: #{backgroundC};
   border-color: #{theme["Reply Border"]};
   border-style: solid;
@@ -91,9 +91,11 @@ html {
 .spoiler,
 .spoiler a,
 .spoiler .quote,
+.spoiler .quotelink,
 s,
 s a,
-s:hover .quote {
+s .quote,
+s .quotelink {
   color: rgb(0,0,0);
   background-color: rgb(0,0,0);
   text-shadow: none;
@@ -101,21 +103,22 @@ s:hover .quote {
 .spoiler:hover,
 .spoiler:hover a,
 .spoiler:hover .quote,
+.spoiler:hover .quotelink,
 s:hover,
 s:hover a,
-s:hover .quote {
+s:hover .quote,
+s:hover .quotelink {
   color: #{theme['Text']};
   background-color: transparent;
 }
-#options .dialog,
 #exlinks-options,
+#options,
 #qrtab,
 #{if _conf["Post Form Decorations"] then "#qr," else ""}
 #updater:hover,
-span[style="left: 5px; position: absolute;"] a,
 input[type="submit"],
-#options.dialog,
-input[value="Report"] {
+input[value="Report"],
+span[style="left: 5px; position: absolute;"] a {
   background: #{theme["Buttons Background"]};
   border: 1px solid #{theme["Buttons Border"]};
 }
@@ -130,8 +133,7 @@ input[value="Report"] {
 .selectrice,
 button,
 input,
-textarea,
-textarea.field {
+textarea {
   background: #{theme["Input Background"]};
   border: 1px solid #{theme["Input Border"]};
   color: #{theme["Inputs"]};
@@ -142,8 +144,7 @@ textarea.field {
 .selectrice:hover,
 .selectrice li:hover,
 input:hover,
-textarea:hover,
-textarea.field:hover {
+textarea:hover {
   background: #{theme["Hovered Input Background"]};
   border-color: #{theme["Hovered Input Border"]};
   color: #{theme["Inputs"]};
@@ -191,7 +192,7 @@ textarea.field:focus {
 #watcher,
 #watcher:hover,
 .subMenu,
-body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
+a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Dialog Border"]};
 }
@@ -209,9 +210,9 @@ body > a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > 
 #dump,
 .button,
 .entry,
-a,
 .post blockquote a[href^="//"],
-span.postNum > .replylink {
+.postNum > .replylink,
+a {
   color: #{theme["Links"]};
 }
 #navlinks a:first-of-type {
@@ -235,24 +236,24 @@ span.postNum > .replylink {
   color: #{theme["Timestamps"]} !important;
 }
 #fs_status a,
+#imgControls label::after,
+#updater #count:not(.new)::after,
+#qr > form > label::after,
 #showQR,
 #updater,
+.abbr,
+.boxbar,
+.boxcontent,
+.pages strong,
+.pln,
+.reply,
+.reply.highlight,
 .summary,
 body,
 button,
 span[style="left: 5px; position: absolute;"] a,
 input,
-textarea,
-.abbr,
-.boxbar,
-.boxcontent,
-.pages strong,
-.reply,
-.reply.highlight,
-#imgControls label::after,
-#updater #count:not(.new)::after,
-#qr > form > label::after,
-.pln {
+textarea {
   color: #{theme["Text"]};
 }
 #exlinks-options-content > table,
@@ -305,15 +306,13 @@ input[type=checkbox]:checked + .rice {
   background: #{theme["Checkbox Checked Background"]};
   background-image: url(#{Icons.header.png + (if Style.lightTheme then "AkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" else "AkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==")});
 }
-a:hover,
 #dump:hover,
 .entry:hover,
-.post > blockquote a[href^="//"]:hover,
 .sideArrows a:hover,
-.post .postInfo span.postNum a:hover,
-span.postNum > .replylink:hover,
-.nameBlock > .useremail > .name:hover,
-.nameBlock > .useremail > .postertrip:hover {
+.postNum > .replylink:hover,
+a .name:hover,
+a .postertrip:hover,
+a:hover {
   color: #{theme["Hovered Links"]};
 }
 #boardNavDesktop a:hover,
@@ -332,11 +331,11 @@ span.postNum > .replylink:hover,
 .trip {
   color: #{theme["Tripcodes"]} !important;
 }
-.useremail .postertrip,
-.useremail .name {
+a .postertrip,
+a .name {
   color: #{theme["Emails"]};
 }
-.post.qphl {
+.qphl {
   border-color: #{theme["Backlinked Reply Outline"]};
 }
 .inline .post {
@@ -347,13 +346,13 @@ span.postNum > .replylink:hover,
 #qr textarea::#{Style.agent}placeholder {
   color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
 }
-.placeholder,
 #qr input:#{Style.agent}placeholder,
-#qr textarea:#{Style.agent}placeholder {
+#qr textarea:#{Style.agent}placeholder,
+.placeholder {
   color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
 }
-.boxcontent dd,
 #options ul,
+.boxcontent dd,
 .selectrice ul {
   border-color: #{if Style.lightTheme then "rgba(0,0,0,0.1)" else "rgba(255,255,255,0.1)"};
 }

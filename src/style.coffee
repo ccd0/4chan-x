@@ -78,9 +78,13 @@ label,
 .favicon {
   cursor: pointer;
 }
-.hide_thread_button:not(.hidden_thread) {
+.hide_thread_button {
   padding: 0 5px;
   float: left;
+}
+.hide_thead_button.hidden_thread {
+  padding: 0;
+  float: none;
 }
 .menu_button {
   display: inline-block;
@@ -200,7 +204,7 @@ h1 {
 #selectrice,
 #selectrice *,
 #qr .warning,
-#qr > .move,
+#qr .move,
 #threadselect .selectrice,
 #watcher,
 .captchaimg img,
@@ -208,22 +212,22 @@ h1 {
 .file,
 .mascotname,
 .mascotoptions,
-.selectrice,
+.post,
 .postInfo,
+.selectrice,
 .thumbnail,
 button,
-.post,
 input {
   #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
 }
 #updater .move,
-#qr > .move {
+#qr .move {
   overflow: hidden;
   padding: 0 2px;
 }
 #credits,
-#qr > .move > span {
+#qr .move > span {
   float: right;
 }
 #autohide,
@@ -336,7 +340,7 @@ input {
 .thumbnail::before {
   counter-increment: thumbnails;
   content: counter(thumbnails);
-  color: #FFF;
+  color: #fff;
   font-weight: 700;
   padding: 3px;
   position: absolute;
@@ -348,14 +352,14 @@ input {
   box-shadow: 0 0 10px rgba(0,0,0,.5);
 }
 .thumbnail.over {
-  border-color: #FFF;
+  border-color: #fff;
 }
 .thumbnail > span {
-  color: #FFF;
+  color: #fff;
 }
 .remove {
   background: none;
-  color: #E00;
+  color: #e00;
   font-weight: 700;
   padding: 3px;
 }
@@ -364,7 +368,7 @@ input {
 }
 .thumbnail > label {
   background: rgba(0,0,0,.5);
-  color: #FFF;
+  color: #fff;
   right: 0; bottom: 0; left: 0;
   position: absolute;
   text-align: center;
@@ -784,6 +788,7 @@ h2 a {
 .postInfo input,
 .postInfo .rice,
 .postingMode,
+.postingMode ~ #delform hr,
 .qrHeader,
 .replyContainer > .hide_reply_button.stub ~ .reply,
 .replymode,
@@ -796,7 +801,6 @@ h2 a {
 .warnicon,
 .warning:empty,
 [hidden],
-body > .postingMode ~ #delform hr,
 body > br,
 body > div[style^="text-align"],
 body > hr,
@@ -861,11 +865,10 @@ span.postNum > .replylink {
   z-index: 999;
 }
 #mascotConf,
-#options.reply.dialog,
+#options,
 #themeConf {
   z-index: 998;
 }
-#post-preview,
 #qp {
   z-index: 104;
 }
@@ -874,10 +877,10 @@ span.postNum > .replylink {
 #stats,
 #updater,
 .exPopup,
-html .subMenu {
+.subMenu {
   z-index: 102;
 }
-#navtopright .exlinksOptionsLink::after,
+.exlinksOptionsLink::after,
 #settingsWindowLink,
 .cataloglink a::after {
   z-index: 101;
@@ -887,9 +890,9 @@ html .subMenu {
 }
 #autoPagerBorderPaging,
 #boardNavDesktop,
-#menu.reply.dialog,
+#menu,
 #navlinks,
-body > a[style="cursor: pointer; float: right;"]::after {
+a[style="cursor: pointer; float: right;"]::after {
   z-index: 94;
 }
 .fileThumb .fullSize {
@@ -917,7 +920,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
   z-index: 0;
 }
 .boardTitle,
-.boardTitle > a {
+.boardTitle a {
   font-size: 22px;
   font-weight: 400;
 }
@@ -969,14 +972,14 @@ img {
   width: #{width = 248 + Style.sidebarOffset.W}px !important;
   overflow: hidden;
 }
-img.topad,
-img.middlead,
-img.bottomad {
+.topad,
+.middlead,
+.bottomad {
   opacity: 0.3;
 }
-img.topad:hover,
-img.middlead:hover,
-img.bottomad:hover {
+.topad:hover,
+.middlead:hover,
+.bottomad:hover {
   opacity: 1;
   #{Style.agent}transition: opacity .3s linear;
 }
@@ -1025,8 +1028,7 @@ input[type="submit"] {
 .field,
 .selectrice,
 button,
-input,
-input[type="submit"] {
+input {
   vertical-align: bottom;
   padding: 0 1px;
 }
@@ -1089,12 +1091,6 @@ blockquote {
 .post {
   margin: 0;
 }
-/* Remove default "inherit" background declaration */
-.subject,
-.name,
-.postertrip {
-  background: transparent;
-}
 .cataloglink,
 #navtopright {
   position: fixed;
@@ -1117,7 +1113,6 @@ blockquote {
 #imgControls label {
   float: #{Style.sidebarLocation[0]};
 }
-
 #imgControls .selectrice {
   float: #{Style.sidebarLocation[1]};
   width: 90px;
@@ -1189,15 +1184,15 @@ blockquote {
 #options .move,
 #watcher .move,
 #stats .move {
-  cursor: default !important;
+  cursor: default;
 }
 /* 4sight */
-body > a[style="cursor: pointer; float: right;"] {
+a[style="cursor: pointer; float: right;"] {
   position: fixed;
   top: -1000px;
   left: -1000px;
 }
-body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
+a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
   display: block;
   position: fixed !important;
   top: 117px !important;
@@ -1207,10 +1202,10 @@ body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
   margin: 0 !important;
   z-index: 2;
 }
-body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] > table > tbody > tr > td {
+a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] > table > tbody > tr > td {
   vertical-align: top;
 }
-body > a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
+a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
   height: 95% !important;
   margin: 0 5px !important;
 }
@@ -1241,13 +1236,13 @@ input[type="submit"]:hover {
   background-color: transparent;
 }
 #menu.reply.dialog,
-html .subMenu {
+.subMenu {
   padding: 0;
 }
 .textarea {
   position: relative;
 }
-#qr #charCount {
+#charCount {
   background: none;
   font-size: 10px;
   pointer-events: none;
@@ -1257,7 +1252,7 @@ html .subMenu {
   bottom: 0;
   height: 1.7em;
 }
-#qr #charCount.warning {
+#charCount.warning {
   color: rgb(255,0,0);
   padding: 0;
   margin: 0;
@@ -1318,13 +1313,11 @@ html .subMenu {
 #dump,
 #file,
 #options input,
-.dump #dump,
+#dump,
 .selectrice,
 button,
 input,
-input.field,
-textarea,
-textarea.field {
+textarea {
   #{Style.agent}transition: all .2s linear;
 }
 #boardNavDesktop,
@@ -1396,7 +1389,6 @@ input[type=checkbox]:checked + .rice {
   background-repeat: no-repeat;
   background-position: bottom right;
 }
-.nameBlock > .useremail > .name,
 .name,
 .post-author {
   font-weight: 600;
@@ -1404,13 +1396,14 @@ input[type=checkbox]:checked + .rice {
 .post-author .post-tripcode {
   font-weight: 400;
 }
-a.forwardlink {
+.forwardlink {
   border-bottom: 1px dashed;
 }\n
 """ + (
       if _conf["Hide Navigation Decorations"]
          """
-#boardNavDesktop, .pages {
+#boardNavDesktop,
+.pages {
   font-size: 0;
   color: transparent;
   word-spacing: 2px;
