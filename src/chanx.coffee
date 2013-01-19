@@ -614,7 +614,7 @@ ReplyHiding =
     return unless show_stub
 
     stub = $.el 'div',
-      className: 'hide_reply_button stub'
+      className: 'stub'
       innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
     a = stub.firstChild
     $.on  a, 'click', ->

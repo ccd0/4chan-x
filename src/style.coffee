@@ -446,7 +446,7 @@ input {
 #optionsbar {
   padding: 0 3px;
 }
-#optionsbar label[for] {
+.tabs label {
   position: relative;
   padding: 0 4px;
   z-index: 1;
@@ -698,7 +698,6 @@ article li {
 #copyright,
 #boardNavDesktop a,
 #options ul,
-#qr,
 .menubutton a,
 body {
   padding: 0;
@@ -1566,6 +1565,7 @@ textarea.field,
   width: #{width}px;
 }
 #qr {
+  border: 1px transparent solid;
   padding: 1px;
   overflow: visible;
   top: auto !important;
