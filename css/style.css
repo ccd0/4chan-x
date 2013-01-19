@@ -156,3 +156,8 @@ body.fourchan_x {
   max-width: 75%;
   padding-bottom: 16px;
 }
+
+/* thread hiding */
+.opContainer > .hide-thread-button {
+  float: left;
+}

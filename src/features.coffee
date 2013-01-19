@@ -1,3 +1,113 @@
+ThreadHiding =
+  init: ->
+    return if g.VIEW isnt 'index'
+    @getHiddenThreads()
+    @syncFromCatalog()
+    @clean()
+    Thread::callbacks.push
+      name: 'Thread Hiding'
+      cb:   @node
+
+  node: ->
+    if @ID in ThreadHiding.hiddenThreads.threads
+      ThreadHiding.hide @
+    $.prepend @posts[@].nodes.root, ThreadHiding.button @, '-'
+
+  getHiddenThreads: ->
+    hiddenThreads = $.get "hiddenThreads.#{g.BOARD}"
+    unless hiddenThreads
+      hiddenThreads =
+        threads: []
+        lastChecked: Date.now()
+      $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
+    ThreadHiding.hiddenThreads = hiddenThreads
+
+  syncFromCatalog: ->
+    # Sync hidden threads from the catalog into the index.
+    hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
+    ThreadHiding.hiddenThreads.threads = Object.keys(hiddenThreadsOnCatalog).map Number
+    $.set "hiddenThreads.#{g.BOARD}", ThreadHiding.hiddenThreads
+
+  clean: ->
+    {hiddenThreads} = ThreadHiding
+    {lastChecked} = hiddenThreads
+    hiddenThreads.lastChecked = now = Date.now()
+
+    return unless lastChecked < now - $.DAY
+
+    unless hiddenThreads.threads.length
+      $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
+      return
+
+    $.ajax "//api.4chan.org/#{g.BOARD}/catalog.json", onload: ->
+      threads = []
+      for obj in JSON.parse @response
+        for thread in obj.threads
+          threads.push thread.no if thread.no in hiddenThreads.threads
+      hiddenThreads.threads = threads
+      $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
+
+  button: (thread, sign) ->
+    a = $.el 'a',
+      className: 'hide-thread-button'
+      innerHTML: "<span>[&nbsp;#{sign}&nbsp;]</span>&nbsp;"
+      href:      'javascript:;'
+    $.on a, 'click', -> ThreadHiding.toggle thread
+    a
+
+  toggle: (thread) ->
+    # Get fresh hidden threads.
+    hiddenThreads = ThreadHiding.getHiddenThreads()
+    hiddenThreadsCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
+    if thread.hidden
+      ThreadHiding.show thread
+      hiddenThreads.threads.splice hiddenThreads.threads.indexOf(thread.ID), 1
+      delete hiddenThreadsCatalog[thread]
+    else
+      ThreadHiding.hide thread
+      hiddenThreads.threads.push thread.ID
+      hiddenThreadsCatalog[thread] = true
+    $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
+    localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify hiddenThreadsCatalog
+
+  hide: (thread, makeStub=Conf['Stubs']) ->
+    return if thread.hidden
+    op = thread.posts[thread]
+    threadRoot = op.nodes.root.parentNode
+    threadRoot.hidden = thread.hidden = true
+
+    unless makeStub
+      threadRoot.nextElementSibling.hidden = true # <hr>
+      return
+
+    numReplies = 0
+    if span = $ '.summary', threadRoot
+      numReplies = +span.textContent.match /\d+/
+    numReplies += $$('.opContainer ~ .replyContainer', threadRoot).length
+    numReplies  = if numReplies is 1 then '1 reply' else "#{numReplies} replies"
+    opInfo =
+      if Conf['Anonymize']
+        'Anonymous'
+      else
+        $('.nameBlock', op.nodes.info).textContent
+
+    a = ThreadHiding.button thread, '+'
+    $.add a, $.tn "#{opInfo} (#{numReplies})"
+    thread.stub = $.el 'div'
+    $.add thread.stub, a
+    # if Conf['Menu']
+    #   menuButton = Menu.button()
+    #   $.add thread.stub, [$.tn(' '), menuButton]
+    $.before threadRoot, thread.stub
+
+  show: (thread) ->
+    if thread.stub
+      $.rm thread.stub
+      delete thread.stub
+    threadRoot = thread.posts[thread].nodes.root.parentNode
+    threadRoot.nextElementSibling.hidden =
+      threadRoot.hidden = thread.hidden = false
+
 Redirect =
   image: (board, filename) ->
     # XXX need to differentiate between thumbnail only and full_image for img src=

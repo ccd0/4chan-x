@@ -339,6 +339,13 @@ Main =
       settings.disableAll = true
       localStorage.setItem '4chan-settings', JSON.stringify settings
 
+    if Conf['Thread Hiding']
+      try
+        ThreadHiding.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Thread Hiding'
+
     if Conf['Resurrect Quotes']
       try
         Quotify.init()

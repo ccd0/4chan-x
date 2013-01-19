@@ -20,7 +20,7 @@
 // @icon         https://github.com/MayhemYDG/4chan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2013-01-15
+/* 4chan X Alpha - Version 3.0.0 - 2013-01-19
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -43,7 +43,8 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, ThreadUpdater, Time, UI, d, g, _base,
+  var $, $$, Anonymize, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, g, _base,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -676,6 +677,143 @@
       return localStorage.setItem(g.NAMESPACE + name, JSON.stringify(value));
     }
   });
+
+  ThreadHiding = {
+    init: function() {
+      if (g.VIEW !== 'index') {
+        return;
+      }
+      this.getHiddenThreads();
+      this.syncFromCatalog();
+      this.clean();
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Hiding',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var _ref;
+      if (_ref = this.ID, __indexOf.call(ThreadHiding.hiddenThreads.threads, _ref) >= 0) {
+        ThreadHiding.hide(this);
+      }
+      return $.prepend(this.posts[this].nodes.root, ThreadHiding.button(this, '-'));
+    },
+    getHiddenThreads: function() {
+      var hiddenThreads;
+      hiddenThreads = $.get("hiddenThreads." + g.BOARD);
+      if (!hiddenThreads) {
+        hiddenThreads = {
+          threads: [],
+          lastChecked: Date.now()
+        };
+        $.set("hiddenThreads." + g.BOARD, hiddenThreads);
+      }
+      return ThreadHiding.hiddenThreads = hiddenThreads;
+    },
+    syncFromCatalog: function() {
+      var hiddenThreadsOnCatalog;
+      hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
+      ThreadHiding.hiddenThreads.threads = Object.keys(hiddenThreadsOnCatalog).map(Number);
+      return $.set("hiddenThreads." + g.BOARD, ThreadHiding.hiddenThreads);
+    },
+    clean: function() {
+      var hiddenThreads, lastChecked, now;
+      hiddenThreads = ThreadHiding.hiddenThreads;
+      lastChecked = hiddenThreads.lastChecked;
+      hiddenThreads.lastChecked = now = Date.now();
+      if (!(lastChecked < now - $.DAY)) {
+        return;
+      }
+      if (!hiddenThreads.threads.length) {
+        $.set("hiddenThreads." + g.BOARD, hiddenThreads);
+        return;
+      }
+      return $.ajax("//api.4chan.org/" + g.BOARD + "/catalog.json", {
+        onload: function() {
+          var obj, thread, threads, _i, _j, _len, _len1, _ref, _ref1, _ref2;
+          threads = [];
+          _ref = JSON.parse(this.response);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            obj = _ref[_i];
+            _ref1 = obj.threads;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              thread = _ref1[_j];
+              if (_ref2 = thread.no, __indexOf.call(hiddenThreads.threads, _ref2) >= 0) {
+                threads.push(thread.no);
+              }
+            }
+          }
+          hiddenThreads.threads = threads;
+          return $.set("hiddenThreads." + g.BOARD, hiddenThreads);
+        }
+      });
+    },
+    button: function(thread, sign) {
+      var a;
+      a = $.el('a', {
+        className: 'hide-thread-button',
+        innerHTML: "<span>[&nbsp;" + sign + "&nbsp;]</span>&nbsp;",
+        href: 'javascript:;'
+      });
+      $.on(a, 'click', function() {
+        return ThreadHiding.toggle(thread);
+      });
+      return a;
+    },
+    toggle: function(thread) {
+      var hiddenThreads, hiddenThreadsCatalog;
+      hiddenThreads = ThreadHiding.getHiddenThreads();
+      hiddenThreadsCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
+      if (thread.hidden) {
+        ThreadHiding.show(thread);
+        hiddenThreads.threads.splice(hiddenThreads.threads.indexOf(thread.ID), 1);
+        delete hiddenThreadsCatalog[thread];
+      } else {
+        ThreadHiding.hide(thread);
+        hiddenThreads.threads.push(thread.ID);
+        hiddenThreadsCatalog[thread] = true;
+      }
+      $.set("hiddenThreads." + g.BOARD, hiddenThreads);
+      return localStorage.setItem("4chan-hide-t-" + g.BOARD, JSON.stringify(hiddenThreadsCatalog));
+    },
+    hide: function(thread, makeStub) {
+      var a, numReplies, op, opInfo, span, threadRoot;
+      if (makeStub == null) {
+        makeStub = Conf['Stubs'];
+      }
+      if (thread.hidden) {
+        return;
+      }
+      op = thread.posts[thread];
+      threadRoot = op.nodes.root.parentNode;
+      threadRoot.hidden = thread.hidden = true;
+      if (!makeStub) {
+        threadRoot.nextElementSibling.hidden = true;
+        return;
+      }
+      numReplies = 0;
+      if (span = $('.summary', threadRoot)) {
+        numReplies = +span.textContent.match(/\d+/);
+      }
+      numReplies += $$('.opContainer ~ .replyContainer', threadRoot).length;
+      numReplies = numReplies === 1 ? '1 reply' : "" + numReplies + " replies";
+      opInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', op.nodes.info).textContent;
+      a = ThreadHiding.button(thread, '+');
+      $.add(a, $.tn("" + opInfo + " (" + numReplies + ")"));
+      thread.stub = $.el('div');
+      $.add(thread.stub, a);
+      return $.before(threadRoot, thread.stub);
+    },
+    show: function(thread) {
+      var threadRoot;
+      if (thread.stub) {
+        $.rm(thread.stub);
+        delete thread.stub;
+      }
+      threadRoot = thread.posts[thread].nodes.root.parentNode;
+      return threadRoot.nextElementSibling.hidden = threadRoot.hidden = thread.hidden = false;
+    }
+  };
 
   Redirect = {
     image: function(board, filename) {
@@ -2692,6 +2830,13 @@
         settings.disableAll = true;
         localStorage.setItem('4chan-settings', JSON.stringify(settings));
       }
+      if (Conf['Thread Hiding']) {
+        try {
+          ThreadHiding.init();
+        } catch (err) {
+          $.log(err, 'Thread Hiding');
+        }
+      }
       if (Conf['Resurrect Quotes']) {
         try {
           Quotify.init();
@@ -2851,7 +2996,7 @@
     settings: function() {
       return alert('Here be settings');
     },
-    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#boardNavDesktop.reply,\n#qr, #watcher {\n  position: fixed;\n}\n#qp, #ihover {\n  z-index: 100;\n}\n#updater, #stats {\n  z-index: 90;\n}\n#boardNavDesktop.reply:hover {\n  z-index: 80;\n}\n#qr {\n  z-index: 50;\n}\n#watcher {\n  z-index: 30;\n}\n#boardNavDesktop.reply {\n  z-index: 10;\n}\n\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* thread updater */\n#updater {\n  text-align: right;\n}\n#updater:not(:hover) {\n  background: none;\n  border: none;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n.new {\n  color: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  padding-bottom: 16px;\n}"
+    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#boardNavDesktop.reply,\n#qr, #watcher {\n  position: fixed;\n}\n#qp, #ihover {\n  z-index: 100;\n}\n#updater, #stats {\n  z-index: 90;\n}\n#boardNavDesktop.reply:hover {\n  z-index: 80;\n}\n#qr {\n  z-index: 50;\n}\n#watcher {\n  z-index: 30;\n}\n#boardNavDesktop.reply {\n  z-index: 10;\n}\n\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* thread updater */\n#updater {\n  text-align: right;\n}\n#updater:not(:hover) {\n  background: none;\n  border: none;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n.new {\n  color: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  padding-bottom: 16px;\n}\n\n/* thread hiding */\n.opContainer > .hide-thread-button {\n  float: left;\n}"
   };
 
   Main.init();
