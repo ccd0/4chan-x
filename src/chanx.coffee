@@ -2053,6 +2053,7 @@ QuoteBacklink =
 QuoteInline =
   init: ->
     Main.callbacks.push @node
+
   node: (post) ->
     for quote in post.quotes
       continue unless quote.hash and quote.hostname is 'boards.4chan.org' and !/catalog$/.test(quote.pathname) or /\bdeadlink\b/.test quote.className
@@ -2060,6 +2061,7 @@ QuoteInline =
     for quote in post.backlinks
       $.on quote, 'click', QuoteInline.toggle
     return
+
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
@@ -2254,7 +2256,7 @@ IDColor =
     Main.callbacks.push @node
 
   node: (post) ->
-    return unless uid = post.el.getElementsByClassName('hand')[1]
+    return unless uid = $ '.postInfo .hand', post.el
     str = uid.textContent
     if uid.nodeName is 'SPAN'
       uid.style.cssText = IDColor.apply.call str

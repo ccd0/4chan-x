@@ -691,10 +691,6 @@ article li {
 .opContainer {
   display: block;
 }
-.forwardlink, {
-  text-decoration: none;
-  border-bottom: 1px dashed;
-}
 #copyright,
 #boardNavDesktop a,
 #options ul,
@@ -847,6 +843,7 @@ s {
 }
 .inlined {
   font-style: italic;
+  font-weight: 800;
 }
 #watcher > .move,
 .backlink:not(.filtered),
@@ -935,7 +932,6 @@ hr {
 }
 .boxcontent > hr,
 .entry:last-child,
-a.forwardlink,
 h3,
 img {
   border: none;
@@ -1394,9 +1390,6 @@ input[type=checkbox]:checked + .rice {
 }
 .post-author .post-tripcode {
   font-weight: 400;
-}
-.forwardlink {
-  border-bottom: 1px dashed;
 }\n
 """ + (
       if _conf["Hide Navigation Decorations"]

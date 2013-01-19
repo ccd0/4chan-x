@@ -269,6 +269,10 @@ textarea {
 .backlink {
   color: #{theme["Backlinks"]};
 }
+.forwardlink {
+  text-decoration: none;
+  border-bottom: 1px dashed #{theme["Backlinks"]};
+}
 .quotelink {
   color: #{theme["Quotelinks"]};
 }
