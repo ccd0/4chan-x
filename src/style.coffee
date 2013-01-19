@@ -471,13 +471,18 @@ input {
 #themeContainer {
   margin-bottom: 3px;
 }
-#options li {
+.main_tab li,
+.style_tab li,
+.rice_tab li {
   overflow: visible;
   padding: 0 5px 0 7px;
   list-style-type: none;
 }
 #options tr:nth-of-type(2n+1),
-#options li:nth-of-type(2n+1),
+.main_tab li:nth-of-type(2n+1),
+.rice_tab li:nth-of-type(2n+1),
+.style_tab li:nth-of-type(2n+1),
+.keybinds_tab li:nth-of-type(2n+1),
 .selectrice li:nth-of-type(2n+1) {
   background-color: rgba(0, 0, 0, 0.05);
 }
