@@ -1,4 +1,6 @@
 master
+- Mayhem
+  Fix quoting inside inlined backlinks.
 
 2.37.4
 - James Campos
