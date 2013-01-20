@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.34 - 2013-01-19
+ * appchan x - Version 1.0.34 - 2013-01-21
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -8138,7 +8138,7 @@
       return $.on(d, 'dragstart dragend', QR.drag);
     },
     node: function(post) {
-      return $.on($('.postInfo a[title="Quote this post"]', post.el), 'click', QR.quote);
+      return $.on($('a[title="Quote this post"]', $('.postInfo', post.el)), 'click', QR.quote);
     },
     open: function() {
       if (QR.el) {

@@ -1,4 +1,6 @@
 master
+- Mayhem
+  Fix quoting inside inlined backlinks.
 
 1.0.34
 - Mayhem
