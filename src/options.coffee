@@ -1160,29 +1160,26 @@ Options =
     Style.addStyle()
 
   mouseover: (e) ->
-
     if mouseover = $.id 'mouseover'
       if mouseover is UI.el
         delete UI.el
       $.rm mouseover
 
-    # Don't stop other elements from dragging
-    return if UI.el
+    UI.el = mouseover = @nextSibling.cloneNode true
+    mouseover.id = 'mouseover'
+    mouseover.className = 'dialog'
+    mouseover.style.display = ''
 
-    mouseover = UI.el = $.el 'div',
-      id:           'mouseover'
-      className:    'reply dialog'
-      innerHTML:  @nextSibling.innerHTML
-
-    Options.cb = (e) -> UI.hover e, "menu"
-    $.add d.body, mouseover
-
-    $.on @, 'mousemove',      Options.cb
+    $.on @, 'mousemove',      Options.hover
     $.on @, 'mouseout',       Options.mouseout
+
+    $.add d.body, mouseover
 
     return
 
-  mouseout: (e) ->
+  hover: (e) ->
+    UI.hover e, "menu"
 
+  mouseout: (e) ->
     UI.hoverend()
-    $.off @, 'mousemove',     Options.cb
+    $.off @, 'mousemove',     Options.hover

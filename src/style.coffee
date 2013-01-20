@@ -669,17 +669,12 @@ article li {
 #watcher:hover {
   max-height: none;
 }
-#watcher > div {
+#watcher {
   max-width: 200px;
   overflow: hidden;
   padding-left: 5px;
   padding-right: 5px;
   text-overflow: ellipsis;
-}
-#qp .post {
-  border: none;
-  margin: 0;
-  padding: 0;
 }
 #mouseover,
 #qp img {

@@ -210,8 +210,8 @@ a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
 #dump,
 .button,
 .entry,
-.post blockquote a[href^="//"],
-.postNum > .replylink,
+.post blockquote a,
+.replylink,
 a {
   color: #{theme["Links"]};
 }
@@ -238,7 +238,6 @@ a {
 #fs_status a,
 #imgControls label::after,
 #updater #count:not(.new)::after,
-#qr > form > label::after,
 #showQR,
 #updater,
 .abbr,
@@ -279,11 +278,11 @@ textarea {
 .container::before {
   color: #{theme["Timestamps"]};
 }
-.subMenu,
 #menu,
 #post-preview,
 #qp .opContainer,
-#qp .replyContainer {
+#qp .replyContainer,
+.subMenu {
   box-shadow: #{if _conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else ""};
 }
 .rice {
@@ -296,7 +295,6 @@ textarea {
 .selectrice::after {
   border-top: .45em solid #{theme["Inputs"]};
 }
-#qr label input,
 #updater input,
 .bd {
   background: #{theme["Buttons Background"]};
@@ -313,7 +311,7 @@ input[type=checkbox]:checked + .rice {
 #dump:hover,
 .entry:hover,
 .sideArrows a:hover,
-.postNum > .replylink:hover,
+.replylink:hover,
 a .name:hover,
 a .postertrip:hover,
 a:hover {
@@ -374,7 +372,7 @@ a .name {
 #watcher::after,
 #globalMessage::after,
 #boardNavDesktopFoot::after,
-body > a[style="cursor: pointer; float: right;"]::after,
+a[style="cursor: pointer; float: right;"]::after,
 #imgControls label:first-of-type::after,
 .cataloglink a::after,
 #fappeTyme {

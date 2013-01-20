@@ -1615,7 +1615,7 @@ Get =
       $.add root, Get.cleanPost post.cloneNode true
       return
 
-    root.textContent = "Loading post No.#{postID}..."
+    root.innerHTML = "<div class=post>Loading post No.#{postID}...</div>"
     if threadID
       $.cache "//api.4chan.org/#{board}/res/#{threadID}.json", ->
         Get.parsePost @, board, threadID, postID, root, cb
@@ -1631,11 +1631,11 @@ Get =
           Get.parseArchivedPost @, board, postID, root, cb
       else
         $.addClass root, 'warning'
-        root.textContent =
+        root.innerHTML =
           if status is 404
-            "Thread No.#{threadID} 404'd."
+            "<div class=post>Thread No.#{threadID} 404'd.</div>"
           else
-            "Error #{req.status}: #{req.statusText}."
+            "<div class=post>Error #{req.status}: #{req.statusText}.</div>"
       return
 
     posts = JSON.parse(req.response).posts
@@ -2140,16 +2140,14 @@ QuotePreview =
     return if /\binlined\b/.test @className
 
     # Make sure to remove the previous qp
-    # in case it got stuck. Opera-only bug?
+    # in case it got stuck.
     if qp = $.id 'qp'
-      if qp is UI.el
-        delete UI.el
+      delete UI.el if qp is UI.el
       $.rm qp
 
     # Don't stop other elements from dragging
     return if UI.el
 
-    _conf = Conf
     if @host is 'boards.4chan.org'
       path     = @pathname.split '/'
       board    = path[1]
@@ -2160,13 +2158,13 @@ QuotePreview =
       threadID = 0
       postID   = @dataset.id
 
-    qp = UI.el = $.el 'div',
+    UI.el = qp = $.el 'div',
       id: 'qp'
       className: 'reply dialog'
     UI.hover e
-    $.add d.body, qp
 
     Get.post board, threadID, postID, qp, ->
+      _conf = Conf
       bq = $ 'blockquote', qp
       Main.prettify bq
       post =
@@ -2178,18 +2176,18 @@ QuotePreview =
         post.img      = img
       if _conf['Reveal Spoilers']
         RevealSpoilers.node post
-      if _conf['Image Auto-Gif']
-        AutoGif.node        post
       if _conf['Time Formatting']
         Time.node           post
       if _conf['File Info Formatting']
         FileInfo.node       post
-      if _conf['Resurrect Quotes']
-        Quotify.node        post
       if _conf['Linkify']
         Linkify.node        post
+      if _conf['Resurrect Quotes']
+        Quotify.node        post
       if _conf['Anonymize']
         Anonymize.node      post
+      if _conf['Replace GIF'] or _conf['Replace PNG'] or _conf['Replace JPG']
+        ImageReplace.node   post
       if _conf['Color user IDs'] and ['b', 'q', 'soc'].contains board
         IDColor.node        post
       if _conf['RemoveSpoilers']
@@ -2198,22 +2196,24 @@ QuotePreview =
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
 
-    return unless board is g.BOARD and el = $.id "p#{postID}"
+    if board is g.BOARD
+      _conf = Conf
+      if _conf['Fappe Tyme'] and not $('img[data-md5]', qp) and el = qp.firstElementChild
+        $.rmClass el, 'noFile'
 
-    if _conf['Quote Highlighting']
-      if /\bop\b/.test el.className
-        $.addClass el.parentNode, 'qphl'
-      else
-        $.addClass el, 'qphl'
+      if el = $.id "p#{postID}"
+        if _conf['Quote Highlighting']
+          if /\bop\b/.test el.className
+            $.addClass el.parentNode, 'qphl'
+          else
+            $.addClass el, 'qphl'
 
-    quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
-    for quote in $$ '.quotelink, .backlink', qp
-      if quote.hash[2..] is quoterID
-        $.addClass quote, 'forwardlink'
+        quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
+        for quote in $$ '.quotelink, .backlink', qp
+          if quote.hash[2..] is quoterID
+            $.addClass quote, 'forwardlink'
 
-    if _conf['Fappe Tyme'] and not $('img[data-md5]', qp)
-      $.rmClass qp.firstElementChild, 'noFile'
-    return
+    $.add d.body, qp
 
   mouseout: (e) ->
     UI.hoverend()
