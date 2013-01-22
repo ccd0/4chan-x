@@ -1,5 +1,9 @@
 master
 
+1.0.36
+- Zixaphir
+  Fix image expansion. ( lol, moot handling 3rd party developer relations: http://boards.4chan.org/q/res/385389 )
+
 1.0.35
 - Mayhem
   Fix quoting inside inlined backlinks.
