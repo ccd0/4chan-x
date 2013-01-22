@@ -7978,7 +7978,7 @@
       }
       thumb.hidden = true;
       $.addClass(thumb.parentNode.parentNode.parentNode.parentNode, 'image_expanded');
-      if (img = thumb.nextSibling) {
+      if ((img = thumb.nextSibling) && img.tagName.toLowerCase() === 'img') {
         img.hidden = false;
         return;
       }
@@ -7987,7 +7987,7 @@
         className: 'fullSize'
       });
       $.on(img, 'error', ImageExpand.error);
-      return $.add(a, img);
+      return $.after(thumb, img);
     },
     error: function() {
       var src, thumb, timeoutID, url;

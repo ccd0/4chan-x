@@ -3320,7 +3320,7 @@ ImageExpand =
     return if /\.pdf$/.test src
     thumb.hidden = true
     $.addClass thumb.parentNode.parentNode.parentNode.parentNode, 'image_expanded'
-    if img = thumb.nextSibling
+    if (img = thumb.nextSibling) and img.tagName.toLowerCase() is 'img'
       # Expand already loaded picture
       img.hidden = false
       return
@@ -3328,7 +3328,7 @@ ImageExpand =
       src:       src
       className: 'fullSize'
     $.on img, 'error', ImageExpand.error
-    $.add a, img
+    $.after thumb, img
 
   error: ->
     thumb = @previousSibling
