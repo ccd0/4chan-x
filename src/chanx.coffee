@@ -2422,9 +2422,9 @@ Linkify =
     blockquote = $.el 'blockquote'
       innerHTML: nodes.join ""
 
-    if !Conf['Embedding']
+    if Conf['Embedding']
       for link in $$ '.linkify', blockquote
-        $.replace link, Linkify.embedder link
+        Linkify.embedder link
 
     $.replace post.blockquote, blockquote
     
@@ -2555,8 +2555,7 @@ Linkify =
               else
                 "[#{key}] #{@status}'d"
 
-        return [a, $.tn(' '), embed]
-    return [a]
+        $.after a, [$.tn(' '), embed]
 
 DeleteLink =
   init: ->

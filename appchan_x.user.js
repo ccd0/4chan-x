@@ -6855,11 +6855,11 @@
       blockquote = $.el('blockquote', {
         innerHTML: nodes.join("")
       });
-      if (!Conf['Embedding']) {
+      if (Conf['Embedding']) {
         _ref1 = $$('.linkify', blockquote);
         for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
           link = _ref1[_k];
-          $.replace(link, Linkify.embedder(link));
+          Linkify.embedder(link);
         }
       }
       $.replace(post.blockquote, blockquote);
@@ -6964,8 +6964,9 @@
       }
     },
     embedder: function(a) {
-      var embed, key, match, service, title, titles, type, _ref;
+      var embed, key, match, service, title, titles, type, _ref, _results;
       _ref = Linkify.types;
+      _results = [];
       for (key in _ref) {
         type = _ref[key];
         if (!(match = a.href.match(type.regExp))) {
@@ -7006,10 +7007,12 @@
               }).call(this);
             });
           }
-          return [a, $.tn(' '), embed];
+          _results.push($.after(a, [$.tn(' '), embed]));
+        } else {
+          _results.push(void 0);
         }
       }
-      return [a];
+      return _results;
     }
   };
 
