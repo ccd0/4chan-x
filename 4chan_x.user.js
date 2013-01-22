@@ -20,7 +20,7 @@
 // @icon         https://github.com/MayhemYDG/4chan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2013-01-19
+/* 4chan X Alpha - Version 3.0.0 - 2013-01-22
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RevealSpoilers, Sauce, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, g, _base,
+  var $, $$, Anonymize, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, RevealSpoilers, Sauce, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, g, _base,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -696,7 +696,7 @@
       if (_ref = this.ID, __indexOf.call(ThreadHiding.hiddenThreads.threads, _ref) >= 0) {
         ThreadHiding.hide(this);
       }
-      return $.prepend(this.posts[this].nodes.root, ThreadHiding.button(this, '-'));
+      return $.prepend(this.posts[this].nodes.root, ThreadHiding.makeButton(this, '-'));
     },
     getHiddenThreads: function() {
       var hiddenThreads;
@@ -721,7 +721,7 @@
       hiddenThreads = ThreadHiding.hiddenThreads;
       lastChecked = hiddenThreads.lastChecked;
       hiddenThreads.lastChecked = now = Date.now();
-      if (!(lastChecked < now - $.DAY)) {
+      if (lastChecked > now - $.DAY) {
         return;
       }
       if (!hiddenThreads.threads.length) {
@@ -748,7 +748,7 @@
         }
       });
     },
-    button: function(thread, sign) {
+    makeButton: function(thread, sign) {
       var a;
       a = $.el('a', {
         className: 'hide-thread-button',
@@ -764,7 +764,7 @@
       var hiddenThreads, hiddenThreadsCatalog;
       hiddenThreads = ThreadHiding.getHiddenThreads();
       hiddenThreadsCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
-      if (thread.hidden) {
+      if (thread.isHidden) {
         ThreadHiding.show(thread);
         hiddenThreads.threads.splice(hiddenThreads.threads.indexOf(thread.ID), 1);
         delete hiddenThreadsCatalog[thread];
@@ -786,7 +786,7 @@
       }
       op = thread.posts[thread];
       threadRoot = op.nodes.root.parentNode;
-      threadRoot.hidden = thread.hidden = true;
+      threadRoot.hidden = thread.isHidden = true;
       if (!makeStub) {
         threadRoot.nextElementSibling.hidden = true;
         return;
@@ -798,7 +798,7 @@
       numReplies += $$('.opContainer ~ .replyContainer', threadRoot).length;
       numReplies = numReplies === 1 ? '1 reply' : "" + numReplies + " replies";
       opInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', op.nodes.info).textContent;
-      a = ThreadHiding.button(thread, '+');
+      a = ThreadHiding.makeButton(thread, '+');
       $.add(a, $.tn("" + opInfo + " (" + numReplies + ")"));
       thread.stub = $.el('div');
       $.add(thread.stub, a);
@@ -811,7 +811,141 @@
         delete thread.stub;
       }
       threadRoot = thread.posts[thread].nodes.root.parentNode;
-      return threadRoot.nextElementSibling.hidden = threadRoot.hidden = thread.hidden = false;
+      return threadRoot.nextElementSibling.hidden = threadRoot.hidden = thread.isHidden = false;
+    }
+  };
+
+  ReplyHiding = {
+    init: function() {
+      this.getHiddenPosts();
+      this.clean();
+      return Post.prototype.callbacks.push({
+        name: 'Reply Hiding',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var thread, _ref;
+      if (!this.isReply || this.isClone) {
+        return;
+      }
+      if (thread = ReplyHiding.hiddenPosts.threads[this.thread]) {
+        if (_ref = this.ID, __indexOf.call(thread, _ref) >= 0) {
+          ReplyHiding.hide(this);
+        }
+      }
+      return $.replace($('.sideArrows', this.nodes.root), ReplyHiding.makeButton(this, '-'));
+    },
+    getHiddenPosts: function() {
+      var hiddenPosts;
+      hiddenPosts = $.get("hiddenPosts." + g.BOARD);
+      if (!hiddenPosts) {
+        hiddenPosts = {
+          threads: {},
+          lastChecked: Date.now()
+        };
+        $.set("hiddenPosts." + g.BOARD, hiddenPosts);
+      }
+      return ReplyHiding.hiddenPosts = hiddenPosts;
+    },
+    clean: function() {
+      var hiddenPosts, lastChecked, now;
+      hiddenPosts = ReplyHiding.hiddenPosts;
+      lastChecked = hiddenPosts.lastChecked;
+      hiddenPosts.lastChecked = now = Date.now();
+      if (lastChecked > now - $.DAY) {
+        return;
+      }
+      if (!Object.keys(hiddenPosts.threads).length) {
+        $.set("hiddenPosts." + g.BOARD, hiddenPosts);
+        return;
+      }
+      return $.ajax("//api.4chan.org/" + g.BOARD + "/catalog.json", {
+        onload: function() {
+          var obj, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+          threads = {};
+          _ref = JSON.parse(this.response);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            obj = _ref[_i];
+            _ref1 = obj.threads;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              thread = _ref1[_j];
+              if (thread.no in hiddenPosts.threads) {
+                threads[thread.no] = hiddenPosts.threads[thread.no];
+              }
+            }
+          }
+          hiddenPosts.threads = threads;
+          return $.set("hiddenPosts." + g.BOARD, hiddenPosts);
+        }
+      });
+    },
+    makeButton: function(post, sign) {
+      var a;
+      a = $.el('a', {
+        className: 'hide-reply-button',
+        innerHTML: "<span>[&nbsp;" + sign + "&nbsp;]</span>",
+        href: 'javascript:;'
+      });
+      $.on(a, 'click', function() {
+        return ReplyHiding.toggle(post);
+      });
+      return a;
+    },
+    toggle: function(post) {
+      var hiddenPosts, quotelink, quotelinks, thread, _i, _j, _len, _len1;
+      hiddenPosts = ReplyHiding.getHiddenPosts();
+      quotelinks = Get.allQuotelinksLinkingTo(post);
+      if (post.isHidden) {
+        ReplyHiding.show(post);
+        for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
+          quotelink = quotelinks[_i];
+          $.rmClass(quotelink, 'filtered');
+        }
+        thread = hiddenPosts.threads[post.thread];
+        if (thread.length === 1) {
+          delete hiddenPosts.threads[post.thread];
+        } else {
+          thread.splice(thread.indexOf(post.ID), 1);
+        }
+      } else {
+        ReplyHiding.hide(post);
+        for (_j = 0, _len1 = quotelinks.length; _j < _len1; _j++) {
+          quotelink = quotelinks[_j];
+          $.addClass(quotelink, 'filtered');
+        }
+        if (!(thread = hiddenPosts.threads[post.thread])) {
+          thread = hiddenPosts.threads[post.thread] = [];
+        }
+        thread.push(post.ID);
+      }
+      return $.set("hiddenPosts." + g.BOARD, hiddenPosts);
+    },
+    hide: function(post, makeStub) {
+      var a, postInfo;
+      if (makeStub == null) {
+        makeStub = Conf['Stubs'];
+      }
+      if (post.isHidden) {
+        return;
+      }
+      post.nodes.root.hidden = post.isHidden = true;
+      if (!makeStub) {
+        return;
+      }
+      a = ReplyHiding.makeButton(post, '+');
+      postInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', post.nodes.info).textContent;
+      $.add(a, $.tn(" " + postInfo));
+      post.stub = $.el('div');
+      $.add(post.stub, a);
+      return $.before(post.nodes.root, post.stub);
+    },
+    show: function(post) {
+      if (post.stub) {
+        $.rm(post.stub);
+        delete post.stub;
+      }
+      return post.nodes.root.hidden = post.isHidden = false;
     }
   };
 
@@ -1132,7 +1266,7 @@
     },
     postDataFromLink: function(link) {
       var board, path, postID, threadID;
-      if (link.host === 'boards.4chan.org') {
+      if (link.hostname === 'boards.4chan.org') {
         path = link.pathname.split('/');
         board = path[1];
         threadID = path[3];
@@ -1147,6 +1281,39 @@
         threadID: +threadID,
         postID: +postID
       };
+    },
+    allQuotelinksLinkingTo: function(post) {
+      var ID, fullID, quote, quotedPost, quotelinks, quoterPost, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+      quotelinks = [];
+      fullID = "" + post.board + "." + post;
+      _ref = g.posts;
+      for (ID in _ref) {
+        quoterPost = _ref[ID];
+        if (-1 !== quoterPost.quotes.indexOf(fullID)) {
+          _ref1 = [quoterPost].concat(quoterPost.clones);
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            quoterPost = _ref1[_i];
+            quotelinks.push.apply(quotelinks, quoterPost.nodes.quotelinks);
+          }
+        }
+      }
+      if (Conf['Quote Backlinks']) {
+        _ref2 = post.quotes;
+        for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+          quote = _ref2[_j];
+          quotedPost = g.posts[quote];
+          _ref3 = [quotedPost].concat(quotedPost.clones);
+          for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
+            quotedPost = _ref3[_k];
+            quotelinks.push.apply(quotelinks, Array.prototype.slice.call(quotedPost.nodes.backlinks));
+          }
+        }
+      }
+      return quotelinks.filter(function(quotelink) {
+        var board, postID, _ref4;
+        _ref4 = Get.postDataFromLink(quotelink), board = _ref4.board, postID = _ref4.postID;
+        return board === post.board.ID && postID === post.ID;
+      });
     },
     contextFromLink: function(quotelink) {
       return Get.postFromRoot($.x('ancestor::div[parent::div[@class="thread"]][1]', quotelink));
@@ -1595,7 +1762,7 @@
       }
       a = $.el('a', {
         href: "/" + this.board + "/res/" + this.thread + "#p" + this,
-        className: 'backlink',
+        className: this.isHidden ? 'filtered backlink' : 'backlink',
         textContent: QuoteBacklink.funk(this.ID)
       });
       _ref = this.quotes;
@@ -2027,7 +2194,7 @@
     },
     node: function() {
       var URL, gif, style, thumb, _ref, _ref1;
-      if (this.isClone || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
+      if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
       _ref1 = this.file, thumb = _ref1.thumb, URL = _ref1.URL;
@@ -2576,7 +2743,7 @@
     }
 
     Post.prototype.kill = function(img) {
-      var ID, board, num, post, postID, quote, quotelink, quotelinks, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4;
+      var quotelink, _i, _len, _ref;
       if (this.file && !this.file.isDead) {
         this.file.isDead = true;
       }
@@ -2585,41 +2752,11 @@
       }
       this.isDead = true;
       $.addClass(this.nodes.root, 'dead');
-      quotelinks = [];
-      num = "" + this.board + "." + this;
-      _ref = g.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
-        if (-1 < post.quotes.indexOf(num)) {
-          _ref1 = [post].concat(post.clones);
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            post = _ref1[_i];
-            quotelinks.push.apply(quotelinks, post.nodes.quotelinks);
-          }
-        }
-      }
-      if (Conf['Quote Backlinks']) {
-        _ref2 = this.quotes;
-        for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-          quote = _ref2[_j];
-          post = g.posts[quote];
-          _ref3 = [post].concat(post.clones);
-          for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
-            post = _ref3[_k];
-            quotelinks.push.apply(quotelinks, Array.prototype.slice.call(post.nodes.backlinks));
-          }
-        }
-      }
-      for (_l = 0, _len3 = quotelinks.length; _l < _len3; _l++) {
-        quotelink = quotelinks[_l];
-        if ($.hasClass(quotelink, 'deadlink')) {
-          continue;
-        }
-        _ref4 = Get.postDataFromLink(quotelink), board = _ref4.board, postID = _ref4.postID;
-        if (board === this.board.ID(postID === this.ID)) {
-          $.add(quotelink, $.tn('\u00A0(Dead)'));
-          $.addClass(quotelinks, 'deadlink');
-        }
+      _ref = Get.allQuotelinksLinkingTo(this);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quotelink = _ref[_i];
+        $.add(quotelink, $.tn('\u00A0(Dead)'));
+        $.addClass(quotelink, 'deadlink');
       }
     };
 
@@ -2676,6 +2813,7 @@
         inlined = _ref2[_k];
         $.rmClass(inlined, 'inlined');
       }
+      root.hidden = false;
       $.rmClass(root, 'forwarded');
       if (nodes.subject) {
         this.nodes.subject = $('.subject', info);
@@ -2837,6 +2975,13 @@
           $.log(err, 'Thread Hiding');
         }
       }
+      if (Conf['Reply Hiding']) {
+        try {
+          ReplyHiding.init();
+        } catch (err) {
+          $.log(err, 'Reply Hiding');
+        }
+      }
       if (Conf['Resurrect Quotes']) {
         try {
           Quotify.init();
@@ -2996,7 +3141,7 @@
     settings: function() {
       return alert('Here be settings');
     },
-    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#boardNavDesktop.reply,\n#qr, #watcher {\n  position: fixed;\n}\n#qp, #ihover {\n  z-index: 100;\n}\n#updater, #stats {\n  z-index: 90;\n}\n#boardNavDesktop.reply:hover {\n  z-index: 80;\n}\n#qr {\n  z-index: 50;\n}\n#watcher {\n  z-index: 30;\n}\n#boardNavDesktop.reply {\n  z-index: 10;\n}\n\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* thread updater */\n#updater {\n  text-align: right;\n}\n#updater:not(:hover) {\n  background: none;\n  border: none;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n.new {\n  color: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  padding-bottom: 16px;\n}\n\n/* thread hiding */\n.opContainer > .hide-thread-button {\n  float: left;\n}"
+    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#boardNavDesktop.reply,\n#qr, #watcher {\n  position: fixed;\n}\n#qp, #ihover {\n  z-index: 100;\n}\n#updater, #stats {\n  z-index: 90;\n}\n#boardNavDesktop.reply:hover {\n  z-index: 80;\n}\n#qr {\n  z-index: 50;\n}\n#watcher {\n  z-index: 30;\n}\n#boardNavDesktop.reply {\n  z-index: 10;\n}\n\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* thread updater */\n#updater {\n  text-align: right;\n}\n#updater:not(:hover) {\n  background: none;\n  border: none;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n.new {\n  color: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.filtered {\n  text-decoration: underline line-through;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  padding-bottom: 16px;\n}\n\n/* thread hiding */\n.opContainer > .hide-thread-button {\n  float: left;\n}\n\n/* reply hiding */\n.replyContainer > .hide-reply-button {\n  float: left;\n  margin-right: 2px;\n}"
   };
 
   Main.init();

@@ -153,37 +153,11 @@ class Post
     $.addClass @nodes.root, 'dead'
     # XXX style dead posts.
 
-    # Get quote/backlinks to this post,
+    # Get quote/backlinks to this post
     # and paint them (Dead).
-    # First:
-    #   In every posts,
-    #   if it did quote this post,
-    #   get all their backlinks.
-    # Second:
-    #   If we have quote backlinks,
-    #   in all posts this post quoted,
-    #   and their clones,
-    #   get all of their backlinks.
-    # Third:
-    #   In all collected links,
-    #   apply (Dead) if relevant.
-    quotelinks = []
-    num = "#{@board}.#{@}"
-    for ID, post of g.posts
-      if -1 < post.quotes.indexOf num
-        for post in [post].concat post.clones
-          quotelinks.push.apply quotelinks, post.nodes.quotelinks
-    if Conf['Quote Backlinks']
-      for quote in @quotes
-        post = g.posts[quote]
-        for post in [post].concat post.clones
-          quotelinks.push.apply quotelinks, Array::slice.call post.nodes.backlinks
-    for quotelink in quotelinks
-      continue if $.hasClass quotelink, 'deadlink'
-      {board, postID} = Get.postDataFromLink quotelink
-      if board is @board.ID postID is @ID
-        $.add quotelink, $.tn '\u00A0(Dead)'
-        $.addClass quotelinks, 'deadlink'
+    for quotelink in Get.allQuotelinksLinkingTo @
+      $.add quotelink, $.tn '\u00A0(Dead)'
+      $.addClass quotelink, 'deadlink'
     return
   addClone: (context) ->
     new Clone @, context
@@ -217,7 +191,7 @@ class Clone extends Post
     for inlined in $$ '.inlined', post
       $.rmClass inlined, 'inlined'
 
-    # root.hidden = false # post hiding
+    root.hidden = false # post hiding
     $.rmClass root, 'forwarded' # quote inlining
     # $.rmClass post, 'highlight' # keybind navigation
 
@@ -345,6 +319,13 @@ Main =
       catch err
         # XXX handle error
         $.log err, 'Thread Hiding'
+
+    if Conf['Reply Hiding']
+      try
+        ReplyHiding.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Reply Hiding'
 
     if Conf['Resurrect Quotes']
       try

@@ -117,6 +117,9 @@ body.fourchan_x {
   text-decoration: none;
   border-bottom: 1px dashed;
 }
+.filtered {
+  text-decoration: underline line-through;
+}
 .inline {
   border: 1px solid rgba(128, 128, 128, .5);
   display: table;
@@ -160,4 +163,10 @@ body.fourchan_x {
 /* thread hiding */
 .opContainer > .hide-thread-button {
   float: left;
+}
+
+/* reply hiding */
+.replyContainer > .hide-reply-button {
+  float: left;
+  margin-right: 2px;
 }

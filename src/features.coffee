@@ -11,7 +11,7 @@ ThreadHiding =
   node: ->
     if @ID in ThreadHiding.hiddenThreads.threads
       ThreadHiding.hide @
-    $.prepend @posts[@].nodes.root, ThreadHiding.button @, '-'
+    $.prepend @posts[@].nodes.root, ThreadHiding.makeButton @, '-'
 
   getHiddenThreads: ->
     hiddenThreads = $.get "hiddenThreads.#{g.BOARD}"
@@ -33,7 +33,7 @@ ThreadHiding =
     {lastChecked} = hiddenThreads
     hiddenThreads.lastChecked = now = Date.now()
 
-    return unless lastChecked < now - $.DAY
+    return if lastChecked > now - $.DAY
 
     unless hiddenThreads.threads.length
       $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
@@ -47,7 +47,7 @@ ThreadHiding =
       hiddenThreads.threads = threads
       $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
 
-  button: (thread, sign) ->
+  makeButton: (thread, sign) ->
     a = $.el 'a',
       className: 'hide-thread-button'
       innerHTML: "<span>[&nbsp;#{sign}&nbsp;]</span>&nbsp;"
@@ -59,7 +59,7 @@ ThreadHiding =
     # Get fresh hidden threads.
     hiddenThreads = ThreadHiding.getHiddenThreads()
     hiddenThreadsCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
-    if thread.hidden
+    if thread.isHidden
       ThreadHiding.show thread
       hiddenThreads.threads.splice hiddenThreads.threads.indexOf(thread.ID), 1
       delete hiddenThreadsCatalog[thread]
@@ -74,7 +74,7 @@ ThreadHiding =
     return if thread.hidden
     op = thread.posts[thread]
     threadRoot = op.nodes.root.parentNode
-    threadRoot.hidden = thread.hidden = true
+    threadRoot.hidden = thread.isHidden = true
 
     unless makeStub
       threadRoot.nextElementSibling.hidden = true # <hr>
@@ -91,13 +91,12 @@ ThreadHiding =
       else
         $('.nameBlock', op.nodes.info).textContent
 
-    a = ThreadHiding.button thread, '+'
+    a = ThreadHiding.makeButton thread, '+'
     $.add a, $.tn "#{opInfo} (#{numReplies})"
     thread.stub = $.el 'div'
     $.add thread.stub, a
     # if Conf['Menu']
-    #   menuButton = Menu.button()
-    #   $.add thread.stub, [$.tn(' '), menuButton]
+    #   $.add thread.stub, [$.tn(' '), Menu.makeButton()]
     $.before threadRoot, thread.stub
 
   show: (thread) ->
@@ -106,7 +105,106 @@ ThreadHiding =
       delete thread.stub
     threadRoot = thread.posts[thread].nodes.root.parentNode
     threadRoot.nextElementSibling.hidden =
-      threadRoot.hidden = thread.hidden = false
+      threadRoot.hidden = thread.isHidden = false
+
+ReplyHiding =
+  init: ->
+    @getHiddenPosts()
+    @clean()
+    Post::callbacks.push
+      name: 'Reply Hiding'
+      cb:   @node
+
+  node: ->
+    return if !@isReply or @isClone
+    if thread = ReplyHiding.hiddenPosts.threads[@thread]
+      if @ID in thread
+        ReplyHiding.hide @
+    $.replace $('.sideArrows', @nodes.root), ReplyHiding.makeButton @, '-'
+
+  getHiddenPosts: ->
+    hiddenPosts = $.get "hiddenPosts.#{g.BOARD}"
+    unless hiddenPosts
+      hiddenPosts =
+        threads: {}
+        lastChecked: Date.now()
+      $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
+    ReplyHiding.hiddenPosts = hiddenPosts
+
+  clean: ->
+    {hiddenPosts} = ReplyHiding
+    {lastChecked} = hiddenPosts
+    hiddenPosts.lastChecked = now = Date.now()
+
+    return if lastChecked > now - $.DAY
+
+    unless Object.keys(hiddenPosts.threads).length
+      $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
+      return
+
+    $.ajax "//api.4chan.org/#{g.BOARD}/catalog.json", onload: ->
+      threads = {}
+      for obj in JSON.parse @response
+        for thread in obj.threads
+          if thread.no of hiddenPosts.threads
+            threads[thread.no] = hiddenPosts.threads[thread.no]
+      hiddenPosts.threads = threads
+      $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
+
+  makeButton: (post, sign) ->
+    a = $.el 'a',
+      className: 'hide-reply-button'
+      innerHTML: "<span>[&nbsp;#{sign}&nbsp;]</span>"
+      href:      'javascript:;'
+    $.on a, 'click', -> ReplyHiding.toggle post
+    a
+
+  toggle: (post) ->
+    # Get fresh hidden posts.
+    hiddenPosts = ReplyHiding.getHiddenPosts()
+    quotelinks  = Get.allQuotelinksLinkingTo post
+    if post.isHidden
+      ReplyHiding.show post
+      for quotelink in quotelinks
+        $.rmClass quotelink, 'filtered'
+      # XXX recursive filtering
+      thread = hiddenPosts.threads[post.thread]
+      if thread.length is 1
+        delete hiddenPosts.threads[post.thread]
+      else
+        thread.splice thread.indexOf(post.ID), 1
+    else
+      ReplyHiding.hide post
+      for quotelink in quotelinks
+        $.addClass quotelink, 'filtered'
+      unless thread = hiddenPosts.threads[post.thread]
+        thread = hiddenPosts.threads[post.thread] = []
+      thread.push post.ID
+    $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
+
+  hide: (post, makeStub=Conf['Stubs']) ->
+    return if post.isHidden
+    post.nodes.root.hidden = post.isHidden = true
+
+    return unless makeStub
+    a = ReplyHiding.makeButton post, '+'
+    postInfo =
+      if Conf['Anonymize']
+        'Anonymous'
+      else
+        $('.nameBlock', post.nodes.info).textContent
+    $.add a, $.tn " #{postInfo}"
+    post.stub = $.el 'div'
+    $.add post.stub, a
+    # if Conf['Menu']
+    #   $.add post.stub, [$.tn(' '), Menu.makeButton()]
+    $.before post.nodes.root, post.stub
+
+  show: (post) ->
+    if post.stub
+      $.rm post.stub
+      delete post.stub
+    post.nodes.root.hidden = post.isHidden = false
 
 Redirect =
   image: (board, filename) ->
@@ -464,7 +562,7 @@ Get =
     post   = g.posts["#{board}.#{postID}"]
     if index then post.clones[index] else post
   postDataFromLink: (link) ->
-    if link.host is 'boards.4chan.org'
+    if link.hostname is 'boards.4chan.org'
       path     = link.pathname.split '/'
       board    = path[1]
       threadID = path[3]
@@ -478,6 +576,33 @@ Get =
       threadID: +threadID
       postID:   +postID
     }
+  allQuotelinksLinkingTo: (post) ->
+    # Get quotelinks & backlinks linking to the given post.
+    quotelinks = []
+    fullID = "#{post.board}.#{post}"
+    # First:
+    #   In every posts,
+    #   if it did quote this post,
+    #   get all their backlinks.
+    for ID, quoterPost of g.posts
+      if -1 isnt quoterPost.quotes.indexOf fullID
+        for quoterPost in [quoterPost].concat quoterPost.clones
+          quotelinks.push.apply quotelinks, quoterPost.nodes.quotelinks
+    # Second:
+    #   If we have quote backlinks:
+    #   in all posts this post quoted
+    #   and their clones,
+    #   get all of their backlinks.
+    if Conf['Quote Backlinks']
+      for quote in post.quotes
+        quotedPost = g.posts[quote]
+        for quotedPost in [quotedPost].concat quotedPost.clones
+          quotelinks.push.apply quotelinks, Array::slice.call quotedPost.nodes.backlinks
+    # Third:
+    #   Filter out irrelevant quotelinks.
+    quotelinks.filter (quotelink) ->
+      {board, postID} = Get.postDataFromLink quotelink
+      board is post.board.ID and postID is post.ID
   contextFromLink: (quotelink) ->
     Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', quotelink
   postClone: (board, threadID, postID, root, context) ->
@@ -886,8 +1011,7 @@ QuoteBacklink =
     return if @isClone or !@quotes.length
     a = $.el 'a',
       href: "/#{@board}/res/#{@thread}#p#{@}"
-      # XXX className: if post.el.hidden then 'filtered backlink' else 'backlink'
-      className: 'backlink'
+      className: if @isHidden then 'filtered backlink' else 'backlink'
       textContent: QuoteBacklink.funk @ID
     for quote in @quotes
       containers = [QuoteBacklink.getContainer quote]
@@ -1155,8 +1279,7 @@ AutoGIF =
       name: 'Auto-GIF'
       cb:   @node
   node: ->
-    # XXX return if @hidden?
-    return if @isClone or !@file?.isImage
+    return if @isClone or @isHidden or @thread.isHidden or !@file?.isImage
     {thumb, URL} = @file
     return unless /gif$/.test(URL) and !/spoiler/.test thumb.src
     if @file.isSpoiler
