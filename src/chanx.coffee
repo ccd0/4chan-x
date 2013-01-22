@@ -2410,7 +2410,7 @@ Linkify =
         # Potential text before this valid link.
         nodes.push text
 
-      nodes.push "<a class=linkify rel='nofollow noreferrer' target='blank' href='#{(unless link.contains(":") then (if (link.contains '@') then 'mailto:' + link else 'http://' + link) else link).replace(/<wbr>/, '')}'>#{link}</a>"
+      nodes.push "<a class=linkify rel='nofollow noreferrer' target='blank' href='#{(unless link.contains(":") then (if (link.contains '@') then 'mailto:' + link else 'http://' + link) else link).replace(/<wbr>/g, '')}'>#{link}</a>"
 
       data = data[index + link.length..]
 

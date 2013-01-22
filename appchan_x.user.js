@@ -6836,7 +6836,7 @@
         if (text = data.slice(0, index)) {
           nodes.push(text);
         }
-        nodes.push("<a class=linkify rel='nofollow noreferrer' target='blank' href='" + ((!link.contains(":") ? (link.contains('@') ? 'mailto:' + link : 'http://' + link) : link).replace(/<wbr>/, '')) + "'>" + link + "</a>");
+        nodes.push("<a class=linkify rel='nofollow noreferrer' target='blank' href='" + ((!link.contains(":") ? (link.contains('@') ? 'mailto:' + link : 'http://' + link) : link).replace(/<wbr>/g, '')) + "'>" + link + "</a>");
         data = data.slice(index + link.length);
       }
       if (data) {
