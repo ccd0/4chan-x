@@ -316,25 +316,6 @@ Main =
       $.on board, 'DOMNodeInserted', Main.listener
     return
 
-    Main.observe()
-
-  observe: ->
-    board = $ '.board'
-    if MutationObserver = window.WebKitMutationObserver or window.MozMutationObserver or window.OMutationObserver or window.MutationObserver
-      Main.observer2 = observer = new MutationObserver Main.observer
-      observer.observe board,
-        childList: true
-        subtree:   true
-    else
-      $.on board, 'DOMNodeInserted', Main.listener
-
-  disconnect: ->
-    if Main.observer2
-      Main.observer2.disconnect()
-    else
-      board = $ '.board'
-      $.off board, 'DOMNodeInserted', Main.listener
-
   prune: ->
     now = Date.now()
     g.hiddenReplies = $.get "hiddenReplies/#{g.BOARD}/", {}

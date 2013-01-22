@@ -2510,10 +2510,20 @@
       if (['interactive', 'complete'].contains(d.readyState)) {
         return setTimeout(fc);
       }
-      cb = function() {
-        $.off(d, 'DOMContentLoaded', cb);
-        return fc();
-      };
+      if (!$.callbacks) {
+        $.callbacks = [];
+        cb = function() {
+          var callback, _i, _len, _ref;
+          _ref = $.callbacks;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            callback = _ref[_i];
+            callback();
+          }
+          return $.off(d, 'DOMContentLoaded', cb);
+        };
+        $.on(d, 'DOMContentLoaded', cb);
+      }
+      $.callbacks.push(fc);
       return $.on(d, 'DOMContentLoaded', cb);
     },
     sync: function(key, cb) {
@@ -10928,30 +10938,6 @@
         });
       } else {
         $.on(board, 'DOMNodeInserted', Main.listener);
-      }
-      return;
-      return Main.observe();
-    },
-    observe: function() {
-      var MutationObserver, board, observer;
-      board = $('.board');
-      if (MutationObserver = window.WebKitMutationObserver || window.MozMutationObserver || window.OMutationObserver || window.MutationObserver) {
-        Main.observer2 = observer = new MutationObserver(Main.observer);
-        return observer.observe(board, {
-          childList: true,
-          subtree: true
-        });
-      } else {
-        return $.on(board, 'DOMNodeInserted', Main.listener);
-      }
-    },
-    disconnect: function() {
-      var board;
-      if (Main.observer2) {
-        return Main.observer2.disconnect();
-      } else {
-        board = $('.board');
-        return $.off(board, 'DOMNodeInserted', Main.listener);
       }
     },
     prune: function() {

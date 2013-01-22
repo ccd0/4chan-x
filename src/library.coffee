@@ -74,9 +74,14 @@ $.extend $,
       # Execute the functions in parallel.
       # If one fails, do not stop the others.
       return setTimeout fc
-    cb = ->
-      $.off d, 'DOMContentLoaded', cb
-      fc()
+    unless $.callbacks
+      $.callbacks = []
+      cb = ->
+        for callback in $.callbacks
+          callback()
+        $.off d, 'DOMContentLoaded', cb
+      $.on d, 'DOMContentLoaded', cb
+    $.callbacks.push fc
     $.on d, 'DOMContentLoaded', cb
   sync: (key, cb) ->
     key = Main.namespace + key

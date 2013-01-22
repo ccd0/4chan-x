@@ -1285,6 +1285,7 @@ Updater =
       node.data = text
     else
       el.textContent = text
+
   getInput: (input) ->
     while (i = input.length) < 10
       input[i] = input[i - 1]
