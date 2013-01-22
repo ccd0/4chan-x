@@ -337,13 +337,13 @@ UI =
         style.right = clientWidth - clientX + 20 + 'px'
         top = clientY - 120
 
-      style.top =
+      style.top = "#{
         if clientHeight <= height or top <= 0
-          '0px'
+          0
         else if top + height >= clientHeight
-          clientHeight - height + 'px'
+          clientHeight - height
         else
-          top + 'px'
+          top}px"
 
   hoverend: ->
     $.rm UI.el

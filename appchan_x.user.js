@@ -2847,7 +2847,7 @@
           style.right = clientWidth - clientX + 20 + 'px';
           top = clientY - 120;
         }
-        return style.top = clientHeight <= height || top <= 0 ? '0px' : top + height >= clientHeight ? clientHeight - height + 'px' : top + 'px';
+        return style.top = "" + (clientHeight <= height || top <= 0 ? 0 : top + height >= clientHeight ? clientHeight - height : top) + "px";
       }
     },
     hoverend: function() {
@@ -5383,7 +5383,7 @@
         return delete Updater.postID;
       },
       visibility: function() {
-        if ($.hidden) {
+        if ($.hidden()) {
           return;
         }
         Updater.unsuccessfulFetchCount = 0;
@@ -5425,7 +5425,7 @@
         return Updater.scrollBG = this.checked ? function() {
           return true;
         } : function() {
-          return !$.hidden;
+          return !$.hidden();
         };
       },
       load: function() {
@@ -5509,7 +5509,7 @@
           Updater.count.className = count ? 'new' : null;
         }
         if (count) {
-          if (Conf['Beep'] && $.hidden && (Unread.replies.length === 0)) {
+          if (Conf['Beep'] && $.hidden() && (Unread.replies.length === 0)) {
             Updater.audio.play();
           }
           Updater.unsuccessfulFetchCount = 0;
@@ -5546,16 +5546,16 @@
       return _results;
     },
     getInterval: function() {
-      var bg, count, i, increase, j;
-      if (Conf['Interval per board']) {
-        i = +Conf['Interval_' + g.BOARD];
-        bg = +Conf['BGInterval_' + g.BOARD];
-      } else {
-        i = +Conf['Interval'];
-        bg = +Conf['BGInterval'];
+      var count, i, increase, increaseString, j, string;
+      string = "Interval" + (Conf['Interval per board'] ? "_" + g.BOARD : "");
+      increaseString = "updateIncrease";
+      if ($.hidden()) {
+        string = "BG" + string;
+        increaseString += "B";
       }
+      i = +Conf[string];
       j = (count = this.unsuccessfulFetchCount) > 9 ? 9 : count;
-      return (!$.hidden ? Conf['Optional Increase'] ? (i > (increase = Updater.getInput(Conf['updateIncrease'].split(','))[j]) ? i : increase) : i : Conf['Optional Increase'] ? (bg > (increase = Updater.getInput(Conf['updateIncreaseB'].split(','))[j]) ? bg : increase) : bg);
+      return (Conf['Optional Increase'] ? (i > (increase = Updater.getInput(Conf[increaseString].split(','))[j]) ? i : increase) : i);
     },
     timeout: function() {
       var n;
@@ -8210,7 +8210,7 @@
       if (QR.captcha.isEnabled && /captcha|verification/i.test(QR.warning.textContent)) {
         $('[autocomplete]', QR.el).focus();
       }
-      if ($.hidden) {
+      if ($.hidden()) {
         return alert(QR.warning.textContent);
       }
     },

@@ -1171,7 +1171,7 @@ Updater =
       Updater.checkPostCount = 0
       delete Updater.postID
     visibility: ->
-      return if $.hidden
+      return if $.hidden()
       # Reset the counter when we focus this tab.
       Updater.unsuccessfulFetchCount = 0
       if Conf['Interval per board']
@@ -1203,7 +1203,7 @@ Updater =
         if @checked
           -> true
         else
-          -> ! $.hidden
+          -> ! $.hidden()
     load: ->
       switch @status
         when 404
@@ -1264,7 +1264,7 @@ Updater =
         Updater.count.className = if count then 'new' else null
 
       if count
-        if Conf['Beep'] and $.hidden and (Unread.replies.length is 0)
+        if Conf['Beep'] and $.hidden() and (Unread.replies.length is 0)
           Updater.audio.play()
         Updater.unsuccessfulFetchCount = 0
       else
@@ -1291,23 +1291,18 @@ Updater =
     parseInt(number, 10) for number in input
 
   getInterval: ->
-    if Conf['Interval per board']
-      i  = +Conf['Interval_' + g.BOARD]
-      bg = +Conf['BGInterval_' + g.BOARD]
-    else
-      i  = +Conf['Interval']
-      bg = +Conf['BGInterval']
+    string = "Interval" + (if Conf['Interval per board'] then "_#{g.BOARD}" else "")
+    increaseString = "updateIncrease"
+    if $.hidden()
+      string = "BG#{string}"
+      increaseString += "B"
+    i  = +Conf[string]
     j = if (count = @unsuccessfulFetchCount) > 9 then 9 else count
-    return (unless $.hidden
+    return (
       if Conf['Optional Increase']
-        (if i > increase = Updater.getInput(Conf['updateIncrease'].split ',')[j] then i else increase)
+        (if i > increase = Updater.getInput(Conf[increaseString].split ',')[j] then i else increase)
       else
         i
-    else
-      if Conf['Optional Increase']
-        (if bg > increase = Updater.getInput(Conf['updateIncreaseB'].split ',')[j] then bg else increase)
-      else
-        bg
     )
 
   timeout: ->
