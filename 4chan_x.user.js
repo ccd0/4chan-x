@@ -5139,7 +5139,7 @@
       }
       thumb.hidden = true;
       $.addClass(thumb.parentNode.parentNode.parentNode, 'image_expanded');
-      if (img = thumb.nextSibling) {
+      if ((img = thumb.nextSibling) && img.nodeName === 'IMG') {
         img.hidden = false;
         return;
       }
@@ -5147,7 +5147,7 @@
         src: src
       });
       $.on(img, 'error', ImageExpand.error);
-      return $.add(a, img);
+      return $.after(thumb, img);
     },
     error: function() {
       var src, thumb, timeoutID, url;
