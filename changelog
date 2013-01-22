@@ -1,8 +1,16 @@
 master
+
+1.0.35
 - Mayhem
   Fix quoting inside inlined backlinks.
 - aeosynth
   Beep, beep, motherfucker
+  Don't expand pdfs
+- Zixaphir
+  New linkifier that respects <wbr>s.
+  Fixed Filter + Menu
+  Fixed image expansion
+  Fixed forward links and id colors
 
 1.0.34
 - Mayhem
