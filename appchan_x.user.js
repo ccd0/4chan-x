@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.34 - 2013-01-21
+ * appchan x - Version 1.0.34 - 2013-01-22
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -7899,7 +7899,7 @@
           if (Conf['Expand From Current']) {
             for (i = _i = 0, _len = thumbs.length; _i < _len; i = ++_i) {
               thumb = thumbs[i];
-              if (!thumb.getBoundingClientRect().top) {
+              if (thumb.getBoundingClientRect().top > 0) {
                 break;
               }
             }

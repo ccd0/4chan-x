@@ -3260,7 +3260,7 @@ ImageExpand =
         thumbs = $$ 'img[data-md5]'
         if Conf['Expand From Current']
           for thumb, i in thumbs
-            break unless thumb.getBoundingClientRect().top
+            break if thumb.getBoundingClientRect().top > 0
           thumbs = thumbs[i...]
         for thumb in thumbs
           continue if Conf['Don\'t Expand Spoilers'] and !Conf['Reveal Spoilers'] and /^spoiler\ image/i.test thumb.alt
