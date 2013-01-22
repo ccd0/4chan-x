@@ -2384,7 +2384,7 @@ Linkify =
       |
       news:
     )
-    [^\s'"<>]+ # Non-URL characters. We cut of the string here.
+    [^\s]+ # Any whitespace character / End of URL
     |
     \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails.
   )///gi
@@ -2395,75 +2395,41 @@ Linkify =
         for embed in $$('.embed', post.blockquote)
           $.on embed, 'click', Linkify.toggle
       return
-    
-    crop = []
-    
-    crop.pushArrays $$('s', post.blockquote), $$('wbr', post.blockquote)
-    
-    for cut in crop
-      if not /\w/.test(cut.textContent) and (n = cut.nextSibling) and n.nodeName is '#text' and (p = cut.previousSibling) and p.nodeName is '#text'
-        el = $.tn p.textContent + n.textContent
-        $.rm p
-        $.rm n
-        $.replace cut, el
 
-    # XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE is 6
-    # Get all the text nodes that are not inside an anchor.
-    snapshot = d.evaluate './/text()', post.blockquote, null, 6, null
+    data = post.blockquote.innerHTML.replace /<br/g, " <br"
 
-    for i in [0...snapshot.snapshotLength]
-      node = snapshot.snapshotItem i
-      data = node.data
+    # Only accept nodes with potentially valid links
+    return unless links = data.match Linkify.regString
 
-      unless links = data.match Linkify.regString
-        # Only accept nodes with potentially valid links
-        continue
+    nodes = []
 
-      nodes = []
+    for link in links
+      index = data.indexOf link
 
-      for link in links
-        index = data.indexOf link
+      if text = data[...index]
+        # Potential text before this valid link.
+        nodes.push text
 
-        if text = data[...index]
-          # Potential text before this valid link.
-          nodes.push $.tn text
-
-        a = $.el 'a'
-          textContent: link
-          className:   'linkify'
-          rel:         'nofollow noreferrer'
-          target:      'blank'
-          href:        unless link.contains(":") then (if (link.contains "@") then "mailto:" + link else "http://" + link) else link
-
-        Linkify.concat a
-
-        nodes = nodes.concat Linkify.embedder(a)
+      nodes.push "<a class=linkify rel='nofollow noreferrer' target='blank' href='#{(unless link.contains(":") then (if (link.contains '@') then 'mailto:' + link else 'http://' + link) else link).replace(/<wbr>/, '')}'>#{link}</a>"
 
       data = data[index + link.length..]
 
-      if data
-        # Potential text after the last valid link.
-        nodes.push $.tn data
+    if data
+      # Potential text after the last valid link.
+      nodes.push data
 
-      $.replace node, nodes
+    blockquote = $.el 'blockquote'
+      innerHTML: nodes.join ""
+
+    if !Conf['Embedding']
+      for link in $$ '.linkify', blockquote
+        $.replace link, Linkify.embedder link
+
+    $.replace post.blockquote, blockquote
+    
+    post.blockquote = blockquote
+
     return
-
-  concat: (a) ->
-    $.on a, 'click', (e) ->
-      # Shift + CTRL + Click
-      if e.shiftKey and e.ctrlKey
-        # Let's not accidentally open the link while we're editting it.
-        e.preventDefault()
-        e.stopPropagation()
-
-        # We essentially check for a <br> and make sure we're not merging non-post content.
-        if ((el = @nextSibling).tagName.toLowerCase() is "br" or el.tagName.toLowerCase() is 's') and (next = el.nextSibling).className isnt "abbr"
-          @href = @textContent += (if text = el.textContent
-            text + next.textContent
-          else
-            next.textContent)
-          $.rm next
-          $.rm el
 
   toggle: ->
     # We setup the link to be replaced by the embedded video
@@ -2552,44 +2518,43 @@ Linkify =
         div
 
   embedder: (a) ->
-    if Conf['Embedding']
-      for key, type of Linkify.types
-        continue unless match = a.href.match type.regExp
+    for key, type of Linkify.types
+      continue unless match = a.href.match type.regExp
 
-        embed = $.el 'a'
-          name:         (a.name = match[1])
-          className:    'embed'
-          href:         'javascript:;'
-          textContent:  '(embed)'
+      embed = $.el 'a'
+        name:         (a.name = match[1])
+        className:    'embed'
+        href:         'javascript:;'
+        textContent:  '(embed)'
 
-        embed.setAttribute 'data-service', key
-        embed.setAttribute 'data-originalURL', a.href
+      embed.setAttribute 'data-service', key
+      embed.setAttribute 'data-originalURL', a.href
 
-        $.on embed, 'click', Linkify.toggle
+      $.on embed, 'click', Linkify.toggle
 
-        if Conf['Link Title'] and (service = type.title)
-          titles = $.get 'CachedTitles', {}
+      if Conf['Link Title'] and (service = type.title)
+        titles = $.get 'CachedTitles', {}
 
-          if title = titles[match[1]]
-            a.textContent = title[0]
-            embed.setAttribute 'data-title', title[0]
-          else
-            $.cache service.api.call(a), ->
-              a.textContent = switch @status
-                when 200, 304
-                  title = "[#{key}] #{service.text.call @}"
-                  embed.setAttribute 'data-title', title
-                  titles[match[1]] = [title, Date.now()]
-                  $.set 'CachedTitles', titles
-                  title
-                when 404
-                  "[#{key}] Not Found"
-                when 403
-                  "[#{key}] Forbidden or Private"
-                else
-                  "[#{key}] #{@status}'d"
+        if title = titles[match[1]]
+          a.textContent = title[0]
+          embed.setAttribute 'data-title', title[0]
+        else
+          $.cache service.api.call(a), ->
+            a.textContent = switch @status
+              when 200, 304
+                title = "[#{key}] #{service.text.call @}"
+                embed.setAttribute 'data-title', title
+                titles[match[1]] = [title, Date.now()]
+                $.set 'CachedTitles', titles
+                title
+              when 404
+                "[#{key}] Not Found"
+              when 403
+                "[#{key}] Forbidden or Private"
+              else
+                "[#{key}] #{@status}'d"
 
-          return [a, $.tn(' '), embed]
+        return [a, $.tn(' '), embed]
     return [a]
 
 DeleteLink =

@@ -6834,9 +6834,9 @@
     init: function() {
       return Main.callbacks.push(this.node);
     },
-    regString: /(\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s'"<>]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi,
+    regString: /(\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi,
     node: function(post) {
-      var a, crop, cut, data, el, embed, i, index, link, links, n, node, nodes, p, snapshot, text, _i, _j, _k, _l, _len, _len1, _len2, _ref, _ref1;
+      var blockquote, data, embed, index, link, links, nodes, text, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       if (post.isInlined && !post.isCrosspost) {
         if (Conf['Embedding']) {
           _ref = $$('.embed', post.blockquote);
@@ -6847,61 +6847,35 @@
         }
         return;
       }
-      crop = [];
-      crop.pushArrays($$('s', post.blockquote), $$('wbr', post.blockquote));
-      for (_j = 0, _len1 = crop.length; _j < _len1; _j++) {
-        cut = crop[_j];
-        if (!/\w/.test(cut.textContent) && (n = cut.nextSibling) && n.nodeName === '#text' && (p = cut.previousSibling) && p.nodeName === '#text') {
-          el = $.tn(p.textContent + n.textContent);
-          $.rm(p);
-          $.rm(n);
-          $.replace(cut, el);
-        }
+      data = post.blockquote.innerHTML.replace(/<br/g, " <br");
+      if (!(links = data.match(Linkify.regString))) {
+        return;
       }
-      snapshot = d.evaluate('.//text()', post.blockquote, null, 6, null);
-      for (i = _k = 0, _ref1 = snapshot.snapshotLength; 0 <= _ref1 ? _k < _ref1 : _k > _ref1; i = 0 <= _ref1 ? ++_k : --_k) {
-        node = snapshot.snapshotItem(i);
-        data = node.data;
-        if (!(links = data.match(Linkify.regString))) {
-          continue;
+      nodes = [];
+      for (_j = 0, _len1 = links.length; _j < _len1; _j++) {
+        link = links[_j];
+        index = data.indexOf(link);
+        if (text = data.slice(0, index)) {
+          nodes.push(text);
         }
-        nodes = [];
-        for (_l = 0, _len2 = links.length; _l < _len2; _l++) {
-          link = links[_l];
-          index = data.indexOf(link);
-          if (text = data.slice(0, index)) {
-            nodes.push($.tn(text));
-          }
-          a = $.el('a', {
-            textContent: link,
-            className: 'linkify',
-            rel: 'nofollow noreferrer',
-            target: 'blank',
-            href: !link.contains(":") ? (link.contains("@") ? "mailto:" + link : "http://" + link) : link
-          });
-          Linkify.concat(a);
-          nodes = nodes.concat(Linkify.embedder(a));
-        }
+        nodes.push("<a class=linkify rel='nofollow noreferrer' target='blank' href='" + ((!link.contains(":") ? (link.contains('@') ? 'mailto:' + link : 'http://' + link) : link).replace(/<wbr>/, '')) + "'>" + link + "</a>");
         data = data.slice(index + link.length);
-        if (data) {
-          nodes.push($.tn(data));
-        }
-        $.replace(node, nodes);
       }
-    },
-    concat: function(a) {
-      return $.on(a, 'click', function(e) {
-        var el, next, text;
-        if (e.shiftKey && e.ctrlKey) {
-          e.preventDefault();
-          e.stopPropagation();
-          if (((el = this.nextSibling).tagName.toLowerCase() === "br" || el.tagName.toLowerCase() === 's') && (next = el.nextSibling).className !== "abbr") {
-            this.href = this.textContent += ((text = el.textContent) ? text + next.textContent : next.textContent);
-            $.rm(next);
-            return $.rm(el);
-          }
-        }
+      if (data) {
+        nodes.push(data);
+      }
+      blockquote = $.el('blockquote', {
+        innerHTML: nodes.join("")
       });
+      if (!Conf['Embedding']) {
+        _ref1 = $$('.linkify', blockquote);
+        for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+          link = _ref1[_k];
+          $.replace(link, Linkify.embedder(link));
+        }
+      }
+      $.replace(post.blockquote, blockquote);
+      post.blockquote = blockquote;
     },
     toggle: function() {
       var el, embed, style, type, url;
@@ -7003,50 +6977,48 @@
     },
     embedder: function(a) {
       var embed, key, match, service, title, titles, type, _ref;
-      if (Conf['Embedding']) {
-        _ref = Linkify.types;
-        for (key in _ref) {
-          type = _ref[key];
-          if (!(match = a.href.match(type.regExp))) {
-            continue;
+      _ref = Linkify.types;
+      for (key in _ref) {
+        type = _ref[key];
+        if (!(match = a.href.match(type.regExp))) {
+          continue;
+        }
+        embed = $.el('a', {
+          name: (a.name = match[1]),
+          className: 'embed',
+          href: 'javascript:;',
+          textContent: '(embed)'
+        });
+        embed.setAttribute('data-service', key);
+        embed.setAttribute('data-originalURL', a.href);
+        $.on(embed, 'click', Linkify.toggle);
+        if (Conf['Link Title'] && (service = type.title)) {
+          titles = $.get('CachedTitles', {});
+          if (title = titles[match[1]]) {
+            a.textContent = title[0];
+            embed.setAttribute('data-title', title[0]);
+          } else {
+            $.cache(service.api.call(a), function() {
+              return a.textContent = (function() {
+                switch (this.status) {
+                  case 200:
+                  case 304:
+                    title = "[" + key + "] " + (service.text.call(this));
+                    embed.setAttribute('data-title', title);
+                    titles[match[1]] = [title, Date.now()];
+                    $.set('CachedTitles', titles);
+                    return title;
+                  case 404:
+                    return "[" + key + "] Not Found";
+                  case 403:
+                    return "[" + key + "] Forbidden or Private";
+                  default:
+                    return "[" + key + "] " + this.status + "'d";
+                }
+              }).call(this);
+            });
           }
-          embed = $.el('a', {
-            name: (a.name = match[1]),
-            className: 'embed',
-            href: 'javascript:;',
-            textContent: '(embed)'
-          });
-          embed.setAttribute('data-service', key);
-          embed.setAttribute('data-originalURL', a.href);
-          $.on(embed, 'click', Linkify.toggle);
-          if (Conf['Link Title'] && (service = type.title)) {
-            titles = $.get('CachedTitles', {});
-            if (title = titles[match[1]]) {
-              a.textContent = title[0];
-              embed.setAttribute('data-title', title[0]);
-            } else {
-              $.cache(service.api.call(a), function() {
-                return a.textContent = (function() {
-                  switch (this.status) {
-                    case 200:
-                    case 304:
-                      title = "[" + key + "] " + (service.text.call(this));
-                      embed.setAttribute('data-title', title);
-                      titles[match[1]] = [title, Date.now()];
-                      $.set('CachedTitles', titles);
-                      return title;
-                    case 404:
-                      return "[" + key + "] Not Found";
-                    case 403:
-                      return "[" + key + "] Forbidden or Private";
-                    default:
-                      return "[" + key + "] " + this.status + "'d";
-                  }
-                }).call(this);
-              });
-            }
-            return [a, $.tn(' '), embed];
-          }
+          return [a, $.tn(' '), embed];
         }
       }
       return [a];
