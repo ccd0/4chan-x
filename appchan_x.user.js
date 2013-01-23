@@ -10156,18 +10156,16 @@
 
   CustomNavigation = {
     init: function() {
-      var a, i, len, link, navNodes, navigation, node;
+      var a, i, len, link, navNodes, navigation, node, nodes;
       navigation = $("#boardNavDesktop", d.body);
       navNodes = navigation.childNodes;
       i = navNodes.length;
+      nodes = Conf['Append Delimiters'] ? [$.tn("" + userNavigation.delimiter + " ")] : [];
       while (i--) {
         if ((node = navNodes[i]).id === "navtopright") {
           continue;
         }
         $.rm(node);
-      }
-      if (Conf['Append Delimiters']) {
-        $.add(navigation, $.tn("" + userNavigation.delimiter + " "));
       }
       len = userNavigation.links.length - 1;
       while (i++ < len) {
@@ -10177,11 +10175,12 @@
           title: link[1],
           href: link[2]
         });
-        $.add(navigation, a);
+        nodes[nodes.length] = a;
         if (Conf['Append Delimiters'] || i !== len) {
-          $.add(navigation, $.tn(" " + userNavigation.delimiter + " "));
+          nodes[nodes.length] = $.tn(" " + userNavigation.delimiter + " ");
         }
       }
+      $.prepend(navigation, nodes);
     }
   };
 
