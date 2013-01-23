@@ -6822,9 +6822,9 @@
     init: function() {
       return Main.callbacks.push(this.node);
     },
-    regString: /(\b([a-z][-a-z0-9+.]+:\/\/|www\.|magnet:|mailto:|news:)[^\s]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi,
+    regString: /(((magnet|mailto)\:|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi,
     node: function(post) {
-      var blockquote, data, embed, index, link, links, nodes, text, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var a, blockquote, child, commentFrag, data, embed, i, index, link, links, node, nodes, snapshot, text, wbr, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _o, _ref, _ref1, _ref2, _ref3;
       if (post.isInlined && !post.isCrosspost) {
         if (Conf['Embedding']) {
           _ref = $$('.embed', post.blockquote);
@@ -6835,35 +6835,70 @@
         }
         return;
       }
-      data = post.blockquote.innerHTML.replace(/<br/g, " <br");
-      if (!(links = data.match(Linkify.regString))) {
-        return;
-      }
-      nodes = [];
-      for (_j = 0, _len1 = links.length; _j < _len1; _j++) {
-        link = links[_j];
-        index = data.indexOf(link);
-        if (text = data.slice(0, index)) {
-          nodes.push(text);
-        }
-        nodes.push("<a class=linkify rel='nofollow noreferrer' target='blank' href='" + ((!link.contains(":") ? (link.contains('@') ? 'mailto:' + link : 'http://' + link) : link).replace(/<wbr>/g, '')) + "'>" + link + "</a>");
-        data = data.slice(index + link.length);
-      }
-      if (data) {
-        nodes.push(data);
-      }
       blockquote = $.el('blockquote', {
-        innerHTML: nodes.join("")
+        innerHTML: post.blockquote.innerHTML
       });
-      if (Conf['Embedding']) {
-        _ref1 = $$('.linkify', blockquote);
-        for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-          link = _ref1[_k];
-          Linkify.embedder(link);
-        }
+      _ref1 = $$('wbr', blockquote);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        wbr = _ref1[_j];
+        $.replace(wbr.previousSibling, $.tn("" + (($.el('span', {
+          innerHTML: wbr.previousSibling.textContent
+        })).innerHTML + '<wbr>' + ($.el('span', {
+          innerHTML: wbr.nextSibling.textContent
+        })).innerHTML)));
+        $.rm(wbr.nextSibling);
+        $.rm(wbr);
       }
-      $.replace(post.blockquote, blockquote);
-      post.blockquote = blockquote;
+      snapshot = d.evaluate('.//text()', blockquote, null, 6, null);
+      for (i = _k = 0, _ref2 = snapshot.snapshotLength; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
+        node = snapshot.snapshotItem(i);
+        data = node.data;
+        if (!(links = data.match(Linkify.regString))) {
+          continue;
+        }
+        nodes = [];
+        for (_l = 0, _len2 = links.length; _l < _len2; _l++) {
+          link = links[_l];
+          index = data.indexOf(link);
+          if (text = data.slice(0, index)) {
+            commentFrag = $.el('div', {
+              innerHTML: text
+            });
+            for (_m = 0, _len3 = commentFrag.length; _m < _len3; _m++) {
+              child = commentFrag[_m];
+              nodes.push(child);
+            }
+          }
+          a = $.el('a', {
+            innerHTML: link,
+            rel: 'nofollow noreferrer',
+            target: 'blank',
+            href: (link.indexOf(':') < 0 ? (link.indexOf('@') > 0 ? 'mailto:' + link : 'http://' + link) : link).replace(/<wbr>/g, '')
+          });
+          nodes.push(a);
+          data = data.slice(index + link.length);
+        }
+        if (data) {
+          commentFrag = $.el('div', {
+            innerHTML: data
+          });
+          for (_n = 0, _len4 = commentFrag.length; _n < _len4; _n++) {
+            child = commentFrag[_n];
+            nodes.push(child);
+          }
+        }
+        $.replace(node, nodes);
+      }
+      if (a) {
+        if (Conf['Embedding']) {
+          _ref3 = $$('.linkify', blockquote);
+          for (_o = 0, _len5 = _ref3.length; _o < _len5; _o++) {
+            link = _ref3[_o];
+            Linkify.embedder(link);
+          }
+        }
+        return $.replace(post.blockquote, blockquote);
+      }
     },
     toggle: function() {
       var el, embed, style, type, url;

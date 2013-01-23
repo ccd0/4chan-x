@@ -2373,23 +2373,8 @@ Linkify =
   init: ->
     Main.callbacks.push @node
 
-  regString: ///(
-    \b(
-      [a-z][-a-z0-9+.]+:// # Leading handler (http://, ftp://). Matches any *://
-      |
-      www\.
-      |
-      magnet:
-      |
-      mailto:
-      |
-      news:
-    )
-    [^\s]+ # Any whitespace character / End of URL
-    |
-    \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails.
-  )///gi
-
+  regString: /(((magnet|mailto)\:|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi
+  
   node: (post) ->
     if post.isInlined and not post.isCrosspost
       if Conf['Embedding']
@@ -2397,40 +2382,64 @@ Linkify =
           $.on embed, 'click', Linkify.toggle
       return
 
-    data = post.blockquote.innerHTML.replace /<br/g, " <br"
-
-    # Only accept nodes with potentially valid links
-    return unless links = data.match Linkify.regString
-
-    nodes = []
-
-    for link in links
-      index = data.indexOf link
-
-      if text = data[...index]
-        # Potential text before this valid link.
-        nodes.push text
-
-      nodes.push "<a class=linkify rel='nofollow noreferrer' target='blank' href='#{(unless link.contains(":") then (if (link.contains '@') then 'mailto:' + link else 'http://' + link) else link).replace(/<wbr>/g, '')}'>#{link}</a>"
-
-      data = data[index + link.length..]
-
-    if data
-      # Potential text after the last valid link.
-      nodes.push data
-
     blockquote = $.el 'blockquote'
-      innerHTML: nodes.join ""
+      innerHTML: post.blockquote.innerHTML
 
-    if Conf['Embedding']
-      for link in $$ '.linkify', blockquote
-        Linkify.embedder link
+    for wbr in $$ 'wbr', blockquote
+      $.replace wbr.previousSibling, $.tn "#{($.el 'span', innerHTML: wbr.previousSibling.textContent).innerHTML + '<wbr>' + ($.el 'span', innerHTML: wbr.nextSibling.textContent).innerHTML}"
+      $.rm wbr.nextSibling
+      $.rm wbr
 
-    $.replace post.blockquote, blockquote
-    
-    post.blockquote = blockquote
+    snapshot = d.evaluate './/text()', blockquote, null, 6, null
 
-    return
+    for i in [0...snapshot.snapshotLength]
+      node = snapshot.snapshotItem i
+      data = node.data
+      unless links = data.match Linkify.regString
+        # Only accept nodes with potentially valid links
+        continue
+
+      nodes = []
+
+      for link in links
+
+        index = data.indexOf link
+
+        if text = data[...index]
+          # Potential text before this valid link.
+          commentFrag = $.el 'div'
+            innerHTML: text
+
+          # Convert <wbr> into elements
+          for child in commentFrag
+            nodes.push child
+
+        a = $.el 'a',
+          innerHTML: link
+          rel: 'nofollow noreferrer'
+          target: 'blank'
+          href: (if link.indexOf(':') < 0 then (if link.indexOf('@') > 0 then 'mailto:' + link else 'http://' + link) else link).replace /<wbr>/g, ''
+
+        nodes.push a
+        data = data[index + link.length..]
+
+      if data
+        # Potential text after the last valid link.
+        commentFrag = $.el 'div'
+          innerHTML: data
+
+        # Convert <wbr> into elements
+        for child in commentFrag
+          nodes.push child
+
+      $.replace node, nodes
+
+    if a      
+      if Conf['Embedding']
+        for link in $$ '.linkify', blockquote
+         Linkify.embedder link
+
+      $.replace post.blockquote, blockquote
 
   toggle: ->
     # We setup the link to be replaced by the embedded video
