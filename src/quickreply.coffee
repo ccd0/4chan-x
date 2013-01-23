@@ -463,8 +463,16 @@ QR =
       if $.id 'recaptcha_challenge_field_holder'
         @ready()
       else
-        @onready = => @ready()
-        $.on $.id('recaptcha_widget_div'), 'DOMNodeInserted', @onready
+        if MutationObserver
+          observer = new MutationObserver onMutationObserver = =>
+            if $.id 'recaptcha_challenge_field_holder'
+              @ready()
+              observer.disconnect()
+          observer.observe $.id('recaptcha_widget_div'),
+            childList: true
+            subtree: true
+        else
+          $.on $.id('recaptcha_widget_div'), 'DOMNodeInserted', @ready
 
     ready: ->
       if @challenge = $.id 'recaptcha_challenge_field_holder'
@@ -484,11 +492,21 @@ QR =
       @input = $ '.captchainput > input', QR.el
       $.on @img.parentNode, 'click',              @reload
       $.on @input,          'keydown',            @keydown
-      $.on @challenge,      'DOMNodeInserted', => @load()
       $.on @input, 'focus', -> QR.el.classList.add    'focus'
       $.on @input, 'blur',  -> QR.el.classList.remove 'focus'
+
+      if MutationObserver
+        observer = new MutationObserver =>
+          @load()
+        observer.observe @challenge,
+          childList: true
+          subtree: true
+      else
+        $.on @challenge,      'DOMNodeInserted', => @load()
+
       $.sync 'captchas', (arr) => @count arr.length
       @count $.get('captchas', []).length
+
       # start with an uncached captcha
       @reload()
 

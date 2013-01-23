@@ -899,3 +899,6 @@ userNavigation   = {}       # ...
 d                = document # Shortcut
 g                = {}       # "Globals"
 g.TYPE         = 'sfw'		# 4chan Board Type.
+
+# MutationObserver
+MutationObserver = window.MutationObserver or window.WebKitMutationObserver or window.OMutationObserver

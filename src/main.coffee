@@ -307,7 +307,7 @@ Main =
     # Execute these scripts on inserted posts, not page init.
     Main.hasCodeTags = !! $ 'script[src^="//static.4chan.org/js/prettify/prettify"]'
 
-    if MutationObserver = window.MutationObserver or window.WebKitMutationObserver or window.OMutationObserver
+    if MutationObserver
       observer = new MutationObserver Main.observer
       observer.observe board,
         childList: true
@@ -389,6 +389,7 @@ Main =
       post.hasPdf   = /\.pdf$/.test imgParent.href
     Main.prettify post.blockquote
     post
+
   node: (nodes, notify) ->
     for callback in Main.callbacks
       try
@@ -396,13 +397,15 @@ Main =
       catch err
         alert "AppChan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err}\n#{err.stack}" if notify
     return
+
   observer: (mutations) ->
     nodes = []
     for mutation in mutations
       for addedNode in mutation.addedNodes
-        if /\bpostContainer\b/.test(addedNode.className)
+        if /\bpostContainer\b/.test addedNode.className
           nodes.push Main.preParse addedNode
     Main.node nodes if nodes.length
+
   listener: (e) ->
     {target} = e
     if /\bpostContainer\b/.test(target.className)

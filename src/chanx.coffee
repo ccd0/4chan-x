@@ -2572,9 +2572,9 @@ Linkify =
           $.cache service.api.call(a), ->
             a.textContent = switch @status
               when 200, 304
-                title = "[#{key}] #{service.text.call @}"
+                title = "[#{embed.getAttribute 'data-service'}] #{service.text.call @}"
                 embed.setAttribute 'data-title', title
-                titles[match[1]] = [title, Date.now()]
+                titles[embed.name] = [title, Date.now()]
                 $.set 'CachedTitles', titles
                 title
               when 404
