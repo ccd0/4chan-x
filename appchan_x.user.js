@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.38 - 2013-01-22
+ * appchan x - Version 1.0.38 - 2013-01-23
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -6822,9 +6822,9 @@
     init: function() {
       return Main.callbacks.push(this.node);
     },
-    regString: /(((magnet|mailto)\:|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi,
+    regString: /(\b([a-z]+:\/\/|www\.|magnet:|mailto:|news:)[^\s]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi,
     node: function(post) {
-      var a, blockquote, child, commentFrag, data, embed, i, index, link, links, node, nodes, snapshot, text, wbr, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _o, _ref, _ref1, _ref2, _ref3;
+      var a, blockquote, child, commentFrag, data, embed, i, index, len, link, links, node, nodes, snapshot, text, wbr, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref, _ref1, _ref2;
       if (post.isInlined && !post.isCrosspost) {
         if (Conf['Embedding']) {
           _ref = $$('.embed', post.blockquote);
@@ -6850,27 +6850,30 @@
         $.rm(wbr);
       }
       snapshot = d.evaluate('.//text()', blockquote, null, 6, null);
-      for (i = _k = 0, _ref2 = snapshot.snapshotLength; 0 <= _ref2 ? _k < _ref2 : _k > _ref2; i = 0 <= _ref2 ? ++_k : --_k) {
+      i = -1;
+      len = snapshot.snapshotLength;
+      while (++i < len) {
         node = snapshot.snapshotItem(i);
         data = node.data;
         if (!(links = data.match(Linkify.regString))) {
           continue;
         }
         nodes = [];
-        for (_l = 0, _len2 = links.length; _l < _len2; _l++) {
-          link = links[_l];
+        for (_k = 0, _len2 = links.length; _k < _len2; _k++) {
+          link = links[_k];
           index = data.indexOf(link);
           if (text = data.slice(0, index)) {
             commentFrag = $.el('div', {
               innerHTML: text
             });
-            for (_m = 0, _len3 = commentFrag.length; _m < _len3; _m++) {
-              child = commentFrag[_m];
+            for (_l = 0, _len3 = commentFrag.length; _l < _len3; _l++) {
+              child = commentFrag[_l];
               nodes.push(child);
             }
           }
           a = $.el('a', {
             innerHTML: link,
+            className: 'linkify',
             rel: 'nofollow noreferrer',
             target: 'blank',
             href: (link.indexOf(':') < 0 ? (link.indexOf('@') > 0 ? 'mailto:' + link : 'http://' + link) : link).replace(/<wbr>/g, '')
@@ -6882,8 +6885,8 @@
           commentFrag = $.el('div', {
             innerHTML: data
           });
-          for (_n = 0, _len4 = commentFrag.length; _n < _len4; _n++) {
-            child = commentFrag[_n];
+          for (_m = 0, _len4 = commentFrag.length; _m < _len4; _m++) {
+            child = commentFrag[_m];
             nodes.push(child);
           }
         }
@@ -6891,9 +6894,9 @@
       }
       if (a) {
         if (Conf['Embedding']) {
-          _ref3 = $$('.linkify', blockquote);
-          for (_o = 0, _len5 = _ref3.length; _o < _len5; _o++) {
-            link = _ref3[_o];
+          _ref2 = $$('.linkify', blockquote);
+          for (_n = 0, _len5 = _ref2.length; _n < _len5; _n++) {
+            link = _ref2[_n];
             Linkify.embedder(link);
           }
         }

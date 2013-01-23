@@ -2373,7 +2373,22 @@ Linkify =
   init: ->
     Main.callbacks.push @node
 
-  regString: /(((magnet|mailto)\:|(news|(ht|f)tp(s?))\:\/\/){1}\S+)/gi
+  regString: ///(
+    \b(
+      [a-z]+:// # Leading handler (http://, ftp://). Matches any *://
+      |
+      www\.
+      |
+      magnet:
+      |
+      mailto:
+      |
+      news:
+    )
+    [^\s]+ # Any whitespace character / End of URL
+    |
+    \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails.
+  )///gi
   
   node: (post) ->
     if post.isInlined and not post.isCrosspost
@@ -2386,13 +2401,17 @@ Linkify =
       innerHTML: post.blockquote.innerHTML
 
     for wbr in $$ 'wbr', blockquote
+      # Merge any text separated by <wbr>s, replacing <wbr>s with text, escape all special characters in text using innerHTML
       $.replace wbr.previousSibling, $.tn "#{($.el 'span', innerHTML: wbr.previousSibling.textContent).innerHTML + '<wbr>' + ($.el 'span', innerHTML: wbr.nextSibling.textContent).innerHTML}"
       $.rm wbr.nextSibling
       $.rm wbr
 
     snapshot = d.evaluate './/text()', blockquote, null, 6, null
 
-    for i in [0...snapshot.snapshotLength]
+    i = -1
+    len = snapshot.snapshotLength
+
+    while ++i < len
       node = snapshot.snapshotItem i
       data = node.data
       unless links = data.match Linkify.regString
@@ -2416,19 +2435,20 @@ Linkify =
 
         a = $.el 'a',
           innerHTML: link
-          rel: 'nofollow noreferrer'
-          target: 'blank'
-          href: (if link.indexOf(':') < 0 then (if link.indexOf('@') > 0 then 'mailto:' + link else 'http://' + link) else link).replace /<wbr>/g, ''
+          className: 'linkify'
+          rel:       'nofollow noreferrer'
+          target:    'blank'
+          href:      (if link.indexOf(':') < 0 then (if link.indexOf('@') > 0 then 'mailto:' + link else 'http://' + link) else link).replace /<wbr>/g, ''
 
         nodes.push a
         data = data[index + link.length..]
 
       if data
         # Potential text after the last valid link.
+        # & Convert <wbr> into elements
         commentFrag = $.el 'div'
           innerHTML: data
 
-        # Convert <wbr> into elements
         for child in commentFrag
           nodes.push child
 
@@ -2437,7 +2457,7 @@ Linkify =
     if a      
       if Conf['Embedding']
         for link in $$ '.linkify', blockquote
-         Linkify.embedder link
+          Linkify.embedder link
 
       $.replace post.blockquote, blockquote
 
