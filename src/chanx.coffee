@@ -2395,7 +2395,9 @@ Linkify =
     |
     \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails.
   )///gi
-  
+
+  cypher: $.el 'div'
+
   node: (post) ->
     if post.isInlined and not post.isCrosspost
       if Conf['Embedding']
@@ -2403,68 +2405,92 @@ Linkify =
           $.on embed, 'click', Linkify.toggle
       return
 
-    for wbr in $$ 'wbr', post.blockquote
-      # Merge any text separated by <wbr>s, replacing <wbr>s with text, escape all special characters in text using innerHTML
-      $.replace wbr.previousSibling, $.tn "#{($.el 'span', innerHTML: wbr.previousSibling.textContent).innerHTML + '<wbr>' + ($.el 'span', innerHTML: wbr.nextSibling.textContent).innerHTML}"
-      $.rm wbr.nextSibling
-      $.rm wbr
-
     snapshot = d.evaluate './/text()', post.blockquote, null, 6, null
-
-    i = -1
-    len = snapshot.snapshotLength
+    
+    # By using an out-of-document element to hold text I
+    # can use the browser's methods and properties for 
+    # character escaping, instead of depending on loose code
+    cypher   = Linkify.cypher
+    i        = -1
+    len      = snapshot.snapshotLength
 
     while ++i < len
       nodes = []
       node  = snapshot.snapshotItem i
       data  = node.data
-      
-      # Only accept nodes with potentially valid links
-      unless links = data.match Linkify.regString
-        commentFrag = $.el 'div'
-          innerHTML: data
 
-        for child in commentFrag
-          nodes.push child
+      continue unless data.match Linkify.regString
 
-        if nodes.length > 1
-          $.replace node, nodes
+      cypherText = []
 
-        continue
+      if next = node.nextSibling
+        # This is one of the few examples in JS where what you
+        # put into a variable is different than what comes out
+        cypher.innerHTML = node.textContent
+        cypherText[0]    = cypher.innerHTML
+ 
+        # i herd u leik wbr
+        while ((next.nodeName.toLowerCase() is 'wbr') and ((spoiler = false) or true)) or ((next.nodeName.toLowerCase() is 's') and spoiler = true)
+          lookahead        = next.nextSibling
+          cypher.innerHTML = lookahead.textContent
+
+          cypherText[cypherText.length] = if spoiler then "<s>#{next.textContent}</s>" else '<wbr>'
+          cypherText[cypherText.length] = cypher.innerHTML
+
+          $.rm next
+          next = lookahead.nextSibling
+          $.rm lookahead
+
+          break unless next
+
+      if cypherText.length
+        data = cypherText.join ''
+
+      # Re-check for links due to string merging.
+      links = data.match Linkify.regString
 
       for link in links
-
         index = data.indexOf link
 
+        # Potential text before this valid link.
+        # Convert <wbr> and spoilers into elements
         if text = data[...index]
-          # Potential text before this valid link.
-          commentFrag = $.el 'div'
-            innerHTML: text
-
-          # Convert <wbr> into elements
-          for child in commentFrag
+          # press button get bacon
+          cypher.innerHTML = text
+          for child in cypher.childNodes
             nodes.push child
 
+        cypher.innerHTML = (if link.indexOf(':') < 0 then (if link.indexOf('@') > 0 then 'mailto:' + link else 'http://' + link) else link).replace /<(wbr|s|\/s)>/g, ''
+
+        # The bloodied text walked away, mangled
+        # Attributes dropping out its opened gut
+        # For the RegEx Blade vibrated violently
+        # Ripping and tearing as it classified a
+        # Poor piece of prose out of its element
+        # Injured anchor arose an example of art
         a = $.el 'a',
           innerHTML: link
           className: 'linkify'
           rel:       'nofollow noreferrer'
           target:    'blank'
-          href:      (if link.indexOf(':') < 0 then (if link.indexOf('@') > 0 then 'mailto:' + link else 'http://' + link) else link).replace /<wbr>/g, ''
+          href:      cypher.textContent
 
+        # To die and rot inside burning embedder
         nodes = nodes.concat Linkify.embedder a
 
+        # The survivor shot down with no remorse
         data = data[index + link.length..]
 
       if data
         # Potential text after the last valid link.
         # & Convert <wbr> into elements
-        commentFrag = $.el 'div'
-          innerHTML: data
+        cypher.innerHTML = text
 
-        for child in commentFrag
+        # Convert <wbr> into elements
+        for child in cypher.childNodes
           nodes.push child
 
+      # They were replaced with constructs.
       $.replace node, nodes
 
   toggle: ->

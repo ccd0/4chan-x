@@ -6824,8 +6824,9 @@
       return Main.callbacks.push(this.node);
     },
     regString: /(\b([a-z]+:\/\/|www\.|magnet:|mailto:|news:)[^\s]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi,
+    cypher: $.el('div'),
     node: function(post) {
-      var a, child, commentFrag, data, embed, i, index, len, link, links, node, nodes, snapshot, text, wbr, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref, _ref1, _results;
+      var a, child, cypher, cypherText, data, embed, i, index, len, link, links, lookahead, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results;
       if (post.isInlined && !post.isCrosspost) {
         if (Conf['Embedding']) {
           _ref = $$('.embed', post.blockquote);
@@ -6836,18 +6837,8 @@
         }
         return;
       }
-      _ref1 = $$('wbr', post.blockquote);
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        wbr = _ref1[_j];
-        $.replace(wbr.previousSibling, $.tn("" + (($.el('span', {
-          innerHTML: wbr.previousSibling.textContent
-        })).innerHTML + '<wbr>' + ($.el('span', {
-          innerHTML: wbr.nextSibling.textContent
-        })).innerHTML)));
-        $.rm(wbr.nextSibling);
-        $.rm(wbr);
-      }
       snapshot = d.evaluate('.//text()', post.blockquote, null, 6, null);
+      cypher = Linkify.cypher;
       i = -1;
       len = snapshot.snapshotLength;
       _results = [];
@@ -6855,47 +6846,57 @@
         nodes = [];
         node = snapshot.snapshotItem(i);
         data = node.data;
-        if (!(links = data.match(Linkify.regString))) {
-          commentFrag = $.el('div', {
-            innerHTML: data
-          });
-          for (_k = 0, _len2 = commentFrag.length; _k < _len2; _k++) {
-            child = commentFrag[_k];
-            nodes.push(child);
-          }
-          if (nodes.length > 1) {
-            $.replace(node, nodes);
-          }
+        if (!data.match(Linkify.regString)) {
           continue;
         }
-        for (_l = 0, _len3 = links.length; _l < _len3; _l++) {
-          link = links[_l];
+        cypherText = [];
+        if (next = node.nextSibling) {
+          cypher.innerHTML = node.textContent;
+          cypherText[0] = cypher.innerHTML;
+          while (((next.nodeName.toLowerCase() === 'wbr') && ((spoiler = false) || true)) || ((next.nodeName.toLowerCase() === 's') && (spoiler = true))) {
+            lookahead = next.nextSibling;
+            cypher.innerHTML = lookahead.textContent;
+            cypherText[cypherText.length] = spoiler ? "<s>" + next.textContent + "</s>" : '<wbr>';
+            cypherText[cypherText.length] = cypher.innerHTML;
+            $.rm(next);
+            next = lookahead.nextSibling;
+            $.rm(lookahead);
+            if (!next) {
+              break;
+            }
+          }
+        }
+        if (cypherText.length) {
+          data = cypherText.join('');
+        }
+        links = data.match(Linkify.regString);
+        for (_j = 0, _len1 = links.length; _j < _len1; _j++) {
+          link = links[_j];
           index = data.indexOf(link);
           if (text = data.slice(0, index)) {
-            commentFrag = $.el('div', {
-              innerHTML: text
-            });
-            for (_m = 0, _len4 = commentFrag.length; _m < _len4; _m++) {
-              child = commentFrag[_m];
+            cypher.innerHTML = text;
+            _ref1 = cypher.childNodes;
+            for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+              child = _ref1[_k];
               nodes.push(child);
             }
           }
+          cypher.innerHTML = (link.indexOf(':') < 0 ? (link.indexOf('@') > 0 ? 'mailto:' + link : 'http://' + link) : link).replace(/<(wbr|s|\/s)>/g, '');
           a = $.el('a', {
             innerHTML: link,
             className: 'linkify',
             rel: 'nofollow noreferrer',
             target: 'blank',
-            href: (link.indexOf(':') < 0 ? (link.indexOf('@') > 0 ? 'mailto:' + link : 'http://' + link) : link).replace(/<wbr>/g, '')
+            href: cypher.textContent
           });
           nodes = nodes.concat(Linkify.embedder(a));
           data = data.slice(index + link.length);
         }
         if (data) {
-          commentFrag = $.el('div', {
-            innerHTML: data
-          });
-          for (_n = 0, _len5 = commentFrag.length; _n < _len5; _n++) {
-            child = commentFrag[_n];
+          cypher.innerHTML = text;
+          _ref2 = cypher.childNodes;
+          for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
+            child = _ref2[_l];
             nodes.push(child);
           }
         }
