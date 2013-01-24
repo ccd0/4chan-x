@@ -1016,7 +1016,7 @@
 
   Redirect = {
     image: function(board, filename) {
-      switch (board) {
+      switch (board.ID) {
         case 'a':
         case 'co':
         case 'jp':
@@ -1057,7 +1057,7 @@
       }
     },
     post: function(board, postID) {
-      switch (board) {
+      switch (board.ID) {
         case 'a':
         case 'co':
         case 'jp':
@@ -1082,7 +1082,7 @@
     to: function(data) {
       var board, url;
       board = data.board;
-      switch (board) {
+      switch (board.ID) {
         case 'a':
         case 'co':
         case 'jp':

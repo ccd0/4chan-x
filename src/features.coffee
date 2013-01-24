@@ -248,7 +248,7 @@ Redirect =
   image: (board, filename) ->
     # XXX need to differentiate between thumbnail only and full_image for img src=
     # Do not use g.BOARD, the image url can originate from a cross-quote.
-    switch board
+    switch board.ID
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg'
         "//archive.foolz.us/#{board}/full_image/#{filename}"
       when 'u'
@@ -266,7 +266,7 @@ Redirect =
       when 'c'
         "//archive.nyafuu.org/#{board}/full_image/#{filename}"
   post: (board, postID) ->
-    switch board
+    switch board.ID
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
@@ -277,7 +277,7 @@ Redirect =
     # https://github.com/eksopl/fuuka/issues/27
   to: (data) ->
     {board} = data
-    switch board
+    switch board.ID
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
       when 'u', 'kuku'
