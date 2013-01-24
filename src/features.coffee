@@ -1424,6 +1424,7 @@ ThreadUpdater =
         if @online = navigator.onLine
           @unsuccessfulFetchCount = 0
           @set 'timer', @getInterval()
+          @update() if Conf['Auto Update This']
           @set 'status', null
           @status.className = null
         else

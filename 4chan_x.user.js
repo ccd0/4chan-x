@@ -2419,6 +2419,9 @@
           if (this.online = navigator.onLine) {
             this.unsuccessfulFetchCount = 0;
             this.set('timer', this.getInterval());
+            if (Conf['Auto Update This']) {
+              this.update();
+            }
             this.set('status', null);
             this.status.className = null;
           } else {
