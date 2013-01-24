@@ -2441,6 +2441,7 @@ Linkify =
           next = lookahead.nextSibling
           $.rm lookahead
 
+          i++
           break unless next
 
       if cypherText.length

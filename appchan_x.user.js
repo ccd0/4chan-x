@@ -6861,6 +6861,7 @@
             $.rm(next);
             next = lookahead.nextSibling;
             $.rm(lookahead);
+            i++;
             if (!next) {
               break;
             }
@@ -11154,22 +11155,21 @@
       return post;
     },
     node: function(nodes, notify) {
-      var callback, node, _i, _len, _ref, _results;
+      var callback, node, _i, _j, _len, _len1, _ref;
       _ref = Main.callbacks;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
-        _results.push((function() {
-          var _j, _len1, _results1;
-          _results1 = [];
+        try {
           for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
             node = nodes[_j];
-            _results1.push(callback(node));
+            callback(node);
           }
-          return _results1;
-        })());
+        } catch (err) {
+          if (notify) {
+            alert("AppChan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n" + Main.version + "\n" + window.location + "\n" + navigator.userAgent + "\n\n" + err + "\n" + err.stack);
+          }
+        }
       }
-      return _results;
     },
     observer: function(mutations) {
       var addedNode, mutation, nodes, _i, _j, _len, _len1, _ref;
