@@ -109,6 +109,9 @@ Main =
       ThreadHiding.init()
     
     $.ready ->
+      if _conf['Custom Navigation']
+        CustomNavigation.init()
+
       Options.init()
       MascotTools.init()
 
@@ -116,9 +119,6 @@ Main =
         if a = $ "a[href*='/#{g.BOARD}/']", $.id nav
           # Gotta make it work in temporary boards.
           $.addClass a, 'current'
-
-      if _conf['Custom Navigation']
-        CustomNavigation.init()
 
   features: ->
     _conf = Conf

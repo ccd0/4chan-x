@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                appchan x
 // @namespace           zixaphir
-// @version             1.0.38
+// @version             1.0.39
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           2013 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2009-2011 James Campos <james.r.campos@gmail.com>
@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.38 - 2013-01-24
+ * appchan x - Version 1.0.39 - 2013-01-24
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -10851,19 +10851,23 @@
         ThreadHiding.init();
       }
       return $.ready(function() {
-        var a, nav, _i, _len, _ref;
+        var a, nav, _i, _len, _ref, _results;
+        if (_conf['Custom Navigation']) {
+          CustomNavigation.init();
+        }
         Options.init();
         MascotTools.init();
         _ref = ['boardNavDesktop', 'boardNavDesktopFoot'];
+        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           nav = _ref[_i];
           if (a = $("a[href*='/" + g.BOARD + "/']", $.id(nav))) {
-            $.addClass(a, 'current');
+            _results.push($.addClass(a, 'current'));
+          } else {
+            _results.push(void 0);
           }
         }
-        if (_conf['Custom Navigation']) {
-          return CustomNavigation.init();
-        }
+        return _results;
       });
     },
     features: function() {
@@ -11222,7 +11226,7 @@
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '1.0.38',
+    version: '1.0.39',
     callbacks: []
   };
 
