@@ -20,7 +20,7 @@
 // @icon         https://github.com/MayhemYDG/4chan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2013-01-22
+/* 4chan X Alpha - Version 3.0.0 - 2013-01-24
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, RevealSpoilers, Sauce, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, g, _base,
+  var $, $$, Anonymize, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, ReplyHiding, RevealSpoilers, Sauce, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, g, _base,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -65,7 +65,7 @@
       Filtering: {
         'Anonymize': [false, 'Turn everyone Anonymous.'],
         'Filter': [true, 'Self-moderation placebo.'],
-        'Recursive Filtering': [true, 'Filter replies of filtered posts, recursively.'],
+        'Recursive Hiding': [true, 'Filter replies of filtered posts, recursively.'],
         'Reply Hiding': [true, 'Hide single replies.'],
         'Thread Hiding': [true, 'Hide entire threads.'],
         'Stubs': [true, 'Make stubs of hidden threads / replies.']
@@ -696,7 +696,7 @@
       if (_ref = this.ID, __indexOf.call(ThreadHiding.hiddenThreads.threads, _ref) >= 0) {
         ThreadHiding.hide(this);
       }
-      return $.prepend(this.posts[this].nodes.root, ThreadHiding.makeButton(this, '-'));
+      return $.prepend(this.posts[this].nodes.root, ThreadHiding.makeButton(this, 'hide'));
     },
     getHiddenThreads: function() {
       var hiddenThreads;
@@ -748,11 +748,11 @@
         }
       });
     },
-    makeButton: function(thread, sign) {
+    makeButton: function(thread, type) {
       var a;
       a = $.el('a', {
-        className: 'hide-thread-button',
-        innerHTML: "<span>[&nbsp;" + sign + "&nbsp;]</span>&nbsp;",
+        className: "" + type + "-thread-button",
+        innerHTML: "<span>[&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;]</span>",
         href: 'javascript:;'
       });
       $.on(a, 'click', function() {
@@ -798,9 +798,11 @@
       numReplies += $$('.opContainer ~ .replyContainer', threadRoot).length;
       numReplies = numReplies === 1 ? '1 reply' : "" + numReplies + " replies";
       opInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', op.nodes.info).textContent;
-      a = ThreadHiding.makeButton(thread, '+');
-      $.add(a, $.tn("" + opInfo + " (" + numReplies + ")"));
-      thread.stub = $.el('div');
+      a = ThreadHiding.makeButton(thread, 'show');
+      $.add(a, $.tn(" " + opInfo + " (" + numReplies + ")"));
+      thread.stub = $.el('div', {
+        className: 'stub'
+      });
       $.add(thread.stub, a);
       return $.before(threadRoot, thread.stub);
     },
@@ -834,7 +836,7 @@
           ReplyHiding.hide(this);
         }
       }
-      return $.replace($('.sideArrows', this.nodes.root), ReplyHiding.makeButton(this, '-'));
+      return $.replace($('.sideArrows', this.nodes.root), ReplyHiding.makeButton(this, 'hide'));
     },
     getHiddenPosts: function() {
       var hiddenPosts;
@@ -880,11 +882,11 @@
         }
       });
     },
-    makeButton: function(post, sign) {
+    makeButton: function(post, type) {
       var a;
       a = $.el('a', {
-        className: 'hide-reply-button',
-        innerHTML: "<span>[&nbsp;" + sign + "&nbsp;]</span>",
+        className: "" + type + "-reply-button",
+        innerHTML: "<span>[&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;]</span>",
         href: 'javascript:;'
       });
       $.on(a, 'click', function() {
@@ -893,27 +895,20 @@
       return a;
     },
     toggle: function(post) {
-      var hiddenPosts, quotelink, quotelinks, thread, _i, _j, _len, _len1;
+      var hiddenPosts, index, thread;
       hiddenPosts = ReplyHiding.getHiddenPosts();
-      quotelinks = Get.allQuotelinksLinkingTo(post);
       if (post.isHidden) {
         ReplyHiding.show(post);
-        for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
-          quotelink = quotelinks[_i];
-          $.rmClass(quotelink, 'filtered');
-        }
         thread = hiddenPosts.threads[post.thread];
-        if (thread.length === 1) {
-          delete hiddenPosts.threads[post.thread];
-        } else {
-          thread.splice(thread.indexOf(post.ID), 1);
+        if ((index = thread.indexOf(post.ID)) > -1) {
+          if (thread.length === 1) {
+            delete hiddenPosts.threads[post.thread];
+          } else {
+            thread.splice(index, 1);
+          }
         }
       } else {
         ReplyHiding.hide(post);
-        for (_j = 0, _len1 = quotelinks.length; _j < _len1; _j++) {
-          quotelink = quotelinks[_j];
-          $.addClass(quotelink, 'filtered');
-        }
         if (!(thread = hiddenPosts.threads[post.thread])) {
           thread = hiddenPosts.threads[post.thread] = [];
         }
@@ -921,31 +916,101 @@
       }
       return $.set("hiddenPosts." + g.BOARD, hiddenPosts);
     },
-    hide: function(post, makeStub) {
-      var a, postInfo;
+    hide: function(post, makeStub, hideRecursively) {
+      var a, postInfo, quotelink, _i, _len, _ref;
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
+      }
+      if (hideRecursively == null) {
+        hideRecursively = Conf['Recursive Hiding'];
       }
       if (post.isHidden) {
         return;
       }
-      post.nodes.root.hidden = post.isHidden = true;
+      post.isHidden = true;
+      if (hideRecursively) {
+        Recursive.hide(post, makeStub, true);
+      }
+      _ref = Get.allQuotelinksLinkingTo(post);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quotelink = _ref[_i];
+        $.addClass(quotelink, 'filtered');
+      }
       if (!makeStub) {
         return;
       }
-      a = ReplyHiding.makeButton(post, '+');
+      a = ReplyHiding.makeButton(post, 'show');
       postInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', post.nodes.info).textContent;
       $.add(a, $.tn(" " + postInfo));
-      post.stub = $.el('div');
-      $.add(post.stub, a);
-      return $.before(post.nodes.root, post.stub);
+      post.nodes.stub = $.el('div', {
+        className: 'stub'
+      });
+      $.add(post.nodes.stub, a);
+      return $.prepend(post.nodes.root, post.nodes.stub);
     },
     show: function(post) {
-      if (post.stub) {
-        $.rm(post.stub);
-        delete post.stub;
+      var quotelink, _i, _len, _ref;
+      if (post.nodes.stub) {
+        $.rm(post.nodes.stub);
+        delete post.nodes.stub;
       }
-      return post.nodes.root.hidden = post.isHidden = false;
+      post.isHidden = false;
+      _ref = Get.allQuotelinksLinkingTo(post);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quotelink = _ref[_i];
+        $.rmClass(quotelink, 'filtered');
+      }
+    }
+  };
+
+  Recursive = {
+    toHide: [],
+    init: function() {
+      return Post.prototype.callbacks.push({
+        name: 'Recursive',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var board, postID, quote, quotelink, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      if (this.isClone) {
+        return;
+      }
+      _ref = this.quotes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        if (__indexOf.call(Recursive.toHide, quote) >= 0) {
+          ReplyHiding.hide(this, !!g.posts[quote].nodes.stub, true);
+        }
+      }
+      _ref1 = this.nodes.quotelinks;
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        quotelink = _ref1[_j];
+        _ref2 = Get.postDataFromLink(quotelink), board = _ref2.board, postID = _ref2.postID;
+        if ((_ref3 = g.posts["" + board + "." + postID]) != null ? _ref3.isHidden : void 0) {
+          $.addClass(quotelink, 'filtered');
+        }
+      }
+    },
+    hide: function(post, makeStub) {
+      var ID, fullID, quote, _i, _len, _ref, _ref1;
+      fullID = post.fullID;
+      Recursive.toHide.push(fullID);
+      _ref = g.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
+        if (!post.isReply || post.isHidden) {
+          continue;
+        }
+        _ref1 = post.quotes;
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          quote = _ref1[_i];
+          if (quote === fullID) {
+            ReplyHiding.hide(post, makeStub, true);
+            break;
+          }
+        }
+      }
     }
   };
 
@@ -1017,7 +1082,7 @@
     to: function(data) {
       var board, url;
       board = data.board;
-      switch ("" + board) {
+      switch (board) {
         case 'a':
         case 'co':
         case 'jp':
@@ -1283,13 +1348,12 @@
       };
     },
     allQuotelinksLinkingTo: function(post) {
-      var ID, fullID, quote, quotedPost, quotelinks, quoterPost, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+      var ID, quote, quotedPost, quotelinks, quoterPost, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
       quotelinks = [];
-      fullID = "" + post.board + "." + post;
       _ref = g.posts;
       for (ID in _ref) {
         quoterPost = _ref[ID];
-        if (-1 !== quoterPost.quotes.indexOf(fullID)) {
+        if (-1 !== quoterPost.quotes.indexOf(post.fullID)) {
           _ref1 = [quoterPost].concat(quoterPost.clones);
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             quoterPost = _ref1[_i];
@@ -1301,7 +1365,9 @@
         _ref2 = post.quotes;
         for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
           quote = _ref2[_j];
-          quotedPost = g.posts[quote];
+          if (!(quotedPost = g.posts[quote])) {
+            continue;
+          }
           _ref3 = [quotedPost].concat(quotedPost.clones);
           for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
             quotedPost = _ref3[_k];
@@ -1584,19 +1650,20 @@
       }
     },
     toggle: function(e) {
-      var board, postID, threadID, _ref;
+      var board, context, postID, threadID, _ref;
       if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
         return;
       }
       e.preventDefault();
       _ref = Get.postDataFromLink(this), board = _ref.board, threadID = _ref.threadID, postID = _ref.postID;
+      context = Get.contextFromLink(this);
       if ($.hasClass(this, 'inlined')) {
-        QuoteInline.rm(this, board, threadID, postID);
+        QuoteInline.rm(this, board, threadID, postID, context);
       } else {
         if ($.x("ancestor::div[@id='p" + postID + "']", this)) {
           return;
         }
-        QuoteInline.add(this, board, threadID, postID);
+        QuoteInline.add(this, board, threadID, postID, context);
       }
       return this.classList.toggle('inlined');
     },
@@ -1607,28 +1674,27 @@
         return $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
       }
     },
-    add: function(quotelink, board, threadID, postID) {
-      var context, inline, isBacklink, post;
+    add: function(quotelink, board, threadID, postID, context) {
+      var inline, isBacklink, post;
       isBacklink = $.hasClass(quotelink, 'backlink');
       inline = $.el('div', {
         id: "i" + postID,
         className: 'inline'
       });
-      context = Get.contextFromLink(quotelink);
       $.after(QuoteInline.findRoot(quotelink, isBacklink), inline);
       Get.postClone(board, threadID, postID, inline, context);
-      if (context.thread !== g.threads["" + board + "." + threadID]) {
+      if (!((post = g.posts["" + board + "." + postID]) && context.thread === post.thread)) {
         return;
       }
-      post = g.posts["" + board + "." + postID];
       if (isBacklink && Conf['Forward Hiding']) {
         $.addClass(post.nodes.root, 'forwarded');
         return post.forwarded++ || (post.forwarded = 1);
       }
     },
-    rm: function(quotelink, board, threadID, postID) {
-      var context, el, inline, post, root, _i, _len, _ref, _ref1;
-      root = QuoteInline.findRoot(quotelink, $.hasClass(quotelink, 'backlink'));
+    rm: function(quotelink, board, threadID, postID, context) {
+      var el, inlined, isBacklink, post, root, _ref;
+      isBacklink = $.hasClass(quotelink, 'backlink');
+      root = QuoteInline.findRoot(quotelink, isBacklink);
       root = $.x("following-sibling::div[@id='i" + postID + "'][1]", root);
       $.rm(root);
       if (!(el = root.firstElementChild)) {
@@ -1636,26 +1702,14 @@
       }
       post = g.posts["" + board + "." + postID];
       post.rmClone(el.dataset.clone);
-      context = Get.contextFromLink(quotelink);
-      if (Conf['Forward Hiding'] && context.thread === g.threads["" + board + "." + threadID] && $.hasClass(quotelink, 'backlink') && !--post.forwarded) {
+      if (Conf['Forward Hiding'] && isBacklink && context.thread === g.threads["" + board + "." + threadID] && !--post.forwarded) {
         delete post.forwarded;
         $.rmClass(post.nodes.root, 'forwarded');
       }
-      _ref = $$('.inlined', el);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        inline = _ref[_i];
-        _ref1 = Get.postDataFromLink(inline), board = _ref1.board, threadID = _ref1.threadID, postID = _ref1.postID;
-        root = QuoteInline.findRoot(inline, $.hasClass(inline, 'backlink'));
-        root = $.x("following-sibling::div[@id='i" + postID + "'][1]", root);
-        if (!(el = root.firstElementChild)) {
-          continue;
-        }
-        post = g.posts["" + board + "." + postID];
-        post.rmClone(el.dataset.clone);
-        if (Conf['Forward Hiding'] && context.thread === g.threads["" + board + "." + threadID] && $.hasClass(inline, 'backlink') && !--post.forwarded) {
-          delete post.forwarded;
-          $.rmClass(post.nodes.root, 'forwarded');
-        }
+      while (inlined = $('.inlined', el)) {
+        _ref = Get.postDataFromLink(inlined), board = _ref.board, threadID = _ref.threadID, postID = _ref.postID;
+        QuoteInline.rm(inlined, board, threadID, postID, context);
+        $.rmClass(inlined, 'inlined');
       }
     }
   };
@@ -1798,7 +1852,7 @@
       if (!(Conf['OP Backlinks'] || this.isReply)) {
         return;
       }
-      container = QuoteBacklink.getContainer("" + this.board + "." + this);
+      container = QuoteBacklink.getContainer(this.fullID);
       this.nodes.backlinkContainer = container;
       return $.add(this.nodes.info, container);
     },
@@ -1819,7 +1873,7 @@
       });
     },
     node: function() {
-      var board, op, postID, quote, quotelinks, quotes, thread, _i, _j, _len, _len1, _ref, _ref1;
+      var board, op, postID, quote, quotelinks, quotes, _i, _j, _len, _len1, _ref;
       if (this.isClone && this.thread === this.context.thread) {
         return;
       }
@@ -1827,20 +1881,19 @@
         return;
       }
       quotelinks = this.nodes.quotelinks;
-      if (this.isClone && -1 < quotes.indexOf("" + this.board + "." + this.thread)) {
+      if (this.isClone && -1 < quotes.indexOf(this.fullID)) {
         for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
           quote = quotelinks[_i];
           quote.textContent = quote.textContent.replace(QuoteOP.text, '');
         }
       }
-      _ref = this.isClone ? this.context : this, board = _ref.board, thread = _ref.thread;
-      op = "" + board + "." + thread;
+      op = (this.isClone ? this.context : this).thread.fullID;
       if (!(-1 < quotes.indexOf(op))) {
         return;
       }
       for (_j = 0, _len1 = quotelinks.length; _j < _len1; _j++) {
         quote = quotelinks[_j];
-        _ref1 = Get.postDataFromLink(quote), board = _ref1.board, postID = _ref1.postID;
+        _ref = Get.postDataFromLink(quote), board = _ref.board, postID = _ref.postID;
         if (("" + board + "." + postID) === op) {
           $.add(quote, $.tn(QuoteOP.text));
         }
@@ -2609,6 +2662,7 @@
     function Thread(ID, board) {
       this.board = board;
       this.ID = +ID;
+      this.fullID = "" + this.board + "." + this.ID;
       this.posts = {};
       g.threads["" + board + "." + this] = board.threads[this] = this;
     }
@@ -2633,6 +2687,7 @@
         that = {};
       }
       this.ID = +root.id.slice(2);
+      this.fullID = "" + this.board + "." + this.ID;
       post = $('.post', root);
       info = $('.postInfo', post);
       this.nodes = {
@@ -2786,7 +2841,7 @@
       var file, index, info, inline, inlined, key, nodes, post, quotelink, root, val, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4;
       this.origin = origin;
       this.context = context;
-      _ref = ['ID', 'board', 'thread', 'info', 'quotes', 'isReply'];
+      _ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         key = _ref[_i];
         this[key] = origin[key];
@@ -2968,6 +3023,13 @@
         settings.disableAll = true;
         localStorage.setItem('4chan-settings', JSON.stringify(settings));
       }
+      if (Conf['Resurrect Quotes']) {
+        try {
+          Quotify.init();
+        } catch (err) {
+          $.log(err, 'Resurrect Quotes');
+        }
+      }
       if (Conf['Thread Hiding']) {
         try {
           ThreadHiding.init();
@@ -2982,12 +3044,10 @@
           $.log(err, 'Reply Hiding');
         }
       }
-      if (Conf['Resurrect Quotes']) {
-        try {
-          Quotify.init();
-        } catch (err) {
-          $.log(err, 'Resurrect Quotes');
-        }
+      try {
+        Recursive.init();
+      } catch (err) {
+        $.log(err, 'Recursive');
       }
       if (Conf['Quote Inline']) {
         try {
@@ -3134,14 +3194,15 @@
             callback.cb.call(nodes[i]);
           }
         } catch (err) {
-          $.log(callback.name, 'crashed. error:', err.message, nodes[i], err);
+          $.log(callback.name, 'crashed. error:', err.message, nodes[i]);
+          $.log(err.stack);
         }
       }
     },
     settings: function() {
       return alert('Here be settings');
     },
-    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#boardNavDesktop.reply,\n#qr, #watcher {\n  position: fixed;\n}\n#qp, #ihover {\n  z-index: 100;\n}\n#updater, #stats {\n  z-index: 90;\n}\n#boardNavDesktop.reply:hover {\n  z-index: 80;\n}\n#qr {\n  z-index: 50;\n}\n#watcher {\n  z-index: 30;\n}\n#boardNavDesktop.reply {\n  z-index: 10;\n}\n\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* thread updater */\n#updater {\n  text-align: right;\n}\n#updater:not(:hover) {\n  background: none;\n  border: none;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n.new {\n  color: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.filtered {\n  text-decoration: underline line-through;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  padding-bottom: 16px;\n}\n\n/* thread hiding */\n.opContainer > .hide-thread-button {\n  float: left;\n}\n\n/* reply hiding */\n.replyContainer > .hide-reply-button {\n  float: left;\n  margin-right: 2px;\n}"
+    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n[hidden] {\n  display: none !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#boardNavDesktop.reply,\n#qr, #watcher {\n  position: fixed;\n}\n#qp, #ihover {\n  z-index: 100;\n}\n#updater, #stats {\n  z-index: 90;\n}\n#boardNavDesktop.reply:hover {\n  z-index: 80;\n}\n#qr {\n  z-index: 50;\n}\n#watcher {\n  z-index: 30;\n}\n#boardNavDesktop.reply {\n  z-index: 10;\n}\n\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* thread updater */\n#updater {\n  text-align: right;\n}\n#updater:not(:hover) {\n  background: none;\n  border: none;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n.new {\n  color: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.filtered {\n  text-decoration: underline line-through;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  padding-bottom: 16px;\n}\n\n/* thread & reply hiding */\n.hide-thread-button,\n.hide-reply-button {\n  float: left;\n  margin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\n  display: none !important;\n}"
   };
 
   Main.init();

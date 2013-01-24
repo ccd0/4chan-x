@@ -14,7 +14,7 @@ Config =
     Filtering:
       'Anonymize':                    [false, 'Turn everyone Anonymous.']
       'Filter':                       [true,  'Self-moderation placebo.']
-      'Recursive Filtering':          [true,  'Filter replies of filtered posts, recursively.']
+      'Recursive Hiding':             [true,  'Filter replies of filtered posts, recursively.']
       'Reply Hiding':                 [true,  'Hide single replies.']
       'Thread Hiding':                [true,  'Hide entire threads.']
       'Stubs':                        [true,  'Make stubs of hidden threads / replies.']

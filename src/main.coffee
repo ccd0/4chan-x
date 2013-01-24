@@ -12,8 +12,9 @@ class Thread
   toString: -> @ID
 
   constructor: (ID, @board) ->
-    @ID = +ID
-    @posts = {}
+    @ID     = +ID
+    @fullID = "#{@board}.#{@ID}"
+    @posts  = {}
 
     # XXX Can't check when parsing single posts
     #     move to Post constructor? unless @isReply
@@ -28,7 +29,8 @@ class Post
   toString: -> @ID
 
   constructor: (root, @thread, @board, that={}) ->
-    @ID = +root.id[2..]
+    @ID     = +root.id[2..]
+    @fullID = "#{@board}.#{@ID}"
 
     post = $ '.post',     root
     info = $ '.postInfo', post
@@ -169,7 +171,7 @@ class Post
 
 class Clone extends Post
   constructor: (@origin, @context) ->
-    for key in ['ID', 'board', 'thread', 'info', 'quotes', 'isReply']
+    for key in ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply']
       # Copy or point to the origin's key value.
       @[key] = origin[key]
 
@@ -313,6 +315,13 @@ Main =
       settings.disableAll = true
       localStorage.setItem '4chan-settings', JSON.stringify settings
 
+    if Conf['Resurrect Quotes']
+      try
+        Quotify.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Resurrect Quotes'
+
     if Conf['Thread Hiding']
       try
         ThreadHiding.init()
@@ -327,12 +336,11 @@ Main =
         # XXX handle error
         $.log err, 'Reply Hiding'
 
-    if Conf['Resurrect Quotes']
-      try
-        Quotify.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Resurrect Quotes'
+    try
+      Recursive.init()
+    catch err
+      # XXX handle error
+      $.log err, 'Recursive'
 
     if Conf['Quote Inline']
       try
@@ -466,7 +474,8 @@ Main =
           callback.cb.call nodes[i]
       catch err
         # XXX handle error if notify
-        $.log callback.name, 'crashed. error:', err.message, nodes[i], err
+        $.log callback.name, 'crashed. error:', err.message, nodes[i]
+        $.log err.stack
     return
 
   settings: ->

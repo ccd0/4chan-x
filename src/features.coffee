@@ -11,7 +11,7 @@ ThreadHiding =
   node: ->
     if @ID in ThreadHiding.hiddenThreads.threads
       ThreadHiding.hide @
-    $.prepend @posts[@].nodes.root, ThreadHiding.makeButton @, '-'
+    $.prepend @posts[@].nodes.root, ThreadHiding.makeButton @, 'hide'
 
   getHiddenThreads: ->
     hiddenThreads = $.get "hiddenThreads.#{g.BOARD}"
@@ -47,10 +47,10 @@ ThreadHiding =
       hiddenThreads.threads = threads
       $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
 
-  makeButton: (thread, sign) ->
+  makeButton: (thread, type) ->
     a = $.el 'a',
-      className: 'hide-thread-button'
-      innerHTML: "<span>[&nbsp;#{sign}&nbsp;]</span>&nbsp;"
+      className: "#{type}-thread-button"
+      innerHTML: "<span>[&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;]</span>"
       href:      'javascript:;'
     $.on a, 'click', -> ThreadHiding.toggle thread
     a
@@ -91,9 +91,10 @@ ThreadHiding =
       else
         $('.nameBlock', op.nodes.info).textContent
 
-    a = ThreadHiding.makeButton thread, '+'
-    $.add a, $.tn "#{opInfo} (#{numReplies})"
-    thread.stub = $.el 'div'
+    a = ThreadHiding.makeButton thread, 'show'
+    $.add a, $.tn " #{opInfo} (#{numReplies})"
+    thread.stub = $.el 'div',
+      className: 'stub'
     $.add thread.stub, a
     # if Conf['Menu']
     #   $.add thread.stub, [$.tn(' '), Menu.makeButton()]
@@ -120,7 +121,7 @@ ReplyHiding =
     if thread = ReplyHiding.hiddenPosts.threads[@thread]
       if @ID in thread
         ReplyHiding.hide @
-    $.replace $('.sideArrows', @nodes.root), ReplyHiding.makeButton @, '-'
+    $.replace $('.sideArrows', @nodes.root), ReplyHiding.makeButton @, 'hide'
 
   getHiddenPosts: ->
     hiddenPosts = $.get "hiddenPosts.#{g.BOARD}"
@@ -151,10 +152,10 @@ ReplyHiding =
       hiddenPosts.threads = threads
       $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
 
-  makeButton: (post, sign) ->
+  makeButton: (post, type) ->
     a = $.el 'a',
-      className: 'hide-reply-button'
-      innerHTML: "<span>[&nbsp;#{sign}&nbsp;]</span>"
+      className: "#{type}-reply-button"
+      innerHTML: "<span>[&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;]</span>"
       href:      'javascript:;'
     $.on a, 'click', -> ReplyHiding.toggle post
     a
@@ -162,49 +163,86 @@ ReplyHiding =
   toggle: (post) ->
     # Get fresh hidden posts.
     hiddenPosts = ReplyHiding.getHiddenPosts()
-    quotelinks  = Get.allQuotelinksLinkingTo post
     if post.isHidden
       ReplyHiding.show post
-      for quotelink in quotelinks
-        $.rmClass quotelink, 'filtered'
-      # XXX recursive filtering
       thread = hiddenPosts.threads[post.thread]
-      if thread.length is 1
-        delete hiddenPosts.threads[post.thread]
-      else
-        thread.splice thread.indexOf(post.ID), 1
+      if (index = thread.indexOf post.ID) > -1
+        # Was manually hidden, not by recursion/filtering.
+        if thread.length is 1
+          delete hiddenPosts.threads[post.thread]
+        else
+          thread.splice index, 1
     else
       ReplyHiding.hide post
-      for quotelink in quotelinks
-        $.addClass quotelink, 'filtered'
       unless thread = hiddenPosts.threads[post.thread]
         thread = hiddenPosts.threads[post.thread] = []
       thread.push post.ID
     $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
 
-  hide: (post, makeStub=Conf['Stubs']) ->
+  hide: (post, makeStub=Conf['Stubs'], hideRecursively=Conf['Recursive Hiding']) ->
     return if post.isHidden
-    post.nodes.root.hidden = post.isHidden = true
+    post.isHidden = true
+
+    Recursive.hide post, makeStub, true if hideRecursively
+
+    for quotelink in Get.allQuotelinksLinkingTo post
+      $.addClass quotelink, 'filtered'
 
     return unless makeStub
-    a = ReplyHiding.makeButton post, '+'
+    a = ReplyHiding.makeButton post, 'show'
     postInfo =
       if Conf['Anonymize']
         'Anonymous'
       else
         $('.nameBlock', post.nodes.info).textContent
     $.add a, $.tn " #{postInfo}"
-    post.stub = $.el 'div'
-    $.add post.stub, a
+    post.nodes.stub = $.el 'div',
+      className: 'stub'
+    $.add post.nodes.stub, a
     # if Conf['Menu']
-    #   $.add post.stub, [$.tn(' '), Menu.makeButton()]
-    $.before post.nodes.root, post.stub
+    #   $.add post.nodes.stub, [$.tn(' '), Menu.makeButton()]
+    $.prepend post.nodes.root, post.nodes.stub
 
   show: (post) ->
-    if post.stub
-      $.rm post.stub
-      delete post.stub
-    post.nodes.root.hidden = post.isHidden = false
+    if post.nodes.stub
+      $.rm post.nodes.stub
+      delete post.nodes.stub
+    post.isHidden = false
+    for quotelink in Get.allQuotelinksLinkingTo post
+      $.rmClass quotelink, 'filtered'
+    return
+
+Recursive =
+  toHide: []
+  init: ->
+    Post::callbacks.push
+      name: 'Recursive'
+      cb:   @node
+
+  node: ->
+    return if @isClone
+    # In fetched posts:
+    #  - Strike-through quotelinks
+    #  - Hide recursively
+    for quote in @quotes
+      if quote in Recursive.toHide
+        ReplyHiding.hide @, !!g.posts[quote].nodes.stub, true
+    for quotelink in @nodes.quotelinks
+      {board, postID} = Get.postDataFromLink quotelink
+      if g.posts["#{board}.#{postID}"]?.isHidden
+        $.addClass quotelink, 'filtered'
+    return
+
+  hide: (post, makeStub) ->
+    {fullID} = post
+    Recursive.toHide.push fullID
+    for ID, post of g.posts
+      continue if !post.isReply or post.isHidden
+      for quote in post.quotes
+        if quote is fullID
+          ReplyHiding.hide post, makeStub, true
+          break
+    return
 
 Redirect =
   image: (board, filename) ->
@@ -239,7 +277,7 @@ Redirect =
     # https://github.com/eksopl/fuuka/issues/27
   to: (data) ->
     {board} = data
-    switch "#{board}"
+    switch board
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
       when 'u', 'kuku'
@@ -579,13 +617,12 @@ Get =
   allQuotelinksLinkingTo: (post) ->
     # Get quotelinks & backlinks linking to the given post.
     quotelinks = []
-    fullID = "#{post.board}.#{post}"
     # First:
     #   In every posts,
     #   if it did quote this post,
     #   get all their backlinks.
     for ID, quoterPost of g.posts
-      if -1 isnt quoterPost.quotes.indexOf fullID
+      if -1 isnt quoterPost.quotes.indexOf post.fullID
         for quoterPost in [quoterPost].concat quoterPost.clones
           quotelinks.push.apply quotelinks, quoterPost.nodes.quotelinks
     # Second:
@@ -595,7 +632,7 @@ Get =
     #   get all of their backlinks.
     if Conf['Quote Backlinks']
       for quote in post.quotes
-        quotedPost = g.posts[quote]
+        continue unless quotedPost = g.posts[quote]
         for quotedPost in [quotedPost].concat quotedPost.clones
           quotelinks.push.apply quotelinks, Array::slice.call quotedPost.nodes.backlinks
     # Third:
@@ -854,11 +891,12 @@ QuoteInline =
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
     {board, threadID, postID} = Get.postDataFromLink @
+    context = Get.contextFromLink @
     if $.hasClass @, 'inlined'
-      QuoteInline.rm @, board, threadID, postID
+      QuoteInline.rm @, board, threadID, postID, context
     else
       return if $.x "ancestor::div[@id='p#{postID}']", @
-      QuoteInline.add @, board, threadID, postID
+      QuoteInline.add @, board, threadID, postID, context
     @classList.toggle 'inlined'
 
   findRoot: (quotelink, isBacklink) ->
@@ -866,17 +904,16 @@ QuoteInline =
       quotelink.parentNode.parentNode
     else
       $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
-  add: (quotelink, board, threadID, postID) ->
+  add: (quotelink, board, threadID, postID, context) ->
     isBacklink = $.hasClass quotelink, 'backlink'
     inline = $.el 'div',
       id: "i#{postID}"
       className: 'inline'
-    context = Get.contextFromLink quotelink
     $.after QuoteInline.findRoot(quotelink, isBacklink), inline
     Get.postClone board, threadID, postID, inline, context
 
-    return unless context.thread is g.threads["#{board}.#{threadID}"]
-    post = g.posts["#{board}.#{postID}"]
+    return unless (post = g.posts["#{board}.#{postID}"]) and
+      context.thread is post.thread
 
     # Hide forward post if it's a backlink of a post in this thread.
     # Will only unhide if there's no inlined backlinks of it anymore.
@@ -890,9 +927,10 @@ QuoteInline =
     #   Unread.replies.splice i, 1
     #   Unread.update true
 
-  rm: (quotelink, board, threadID, postID) ->
+  rm: (quotelink, board, threadID, postID, context) ->
+    isBacklink = $.hasClass quotelink, 'backlink'
     # Select the corresponding inlined quote, and remove it.
-    root = QuoteInline.findRoot quotelink, $.hasClass quotelink, 'backlink'
+    root = QuoteInline.findRoot quotelink, isBacklink
     root = $.x "following-sibling::div[@id='i#{postID}'][1]", root
     $.rm root
 
@@ -903,31 +941,19 @@ QuoteInline =
     post = g.posts["#{board}.#{postID}"]
     post.rmClone el.dataset.clone
 
-    context = Get.contextFromLink quotelink
-
     # Decrease forward count and unhide.
     if Conf['Forward Hiding'] and
+      isBacklink and
       context.thread is g.threads["#{board}.#{threadID}"] and
-      $.hasClass(quotelink, 'backlink') and
       not --post.forwarded
         delete post.forwarded
         $.rmClass post.nodes.root, 'forwarded'
 
     # Repeat.
-    for inline in $$ '.inlined', el
-      {board, threadID, postID} = Get.postDataFromLink inline
-      root = QuoteInline.findRoot inline, $.hasClass inline, 'backlink'
-      root = $.x "following-sibling::div[@id='i#{postID}'][1]", root
-      continue unless el = root.firstElementChild
-      post = g.posts["#{board}.#{postID}"]
-      post.rmClone el.dataset.clone
-
-      if Conf['Forward Hiding'] and
-        context.thread is g.threads["#{board}.#{threadID}"] and
-        $.hasClass(inline, 'backlink') and
-        not --post.forwarded
-          delete post.forwarded
-          $.rmClass post.nodes.root, 'forwarded'
+    while inlined = $ '.inlined', el
+      {board, threadID, postID} = Get.postDataFromLink inlined
+      QuoteInline.rm inlined, board, threadID, postID, context
+      $.rmClass inlined, 'inlined'
     return
 
 QuotePreview =
@@ -1032,7 +1058,7 @@ QuoteBacklink =
       return
     # Don't backlink the OP.
     return unless Conf['OP Backlinks'] or @isReply
-    container = QuoteBacklink.getContainer "#{@board}.#{@}"
+    container = QuoteBacklink.getContainer @fullID
     @nodes.backlinkContainer = container
     $.add @nodes.info, container
   getContainer: (id) ->
@@ -1054,12 +1080,11 @@ QuoteOP =
     quotelinks = @nodes.quotelinks
 
     # rm (OP) from cross-thread quotes.
-    if @isClone and -1 < quotes.indexOf "#{@board}.#{@thread}"
+    if @isClone and -1 < quotes.indexOf @fullID
       for quote in quotelinks
         quote.textContent = quote.textContent.replace QuoteOP.text, ''
 
-    {board, thread} = if @isClone then @context else @
-    op = "#{board}.#{thread}"
+    op = (if @isClone then @context else @).thread.fullID
     # add (OP) to quotes quoting this context's OP.
     return unless -1 < quotes.indexOf op
     for quote in quotelinks

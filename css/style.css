@@ -24,6 +24,9 @@ a[href="javascript:;"] {
 .post {
   overflow: visible !important;
 }
+[hidden] {
+  display: none !important;
+}
 
 /* fixed, z-index */
 #qp, #ihover,
@@ -160,13 +163,14 @@ body.fourchan_x {
   padding-bottom: 16px;
 }
 
-/* thread hiding */
-.opContainer > .hide-thread-button {
-  float: left;
-}
-
-/* reply hiding */
-.replyContainer > .hide-reply-button {
+/* thread & reply hiding */
+.hide-thread-button,
+.hide-reply-button {
   float: left;
   margin-right: 2px;
+}
+.stub ~ .sideArrows,
+.stub ~ .hide-reply-button,
+.stub ~ .post {
+  display: none !important;
 }
