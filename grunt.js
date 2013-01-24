@@ -16,8 +16,8 @@ module.exports = function(grunt) {
       coffee: {
         src: [
           'src/config.coffee',
-          'src/themes.coffee',
           'src/library.coffee',
+          'src/themes.coffee',
           'src/options.coffee',
           'src/chanx.coffee',
           'src/quickreply.coffee',

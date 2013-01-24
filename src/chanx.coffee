@@ -361,6 +361,7 @@ Filter =
 StrikethroughQuotes =
   init: ->
     Main.callbacks.push @node
+
   node: (post) ->
     return if post.isInlined
     for quote in post.quotes
@@ -376,12 +377,14 @@ ExpandComment =
     for a in $$ '.abbr'
       $.on a.firstElementChild, 'click', ExpandComment.expand
     return
+
   expand: (e) ->
     e.preventDefault()
     [_, threadID, replyID] = @href.match /(\d+)#p(\d+)/
     @textContent = "Loading No.#{replyID}..."
     a = @
     $.cache "//api.4chan.org#{@pathname}.json", -> ExpandComment.parse @, a, threadID, replyID
+
   parse: (req, a, threadID, replyID) ->
     _conf = Conf
     if req.status isnt 200
@@ -411,10 +414,10 @@ ExpandComment =
       threadID:   threadID
       quotes:     quotes
       backlinks:  []
-    if _conf['Resurrect Quotes']
-      Quotify.node        post
     if _conf['Linkify']
       Linkify.node        post
+    if _conf['Resurrect Quotes']
+      Quotify.node        post
     if _conf['Quote Preview']
       QuotePreview.node   post
     if _conf['Quote Inline']
@@ -2151,7 +2154,8 @@ QuotePreview =
     # Make sure to remove the previous qp
     # in case it got stuck.
     if qp = $.id 'qp'
-      delete UI.el if qp is UI.el
+      if qp is UI.el
+        delete UI.el
       $.rm qp
 
     # Don't stop other elements from dragging
@@ -2205,30 +2209,32 @@ QuotePreview =
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
 
-    if board is g.BOARD
+    _conf = Conf
+
+    if _conf['Fappe Tyme']
+      $.rmClass qp.firstElementChild, 'noFile'
+
+    if el = $.id "p#{postID}"
       _conf = Conf
-      if _conf['Fappe Tyme'] and not $('img[data-md5]', qp) and el = qp.firstElementChild
-        $.rmClass el, 'noFile'
+      if _conf['Quote Highlighting']
+        if /\bop\b/.test el.className
+          $.addClass el.parentNode, 'qphl'
+        else
+          $.addClass el, 'qphl'
 
-      if el = $.id "p#{postID}"
-        if _conf['Quote Highlighting']
-          if /\bop\b/.test el.className
-            $.addClass el.parentNode, 'qphl'
-          else
-            $.addClass el, 'qphl'
-
-        quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
-        for quote in $$ '.quotelink, .backlink', qp
-          if quote.hash[2..] is quoterID
-            $.addClass quote, 'forwardlink'
+      quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
+      for quote in $$ '.quotelink, .backlink', qp
+        if quote.hash[2..] is quoterID
+          $.addClass quote, 'forwardlink'
 
     $.add d.body, qp
 
   mouseout: (e) ->
     UI.hoverend()
     if el = $.id @hash[1..]
-      $.rmClass el,            'qphl' # reply
       $.rmClass el.parentNode, 'qphl' # op
+      $.rmClass el,            'qphl' # reply
+
     $.off @, 'mousemove',      UI.hover
     $.off @, 'mouseout click', QuotePreview.mouseout
 
@@ -2397,28 +2403,34 @@ Linkify =
           $.on embed, 'click', Linkify.toggle
       return
 
-    blockquote = $.el 'blockquote'
-      innerHTML: post.blockquote.innerHTML
-
-    for wbr in $$ 'wbr', blockquote
+    for wbr in $$ 'wbr', post.blockquote
       # Merge any text separated by <wbr>s, replacing <wbr>s with text, escape all special characters in text using innerHTML
       $.replace wbr.previousSibling, $.tn "#{($.el 'span', innerHTML: wbr.previousSibling.textContent).innerHTML + '<wbr>' + ($.el 'span', innerHTML: wbr.nextSibling.textContent).innerHTML}"
       $.rm wbr.nextSibling
       $.rm wbr
 
-    snapshot = d.evaluate './/text()', blockquote, null, 6, null
+    snapshot = d.evaluate './/text()', post.blockquote, null, 6, null
 
     i = -1
     len = snapshot.snapshotLength
 
     while ++i < len
-      node = snapshot.snapshotItem i
-      data = node.data
-      unless links = data.match Linkify.regString
-        # Only accept nodes with potentially valid links
-        continue
-
       nodes = []
+      node  = snapshot.snapshotItem i
+      data  = node.data
+      
+      # Only accept nodes with potentially valid links
+      unless links = data.match Linkify.regString
+        commentFrag = $.el 'div'
+          innerHTML: data
+
+        for child in commentFrag
+          nodes.push child
+
+        if nodes.length > 1
+          $.replace node, nodes
+
+        continue
 
       for link in links
 
@@ -2440,7 +2452,8 @@ Linkify =
           target:    'blank'
           href:      (if link.indexOf(':') < 0 then (if link.indexOf('@') > 0 then 'mailto:' + link else 'http://' + link) else link).replace /<wbr>/g, ''
 
-        nodes.push a
+        nodes = nodes.concat Linkify.embedder a
+
         data = data[index + link.length..]
 
       if data
@@ -2453,13 +2466,6 @@ Linkify =
           nodes.push child
 
       $.replace node, nodes
-
-    if a      
-      if Conf['Embedding']
-        for link in $$ '.linkify', blockquote
-          Linkify.embedder link
-
-      $.replace post.blockquote, blockquote
 
   toggle: ->
     # We setup the link to be replaced by the embedded video
@@ -2548,6 +2554,8 @@ Linkify =
         div
 
   embedder: (a) ->
+    return [a] unless Conf['Embedding']
+
     for key, type of Linkify.types
       continue unless match = a.href.match type.regExp
 
@@ -2584,7 +2592,8 @@ Linkify =
               else
                 "[#{key}] #{@status}'d"
 
-        $.after a, [$.tn(' '), embed]
+        return [a, $.tn(' '), embed]
+    return [a]
 
 DeleteLink =
   init: ->

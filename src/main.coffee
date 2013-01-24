@@ -182,12 +182,12 @@ Main =
       if _conf['Reply Hiding Link']
         ReplyHideLink.init()
 
-    if _conf['Resurrect Quotes']
-      Quotify.init()
-    
     if _conf['Linkify']
       Linkify.init()
 
+    if _conf['Resurrect Quotes']
+      Quotify.init()
+    
     if _conf['Remove Spoilers']
       RemoveSpoilers.init()
 
@@ -392,11 +392,7 @@ Main =
 
   node: (nodes, notify) ->
     for callback in Main.callbacks
-      try
-        callback node for node in nodes
-      catch err
-        alert "AppChan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err}\n#{err.stack}" if notify
-    return
+      callback node for node in nodes
 
   observer: (mutations) ->
     nodes = []

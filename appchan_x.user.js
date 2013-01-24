@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.38 - 2013-01-23
+ * appchan x - Version 1.0.38 - 2013-01-24
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -368,6 +368,449 @@
   g.TYPE = 'sfw';
 
   MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.OMutationObserver;
+
+  /*
+  loosely follows the jquery api:
+  http://api.jquery.com/
+  not chainable
+  */
+
+
+  $ = function(selector, root) {
+    var result;
+    root || (root = d.body);
+    if (result = root.querySelector(selector)) {
+      return result;
+    }
+  };
+
+  $.extend = function(object, properties) {
+    var key, val;
+    for (key in properties) {
+      val = properties[key];
+      object[key] = val;
+    }
+  };
+
+  $.extend(Array.prototype, {
+    add: function(object, position) {
+      var keep;
+      keep = this.slice(position);
+      this.length = position;
+      this.push(object);
+      return this.pushArrays(keep);
+    },
+    contains: function(object) {
+      return this.indexOf(object) > -1;
+    },
+    indexOf: function(object) {
+      var i;
+      i = this.length;
+      while (i--) {
+        if (this[i] === object) {
+          break;
+        }
+      }
+      return i;
+    },
+    pushArrays: function() {
+      var arg, args, _i, _len, _results;
+      args = arguments;
+      _results = [];
+      for (_i = 0, _len = args.length; _i < _len; _i++) {
+        arg = args[_i];
+        _results.push(this.push.apply(this, arg));
+      }
+      return _results;
+    },
+    remove: function(object) {
+      var index;
+      if ((index = this.indexOf(object)) > -1) {
+        return this.splice(index, 1);
+      } else {
+        return false;
+      }
+    }
+  });
+
+  $.extend(String.prototype, {
+    capitalize: function() {
+      return this.charAt(0).toUpperCase() + this.slice(1);
+    },
+    contains: function(string) {
+      return this.indexOf(string) > -1;
+    }
+  });
+
+  $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)));
+
+  $.extend($, {
+    NBSP: '\u00A0',
+    minmax: function(value, min, max) {
+      return (value < min ? min : value > max ? max : value);
+    },
+    log: typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0,
+    engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
+    ready: function(fc) {
+      var cb;
+      if (['interactive', 'complete'].contains(d.readyState)) {
+        return setTimeout(fc);
+      }
+      if (!$.callbacks) {
+        $.callbacks = [];
+        cb = function() {
+          var callback, _i, _len, _ref;
+          _ref = $.callbacks;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            callback = _ref[_i];
+            callback();
+          }
+          return $.off(d, 'DOMContentLoaded', cb);
+        };
+        $.on(d, 'DOMContentLoaded', cb);
+      }
+      $.callbacks.push(fc);
+      return $.on(d, 'DOMContentLoaded', cb);
+    },
+    sync: function(key, cb) {
+      var parse;
+      key = Main.namespace + key;
+      parse = JSON.parse;
+      return $.on(window, 'storage', function(e) {
+        if (e.key === key) {
+          return cb(parse(e.newValue));
+        }
+      });
+    },
+    id: d.getElementById.bind(d),
+    formData: function(arg) {
+      var fd, key, val;
+      if (arg instanceof HTMLFormElement) {
+        fd = new FormData(arg);
+      } else {
+        fd = new FormData();
+        for (key in arg) {
+          val = arg[key];
+          if (val) {
+            fd.append(key, val);
+          }
+        }
+      }
+      return fd;
+    },
+    ajax: function(url, callbacks, opts) {
+      var form, headers, key, r, type, upCallbacks, val;
+      if (!opts) {
+        opts = {};
+      }
+      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
+      r = new XMLHttpRequest();
+      r.overrideMimeType('text/html');
+      type || (type = form && 'post' || 'get');
+      r.open(type, url, true);
+      for (key in headers) {
+        val = headers[key];
+        r.setRequestHeader(key, val);
+      }
+      $.extend(r, callbacks);
+      $.extend(r.upload, upCallbacks);
+      if (type === 'post') {
+        r.withCredentials = true;
+      }
+      r.send(form);
+      return r;
+    },
+    cache: function(url, cb) {
+      var req;
+      if (req = $.cache.requests[url]) {
+        if (req.readyState === 4) {
+          return cb.call(req);
+        } else {
+          return req.callbacks.push(cb);
+        }
+      } else {
+        req = $.ajax(url, {
+          onload: function() {
+            var _i, _len, _ref;
+            _ref = this.callbacks;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              cb = _ref[_i];
+              cb.call(this);
+            }
+          },
+          onabort: function() {
+            return delete $.cache.requests[url];
+          },
+          onerror: function() {
+            return delete $.cache.requests[url];
+          }
+        });
+        req.callbacks = [cb];
+        return $.cache.requests[url] = req;
+      }
+    },
+    cb: {
+      checked: function() {
+        $.set(this.name, this.checked);
+        return Conf[this.name] = this.checked;
+      },
+      value: function() {
+        $.set(this.name, this.value.trim());
+        return Conf[this.name] = this.value;
+      }
+    },
+    addStyle: function(css, identifier) {
+      var style;
+      style = $.el('style', {
+        textContent: css,
+        id: identifier
+      });
+      $.add(d.head, style);
+      return style;
+    },
+    x: function(path, root) {
+      root || (root = d.body);
+      return d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
+    },
+    X: function(path, root) {
+      root || (root = d.body);
+      return d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+    },
+    addClass: function(el, className) {
+      return el.classList.add(className);
+    },
+    rmClass: function(el, className) {
+      return el.classList.remove(className);
+    },
+    toggleClass: function(el, className) {
+      return el.classList.toggle(className);
+    },
+    rm: function(el) {
+      return el.parentNode.removeChild(el);
+    },
+    tn: d.createTextNode.bind(d),
+    nodes: function(nodes) {
+      var frag, node, _i, _len;
+      if (!(nodes instanceof Array)) {
+        return nodes;
+      }
+      frag = d.createDocumentFragment();
+      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+        node = nodes[_i];
+        frag.appendChild(node);
+      }
+      return frag;
+    },
+    add: function(parent, children) {
+      return parent.appendChild($.nodes(children));
+    },
+    prepend: function(parent, children) {
+      return parent.insertBefore($.nodes(children), parent.firstChild);
+    },
+    after: function(root, el) {
+      return root.parentNode.insertBefore($.nodes(el), root.nextSibling);
+    },
+    before: function(root, el) {
+      return root.parentNode.insertBefore($.nodes(el), root);
+    },
+    replace: function(root, el) {
+      return root.parentNode.replaceChild($.nodes(el), root);
+    },
+    create: d.createElement.bind(d),
+    el: function(tag, properties) {
+      var el;
+      el = $.create(tag);
+      if (properties) {
+        $.extend(el, properties);
+      }
+      return el;
+    },
+    on: function(el, events, handler) {
+      var event, _i, _len, _ref;
+      _ref = events.split(' ');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        event = _ref[_i];
+        el.addEventListener(event, handler, false);
+      }
+    },
+    off: function(el, events, handler) {
+      var event, _i, _len, _ref;
+      _ref = events.split(' ');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        event = _ref[_i];
+        el.removeEventListener(event, handler, false);
+      }
+    },
+    event: function(el, e) {
+      return el.dispatchEvent(e);
+    },
+    globalEval: function(code) {
+      var script;
+      script = $.el('script', {
+        textContent: "(" + code + ")()"
+      });
+      $.add(d.head, script);
+      return $.rm(script);
+    },
+    shortenFilename: function(filename, isOP) {
+      var threshold;
+      threshold = 30 + 10 * isOP;
+      if (filename.replace(/\.\w+$/, '').length > threshold) {
+        return "" + filename.slice(0, threshold - 5) + "(...)" + (filename.match(/\.\w+$/));
+      } else {
+        return filename;
+      }
+    },
+    bytesToString: function(size) {
+      var unit;
+      unit = 0;
+      while (size >= 1024) {
+        size /= 1024;
+        unit++;
+      }
+      size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
+      return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
+    },
+    hidden: function() {
+      return d.hidden || d.mozHidden || d.webkitHidden || d.oHidden;
+    }
+  });
+
+  $.cache.requests = {};
+
+  $.extend($, typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null ? {
+    "delete": function(name) {
+      name = Main.namespace + name;
+      return GM_deleteValue(name);
+    },
+    get: function(name, defaultValue) {
+      var value;
+      name = Main.namespace + name;
+      if (value = GM_getValue(name)) {
+        return JSON.parse(value);
+      } else {
+        return defaultValue;
+      }
+    },
+    set: function(name, value) {
+      name = Main.namespace + name;
+      localStorage.setItem(name, JSON.stringify(value));
+      return GM_setValue(name, JSON.stringify(value));
+    },
+    open: function(url) {
+      return GM_openInTab(location.protocol + url, true);
+    }
+  } : {
+    "delete": function(name) {
+      return localStorage.removeItem(Main.namespace + name);
+    },
+    get: function(name, defaultValue) {
+      var value;
+      if (value = localStorage.getItem(Main.namespace + name)) {
+        return JSON.parse(value);
+      } else {
+        return defaultValue;
+      }
+    },
+    set: function(name, value) {
+      return localStorage.setItem(Main.namespace + name, JSON.stringify(value));
+    },
+    open: function(url) {
+      return window.open(location.protocol + url, '_blank');
+    }
+  });
+
+  $$ = function(selector, root) {
+    var result;
+    root || (root = d.body);
+    if (result = Array.prototype.slice.call(root.querySelectorAll(selector))) {
+      return result;
+    }
+    return null;
+  };
+
+  UI = {
+    dialog: function(id, position, html) {
+      var el, move;
+      el = $.el('div', {
+        className: 'reply dialog',
+        innerHTML: html,
+        id: id
+      });
+      el.style.cssText = $.get(id + ".position", position);
+      if (move = $('.move', el)) {
+        move.addEventListener('mousedown', UI.dragstart, false);
+      }
+      return el;
+    },
+    dragstart: function(e) {
+      var el, rect;
+      e.preventDefault();
+      UI.el = el = this.parentNode;
+      d.addEventListener('mousemove', UI.drag, false);
+      d.addEventListener('mouseup', UI.dragend, false);
+      rect = el.getBoundingClientRect();
+      UI.dx = e.clientX - rect.left;
+      UI.dy = e.clientY - rect.top;
+      UI.width = d.documentElement.clientWidth - rect.width;
+      return UI.height = d.documentElement.clientHeight - rect.height;
+    },
+    drag: function(e) {
+      var left, style, top;
+      left = e.clientX - UI.dx;
+      top = e.clientY - UI.dy;
+      left = left < 10 ? '0px' : UI.width - left < 10 ? null : left + 'px';
+      top = top < 10 ? '0px' : UI.height - top < 10 ? null : top + 'px';
+      style = UI.el.style;
+      style.left = left;
+      style.top = top;
+      style.right = left === null ? '0px' : null;
+      return style.bottom = top === null ? '0px' : null;
+    },
+    dragend: function() {
+      $.set(UI.el.id + ".position", UI.el.style.cssText);
+      d.removeEventListener('mousemove', UI.drag, false);
+      d.removeEventListener('mouseup', UI.dragend, false);
+      return delete UI.el;
+    },
+    hover: function(e, mode) {
+      var clientHeight, clientWidth, clientX, clientY, height, style, top, _ref;
+      if (mode == null) {
+        mode = "default";
+      }
+      clientX = e.clientX, clientY = e.clientY;
+      style = UI.el.style;
+      _ref = d.documentElement, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
+      height = UI.el.offsetHeight;
+      if (mode === "default") {
+        top = clientY - 120;
+        style.top = clientHeight <= height || top <= 0 ? '0px' : top + height >= clientHeight ? clientHeight - height + 'px' : top + 'px';
+        if (clientX <= clientWidth - 400) {
+          style.left = clientX + 45 + 'px';
+          return style.right = null;
+        } else {
+          style.left = null;
+          style.right = clientWidth - clientX + 20 + 'px';
+          return top = clientY - 120;
+        }
+      } else {
+        if (clientX <= clientWidth - 400) {
+          style.left = clientX + 20 + 'px';
+          style.right = null;
+          top = clientY;
+        } else {
+          style.left = null;
+          style.right = clientWidth - clientX + 20 + 'px';
+          top = clientY - 120;
+        }
+        return style.top = "" + (clientHeight <= height || top <= 0 ? 0 : top + height >= clientHeight ? clientHeight - height : top) + "px";
+      }
+    },
+    hoverend: function() {
+      $.rm(UI.el);
+      return delete UI.el;
+    }
+  };
 
   Emoji = {
     pony: [['Pinkie', 'BAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA3dJREFUGBlNwUtoXFUcB+Df/zzuY553pp2MmUwSk5TGpnamiokWRdNCSkCrUChKCnVZQUEUdy5sQZC6cyd2VWgoutCFXWTjIyp1UdqmEDBRsSZNmkmaZF6Zx32ccyzowu8j/M883pH5A9kBYfNkFOpu0OiulyqXmnhkDmdYHYJexzX1Ef51EQDhP9fxpjU0PDCd7IldYIxGVag3/KZ/ZX1p8/P0k/0U47qs291M2NS3f6ncuLeFeQ3A8KuYoNPoY/3e2Ej6scSnqUJ8gksmhC2y3OJHpSUHU0/3HU+WCuddyV6VSpVyYv/aUuPefWAP4iDG8AhJWyYYo972tg8DQ1wyWHGZSfcmZmQ+YeKTw1bQ70H8uJw3xtDp6NzG15VLf/DLWMBZHGPkwuWGyq7njLoZyzAiCtqRIddioifBxYBHIpeE0oaw0yoG7WA755dvi8Xih66BOSZj4rwds45bSQkuOeOCQYWG2PjjcEq94JwjQgQ+kCW+tBl3H7Ym4jnbE/nDmamwqz9mnEaYoBgiZaJIGW5zEIHEPheykMD2w12ztPIXCrZHec+GdOVAUI8ygjvifeHQESiNoKtMlIoRxSV0owMjAeY5+P3BKrbTDq3n02B/7yDTDkBANSXiewKgjFbahEwQe34IiVIfRNqCv1qDanQR9Di4+tU16N409o2WMXnyJeNWb9PO4s6WroZawOiSiozCoR7lPFUQezICCzXF+pPGYRna6/rotNqY/eJLUzh4mM5dP4Va0YXV45x0O9F9FhkN5auq4eznaq3WmP1pDkuibW5uraNaqyNh23ihPA6v7wAVS+PwXAGkbYiUnU3kYm8JzvgGpJGdG6vzm15+ce6H79/9bnnBhCxG702dwnTaw4nyM/jsiTHsHx+DEyjKWnGEUpBOyjTTgbpsNHyLojPe7PK3qci58NvNu0Gl0YA8NIxWp4MkdzCdK2Ci6iNYXIV6UEfUDBC2Q/A3WqVbUUfVucWftYhP9fLiFf7yRPGVmZmhE88dJVmpGRMqRH4E3emSbnQR3lkzaqNB3br/J39tb1ibJglGfJDZbMReb37Td/bFhcnB/iNppXNUbZEKFGBJ6FBT+9cVo5c3yd/trDV3OxdFDDHFOV8IffVJtNNOC+J3xtYqATWw0Mm6RIJ9YAy9rdtt07q1ZtjdVXCYFRBG4Bv8A+lliGhzN164AAAAAElFTkSuQmCC'], ['Applejack', 'A4AAAAQCAYAAAAmlE46AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAv9JREFUOE9dkmtIU2EYx88Roi9FfahkfQmS6kNGEBRlZWSY5tylTKepqR8MHYGl2R1POm2u5bCVlzbog2Ze591pzZPZxUskDZLMMLSWzcIca3MXt7N/55woqhf+PC8Pz+99n+fPQxAEQf6vhINb1nG5/ISdobWXo+9eSd4tyM7OJimKImmaJhsaGjjmX/DGqfDQmkvRg1x+9YrlZPd18fdupXiu6mxkOAcqlUqyuLiYB/+cayfD1rKFH0w3pYEHV4/omhTCyieVcYEB7TEYSyX21Mita/6u/91qUBMV00JrjmKwMg4zI2fgnlfD90PLx+nhMyinIrb91SFBFqaHBevPHb7G/fS06jhs0wXwO8rBOLXws2Kct/k4//HKRE+jZD0Pl2buD2FnmOlVSUFrpJg15/JFgcWKP0Bg8Q6fs1sVs+11wmAebKaEuiG1CC81Yozci+cL4KoC3JUIuCp4+R23+Ee4Dr5bisZmJi7fJzpLRJZPOin8vSlwdSXDO54Hz+vT8LzLh3uuCIuzBfDa1DzMPcrJMVfkIHpVEu94uYgH/aaTvOxdJzDZkI76smhY2mVwDmfg8zM5RukcvH8pbx96mLiPMBTG0nSpGK7mePg6k+DsSUZbSQwem02oba3DRsFKzNQfx9sHSdi1dzve5Ow4xM+ozorY1K2U2MY0IrhbEuB7lIqB6gxY7B9R3XoHAoEAivN74O5LAaXNwvNLe9PlcjlJACANRaIRztFh1iRvfRyYx5kIOCwY+GCE9GIUOjrzwZjS4H16FV80UT1WqzWIWFhYIBsLhDf7y46Ck1UvATNKgXlxHgHbJDyub2DGVPC2s+bVyGDTx74ym80kwe2fKvNASN8NySK3NeayWNagNPj7WaP62Uhn8HdPkwyWW3IoEjdv0Ol0JGE0GvmV0+dFpj9SS5kOKuahr01Wwbb2lXV6aakjkfF1p8DXlwHnaB5yTm1bbzAYfs34e/+0pyNic+N2ruIWmQWXcdE1dUEGd9UYq6kle1mXqVW6imWIn290AGVZutJTAAAAAElFTkSuQmCC'], ['Fluttershy', 'BAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA2xJREFUOE9dU91PWmcYP2uybDfrxdIlu9vN/oglverWNN3Fmu1iN7vY2q4utnE2Nu26ukyrUUGwExGpn3xY+TyACjrskFrcEYoWnCAM4YAgcJjROkFA1q789nJczNaTPHnfk+f5/d7n4/dQ1Cvf3Ut3Xp//Qnze36gYCt56kIgJpyqRFvrvcIvxMNxhSa9eV993XJK/+yqO/zdf7j7tbRz1RdstLzOKReRoLxJSOzb7HyKtdCEumgErmEbwO03U2aR8738kzq8ln8e6bXlWYMWmZA6Z8SUk5U5ytyPeY0Oy1w5O50FO+wQ5jbtG4lK19L5BGehzb9sE19+JtFt2c8ZlJPvmwAqtSA06EWs3g+2aQnacwdbwAmLknuiZxaZ4FiTD6tLFvi+pBeenb/3mvvo4Yu3D5v1ZsP1axHpUiAo0iPyg41/dGiNgiQI5PXmdXkai92dkVItYbZ6YpVZWLrrKFSOynBip9W6U/7LwViqZ8SykRWpcR8BqJNlmJCZp1LLMkIxSAw6s39WHqUCo/mDnWTdKhwRUMaNMzvLh5NFZsaBIbD+rJ34jgsxtcLQH3IQbKakDoVZDmnpk+irA/fEjCkXlv+AawX+MEJQJcaFEY8bWAJdMgYxyESn5PILNumUqJNVVA4EG7OXlx8Bf3T2QyRuh0X2P5ad9pCQTcjtqDI3UwTMuReIeaaKagb9u6B6VVi9Wg1YRUhkhH1g6NKFf3gD/2gAYz08YVd5AdltDfDS2d2QIrH6DcNcwUjLHc+aC8AMqLrW/4EwesBoligUTCgc05h52IH9gwu6+ERwBb+9pkc0IwLJNWHPXIyrUIdysW2POd52gopIZjtOSpgzOI2NToVAmwD0D9osmvvZSxcCXtr5wA08627Ah0yHZ74D3ysBNXokR8XQ8q2SQM3gQbZtAPm1AiZRyNIUawZGFl5qIRqbBdk4Sndjy1iviIymzIquXldirWRXDzzdOZr63q8J66OqOf+2yL8be+nMr3fry91A9NlRjvKT9tx88Pt6Djdaps0RZxQRZmCzpbHrMBV9b5/YM/dn7tSCT/cNTvpauFdasR5xkkCaS9n07Kj0mIKm+GbujP5OQ/vI8Ofyomhx0sOmxhU9W6wYp5uOO12qB3guik2TuI2QPXmwpXLGnjSMf3RRdO1Hz/QNneMt7Iqmg5QAAAABJRU5ErkJggg=='], ['Twilight', 'BIAAAAQCAYAAAAbBi9cAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA6lJREFUOE+VlF9Mk1cYxj+Kc3+yXWimFxuk2zTIn4bQFkppF0hDNmBpBtgKixhhQZAhbSkFBp1uZWg3ZLRMxFKE0qKtrMy2E2ztn2+1tLQgbuJiorvQ7c5pgplZNjfmePZ9nwtZMm52kufqvOeX5zznfQ9B/M9l/8CXPP2R/6ajy+u0amZeoI8D2PpfTLqMlZQpT9vE2fPOc9l73302q7rs6Sz5K6zM3ZuJzD2EVf1VytejC4hNXoWj2/vlF71+FgVKIsZVHrbnEzLoPkYOqqtPNm7j1l1J4R9Y4wgVkOR3Qcvrg+uNXmTnt9zfmdcUFRd1XqQhC+eWMXP8MiwKdyUDOqMLEG49qYtYlhA+vQi7zocGmQHFYi2UnM9wq/RzNEsOQyDWMBIWtjNurjivw2ucg+toyM+A6LWZU72vvsqwFjwVZwrmrEvoq7DBLDDiltQAobidgeRRUipMTA0t32AU3hNzD7zGSANBZMi2UFe5nyZohrREB9dxEnMTS+jgnUBYMghv2afrbhhHb3aAnFxkQMHhOALDid8p0EHiKU6VklvQil0UiJakqBsf77dCmTmASPEAhoqPIEN4CGmCJvAkauzKfw/5pRr4J+JUTtfo693zGSM7iBdzan10sE9gh5AragNXoEKtvB+93ZMY0TthGraB92oJVlYewDTgQJ96DKTtiStXb8jvNoafIV7i19+lndC2X+bXPyqXffj4kmV+PYexY1aQMwnkv1YGWUUljryvQ0/dqfV9+Vs9zVTYLILKZ5UGsXMbb2/llJaWCN8OnzNMrxda9JNYjt+ENL0RrQol0nekQVtlRHA8gsWpZQhEmrviws5yIpXfcG87t+52UpY8NZXN3lIjPRiOReZxfugCA7s4EsCN727ArHChQiKDYGchRrumELbFEbQmkFvQ+ofg9TYX8Xx2zfnkLDmHbgM2m00M1tortQf06FC2Y2HqGgMjvSR+WfkVplYPzCoX3EOziDmuwjMSRk6BajVP1PYT/fzb/j0nZ7tmN+n3mUlpUTmCo1EGFHJE8NvDR/g+egd0fj5LDN6xKHo6bOAL1D/niTTRDUd2rMW13VBj/zFu/5YZBaYBp69j0blMPfs8zhj9KCjspPNZ+6fjd28IGld4MgIn5x/HJr9ByJRYDz5oS2B6KIT9Nf3IEaj+pCBrXFELOTERZm0Ichy+lHy2czZlpv+y80JfmILFVwPDsTvmo26SJ1I9zBU1/UVBfqAk35ujpb+RpL8BJjxIUjyXvSgAAAAASUVORK5CYII='], ['Rainbow', 'A8AAAAQCAYAAADJViUEAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA3tJREFUGBk9wV9MG3UAB/Dv7+531971aKGMlr+OwjoGBUZwRDrRBJwj0bHEmeiS6Xwyxn8x8UVNzHAPPvliFhMzsy0m8uDD5h/QZWoUNxYMBoZbZCBjZTBoKRwtLde7cv9+bg/6+ZDnzk6C44lw6f6whdOnETpzla+0803RMD3ZGSH95V62lzGQtMH9M7MhfpPUyIX5HE1uvNXDaCQgtykB70cR/4unrn3aqzYkZt7v18ZfezyTkfy0HlJ7FMWKEBJFpYMSVq7bngMlGvvc/OTiLzRYLp8K1waObaS16MDIRfupG9c6SuwCsSt2kJ+/B+3HMdC6MBofa0N1a2sVJTWj02mh4BFCCpV84jN4oHyX3KYEJAi2BWYR2CkPmMlBiOgwE0mYiymo1Qu0Mx4/8VLVnrtnF4VxfuCN9z5mDBA9FJt7mzDe3oXkjou69CqoxkA4gC9xQAggankMa7uTm3m32SLKD+Sz6XXGGCDJAv6j7di4MzqBo199Adk2EIqkQGQHDy3Ij2Q+bHr9g3UxyFHLdFyvJHAg+J/ipYgdjuMyzwELCfRsTWG/NQEwhqCVC0YLy/qKGJzmD77w9pHSoFyjbWWxtjAH5jIIHi8EKkCpq8JteCD2H0F2u4BwZhE+x8BEWbt6i6df8kr/s0+H/HKMc1yo02MYaG9APjGLxJ+T2NxYRV7fxu66GqjwYyrn2AG7YFGw4FygeYiXjva/KoipxoaKGPY1N+PJfRHEauvQaIj47vsLSN67i87ew6hOLGFeTS38FO45XhR8lQlffS0tmGViwbmCdKEb3tJSGLYLieMwMfQr1tZSqOzqheCVkDWIk7i/vvJ7WdVVxd96XWBU4kzb55qOiZvqJazmCxhLGzBFiqbnuzD71xyij8bxEN/XzXccf7PyxJ6+lkxuwknnftP4vorBd9O1mXBAnsbfaQW6VQadcWC7gmiIH0JlrBWuw+DYgFyiSGqu+O2NjZllPMBJRUevuH4Ipu1DyOefrS6RzmQN211iFGUtzSAcD8dh2Ll8cyStai8vra/8MQhgEADvjx/bX78c6rgT1ddl722/btSelEz69eaWoZqms1kwrGVt27xV1I1zgdWfRw6Ww8lmswQAo6QR2dnM6JC6HT3PEfvctjSsnx+3J1uob6qt6gAtSgEu4BbdV2KO80T3O0QQBFiWRQRBwL/txI3OlzkSKwAAAABJRU5ErkJggg=='], ['Rarity', 'BMAAAAQCAYAAAD0xERiAAAEEElEQVR4Xm2SW2xURRyHfzPnsmcvlO4ulN1uF2sLrIpdJNS0KUZFUq1t0AiKkpASbyQSjRKENEGrPuCTiUoTjSENKAnFYKokbZOmIBaoTRXB1AjbWmrabmVpt3SvZ899PFnTxAe+ZF7+D998mf/gbmwt30131B58YM+WTw7vbTnW/+oTHZda6490723uPP1KY0fna40dh/Y0fFz/4pq3XRFEsATB/2i71EauvDcplHN173p8of2gnI8KPHLxm/AEqwgIARUEeywyS1dVPZ+9kJ6OHdB/uzF2BmcYXRIdHxkhO/0vR/e9+c4p7+pIO+92+wlHaGE+QV1lYWpLCe90kdKVTvJo80rqDTic4nJfk7c62kM3rltfgQpSLGOM4ZfR0apQIPQTpSR04uhVqhUYSkoItLyMVFaEIjNENpTg8ZbVyGYK6PpyHIYGBhCmLiYHZ2NDzxZlpwYHaX3V2mMet3sPpZSbjc/B5y+Fw8GDgWEukcbURBLR2jB0TcPpz4cwO5aBBQJuWSnsbC09eeN50tnZSYy0s6p5V+MwIVghSQ4iFwqQHBIIIcVjGEaxXtd1XO2P4dr3N6EqCvJyFoqmgvqDlqZqp+jxD4/z8etKGxjxm6ZJxmIxnB8YwNDQEGITE5iemQHHcRAEATYIVPvB8ZQRQu05D45QGPNx2PYNNFxWV21y/h0AiCiKkGUZcwsZnDjTg7cOtuOr098hYxLYQJIklK8ps5hoaAyM2ZeAFwRQEJi5FEclT/BpxZBKFhdkQimFx+NBTbQG+1pfQFZ34tZtFd29PTAtC+N2dU9vH/t18sKCwPP4r46DQ3QySzcGKBGERzRFpYl4CkubPdd3Fj1nu5GduAxvdQNIPgNV1zBw/hy6+y+D510xUZQYzwlM5CXT5iID+5RailLNDINN/ZUCoQTLlnkQj8dx8uRJW2DA7V2F6H0RGJoGt8vFgqF7c2vD0T4wMANgd0yjP2Mqb+Ty2RkqMrhhmbh+JYnk7TSWl/pwuP0DrIvWoX73EWx/LIIV3lKIgoitT21Dy7aWPzU125/JpbOLukrA8U1ly8uGwxWVz1CXwOvE0qHIGq4NJ4qPHApVoKurC4defw6bKigCwfLiRkMBPzavL39w5/tPChk5vV+ZvzVHUknm4DhB13RKeZ5LlthlzDAQG00jkykU/5VTYKgJiTANE6LkhKIqTNW0nKqpvYauj89PzX5jcqxG0/WmeGK6bj6V+IHPy7nfV/hWbS5kM0gnC5iMLWBjXfhnAA0FRQGz0XVtzmJsZEHOH52a+uPirubtOmw2BfYmg9cSP2YsJ7uIbxlpfaitdk3l/Q/rlv7FnVzucmXdPS+1HtjyD8dzWCIvy76/Z6bY5MTs4tfjn7HBjwZxN/4Fq6rr1ZuF0oUAAAAASUVORK5CYII='], ['Spike', 'A4AAAAQCAYAAAAmlE46AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAsFJREFUOE+Fk1tM0nEUx/9QPtCD7z30nE9sbbVeXJJR6j8DkVsIhg6HTqSXnBHSMMEbEy+AgPwVQpcgNy+kKLc/lCgF09Wquaab67kHX1pulif+mHRdne3sd3Z2Pt/fOee3H4J8N/ow2lrj4H64OljRfEXBIZ/k/3lWquXIrQl2ROAVA98jOro2XKUtvV9Dpj/iFV/ppwvLVfzThEBZGRWh0S4hmFx+rId2ysmMSU6WAAUeMfDcdYe0gUrGdUOl7rZXBDRdRQtRp1PeIRlVctIzk+lHR6itJnwC1nkbgOXgZlhO3h6RY9rZKYT7W9NUKpUklUqRKjPDQADEjYTz3SLgzQjzMWua/5E5xLpQrqOX/jEzamTc4LqEX/KQRwRMBwfEDgnUOyXAdgk+1zr5e0w7J/vA15OfN28PW5SnZlRuVT3WeMia5oHW1AthawSS40mIjcWhW98HfF89Ifa6qb+hqAA6FA5xzIp/dVncYDc/hkQOiI/jBcctCegwdRJgsERWcszpZTrKU/3S7s+Ff4vn9UG4aWbGyofoaB60d05dDJuiR/8DcXMCpLY24GPsrlRWcxZxKmaqF0aCsDy8ArgtAVFL/Jc2C4LWBEwFNLCUbt9PZrpEiEk2VjbmMYIdm4TQ6Cq4RmYB02CwZAlB2ByBkHEVYhYcEmEreNZl4F+/C8F0+0vE2x1IL3qDsDgZhKg5Bt7ULAgHa+HVzlt4v7MHMQyHpM8LrlQzuNdaIfJCub+R0Z5DfNrAxsJAEHJbhXhue5nQJmS3t2D73S6suVK5XBKiYQMs4B3xSEbZ83xTc3ljq5eMmNts5/3d82/8jicQDc0Cbo8BjiVyQsez4rYkeNRzfqfadUYgEJBRFCVRKBQS0tTUSM7BxaauUelyenwunnZ+SnhXDkKG0EGgb+5g4p5dpa5TFEkk1bmfQSu8/TfTXs+Z8UbptgAAAABJRU5ErkJggg==']],
@@ -2425,449 +2868,6 @@
     links: [["a", "Anime & Manga", "//boards.4chan.org/a/"], ["b", "Random", "//boards.4chan.org/b/"], ["c", "Cute/Anime", "//boards.4chan.org/c/"], ["d", "Hentai/Alternative", "//boards.4chan.org/d/"], ["e", "Ecchi", "//boards.4chan.org/e/"], ["f", "Flash", "//boards.4chan.org/f/"], ["g", "Technology", "//boards.4chan.org/g/"], ["gif", "Animated Gifs", "//boards.4chan.org/gif/"], ["h", "Hentai", "//boards.4chan.org/h/"], ["hr", "High Resolution", "//boards.4chan.org/hr/"], ["k", "Weapons", "//boards.4chan.org/k/"], ["l", "Lolicon", "http://7chan.org/cake/"], ["m", "Mecha", "//boards.4chan.org/m/"], ["o", "Auto", "//boards.4chan.org/o/"], ["p", "Pictures", "//boards.4chan.org/p/"], ["r", "Requests", "//boards.4chan.org/r/"], ["s", "Sexy Beautiful Women", "//boards.4chan.org/s/"], ["t", "Torrents", "//boards.4chan.org/t/"], ["u", "Yuri", "//boards.4chan.org/u/"], ["v", "Video Games", "//boards.4chan.org/v/"], ["vg", "Video Game Generals", "//boards.4chan.org/vg/"], ["w", "Anime/Wallpapers", "//boards.4chan.org/w/"], ["wg", "Wallpapers/General", "//boards.4chan.org/wg/"], ["i", "Oekaki", "//boards.4chan.org/i/"], ["ic", "Artwork/Critique", "//boards.4chan.org/ic/"], ["r9k", "Robot 9K", "//boards.4chan.org/r9k/"], ["cm", "Cute/Male", "//boards.4chan.org/cm/"], ["hm", "Handsome Men", "//boards.4chan.org/hm/"], ["y", "Yaoi", "//boards.4chan.org/y/"], ["3", "3DCG", "//boards.4chan.org/3/"], ["adv", "Advice", "//boards.4chan.org/adv/"], ["an", "Animals", "//boards.4chan.org/an/"], ["cgl", "Cosplay & EGL", "//boards.4chan.org/cgl/"], ["ck", "Food & Cooking", "//boards.4chan.org/ck/"], ["co", "Comics & Cartoons", "//boards.4chan.org/co/"], ["diy", "Do It Yourself", "//boards.4chan.org/diy/"], ["fa", "Fashion", "//boards.4chan.org/fa/"], ["fit", "Health & Fitness", "//boards.4chan.org/fit/"], ["hc", "Hardcore", "//boards.4chan.org/hc/"], ["int", "International", "//boards.4chan.org/int/"], ["jp", "Otaku Culture", "//boards.4chan.org/jp/"], ["lit", "Literature", "//boards.4chan.org/lit/"], ["mlp", "My Little Pony", "//boards.4chan.org/mlp/"], ["mu", "Music", "//boards.4chan.org/mu/"], ["n", "Transportation", "//boards.4chan.org/n/"], ["po", "Papercraft & Origami", "//boards.4chan.org/po/"], ["pol", "Politically Incorrect", "//boards.4chan.org/pol/"], ["sci", "Science & Math", "//boards.4chan.org/sci/"], ["soc", "Social", "//boards.4chan.org/soc/"], ["sp", "Sports", "//boards.4chan.org/sp/"], ["tg", "Traditional Games", "//boards.4chan.org/tg/"], ["toy", "Toys", "//boards.4chan.org/toys/"], ["trv", "Travel", "//boards.4chan.org/trv/"], ["tv", "Television & Film", "//boards.4chan.org/tv/"], ["vp", "Pok&eacute;mon", "//boards.4chan.org/vp/"], ["wsg", "Worksafe GIF", "//boards.4chan.org/wsg/"], ["x", "Paranormal", "//boards.4chan.org/x/"], ["rs", "Rapidshares", "http://rs.4chan.org/"], ["status", "4chan Status", "http://status.4chan.org/"], ["q", "4chan Discussion", "//boards.4chan.org/q/"], ["@", "4chan Twitter", "http://www.twitter.com/4chan"]]
   };
 
-  /*
-  loosely follows the jquery api:
-  http://api.jquery.com/
-  not chainable
-  */
-
-
-  $ = function(selector, root) {
-    var result;
-    root || (root = d.body);
-    if (result = root.querySelector(selector)) {
-      return result;
-    }
-  };
-
-  $.extend = function(object, properties) {
-    var key, val;
-    for (key in properties) {
-      val = properties[key];
-      object[key] = val;
-    }
-  };
-
-  $.extend(Array.prototype, {
-    add: function(object, position) {
-      var keep;
-      keep = this.slice(position);
-      this.length = position;
-      this.push(object);
-      return this.pushArrays(keep);
-    },
-    contains: function(object) {
-      return this.indexOf(object) > -1;
-    },
-    indexOf: function(object) {
-      var i;
-      i = this.length;
-      while (i--) {
-        if (this[i] === object) {
-          break;
-        }
-      }
-      return i;
-    },
-    pushArrays: function() {
-      var arg, args, _i, _len, _results;
-      args = arguments;
-      _results = [];
-      for (_i = 0, _len = args.length; _i < _len; _i++) {
-        arg = args[_i];
-        _results.push(this.push.apply(this, arg));
-      }
-      return _results;
-    },
-    remove: function(object) {
-      var index;
-      if ((index = this.indexOf(object)) > -1) {
-        return this.splice(index, 1);
-      } else {
-        return false;
-      }
-    }
-  });
-
-  $.extend(String.prototype, {
-    capitalize: function() {
-      return this.charAt(0).toUpperCase() + this.slice(1);
-    },
-    contains: function(string) {
-      return this.indexOf(string) > -1;
-    }
-  });
-
-  $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)));
-
-  $.extend($, {
-    NBSP: '\u00A0',
-    minmax: function(value, min, max) {
-      return (value < min ? min : value > max ? max : value);
-    },
-    log: typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0,
-    engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
-    ready: function(fc) {
-      var cb;
-      if (['interactive', 'complete'].contains(d.readyState)) {
-        return setTimeout(fc);
-      }
-      if (!$.callbacks) {
-        $.callbacks = [];
-        cb = function() {
-          var callback, _i, _len, _ref;
-          _ref = $.callbacks;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            callback = _ref[_i];
-            callback();
-          }
-          return $.off(d, 'DOMContentLoaded', cb);
-        };
-        $.on(d, 'DOMContentLoaded', cb);
-      }
-      $.callbacks.push(fc);
-      return $.on(d, 'DOMContentLoaded', cb);
-    },
-    sync: function(key, cb) {
-      var parse;
-      key = Main.namespace + key;
-      parse = JSON.parse;
-      return $.on(window, 'storage', function(e) {
-        if (e.key === key) {
-          return cb(parse(e.newValue));
-        }
-      });
-    },
-    id: d.getElementById.bind(d),
-    formData: function(arg) {
-      var fd, key, val;
-      if (arg instanceof HTMLFormElement) {
-        fd = new FormData(arg);
-      } else {
-        fd = new FormData();
-        for (key in arg) {
-          val = arg[key];
-          if (val) {
-            fd.append(key, val);
-          }
-        }
-      }
-      return fd;
-    },
-    ajax: function(url, callbacks, opts) {
-      var form, headers, key, r, type, upCallbacks, val;
-      if (!opts) {
-        opts = {};
-      }
-      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
-      r = new XMLHttpRequest();
-      r.overrideMimeType('text/html');
-      type || (type = form && 'post' || 'get');
-      r.open(type, url, true);
-      for (key in headers) {
-        val = headers[key];
-        r.setRequestHeader(key, val);
-      }
-      $.extend(r, callbacks);
-      $.extend(r.upload, upCallbacks);
-      if (type === 'post') {
-        r.withCredentials = true;
-      }
-      r.send(form);
-      return r;
-    },
-    cache: function(url, cb) {
-      var req;
-      if (req = $.cache.requests[url]) {
-        if (req.readyState === 4) {
-          return cb.call(req);
-        } else {
-          return req.callbacks.push(cb);
-        }
-      } else {
-        req = $.ajax(url, {
-          onload: function() {
-            var _i, _len, _ref;
-            _ref = this.callbacks;
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              cb = _ref[_i];
-              cb.call(this);
-            }
-          },
-          onabort: function() {
-            return delete $.cache.requests[url];
-          },
-          onerror: function() {
-            return delete $.cache.requests[url];
-          }
-        });
-        req.callbacks = [cb];
-        return $.cache.requests[url] = req;
-      }
-    },
-    cb: {
-      checked: function() {
-        $.set(this.name, this.checked);
-        return Conf[this.name] = this.checked;
-      },
-      value: function() {
-        $.set(this.name, this.value.trim());
-        return Conf[this.name] = this.value;
-      }
-    },
-    addStyle: function(css, identifier) {
-      var style;
-      style = $.el('style', {
-        textContent: css,
-        id: identifier
-      });
-      $.add(d.head, style);
-      return style;
-    },
-    x: function(path, root) {
-      root || (root = d.body);
-      return d.evaluate(path, root, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue;
-    },
-    X: function(path, root) {
-      root || (root = d.body);
-      return d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
-    },
-    addClass: function(el, className) {
-      return el.classList.add(className);
-    },
-    rmClass: function(el, className) {
-      return el.classList.remove(className);
-    },
-    toggleClass: function(el, className) {
-      return el.classList.toggle(className);
-    },
-    rm: function(el) {
-      return el.parentNode.removeChild(el);
-    },
-    tn: d.createTextNode.bind(d),
-    nodes: function(nodes) {
-      var frag, node, _i, _len;
-      if (!(nodes instanceof Array)) {
-        return nodes;
-      }
-      frag = d.createDocumentFragment();
-      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
-        node = nodes[_i];
-        frag.appendChild(node);
-      }
-      return frag;
-    },
-    add: function(parent, children) {
-      return parent.appendChild($.nodes(children));
-    },
-    prepend: function(parent, children) {
-      return parent.insertBefore($.nodes(children), parent.firstChild);
-    },
-    after: function(root, el) {
-      return root.parentNode.insertBefore($.nodes(el), root.nextSibling);
-    },
-    before: function(root, el) {
-      return root.parentNode.insertBefore($.nodes(el), root);
-    },
-    replace: function(root, el) {
-      return root.parentNode.replaceChild($.nodes(el), root);
-    },
-    create: d.createElement.bind(d),
-    el: function(tag, properties) {
-      var el;
-      el = $.create(tag);
-      if (properties) {
-        $.extend(el, properties);
-      }
-      return el;
-    },
-    on: function(el, events, handler) {
-      var event, _i, _len, _ref;
-      _ref = events.split(' ');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        event = _ref[_i];
-        el.addEventListener(event, handler, false);
-      }
-    },
-    off: function(el, events, handler) {
-      var event, _i, _len, _ref;
-      _ref = events.split(' ');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        event = _ref[_i];
-        el.removeEventListener(event, handler, false);
-      }
-    },
-    event: function(el, e) {
-      return el.dispatchEvent(e);
-    },
-    globalEval: function(code) {
-      var script;
-      script = $.el('script', {
-        textContent: "(" + code + ")()"
-      });
-      $.add(d.head, script);
-      return $.rm(script);
-    },
-    shortenFilename: function(filename, isOP) {
-      var threshold;
-      threshold = 30 + 10 * isOP;
-      if (filename.replace(/\.\w+$/, '').length > threshold) {
-        return "" + filename.slice(0, threshold - 5) + "(...)" + (filename.match(/\.\w+$/));
-      } else {
-        return filename;
-      }
-    },
-    bytesToString: function(size) {
-      var unit;
-      unit = 0;
-      while (size >= 1024) {
-        size /= 1024;
-        unit++;
-      }
-      size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
-      return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
-    },
-    hidden: function() {
-      return d.hidden || d.mozHidden || d.webkitHidden || d.oHidden;
-    }
-  });
-
-  $.cache.requests = {};
-
-  $.extend($, typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null ? {
-    "delete": function(name) {
-      name = Main.namespace + name;
-      return GM_deleteValue(name);
-    },
-    get: function(name, defaultValue) {
-      var value;
-      name = Main.namespace + name;
-      if (value = GM_getValue(name)) {
-        return JSON.parse(value);
-      } else {
-        return defaultValue;
-      }
-    },
-    set: function(name, value) {
-      name = Main.namespace + name;
-      localStorage.setItem(name, JSON.stringify(value));
-      return GM_setValue(name, JSON.stringify(value));
-    },
-    open: function(url) {
-      return GM_openInTab(location.protocol + url, true);
-    }
-  } : {
-    "delete": function(name) {
-      return localStorage.removeItem(Main.namespace + name);
-    },
-    get: function(name, defaultValue) {
-      var value;
-      if (value = localStorage.getItem(Main.namespace + name)) {
-        return JSON.parse(value);
-      } else {
-        return defaultValue;
-      }
-    },
-    set: function(name, value) {
-      return localStorage.setItem(Main.namespace + name, JSON.stringify(value));
-    },
-    open: function(url) {
-      return window.open(location.protocol + url, '_blank');
-    }
-  });
-
-  $$ = function(selector, root) {
-    var result;
-    root || (root = d.body);
-    if (result = Array.prototype.slice.call(root.querySelectorAll(selector))) {
-      return result;
-    }
-    return null;
-  };
-
-  UI = {
-    dialog: function(id, position, html) {
-      var el, move;
-      el = $.el('div', {
-        className: 'reply dialog',
-        innerHTML: html,
-        id: id
-      });
-      el.style.cssText = $.get(id + ".position", position);
-      if (move = $('.move', el)) {
-        move.addEventListener('mousedown', UI.dragstart, false);
-      }
-      return el;
-    },
-    dragstart: function(e) {
-      var el, rect;
-      e.preventDefault();
-      UI.el = el = this.parentNode;
-      d.addEventListener('mousemove', UI.drag, false);
-      d.addEventListener('mouseup', UI.dragend, false);
-      rect = el.getBoundingClientRect();
-      UI.dx = e.clientX - rect.left;
-      UI.dy = e.clientY - rect.top;
-      UI.width = d.documentElement.clientWidth - rect.width;
-      return UI.height = d.documentElement.clientHeight - rect.height;
-    },
-    drag: function(e) {
-      var left, style, top;
-      left = e.clientX - UI.dx;
-      top = e.clientY - UI.dy;
-      left = left < 10 ? '0px' : UI.width - left < 10 ? null : left + 'px';
-      top = top < 10 ? '0px' : UI.height - top < 10 ? null : top + 'px';
-      style = UI.el.style;
-      style.left = left;
-      style.top = top;
-      style.right = left === null ? '0px' : null;
-      return style.bottom = top === null ? '0px' : null;
-    },
-    dragend: function() {
-      $.set(UI.el.id + ".position", UI.el.style.cssText);
-      d.removeEventListener('mousemove', UI.drag, false);
-      d.removeEventListener('mouseup', UI.dragend, false);
-      return delete UI.el;
-    },
-    hover: function(e, mode) {
-      var clientHeight, clientWidth, clientX, clientY, height, style, top, _ref;
-      if (mode == null) {
-        mode = "default";
-      }
-      clientX = e.clientX, clientY = e.clientY;
-      style = UI.el.style;
-      _ref = d.documentElement, clientHeight = _ref.clientHeight, clientWidth = _ref.clientWidth;
-      height = UI.el.offsetHeight;
-      if (mode === "default") {
-        top = clientY - 120;
-        style.top = clientHeight <= height || top <= 0 ? '0px' : top + height >= clientHeight ? clientHeight - height + 'px' : top + 'px';
-        if (clientX <= clientWidth - 400) {
-          style.left = clientX + 45 + 'px';
-          return style.right = null;
-        } else {
-          style.left = null;
-          style.right = clientWidth - clientX + 20 + 'px';
-          return top = clientY - 120;
-        }
-      } else {
-        if (clientX <= clientWidth - 400) {
-          style.left = clientX + 20 + 'px';
-          style.right = null;
-          top = clientY;
-        } else {
-          style.left = null;
-          style.right = clientWidth - clientX + 20 + 'px';
-          top = clientY - 120;
-        }
-        return style.top = "" + (clientHeight <= height || top <= 0 ? 0 : top + height >= clientHeight ? clientHeight - height : top) + "px";
-      }
-    },
-    hoverend: function() {
-      $.rm(UI.el);
-      return delete UI.el;
-    }
-  };
-
   Options = {
     init: function() {
       var a;
@@ -4410,11 +4410,11 @@
         quotes: quotes,
         backlinks: []
       };
-      if (_conf['Resurrect Quotes']) {
-        Quotify.node(post);
-      }
       if (_conf['Linkify']) {
         Linkify.node(post);
+      }
+      if (_conf['Resurrect Quotes']) {
+        Quotify.node(post);
       }
       if (_conf['Quote Preview']) {
         QuotePreview.node(post);
@@ -6611,26 +6611,25 @@
       });
       $.on(this, 'mousemove', UI.hover);
       $.on(this, 'mouseout click', QuotePreview.mouseout);
-      if (board === g.BOARD) {
+      _conf = Conf;
+      if (_conf['Fappe Tyme']) {
+        $.rmClass(qp.firstElementChild, 'noFile');
+      }
+      if (el = $.id("p" + postID)) {
         _conf = Conf;
-        if (_conf['Fappe Tyme'] && !$('img[data-md5]', qp) && (el = qp.firstElementChild)) {
-          $.rmClass(el, 'noFile');
-        }
-        if (el = $.id("p" + postID)) {
-          if (_conf['Quote Highlighting']) {
-            if (/\bop\b/.test(el.className)) {
-              $.addClass(el.parentNode, 'qphl');
-            } else {
-              $.addClass(el, 'qphl');
-            }
+        if (_conf['Quote Highlighting']) {
+          if (/\bop\b/.test(el.className)) {
+            $.addClass(el.parentNode, 'qphl');
+          } else {
+            $.addClass(el, 'qphl');
           }
-          quoterID = $.x('ancestor::*[@id][1]', this).id.match(/\d+$/)[0];
-          _ref = $$('.quotelink, .backlink', qp);
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            quote = _ref[_i];
-            if (quote.hash.slice(2) === quoterID) {
-              $.addClass(quote, 'forwardlink');
-            }
+        }
+        quoterID = $.x('ancestor::*[@id][1]', this).id.match(/\d+$/)[0];
+        _ref = $$('.quotelink, .backlink', qp);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          quote = _ref[_i];
+          if (quote.hash.slice(2) === quoterID) {
+            $.addClass(quote, 'forwardlink');
           }
         }
       }
@@ -6640,8 +6639,8 @@
       var el;
       UI.hoverend();
       if (el = $.id(this.hash.slice(1))) {
-        $.rmClass(el, 'qphl');
         $.rmClass(el.parentNode, 'qphl');
+        $.rmClass(el, 'qphl');
       }
       $.off(this, 'mousemove', UI.hover);
       return $.off(this, 'mouseout click', QuotePreview.mouseout);
@@ -6826,7 +6825,7 @@
     },
     regString: /(\b([a-z]+:\/\/|www\.|magnet:|mailto:|news:)[^\s]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi,
     node: function(post) {
-      var a, blockquote, child, commentFrag, data, embed, i, index, len, link, links, node, nodes, snapshot, text, wbr, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref, _ref1, _ref2;
+      var a, child, commentFrag, data, embed, i, index, len, link, links, node, nodes, snapshot, text, wbr, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _len5, _m, _n, _ref, _ref1, _results;
       if (post.isInlined && !post.isCrosspost) {
         if (Conf['Embedding']) {
           _ref = $$('.embed', post.blockquote);
@@ -6837,10 +6836,7 @@
         }
         return;
       }
-      blockquote = $.el('blockquote', {
-        innerHTML: post.blockquote.innerHTML
-      });
-      _ref1 = $$('wbr', blockquote);
+      _ref1 = $$('wbr', post.blockquote);
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         wbr = _ref1[_j];
         $.replace(wbr.previousSibling, $.tn("" + (($.el('span', {
@@ -6851,25 +6847,36 @@
         $.rm(wbr.nextSibling);
         $.rm(wbr);
       }
-      snapshot = d.evaluate('.//text()', blockquote, null, 6, null);
+      snapshot = d.evaluate('.//text()', post.blockquote, null, 6, null);
       i = -1;
       len = snapshot.snapshotLength;
+      _results = [];
       while (++i < len) {
+        nodes = [];
         node = snapshot.snapshotItem(i);
         data = node.data;
         if (!(links = data.match(Linkify.regString))) {
+          commentFrag = $.el('div', {
+            innerHTML: data
+          });
+          for (_k = 0, _len2 = commentFrag.length; _k < _len2; _k++) {
+            child = commentFrag[_k];
+            nodes.push(child);
+          }
+          if (nodes.length > 1) {
+            $.replace(node, nodes);
+          }
           continue;
         }
-        nodes = [];
-        for (_k = 0, _len2 = links.length; _k < _len2; _k++) {
-          link = links[_k];
+        for (_l = 0, _len3 = links.length; _l < _len3; _l++) {
+          link = links[_l];
           index = data.indexOf(link);
           if (text = data.slice(0, index)) {
             commentFrag = $.el('div', {
               innerHTML: text
             });
-            for (_l = 0, _len3 = commentFrag.length; _l < _len3; _l++) {
-              child = commentFrag[_l];
+            for (_m = 0, _len4 = commentFrag.length; _m < _len4; _m++) {
+              child = commentFrag[_m];
               nodes.push(child);
             }
           }
@@ -6880,30 +6887,21 @@
             target: 'blank',
             href: (link.indexOf(':') < 0 ? (link.indexOf('@') > 0 ? 'mailto:' + link : 'http://' + link) : link).replace(/<wbr>/g, '')
           });
-          nodes.push(a);
+          nodes = nodes.concat(Linkify.embedder(a));
           data = data.slice(index + link.length);
         }
         if (data) {
           commentFrag = $.el('div', {
             innerHTML: data
           });
-          for (_m = 0, _len4 = commentFrag.length; _m < _len4; _m++) {
-            child = commentFrag[_m];
+          for (_n = 0, _len5 = commentFrag.length; _n < _len5; _n++) {
+            child = commentFrag[_n];
             nodes.push(child);
           }
         }
-        $.replace(node, nodes);
+        _results.push($.replace(node, nodes));
       }
-      if (a) {
-        if (Conf['Embedding']) {
-          _ref2 = $$('.linkify', blockquote);
-          for (_n = 0, _len5 = _ref2.length; _n < _len5; _n++) {
-            link = _ref2[_n];
-            Linkify.embedder(link);
-          }
-        }
-        return $.replace(post.blockquote, blockquote);
-      }
+      return _results;
     },
     toggle: function() {
       var el, embed, style, type, url;
@@ -7004,9 +7002,11 @@
       }
     },
     embedder: function(a) {
-      var embed, key, match, service, title, titles, type, _ref, _results;
+      var embed, key, match, service, title, titles, type, _ref;
+      if (!Conf['Embedding']) {
+        return [a];
+      }
       _ref = Linkify.types;
-      _results = [];
       for (key in _ref) {
         type = _ref[key];
         if (!(match = a.href.match(type.regExp))) {
@@ -7047,12 +7047,10 @@
               }).call(this);
             });
           }
-          _results.push($.after(a, [$.tn(' '), embed]));
-        } else {
-          _results.push(void 0);
+          return [a, $.tn(' '), embed];
         }
       }
-      return _results;
+      return [a];
     }
   };
 
@@ -10929,11 +10927,11 @@
           ReplyHideLink.init();
         }
       }
-      if (_conf['Resurrect Quotes']) {
-        Quotify.init();
-      }
       if (_conf['Linkify']) {
         Linkify.init();
+      }
+      if (_conf['Resurrect Quotes']) {
+        Quotify.init();
       }
       if (_conf['Remove Spoilers']) {
         RemoveSpoilers.init();
@@ -11155,21 +11153,22 @@
       return post;
     },
     node: function(nodes, notify) {
-      var callback, node, _i, _j, _len, _len1, _ref;
+      var callback, node, _i, _len, _ref, _results;
       _ref = Main.callbacks;
+      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
-        try {
+        _results.push((function() {
+          var _j, _len1, _results1;
+          _results1 = [];
           for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
             node = nodes[_j];
-            callback(node);
+            _results1.push(callback(node));
           }
-        } catch (err) {
-          if (notify) {
-            alert("AppChan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n" + Main.version + "\n" + window.location + "\n" + navigator.userAgent + "\n\n" + err + "\n" + err.stack);
-          }
-        }
+          return _results1;
+        })());
       }
+      return _results;
     },
     observer: function(mutations) {
       var addedNode, mutation, nodes, _i, _j, _len, _len1, _ref;
