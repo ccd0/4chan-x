@@ -20,7 +20,7 @@
 // @icon         https://github.com/MayhemYDG/4chan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2013-01-24
+/* 4chan X Alpha - Version 3.0.0 - 2013-01-25
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, AutoGIF, Board, Build, Clone, Conf, Config, FileInfo, Get, ImageHover, Main, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, ReplyHiding, RevealSpoilers, Sauce, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, g, _base,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Get, ImageHover, Main, Menu, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, g, _base,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1014,9 +1014,450 @@
     }
   };
 
+  Menu = {
+    entries: [],
+    init: function() {
+      $.on(d, 'AddMenuEntry', function(e) {
+        return Menu.addEntry(e.detail);
+      });
+      return Post.prototype.callbacks.push({
+        name: 'Menu',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var a;
+      if (this.isClone) {
+        a = $('.menu-button', this.nodes.info);
+        a.setAttribute('data-clone', true);
+        $.on(a, 'click', Menu.toggle);
+        return;
+      }
+      a = Menu.makeButton(this);
+      return $.add(this.nodes.info, [$.tn('\u00A0'), a]);
+    },
+    makeButton: function(post) {
+      var a;
+      a = $.el('a', {
+        className: 'menu-button',
+        innerHTML: '[<span></span>]',
+        href: 'javascript:;'
+      });
+      a.setAttribute('data-postid', post.fullID);
+      $.on(a, 'click', Menu.toggle);
+      return a;
+    },
+    makeMenu: function() {
+      var menu;
+      menu = $.el('div', {
+        className: 'reply dialog',
+        id: 'menu',
+        tabIndex: 0
+      });
+      $.on(menu, 'click', function(e) {
+        return e.stopPropagation();
+      });
+      $.on(menu, 'keydown', Menu.keybinds);
+      return menu;
+    },
+    toggle: function(e) {
+      var lastToggledButton, post;
+      e.preventDefault();
+      e.stopPropagation();
+      if (Menu.currentMenu) {
+        lastToggledButton = Menu.lastToggledButton;
+        Menu.close();
+        if (lastToggledButton === this) {
+          return;
+        }
+      }
+      Menu.lastToggledButton = this;
+      post = this.dataset.clone ? Get.postFromRoot($.x('ancestor::div[contains(@class,"postContainer")][1]', this)) : g.posts[this.dataset.postid];
+      return Menu.open(this, post);
+    },
+    open: function(button, post) {
+      var bLeft, bRect, bTop, entry, mRect, menu, _i, _len, _ref;
+      menu = Menu.makeMenu();
+      Menu.currentMenu = menu;
+      _ref = Menu.entries;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        entry = _ref[_i];
+        Menu.insertEntry(entry, menu, post);
+      }
+      Menu.focus($('.entry', menu));
+      $.on(d, 'click', Menu.close);
+      $.add(d.body, menu);
+      mRect = menu.getBoundingClientRect();
+      bRect = button.getBoundingClientRect();
+      bTop = d.documentElement.scrollTop + d.body.scrollTop + bRect.top;
+      bLeft = d.documentElement.scrollLeft + d.body.scrollLeft + bRect.left;
+      menu.style.top = bRect.top + bRect.height + mRect.height < d.documentElement.clientHeight ? bTop + bRect.height + 2 + 'px' : bTop - mRect.height - 2 + 'px';
+      menu.style.left = bRect.left + mRect.width < d.documentElement.clientWidth ? bLeft + 'px' : bLeft + bRect.width - mRect.width + 'px';
+      return menu.focus();
+    },
+    insertEntry: function(entry, parent, post) {
+      var child, submenu, _i, _len, _ref;
+      if (!entry.open(post)) {
+        return;
+      }
+      $.add(parent, entry.el);
+      if (!entry.children) {
+        return;
+      }
+      if (submenu = $('.submenu', entry.el)) {
+        $.rm(submenu);
+      }
+      submenu = $.el('div', {
+        className: 'reply dialog submenu'
+      });
+      $.add(entry.el, submenu);
+      _ref = entry.children;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        child = _ref[_i];
+        Menu.insertEntry(child, submenu, post);
+      }
+    },
+    close: function() {
+      $.rm(Menu.currentMenu);
+      delete Menu.currentMenu;
+      delete Menu.lastToggledButton;
+      return $.off(d, 'click', Menu.close);
+    },
+    keybinds: function(e) {
+      var entry, next, subEntry, submenu;
+      entry = $('.focused', Menu.currentMenu);
+      while (subEntry = $('.focused', entry)) {
+        entry = subEntry;
+      }
+      switch (Keybinds.keyCode(e) || e.keyCode) {
+        case 'Esc':
+          Menu.lastToggledButton.focus();
+          Menu.close();
+          break;
+        case 13:
+        case 32:
+          entry.click();
+          break;
+        case 'Up':
+          if (next = entry.previousElementSibling) {
+            Menu.focus(next);
+          }
+          break;
+        case 'Down':
+          if (next = entry.nextElementSibling) {
+            Menu.focus(next);
+          }
+          break;
+        case 'Right':
+          if ((submenu = $('.submenu', entry)) && (next = submenu.firstElementChild)) {
+            Menu.focus(next);
+          }
+          break;
+        case 'Left':
+          if (next = $.x('parent::*[contains(@class,"submenu")]/parent::*', entry)) {
+            Menu.focus(next);
+          }
+          break;
+        default:
+          return;
+      }
+      e.preventDefault();
+      return e.stopPropagation();
+    },
+    focus: function(entry) {
+      var bottom, eRect, focused, left, right, sRect, style, submenu, top, _i, _len, _ref;
+      if (focused = $.x('parent::*/child::*[contains(@class,"focused")]', entry)) {
+        $.rmClass(focused, 'focused');
+      }
+      _ref = $$('.focused', entry);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        focused = _ref[_i];
+        $.rmClass(focused, 'focused');
+      }
+      $.addClass(entry, 'focused');
+      if (!(submenu = $('.submenu', entry))) {
+        return;
+      }
+      sRect = submenu.getBoundingClientRect();
+      eRect = entry.getBoundingClientRect();
+      if (eRect.top + sRect.height < d.documentElement.clientHeight) {
+        top = '0px';
+        bottom = 'auto';
+      } else {
+        top = 'auto';
+        bottom = '0px';
+      }
+      if (eRect.right + sRect.width < d.documentElement.clientWidth) {
+        left = '100%';
+        right = 'auto';
+      } else {
+        left = 'auto';
+        right = '100%';
+      }
+      style = submenu.style;
+      style.top = top;
+      style.bottom = bottom;
+      style.left = left;
+      return style.right = right;
+    },
+    addEntry: function(entry) {
+      Menu.parseEntry(entry);
+      return Menu.entries.push(entry);
+    },
+    parseEntry: function(entry) {
+      var child, children, el, _i, _len;
+      el = entry.el, children = entry.children;
+      $.addClass(el, 'entry');
+      $.on(el, 'focus mouseover', function(e) {
+        e.stopPropagation();
+        return Menu.focus(this);
+      });
+      if (!children) {
+        return;
+      }
+      $.addClass(el, 'has-submenu');
+      for (_i = 0, _len = children.length; _i < _len; _i++) {
+        child = children[_i];
+        Menu.parseEntry(child);
+      }
+    }
+  };
+
+  ReportLink = {
+    init: function() {
+      var a;
+      a = $.el('a', {
+        className: 'report-link',
+        href: 'javascript:;',
+        textContent: 'Report this post'
+      });
+      $.on(a, 'click', ReportLink.report);
+      return Menu.addEntry({
+        el: a,
+        open: function(post) {
+          ReportLink.post = post;
+          return !post.isDead;
+        }
+      });
+    },
+    report: function() {
+      var id, post, set, url;
+      post = ReportLink.post;
+      url = "//sys.4chan.org/" + post.board + "/imgboard.php?mode=report&no=" + post;
+      id = Date.now();
+      set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
+      return window.open(url, id, set);
+    }
+  };
+
+  DeleteLink = {
+    init: function() {
+      var div, fileEl, fileEntry, postEl, postEntry;
+      div = $.el('div', {
+        className: 'delete-link',
+        textContent: 'Delete'
+      });
+      postEl = $.el('a', {
+        className: 'delete-post',
+        href: 'javascript:;'
+      });
+      fileEl = $.el('a', {
+        className: 'delete-file',
+        href: 'javascript:;'
+      });
+      postEntry = {
+        el: postEl,
+        open: function() {
+          postEl.textContent = 'Post';
+          $.on(postEl, 'click', DeleteLink["delete"]);
+          return true;
+        }
+      };
+      fileEntry = {
+        el: fileEl,
+        open: function(post) {
+          fileEl.textContent = 'File';
+          $.on(fileEl, 'click', DeleteLink["delete"]);
+          return !!post.file;
+        }
+      };
+      Menu.addEntry({
+        el: div,
+        open: function(post) {
+          var node, seconds;
+          if (post.isDead) {
+            return false;
+          }
+          DeleteLink.post = post;
+          node = div.firstChild;
+          if (seconds = DeleteLink.cooldown[post.fullID]) {
+            node.textContent = "Delete (" + seconds + ")";
+            DeleteLink.cooldown.el = node;
+          } else {
+            node.textContent = 'Delete';
+            delete DeleteLink.cooldown.el;
+          }
+          return true;
+        },
+        children: [postEntry, fileEntry]
+      });
+      return $.on(d, 'QRPostSuccessful', this.cooldown.start);
+    },
+    "delete": function() {
+      var form, link, m, post, pwd;
+      post = DeleteLink.post;
+      if (DeleteLink.cooldown[post.fullID]) {
+        return;
+      }
+      $.off(this, 'click', DeleteLink["delete"]);
+      this.textContent = "Deleting " + this.textContent + "...";
+      pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $.id('delPassword').value;
+      form = {
+        mode: 'usrdel',
+        onlyimgdel: $.hasClass(this, 'delete-file'),
+        pwd: pwd
+      };
+      form[post.ID] = 'delete';
+      link = this;
+      return $.ajax($.id('delform').action.replace("/" + g.BOARD + "/", "/" + post.board + "/"), {
+        onload: function() {
+          return DeleteLink.load(link, this.response);
+        },
+        onerror: function() {
+          return DeleteLink.error(link);
+        }
+      }, {
+        form: $.formData(form)
+      });
+    },
+    load: function(link, html) {
+      var doc, msg, s;
+      doc = d.implementation.createHTMLDocument('');
+      doc.documentElement.innerHTML = html;
+      if (doc.title === '4chan - Banned') {
+        s = 'Banned!';
+      } else if (msg = doc.getElementById('errmsg')) {
+        s = msg.textContent;
+        $.on(link, 'click', DeleteLink["delete"]);
+      } else {
+        s = 'Deleted';
+      }
+      return link.textContent = s;
+    },
+    error: function(link) {
+      link.textContent = 'Connection error, please retry.';
+      return $.on(link, 'click', DeleteLink["delete"]);
+    },
+    cooldown: {
+      start: function(e) {
+        var fullID, seconds;
+        seconds = g.BOARD.ID === 'q' ? 600 : 30;
+        fullID = "" + g.BOARD + "." + e.detail.postID;
+        return DeleteLink.cooldown.count(fullID, seconds, seconds);
+      },
+      count: function(fullID, seconds, length) {
+        var el;
+        if (!((0 <= seconds && seconds <= length))) {
+          return;
+        }
+        setTimeout(DeleteLink.cooldown.count, 1000, fullID, seconds - 1, length);
+        el = DeleteLink.cooldown.el;
+        if (seconds === 0) {
+          if (el != null) {
+            el.textContent = 'Delete';
+          }
+          delete DeleteLink.cooldown[fullID];
+          delete DeleteLink.cooldown.el;
+          return;
+        }
+        if (el != null) {
+          el.textContent = "Delete (" + seconds + ")";
+        }
+        return DeleteLink.cooldown[fullID] = seconds;
+      }
+    }
+  };
+
+  DownloadLink = {
+    init: function() {
+      var a;
+      if ($.el('a').download === void 0) {
+        return;
+      }
+      a = $.el('a', {
+        className: 'download-link',
+        textContent: 'Download file'
+      });
+      return Menu.addEntry({
+        el: a,
+        open: function(post) {
+          if (!post.file) {
+            return false;
+          }
+          a.href = post.file.URL;
+          a.download = post.file.name;
+          return true;
+        }
+      });
+    }
+  };
+
+  ArchiveLink = {
+    init: function() {
+      var div, entry, type, _i, _len, _ref;
+      div = $.el('div', {
+        textContent: 'Archive'
+      });
+      entry = {
+        el: div,
+        open: function(post) {
+          var redirect;
+          redirect = Redirect.to({
+            board: post.board,
+            threadID: post.thread,
+            postID: post.ID
+          });
+          return redirect !== ("//boards.4chan.org/" + post.board + "/");
+        },
+        children: []
+      };
+      _ref = [['Post', 'post'], ['Name', 'name'], ['Tripcode', 'tripcode'], ['E-mail', 'email'], ['Subject', 'subject'], ['Filename', 'filename'], ['Image MD5', 'md5']];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        entry.children.push(this.createSubEntry(type[0], type[1]));
+      }
+      return Menu.addEntry(entry);
+    },
+    createSubEntry: function(text, type) {
+      var el, open;
+      el = $.el('a', {
+        textContent: text,
+        target: '_blank'
+      });
+      if (type === 'post') {
+        open = function(post) {
+          el.href = Redirect.to({
+            board: post.board,
+            threadID: post.thread,
+            postID: post.ID
+          });
+          return true;
+        };
+      } else {
+        open = function(post) {
+          return true;
+        };
+      }
+      return {
+        el: el,
+        open: open
+      };
+    }
+  };
+
   Redirect = {
     image: function(board, filename) {
-      switch (board.ID) {
+      switch ("" + board) {
         case 'a':
         case 'co':
         case 'jp':
@@ -1057,7 +1498,7 @@
       }
     },
     post: function(board, postID) {
-      switch (board.ID) {
+      switch ("" + board) {
         case 'a':
         case 'co':
         case 'jp':
@@ -1082,7 +1523,7 @@
     to: function(data) {
       var board, url;
       board = data.board;
-      switch (board.ID) {
+      switch ("" + board) {
         case 'a':
         case 'co':
         case 'jp':
@@ -1153,7 +1594,7 @@
         }
       }
       board = data.board, threadID = data.threadID, postID = data.postID;
-      if (postID) {
+      if (typeof postID === 'string') {
         postID = postID.match(/\d+/)[0];
       }
       path = threadID ? "" + board + "/thread/" + threadID : "" + board + "/post/" + postID;
@@ -3052,6 +3493,41 @@
       } catch (err) {
         $.log(err, 'Recursive');
       }
+      if (Conf['Menu']) {
+        try {
+          Menu.init();
+        } catch (err) {
+          $.log(err, 'Menu');
+        }
+        if (Conf['Report Link']) {
+          try {
+            ReportLink.init();
+          } catch (err) {
+            $.log(err, 'Report Link', err.stack);
+          }
+        }
+        if (Conf['Delete Link']) {
+          try {
+            DeleteLink.init();
+          } catch (err) {
+            $.log(err, 'Delete Link');
+          }
+        }
+        if (Conf['Download Link']) {
+          try {
+            DownloadLink.init();
+          } catch (err) {
+            $.log(err, 'Download Link');
+          }
+        }
+        if (Conf['Archive Link']) {
+          try {
+            ArchiveLink.init();
+          } catch (err) {
+            $.log(err, 'Archive Link');
+          }
+        }
+      }
       if (Conf['Quote Inline']) {
         try {
           QuoteInline.init();
@@ -3205,7 +3681,7 @@
     settings: function() {
       return alert('Here be settings');
     },
-    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n[hidden] {\n  display: none !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#boardNavDesktop.reply,\n#qr, #watcher {\n  position: fixed;\n}\n#qp, #ihover {\n  z-index: 100;\n}\n#updater, #stats {\n  z-index: 90;\n}\n#boardNavDesktop.reply:hover {\n  z-index: 80;\n}\n#qr {\n  z-index: 50;\n}\n#watcher {\n  z-index: 30;\n}\n#boardNavDesktop.reply {\n  z-index: 10;\n}\n\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* thread updater */\n#updater {\n  text-align: right;\n}\n#updater:not(:hover) {\n  background: none;\n  border: none;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n.new {\n  color: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.filtered {\n  text-decoration: underline line-through;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  padding-bottom: 16px;\n}\n\n/* thread & reply hiding */\n.hide-thread-button,\n.hide-reply-button {\n  float: left;\n  margin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\n  display: none !important;\n}"
+    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n[hidden] {\n  display: none !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#boardNavDesktop.reply,\n#qr, #watcher {\n  position: fixed;\n}\n#qp, #ihover {\n  z-index: 100;\n}\n#updater, #stats {\n  z-index: 90;\n}\n#boardNavDesktop.reply:hover {\n  z-index: 80;\n}\n#qr {\n  z-index: 50;\n}\n#watcher {\n  z-index: 30;\n}\n#boardNavDesktop.reply {\n  z-index: 10;\n}\n\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* thread updater */\n#updater {\n  text-align: right;\n}\n#updater:not(:hover) {\n  background: none;\n  border: none;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n.new {\n  color: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.filtered {\n  text-decoration: underline line-through;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  padding-bottom: 16px;\n}\n\n/* thread & reply hiding */\n.hide-thread-button,\n.hide-reply-button {\n  float: left;\n  margin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\n  display: none !important;\n}\n\n/* Menu */\n.menu-button {\n  display: inline-block;\n}\n.menu-button > span {\n  border-top:   6px solid;\n  border-right: 4px solid transparent;\n  border-left:  4px solid transparent;\n  display: inline-block;\n  margin: 2px;\n  vertical-align: middle;\n}\n#menu {\n  position: absolute;\n  outline: none;\n}\n.entry {\n  border-bottom: 1px solid rgba(0, 0, 0, .25);\n  cursor: pointer;\n  display: block;\n  outline: none;\n  padding: 3px 7px;\n  position: relative;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.entry:last-child {\n  border: none;\n}\n.focused.entry {\n  background: rgba(255, 255, 255, .33);\n}\n.entry.has-submenu {\n  padding-right: 20px;\n}\n.has-submenu::after {\n  content: \"\";\n  border-left:   6px solid;\n  border-top:    4px solid transparent;\n  border-bottom: 4px solid transparent;\n  display: inline-block;\n  margin: 4px;\n  position: absolute;\n  right: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\n  display: none;\n}\n.submenu {\n  position: absolute;\n  margin: -1px 0;\n}"
   };
 
   Main.init();

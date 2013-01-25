@@ -244,11 +244,386 @@ Recursive =
           break
     return
 
+Menu =
+  entries: []
+  init: ->
+    # Doc here: https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
+    $.on d, 'AddMenuEntry', (e) -> Menu.addEntry e.detail
+    Post::callbacks.push
+      name: 'Menu'
+      cb:   @node
+
+  node: ->
+    if @isClone
+      a = $ '.menu-button', @nodes.info
+      a.setAttribute 'data-clone', true
+      $.on a, 'click', Menu.toggle
+      return
+    a = Menu.makeButton @
+    $.add @nodes.info, [$.tn('\u00A0'), a]
+
+  makeButton: (post) ->
+    a = $.el 'a',
+      className: 'menu-button'
+      innerHTML: '[<span></span>]'
+      href:      'javascript:;'
+    a.setAttribute 'data-postid', post.fullID
+    $.on a, 'click', Menu.toggle
+    a
+
+  makeMenu: ->
+    menu = $.el 'div',
+      className: 'reply dialog'
+      id:        'menu'
+      tabIndex:  0
+    $.on menu, 'click', (e) -> e.stopPropagation()
+    $.on menu, 'keydown', Menu.keybinds
+    menu
+
+  toggle: (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+
+    if Menu.currentMenu
+      # Close if it's already opened.
+      # Reopen if we clicked on another button.
+      {lastToggledButton} = Menu
+      Menu.close()
+      return if lastToggledButton is @
+
+    Menu.lastToggledButton = @
+    post =
+      if @dataset.clone
+        Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
+      else
+        g.posts[@dataset.postid]
+    Menu.open @, post
+
+  open: (button, post) ->
+    menu = Menu.makeMenu()
+    Menu.currentMenu = menu
+
+    for entry in Menu.entries
+      Menu.insertEntry entry, menu, post
+
+    Menu.focus $ '.entry', menu
+    $.on d, 'click', Menu.close
+    $.add d.body, menu
+
+    # Position
+    mRect = menu.getBoundingClientRect()
+    bRect = button.getBoundingClientRect()
+    bTop  = d.documentElement.scrollTop  + d.body.scrollTop  + bRect.top
+    bLeft = d.documentElement.scrollLeft + d.body.scrollLeft + bRect.left
+    menu.style.top =
+      if bRect.top + bRect.height + mRect.height < d.documentElement.clientHeight
+        bTop + bRect.height + 2 + 'px'
+      else
+        bTop - mRect.height - 2 + 'px'
+    menu.style.left =
+      if bRect.left + mRect.width < d.documentElement.clientWidth
+        bLeft + 'px'
+      else
+        bLeft + bRect.width - mRect.width + 'px'
+
+    menu.focus()
+
+  insertEntry: (entry, parent, post) ->
+    return unless entry.open post
+    $.add parent, entry.el
+
+    return unless entry.children
+    if submenu = $ '.submenu', entry.el
+      # Reset sub menu, remove irrelevant entries.
+      $.rm submenu
+    submenu = $.el 'div',
+      className: 'reply dialog submenu'
+    $.add entry.el, submenu
+    for child in entry.children
+      Menu.insertEntry child, submenu, post
+    return
+
+  close: ->
+    $.rm Menu.currentMenu
+    delete Menu.currentMenu
+    delete Menu.lastToggledButton
+    $.off d, 'click', Menu.close
+
+  keybinds: (e) ->
+    entry = $ '.focused', Menu.currentMenu
+    while subEntry = $ '.focused', entry
+      entry = subEntry
+
+    switch Keybinds.keyCode(e) or e.keyCode
+      when 'Esc'
+        Menu.lastToggledButton.focus()
+        Menu.close()
+      when 13, 32 # 'Enter', 'Space'
+        entry.click()
+      when 'Up'
+        if next = entry.previousElementSibling
+          Menu.focus next
+      when 'Down'
+        if next = entry.nextElementSibling
+          Menu.focus next
+      when 'Right'
+        if (submenu = $ '.submenu', entry) and next = submenu.firstElementChild
+          Menu.focus next
+      when 'Left'
+        if next = $.x 'parent::*[contains(@class,"submenu")]/parent::*', entry
+          Menu.focus next
+      else
+        return
+
+    e.preventDefault()
+    e.stopPropagation()
+
+  focus: (entry) ->
+    if focused = $.x 'parent::*/child::*[contains(@class,"focused")]', entry
+      $.rmClass focused, 'focused'
+    for focused in $$ '.focused', entry
+      $.rmClass focused, 'focused'
+    $.addClass entry, 'focused'
+
+    # Submenu positioning.
+    return unless submenu = $ '.submenu', entry
+    sRect = submenu.getBoundingClientRect()
+    eRect = entry.getBoundingClientRect()
+    if eRect.top + sRect.height < d.documentElement.clientHeight
+      top    = '0px'
+      bottom = 'auto'
+    else
+      top    = 'auto'
+      bottom = '0px'
+    if eRect.right + sRect.width < d.documentElement.clientWidth
+      left  = '100%'
+      right = 'auto'
+    else
+      left  = 'auto'
+      right = '100%'
+    {style} = submenu
+    style.top    = top
+    style.bottom = bottom
+    style.left   = left
+    style.right  = right
+
+  addEntry: (entry) ->
+    Menu.parseEntry entry
+    Menu.entries.push entry
+
+  parseEntry: (entry) ->
+    {el, children} = entry
+    $.addClass el, 'entry'
+    $.on el, 'focus mouseover', (e) ->
+      e.stopPropagation()
+      Menu.focus @
+    return unless children
+    $.addClass el, 'has-submenu'
+    for child in children
+      Menu.parseEntry child
+    return
+
+ReportLink =
+  init: ->
+    a = $.el 'a',
+      className: 'report-link'
+      href: 'javascript:;'
+      textContent: 'Report this post'
+    $.on a, 'click', ReportLink.report
+    Menu.addEntry
+      el: a
+      open: (post) ->
+        ReportLink.post = post
+        !post.isDead
+  report: ->
+    {post} = ReportLink
+    url = "//sys.4chan.org/#{post.board}/imgboard.php?mode=report&no=#{post}"
+    id  = Date.now()
+    set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200"
+    window.open url, id, set
+
+DeleteLink =
+  init: ->
+    div = $.el 'div',
+      className: 'delete-link'
+      textContent: 'Delete'
+    postEl = $.el 'a',
+      className: 'delete-post'
+      href: 'javascript:;'
+    fileEl = $.el 'a',
+      className: 'delete-file'
+      href: 'javascript:;'
+
+    postEntry =
+      el: postEl
+      open: ->
+        postEl.textContent = 'Post'
+        $.on postEl, 'click', DeleteLink.delete
+        true
+    fileEntry =
+      el: fileEl
+      open: (post) ->
+        fileEl.textContent = 'File'
+        $.on fileEl, 'click', DeleteLink.delete
+        !!post.file
+
+    Menu.addEntry
+      el: div
+      open: (post) ->
+        return false if post.isDead
+        DeleteLink.post = post
+        node = div.firstChild
+        if seconds = DeleteLink.cooldown[post.fullID]
+          node.textContent = "Delete (#{seconds})"
+          DeleteLink.cooldown.el = node
+        else
+          node.textContent = 'Delete'
+          delete DeleteLink.cooldown.el
+        true
+      children: [postEntry, fileEntry]
+
+    $.on d, 'QRPostSuccessful', @cooldown.start
+
+  delete: ->
+    {post} = DeleteLink
+    return if DeleteLink.cooldown[post.fullID]
+
+    $.off @, 'click', DeleteLink.delete
+    @textContent = "Deleting #{@textContent}..."
+
+    pwd =
+      if m = d.cookie.match /4chan_pass=([^;]+)/
+        decodeURIComponent m[1]
+      else
+        $.id('delPassword').value
+
+    form =
+      mode: 'usrdel'
+      onlyimgdel: $.hasClass @, 'delete-file'
+      pwd: pwd
+    form[post.ID] = 'delete'
+
+    link = @
+    $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{post.board}/"), {
+        onload:  -> DeleteLink.load  link, @response
+        onerror: -> DeleteLink.error link
+      }, {
+        form: $.formData form
+      }
+  load: (link, html) ->
+    doc = d.implementation.createHTMLDocument ''
+    doc.documentElement.innerHTML = html
+    if doc.title is '4chan - Banned' # Ban/warn check
+      s = 'Banned!'
+    else if msg = doc.getElementById 'errmsg' # error!
+      s = msg.textContent
+      $.on link, 'click', DeleteLink.delete
+    else
+      s = 'Deleted'
+    link.textContent = s
+  error: (link) ->
+    link.textContent = 'Connection error, please retry.'
+    $.on link, 'click', DeleteLink.delete
+
+  cooldown:
+    start: (e) ->
+      seconds =
+        if g.BOARD.ID is 'q'
+          600
+        else
+          30
+      fullID = "#{g.BOARD}.#{e.detail.postID}"
+      DeleteLink.cooldown.count fullID, seconds, seconds
+    count: (fullID, seconds, length) ->
+      return unless 0 <= seconds <= length
+      setTimeout DeleteLink.cooldown.count, 1000, fullID, seconds-1, length
+      {el} = DeleteLink.cooldown
+      if seconds is 0
+        el?.textContent = 'Delete'
+        delete DeleteLink.cooldown[fullID]
+        delete DeleteLink.cooldown.el
+        return
+      el?.textContent = "Delete (#{seconds})"
+      DeleteLink.cooldown[fullID] = seconds
+
+DownloadLink =
+  init: ->
+    # Test for download feature support.
+    return if $.el('a').download is undefined
+    a = $.el 'a',
+      className: 'download-link'
+      textContent: 'Download file'
+    Menu.addEntry
+      el: a
+      open: (post) ->
+        return false unless post.file
+        a.href     = post.file.URL
+        a.download = post.file.name
+        true
+
+ArchiveLink =
+  init: ->
+    div = $.el 'div',
+      textContent: 'Archive'
+
+    entry =
+      el: div
+      open: (post) ->
+        redirect = Redirect.to
+          board:    post.board
+          threadID: post.thread
+          postID:   post.ID
+        redirect isnt "//boards.4chan.org/#{post.board}/"
+      children: []
+
+    for type in [
+      ['Post',      'post']
+      ['Name',      'name']
+      ['Tripcode',  'tripcode']
+      ['E-mail',    'email']
+      ['Subject',   'subject']
+      ['Filename',  'filename']
+      ['Image MD5', 'md5']
+    ]
+      # Add a sub entry for each type.
+      entry.children.push @createSubEntry type[0], type[1]
+
+    Menu.addEntry entry
+
+  createSubEntry: (text, type) ->
+    el = $.el 'a',
+      textContent: text
+      target: '_blank'
+
+    if type is 'post'
+      open = (post) ->
+        el.href = Redirect.to
+          board:    post.board
+          threadID: post.thread
+          postID:   post.ID
+        true
+    else
+      open = (post) ->
+        # value = Filter[type] post
+        # # We want to parse the exact same stuff as the filter does already.
+        # return false unless value
+        # el.href = Redirect.to
+        #   board:    post.board
+        #   type:     type
+        #   value:    value
+        #   isSearch: true
+        true
+
+    return {
+      el: el
+      open: open
+    }
+
 Redirect =
   image: (board, filename) ->
     # XXX need to differentiate between thumbnail only and full_image for img src=
     # Do not use g.BOARD, the image url can originate from a cross-quote.
-    switch board.ID
+    switch "#{board}"
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg'
         "//archive.foolz.us/#{board}/full_image/#{filename}"
       when 'u'
@@ -266,7 +641,7 @@ Redirect =
       when 'c'
         "//archive.nyafuu.org/#{board}/full_image/#{filename}"
   post: (board, postID) ->
-    switch board.ID
+    switch "#{board}"
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
@@ -277,7 +652,7 @@ Redirect =
     # https://github.com/eksopl/fuuka/issues/27
   to: (data) ->
     {board} = data
-    switch board.ID
+    switch "#{board}"
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
         url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
       when 'u', 'kuku'
@@ -318,7 +693,7 @@ Redirect =
 
     {board, threadID, postID} = data
     # keep the number only if the location.hash was sent f.e.
-    postID = postID.match(/\d+/)[0] if postID
+    postID = postID.match(/\d+/)[0] if typeof postID is 'string'
     path =
       if threadID
         "#{board}/thread/#{threadID}"

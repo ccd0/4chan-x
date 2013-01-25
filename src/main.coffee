@@ -342,6 +342,41 @@ Main =
       # XXX handle error
       $.log err, 'Recursive'
 
+    if Conf['Menu']
+      try
+        Menu.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Menu'
+
+      if Conf['Report Link']
+        try
+          ReportLink.init()
+        catch err
+          # XXX handle error
+          $.log err, 'Report Link', err.stack
+
+      if Conf['Delete Link']
+        try
+          DeleteLink.init()
+        catch err
+          # XXX handle error
+          $.log err, 'Delete Link'
+
+      if Conf['Download Link']
+        try
+          DownloadLink.init()
+        catch err
+          # XXX handle error
+          $.log err, 'Download Link'
+
+      if Conf['Archive Link']
+        try
+          ArchiveLink.init()
+        catch err
+          # XXX handle error
+          $.log err, 'Archive Link'
+
     if Conf['Quote Inline']
       try
         QuoteInline.init()
