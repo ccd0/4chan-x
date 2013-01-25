@@ -2430,8 +2430,7 @@ Linkify =
         cypherText[0]    = cypher.innerHTML
  
         # i herd u leik wbr
-        while ((next.nodeName.toLowerCase() is 'wbr') and ((spoiler = false) or true)) or ((next.nodeName.toLowerCase() is 's') and spoiler = true)
-          lookahead        = next.nextSibling
+        while (((next.nodeName.toLowerCase() is 'wbr') and ((spoiler = false) or true)) or ((next.nodeName.toLowerCase() is 's') and spoiler = true)) and lookahead = next.nextSibling
           cypher.innerHTML = lookahead.textContent
 
           cypherText[cypherText.length] = if spoiler then "<s>#{next.textContent}</s>" else '<wbr>'

@@ -6853,8 +6853,7 @@
         if (next = node.nextSibling) {
           cypher.innerHTML = node.textContent;
           cypherText[0] = cypher.innerHTML;
-          while (((next.nodeName.toLowerCase() === 'wbr') && ((spoiler = false) || true)) || ((next.nodeName.toLowerCase() === 's') && (spoiler = true))) {
-            lookahead = next.nextSibling;
+          while ((((next.nodeName.toLowerCase() === 'wbr') && ((spoiler = false) || true)) || ((next.nodeName.toLowerCase() === 's') && (spoiler = true))) && (lookahead = next.nextSibling)) {
             cypher.innerHTML = lookahead.textContent;
             cypherText[cypherText.length] = spoiler ? "<s>" + next.textContent + "</s>" : '<wbr>';
             cypherText[cypherText.length] = cypher.innerHTML;
