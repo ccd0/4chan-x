@@ -1,8 +1,7 @@
 Style =
   init: ->
 
-    Style.remStyle()
-    Style.addStyle()
+    Style.setup()
 
     $.ready ->
       Style.rice(d.body)
@@ -106,95 +105,85 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       $.after select, div
     return
 
-  addStyle: ->
+  addStyle: (theme) ->
+    _conf = Conf
+    unless theme
+      theme = Themes[_conf['theme']]
+
+    MascotTools.init _conf["mascot"]
+    Style.layoutCSS.textContent = Style.layout()
+    Style.themeCSS.textContent  = Style.theme(theme)
+    Style.iconPositions()
+
+  setup: ->
     if d.head
       @addStyleReady()
-    else # XXX fox
-      if MutationObserver
-        observer = new MutationObserver onMutationObserver = =>
-          if d.head
-            @addStyleReady()
-            observer.disconnect()
-        observer.observe d,
-          childList: true
-          subtree:   true
-      else
-        $.on d, 'DOMNodeInserted', @asWrapper
+      @remStyle()
+      if Style.headCount > 11
+        @cleanup()
+        return
+    @observe()
+
+  headCount: 0
+
+  cleanup: ->
+    delete Style.setup
+    delete Style.observe
+    delete Style.wrapper
+    delete Style.remStyle
+    delete Style.headCount
+    delete Style.cleanup
+    
+  observe: ->
+    if MutationObserver
+      observer = new MutationObserver onMutationObserver = @wrapper
+      observer.observe d,
+        childList: true
+        subtree:   true
+    else
+      $.on d, 'DOMNodeInserted', @wrapper
+      
+  wrapper: ->
+    if d.head
+      if Style.addStyleReady
+        Style.addStyleReady()
+
+      Style.remStyle()
+
+      if Style.headcount >= 11
+
+        if observer
+          observer.disconnect()
+        else
+          $.off d, 'DOMNodeInserted', Style.wrapper
+
+        Style.cleanup()
 
   addStyleReady: ->
     theme = Themes[Conf['theme']]
     $.extend Style,
-      layoutCSS:    $.addStyle @layout(),     'layout'
-      themeCSS:     $.addStyle @theme(theme), 'theme'
-      icons:        $.addStyle "",            'icons'
-      paddingSheet: $.addStyle "",            'padding'
-      mascot:       $.addStyle "",            'mascotSheet'
+      layoutCSS:    $.addStyle Style.layout(),     'layout'
+      themeCSS:     $.addStyle Style.theme(theme), 'theme'
+      icons:        $.addStyle "",                 'icons'
+      paddingSheet: $.addStyle "",                 'padding'
+      mascot:       $.addStyle "",              'mascotSheet'
 
     # As JSColor doesn't really have any customization,
     # we don't save its sheet as a variable.
-    $.addStyle @jsColorCSS(),                 'jsColor'
-
-    # After this has run correctly, this function becomes our go-to function for changing options.
-    Style.addStyle = (theme) ->
-      _conf = Conf
-      unless theme
-        theme = Themes[_conf['theme']]
-
-      MascotTools.init _conf["mascot"]
-      Style.layoutCSS.textContent = Style.layout()
-      Style.themeCSS.textContent  = Style.theme(theme)
-      Style.iconPositions()
-
-    delete @asWrapper
-    delete @addStyleReady
-
-  asWrapper: ->
-    if d.head
-      $.off d, 'DOMNodeInserted', Style.asWrapper
-      Style.addStyleReady()
-      delete @asWrapper
-      delete @addStyleReady
-
-  headCount: 0
+    $.addStyle Style.jsColorCSS(),                 'jsColor'
+    
+    delete Style.addStyleReady
 
   remStyle: ->
-    if Style.headCount < 10 and head = d.head
-      @remStyleReady()
-    else # XXX fox
-      if MutationObserver
-        observer = new MutationObserver onMutationObserver = =>
-          if d.head
-            if @headCount < 10
-              @remStyleReady()
-            if @headcount >= 10
-              observer.disconnect()
-              delete @rsWrapper
-              delete @remStyle
-              delete @remStyleReady
-        observer.observe d,
-          childList: true
-          subtree:   true
-      else
-        $.on d, 'DOMNodeInserted', @rsWrapper
-
-  remStyleReady: ->
     head  = d.head
     nodes = head.children
     i     = nodes.length
     while i--
-      break if Style.headCount >= 10
+      break if Style.headCount >= 11
       node = nodes[i]
       if /^.*\bstylesheet\b.*/.test(node.rel) or (/style/i.test(node.tagName) and !node.id)
         Style.headCount++
         $.rm node
-
-  rsWrapper: ->
-    Style.remStyleReady()
-    unless Style.headCount < 10
-      $.off d, 'DOMNodeInserted', Style.rsWrapper
-      delete Style.rsWrapper
-      delete Style.remStyle
-      delete Style.remStyleReady
 
   banner: ->
     banner   = $ ".boardBanner", d.body

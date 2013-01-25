@@ -10186,8 +10186,7 @@
 
   Style = {
     init: function() {
-      Style.remStyle();
-      Style.addStyle();
+      Style.setup();
       return $.ready(function() {
         Style.rice(d.body);
         Style.banner();
@@ -10308,25 +10307,62 @@
         $.after(select, div);
       }
     },
-    addStyle: function() {
-      var observer, onMutationObserver,
-        _this = this;
+    addStyle: function(theme) {
+      var _conf;
+      _conf = Conf;
+      if (!theme) {
+        theme = Themes[_conf['theme']];
+      }
+      MascotTools.init(_conf["mascot"]);
+      Style.layoutCSS.textContent = Style.layout();
+      Style.themeCSS.textContent = Style.theme(theme);
+      return Style.iconPositions();
+    },
+    setup: function() {
       if (d.head) {
-        return this.addStyleReady();
+        this.addStyleReady();
+        this.remStyle();
+        if (Style.headCount > 11) {
+          this.cleanup();
+          return;
+        }
+      }
+      return this.observe();
+    },
+    headCount: 0,
+    cleanup: function() {
+      delete Style.setup;
+      delete Style.observe;
+      delete Style.wrapper;
+      delete Style.remStyle;
+      delete Style.headCount;
+      return delete Style.cleanup;
+    },
+    observe: function() {
+      var observer, onMutationObserver;
+      if (MutationObserver) {
+        observer = new MutationObserver(onMutationObserver = this.wrapper);
+        return observer.observe(d, {
+          childList: true,
+          subtree: true
+        });
       } else {
-        if (MutationObserver) {
-          observer = new MutationObserver(onMutationObserver = function() {
-            if (d.head) {
-              _this.addStyleReady();
-              return observer.disconnect();
-            }
-          });
-          return observer.observe(d, {
-            childList: true,
-            subtree: true
-          });
-        } else {
-          return $.on(d, 'DOMNodeInserted', this.asWrapper);
+        return $.on(d, 'DOMNodeInserted', this.wrapper);
+      }
+    },
+    wrapper: function() {
+      if (d.head) {
+        if (Style.addStyleReady) {
+          Style.addStyleReady();
+        }
+        Style.remStyle();
+        if (Style.headcount >= 11) {
+          if (observer) {
+            observer.disconnect();
+          } else {
+            $.off(d, 'DOMNodeInserted', Style.wrapper);
+          }
+          return Style.cleanup();
         }
       }
     },
@@ -10334,73 +10370,23 @@
       var theme;
       theme = Themes[Conf['theme']];
       $.extend(Style, {
-        layoutCSS: $.addStyle(this.layout(), 'layout'),
-        themeCSS: $.addStyle(this.theme(theme), 'theme'),
+        layoutCSS: $.addStyle(Style.layout(), 'layout'),
+        themeCSS: $.addStyle(Style.theme(theme), 'theme'),
         icons: $.addStyle("", 'icons'),
         paddingSheet: $.addStyle("", 'padding'),
         mascot: $.addStyle("", 'mascotSheet')
       });
-      $.addStyle(this.jsColorCSS(), 'jsColor');
-      Style.addStyle = function(theme) {
-        var _conf;
-        _conf = Conf;
-        if (!theme) {
-          theme = Themes[_conf['theme']];
-        }
-        MascotTools.init(_conf["mascot"]);
-        Style.layoutCSS.textContent = Style.layout();
-        Style.themeCSS.textContent = Style.theme(theme);
-        return Style.iconPositions();
-      };
-      delete this.asWrapper;
-      return delete this.addStyleReady;
+      $.addStyle(Style.jsColorCSS(), 'jsColor');
+      return delete Style.addStyleReady;
     },
-    asWrapper: function() {
-      if (d.head) {
-        $.off(d, 'DOMNodeInserted', Style.asWrapper);
-        Style.addStyleReady();
-        delete this.asWrapper;
-        return delete this.addStyleReady;
-      }
-    },
-    headCount: 0,
     remStyle: function() {
-      var head, observer, onMutationObserver,
-        _this = this;
-      if (Style.headCount < 10 && (head = d.head)) {
-        return this.remStyleReady();
-      } else {
-        if (MutationObserver) {
-          observer = new MutationObserver(onMutationObserver = function() {
-            if (d.head) {
-              if (_this.headCount < 10) {
-                _this.remStyleReady();
-              }
-              if (_this.headcount >= 10) {
-                observer.disconnect();
-                delete _this.rsWrapper;
-                delete _this.remStyle;
-                return delete _this.remStyleReady;
-              }
-            }
-          });
-          return observer.observe(d, {
-            childList: true,
-            subtree: true
-          });
-        } else {
-          return $.on(d, 'DOMNodeInserted', this.rsWrapper);
-        }
-      }
-    },
-    remStyleReady: function() {
       var head, i, node, nodes, _results;
       head = d.head;
       nodes = head.children;
       i = nodes.length;
       _results = [];
       while (i--) {
-        if (Style.headCount >= 10) {
+        if (Style.headCount >= 11) {
           break;
         }
         node = nodes[i];
@@ -10412,15 +10398,6 @@
         }
       }
       return _results;
-    },
-    rsWrapper: function() {
-      Style.remStyleReady();
-      if (!(Style.headCount < 10)) {
-        $.off(d, 'DOMNodeInserted', Style.rsWrapper);
-        delete Style.rsWrapper;
-        delete Style.remStyle;
-        return delete Style.remStyleReady;
-      }
     },
     banner: function() {
       var banner, child, children, i, title;
