@@ -865,6 +865,7 @@ span.postNum > .replylink {
 #themeConf {
   z-index: 998;
 }
+#post-preview,
 #qp {
   z-index: 104;
 }
