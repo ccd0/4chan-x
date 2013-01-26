@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.41 - 2013-01-25
+ * appchan x - Version 1.0.41 - 2013-01-26
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -10321,7 +10321,7 @@
       if (d.head) {
         this.addStyleReady();
         this.remStyle();
-        if (Style.headCount > 11) {
+        if (Style.headCount > 8) {
           this.cleanup();
           return;
         }
@@ -10355,7 +10355,7 @@
           Style.addStyleReady();
         }
         Style.remStyle();
-        if (Style.headcount >= 11) {
+        if (Style.headcount > 8) {
           if (observer) {
             observer.disconnect();
           } else {
@@ -10379,22 +10379,24 @@
       return delete Style.addStyleReady;
     },
     remStyle: function() {
-      var head, i, node, nodes, _results;
+      var head, i, len, node, nodes, _results;
       head = d.head;
       nodes = head.children;
-      i = nodes.length;
+      len = nodes.length;
+      i = 0;
       _results = [];
-      while (i--) {
-        if (Style.headCount >= 11) {
+      while (i < len) {
+        if (Style.headCount > 8) {
           break;
         }
         node = nodes[i];
-        if (/^.*\bstylesheet\b.*/.test(node.rel) || (/style/i.test(node.tagName) && !node.id)) {
+        if ((node.nodeName === 'style' && !node.id) || ("" + node.rel).contains('stylesheet')) {
           Style.headCount++;
-          _results.push($.rm(node));
-        } else {
-          _results.push(void 0);
+          $.rm(node);
+          len--;
+          continue;
         }
+        _results.push(i++);
       }
       return _results;
     },
@@ -10786,7 +10788,7 @@
         case 'images.4chan.org':
           $.ready(function() {
             var url;
-            if (/^4chan - 404/.test(d.title) && _conf['404 Redirect']) {
+            if (/^4chan - 404/.test(d.title) && Conf['404 Redirect']) {
               path = location.pathname.split('/');
               url = Redirect.image(path[1], path[3]);
               if (url) {

@@ -119,7 +119,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
     if d.head
       @addStyleReady()
       @remStyle()
-      if Style.headCount > 11
+      if Style.headCount > 8
         @cleanup()
         return
     @observe()
@@ -150,7 +150,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
 
       Style.remStyle()
 
-      if Style.headcount >= 11
+      if Style.headcount > 8
 
         if observer
           observer.disconnect()
@@ -166,7 +166,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       themeCSS:     $.addStyle Style.theme(theme), 'theme'
       icons:        $.addStyle "",                 'icons'
       paddingSheet: $.addStyle "",                 'padding'
-      mascot:       $.addStyle "",              'mascotSheet'
+      mascot:       $.addStyle "",                 'mascotSheet'
 
     # As JSColor doesn't really have any customization,
     # we don't save its sheet as a variable.
@@ -177,13 +177,17 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
   remStyle: ->
     head  = d.head
     nodes = head.children
-    i     = nodes.length
-    while i--
-      break if Style.headCount >= 11
+    len   = nodes.length
+    i     = 0
+    while i < len
+      break if Style.headCount > 8
       node = nodes[i]
-      if /^.*\bstylesheet\b.*/.test(node.rel) or (/style/i.test(node.tagName) and !node.id)
+      if (node.nodeName is 'style' and !node.id) or "#{node.rel}".contains 'stylesheet'
         Style.headCount++
         $.rm node
+        len--
+        continue
+      i++
 
   banner: ->
     banner   = $ ".boardBanner", d.body
