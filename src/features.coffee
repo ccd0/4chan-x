@@ -67,13 +67,13 @@ ThreadHiding =
         className: 'hide-thread-link'
         textContent: 'Hide thread'
 
-      option = $.el 'label',
-        innerHTML: "<input type=checkbox checked=#{Conf['Stubs']}> Make stub"
-
       apply = $.el 'a',
         textContent: 'Apply'
         href: 'javascript:;'
       $.on apply, 'click', ThreadHiding.menu.hide
+
+      makeStub = $.el 'label',
+        innerHTML: "<input type=checkbox checked=#{Conf['Stubs']}> Make stub"
 
       Menu.addEntry
         el: div
@@ -83,13 +83,12 @@ ThreadHiding =
             return false
           ThreadHiding.menu.thread = thread
           true
-        children: [{el: option}, {el: apply}]
+        children: [{el: apply}, {el: makeStub}]
     hide: ->
       makeStub = $('input', @parentNode).checked
       {thread} = ThreadHiding.menu
       ThreadHiding.hide thread, makeStub
       ThreadHiding.saveHiddenState thread, makeStub
-      # need to save if we made a stub or not
       Menu.close()
 
   makeButton: (thread, type) ->
@@ -169,8 +168,11 @@ ReplyHiding =
   node: ->
     return if !@isReply or @isClone
     if thread = ReplyHiding.hiddenPosts.threads[@thread]
-      if @ID in thread
-        ReplyHiding.hide @
+      if data = thread[@]
+        if data.thisPost
+          ReplyHiding.hide @, data.makeStub, data.hideRecursively
+        else
+          Recursive.hide   @, data.makeStub
     return unless Conf['Thread/Reply Hiding Buttons']
     $.replace $('.sideArrows', @nodes.root), ReplyHiding.makeButton @, 'hide'
 
@@ -203,6 +205,47 @@ ReplyHiding =
       hiddenPosts.threads = threads
       $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
 
+  menu:
+    init: ->
+      div = $.el 'div',
+        className: 'hide-reply-link'
+        textContent: 'Hide reply'
+
+      apply = $.el 'a',
+        textContent: 'Apply'
+        href: 'javascript:;'
+      $.on apply, 'click', ReplyHiding.menu.hide
+
+      thisPost = $.el 'label',
+        innerHTML: '<input type=checkbox name=thisPost checked=true> This post'
+      replies  = $.el 'label',
+        innerHTML: "<input type=checkbox name=replies  checked=#{Conf['Recursive Hiding']}> Hide replies"
+      makeStub = $.el 'label',
+        innerHTML: "<input type=checkbox name=makeStub checked=#{Conf['Stubs']}> Make stub"
+
+      Menu.addEntry
+        el: div
+        open: (post) ->
+          if !post.isReply or post.isClone
+            return false
+          ReplyHiding.menu.post = post
+          true
+        children: [{el: apply}, {el: thisPost}, {el: replies}, {el: makeStub}]
+    hide: ->
+      parent   = @parentNode
+      thisPost = $('input[name=thisPost]', parent).checked
+      replies  = $('input[name=replies]',  parent).checked
+      makeStub = $('input[name=makeStub]', parent).checked
+      {post}   = ReplyHiding.menu
+      if thisPost
+        ReplyHiding.hide post, makeStub, replies
+      else if replies
+        Recursive.hide   post, makeStub
+      else
+        return
+      ReplyHiding.saveHiddenState post, true, thisPost, makeStub, replies
+      Menu.close()
+
   makeButton: (post, type) ->
     a = $.el 'a',
       className: "#{type}-reply-button"
@@ -211,24 +254,29 @@ ReplyHiding =
     $.on a, 'click', -> ReplyHiding.toggle post
     a
 
-  toggle: (post) ->
+  saveHiddenState: (post, isHiding, thisPost, makeStub, hideRecursively) ->
     # Get fresh hidden posts.
     hiddenPosts = ReplyHiding.getHiddenPosts()
+    if isHiding
+      unless thread = hiddenPosts.threads[post.thread]
+        thread = hiddenPosts.threads[post.thread] = {}
+      thread[post] =
+        thisPost: thisPost isnt false # undefined -> true
+        makeStub: makeStub
+        hideRecursively: hideRecursively
+    else
+      thread = hiddenPosts.threads[post.thread]
+      delete thread[post]
+      unless Object.keys(thread).length
+        delete hiddenPosts.threads[post.thread]
+    $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
+
+  toggle: (post) ->
     if post.isHidden
       ReplyHiding.show post
-      thread = hiddenPosts.threads[post.thread]
-      if (index = thread.indexOf post.ID) > -1
-        # Was manually hidden, not by recursion/filtering.
-        if thread.length is 1
-          delete hiddenPosts.threads[post.thread]
-        else
-          thread.splice index, 1
     else
       ReplyHiding.hide post
-      unless thread = hiddenPosts.threads[post.thread]
-        thread = hiddenPosts.threads[post.thread] = []
-      thread.push post.ID
-    $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
+    ReplyHiding.saveHiddenState post, post.isHidden
 
   hide: (post, makeStub=Conf['Stubs'], hideRecursively=Conf['Recursive Hiding']) ->
     return if post.isHidden
@@ -239,7 +287,10 @@ ReplyHiding =
     for quotelink in Get.allQuotelinksLinkingTo post
       $.addClass quotelink, 'filtered'
 
-    return unless makeStub
+    unless makeStub
+      post.nodes.root.hidden = true
+      return
+
     a = ReplyHiding.makeButton post, 'show'
     postInfo =
       if Conf['Anonymize']
@@ -258,6 +309,8 @@ ReplyHiding =
     if post.nodes.stub
       $.rm post.nodes.stub
       delete post.nodes.stub
+    else
+      post.nodes.root.hidden = false
     post.isHidden = false
     for quotelink in Get.allQuotelinksLinkingTo post
       $.rmClass quotelink, 'filtered'
@@ -288,7 +341,7 @@ Recursive =
     {fullID} = post
     Recursive.toHide.push fullID
     for ID, post of g.posts
-      continue if !post.isReply or post.isHidden
+      continue if !post.isReply
       for quote in post.quotes
         if quote is fullID
           ReplyHiding.hide post, makeStub, true

@@ -766,7 +766,7 @@
     },
     menu: {
       init: function() {
-        var apply, div, option;
+        var apply, div, makeStub;
         if (g.VIEW !== 'index') {
           return;
         }
@@ -774,14 +774,14 @@
           className: 'hide-thread-link',
           textContent: 'Hide thread'
         });
-        option = $.el('label', {
-          innerHTML: "<input type=checkbox checked=" + Conf['Stubs'] + "> Make stub"
-        });
         apply = $.el('a', {
           textContent: 'Apply',
           href: 'javascript:;'
         });
         $.on(apply, 'click', ThreadHiding.menu.hide);
+        makeStub = $.el('label', {
+          innerHTML: "<input type=checkbox checked=" + Conf['Stubs'] + "> Make stub"
+        });
         return Menu.addEntry({
           el: div,
           open: function(post) {
@@ -795,9 +795,9 @@
           },
           children: [
             {
-              el: option
-            }, {
               el: apply
+            }, {
+              el: makeStub
             }
           ]
         });
@@ -901,13 +901,17 @@
       });
     },
     node: function() {
-      var thread, _ref;
+      var data, thread;
       if (!this.isReply || this.isClone) {
         return;
       }
       if (thread = ReplyHiding.hiddenPosts.threads[this.thread]) {
-        if (_ref = this.ID, __indexOf.call(thread, _ref) >= 0) {
-          ReplyHiding.hide(this);
+        if (data = thread[this]) {
+          if (data.thisPost) {
+            ReplyHiding.hide(this, data.makeStub, data.hideRecursively);
+          } else {
+            Recursive.hide(this, data.makeStub);
+          }
         }
       }
       if (!Conf['Thread/Reply Hiding Buttons']) {
@@ -959,6 +963,67 @@
         }
       });
     },
+    menu: {
+      init: function() {
+        var apply, div, makeStub, replies, thisPost;
+        div = $.el('div', {
+          className: 'hide-reply-link',
+          textContent: 'Hide reply'
+        });
+        apply = $.el('a', {
+          textContent: 'Apply',
+          href: 'javascript:;'
+        });
+        $.on(apply, 'click', ReplyHiding.menu.hide);
+        thisPost = $.el('label', {
+          innerHTML: '<input type=checkbox name=thisPost checked=true> This post'
+        });
+        replies = $.el('label', {
+          innerHTML: "<input type=checkbox name=replies  checked=" + Conf['Recursive Hiding'] + "> Hide replies"
+        });
+        makeStub = $.el('label', {
+          innerHTML: "<input type=checkbox name=makeStub checked=" + Conf['Stubs'] + "> Make stub"
+        });
+        return Menu.addEntry({
+          el: div,
+          open: function(post) {
+            if (!post.isReply || post.isClone) {
+              return false;
+            }
+            ReplyHiding.menu.post = post;
+            return true;
+          },
+          children: [
+            {
+              el: apply
+            }, {
+              el: thisPost
+            }, {
+              el: replies
+            }, {
+              el: makeStub
+            }
+          ]
+        });
+      },
+      hide: function() {
+        var makeStub, parent, post, replies, thisPost;
+        parent = this.parentNode;
+        thisPost = $('input[name=thisPost]', parent).checked;
+        replies = $('input[name=replies]', parent).checked;
+        makeStub = $('input[name=makeStub]', parent).checked;
+        post = ReplyHiding.menu.post;
+        if (thisPost) {
+          ReplyHiding.hide(post, makeStub, replies);
+        } else if (replies) {
+          Recursive.hide(post, makeStub);
+        } else {
+          return;
+        }
+        ReplyHiding.saveHiddenState(post, true, thisPost, makeStub, replies);
+        return Menu.close();
+      }
+    },
     makeButton: function(post, type) {
       var a;
       a = $.el('a', {
@@ -971,27 +1036,34 @@
       });
       return a;
     },
-    toggle: function(post) {
-      var hiddenPosts, index, thread;
+    saveHiddenState: function(post, isHiding, thisPost, makeStub, hideRecursively) {
+      var hiddenPosts, thread;
       hiddenPosts = ReplyHiding.getHiddenPosts();
-      if (post.isHidden) {
-        ReplyHiding.show(post);
-        thread = hiddenPosts.threads[post.thread];
-        if ((index = thread.indexOf(post.ID)) > -1) {
-          if (thread.length === 1) {
-            delete hiddenPosts.threads[post.thread];
-          } else {
-            thread.splice(index, 1);
-          }
-        }
-      } else {
-        ReplyHiding.hide(post);
+      if (isHiding) {
         if (!(thread = hiddenPosts.threads[post.thread])) {
-          thread = hiddenPosts.threads[post.thread] = [];
+          thread = hiddenPosts.threads[post.thread] = {};
         }
-        thread.push(post.ID);
+        thread[post] = {
+          thisPost: thisPost !== false,
+          makeStub: makeStub,
+          hideRecursively: hideRecursively
+        };
+      } else {
+        thread = hiddenPosts.threads[post.thread];
+        delete thread[post];
+        if (!Object.keys(thread).length) {
+          delete hiddenPosts.threads[post.thread];
+        }
       }
       return $.set("hiddenPosts." + g.BOARD, hiddenPosts);
+    },
+    toggle: function(post) {
+      if (post.isHidden) {
+        ReplyHiding.show(post);
+      } else {
+        ReplyHiding.hide(post);
+      }
+      return ReplyHiding.saveHiddenState(post, post.isHidden);
     },
     hide: function(post, makeStub, hideRecursively) {
       var a, postInfo, quotelink, _i, _len, _ref;
@@ -1014,6 +1086,7 @@
         $.addClass(quotelink, 'filtered');
       }
       if (!makeStub) {
+        post.nodes.root.hidden = true;
         return;
       }
       a = ReplyHiding.makeButton(post, 'show');
@@ -1033,6 +1106,8 @@
       if (post.nodes.stub) {
         $.rm(post.nodes.stub);
         delete post.nodes.stub;
+      } else {
+        post.nodes.root.hidden = false;
       }
       post.isHidden = false;
       _ref = Get.allQuotelinksLinkingTo(post);
@@ -1079,7 +1154,7 @@
       _ref = g.posts;
       for (ID in _ref) {
         post = _ref[ID];
-        if (!post.isReply || post.isHidden) {
+        if (!post.isReply) {
           continue;
         }
         _ref1 = post.quotes;
@@ -3594,6 +3669,13 @@
             ThreadHiding.menu.init();
           } catch (err) {
             $.log(err, 'Thread Hiding - Menu');
+          }
+        }
+        if (Conf['Reply Hiding']) {
+          try {
+            ReplyHiding.menu.init();
+          } catch (err) {
+            $.log(err, 'Reply Hiding - Menu');
           }
         }
         if (Conf['Delete Link']) {

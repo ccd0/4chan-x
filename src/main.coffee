@@ -364,6 +364,13 @@ Main =
           # XXX handle error
           $.log err, 'Thread Hiding - Menu'
 
+      if Conf['Reply Hiding']
+        try
+          ReplyHiding.menu.init()
+        catch err
+          # XXX handle error
+          $.log err, 'Reply Hiding - Menu'
+
       if Conf['Delete Link']
         try
           DeleteLink.init()
