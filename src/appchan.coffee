@@ -5,6 +5,7 @@ Style =
 
     $.ready ->
       Style.rice(d.body)
+      return unless $.id 'navtopright'
       Style.banner()
       Style.trimGlobalMessage()
       Style.padding.nav   = $ "#boardNavDesktop", d.body

@@ -10784,6 +10784,7 @@
               });
             });
           }
+          Style.init();
           return;
         case 'images.4chan.org':
           $.ready(function() {
@@ -10944,7 +10945,8 @@
       var a, board, nav, node, nodes, now, observer, _conf, _i, _j, _len, _len1, _ref, _ref1;
       _conf = Conf;
       if (/^4chan - 404/.test(d.title)) {
-        if (_conf['404 Redirect'] && /^\d+$/.test(g.THREAD_ID)) {
+        $.log('hi');
+        if (Conf['404 Redirect'] && /^\d+$/.test(g.THREAD_ID)) {
           location.href = Redirect.to({
             board: g.BOARD,
             threadID: g.THREAD_ID,

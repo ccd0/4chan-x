@@ -70,7 +70,7 @@ Main =
 
       when 'images.4chan.org'
         $.ready ->
-          if /^4chan - 404/.test(d.title) and Conf['404 Redirect']
+          if /^4chan - 404/.test(d.title) and _conf['404 Redirect']
             path = location.pathname.split '/'
             url  = Redirect.image path[1], path[3]
             location.href = url if url
@@ -221,8 +221,7 @@ Main =
             threadID: g.THREAD_ID
             postID:   location.hash
       return
-    unless $.id 'navtopright'
-      return
+    return unless $.id 'navtopright'
     $.addClass d.body, $.engine
     $.addClass d.body, 'fourchan_x'
 
