@@ -1,5 +1,8 @@
 CustomNavigation =
   init: ->
+    setTimeout @asyncInit
+
+  asyncInit: ->
     navigation  = $ "#boardNavDesktop", d.body
     navNodes    = navigation.childNodes
     i           = navNodes.length

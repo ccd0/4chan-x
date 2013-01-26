@@ -10155,6 +10155,9 @@
 
   CustomNavigation = {
     init: function() {
+      return setTimeout(this.asyncInit);
+    },
+    asyncInit: function() {
       var a, i, len, link, navNodes, navigation, node, nodes;
       navigation = $("#boardNavDesktop", d.body);
       navNodes = navigation.childNodes;
@@ -10188,6 +10191,9 @@
       Style.setup();
       return $.ready(function() {
         Style.rice(d.body);
+        if (!$.id('navtopright')) {
+          return;
+        }
         Style.banner();
         Style.trimGlobalMessage();
         Style.padding.nav = $("#boardNavDesktop", d.body);
@@ -10784,12 +10790,11 @@
               });
             });
           }
-          Style.init();
           return;
         case 'images.4chan.org':
           $.ready(function() {
             var url;
-            if (/^4chan - 404/.test(d.title) && Conf['404 Redirect']) {
+            if (/^4chan - 404/.test(d.title) && _conf['404 Redirect']) {
               path = location.pathname.split('/');
               url = Redirect.image(path[1], path[3]);
               if (url) {
@@ -10945,8 +10950,7 @@
       var a, board, nav, node, nodes, now, observer, _conf, _i, _j, _len, _len1, _ref, _ref1;
       _conf = Conf;
       if (/^4chan - 404/.test(d.title)) {
-        $.log('hi');
-        if (Conf['404 Redirect'] && /^\d+$/.test(g.THREAD_ID)) {
+        if (_conf['404 Redirect'] && /^\d+$/.test(g.THREAD_ID)) {
           location.href = Redirect.to({
             board: g.BOARD,
             threadID: g.THREAD_ID,
