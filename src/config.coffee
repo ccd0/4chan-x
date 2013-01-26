@@ -15,8 +15,9 @@ Config =
       'Anonymize':                    [false, 'Turn everyone Anonymous.']
       'Filter':                       [true,  'Self-moderation placebo.']
       'Recursive Hiding':             [true,  'Filter replies of filtered posts, recursively.']
-      'Reply Hiding':                 [true,  'Hide single replies.']
       'Thread Hiding':                [true,  'Hide entire threads.']
+      'Reply Hiding':                 [true,  'Hide single replies.']
+      'Thread/Reply Hiding Buttons':  [true,  'Make buttons to hide threads / replies, in addition to menu links.']
       'Stubs':                        [true,  'Make stubs of hidden threads / replies.']
     Imaging:
       'Auto-GIF':                     [false, 'Animate GIF thumbnails.']

@@ -9,15 +9,16 @@ ThreadHiding =
       cb:   @node
 
   node: ->
-    if @ID in ThreadHiding.hiddenThreads.threads
-      ThreadHiding.hide @
+    if data = ThreadHiding.hiddenThreads.threads[@]
+      ThreadHiding.hide @, data.makeStub
+    return unless Conf['Thread/Reply Hiding Buttons']
     $.prepend @posts[@].nodes.root, ThreadHiding.makeButton @, 'hide'
 
   getHiddenThreads: ->
     hiddenThreads = $.get "hiddenThreads.#{g.BOARD}"
     unless hiddenThreads
       hiddenThreads =
-        threads: []
+        threads: {}
         lastChecked: Date.now()
       $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
     ThreadHiding.hiddenThreads = hiddenThreads
@@ -25,27 +26,71 @@ ThreadHiding =
   syncFromCatalog: ->
     # Sync hidden threads from the catalog into the index.
     hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
-    ThreadHiding.hiddenThreads.threads = Object.keys(hiddenThreadsOnCatalog).map Number
+    {threads} = ThreadHiding.hiddenThreads
+
+    # Add threads that were hidden in the catalog.
+    for threadID of hiddenThreadsOnCatalog
+      continue if threadID of threads
+      threads[threadID] = {}
+
+    # Remove threads that were un-hidden in the catalog.
+    for threadID of threads
+      continue if threadID of threads
+      delete threads[threadID]
+
     $.set "hiddenThreads.#{g.BOARD}", ThreadHiding.hiddenThreads
 
   clean: ->
     {hiddenThreads} = ThreadHiding
-    {lastChecked} = hiddenThreads
+    {lastChecked}   = hiddenThreads
     hiddenThreads.lastChecked = now = Date.now()
 
     return if lastChecked > now - $.DAY
 
-    unless hiddenThreads.threads.length
+    unless Object.keys(hiddenThreads.threads).length
       $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
       return
 
     $.ajax "//api.4chan.org/#{g.BOARD}/catalog.json", onload: ->
-      threads = []
+      threads = {}
       for obj in JSON.parse @response
         for thread in obj.threads
-          threads.push thread.no if thread.no in hiddenThreads.threads
+          if thread.no of hiddenThreads.threads
+            threads[thread.no] = hiddenThreads.threads[thread.no]
       hiddenThreads.threads = threads
       $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
+
+  menu:
+    init: ->
+      return if g.VIEW isnt 'index'
+      div = $.el 'div',
+        className: 'hide-thread-link'
+        textContent: 'Hide thread'
+
+      option = $.el 'label',
+        innerHTML: "<input type=checkbox checked=#{Conf['Stubs']}> Make stub"
+
+      apply = $.el 'a',
+        textContent: 'Apply'
+        href: 'javascript:;'
+      $.on apply, 'click', ThreadHiding.menu.hide
+
+      Menu.addEntry
+        el: div
+        open: (post) ->
+          {thread} = post
+          if post.isReply or thread.isHidden
+            return false
+          ThreadHiding.menu.thread = thread
+          true
+        children: [{el: option}, {el: apply}]
+    hide: ->
+      makeStub = $('input', @parentNode).checked
+      {thread} = ThreadHiding.menu
+      ThreadHiding.hide thread, makeStub
+      ThreadHiding.saveHiddenState thread, makeStub
+      # need to save if we made a stub or not
+      Menu.close()
 
   makeButton: (thread, type) ->
     a = $.el 'a',
@@ -55,20 +100,25 @@ ThreadHiding =
     $.on a, 'click', -> ThreadHiding.toggle thread
     a
 
-  toggle: (thread) ->
+  saveHiddenState: (thread, makeStub) ->
     # Get fresh hidden threads.
-    hiddenThreads = ThreadHiding.getHiddenThreads()
+    hiddenThreads        = ThreadHiding.getHiddenThreads()
     hiddenThreadsCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
     if thread.isHidden
-      ThreadHiding.show thread
-      hiddenThreads.threads.splice hiddenThreads.threads.indexOf(thread.ID), 1
-      delete hiddenThreadsCatalog[thread]
+      hiddenThreads.threads[thread] = {makeStub}
+      hiddenThreadsCatalog[thread]  = true
     else
-      ThreadHiding.hide thread
-      hiddenThreads.threads.push thread.ID
-      hiddenThreadsCatalog[thread] = true
+      delete hiddenThreads.threads[thread]
+      delete hiddenThreadsCatalog[thread]
     $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
     localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify hiddenThreadsCatalog
+
+  toggle: (thread) ->
+    if thread.isHidden
+      ThreadHiding.show thread
+    else
+      ThreadHiding.hide thread
+    ThreadHiding.saveHiddenState thread
 
   hide: (thread, makeStub=Conf['Stubs']) ->
     return if thread.hidden
@@ -96,8 +146,8 @@ ThreadHiding =
     thread.stub = $.el 'div',
       className: 'stub'
     $.add thread.stub, a
-    # if Conf['Menu']
-    #   $.add thread.stub, [$.tn(' '), Menu.makeButton()]
+    if Conf['Menu']
+      $.add thread.stub, [$.tn(' '), Menu.makeButton op]
     $.before threadRoot, thread.stub
 
   show: (thread) ->
@@ -121,6 +171,7 @@ ReplyHiding =
     if thread = ReplyHiding.hiddenPosts.threads[@thread]
       if @ID in thread
         ReplyHiding.hide @
+    return unless Conf['Thread/Reply Hiding Buttons']
     $.replace $('.sideArrows', @nodes.root), ReplyHiding.makeButton @, 'hide'
 
   getHiddenPosts: ->
@@ -199,8 +250,8 @@ ReplyHiding =
     post.nodes.stub = $.el 'div',
       className: 'stub'
     $.add post.nodes.stub, a
-    # if Conf['Menu']
-    #   $.add post.nodes.stub, [$.tn(' '), Menu.makeButton()]
+    if Conf['Menu']
+      $.add post.nodes.stub, [$.tn(' '), Menu.makeButton post]
     $.prepend post.nodes.root, post.nodes.stub
 
   show: (post) ->
@@ -254,12 +305,10 @@ Menu =
       cb:   @node
 
   node: ->
-    if @isClone
-      a = $ '.menu-button', @nodes.info
-      a.setAttribute 'data-clone', true
-      $.on a, 'click', Menu.toggle
-      return
     a = Menu.makeButton @
+    if @isClone
+      $.replace $('.menu-button', @nodes.info), a
+      return
     $.add @nodes.info, [$.tn('\u00A0'), a]
 
   makeButton: (post) ->
@@ -268,6 +317,7 @@ Menu =
       innerHTML: '[<span></span>]'
       href:      'javascript:;'
     a.setAttribute 'data-postid', post.fullID
+    a.setAttribute 'data-clone', true if post.isClone
     $.on a, 'click', Menu.toggle
     a
 
@@ -329,7 +379,8 @@ Menu =
     menu.focus()
 
   insertEntry: (entry, parent, post) ->
-    return unless entry.open post
+    if typeof entry.open is 'function'
+      return unless entry.open post
     $.add parent, entry.el
 
     return unless entry.children
@@ -379,7 +430,7 @@ Menu =
     e.stopPropagation()
 
   focus: (entry) ->
-    if focused = $.x 'parent::*/child::*[contains(@class,"focused")]', entry
+    while focused = $.x 'parent::*/child::*[contains(@class,"focused")]', entry
       $.rmClass focused, 'focused'
     for focused in $$ '.focused', entry
       $.rmClass focused, 'focused'

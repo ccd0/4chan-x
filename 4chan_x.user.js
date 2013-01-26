@@ -20,7 +20,7 @@
 // @icon         https://github.com/MayhemYDG/4chan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2013-01-25
+/* 4chan X Alpha - Version 3.0.0 - 2013-01-26
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -66,8 +66,9 @@
         'Anonymize': [false, 'Turn everyone Anonymous.'],
         'Filter': [true, 'Self-moderation placebo.'],
         'Recursive Hiding': [true, 'Filter replies of filtered posts, recursively.'],
-        'Reply Hiding': [true, 'Hide single replies.'],
         'Thread Hiding': [true, 'Hide entire threads.'],
+        'Reply Hiding': [true, 'Hide single replies.'],
+        'Thread/Reply Hiding Buttons': [true, 'Make buttons to hide threads / replies, in addition to menu links.'],
         'Stubs': [true, 'Make stubs of hidden threads / replies.']
       },
       Imaging: {
@@ -692,9 +693,12 @@
       });
     },
     node: function() {
-      var _ref;
-      if (_ref = this.ID, __indexOf.call(ThreadHiding.hiddenThreads.threads, _ref) >= 0) {
-        ThreadHiding.hide(this);
+      var data;
+      if (data = ThreadHiding.hiddenThreads.threads[this]) {
+        ThreadHiding.hide(this, data.makeStub);
+      }
+      if (!Conf['Thread/Reply Hiding Buttons']) {
+        return;
       }
       return $.prepend(this.posts[this].nodes.root, ThreadHiding.makeButton(this, 'hide'));
     },
@@ -703,7 +707,7 @@
       hiddenThreads = $.get("hiddenThreads." + g.BOARD);
       if (!hiddenThreads) {
         hiddenThreads = {
-          threads: [],
+          threads: {},
           lastChecked: Date.now()
         };
         $.set("hiddenThreads." + g.BOARD, hiddenThreads);
@@ -711,9 +715,21 @@
       return ThreadHiding.hiddenThreads = hiddenThreads;
     },
     syncFromCatalog: function() {
-      var hiddenThreadsOnCatalog;
+      var hiddenThreadsOnCatalog, threadID, threads;
       hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
-      ThreadHiding.hiddenThreads.threads = Object.keys(hiddenThreadsOnCatalog).map(Number);
+      threads = ThreadHiding.hiddenThreads.threads;
+      for (threadID in hiddenThreadsOnCatalog) {
+        if (threadID in threads) {
+          continue;
+        }
+        threads[threadID] = {};
+      }
+      for (threadID in threads) {
+        if (threadID in threads) {
+          continue;
+        }
+        delete threads[threadID];
+      }
       return $.set("hiddenThreads." + g.BOARD, ThreadHiding.hiddenThreads);
     },
     clean: function() {
@@ -724,22 +740,22 @@
       if (lastChecked > now - $.DAY) {
         return;
       }
-      if (!hiddenThreads.threads.length) {
+      if (!Object.keys(hiddenThreads.threads).length) {
         $.set("hiddenThreads." + g.BOARD, hiddenThreads);
         return;
       }
       return $.ajax("//api.4chan.org/" + g.BOARD + "/catalog.json", {
         onload: function() {
-          var obj, thread, threads, _i, _j, _len, _len1, _ref, _ref1, _ref2;
-          threads = [];
+          var obj, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+          threads = {};
           _ref = JSON.parse(this.response);
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             obj = _ref[_i];
             _ref1 = obj.threads;
             for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
               thread = _ref1[_j];
-              if (_ref2 = thread.no, __indexOf.call(hiddenThreads.threads, _ref2) >= 0) {
-                threads.push(thread.no);
+              if (thread.no in hiddenThreads.threads) {
+                threads[thread.no] = hiddenThreads.threads[thread.no];
               }
             }
           }
@@ -747,6 +763,53 @@
           return $.set("hiddenThreads." + g.BOARD, hiddenThreads);
         }
       });
+    },
+    menu: {
+      init: function() {
+        var apply, div, option;
+        if (g.VIEW !== 'index') {
+          return;
+        }
+        div = $.el('div', {
+          className: 'hide-thread-link',
+          textContent: 'Hide thread'
+        });
+        option = $.el('label', {
+          innerHTML: "<input type=checkbox checked=" + Conf['Stubs'] + "> Make stub"
+        });
+        apply = $.el('a', {
+          textContent: 'Apply',
+          href: 'javascript:;'
+        });
+        $.on(apply, 'click', ThreadHiding.menu.hide);
+        return Menu.addEntry({
+          el: div,
+          open: function(post) {
+            var thread;
+            thread = post.thread;
+            if (post.isReply || thread.isHidden) {
+              return false;
+            }
+            ThreadHiding.menu.thread = thread;
+            return true;
+          },
+          children: [
+            {
+              el: option
+            }, {
+              el: apply
+            }
+          ]
+        });
+      },
+      hide: function() {
+        var makeStub, thread;
+        makeStub = $('input', this.parentNode).checked;
+        thread = ThreadHiding.menu.thread;
+        ThreadHiding.hide(thread, makeStub);
+        ThreadHiding.saveHiddenState(thread, makeStub);
+        return Menu.close();
+      }
     },
     makeButton: function(thread, type) {
       var a;
@@ -760,21 +823,29 @@
       });
       return a;
     },
-    toggle: function(thread) {
+    saveHiddenState: function(thread, makeStub) {
       var hiddenThreads, hiddenThreadsCatalog;
       hiddenThreads = ThreadHiding.getHiddenThreads();
       hiddenThreadsCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
       if (thread.isHidden) {
-        ThreadHiding.show(thread);
-        hiddenThreads.threads.splice(hiddenThreads.threads.indexOf(thread.ID), 1);
-        delete hiddenThreadsCatalog[thread];
-      } else {
-        ThreadHiding.hide(thread);
-        hiddenThreads.threads.push(thread.ID);
+        hiddenThreads.threads[thread] = {
+          makeStub: makeStub
+        };
         hiddenThreadsCatalog[thread] = true;
+      } else {
+        delete hiddenThreads.threads[thread];
+        delete hiddenThreadsCatalog[thread];
       }
       $.set("hiddenThreads." + g.BOARD, hiddenThreads);
       return localStorage.setItem("4chan-hide-t-" + g.BOARD, JSON.stringify(hiddenThreadsCatalog));
+    },
+    toggle: function(thread) {
+      if (thread.isHidden) {
+        ThreadHiding.show(thread);
+      } else {
+        ThreadHiding.hide(thread);
+      }
+      return ThreadHiding.saveHiddenState(thread);
     },
     hide: function(thread, makeStub) {
       var a, numReplies, op, opInfo, span, threadRoot;
@@ -804,6 +875,9 @@
         className: 'stub'
       });
       $.add(thread.stub, a);
+      if (Conf['Menu']) {
+        $.add(thread.stub, [$.tn(' '), Menu.makeButton(op)]);
+      }
       return $.before(threadRoot, thread.stub);
     },
     show: function(thread) {
@@ -835,6 +909,9 @@
         if (_ref = this.ID, __indexOf.call(thread, _ref) >= 0) {
           ReplyHiding.hide(this);
         }
+      }
+      if (!Conf['Thread/Reply Hiding Buttons']) {
+        return;
       }
       return $.replace($('.sideArrows', this.nodes.root), ReplyHiding.makeButton(this, 'hide'));
     },
@@ -946,6 +1023,9 @@
         className: 'stub'
       });
       $.add(post.nodes.stub, a);
+      if (Conf['Menu']) {
+        $.add(post.nodes.stub, [$.tn(' '), Menu.makeButton(post)]);
+      }
       return $.prepend(post.nodes.root, post.nodes.stub);
     },
     show: function(post) {
@@ -1027,13 +1107,11 @@
     },
     node: function() {
       var a;
+      a = Menu.makeButton(this);
       if (this.isClone) {
-        a = $('.menu-button', this.nodes.info);
-        a.setAttribute('data-clone', true);
-        $.on(a, 'click', Menu.toggle);
+        $.replace($('.menu-button', this.nodes.info), a);
         return;
       }
-      a = Menu.makeButton(this);
       return $.add(this.nodes.info, [$.tn('\u00A0'), a]);
     },
     makeButton: function(post) {
@@ -1044,6 +1122,9 @@
         href: 'javascript:;'
       });
       a.setAttribute('data-postid', post.fullID);
+      if (post.isClone) {
+        a.setAttribute('data-clone', true);
+      }
       $.on(a, 'click', Menu.toggle);
       return a;
     },
@@ -1097,8 +1178,10 @@
     },
     insertEntry: function(entry, parent, post) {
       var child, submenu, _i, _len, _ref;
-      if (!entry.open(post)) {
-        return;
+      if (typeof entry.open === 'function') {
+        if (!entry.open(post)) {
+          return;
+        }
       }
       $.add(parent, entry.el);
       if (!entry.children) {
@@ -1166,7 +1249,7 @@
     },
     focus: function(entry) {
       var bottom, eRect, focused, left, right, sRect, style, submenu, top, _i, _len, _ref;
-      if (focused = $.x('parent::*/child::*[contains(@class,"focused")]', entry)) {
+      while (focused = $.x('parent::*/child::*[contains(@class,"focused")]', entry)) {
         $.rmClass(focused, 'focused');
       }
       _ref = $$('.focused', entry);
@@ -3503,7 +3586,14 @@
           try {
             ReportLink.init();
           } catch (err) {
-            $.log(err, 'Report Link', err.stack);
+            $.log(err, 'Report Link');
+          }
+        }
+        if (Conf['Thread Hiding']) {
+          try {
+            ThreadHiding.menu.init();
+          } catch (err) {
+            $.log(err, 'Thread Hiding - Menu');
           }
         }
         if (Conf['Delete Link']) {

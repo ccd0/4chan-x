@@ -286,6 +286,7 @@ Main =
       className: 'reply'
       innerHTML: '<div class=extra></div>'
     $.ready Main.initHeaderReady
+
   initHeaderReady: ->
     header = Main.header
     $.prepend d.body, header
@@ -354,7 +355,14 @@ Main =
           ReportLink.init()
         catch err
           # XXX handle error
-          $.log err, 'Report Link', err.stack
+          $.log err, 'Report Link'
+
+      if Conf['Thread Hiding']
+        try
+          ThreadHiding.menu.init()
+        catch err
+          # XXX handle error
+          $.log err, 'Thread Hiding - Menu'
 
       if Conf['Delete Link']
         try
@@ -469,6 +477,7 @@ Main =
         $.log err, 'Thread Updater'
 
     $.ready Main.initFeaturesReady
+
   initFeaturesReady: ->
     if d.title is '4chan - 404 Not Found'
       if Conf['404 Redirect'] and g.VIEW is 'thread'

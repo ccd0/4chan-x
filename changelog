@@ -2,6 +2,8 @@ alpha
 - Mayhem
   Added touch and multi-touch support for dragging windows.
   The Thread Updater will pause when offline, and resume when online.
+  Added Thread & Post Hiding in the Menu, with individual settings.
+  Thread & Post Hiding Buttons can now be disabled in the settings.
   Recursive Hiding will be automatically applied when manually hiding a post.
   Fix Chrome's install warning that 4chan X would execute on all domains.
   Fix Quote Backlinks not affecting inlined quotes.
