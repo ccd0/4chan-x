@@ -137,7 +137,7 @@ $.extend $,
       Conf[@name] = @value
   addStyle: (css, identifier) ->
     style = $.el 'style',
-      textContent: css
+      innerHTML:   css
       id:          identifier
     $.add d.head, style
     return style

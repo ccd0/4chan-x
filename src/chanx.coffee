@@ -2140,6 +2140,10 @@ QuotePreview =
   init: ->
     Main.callbacks.push @node
 
+    $.ready -> $.add d.body, QuotePreview.el = $.el 'div',
+      id: 'qp'
+      className: 'reply dialog'
+
   node: (post) ->
     for quote in post.quotes
       continue unless quote.hostname is 'boards.4chan.org' and quote.hash and !/catalog$/.test(quote.pathname) or /\bdeadlink\b/.test quote.className
@@ -2151,15 +2155,17 @@ QuotePreview =
   mouseover: (e) ->
     return if /\binlined\b/.test @className
 
+    qp = QuotePreview.el
+
     # Make sure to remove the previous qp
     # in case it got stuck.
-    if qp = $.id 'qp'
+    if UI.el
       if qp is UI.el
         delete UI.el
-      $.rm qp
-
-    # Don't stop other elements from dragging
-    return if UI.el
+      
+      # Don't stop other elements from dragging
+      else
+        return
 
     if @host is 'boards.4chan.org'
       path     = @pathname.split '/'
@@ -2171,9 +2177,7 @@ QuotePreview =
       threadID = 0
       postID   = @dataset.id
 
-    UI.el = qp = $.el 'div',
-      id: 'qp'
-      className: 'reply dialog'
+    UI.el = qp
     UI.hover e
 
     Get.post board, threadID, postID, qp, ->
@@ -2227,10 +2231,9 @@ QuotePreview =
         if quote.hash[2..] is quoterID
           $.addClass quote, 'forwardlink'
 
-    $.add d.body, qp
-
   mouseout: (e) ->
-    UI.hoverend()
+    delete UI.el
+    $.rm QuotePreview.el.firstChild
     if el = $.id @hash[1..]
       $.rmClass el.parentNode, 'qphl' # op
       $.rmClass el,            'qphl' # reply

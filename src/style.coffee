@@ -973,12 +973,12 @@ img {
 .middlead,
 .bottomad {
   opacity: 0.3;
+  #{Style.agent}transition: opacity .3s linear;
 }
 .topad:hover,
 .middlead:hover,
 .bottomad:hover {
   opacity: 1;
-  #{Style.agent}transition: opacity .3s linear;
 }
 /* moots announcements */
 #globalMessage {
@@ -1494,11 +1494,6 @@ input[type=checkbox]:checked + .rice {
 #watcher:hover,
 #boardNavDesktopFoot:hover {
   #{Style.agent}transition: height .3s linear, border .3s linear, background-color .3s step-start;
-}
-img.topad,
-img.middlead,
-img.bottomad {
-  #{Style.agent}transition: opacity .3s linear;
 }
 #imgControls {
   #{Style.agent}transition: width .2s linear;
