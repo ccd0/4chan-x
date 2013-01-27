@@ -518,6 +518,9 @@ article li {
   width: 50%;
   display: inline-block;
 }
+.themevar .option {
+  width: 100%;
+}
 .optionlabel {
   padding-left: 18px;
 }

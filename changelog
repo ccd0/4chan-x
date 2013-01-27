@@ -1,6 +1,10 @@
 master
 
-1.0.40-41
+1.0.43
+Zixaphir
+- Fix quote preview performance issues.
+
+1.0.40-42
 - Zixaphir
   Bugfixes
 
