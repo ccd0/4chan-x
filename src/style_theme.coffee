@@ -332,6 +332,7 @@ a .name {
 .post.reply.qphl,
 .post.op.qphl {
   border-color: #{theme["Backlinked Reply Outline"]};
+  background: #{theme["Highlighted Reply Background"]};
 }
 .inline .post {
   box-shadow: #{if _conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};

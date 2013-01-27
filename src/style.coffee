@@ -1086,7 +1086,6 @@ blockquote {
   min-height: #{parseInt(_conf["Font Size"], 10) + 3}px;
 }
 .fullSize {
-  margin: 0 0 25px;
   position: relative;
   top: 0;
 }
