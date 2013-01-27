@@ -155,7 +155,8 @@ $.extend $,
     el.classList.toggle className
   rm: (el) ->
     el.parentNode.removeChild el
-  tn: d.createTextNode.bind d
+  tn: (string) ->
+    d.createTextNode string
   nodes: (nodes) ->
     # In (at least) Chrome, elements created inside different
     # scripts/window contexts inherit from unequal prototypes.
@@ -176,9 +177,8 @@ $.extend $,
     root.parentNode.insertBefore $.nodes(el), root
   replace: (root, el) ->
     root.parentNode.replaceChild $.nodes(el), root
-  create: d.createElement.bind d
   el: (tag, properties) ->
-    el = $.create tag
+    el = d.createElement tag
     $.extend el, properties if properties
     el
   on: (el, events, handler) ->
@@ -306,22 +306,23 @@ UI =
     d.removeEventListener 'mousemove', UI.drag,    false
     d.removeEventListener 'mouseup',   UI.dragend, false
     delete UI.el
-  hover: (e, mode = "default") ->
+  hover: (e, mode) ->
+
     {clientX, clientY} = e
-    {style} = UI.el
+    style = UI.el.style
     {clientHeight, clientWidth} = d.documentElement
     height = UI.el.offsetHeight
 
-    if mode is "default"
+    if (mode or 'default') is 'default'
 
       top = clientY - 120
-      style.top =
+      style.top = "#{
         if clientHeight <= height or top <= 0
-          '0px'
+          0
         else if top + height >= clientHeight
-          clientHeight - height + 'px'
+          clientHeight - height
         else
-          top + 'px'
+          top}px"
 
       if clientX <= clientWidth - 400
         style.left = clientX + 45 + 'px'

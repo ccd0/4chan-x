@@ -2419,7 +2419,14 @@ Linkify =
       node  = snapshot.snapshotItem i
       data  = node.data
 
-      continue unless data.match Linkify.regString
+      # Test for valid links
+      continue unless Linkify.regString.test data
+
+      # Regex.test stores the index of its last match.
+      # Because I am matching different nodes, this causes issues,
+      # like the next checked line failing to test
+      # (which also resets ...lastIndex)
+      Linkify.regString.lastIndex = 0
 
       cypherText = []
 
@@ -2430,15 +2437,17 @@ Linkify =
         cypherText[0]    = cypher.innerHTML
  
         # i herd u leik wbr
-        while (((next.nodeName.toLowerCase() is 'wbr') and ((spoiler = false) or true)) or ((next.nodeName.toLowerCase() is 's') and spoiler = true)) and lookahead = next.nextSibling
+        while (next.nodeName.toLowerCase() is 'wbr' or next.nodeName.toLowerCase() is 's') and lookahead = next.nextSibling
           cypher.innerHTML = lookahead.textContent
 
-          cypherText[cypherText.length] = if spoiler then "<s>#{next.textContent}</s>" else '<wbr>'
+          cypherText[cypherText.length] = if spoiler = next.textContent then "<s>#{spoiler}</s>" else '<wbr>'
           cypherText[cypherText.length] = cypher.innerHTML
 
           $.rm next
           next = lookahead.nextSibling
           $.rm lookahead if lookahead.nodeName is "#text"
+
+          i++
 
           unless next
             break

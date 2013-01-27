@@ -202,7 +202,9 @@ h1 {
 }
 #boardNavDesktopFoot,
 #selectrice,
-#selectrice *,
+#selectrice div,
+#selectrice ul,
+#selectrice li,
 #qr .warning,
 #qr .move,
 #threadselect .selectrice,
@@ -750,7 +752,7 @@ h2 a {
 /* Cleanup */
 #absbot,
 #autohide,
-#optionsContent > [name=tab]:not(:checked) + div,
+#optionsContent > div,
 #delform > hr,
 #filters-ctrl,
 #imgControls .rice,
@@ -758,22 +760,21 @@ h2 a {
 #navbotright,
 #postForm,
 #postPassword,
-#qr:not(.dump) #replies,
+#qr #replies,
 #qp .rice
 #qp input,
 #settingsMenu,
 #{if _conf["Hide Show Post Form"] then "#showQR," else ""}
 #styleSwitcher,
 #threadselect:empty,
-#updater:not(:hover) > :not(.move),
+#updater > div,
 #{unless _conf["Board Subtitle"] then ".boardSubtitle," else ""}
 .deleteform,
-.dump > form > label,
 .fappeTyme .noFile,
 .fileText:hover .fntrunc,
-.fileText:not(:hover) .fnfull,
+.fnfull,
 .forwarded,
-.hasSubMenu:not(.focused) > .subMenu,
+.hasSubMenu > .subMenu,
 .hidden_thread > .summary,
 .inline input,
 .large .teaser,
@@ -785,25 +786,29 @@ h2 a {
 .postingMode,
 .postingMode ~ #delform hr,
 .qrHeader,
-.replyContainer > .hide_reply_button.stub ~ .reply,
+.hide_reply_button.stub ~ .reply,
 .replymode,
 .riced,
 .sideArrows,
 .small .teaser,
-.stub ~ *,
+.stub ~ div,
 .stylechanger,
-.thread > .hidden_thread ~ *,
-.warnicon,
+.hidden_thread ~ div,
 .warning:empty,
 [hidden],
 body > br,
 body > div[style^="text-align"],
 body > hr,
-body > script + hr + div,
-.post[hidden],
-span[style="left: 5px; position: absolute;"]:nth-of-type(0),
-table[style="text-align:center;width:100%;height:300px;"] {
-  display: none !important;
+body > script + hr + div {
+  display: none;
+}
+#optionsContent > input:checked + div,
+#updater:hover div,
+#updater .move,
+#qr.dump #replies,
+.fileText:hover .fnfull,
+.hasSubMenu.focused > .subMenu {
+  display: block;
 }
 #mascot img,
 #replies,
