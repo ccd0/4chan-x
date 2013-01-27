@@ -382,10 +382,6 @@ input {
   font-size: 3.5em;
   line-height: 100px;
 }
-#addReply:hover,
-#addReply:focus {
-  color: #000;
-}
 .field {
   #{Style.agent}transition: color .25s, border .25s;
 }
@@ -774,8 +770,8 @@ h2 a {
 .fileText:hover .fntrunc,
 .fnfull,
 .forwarded,
-.hasSubMenu > .subMenu,
-.hidden_thread > .summary,
+.hasSubMenu .subMenu,
+.hidden_thread .summary,
 .inline input,
 .large .teaser,
 .mobile,
@@ -803,7 +799,7 @@ body > script + hr + div {
   display: none;
 }
 #optionsContent > input:checked + div,
-#updater:hover div,
+#updater:hover > div,
 #updater .move,
 #qr.dump #replies,
 .fileText:hover .fnfull,
@@ -1540,7 +1536,7 @@ hr {
   height: 3.9em;
   width: #{width}px;
 }
-#qr > form > #threadselect,
+#threadselect,
 #spoilerLabel {
   display: inline-block;
 }
@@ -1548,7 +1544,7 @@ hr {
   width: 100%;
   text-align: right;
 }
-#qr > form > #threadselect,
+#threadselect,
 #threadselect:not(:empty) + #spoilerLabel {
   width: 49%;
 }
@@ -1592,7 +1588,7 @@ input,
 }""" + (
           if _conf["Compact Post Form Inputs"] then """
 #qr textarea.field {
-  height: 15em;
+  height: 14.8em;
   min-height: 9em;
   min-width: #{width}px;
 }
@@ -1611,8 +1607,8 @@ input,
           else
             """
 #qr textarea.field {
-  height: 12em;
-  min-height: 12em;
+  height: 11.6em;
+  min-height: 11.6em;
   min-width: #{width}px
 }
 #qr.captcha textarea.field {
