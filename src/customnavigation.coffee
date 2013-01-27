@@ -25,12 +25,14 @@ CustomNavigation =
         textContent:    link[0]
         title:          link[1]
         href:           link[2]
+      
+      $.addClass(a, 'current') if a.href.contains "/#{g.BOARD}/"
 
       nodes[nodes.length] = a
 
       if Conf['Append Delimiters'] or i isnt len
         nodes[nodes.length] = $.tn " #{userNavigation.delimiter} "
-        
+
     $.prepend navigation, nodes
 
     return

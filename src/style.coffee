@@ -223,6 +223,25 @@ input {
   #{Style.agent}box-sizing: border-box;
   box-sizing: border-box;
 }
+#threadselect,
+#spoilerLabel {
+  display: inline-block;
+}
+#spoilerLabel {
+  text-align: right;
+}
+#threadselect,
+#threadselect + #spoilerLabel {
+  width: 49%;
+}
+#threadselect:empty + #spoilerLabel,
+input[title="Verification"] {
+  width: 100%;
+}
+#threadselect .selectrice {
+  margin-top: 0;
+  width: 100%;
+}
 #updater .move,
 #qr .move {
   overflow: hidden;
@@ -559,8 +578,8 @@ article li {
   bottom: 5px;
   left:   5px;
 }
-.style_tab .suboptions ul,
-.main_tab ul {
+#options .style_tab ul,
+#options .main_tab ul {
   vertical-align: top;
   #{if _conf["Single Column Mode"] then "margin: 0 auto 6px;" else "margin: 0 3px 6px;\n  display: inline-block;"}
 }
@@ -782,29 +801,33 @@ h2 a {
 .postingMode,
 .postingMode ~ #delform hr,
 .qrHeader,
-.hide_reply_button.stub ~ .reply,
 .replymode,
 .riced,
 .sideArrows,
 .small .teaser,
-.stub ~ div,
 .stylechanger,
-.hidden_thread ~ div,
 .warning:empty,
-[hidden],
 body > br,
 body > div[style^="text-align"],
 body > hr,
 body > script + hr + div {
   display: none;
 }
+.hidden_thread ~ div,
+.hide_reply_button.stub ~ .reply,
+.stub ~ div,
+[hidden] {
+  display: none !important;
+}
 #optionsContent > input:checked + div,
 #updater:hover > div,
 #updater .move,
 #qr.dump #replies,
-.fileText:hover .fnfull,
 .hasSubMenu.focused > .subMenu {
   display: block;
+}
+.fileText:hover .fnfull {
+  display: inline-block;
 }
 #mascot img,
 #replies,
@@ -1530,25 +1553,6 @@ hr {
 #qr img {
   height: 3.9em;
   width: #{width}px;
-}
-#threadselect,
-#spoilerLabel {
-  display: inline-block;
-}
-#spoilerLabel {
-  width: 100%;
-  text-align: right;
-}
-#threadselect,
-#threadselect:not(:empty) + #spoilerLabel {
-  width: 49%;
-}
-#threadselect .selectrice {
-  margin-top: 0;
-  width: 100%;
-}
-input[title="Verification"] {
-  width: 100%;
 }
 textarea.field,
 #qr > form > div {

@@ -169,8 +169,8 @@ textarea.field:focus {
   background: #{theme["Reply Background"]};
 }
 .exblock.reply,
-.post.highlight,
-.post:target {
+.reply.post.highlight,
+.reply.post:target {
   background: #{theme["Highlighted Reply Background"]};
   border: 1px solid #{theme["Highlighted Reply Border"]};
 }
@@ -460,12 +460,12 @@ a[style="cursor: pointer; float: right;"]::after,
 """
     if _conf["OP Background"]
       css += """
-.opContainer .post {
+.op.post {
   background: #{theme["Reply Background"]};
   border: 1px solid #{theme["Reply Border"]};
 }
-.opContainer .post:target
-.opContainer .post.highlight {
+.op.post:target
+.op.post.highlight {
   background: #{theme["Highlighted Reply Background"]};
   border: 1px solid #{theme["Highlighted Reply Border"]};
 }\n
