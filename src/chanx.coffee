@@ -2438,10 +2438,10 @@ Linkify =
 
           $.rm next
           next = lookahead.nextSibling
-          $.rm lookahead
+          $.rm lookahead if lookahead.nodeName is "#text"
 
-          i++
-          break unless next
+          unless next
+            break
 
       if cypherText.length
         data = cypherText.join ''

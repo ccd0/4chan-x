@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.42 - 2013-01-26
+ * appchan x - Version 1.0.42 - 2013-01-27
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -6859,8 +6859,9 @@
             cypherText[cypherText.length] = cypher.innerHTML;
             $.rm(next);
             next = lookahead.nextSibling;
-            $.rm(lookahead);
-            i++;
+            if (lookahead.nodeName === "#text") {
+              $.rm(lookahead);
+            }
             if (!next) {
               break;
             }
