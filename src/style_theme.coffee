@@ -88,27 +88,19 @@ html {
     #{if _conf["Sidebar Glow"] then ", 0 2px 5px #{theme['Text']};" else ";"}
 }
 /* Fixes text spoilers */
+.spoiler:not(:hover) *,
+s:not(:hover) * {
+  color: rgb(0,0,0) !important;
+  text-shadow: none !important;
+}
 .spoiler,
-.spoiler a,
-.spoiler .quote,
-.spoiler .quotelink,
-s,
-s a,
-s .quote,
-s .quotelink {
+s {
   color: rgb(0,0,0);
   background-color: rgb(0,0,0);
-  text-shadow: none;
 }
 .spoiler:hover,
-.spoiler:hover a,
-.spoiler:hover .quote,
-.spoiler:hover .quotelink,
-s:hover,
-s:hover a,
-s:hover .quote,
-s:hover .quotelink {
-  color: #{theme['Text']};
+s:hover {
+  color: #{theme["Text"]};
   background-color: transparent;
 }
 #exlinks-options,
@@ -337,7 +329,8 @@ a .postertrip,
 a .name {
   color: #{theme["Emails"]};
 }
-.qphl {
+.post.reply.qphl,
+.post.op.qphl {
   border-color: #{theme["Backlinked Reply Outline"]};
 }
 .inline .post {

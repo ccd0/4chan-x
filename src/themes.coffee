@@ -1882,9 +1882,6 @@ textarea,
   content: " by";
   font-weight: normal;
 }
-.qphl {
-  outline-width: 1px;
-}
 """
 
   "4chan Dark Upgrade":
