@@ -20,7 +20,7 @@
 // @icon         https://github.com/MayhemYDG/4chan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2013-01-26
+/* 4chan X Alpha - Version 3.0.0 - 2013-01-27
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Get, ImageHover, Main, Menu, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, g, _base,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, ImageHover, Main, Menu, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, g, _base,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -119,7 +119,7 @@
     },
     filter: {
       name: ['# Filter any namefags:', '#/^(?!Anonymous$)/'].join('\n'),
-      uniqueid: ['# Filter a specific ID:', '#/Txhvk1Tl/'].join('\n'),
+      uniqueID: ['# Filter a specific ID:', '#/Txhvk1Tl/'].join('\n'),
       tripcode: ['# Filter any tripfags', '#/^!/'].join('\n'),
       capcode: ['# Set a custom class for mods:', '#/Mod$/;highlight:mod;op:yes', '# Set a custom class for moot:', '#/Admin$/;highlight:moot;op:yes'].join('\n'),
       email: ['# Filter any e-mails that are not `sage` on /a/ and /jp/:', '#/^(?!sage$)/;boards:a,jp'].join('\n'),
@@ -129,7 +129,7 @@
       filename: [''].join('\n'),
       dimensions: ['# Highlight potential wallpapers:', '#/1920x1080/;op:yes;highlight;top:no;boards:w,wg'].join('\n'),
       filesize: [''].join('\n'),
-      md5: [''].join('\n')
+      MD5: [''].join('\n')
     },
     sauces: ['http://iqdb.org/?url=%turl', 'http://www.google.com/searchbyimage?image_url=%turl', '#http://tineye.com/search?url=%turl', '#http://saucenao.com/search.php?db=999&url=%turl', '#http://3d.iqdb.org/?url=%turl', '#http://regex.info/exif.cgi?imgurl=%url', '# uploaders:', '#http://imgur.com/upload?url=%url;text:Upload to imgur', '#http://omploader.org/upload?url1=%url;text:Upload to omploader', '# "View Same" in archives:', '#//archive.foolz.us/_/search/image/%md5/;text:View same on foolz', '#//archive.foolz.us/%board/search/image/%md5/;text:View same on foolz /%board/', '#//archive.installgentoo.net/%board/image/%md5;text:View same on installgentoo /%board/'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M:%S',
@@ -678,6 +678,262 @@
       return localStorage.setItem(g.NAMESPACE + name, JSON.stringify(value));
     }
   });
+
+  Filter = {
+    filters: {},
+    init: function() {
+      var boards, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      for (key in Config.filter) {
+        this.filters[key] = [];
+        _ref = Conf[key].split('\n');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          filter = _ref[_i];
+          if (filter[0] === '#') {
+            continue;
+          }
+          if (!(regexp = filter.match(/\/(.+)\/(\w*)/))) {
+            continue;
+          }
+          filter = filter.replace(regexp[0], '');
+          boards = ((_ref1 = filter.match(/boards:([^;]+)/)) != null ? _ref1[1].toLowerCase() : void 0) || 'global';
+          if (boards !== 'global' && !(_ref2 = g.BOARD.ID, __indexOf.call(boards.split(','), _ref2) >= 0)) {
+            continue;
+          }
+          if (key === 'uniqueID' || key === 'MD5') {
+            regexp = regexp[1];
+          } else {
+            try {
+              regexp = RegExp(regexp[1], regexp[2]);
+            } catch (err) {
+              alert(err.message);
+              continue;
+            }
+          }
+          op = ((_ref3 = filter.match(/[^t]op:(yes|no|only)/)) != null ? _ref3[1] : void 0) || 'no';
+          stub = (function() {
+            var _ref4;
+            switch ((_ref4 = filter.match(/stub:(yes|no)/)) != null ? _ref4[1] : void 0) {
+              case 'yes':
+                return true;
+              case 'no':
+                return false;
+              default:
+                return Conf['Stubs'];
+            }
+          })();
+          if (hl = /highlight/.test(filter)) {
+            hl = ((_ref4 = filter.match(/highlight:(\w+)/)) != null ? _ref4[1] : void 0) || 'filter-highlight';
+            top = ((_ref5 = filter.match(/top:(yes|no)/)) != null ? _ref5[1] : void 0) || 'yes';
+            top = top === 'yes';
+          }
+          this.filters[key].push(this.createFilter(regexp, op, stub, hl, top));
+        }
+        if (!this.filters[key].length) {
+          delete this.filters[key];
+        }
+      }
+      if (!Object.keys(this.filters).length) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Thread Hiding',
+        cb: this.node
+      });
+    },
+    createFilter: function(regexp, op, stub, hl, top) {
+      var settings, test;
+      test = typeof regexp === 'string' ? function(value) {
+        return regexp === value;
+      } : function(value) {
+        return regexp.test(value);
+      };
+      settings = {
+        hide: !hl,
+        stub: stub,
+        "class": hl,
+        top: top
+      };
+      return function(value, isReply) {
+        if (isReply && op === 'only' || !isReply && op === 'no') {
+          return false;
+        }
+        if (!test(value)) {
+          return false;
+        }
+        return settings;
+      };
+    },
+    node: function() {
+      var filter, firstThread, key, result, thisThread, value, _i, _len, _ref;
+      if (this.isClone) {
+        return;
+      }
+      for (key in Filter.filters) {
+        value = Filter[key](this);
+        if (value === false) {
+          continue;
+        }
+        _ref = Filter.filters[key];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          filter = _ref[_i];
+          if (!(result = filter(value, this.isReply))) {
+            continue;
+          }
+          if (result.hide) {
+            if (this.isReply) {
+              ReplyHiding.hide(this, result.stub);
+            } else if (g.VIEW === 'index') {
+              ThreadHiding.hide(this.thread, result.stub);
+            } else {
+              continue;
+            }
+            return;
+          }
+          $.addClass(this.nodes.root, result["class"]);
+          if (!this.isReply && result.top && g.VIEW === 'index') {
+            thisThread = this.nodes.root.parentNode;
+            if (firstThread = $('div[class="postContainer opContainer"]')) {
+              if (firstThread !== this.nodes.root) {
+                $.before(firstThread.parentNode, [thisThread, thisThread.nextElementSibling]);
+              }
+            }
+          }
+        }
+      }
+    },
+    name: function(post) {
+      if ('name' in post.info) {
+        return post.info.name;
+      }
+      return false;
+    },
+    uniqueID: function(post) {
+      if ('uniqueID' in post.info) {
+        return post.info.uniqueID;
+      }
+      return false;
+    },
+    tripcode: function(post) {
+      if ('tripcode' in post.info) {
+        return post.info.tripcode;
+      }
+      return false;
+    },
+    capcode: function(post) {
+      if ('capcode' in post.info) {
+        return post.info.capcode;
+      }
+      return false;
+    },
+    email: function(post) {
+      if ('email' in post.info) {
+        return post.info.email;
+      }
+      return false;
+    },
+    subject: function(post) {
+      if ('subject' in post.info) {
+        return post.info.subject || false;
+      }
+      return false;
+    },
+    comment: function(post) {
+      if ('comment' in post.info) {
+        return post.info.comment;
+      }
+      return false;
+    },
+    flag: function(post) {
+      if ('flag' in post.info) {
+        return post.info.flag;
+      }
+      return false;
+    },
+    filename: function(post) {
+      if (post.file) {
+        return post.file.name;
+      }
+      return false;
+    },
+    dimensions: function(post) {
+      if (post.file && post.file.isImage) {
+        return post.file.dimensions;
+      }
+      return false;
+    },
+    filesize: function(post) {
+      if (post.file) {
+        return post.file.size;
+      }
+      return false;
+    },
+    MD5: function(post) {
+      if (post.file) {
+        return post.file.MD5;
+      }
+      return false;
+    },
+    menu: {
+      init: function() {
+        var div, entry, type, _i, _len, _ref;
+        div = $.el('div', {
+          textContent: 'Filter'
+        });
+        entry = {
+          el: div,
+          open: function(post) {
+            Filter.menu.post = post;
+            return true;
+          },
+          children: []
+        };
+        _ref = [['Name', 'name'], ['Unique ID', 'uniqueID'], ['Tripcode', 'tripcode'], ['Capcode', 'capcode'], ['E-mail', 'email'], ['Subject', 'subject'], ['Comment', 'comment'], ['Flag', 'flag'], ['Filename', 'filename'], ['Image dimensions', 'dimensions'], ['Filesize', 'filesize'], ['Image MD5', 'MD5']];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          type = _ref[_i];
+          entry.children.push(Filter.menu.createSubEntry(type[0], type[1]));
+        }
+        return Menu.addEntry(entry);
+      },
+      createSubEntry: function(text, type) {
+        var el;
+        el = $.el('a', {
+          href: 'javascript:;',
+          textContent: text
+        });
+        el.setAttribute('data-type', type);
+        $.on(el, 'click', Filter.menu.makeFilter);
+        return {
+          el: el,
+          open: function(post) {
+            var value;
+            value = Filter[type](post);
+            return value !== false;
+          }
+        };
+      },
+      makeFilter: function() {
+        var re, save, type, value;
+        type = this.dataset.type;
+        value = Filter[type](Filter.menu.post);
+        re = type === 'uniqueID' || type === 'MD5' ? value : value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
+          if (c === '\n') {
+            return '\\n';
+          } else if (c === '\\') {
+            return '\\\\';
+          } else {
+            return "\\" + c;
+          }
+        });
+        re = type === 'uniqueID' || type === 'MD5' ? "/" + re + "/" : "/^" + re + "$/";
+        if (!Filter.menu.post.isReply) {
+          re += ';op:yes';
+        }
+        save = $.get(type, '');
+        save = save ? "" + save + "\n" + re : re;
+        return $.set(type, save);
+      }
+    }
+  };
 
   ThreadHiding = {
     init: function() {
@@ -1579,7 +1835,7 @@
         },
         children: []
       };
-      _ref = [['Post', 'post'], ['Name', 'name'], ['Tripcode', 'tripcode'], ['E-mail', 'email'], ['Subject', 'subject'], ['Filename', 'filename'], ['Image MD5', 'md5']];
+      _ref = [['Post', 'post'], ['Name', 'name'], ['Tripcode', 'tripcode'], ['E-mail', 'email'], ['Subject', 'subject'], ['Filename', 'filename'], ['Image MD5', 'MD5']];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         type = _ref[_i];
         entry.children.push(this.createSubEntry(type[0], type[1]));
@@ -1603,6 +1859,17 @@
         };
       } else {
         open = function(post) {
+          var value;
+          value = Filter[type](post);
+          if (!value) {
+            return false;
+          }
+          el.href = Redirect.to({
+            board: post.board,
+            type: type,
+            value: value,
+            isSearch: true
+          });
           return true;
         };
       }
@@ -1741,7 +2008,7 @@
       var board, path, postID, threadID, type, value;
       if (data.isSearch) {
         board = data.board, type = data.type, value = data.value;
-        type = type === 'name' ? 'username' : type === 'md5' ? 'image' : type;
+        type = type === 'name' ? 'username' : type === 'MD5' ? 'image' : type;
         value = encodeURIComponent(value);
         if (archiver === 'foolfuuka') {
           return "" + base + "/" + board + "/search/" + type + "/" + value;
@@ -1752,7 +2019,7 @@
         }
       }
       board = data.board, threadID = data.threadID, postID = data.postID;
-      if (typeof postID === 'string') {
+      if (postID && typeof postID === 'string') {
         postID = postID.match(/\d+/)[0];
       }
       path = threadID ? "" + board + "/thread/" + threadID : "" + board + "/post/" + postID;
@@ -2213,14 +2480,14 @@
             a.setAttribute('data-postid', ID);
           }
         }
-        if (a) {
-          $.replace(deadlink, a);
-        } else {
-          deadlink.textContent += "\u00A0(Dead)";
-        }
-        if (this.quotes.indexOf(quoteID) === -1) {
+        if (__indexOf.call(this.quotes, quoteID) < 0) {
           this.quotes.push(quoteID);
         }
+        if (!a) {
+          deadlink.textContent += "\u00A0(Dead)";
+          continue;
+        }
+        $.replace(deadlink, a);
         if ($.hasClass(a, 'quotelink')) {
           this.nodes.quotelinks.push(a);
         }
@@ -2735,16 +3002,16 @@
         }
       },
       s: function() {
-        return $.bytesToString(this.file.size);
+        return this.file.size;
       },
       B: function() {
-        return FileInfo.convertUnit(this.file.size, 'B');
+        return FileInfo.convertUnit(this.file.sizeInBytes, 'B');
       },
       K: function() {
-        return FileInfo.convertUnit(this.file.size, 'KB');
+        return FileInfo.convertUnit(this.file.sizeInBytes, 'KB');
       },
       M: function() {
-        return FileInfo.convertUnit(this.file.size, 'MB');
+        return FileInfo.convertUnit(this.file.sizeInBytes, 'MB');
       },
       r: function() {
         if (this.file.isImage) {
@@ -3319,7 +3586,7 @@
       }
       if (uniqueID = $('.posteruid', info)) {
         this.nodes.uniqueID = uniqueID;
-        this.info.uniqueID = uniqueID.textContent;
+        this.info.uniqueID = uniqueID.firstElementChild.textContent;
       }
       if (capcode = $('.capcode', info)) {
         this.nodes.capcode = capcode;
@@ -3376,15 +3643,16 @@
           text: fileInfo.firstElementChild,
           thumb: thumb,
           URL: anchor.href,
+          size: alt.match(/[\d.]+\s\w+/)[0],
           MD5: thumb.dataset.md5,
           isSpoiler: $.hasClass(anchor, 'imgspoiler')
         };
-        size = +alt.match(/\d+(\.\d+)?/)[0];
-        unit = ['B', 'KB', 'MB', 'GB'].indexOf(alt.match(/\w+$/)[0]);
-        while (unit--) {
+        size = +this.file.size.match(/[\d.]+/)[0];
+        unit = ['B', 'KB', 'MB', 'GB'].indexOf(this.file.size.match(/\w+$/)[0]);
+        while (unit-- > 0) {
           size *= 1024;
         }
-        this.file.size = size;
+        this.file.sizeInBytes = size;
         this.file.thumbURL = that.isArchived ? thumb.src : "" + location.protocol + "//thumbs.4chan.org/" + board + "/thumb/" + (this.file.URL.match(/(\d+)\./)[1]) + "s.jpg";
         this.file.name = $('span[title]', fileInfo).title.replace(/%22/g, '"');
         if (this.file.isImage = /(jpg|png|gif)$/i.test(this.file.name)) {
@@ -3632,6 +3900,13 @@
           $.log(err, 'Resurrect Quotes');
         }
       }
+      if (Conf['Filter']) {
+        try {
+          Filter.init();
+        } catch (err) {
+          $.log(err, 'Filter');
+        }
+      }
       if (Conf['Thread Hiding']) {
         try {
           ThreadHiding.init();
@@ -3683,6 +3958,13 @@
             DeleteLink.init();
           } catch (err) {
             $.log(err, 'Delete Link');
+          }
+        }
+        if (Conf['Filter']) {
+          try {
+            Filter.menu.init();
+          } catch (err) {
+            $.log(err, 'Filter - Menu');
           }
         }
         if (Conf['Download Link']) {
@@ -3853,7 +4135,7 @@
     settings: function() {
       return alert('Here be settings');
     },
-    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n[hidden] {\n  display: none !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#boardNavDesktop.reply,\n#qr, #watcher {\n  position: fixed;\n}\n#qp, #ihover {\n  z-index: 100;\n}\n#updater, #stats {\n  z-index: 90;\n}\n#boardNavDesktop.reply:hover {\n  z-index: 80;\n}\n#qr {\n  z-index: 50;\n}\n#watcher {\n  z-index: 30;\n}\n#boardNavDesktop.reply {\n  z-index: 10;\n}\n\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* thread updater */\n#updater {\n  text-align: right;\n}\n#updater:not(:hover) {\n  background: none;\n  border: none;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n.new {\n  color: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.filtered {\n  text-decoration: underline line-through;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  padding-bottom: 16px;\n}\n\n/* thread & reply hiding */\n.hide-thread-button,\n.hide-reply-button {\n  float: left;\n  margin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\n  display: none !important;\n}\n\n/* Menu */\n.menu-button {\n  display: inline-block;\n}\n.menu-button > span {\n  border-top:   6px solid;\n  border-right: 4px solid transparent;\n  border-left:  4px solid transparent;\n  display: inline-block;\n  margin: 2px;\n  vertical-align: middle;\n}\n#menu {\n  position: absolute;\n  outline: none;\n}\n.entry {\n  border-bottom: 1px solid rgba(0, 0, 0, .25);\n  cursor: pointer;\n  display: block;\n  outline: none;\n  padding: 3px 7px;\n  position: relative;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.entry:last-child {\n  border: none;\n}\n.focused.entry {\n  background: rgba(255, 255, 255, .33);\n}\n.entry.has-submenu {\n  padding-right: 20px;\n}\n.has-submenu::after {\n  content: \"\";\n  border-left:   6px solid;\n  border-top:    4px solid transparent;\n  border-bottom: 4px solid transparent;\n  display: inline-block;\n  margin: 4px;\n  position: absolute;\n  right: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\n  display: none;\n}\n.submenu {\n  position: absolute;\n  margin: -1px 0;\n}"
+    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n[hidden] {\n  display: none !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#boardNavDesktop.reply,\n#qr, #watcher {\n  position: fixed;\n}\n#qp, #ihover {\n  z-index: 100;\n}\n#updater, #stats {\n  z-index: 90;\n}\n#boardNavDesktop.reply:hover {\n  z-index: 80;\n}\n#qr {\n  z-index: 50;\n}\n#watcher {\n  z-index: 30;\n}\n#boardNavDesktop.reply {\n  z-index: 10;\n}\n\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2.5em;\n}\n#boardNavDesktop.reply {\n  border-width: 0 0 1px;\n  padding: 4px;\n  top: 0;\n  right: 0;\n  left: 0;\n  transition: opacity .1s ease-in-out;\n  -o-transition: opacity .1s ease-in-out;\n  -moz-transition: opacity .1s ease-in-out;\n  -webkit-transition: opacity .1s ease-in-out;\n}\n#boardNavDesktop.reply:not(:hover) {\n  opacity: .4;\n  transition: opacity 1.5s .5s ease-in-out;\n  -o-transition: opacity 1.5s .5s ease-in-out;\n  -moz-transition: opacity 1.5s .5s ease-in-out;\n  -webkit-transition: opacity 1.5s .5s ease-in-out;\n}\n#boardNavDesktop.reply a {\n  margin: -1px;\n}\n#settings {\n  float: right;\n}\n\n/* thread updater */\n#updater {\n  text-align: right;\n}\n#updater:not(:hover) {\n  background: none;\n  border: none;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n.new {\n  color: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.filtered {\n  text-decoration: underline line-through;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  padding-bottom: 16px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\n  box-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.opContainer.filter-highlight.qphl {\n  box-shadow: inset 5px 0 rgba(255, 0, 0, .5),\n              0 0 0 2px rgba(216, 94, 49, .7);\n}\n.filter-highlight > .reply {\n  box-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply.qphl {\n  box-shadow: -5px 0 rgba(255, 0, 0, .5),\n              0 0 0 2px rgba(216, 94, 49, .7)\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\n  float: left;\n  margin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\n  display: none !important;\n}\n\n/* Menu */\n.menu-button {\n  display: inline-block;\n}\n.menu-button > span {\n  border-top:   6px solid;\n  border-right: 4px solid transparent;\n  border-left:  4px solid transparent;\n  display: inline-block;\n  margin: 2px;\n  vertical-align: middle;\n}\n#menu {\n  position: absolute;\n  outline: none;\n}\n.entry {\n  border-bottom: 1px solid rgba(0, 0, 0, .25);\n  cursor: pointer;\n  display: block;\n  outline: none;\n  padding: 3px 7px;\n  position: relative;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.entry:last-child {\n  border: none;\n}\n.focused.entry {\n  background: rgba(255, 255, 255, .33);\n}\n.entry.has-submenu {\n  padding-right: 20px;\n}\n.has-submenu::after {\n  content: \"\";\n  border-left:   6px solid;\n  border-top:    4px solid transparent;\n  border-bottom: 4px solid transparent;\n  display: inline-block;\n  margin: 4px;\n  position: absolute;\n  right: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\n  display: none;\n}\n.submenu {\n  position: absolute;\n  margin: -1px 0;\n}\n.entry input {\n  margin: 0;\n}"
   };
 
   Main.init();

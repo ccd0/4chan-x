@@ -64,7 +64,7 @@ Config =
       '# Filter any namefags:'
       '#/^(?!Anonymous$)/'
     ].join '\n'
-    uniqueid: [
+    uniqueID: [
       '# Filter a specific ID:'
       '#/Txhvk1Tl/'
     ].join '\n'
@@ -103,7 +103,7 @@ Config =
     filesize: [
       ''
     ].join '\n'
-    md5: [
+    MD5: [
       ''
     ].join '\n'
   sauces: [

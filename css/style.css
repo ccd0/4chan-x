@@ -163,7 +163,23 @@ body.fourchan_x {
   padding-bottom: 16px;
 }
 
-/* thread & reply hiding */
+/* Filter */
+.opContainer.filter-highlight {
+  box-shadow: inset 5px 0 rgba(255, 0, 0, .5);
+}
+.opContainer.filter-highlight.qphl {
+  box-shadow: inset 5px 0 rgba(255, 0, 0, .5),
+              0 0 0 2px rgba(216, 94, 49, .7);
+}
+.filter-highlight > .reply {
+  box-shadow: -5px 0 rgba(255, 0, 0, .5);
+}
+.filter-highlight > .reply.qphl {
+  box-shadow: -5px 0 rgba(255, 0, 0, .5),
+              0 0 0 2px rgba(216, 94, 49, .7)
+}
+
+/* Thread & Reply Hiding */
 .hide-thread-button,
 .hide-reply-button {
   float: left;
@@ -226,4 +242,7 @@ body.fourchan_x {
 .submenu {
   position: absolute;
   margin: -1px 0;
+}
+.entry input {
+  margin: 0;
 }

@@ -57,7 +57,7 @@ class Post
       @info.tripcode  = tripcode.textContent
     if uniqueID       = $ '.posteruid',   info
       @nodes.uniqueID = uniqueID
-      @info.uniqueID  = uniqueID.textContent
+      @info.uniqueID  = uniqueID.firstElementChild.textContent
     if capcode        = $ '.capcode',     info
       @nodes.capcode  = capcode
       @info.capcode   = capcode.textContent
@@ -113,21 +113,21 @@ class Post
     if (file = $ '.file', post) and thumb = $ 'img[data-md5]', file
       # Supports JPG/PNG/GIF/PDF.
       # Flash files are not supported.
-      alt    = thumb.alt
-      anchor = thumb.parentNode
+      alt      = thumb.alt
+      anchor   = thumb.parentNode
       fileInfo = file.firstElementChild
-      @file  =
+      @file    =
         info:  fileInfo
         text:  fileInfo.firstElementChild
         thumb: thumb
         URL:   anchor.href
+        size:  alt.match(/[\d.]+\s\w+/)[0]
         MD5:   thumb.dataset.md5
         isSpoiler: $.hasClass anchor, 'imgspoiler'
-      size = +alt.match(/\d+(\.\d+)?/)[0]
-      unit = ['B', 'KB', 'MB', 'GB'].indexOf alt.match(/\w+$/)[0]
-      while unit--
-        size *= 1024
-      @file.size = size
+      size  = +@file.size.match(/[\d.]+/)[0]
+      unit  = ['B', 'KB', 'MB', 'GB'].indexOf @file.size.match(/\w+$/)[0]
+      size *= 1024 while unit-- > 0
+      @file.sizeInBytes = size
       @file.thumbURL =
         if that.isArchived
           thumb.src
@@ -323,6 +323,13 @@ Main =
         # XXX handle error
         $.log err, 'Resurrect Quotes'
 
+    if Conf['Filter']
+      try
+        Filter.init()
+      catch err
+        # XXX handle error
+        $.log err, 'Filter'
+
     if Conf['Thread Hiding']
       try
         ThreadHiding.init()
@@ -377,6 +384,13 @@ Main =
         catch err
           # XXX handle error
           $.log err, 'Delete Link'
+
+      if Conf['Filter']
+        try
+          Filter.menu.init()
+        catch err
+          # XXX handle error
+          $.log err, 'Filter - Menu'
 
       if Conf['Download Link']
         try
