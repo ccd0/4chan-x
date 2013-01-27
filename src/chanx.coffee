@@ -2384,19 +2384,17 @@ Linkify =
 
   regString: ///(
     \b(
-      [a-z]+:// # Leading handler (http://, ftp://). Matches any *://
+      [a-z]+:// # http://, ftp://
       |
-      www\.
+      [-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+ # www.test-9.com
       |
-      magnet:
+      [-a-z0-9]+\.[a-z]+ # this-is-my-web-sight.net
       |
-      mailto:
+      [a-z]+:[a-z0-9] # mailto:, magnet:
       |
-      news:
+      [a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9] # E-mails, also possibly anonymous:password@192.168.2.1
     )
-    [^\s]+ # Any whitespace character / End of URL
-    |
-    \b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b # E-mails.
+    [^\s]+ # Terminate at Whitespace
   )///gi
 
   cypher: $.el 'div'
@@ -2423,7 +2421,7 @@ Linkify =
       data  = node.data
 
       # Test for valid links
-      continue unless Linkify.regString.test data
+      continue unless node.parentElement and Linkify.regString.test data
 
       # Regex.test stores the index of its last match.
       # Because I am matching different nodes, this causes issues,
@@ -2440,7 +2438,7 @@ Linkify =
         cypherText[0]    = cypher.innerHTML
 
         # i herd u leik wbr
-        while (next.nodeName.toLowerCase() is 'wbr' or next.nodeName.toLowerCase() is 's') and lookahead = next.nextSibling
+        while (next.nodeName.toLowerCase() is 'wbr' or next.nodeName.toLowerCase() is 's') and (lookahead = next.nextSibling) and lookahead.nodeName is "#text"
           cypher.innerHTML = lookahead.textContent
 
           cypherText[cypherText.length] = if spoiler = next.textContent then "<s>#{spoiler}</s>" else '<wbr>'
@@ -2449,8 +2447,6 @@ Linkify =
           $.rm next
           next = lookahead.nextSibling
           $.rm lookahead if lookahead.nodeName is "#text"
-
-          i++
 
           unless next
             break

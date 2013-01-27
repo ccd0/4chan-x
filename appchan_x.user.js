@@ -6827,7 +6827,7 @@
     init: function() {
       return Main.callbacks.push(this.node);
     },
-    regString: /(\b([a-z]+:\/\/|www\.|magnet:|mailto:|news:)[^\s]+|\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}\b)/gi,
+    regString: /(\b([a-z]+:\/\/|[-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+|[-a-z0-9]+\.[a-z]+|[a-z]+:[a-z0-9]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s]+)/gi,
     cypher: $.el('div'),
     node: function(post) {
       var a, child, cypher, cypherText, data, embed, i, index, len, link, links, lookahead, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results;
@@ -6850,7 +6850,7 @@
         nodes = [];
         node = snapshot.snapshotItem(i);
         data = node.data;
-        if (!Linkify.regString.test(data)) {
+        if (!(node.parentElement && Linkify.regString.test(data))) {
           continue;
         }
         Linkify.regString.lastIndex = 0;
@@ -6858,7 +6858,7 @@
         if (next = node.nextSibling) {
           cypher.innerHTML = node.textContent;
           cypherText[0] = cypher.innerHTML;
-          while ((next.nodeName.toLowerCase() === 'wbr' || next.nodeName.toLowerCase() === 's') && (lookahead = next.nextSibling)) {
+          while ((next.nodeName.toLowerCase() === 'wbr' || next.nodeName.toLowerCase() === 's') && (lookahead = next.nextSibling) && lookahead.nodeName === "#text") {
             cypher.innerHTML = lookahead.textContent;
             cypherText[cypherText.length] = (spoiler = next.textContent) ? "<s>" + spoiler + "</s>" : '<wbr>';
             cypherText[cypherText.length] = cypher.innerHTML;
@@ -6867,7 +6867,6 @@
             if (lookahead.nodeName === "#text") {
               $.rm(lookahead);
             }
-            i++;
             if (!next) {
               break;
             }
