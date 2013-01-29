@@ -10,7 +10,7 @@ CustomNavigation =
 
     # Gather default navigation and remove it.
     while i--
-      continue if (node = navNodes[i]).id is "navtopright"
+      continue if (node = navNodes[i]).id
       $.rm node
 
     # Add the first delimiter outside the for loop so we don't end up with hundreds.

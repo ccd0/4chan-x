@@ -10184,7 +10184,7 @@
       i = navNodes.length;
       nodes = Conf['Append Delimiters'] ? [$.tn("" + userNavigation.delimiter + " ")] : [];
       while (i--) {
-        if ((node = navNodes[i]).id === "navtopright") {
+        if ((node = navNodes[i]).id) {
           continue;
         }
         $.rm(node);
