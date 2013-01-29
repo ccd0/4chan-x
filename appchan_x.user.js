@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.44 - 2013-01-28
+ * appchan x - Version 1.0.44 - 2013-01-29
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -6827,10 +6827,10 @@
     init: function() {
       return Main.callbacks.push(this.node);
     },
-    regString: /(\b([a-z]+:\/\/|[-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+|[-a-z0-9]+\.[a-z]+|[a-z]+:[a-z0-9]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s]+)/gi,
+    regString: /(\b([a-z]+:\/\/|[-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+|[-a-z0-9]+\.[a-z]{2,4}|[a-z]+:[a-z0-9]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s]+)/gi,
     cypher: $.el('div'),
     node: function(post) {
-      var a, child, cypher, cypherText, data, embed, i, index, len, link, links, lookahead, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results;
+      var a, child, cypher, cypherText, data, embed, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results;
       if (post.isInlined && !post.isCrosspost) {
         if (Conf['Embedding']) {
           _ref = $$('.embed', post.blockquote);
@@ -6858,9 +6858,9 @@
         if (next = node.nextSibling) {
           cypher.innerHTML = node.textContent;
           cypherText[0] = cypher.innerHTML;
-          while ((next.nodeName.toLowerCase() === 'wbr' || next.nodeName.toLowerCase() === 's') && (lookahead = next.nextSibling) && lookahead.nodeName === "#text") {
+          while ((next.nodeName.toLowerCase() === 'wbr' || next.nodeName.toLowerCase() === 's') && (lookahead = next.nextSibling) && ((name = lookahead.nodeName) === "#text" || name.toLowerCase() === 'br')) {
             cypher.innerHTML = lookahead.textContent;
-            cypherText[cypherText.length] = (spoiler = next.textContent) ? "<s>" + spoiler + "</s>" : '<wbr>';
+            cypherText[cypherText.length] = (spoiler = next.innerHTML) ? "<s>" + (spoiler.replace(/</g, ' <')) + "</s>" : '<wbr>';
             cypherText[cypherText.length] = cypher.innerHTML;
             $.rm(next);
             next = lookahead.nextSibling;
@@ -7661,7 +7661,7 @@
     },
     post: function(board, postID) {
       var base;
-      return ((base = ['a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'wsg', 'dev', 'foolz'].contains(board) ? "archive" : ['u', 'kuku'].contains(board) ? "nsfw" : null) ? "//" + base + ".foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID : base);
+      return ((base = ['a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'].contains(board) ? "archive" : ['u', 'kuku'].contains(board) ? "nsfw" : null) ? "//" + base + ".foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID : base);
     },
     archiver: {
       'Foolz': {

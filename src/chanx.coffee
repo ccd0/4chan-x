@@ -2388,7 +2388,7 @@ Linkify =
       |
       [-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+ # www.test-9.com
       |
-      [-a-z0-9]+\.[a-z]+ # this-is-my-web-sight.net
+      [-a-z0-9]+\.[a-z]{2,4} # this-is-my-web-sight.net, but not 9gag.com
       |
       [a-z]+:[a-z0-9] # mailto:, magnet:
       |
@@ -2438,10 +2438,10 @@ Linkify =
         cypherText[0]    = cypher.innerHTML
 
         # i herd u leik wbr
-        while (next.nodeName.toLowerCase() is 'wbr' or next.nodeName.toLowerCase() is 's') and (lookahead = next.nextSibling) and lookahead.nodeName is "#text"
+        while (next.nodeName.toLowerCase() is 'wbr' or next.nodeName.toLowerCase() is 's') and (lookahead = next.nextSibling) and ((name = lookahead.nodeName) is "#text" or name.toLowerCase() is 'br')
           cypher.innerHTML = lookahead.textContent
 
-          cypherText[cypherText.length] = if spoiler = next.textContent then "<s>#{spoiler}</s>" else '<wbr>'
+          cypherText[cypherText.length] = if spoiler = next.innerHTML then "<s>#{spoiler.replace /</g, ' <'}</s>" else '<wbr>'
           cypherText[cypherText.length] = cypher.innerHTML
 
           $.rm next
@@ -3102,7 +3102,7 @@ Redirect =
   post: (board, postID) ->
     return (
       if (base =
-        if ['a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'wsg', 'dev', 'foolz'].contains board
+        if ['a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'].contains board
           "archive"
         else if ['u', 'kuku'].contains board
           "nsfw"
