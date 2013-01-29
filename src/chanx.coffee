@@ -2492,7 +2492,7 @@ Linkify =
       if data
         # Potential text after the last valid link.
         # & Convert <wbr> into elements
-        cypher.innerHTML = text
+        cypher.innerHTML = data
 
         # Convert <wbr> into elements
         for child in cypher.childNodes

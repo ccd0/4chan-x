@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.43 - 2013-01-27
+ * appchan x - Version 1.0.43 - 2013-01-28
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -6899,7 +6899,7 @@
           data = data.slice(index + link.length);
         }
         if (data) {
-          cypher.innerHTML = text;
+          cypher.innerHTML = data;
           _ref2 = cypher.childNodes;
           for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
             child = _ref2[_l];
