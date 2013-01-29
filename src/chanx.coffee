@@ -2234,7 +2234,7 @@ QuotePreview =
   mouseout: (e) ->
     delete UI.el
     $.rm QuotePreview.el.firstChild
-    if el = $.id @hash[1..]
+    if (hash = @hash) and el = $.id hash[1..]
       $.rmClass el.parentNode, 'qphl' # op
       $.rmClass el,            'qphl' # reply
 
@@ -3100,17 +3100,16 @@ Redirect =
         "//archive.nyafuu.org/#{board}/full_image/#{filename}"
 
   post: (board, postID) ->
-    return (
-      if (base =
-        if ['a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'].contains board
-          "archive"
-        else if ['u', 'kuku'].contains board
-          "nsfw"
-        else
-          null)
-        "//#{base}.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-      else
-        base)
+    if typeof Redirect.post[board] is 'undefined'
+      for name, archive of @archiver
+        if archive.type is 'foolfuuka' and archive.boards.contains board
+          Redirect.post[board] = archive.base
+          break
+      Redirect.post[board] or= null
+
+    if Redirect.post[board]
+      return "#{Redirect.post[board]}/_/api/chan/post/?board=#{board}&num=#{postID}"
+    null
 
   archiver:
     'Foolz':
@@ -3123,7 +3122,7 @@ Redirect =
       type:    'foolfuuka'
     'TheDarkCave':
       base:    'http://archive.thedarkcave.org'
-      boards:  ['c', 'po']
+      boards:  ['c', 'int', 'po']
       type:    'foolfuuka'
     'Warosu':
       base:    '//fuuka.warosu.org'
@@ -3153,21 +3152,21 @@ Redirect =
   noarch: 'No archive available.'
 
   select: (board) ->
-    names = for name, type of @archiver
-      continue unless type.boards.contains board or g.BOARD
+    names = for name, archive of @archiver
+      continue unless archive.boards.contains board or g.BOARD
       name
     return (if names.length > 0 then names else [@noarch])
 
   to: (data) ->
 
-    aboard = @archiver[$.get "archiver/#{board = data.board}/", false] or
+    archive = @archiver[$.get "archiver/#{board = data.board}/", false] or
       if $.set("archiver/#{board}/", name = @select(board)[0]) and name isnt @noarch
         @archiver[name]
       else
         {}
 
-    return (if aboard.base
-      @path aboard.base, aboard.type, data
+    return (if archive.base
+      @path archive.base, archive.type, data
     else if not data.isSearch and data.threadID
       "//boards.4chan.org/#{board}/"
     else

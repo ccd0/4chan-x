@@ -6639,10 +6639,10 @@
       }
     },
     mouseout: function(e) {
-      var el;
+      var el, hash;
       delete UI.el;
       $.rm(QuotePreview.el.firstChild);
-      if (el = $.id(this.hash.slice(1))) {
+      if ((hash = this.hash) && (el = $.id(hash.slice(1)))) {
         $.rmClass(el.parentNode, 'qphl');
         $.rmClass(el, 'qphl');
       }
@@ -7660,8 +7660,22 @@
       }
     },
     post: function(board, postID) {
-      var base;
-      return ((base = ['a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'].contains(board) ? "archive" : ['u', 'kuku'].contains(board) ? "nsfw" : null) ? "//" + base + ".foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID : base);
+      var archive, name, _base1, _ref;
+      if (typeof Redirect.post[board] === 'undefined') {
+        _ref = this.archiver;
+        for (name in _ref) {
+          archive = _ref[name];
+          if (archive.type === 'foolfuuka' && archive.boards.contains(board)) {
+            Redirect.post[board] = archive.base;
+            break;
+          }
+        }
+        (_base1 = Redirect.post)[board] || (_base1[board] = null);
+      }
+      if (Redirect.post[board]) {
+        return "" + Redirect.post[board] + "/_/api/chan/post/?board=" + board + "&num=" + postID;
+      }
+      return null;
     },
     archiver: {
       'Foolz': {
@@ -7676,7 +7690,7 @@
       },
       'TheDarkCave': {
         base: 'http://archive.thedarkcave.org',
-        boards: ['c', 'po'],
+        boards: ['c', 'int', 'po'],
         type: 'foolfuuka'
       },
       'Warosu': {
@@ -7712,14 +7726,14 @@
     },
     noarch: 'No archive available.',
     select: function(board) {
-      var name, names, type;
+      var archive, name, names;
       names = (function() {
         var _ref, _results;
         _ref = this.archiver;
         _results = [];
         for (name in _ref) {
-          type = _ref[name];
-          if (!type.boards.contains(board || g.BOARD)) {
+          archive = _ref[name];
+          if (!archive.boards.contains(board || g.BOARD)) {
             continue;
           }
           _results.push(name);
@@ -7729,9 +7743,9 @@
       return (names.length > 0 ? names : [this.noarch]);
     },
     to: function(data) {
-      var aboard, board, name;
-      aboard = this.archiver[$.get("archiver/" + (board = data.board) + "/", false)] || ($.set("archiver/" + board + "/", name = this.select(board)[0]) && name !== this.noarch ? this.archiver[name] : {});
-      return (aboard.base ? this.path(aboard.base, aboard.type, data) : !data.isSearch && data.threadID ? "//boards.4chan.org/" + board + "/" : null);
+      var archive, board, name;
+      archive = this.archiver[$.get("archiver/" + (board = data.board) + "/", false)] || ($.set("archiver/" + board + "/", name = this.select(board)[0]) && name !== this.noarch ? this.archiver[name] : {});
+      return (archive.base ? this.path(archive.base, archive.type, data) : !data.isSearch && data.threadID ? "//boards.4chan.org/" + board + "/" : null);
     },
     path: function(base, archiver, data) {
       var board, isSearch, postID, threadID, type, url, value;
