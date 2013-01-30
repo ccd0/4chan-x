@@ -274,7 +274,7 @@
         'Custom Board Titles': [false, 'Customize Board Titles by shift-clicking the board title or subtitle.'],
         'Board Subtitle': [true, 'Show the board subtitle.'],
         '4chan Banner': ['at sidebar top', 'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'under post form', 'at top', 'hide']],
-        '4chan Banner Reflection': [true, 'Adds reflection effects to 4chan\'s image banner.'],
+        '4chan Banner Reflection': [false, 'Adds reflection effects to 4chan\'s image banner.'],
         'Faded 4chan Banner': [true, 'Make 4chan\'s image banner translucent.'],
         'Icon Orientation': ['horizontal', 'Change the orientation of the appchan x icons.', ['horizontal', 'vertical']],
         'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.'],
