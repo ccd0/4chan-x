@@ -739,7 +739,7 @@ body,
 button,
 input,
 textarea {
-  font-family: '#{_conf["Font"]}';
+  font-family: #{_conf["Font"]};
 }
 #qr .captchaimg {
   opacity: #{_conf["Captcha Opacity"]};
