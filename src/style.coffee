@@ -2237,7 +2237,7 @@ td[style="border: 1px dashed;"] {
 }
 #qr > .move,
 #qr textarea {
-  min-width: 300px;
+  min-width: 302px;
 }
 #qr .captchaimg {
   max-width: 100%;
