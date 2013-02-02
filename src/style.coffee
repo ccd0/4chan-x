@@ -1550,9 +1550,9 @@ hr {
     ) + (
       unless _conf["Post Form Style"] is "float"
         """
-#qr img {
+.captcha img {
   height: 3.9em;
-  width: #{width}px;
+  width: #{width - 2}px;
 }
 textarea.field {
   width: #{width}px;

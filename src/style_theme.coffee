@@ -70,6 +70,9 @@ html {
   border-color: #{theme["Reply Border"]};
   border-style: solid;
 }
+.captcha img {
+  #{Style.filter theme["Text"], theme["Reply Background"]}
+}
 #boardTitle,
 #prefetch,
 #showQR,
@@ -192,7 +195,7 @@ a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
   background: #{theme["Input Background"]};
   border: 1px solid #{theme["Input Border"]};
 }
-.captcha img {
+.captchaimg {
   border: 1px solid #{theme["Input Border"]};
 }
 .disabledwarning,

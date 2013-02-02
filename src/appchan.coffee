@@ -112,6 +112,30 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
       $.after select, div
     return
 
+  filter: (text, background) ->
+
+    css = (fg, bg) -> "
+filter: url(\"
+data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='
+#{bg.r} #{-fg.r} 0 0 #{fg.r}
+ #{bg.g} #{-fg.g} 0 0 #{fg.g}
+ #{bg.b} #{-fg.b} 0 0 #{fg.b}
+ 0 0 0 1 0' /></filter></svg>#filters
+\");
+"
+
+    fgHex = Style.colorToHex text
+    bgHex = Style.colorToHex background
+    css {
+      r: Number(parseInt(fgHex.substr(0, 2), 16) / 255).toFixed 1
+      g: Number(parseInt(fgHex.substr(2, 2), 16) / 255).toFixed 1
+      b: Number(parseInt(fgHex.substr(4, 2), 16) / 255).toFixed 1
+    }, {
+      r: Number(parseInt(bgHex.substr(0, 2), 16) / 255).toFixed 1
+      g: Number(parseInt(bgHex.substr(2, 2), 16) / 255).toFixed 1
+      b: Number(parseInt(bgHex.substr(4, 2), 16) / 255).toFixed 1
+    }
+
   addStyle: (theme) ->
     _conf = Conf
     unless theme

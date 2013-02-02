@@ -122,7 +122,7 @@ JSColor =
             $.minmax hsv[1], 0.0, 1.0
 
       @hsv[2] =
-        if hsv[2] is null
+        unless hsv[2]?
           null
         else
           $.minmax hsv[2], 0.0, 1.0
