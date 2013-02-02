@@ -6863,8 +6863,8 @@
           cypherText[0] = cypher.innerHTML;
           while ((next.nodeName.toLowerCase() === 'wbr' || next.nodeName.toLowerCase() === 's') && (lookahead = next.nextSibling) && ((name = lookahead.nodeName) === "#text" || name.toLowerCase() === 'br')) {
             cypher.innerHTML = lookahead.textContent;
-            cypherText[cypherText.length] = (spoiler = next.innerHTML) ? "<s>" + (spoiler.replace(/</g, ' <')) + "</s>" : '<wbr>';
-            cypherText[cypherText.length] = cypher.innerHTML;
+            cypherText.push((spoiler = next.innerHTML) ? "<s>" + (spoiler.replace(/</g, ' <')) + "</s>" : '<wbr>');
+            cypherText.push(cypher.innerHTML);
             $.rm(next);
             next = lookahead.nextSibling;
             if (lookahead.nodeName === "#text") {
