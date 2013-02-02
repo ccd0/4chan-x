@@ -1,5 +1,25 @@
 master
 
+1.0.45
+Applebloom
+- SVG Filter that allows the Captcha to match theme colors
+Zixaphir
+- Removed Captcha Opacity in favor of Applebloom's SVG Filter
+- Add Inline Quote Resurrection to /c/, /int/, and /po/
+- Fixed Catalog Link toggle not appearing with Custom Navigation
+- Added an option to show the post form header
+- Fixed an issue with the catalog icon being incorrectly positioned with On Side Pagination
+- The catalog icon now shows in opened threads, instead of just on the board index
+- Moved the Post Form Slideout Transitioned option into the Post Form section
+- Fixed a bug that caused the theme editor to update the color widget
+- Mascots now receive a small amount of bottom padding with 4chan SS navigation
+  ( Not perfect, there are places where there are misses )
+
+1.0.44
+Zixaphir
+- Linkifier now makes a lot of assumptions about what is and isn't a link
+  * this means there will be a of false positives, but almost no misses.
+
 1.0.43
 Zixaphir
 - Fix quote preview performance issues.
