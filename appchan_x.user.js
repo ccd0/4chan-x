@@ -341,6 +341,7 @@
         'Show Post Form Header': [false, 'Force the Post Form to have a header.'],
         'Post Form Style': ['tabbed slideout', 'How the post form will sit on the page.', ['fixed', 'slideout', 'tabbed slideout', 'transparent fade', 'float']],
         'Post Form Slideout Transitions': [true, 'Animate slideouts for the post form.'],
+        'Post Form Decorations': [false, 'Add a border and background to the post form (does not apply to the "float" post form style.'],
         'Textarea Resize': ['vertical', 'Options to resize the post form\'s comment box.', ['both', 'horizontal', 'vertical', 'none', 'auto-expand']],
         'Tripcode Hider': [true, 'Intelligent name field hiding.']
       }

@@ -875,6 +875,10 @@ div.post.highlight {
         true
         'Animate slideouts for the post form.'
       ]
+      'Post Form Decorations': [
+        false
+        'Add a border and background to the post form (does not apply to the "float" post form style.'
+      ]
       'Textarea Resize': [
         'vertical'
         'Options to resize the post form\'s comment box.'
