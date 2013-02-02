@@ -8,7 +8,7 @@ MascotTools =
       return if el then el.src = "" else null
 
     position = "#{if Conf['Mascot Position'] is 'bottom' or !(Conf['Mascot Position'] is "default" and Conf['Post Form Style'] is "fixed")
-      0
+      0 + (if (!g.REPLY or Conf['Boards Navigation'] is 'sticky bottom') and Conf['4chan SS Navigation'] then 2 else 0)
     else
       20.2 + (if !g.REPLY or !!$ '#postForm input[name=spoiler]' then 1.4 else 0)
     }em"

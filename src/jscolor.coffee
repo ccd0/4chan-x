@@ -94,35 +94,35 @@ JSColor =
 
     @fromRGB = (r, g, b, flags) -> # null = don't change
       r = 
-        if r 
+        if r?
           $.minmax r, 0.0, 1.0
         else
           @rgb[0]
       g =
-        if g
+        if g?
           $.minmax g, 0.0, 1.0
         else
           @rgb[1]
       b = 
-        if b
+        if b?
           $.minmax b, 0.0, 1.0
         else
           @rgb[2]
 
       hsv = RGB_HSV(r, g, b)
 
-      if hsv[0]
+      if hsv[0]?
         @hsv[0] = $.minmax hsv[0], 0.0, 6.0
 
-      if hsv[2]
+      if hsv[2] isnt 0
         @hsv[1] =
-          unless hsv[1]
+          unless hsv[1]?
             null
           else
             $.minmax hsv[1], 0.0, 1.0
 
       @hsv[2] =
-        unless hsv[2]
+        if hsv[2] is null
           null
         else
           $.minmax hsv[2], 0.0, 1.0
@@ -182,7 +182,7 @@ JSColor =
 
     HSV_RGB = (h, s, v) ->
 
-      return [ v, v, v ] if h is null
+      return [ v, v, v ] unless h?
 
       i = Math.floor(h)
       f = 

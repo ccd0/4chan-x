@@ -125,7 +125,7 @@ ThemeTools =
 
           $.on input, 'click', (evt) ->
             if evt.shiftKey
-              @.nextSibling.click()
+              @nextSibling.click()
 
           $.on fileInput, 'change', (evt) ->
             ThemeTools.uploadImage evt, @
@@ -149,7 +149,7 @@ ThemeTools =
       $.on input, 'blur', ->
         depth = 0
 
-        unless @.value.length > 1000
+        unless @value.length > 1000
           for i in [0..@value.length - 1]
             switch @value[i]
               when '(' then depth++
@@ -159,7 +159,7 @@ ThemeTools =
 
         if depth != 0 or toggle1 or toggle2
           return alert "Syntax error on #{@name}."
-          
+
         if @className == "colorfield"
           @nextSibling.value = "##{Style.colorToHex @value}"
           @nextSibling.color.importColor()

@@ -785,6 +785,7 @@ h2 a {
 #styleSwitcher,
 #threadselect:empty,
 #updater > div,
+.boardBanner div,
 #{unless _conf["Board Subtitle"] then ".boardSubtitle," else ""}
 .deleteform,
 .fappeTyme .noFile,
@@ -1553,8 +1554,7 @@ hr {
   height: 3.9em;
   width: #{width}px;
 }
-textarea.field,
-#qr > form > div {
+textarea.field {
   width: #{width}px;
 }
 #qr {
