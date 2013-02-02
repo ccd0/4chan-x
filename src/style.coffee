@@ -741,10 +741,6 @@ input,
 textarea {
   font-family: #{_conf["Font"]};
 }
-#qr .captchaimg {
-  opacity: #{_conf["Captcha Opacity"]};
-  background-color: #fff;
-}
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::after,
 #boardNavDesktopFoot a[href*="//boards.4chan.org/"]::before,
 #boardNavDesktopFoot a,

@@ -70,7 +70,7 @@ html {
   border-color: #{theme["Reply Border"]};
   border-style: solid;
 }
-.captcha img {
+.captchaimg img {
   #{Style.filter theme["Text"], theme["Input Background"]}
 }
 #boardTitle,
@@ -124,6 +124,7 @@ span[style="left: 5px; position: absolute;"] a {
 #dump,
 #file,
 #options input,
+.captchaimg,
 .dump #dump:not(:hover):not(:focus),
 .selectrice,
 button,
@@ -193,9 +194,6 @@ a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
 }
 #qr .warning {
   background: #{theme["Input Background"]};
-  border: 1px solid #{theme["Input Border"]};
-}
-.captchaimg {
   border: 1px solid #{theme["Input Border"]};
 }
 .disabledwarning,
