@@ -1,5 +1,9 @@
 master
 
+1.0.46
+Zixaphir
+- Fix catalog and back button being incorrectly aligned in the vertical orientation
+
 1.0.45
 Applebloom
 - SVG Filter that allows the Captcha to match theme colors
