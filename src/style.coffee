@@ -995,15 +995,15 @@ img {
   width: #{width = 248 + Style.sidebarOffset.W}px !important;
   overflow: hidden;
 }
-.topad,
-.middlead,
-.bottomad {
+img.topad,
+img.middlead,
+img.bottomad {
   opacity: 0.3;
   #{Style.agent}transition: opacity .3s linear;
 }
-.topad:hover,
-.middlead:hover,
-.bottomad:hover {
+img.topad:hover,
+img.middlead:hover,
+img.bottomad:hover {
   opacity: 1;
 }
 /* moots announcements */

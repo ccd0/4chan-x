@@ -2388,13 +2388,13 @@ Linkify =
       |
       [-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+ # www.test-9.com
       |
-      [-a-z0-9]+\.[a-z]{2,4} # this-is-my-web-sight.net, but not 9gag.com
+      [-a-z0-9]+\.[a-z]{3} # this-is-my-web-sight.net.
       |
       [a-z]+:[a-z0-9] # mailto:, magnet:
       |
       [a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9] # E-mails, also possibly anonymous:password@192.168.2.1
     )
-    [^\s]+ # Terminate at Whitespace
+    [^\s,]+ # Terminate at Whitespace
   )///gi
 
   cypher: $.el 'div'
@@ -3100,7 +3100,7 @@ Redirect =
         "//archive.nyafuu.org/#{board}/full_image/#{filename}"
 
   post: (board, postID) ->
-    if typeof Redirect.post[board] is 'undefined'
+    if Redirect.post[board] is undefined
       for name, archive of @archiver
         if archive.type is 'foolfuuka' and archive.boards.contains board
           Redirect.post[board] = archive.base
@@ -3149,25 +3149,15 @@ Redirect =
       boards: ['c', 'w']
       type: 'fuuka'
 
-  noarch: 'No archive available.'
-
   select: (board) ->
-    names = for name, archive of @archiver
-      continue unless archive.boards.contains board or g.BOARD
-      name
-    return (if names.length > 0 then names else [@noarch])
+    return (name for name, archive of @archiver when archive.boards.contains board or g.BOARD)
 
   to: (data) ->
+    {board, threadID, isSearch} = data
 
-    archive = @archiver[$.get "archiver/#{board = data.board}/", false] or
-      if $.set("archiver/#{board}/", name = @select(board)[0]) and name isnt @noarch
-        @archiver[name]
-      else
-        {}
-
-    return (if archive.base
+    return (if archive = @archiver[$.get "archiver/#{board}/", @select(board)[0]]
       @path archive.base, archive.type, data
-    else if not data.isSearch and data.threadID
+    else if threadID and not isSearch
       "//boards.4chan.org/#{board}/"
     else
       null)

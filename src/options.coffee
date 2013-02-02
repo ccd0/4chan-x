@@ -253,9 +253,10 @@ Options =
     # Archiver
     archiver = $ 'select[name=archiver]', dialog
     toSelect = Redirect.select g.BOARD
-    for name in toSelect
-      $.add archiver, $.el 'option'
-        textContent: name
+    toSelect = ['No Archive Available'] unless toSelect[0]
+
+    $.add archiver, $.el('option', {textContent: name}) for name in toSelect
+
     if toSelect[1]
       archiver.value = $.get value = "archiver/#{g.BOARD}/", toSelect[0]
       $.on archiver, 'change', ->
