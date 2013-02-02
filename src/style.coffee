@@ -677,7 +677,7 @@ article li {
   border-color: transparent;
 }
 #updater input[type=number] {
-  width: 4em;
+  width: 3.9em;
 }
 #watcher {
   padding-bottom: 5px;
@@ -1551,7 +1551,7 @@ hr {
       unless _conf["Post Form Style"] is "float"
         """
 .captcha img {
-  height: 3.9em;
+  height: 4em;
   width: #{width - 2}px;
 }
 textarea.field {

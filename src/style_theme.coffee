@@ -71,7 +71,7 @@ html {
   border-style: solid;
 }
 .captcha img {
-  #{Style.filter theme["Text"], theme["Reply Background"]}
+  #{Style.filter theme["Text"], theme["Input Background"]}
 }
 #boardTitle,
 #prefetch,

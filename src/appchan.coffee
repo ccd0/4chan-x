@@ -127,13 +127,13 @@ data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' 
     fgHex = Style.colorToHex text
     bgHex = Style.colorToHex background
     css {
-      r: Number(parseInt(fgHex.substr(0, 2), 16) / 255).toFixed 1
-      g: Number(parseInt(fgHex.substr(2, 2), 16) / 255).toFixed 1
-      b: Number(parseInt(fgHex.substr(4, 2), 16) / 255).toFixed 1
+      r: parseInt(fgHex.substr(0, 2), 16) / 255
+      g: parseInt(fgHex.substr(2, 2), 16) / 255
+      b: parseInt(fgHex.substr(4, 2), 16) / 255
     }, {
-      r: Number(parseInt(bgHex.substr(0, 2), 16) / 255).toFixed 1
-      g: Number(parseInt(bgHex.substr(2, 2), 16) / 255).toFixed 1
-      b: Number(parseInt(bgHex.substr(4, 2), 16) / 255).toFixed 1
+      r: parseInt(bgHex.substr(0, 2), 16) / 255
+      g: parseInt(bgHex.substr(2, 2), 16) / 255
+      b: parseInt(bgHex.substr(4, 2), 16) / 255
     }
 
   addStyle: (theme) ->
