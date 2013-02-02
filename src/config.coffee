@@ -771,10 +771,6 @@ div.post.highlight {
         false
         'Animate slideouts.'
       ]
-      'Post Form Slideout Transitions' : [
-        true
-        'Animate slideouts for the post form.'
-      ]
       'Underline Links': [
         false
         'Put lines under hyperlinks.'
@@ -866,14 +862,18 @@ div.post.highlight {
         false
         'Hides the "Show Post Form" button when Persistent QR is disabled.'
       ]
+      'Show Post Form Header': [
+        false
+        'Force the Post Form to have a header.'
+      ]
       'Post Form Style': [
         'tabbed slideout'
         'How the post form will sit on the page.'
         ['fixed', 'slideout', 'tabbed slideout', 'transparent fade', 'float']
       ]
-      'Post Form Decorations': [
-        false
-        'Add a border and background to the post form (does not apply to the "float" post form style.'
+      'Post Form Slideout Transitions' : [
+        true
+        'Animate slideouts for the post form.'
       ]
       'Textarea Resize': [
         'vertical'

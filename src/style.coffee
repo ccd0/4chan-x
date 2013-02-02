@@ -603,7 +603,7 @@ article li {
   position: absolute;
   top: 0;
   right: 0;
-  bottom: 1.5em;
+  bottom: 1.7em;
   left: 0;
 }
 .mAlign {
@@ -615,7 +615,7 @@ article li {
   bottom: 0;
 }
 #themecontent {
-  top: 1.5em;
+  top: 1.7em;
 }
 #mascotcontent {
   text-align: center;
@@ -782,7 +782,6 @@ h2 a {
 #qp .rice
 #qp input,
 #settingsMenu,
-#{if _conf["Hide Show Post Form"] then "#showQR," else ""}
 #styleSwitcher,
 #threadselect:empty,
 #updater > div,
@@ -816,7 +815,9 @@ body > hr,
 body > script + hr + div {
   display: none;
 }
+#{if _conf["Hide Show Post Form"] then "#showQR," else ""}
 .hidden_thread ~ div,
+.hidden_thread ~ a,
 .hide_reply_button.stub ~ .reply,
 .stub ~ div,
 [hidden] {
@@ -906,7 +907,7 @@ span.postNum > .replylink {
 }
 .exlinksOptionsLink::after,
 #settingsWindowLink,
-.cataloglink a::after {
+#catalog::after {
   z-index: 101;
 }
 #imgControls {
@@ -1042,7 +1043,7 @@ a,
 input:not([type=radio]),
 .field,
 input[type="submit"] {
-  height: 1.5em;
+  height: 1.7em;
 }
 #qr .warning {
   min-height: 1.7em;
@@ -1052,7 +1053,7 @@ input[type="submit"] {
 .selectrice,
 button,
 input {
-  vertical-align: bottom;
+  vertical-align: middle;
   padding: 0 1px;
 }
 input[type="submit"] {
@@ -1113,11 +1114,13 @@ blockquote {
 .post {
   margin: 0;
 }
+#catalog,
+#navtopright,
 .cataloglink,
-#navtopright {
+a[style="cursor: pointer; float: right;"] {
   position: fixed;
-  bottom: -1000px;
-  left: -1000px;
+  top: 100%;
+  left: 100%;
 }
 /* Expand Images */
 #imgControls {
@@ -1209,11 +1212,6 @@ blockquote {
   cursor: default;
 }
 /* 4sight */
-a[style="cursor: pointer; float: right;"] {
-  position: fixed;
-  top: -1000px;
-  left: -1000px;
-}
 a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] {
   display: block;
   position: fixed !important;
@@ -1335,7 +1333,6 @@ input[type="submit"]:hover {
 #dump,
 #file,
 #options input,
-#dump,
 .selectrice,
 button,
 input,
@@ -1393,7 +1390,7 @@ textarea {
 .selectrice::before {
   display: block;
   content: "";
-  height: 1.5em;
+  height: 1.7em;
   position: absolute;
   right: 1.3em;
   top: 0;
@@ -2136,8 +2133,16 @@ td[style="border: 1px dashed;"] {
     ) + (
       {
         "fixed": """
+#{unless _conf['Show Post Form Header'] then '
 #qrtab {
   display: none;
+}' else '
+#qrtab input,
+#qrtab .rice {
+  display: none;
+}'}
+#qrtab {
+  margin-bottom: 1px;
 }
 #qr {
   #{Style.sidebarLocation[0]}: 0 !important;
@@ -2145,8 +2150,16 @@ td[style="border: 1px dashed;"] {
 }\n
 """
         "slideout": """
+#{unless _conf['Show Post Form Header'] then '
 #qrtab {
   display: none;
+}' else '
+#qrtab input,
+#qrtab .rice {
+  display: none;
+}'}
+#qrtab {
+  margin-bottom: 1px;
 }
 #qr {
   #{Style.sidebarLocation[0]}: -#{233 + Style.sidebarOffset.W}px !important;
@@ -2198,8 +2211,16 @@ td[style="border: 1px dashed;"] {
 }\n
 """
         "transparent fade": """
+#{unless _conf['Show Post Form Header'] then '
 #qrtab {
   display: none;
+}' else '
+#qrtab input,
+#qrtab .rice {
+  display: none;
+}'}
+#qrtab {
+  margin-bottom: 1px;
 }
 #qr {
   #{Style.sidebarLocation[0]}: 2px !important;

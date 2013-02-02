@@ -368,7 +368,7 @@ a .name {
 #boardNavDesktopFoot::after,
 a[style="cursor: pointer; float: right;"]::after,
 #imgControls label:first-of-type::after,
-.cataloglink a::after,
+#catalog::after,
 #fappeTyme {
   background-image: url('#{icons}');
 }

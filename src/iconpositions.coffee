@@ -8,13 +8,13 @@ div.navLinks > a:first-of-type::after,
 #boardNavDesktopFoot::after,
 body > a[style="cursor: pointer; float: right;"]::after,
 #imgControls label:first-of-type::after,
-.cataloglink a::after,
+#catalog::after,
 #fappeTyme {
   position: fixed;
   display: block;
   width: 15px;
   height: 15px;
-  content: " ";
+  content: "";
   overflow: hidden;
   opacity: 0.5;
 }
@@ -51,7 +51,8 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #navtopright .exlinksOptionsLink::after {
   background-position: 0 -105px;
 }
-.cataloglink a::after {
+#catalog::after {
+  visibility: visible;
   background-position: 0 -120px;
 }
 #fappeTyme {
@@ -68,7 +69,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 .thumbnail#selected,
 body > a[style="cursor: pointer; float: right;"]:hover::after,
 div.navLinks > a:first-of-type:hover::after,
-.cataloglink a:hover::after,
+#catalog:hover::after,
 #fappeTyme:hover {
   opacity: 1;
 }
@@ -116,6 +117,7 @@ div.navLinks > a:first-of-type:hover::after,
           notCatalog and $ 'body > a[style="cursor: pointer; float: right;"]', d.body
           notEither and _conf['Image Expansion']
           notEither
+          g.REPLY
           notEither and _conf['Fappe Tyme']
           navlinks = ((!g.REPLY and _conf['Index Navigation']) or (g.REPLY and _conf['Reply Navigation'])) and notCatalog
           navlinks
@@ -164,8 +166,11 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #imgControls {
   #{align}: #{position[i++]}px;
 }
-/* Back / 4chan Catalog */
-.cataloglink a::after,
+/* 4chan Catalog */
+#catalog::after {
+  #{align}: #{position[i++]}px;
+}
+/* Back */
 div.navLinks > a:first-of-type::after {
   #{align}: #{position[i++]}px;
 }
@@ -198,7 +203,7 @@ div.navLinks > a:first-of-type::after {
 #imgControls,
 #fappeTyme,
 div.navLinks > a:first-of-type::after,
-.cataloglink a::after,
+#catalog::after,
 body > a[style="cursor: pointer; float: right;"]::after {
   top: 2px !important;
 }
@@ -244,6 +249,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
           notCatalog and $ 'body > a[style="cursor: pointer; float: right;"]', d.body
           $ '#navtopright .exlinksOptionsLink', d.body
           notEither
+          g.REPLY
           notEither and _conf['Fappe Tyme']
           navlinks = ((!g.REPLY and _conf['Index Navigation']) or (g.REPLY and _conf['Reply Navigation'])) and notCatalog
           navlinks
@@ -289,10 +295,13 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #navtopright .exlinksOptionsLink::after {
   top: #{position[i++]}px;
 }
-/* Back / 4chan Catalog */
-.cataloglink a::after,
+/* 4chan Catalog */
+#catalog::after {
+  #{align}: #{position[i++]}px;
+}
+/* Back */
 div.navLinks > a:first-of-type::after {
-  top: #{position[i++]}px;
+  #{align}: #{position[i++]}px;
 }
 /* Fappe Tyme */
 #fappeTyme {
@@ -320,7 +329,7 @@ div.navLinks > a:first-of-type::after {
 #fappeTyme,
 #{if _conf["Slideout Watcher"] then "#watcher::after," else ""}
 body > a[style="cursor: pointer; float: right;"]::after,
-.cataloglink a::after,
+#catalog::after,
 div.navLinks > a:first-of-type::after {
   #{align}: 3px !important;
 }

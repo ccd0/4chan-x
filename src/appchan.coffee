@@ -13,6 +13,12 @@ Style =
       Style.padding()
       $.on (window or unsafeWindow), "resize", Style.padding
 
+      if catalogLink = ($('.pages.cataloglink a', d.body) or $ '[href=".././catalog"]', d.body)
+        if !g.REPLY
+          $.add d.body, catalogLink
+        catalogLink.id = 'catalog'
+        
+
       # Give ExLinks and 4sight a little time to append their dialog links
       setTimeout (->
         Style.iconPositions()

@@ -634,7 +634,7 @@ QR =
     i = 0
     size = QR.fileEl.max
     size /= 1024 while i++ < 2
-    QR.riceFile.innerHTML = QR.defaultMessage = "<span class='placeholder'>Max: #{size}MB, Shift+Click to Clear</span>"
+    QR.riceFile.innerHTML = QR.defaultMessage = "<span class='placeholder'>Browse...</span>"
     QR.riceFile.title     = "Max: #{size}MB, Shift+Click to Clear."
     $.on QR.riceFile,             'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else QR.fileEl.click()
     $.on QR.fileEl,               'change',    
