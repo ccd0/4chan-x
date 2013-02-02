@@ -7,12 +7,11 @@ MascotTools =
     if !Conf['Mascots'] or (g.CATALOG and Conf['Hide Mascots on Catalog'])
       return if el then el.src = "" else null
 
-    if Conf['Mascot Position'] is 'bottom' or !(Conf['Mascot Position'] is "default" and Conf['Post Form Style'] is "fixed")
-      position = 0
+    position = "#{if Conf['Mascot Position'] is 'bottom' or !(Conf['Mascot Position'] is "default" and Conf['Post Form Style'] is "fixed")
+      0
     else
-      position = if !g.REPLY or !!$ '#postForm input[name=spoiler]'
-        "21.1em"
-      else "19.7em"
+      20.2 + (if !g.REPLY or !!$ '#postForm input[name=spoiler]' then 1.4 else 0)
+    }em"
 
     # If we're editting anything, let's not change mascots any time we change a value.
     if Conf['editMode']

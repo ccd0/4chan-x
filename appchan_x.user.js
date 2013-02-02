@@ -9884,11 +9884,7 @@
           return null;
         }
       }
-      if (Conf['Mascot Position'] === 'bottom' || !(Conf['Mascot Position'] === "default" && Conf['Post Form Style'] === "fixed")) {
-        position = 0;
-      } else {
-        position = !g.REPLY || !!$('#postForm input[name=spoiler]') ? "21.1em" : "19.7em";
-      }
+      position = "" + (Conf['Mascot Position'] === 'bottom' || !(Conf['Mascot Position'] === "default" && Conf['Post Form Style'] === "fixed") ? 0 : 20.2 + (!g.REPLY || !!$('#postForm input[name=spoiler]') ? 1.4 : 0)) + "em";
       if (Conf['editMode']) {
         if (!(mascot = editMascot || (mascot = Mascots[Conf["mascot"]]))) {
           return;
