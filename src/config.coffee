@@ -615,7 +615,7 @@ div.post.highlight {
         ['at sidebar top', 'at sidebar bottom', 'under post form', 'at top', 'hide']
       ]
       '4chan Banner Reflection': [
-        true
+        false
         'Adds reflection effects to 4chan\'s image banner.'
       ]
       'Faded 4chan Banner': [
