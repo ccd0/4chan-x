@@ -12,6 +12,7 @@ Zixaphir
 - The catalog icon now shows in opened threads, instead of just on the board index
 - Moved the Post Form Slideout Transitioned option into the Post Form section
 - Fixed a bug that caused the theme editor to update the color widget
+- Defaults have been changed to look more vanilla
 - Mascots now receive a small amount of bottom padding with 4chan SS navigation
   ( Not perfect, there are places where there are misses )
 

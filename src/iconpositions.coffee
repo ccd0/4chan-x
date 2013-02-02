@@ -297,11 +297,11 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 /* 4chan Catalog */
 #catalog::after {
-  #{align}: #{position[i++]}px;
+  top: #{position[i++]}px;
 }
 /* Back */
 div.navLinks > a:first-of-type::after {
-  #{align}: #{position[i++]}px;
+  top: #{position[i++]}px;
 }
 /* Fappe Tyme */
 #fappeTyme {
