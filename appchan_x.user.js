@@ -6830,7 +6830,7 @@
     init: function() {
       return Main.callbacks.push(this.node);
     },
-    regString: /(\b([a-z]+:\/\/|[-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+|[-a-z0-9]+\.[a-z]{3}|[a-z]+:[a-z0-9]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s,]+)/gi,
+    regString: /(\b([a-z]+:\/\/|[-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+|[-a-z0-9]+\.(com|net|tv|org|xxx|us)|[a-z]+:[a-z0-9]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s,]+)/gi,
     cypher: $.el('div'),
     node: function(post) {
       var a, child, cypher, cypherText, data, embed, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results;
@@ -10728,7 +10728,7 @@
 #qrtab .rice {\
   display: none;\
 }') + "\n#qrtab {\n  margin-bottom: 1px;\n}\n#qr {\n  " + Style.sidebarLocation[0] + ": 2px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  opacity: 0.2;\n  " + Style.agent + "transition: opacity .3s ease-in-out 1s;\n}\n#qr:hover,\n#qr.focus,\n#qr.dump {\n  opacity: 1;\n  " + Style.agent + "transition: opacity .3s linear;\n}\n",
-        "float": "#qr {\n  z-index: 103;\n}\n#qr > .move,\n#qr textarea {\n  min-width: 300px;\n}\n#qr .captchaimg {\n  max-width: 100%;\n  overflow: hidden;\n}\n.autohide:not(:hover) > form {\n  display: none !important;\n}\ntextarea.field,\n#qr input[title=\"Verification\"] {\n  width: 100%;\n}\n#dump {\n  width: 10%;\n}\n#qr .userInfo .field:not(#dump) {\n  width: 30%;\n}\n#buttons input {\n  width: 25%;\n}\n#file {\n  width: 75%;\n}\n#qr.captcha textarea.field {\n  min-height: 120px;\n}\n#qr textarea.field {\n  min-height: 160px;\n  resize: resize;\n  " + Style.agent + "transition:\n    color 0.25s linear,\n    background-color 0.25s linear,\n    background-image 0.25s linear,\n    border-color 0.25s linear,\n    height step-end,\n    width step-end;\n  margin: 0;\n}\n"
+        "float": "#qr {\n  z-index: 103;\n}\n#qr > .move,\n#qr textarea {\n  min-width: 302px;\n}\n#qr .captchaimg {\n  max-width: 100%;\n  overflow: hidden;\n}\n.autohide:not(:hover) > form {\n  display: none !important;\n}\ntextarea.field,\n#qr input[title=\"Verification\"] {\n  width: 100%;\n}\n#dump {\n  width: 10%;\n}\n#qr .userInfo .field:not(#dump) {\n  width: 30%;\n}\n#buttons input {\n  width: 25%;\n}\n#file {\n  width: 75%;\n}\n#qr.captcha textarea.field {\n  min-height: 120px;\n}\n#qr textarea.field {\n  min-height: 160px;\n  resize: resize;\n  " + Style.agent + "transition:\n    color 0.25s linear,\n    background-color 0.25s linear,\n    background-image 0.25s linear,\n    border-color 0.25s linear,\n    height step-end,\n    width step-end;\n  margin: 0;\n}\n"
       }[_conf["Post Form Style"]] + {
         "at sidebar top": ".boardBanner {\n  position: fixed;\n  top: 18px;\n  " + Style.sidebarLocation[0] + ": 2px;\n}\n.boardBanner img {\n  width: " + width + "px;\n}\n",
         "at sidebar bottom": ".boardBanner {\n  position: fixed;\n  bottom: 270px;\n  " + Style.sidebarLocation[0] + ": 2px;\n}\n.boardBanner img {\n  width: " + width + "px;\n}\n",

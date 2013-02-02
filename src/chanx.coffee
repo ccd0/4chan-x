@@ -2388,7 +2388,7 @@ Linkify =
       |
       [-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+ # www.test-9.com
       |
-      [-a-z0-9]+\.[a-z]{3} # this-is-my-web-sight.net.
+      [-a-z0-9]+\.(com|net|tv|org|xxx|us) # this-is-my-web-sight.net.
       |
       [a-z]+:[a-z0-9] # mailto:, magnet:
       |
