@@ -175,6 +175,7 @@ Options =
         <option value=ferongr>ferongr</option>
         <option value=xat->xat-</option>
         <option value=Mayhem>Mayhem</option>
+        <option value=4chanJS>4chanJS</option>
         <option value=Original>Original</option>
       </select>
     </ul>

@@ -756,7 +756,7 @@ div.post.highlight {
       ]
       'Icons': [
         'oneechan'
-        'Icon theme which Appchan will use. Invisible really is "invisible", so don\'t use it if you don't have your icons memorized or don\'t use keybinds.'
+        'Icon theme which Appchan will use. Invisible really is "invisible", so don\'t use it if you don\'t have your icons memorized or don\'t use keybinds.'
         ['oneechan', '4chan SS', 'Invisible']
       ]
       'Quote Shadows': [

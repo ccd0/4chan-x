@@ -310,7 +310,7 @@
         'Emoji Spacing': ['5', 'Add some spacing between emoji and text.', 'text'],
         'Font': ['sans-serif', 'The font used by all elements of 4chan.', 'text'],
         'Font Size': ['12', 'The font size of posts and various UI. This changes most, but not all, font sizes.', 'text'],
-        'Icons': ['oneechan', 'Icon theme which Appchan will use.', ['oneechan', '4chan SS']],
+        'Icons': ['oneechan', 'Icon theme which Appchan will use. Invisible really is "invisible", so don\'t use it if you don\'t have your icons memorized or don\'t use keybinds.', ['oneechan', '4chan SS', 'Invisible']],
         'Quote Shadows': [true, 'Add shadows to the quote previews and inline quotes.'],
         'Rounded Edges': [false, 'Round the edges of various 4chan elements.'],
         'Slideout Transitions': [false, 'Animate slideouts.'],
@@ -3057,6 +3057,7 @@
         <option value=ferongr>ferongr</option>\
         <option value=xat->xat-</option>\
         <option value=Mayhem>Mayhem</option>\
+        <option value=4chanJS>4chanJS</option>\
         <option value=Original>Original</option>\
       </select>\
     </ul>\
@@ -7623,12 +7624,17 @@
           this.unreadNSFW += 'BAAAAAQBAMAAADt3eJSAAAAHlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///9mzDPTSEsdAAAACHRSTlMaDCUeLg4zKeknoAsAAACHSURBVHheJcqxCsIwEMbxLw2CY27oLiSCYwioeyjS0Sp9Ah26d+koUtrkDXJv6xXhhj+/70B9R1T3BBN8V2urUKXV6ykdsOcSXeYPLpnXictLZAuRKqXokvzc3duGW9zBXBsbmlHBuG2KEi3PcgrPzMvA5YzHP44ieW6LiDkNNixfBYIHNOgHHmcn+8KfmKQAAAAASUVORK5CYII=';
           this.unreadSFW += 'BAAAAAQBAMAAADt3eJSAAAAG1BMVEUAAAAAAAABAwMAAAAAAAAAAAAAAAAumMP///+/4sWwAAAAB3RSTlMVJxQdMSkcONaevAAAAIJJREFUeF4lirEKgzAURa9PcBai4PjI0NlA6y61kFXawVHq4h+8rEI0+ewmdLqHcw80SGtOw2Yg3hShiGdfLrHGLm5ug1y4Bzk6cc9kMiRTxDi3MTVVMykzjSv48VLm8yZwk6+RcFvEWzm/KEMG16P4Q51M8NYlw51Vxh8EXQ3AtuofzNIkEO8Bb0kAAAAASUVORK5CYII=';
           break;
+        case '4chanJS':
+          this.unreadDead += 'BAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAD/AABnZ2f///8nFk05AAAAAXRSTlMAQObYZgAAAEFJREFUeNqNjgEKACAMAjvX/98cAkkxgmSgO8Bt/Ai4ApJ6KKhzF3OiEMDASrGB/QWgPEHsUpN+Ng9xAETMYhDrWmeHAMcmvycWAAAAAElFTkSuQmCC';
+          this.unreadNSFW += 'BAAAAAQCAMAAAAoLQ9TAAAAElBMVEUBAAAAAABmzDNlyjJnZ2f///+6o7dfAAAAAXRSTlMAQObYZgAAAERJREFUeF6NjkEKADEIA51o///lJZfQxUsHITogWi8AvwZJuxmYa25xDooBLEwOWFTYAsYVhdorLZt9Ng9xCUTCUCQ2H3F4ANrZ2WNiAAAAAElFTkSuQmCC';
+          this.unreadSFW += 'BAAAAAQCAMAAAAoLQ9TAAAAD1BMVEUBAAAAAAAul8NnZ2f////82iC9AAAAAXRSTlMAQObYZgAAAEFJREFUeNqNjgEKACAMAjvX/98cAkkxgmSgO8Bt/Ai4ApJ6KKhzF3OiEMDASrGB/QWgPEHsUpN+Ng9xAETMYhDrWmeHAMcmvycWAAAAAElFTkSuQmCC';
+          break;
         case 'Original':
           this.unreadDead += 'BAAAAAQCAMAAAAoLQ9TAAAAD1BMVEWYmJiYmJj///8AAAD/AACKRYF4AAAAAnRSTlMAvLREMp8AAABFSURBVBjTbY7BDgAgCEIZ+P/f3MGgXHkR3wYCvENyCEq6BVVVPzFvg03sTZjT8w4GKWKL+8ih7jPffoEaKB52KJMKnrUA5kwBxesBDg0AAAAASUVORK5CYII=';
           this.unreadNSFW += 'BAAAAAQCAMAAAAoLQ9TAAAADFBMVEWYmJj///9mzDMAAAADduU3AAAAAXRSTlMAQObYZgAAAERJREFUGNNtjkESACAIAkH+/+cOBuWUF3FnQIB3SA5BSbegquon5m2wib0Jc3rewSBFbHEfOdR95tsvUAPFww5lUsGzFpsgATH7KrmBAAAAAElFTkSuQmCC';
           this.unreadSFW += 'BAAAAAQCAMAAAAoLQ9TAAAADFBMVEWYmJj///8umMMAAACriBKaAAAAAXRSTlMAQObYZgAAAERJREFUGNNtjkESACAIAkH+/+cOBuWUF3FnQIB3SA5BSbegquon5m2wib0Jc3rewSBFbHEfOdR95tsvUAPFww5lUsGzFpsgATH7KrmBAAAAAElFTkSuQmCC';
       }
-      return this.unread = this.SFW ? this.unreadSFW : this.unreadNSFW;
+      this.unread = this.SFW ? this.unreadSFW : this.unreadNSFW;
     },
     empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
     dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
