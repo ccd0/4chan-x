@@ -808,8 +808,7 @@ h2 a {
 .warning:empty,
 body > br,
 body > div[style^="text-align"],
-body > hr,
-body > script + hr + div {
+body > hr {
   display: none;
 }
 #{if _conf["Hide Show Post Form"] then "#showQR," else ""}
@@ -817,6 +816,7 @@ body > script + hr + div {
 .hidden_thread ~ a,
 .hide_reply_button.stub ~ .reply,
 .stub ~ div,
+body > .center,
 [hidden] {
   display: none !important;
 }

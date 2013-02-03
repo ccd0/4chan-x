@@ -10,7 +10,7 @@ MascotTools =
     position = "#{if Conf['Mascot Position'] is 'bottom' or !(Conf['Mascot Position'] is "default" and Conf['Post Form Style'] is "fixed")
       0 + (if (!g.REPLY or Conf['Boards Navigation'] is 'sticky bottom') and Conf['4chan SS Navigation'] then 2 else 0)
     else
-      20.5 + (if !g.REPLY or !!$ '#postForm input[name=spoiler]' then 1.4 else 0)
+      20.5 + (if !g.REPLY or !!$ '#postForm input[name=spoiler]' then 1.4 else 0) + (if Conf['Show Post Form Header'] then 1.7 else 0) + (if Conf['Post Form Decorations'] then 0.2 else 0)
     }em"
 
     # If we're editting anything, let's not change mascots any time we change a value.
