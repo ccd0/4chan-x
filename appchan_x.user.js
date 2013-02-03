@@ -7018,10 +7018,30 @@
       }
     },
     embedder: function(a) {
-      var embed, key, match, service, title, titles, type, _ref;
+      var callbacks, embed, key, match, service, title, titles, type, _ref;
       if (!Conf['Embedding']) {
         return [a];
       }
+      callbacks = function() {
+        var title;
+        return a.textContent = (function() {
+          switch (this.status) {
+            case 200:
+            case 304:
+              title = "[" + (embed.getAttribute('data-service')) + "] " + (service.text.call(this));
+              embed.setAttribute('data-title', title);
+              titles[embed.name] = [title, Date.now()];
+              $.set('CachedTitles', titles);
+              return title;
+            case 404:
+              return "[" + key + "] Not Found";
+            case 403:
+              return "[" + key + "] Forbidden or Private";
+            default:
+              return "[" + key + "] " + this.status + "'d";
+          }
+        }).call(this);
+      };
       _ref = Linkify.types;
       for (key in _ref) {
         type = _ref[key];
@@ -7043,25 +7063,11 @@
             a.textContent = title[0];
             embed.setAttribute('data-title', title[0]);
           } else {
-            $.cache(service.api.call(a), function() {
-              return a.textContent = (function() {
-                switch (this.status) {
-                  case 200:
-                  case 304:
-                    title = "[" + (embed.getAttribute('data-service')) + "] " + (service.text.call(this));
-                    embed.setAttribute('data-title', title);
-                    titles[embed.name] = [title, Date.now()];
-                    $.set('CachedTitles', titles);
-                    return title;
-                  case 404:
-                    return "[" + key + "] Not Found";
-                  case 403:
-                    return "[" + key + "] Forbidden or Private";
-                  default:
-                    return "[" + key + "] " + this.status + "'d";
-                }
-              }).call(this);
-            });
+            try {
+              $.cache(service.api.call(a), callbacks);
+            } catch (err) {
+              a.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
+            }
           }
           return [a, $.tn(' '), embed];
         }

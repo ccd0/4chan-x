@@ -2587,8 +2587,24 @@ Linkify =
           false)
         div
 
+
   embedder: (a) ->
     return [a] unless Conf['Embedding']
+    
+    callbacks = ->
+      a.textContent = switch @status
+        when 200, 304
+          title = "[#{embed.getAttribute 'data-service'}] #{service.text.call @}"
+          embed.setAttribute 'data-title', title
+          titles[embed.name] = [title, Date.now()]
+          $.set 'CachedTitles', titles
+          title
+        when 404
+          "[#{key}] Not Found"
+        when 403
+          "[#{key}] Forbidden or Private"
+        else
+          "[#{key}] #{@status}'d"
 
     for key, type of Linkify.types
       continue unless match = a.href.match type.regExp
@@ -2611,20 +2627,10 @@ Linkify =
           a.textContent = title[0]
           embed.setAttribute 'data-title', title[0]
         else
-          $.cache service.api.call(a), ->
-            a.textContent = switch @status
-              when 200, 304
-                title = "[#{embed.getAttribute 'data-service'}] #{service.text.call @}"
-                embed.setAttribute 'data-title', title
-                titles[embed.name] = [title, Date.now()]
-                $.set 'CachedTitles', titles
-                title
-              when 404
-                "[#{key}] Not Found"
-              when 403
-                "[#{key}] Forbidden or Private"
-              else
-                "[#{key}] #{@status}'d"
+          try
+            $.cache service.api.call(a), callbacks
+          catch err
+            a.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
 
         return [a, $.tn(' '), embed]
     return [a]
