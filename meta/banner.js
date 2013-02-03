@@ -58,6 +58,7 @@
  *   herpaderpderp
  *   WakiMiko
  *   btmcsweeney
+ *   AppleBloom
  *
  * All the people who've taken the time to write bug reports.
  *

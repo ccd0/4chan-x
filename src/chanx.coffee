@@ -2411,9 +2411,9 @@ Linkify =
     # By using an out-of-document element to hold text I
     # can use the browser's methods and properties for
     # character escaping, instead of depending on loose code
-    cypher   = Linkify.cypher
-    i        = -1
-    len      = snapshot.snapshotLength
+    cypher = Linkify.cypher
+    i      = -1
+    len    = snapshot.snapshotLength
 
     while ++i < len
       nodes = []
