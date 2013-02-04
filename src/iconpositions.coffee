@@ -16,7 +16,7 @@ body > a[style="cursor: pointer; float: right;"]::after,
   height: 15px;
   content: "";
   overflow: hidden;
-  opacity: 0.5;
+  opacity: #{if Conf['Invisible Icons'] then 0 else 0.5};
 }
 #imgControls {
   position: fixed;

@@ -903,12 +903,14 @@ span.postNum > .replylink {
   z-index: 102;
 }
 .exlinksOptionsLink::after,
-#settingsWindowLink,
-#catalog::after {
+#settingsWindowLink {
   z-index: 101;
 }
 #imgControls {
   z-index: 100;
+}
+#catalog::after {
+  z-index: 99;
 }
 #autoPagerBorderPaging,
 #boardNavDesktop,
