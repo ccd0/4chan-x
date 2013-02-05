@@ -7066,8 +7066,8 @@
               a.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
             }
           }
-          return [a, $.tn(' '), embed];
         }
+        return [a, $.tn(' '), embed];
       }
       return [a];
     }
