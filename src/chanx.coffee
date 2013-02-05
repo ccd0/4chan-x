@@ -2421,7 +2421,7 @@ Linkify =
       data  = node.data
 
       # Test for valid links
-      continue unless node.parentElement and Linkify.regString.test data
+      continue unless node.parentNode and Linkify.regString.test data
 
       # Regex.test stores the index of its last match.
       # Because I am matching different nodes, this causes issues,

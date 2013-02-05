@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.46 - 2013-02-04
+ * appchan x - Version 1.0.46 - 2013-02-05
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -6856,7 +6856,7 @@
         nodes = [];
         node = snapshot.snapshotItem(i);
         data = node.data;
-        if (!(node.parentElement && Linkify.regString.test(data))) {
+        if (!(node.parentNode && Linkify.regString.test(data))) {
           continue;
         }
         Linkify.regString.lastIndex = 0;
