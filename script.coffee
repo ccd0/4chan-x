@@ -3944,7 +3944,7 @@ Redirect =
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-      when 'po'
+      when 'c', 'int', 'po'
         "http://archive.thedarkcave.org/_/api/chan/post/?board=#{board}&num=#{postID}"
   to: (data) ->
     unless data.isSearch
@@ -3955,7 +3955,7 @@ Redirect =
         url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
       when 'u', 'kuku'
         url = Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
-      when 'po'
+      when 'int', 'po'
         url = Redirect.path 'http://archive.thedarkcave.org', 'foolfuuka', data
       when 'ck', 'lit'
         url = Redirect.path '//fuuka.warosu.org', 'fuuka', data
