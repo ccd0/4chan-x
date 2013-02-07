@@ -1,8 +1,10 @@
 master
+
+2.38.0
+- Queue
+  Add relative time ("35 seconds ago"), disabled by default.
 - Mayhem
   Add /int/ archive redirection for threads, and post resurrection.
-- Queue
-  Add relative time ("35 seconds ago") date formatting option.
 
 2.37.6
 - Mayhem
