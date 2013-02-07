@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.0.46 - 2013-02-05
+ * appchan x - Version 1.0.46 - 2013-02-07
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -6862,10 +6862,10 @@
         Linkify.regString.lastIndex = 0;
         cypherText = [];
         if (next = node.nextSibling) {
-          cypher.innerHTML = node.textContent;
+          cypher.textContent = node.textContent;
           cypherText[0] = cypher.innerHTML;
           while ((next.nodeName.toLowerCase() === 'wbr' || next.nodeName.toLowerCase() === 's') && (lookahead = next.nextSibling) && ((name = lookahead.nodeName) === "#text" || name.toLowerCase() === 'br')) {
-            cypher.innerHTML = lookahead.textContent;
+            cypher.textContent = lookahead.textContent;
             cypherText.push((spoiler = next.innerHTML) ? "<s>" + (spoiler.replace(/</g, ' <')) + "</s>" : '<wbr>');
             cypherText.push(cypher.innerHTML);
             $.rm(next);
@@ -8833,7 +8833,7 @@
 </div>\
 <form>\
   <div class=warning></div>\
-  <div class=userInfo><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
+  <div class=userInfo><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field><input name=email title=E-mail placeholder=E-mail class=field><input name=sub title=Subject placeholder=Subject class=field></div>\
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>\
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span><div style=clear:both></div></div>\
   <div id=buttons><input type=file multiple size=16><div id=file class=field></div><input type=submit></div>\

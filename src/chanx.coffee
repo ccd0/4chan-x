@@ -2434,12 +2434,12 @@ Linkify =
       if next = node.nextSibling
         # This is one of the few examples in JS where what you
         # put into a variable is different than what comes out
-        cypher.innerHTML = node.textContent
-        cypherText[0]    = cypher.innerHTML
+        cypher.textContent = node.textContent
+        cypherText[0]      = cypher.innerHTML
 
         # i herd u leik wbr
         while (next.nodeName.toLowerCase() is 'wbr' or next.nodeName.toLowerCase() is 's') and (lookahead = next.nextSibling) and ((name = lookahead.nodeName) is "#text" or name.toLowerCase() is 'br')
-          cypher.innerHTML = lookahead.textContent
+          cypher.textContent = lookahead.textContent
 
           cypherText.push if spoiler = next.innerHTML then "<s>#{spoiler.replace /</g, ' <'}</s>" else '<wbr>'
           cypherText.push cypher.innerHTML
