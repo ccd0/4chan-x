@@ -2,7 +2,7 @@ master
 
 2.38.0
 - Queue
-  Add relative time ("35 seconds ago"), disabled by default.
+  Add Relative Post Dates ("35 seconds ago"), disabled by default.
 - Mayhem
   Add /int/ archive redirection for threads, and post resurrection.
 
