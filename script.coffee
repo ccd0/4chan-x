@@ -2849,17 +2849,18 @@ RelativeDates =
   node: (post) ->
     dateEl = $ '.postInfo > .dateTime', post.el
 
-    utc = dateEl.dataset.utc * 1000 # convert data-utc to milliseconds
-
     # Show original absolute time as tooltip so users can still know exact times
     # Since "Time Formatting" runs `node` before us, the title tooltip will
     # pick up the user-formatted time instead of 4chan time when enabled.
     dateEl.title = dateEl.textContent
 
+    # convert data-utc to milliseconds
+    utc = dateEl.dataset.utc * 1000
+
     diff = Date.now() - utc
 
     dateEl.textContent = RelativeDates.relative diff
-    RelativeDates.setUpdate dateEl, diff
+    RelativeDates.setUpdate dateEl, utc, diff
 
     # Main calls @node whenever a DOM node is added (update, inline post,
     # whatever), so use also this reflow opportunity to flush any other dates
@@ -2889,31 +2890,44 @@ RelativeDates =
   # stuttering won't be noticed), falling back to INTERVAL while the page
   # is visible.
   #
-  # each individual dateTime element will be added to the stale list when it
-  # needs to change.
+  # each individual dateTime element will add its update() function to the stale list
+  # when it to be called.
   stale: []
   flush: $.debounce($.SECOND, ->
     # no point in changing the dates until the user sees them
     return if d.hidden
-    for dateEl in RelativeDates.stale
-      if d.contains dateEl # not removed from DOM
-        diff = Date.now() - dateEl.dataset.utc * 1000
-        dateEl.textContent = RelativeDates.relative diff
-        RelativeDates.setUpdate dateEl, diff
+
+    now = Date.now()
+    update now for update in RelativeDates.stale
     RelativeDates.stale = []
+
+    # reset automatic flush
     clearTimeout RelativeDates.timeout
     RelativeDates.timeout = setTimeout RelativeDates.flush, RelativeDates.INTERVAL)
 
-  # Add element to stale list when the relative date string would change
-  # diff is in milliseconds between dateEl and now
-  setUpdate: (dateEl, diff) ->
-    delay = if diff > $.HOUR
-      diff % $.HOUR
-    else if diff > $.MINUTE
-      diff % $.MINUTE
-    else
-      diff % $.SECOND
-    setTimeout (-> RelativeDates.stale.push dateEl), delay
+  # create function `update()`, closed over dateEl and diff, that, when called
+  # from `flush()`, updates the element, and re-calls `setOwnTimeout()` to
+  # re-add `update()` to the stale list later.
+  setUpdate: (dateEl, utc, diff) ->
+    setOwnTimeout = (diff) ->
+      delay = if diff > $.HOUR
+        diff % $.HOUR
+      else if diff > $.MINUTE
+        diff % $.MINUTE
+      else
+        diff % $.SECOND
+      setTimeout markStale, delay
+
+    update = (now) ->
+      if d.contains dateEl # not removed from DOM
+        diff = now - utc
+        dateEl.textContent = RelativeDates.relative diff
+        setOwnTimeout diff
+
+    markStale = -> RelativeDates.stale.push update
+
+    # kick off initial timeout with current diff
+    setOwnTimeout diff
 
 FileInfo =
   init: ->

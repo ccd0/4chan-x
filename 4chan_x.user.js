@@ -3558,11 +3558,11 @@
     node: function(post) {
       var dateEl, diff, utc;
       dateEl = $('.postInfo > .dateTime', post.el);
-      utc = dateEl.dataset.utc * 1000;
       dateEl.title = dateEl.textContent;
+      utc = dateEl.dataset.utc * 1000;
       diff = Date.now() - utc;
       dateEl.textContent = RelativeDates.relative(diff);
-      RelativeDates.setUpdate(dateEl, diff);
+      RelativeDates.setUpdate(dateEl, utc, diff);
       return RelativeDates.flush();
     },
     relative: function(diff) {
@@ -3576,29 +3576,38 @@
     },
     stale: [],
     flush: $.debounce($.SECOND, function() {
-      var dateEl, diff, _i, _len, _ref;
+      var now, update, _i, _len, _ref;
       if (d.hidden) {
         return;
       }
+      now = Date.now();
       _ref = RelativeDates.stale;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        dateEl = _ref[_i];
-        if (d.contains(dateEl)) {
-          diff = Date.now() - dateEl.dataset.utc * 1000;
-          dateEl.textContent = RelativeDates.relative(diff);
-          RelativeDates.setUpdate(dateEl, diff);
-        }
+        update = _ref[_i];
+        update(now);
       }
       RelativeDates.stale = [];
       clearTimeout(RelativeDates.timeout);
       return RelativeDates.timeout = setTimeout(RelativeDates.flush, RelativeDates.INTERVAL);
     }),
-    setUpdate: function(dateEl, diff) {
-      var delay;
-      delay = diff > $.HOUR ? diff % $.HOUR : diff > $.MINUTE ? diff % $.MINUTE : diff % $.SECOND;
-      return setTimeout((function() {
-        return RelativeDates.stale.push(dateEl);
-      }), delay);
+    setUpdate: function(dateEl, utc, diff) {
+      var markStale, setOwnTimeout, update;
+      setOwnTimeout = function(diff) {
+        var delay;
+        delay = diff > $.HOUR ? diff % $.HOUR : diff > $.MINUTE ? diff % $.MINUTE : diff % $.SECOND;
+        return setTimeout(markStale, delay);
+      };
+      update = function(now) {
+        if (d.contains(dateEl)) {
+          diff = now - utc;
+          dateEl.textContent = RelativeDates.relative(diff);
+          return setOwnTimeout(diff);
+        }
+      };
+      markStale = function() {
+        return RelativeDates.stale.push(update);
+      };
+      return setOwnTimeout(diff);
     }
   };
 
