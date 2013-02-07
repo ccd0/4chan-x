@@ -6,6 +6,7 @@ Config =
       '404 Redirect':                 [true,  'Redirect dead threads and images']
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
+      'Relative Post Dates':          [false, 'Display post times as "3 minutes ago" or similar. Hover tooltip will display the original or formatted timestamp']
       'File Info Formatting':         [true,  'Reformats the file information']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
@@ -397,8 +398,19 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
-  hidden: ->
-    d.hidden or d.oHidden or d.mozHidden or d.webkitHidden
+  # a function that will execute at most every 'wait' ms. executes immediately
+  # if possible, else discards invocation
+  debounce: (wait, fn) ->
+    timeout = null
+    return ->
+      if timeout
+        # stop current reset
+        clearTimeout timeout
+      else
+        fn.apply this, arguments
+
+      # after wait, let next invocation execute immediately
+      timeout = setTimeout (-> timeout = null), wait
 
 $.cache.requests = {}
 
@@ -1422,7 +1434,7 @@ QR =
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
-    alert el.textContent if $.hidden()
+    alert el.textContent if d.hidden
   cleanError: ->
     $('.warning', QR.el).textContent = null
 
@@ -2458,7 +2470,7 @@ Updater =
     $.add d.body, dialog
 
     $.on d, 'QRPostSuccessful', @cb.post
-    $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', @cb.visibility
+    $.on d, 'visibilitychange', @cb.visibility
 
   ###
   http://freesound.org/people/pierrecartoons1979/sounds/90112/
@@ -2472,7 +2484,7 @@ Updater =
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 500
     visibility: ->
-      return if $.hidden()
+      return if d.hidden
       # Reset the counter when we focus this tab.
       Updater.unsuccessfulFetchCount = 0
       if Updater.timer.textContent < -Conf['Interval']
@@ -2500,7 +2512,7 @@ Updater =
         if @checked
           -> true
         else
-          -> ! $.hidden()
+          -> ! d.hidden
     load: ->
       switch @status
         when 404
@@ -2555,7 +2567,7 @@ Updater =
         Updater.count.className = if count then 'new' else null
 
       if count
-        if Conf['Beep'] and $.hidden() and (Unread.replies.length is 0)
+        if Conf['Beep'] and d.hidden and (Unread.replies.length is 0)
           Updater.audio.play()
         Updater.unsuccessfulFetchCount = 0
       else
@@ -2580,7 +2592,7 @@ Updater =
   getInterval: ->
     i = +Conf['Interval']
     j = Math.min @unsuccessfulFetchCount, 9
-    unless $.hidden()
+    unless d.hidden
       # Don't increase the refresh rate too much on visible tabs.
       j = Math.min j, 6
     Math.max i, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
@@ -2826,6 +2838,82 @@ Time =
     P: -> if Time.date.getHours() < 12 then 'am' else 'pm'
     S: -> Time.zeroPad Time.date.getSeconds()
     y: -> Time.date.getFullYear() - 2000
+
+RelativeDates =
+  INTERVAL: $.MINUTE
+  init: ->
+    Main.callbacks.push @node
+
+    # flush when page becomes visible again
+    $.on d, 'visibilitychange', @flush
+  node: (post) ->
+    dateEl = $ '.postInfo > .dateTime', post.el
+
+    utc = dateEl.dataset.utc * 1000 # convert data-utc to milliseconds
+
+    # Show original absolute time as tooltip so users can still know exact times
+    # Since "Time Formatting" runs `node` before us, the title tooltip will
+    # pick up the user-formatted time instead of 4chan time when enabled.
+    dateEl.title = dateEl.textContent
+
+    diff = Date.now() - utc
+
+    dateEl.textContent = RelativeDates.relative diff
+    RelativeDates.setUpdate dateEl, diff
+
+    # Main calls @node whenever a DOM node is added (update, inline post,
+    # whatever), so use also this reflow opportunity to flush any other dates
+    # flush is debounced, so this won't burn too much cpu
+    RelativeDates.flush()
+
+  # diff is milliseconds from now
+  relative: (diff) ->
+    unit = if (number = (diff / $.DAY)) > 1
+      'day'
+    else if (number = (diff / $.HOUR)) > 1
+      'hour'
+    else if (number = (diff / $.MINUTE)) > 1
+      'minute'
+    else
+      number = diff / $.SECOND
+      'second'
+
+    rounded = Math.round number
+    unit += 's' if rounded isnt 1 # pluralize
+
+    "#{rounded} #{unit} ago"
+
+  # changing all relative dates as soon as possible incurs many annoying
+  # redraws and scroll stuttering. Thus, sacrifice accuracy for UX/CPU economy,
+  # and perform redraws when the DOM is otherwise being manipulated (and scroll
+  # stuttering won't be noticed), falling back to INTERVAL while the page
+  # is visible.
+  #
+  # each individual dateTime element will be added to the stale list when it
+  # needs to change.
+  stale: []
+  flush: $.debounce($.SECOND, ->
+    # no point in changing the dates until the user sees them
+    return if d.hidden
+    for dateEl in RelativeDates.stale
+      if d.contains dateEl # not removed from DOM
+        diff = Date.now() - dateEl.dataset.utc * 1000
+        dateEl.textContent = RelativeDates.relative diff
+        RelativeDates.setUpdate dateEl, diff
+    RelativeDates.stale = []
+    clearTimeout RelativeDates.timeout
+    RelativeDates.timeout = setTimeout RelativeDates.flush, RelativeDates.INTERVAL)
+
+  # Add element to stale list when the relative date string would change
+  # diff is in milliseconds between dateEl and now
+  setUpdate: (dateEl, diff) ->
+    delay = if diff > $.HOUR
+      diff % $.HOUR
+    else if diff > $.MINUTE
+      diff % $.MINUTE
+    else
+      diff % $.SECOND
+    setTimeout (-> RelativeDates.stale.push dateEl), delay
 
 FileInfo =
   init: ->
@@ -4274,10 +4362,32 @@ Main =
       settings.disableAll = true
       localStorage.setItem '4chan-settings', JSON.stringify settings
 
+    Main.polyfill()
+
     if g.CATALOG
       $.ready Main.catalog
     else
       Main.features()
+
+  polyfill: ->
+    # page visibility API
+    unless 'visibilityState' of document
+      prefix = if 'mozVisibilityState' of document
+        'moz'
+      else if 'webkitvisibilityState' of document
+        'webkit'
+      else
+        'o'
+
+      property = prefix + 'VisibilityState'
+      event = prefix + 'visibilitychange'
+
+      d.visibilityState = d[property]
+      d.hidden = d.visibilityState is 'hidden'
+      $.on d, event, ->
+        d.visibilityState = d[property]
+        d.hidden = d.visibilityState is 'hidden'
+        $.event d, new CustomEvent 'visibilitychange'
 
   catalog: ->
     if Conf['Catalog Links']
@@ -4336,6 +4446,9 @@ Main =
 
     if Conf['Time Formatting']
       Time.init()
+
+    if Conf['Relative Post Dates']
+      RelativeDates.init()
 
     if Conf['File Info Formatting']
       FileInfo.init()
