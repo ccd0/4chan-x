@@ -81,7 +81,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, CatalogLinks, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
+  var $, $$, Anonymize, ArchiveLink, AutoGif, Build, CatalogLinks, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Options, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, _base;
 
   Config = {
     main: {
@@ -91,6 +91,7 @@
         '404 Redirect': [true, 'Redirect dead threads and images'],
         'Keybinds': [true, 'Binds actions to keys'],
         'Time Formatting': [true, 'Arbitrarily formatted timestamps, using your local time'],
+        'Relative Post Dates': [false, 'Display post times as "3 minutes ago" or similar. Hover tooltip will display the original or formatted timestamp'],
         'File Info Formatting': [true, 'Reformats the file information'],
         'Comment Expansion': [true, 'Expand too long comments'],
         'Thread Expansion': [true, 'View all replies'],
@@ -516,8 +517,19 @@
       size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
       return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
     },
-    hidden: function() {
-      return d.hidden || d.oHidden || d.mozHidden || d.webkitHidden;
+    debounce: function(wait, fn) {
+      var timeout;
+      timeout = null;
+      return function() {
+        if (timeout) {
+          clearTimeout(timeout);
+        } else {
+          fn.apply(this, arguments);
+        }
+        return timeout = setTimeout((function() {
+          return timeout = null;
+        }), wait);
+      };
     }
   });
 
@@ -1841,7 +1853,7 @@
       if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
         $('[autocomplete]', QR.el).focus();
       }
-      if ($.hidden()) {
+      if (d.hidden) {
         return alert(el.textContent);
       }
     },
@@ -3033,7 +3045,7 @@
       }
       $.add(d.body, dialog);
       $.on(d, 'QRPostSuccessful', this.cb.post);
-      return $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility);
+      return $.on(d, 'visibilitychange', this.cb.visibility);
     },
     /*
       http://freesound.org/people/pierrecartoons1979/sounds/90112/
@@ -3052,7 +3064,7 @@
         return setTimeout(Updater.update, 500);
       },
       visibility: function() {
-        if ($.hidden()) {
+        if (d.hidden) {
           return;
         }
         Updater.unsuccessfulFetchCount = 0;
@@ -3088,7 +3100,7 @@
         return Updater.scrollBG = this.checked ? function() {
           return true;
         } : function() {
-          return !$.hidden();
+          return !d.hidden;
         };
       },
       load: function() {
@@ -3159,7 +3171,7 @@
           Updater.count.className = count ? 'new' : null;
         }
         if (count) {
-          if (Conf['Beep'] && $.hidden() && (Unread.replies.length === 0)) {
+          if (Conf['Beep'] && d.hidden && (Unread.replies.length === 0)) {
             Updater.audio.play();
           }
           Updater.unsuccessfulFetchCount = 0;
@@ -3187,7 +3199,7 @@
       var i, j;
       i = +Conf['Interval'];
       j = Math.min(this.unsuccessfulFetchCount, 9);
-      if (!$.hidden()) {
+      if (!d.hidden) {
         j = Math.min(j, 6);
       }
       return Math.max(i, [5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
@@ -3534,6 +3546,68 @@
       y: function() {
         return Time.date.getFullYear() - 2000;
       }
+    }
+  };
+
+  RelativeDates = {
+    INTERVAL: $.MINUTE,
+    init: function() {
+      Main.callbacks.push(this.node);
+      return $.on(d, 'visibilitychange', this.flush);
+    },
+    node: function(post) {
+      var dateEl, diff, utc;
+      dateEl = $('.postInfo > .dateTime', post.el);
+      dateEl.title = dateEl.textContent;
+      utc = dateEl.dataset.utc * 1000;
+      diff = Date.now() - utc;
+      dateEl.textContent = RelativeDates.relative(diff);
+      RelativeDates.setUpdate(dateEl, utc, diff);
+      return RelativeDates.flush();
+    },
+    relative: function(diff) {
+      var number, rounded, unit;
+      unit = (number = diff / $.DAY) > 1 ? 'day' : (number = diff / $.HOUR) > 1 ? 'hour' : (number = diff / $.MINUTE) > 1 ? 'minute' : (number = diff / $.SECOND, 'second');
+      rounded = Math.round(number);
+      if (rounded !== 1) {
+        unit += 's';
+      }
+      return "" + rounded + " " + unit + " ago";
+    },
+    stale: [],
+    flush: $.debounce($.SECOND, function() {
+      var now, update, _i, _len, _ref;
+      if (d.hidden) {
+        return;
+      }
+      now = Date.now();
+      _ref = RelativeDates.stale;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        update = _ref[_i];
+        update(now);
+      }
+      RelativeDates.stale = [];
+      clearTimeout(RelativeDates.timeout);
+      return RelativeDates.timeout = setTimeout(RelativeDates.flush, RelativeDates.INTERVAL);
+    }),
+    setUpdate: function(dateEl, utc, diff) {
+      var markStale, setOwnTimeout, update;
+      setOwnTimeout = function(diff) {
+        var delay;
+        delay = diff > $.HOUR ? diff % $.HOUR : diff > $.MINUTE ? diff % $.MINUTE : diff % $.SECOND;
+        return setTimeout(markStale, delay);
+      };
+      update = function(now) {
+        if (d.contains(dateEl)) {
+          diff = now - utc;
+          dateEl.textContent = RelativeDates.relative(diff);
+          return setOwnTimeout(diff);
+        }
+      };
+      markStale = function() {
+        return RelativeDates.stale.push(update);
+      };
+      return setOwnTimeout(diff);
     }
   };
 
@@ -5307,10 +5381,26 @@
         settings.disableAll = true;
         localStorage.setItem('4chan-settings', JSON.stringify(settings));
       }
+      Main.polyfill();
       if (g.CATALOG) {
         return $.ready(Main.catalog);
       } else {
         return Main.features();
+      }
+    },
+    polyfill: function() {
+      var event, prefix, property;
+      if (!('visibilityState' in document)) {
+        prefix = 'mozVisibilityState' in document ? 'moz' : 'webkitvisibilityState' in document ? 'webkit' : 'o';
+        property = prefix + 'VisibilityState';
+        event = prefix + 'visibilitychange';
+        d.visibilityState = d[property];
+        d.hidden = d.visibilityState === 'hidden';
+        return $.on(d, event, function() {
+          d.visibilityState = d[property];
+          d.hidden = d.visibilityState === 'hidden';
+          return $.event(d, new CustomEvent('visibilitychange'));
+        });
       }
     },
     catalog: function() {
@@ -5373,6 +5463,9 @@
       }
       if (Conf['Time Formatting']) {
         Time.init();
+      }
+      if (Conf['Relative Post Dates']) {
+        RelativeDates.init();
       }
       if (Conf['File Info Formatting']) {
         FileInfo.init();
