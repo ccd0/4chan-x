@@ -1168,7 +1168,7 @@ Updater =
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 500
     checkpost: (status) ->
-      unless status is 404 and Updater.save.contains(Updater.postID) and Updater.checkPostCount >= 10
+      unless status is 404 or Updater.save.contains(Updater.postID) or Updater.checkPostCount >= 10
         return ( -> setTimeout Updater.update, @ ).call ++Updater.checkPostCount * 500
       Updater.save = []
       Updater.checkPostCount = 0
@@ -2153,19 +2153,15 @@ QuotePreview =
     return
 
   mouseover: (e) ->
-    return if /\binlined\b/.test @className
+    return if UI.el or /\binlined\b/.test @className
 
     qp = QuotePreview.el
 
     # Make sure to remove the previous qp
     # in case it got stuck.
-    if UI.el
-      if qp is UI.el
-        delete UI.el
-
-      # Don't stop other elements from dragging
-      else
-        return
+    if children = qp.children
+      for child in children
+        $.rm child
 
     if @host is 'boards.4chan.org'
       path     = @pathname.split '/'
@@ -2176,6 +2172,7 @@ QuotePreview =
       board    = @dataset.board
       threadID = 0
       postID   = @dataset.id
+
 
     UI.el = qp
     UI.hover e
