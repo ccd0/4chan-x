@@ -5367,10 +5367,12 @@
         return setTimeout(Updater.update, 500);
       },
       checkpost: function(status) {
+        var check;
         if (!(status === 404 || Updater.save.contains(Updater.postID) || Updater.checkPostCount >= 10)) {
-          return (function() {
-            return setTimeout(Updater.update, this);
-          }).call(++Updater.checkPostCount * 500);
+          check = function(delay) {
+            return setTimeout(Updater.update, delay);
+          };
+          return check(++Updater.checkPostCount * 500);
         }
         Updater.save = [];
         Updater.checkPostCount = 0;
@@ -5381,14 +5383,8 @@
           return;
         }
         Updater.unsuccessfulFetchCount = 0;
-        if (Conf['Interval per board']) {
-          if (Updater.timer.textContent < -Conf['Interval_' + g.BOARD]) {
-            return Updater.set('timer', -Updater.getInterval());
-          }
-        } else {
-          if (Updater.timer.textContent < -Conf['Interval']) {
-            return Updater.set('timer', -Updater.getInterval());
-          }
+        if (Updater.timer.textContent < (Conf['Interval per board'] ? -Conf['Interval_' + g.BOARD] : -Conf['Interval'])) {
+          return Updater.set('timer', -Updater.getInterval());
         }
       },
       interval: function() {
@@ -5469,10 +5465,7 @@
         if (Updater.postID) {
           Updater.cb.checkpost(this.status);
         }
-        delete Updater.request;
-        Updater.checkPostCount = 0;
-        Updater.save = [];
-        return delete Updater.postID;
+        return delete Updater.request;
       },
       update: function(posts) {
         var count, id, lastPost, nodes, post, scroll, spoilerRange;

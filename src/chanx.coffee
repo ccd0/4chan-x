@@ -1167,46 +1167,58 @@ Updater =
       return unless Conf['Auto Update This']
       Updater.unsuccessfulFetchCount = 0
       setTimeout Updater.update, 500
+
     checkpost: (status) ->
       unless status is 404 or Updater.save.contains(Updater.postID) or Updater.checkPostCount >= 10
-        return ( -> setTimeout Updater.update, @ ).call ++Updater.checkPostCount * 500
+        check = (delay) ->
+          setTimeout Updater.update, delay
+        return check ++Updater.checkPostCount * 500
       Updater.save = []
       Updater.checkPostCount = 0
       delete Updater.postID
+
     visibility: ->
       return if $.hidden()
       # Reset the counter when we focus this tab.
       Updater.unsuccessfulFetchCount = 0
-      if Conf['Interval per board']
-        if Updater.timer.textContent < -Conf['Interval_' + g.BOARD]
-          Updater.set 'timer', -Updater.getInterval()
-      else
-        if Updater.timer.textContent < -Conf['Interval']
-          Updater.set 'timer', -Updater.getInterval()
+
+      if Updater.timer.textContent < (
+        if Conf['Interval per board']
+          -Conf['Interval_' + g.BOARD]
+        else
+          -Conf['Interval']
+      )
+        Updater.set 'timer', -Updater.getInterval()
+
     interval: ->
       val = parseInt @value, 10
       @value = if val > 0 then val else 30
       $.cb.value.call @
       Updater.set 'timer', -Updater.getInterval()
+
     verbose: ->
       if Conf['Verbose']
         Updater.set 'count', '+0'
         Updater.timer.hidden = false
+
       else
         Updater.set 'count', '+0'
         Updater.count.className = ''
         Updater.timer.hidden = true
+
     autoUpdate: ->
       if Conf['Auto Update This'] = @checked
         Updater.timeoutID = setTimeout Updater.timeout, 1000
       else
         clearTimeout Updater.timeoutID
+
     scrollBG: ->
       Updater.scrollBG =
         if @checked
           -> true
         else
           -> ! $.hidden()
+
     load: ->
       switch @status
         when 404
@@ -1221,6 +1233,7 @@ Updater =
             d.title = d.title.match(/^.+-/)[0] + ' 404'
           Unread.update true
           QR.abort()
+
         # XXX 304 -> 0 in Opera
         when 0, 304
           ###
@@ -1234,6 +1247,7 @@ Updater =
           if Conf['Verbose']
             Updater.set 'count', '+0'
             Updater.count.className = null
+
         when 200
           Updater.lastModified = @getResponseHeader 'Last-Modified'
           Updater.cb.update JSON.parse(@response).posts
@@ -1244,12 +1258,12 @@ Updater =
           if Conf['Verbose']
             Updater.set 'count', @statusText
             Updater.count.className = 'warning'
+
       if Updater.postID
         Updater.cb.checkpost @status
+
       delete Updater.request
-      Updater.checkPostCount = 0
-      Updater.save = []
-      delete Updater.postID
+
     update: (posts) ->
       if spoilerRange = posts[0].custom_spoiler
         Build.spoilerRange[g.BOARD] = spoilerRange
