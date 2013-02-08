@@ -14,14 +14,14 @@ QR =
       $.on link, 'click', ->
         QR.open()
         unless g.REPLY
-          QR.threadSelector.value = 
+          QR.threadSelector.value =
             unless g.BOARD is 'f'
               '9999'
             else
               'new'
         $('textarea', QR.el).focus()
       $.before $.id('postForm'), link
-   
+
       BanChecker.init() if Conf['Check for Bans']
 
     if Conf['Persistent QR']
@@ -299,7 +299,7 @@ QR =
     constructor: ->
       # set values, or null, to avoid 'undefined' values in inputs
       prev     = QR.replies[QR.replies.length-1]
-      persona  = $.get 'persona', 
+      persona  = $.get 'persona',
         global: {}
       unless persona[key = if Conf['Per Board Persona'] then g.BOARD else 'global']
         persona[key] = JSON.parse JSON.stringify persona.global
@@ -623,7 +623,7 @@ QR =
           $.el 'select'
             innerHTML: threads
             title: 'Create a new thread / Reply to a thread'
-      
+
       QR.threadSelector.className = null
 
       $.prepend $('#threadselect', QR.el), QR.threadSelector
@@ -637,7 +637,7 @@ QR =
     QR.riceFile.innerHTML = QR.defaultMessage = "<span class='placeholder'>Browse...</span>"
     QR.riceFile.title     = "Max: #{size}MB, Shift+Click to Clear."
     $.on QR.riceFile,             'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else QR.fileEl.click()
-    $.on QR.fileEl,               'change',    
+    $.on QR.fileEl,               'change',
     $.on QR.fileEl,               'change',    ->
       QR.riceFile.textContent = QR.fileEl.value
       QR.fileInput.call @
@@ -850,13 +850,12 @@ Reason: #{$('.reason', doc).innerHTML}
 
     reply = QR.replies[0]
 
-    
-    persona = $.get 'persona', 
+    persona = $.get 'persona',
       global: {}
 
     unless persona[key = if Conf['Per Board Persona'] then g.BOARD else 'global']
       persona[key] = JSON.parse JSON.stringify persona.global
-      
+
     persona[key] =
       name:  reply.name
       email:
@@ -873,16 +872,22 @@ Reason: #{$('.reason', doc).innerHTML}
     [_, threadID, postID] = doc.body.lastChild.textContent.match /thread:(\d+),no:(\d+)/
     Updater.postID = postID
 
+    unless MarkOwn.posts
+      MarkOwn.posts = $.get 'ownedPosts', {}
+
+    MarkOwn.posts[postID] = Date.now()
+    $.set 'ownedPosts', MarkOwn.posts
+
     # Post/upload confirmed as successful.
     $.event QR.el, new CustomEvent 'QRPostSuccessful',
       bubbles: true
       detail:
         threadID: threadID
         postID:   postID
-        
+
     if $.get 'isBanned'
       if BanChecker.el
-        $.rm BanChecker.el 
+        $.rm BanChecker.el
         delete BanChecker.el
       $.delete 'isBanned'
 

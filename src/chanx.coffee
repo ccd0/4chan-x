@@ -2043,6 +2043,7 @@ QuoteBacklink =
     format = Conf['backlink'].replace /%id/g, "' + id + '"
     @funk  = Function 'id', "return '#{format}'"
     Main.callbacks.push @node
+
   node: (post) ->
     return if post.isInlined
     quotes = {}
@@ -2057,6 +2058,9 @@ QuoteBacklink =
       href: "/#{g.BOARD}/res/#{post.threadID}#p#{post.ID}"
       className: if post.el.hidden then 'filtered backlink' else 'backlink'
       textContent: QuoteBacklink.funk post.ID
+    if Conf['Mark Owned Posts']
+      if a.hash and MarkOwn.posts[a.hash[2..]]
+        $.addClass a, 'ownpost'
     for qid of quotes
       # Don't backlink the OP.
       continue if !(el = $.id "pi#{qid}") or !Conf['OP Backlinks'] and /\bop\b/.test el.parentNode.className
@@ -3002,6 +3006,7 @@ Unread =
     Unread.update count is 1
 
   scroll: ->
+    return if $.hidden()
     height = d.documentElement.clientHeight
     for reply, i in Unread.replies
       {bottom} = reply.getBoundingClientRect()

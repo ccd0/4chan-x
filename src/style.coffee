@@ -881,6 +881,9 @@ span.postNum > .replylink {
 [alt="closed"] + a {
   text-decoration: line-through;
 }
+.ownpost:after {
+  content: " (You)";
+}
 /* Z-INDEXES */
 #mouseover {
   z-index: 999;

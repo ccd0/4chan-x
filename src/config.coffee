@@ -230,6 +230,10 @@ Config =
         false
         'Assign unique colors to user IDs on boards that use them'
       ]
+      'Mark Owned Posts': [
+        true
+        'Mark quotes to posts you\'ve authored.'
+      ]
       'Remove Spoilers': [
         false
         'Remove all spoilers in text.'

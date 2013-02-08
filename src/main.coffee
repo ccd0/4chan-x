@@ -8,7 +8,7 @@ Main =
       Conf[key] = $.get key, val
 
     Conf['Hidden Categories'] = $.get "Hidden Categories", ["Questionable"]
-      
+
     path = location.pathname
     pathname = path[1..].split '/'
     [g.BOARD, temp] = pathname
@@ -25,7 +25,7 @@ Main =
 
     # Scope a local _conf variable for performance.
     _conf = Conf
-    
+
     if _conf["NSFW/SFW Mascots"]
       g.MASCOTSTRING = "Enabled Mascots #{g.TYPE}"
     else
@@ -107,7 +107,7 @@ Main =
 
     if _conf['Thread Hiding']
       ThreadHiding.init()
-    
+
     $.ready ->
       if _conf['Custom Navigation']
         CustomNavigation.init()
@@ -187,7 +187,7 @@ Main =
 
     if _conf['Resurrect Quotes']
       Quotify.init()
-    
+
     if _conf['Remove Spoilers']
       RemoveSpoilers.init()
 
@@ -205,7 +205,7 @@ Main =
 
     if _conf['Indicate Cross-thread Quotes']
       QuoteCT.init()
-  
+
     if _conf['Color user IDs']
       IDColor.init()
 
@@ -255,12 +255,15 @@ Main =
 
     if _conf['Keybinds']
       Keybinds.init()
-      
+
     if _conf['Replace GIF'] or _conf['Replace PNG'] or _conf['Replace JPG']
       ImageReplace.init()
-    
+
     if _conf['Fappe Tyme']
       FappeTyme.init()
+
+    if _conf['Mark Owned Posts']
+      MarkOwn.init()
 
     if g.REPLY
       if _conf['Prefetch']
@@ -323,6 +326,7 @@ Main =
 
       cutoff        = now - 7*$.DAY
       hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
+      ownedPosts    = MarkOwn.posts
       titles        = $.get 'CachedTitles', {}
 
       for id, timestamp of hiddenThreads
@@ -332,7 +336,11 @@ Main =
       for id, timestamp of g.hiddenReplies
         if timestamp < cutoff
           delete g.hiddenReplies[id]
-          
+
+      for id, timestamp of ownedPosts
+        if timestamp < cutoff
+          delete ownPosts[id]
+
       for id of titles
         if titles[id][1] < cutoff
           delete titles[id]
@@ -340,6 +348,7 @@ Main =
       $.set "hiddenThreads/#{g.BOARD}/", hiddenThreads
       $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
       $.set 'CachedTitles',              titles
+      $.set 'ownedPosts',                ownedPosts
 
   flatten: (parent, obj) ->
     if obj instanceof Array
