@@ -3833,9 +3833,6 @@
           $.add(el, container);
         }
         $.add(container, [$.tn(' '), link]);
-        if (!(Conf["Backlinks Position"] === "default" || /\bop\b/.test(el.parentNode.className))) {
-          el.parentNode.style.paddingBottom = "" + container.offsetHeight + "px";
-        }
       }
     }
   };
