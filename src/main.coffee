@@ -71,7 +71,7 @@ Main =
         $.on window, 'message', Main.message
         $.set 'lastUpdate', now
         $.add d.head, $.el 'script'
-          src: 'https://github.com/zixaphir/appchan-x/raw/master/latest.js'
+          src: 'https://github.com/zixaphir/appchan-x/raw/4chanX/latest.js'
 
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
     settings.disableAll = true
@@ -382,7 +382,7 @@ Main =
       try
         callback node for node in nodes
       catch err
-        alert "AppChan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err}\n#{err.stack}" if notify
+        alert "4chan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err}\n#{err.stack}" if notify
     return
 
   observer: (mutations) ->

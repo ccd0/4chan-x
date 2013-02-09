@@ -1,6 +1,6 @@
 # JavaScript "Globals"
 Config =
-# Depending on the category, the following objects are used to store default settings, generate layouts, and hold the various settings available for appchan x.
+# Depending on the category, the following objects are used to store default settings, generate layouts, and hold the various settings available for 4chan x.
   main:
 
     Enhancing:
@@ -54,7 +54,7 @@ Config =
       ]
       'Check for Updates': [
         true
-        'Check for updated versions of Appchan X'
+        'Check for updated versions of 4chan X'
       ]
       'Check for Bans': [
         false

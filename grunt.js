@@ -7,8 +7,8 @@ module.exports = function(grunt) {
       name: '<%= pkg.name.replace(/-/g, " ") %>',
       repo: 'https://github.com/zixaphir/appchan-x/',
       files: {
-        metajs:   'appchan_x.meta.js',
-        userjs:   'appchan_x.user.js',
+        metajs:   '4chan_x.meta.js',
+        userjs:   '4chan_x.user.js',
         latestjs: 'latest.js'
       }
     },
@@ -24,8 +24,8 @@ module.exports = function(grunt) {
           'src/fappetyme.coffee',
           'src/mascotoptions.coffee',
           'src/customnavigation.coffee',
-          'src/appchan.coffee',
           'src/style.coffee',
+          'src/css.coffee',
           '<file_template:src/main.coffee>',
           'src/exec.coffee'
         ],
@@ -61,16 +61,13 @@ module.exports = function(grunt) {
           name    = grunt.config(['pkg', 'name']).replace(/-/g, ' ');
           version = grunt.config(['pkg', 'version']);
           return [
-            'git checkout master',
-            'git commit -am "Release ' + name + ' v' + version + '."',
-            'git tag -a ' + version + ' -m "' + version + '"',
-            'git tag -af stable -m "' + version + '"'
+            'git commit -am "Release ' + name + ' v' + version + '."'
           ].join(' && ');
         },
         stdout: true
       },
       push: {
-        command: 'git push && git push --tags',
+        command: 'git push',
         stdout: true
       }
     },

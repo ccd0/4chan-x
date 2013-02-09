@@ -29,9 +29,8 @@ Options =
       innerHTML: '<div id=optionsbar>
   <div id=credits>
     <label for=apply>Apply</label>
-    | <a target=_blank href=http://zixaphir.github.com/appchan-x/>AppChan X</a>
-    | <a target=_blank href=https://raw.github.com/zixaphir/appchan-x/master/changelog>' + Main.version + '</a>
-    | <a target=_blank href=http://zixaphir.github.com/appchan-x/#bug-report>Issues</a>
+    | <a target=_blank href=http://zixaphir.github.com/appchan-x/>4chan X</a>
+    | <a target=_blank href=https://raw.github.com/zixaphir/appchan-x/4chanX/changelog>' + Main.version + '</a>
   </div>
   <div class=tabs>
     <label for=main_tab id=selected_tab>Main</label>
