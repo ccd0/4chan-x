@@ -101,8 +101,10 @@ h2 {
   #{agent}box-sizing: border-box;
   padding: 0 2px;
 }
+#threadselect,
 #qr > .move > span {
   float: right;
+  padding: 0 2px;
 }
 #autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {
   cursor: pointer;
@@ -243,7 +245,7 @@ h2 {
   color: #000;
   outline: none;
 }
-#qr > form > div:first-child > .field:not(#dump) {
+.userInfo > .field:not(#dump) {
   width: 30%;
 }
 #qr textarea.field {
@@ -309,7 +311,7 @@ h2 {
   width: 100%;
 }
 
-#qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {
+#qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks, #mouseover {
   position: fixed;
 }
 
@@ -331,6 +333,9 @@ body {
 }
 body.unscroll {
   overflow: hidden;
+}
+#mouseover {
+  z-index: 2;
 }
 #overlay {
   top: 0;
@@ -376,6 +381,9 @@ body.unscroll {
 }
 #options label {
   text-decoration: underline;
+}
+#selected_tab {
+  font-weight: 700;
 }
 #content {
   overflow: auto;

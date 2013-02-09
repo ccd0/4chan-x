@@ -64,6 +64,10 @@ Config =
         false
         'Optain ban status on every refresh. Note that this will cause delay on getting the result.'
       ]
+      'Custom CSS': [
+        false
+        'Add your own CSS to 4chan.'
+      ]
 
     Linkification:
       'Linkify': [

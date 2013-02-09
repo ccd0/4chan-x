@@ -292,7 +292,6 @@ QR =
 
   resetFileInput: ->
     QR.fileEl.value = null
-    QR.riceFile.innerHTML = QR.defaultMessage
 
   replies: []
   reply: class
@@ -562,16 +561,16 @@ QR =
   dialog: ->
     QR.el = UI.dialog 'qr', 'bottom: 0; right: 0;', '
 <div id=qrtab class=move>
-  <label><input type=checkbox id=autohide title=Auto-hide> Post Form</label>
+  <label><input type=checkbox id=autohide title=Auto-hide> Quick Reply</label>
   <span> <a class=close title=Close>×</a> </span>
+  <div id=threadselect></div>
 </div>
 <form>
   <div class=warning></div>
   <div class=userInfo><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field><input name=email title=E-mail placeholder=E-mail class=field><input name=sub title=Subject placeholder=Subject class=field></div>
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span><div style=clear:both></div></div>
-  <div id=buttons><input type=file multiple size=16><div id=file class=field></div><input type=submit></div>
-  <div id=threadselect></div>
+  <input type=file multiple size=16><input type=submit>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
 </form>'
 
@@ -630,17 +629,11 @@ QR =
 
       $.on QR.threadSelector,     'mousedown', (e) -> e.stopPropagation()
 
-    QR.riceFile = $("#file", QR.el)
     i = 0
     size = QR.fileEl.max
     size /= 1024 while i++ < 2
-    QR.riceFile.innerHTML = QR.defaultMessage = "<span class='placeholder'>Browse...</span>"
-    QR.riceFile.title     = "Max: #{size}MB, Shift+Click to Clear."
-    $.on QR.riceFile,             'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else QR.fileEl.click()
     $.on QR.fileEl,               'change',
-    $.on QR.fileEl,               'change',    ->
-      QR.riceFile.textContent = QR.fileEl.value
-      QR.fileInput.call @
+    $.on QR.fileEl,               'change',    QR.fileInput
     $.on QR.fileEl,               'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
 
     $.on QR.autohide,             'change',    QR.toggleHide

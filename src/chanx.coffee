@@ -581,8 +581,7 @@ ReplyHiding =
   node: (post) ->
     return if post.isInlined or post.ID is post.threadID
     side = $ '.sideArrows', post.root
-    side.className = 'hide_reply_button'
-    side.innerHTML = '<a href="javascript:;"><span>[<span></span>]</span></a>'
+    side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>'
     $.on side.firstChild, 'click', ->
       ReplyHiding.toggle button = @parentNode, root = button.parentNode, id = root.id[2..]
 

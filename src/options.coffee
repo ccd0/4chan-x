@@ -34,10 +34,14 @@ Options =
     | <a target=_blank href=http://zixaphir.github.com/appchan-x/#bug-report>Issues</a>
   </div>
   <div class=tabs>
-    <label for=main_tab>Main</label><label for=filter_tab>Filter</label><label for=sauces_tab>Sauce</label><label for=keybinds_tab>Keybinds</label><label for=rice_tab>Rice</label>
+    <label for=main_tab id=selected_tab>Main</label>
+    | <label for=filter_tab>Filter</label>
+    | <label for=sauces_tab>Sauce</label>
+    | <label for=keybinds_tab>Keybinds</label>
+    | <label for=rice_tab>Rice</label>
   </div>
 </div>
-<div id=optionsContent>
+<div id=content>
   <input type=radio name=tab hidden id=main_tab checked>
   <div class=main_tab></div>
   <input type=radio name=tab hidden id=sauces_tab>
@@ -204,7 +208,7 @@ Options =
     for key, obj of Config.main
       # and creating an unordered list for the main categories.
       ul = $.el 'ul'
-        innerHTML: "<h3>#{key}</h3>"
+        textContent: key
 
       # Then I gather the variables from each category
       for key, arr of obj
@@ -343,6 +347,9 @@ Options =
     d.body.style.setProperty 'width', "#{d.body.clientWidth}px", null
     $.addClass d.body, 'unscroll'
 
+    # Indicate disabled options
+    @indicators dialog
+    
     # Fill values, mostly. See each section for the value of the variable used as an argument.
     # Argument will be treated as 'this' by each method.
     Options.filter.call   filter
@@ -535,9 +542,9 @@ Options =
       Options.persona.button.textContent = "Copy from #{if Options.persona.select.value is 'global' then 'current board' else 'global'}"
 
   close: ->
-    $.rm $.id 'options'
-    $.rm $.id 'overlay'
-    delete Options.el
+    $.rm @
+    d.body.style.removeProperty 'width'
+    $.rmClass d.body, 'unscroll'
 
   clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -646,7 +653,7 @@ Options =
 
     UI.el = mouseover = @nextSibling.cloneNode true
     mouseover.id = 'mouseover'
-    mouseover.className = 'dialog'
+    mouseover.className = 'dialog reply'
     mouseover.style.display = ''
 
     $.on @, 'mousemove',      Options.hover

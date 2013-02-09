@@ -122,7 +122,8 @@
         'Append Delimiters': [false, 'Adds delimiters before and after custom navigation.'],
         'Check for Updates': [true, 'Check for updated versions of Appchan X'],
         'Check for Bans': [false, 'Check ban status and prepend it to the top of the page.'],
-        'Check for Bans constantly': [false, 'Optain ban status on every refresh. Note that this will cause delay on getting the result.']
+        'Check for Bans constantly': [false, 'Optain ban status on every refresh. Note that this will cause delay on getting the result.'],
+        'Custom CSS': [false, 'Add your own CSS to 4chan.']
       },
       Linkification: {
         'Linkify': [true, 'Convert text into links where applicable. If a link is too long and only partially linkified, shift+ctrl+click it to merge the next line.'],
@@ -767,10 +768,14 @@
     | <a target=_blank href=http://zixaphir.github.com/appchan-x/#bug-report>Issues</a>\
   </div>\
   <div class=tabs>\
-    <label for=main_tab>Main</label><label for=filter_tab>Filter</label><label for=sauces_tab>Sauce</label><label for=keybinds_tab>Keybinds</label><label for=rice_tab>Rice</label>\
+    <label for=main_tab id=selected_tab>Main</label>\
+    | <label for=filter_tab>Filter</label>\
+    | <label for=sauces_tab>Sauce</label>\
+    | <label for=keybinds_tab>Keybinds</label>\
+    | <label for=rice_tab>Rice</label>\
   </div>\
 </div>\
-<div id=optionsContent>\
+<div id=content>\
   <input type=radio name=tab hidden id=main_tab checked>\
   <div class=main_tab></div>\
   <input type=radio name=tab hidden id=sauces_tab>\
@@ -941,7 +946,7 @@
       for (key in _ref1) {
         obj = _ref1[key];
         ul = $.el('ul', {
-          innerHTML: "<h3>" + key + "</h3>"
+          textContent: key
         });
         for (key in obj) {
           arr = obj[key];
@@ -1054,6 +1059,7 @@
       $.add(d.body, overlay);
       d.body.style.setProperty('width', "" + d.body.clientWidth + "px", null);
       $.addClass(d.body, 'unscroll');
+      this.indicators(dialog);
       Options.filter.call(filter);
       Options.backlink.call(back);
       Options.time.call(time);
@@ -1243,9 +1249,9 @@
       }
     },
     close: function() {
-      $.rm($.id('options'));
-      $.rm($.id('overlay'));
-      return delete Options.el;
+      $.rm(this);
+      d.body.style.removeProperty('width');
+      return $.rmClass(d.body, 'unscroll');
     },
     clearHidden: function() {
       $["delete"]("hiddenReplies/" + g.BOARD + "/");
@@ -1338,7 +1344,7 @@
       }
       UI.el = mouseover = this.nextSibling.cloneNode(true);
       mouseover.id = 'mouseover';
-      mouseover.className = 'dialog';
+      mouseover.className = 'dialog reply';
       mouseover.style.display = '';
       $.on(this, 'mousemove', Options.hover);
       $.on(this, 'mouseout', Options.mouseout);
@@ -2062,8 +2068,7 @@
         return;
       }
       side = $('.sideArrows', post.root);
-      side.className = 'hide_reply_button';
-      side.innerHTML = '<a href="javascript:;"><span>[<span></span>]</span></a>';
+      side.innerHTML = '<a href="javascript:;"><span>[ - ]</span></a>';
       $.on(side.firstChild, 'click', function() {
         var button, id, root;
         return ReplyHiding.toggle(button = this.parentNode, root = button.parentNode, id = root.id.slice(2));
@@ -5891,8 +5896,7 @@
       return QR.resetFileInput();
     },
     resetFileInput: function() {
-      QR.fileEl.value = null;
-      return QR.riceFile.innerHTML = QR.defaultMessage;
+      return QR.fileEl.value = null;
     },
     replies: [],
     reply: (function() {
@@ -6240,16 +6244,16 @@
       var i, id, mimeTypes, name, size, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
       QR.el = UI.dialog('qr', 'bottom: 0; right: 0;', '\
 <div id=qrtab class=move>\
-  <label><input type=checkbox id=autohide title=Auto-hide> Post Form</label>\
+  <label><input type=checkbox id=autohide title=Auto-hide> Quick Reply</label>\
   <span> <a class=close title=Close>×</a> </span>\
+  <div id=threadselect></div>\
 </div>\
 <form>\
   <div class=warning></div>\
   <div class=userInfo><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field><input name=email title=E-mail placeholder=E-mail class=field><input name=sub title=Subject placeholder=Subject class=field></div>\
   <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>\
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span><div style=clear:both></div></div>\
-  <div id=buttons><input type=file multiple size=16><div id=file class=field></div><input type=submit></div>\
-  <div id=threadselect></div>\
+  <input type=file multiple size=16><input type=submit>\
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>\
 </form>');
       if (Conf['Remember QR size']) {
@@ -6302,25 +6306,12 @@
           return e.stopPropagation();
         });
       }
-      QR.riceFile = $("#file", QR.el);
       i = 0;
       size = QR.fileEl.max;
       while (i++ < 2) {
         size /= 1024;
       }
-      QR.riceFile.innerHTML = QR.defaultMessage = "<span class='placeholder'>Browse...</span>";
-      QR.riceFile.title = "Max: " + size + "MB, Shift+Click to Clear.";
-      $.on(QR.riceFile, 'click', function(e) {
-        if (e.shiftKey) {
-          return QR.selected.rmFile() || e.preventDefault();
-        } else {
-          return QR.fileEl.click();
-        }
-      });
-      $.on(QR.fileEl, 'change', $.on(QR.fileEl, 'change', function() {
-        QR.riceFile.textContent = QR.fileEl.value;
-        return QR.fileInput.call(this);
-      }));
+      $.on(QR.fileEl, 'change', $.on(QR.fileEl, 'change', QR.fileInput));
       $.on(QR.fileEl, 'click', function(e) {
         if (e.shiftKey) {
           return QR.selected.rmFile() || e.preventDefault();
@@ -7045,7 +7036,7 @@
     layout: function() {
       var agent;
       agent = Style.agent;
-      return ("/* dialog styling */\nhr.abovePostForm {\n  width: 100% !important;\n}\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0,0,0,.25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel, .favicon {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n.hide_thread_button:not(.hidden_thread) {\n  float: left;\n}\n\n.thread > .hidden_thread ~ *,\n[hidden],\n#globalMessage.hidden,\n#content > [name=tab]:not(:checked) + div,\n#updater:not(:hover) > :not(.move),\n.autohide:not(:hover) > form,\n#qp input, .forwarded {\n  display: none !important;\n}\n\n.menu_button {\n  display: inline-block;\n}\n.menu_button > span {\n  border-top:   .5em solid;\n  border-right: .3em solid transparent;\n  border-left:  .3em solid transparent;\n  display: inline-block;\n  margin: 2px;\n  vertical-align: middle;\n}\n#menu {\n  position: absolute;\n  outline: none;\n}\n.entry {\n  border-bottom: 1px solid rgba(0, 0, 0, .25);\n  cursor: pointer;\n  display: block;\n  outline: none;\n  padding: 3px 7px;\n  position: relative;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.entry:last-child {\n  border: none;\n}\n.focused.entry {\n  background: rgba(255, 255, 255, .33);\n}\n.entry.hasSubMenu {\n  padding-right: 1.5em;\n}\n.hasSubMenu::after {\n  content: \"\";\n  border-left:   .5em solid;\n  border-top:    .3em solid transparent;\n  border-bottom: .3em solid transparent;\n  display: inline-block;\n  margin: .3em;\n  position: absolute;\n  right: 3px;\n}\n.hasSubMenu:not(.focused) > .subMenu {\n  display: none;\n}\n.subMenu {\n  position: absolute;\n  left: 100%;\n  top: 0;\n  margin-top: -1px;\n}\nh1,\nh2 {\n  text-align: center;\n}\n#qr > .move {\n  min-width: 300px;\n  overflow: hidden;\n  box-sizing: border-box;\n  " + agent + "box-sizing: border-box;\n  padding: 0 2px;\n}\n#qr > .move > span {\n  float: right;\n}\n#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {\n  cursor: pointer;\n}\n#qr select,\n#qr > form {\n  margin: 0;\n}\n#dump {\n  background: " + agent + "linear-gradient(#EEE, #CCC);\n  background: linear-gradient(#EEE, #CCC);\n  width: 10%;\n}\n.gecko #dump {\n  padding: 1px 0 2px;\n}\n#dump:hover, #dump:focus {\n  background: " + agent + "linear-gradient(#FFF, #DDD);\n  background: linear-gradient(#FFF, #DDD);\n}\n#dump:active, .dump #dump:not(:hover):not(:focus) {\n  background: " + agent + "linear-gradient(#CCC, #DDD);\n  background: linear-gradient(#CCC, #DDD);\n}\n#qr:not(.dump) #replies, .dump > form > label {\n  display: none;\n}\n#replies {\n  display: block;\n  height: 100px;\n  position: relative;\n  " + agent + "user-select: none;\n  user-select: none;\n}\n#replies > div {\n  counter-reset: thumbnails;\n  top: 0; right: 0; bottom: 0; left: 0;\n  margin: 0; padding: 0;\n  overflow: hidden;\n  position: absolute;\n  white-space: pre;\n}\n#replies > div:hover {\n  bottom: -10px;\n  overflow-x: auto;\n  z-index: 1;\n}\n.thumbnail {\n  background-color: rgba(0,0,0,.2) !important;\n  background-position: 50% 20% !important;\n  background-size: cover !important;\n  border: 1px solid #666;\n  box-sizing: border-box;\n  " + agent + "box-sizing: border-box;\n  cursor: move;\n  display: inline-block;\n  height: 90px; width: 90px;\n  margin: 5px; padding: 2px;\n  opacity: .5;\n  outline: none;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + agent + "transition: opacity .25s ease-in-out;\n  transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.thumbnail:hover, .thumbnail:focus {\n  opacity: .9;\n}\n.thumbnail#selected {\n  opacity: 1;\n}\n.thumbnail::before {\n  counter-increment: thumbnails;\n  content: counter(thumbnails);\n  color: #FFF;\n  font-weight: 700;\n  padding: 3px;\n  position: absolute;\n  top: 0;\n  right: 0;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.thumbnail.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.thumbnail.over {\n  border-color: #FFF;\n}\n.thumbnail > span {\n  color: #FFF;\n}\n.remove {\n  background: none;\n  color: #E00;\n  font-weight: 700;\n  padding: 3px;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.thumbnail > label {\n  background: rgba(0,0,0,.5);\n  color: #FFF;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.thumbnail > label > input {\n  margin: 0;\n}\n#addReply {\n  color: #333;\n  font-size: 3.5em;\n  line-height: 100px;\n}\n#addReply:hover, #addReply:focus {\n  color: #000;\n}\n.field {\n  border: 1px solid #CCC;\n  box-sizing: border-box;\n  " + agent + "box-sizing: border-box;\n  color: #333;\n  font: 13px sans-serif;\n  margin: 0;\n  padding: 2px 4px 3px;\n  " + agent + "transition: color .25s, border .25s;\n  transition: color .25s, border .25s;\n}\n.field:" + agent + "placeholder,\n.field:hover:" + agent + "placeholder {\n  color: #AAA;\n}\n.field:hover, .field:focus {\n  border-color: #999;\n  color: #000;\n  outline: none;\n}\n#qr > form > div:first-child > .field:not(#dump) {\n  width: 30%;\n}\n#qr textarea.field {\n  display: " + agent + "box;\n  min-height: 160px;\n  min-width: 100%;\n}\n#qr.captcha textarea.field {\n  min-height: 120px;\n}\n.textarea {\n  position: relative;\n}\n#charCount {\n  color: #000;\n  background: hsla(0, 0%, 100%, .5);\n  font-size: 8pt;\n  margin: 1px;\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  pointer-events: none;\n}\n#charCount.warning {\n  color: red;\n}\n.captchainput > .field {\n  min-width: 100%;\n}\n.captchaimg {\n  background: #FFF;\n  outline: 1px solid #CCC;\n  outline-offset: -1px;\n  text-align: center;\n}\n.captchaimg > img {\n  display: block;\n  height: 57px;\n  width: 300px;\n}\n#qr [type=file] {\n  margin: 1px 0;\n  width: 70%;\n}\n#qr [type=submit] {\n  margin: 1px 0;\n  padding: 1px; /* not Gecko */\n  width: 30%;\n}\n.gecko #qr [type=submit] {\n  padding: 0 1px; /* Gecko does not respect box-sizing: border-box */\n}\n\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n.fitwidth img[data-md5] + img {\n  max-width: 100%;\n}\n.gecko  .fitwidth img[data-md5] + img,\n.presto .fitwidth img[data-md5] + img {\n  width: 100%;\n}\n\n#qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks {\n  position: fixed;\n}\n\n#ihover {\n  max-height: 97%;\n  max-width: 75%;\n  padding-bottom: 18px;\n}\n\n#navlinks {\n  font-size: 16px;\n  top: 25px;\n  right: 5px;\n}\n\nbody {\n  box-sizing: border-box;\n  " + agent + "box-sizing: border-box;\n}\nbody.unscroll {\n  overflow: hidden;\n}\n#overlay {\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  text-align: center;\n  background: rgba(0,0,0,.5);\n  z-index: 1;\n}\n#overlay::after {\n  content: \"\";\n  display: inline-block;\n  height: 100%;\n  vertical-align: middle;\n}\n#options {\n  box-sizing: border-box;\n  " + agent + "box-sizing: border-box;\n  display: inline-block;\n  padding: 5px;\n  position: relative;\n  text-align: left;\n  vertical-align: middle;\n  width: 600px;\n  max-width: 100%;\n  height: 500px;\n  max-height: 100%;\n}\n#credits {\n  float: right;\n}\n#options ul {\n  padding: 0;\n}\n#options article li {\n  margin: 10px 0 10px 2em;\n}\n#options code {\n  background: hsla(0, 0%, 100%, .5);\n  color: #000;\n  padding: 0 1px;\n}\n#options label {\n  text-decoration: underline;\n}\n#content {\n  overflow: auto;\n  position: absolute;\n  top: 2.5em;\n  right: 5px;\n  bottom: 5px;\n  left: 5px;\n}\n#content textarea {\n  font-family: monospace;\n  min-height: 350px;\n  resize: vertical;\n  width: 100%;\n}\n\n#updater {\n  text-align: right;\n}\n#updater:not(:hover) {\n  border: none;\n  background: transparent;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n.new {\n  background: lime;\n}\n\n#watcher {\n  padding-bottom: 5px;\n  position: absolute;\n  overflow: hidden;\n  white-space: nowrap;\n}\n#watcher:not(:hover) {\n  max-height: 220px;\n}\n#watcher > div {\n  max-width: 200px;\n  overflow: hidden;\n  padding-left: 5px;\n  padding-right: 5px;\n  text-overflow: ellipsis;\n}\n#watcher > .move {\n  padding-top: 5px;\n  text-decoration: underline;\n}\n\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n.inline {\n  background-color: rgba(255, 255, 255, 0.15);\n  border: 1px solid rgba(128, 128, 128, 0.5);\n  display: table;\n  margin: 2px;\n  padding: 2px;\n}\n.inline .post {\n  background: none;\n  border: none;\n  margin: 0;\n  padding: 0;\n}\ndiv.opContainer {\n  display: block !important;\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.opContainer.filter_highlight.qphl {\n  box-shadow: inset 5px 0 rgba(255, 0, 0, .5),\n              0 0 0 2px rgba(216, 94, 49, .7);\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n.filter_highlight > .reply.qphl {\n  box-shadow: -5px 0 rgba(255, 0, 0, .5),\n              0 0 0 2px rgba(216, 94, 49, .7)\n}\n.filtered,\n.quotelink.filtered {\n  text-decoration: underline;\n  text-decoration: line-through !important;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.threadContainer {\n  margin-left: 20px;\n  border-left: 1px solid black;\n}") + (Conf["Custom CSS"] ? Conf["customCSS"] : "");
+      return ("/* dialog styling */\nhr.abovePostForm {\n  width: 100% !important;\n}\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0,0,0,.25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel, .favicon {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n.hide_thread_button:not(.hidden_thread) {\n  float: left;\n}\n\n.thread > .hidden_thread ~ *,\n[hidden],\n#globalMessage.hidden,\n#content > [name=tab]:not(:checked) + div,\n#updater:not(:hover) > :not(.move),\n.autohide:not(:hover) > form,\n#qp input, .forwarded {\n  display: none !important;\n}\n\n.menu_button {\n  display: inline-block;\n}\n.menu_button > span {\n  border-top:   .5em solid;\n  border-right: .3em solid transparent;\n  border-left:  .3em solid transparent;\n  display: inline-block;\n  margin: 2px;\n  vertical-align: middle;\n}\n#menu {\n  position: absolute;\n  outline: none;\n}\n.entry {\n  border-bottom: 1px solid rgba(0, 0, 0, .25);\n  cursor: pointer;\n  display: block;\n  outline: none;\n  padding: 3px 7px;\n  position: relative;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.entry:last-child {\n  border: none;\n}\n.focused.entry {\n  background: rgba(255, 255, 255, .33);\n}\n.entry.hasSubMenu {\n  padding-right: 1.5em;\n}\n.hasSubMenu::after {\n  content: \"\";\n  border-left:   .5em solid;\n  border-top:    .3em solid transparent;\n  border-bottom: .3em solid transparent;\n  display: inline-block;\n  margin: .3em;\n  position: absolute;\n  right: 3px;\n}\n.hasSubMenu:not(.focused) > .subMenu {\n  display: none;\n}\n.subMenu {\n  position: absolute;\n  left: 100%;\n  top: 0;\n  margin-top: -1px;\n}\nh1,\nh2 {\n  text-align: center;\n}\n#qr > .move {\n  min-width: 300px;\n  overflow: hidden;\n  box-sizing: border-box;\n  " + agent + "box-sizing: border-box;\n  padding: 0 2px;\n}\n#threadselect,\n#qr > .move > span {\n  float: right;\n  padding: 0 2px;\n}\n#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {\n  cursor: pointer;\n}\n#qr select,\n#qr > form {\n  margin: 0;\n}\n#dump {\n  background: " + agent + "linear-gradient(#EEE, #CCC);\n  background: linear-gradient(#EEE, #CCC);\n  width: 10%;\n}\n.gecko #dump {\n  padding: 1px 0 2px;\n}\n#dump:hover, #dump:focus {\n  background: " + agent + "linear-gradient(#FFF, #DDD);\n  background: linear-gradient(#FFF, #DDD);\n}\n#dump:active, .dump #dump:not(:hover):not(:focus) {\n  background: " + agent + "linear-gradient(#CCC, #DDD);\n  background: linear-gradient(#CCC, #DDD);\n}\n#qr:not(.dump) #replies, .dump > form > label {\n  display: none;\n}\n#replies {\n  display: block;\n  height: 100px;\n  position: relative;\n  " + agent + "user-select: none;\n  user-select: none;\n}\n#replies > div {\n  counter-reset: thumbnails;\n  top: 0; right: 0; bottom: 0; left: 0;\n  margin: 0; padding: 0;\n  overflow: hidden;\n  position: absolute;\n  white-space: pre;\n}\n#replies > div:hover {\n  bottom: -10px;\n  overflow-x: auto;\n  z-index: 1;\n}\n.thumbnail {\n  background-color: rgba(0,0,0,.2) !important;\n  background-position: 50% 20% !important;\n  background-size: cover !important;\n  border: 1px solid #666;\n  box-sizing: border-box;\n  " + agent + "box-sizing: border-box;\n  cursor: move;\n  display: inline-block;\n  height: 90px; width: 90px;\n  margin: 5px; padding: 2px;\n  opacity: .5;\n  outline: none;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + agent + "transition: opacity .25s ease-in-out;\n  transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.thumbnail:hover, .thumbnail:focus {\n  opacity: .9;\n}\n.thumbnail#selected {\n  opacity: 1;\n}\n.thumbnail::before {\n  counter-increment: thumbnails;\n  content: counter(thumbnails);\n  color: #FFF;\n  font-weight: 700;\n  padding: 3px;\n  position: absolute;\n  top: 0;\n  right: 0;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.thumbnail.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.thumbnail.over {\n  border-color: #FFF;\n}\n.thumbnail > span {\n  color: #FFF;\n}\n.remove {\n  background: none;\n  color: #E00;\n  font-weight: 700;\n  padding: 3px;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.thumbnail > label {\n  background: rgba(0,0,0,.5);\n  color: #FFF;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.thumbnail > label > input {\n  margin: 0;\n}\n#addReply {\n  color: #333;\n  font-size: 3.5em;\n  line-height: 100px;\n}\n#addReply:hover, #addReply:focus {\n  color: #000;\n}\n.field {\n  border: 1px solid #CCC;\n  box-sizing: border-box;\n  " + agent + "box-sizing: border-box;\n  color: #333;\n  font: 13px sans-serif;\n  margin: 0;\n  padding: 2px 4px 3px;\n  " + agent + "transition: color .25s, border .25s;\n  transition: color .25s, border .25s;\n}\n.field:" + agent + "placeholder,\n.field:hover:" + agent + "placeholder {\n  color: #AAA;\n}\n.field:hover, .field:focus {\n  border-color: #999;\n  color: #000;\n  outline: none;\n}\n.userInfo > .field:not(#dump) {\n  width: 30%;\n}\n#qr textarea.field {\n  display: " + agent + "box;\n  min-height: 160px;\n  min-width: 100%;\n}\n#qr.captcha textarea.field {\n  min-height: 120px;\n}\n.textarea {\n  position: relative;\n}\n#charCount {\n  color: #000;\n  background: hsla(0, 0%, 100%, .5);\n  font-size: 8pt;\n  margin: 1px;\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  pointer-events: none;\n}\n#charCount.warning {\n  color: red;\n}\n.captchainput > .field {\n  min-width: 100%;\n}\n.captchaimg {\n  background: #FFF;\n  outline: 1px solid #CCC;\n  outline-offset: -1px;\n  text-align: center;\n}\n.captchaimg > img {\n  display: block;\n  height: 57px;\n  width: 300px;\n}\n#qr [type=file] {\n  margin: 1px 0;\n  width: 70%;\n}\n#qr [type=submit] {\n  margin: 1px 0;\n  padding: 1px; /* not Gecko */\n  width: 30%;\n}\n.gecko #qr [type=submit] {\n  padding: 0 1px; /* Gecko does not respect box-sizing: border-box */\n}\n\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n.fitwidth img[data-md5] + img {\n  max-width: 100%;\n}\n.gecko  .fitwidth img[data-md5] + img,\n.presto .fitwidth img[data-md5] + img {\n  width: 100%;\n}\n\n#qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks, #mouseover {\n  position: fixed;\n}\n\n#ihover {\n  max-height: 97%;\n  max-width: 75%;\n  padding-bottom: 18px;\n}\n\n#navlinks {\n  font-size: 16px;\n  top: 25px;\n  right: 5px;\n}\n\nbody {\n  box-sizing: border-box;\n  " + agent + "box-sizing: border-box;\n}\nbody.unscroll {\n  overflow: hidden;\n}\n#mouseover {\n  z-index: 2;\n}\n#overlay {\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  text-align: center;\n  background: rgba(0,0,0,.5);\n  z-index: 1;\n}\n#overlay::after {\n  content: \"\";\n  display: inline-block;\n  height: 100%;\n  vertical-align: middle;\n}\n#options {\n  box-sizing: border-box;\n  " + agent + "box-sizing: border-box;\n  display: inline-block;\n  padding: 5px;\n  position: relative;\n  text-align: left;\n  vertical-align: middle;\n  width: 600px;\n  max-width: 100%;\n  height: 500px;\n  max-height: 100%;\n}\n#credits {\n  float: right;\n}\n#options ul {\n  padding: 0;\n}\n#options article li {\n  margin: 10px 0 10px 2em;\n}\n#options code {\n  background: hsla(0, 0%, 100%, .5);\n  color: #000;\n  padding: 0 1px;\n}\n#options label {\n  text-decoration: underline;\n}\n#selected_tab {\n  font-weight: 700;\n}\n#content {\n  overflow: auto;\n  position: absolute;\n  top: 2.5em;\n  right: 5px;\n  bottom: 5px;\n  left: 5px;\n}\n#content textarea {\n  font-family: monospace;\n  min-height: 350px;\n  resize: vertical;\n  width: 100%;\n}\n\n#updater {\n  text-align: right;\n}\n#updater:not(:hover) {\n  border: none;\n  background: transparent;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n.new {\n  background: lime;\n}\n\n#watcher {\n  padding-bottom: 5px;\n  position: absolute;\n  overflow: hidden;\n  white-space: nowrap;\n}\n#watcher:not(:hover) {\n  max-height: 220px;\n}\n#watcher > div {\n  max-width: 200px;\n  overflow: hidden;\n  padding-left: 5px;\n  padding-right: 5px;\n  text-overflow: ellipsis;\n}\n#watcher > .move {\n  padding-top: 5px;\n  text-decoration: underline;\n}\n\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n.inline {\n  background-color: rgba(255, 255, 255, 0.15);\n  border: 1px solid rgba(128, 128, 128, 0.5);\n  display: table;\n  margin: 2px;\n  padding: 2px;\n}\n.inline .post {\n  background: none;\n  border: none;\n  margin: 0;\n  padding: 0;\n}\ndiv.opContainer {\n  display: block !important;\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.opContainer.filter_highlight.qphl {\n  box-shadow: inset 5px 0 rgba(255, 0, 0, .5),\n              0 0 0 2px rgba(216, 94, 49, .7);\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n.filter_highlight > .reply.qphl {\n  box-shadow: -5px 0 rgba(255, 0, 0, .5),\n              0 0 0 2px rgba(216, 94, 49, .7)\n}\n.filtered,\n.quotelink.filtered {\n  text-decoration: underline;\n  text-decoration: line-through !important;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.threadContainer {\n  margin-left: 20px;\n  border-left: 1px solid black;\n}") + (Conf["Custom CSS"] ? Conf["customCSS"] : "");
     }
   };
 
