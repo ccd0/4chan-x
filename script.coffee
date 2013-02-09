@@ -6,7 +6,7 @@ Config =
       '404 Redirect':                 [true,  'Redirect dead threads and images']
       'Keybinds':                     [true,  'Binds actions to keys']
       'Time Formatting':              [true,  'Arbitrarily formatted timestamps, using your local time']
-      'Relative Post Dates':          [false, 'Display post times as "3 minutes ago" or similar. Hover tooltip will display the original or formatted timestamp']
+      'Relative Post Dates':          [false, 'Display dates as "3 minutes ago" f.e., tooltip shows the timestamp']
       'File Info Formatting':         [true,  'Reformats the file information']
       'Comment Expansion':            [true,  'Expand too long comments']
       'Thread Expansion':             [true,  'View all replies']
