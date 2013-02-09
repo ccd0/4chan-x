@@ -1140,9 +1140,6 @@ Updater =
         when 'Update Now'
           $.on input, 'click', @update
 
-    # Applies fake checkboxes.
-    Style.rice dialog
-
     $.add d.body, dialog
 
     # Check for new posts on post.
@@ -3287,7 +3284,6 @@ Prefetch =
       $.after first, controls
     else
       $.before first, controls
-    Style.rice controls
 
   change: ->
     $.off @, 'change', Prefetch.change
@@ -3445,7 +3441,6 @@ ImageExpand =
     $.on select, 'change', $.cb.value
     $.on select, 'change', ImageExpand.cb.typeChange
     $.on $('input', controls), 'click', ImageExpand.cb.all
-    Style.rice controls
 
     $.prepend $.id('delform'), controls
 

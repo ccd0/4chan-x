@@ -642,8 +642,6 @@ QR =
       QR.riceFile.textContent = QR.fileEl.value
       QR.fileInput.call @
     $.on QR.fileEl,               'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
-    Style.rice QR.el
-
 
     $.on QR.autohide,             'change',    QR.toggleHide
     $.on $('.close',    QR.el),   'click',     QR.close

@@ -7,8 +7,6 @@ Main =
     for key, val of Conf
       Conf[key] = $.get key, val
 
-    Conf['Hidden Categories'] = $.get "Hidden Categories", ["Questionable"]
-
     path = location.pathname
     pathname = path[1..].split '/'
     [g.BOARD, temp] = pathname
@@ -25,25 +23,6 @@ Main =
 
     # Scope a local _conf variable for performance.
     _conf = Conf
-
-    if _conf["NSFW/SFW Mascots"]
-      g.MASCOTSTRING = "Enabled Mascots #{g.TYPE}"
-    else
-      g.MASCOTSTRING = "Enabled Mascots"
-
-    # Load user themes, mascots, and their various statuses.
-    userNavigation = $.get "userNavigation", Navigation
-
-    for name, theme of $.get "userThemes", {}
-      Themes[name] = theme
-
-    for name, mascot of $.get "userMascots", {}
-      Mascots[name] = mascot
-
-    Conf["Enabled Mascots"]       = $.get "Enabled Mascots",      []
-    Conf["Enabled Mascots sfw"]   = $.get "Enabled Mascots sfw",  []
-    Conf["Enabled Mascots nsfw"]  = $.get "Enabled Mascots nsfw", []
-    Conf["Deleted Mascots"]       = $.get "Deleted Mascots",      []
 
     # Setup Fill some per board configuration values with their global equivalents.
     if _conf["Interval per board"]
@@ -113,7 +92,6 @@ Main =
         CustomNavigation.init()
 
       Options.init()
-      MascotTools.init()
 
       for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
         if a = $ "a[href*='/#{g.BOARD}/']", $.id nav
@@ -241,8 +219,6 @@ Main =
     # Major features.
 
     QR.init()
-
-    MascotTools.init()
 
     if _conf['Image Expansion']
       ImageExpand.init()
