@@ -1971,7 +1971,7 @@
         thread = _ref[_i];
         a = $.el('a', {
           className: 'hide_thread_button',
-          innerHTML: '<span>[<span></span>]</span>',
+          innerHTML: '<span>[ - ]</span>',
           href: 'javascript:;'
         });
         $.on(a, 'click', function() {
