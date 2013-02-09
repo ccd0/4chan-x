@@ -1,5 +1,9 @@
 master
 
+2.38.1
+- Mayhem
+  Fix a little regression introduced in 2.38.0 for webkit browsers.
+
 2.38.0
 - Queue
   Add Relative Post Dates ("35 seconds ago"), disabled by default.
