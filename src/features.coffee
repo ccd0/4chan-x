@@ -1,3 +1,109 @@
+Header =
+  init: ->
+    @menu = new UI.Menu 'header'
+
+    @headerEl = $.el 'div',
+      id:        'header'
+      innerHTML: '<div id=header-bar></div><div id=notifications></div>'
+
+    headerBar = $('#header-bar', @headerEl)
+    if $.get 'autohideHeaderBar', false
+      $.addClass headerBar, 'autohide'
+
+    menuButton = $.el 'a',
+      className: 'menu-button'
+      innerHTML: '[<span></span>]'
+      href:      'javascript:;'
+    $.on menuButton, 'click', @menuToggle
+
+    boardListButton = $.el 'span',
+      className: 'show-board-list-button'
+      innerHTML: '[<a href=javascript:;>+</a>]'
+      title:     'Toggle the board list.'
+    $.on boardListButton, 'click', @toggleBoardList
+
+    boardTitle = $.el 'a',
+      className: 'board-name'
+      innerHTML: "<span class=board-path>/#{g.BOARD}/</span> - <span class=board-title>...</span>"
+      href:      "/#{g.BOARD}/"
+    boardList = $.el 'span',
+      className: 'board-list'
+      hidden:    true
+
+    toggleBar = $.el 'div',
+      id: 'toggle-header-bar'
+      title: 'Toggle the header bar.'
+    $.on toggleBar, 'click', @toggleBar
+
+    $.prepend headerBar, [menuButton, boardListButton, $.tn(' '), boardTitle, boardList, toggleBar]
+
+    try
+      @setBoardList()
+    catch err
+      # XXX handle error
+      $.log err, 'Header - board list'
+
+    $.asap (-> d.body), ->
+      $.prepend d.body, Header.headerEl
+
+  setBoardList: ->
+    Get.boardsConfig (boardsConfig) ->
+      $('.board-title', Header.headerEl).textContent = boardsConfig[g.BOARD].title
+    $.ready ->
+      if nav = $.id 'boardNavDesktop'
+        $("a[href$='/#{g.BOARD}/']", nav)?.className = 'current'
+        $.add $('.board-list', Header.headerEl),
+          Array::slice.call nav.childNodes
+
+  toggleBoardList: ->
+    node = @firstElementChild.firstChild
+    if showBoardList = $.hasClass @, 'show-board-list-button'
+      @className = 'hide-board-list-button'
+      node.data = node.data.replace '+', '-'
+    else
+      @className = 'show-board-list-button'
+      node.data = node.data.replace '-', '+'
+    {headerEl} = Header
+    $('.board-name', headerEl).hidden =  showBoardList
+    $('.board-list', headerEl).hidden = !showBoardList
+
+  toggleBar: ->
+    bool = $.id('header-bar').classList.toggle 'autohide'
+    $.set 'autohideHeaderBar', bool
+
+  menuToggle: (e) ->
+    Header.menu.toggle e, @, g
+
+Settings =
+  init: ->
+    # 4chan X settings link
+    link = $.el 'a',
+      className:   'settings-link'
+      textContent: '4chan X Settings'
+      href:        'javascript:;'
+    $.on link, 'click', Settings.open
+    Header.menu.addEntry
+      el: link
+
+    # 4chan settings link
+    link = $.el 'a',
+      className:   'fourchan-settings-link'
+      textContent: '4chan Settings'
+      href:        'javascript:;'
+    $.on link, 'click', -> $.id('settingsWindowLink').click()
+    Header.menu.addEntry
+      el: link
+      open: -> !Conf['Disable 4chan\'s extension']
+
+    return unless Conf['Disable 4chan\'s extension']
+    settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
+    return if settings.disableAll
+    settings.disableAll = true
+    localStorage.setItem '4chan-settings', JSON.stringify settings
+  open: ->
+    Header.menu.close()
+    # Here be settings
+
 Filter =
   filters: {}
   init: ->
@@ -195,7 +301,7 @@ Filter =
         # Add a sub entry for each filter type.
         entry.children.push Filter.menu.createSubEntry type[0], type[1]
 
-      Menu.addEntry entry
+      Menu.menu.addEntry entry
 
     createSubEntry: (text, type) ->
       el = $.el 'a',
@@ -345,7 +451,7 @@ ThreadHiding =
       makeStub = $.el 'label',
         innerHTML: "<input type=checkbox checked=#{Conf['Stubs']}> Make stub"
 
-      Menu.addEntry
+      Menu.menu.addEntry
         el: div
         open: (post) ->
           {thread} = post
@@ -493,7 +599,7 @@ ReplyHiding =
       makeStub = $.el 'label',
         innerHTML: "<input type=checkbox name=makeStub checked=#{Conf['Stubs']}> Make stub"
 
-      Menu.addEntry
+      Menu.menu.addEntry
         el: div
         open: (post) ->
           if !post.isReply or post.isClone
@@ -619,20 +725,18 @@ Recursive =
     return
 
 Menu =
-  entries: []
   init: ->
-    # Doc here: https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
-    $.on d, 'AddMenuEntry', (e) -> Menu.addEntry e.detail
+    @menu = new UI.Menu 'post'
     Post::callbacks.push
       name: 'Menu'
       cb:   @node
 
   node: ->
-    a = Menu.makeButton @
+    button = Menu.makeButton @
     if @isClone
-      $.replace $('.menu-button', @nodes.info), a
+      $.replace $('.menu-button', @nodes.info), button
       return
-    $.add @nodes.info, [$.tn('\u00A0'), a]
+    $.add @nodes.info, [$.tn('\u00A0'), button]
 
   makeButton: (post) ->
     a = $.el 'a',
@@ -644,158 +748,13 @@ Menu =
     $.on a, 'click', Menu.toggle
     a
 
-  makeMenu: ->
-    menu = $.el 'div',
-      className: 'reply dialog'
-      id:        'menu'
-      tabIndex:  0
-    $.on menu, 'click', (e) -> e.stopPropagation()
-    $.on menu, 'keydown', Menu.keybinds
-    menu
-
   toggle: (e) ->
-    e.preventDefault()
-    e.stopPropagation()
-
-    if Menu.currentMenu
-      # Close if it's already opened.
-      # Reopen if we clicked on another button.
-      {lastToggledButton} = Menu
-      Menu.close()
-      return if lastToggledButton is @
-
-    Menu.lastToggledButton = @
     post =
       if @dataset.clone
         Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
       else
         g.posts[@dataset.postid]
-    Menu.open @, post
-
-  open: (button, post) ->
-    menu = Menu.makeMenu()
-    Menu.currentMenu = menu
-
-    for entry in Menu.entries
-      Menu.insertEntry entry, menu, post
-
-    Menu.focus $ '.entry', menu
-    $.on d, 'click', Menu.close
-    $.add d.body, menu
-
-    # Position
-    mRect = menu.getBoundingClientRect()
-    bRect = button.getBoundingClientRect()
-    bTop  = d.documentElement.scrollTop  + d.body.scrollTop  + bRect.top
-    bLeft = d.documentElement.scrollLeft + d.body.scrollLeft + bRect.left
-    menu.style.top =
-      if bRect.top + bRect.height + mRect.height < d.documentElement.clientHeight
-        bTop + bRect.height + 2 + 'px'
-      else
-        bTop - mRect.height - 2 + 'px'
-    menu.style.left =
-      if bRect.left + mRect.width < d.documentElement.clientWidth
-        bLeft + 'px'
-      else
-        bLeft + bRect.width - mRect.width + 'px'
-
-    menu.focus()
-
-  insertEntry: (entry, parent, post) ->
-    if typeof entry.open is 'function'
-      return unless entry.open post
-    $.add parent, entry.el
-
-    return unless entry.children
-    if submenu = $ '.submenu', entry.el
-      # Reset sub menu, remove irrelevant entries.
-      $.rm submenu
-    submenu = $.el 'div',
-      className: 'reply dialog submenu'
-    $.add entry.el, submenu
-    for child in entry.children
-      Menu.insertEntry child, submenu, post
-    return
-
-  close: ->
-    $.rm Menu.currentMenu
-    delete Menu.currentMenu
-    delete Menu.lastToggledButton
-    $.off d, 'click', Menu.close
-
-  keybinds: (e) ->
-    entry = $ '.focused', Menu.currentMenu
-    while subEntry = $ '.focused', entry
-      entry = subEntry
-
-    switch Keybinds.keyCode(e) or e.keyCode
-      when 'Esc'
-        Menu.lastToggledButton.focus()
-        Menu.close()
-      when 13, 32 # 'Enter', 'Space'
-        entry.click()
-      when 'Up'
-        if next = entry.previousElementSibling
-          Menu.focus next
-      when 'Down'
-        if next = entry.nextElementSibling
-          Menu.focus next
-      when 'Right'
-        if (submenu = $ '.submenu', entry) and next = submenu.firstElementChild
-          Menu.focus next
-      when 'Left'
-        if next = $.x 'parent::*[contains(@class,"submenu")]/parent::*', entry
-          Menu.focus next
-      else
-        return
-
-    e.preventDefault()
-    e.stopPropagation()
-
-  focus: (entry) ->
-    while focused = $.x 'parent::*/child::*[contains(@class,"focused")]', entry
-      $.rmClass focused, 'focused'
-    for focused in $$ '.focused', entry
-      $.rmClass focused, 'focused'
-    $.addClass entry, 'focused'
-
-    # Submenu positioning.
-    return unless submenu = $ '.submenu', entry
-    sRect = submenu.getBoundingClientRect()
-    eRect = entry.getBoundingClientRect()
-    if eRect.top + sRect.height < d.documentElement.clientHeight
-      top    = '0px'
-      bottom = 'auto'
-    else
-      top    = 'auto'
-      bottom = '0px'
-    if eRect.right + sRect.width < d.documentElement.clientWidth
-      left  = '100%'
-      right = 'auto'
-    else
-      left  = 'auto'
-      right = '100%'
-    {style} = submenu
-    style.top    = top
-    style.bottom = bottom
-    style.left   = left
-    style.right  = right
-
-  addEntry: (entry) ->
-    Menu.parseEntry entry
-    Menu.entries.push entry
-
-  parseEntry: (entry) ->
-    {el, children} = entry
-    $.addClass el, 'entry'
-    $.on el, 'focus mouseover', (e) ->
-      e.stopPropagation()
-      Menu.focus @
-    return unless children
-    $.addClass el, 'has-submenu'
-    for child in children
-      Menu.parseEntry child
-    return
+    Menu.menu.toggle e, @, post
 
 ReportLink =
   init: ->
@@ -804,7 +763,7 @@ ReportLink =
       href: 'javascript:;'
       textContent: 'Report this post'
     $.on a, 'click', ReportLink.report
-    Menu.addEntry
+    Menu.menu.addEntry
       el: a
       open: (post) ->
         ReportLink.post = post
@@ -841,7 +800,7 @@ DeleteLink =
         $.on fileEl, 'click', DeleteLink.delete
         !!post.file
 
-    Menu.addEntry
+    Menu.menu.addEntry
       el: div
       open: (post) ->
         return false if post.isDead
@@ -927,7 +886,7 @@ DownloadLink =
     a = $.el 'a',
       className: 'download-link'
       textContent: 'Download file'
-    Menu.addEntry
+    Menu.menu.addEntry
       el: a
       open: (post) ->
         return false unless post.file
@@ -962,7 +921,7 @@ ArchiveLink =
       # Add a sub entry for each type.
       entry.children.push @createSubEntry type[0], type[1]
 
-    Menu.addEntry entry
+    Menu.menu.addEntry entry
 
   createSubEntry: (text, type) ->
     el = $.el 'a',
@@ -1341,6 +1300,40 @@ Build =
     container
 
 Get =
+  boardsConfig: (->
+    boardsConfig = null
+    callbacks    = []
+
+    parseBoardsConfig = ->
+      return if @status isnt 200
+      boardsConfig = {}
+      for board in JSON.parse(@response).boards
+        boardName = board.board
+        delete board.board
+        boardsConfig[boardName] = board
+      for callback in callbacks
+        callback boardsConfig
+      callbacks = null
+      boardsConfig.lastModified = @getResponseHeader 'Last-Modified'
+      $.set 'boardsConfig', boardsConfig
+
+    (cb) ->
+      # Configs were already loaded previously, callback and stop.
+      if boardsConfig
+        cb boardsConfig
+        return
+
+      # Load configs, callback, check for updates.
+      if boardsConfig = $.get 'boardsConfig', null
+        cb boardsConfig
+        lastModified = boardsConfig.lastModified
+      else
+        return if callbacks.push(cb) > 1
+        lastModified = 0
+
+      $.ajax '//api.4chan.org/boards.json', onloadend: parseBoardsConfig,
+        headers: 'If-Modified-Since': lastModified
+  )()
   postFromRoot: (root) ->
     link   = $ 'a[title="Highlight this post"]', root
     board  = link.pathname.split('/')[1]

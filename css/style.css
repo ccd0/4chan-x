@@ -31,17 +31,20 @@ a[href="javascript:;"] {
 /* fixed, z-index */
 #qp, #ihover,
 #updater, #stats,
-#boardNavDesktop.reply,
+#header,
 #qr, #watcher {
   position: fixed;
 }
 #qp, #ihover {
   z-index: 100;
 }
+#menu {
+  z-index: 95;
+}
 #updater, #stats {
   z-index: 90;
 }
-#boardNavDesktop.reply:hover {
+#header:hover {
   z-index: 80;
 }
 #qr {
@@ -50,38 +53,70 @@ a[href="javascript:;"] {
 #watcher {
   z-index: 30;
 }
-#boardNavDesktop.reply {
+#header {
   z-index: 10;
 }
 
+/* XXX support different styles */
+#header-bar {
+  font-size: 9pt;
+  color: #89A;
+  background-color: #D6DAF0;
+  border-color: #B7C5D9;
+  border-width: 0 0 1px;
+  border-style: solid;
+}
 
 /* header */
 body.fourchan_x {
-  margin-top: 2.5em;
+  margin-top: 2em;
 }
-#boardNavDesktop.reply {
-  border-width: 0 0 1px;
-  padding: 4px;
+#header {
   top: 0;
   right: 0;
   left: 0;
-  transition: opacity .1s ease-in-out;
-  -o-transition: opacity .1s ease-in-out;
-  -moz-transition: opacity .1s ease-in-out;
-  -webkit-transition: opacity .1s ease-in-out;
 }
-#boardNavDesktop.reply:not(:hover) {
-  opacity: .4;
-  transition: opacity 1.5s .5s ease-in-out;
-  -o-transition: opacity 1.5s .5s ease-in-out;
-  -moz-transition: opacity 1.5s .5s ease-in-out;
-  -webkit-transition: opacity 1.5s .5s ease-in-out;
+#header-bar {
+  padding: 4px;
+  position: relative;
+  transition: all .1s ease-in-out;
+  -o-transition: all .1s ease-in-out;
+  -moz-transition: all .1s ease-in-out;
+  -webkit-transition: all .1s ease-in-out;
 }
-#boardNavDesktop.reply a {
-  margin: -1px;
+#header-bar.autohide:not(:hover) {
+  transform: translateY(-100%);
+  -o-transform: translateY(-100%);
+  -moz-transform: translateY(-100%);
+  -webkit-transform: translateY(-100%);
+  transition: all .75s .25s ease-in-out;
+  -o-transition: all .75s .25s ease-in-out;
+  -moz-transition: all .75s .25s ease-in-out;
+  -webkit-transition: all .75s .25s ease-in-out;
 }
-#settings {
+#toggle-header-bar {
+  cursor: n-resize;
+  left: 0;
+  right: 0;
+  bottom: -8px;
+  height: 10px;
+  position: absolute;
+}
+#header-bar.autohide #toggle-header-bar {
+  cursor: s-resize;
+}
+#header-bar a {
+  text-decoration: none;
+  padding: 1px;
+}
+#header-bar > .menu-button {
   float: right;
+  padding: 0;
+}
+body > #boardNavDesktop,
+#navtopright,
+#boardNavDesktopFoot {
+  display: none !important;
 }
 
 /* thread updater */

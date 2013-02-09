@@ -10,6 +10,180 @@ UI = (->
     move.addEventListener 'mousedown',  dragstart, false
     el
 
+
+  class Menu
+    currentMenu       = null
+    lastToggledButton = null
+
+    constructor: (@type) ->
+      # Doc here: https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
+      $.on d, 'AddMenuEntry', @addEntryListener.bind @
+      @close   = close.bind @
+      @entries = []
+
+    makeMenu: ->
+      menu = $.el 'div',
+        className: 'reply dialog'
+        id:        'menu'
+        tabIndex:  0
+      $.on menu, 'click', (e) -> e.stopPropagation()
+      $.on menu, 'keydown', @keybinds.bind @
+      menu
+
+    toggle: (e, button, data) ->
+      e.preventDefault()
+      e.stopPropagation()
+
+      if currentMenu
+        # Close if it's already opened.
+        # Reopen if we clicked on another button.
+        previousButton = lastToggledButton
+        @close()
+        return if previousButton is button
+
+      return unless @entries.length
+      @open button, data
+
+    open: (button, data) ->
+      menu = @makeMenu()
+      currentMenu       = menu
+      lastToggledButton = button
+
+      for entry in @entries
+        @insertEntry entry, menu, data
+
+      @focus $ '.entry', menu
+      $.on d, 'click', @close
+      $.add d.body, menu
+
+      # Position
+      mRect   = menu.getBoundingClientRect()
+      bRect   = button.getBoundingClientRect()
+      bTop    = d.documentElement.scrollTop  + d.body.scrollTop  + bRect.top
+      bLeft   = d.documentElement.scrollLeft + d.body.scrollLeft + bRect.left
+      cHeight = d.documentElement.clientHeight
+      cWidth  = d.documentElement.clientWidth
+      top =
+        if bRect.top + bRect.height + mRect.height < cHeight
+          bTop + bRect.height + 2
+        else
+          bTop - mRect.height - 2
+      left =
+        if bRect.left + mRect.width < cWidth
+          bLeft
+        else
+          bLeft + bRect.width - mRect.width
+      {style} = menu
+      style.top  = top  + 'px'
+      style.left = left + 'px'
+
+      menu.focus()
+
+    insertEntry: (entry, parent, data) ->
+      if typeof entry.open is 'function'
+        return unless entry.open data
+      $.add parent, entry.el
+
+      return unless entry.children
+      if submenu = $ '.submenu', entry.el
+        # Reset sub menu, remove irrelevant entries.
+        $.rm submenu
+      submenu = $.el 'div',
+        className: 'reply dialog submenu'
+      for child in entry.children
+        @insertEntry child, submenu, data
+      $.add entry.el, submenu
+      return
+
+    close = ->
+      $.rm currentMenu
+      currentMenu       = null
+      lastToggledButton = null
+      $.off d, 'click', @close
+
+    keybinds: (e) ->
+      entry = $ '.focused', currentMenu
+      while subEntry = $ '.focused', entry
+        entry = subEntry
+
+      switch e.keyCode
+        when 27 # Esc
+          lastToggledButton.focus()
+          @close()
+        when 13, 32 # Enter, Space
+          entry.click()
+        when 38 # Up
+          if next = entry.previousElementSibling
+            @focus next
+        when 40 # Down
+          if next = entry.nextElementSibling
+            @focus next
+        when 39 # Right
+          if (submenu = $ '.submenu', entry) and next = submenu.firstElementChild
+            @focus next
+        when 37 # Left
+          if next = $.x 'parent::*[contains(@class,"submenu")]/parent::*', entry
+            @focus next
+        else
+          return
+
+      e.preventDefault()
+      e.stopPropagation()
+
+    focus: (entry) ->
+      while focused = $.x 'parent::*/child::*[contains(@class,"focused")]', entry
+        $.rmClass focused, 'focused'
+      for focused in $$ '.focused', entry
+        $.rmClass focused, 'focused'
+      $.addClass entry, 'focused'
+
+      # Submenu positioning.
+      return unless submenu = $ '.submenu', entry
+      sRect   = submenu.getBoundingClientRect()
+      eRect   = entry.getBoundingClientRect()
+      cHeight = d.documentElement.clientHeight
+      cWidth  = d.documentElement.clientWidth
+      if eRect.top + sRect.height < cHeight
+        top    = '0px'
+        bottom = 'auto'
+      else
+        top    = 'auto'
+        bottom = '0px'
+      if eRect.right + sRect.width < cWidth
+        left  = '100%'
+        right = 'auto'
+      else
+        left  = 'auto'
+        right = '100%'
+      {style} = submenu
+      style.top    = top
+      style.bottom = bottom
+      style.left   = left
+      style.right  = right
+
+    addEntry: (entry) ->
+      @parseEntry entry
+      @entries.push entry
+
+    parseEntry: (entry) ->
+      {el, children} = entry
+      $.addClass el, 'entry'
+      $.on el, 'focus mouseover', ((e) ->
+        e.stopPropagation()
+        @focus el
+      ).bind @
+      return unless children
+      $.addClass el, 'has-submenu'
+      for child in children
+        @parseEntry child
+      return
+
+    addEntryListener: (e) ->
+      entry = e.detail
+      return if entry.type isnt @type
+      @addEntry entry
+
+
   dragstart = (e) ->
     # prevent text selection
     e.preventDefault()
@@ -49,24 +223,42 @@ UI = (->
         drag.call @, touch
         return
   drag = (e) ->
-    left = e.clientX - @dx
-    top  = e.clientY - @dy
-    if left < 10 then left = 0
-    else if @width - left < 10 then left = null
-    if top < 10 then top = 0
-    else if @height - top < 10 then top = null
-    if left is null
-      @style.left  = null
-      @style.right = '0%'
-    else
-      @style.left  = left / @screenWidth * 100 + '%'
-      @style.right = null
-    if top is null
-      @style.top    = null
-      @style.bottom = '0%'
-    else
-      @style.top    = top / @screenHeight * 100 + '%'
-      @style.bottom = null
+    {clientX, clientY} = e
+
+    left = clientX - @dx
+    left =
+      if left < 10
+        0
+      else if @width - left < 10
+        null
+      else
+        left / @screenWidth * 100 + '%'
+
+    top = clientY - @dy
+    top =
+      if top < 10
+        0
+      else if @height - top < 10
+        null
+      else
+        top / @screenHeight * 100 + '%'
+
+    right =
+      if left is null
+        0
+      else
+        null
+    bottom =
+      if top is null
+        0
+      else
+        null
+
+    {style} = @
+    style.left   = left
+    style.right  = right
+    style.top    = top
+    style.bottom = bottom
   touchend = (e) ->
     for touch in e.changedTouches
       if touch.identifier is @identifier
@@ -99,22 +291,28 @@ UI = (->
     root.addEventListener 'mousemove', o.hover,    false
   hover = (e) ->
     height = @el.offsetHeight
-    top = e.clientY - 120
-    @style.top =
-      if @clientHeight <= height or top <= 0
-        '0px'
-      else if top + height >= @clientHeight
-        @clientHeight - height + 'px'
-      else
-        top + 'px'
+    {clientX, clientY} = e
 
-    {clientX} = e
+    top = clientY - 120
+    top =
+      if @clientHeight <= height or top <= 0
+        0
+      else if top + height >= @clientHeight
+        @clientHeight - height
+      else
+        top
+
     if clientX <= @clientWidth - 400
-      @style.left  = clientX + 45 + 'px'
-      @style.right = null
+      left  = clientX + 45 + 'px'
+      right = null
     else
-      @style.left  = null
-      @style.right = @clientWidth - clientX + 45 + 'px'
+      left  = null
+      right = @clientWidth - clientX + 45 + 'px'
+
+    {style} = @
+    style.top   = top + 'px'
+    style.left  = left
+    style.right = right
   hoverend = ->
     @el.parentNode.removeChild @el
     for event in @events
@@ -122,8 +320,10 @@ UI = (->
     @root.removeEventListener 'mousemove', @hover,    false
     @cb.call @ if @cb
 
+
   return {
     dialog: dialog
+    Menu:   Menu
     hover:  hoverstart
   }
 )()

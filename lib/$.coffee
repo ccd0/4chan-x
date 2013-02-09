@@ -78,19 +78,19 @@ $.extend $,
     value: ->
       $.set @name, @value.trim()
       Conf[@name] = @value
+  asap: (test, cb) ->
+    if test()
+      cb()
+    else
+      setTimeout $.asap, 25, test, cb
   addStyle: (css) ->
     style = $.el 'style',
       textContent: css
-    # That's terrible.
-    # XXX tmp fix for scriptish:
+    # XXX fix for scriptish:
     # https://github.com/scriptish/scriptish/issues/16
-    f = ->
-      # XXX Only Chrome has no d.head on document-start.
-      if root = d.head or d.documentElement
-        $.add root, style
-      else
-        setTimeout f, 20
-    f()
+    $.asap (-> d.head), (->
+      $.add d.head, style
+    )
     style
   x: (path, root=d.body) ->
     # XPathResult.ANY_UNORDERED_NODE_TYPE === 8

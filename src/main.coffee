@@ -158,6 +158,7 @@ class Post
     # Get quote/backlinks to this post
     # and paint them (Dead).
     for quotelink in Get.allQuotelinksLinkingTo @
+      continue if $.hasClass quotelink, 'deadlink'
       $.add quotelink, $.tn '\u00A0(Dead)'
       $.addClass quotelink, 'deadlink'
     return
@@ -267,10 +268,6 @@ Main =
       g.THREAD = +pathname[3]
 
     switch location.hostname
-      when 'boards.4chan.org'
-        Main.initHeader()
-        return if g.VIEW is 'catalog'
-        Main.initFeatures()
       when 'sys.4chan.org'
         return
       when 'images.4chan.org'
@@ -280,41 +277,25 @@ Main =
             location.href = url if url
         return
 
-  initHeader: ->
+    return if g.VIEW is 'catalog'
+
     $.addStyle Main.css
-    Main.header = $.el 'div',
-      className: 'reply'
-      innerHTML: '<div class=extra></div>'
-    $.ready Main.initHeaderReady
+    $.asap (-> d.body), (->
+      $.addClass d.body, $.engine
+      $.addClass d.body, 'fourchan_x'
+    )
 
-  initHeaderReady: ->
-    header = Main.header
-    $.prepend d.body, header
+    try
+      Header.init()
+    catch err
+      # XXX handle error
+      $.log err, 'Header'
 
-    if nav = $.id 'boardNavDesktop'
-      header.id = nav.id
-      $.prepend header, nav
-      nav.id = nav.className = null
-      nav.lastElementChild.hidden = true
-      settings = $.el 'span',
-        id: 'settings'
-        innerHTML: '[<a href=javascript:;>Settings</a>]'
-      $.on settings.firstElementChild, 'click', Main.settings
-      $.add nav, settings
-      $("a[href$='/#{g.BOARD}/']", nav)?.className = 'current'
-
-    $.addClass d.body, $.engine
-    $.addClass d.body, 'fourchan_x'
-
-    # disable the mobile layout
-    $('link[href*=mobile]', d.head)?.disabled = true
-    $.id('boardNavDesktopFoot')?.hidden = true
-
-  initFeatures: ->
-    if Conf['Disable 4chan\'s extension']
-      settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
-      settings.disableAll = true
-      localStorage.setItem '4chan-settings', JSON.stringify settings
+    try
+      Settings.init()
+    catch err
+      # XXX handle error
+      $.log err, 'Settings'
 
     if Conf['Resurrect Quotes']
       try
@@ -497,9 +478,9 @@ Main =
         # XXX handle error
         $.log err, 'Thread Updater'
 
-    $.ready Main.initFeaturesReady
+    $.ready Main.initReady
 
-  initFeaturesReady: ->
+  initReady: ->
     if d.title is '4chan - 404 Not Found'
       if Conf['404 Redirect'] and g.VIEW is 'thread'
         location.href = Redirect.to
@@ -508,7 +489,8 @@ Main =
           postID: location.hash
       return
 
-    return unless $.id 'navtopright'
+    # disable the mobile layout
+    $('link[href*=mobile]', d.head)?.disabled = true
 
     threads = []
     posts   = []
@@ -542,9 +524,6 @@ Main =
         $.log callback.name, 'crashed. error:', err.message, nodes[i]
         $.log err.stack
     return
-
-  settings: ->
-    alert 'Here be settings'
 
   css: """<%= grunt.file.read('css/style.css') %>"""
 
