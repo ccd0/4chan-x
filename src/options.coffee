@@ -6,15 +6,23 @@ Options =
       Favicon.init() unless Favicon.el
       Options.dialog()
 
-    a = $.el 'a',
-      id:    'settingsWindowLink'
-      title: 'Appchan X Settings'
-      href:  'javascript:;'
-    $.on a, 'click', ->
-      Options.dialog()
-    $.replace $.id('settingsWindowLink'), a
+    for settings in ['navtopright', 'navbotright']
+      a = $.el 'a',
+        className:   'settingsWindowLink'
+        textContent: '4chan X Settings'
+        href:        'javascript:;'
+      $.on a, 'click', ->
+        Options.dialog()
 
-  dialog: (tab) ->
+      setting = $.id(settings)
+
+      if Conf['Disable 4chan\'s extension']
+        $.replace setting.childNodes[1], a
+        continue
+
+      $.prepend setting, [$.tn('['), a, $.tn('] ')]
+
+  dialog: ->
     dialog = Options.el = $.el 'div'
       id: 'options'
       className: 'reply dialog'
@@ -329,16 +337,11 @@ Options =
     # The overlay over 4chan and under the options dialog you can click to close.
     overlay = $.el 'div', id: 'overlay'
     $.on overlay, 'click', Options.close
+    $.on dialog,  'click', (e) -> e.stopPropagation()
+    $.add overlay, dialog
     $.add d.body, overlay
-    dialog.style.visibility = 'hidden'
-
-    # Add options dialog to the DOM.
-    $.add d.body, dialog
-    dialog.style.visibility = 'visible'
-
-    # For theme and mascot edit dialogs, mostly. Allows the user to return to the tab that opened the edit dialog.
-    if tab
-      $("[for='#{tab}_tab']", dialog).click()
+    d.body.style.setProperty 'width', "#{d.body.clientWidth}px", null
+    $.addClass d.body, 'unscroll'
 
     # Fill values, mostly. See each section for the value of the variable used as an argument.
     # Argument will be treated as 'this' by each method.

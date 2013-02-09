@@ -55,6 +55,9 @@ Main =
             location.href = url if url
         return
 
+    # Load user themes, mascots, and their various statuses.
+    userNavigation = $.get "userNavigation", Navigation
+
     # Prune objects that have expired.
     Main.prune()
 

@@ -103,7 +103,7 @@
  * @link      http://JSColor.com
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, EmbedLink, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Get, IDColor, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, MarkOwn, Markdown, MascotTools, Menu, MutationObserver, Nav, Navigation, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RemoveSpoilers, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
+  var $, $$, Anonymize, ArchiveLink, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, EmbedLink, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Get, IDColor, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, MarkOwn, Markdown, MascotTools, Menu, MutationObserver, Nav, Navigation, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RemoveSpoilers, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, userNavigation, _base;
 
   Config = {
     main: {
@@ -263,93 +263,7 @@
       BGInterval: 60
     },
     embedWidth: 640,
-    embedHeight: 390,
-    style: {
-      Interface: {
-        'Single Column Mode': [true, 'Presents options in a single column, rather than in blocks.'],
-        'Sidebar': ['normal', 'Alter the sidebar size. Completely hiding it can cause content to overlap, but with the correct option combinations can create a minimal 4chan layout that has more efficient screen real-estate than vanilla 4chan.', ['large', 'normal', 'minimal', 'hide']],
-        'Sidebar Location': ['right', 'The side of the page the sidebar content is on. It is highly recommended that you do not hide the sidebar if you change this option.', ['left', 'right']],
-        'Left Thread Padding': ['0', 'Add some spacing between the left edge of document and the threads.', 'text'],
-        'Right Thread Padding': ['0', 'Add some spacing between the right edge of document and the threads.', 'text'],
-        'Announcements': ['slideout', 'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']],
-        'Board Title': ['at sidebar top', 'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'under post form', 'hide']],
-        'Custom Board Titles': [false, 'Customize Board Titles by shift-clicking the board title or subtitle.'],
-        'Board Subtitle': [true, 'Show the board subtitle.'],
-        '4chan Banner': ['at sidebar top', 'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'under post form', 'at top', 'hide']],
-        '4chan Banner Reflection': [false, 'Adds reflection effects to 4chan\'s image banner.'],
-        'Faded 4chan Banner': [true, 'Make 4chan\'s image banner translucent.'],
-        'Icon Orientation': ['horizontal', 'Change the orientation of the appchan x icons.', ['horizontal', 'vertical']],
-        'Slideout Watcher': [true, 'Adds an icon you can hover over to show the watcher, as opposed to having the watcher always visible.'],
-        'Updater Position': ['top', 'The position of 4chan thread updater and stats', ['top', 'bottom', 'moveable']]
-      },
-      Posts: {
-        'Alternate Post Colors': [false, 'Make post background colors alternate every other post.'],
-        'Color Reply Headings': [false, 'Give the post info a background.'],
-        'Color File Info': [false, 'Give the file info a background.'],
-        'OP Background': [false, 'Adds a border and background color to the OP Post, as if it were a reply.'],
-        'Backlinks Position': ['default', 'The position of backlinks in relation to the post.', ['default', 'lower left', 'lower right']],
-        'Sage Highlighting': ['image', 'Icons or text to highlight saged posts.', ['text', 'image', 'none']],
-        'Sage Highlight Position': ['after', 'Position of Sage Highlighting', ['before', 'after']],
-        'Filtered Backlinks': [true, 'Mark backlinks to filtered posts.'],
-        'Force Reply Break': [false, 'Force replies to occupy their own line and not be adjacent to the OP image.'],
-        'Fit Width Replies': [true, 'Replies fit the entire width of the page.'],
-        'Reply Spacing': ['small', 'The amount of space between replies.', ['none', 'minimal', 'small', 'medium', 'large']],
-        'Reply Padding': ['normal', 'The padding around post content of replies.', ['phat', 'normal', 'slim', 'super slim', 'anorexia']],
-        'Hide Horizontal Rules': [false, 'Hides lines between threads.'],
-        'Images Overlap Post Form': [true, 'Images expand over the post form and sidebar content, usually used with "Expand images" set to "full".']
-      },
-      Aesthetics: {
-        '4chan SS Navigation': [false, 'Try to emulate the appearance of 4chan SS\'s Navigation.'],
-        '4chan SS Sidebar': [false, 'Try to emulate the appearance of 4chan SS\'s Sidebar.'],
-        'Block Ads': [false, 'Block advertisements. It\'s probably better to use AdBlock for this.'],
-        'Shrink Ads': [false, 'Make 4chan advertisements smaller.'],
-        'Sidebar Glow': [false, 'Adds a glow to the sidebar\'s text.'],
-        'Circle Checkboxes': [false, 'Make checkboxes circular.'],
-        'Custom CSS': [false, 'Add (more) custom CSS to Appchan X'],
-        'Emoji': ['enabled', 'Enable emoji', ['enabled', 'disable ponies', 'only ponies', 'disable']],
-        'Emoji Position': ['before', 'Position of emoji icons, like sega and neko.', ['before', 'after']],
-        'Emoji Spacing': ['5', 'Add some spacing between emoji and text.', 'text'],
-        'Font': ['sans-serif', 'The font used by all elements of 4chan.', 'text'],
-        'Font Size': ['12', 'The font size of posts and various UI. This changes most, but not all, font sizes.', 'text'],
-        'Icons': ['oneechan', 'Icon theme which Appchan will use.', ['oneechan', '4chan SS']],
-        'Invisible Icons': [false, 'Makes icons invisible unless hovered. Invisible really is "invisible", so don\'t use it if you don\'t have your icons memorized or don\'t use keybinds.'],
-        'Quote Shadows': [true, 'Add shadows to the quote previews and inline quotes.'],
-        'Rounded Edges': [false, 'Round the edges of various 4chan elements.'],
-        'Slideout Transitions': [false, 'Animate slideouts.'],
-        'Underline Links': [false, 'Put lines under hyperlinks.'],
-        'NSFW/SFW Themes': [false, 'Choose your theme based on the SFW status of the board you are viewing.']
-      },
-      Mascots: {
-        'Mascots': [true, 'Add a pretty picture of your waifu to Appchan.'],
-        'Mascot Location': ['sidebar', 'Change where your mascot is located.', ['sidebar', 'opposite']],
-        'Mascot Position': ['default', 'Change where your mascot is placed in relation to the post form.', ['above post form', 'default', 'bottom']],
-        'Mascots Overlap Posts': [true, 'Mascots overlap threads and posts.'],
-        'NSFW/SFW Mascots': [false, 'Enable or disable mascots based on the SFW status of the board you are viewing.'],
-        'Grayscale Mascots': [false, 'Force mascots to be monochrome.'],
-        'Mascot Opacity': ['1.00', 'Make Mascots transparent.', 'text'],
-        'Hide Mascots on Catalog': [false, 'Do not show mascots on the official catalog pages.']
-      },
-      Navigation: {
-        'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']],
-        'Navigation Alignment': ['center', 'Change the text alignment of the navigation.', ['left', 'center', 'right']],
-        'Slideout Navigation': ['compact', 'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']],
-        'Pagination': ['sticky bottom', 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']],
-        'Pagination Alignment': ['center', 'Change the text alignment of the pagination.', ['left', 'center', 'right']],
-        'Hide Navigation Decorations': [false, 'Hide non-link text in the board navigation and pagination. This also disables the delimiter in <code>Custom Navigation</code>']
-      },
-      'Post Form': {
-        'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],
-        'Hide Show Post Form': [false, 'Hides the "Show Post Form" button when Persistent QR is disabled.'],
-        'Show Post Form Header': [false, 'Force the Post Form to have a header.'],
-        'Post Form Style': ['tabbed slideout', 'How the post form will sit on the page.', ['fixed', 'slideout', 'tabbed slideout', 'transparent fade', 'float']],
-        'Post Form Slideout Transitions': [true, 'Animate slideouts for the post form.'],
-        'Post Form Decorations': [false, 'Add a border and background to the post form (does not apply to the "float" post form style.'],
-        'Textarea Resize': ['vertical', 'Options to resize the post form\'s comment box.', ['both', 'horizontal', 'vertical', 'none', 'auto-expand']],
-        'Tripcode Hider': [true, 'Intelligent name field hiding.']
-      }
-    },
-    theme: 'Yotsuba B',
-    mascot: ''
+    embedHeight: 390
   };
 
   if (!/^[a-z]+\.4chan\.org$/.test(location.hostname)) {
@@ -358,17 +272,13 @@
 
   Conf = {};
 
-  editTheme = {};
-
-  editMascot = {};
-
-  userNavigation = {};
+  g = {};
 
   d = document;
 
-  g = {};
-
   g.TYPE = 'sfw';
+
+  userNavigation = {};
 
   MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.OMutationObserver;
 
@@ -815,7 +725,7 @@
 
   Options = {
     init: function() {
-      var a;
+      var a, setting, settings, _i, _len, _ref, _results;
       if (!$.get('firstrun')) {
         $.set('firstrun', true);
         if (!Favicon.el) {
@@ -823,17 +733,28 @@
         }
         Options.dialog();
       }
-      a = $.el('a', {
-        id: 'settingsWindowLink',
-        title: 'Appchan X Settings',
-        href: 'javascript:;'
-      });
-      $.on(a, 'click', function() {
-        return Options.dialog();
-      });
-      return $.replace($.id('settingsWindowLink'), a);
+      _ref = ['navtopright', 'navbotright'];
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        settings = _ref[_i];
+        a = $.el('a', {
+          className: 'settingsWindowLink',
+          textContent: '4chan X Settings',
+          href: 'javascript:;'
+        });
+        $.on(a, 'click', function() {
+          return Options.dialog();
+        });
+        setting = $.id(settings);
+        if (Conf['Disable 4chan\'s extension']) {
+          $.replace(setting.childNodes[1], a);
+          continue;
+        }
+        _results.push($.prepend(setting, [$.tn('['), a, $.tn('] ')]));
+      }
+      return _results;
     },
-    dialog: function(tab) {
+    dialog: function() {
       var archiver, arr, back, checked, customCSS, description, dialog, favicon, fileInfo, filter, height, hiddenNum, hiddenThreads, input, key, label, li, name, obj, overlay, sauce, time, toSelect, tr, ul, updateIncrease, updateIncreaseB, value, width, _i, _j, _len, _len1, _ref, _ref1, _ref2;
       dialog = Options.el = $.el('div', {
         id: 'options',
@@ -1126,13 +1047,13 @@
         id: 'overlay'
       });
       $.on(overlay, 'click', Options.close);
+      $.on(dialog, 'click', function(e) {
+        return e.stopPropagation();
+      });
+      $.add(overlay, dialog);
       $.add(d.body, overlay);
-      dialog.style.visibility = 'hidden';
-      $.add(d.body, dialog);
-      dialog.style.visibility = 'visible';
-      if (tab) {
-        $("[for='" + tab + "_tab']", dialog).click();
-      }
+      d.body.style.setProperty('width', "" + d.body.clientWidth + "px", null);
+      $.addClass(d.body, 'unscroll');
       Options.filter.call(filter);
       Options.backlink.call(back);
       Options.time.call(time);
@@ -5103,7 +5024,7 @@
       return this["switch"]();
     },
     "switch": function() {
-      this.unreadDead = this.unreadSFW = this.unreadNSFW = Icons.header.png;
+      this.unreadDead = this.unreadSFW = this.unreadNSFW = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA';
       switch (Conf['favicon']) {
         case 'ferongr':
           this.unreadDead += 'BAAAAAQBAMAAADt3eJSAAAAD1BMVEWrVlbpCwJzBQD/jIzlCgLerRyUAAAAAXRSTlMAQObYZgAAAFhJREFUeF5Fi8ENw0AMw6gNZHcCXbJAkw2C7D9Tz68KJKAP+a8MKtAK9DJ9X9ZxB+WT/rbpt9L1Bq3lEapGgBqY3hvYfTagY6rLKHPa6DzTz2PothJAApsfXPUIxXEAtJ4AAAAASUVORK5CYII=';
@@ -6784,7 +6705,7 @@
     },
     categories: ['Anime', 'Ponies', 'Questionable', 'Silhouette', 'Western'],
     dialog: function(key) {
-      var dialog, div, fileInput, input, item, layout, name, option, optionHTML, setting, value, _i, _len, _ref;
+      var dialog, div, editMascot, fileInput, input, item, layout, name, option, optionHTML, setting, value, _i, _len, _ref;
       Conf['editMode'] = 'mascot';
       if (Mascots[key]) {
         editMascot = JSON.parse(JSON.stringify(Mascots[key]));
@@ -6992,6 +6913,7 @@
       return alert("Mascot \"" + name + "\" saved.");
     },
     close: function() {
+      var editMascot;
       Conf['editMode'] = false;
       editMascot = {};
       $.rm($("#mascotConf", d.body));
@@ -7092,18 +7014,13 @@
       delete Style.init;
       delete Style.observe;
       delete Style.wrapper;
-      delete Style.cleanup;
-      if (observer) {
-        return observer.disconnect();
-      } else {
-        return $.off(d, 'DOMNodeInserted', Style.wrapper);
-      }
+      return delete Style.cleanup;
     },
     observe: function() {
-      var observer, onMutationObserver;
+      var onMutationObserver;
       if (MutationObserver) {
-        observer = new MutationObserver(onMutationObserver = this.wrapper);
-        return observer.observe(d, {
+        Style.observer = new MutationObserver(onMutationObserver = this.wrapper);
+        return Style.observer.observe(d, {
           childList: true,
           subtree: true
         });
@@ -7114,6 +7031,11 @@
     wrapper: function() {
       if (d.head) {
         Style.addStyleReady();
+        if (Style.observer) {
+          Style.observer.disconnect();
+        } else {
+          $.off(d, 'DOMNodeInserted', Style.wrapper);
+        }
         return Style.cleanup();
       }
     },
@@ -7194,6 +7116,7 @@
           });
           return;
       }
+      userNavigation = $.get("userNavigation", Navigation);
       Main.prune();
       Style.init();
       now = Date.now();

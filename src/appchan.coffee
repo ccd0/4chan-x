@@ -19,15 +19,10 @@ Style =
     delete Style.wrapper
     delete Style.cleanup
 
-    if observer
-      observer.disconnect()
-    else
-      $.off d, 'DOMNodeInserted', Style.wrapper
-
   observe: ->
     if MutationObserver
-      observer = new MutationObserver onMutationObserver = @wrapper
-      observer.observe d,
+      Style.observer = new MutationObserver onMutationObserver = @wrapper
+      Style.observer.observe d,
         childList: true
         subtree:   true
     else
@@ -36,6 +31,12 @@ Style =
   wrapper: ->
     if d.head
       Style.addStyleReady()
+
+      if Style.observer
+        Style.observer.disconnect()
+      else
+        $.off d, 'DOMNodeInserted', Style.wrapper
+
       Style.cleanup()
 
   addStyleReady: ->

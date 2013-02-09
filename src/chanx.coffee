@@ -3076,7 +3076,7 @@ Favicon =
     @switch()
 
   switch: ->
-    @unreadDead = @unreadSFW = @unreadNSFW = Icons.header.png
+    @unreadDead = @unreadSFW = @unreadNSFW = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA'
     switch Conf['favicon']
       when 'ferongr'
         @unreadDead += 'BAAAAAQBAMAAADt3eJSAAAAD1BMVEWrVlbpCwJzBQD/jIzlCgLerRyUAAAAAXRSTlMAQObYZgAAAFhJREFUeF5Fi8ENw0AMw6gNZHcCXbJAkw2C7D9Tz68KJKAP+a8MKtAK9DJ9X9ZxB+WT/rbpt9L1Bq3lEapGgBqY3hvYfTagY6rLKHPa6DzTz2PothJAApsfXPUIxXEAtJ4AAAAASUVORK5CYII='
