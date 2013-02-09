@@ -5391,7 +5391,7 @@
     polyfill: function() {
       var event, prefix, property;
       if (!('visibilityState' in document)) {
-        prefix = 'mozVisibilityState' in document ? 'moz' : 'webkitvisibilityState' in document ? 'webkit' : 'o';
+        prefix = 'mozVisibilityState' in document ? 'moz' : 'webkitVisibilityState' in document ? 'webkit' : 'o';
         property = prefix + 'VisibilityState';
         event = prefix + 'visibilitychange';
         d.visibilityState = d[property];

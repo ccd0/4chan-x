@@ -4388,7 +4388,7 @@ Main =
     unless 'visibilityState' of document
       prefix = if 'mozVisibilityState' of document
         'moz'
-      else if 'webkitvisibilityState' of document
+      else if 'webkitVisibilityState' of document
         'webkit'
       else
         'o'
