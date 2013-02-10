@@ -40,8 +40,9 @@ Header =
     try
       @setBoardList()
     catch err
-      # XXX handle error
-      $.log err, 'Header - board list'
+      Main.handleErrors
+        message: '"Header (board list)" crashed.'
+        error: err
 
     $.asap (-> d.body), ->
       $.prepend d.body, Header.headerEl
@@ -73,6 +74,31 @@ Header =
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g
+
+class Notification
+  constructor: (@type, content, timeout) ->
+    @el = $.el 'div',
+      className: "notification #{type}"
+      innerHTML: '<a href=javascript:; class=close title=Close>×</a><div class=message></div>'
+    $.on @el.firstElementChild, 'click', @close.bind @
+    if typeof content is 'string'
+      content = $.tn content
+    $.add @el.lastElementChild, content
+
+    if timeout
+      setTimeout @close.bind(@), timeout * $.SECOND
+
+    el = @el
+    $.ready ->
+      $.add $.id('notifications'), el
+
+  setType: (type) ->
+    $.rmClass  @el, @type
+    $.addClass @el,  type
+    @type = type
+
+  close: ->
+    $.rm @el
 
 Settings =
   init: ->
@@ -107,6 +133,8 @@ Settings =
 Filter =
   filters: {}
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Filter']
+
     for key of Config.filter
       @filters[key] = []
       for filter in Conf[key].split '\n'
@@ -134,8 +162,7 @@ Filter =
             regexp = RegExp regexp[1], regexp[2]
           catch err
             # I warned you, bro.
-            # XXX handle error
-            alert err.message
+            new Notification 'warning', err.message, 60
             continue
 
         # Filter OPs along with their threads, replies only, or both.
@@ -274,6 +301,8 @@ Filter =
 
   menu:
     init: ->
+      return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Filter']
+
       div = $.el 'div',
         textContent: 'Filter'
 
@@ -376,7 +405,8 @@ Filter =
 
 ThreadHiding =
   init: ->
-    return if g.VIEW isnt 'index'
+    return if g.VIEW isnt 'index' or !Conf['Thread Hiding']
+
     @getHiddenThreads()
     @syncFromCatalog()
     @clean()
@@ -438,7 +468,8 @@ ThreadHiding =
 
   menu:
     init: ->
-      return if g.VIEW isnt 'index'
+      return if g.VIEW isnt 'index' or !Conf['Menu'] or !Conf['Thread Hiding']
+
       div = $.el 'div',
         className: 'hide-thread-link'
         textContent: 'Hide thread'
@@ -535,6 +566,8 @@ ThreadHiding =
 
 ReplyHiding =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Reply Hiding']
+
     @getHiddenPosts()
     @clean()
     Post::callbacks.push
@@ -583,6 +616,8 @@ ReplyHiding =
 
   menu:
     init: ->
+      return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Reply Hiding']
+
       div = $.el 'div',
         className: 'hide-reply-link'
         textContent: 'Hide reply'
@@ -726,6 +761,8 @@ Recursive =
 
 Menu =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Menu']
+
     @menu = new UI.Menu 'post'
     Post::callbacks.push
       name: 'Menu'
@@ -758,6 +795,8 @@ Menu =
 
 ReportLink =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Report Link']
+
     a = $.el 'a',
       className: 'report-link'
       href: 'javascript:;'
@@ -777,6 +816,8 @@ ReportLink =
 
 DeleteLink =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Delete Link']
+
     div = $.el 'div',
       className: 'delete-link'
       textContent: 'Delete'
@@ -881,6 +922,8 @@ DeleteLink =
 
 DownloadLink =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Download Link']
+
     # Test for download feature support.
     return if $.el('a').download is undefined
     a = $.el 'a',
@@ -896,6 +939,8 @@ DownloadLink =
 
 ArchiveLink =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Archive Link']
+
     div = $.el 'div',
       textContent: 'Archive'
 
@@ -1554,6 +1599,8 @@ Get =
 
 Quotify =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Resurrect Quotes']
+
     Post::callbacks.push
       name: 'Resurrect Quotes'
       cb:   @node
@@ -1621,6 +1668,8 @@ Quotify =
 
 QuoteInline =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Quote Inline']
+
     Post::callbacks.push
       name: 'Quote Inline'
       cb:   @node
@@ -1701,6 +1750,8 @@ QuoteInline =
 
 QuotePreview =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Quote Preview']
+
     Post::callbacks.push
       name: 'Quote Preview'
       cb:   @node
@@ -1767,6 +1818,8 @@ QuoteBacklink =
   # This is is so that fetched posts can get their backlinks,
   # and that as much backlinks are appended in the background as possible.
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Quote Backlinks']
+
     format = Conf['backlink'].replace /%id/g, "' + id + '"
     @funk  = Function 'id', "return '#{format}'"
     @containers = {}
@@ -1810,10 +1863,12 @@ QuoteBacklink =
 
 QuoteOP =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Mark OP Quotes']
+
     # \u00A0 is nbsp
     @text = '\u00A0(OP)'
     Post::callbacks.push
-      name: 'Indicate OP Quotes'
+      name: 'Mark OP Quotes'
       cb:   @node
   node: ->
     # Stop there if it's a clone of a post in the same thread.
@@ -1838,10 +1893,12 @@ QuoteOP =
 
 QuoteCT =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Mark Cross-thread Quotes']
+
     # \u00A0 is nbsp
     @text = '\u00A0(Cross-thread)'
     Post::callbacks.push
-      name: 'Indicate Cross-thread Quotes'
+      name: 'Mark Cross-thread Quotes'
       cb:   @node
   node: ->
     # Stop there if it's a clone of a post in the same thread.
@@ -1862,6 +1919,8 @@ QuoteCT =
 
 Anonymize =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Anonymize']
+
     Post::callbacks.push
       name: 'Anonymize'
       cb:   @node
@@ -1882,6 +1941,8 @@ Anonymize =
 
 Time =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Time Formatting']
+
     @funk = @createFunc Conf['time']
     Post::callbacks.push
       name: 'Time Formatting'
@@ -1940,6 +2001,8 @@ Time =
 
 FileInfo =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['File Info Formatting']
+
     @funk = @createFunc Conf['fileInfo']
     Post::callbacks.push
       name: 'File Info Formatting'
@@ -1990,6 +2053,8 @@ FileInfo =
 
 Sauce =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Sauce']
+
     links = []
     for link in Conf['sauces'].split '\n'
       continue if link[0] is '#'
@@ -2031,6 +2096,8 @@ Sauce =
 
 RevealSpoilers =
   init: ->
+    return if g.VIEW is 'catalog' or !Conf['Reveal Spoilers']
+
     Post::callbacks.push
       name: 'Reveal Spoilers'
       cb:   @node
@@ -2042,7 +2109,8 @@ RevealSpoilers =
 
 AutoGIF =
   init: ->
-    return if g.BOARD.ID in ['gif', 'wsg']
+    return if g.VIEW is 'catalog' or !Conf['Auto-GIF'] or g.BOARD.ID in ['gif', 'wsg']
+
     Post::callbacks.push
       name: 'Auto-GIF'
       cb:   @node
@@ -2062,7 +2130,8 @@ AutoGIF =
 
 ImageHover =
   init: ->
-    return if g.BOARD.ID in ['gif', 'wsg']
+    return if g.VIEW is 'catalog' or !Conf['Image Hover']
+
     Post::callbacks.push
       name: 'Auto-GIF'
       cb:   @node
@@ -2101,7 +2170,8 @@ ImageHover =
 
 ThreadUpdater =
   init: ->
-    return if g.VIEW isnt 'thread'
+    return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
+
     Thread::callbacks.push
       name: 'Thread Updater'
       cb:   @node

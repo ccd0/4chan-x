@@ -22,7 +22,7 @@ $.extend $,
   id: (id) ->
     d.getElementById id
   ready: (fc) ->
-    if /interactive|complete/.test d.readyState
+    if d.readyState in ['interactive', 'complete']
       $.queueTask fc
       return
     cb = ->
@@ -106,9 +106,6 @@ $.extend $,
   tn: (s) ->
     d.createTextNode s
   nodes: (nodes) ->
-    # In (at least) Chrome, elements created inside different
-    # scripts/window contexts inherit from unequal prototypes.
-    # window_context1.Node !== window_context2.Node
     unless nodes instanceof Array
       return nodes
     frag = d.createDocumentFragment()

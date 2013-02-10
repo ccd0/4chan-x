@@ -57,8 +57,8 @@ Config =
       'Quote Preview':                [true,  'Show quoted post on hover.']
       'Quote Highlighting':           [true,  'Highlight the previewed post.']
       'Resurrect Quotes':             [true,  'Linkify dead quotes to archives.']
-      'Indicate OP Quotes':           [true,  'Add \'(OP)\' to OP quotes.']
-      'Indicate Cross-thread Quotes': [true,  'Add \'(Cross-thread)\' to cross-threads quotes.']
+      'Mark OP Quotes':               [true,  'Add \'(OP)\' to OP quotes.']
+      'Mark Cross-thread Quotes':     [true,  'Add \'(Cross-thread)\' to cross-threads quotes.']
   filter:
     name: [
       '# Filter any namefags:'

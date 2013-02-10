@@ -277,211 +277,56 @@ Main =
             location.href = url if url
         return
 
-    return if g.VIEW is 'catalog'
-
     $.addStyle Main.css
-    $.asap (-> d.body), (->
-      $.addClass d.body, $.engine
-      $.addClass d.body, 'fourchan_x'
-    )
+    $.addClass d.documentElement, $.engine
+    $.addClass d.documentElement, 'fourchan_x'
 
-    try
-      Header.init()
-    catch err
-      # XXX handle error
-      $.log err, 'Header'
-
-    try
-      Settings.init()
-    catch err
-      # XXX handle error
-      $.log err, 'Settings'
-
-    if Conf['Resurrect Quotes']
+    initFeature = (name, module) ->
+      console.time "#{name} initialization"
       try
-        Quotify.init()
+        module.init()
       catch err
-        # XXX handle error
-        $.log err, 'Resurrect Quotes'
+        Main.handleErrors
+          message: "\"#{name}\" initialization crashed."
+          error: err
+      console.timeEnd "#{name} initialization"
 
-    if Conf['Filter']
-      try
-        Filter.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Filter'
-
-    if Conf['Thread Hiding']
-      try
-        ThreadHiding.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Thread Hiding'
-
-    if Conf['Reply Hiding']
-      try
-        ReplyHiding.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Reply Hiding'
-
-    try
-      Recursive.init()
-    catch err
-      # XXX handle error
-      $.log err, 'Recursive'
-
-    if Conf['Menu']
-      try
-        Menu.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Menu'
-
-      if Conf['Report Link']
-        try
-          ReportLink.init()
-        catch err
-          # XXX handle error
-          $.log err, 'Report Link'
-
-      if Conf['Thread Hiding']
-        try
-          ThreadHiding.menu.init()
-        catch err
-          # XXX handle error
-          $.log err, 'Thread Hiding - Menu'
-
-      if Conf['Reply Hiding']
-        try
-          ReplyHiding.menu.init()
-        catch err
-          # XXX handle error
-          $.log err, 'Reply Hiding - Menu'
-
-      if Conf['Delete Link']
-        try
-          DeleteLink.init()
-        catch err
-          # XXX handle error
-          $.log err, 'Delete Link'
-
-      if Conf['Filter']
-        try
-          Filter.menu.init()
-        catch err
-          # XXX handle error
-          $.log err, 'Filter - Menu'
-
-      if Conf['Download Link']
-        try
-          DownloadLink.init()
-        catch err
-          # XXX handle error
-          $.log err, 'Download Link'
-
-      if Conf['Archive Link']
-        try
-          ArchiveLink.init()
-        catch err
-          # XXX handle error
-          $.log err, 'Archive Link'
-
-    if Conf['Quote Inline']
-      try
-        QuoteInline.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Quote Inline'
-
-    if Conf['Quote Preview']
-      try
-        QuotePreview.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Quote Preview'
-
-    if Conf['Quote Backlinks']
-      try
-        QuoteBacklink.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Quote Backlinks'
-
-    if Conf['Indicate OP Quotes']
-      try
-        QuoteOP.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Indicate OP Quotes'
-
-    if Conf['Indicate Cross-thread Quotes']
-      try
-        QuoteCT.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Indicate Cross-thread Quotes'
-
-    if Conf['Anonymize']
-      try
-        Anonymize.init()
-      catch e
-        # XXX handle error
-        $.log err, 'Anonymize'
-
-    if Conf['Time Formatting']
-      try
-        Time.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Time Formatting'
-
-    if Conf['File Info Formatting']
-      try
-        FileInfo.init()
-      catch err
-        # XXX handle error
-        $.log err, 'File Info Formatting'
-
-    if Conf['Sauce']
-      try
-        Sauce.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Sauce'
-
-    if Conf['Reveal Spoilers']
-      try
-        RevealSpoilers.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Reveal Spoilers'
-
-    if Conf['Auto-GIF']
-      try
-        AutoGIF.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Auto-GIF'
-
-    if Conf['Image Hover']
-      try
-        ImageHover.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Image Hover'
-
-    if Conf['Thread Updater']
-      try
-        ThreadUpdater.init()
-      catch err
-        # XXX handle error
-        $.log err, 'Thread Updater'
+    console.time 'All initializations'
+    initFeature 'Header',                   Header
+    initFeature 'Settings',                 Settings
+    initFeature 'Resurrect Quotes',         Quotify
+    initFeature 'Filter',                   Filter
+    initFeature 'Thread Hiding',            ThreadHiding
+    initFeature 'Reply Hiding',             ReplyHiding
+    initFeature 'Recursive',                Recursive
+    initFeature 'Menu',                     Menu
+    initFeature 'Report Link',              ReportLink
+    initFeature 'Thread Hiding (Menu)',     ThreadHiding.menu
+    initFeature 'Reply Hiding (Menu)',      ReplyHiding.menu
+    initFeature 'Delete Link',              DeleteLink
+    initFeature 'Filter (Menu)',            Filter.menu
+    initFeature 'Download Link',            DownloadLink
+    initFeature 'Archive Link',             ArchiveLink
+    initFeature 'Quote Inline',             QuoteInline
+    initFeature 'Quote Preview',            QuotePreview
+    initFeature 'Quote Backlinks',          QuoteBacklink
+    initFeature 'Mark OP Quotes',           QuoteOP
+    initFeature 'Mark Cross-thread Quotes', QuoteCT
+    initFeature 'Anonymize',                Anonymize
+    initFeature 'Time Formatting',          Time
+    initFeature 'File Info Formatting',     FileInfo
+    initFeature 'Sauce',                    Sauce
+    initFeature 'Reveal Spoilers',          RevealSpoilers
+    initFeature 'Auto-GIF',                 AutoGIF
+    initFeature 'Image Hover',              ImageHover
+    initFeature 'Thread Updater',           ThreadUpdater
+    console.timeEnd 'All initializations'
 
     $.ready Main.initReady
 
   initReady: ->
     if d.title is '4chan - 404 Not Found'
+      $.rmClass d.documentElement, 'fourchan_x'
       if Conf['404 Redirect'] and g.VIEW is 'thread'
         location.href = Redirect.to
           board: g.BOARD
@@ -505,25 +350,66 @@ Main =
           posts.push new Post threadChild, thread, g.BOARD
         catch err
           # Skip posts that we failed to parse.
-          # XXX handle error
-          # Post parser crashed for post No.#{threadChild.id[2..]}
-          $.log threadChild, err
+          unless errors
+            errors = []
+          errors.push
+            message: "Parsing of Post No.#{threadChild.id.match(/\d+/)} failed. Post will be skipped."
+            error: err
+    Main.handleErrors errors if errors
 
-    Main.callbackNodes Thread, threads, true
-    Main.callbackNodes Post,   posts,   true
+    Main.callbackNodes Thread, threads
+    Main.callbackNodes Post, posts
 
-  callbackNodes: (klass, nodes, notify) ->
+  callbackNodes: (klass, nodes) ->
     # get the nodes' length only once
     len = nodes.length
     for callback in klass::callbacks
-      try
-        for i in [0...len]
-          callback.cb.call nodes[i]
-      catch err
-        # XXX handle error if notify
-        $.log callback.name, 'crashed. error:', err.message, nodes[i]
-        $.log err.stack
-    return
+      for i in [0...len]
+        node = nodes[i]
+        try
+          callback.cb.call node
+        catch err
+          unless errors
+            errors = []
+          errors.push
+            message: "\"#{callback.name}\" crashed on #{klass.name} No.#{node} (/#{node.board}/)."
+            error: err
+    Main.handleErrors errors if errors
+
+  handleErrors: (errors) ->
+    unless 'length' of errors
+      error = errors
+    else if errors.length is 1
+      error = errors[0]
+    if error
+      new Notification 'error', Main.parseError(error), 15
+      return
+
+    div = $.el 'div',
+      innerHTML: "#{errors.length} errors occured. [<a href=javascript:;>show</a>]"
+    $.on div.lastElementChild, 'click', ->
+      if @textContent is 'show'
+        @textContent = 'hide'
+        logs.hidden  = false
+      else
+        @textContent = 'show'
+        logs.hidden  = true
+
+    logs = $.el 'div',
+      hidden: true
+    for error in errors
+      $.add logs, Main.parseError error
+
+    new Notification 'error', [div, logs], 30
+
+  parseError: (data) ->
+    {message, error} = data
+    $.log message, error.stack
+    message = $.el 'div',
+      textContent: message
+    error = $.el 'div',
+      textContent: error
+    [message, error]
 
   css: """<%= grunt.file.read('css/style.css') %>"""
 

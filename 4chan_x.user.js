@@ -20,7 +20,7 @@
 // @icon         https://github.com/MayhemYDG/4chan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2013-02-09
+/* 4chan X Alpha - Version 3.0.0 - 2013-02-10
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, Header, ImageHover, Main, Menu, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, g, _base,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, Header, ImageHover, Main, Menu, Notification, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, g, _base,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -113,8 +113,8 @@
         'Quote Preview': [true, 'Show quoted post on hover.'],
         'Quote Highlighting': [true, 'Highlight the previewed post.'],
         'Resurrect Quotes': [true, 'Linkify dead quotes to archives.'],
-        'Indicate OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
-        'Indicate Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.']
+        'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
+        'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.']
       }
     },
     filter: {
@@ -597,8 +597,8 @@
       return d.getElementById(id);
     },
     ready: function(fc) {
-      var cb;
-      if (/interactive|complete/.test(d.readyState)) {
+      var cb, _ref;
+      if ((_ref = d.readyState) === 'interactive' || _ref === 'complete') {
         $.queueTask(fc);
         return;
       }
@@ -935,7 +935,10 @@
       try {
         this.setBoardList();
       } catch (err) {
-        $.log(err, 'Header - board list');
+        Main.handleErrors({
+          message: '"Header (board list)" crashed.',
+          error: err
+        });
       }
       return $.asap((function() {
         return d.body;
@@ -980,6 +983,43 @@
       return Header.menu.toggle(e, this, g);
     }
   };
+
+  Notification = (function() {
+
+    function Notification(type, content, timeout) {
+      var el;
+      this.type = type;
+      this.el = $.el('div', {
+        className: "notification " + type,
+        innerHTML: '<a href=javascript:; class=close title=Close>×</a><div class=message></div>'
+      });
+      $.on(this.el.firstElementChild, 'click', this.close.bind(this));
+      if (typeof content === 'string') {
+        content = $.tn(content);
+      }
+      $.add(this.el.lastElementChild, content);
+      if (timeout) {
+        setTimeout(this.close.bind(this), timeout * $.SECOND);
+      }
+      el = this.el;
+      $.ready(function() {
+        return $.add($.id('notifications'), el);
+      });
+    }
+
+    Notification.prototype.setType = function(type) {
+      $.rmClass(this.el, this.type);
+      $.addClass(this.el, type);
+      return this.type = type;
+    };
+
+    Notification.prototype.close = function() {
+      return $.rm(this.el);
+    };
+
+    return Notification;
+
+  })();
 
   Settings = {
     init: function() {
@@ -1026,6 +1066,9 @@
     filters: {},
     init: function() {
       var boards, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      if (g.VIEW === 'catalog' || !Conf['Filter']) {
+        return;
+      }
       for (key in Config.filter) {
         this.filters[key] = [];
         _ref = Conf[key].split('\n');
@@ -1048,7 +1091,7 @@
             try {
               regexp = RegExp(regexp[1], regexp[2]);
             } catch (err) {
-              alert(err.message);
+              new Notification('warning', err.message, 60);
               continue;
             }
           }
@@ -1219,6 +1262,9 @@
     menu: {
       init: function() {
         var div, entry, type, _i, _len, _ref;
+        if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Filter']) {
+          return;
+        }
         div = $.el('div', {
           textContent: 'Filter'
         });
@@ -1280,7 +1326,7 @@
 
   ThreadHiding = {
     init: function() {
-      if (g.VIEW !== 'index') {
+      if (g.VIEW !== 'index' || !Conf['Thread Hiding']) {
         return;
       }
       this.getHiddenThreads();
@@ -1366,7 +1412,7 @@
     menu: {
       init: function() {
         var apply, div, makeStub;
-        if (g.VIEW !== 'index') {
+        if (g.VIEW !== 'index' || !Conf['Menu'] || !Conf['Thread Hiding']) {
           return;
         }
         div = $.el('div', {
@@ -1492,6 +1538,9 @@
 
   ReplyHiding = {
     init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Reply Hiding']) {
+        return;
+      }
       this.getHiddenPosts();
       this.clean();
       return Post.prototype.callbacks.push({
@@ -1565,6 +1614,9 @@
     menu: {
       init: function() {
         var apply, div, makeStub, replies, thisPost;
+        if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Reply Hiding']) {
+          return;
+        }
         div = $.el('div', {
           className: 'hide-reply-link',
           textContent: 'Hide reply'
@@ -1770,6 +1822,9 @@
 
   Menu = {
     init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Menu']) {
+        return;
+      }
       this.menu = new UI.Menu('post');
       return Post.prototype.callbacks.push({
         name: 'Menu',
@@ -1809,6 +1864,9 @@
   ReportLink = {
     init: function() {
       var a;
+      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Report Link']) {
+        return;
+      }
       a = $.el('a', {
         className: 'report-link',
         href: 'javascript:;',
@@ -1836,6 +1894,9 @@
   DeleteLink = {
     init: function() {
       var div, fileEl, fileEntry, postEl, postEntry;
+      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Delete Link']) {
+        return;
+      }
       div = $.el('div', {
         className: 'delete-link',
         textContent: 'Delete'
@@ -1964,6 +2025,9 @@
   DownloadLink = {
     init: function() {
       var a;
+      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Download Link']) {
+        return;
+      }
       if ($.el('a').download === void 0) {
         return;
       }
@@ -1988,6 +2052,9 @@
   ArchiveLink = {
     init: function() {
       var div, entry, type, _i, _len, _ref;
+      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Archive Link']) {
+        return;
+      }
       div = $.el('div', {
         textContent: 'Archive'
       });
@@ -2636,6 +2703,9 @@
 
   Quotify = {
     init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Resurrect Quotes']) {
+        return;
+      }
       return Post.prototype.callbacks.push({
         name: 'Resurrect Quotes',
         cb: this.node
@@ -2715,6 +2785,9 @@
 
   QuoteInline = {
     init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Quote Inline']) {
+        return;
+      }
       return Post.prototype.callbacks.push({
         name: 'Quote Inline',
         cb: this.node
@@ -2800,6 +2873,9 @@
 
   QuotePreview = {
     init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Quote Preview']) {
+        return;
+      }
       return Post.prototype.callbacks.push({
         name: 'Quote Preview',
         cb: this.node
@@ -2881,6 +2957,9 @@
   QuoteBacklink = {
     init: function() {
       var format;
+      if (g.VIEW === 'catalog' || !Conf['Quote Backlinks']) {
+        return;
+      }
       format = Conf['backlink'].replace(/%id/g, "' + id + '");
       this.funk = Function('id', "return '" + format + "'");
       this.containers = {};
@@ -2950,9 +3029,12 @@
 
   QuoteOP = {
     init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Mark OP Quotes']) {
+        return;
+      }
       this.text = '\u00A0(OP)';
       return Post.prototype.callbacks.push({
-        name: 'Indicate OP Quotes',
+        name: 'Mark OP Quotes',
         cb: this.node
       });
     },
@@ -2987,9 +3069,12 @@
 
   QuoteCT = {
     init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Mark Cross-thread Quotes']) {
+        return;
+      }
       this.text = '\u00A0(Cross-thread)';
       return Post.prototype.callbacks.push({
-        name: 'Indicate Cross-thread Quotes',
+        name: 'Mark Cross-thread Quotes',
         cb: this.node
       });
     },
@@ -3021,6 +3106,9 @@
 
   Anonymize = {
     init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Anonymize']) {
+        return;
+      }
       return Post.prototype.callbacks.push({
         name: 'Anonymize',
         cb: this.node
@@ -3052,6 +3140,9 @@
 
   Time = {
     init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Time Formatting']) {
+        return;
+      }
       this.funk = this.createFunc(Conf['time']);
       return Post.prototype.callbacks.push({
         name: 'Time Formatting',
@@ -3146,6 +3237,9 @@
 
   FileInfo = {
     init: function() {
+      if (g.VIEW === 'catalog' || !Conf['File Info Formatting']) {
+        return;
+      }
       this.funk = this.createFunc(Conf['fileInfo']);
       return Post.prototype.callbacks.push({
         name: 'File Info Formatting',
@@ -3244,6 +3338,9 @@
   Sauce = {
     init: function() {
       var link, links, _i, _len, _ref;
+      if (g.VIEW === 'catalog' || !Conf['Sauce']) {
+        return;
+      }
       links = [];
       _ref = Conf['sauces'].split('\n');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3302,6 +3399,9 @@
 
   RevealSpoilers = {
     init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Reveal Spoilers']) {
+        return;
+      }
       return Post.prototype.callbacks.push({
         name: 'Reveal Spoilers',
         cb: this.node
@@ -3321,7 +3421,7 @@
   AutoGIF = {
     init: function() {
       var _ref;
-      if ((_ref = g.BOARD.ID) === 'gif' || _ref === 'wsg') {
+      if (g.VIEW === 'catalog' || !Conf['Auto-GIF'] || ((_ref = g.BOARD.ID) === 'gif' || _ref === 'wsg')) {
         return;
       }
       return Post.prototype.callbacks.push({
@@ -3352,8 +3452,7 @@
 
   ImageHover = {
     init: function() {
-      var _ref;
-      if ((_ref = g.BOARD.ID) === 'gif' || _ref === 'wsg') {
+      if (g.VIEW === 'catalog' || !Conf['Image Hover']) {
         return;
       }
       return Post.prototype.callbacks.push({
@@ -3429,7 +3528,7 @@
 
   ThreadUpdater = {
     init: function() {
-      if (g.VIEW !== 'thread') {
+      if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
         return;
       }
       return Thread.prototype.callbacks.push({
@@ -4018,7 +4117,7 @@
 
   Main = {
     init: function() {
-      var flatten, key, pathname, val;
+      var flatten, initFeature, key, pathname, val;
       flatten = function(parent, obj) {
         var key, val;
         if (obj instanceof Array) {
@@ -4067,211 +4166,57 @@
           });
           return;
       }
-      if (g.VIEW === 'catalog') {
-        return;
-      }
       $.addStyle(Main.css);
-      $.asap((function() {
-        return d.body;
-      }), (function() {
-        $.addClass(d.body, $.engine);
-        return $.addClass(d.body, 'fourchan_x');
-      }));
-      try {
-        Header.init();
-      } catch (err) {
-        $.log(err, 'Header');
-      }
-      try {
-        Settings.init();
-      } catch (err) {
-        $.log(err, 'Settings');
-      }
-      if (Conf['Resurrect Quotes']) {
+      $.addClass(d.documentElement, $.engine);
+      $.addClass(d.documentElement, 'fourchan_x');
+      initFeature = function(name, module) {
+        console.time("" + name + " initialization");
         try {
-          Quotify.init();
+          module.init();
         } catch (err) {
-          $.log(err, 'Resurrect Quotes');
+          Main.handleErrors({
+            message: "\"" + name + "\" initialization crashed.",
+            error: err
+          });
         }
-      }
-      if (Conf['Filter']) {
-        try {
-          Filter.init();
-        } catch (err) {
-          $.log(err, 'Filter');
-        }
-      }
-      if (Conf['Thread Hiding']) {
-        try {
-          ThreadHiding.init();
-        } catch (err) {
-          $.log(err, 'Thread Hiding');
-        }
-      }
-      if (Conf['Reply Hiding']) {
-        try {
-          ReplyHiding.init();
-        } catch (err) {
-          $.log(err, 'Reply Hiding');
-        }
-      }
-      try {
-        Recursive.init();
-      } catch (err) {
-        $.log(err, 'Recursive');
-      }
-      if (Conf['Menu']) {
-        try {
-          Menu.init();
-        } catch (err) {
-          $.log(err, 'Menu');
-        }
-        if (Conf['Report Link']) {
-          try {
-            ReportLink.init();
-          } catch (err) {
-            $.log(err, 'Report Link');
-          }
-        }
-        if (Conf['Thread Hiding']) {
-          try {
-            ThreadHiding.menu.init();
-          } catch (err) {
-            $.log(err, 'Thread Hiding - Menu');
-          }
-        }
-        if (Conf['Reply Hiding']) {
-          try {
-            ReplyHiding.menu.init();
-          } catch (err) {
-            $.log(err, 'Reply Hiding - Menu');
-          }
-        }
-        if (Conf['Delete Link']) {
-          try {
-            DeleteLink.init();
-          } catch (err) {
-            $.log(err, 'Delete Link');
-          }
-        }
-        if (Conf['Filter']) {
-          try {
-            Filter.menu.init();
-          } catch (err) {
-            $.log(err, 'Filter - Menu');
-          }
-        }
-        if (Conf['Download Link']) {
-          try {
-            DownloadLink.init();
-          } catch (err) {
-            $.log(err, 'Download Link');
-          }
-        }
-        if (Conf['Archive Link']) {
-          try {
-            ArchiveLink.init();
-          } catch (err) {
-            $.log(err, 'Archive Link');
-          }
-        }
-      }
-      if (Conf['Quote Inline']) {
-        try {
-          QuoteInline.init();
-        } catch (err) {
-          $.log(err, 'Quote Inline');
-        }
-      }
-      if (Conf['Quote Preview']) {
-        try {
-          QuotePreview.init();
-        } catch (err) {
-          $.log(err, 'Quote Preview');
-        }
-      }
-      if (Conf['Quote Backlinks']) {
-        try {
-          QuoteBacklink.init();
-        } catch (err) {
-          $.log(err, 'Quote Backlinks');
-        }
-      }
-      if (Conf['Indicate OP Quotes']) {
-        try {
-          QuoteOP.init();
-        } catch (err) {
-          $.log(err, 'Indicate OP Quotes');
-        }
-      }
-      if (Conf['Indicate Cross-thread Quotes']) {
-        try {
-          QuoteCT.init();
-        } catch (err) {
-          $.log(err, 'Indicate Cross-thread Quotes');
-        }
-      }
-      if (Conf['Anonymize']) {
-        try {
-          Anonymize.init();
-        } catch (e) {
-          $.log(err, 'Anonymize');
-        }
-      }
-      if (Conf['Time Formatting']) {
-        try {
-          Time.init();
-        } catch (err) {
-          $.log(err, 'Time Formatting');
-        }
-      }
-      if (Conf['File Info Formatting']) {
-        try {
-          FileInfo.init();
-        } catch (err) {
-          $.log(err, 'File Info Formatting');
-        }
-      }
-      if (Conf['Sauce']) {
-        try {
-          Sauce.init();
-        } catch (err) {
-          $.log(err, 'Sauce');
-        }
-      }
-      if (Conf['Reveal Spoilers']) {
-        try {
-          RevealSpoilers.init();
-        } catch (err) {
-          $.log(err, 'Reveal Spoilers');
-        }
-      }
-      if (Conf['Auto-GIF']) {
-        try {
-          AutoGIF.init();
-        } catch (err) {
-          $.log(err, 'Auto-GIF');
-        }
-      }
-      if (Conf['Image Hover']) {
-        try {
-          ImageHover.init();
-        } catch (err) {
-          $.log(err, 'Image Hover');
-        }
-      }
-      if (Conf['Thread Updater']) {
-        try {
-          ThreadUpdater.init();
-        } catch (err) {
-          $.log(err, 'Thread Updater');
-        }
-      }
+        return console.timeEnd("" + name + " initialization");
+      };
+      console.time('All initializations');
+      initFeature('Header', Header);
+      initFeature('Settings', Settings);
+      initFeature('Resurrect Quotes', Quotify);
+      initFeature('Filter', Filter);
+      initFeature('Thread Hiding', ThreadHiding);
+      initFeature('Reply Hiding', ReplyHiding);
+      initFeature('Recursive', Recursive);
+      initFeature('Menu', Menu);
+      initFeature('Report Link', ReportLink);
+      initFeature('Thread Hiding (Menu)', ThreadHiding.menu);
+      initFeature('Reply Hiding (Menu)', ReplyHiding.menu);
+      initFeature('Delete Link', DeleteLink);
+      initFeature('Filter (Menu)', Filter.menu);
+      initFeature('Download Link', DownloadLink);
+      initFeature('Archive Link', ArchiveLink);
+      initFeature('Quote Inline', QuoteInline);
+      initFeature('Quote Preview', QuotePreview);
+      initFeature('Quote Backlinks', QuoteBacklink);
+      initFeature('Mark OP Quotes', QuoteOP);
+      initFeature('Mark Cross-thread Quotes', QuoteCT);
+      initFeature('Anonymize', Anonymize);
+      initFeature('Time Formatting', Time);
+      initFeature('File Info Formatting', FileInfo);
+      initFeature('Sauce', Sauce);
+      initFeature('Reveal Spoilers', RevealSpoilers);
+      initFeature('Auto-GIF', AutoGIF);
+      initFeature('Image Hover', ImageHover);
+      initFeature('Thread Updater', ThreadUpdater);
+      console.timeEnd('All initializations');
       return $.ready(Main.initReady);
     },
     initReady: function() {
-      var boardChild, posts, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1, _ref2;
+      var boardChild, errors, posts, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1, _ref2;
       if (d.title === '4chan - 404 Not Found') {
+        $.rmClass(d.documentElement, 'fourchan_x');
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           location.href = Redirect.to({
             board: g.BOARD,
@@ -4303,30 +4248,92 @@
           try {
             posts.push(new Post(threadChild, thread, g.BOARD));
           } catch (err) {
-            $.log(threadChild, err);
+            if (!errors) {
+              errors = [];
+            }
+            errors.push({
+              message: "Parsing of Post No." + (threadChild.id.match(/\d+/)) + " failed. Post will be skipped.",
+              error: err
+            });
           }
         }
       }
-      Main.callbackNodes(Thread, threads, true);
-      return Main.callbackNodes(Post, posts, true);
+      if (errors) {
+        Main.handleErrors(errors);
+      }
+      Main.callbackNodes(Thread, threads);
+      return Main.callbackNodes(Post, posts);
     },
-    callbackNodes: function(klass, nodes, notify) {
-      var callback, i, len, _i, _j, _len, _ref;
+    callbackNodes: function(klass, nodes) {
+      var callback, errors, i, len, node, _i, _j, _len, _ref;
       len = nodes.length;
       _ref = klass.prototype.callbacks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
-        try {
-          for (i = _j = 0; 0 <= len ? _j < len : _j > len; i = 0 <= len ? ++_j : --_j) {
-            callback.cb.call(nodes[i]);
+        for (i = _j = 0; 0 <= len ? _j < len : _j > len; i = 0 <= len ? ++_j : --_j) {
+          node = nodes[i];
+          try {
+            callback.cb.call(node);
+          } catch (err) {
+            if (!errors) {
+              errors = [];
+            }
+            errors.push({
+              message: "\"" + callback.name + "\" crashed on " + klass.name + " No." + node + " (/" + node.board + "/).",
+              error: err
+            });
           }
-        } catch (err) {
-          $.log(callback.name, 'crashed. error:', err.message, nodes[i]);
-          $.log(err.stack);
         }
       }
+      if (errors) {
+        return Main.handleErrors(errors);
+      }
     },
-    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n[hidden] {\n  display: none !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#header,\n#qr, #watcher {\n  position: fixed;\n}\n#qp, #ihover {\n  z-index: 100;\n}\n#menu {\n  z-index: 95;\n}\n#updater, #stats {\n  z-index: 90;\n}\n#header:hover {\n  z-index: 80;\n}\n#qr {\n  z-index: 50;\n}\n#watcher {\n  z-index: 30;\n}\n#header {\n  z-index: 10;\n}\n\n/* XXX support different styles */\n#header-bar {\n  font-size: 9pt;\n  color: #89A;\n  background-color: #D6DAF0;\n  border-color: #B7C5D9;\n  border-width: 0 0 1px;\n  border-style: solid;\n}\n\n/* header */\nbody.fourchan_x {\n  margin-top: 2em;\n}\n#header {\n  top: 0;\n  right: 0;\n  left: 0;\n}\n#header-bar {\n  padding: 4px;\n  position: relative;\n  transition: all .1s ease-in-out;\n  -o-transition: all .1s ease-in-out;\n  -moz-transition: all .1s ease-in-out;\n  -webkit-transition: all .1s ease-in-out;\n}\n#header-bar.autohide:not(:hover) {\n  transform: translateY(-100%);\n  -o-transform: translateY(-100%);\n  -moz-transform: translateY(-100%);\n  -webkit-transform: translateY(-100%);\n  transition: all .75s .25s ease-in-out;\n  -o-transition: all .75s .25s ease-in-out;\n  -moz-transition: all .75s .25s ease-in-out;\n  -webkit-transition: all .75s .25s ease-in-out;\n}\n#toggle-header-bar {\n  cursor: n-resize;\n  left: 0;\n  right: 0;\n  bottom: -8px;\n  height: 10px;\n  position: absolute;\n}\n#header-bar.autohide #toggle-header-bar {\n  cursor: s-resize;\n}\n#header-bar a {\n  text-decoration: none;\n  padding: 1px;\n}\n#header-bar > .menu-button {\n  float: right;\n  padding: 0;\n}\nbody > #boardNavDesktop,\n#navtopright,\n#boardNavDesktopFoot {\n  display: none !important;\n}\n\n/* thread updater */\n#updater {\n  text-align: right;\n}\n#updater:not(:hover) {\n  background: none;\n  border: none;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n.new {\n  color: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.filtered {\n  text-decoration: underline line-through;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  padding-bottom: 16px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\n  box-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.opContainer.filter-highlight.qphl {\n  box-shadow: inset 5px 0 rgba(255, 0, 0, .5),\n              0 0 0 2px rgba(216, 94, 49, .7);\n}\n.filter-highlight > .reply {\n  box-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply.qphl {\n  box-shadow: -5px 0 rgba(255, 0, 0, .5),\n              0 0 0 2px rgba(216, 94, 49, .7)\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\n  float: left;\n  margin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\n  display: none !important;\n}\n\n/* Menu */\n.menu-button {\n  display: inline-block;\n}\n.menu-button > span {\n  border-top:   6px solid;\n  border-right: 4px solid transparent;\n  border-left:  4px solid transparent;\n  display: inline-block;\n  margin: 2px;\n  vertical-align: middle;\n}\n#menu {\n  position: absolute;\n  outline: none;\n}\n.entry {\n  border-bottom: 1px solid rgba(0, 0, 0, .25);\n  cursor: pointer;\n  display: block;\n  outline: none;\n  padding: 3px 7px;\n  position: relative;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.entry:last-child {\n  border: none;\n}\n.focused.entry {\n  background: rgba(255, 255, 255, .33);\n}\n.entry.has-submenu {\n  padding-right: 20px;\n}\n.has-submenu::after {\n  content: \"\";\n  border-left:   6px solid;\n  border-top:    4px solid transparent;\n  border-bottom: 4px solid transparent;\n  display: inline-block;\n  margin: 4px;\n  position: absolute;\n  right: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\n  display: none;\n}\n.submenu {\n  position: absolute;\n  margin: -1px 0;\n}\n.entry input {\n  margin: 0;\n}"
+    handleErrors: function(errors) {
+      var div, error, logs, _i, _len;
+      if (!('length' in errors)) {
+        error = errors;
+      } else if (errors.length === 1) {
+        error = errors[0];
+      }
+      if (error) {
+        new Notification('error', Main.parseError(error), 15);
+        return;
+      }
+      div = $.el('div', {
+        innerHTML: "" + errors.length + " errors occured. [<a href=javascript:;>show</a>]"
+      });
+      $.on(div.lastElementChild, 'click', function() {
+        if (this.textContent === 'show') {
+          this.textContent = 'hide';
+          return logs.hidden = false;
+        } else {
+          this.textContent = 'show';
+          return logs.hidden = true;
+        }
+      });
+      logs = $.el('div', {
+        hidden: true
+      });
+      for (_i = 0, _len = errors.length; _i < _len; _i++) {
+        error = errors[_i];
+        $.add(logs, Main.parseError(error));
+      }
+      return new Notification('error', [div, logs], 30);
+    },
+    parseError: function(data) {
+      var error, message;
+      message = data.message, error = data.error;
+      $.log(message, error.stack);
+      message = $.el('div', {
+        textContent: message
+      });
+      error = $.el('div', {
+        textContent: error
+      });
+      return [message, error];
+    },
+    css: "/* general */\n.dialog.reply {\n  display: block;\n  border: 1px solid rgba(0, 0, 0, .25);\n  padding: 0;\n}\n.move {\n  cursor: move;\n}\nlabel {\n  cursor: pointer;\n}\na[href=\"javascript:;\"] {\n  text-decoration: none;\n}\n.warning {\n  color: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\n  display: block !important;\n}\n.post {\n  overflow: visible !important;\n}\n[hidden] {\n  display: none !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#header,\n#qr, #watcher {\n  position: fixed;\n}\n#notifications {\n  z-index: 80;\n}\n#qp, #ihover {\n  z-index: 70;\n}\n#menu {\n  z-index: 60;\n}\n#updater, #stats {\n  z-index: 50;\n}\n#header:hover {\n  z-index: 40;\n}\n#qr {\n  z-index: 30;\n}\n#header {\n  z-index: 20;\n}\n#watcher {\n  z-index: 10;\n}\n\n/* XXX support different styles */\n#header-bar {\n  font-size: 9pt;\n  color: #89A;\n  background-color: #D6DAF0;\n  border-color: #B7C5D9;\n  border-width: 0 0 1px;\n  border-style: solid;\n}\n\n/* header */\n.fourchan_x body {\n  margin-top: 2em;\n}\n#header {\n  top: 0;\n  right: 0;\n  left: 0;\n}\n#header-bar {\n  padding: 4px;\n  position: relative;\n  transition: all .1s ease-in-out;\n  -o-transition: all .1s ease-in-out;\n  -moz-transition: all .1s ease-in-out;\n  -webkit-transition: all .1s ease-in-out;\n}\n#header-bar.autohide:not(:hover) {\n  margin-bottom: -1em;\n  transform: translateY(-100%);\n  -o-transform: translateY(-100%);\n  -moz-transform: translateY(-100%);\n  -webkit-transform: translateY(-100%);\n  transition: all .75s .25s ease-in-out;\n  -o-transition: all .75s .25s ease-in-out;\n  -moz-transition: all .75s .25s ease-in-out;\n  -webkit-transition: all .75s .25s ease-in-out;\n}\n#toggle-header-bar {\n  cursor: n-resize;\n  left: 0;\n  right: 0;\n  bottom: -8px;\n  height: 10px;\n  position: absolute;\n}\n#header-bar.autohide #toggle-header-bar {\n  cursor: s-resize;\n}\n#header-bar a {\n  text-decoration: none;\n  padding: 1px;\n}\n#header-bar > .menu-button {\n  float: right;\n  padding: 0;\n}\nbody > #boardNavDesktop,\n#navtopright,\n#boardNavDesktopFoot {\n  display: none !important;\n}\n\n/* notifications */\n#notifications {\n  text-align: center;\n}\n.notification {\n  color: #FFF;\n  font-weight: 700;\n  text-shadow: 0 1px 2px rgba(0, 0, 0, .5);\n  border-radius: 2px;\n  margin: 1px auto;\n  width: 500px;\n  max-width: 100%;\n  position: relative;\n  transition: all .25s ease-in-out;\n  -o-transition: all .25s ease-in-out;\n  -moz-transition: all .25s ease-in-out;\n  -webkit-transition: all .25s ease-in-out;\n}\n.notification.error {\n  background-color: hsl(0, 100%, 40%);\n}\n.notification.warning {\n  background-color: hsl(36, 100%, 40%);\n}\n.notification.info {\n  background-color: hsl(200, 100%, 40%);\n}\n.notification.success {\n  background-color: hsl(104, 100%, 40%);\n}\n.notification > .close {\n  color: white;\n  padding: 4px 6px;\n  top: 0;\n  right: 0;\n  position: absolute;\n}\n.message {\n  box-sizing: border-box;\n  padding: 4px 20px;\n  max-height: 200px;\n  width: 100%;\n  overflow: auto;\n}\n\n/* thread updater */\n#updater {\n  text-align: right;\n}\n#updater:not(:hover) {\n  background: none;\n  border: none;\n}\n#updater input[type=number] {\n  width: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n.new {\n  color: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\n  text-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\n  text-decoration: none !important;\n}\n.inlined {\n  opacity: .5;\n}\n#qp input, .forwarded {\n  display: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\n  text-decoration: none;\n  border-bottom: 1px dashed;\n}\n.filtered {\n  text-decoration: underline line-through;\n}\n.inline {\n  border: 1px solid rgba(128, 128, 128, .5);\n  display: table;\n  margin: 2px 0;\n}\n.inline .post {\n  border: 0 !important;\n  display: table !important;\n  margin: 0 !important;\n  padding: 1px 2px !important;\n}\n#qp {\n  padding: 2px 2px 5px;\n}\n#qp .post {\n  border: none;\n  margin: 0;\n  padding: 0;\n}\n#qp img {\n  max-height: 300px;\n  max-width: 500px;\n}\n.qphl {\n  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n#ihover {\n  box-sizing: border-box;\n  -moz-box-sizing: border-box;\n  max-height: 100%;\n  max-width: 75%;\n  padding-bottom: 16px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\n  box-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.opContainer.filter-highlight.qphl {\n  box-shadow: inset 5px 0 rgba(255, 0, 0, .5),\n              0 0 0 2px rgba(216, 94, 49, .7);\n}\n.filter-highlight > .reply {\n  box-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply.qphl {\n  box-shadow: -5px 0 rgba(255, 0, 0, .5),\n              0 0 0 2px rgba(216, 94, 49, .7)\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\n  float: left;\n  margin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\n  display: none !important;\n}\n\n/* Menu */\n.menu-button {\n  display: inline-block;\n}\n.menu-button > span {\n  border-top:   6px solid;\n  border-right: 4px solid transparent;\n  border-left:  4px solid transparent;\n  display: inline-block;\n  margin: 2px;\n  vertical-align: middle;\n}\n#menu {\n  position: absolute;\n  outline: none;\n}\n.entry {\n  border-bottom: 1px solid rgba(0, 0, 0, .25);\n  cursor: pointer;\n  display: block;\n  outline: none;\n  padding: 3px 7px;\n  position: relative;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.entry:last-child {\n  border: none;\n}\n.focused.entry {\n  background: rgba(255, 255, 255, .33);\n}\n.entry.has-submenu {\n  padding-right: 20px;\n}\n.has-submenu::after {\n  content: \"\";\n  border-left:   6px solid;\n  border-top:    4px solid transparent;\n  border-bottom: 4px solid transparent;\n  display: inline-block;\n  margin: 4px;\n  position: absolute;\n  right: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\n  display: none;\n}\n.submenu {\n  position: absolute;\n  margin: -1px 0;\n}\n.entry input {\n  margin: 0;\n}"
   };
 
   Main.init();

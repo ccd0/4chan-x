@@ -35,25 +35,28 @@ a[href="javascript:;"] {
 #qr, #watcher {
   position: fixed;
 }
-#qp, #ihover {
-  z-index: 100;
-}
-#menu {
-  z-index: 95;
-}
-#updater, #stats {
-  z-index: 90;
-}
-#header:hover {
+#notifications {
   z-index: 80;
 }
-#qr {
+#qp, #ihover {
+  z-index: 70;
+}
+#menu {
+  z-index: 60;
+}
+#updater, #stats {
   z-index: 50;
 }
-#watcher {
+#header:hover {
+  z-index: 40;
+}
+#qr {
   z-index: 30;
 }
 #header {
+  z-index: 20;
+}
+#watcher {
   z-index: 10;
 }
 
@@ -68,7 +71,7 @@ a[href="javascript:;"] {
 }
 
 /* header */
-body.fourchan_x {
+.fourchan_x body {
   margin-top: 2em;
 }
 #header {
@@ -85,6 +88,7 @@ body.fourchan_x {
   -webkit-transition: all .1s ease-in-out;
 }
 #header-bar.autohide:not(:hover) {
+  margin-bottom: -1em;
   transform: translateY(-100%);
   -o-transform: translateY(-100%);
   -moz-transform: translateY(-100%);
@@ -117,6 +121,51 @@ body > #boardNavDesktop,
 #navtopright,
 #boardNavDesktopFoot {
   display: none !important;
+}
+
+/* notifications */
+#notifications {
+  text-align: center;
+}
+.notification {
+  color: #FFF;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .5);
+  border-radius: 2px;
+  margin: 1px auto;
+  width: 500px;
+  max-width: 100%;
+  position: relative;
+  transition: all .25s ease-in-out;
+  -o-transition: all .25s ease-in-out;
+  -moz-transition: all .25s ease-in-out;
+  -webkit-transition: all .25s ease-in-out;
+}
+.notification.error {
+  background-color: hsl(0, 100%, 40%);
+}
+.notification.warning {
+  background-color: hsl(36, 100%, 40%);
+}
+.notification.info {
+  background-color: hsl(200, 100%, 40%);
+}
+.notification.success {
+  background-color: hsl(104, 100%, 40%);
+}
+.notification > .close {
+  color: white;
+  padding: 4px 6px;
+  top: 0;
+  right: 0;
+  position: absolute;
+}
+.message {
+  box-sizing: border-box;
+  padding: 4px 20px;
+  max-height: 200px;
+  width: 100%;
+  overflow: auto;
 }
 
 /* thread updater */
