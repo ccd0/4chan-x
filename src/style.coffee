@@ -1,7 +1,7 @@
 Style =
   init: ->
     if d.head
-      @wrapper()
+      return @wrapper()
     @observe()
 
   agent: {

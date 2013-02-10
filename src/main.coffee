@@ -29,9 +29,6 @@ Main =
       Conf["Interval_"   + g.BOARD] = $.get "Interval_"   + g.BOARD, Conf["Interval"]
       Conf["BGInterval_" + g.BOARD] = $.get "BGInterval_" + g.BOARD, Conf["BGInteval"]
 
-    if _conf["NSFW/SFW Themes"]
-      Conf["theme"] = $.get "theme_#{g.TYPE}", Conf["theme"]
-
     switch location.hostname
       when 'sys.4chan.org'
         if /report/.test location.search

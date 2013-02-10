@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * 4chan x - Version 1.1.0 - 2013-02-09
+ * 4chan x - Version 1.1.0 - 2013-02-10
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -6985,7 +6985,7 @@
   Style = {
     init: function() {
       if (d.head) {
-        this.wrapper();
+        return this.wrapper();
       }
       return this.observe();
     },
@@ -7062,9 +7062,6 @@
       if (_conf["Interval per board"]) {
         Conf["Interval_" + g.BOARD] = $.get("Interval_" + g.BOARD, Conf["Interval"]);
         Conf["BGInterval_" + g.BOARD] = $.get("BGInterval_" + g.BOARD, Conf["BGInteval"]);
-      }
-      if (_conf["NSFW/SFW Themes"]) {
-        Conf["theme"] = $.get("theme_" + g.TYPE, Conf["theme"]);
       }
       switch (location.hostname) {
         case 'sys.4chan.org':
