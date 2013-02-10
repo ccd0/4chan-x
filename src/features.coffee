@@ -37,24 +37,17 @@ Header =
 
     $.prepend headerBar, [menuButton, boardListButton, $.tn(' '), boardTitle, boardList, toggleBar]
 
-    try
-      @setBoardList()
-    catch err
-      Main.handleErrors
-        message: '"Header (board list)" crashed.'
-        error: err
-
     $.asap (-> d.body), ->
       $.prepend d.body, Header.headerEl
+    $.asap (-> $.id 'boardNavDesktop'), @setBoardList
 
   setBoardList: ->
-    Get.boardsConfig (boardsConfig) ->
-      $('.board-title', Header.headerEl).textContent = boardsConfig[g.BOARD].title
-    $.ready ->
-      if nav = $.id 'boardNavDesktop'
-        $("a[href$='/#{g.BOARD}/']", nav)?.className = 'current'
-        $.add $('.board-list', Header.headerEl),
-          Array::slice.call nav.childNodes
+    if nav = $.id 'boardNavDesktop'
+      if a = $ "a[href$='/#{g.BOARD}/']", nav
+        a.className = 'current'
+        $('.board-title', Header.headerEl).textContent = a.title
+      $.add $('.board-list', Header.headerEl),
+        Array::slice.call nav.childNodes
 
   toggleBoardList: ->
     node = @firstElementChild.firstChild
@@ -1345,40 +1338,6 @@ Build =
     container
 
 Get =
-  boardsConfig: (->
-    boardsConfig = null
-    callbacks    = []
-
-    parseBoardsConfig = ->
-      return if @status isnt 200
-      boardsConfig = {}
-      for board in JSON.parse(@response).boards
-        boardName = board.board
-        delete board.board
-        boardsConfig[boardName] = board
-      for callback in callbacks
-        callback boardsConfig
-      callbacks = null
-      boardsConfig.lastModified = @getResponseHeader 'Last-Modified'
-      $.set 'boardsConfig', boardsConfig
-
-    (cb) ->
-      # Configs were already loaded previously, callback and stop.
-      if boardsConfig
-        cb boardsConfig
-        return
-
-      # Load configs, callback, check for updates.
-      if boardsConfig = $.get 'boardsConfig', null
-        cb boardsConfig
-        lastModified = boardsConfig.lastModified
-      else
-        return if callbacks.push(cb) > 1
-        lastModified = 0
-
-      $.ajax '//api.4chan.org/boards.json', onloadend: parseBoardsConfig,
-        headers: 'If-Modified-Since': lastModified
-  )()
   postFromRoot: (root) ->
     link   = $ 'a[title="Highlight this post"]', root
     board  = link.pathname.split('/')[1]

@@ -20,7 +20,7 @@
 // @icon         https://github.com/MayhemYDG/4chan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2013-02-10
+/* 4chan X Alpha - Version 3.0.0 - 2013-02-11
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -932,33 +932,24 @@
       });
       $.on(toggleBar, 'click', this.toggleBar);
       $.prepend(headerBar, [menuButton, boardListButton, $.tn(' '), boardTitle, boardList, toggleBar]);
-      try {
-        this.setBoardList();
-      } catch (err) {
-        Main.handleErrors({
-          message: '"Header (board list)" crashed.',
-          error: err
-        });
-      }
-      return $.asap((function() {
+      $.asap((function() {
         return d.body;
       }), function() {
         return $.prepend(d.body, Header.headerEl);
       });
+      return $.asap((function() {
+        return $.id('boardNavDesktop');
+      }), this.setBoardList);
     },
     setBoardList: function() {
-      Get.boardsConfig(function(boardsConfig) {
-        return $('.board-title', Header.headerEl).textContent = boardsConfig[g.BOARD].title;
-      });
-      return $.ready(function() {
-        var nav, _ref;
-        if (nav = $.id('boardNavDesktop')) {
-          if ((_ref = $("a[href$='/" + g.BOARD + "/']", nav)) != null) {
-            _ref.className = 'current';
-          }
-          return $.add($('.board-list', Header.headerEl), Array.prototype.slice.call(nav.childNodes));
+      var a, nav;
+      if (nav = $.id('boardNavDesktop')) {
+        if (a = $("a[href$='/" + g.BOARD + "/']", nav)) {
+          a.className = 'current';
+          $('.board-title', Header.headerEl).textContent = a.title;
         }
-      });
+        return $.add($('.board-list', Header.headerEl), Array.prototype.slice.call(nav.childNodes));
+      }
     },
     toggleBoardList: function() {
       var headerEl, node, showBoardList;
@@ -2418,55 +2409,6 @@
   };
 
   Get = {
-    boardsConfig: (function() {
-      var boardsConfig, callbacks, parseBoardsConfig;
-      boardsConfig = null;
-      callbacks = [];
-      parseBoardsConfig = function() {
-        var board, boardName, callback, _i, _j, _len, _len1, _ref;
-        if (this.status !== 200) {
-          return;
-        }
-        boardsConfig = {};
-        _ref = JSON.parse(this.response).boards;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          board = _ref[_i];
-          boardName = board.board;
-          delete board.board;
-          boardsConfig[boardName] = board;
-        }
-        for (_j = 0, _len1 = callbacks.length; _j < _len1; _j++) {
-          callback = callbacks[_j];
-          callback(boardsConfig);
-        }
-        callbacks = null;
-        boardsConfig.lastModified = this.getResponseHeader('Last-Modified');
-        return $.set('boardsConfig', boardsConfig);
-      };
-      return function(cb) {
-        var lastModified;
-        if (boardsConfig) {
-          cb(boardsConfig);
-          return;
-        }
-        if (boardsConfig = $.get('boardsConfig', null)) {
-          cb(boardsConfig);
-          lastModified = boardsConfig.lastModified;
-        } else {
-          if (callbacks.push(cb) > 1) {
-            return;
-          }
-          lastModified = 0;
-        }
-        return $.ajax('//api.4chan.org/boards.json', {
-          onloadend: parseBoardsConfig
-        }, {
-          headers: {
-            'If-Modified-Since': lastModified
-          }
-        });
-      };
-    })(),
     postFromRoot: function(root) {
       var board, index, link, post, postID;
       link = $('a[title="Highlight this post"]', root);
