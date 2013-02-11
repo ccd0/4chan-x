@@ -134,6 +134,8 @@ $.extend $,
     for event in events.split ' '
       el.removeEventListener event, handler, false
     return
+  event: (event, detail) ->
+    d.dispatchEvent new CustomEvent event, {detail}
   open: (url) ->
     (GM_openInTab or window.open) url, '_blank'
   hidden: ->

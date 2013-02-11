@@ -780,6 +780,11 @@
         el.removeEventListener(event, handler, false);
       }
     },
+    event: function(event, detail) {
+      return d.dispatchEvent(new CustomEvent(event, {
+        detail: detail
+      }));
+    },
     open: function(url) {
       return (GM_openInTab || window.open)(url, '_blank');
     },
@@ -1017,12 +1022,10 @@
         href: 'javascript:;'
       });
       $.on(link, 'click', Settings.open);
-      d.dispatchEvent(new CustomEvent('AddMenuEntry', {
-        detail: {
-          type: 'header',
-          el: link
-        }
-      }));
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: link
+      });
       link = $.el('a', {
         className: 'fourchan-settings-link',
         textContent: '4chan Settings',
@@ -1031,15 +1034,13 @@
       $.on(link, 'click', function() {
         return $.id('settingsWindowLink').click();
       });
-      d.dispatchEvent(new CustomEvent('AddMenuEntry', {
-        detail: {
-          type: 'header',
-          el: link,
-          open: function() {
-            return !Conf['Disable 4chan\'s extension'];
-          }
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: link,
+        open: function() {
+          return !Conf['Disable 4chan\'s extension'];
         }
-      }));
+      });
       if (!Conf['Disable 4chan\'s extension']) {
         return;
       }
@@ -1275,9 +1276,7 @@
           type = _ref[_i];
           entry.subEntries.push(Filter.menu.createSubEntry(type[0], type[1]));
         }
-        return d.dispatchEvent(new CustomEvent('AddMenuEntry', {
-          detail: entry
-        }));
+        return $.event('AddMenuEntry', entry);
       },
       createSubEntry: function(text, type) {
         var el;
@@ -1423,28 +1422,26 @@
         makeStub = $.el('label', {
           innerHTML: "<input type=checkbox checked=" + Conf['Stubs'] + "> Make stub"
         });
-        return d.dispatchEvent(new CustomEvent('AddMenuEntry', {
-          detail: {
-            type: 'post',
-            el: div,
-            open: function(_arg) {
-              var isReply, thread;
-              thread = _arg.thread, isReply = _arg.isReply;
-              if (isReply || thread.isHidden) {
-                return false;
-              }
-              ThreadHiding.menu.thread = thread;
-              return true;
-            },
-            subEntries: [
-              {
-                el: apply
-              }, {
-                el: makeStub
-              }
-            ]
-          }
-        }));
+        return $.event('AddMenuEntry', {
+          type: 'post',
+          el: div,
+          open: function(_arg) {
+            var isReply, thread;
+            thread = _arg.thread, isReply = _arg.isReply;
+            if (isReply || thread.isHidden) {
+              return false;
+            }
+            ThreadHiding.menu.thread = thread;
+            return true;
+          },
+          subEntries: [
+            {
+              el: apply
+            }, {
+              el: makeStub
+            }
+          ]
+        });
       },
       hide: function() {
         var makeStub, thread;
@@ -1634,30 +1631,28 @@
         makeStub = $.el('label', {
           innerHTML: "<input type=checkbox name=makeStub checked=" + Conf['Stubs'] + "> Make stub"
         });
-        return d.dispatchEvent(new CustomEvent('AddMenuEntry', {
-          detail: {
-            type: 'post',
-            el: div,
-            open: function(post) {
-              if (!post.isReply || post.isClone) {
-                return false;
-              }
-              ReplyHiding.menu.post = post;
-              return true;
-            },
-            subEntries: [
-              {
-                el: apply
-              }, {
-                el: thisPost
-              }, {
-                el: replies
-              }, {
-                el: makeStub
-              }
-            ]
-          }
-        }));
+        return $.event('AddMenuEntry', {
+          type: 'post',
+          el: div,
+          open: function(post) {
+            if (!post.isReply || post.isClone) {
+              return false;
+            }
+            ReplyHiding.menu.post = post;
+            return true;
+          },
+          subEntries: [
+            {
+              el: apply
+            }, {
+              el: thisPost
+            }, {
+              el: replies
+            }, {
+              el: makeStub
+            }
+          ]
+        });
       },
       hide: function() {
         var makeStub, parent, post, replies, thisPost;
@@ -1875,16 +1870,14 @@
         textContent: 'Report this post'
       });
       $.on(a, 'click', ReportLink.report);
-      return d.dispatchEvent(new CustomEvent('AddMenuEntry', {
-        detail: {
-          type: 'post',
-          el: a,
-          open: function(post) {
-            ReportLink.post = post;
-            return !post.isDead;
-          }
+      return $.event('AddMenuEntry', {
+        type: 'post',
+        el: a,
+        open: function(post) {
+          ReportLink.post = post;
+          return !post.isDead;
         }
-      }));
+      });
     },
     report: function() {
       var id, post, set, url;
@@ -1932,29 +1925,27 @@
           return !!file;
         }
       };
-      d.dispatchEvent(new CustomEvent('AddMenuEntry', {
-        detail: {
-          type: 'post',
-          el: div,
-          open: function(post) {
-            var node, seconds;
-            if (post.isDead) {
-              return false;
-            }
-            DeleteLink.post = post;
-            node = div.firstChild;
-            if (seconds = DeleteLink.cooldown[post.fullID]) {
-              node.textContent = "Delete (" + seconds + ")";
-              DeleteLink.cooldown.el = node;
-            } else {
-              node.textContent = 'Delete';
-              delete DeleteLink.cooldown.el;
-            }
-            return true;
-          },
-          subEntries: [postEntry, fileEntry]
-        }
-      }));
+      $.event('AddMenuEntry', {
+        type: 'post',
+        el: div,
+        open: function(post) {
+          var node, seconds;
+          if (post.isDead) {
+            return false;
+          }
+          DeleteLink.post = post;
+          node = div.firstChild;
+          if (seconds = DeleteLink.cooldown[post.fullID]) {
+            node.textContent = "Delete (" + seconds + ")";
+            DeleteLink.cooldown.el = node;
+          } else {
+            node.textContent = 'Delete';
+            delete DeleteLink.cooldown.el;
+          }
+          return true;
+        },
+        subEntries: [postEntry, fileEntry]
+      });
       return $.on(d, 'QRPostSuccessful', this.cooldown.start);
     },
     "delete": function() {
@@ -2045,22 +2036,20 @@
         className: 'download-link',
         textContent: 'Download file'
       });
-      return d.dispatchEvent(new CustomEvent('AddMenuEntry', {
-        detail: {
-          type: 'post',
-          el: a,
-          open: function(_arg) {
-            var file;
-            file = _arg.file;
-            if (!file) {
-              return false;
-            }
-            a.href = file.URL;
-            a.download = file.name;
-            return true;
+      return $.event('AddMenuEntry', {
+        type: 'post',
+        el: a,
+        open: function(_arg) {
+          var file;
+          file = _arg.file;
+          if (!file) {
+            return false;
           }
+          a.href = file.URL;
+          a.download = file.name;
+          return true;
         }
-      }));
+      });
     }
   };
 
@@ -2093,9 +2082,7 @@
         type = _ref[_i];
         entry.subEntries.push(this.createSubEntry(type[0], type[1]));
       }
-      return d.dispatchEvent(new CustomEvent('AddMenuEntry', {
-        detail: entry
-      }));
+      return $.event('AddMenuEntry', entry);
     },
     createSubEntry: function(text, type) {
       var el, open;
