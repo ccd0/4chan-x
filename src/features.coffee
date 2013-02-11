@@ -947,11 +947,8 @@ ArchiveLink =
     entry =
       type: 'post'
       el: div
-      open: ({ID, thread, board}) ->
-        redirect = Redirect.to
-          board:    board
-          threadID: thread
-          postID:   ID
+      open: ({ID: postID, thread: threadID, board}) ->
+        redirect = Redirect.to {postID, threadID, board}
         redirect isnt "//boards.4chan.org/#{board}/"
       subEntries: []
 
@@ -975,11 +972,8 @@ ArchiveLink =
       target: '_blank'
 
     if type is 'post'
-      open = ({ID, thread, board}) ->
-        el.href = Redirect.to
-          board:    board
-          threadID: thread
-          postID:   ID
+      open = ({ID: postID, thread: threadID, board}) ->
+        el.href = Redirect.to {postID, threadID, board}
         true
     else
       open = (post) ->

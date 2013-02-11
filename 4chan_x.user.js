@@ -2066,12 +2066,12 @@
         type: 'post',
         el: div,
         open: function(_arg) {
-          var ID, board, redirect, thread;
-          ID = _arg.ID, thread = _arg.thread, board = _arg.board;
+          var board, postID, redirect, threadID;
+          postID = _arg.ID, threadID = _arg.thread, board = _arg.board;
           redirect = Redirect.to({
-            board: board,
-            threadID: thread,
-            postID: ID
+            postID: postID,
+            threadID: threadID,
+            board: board
           });
           return redirect !== ("//boards.4chan.org/" + board + "/");
         },
@@ -2092,12 +2092,12 @@
       });
       if (type === 'post') {
         open = function(_arg) {
-          var ID, board, thread;
-          ID = _arg.ID, thread = _arg.thread, board = _arg.board;
+          var board, postID, threadID;
+          postID = _arg.ID, threadID = _arg.thread, board = _arg.board;
           el.href = Redirect.to({
-            board: board,
-            threadID: thread,
-            postID: ID
+            postID: postID,
+            threadID: threadID,
+            board: board
           });
           return true;
         };
