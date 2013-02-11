@@ -212,7 +212,7 @@
 
       function Menu(type) {
         this.type = type;
-        $.on(d, 'AddMenuEntry', this.addEntryListener.bind(this));
+        $.on(d, 'AddMenuEntry', this.addEntry.bind(this));
         this.close = close.bind(this);
         this.entries = [];
       }
@@ -276,14 +276,14 @@
       };
 
       Menu.prototype.insertEntry = function(entry, parent, data) {
-        var child, submenu, _i, _len, _ref;
+        var subEntry, submenu, _i, _len, _ref;
         if (typeof entry.open === 'function') {
           if (!entry.open(data)) {
             return;
           }
         }
         $.add(parent, entry.el);
-        if (!entry.children) {
+        if (!entry.subEntries) {
           return;
         }
         if (submenu = $('.submenu', entry.el)) {
@@ -292,10 +292,10 @@
         submenu = $.el('div', {
           className: 'reply dialog submenu'
         });
-        _ref = entry.children;
+        _ref = entry.subEntries;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          child = _ref[_i];
-          this.insertEntry(child, submenu, data);
+          subEntry = _ref[_i];
+          this.insertEntry(subEntry, submenu, data);
         }
         $.add(entry.el, submenu);
       };
@@ -388,36 +388,32 @@
         return style.right = right;
       };
 
-      Menu.prototype.addEntry = function(entry) {
-        this.parseEntry(entry);
-        return this.entries.push(entry);
-      };
-
-      Menu.prototype.parseEntry = function(entry) {
-        var child, children, el, _i, _len;
-        el = entry.el, children = entry.children;
-        $.addClass(el, 'entry');
-        $.on(el, 'focus mouseover', (function(e) {
-          e.stopPropagation();
-          return this.focus(el);
-        }).bind(this));
-        if (!children) {
-          return;
-        }
-        $.addClass(el, 'has-submenu');
-        for (_i = 0, _len = children.length; _i < _len; _i++) {
-          child = children[_i];
-          this.parseEntry(child);
-        }
-      };
-
-      Menu.prototype.addEntryListener = function(e) {
+      Menu.prototype.addEntry = function(e) {
         var entry;
         entry = e.detail;
         if (entry.type !== this.type) {
           return;
         }
-        return this.addEntry(entry);
+        this.parseEntry(entry);
+        return this.entries.push(entry);
+      };
+
+      Menu.prototype.parseEntry = function(entry) {
+        var el, subEntries, subEntry, _i, _len;
+        el = entry.el, subEntries = entry.subEntries;
+        $.addClass(el, 'entry');
+        $.on(el, 'focus mouseover', (function(e) {
+          e.stopPropagation();
+          return this.focus(el);
+        }).bind(this));
+        if (!subEntries) {
+          return;
+        }
+        $.addClass(el, 'has-submenu');
+        for (_i = 0, _len = subEntries.length; _i < _len; _i++) {
+          subEntry = subEntries[_i];
+          this.parseEntry(subEntry);
+        }
       };
 
       return Menu;
@@ -1021,9 +1017,12 @@
         href: 'javascript:;'
       });
       $.on(link, 'click', Settings.open);
-      Header.menu.addEntry({
-        el: link
-      });
+      d.dispatchEvent(new CustomEvent('AddMenuEntry', {
+        detail: {
+          type: 'header',
+          el: link
+        }
+      }));
       link = $.el('a', {
         className: 'fourchan-settings-link',
         textContent: '4chan Settings',
@@ -1032,12 +1031,15 @@
       $.on(link, 'click', function() {
         return $.id('settingsWindowLink').click();
       });
-      Header.menu.addEntry({
-        el: link,
-        open: function() {
-          return !Conf['Disable 4chan\'s extension'];
+      d.dispatchEvent(new CustomEvent('AddMenuEntry', {
+        detail: {
+          type: 'header',
+          el: link,
+          open: function() {
+            return !Conf['Disable 4chan\'s extension'];
+          }
         }
-      });
+      }));
       if (!Conf['Disable 4chan\'s extension']) {
         return;
       }
@@ -1260,19 +1262,22 @@
           textContent: 'Filter'
         });
         entry = {
+          type: 'post',
           el: div,
           open: function(post) {
             Filter.menu.post = post;
             return true;
           },
-          children: []
+          subEntries: []
         };
         _ref = [['Name', 'name'], ['Unique ID', 'uniqueID'], ['Tripcode', 'tripcode'], ['Capcode', 'capcode'], ['E-mail', 'email'], ['Subject', 'subject'], ['Comment', 'comment'], ['Flag', 'flag'], ['Filename', 'filename'], ['Image dimensions', 'dimensions'], ['Filesize', 'filesize'], ['Image MD5', 'MD5']];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           type = _ref[_i];
-          entry.children.push(Filter.menu.createSubEntry(type[0], type[1]));
+          entry.subEntries.push(Filter.menu.createSubEntry(type[0], type[1]));
         }
-        return Menu.menu.addEntry(entry);
+        return d.dispatchEvent(new CustomEvent('AddMenuEntry', {
+          detail: entry
+        }));
       },
       createSubEntry: function(text, type) {
         var el;
@@ -1418,25 +1423,28 @@
         makeStub = $.el('label', {
           innerHTML: "<input type=checkbox checked=" + Conf['Stubs'] + "> Make stub"
         });
-        return Menu.menu.addEntry({
-          el: div,
-          open: function(post) {
-            var thread;
-            thread = post.thread;
-            if (post.isReply || thread.isHidden) {
-              return false;
-            }
-            ThreadHiding.menu.thread = thread;
-            return true;
-          },
-          children: [
-            {
-              el: apply
-            }, {
-              el: makeStub
-            }
-          ]
-        });
+        return d.dispatchEvent(new CustomEvent('AddMenuEntry', {
+          detail: {
+            type: 'post',
+            el: div,
+            open: function(post) {
+              var thread;
+              thread = post.thread;
+              if (post.isReply || thread.isHidden) {
+                return false;
+              }
+              ThreadHiding.menu.thread = thread;
+              return true;
+            },
+            subEntries: [
+              {
+                el: apply
+              }, {
+                el: makeStub
+              }
+            ]
+          }
+        }));
       },
       hide: function() {
         var makeStub, thread;
@@ -1626,27 +1634,30 @@
         makeStub = $.el('label', {
           innerHTML: "<input type=checkbox name=makeStub checked=" + Conf['Stubs'] + "> Make stub"
         });
-        return Menu.menu.addEntry({
-          el: div,
-          open: function(post) {
-            if (!post.isReply || post.isClone) {
-              return false;
-            }
-            ReplyHiding.menu.post = post;
-            return true;
-          },
-          children: [
-            {
-              el: apply
-            }, {
-              el: thisPost
-            }, {
-              el: replies
-            }, {
-              el: makeStub
-            }
-          ]
-        });
+        return d.dispatchEvent(new CustomEvent('AddMenuEntry', {
+          detail: {
+            type: 'post',
+            el: div,
+            open: function(post) {
+              if (!post.isReply || post.isClone) {
+                return false;
+              }
+              ReplyHiding.menu.post = post;
+              return true;
+            },
+            subEntries: [
+              {
+                el: apply
+              }, {
+                el: thisPost
+              }, {
+                el: replies
+              }, {
+                el: makeStub
+              }
+            ]
+          }
+        }));
       },
       hide: function() {
         var makeStub, parent, post, replies, thisPost;
@@ -1864,13 +1875,16 @@
         textContent: 'Report this post'
       });
       $.on(a, 'click', ReportLink.report);
-      return Menu.menu.addEntry({
-        el: a,
-        open: function(post) {
-          ReportLink.post = post;
-          return !post.isDead;
+      return d.dispatchEvent(new CustomEvent('AddMenuEntry', {
+        detail: {
+          type: 'post',
+          el: a,
+          open: function(post) {
+            ReportLink.post = post;
+            return !post.isDead;
+          }
         }
-      });
+      }));
     },
     report: function() {
       var id, post, set, url;
@@ -1916,26 +1930,29 @@
           return !!post.file;
         }
       };
-      Menu.menu.addEntry({
-        el: div,
-        open: function(post) {
-          var node, seconds;
-          if (post.isDead) {
-            return false;
-          }
-          DeleteLink.post = post;
-          node = div.firstChild;
-          if (seconds = DeleteLink.cooldown[post.fullID]) {
-            node.textContent = "Delete (" + seconds + ")";
-            DeleteLink.cooldown.el = node;
-          } else {
-            node.textContent = 'Delete';
-            delete DeleteLink.cooldown.el;
-          }
-          return true;
-        },
-        children: [postEntry, fileEntry]
-      });
+      d.dispatchEvent(new CustomEvent('AddMenuEntry', {
+        detail: {
+          type: 'post',
+          el: div,
+          open: function(post) {
+            var node, seconds;
+            if (post.isDead) {
+              return false;
+            }
+            DeleteLink.post = post;
+            node = div.firstChild;
+            if (seconds = DeleteLink.cooldown[post.fullID]) {
+              node.textContent = "Delete (" + seconds + ")";
+              DeleteLink.cooldown.el = node;
+            } else {
+              node.textContent = 'Delete';
+              delete DeleteLink.cooldown.el;
+            }
+            return true;
+          },
+          subEntries: [postEntry, fileEntry]
+        }
+      }));
       return $.on(d, 'QRPostSuccessful', this.cooldown.start);
     },
     "delete": function() {
@@ -2026,17 +2043,20 @@
         className: 'download-link',
         textContent: 'Download file'
       });
-      return Menu.menu.addEntry({
-        el: a,
-        open: function(post) {
-          if (!post.file) {
-            return false;
+      return d.dispatchEvent(new CustomEvent('AddMenuEntry', {
+        detail: {
+          type: 'post',
+          el: a,
+          open: function(post) {
+            if (!post.file) {
+              return false;
+            }
+            a.href = post.file.URL;
+            a.download = post.file.name;
+            return true;
           }
-          a.href = post.file.URL;
-          a.download = post.file.name;
-          return true;
         }
-      });
+      }));
     }
   };
 
@@ -2050,6 +2070,7 @@
         textContent: 'Archive'
       });
       entry = {
+        type: 'post',
         el: div,
         open: function(post) {
           var redirect;
@@ -2060,14 +2081,16 @@
           });
           return redirect !== ("//boards.4chan.org/" + post.board + "/");
         },
-        children: []
+        subEntries: []
       };
       _ref = [['Post', 'post'], ['Name', 'name'], ['Tripcode', 'tripcode'], ['E-mail', 'email'], ['Subject', 'subject'], ['Filename', 'filename'], ['Image MD5', 'MD5']];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         type = _ref[_i];
-        entry.children.push(this.createSubEntry(type[0], type[1]));
+        entry.subEntries.push(this.createSubEntry(type[0], type[1]));
       }
-      return Menu.menu.addEntry(entry);
+      return d.dispatchEvent(new CustomEvent('AddMenuEntry', {
+        detail: entry
+      }));
     },
     createSubEntry: function(text, type) {
       var el, open;

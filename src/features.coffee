@@ -101,8 +101,10 @@ Settings =
       textContent: '4chan X Settings'
       href:        'javascript:;'
     $.on link, 'click', Settings.open
-    Header.menu.addEntry
-      el: link
+    d.dispatchEvent new CustomEvent 'AddMenuEntry',
+      detail:
+        type: 'header'
+        el: link
 
     # 4chan settings link
     link = $.el 'a',
@@ -110,9 +112,11 @@ Settings =
       textContent: '4chan Settings'
       href:        'javascript:;'
     $.on link, 'click', -> $.id('settingsWindowLink').click()
-    Header.menu.addEntry
-      el: link
-      open: -> !Conf['Disable 4chan\'s extension']
+    d.dispatchEvent new CustomEvent 'AddMenuEntry',
+      detail:
+        type: 'header'
+        el: link
+        open: -> !Conf['Disable 4chan\'s extension']
 
     return unless Conf['Disable 4chan\'s extension']
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
@@ -300,11 +304,12 @@ Filter =
         textContent: 'Filter'
 
       entry =
+        type: 'post'
         el: div
         open: (post) ->
           Filter.menu.post = post
           true
-        children: []
+        subEntries: []
 
       for type in [
         ['Name',             'name']
@@ -321,9 +326,10 @@ Filter =
         ['Image MD5',        'MD5']
       ]
         # Add a sub entry for each filter type.
-        entry.children.push Filter.menu.createSubEntry type[0], type[1]
+        entry.subEntries.push Filter.menu.createSubEntry type[0], type[1]
 
-      Menu.menu.addEntry entry
+      d.dispatchEvent new CustomEvent 'AddMenuEntry',
+        detail: entry
 
     createSubEntry: (text, type) ->
       el = $.el 'a',
@@ -475,15 +481,17 @@ ThreadHiding =
       makeStub = $.el 'label',
         innerHTML: "<input type=checkbox checked=#{Conf['Stubs']}> Make stub"
 
-      Menu.menu.addEntry
-        el: div
-        open: (post) ->
-          {thread} = post
-          if post.isReply or thread.isHidden
-            return false
-          ThreadHiding.menu.thread = thread
-          true
-        children: [{el: apply}, {el: makeStub}]
+      d.dispatchEvent new CustomEvent 'AddMenuEntry',
+        detail:
+          type: 'post'
+          el: div
+          open: (post) ->
+            {thread} = post
+            if post.isReply or thread.isHidden
+              return false
+            ThreadHiding.menu.thread = thread
+            true
+          subEntries: [{el: apply}, {el: makeStub}]
     hide: ->
       makeStub = $('input', @parentNode).checked
       {thread} = ThreadHiding.menu
@@ -627,14 +635,16 @@ ReplyHiding =
       makeStub = $.el 'label',
         innerHTML: "<input type=checkbox name=makeStub checked=#{Conf['Stubs']}> Make stub"
 
-      Menu.menu.addEntry
-        el: div
-        open: (post) ->
-          if !post.isReply or post.isClone
-            return false
-          ReplyHiding.menu.post = post
-          true
-        children: [{el: apply}, {el: thisPost}, {el: replies}, {el: makeStub}]
+      d.dispatchEvent new CustomEvent 'AddMenuEntry',
+        detail:
+          type: 'post'
+          el: div
+          open: (post) ->
+            if !post.isReply or post.isClone
+              return false
+            ReplyHiding.menu.post = post
+            true
+          subEntries: [{el: apply}, {el: thisPost}, {el: replies}, {el: makeStub}]
     hide: ->
       parent   = @parentNode
       thisPost = $('input[name=thisPost]', parent).checked
@@ -795,11 +805,13 @@ ReportLink =
       href: 'javascript:;'
       textContent: 'Report this post'
     $.on a, 'click', ReportLink.report
-    Menu.menu.addEntry
-      el: a
-      open: (post) ->
-        ReportLink.post = post
-        !post.isDead
+    d.dispatchEvent new CustomEvent 'AddMenuEntry',
+      detail:
+        type: 'post'
+        el: a
+        open: (post) ->
+          ReportLink.post = post
+          !post.isDead
   report: ->
     {post} = ReportLink
     url = "//sys.4chan.org/#{post.board}/imgboard.php?mode=report&no=#{post}"
@@ -834,20 +846,22 @@ DeleteLink =
         $.on fileEl, 'click', DeleteLink.delete
         !!post.file
 
-    Menu.menu.addEntry
-      el: div
-      open: (post) ->
-        return false if post.isDead
-        DeleteLink.post = post
-        node = div.firstChild
-        if seconds = DeleteLink.cooldown[post.fullID]
-          node.textContent = "Delete (#{seconds})"
-          DeleteLink.cooldown.el = node
-        else
-          node.textContent = 'Delete'
-          delete DeleteLink.cooldown.el
-        true
-      children: [postEntry, fileEntry]
+    d.dispatchEvent new CustomEvent 'AddMenuEntry',
+      detail:
+        type: 'post'
+        el: div
+        open: (post) ->
+          return false if post.isDead
+          DeleteLink.post = post
+          node = div.firstChild
+          if seconds = DeleteLink.cooldown[post.fullID]
+            node.textContent = "Delete (#{seconds})"
+            DeleteLink.cooldown.el = node
+          else
+            node.textContent = 'Delete'
+            delete DeleteLink.cooldown.el
+          true
+        subEntries: [postEntry, fileEntry]
 
     $.on d, 'QRPostSuccessful', @cooldown.start
 
@@ -922,13 +936,15 @@ DownloadLink =
     a = $.el 'a',
       className: 'download-link'
       textContent: 'Download file'
-    Menu.menu.addEntry
-      el: a
-      open: (post) ->
-        return false unless post.file
-        a.href     = post.file.URL
-        a.download = post.file.name
-        true
+    d.dispatchEvent new CustomEvent 'AddMenuEntry',
+      detail:
+        type: 'post'
+        el: a
+        open: (post) ->
+          return false unless post.file
+          a.href     = post.file.URL
+          a.download = post.file.name
+          true
 
 ArchiveLink =
   init: ->
@@ -938,6 +954,7 @@ ArchiveLink =
       textContent: 'Archive'
 
     entry =
+      type: 'post'
       el: div
       open: (post) ->
         redirect = Redirect.to
@@ -945,7 +962,7 @@ ArchiveLink =
           threadID: post.thread
           postID:   post.ID
         redirect isnt "//boards.4chan.org/#{post.board}/"
-      children: []
+      subEntries: []
 
     for type in [
       ['Post',      'post']
@@ -957,9 +974,10 @@ ArchiveLink =
       ['Image MD5', 'MD5']
     ]
       # Add a sub entry for each type.
-      entry.children.push @createSubEntry type[0], type[1]
+      entry.subEntries.push @createSubEntry type[0], type[1]
 
-    Menu.menu.addEntry entry
+    d.dispatchEvent new CustomEvent 'AddMenuEntry',
+      detail: entry
 
   createSubEntry: (text, type) ->
     el = $.el 'a',

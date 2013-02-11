@@ -17,7 +17,7 @@ UI = (->
 
     constructor: (@type) ->
       # Doc here: https://github.com/MayhemYDG/4chan-x/wiki/Menu-API
-      $.on d, 'AddMenuEntry', @addEntryListener.bind @
+      $.on d, 'AddMenuEntry', @addEntry.bind @
       @close   = close.bind @
       @entries = []
 
@@ -84,14 +84,14 @@ UI = (->
         return unless entry.open data
       $.add parent, entry.el
 
-      return unless entry.children
+      return unless entry.subEntries
       if submenu = $ '.submenu', entry.el
         # Reset sub menu, remove irrelevant entries.
         $.rm submenu
       submenu = $.el 'div',
         className: 'reply dialog submenu'
-      for child in entry.children
-        @insertEntry child, submenu, data
+      for subEntry in entry.subEntries
+        @insertEntry subEntry, submenu, data
       $.add entry.el, submenu
       return
 
@@ -161,27 +161,24 @@ UI = (->
       style.left   = left
       style.right  = right
 
-    addEntry: (entry) ->
+    addEntry: (e) ->
+      entry = e.detail
+      return if entry.type isnt @type
       @parseEntry entry
       @entries.push entry
 
     parseEntry: (entry) ->
-      {el, children} = entry
+      {el, subEntries} = entry
       $.addClass el, 'entry'
       $.on el, 'focus mouseover', ((e) ->
         e.stopPropagation()
         @focus el
       ).bind @
-      return unless children
+      return unless subEntries
       $.addClass el, 'has-submenu'
-      for child in children
-        @parseEntry child
+      for subEntry in subEntries
+        @parseEntry subEntry
       return
-
-    addEntryListener: (e) ->
-      entry = e.detail
-      return if entry.type isnt @type
-      @addEntry entry
 
 
   dragstart = (e) ->
