@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, Header, ImageHover, Main, Menu, Notification, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, g, _base,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, Header, ImageHover, Main, Menu, Notification, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -587,7 +587,7 @@
     MINUTE: 1000 * 60,
     HOUR: 1000 * 60 * 60,
     DAY: 1000 * 60 * 60 * 24,
-    log: typeof (_base = console.log).bind === "function" ? _base.bind(console) : void 0,
+    log: console.log.bind(console),
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     id: function(id) {
       return d.getElementById(id);
@@ -929,7 +929,7 @@
       });
       toggleBar = $.el('div', {
         id: 'toggle-header-bar',
-        title: 'Toggle the header bar.'
+        title: 'Toggle the header bar position.'
       });
       $.on(toggleBar, 'click', this.toggleBar);
       $.prepend(headerBar, [menuButton, boardListButton, $.tn(' '), boardTitle, boardList, toggleBar]);
@@ -967,9 +967,13 @@
       return $('.board-list', headerEl).hidden = !showBoardList;
     },
     toggleBar: function() {
-      var bool;
-      bool = $.id('header-bar').classList.toggle('autohide');
-      return $.set('autohideHeaderBar', bool);
+      var isAutohiding;
+      if (isAutohiding = $.id('header-bar').classList.toggle('autohide')) {
+        new Notification('info', 'The header bar will automatically hide itself.', 2);
+      } else {
+        new Notification('info', 'The header bar will remain visible.', 2);
+      }
+      return $.set('autohideHeaderBar', isAutohiding);
     },
     menuToggle: function(e) {
       return Header.menu.toggle(e, this, g);
@@ -2979,8 +2983,8 @@
       return $.add(this.nodes.info, container);
     },
     getContainer: function(id) {
-      var _base1;
-      return (_base1 = this.containers)[id] || (_base1[id] = $.el('span', {
+      var _base;
+      return (_base = this.containers)[id] || (_base[id] = $.el('span', {
         className: 'container'
       }));
     }

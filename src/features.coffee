@@ -32,7 +32,7 @@ Header =
 
     toggleBar = $.el 'div',
       id: 'toggle-header-bar'
-      title: 'Toggle the header bar.'
+      title: 'Toggle the header bar position.'
     $.on toggleBar, 'click', @toggleBar
 
     $.prepend headerBar, [menuButton, boardListButton, $.tn(' '), boardTitle, boardList, toggleBar]
@@ -62,8 +62,11 @@ Header =
     $('.board-list', headerEl).hidden = !showBoardList
 
   toggleBar: ->
-    bool = $.id('header-bar').classList.toggle 'autohide'
-    $.set 'autohideHeaderBar', bool
+    if isAutohiding = $.id('header-bar').classList.toggle 'autohide'
+      new Notification 'info', 'The header bar will automatically hide itself.', 2
+    else
+      new Notification 'info', 'The header bar will remain visible.', 2
+    $.set 'autohideHeaderBar', isAutohiding
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g
