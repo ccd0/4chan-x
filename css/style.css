@@ -1,7 +1,8 @@
 /* general */
-.dialog.reply {
+.dialog {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .15);
+  border: 1px solid;
   display: block;
-  border: 1px solid rgba(0, 0, 0, .25);
   padding: 0;
 }
 .move {
@@ -60,19 +61,14 @@ a[href="javascript:;"] {
   z-index: 10;
 }
 
-/* XXX support different styles */
-#header-bar {
-  font-size: 9pt;
-  color: #89A;
-  background-color: #D6DAF0;
-  border-color: #B7C5D9;
-  border-width: 0 0 1px;
-  border-style: solid;
-}
-
-/* header */
-.fourchan_x body {
+/* Header */
+.fourchan-x body {
   margin-top: 2em;
+}
+.fourchan-x #boardNavDesktop,
+.fourchan-x #navtopright,
+.fourchan-x #boardNavDesktopFoot {
+  display: none !important;
 }
 #header {
   top: 0;
@@ -80,6 +76,7 @@ a[href="javascript:;"] {
   left: 0;
 }
 #header-bar {
+  border-width: 0 0 1px;
   padding: 4px;
   position: relative;
   transition: all .1s ease-in-out;
@@ -117,11 +114,6 @@ a[href="javascript:;"] {
   float: right;
   padding: 0;
 }
-body > #boardNavDesktop,
-#navtopright,
-#boardNavDesktopFoot {
-  display: none !important;
-}
 
 /* notifications */
 #notifications {
@@ -142,16 +134,16 @@ body > #boardNavDesktop,
   -webkit-transition: all .25s ease-in-out;
 }
 .notification.error {
-  background-color: hsl(0, 100%, 40%);
+  background-color: hsla(0, 100%, 40%, .9);
 }
 .notification.warning {
-  background-color: hsl(36, 100%, 40%);
+  background-color: hsla(36, 100%, 40%, .9);
 }
 .notification.info {
-  background-color: hsl(200, 100%, 40%);
+  background-color: hsla(200, 100%, 40%, .9);
 }
 .notification.success {
-  background-color: hsl(104, 100%, 40%);
+  background-color: hsla(104, 100%, 40%, .9);
 }
 .notification > .close {
   color: white;
@@ -208,12 +200,13 @@ body > #boardNavDesktop,
   text-decoration: underline line-through;
 }
 .inline {
-  border: 1px solid rgba(128, 128, 128, .5);
+  border: 1px solid;
   display: table;
   margin: 2px 0;
 }
 .inline .post {
   border: 0 !important;
+  background-color: transparent !important;
   display: table !important;
   margin: 0 !important;
   padding: 1px 2px !important;
@@ -260,7 +253,7 @@ body > #boardNavDesktop,
 }
 .filter-highlight > .reply.qphl {
   box-shadow: -5px 0 rgba(255, 0, 0, .5),
-              0 0 0 2px rgba(216, 94, 49, .7)
+              0 0 0 2px rgba(216, 94, 49, .7);
 }
 
 /* Thread & Reply Hiding */
@@ -292,7 +285,6 @@ body > #boardNavDesktop,
   outline: none;
 }
 .entry {
-  border-bottom: 1px solid rgba(0, 0, 0, .25);
   cursor: pointer;
   display: block;
   outline: none;
@@ -300,12 +292,6 @@ body > #boardNavDesktop,
   position: relative;
   text-decoration: none;
   white-space: nowrap;
-}
-.entry:last-child {
-  border: none;
-}
-.focused.entry {
-  background: rgba(255, 255, 255, .33);
 }
 .entry.has-submenu {
   padding-right: 20px;

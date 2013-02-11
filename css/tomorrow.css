@@ -1,0 +1,28 @@
+/* general */
+:root.tomorrow .dialog {
+  background-color: #282A2E;
+  border-color: #111;
+}
+
+/* Header */
+:root.tomorrow #header-bar {
+  font-size: 9pt;
+  color: #C5C8C6;
+}
+:root.tomorrow #header-bar a {
+  color: #81A2BE;
+}
+
+/* quote */
+:root.tomorrow .inline {
+  border-color: #111;
+  background-color: rgba(0, 0, 0, .14);
+}
+
+/* Menu */
+:root.tomorrow .entry:not(:last-child) {
+  border-bottom: 1px solid #111;
+}
+:root.tomorrow .focused.entry {
+  background: rgba(0, 0, 0, .33);
+}

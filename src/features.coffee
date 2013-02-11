@@ -4,7 +4,7 @@ Header =
 
     @headerEl = $.el 'div',
       id:        'header'
-      innerHTML: '<div id=header-bar></div><div id=notifications></div>'
+      innerHTML: '<div id=header-bar class=dialog></div><div id=notifications></div>'
 
     headerBar = $('#header-bar', @headerEl)
     if $.get 'autohideHeaderBar', false
@@ -1733,7 +1733,7 @@ QuotePreview =
 
     qp = $.el 'div',
       id: 'qp'
-      className: 'reply dialog'
+      className: 'dialog'
     $.add d.body, qp
     Get.postClone board, threadID, postID, qp, Get.contextFromLink @
 

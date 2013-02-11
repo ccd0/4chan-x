@@ -1,0 +1,28 @@
+/* general */
+:root.futaba .dialog {
+  background-color: #F0E0D6;
+  border-color: #D9BFB7;
+}
+
+/* Header */
+:root.futaba #header-bar {
+  font-size: 11pt;
+  color: #B86;
+}
+:root.futaba #header-bar a {
+  color: #800000;
+}
+
+/* quote */
+:root.futaba .inline {
+  border-color: #D9BFB7;
+  background-color: rgba(255, 255, 255, .14);
+}
+
+/* Menu */
+:root.futaba .entry:not(:last-child) {
+  border-bottom: 1px solid #D9BFB7;
+}
+:root.futaba .focused.entry {
+  background: rgba(255, 255, 255, .33);
+}

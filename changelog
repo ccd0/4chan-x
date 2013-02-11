@@ -13,6 +13,7 @@ alpha
   Fix Chrome's install warning saying that 4chan X would execute on all domains.
   Fix Quote Backlinks not affecting inlined quotes.
   Fix Quote Highlighting not affecting inlined quotes.
+  Fix unreadable inlined posts with the Tomorrow theme.
 
 master
 - Mayhem

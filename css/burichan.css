@@ -1,0 +1,28 @@
+/* general */
+:root.burichan .dialog {
+  background-color: #D6DAF0;
+  border-color: #B7C5D9;
+}
+
+/* Header */
+:root.burichan #header-bar {
+  font-size: 11pt;
+  color: #89A;
+}
+:root.burichan #header-bar a {
+  color: #34345C;
+}
+
+/* quote */
+:root.burichan .inline {
+  border-color: #B7C5D9;
+  background-color: rgba(255, 255, 255, .14);
+}
+
+/* Menu */
+:root.burichan .entry:not(:last-child) {
+  border-bottom: 1px solid #B7C5D9;
+}
+:root.burichan .focused.entry {
+  background: rgba(255, 255, 255, .33);
+}

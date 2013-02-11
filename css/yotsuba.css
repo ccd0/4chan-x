@@ -1,0 +1,28 @@
+/* general */
+:root.yotsuba .dialog {
+  background-color: #F0E0D6;
+  border-color: #D9BFB7;
+}
+
+/* Header */
+:root.yotsuba #header-bar {
+  font-size: 9pt;
+  color: #B86;
+}
+:root.yotsuba #header-bar a {
+  color: #800000;
+}
+
+/* quote */
+:root.yotsuba .inline {
+  border-color: #D9BFB7;
+  background-color: rgba(255, 255, 255, .14);
+}
+
+/* Menu */
+:root.yotsuba .entry:not(:last-child) {
+  border-bottom: 1px solid #D9BFB7;
+}
+:root.yotsuba .focused.entry {
+  background: rgba(255, 255, 255, .33);
+}

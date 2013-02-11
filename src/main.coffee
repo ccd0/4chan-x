@@ -337,7 +337,7 @@ Main =
           break
       $.addClass doc, style
     $.addClass doc, $.engine
-    $.addClass doc, 'fourchan_x'
+    $.addClass doc, 'fourchan-x'
     setStyle()
     if MutationObserver = window.MutationObserver or window.WebKitMutationObserver or window.OMutationObserver
       observer = new MutationObserver setStyle
@@ -349,7 +349,7 @@ Main =
       $.on mainStyleSheet, 'DOMAttrModified', setStyle
 
   initReady: ->
-    unless $.hasClass doc, 'fourchan_x'
+    unless $.hasClass doc, 'fourchan-x'
       # Something might go wrong!
       Main.initStyle()
 
@@ -435,6 +435,14 @@ Main =
       textContent: error
     [message, error]
 
-  css: """<%= grunt.file.read('css/style.css') %>"""
+  css: """
+  <%= grunt.file.read('css/style.css') %>
+  <%= grunt.file.read('css/yotsuba.css') %>
+  <%= grunt.file.read('css/yotsuba-b.css') %>
+  <%= grunt.file.read('css/futaba.css') %>
+  <%= grunt.file.read('css/burichan.css') %>
+  <%= grunt.file.read('css/tomorrow.css') %>
+  <%= grunt.file.read('css/photon.css') %>
+  """
 
 Main.init()

@@ -1,0 +1,28 @@
+/* general */
+:root.photon .dialog {
+  background-color: #DDD;
+  border-color: #CCC;
+}
+
+/* Header */
+:root.photon #header-bar {
+  font-size: 9pt;
+  color: #333;
+}
+:root.photon #header-bar a {
+  color: #FF6600;
+}
+
+/* quote */
+:root.photon .inline {
+  border-color: #CCC;
+  background-color: rgba(255, 255, 255, .14);
+}
+
+/* Menu */
+:root.photon .entry:not(:last-child) {
+  border-bottom: 1px solid #CCC;
+}
+:root.photon .focused.entry {
+  background: rgba(255, 255, 255, .33);
+}

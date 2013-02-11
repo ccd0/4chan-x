@@ -1,7 +1,7 @@
 UI = (->
   dialog = (id, position, html) ->
     el = d.createElement 'div'
-    el.className = 'reply dialog'
+    el.className = 'dialog'
     el.innerHTML = html
     el.id        = id
     el.style.cssText = localStorage.getItem("#{g.NAMESPACE}#{id}.position") or position
@@ -23,7 +23,7 @@ UI = (->
 
     makeMenu: ->
       menu = $.el 'div',
-        className: 'reply dialog'
+        className: 'dialog'
         id:        'menu'
         tabIndex:  0
       $.on menu, 'click', (e) -> e.stopPropagation()
@@ -89,7 +89,7 @@ UI = (->
         # Reset sub menu, remove irrelevant entries.
         $.rm submenu
       submenu = $.el 'div',
-        className: 'reply dialog submenu'
+        className: 'dialog submenu'
       for subEntry in entry.subEntries
         @insertEntry subEntry, submenu, data
       $.add entry.el, submenu
