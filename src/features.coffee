@@ -62,10 +62,11 @@ Header =
     $('.board-list', headerEl).hidden = !showBoardList
 
   toggleBar: ->
-    if isAutohiding = $.id('header-bar').classList.toggle 'autohide'
-      new Notification 'info', 'The header bar will automatically hide itself.', 2
+    message = if isAutohiding = $.id('header-bar').classList.toggle 'autohide'
+      'The header bar will automatically hide itself.'
     else
-      new Notification 'info', 'The header bar will remain visible.', 2
+      'The header bar will remain visible.'
+    new Notification 'info', message, 2
     $.set 'autohideHeaderBar', isAutohiding
 
   menuToggle: (e) ->

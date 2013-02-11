@@ -967,12 +967,9 @@
       return $('.board-list', headerEl).hidden = !showBoardList;
     },
     toggleBar: function() {
-      var isAutohiding;
-      if (isAutohiding = $.id('header-bar').classList.toggle('autohide')) {
-        new Notification('info', 'The header bar will automatically hide itself.', 2);
-      } else {
-        new Notification('info', 'The header bar will remain visible.', 2);
-      }
+      var isAutohiding, message;
+      message = (isAutohiding = $.id('header-bar').classList.toggle('autohide')) ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
+      new Notification('info', message, 2);
       return $.set('autohideHeaderBar', isAutohiding);
     },
     menuToggle: function(e) {
