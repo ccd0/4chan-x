@@ -59,10 +59,10 @@ UI = (->
       # Position
       mRect   = menu.getBoundingClientRect()
       bRect   = button.getBoundingClientRect()
-      bTop    = d.documentElement.scrollTop  + d.body.scrollTop  + bRect.top
-      bLeft   = d.documentElement.scrollLeft + d.body.scrollLeft + bRect.left
-      cHeight = d.documentElement.clientHeight
-      cWidth  = d.documentElement.clientWidth
+      bTop    = doc.scrollTop  + d.body.scrollTop  + bRect.top
+      bLeft   = doc.scrollLeft + d.body.scrollLeft + bRect.left
+      cHeight = doc.clientHeight
+      cWidth  = doc.clientWidth
       top =
         if bRect.top + bRect.height + mRect.height < cHeight
           bTop + bRect.height + 2
@@ -141,8 +141,8 @@ UI = (->
       return unless submenu = $ '.submenu', entry
       sRect   = submenu.getBoundingClientRect()
       eRect   = entry.getBoundingClientRect()
-      cHeight = d.documentElement.clientHeight
-      cWidth  = d.documentElement.clientWidth
+      cHeight = doc.clientHeight
+      cWidth  = doc.clientWidth
       if eRect.top + sRect.height < cHeight
         top    = '0px'
         bottom = 'auto'
@@ -189,8 +189,8 @@ UI = (->
       e = e.changedTouches[e.changedTouches.length - 1]
     # distance from pointer to el edge is constant; calculate it here.
     rect = el.getBoundingClientRect()
-    screenHeight = d.documentElement.clientHeight
-    screenWidth  = d.documentElement.clientWidth
+    screenHeight = doc.clientHeight
+    screenWidth  = doc.clientWidth
     o = {
       id:     el.id
       style:  el.style
@@ -278,8 +278,8 @@ UI = (->
       style:  el.style
       cb:     cb
       events: events.split ' '
-      clientHeight: d.documentElement.clientHeight
-      clientWidth:  d.documentElement.clientWidth
+      clientHeight: doc.clientHeight
+      clientWidth:  doc.clientWidth
     }
     o.hover    = hover.bind    o
     o.hoverend = hoverend.bind o

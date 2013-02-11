@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, Header, ImageHover, Main, Menu, Notification, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, Header, ImageHover, Main, Menu, Notification, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -181,6 +181,8 @@
 
   d = document;
 
+  doc = d.documentElement;
+
   g = {
     VERSION: '3.0.0',
     NAMESPACE: "4chan_X_Alpha.",
@@ -263,10 +265,10 @@
         $.add(d.body, menu);
         mRect = menu.getBoundingClientRect();
         bRect = button.getBoundingClientRect();
-        bTop = d.documentElement.scrollTop + d.body.scrollTop + bRect.top;
-        bLeft = d.documentElement.scrollLeft + d.body.scrollLeft + bRect.left;
-        cHeight = d.documentElement.clientHeight;
-        cWidth = d.documentElement.clientWidth;
+        bTop = doc.scrollTop + d.body.scrollTop + bRect.top;
+        bLeft = doc.scrollLeft + d.body.scrollLeft + bRect.left;
+        cHeight = doc.clientHeight;
+        cWidth = doc.clientWidth;
         top = bRect.top + bRect.height + mRect.height < cHeight ? bTop + bRect.height + 2 : bTop - mRect.height - 2;
         left = bRect.left + mRect.width < cWidth ? bLeft : bLeft + bRect.width - mRect.width;
         style = menu.style;
@@ -365,8 +367,8 @@
         }
         sRect = submenu.getBoundingClientRect();
         eRect = entry.getBoundingClientRect();
-        cHeight = d.documentElement.clientHeight;
-        cWidth = d.documentElement.clientWidth;
+        cHeight = doc.clientHeight;
+        cWidth = doc.clientWidth;
         if (eRect.top + sRect.height < cHeight) {
           top = '0px';
           bottom = 'auto';
@@ -427,8 +429,8 @@
         e = e.changedTouches[e.changedTouches.length - 1];
       }
       rect = el.getBoundingClientRect();
-      screenHeight = d.documentElement.clientHeight;
-      screenWidth = d.documentElement.clientWidth;
+      screenHeight = doc.clientHeight;
+      screenWidth = doc.clientWidth;
       o = {
         id: el.id,
         style: el.style,
@@ -510,8 +512,8 @@
         style: el.style,
         cb: cb,
         events: events.split(' '),
-        clientHeight: d.documentElement.clientHeight,
-        clientWidth: d.documentElement.clientWidth
+        clientHeight: doc.clientHeight,
+        clientWidth: doc.clientWidth
       };
       o.hover = hover.bind(o);
       o.hoverend = hoverend.bind(o);
@@ -701,11 +703,7 @@
       style = $.el('style', {
         textContent: css
       });
-      $.asap((function() {
-        return d.head;
-      }), (function() {
-        return $.add(d.head, style);
-      }));
+      $.add(d.head, style);
       return style;
     },
     x: function(path, root) {
@@ -1977,12 +1975,12 @@
       });
     },
     load: function(link, html) {
-      var doc, msg, s;
-      doc = d.implementation.createHTMLDocument('');
-      doc.documentElement.innerHTML = html;
-      if (doc.title === '4chan - Banned') {
+      var msg, s, tmpDoc;
+      tmpDoc = d.implementation.createHTMLDocument('');
+      tmpDoc.documentElement.innerHTML = html;
+      if (tmpDoc.title === '4chan - Banned') {
         s = 'Banned!';
-      } else if (msg = doc.getElementById('errmsg')) {
+      } else if (msg = tmpDoc.getElementById('errmsg')) {
         s = msg.textContent;
         $.on(link, 'click', DeleteLink["delete"]);
       } else {
@@ -3768,7 +3766,7 @@
         }
         this.lastPost = posts[count - 1].ID;
         Main.callbackNodes(Post, posts);
-        scroll = this['Auto Scroll'] && this.scrollBG() && this.threadRoot.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
+        scroll = this['Auto Scroll'] && this.scrollBG() && this.threadRoot.getBoundingClientRect().bottom - doc.clientHeight < 25;
         $.add(this.threadRoot, nodes);
         if (scroll) {
           return nodes[0].scrollIntoView();
@@ -4126,9 +4124,6 @@
           });
           return;
       }
-      $.addStyle(Main.css);
-      $.addClass(d.documentElement, $.engine);
-      $.addClass(d.documentElement, 'fourchan_x');
       initFeature = function(name, module) {
         console.time("" + name + " initialization");
         try {
@@ -4171,12 +4166,51 @@
       initFeature('Image Hover', ImageHover);
       initFeature('Thread Updater', ThreadUpdater);
       console.timeEnd('All initializations');
+      $.on(d, '4chanMainInit', Main.initStyle);
       return $.ready(Main.initReady);
     },
+    initStyle: function() {
+      var MutationObserver, mainStyleSheet, observer, setStyle, style, styleSheets, _ref;
+      if ((_ref = $('link[href*=mobile]', d.head)) != null) {
+        _ref.disabled = true;
+      }
+      $.addStyle(Main.css);
+      style = null;
+      mainStyleSheet = $('link[title=switch]', d.head);
+      styleSheets = $$('link[rel="alternate stylesheet"]', d.head);
+      setStyle = function() {
+        var styleSheet, _i, _len;
+        if (style) {
+          $.rmClass(doc, style);
+        }
+        for (_i = 0, _len = styleSheets.length; _i < _len; _i++) {
+          styleSheet = styleSheets[_i];
+          if (styleSheet.href === mainStyleSheet.href) {
+            style = styleSheet.title.toLowerCase().replace('new', '').trim().replace(/\s+/g, '-');
+            break;
+          }
+        }
+        return $.addClass(doc, style);
+      };
+      $.addClass(doc, $.engine);
+      $.addClass(doc, 'fourchan_x');
+      setStyle();
+      if (MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.OMutationObserver) {
+        observer = new MutationObserver(setStyle);
+        return observer.observe(mainStyleSheet, {
+          attributes: true,
+          attributeFilter: ['href']
+        });
+      } else {
+        return $.on(mainStyleSheet, 'DOMAttrModified', setStyle);
+      }
+    },
     initReady: function() {
-      var boardChild, errors, posts, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1, _ref2;
+      var boardChild, errors, posts, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1;
+      if (!$.hasClass(doc, 'fourchan_x')) {
+        Main.initStyle();
+      }
       if (d.title === '4chan - 404 Not Found') {
-        $.rmClass(d.documentElement, 'fourchan_x');
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           location.href = Redirect.to({
             board: g.BOARD,
@@ -4186,22 +4220,19 @@
         }
         return;
       }
-      if ((_ref = $('link[href*=mobile]', d.head)) != null) {
-        _ref.disabled = true;
-      }
       threads = [];
       posts = [];
-      _ref1 = $('.board').children;
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        boardChild = _ref1[_i];
+      _ref = $('.board').children;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        boardChild = _ref[_i];
         if (!$.hasClass(boardChild, 'thread')) {
           continue;
         }
         thread = new Thread(boardChild.id.slice(1), g.BOARD);
         threads.push(thread);
-        _ref2 = boardChild.children;
-        for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-          threadChild = _ref2[_j];
+        _ref1 = boardChild.children;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          threadChild = _ref1[_j];
           if (!$.hasClass(threadChild, 'postContainer')) {
             continue;
           }

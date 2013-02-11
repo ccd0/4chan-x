@@ -277,10 +277,6 @@ Main =
             location.href = url if url
         return
 
-    $.addStyle Main.css
-    $.addClass d.documentElement, $.engine
-    $.addClass d.documentElement, 'fourchan_x'
-
     initFeature = (name, module) ->
       console.time "#{name} initialization"
       try
@@ -322,20 +318,48 @@ Main =
     initFeature 'Thread Updater',           ThreadUpdater
     console.timeEnd 'All initializations'
 
+    $.on d, '4chanMainInit', Main.initStyle
     $.ready Main.initReady
 
+  initStyle: ->
+    # disable the mobile layout
+    $('link[href*=mobile]', d.head)?.disabled = true
+    $.addStyle Main.css
+
+    style          = null
+    mainStyleSheet = $ 'link[title=switch]', d.head
+    styleSheets    = $$ 'link[rel="alternate stylesheet"]', d.head
+    setStyle = ->
+      $.rmClass doc, style if style
+      for styleSheet in styleSheets
+        if styleSheet.href is mainStyleSheet.href
+          style = styleSheet.title.toLowerCase().replace('new', '').trim().replace /\s+/g, '-'
+          break
+      $.addClass doc, style
+    $.addClass doc, $.engine
+    $.addClass doc, 'fourchan_x'
+    setStyle()
+    if MutationObserver = window.MutationObserver or window.WebKitMutationObserver or window.OMutationObserver
+      observer = new MutationObserver setStyle
+      observer.observe mainStyleSheet,
+        attributes: true
+        attributeFilter: ['href']
+    else
+      # XXX this doesn't seem to work?
+      $.on mainStyleSheet, 'DOMAttrModified', setStyle
+
   initReady: ->
+    unless $.hasClass doc, 'fourchan_x'
+      # Something might go wrong!
+      Main.initStyle()
+
     if d.title is '4chan - 404 Not Found'
-      $.rmClass d.documentElement, 'fourchan_x'
       if Conf['404 Redirect'] and g.VIEW is 'thread'
         location.href = Redirect.to
           board: g.BOARD
           threadID: g.THREAD
           postID: location.hash
       return
-
-    # disable the mobile layout
-    $('link[href*=mobile]', d.head)?.disabled = true
 
     threads = []
     posts   = []

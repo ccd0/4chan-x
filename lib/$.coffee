@@ -86,11 +86,7 @@ $.extend $,
   addStyle: (css) ->
     style = $.el 'style',
       textContent: css
-    # XXX fix for scriptish:
-    # https://github.com/scriptish/scriptish/issues/16
-    $.asap (-> d.head), (->
-      $.add d.head, style
-    )
+    $.add d.head, style
     style
   x: (path, root=d.body) ->
     # XPathResult.ANY_UNORDERED_NODE_TYPE === 8

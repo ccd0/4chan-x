@@ -888,11 +888,11 @@ DeleteLink =
         form: $.formData form
       }
   load: (link, html) ->
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = html
-    if doc.title is '4chan - Banned' # Ban/warn check
+    tmpDoc = d.implementation.createHTMLDocument ''
+    tmpDoc.documentElement.innerHTML = html
+    if tmpDoc.title is '4chan - Banned' # Ban/warn check
       s = 'Banned!'
-    else if msg = doc.getElementById 'errmsg' # error!
+    else if msg = tmpDoc.getElementById 'errmsg' # error!
       s = msg.textContent
       $.on link, 'click', DeleteLink.delete
     else
@@ -2364,7 +2364,7 @@ ThreadUpdater =
       Main.callbackNodes Post, posts
 
       scroll = @['Auto Scroll'] and @scrollBG() and
-        @threadRoot.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
+        @threadRoot.getBoundingClientRect().bottom - doc.clientHeight < 25
       $.add @threadRoot, nodes
       if scroll
         nodes[0].scrollIntoView()

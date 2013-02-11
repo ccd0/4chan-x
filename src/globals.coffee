@@ -3,7 +3,8 @@
 return unless /^(boards|images|sys)\.4chan\.org$/.test location.hostname
 
 Conf = {}
-d = document
+d    = document
+doc  = d.documentElement
 g =
   VERSION:   '<%= pkg.version %>'
   NAMESPACE: "<%= pkg.name.replace(/-/g, '_') %>."
