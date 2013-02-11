@@ -1427,10 +1427,10 @@
           detail: {
             type: 'post',
             el: div,
-            open: function(post) {
-              var thread;
-              thread = post.thread;
-              if (post.isReply || thread.isHidden) {
+            open: function(_arg) {
+              var isReply, thread;
+              thread = _arg.thread, isReply = _arg.isReply;
+              if (isReply || thread.isHidden) {
                 return false;
               }
               ThreadHiding.menu.thread = thread;
@@ -1924,10 +1924,12 @@
       };
       fileEntry = {
         el: fileEl,
-        open: function(post) {
+        open: function(_arg) {
+          var file;
+          file = _arg.file;
           fileEl.textContent = 'File';
           $.on(fileEl, 'click', DeleteLink["delete"]);
-          return !!post.file;
+          return !!file;
         }
       };
       d.dispatchEvent(new CustomEvent('AddMenuEntry', {
@@ -2047,12 +2049,14 @@
         detail: {
           type: 'post',
           el: a,
-          open: function(post) {
-            if (!post.file) {
+          open: function(_arg) {
+            var file;
+            file = _arg.file;
+            if (!file) {
               return false;
             }
-            a.href = post.file.URL;
-            a.download = post.file.name;
+            a.href = file.URL;
+            a.download = file.name;
             return true;
           }
         }
@@ -2072,14 +2076,15 @@
       entry = {
         type: 'post',
         el: div,
-        open: function(post) {
-          var redirect;
+        open: function(_arg) {
+          var ID, board, redirect, thread;
+          ID = _arg.ID, thread = _arg.thread, board = _arg.board;
           redirect = Redirect.to({
-            board: post.board,
-            threadID: post.thread,
-            postID: post.ID
+            board: board,
+            threadID: thread,
+            postID: ID
           });
-          return redirect !== ("//boards.4chan.org/" + post.board + "/");
+          return redirect !== ("//boards.4chan.org/" + board + "/");
         },
         subEntries: []
       };
@@ -2099,11 +2104,13 @@
         target: '_blank'
       });
       if (type === 'post') {
-        open = function(post) {
+        open = function(_arg) {
+          var ID, board, thread;
+          ID = _arg.ID, thread = _arg.thread, board = _arg.board;
           el.href = Redirect.to({
-            board: post.board,
-            threadID: post.thread,
-            postID: post.ID
+            board: board,
+            threadID: thread,
+            postID: ID
           });
           return true;
         };

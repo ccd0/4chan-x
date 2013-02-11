@@ -485,13 +485,12 @@ ThreadHiding =
         detail:
           type: 'post'
           el: div
-          open: (post) ->
-            {thread} = post
-            if post.isReply or thread.isHidden
+          open: ({thread, isReply}) ->
+            if isReply or thread.isHidden
               return false
             ThreadHiding.menu.thread = thread
             true
-          subEntries: [{el: apply}, {el: makeStub}]
+          subEntries: [el: apply; el: makeStub]
     hide: ->
       makeStub = $('input', @parentNode).checked
       {thread} = ThreadHiding.menu
@@ -841,10 +840,10 @@ DeleteLink =
         true
     fileEntry =
       el: fileEl
-      open: (post) ->
+      open: ({file}) ->
         fileEl.textContent = 'File'
         $.on fileEl, 'click', DeleteLink.delete
-        !!post.file
+        !!file
 
     d.dispatchEvent new CustomEvent 'AddMenuEntry',
       detail:
@@ -940,10 +939,10 @@ DownloadLink =
       detail:
         type: 'post'
         el: a
-        open: (post) ->
-          return false unless post.file
-          a.href     = post.file.URL
-          a.download = post.file.name
+        open: ({file}) ->
+          return false unless file
+          a.href     = file.URL
+          a.download = file.name
           true
 
 ArchiveLink =
@@ -956,12 +955,12 @@ ArchiveLink =
     entry =
       type: 'post'
       el: div
-      open: (post) ->
+      open: ({ID, thread, board}) ->
         redirect = Redirect.to
-          board:    post.board
-          threadID: post.thread
-          postID:   post.ID
-        redirect isnt "//boards.4chan.org/#{post.board}/"
+          board:    board
+          threadID: thread
+          postID:   ID
+        redirect isnt "//boards.4chan.org/#{board}/"
       subEntries: []
 
     for type in [
@@ -985,11 +984,11 @@ ArchiveLink =
       target: '_blank'
 
     if type is 'post'
-      open = (post) ->
+      open = ({ID, thread, board}) ->
         el.href = Redirect.to
-          board:    post.board
-          threadID: post.thread
-          postID:   post.ID
+          board:    board
+          threadID: thread
+          postID:   ID
         true
     else
       open = (post) ->
