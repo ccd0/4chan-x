@@ -2065,10 +2065,6 @@ QuoteBacklink =
       # Don't backlink the OP.
       continue if !(el = $.id "pi#{qid}") or !Conf['OP Backlinks'] and /\bop\b/.test el.parentNode.className
       link = a.cloneNode true
-      if Conf['Quote Preview']
-        $.on link, 'mouseover', QuotePreview.mouseover
-      if Conf['Quote Inline']
-        $.on link, 'click', QuoteInline.toggle
       unless container = $.id "blc#{qid}"
         $.addClass el.parentNode, 'quoted'
         container = $.el 'span',
@@ -2088,9 +2084,20 @@ QuoteInline =
     for quote in post.quotes
       continue unless quote.hash and quote.hostname is 'boards.4chan.org' and !/catalog$/.test(quote.pathname) or /\bdeadlink\b/.test quote.className
       $.on quote, 'click', QuoteInline.toggle
+      QuoteInline.qiQuote quote if Conf['Quote Hash Navigation'] and !post.isInlined
     for quote in post.backlinks
       $.on quote, 'click', QuoteInline.toggle
+      QuoteInline.qiQuote quote if Conf['Quote Hash Navigation'] and !post.isInlined
     return
+
+  qiQuote: (quote) ->
+    $.after quote, [
+      $.tn(' ')
+      $.el 'a',
+        className:   'qiQuote'
+        textContent: '#'
+        href:        quote.href
+    ]
 
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0

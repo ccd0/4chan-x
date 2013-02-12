@@ -191,14 +191,17 @@ Main =
     if _conf['Remove Spoilers']
       RemoveSpoilers.init()
 
-    if _conf['Quote Inline']
-      QuoteInline.init()
+    if _conf['Quote Backlinks']
+      QuoteBacklink.init()
 
     if _conf['Quote Preview']
       QuotePreview.init()
 
-    if _conf['Quote Backlinks']
-      QuoteBacklink.init()
+    if _conf['Quote Inline']
+      QuoteInline.init()
+
+    if _conf['Mark Owned Posts']
+      MarkOwn.init()
 
     if _conf['Indicate OP quote']
       QuoteOP.init()
@@ -208,6 +211,9 @@ Main =
 
     if _conf['Color user IDs']
       IDColor.init()
+
+    if _conf['Replace GIF'] or _conf['Replace PNG'] or _conf['Replace JPG']
+      ImageReplace.init()
 
     $.ready Main.featuresReady
 
@@ -256,14 +262,8 @@ Main =
     if _conf['Keybinds']
       Keybinds.init()
 
-    if _conf['Replace GIF'] or _conf['Replace PNG'] or _conf['Replace JPG']
-      ImageReplace.init()
-
     if _conf['Fappe Tyme']
       FappeTyme.init()
-
-    if _conf['Mark Owned Posts']
-      MarkOwn.init()
 
     if g.REPLY
       if _conf['Prefetch']

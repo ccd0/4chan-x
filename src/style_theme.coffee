@@ -297,6 +297,7 @@ a {
 .backlink {
   color: #{theme["Backlinks"]};
 }
+.qiQuote,
 .quotelink {
   color: #{theme["Quotelinks"]};
 }
@@ -304,6 +305,7 @@ a {
 .entry:hover,
 .sideArrows a:hover,
 .replylink:hover,
+.qiQuote:hover,
 .quotelink:hover,
 a .name:hover,
 a .postertrip:hover,
