@@ -1821,939 +1821,6 @@
     }
   };
 
-  QR = {
-    init: function() {
-      var link;
-      if (g.VIEW === 'catalog' || !Conf['Quick Reply']) {
-        return;
-      }
-      if (Conf['Hide Original Post Form']) {
-        $.addClass(doc, 'hide-original-post-form');
-      }
-      link = $.el('a', {
-        className: 'qr-shortcut',
-        textContent: 'Quick Reply',
-        href: 'javascript:;'
-      });
-      $.on(link, 'click', function() {
-        Header.menu.close();
-        QR.open();
-        if (g.BOARD.ID === 'f') {
-          if (g.VIEW === 'index') {
-            QR.threadSelector.value = '9999';
-          }
-        } else if (g.VIEW === 'thread') {
-          QR.threadSelector.value = g.THREAD;
-        } else {
-          QR.threadSelector.value = 'new';
-        }
-        return $('textarea', QR.el).focus();
-      });
-      $.event('AddMenuEntry', {
-        type: 'header',
-        el: link
-      });
-      $.on(d, 'dragover', QR.dragOver);
-      $.on(d, 'drop', QR.dropFile);
-      $.on(d, 'dragstart dragend', QR.drag);
-      $.on(d, '4chanXInitFinished', function() {
-        if (!Conf['Persistent QR']) {
-          return;
-        }
-        QR.open();
-        if (Conf['Auto Hide QR']) {
-          return QR.hide();
-        }
-      });
-      return Post.prototype.callbacks.push({
-        name: 'Quick Reply',
-        cb: this.node
-      });
-    },
-    node: function() {
-      return $.on($('a[title="Quote this post"]', this.nodes.info), 'click', QR.quote);
-    },
-    open: function() {
-      if (QR.el) {
-        QR.el.hidden = false;
-        QR.unhide();
-        return;
-      }
-      try {
-        return QR.dialog();
-      } catch (err) {
-        delete QR.el;
-        return Main.handleErrors({
-          message: 'Quick Reply dialog creation crashed.',
-          error: err
-        });
-      }
-    },
-    close: function() {
-      var i, spoiler, _i, _len, _ref;
-      QR.el.hidden = true;
-      QR.abort();
-      d.activeElement.blur();
-      $.rmClass(QR.el, 'dump');
-      _ref = QR.replies;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        i = _ref[_i];
-        QR.replies[0].rm();
-      }
-      QR.cooldown.auto = false;
-      QR.status();
-      QR.resetFileInput();
-      if (!Conf['Remember Spoiler'] && (spoiler = $.id('spoiler')).checked) {
-        spoiler.click();
-      }
-      return QR.cleanNotification();
-    },
-    hide: function() {
-      d.activeElement.blur();
-      $.addClass(QR.el, 'autohide');
-      return $.id('autohide').checked = true;
-    },
-    unhide: function() {
-      $.rmClass(QR.el, 'autohide');
-      return $.id('autohide').checked = false;
-    },
-    toggleHide: function() {
-      if (this.checked) {
-        return QR.hide();
-      } else {
-        return QR.unhide();
-      }
-    },
-    error: function(err) {
-      var el;
-      QR.open();
-      if (typeof err === 'string') {
-        el = $.tn(err);
-      } else {
-        el = err;
-        el.removeAttribute('style');
-      }
-      if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
-        $('[autocomplete]', QR.el).focus();
-      }
-      if (d.hidden) {
-        alert(el.textContent);
-      }
-      return QR.lastNotification = new Notification('warning', el);
-    },
-    cleanNotification: function() {
-      var _ref;
-      if ((_ref = QR.lastNotification) != null) {
-        _ref.close();
-      }
-      return delete QR.lastNotification;
-    },
-    status: function(data) {
-      var disabled, input, value;
-      if (data == null) {
-        data = {};
-      }
-      if (!QR.el) {
-        return;
-      }
-      if (g.dead) {
-        value = 404;
-        disabled = true;
-        QR.cooldown.auto = false;
-      }
-      value = data.progress || QR.cooldown.seconds || value;
-      input = QR.status.input;
-      input.value = QR.cooldown.auto ? value ? "Auto " + value : 'Auto' : value || 'Submit';
-      return input.disabled = disabled || false;
-    },
-    cooldown: {
-      init: function() {
-        QR.cooldown.types = {
-          thread: (function() {
-            switch (g.BOARD) {
-              case 'q':
-                return 86400;
-              case 'b':
-              case 'soc':
-              case 'r9k':
-                return 600;
-              default:
-                return 300;
-            }
-          })(),
-          sage: g.BOARD === 'q' ? 600 : 60,
-          file: g.BOARD === 'q' ? 300 : 30,
-          post: g.BOARD === 'q' ? 60 : 30
-        };
-        QR.cooldown.cooldowns = $.get("" + g.BOARD + ".cooldown", {});
-        QR.cooldown.start();
-        return $.sync("" + g.BOARD + ".cooldown", QR.cooldown.sync);
-      },
-      start: function() {
-        if (QR.cooldown.isCounting) {
-          return;
-        }
-        QR.cooldown.isCounting = true;
-        return QR.cooldown.count();
-      },
-      sync: function(cooldowns) {
-        var id;
-        for (id in cooldowns) {
-          QR.cooldown.cooldowns[id] = cooldowns[id];
-        }
-        return QR.cooldown.start();
-      },
-      set: function(data) {
-        var cooldown, hasFile, isReply, isSage, start, type;
-        start = Date.now();
-        if (data.delay) {
-          cooldown = {
-            delay: data.delay
-          };
-        } else {
-          isSage = /sage/i.test(data.post.email);
-          hasFile = !!data.post.file;
-          isReply = data.isReply;
-          type = !isReply ? 'thread' : isSage ? 'sage' : hasFile ? 'file' : 'post';
-          cooldown = {
-            isReply: isReply,
-            isSage: isSage,
-            hasFile: hasFile,
-            timeout: start + QR.cooldown.types[type] * $.SECOND
-          };
-        }
-        QR.cooldown.cooldowns[start] = cooldown;
-        $.set("" + g.BOARD + ".cooldown", QR.cooldown.cooldowns);
-        return QR.cooldown.start();
-      },
-      unset: function(id) {
-        delete QR.cooldown.cooldowns[id];
-        return $.set("" + g.BOARD + ".cooldown", QR.cooldown.cooldowns);
-      },
-      count: function() {
-        var cooldown, cooldowns, elapsed, hasFile, isReply, isSage, now, post, seconds, start, type, types, update, _ref;
-        if (Object.keys(QR.cooldown.cooldowns).length) {
-          setTimeout(QR.cooldown.count, 1000);
-        } else {
-          $["delete"]("" + g.BOARD + ".cooldown");
-          delete QR.cooldown.isCounting;
-          delete QR.cooldown.seconds;
-          QR.status();
-          return;
-        }
-        isReply = g.BOARD.ID === 'f' && g.VIEW === 'thread' ? true : QR.threadSelector.value !== 'new';
-        if (isReply) {
-          post = QR.replies[0];
-          isSage = /sage/i.test(post.email);
-          hasFile = !!post.file;
-        }
-        now = Date.now();
-        seconds = null;
-        _ref = QR.cooldown, types = _ref.types, cooldowns = _ref.cooldowns;
-        for (start in cooldowns) {
-          cooldown = cooldowns[start];
-          if ('delay' in cooldown) {
-            if (cooldown.delay) {
-              seconds = Math.max(seconds, cooldown.delay--);
-            } else {
-              seconds = Math.max(seconds, 0);
-              QR.cooldown.unset(start);
-            }
-            continue;
-          }
-          if (isReply === cooldown.isReply) {
-            type = !isReply ? 'thread' : isSage && cooldown.isSage ? 'sage' : hasFile && cooldown.hasFile ? 'file' : 'post';
-            elapsed = Math.floor((now - start) / 1000);
-            if (elapsed >= 0) {
-              seconds = Math.max(seconds, types[type] - elapsed);
-            }
-          }
-          if (!((start <= now && now <= cooldown.timeout))) {
-            QR.cooldown.unset(start);
-          }
-        }
-        update = seconds !== null || !!QR.cooldown.seconds;
-        QR.cooldown.seconds = seconds;
-        if (update) {
-          QR.status();
-        }
-        if (seconds === 0 && QR.cooldown.auto) {
-          return QR.submit();
-        }
-      }
-    },
-    quote: function(e) {
-      var caretPos, post, range, s, sel, selectionRoot, ta, text;
-      if (e != null) {
-        e.preventDefault();
-      }
-      QR.open();
-      ta = $('textarea', QR.el);
-      if (QR.threadSelector && !ta.value && g.BOARD.ID !== 'f') {
-        QR.threadSelector.value = $.x('ancestor::div[parent::div[@class="board"]]', this).id.slice(1);
-      }
-      post = Get.postFromRoot($.x('ancestor-or-self::div[contains(@class,"postContainer")][1]', this));
-      text = ">>" + post + "\n";
-      sel = d.getSelection();
-      selectionRoot = $.x('ancestor-or-self::div[contains(@class,"postContainer")][1]', sel.anchorNode);
-      if ((s = sel.toString().trim()) && post.nodes.root === selectionRoot) {
-        s = s.replace(/\n/g, '\n>');
-        text += ">" + s + "\n";
-      }
-      caretPos = ta.selectionStart;
-      ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
-      range = caretPos + text.length;
-      ta.setSelectionRange(range, range);
-      ta.focus();
-      return ta.dispatchEvent(new Event('input'));
-    },
-    characterCount: function() {
-      var count, counter;
-      counter = QR.charaCounter;
-      count = this.textLength;
-      counter.textContent = count;
-      counter.hidden = count < 1000;
-      return (count > 1500 ? $.addClass : $.rmClass)(counter, 'warning');
-    },
-    drag: function(e) {
-      var toggle;
-      toggle = e.type === 'dragstart' ? $.off : $.on;
-      toggle(d, 'dragover', QR.dragOver);
-      return toggle(d, 'drop', QR.dropFile);
-    },
-    dragOver: function(e) {
-      e.preventDefault();
-      return e.dataTransfer.dropEffect = 'copy';
-    },
-    dropFile: function(e) {
-      if (!e.dataTransfer.files.length) {
-        return;
-      }
-      e.preventDefault();
-      QR.open();
-      QR.fileInput.call(e.dataTransfer);
-      return $.addClass(QR.el, 'dump');
-    },
-    fileInput: function() {
-      var file, _i, _len, _ref;
-      QR.cleanNotification();
-      if (this.files.length === 1) {
-        file = this.files[0];
-        if (file.size > this.max) {
-          QR.error('File too large.');
-          QR.resetFileInput();
-        } else if (-1 === QR.mimeTypes.indexOf(file.type)) {
-          QR.error('Unsupported file type.');
-          QR.resetFileInput();
-        } else {
-          QR.selected.setFile(file);
-        }
-        return;
-      }
-      _ref = this.files;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        file = _ref[_i];
-        if (file.size > this.max) {
-          QR.error("File " + file.name + " is too large.");
-          break;
-        } else if (-1 === QR.mimeTypes.indexOf(file.type)) {
-          QR.error("" + file.name + ": Unsupported file type.");
-          break;
-        }
-        if (!QR.replies[QR.replies.length - 1].file) {
-          QR.replies[QR.replies.length - 1].setFile(file);
-        } else {
-          new QR.reply().setFile(file);
-        }
-      }
-      $.addClass(QR.el, 'dump');
-      return QR.resetFileInput();
-    },
-    resetFileInput: function() {
-      return $('[type=file]', QR.el).value = null;
-    },
-    replies: [],
-    reply: (function() {
-
-      function _Class() {
-        var persona, prev,
-          _this = this;
-        prev = QR.replies[QR.replies.length - 1];
-        persona = $.get('QR.persona', {});
-        this.name = prev ? prev.name : persona.name || null;
-        this.email = prev && !/^sage$/.test(prev.email) ? prev.email : persona.email || null;
-        this.sub = prev && Conf['Remember Subject'] ? prev.sub : Conf['Remember Subject'] ? persona.sub : null;
-        this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
-        this.com = null;
-        this.el = $.el('a', {
-          className: 'qrpreview',
-          draggable: true,
-          href: 'javascript:;',
-          innerHTML: '<a class=remove>×</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
-        });
-        $('input', this.el).checked = this.spoiler;
-        $.on(this.el, 'click', function() {
-          return _this.select();
-        });
-        $.on($('.remove', this.el), 'click', function(e) {
-          e.stopPropagation();
-          return _this.rm();
-        });
-        $.on($('label', this.el), 'click', function(e) {
-          return e.stopPropagation();
-        });
-        $.on($('input', this.el), 'change', function(e) {
-          _this.spoiler = e.target.checked;
-          if (_this.el.id === 'selected') {
-            return $.id('spoiler').checked = _this.spoiler;
-          }
-        });
-        $.before($('#addReply', QR.el), this.el);
-        $.on(this.el, 'dragstart', this.dragStart);
-        $.on(this.el, 'dragenter', this.dragEnter);
-        $.on(this.el, 'dragleave', this.dragLeave);
-        $.on(this.el, 'dragover', this.dragOver);
-        $.on(this.el, 'dragend', this.dragEnd);
-        $.on(this.el, 'drop', this.drop);
-        QR.replies.push(this);
-      }
-
-      _Class.prototype.setFile = function(file) {
-        var fileUrl, img, url,
-          _this = this;
-        this.file = file;
-        this.el.title = "" + file.name + " (" + ($.bytesToString(file.size)) + ")";
-        if (QR.spoiler) {
-          $('label', this.el).hidden = false;
-        }
-        if (!/^image/.test(file.type)) {
-          this.el.style.backgroundImage = null;
-          return;
-        }
-        if (!(url = window.URL || window.webkitURL)) {
-          return;
-        }
-        url.revokeObjectURL(this.url);
-        fileUrl = url.createObjectURL(file);
-        img = $.el('img');
-        $.on(img, 'load', function() {
-          var c, data, i, l, s, ui8a, _i;
-          s = 90 * 3;
-          if (img.height < s || img.width < s) {
-            _this.url = fileUrl;
-            _this.el.style.backgroundImage = "url(" + _this.url + ")";
-            return;
-          }
-          if (img.height <= img.width) {
-            img.width = s / img.height * img.width;
-            img.height = s;
-          } else {
-            img.height = s / img.width * img.height;
-            img.width = s;
-          }
-          c = $.el('canvas');
-          c.height = img.height;
-          c.width = img.width;
-          c.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
-          data = atob(c.toDataURL().split(',')[1]);
-          l = data.length;
-          ui8a = new Uint8Array(l);
-          for (i = _i = 0; 0 <= l ? _i < l : _i > l; i = 0 <= l ? ++_i : --_i) {
-            ui8a[i] = data.charCodeAt(i);
-          }
-          _this.url = url.createObjectURL(new Blob([ui8a], {
-            type: 'image/png'
-          }));
-          _this.el.style.backgroundImage = "url(" + _this.url + ")";
-          return typeof url.revokeObjectURL === "function" ? url.revokeObjectURL(fileUrl) : void 0;
-        });
-        return img.src = fileUrl;
-      };
-
-      _Class.prototype.rmFile = function() {
-        var _base;
-        QR.resetFileInput();
-        delete this.file;
-        this.el.title = null;
-        this.el.style.backgroundImage = null;
-        if (QR.spoiler) {
-          $('label', this.el).hidden = true;
-        }
-        return typeof (_base = window.URL || window.webkitURL).revokeObjectURL === "function" ? _base.revokeObjectURL(this.url) : void 0;
-      };
-
-      _Class.prototype.select = function() {
-        var data, rectEl, rectList, _i, _len, _ref, _ref1;
-        if ((_ref = QR.selected) != null) {
-          _ref.el.id = null;
-        }
-        QR.selected = this;
-        this.el.id = 'selected';
-        rectEl = this.el.getBoundingClientRect();
-        rectList = this.el.parentNode.getBoundingClientRect();
-        this.el.parentNode.scrollLeft += rectEl.left + rectEl.width / 2 - rectList.left - rectList.width / 2;
-        _ref1 = ['name', 'email', 'sub', 'com'];
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          data = _ref1[_i];
-          $("[name=" + data + "]", QR.el).value = this[data];
-        }
-        QR.characterCount.call($('textarea', QR.el));
-        return $('#spoiler', QR.el).checked = this.spoiler;
-      };
-
-      _Class.prototype.dragStart = function() {
-        return $.addClass(this, 'drag');
-      };
-
-      _Class.prototype.dragEnter = function() {
-        return $.addClass(this, 'over');
-      };
-
-      _Class.prototype.dragLeave = function() {
-        return $.rmClass(this, 'over');
-      };
-
-      _Class.prototype.dragOver = function(e) {
-        e.preventDefault();
-        return e.dataTransfer.dropEffect = 'move';
-      };
-
-      _Class.prototype.drop = function() {
-        var el, index, newIndex, oldIndex, reply;
-        el = $('.drag', this.parentNode);
-        index = function(el) {
-          return Array.prototype.slice.call(el.parentNode.children).indexOf(el);
-        };
-        oldIndex = index(el);
-        newIndex = index(this);
-        if (oldIndex < newIndex) {
-          $.after(this, el);
-        } else {
-          $.before(this, el);
-        }
-        reply = QR.replies.splice(oldIndex, 1)[0];
-        return QR.replies.splice(newIndex, 0, reply);
-      };
-
-      _Class.prototype.dragEnd = function() {
-        var el;
-        $.rmClass(this, 'drag');
-        if (el = $('.over', this.parentNode)) {
-          return $.rmClass(el, 'over');
-        }
-      };
-
-      _Class.prototype.rm = function() {
-        var index, _ref;
-        QR.resetFileInput();
-        $.rm(this.el);
-        index = QR.replies.indexOf(this);
-        if (QR.replies.length === 1) {
-          new QR.reply().select();
-        } else if (this.el.id === 'selected') {
-          (QR.replies[index - 1] || QR.replies[index + 1]).select();
-        }
-        QR.replies.splice(index, 1);
-        return (_ref = window.URL || window.webkitURL) != null ? _ref.revokeObjectURL(this.url) : void 0;
-      };
-
-      return _Class;
-
-    })(),
-    captcha: {
-      init: function() {
-        var _this = this;
-        if (-1 !== d.cookie.indexOf('pass_enabled=')) {
-          return;
-        }
-        if (!(this.isEnabled = !!$.id('captchaFormPart'))) {
-          return;
-        }
-        if ($.id('recaptcha_challenge_field_holder')) {
-          return this.ready();
-        } else {
-          this.onready = function() {
-            return _this.ready();
-          };
-          return $.on($.id('recaptcha_widget_div'), 'DOMNodeInserted', this.onready);
-        }
-      },
-      ready: function() {
-        var _this = this;
-        if (this.challenge = $.id('recaptcha_challenge_field_holder')) {
-          $.off($.id('recaptcha_widget_div'), 'DOMNodeInserted', this.onready);
-          delete this.onready;
-        } else {
-          return;
-        }
-        $.addClass(QR.el, 'captcha');
-        $.after($('.textarea', QR.el), $.el('div', {
-          className: 'captchaimg',
-          title: 'Reload',
-          innerHTML: '<img>'
-        }));
-        $.after($('.captchaimg', QR.el), $.el('div', {
-          className: 'captchainput',
-          innerHTML: '<input title=Verification class=field autocomplete=off size=1>'
-        }));
-        this.img = $('.captchaimg > img', QR.el);
-        this.input = $('.captchainput > input', QR.el);
-        $.on(this.img.parentNode, 'click', this.reload);
-        $.on(this.input, 'keydown', this.keydown);
-        $.on(this.challenge, 'DOMNodeInserted', function() {
-          return _this.load();
-        });
-        $.sync('captchas', function(arr) {
-          return _this.count(arr.length);
-        });
-        this.count($.get('captchas', []).length);
-        return this.reload();
-      },
-      save: function() {
-        var captcha, captchas, response;
-        if (!(response = this.input.value)) {
-          return;
-        }
-        captchas = $.get('captchas', []);
-        while ((captcha = captchas[0]) && captcha.time < Date.now()) {
-          captchas.shift();
-        }
-        captchas.push({
-          challenge: this.challenge.firstChild.value,
-          response: response,
-          time: this.timeout
-        });
-        $.set('captchas', captchas);
-        this.count(captchas.length);
-        return this.reload();
-      },
-      load: function() {
-        var challenge;
-        this.timeout = Date.now() + $.unsafeWindow.RecaptchaState.timeout * $.SECOND - $.MINUTE;
-        challenge = this.challenge.firstChild.value;
-        this.img.alt = challenge;
-        this.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
-        return this.input.value = null;
-      },
-      count: function(count) {
-        this.input.placeholder = (function() {
-          switch (count) {
-            case 0:
-              return 'Verification (Shift + Enter to cache)';
-            case 1:
-              return 'Verification (1 cached captcha)';
-            default:
-              return "Verification (" + count + " cached captchas)";
-          }
-        })();
-        return this.input.alt = count;
-      },
-      reload: function(focus) {
-        $.unsafeWindow.Recaptcha.reload('t');
-        if (focus) {
-          return QR.captcha.input.focus();
-        }
-      },
-      keydown: function(e) {
-        var c;
-        c = QR.captcha;
-        if (e.keyCode === 8 && !c.input.value) {
-          c.reload();
-        } else if (e.keyCode === 13 && e.shiftKey) {
-          c.save();
-        } else {
-          return;
-        }
-        return e.preventDefault();
-      }
-    },
-    dialog: function() {
-      var fileInput, key, mimeTypes, name, span, spoiler, ta, thread, threads, _i, _len, _ref, _ref1;
-      QR.el = UI.dialog('qr', 'top:0;right:0;', "<div class=move>Quick Reply <input type=checkbox id=autohide title=Auto-hide><span> <a class=close title=Close>×</a></span></div>\n<form>\n  <div class=persona><input id=dump type=button title='Dump list' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\n  <div id=replies><div id=repliesList><a id=addReply href=javascript:; title=\"Add a reply\">+</a></div></div>\n  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\n  <div><input type=file title=\"Shift+Click to remove the selected file.\" multiple size=16><input type=submit></div>\n  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\n</form>");
-      mimeTypes = $('ul.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
-        switch (type) {
-          case 'jpg':
-            return 'image/jpeg';
-          case 'pdf':
-            return 'application/pdf';
-          case 'swf':
-            return 'application/x-shockwave-flash';
-          default:
-            return "image/" + type;
-        }
-      });
-      QR.mimeTypes = mimeTypes.split(', ');
-      QR.mimeTypes.push('');
-      fileInput = $('input[type=file]', QR.el);
-      fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
-      if ($.engine !== 'presto') {
-        fileInput.accept = mimeTypes;
-      }
-      QR.spoiler = !!$('input[name=spoiler]');
-      spoiler = $('#spoilerLabel', QR.el);
-      spoiler.hidden = !QR.spoiler;
-      QR.charaCounter = $('#charCount', QR.el);
-      ta = $('textarea', QR.el);
-      span = $('.move > span', QR.el);
-      if (g.BOARD.ID === 'f') {
-        if (g.VIEW === 'index') {
-          QR.threadSelector = $('select[name=filetag]').cloneNode(true);
-        }
-      } else {
-        QR.threadSelector = $.el('select', {
-          title: 'Create a new thread / Reply to a thread'
-        });
-        threads = '<option value=new>New thread</option>';
-        _ref = g.BOARD.threads;
-        for (key in _ref) {
-          thread = _ref[key];
-          threads += "<option value=" + thread.ID + ">Thread No." + thread.ID + "</option>";
-        }
-        QR.threadSelector.innerHTML = threads;
-        if (g.VIEW === 'thread') {
-          QR.threadSelector.value = g.THREAD;
-        }
-      }
-      if (QR.threadSelector) {
-        $.prepend(span, QR.threadSelector);
-      }
-      $.on(span, 'mousedown', function(e) {
-        return e.stopPropagation();
-      });
-      $.on($('#autohide', QR.el), 'change', QR.toggleHide);
-      $.on($('.close', QR.el), 'click', QR.close);
-      $.on($('#dump', QR.el), 'click', function() {
-        return QR.el.classList.toggle('dump');
-      });
-      $.on($('#addReply', QR.el), 'click', function() {
-        return new QR.reply().select();
-      });
-      $.on($('form', QR.el), 'submit', QR.submit);
-      $.on(ta, 'input', function() {
-        return QR.selected.el.lastChild.textContent = this.value;
-      });
-      $.on(ta, 'input', QR.characterCount);
-      $.on(fileInput, 'change', QR.fileInput);
-      $.on(fileInput, 'click', function(e) {
-        if (e.shiftKey) {
-          return QR.selected.rmFile() || e.preventDefault();
-        }
-      });
-      $.on(spoiler.firstChild, 'change', function() {
-        return $('input', QR.selected.el).click();
-      });
-      new QR.reply().select();
-      _ref1 = ['name', 'email', 'sub', 'com'];
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        name = _ref1[_i];
-        $.on($("[name=" + name + "]", QR.el), 'input', function() {
-          var _ref2;
-          QR.selected[this.name] = this.value;
-          if (QR.cooldown.auto && QR.selected === QR.replies[0] && (0 < (_ref2 = QR.cooldown.seconds) && _ref2 <= 5)) {
-            return QR.cooldown.auto = false;
-          }
-        });
-      }
-      QR.status.input = $('input[type=submit]', QR.el);
-      QR.status();
-      QR.cooldown.init();
-      QR.captcha.init();
-      $.add(d.body, QR.el);
-      return $.event(new CustomEvent('QRDialogCreation', null, QR.el));
-    },
-    submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, filetag, m, opts, post, reply, response, textOnly, threadID, _ref;
-      if (e != null) {
-        e.preventDefault();
-      }
-      if (QR.cooldown.seconds) {
-        QR.cooldown.auto = !QR.cooldown.auto;
-        QR.status();
-        return;
-      }
-      QR.abort();
-      reply = QR.replies[0];
-      if (g.BOARD.ID === 'f' && g.VIEW === 'index') {
-        filetag = QR.threadSelector.value;
-        threadID = 'new';
-      } else {
-        threadID = QR.threadSelector.value;
-      }
-      if (threadID === 'new') {
-        threadID = null;
-        if (((_ref = g.BOARD.ID) === 'vg' || _ref === 'q') && !reply.sub) {
-          err = 'New threads require a subject.';
-        } else if (!(reply.file || (textOnly = !!$('input[name=textonly]', $.id('postForm'))))) {
-          err = 'No file selected.';
-        } else if (g.BOARD.ID === 'f' && filetag === '9999') {
-          err = 'Invalid tag specified.';
-        }
-      } else if (!(reply.com || reply.file)) {
-        err = 'No file selected.';
-      }
-      if (QR.captcha.isEnabled && !err) {
-        captchas = $.get('captchas', []);
-        while ((captcha = captchas[0]) && captcha.time < Date.now()) {
-          captchas.shift();
-        }
-        if (captcha = captchas.shift()) {
-          challenge = captcha.challenge;
-          response = captcha.response;
-        } else {
-          challenge = QR.captcha.img.alt;
-          if (response = QR.captcha.input.value) {
-            QR.captcha.reload();
-          }
-        }
-        $.set('captchas', captchas);
-        QR.captcha.count(captchas.length);
-        if (!response) {
-          err = 'No valid captcha.';
-        } else {
-          response = response.trim();
-          if (!/\s/.test(response)) {
-            response = "" + response + " " + response;
-          }
-        }
-      }
-      if (err) {
-        QR.cooldown.auto = false;
-        QR.status();
-        QR.error(err);
-        return;
-      }
-      QR.cleanNotification();
-      QR.cooldown.auto = QR.replies.length > 1;
-      if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
-        QR.hide();
-      }
-      if (!QR.cooldown.auto && $.x('ancestor::div[@id="qr"]', d.activeElement)) {
-        d.activeElement.blur();
-      }
-      QR.status({
-        progress: '...'
-      });
-      post = {
-        resto: threadID,
-        name: reply.name,
-        email: reply.email,
-        sub: reply.sub,
-        com: reply.com,
-        upfile: reply.file,
-        filetag: filetag,
-        spoiler: reply.spoiler,
-        textonly: textOnly,
-        mode: 'regist',
-        pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
-        recaptcha_challenge_field: challenge,
-        recaptcha_response_field: response
-      };
-      callbacks = {
-        onload: function() {
-          return QR.response(this.response);
-        },
-        onerror: function() {
-          QR.cooldown.auto = false;
-          QR.status();
-          return QR.error($.el('a', {
-            href: '//www.4chan.org/banned',
-            target: '_blank',
-            textContent: 'Connection error, or you are banned.'
-          }));
-        }
-      };
-      opts = {
-        form: $.formData(post),
-        upCallbacks: {
-          onload: function() {
-            return QR.status({
-              progress: '...'
-            });
-          },
-          onprogress: function(e) {
-            return QR.status({
-              progress: "" + (Math.round(e.loaded / e.total * 100)) + "%"
-            });
-          }
-        }
-      };
-      return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
-    },
-    response: function(html) {
-      var ban, board, err, h1, persona, postID, reply, threadID, tmpDoc, _, _ref, _ref1;
-      tmpDoc = d.implementation.createHTMLDocument('');
-      tmpDoc.documentElement.innerHTML = html;
-      if (ban = $('.banType', tmpDoc)) {
-        board = $('.board', tmpDoc).innerHTML;
-        err = $.el('span', {
-          innerHTML: ban.textContent.toLowerCase() === 'banned' ? ("You are banned on " + board + "! ;_;<br>") + "Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason." : ("You were issued a warning on " + board + " as " + ($('.nameBlock', tmpDoc).innerHTML) + ".<br>") + ("Reason: " + ($('.reason', tmpDoc).innerHTML))
-        });
-      } else if (err = tmpDoc.getElementById('errmsg')) {
-        if ((_ref = $('a', err)) != null) {
-          _ref.target = '_blank';
-        }
-      } else if (tmpDoc.title !== 'Post successful!') {
-        err = 'Connection error with sys.4chan.org.';
-      }
-      if (err) {
-        if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
-          if (/mistyped/i.test(err.textContent)) {
-            err = 'Error: You seem to have mistyped the CAPTCHA.';
-          }
-          QR.cooldown.auto = QR.captcha.isEnabled ? !!$.get('captchas', []).length : err === 'Connection error with sys.4chan.org.' ? true : false;
-          QR.cooldown.set({
-            delay: 2
-          });
-        } else {
-          QR.cooldown.auto = false;
-        }
-        QR.status();
-        QR.error(err);
-        return;
-      }
-      h1 = $('h1', tmpDoc);
-      QR.lastNotification = new Notification('success', h1.textContent, 5);
-      reply = QR.replies[0];
-      persona = $.get('QR.persona', {});
-      persona = {
-        name: reply.name,
-        email: /^sage$/.test(reply.email) ? persona.email : reply.email,
-        sub: Conf['Remember Subject'] ? reply.sub : null
-      };
-      $.set('QR.persona', persona);
-      _ref1 = h1.nextSibling.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
-      $.event(new CustomEvent('QRPostSuccessful', {
-        threadID: threadID,
-        postID: postID
-      }, QR.el));
-      QR.cooldown.set({
-        post: reply,
-        isReply: threadID !== '0'
-      });
-      QR.cooldown.auto = QR.replies.length > 1;
-      if (threadID === '0') {
-        $.open("/" + g.BOARD + "/res/" + postID);
-      } else if (g.VIEW === 'reply' && !QR.cooldown.auto) {
-        $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
-      }
-      if (Conf['Persistent QR'] || QR.cooldown.auto) {
-        reply.rm();
-      } else {
-        QR.close();
-      }
-      QR.status();
-      return QR.resetFileInput();
-    },
-    abort: function() {
-      var _ref;
-      if ((_ref = QR.ajax) != null) {
-        _ref.abort();
-      }
-      delete QR.ajax;
-      return QR.status();
-    }
-  };
-
   Menu = {
     init: function() {
       if (g.VIEW === 'catalog' || !Conf['Menu']) {
@@ -4714,6 +3781,939 @@
       return _Class;
 
     })()
+  };
+
+  QR = {
+    init: function() {
+      var link;
+      if (g.VIEW === 'catalog' || !Conf['Quick Reply']) {
+        return;
+      }
+      if (Conf['Hide Original Post Form']) {
+        $.addClass(doc, 'hide-original-post-form');
+      }
+      link = $.el('a', {
+        className: 'qr-shortcut',
+        textContent: 'Quick Reply',
+        href: 'javascript:;'
+      });
+      $.on(link, 'click', function() {
+        Header.menu.close();
+        QR.open();
+        if (g.BOARD.ID === 'f') {
+          if (g.VIEW === 'index') {
+            QR.threadSelector.value = '9999';
+          }
+        } else if (g.VIEW === 'thread') {
+          QR.threadSelector.value = g.THREAD;
+        } else {
+          QR.threadSelector.value = 'new';
+        }
+        return $('textarea', QR.el).focus();
+      });
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: link
+      });
+      $.on(d, 'dragover', QR.dragOver);
+      $.on(d, 'drop', QR.dropFile);
+      $.on(d, 'dragstart dragend', QR.drag);
+      $.on(d, '4chanXInitFinished', function() {
+        if (!Conf['Persistent QR']) {
+          return;
+        }
+        QR.open();
+        if (Conf['Auto Hide QR']) {
+          return QR.hide();
+        }
+      });
+      return Post.prototype.callbacks.push({
+        name: 'Quick Reply',
+        cb: this.node
+      });
+    },
+    node: function() {
+      return $.on($('a[title="Quote this post"]', this.nodes.info), 'click', QR.quote);
+    },
+    open: function() {
+      if (QR.el) {
+        QR.el.hidden = false;
+        QR.unhide();
+        return;
+      }
+      try {
+        return QR.dialog();
+      } catch (err) {
+        delete QR.el;
+        return Main.handleErrors({
+          message: 'Quick Reply dialog creation crashed.',
+          error: err
+        });
+      }
+    },
+    close: function() {
+      var i, spoiler, _i, _len, _ref;
+      QR.el.hidden = true;
+      QR.abort();
+      d.activeElement.blur();
+      $.rmClass(QR.el, 'dump');
+      _ref = QR.replies;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        i = _ref[_i];
+        QR.replies[0].rm();
+      }
+      QR.cooldown.auto = false;
+      QR.status();
+      QR.resetFileInput();
+      if (!Conf['Remember Spoiler'] && (spoiler = $.id('spoiler')).checked) {
+        spoiler.click();
+      }
+      return QR.cleanNotification();
+    },
+    hide: function() {
+      d.activeElement.blur();
+      $.addClass(QR.el, 'autohide');
+      return $.id('autohide').checked = true;
+    },
+    unhide: function() {
+      $.rmClass(QR.el, 'autohide');
+      return $.id('autohide').checked = false;
+    },
+    toggleHide: function() {
+      if (this.checked) {
+        return QR.hide();
+      } else {
+        return QR.unhide();
+      }
+    },
+    error: function(err) {
+      var el;
+      QR.open();
+      if (typeof err === 'string') {
+        el = $.tn(err);
+      } else {
+        el = err;
+        el.removeAttribute('style');
+      }
+      if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
+        $('[autocomplete]', QR.el).focus();
+      }
+      if (d.hidden) {
+        alert(el.textContent);
+      }
+      return QR.lastNotification = new Notification('warning', el);
+    },
+    cleanNotification: function() {
+      var _ref;
+      if ((_ref = QR.lastNotification) != null) {
+        _ref.close();
+      }
+      return delete QR.lastNotification;
+    },
+    status: function(data) {
+      var disabled, input, value;
+      if (data == null) {
+        data = {};
+      }
+      if (!QR.el) {
+        return;
+      }
+      if (g.dead) {
+        value = 404;
+        disabled = true;
+        QR.cooldown.auto = false;
+      }
+      value = data.progress || QR.cooldown.seconds || value;
+      input = QR.status.input;
+      input.value = QR.cooldown.auto ? value ? "Auto " + value : 'Auto' : value || 'Submit';
+      return input.disabled = disabled || false;
+    },
+    cooldown: {
+      init: function() {
+        QR.cooldown.types = {
+          thread: (function() {
+            switch (g.BOARD) {
+              case 'q':
+                return 86400;
+              case 'b':
+              case 'soc':
+              case 'r9k':
+                return 600;
+              default:
+                return 300;
+            }
+          })(),
+          sage: g.BOARD === 'q' ? 600 : 60,
+          file: g.BOARD === 'q' ? 300 : 30,
+          post: g.BOARD === 'q' ? 60 : 30
+        };
+        QR.cooldown.cooldowns = $.get("" + g.BOARD + ".cooldown", {});
+        QR.cooldown.start();
+        return $.sync("" + g.BOARD + ".cooldown", QR.cooldown.sync);
+      },
+      start: function() {
+        if (QR.cooldown.isCounting) {
+          return;
+        }
+        QR.cooldown.isCounting = true;
+        return QR.cooldown.count();
+      },
+      sync: function(cooldowns) {
+        var id;
+        for (id in cooldowns) {
+          QR.cooldown.cooldowns[id] = cooldowns[id];
+        }
+        return QR.cooldown.start();
+      },
+      set: function(data) {
+        var cooldown, hasFile, isReply, isSage, start, type;
+        start = Date.now();
+        if (data.delay) {
+          cooldown = {
+            delay: data.delay
+          };
+        } else {
+          isSage = /sage/i.test(data.post.email);
+          hasFile = !!data.post.file;
+          isReply = data.isReply;
+          type = !isReply ? 'thread' : isSage ? 'sage' : hasFile ? 'file' : 'post';
+          cooldown = {
+            isReply: isReply,
+            isSage: isSage,
+            hasFile: hasFile,
+            timeout: start + QR.cooldown.types[type] * $.SECOND
+          };
+        }
+        QR.cooldown.cooldowns[start] = cooldown;
+        $.set("" + g.BOARD + ".cooldown", QR.cooldown.cooldowns);
+        return QR.cooldown.start();
+      },
+      unset: function(id) {
+        delete QR.cooldown.cooldowns[id];
+        return $.set("" + g.BOARD + ".cooldown", QR.cooldown.cooldowns);
+      },
+      count: function() {
+        var cooldown, cooldowns, elapsed, hasFile, isReply, isSage, now, post, seconds, start, type, types, update, _ref;
+        if (Object.keys(QR.cooldown.cooldowns).length) {
+          setTimeout(QR.cooldown.count, 1000);
+        } else {
+          $["delete"]("" + g.BOARD + ".cooldown");
+          delete QR.cooldown.isCounting;
+          delete QR.cooldown.seconds;
+          QR.status();
+          return;
+        }
+        isReply = g.BOARD.ID === 'f' && g.VIEW === 'thread' ? true : QR.threadSelector.value !== 'new';
+        if (isReply) {
+          post = QR.replies[0];
+          isSage = /sage/i.test(post.email);
+          hasFile = !!post.file;
+        }
+        now = Date.now();
+        seconds = null;
+        _ref = QR.cooldown, types = _ref.types, cooldowns = _ref.cooldowns;
+        for (start in cooldowns) {
+          cooldown = cooldowns[start];
+          if ('delay' in cooldown) {
+            if (cooldown.delay) {
+              seconds = Math.max(seconds, cooldown.delay--);
+            } else {
+              seconds = Math.max(seconds, 0);
+              QR.cooldown.unset(start);
+            }
+            continue;
+          }
+          if (isReply === cooldown.isReply) {
+            type = !isReply ? 'thread' : isSage && cooldown.isSage ? 'sage' : hasFile && cooldown.hasFile ? 'file' : 'post';
+            elapsed = Math.floor((now - start) / 1000);
+            if (elapsed >= 0) {
+              seconds = Math.max(seconds, types[type] - elapsed);
+            }
+          }
+          if (!((start <= now && now <= cooldown.timeout))) {
+            QR.cooldown.unset(start);
+          }
+        }
+        update = seconds !== null || !!QR.cooldown.seconds;
+        QR.cooldown.seconds = seconds;
+        if (update) {
+          QR.status();
+        }
+        if (seconds === 0 && QR.cooldown.auto) {
+          return QR.submit();
+        }
+      }
+    },
+    quote: function(e) {
+      var caretPos, post, range, s, sel, selectionRoot, ta, text;
+      if (e != null) {
+        e.preventDefault();
+      }
+      QR.open();
+      ta = $('textarea', QR.el);
+      if (QR.threadSelector && !ta.value && g.BOARD.ID !== 'f') {
+        QR.threadSelector.value = $.x('ancestor::div[parent::div[@class="board"]]', this).id.slice(1);
+      }
+      post = Get.postFromRoot($.x('ancestor-or-self::div[contains(@class,"postContainer")][1]', this));
+      text = ">>" + post + "\n";
+      sel = d.getSelection();
+      selectionRoot = $.x('ancestor-or-self::div[contains(@class,"postContainer")][1]', sel.anchorNode);
+      if ((s = sel.toString().trim()) && post.nodes.root === selectionRoot) {
+        s = s.replace(/\n/g, '\n>');
+        text += ">" + s + "\n";
+      }
+      caretPos = ta.selectionStart;
+      ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
+      range = caretPos + text.length;
+      ta.setSelectionRange(range, range);
+      ta.focus();
+      return ta.dispatchEvent(new Event('input'));
+    },
+    characterCount: function() {
+      var count, counter;
+      counter = QR.charaCounter;
+      count = this.textLength;
+      counter.textContent = count;
+      counter.hidden = count < 1000;
+      return (count > 1500 ? $.addClass : $.rmClass)(counter, 'warning');
+    },
+    drag: function(e) {
+      var toggle;
+      toggle = e.type === 'dragstart' ? $.off : $.on;
+      toggle(d, 'dragover', QR.dragOver);
+      return toggle(d, 'drop', QR.dropFile);
+    },
+    dragOver: function(e) {
+      e.preventDefault();
+      return e.dataTransfer.dropEffect = 'copy';
+    },
+    dropFile: function(e) {
+      if (!e.dataTransfer.files.length) {
+        return;
+      }
+      e.preventDefault();
+      QR.open();
+      QR.fileInput.call(e.dataTransfer);
+      return $.addClass(QR.el, 'dump');
+    },
+    fileInput: function() {
+      var file, _i, _len, _ref;
+      QR.cleanNotification();
+      if (this.files.length === 1) {
+        file = this.files[0];
+        if (file.size > this.max) {
+          QR.error('File too large.');
+          QR.resetFileInput();
+        } else if (-1 === QR.mimeTypes.indexOf(file.type)) {
+          QR.error('Unsupported file type.');
+          QR.resetFileInput();
+        } else {
+          QR.selected.setFile(file);
+        }
+        return;
+      }
+      _ref = this.files;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        file = _ref[_i];
+        if (file.size > this.max) {
+          QR.error("File " + file.name + " is too large.");
+          break;
+        } else if (-1 === QR.mimeTypes.indexOf(file.type)) {
+          QR.error("" + file.name + ": Unsupported file type.");
+          break;
+        }
+        if (!QR.replies[QR.replies.length - 1].file) {
+          QR.replies[QR.replies.length - 1].setFile(file);
+        } else {
+          new QR.reply().setFile(file);
+        }
+      }
+      $.addClass(QR.el, 'dump');
+      return QR.resetFileInput();
+    },
+    resetFileInput: function() {
+      return $('[type=file]', QR.el).value = null;
+    },
+    replies: [],
+    reply: (function() {
+
+      function _Class() {
+        var persona, prev,
+          _this = this;
+        prev = QR.replies[QR.replies.length - 1];
+        persona = $.get('QR.persona', {});
+        this.name = prev ? prev.name : persona.name || null;
+        this.email = prev && !/^sage$/.test(prev.email) ? prev.email : persona.email || null;
+        this.sub = prev && Conf['Remember Subject'] ? prev.sub : Conf['Remember Subject'] ? persona.sub : null;
+        this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
+        this.com = null;
+        this.el = $.el('a', {
+          className: 'qrpreview',
+          draggable: true,
+          href: 'javascript:;',
+          innerHTML: '<a class=remove>×</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+        });
+        $('input', this.el).checked = this.spoiler;
+        $.on(this.el, 'click', function() {
+          return _this.select();
+        });
+        $.on($('.remove', this.el), 'click', function(e) {
+          e.stopPropagation();
+          return _this.rm();
+        });
+        $.on($('label', this.el), 'click', function(e) {
+          return e.stopPropagation();
+        });
+        $.on($('input', this.el), 'change', function(e) {
+          _this.spoiler = e.target.checked;
+          if (_this.el.id === 'selected') {
+            return $.id('spoiler').checked = _this.spoiler;
+          }
+        });
+        $.before($('#addReply', QR.el), this.el);
+        $.on(this.el, 'dragstart', this.dragStart);
+        $.on(this.el, 'dragenter', this.dragEnter);
+        $.on(this.el, 'dragleave', this.dragLeave);
+        $.on(this.el, 'dragover', this.dragOver);
+        $.on(this.el, 'dragend', this.dragEnd);
+        $.on(this.el, 'drop', this.drop);
+        QR.replies.push(this);
+      }
+
+      _Class.prototype.setFile = function(file) {
+        var fileUrl, img, url,
+          _this = this;
+        this.file = file;
+        this.el.title = "" + file.name + " (" + ($.bytesToString(file.size)) + ")";
+        if (QR.spoiler) {
+          $('label', this.el).hidden = false;
+        }
+        if (!/^image/.test(file.type)) {
+          this.el.style.backgroundImage = null;
+          return;
+        }
+        if (!(url = window.URL || window.webkitURL)) {
+          return;
+        }
+        url.revokeObjectURL(this.url);
+        fileUrl = url.createObjectURL(file);
+        img = $.el('img');
+        $.on(img, 'load', function() {
+          var c, data, i, l, s, ui8a, _i;
+          s = 90 * 3;
+          if (img.height < s || img.width < s) {
+            _this.url = fileUrl;
+            _this.el.style.backgroundImage = "url(" + _this.url + ")";
+            return;
+          }
+          if (img.height <= img.width) {
+            img.width = s / img.height * img.width;
+            img.height = s;
+          } else {
+            img.height = s / img.width * img.height;
+            img.width = s;
+          }
+          c = $.el('canvas');
+          c.height = img.height;
+          c.width = img.width;
+          c.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
+          data = atob(c.toDataURL().split(',')[1]);
+          l = data.length;
+          ui8a = new Uint8Array(l);
+          for (i = _i = 0; 0 <= l ? _i < l : _i > l; i = 0 <= l ? ++_i : --_i) {
+            ui8a[i] = data.charCodeAt(i);
+          }
+          _this.url = url.createObjectURL(new Blob([ui8a], {
+            type: 'image/png'
+          }));
+          _this.el.style.backgroundImage = "url(" + _this.url + ")";
+          return typeof url.revokeObjectURL === "function" ? url.revokeObjectURL(fileUrl) : void 0;
+        });
+        return img.src = fileUrl;
+      };
+
+      _Class.prototype.rmFile = function() {
+        var _base;
+        QR.resetFileInput();
+        delete this.file;
+        this.el.title = null;
+        this.el.style.backgroundImage = null;
+        if (QR.spoiler) {
+          $('label', this.el).hidden = true;
+        }
+        return typeof (_base = window.URL || window.webkitURL).revokeObjectURL === "function" ? _base.revokeObjectURL(this.url) : void 0;
+      };
+
+      _Class.prototype.select = function() {
+        var data, rectEl, rectList, _i, _len, _ref, _ref1;
+        if ((_ref = QR.selected) != null) {
+          _ref.el.id = null;
+        }
+        QR.selected = this;
+        this.el.id = 'selected';
+        rectEl = this.el.getBoundingClientRect();
+        rectList = this.el.parentNode.getBoundingClientRect();
+        this.el.parentNode.scrollLeft += rectEl.left + rectEl.width / 2 - rectList.left - rectList.width / 2;
+        _ref1 = ['name', 'email', 'sub', 'com'];
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          data = _ref1[_i];
+          $("[name=" + data + "]", QR.el).value = this[data];
+        }
+        QR.characterCount.call($('textarea', QR.el));
+        return $('#spoiler', QR.el).checked = this.spoiler;
+      };
+
+      _Class.prototype.dragStart = function() {
+        return $.addClass(this, 'drag');
+      };
+
+      _Class.prototype.dragEnter = function() {
+        return $.addClass(this, 'over');
+      };
+
+      _Class.prototype.dragLeave = function() {
+        return $.rmClass(this, 'over');
+      };
+
+      _Class.prototype.dragOver = function(e) {
+        e.preventDefault();
+        return e.dataTransfer.dropEffect = 'move';
+      };
+
+      _Class.prototype.drop = function() {
+        var el, index, newIndex, oldIndex, reply;
+        el = $('.drag', this.parentNode);
+        index = function(el) {
+          return Array.prototype.slice.call(el.parentNode.children).indexOf(el);
+        };
+        oldIndex = index(el);
+        newIndex = index(this);
+        if (oldIndex < newIndex) {
+          $.after(this, el);
+        } else {
+          $.before(this, el);
+        }
+        reply = QR.replies.splice(oldIndex, 1)[0];
+        return QR.replies.splice(newIndex, 0, reply);
+      };
+
+      _Class.prototype.dragEnd = function() {
+        var el;
+        $.rmClass(this, 'drag');
+        if (el = $('.over', this.parentNode)) {
+          return $.rmClass(el, 'over');
+        }
+      };
+
+      _Class.prototype.rm = function() {
+        var index, _ref;
+        QR.resetFileInput();
+        $.rm(this.el);
+        index = QR.replies.indexOf(this);
+        if (QR.replies.length === 1) {
+          new QR.reply().select();
+        } else if (this.el.id === 'selected') {
+          (QR.replies[index - 1] || QR.replies[index + 1]).select();
+        }
+        QR.replies.splice(index, 1);
+        return (_ref = window.URL || window.webkitURL) != null ? _ref.revokeObjectURL(this.url) : void 0;
+      };
+
+      return _Class;
+
+    })(),
+    captcha: {
+      init: function() {
+        var _this = this;
+        if (-1 !== d.cookie.indexOf('pass_enabled=')) {
+          return;
+        }
+        if (!(this.isEnabled = !!$.id('captchaFormPart'))) {
+          return;
+        }
+        if ($.id('recaptcha_challenge_field_holder')) {
+          return this.ready();
+        } else {
+          this.onready = function() {
+            return _this.ready();
+          };
+          return $.on($.id('recaptcha_widget_div'), 'DOMNodeInserted', this.onready);
+        }
+      },
+      ready: function() {
+        var _this = this;
+        if (this.challenge = $.id('recaptcha_challenge_field_holder')) {
+          $.off($.id('recaptcha_widget_div'), 'DOMNodeInserted', this.onready);
+          delete this.onready;
+        } else {
+          return;
+        }
+        $.addClass(QR.el, 'captcha');
+        $.after($('.textarea', QR.el), $.el('div', {
+          className: 'captchaimg',
+          title: 'Reload',
+          innerHTML: '<img>'
+        }));
+        $.after($('.captchaimg', QR.el), $.el('div', {
+          className: 'captchainput',
+          innerHTML: '<input title=Verification class=field autocomplete=off size=1>'
+        }));
+        this.img = $('.captchaimg > img', QR.el);
+        this.input = $('.captchainput > input', QR.el);
+        $.on(this.img.parentNode, 'click', this.reload);
+        $.on(this.input, 'keydown', this.keydown);
+        $.on(this.challenge, 'DOMNodeInserted', function() {
+          return _this.load();
+        });
+        $.sync('captchas', function(arr) {
+          return _this.count(arr.length);
+        });
+        this.count($.get('captchas', []).length);
+        return this.reload();
+      },
+      save: function() {
+        var captcha, captchas, response;
+        if (!(response = this.input.value)) {
+          return;
+        }
+        captchas = $.get('captchas', []);
+        while ((captcha = captchas[0]) && captcha.time < Date.now()) {
+          captchas.shift();
+        }
+        captchas.push({
+          challenge: this.challenge.firstChild.value,
+          response: response,
+          time: this.timeout
+        });
+        $.set('captchas', captchas);
+        this.count(captchas.length);
+        return this.reload();
+      },
+      load: function() {
+        var challenge;
+        this.timeout = Date.now() + $.unsafeWindow.RecaptchaState.timeout * $.SECOND - $.MINUTE;
+        challenge = this.challenge.firstChild.value;
+        this.img.alt = challenge;
+        this.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
+        return this.input.value = null;
+      },
+      count: function(count) {
+        this.input.placeholder = (function() {
+          switch (count) {
+            case 0:
+              return 'Verification (Shift + Enter to cache)';
+            case 1:
+              return 'Verification (1 cached captcha)';
+            default:
+              return "Verification (" + count + " cached captchas)";
+          }
+        })();
+        return this.input.alt = count;
+      },
+      reload: function(focus) {
+        $.unsafeWindow.Recaptcha.reload('t');
+        if (focus) {
+          return QR.captcha.input.focus();
+        }
+      },
+      keydown: function(e) {
+        var c;
+        c = QR.captcha;
+        if (e.keyCode === 8 && !c.input.value) {
+          c.reload();
+        } else if (e.keyCode === 13 && e.shiftKey) {
+          c.save();
+        } else {
+          return;
+        }
+        return e.preventDefault();
+      }
+    },
+    dialog: function() {
+      var fileInput, key, mimeTypes, name, span, spoiler, ta, thread, threads, _i, _len, _ref, _ref1;
+      QR.el = UI.dialog('qr', 'top:0;right:0;', "<div class=move>Quick Reply <input type=checkbox id=autohide title=Auto-hide><span> <a class=close title=Close>×</a></span></div>\n<form>\n  <div class=persona><input id=dump type=button title='Dump list' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\n  <div id=replies><div id=repliesList><a id=addReply href=javascript:; title=\"Add a reply\">+</a></div></div>\n  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\n  <div><input type=file title=\"Shift+Click to remove the selected file.\" multiple size=16><input type=submit></div>\n  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\n</form>");
+      mimeTypes = $('ul.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
+        switch (type) {
+          case 'jpg':
+            return 'image/jpeg';
+          case 'pdf':
+            return 'application/pdf';
+          case 'swf':
+            return 'application/x-shockwave-flash';
+          default:
+            return "image/" + type;
+        }
+      });
+      QR.mimeTypes = mimeTypes.split(', ');
+      QR.mimeTypes.push('');
+      fileInput = $('input[type=file]', QR.el);
+      fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
+      if ($.engine !== 'presto') {
+        fileInput.accept = mimeTypes;
+      }
+      QR.spoiler = !!$('input[name=spoiler]');
+      spoiler = $('#spoilerLabel', QR.el);
+      spoiler.hidden = !QR.spoiler;
+      QR.charaCounter = $('#charCount', QR.el);
+      ta = $('textarea', QR.el);
+      span = $('.move > span', QR.el);
+      if (g.BOARD.ID === 'f') {
+        if (g.VIEW === 'index') {
+          QR.threadSelector = $('select[name=filetag]').cloneNode(true);
+        }
+      } else {
+        QR.threadSelector = $.el('select', {
+          title: 'Create a new thread / Reply to a thread'
+        });
+        threads = '<option value=new>New thread</option>';
+        _ref = g.BOARD.threads;
+        for (key in _ref) {
+          thread = _ref[key];
+          threads += "<option value=" + thread.ID + ">Thread No." + thread.ID + "</option>";
+        }
+        QR.threadSelector.innerHTML = threads;
+        if (g.VIEW === 'thread') {
+          QR.threadSelector.value = g.THREAD;
+        }
+      }
+      if (QR.threadSelector) {
+        $.prepend(span, QR.threadSelector);
+      }
+      $.on(span, 'mousedown', function(e) {
+        return e.stopPropagation();
+      });
+      $.on($('#autohide', QR.el), 'change', QR.toggleHide);
+      $.on($('.close', QR.el), 'click', QR.close);
+      $.on($('#dump', QR.el), 'click', function() {
+        return QR.el.classList.toggle('dump');
+      });
+      $.on($('#addReply', QR.el), 'click', function() {
+        return new QR.reply().select();
+      });
+      $.on($('form', QR.el), 'submit', QR.submit);
+      $.on(ta, 'input', function() {
+        return QR.selected.el.lastChild.textContent = this.value;
+      });
+      $.on(ta, 'input', QR.characterCount);
+      $.on(fileInput, 'change', QR.fileInput);
+      $.on(fileInput, 'click', function(e) {
+        if (e.shiftKey) {
+          return QR.selected.rmFile() || e.preventDefault();
+        }
+      });
+      $.on(spoiler.firstChild, 'change', function() {
+        return $('input', QR.selected.el).click();
+      });
+      new QR.reply().select();
+      _ref1 = ['name', 'email', 'sub', 'com'];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        name = _ref1[_i];
+        $.on($("[name=" + name + "]", QR.el), 'input', function() {
+          var _ref2;
+          QR.selected[this.name] = this.value;
+          if (QR.cooldown.auto && QR.selected === QR.replies[0] && (0 < (_ref2 = QR.cooldown.seconds) && _ref2 <= 5)) {
+            return QR.cooldown.auto = false;
+          }
+        });
+      }
+      QR.status.input = $('input[type=submit]', QR.el);
+      QR.status();
+      QR.cooldown.init();
+      QR.captcha.init();
+      $.add(d.body, QR.el);
+      return $.event(new CustomEvent('QRDialogCreation', null, QR.el));
+    },
+    submit: function(e) {
+      var callbacks, captcha, captchas, challenge, err, filetag, m, opts, post, reply, response, textOnly, threadID, _ref;
+      if (e != null) {
+        e.preventDefault();
+      }
+      if (QR.cooldown.seconds) {
+        QR.cooldown.auto = !QR.cooldown.auto;
+        QR.status();
+        return;
+      }
+      QR.abort();
+      reply = QR.replies[0];
+      if (g.BOARD.ID === 'f' && g.VIEW === 'index') {
+        filetag = QR.threadSelector.value;
+        threadID = 'new';
+      } else {
+        threadID = QR.threadSelector.value;
+      }
+      if (threadID === 'new') {
+        threadID = null;
+        if (((_ref = g.BOARD.ID) === 'vg' || _ref === 'q') && !reply.sub) {
+          err = 'New threads require a subject.';
+        } else if (!(reply.file || (textOnly = !!$('input[name=textonly]', $.id('postForm'))))) {
+          err = 'No file selected.';
+        } else if (g.BOARD.ID === 'f' && filetag === '9999') {
+          err = 'Invalid tag specified.';
+        }
+      } else if (!(reply.com || reply.file)) {
+        err = 'No file selected.';
+      }
+      if (QR.captcha.isEnabled && !err) {
+        captchas = $.get('captchas', []);
+        while ((captcha = captchas[0]) && captcha.time < Date.now()) {
+          captchas.shift();
+        }
+        if (captcha = captchas.shift()) {
+          challenge = captcha.challenge;
+          response = captcha.response;
+        } else {
+          challenge = QR.captcha.img.alt;
+          if (response = QR.captcha.input.value) {
+            QR.captcha.reload();
+          }
+        }
+        $.set('captchas', captchas);
+        QR.captcha.count(captchas.length);
+        if (!response) {
+          err = 'No valid captcha.';
+        } else {
+          response = response.trim();
+          if (!/\s/.test(response)) {
+            response = "" + response + " " + response;
+          }
+        }
+      }
+      if (err) {
+        QR.cooldown.auto = false;
+        QR.status();
+        QR.error(err);
+        return;
+      }
+      QR.cleanNotification();
+      QR.cooldown.auto = QR.replies.length > 1;
+      if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
+        QR.hide();
+      }
+      if (!QR.cooldown.auto && $.x('ancestor::div[@id="qr"]', d.activeElement)) {
+        d.activeElement.blur();
+      }
+      QR.status({
+        progress: '...'
+      });
+      post = {
+        resto: threadID,
+        name: reply.name,
+        email: reply.email,
+        sub: reply.sub,
+        com: reply.com,
+        upfile: reply.file,
+        filetag: filetag,
+        spoiler: reply.spoiler,
+        textonly: textOnly,
+        mode: 'regist',
+        pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
+        recaptcha_challenge_field: challenge,
+        recaptcha_response_field: response
+      };
+      callbacks = {
+        onload: function() {
+          return QR.response(this.response);
+        },
+        onerror: function() {
+          QR.cooldown.auto = false;
+          QR.status();
+          return QR.error($.el('a', {
+            href: '//www.4chan.org/banned',
+            target: '_blank',
+            textContent: 'Connection error, or you are banned.'
+          }));
+        }
+      };
+      opts = {
+        form: $.formData(post),
+        upCallbacks: {
+          onload: function() {
+            return QR.status({
+              progress: '...'
+            });
+          },
+          onprogress: function(e) {
+            return QR.status({
+              progress: "" + (Math.round(e.loaded / e.total * 100)) + "%"
+            });
+          }
+        }
+      };
+      return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
+    },
+    response: function(html) {
+      var ban, board, err, h1, persona, postID, reply, threadID, tmpDoc, _, _ref, _ref1;
+      tmpDoc = d.implementation.createHTMLDocument('');
+      tmpDoc.documentElement.innerHTML = html;
+      if (ban = $('.banType', tmpDoc)) {
+        board = $('.board', tmpDoc).innerHTML;
+        err = $.el('span', {
+          innerHTML: ban.textContent.toLowerCase() === 'banned' ? ("You are banned on " + board + "! ;_;<br>") + "Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason." : ("You were issued a warning on " + board + " as " + ($('.nameBlock', tmpDoc).innerHTML) + ".<br>") + ("Reason: " + ($('.reason', tmpDoc).innerHTML))
+        });
+      } else if (err = tmpDoc.getElementById('errmsg')) {
+        if ((_ref = $('a', err)) != null) {
+          _ref.target = '_blank';
+        }
+      } else if (tmpDoc.title !== 'Post successful!') {
+        err = 'Connection error with sys.4chan.org.';
+      }
+      if (err) {
+        if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
+          if (/mistyped/i.test(err.textContent)) {
+            err = 'Error: You seem to have mistyped the CAPTCHA.';
+          }
+          QR.cooldown.auto = QR.captcha.isEnabled ? !!$.get('captchas', []).length : err === 'Connection error with sys.4chan.org.' ? true : false;
+          QR.cooldown.set({
+            delay: 2
+          });
+        } else {
+          QR.cooldown.auto = false;
+        }
+        QR.status();
+        QR.error(err);
+        return;
+      }
+      h1 = $('h1', tmpDoc);
+      QR.lastNotification = new Notification('success', h1.textContent, 5);
+      reply = QR.replies[0];
+      persona = $.get('QR.persona', {});
+      persona = {
+        name: reply.name,
+        email: /^sage$/.test(reply.email) ? persona.email : reply.email,
+        sub: Conf['Remember Subject'] ? reply.sub : null
+      };
+      $.set('QR.persona', persona);
+      _ref1 = h1.nextSibling.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
+      $.event(new CustomEvent('QRPostSuccessful', {
+        threadID: threadID,
+        postID: postID
+      }, QR.el));
+      QR.cooldown.set({
+        post: reply,
+        isReply: threadID !== '0'
+      });
+      QR.cooldown.auto = QR.replies.length > 1;
+      if (threadID === '0') {
+        $.open("/" + g.BOARD + "/res/" + postID);
+      } else if (g.VIEW === 'reply' && !QR.cooldown.auto) {
+        $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
+      }
+      if (Conf['Persistent QR'] || QR.cooldown.auto) {
+        reply.rm();
+      } else {
+        QR.close();
+      }
+      QR.status();
+      return QR.resetFileInput();
+    },
+    abort: function() {
+      var _ref;
+      if ((_ref = QR.ajax) != null) {
+        _ref.abort();
+      }
+      delete QR.ajax;
+      return QR.status();
+    }
   };
 
   Board = (function() {
