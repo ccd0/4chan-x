@@ -212,6 +212,9 @@ Main =
     if _conf['Color user IDs']
       IDColor.init()
 
+    if _conf['Replace GIF'] or _conf['Replace PNG'] or _conf['Replace JPG']
+      ImageReplace.init()
+
     $.ready Main.featuresReady
 
   featuresReady: ->
@@ -258,9 +261,6 @@ Main =
 
     if _conf['Keybinds']
       Keybinds.init()
-
-    if _conf['Replace GIF'] or _conf['Replace PNG'] or _conf['Replace JPG']
-      ImageReplace.init()
 
     if _conf['Fappe Tyme']
       FappeTyme.init()

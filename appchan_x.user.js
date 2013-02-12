@@ -11075,6 +11075,9 @@
       if (_conf['Color user IDs']) {
         IDColor.init();
       }
+      if (_conf['Replace GIF'] || _conf['Replace PNG'] || _conf['Replace JPG']) {
+        ImageReplace.init();
+      }
       return $.ready(Main.featuresReady);
     },
     featuresReady: function() {
@@ -11121,9 +11124,6 @@
       }
       if (_conf['Keybinds']) {
         Keybinds.init();
-      }
-      if (_conf['Replace GIF'] || _conf['Replace PNG'] || _conf['Replace JPG']) {
-        ImageReplace.init();
       }
       if (_conf['Fappe Tyme']) {
         FappeTyme.init();
