@@ -922,7 +922,7 @@
       boardTitle = $.el('a', {
         className: 'board-name',
         innerHTML: "<span class=board-path>/" + g.BOARD + "/</span> - <span class=board-title>...</span>",
-        href: "/" + g.BOARD + "/"
+        href: "/" + g.BOARD + "/" + (g.VIEW === 'catalog' ? 'catalog' : '')
       });
       boardList = $.el('span', {
         className: 'board-list',
@@ -946,7 +946,7 @@
     setBoardList: function() {
       var a, nav;
       if (nav = $.id('boardNavDesktop')) {
-        if (a = $("a[href$='/" + g.BOARD + "/']", nav)) {
+        if (a = $("a[href*='/" + g.BOARD + "/']", nav)) {
           a.className = 'current';
           $('.board-title', Header.headerEl).textContent = a.title;
         }
@@ -2449,7 +2449,7 @@
         return this.input.alt = count;
       },
       reload: function(focus) {
-        $.unsafeWindow.Recaptcha.reload('r');
+        $.unsafeWindow.Recaptcha.reload('t');
         if (focus) {
           return QR.captcha.input.focus();
         }
@@ -5119,6 +5119,10 @@
       $.addClass(doc, $.engine);
       $.addClass(doc, 'fourchan-x');
       $.addStyle(Main.css);
+      if (g.VIEW === 'catalog') {
+        $.addClass(doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace(/_+/g, '-'));
+        return;
+      }
       style = 'yotsuba-b';
       mainStyleSheet = $('link[title=switch]', d.head);
       styleSheets = $$('link[rel="alternate stylesheet"]', d.head);

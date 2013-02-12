@@ -25,7 +25,7 @@ Header =
     boardTitle = $.el 'a',
       className: 'board-name'
       innerHTML: "<span class=board-path>/#{g.BOARD}/</span> - <span class=board-title>...</span>"
-      href:      "/#{g.BOARD}/"
+      href:      "/#{g.BOARD}/#{if g.VIEW is 'catalog' then 'catalog' else ''}"
     boardList = $.el 'span',
       className: 'board-list'
       hidden:    true
@@ -43,7 +43,7 @@ Header =
 
   setBoardList: ->
     if nav = $.id 'boardNavDesktop'
-      if a = $ "a[href$='/#{g.BOARD}/']", nav
+      if a = $ "a[href*='/#{g.BOARD}/']", nav
         a.className = 'current'
         $('.board-title', Header.headerEl).textContent = a.title
       $.add $('.board-list', Header.headerEl),
@@ -1263,7 +1263,7 @@ QR =
       @input.alt = count # For XTRM RICE.
     reload: (focus) ->
       # the 't' argument prevents the input from being focused
-      $.unsafeWindow.Recaptcha.reload 'r'
+      $.unsafeWindow.Recaptcha.reload 't'
       # Focus if we meant to.
       QR.captcha.input.focus() if focus
     keydown: (e) ->

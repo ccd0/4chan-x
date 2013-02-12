@@ -332,6 +332,10 @@ Main =
     $.addClass doc, 'fourchan-x'
     $.addStyle Main.css
 
+    if g.VIEW is 'catalog'
+      $.addClass doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace /_+/g, '-'
+      return
+
     style          = 'yotsuba-b'
     mainStyleSheet = $ 'link[title=switch]', d.head
     styleSheets    = $$ 'link[rel="alternate stylesheet"]', d.head
