@@ -302,6 +302,10 @@ Config =
         true
         'Show quoted post inline on quote click'
       ]
+      'Quote Hash Navigation': [
+         true
+         'Show a "#" to jump around the thread as if Quote Inline were disabled.'
+      ]
       'Quote Preview': [
         true
         'Show quote content on hover'

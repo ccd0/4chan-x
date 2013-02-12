@@ -5,6 +5,7 @@ MarkOwn =
 
   node: (post) ->
     posts = MarkOwn.posts
-    for quote in post.quotes
+    quotes = []
+    for quote in quotes.pushArrays post.quotes, post.backlinks
       if quote.hash and posts[quote.hash[2..]]
         $.addClass quote, 'ownpost'

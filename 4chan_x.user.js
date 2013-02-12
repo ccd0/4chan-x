@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * 4chan x - Version 1.1.0 - 2013-02-10
+ * 4chan x - Version 1.1.0 - 2013-02-12
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -103,7 +103,7 @@
  * @link      http://JSColor.com
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, EmbedLink, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Get, IDColor, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, MarkOwn, Markdown, MascotTools, Menu, MutationObserver, Nav, Navigation, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RemoveSpoilers, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, userNavigation, _base;
+  var $, $$, Anonymize, ArchiveLink, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, EmbedLink, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Get, IDColor, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, MarkOwn, Markdown, Menu, MutationObserver, Nav, Navigation, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, RemoveSpoilers, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, g, userNavigation, _base;
 
   Config = {
     main: {
@@ -193,6 +193,7 @@
         'OP Backlinks': [false, 'Add backlinks to the OP'],
         'Quote Highlighting': [true, 'Highlight the previewed post'],
         'Quote Inline': [true, 'Show quoted post inline on quote click'],
+        'Quote Hash Navigation': [true, 'Show a "#" to jump around the thread as if Quote Inline were disabled.'],
         'Quote Preview': [true, 'Show quote content on hover'],
         'Resurrect Quotes': [true, 'Linkify dead quotes to archives'],
         'Indicate OP quote': [true, 'Add \'(OP)\' to OP quotes'],
@@ -3788,7 +3789,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var a, container, el, link, qid, quote, quotes, _i, _len, _ref, _ref1;
+      var a, container, el, link, nodes, qid, quote, quotes, _i, _len, _ref, _ref1;
       if (post.isInlined) {
         return;
       }
@@ -3818,11 +3819,15 @@
           continue;
         }
         link = a.cloneNode(true);
+        nodes = $.nodes([$.tn(' '), link]);
         if (Conf['Quote Preview']) {
           $.on(link, 'mouseover', QuotePreview.mouseover);
         }
         if (Conf['Quote Inline']) {
           $.on(link, 'click', QuoteInline.toggle);
+          if (Conf['Quote Hash Navigation']) {
+            QuoteInline.qiQuote(link);
+          }
         }
         if (!(container = $.id("blc" + qid))) {
           $.addClass(el.parentNode, 'quoted');
@@ -3832,7 +3837,7 @@
           });
           $.add(el, container);
         }
-        $.add(container, [$.tn(' '), link]);
+        $.add(container, nodes);
       }
     }
   };
@@ -3850,12 +3855,24 @@
           continue;
         }
         $.on(quote, 'click', QuoteInline.toggle);
+        if (Conf['Quote Hash Navigation'] && !post.isInlined) {
+          QuoteInline.qiQuote(quote);
+        }
       }
       _ref1 = post.backlinks;
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         quote = _ref1[_j];
         $.on(quote, 'click', QuoteInline.toggle);
       }
+    },
+    qiQuote: function(quote) {
+      return $.after(quote, [
+        $.tn(' '), $.el('a', {
+          className: 'qiQuote',
+          textContent: '#',
+          href: quote.href
+        })
+      ]);
     },
     toggle: function(e) {
       var id;
@@ -3892,7 +3909,11 @@
         className: el ? 'inline' : 'inline crosspost'
       });
       root = (isBacklink = /\bbacklink\b/.test(q.className)) ? q.parentNode : $.x('ancestor-or-self::*[parent::blockquote][1]', q);
-      $.after(root, inline);
+      if (Conf['Quote Hash Navigation'] && !isBacklink) {
+        $.after(root.nextElementSibling, inline);
+      } else {
+        $.after(root, inline);
+      }
       Get.post(board, threadID, postID, inline);
       if (!el) {
         return;
@@ -6594,9 +6615,10 @@
       return this.posts = $.get('ownedPosts', {});
     },
     node: function(post) {
-      var posts, quote, _i, _len, _ref, _results;
+      var posts, quote, quotes, _i, _len, _ref, _results;
       posts = MarkOwn.posts;
-      _ref = post.quotes;
+      quotes = [];
+      _ref = quotes.pushArrays(post.quotes, post.backlinks);
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
@@ -6636,308 +6658,6 @@
     },
     toggle: function() {
       return $.toggleClass(d.body, 'fappeTyme');
-    }
-  };
-
-  MascotTools = {
-    init: function(mascot) {
-      var el, filters, location, position;
-      if (mascot == null) {
-        mascot = Conf[g.MASCOTSTRING][Math.floor(Math.random() * Conf[g.MASCOTSTRING].length)];
-      }
-      Conf['mascot'] = mascot;
-      this.el = el = $('#mascot img', d.body);
-      if (!Conf['Mascots'] || (g.CATALOG && Conf['Hide Mascots on Catalog'])) {
-        if (el) {
-          return el.src = "";
-        } else {
-          return null;
-        }
-      }
-      position = "" + (Conf['Mascot Position'] === 'bottom' || !(Conf['Mascot Position'] === "default" && Conf['Post Form Style'] === "fixed") ? 0 + ((!g.REPLY || Conf['Boards Navigation'] === 'sticky bottom') && Conf['4chan SS Navigation'] ? 2 : 0) : 20.5 + (!g.REPLY || !!$('#postForm input[name=spoiler]') ? 1.4 : 0) + (Conf['Show Post Form Header'] ? 1.7 : 0) + (Conf['Post Form Decorations'] ? 0.2 : 0)) + "em";
-      if (Conf['editMode']) {
-        if (!(mascot = editMascot || (mascot = Mascots[Conf["mascot"]]))) {
-          return;
-        }
-      } else {
-        if (!Conf["mascot"]) {
-          if (el) {
-            return el.src = "";
-          } else {
-            return null;
-          }
-        }
-        if (!(mascot = Mascots[Conf["mascot"]])) {
-          Conf[g.MASCOTSTRING].remove(Conf["mascot"]);
-          return this.init();
-        }
-        this.addMascot(mascot);
-      }
-      if (Conf["Sidebar Location"] === 'left') {
-        if (Conf["Mascot Location"] === "sidebar") {
-          location = 'left';
-        } else {
-          location = 'right';
-        }
-      } else if (Conf["Mascot Location"] === "sidebar") {
-        location = 'right';
-      } else {
-        location = 'left';
-      }
-      filters = [];
-      if (Conf["Grayscale Mascots"]) {
-        filters.push('<feColorMatrix id="color" type="saturate" values="0" />');
-      }
-      return Style.mascot.textContent = "#mascot img {\n  position: fixed;\n  z-index: " + (Conf['Mascots Overlap Posts'] ? '3' : '-1') + ";\n  bottom: " + (mascot.position === 'top' ? 'auto' : (mascot.position === 'bottom' && Conf['Mascot Position'] === 'default') || !$.id('postForm') ? '0' : position) + ";\n  " + location + ": " + ((mascot.hOffset || 0) + (Conf['Sidebar'] === 'large' && mascot.center ? 25 : 0)) + "px;\n  top: " + (mascot.position === 'top' ? '0' : 'auto') + ";\n  height: " + (mascot.height && isNaN(parseFloat(mascot.height)) ? mascot.height : mascot.height ? parseInt(mascot.height, 10) + 'px' : 'auto') + ";\n  width: " + (mascot.width && isNaN(parseFloat(mascot.width)) ? mascot.width : mascot.width ? parseInt(mascot.width, 10) + 'px' : 'auto') + ";\n  margin-" + location + ": " + (mascot.hOffset || 0) + "px;\n  margin-bottom: " + (mascot.vOffset || 0) + "px;\n  opacity: " + Conf['Mascot Opacity'] + ";\n  pointer-events: none;\n  " + (filters.length > 0 ? "filter: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\"><filter id=\"filters\">" + filters.join("") + "</filter></svg>#filters');" : "") + "\n}";
-    },
-    categories: ['Anime', 'Ponies', 'Questionable', 'Silhouette', 'Western'],
-    dialog: function(key) {
-      var dialog, div, editMascot, fileInput, input, item, layout, name, option, optionHTML, setting, value, _i, _len, _ref;
-      Conf['editMode'] = 'mascot';
-      if (Mascots[key]) {
-        editMascot = JSON.parse(JSON.stringify(Mascots[key]));
-      } else {
-        editMascot = {};
-      }
-      editMascot.name = key || '';
-      MascotTools.addMascot(editMascot);
-      Style.addStyle();
-      layout = {
-        name: ["Mascot Name", "", "The name of the Mascot", "text"],
-        image: ["Image", "", "Image of Mascot. Accepts Base64 as well as URLs. Shift+Click field to upload.", "text"],
-        category: ["Category", MascotTools.categories[0], "A general categorization of the mascot.", "select", MascotTools.categories],
-        position: ["Position", "default", "Where the mascot is anchored in the Sidebar. The default option places the mascot above the Post Form or on the bottom of the page, depending on the Post Form setting.", "select", ["default", "top", "bottom"]],
-        height: ["Height", "auto", "This value is used for manually setting a height for the mascot.", "text"],
-        width: ["Width", "auto", "This value is used for manually setting a width for the mascot.", "text"],
-        vOffset: ["Vertical Offset", "0", "This value moves the mascot vertically away from the anchor point.", "number"],
-        hOffset: ["Horizontal Offset", "0", "This value moves the mascot further away from the edge of the screen, in pixels.", "number"],
-        center: ["Center Mascot", false, "If this is enabled, 4chan X will attempt to pad the mascot with 25 pixels of Horizontal Offset when the \"Sidebar Setting\" is set to \"large\" in an attempt to \"re-center\" the mascot. If you are having problems placing your mascot properly, ensure this is not enabled.", "checkbox"]
-      };
-      dialog = $.el("div", {
-        id: "mascotConf",
-        className: "reply dialog",
-        innerHTML: "<div id=mascotbar></div><hr><div id=mascotcontent></div><div id=save>  <a href='javascript:;'>Save Mascot</a></div><div id=close>  <a href='javascript:;'>Close</a></div>"
-      });
-      for (name in layout) {
-        item = layout[name];
-        switch (item[3]) {
-          case "text":
-            div = this.input(item, name);
-            input = $('input', div);
-            if (name === 'image') {
-              $.on(input, 'blur', function() {
-                editMascot[this.name] = this.value;
-                MascotTools.addMascot(editMascot);
-                return Style.addStyle();
-              });
-              fileInput = $.el('input', {
-                type: "file",
-                accept: "image/*",
-                title: "imagefile",
-                hidden: "hidden"
-              });
-              $.on(input, 'click', function(evt) {
-                if (evt.shiftKey) {
-                  return this.nextSibling.click();
-                }
-              });
-              $.on(fileInput, 'change', function(evt) {
-                return MascotTools.uploadImage(evt, this);
-              });
-              $.after(input, fileInput);
-            }
-            if (name === 'name') {
-              $.on(input, 'blur', function() {
-                this.value = this.value.replace(/[^a-z-_0-9]/ig, "_");
-                if (!/^[a-z]/i.test(this.value)) {
-                  return alert("Mascot names must start with a letter.");
-                }
-                editMascot[this.name] = this.value;
-                MascotTools.addMascot(editMascot);
-                return Style.addStyle();
-              });
-            } else {
-              $.on(input, 'blur', function() {
-                editMascot[this.name] = this.value;
-                MascotTools.addMascot(editMascot);
-                return Style.addStyle();
-              });
-            }
-            break;
-          case "number":
-            div = this.input(item, name);
-            $.on($('input', div), 'blur', function() {
-              editMascot[this.name] = parseInt(this.value);
-              MascotTools.addMascot(editMascot);
-              return Style.addStyle();
-            });
-            break;
-          case "select":
-            value = editMascot[name] || item[1];
-            optionHTML = "<h2>" + item[0] + "</h2><span class=description>" + item[2] + "</span><div class=option><select name='" + name + "' value='" + value + "'><br>";
-            _ref = item[4];
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              option = _ref[_i];
-              optionHTML = optionHTML + ("<option value=\"" + option + "\">" + option + "</option>");
-            }
-            optionHTML = optionHTML + "</select>";
-            div = $.el('div', {
-              className: "mascotvar",
-              innerHTML: optionHTML
-            });
-            setting = $("select", div);
-            setting.value = value;
-            $.on($('select', div), 'change', function() {
-              editMascot[this.name] = this.value;
-              MascotTools.addMascot(editMascot);
-              return Style.addStyle();
-            });
-            break;
-          case "checkbox":
-            value = editMascot[name] || item[1];
-            div = $.el("div", {
-              className: "mascotvar",
-              innerHTML: "<h2><label><input type=" + item[3] + " class=field name='" + name + "' " + (value ? 'checked' : void 0) + ">" + item[0] + "</label></h2><span class=description>" + item[2] + "</span>"
-            });
-            $.on($('input', div), 'click', function() {
-              editMascot[this.name] = this.checked ? true : false;
-              MascotTools.addMascot(editMascot);
-              return Style.addStyle();
-            });
-        }
-        $.add($("#mascotcontent", dialog), div);
-      }
-      $.on($('#save > a', dialog), 'click', function() {
-        return MascotTools.save(editMascot);
-      });
-      $.on($('#close > a', dialog), 'click', MascotTools.close);
-      Style.rice(dialog);
-      return $.add(d.body, dialog);
-    },
-    input: function(item, name) {
-      var div, value;
-      if (Array.isArray(editMascot[name])) {
-        if (Style.lightTheme) {
-          value = editMascot[name][1];
-        } else {
-          value = editMascot[name][0];
-        }
-      } else {
-        value = editMascot[name] || item[1];
-      }
-      editMascot[name] = value;
-      div = $.el("div", {
-        className: "mascotvar",
-        innerHTML: "<h2>" + item[0] + "</h2><span class=description>" + item[2] + "</span><div class=option><input type=" + item[3] + " class=field name='" + name + "' placeholder='" + item[0] + "' value='" + value + "'></div>"
-      });
-      return div;
-    },
-    uploadImage: function(evt, el) {
-      var file, reader;
-      file = evt.target.files[0];
-      reader = new FileReader();
-      reader.onload = function(evt) {
-        var val;
-        val = evt.target.result;
-        el.previousSibling.value = val;
-        editMascot.image = val;
-        return Style.addStyle();
-      };
-      return reader.readAsDataURL(file);
-    },
-    addMascot: function(mascot) {
-      var el;
-      if (el = this.el) {
-        return el.src = Array.isArray(mascot.image) ? (Style.lightTheme ? mascot.image[1] : mascot.image[0]) : mascot.image;
-      } else {
-        this.el = el = $.el('div', {
-          id: "mascot",
-          innerHTML: "<img src='" + (Array.isArray(mascot.image) ? (Style.lightTheme ? mascot.image[1] : mascot.image[0]) : mascot.image) + "'>"
-        });
-        return $.add(d.body, el);
-      }
-    },
-    save: function(mascot) {
-      var image, name, type, userMascots, _i, _len, _ref;
-      name = mascot.name, image = mascot.image;
-      if (!(name != null) || name === "") {
-        alert("Please name your mascot.");
-        return;
-      }
-      if (!(image != null) || image === "") {
-        alert("Your mascot must contain an image.");
-        return;
-      }
-      if (!mascot.category) {
-        mascot.category = MascotTools.categories[0];
-      }
-      if (Mascots[name]) {
-        if (Conf["Deleted Mascots"].contains(name)) {
-          Conf["Deleted Mascots"].remove(name);
-          $.set("Deleted Mascots", Conf["Deleted Mascots"]);
-        } else {
-          if (confirm("A mascot named \"" + name + "\" already exists. Would you like to over-write?")) {
-            delete Mascots[name];
-          } else {
-            return alert("Creation of \"" + name + "\" aborted.");
-          }
-        }
-      }
-      _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        type = _ref[_i];
-        if (!Conf[type].contains(name)) {
-          Conf[type].push(name);
-          $.set(type, Conf[type]);
-        }
-      }
-      Mascots[name] = JSON.parse(JSON.stringify(mascot));
-      Conf["mascot"] = name;
-      delete Mascots[name].name;
-      userMascots = $.get("userMascots", {});
-      userMascots[name] = Mascots[name];
-      $.set('userMascots', userMascots);
-      return alert("Mascot \"" + name + "\" saved.");
-    },
-    close: function() {
-      var editMascot;
-      Conf['editMode'] = false;
-      editMascot = {};
-      $.rm($("#mascotConf", d.body));
-      Style.addStyle();
-      return Options.dialog("mascot");
-    },
-    importMascot: function(evt) {
-      var file, reader;
-      file = evt.target.files[0];
-      reader = new FileReader();
-      reader.onload = function(e) {
-        var imported, name, userMascots;
-        try {
-          imported = JSON.parse(e.target.result);
-        } catch (err) {
-          alert(err);
-          return;
-        }
-        if (!imported["Mascot"]) {
-          alert("Mascot file is invalid.");
-        }
-        name = imported["Mascot"];
-        delete imported["Mascot"];
-        if (Mascots[name] && !Conf["Deleted Mascots"].remove(name)) {
-          if (!confirm("A mascot with this name already exists. Would you like to over-write?")) {
-            return;
-          }
-        }
-        Mascots[name] = imported;
-        userMascots = $.get("userMascots", {});
-        userMascots[name] = Mascots[name];
-        $.set('userMascots', userMascots);
-        alert("Mascot \"" + name + "\" imported!");
-        $.rm($("#mascotContainer", d.body));
-        return Options.mascotTab.dialog();
-      };
-      return reader.readAsText(file);
     }
   };
 
@@ -7231,6 +6951,9 @@
       if (_conf['Quote Backlinks']) {
         QuoteBacklink.init();
       }
+      if (_conf['Mark Owned Posts']) {
+        MarkOwn.init();
+      }
       if (_conf['Indicate OP quote']) {
         QuoteOP.init();
       }
@@ -7239,6 +6962,9 @@
       }
       if (_conf['Color user IDs']) {
         IDColor.init();
+      }
+      if (_conf['Replace GIF'] || _conf['Replace PNG'] || _conf['Replace JPG']) {
+        ImageReplace.init();
       }
       return $.ready(Main.featuresReady);
     },
@@ -7286,14 +7012,8 @@
       if (_conf['Keybinds']) {
         Keybinds.init();
       }
-      if (_conf['Replace GIF'] || _conf['Replace PNG'] || _conf['Replace JPG']) {
-        ImageReplace.init();
-      }
       if (_conf['Fappe Tyme']) {
         FappeTyme.init();
-      }
-      if (_conf['Mark Owned Posts']) {
-        MarkOwn.init();
       }
       if (g.REPLY) {
         if (_conf['Prefetch']) {
