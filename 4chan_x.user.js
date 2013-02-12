@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, Header, ImageHover, Main, Menu, Notification, Post, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, Header, ImageHover, Main, Menu, Notification, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1813,6 +1813,918 @@
           }
         }
       }
+    }
+  };
+
+  QR = {
+    init: function() {
+      if (!Conf['Quick Reply']) {
+        return;
+      }
+      if (Conf['Hide Original Post Form']) {
+        Main.css += "#postForm, .postingMode {\n  display: none;\n}";
+      }
+      Post.prototype.callbacks.push({
+        name: 'Quick Reply',
+        cb: this.node
+      });
+      return $.ready(this.readyInit);
+    },
+    readyInit: function() {
+      if (Conf['Persistent QR']) {
+        QR.dialog();
+        if (Conf['Auto Hide QR']) {
+          QR.hide();
+        }
+      }
+      $.on(d, 'dragover', QR.dragOver);
+      $.on(d, 'drop', QR.dropFile);
+      return $.on(d, 'dragstart dragend', QR.drag);
+    },
+    node: function() {
+      return $.on($('a[title="Quote this post"]', this.nodes.info), 'click', QR.quote);
+    },
+    open: function() {
+      if (QR.el) {
+        QR.el.hidden = false;
+        return QR.unhide();
+      } else {
+        return QR.dialog();
+      }
+    },
+    close: function() {
+      var i, spoiler, _i, _len, _ref;
+      QR.el.hidden = true;
+      QR.abort();
+      d.activeElement.blur();
+      $.rmClass(QR.el, 'dump');
+      _ref = QR.replies;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        i = _ref[_i];
+        QR.replies[0].rm();
+      }
+      QR.cooldown.auto = false;
+      QR.status();
+      QR.resetFileInput();
+      if (!Conf['Remember Spoiler'] && (spoiler = $.id('spoiler')).checked) {
+        spoiler.click();
+      }
+      return QR.cleanError();
+    },
+    hide: function() {
+      d.activeElement.blur();
+      $.addClass(QR.el, 'autohide');
+      return $.id('autohide').checked = true;
+    },
+    unhide: function() {
+      $.rmClass(QR.el, 'autohide');
+      return $.id('autohide').checked = false;
+    },
+    toggleHide: function() {
+      return this.checked && QR.hide() || QR.unhide();
+    },
+    error: function(err) {
+      var el;
+      el = $('.warning', QR.el);
+      if (typeof err === 'string') {
+        el.textContent = err;
+      } else {
+        el.innerHTML = null;
+        $.add(el, err);
+      }
+      QR.open();
+      if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
+        $('[autocomplete]', QR.el).focus();
+      }
+      if (d.hidden) {
+        return alert(el.textContent);
+      }
+    },
+    cleanError: function() {
+      return $('.warning', QR.el).textContent = null;
+    },
+    status: function(data) {
+      var disabled, input, value;
+      if (data == null) {
+        data = {};
+      }
+      if (!QR.el) {
+        return;
+      }
+      if (g.dead) {
+        value = 404;
+        disabled = true;
+        QR.cooldown.auto = false;
+      }
+      value = data.progress || QR.cooldown.seconds || value;
+      input = QR.status.input;
+      input.value = QR.cooldown.auto && Conf['Cooldown'] ? value ? "Auto " + value : 'Auto' : value || 'Submit';
+      return input.disabled = disabled || false;
+    },
+    cooldown: {
+      init: function() {
+        if (!Conf['Cooldown']) {
+          return;
+        }
+        QR.cooldown.types = {
+          thread: (function() {
+            switch (g.BOARD) {
+              case 'q':
+                return 86400;
+              case 'b':
+              case 'soc':
+              case 'r9k':
+                return 600;
+              default:
+                return 300;
+            }
+          })(),
+          sage: g.BOARD === 'q' ? 600 : 60,
+          file: g.BOARD === 'q' ? 300 : 30,
+          post: g.BOARD === 'q' ? 60 : 30
+        };
+        QR.cooldown.cooldowns = $.get("" + g.BOARD + ".cooldown", {});
+        QR.cooldown.start();
+        return $.sync("" + g.BOARD + ".cooldown", QR.cooldown.sync);
+      },
+      start: function() {
+        if (QR.cooldown.isCounting) {
+          return;
+        }
+        QR.cooldown.isCounting = true;
+        return QR.cooldown.count();
+      },
+      sync: function(cooldowns) {
+        var id;
+        for (id in cooldowns) {
+          QR.cooldown.cooldowns[id] = cooldowns[id];
+        }
+        return QR.cooldown.start();
+      },
+      set: function(data) {
+        var cooldown, hasFile, isReply, isSage, start, type;
+        if (!Conf['Cooldown']) {
+          return;
+        }
+        start = Date.now();
+        if (data.delay) {
+          cooldown = {
+            delay: data.delay
+          };
+        } else {
+          isSage = /sage/i.test(data.post.email);
+          hasFile = !!data.post.file;
+          isReply = data.isReply;
+          type = !isReply ? 'thread' : isSage ? 'sage' : hasFile ? 'file' : 'post';
+          cooldown = {
+            isReply: isReply,
+            isSage: isSage,
+            hasFile: hasFile,
+            timeout: start + QR.cooldown.types[type] * $.SECOND
+          };
+        }
+        QR.cooldown.cooldowns[start] = cooldown;
+        $.set("" + g.BOARD + ".cooldown", QR.cooldown.cooldowns);
+        return QR.cooldown.start();
+      },
+      unset: function(id) {
+        delete QR.cooldown.cooldowns[id];
+        return $.set("" + g.BOARD + ".cooldown", QR.cooldown.cooldowns);
+      },
+      count: function() {
+        var cooldown, cooldowns, elapsed, hasFile, isReply, isSage, now, post, seconds, start, type, types, update, _ref;
+        if (Object.keys(QR.cooldown.cooldowns).length) {
+          setTimeout(QR.cooldown.count, 1000);
+        } else {
+          $["delete"]("" + g.BOARD + ".cooldown");
+          delete QR.cooldown.isCounting;
+          delete QR.cooldown.seconds;
+          QR.status();
+          return;
+        }
+        if ((isReply = g.REPLY ? true : QR.threadSelector.value !== 'new')) {
+          post = QR.replies[0];
+          isSage = /sage/i.test(post.email);
+          hasFile = !!post.file;
+        }
+        now = Date.now();
+        seconds = null;
+        _ref = QR.cooldown, types = _ref.types, cooldowns = _ref.cooldowns;
+        for (start in cooldowns) {
+          cooldown = cooldowns[start];
+          if ('delay' in cooldown) {
+            if (cooldown.delay) {
+              seconds = Math.max(seconds, cooldown.delay--);
+            } else {
+              seconds = Math.max(seconds, 0);
+              QR.cooldown.unset(start);
+            }
+            continue;
+          }
+          if (isReply === cooldown.isReply) {
+            type = !isReply ? 'thread' : isSage && cooldown.isSage ? 'sage' : hasFile && cooldown.hasFile ? 'file' : 'post';
+            elapsed = Math.floor((now - start) / 1000);
+            if (elapsed >= 0) {
+              seconds = Math.max(seconds, types[type] - elapsed);
+            }
+          }
+          if (!((start <= now && now <= cooldown.timeout))) {
+            QR.cooldown.unset(start);
+          }
+        }
+        update = seconds !== null || !!QR.cooldown.seconds;
+        QR.cooldown.seconds = seconds;
+        if (update) {
+          QR.status();
+        }
+        if (seconds === 0 && QR.cooldown.auto) {
+          return QR.submit();
+        }
+      }
+    },
+    quote: function(e) {
+      var caretPos, id, range, s, sel, ta, text, _ref;
+      if (e != null) {
+        e.preventDefault();
+      }
+      QR.open();
+      ta = $('textarea', QR.el);
+      if (!(g.REPLY || ta.value)) {
+        QR.threadSelector.value = $.x('ancestor::div[parent::div[@class="board"]]', this).id.slice(1);
+      }
+      id = this.previousSibling.hash.slice(2);
+      text = ">>" + id + "\n";
+      sel = d.getSelection();
+      if ((s = sel.toString().trim()) && id === ((_ref = $.x('ancestor-or-self::blockquote', sel.anchorNode)) != null ? _ref.id.match(/\d+$/)[0] : void 0)) {
+        s = s.replace(/\n/g, '\n>');
+        text += ">" + s + "\n";
+      }
+      caretPos = ta.selectionStart;
+      ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
+      range = caretPos + text.length;
+      ta.setSelectionRange(range, range);
+      ta.focus();
+      return $.event(ta, new Event('input'));
+    },
+    characterCount: function() {
+      var count, counter;
+      counter = QR.charaCounter;
+      count = this.textLength;
+      counter.textContent = count;
+      counter.hidden = count < 1000;
+      return (count > 1500 ? $.addClass : $.rmClass)(counter, 'warning');
+    },
+    drag: function(e) {
+      var toggle;
+      toggle = e.type === 'dragstart' ? $.off : $.on;
+      toggle(d, 'dragover', QR.dragOver);
+      return toggle(d, 'drop', QR.dropFile);
+    },
+    dragOver: function(e) {
+      e.preventDefault();
+      return e.dataTransfer.dropEffect = 'copy';
+    },
+    dropFile: function(e) {
+      if (!e.dataTransfer.files.length) {
+        return;
+      }
+      e.preventDefault();
+      QR.open();
+      QR.fileInput.call(e.dataTransfer);
+      return $.addClass(QR.el, 'dump');
+    },
+    fileInput: function() {
+      var file, _i, _len, _ref;
+      QR.cleanError();
+      if (this.files.length === 1) {
+        file = this.files[0];
+        if (file.size > this.max) {
+          QR.error('File too large.');
+          QR.resetFileInput();
+        } else if (-1 === QR.mimeTypes.indexOf(file.type)) {
+          QR.error('Unsupported file type.');
+          QR.resetFileInput();
+        } else {
+          QR.selected.setFile(file);
+        }
+        return;
+      }
+      _ref = this.files;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        file = _ref[_i];
+        if (file.size > this.max) {
+          QR.error("File " + file.name + " is too large.");
+          break;
+        } else if (-1 === QR.mimeTypes.indexOf(file.type)) {
+          QR.error("" + file.name + ": Unsupported file type.");
+          break;
+        }
+        if (!QR.replies[QR.replies.length - 1].file) {
+          QR.replies[QR.replies.length - 1].setFile(file);
+        } else {
+          new QR.reply().setFile(file);
+        }
+      }
+      $.addClass(QR.el, 'dump');
+      return QR.resetFileInput();
+    },
+    resetFileInput: function() {
+      return $('[type=file]', QR.el).value = null;
+    },
+    replies: [],
+    reply: (function() {
+
+      function _Class() {
+        var persona, prev,
+          _this = this;
+        prev = QR.replies[QR.replies.length - 1];
+        persona = $.get('QR.persona', {});
+        this.name = prev ? prev.name : persona.name || null;
+        this.email = prev && !/^sage$/.test(prev.email) ? prev.email : persona.email || null;
+        this.sub = prev && Conf['Remember Subject'] ? prev.sub : Conf['Remember Subject'] ? persona.sub : null;
+        this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
+        this.com = null;
+        this.el = $.el('a', {
+          className: 'thumbnail',
+          draggable: true,
+          href: 'javascript:;',
+          innerHTML: '<a class=remove>×</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
+        });
+        $('input', this.el).checked = this.spoiler;
+        $.on(this.el, 'click', function() {
+          return _this.select();
+        });
+        $.on($('.remove', this.el), 'click', function(e) {
+          e.stopPropagation();
+          return _this.rm();
+        });
+        $.on($('label', this.el), 'click', function(e) {
+          return e.stopPropagation();
+        });
+        $.on($('input', this.el), 'change', function(e) {
+          _this.spoiler = e.target.checked;
+          if (_this.el.id === 'selected') {
+            return $.id('spoiler').checked = _this.spoiler;
+          }
+        });
+        $.before($('#addReply', QR.el), this.el);
+        $.on(this.el, 'dragstart', this.dragStart);
+        $.on(this.el, 'dragenter', this.dragEnter);
+        $.on(this.el, 'dragleave', this.dragLeave);
+        $.on(this.el, 'dragover', this.dragOver);
+        $.on(this.el, 'dragend', this.dragEnd);
+        $.on(this.el, 'drop', this.drop);
+        QR.replies.push(this);
+      }
+
+      _Class.prototype.setFile = function(file) {
+        var fileUrl, img, url,
+          _this = this;
+        this.file = file;
+        this.el.title = "" + file.name + " (" + ($.bytesToString(file.size)) + ")";
+        if (QR.spoiler) {
+          $('label', this.el).hidden = false;
+        }
+        if (!/^image/.test(file.type)) {
+          this.el.style.backgroundImage = null;
+          return;
+        }
+        if (!(url = window.URL || window.webkitURL)) {
+          return;
+        }
+        url.revokeObjectURL(this.url);
+        fileUrl = url.createObjectURL(file);
+        img = $.el('img');
+        $.on(img, 'load', function() {
+          var c, data, i, l, s, ui8a, _i;
+          s = 90 * 3;
+          if (img.height < s || img.width < s) {
+            _this.url = fileUrl;
+            _this.el.style.backgroundImage = "url(" + _this.url + ")";
+            return;
+          }
+          if (img.height <= img.width) {
+            img.width = s / img.height * img.width;
+            img.height = s;
+          } else {
+            img.height = s / img.width * img.height;
+            img.width = s;
+          }
+          c = $.el('canvas');
+          c.height = img.height;
+          c.width = img.width;
+          c.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
+          data = atob(c.toDataURL().split(',')[1]);
+          l = data.length;
+          ui8a = new Uint8Array(l);
+          for (i = _i = 0; 0 <= l ? _i < l : _i > l; i = 0 <= l ? ++_i : --_i) {
+            ui8a[i] = data.charCodeAt(i);
+          }
+          _this.url = url.createObjectURL(new Blob([ui8a], {
+            type: 'image/png'
+          }));
+          _this.el.style.backgroundImage = "url(" + _this.url + ")";
+          return typeof url.revokeObjectURL === "function" ? url.revokeObjectURL(fileUrl) : void 0;
+        });
+        return img.src = fileUrl;
+      };
+
+      _Class.prototype.rmFile = function() {
+        var _base;
+        QR.resetFileInput();
+        delete this.file;
+        this.el.title = null;
+        this.el.style.backgroundImage = null;
+        if (QR.spoiler) {
+          $('label', this.el).hidden = true;
+        }
+        return typeof (_base = window.URL || window.webkitURL).revokeObjectURL === "function" ? _base.revokeObjectURL(this.url) : void 0;
+      };
+
+      _Class.prototype.select = function() {
+        var data, rectEl, rectList, _i, _len, _ref, _ref1;
+        if ((_ref = QR.selected) != null) {
+          _ref.el.id = null;
+        }
+        QR.selected = this;
+        this.el.id = 'selected';
+        rectEl = this.el.getBoundingClientRect();
+        rectList = this.el.parentNode.getBoundingClientRect();
+        this.el.parentNode.scrollLeft += rectEl.left + rectEl.width / 2 - rectList.left - rectList.width / 2;
+        _ref1 = ['name', 'email', 'sub', 'com'];
+        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+          data = _ref1[_i];
+          $("[name=" + data + "]", QR.el).value = this[data];
+        }
+        QR.characterCount.call($('textarea', QR.el));
+        return $('#spoiler', QR.el).checked = this.spoiler;
+      };
+
+      _Class.prototype.dragStart = function() {
+        return $.addClass(this, 'drag');
+      };
+
+      _Class.prototype.dragEnter = function() {
+        return $.addClass(this, 'over');
+      };
+
+      _Class.prototype.dragLeave = function() {
+        return $.rmClass(this, 'over');
+      };
+
+      _Class.prototype.dragOver = function(e) {
+        e.preventDefault();
+        return e.dataTransfer.dropEffect = 'move';
+      };
+
+      _Class.prototype.drop = function() {
+        var el, index, newIndex, oldIndex, reply;
+        el = $('.drag', this.parentNode);
+        index = function(el) {
+          return Array.prototype.slice.call(el.parentNode.children).indexOf(el);
+        };
+        oldIndex = index(el);
+        newIndex = index(this);
+        if (oldIndex < newIndex) {
+          $.after(this, el);
+        } else {
+          $.before(this, el);
+        }
+        reply = QR.replies.splice(oldIndex, 1)[0];
+        return QR.replies.splice(newIndex, 0, reply);
+      };
+
+      _Class.prototype.dragEnd = function() {
+        var el;
+        $.rmClass(this, 'drag');
+        if (el = $('.over', this.parentNode)) {
+          return $.rmClass(el, 'over');
+        }
+      };
+
+      _Class.prototype.rm = function() {
+        var index, _base;
+        QR.resetFileInput();
+        $.rm(this.el);
+        index = QR.replies.indexOf(this);
+        if (QR.replies.length === 1) {
+          new QR.reply().select();
+        } else if (this.el.id === 'selected') {
+          (QR.replies[index - 1] || QR.replies[index + 1]).select();
+        }
+        QR.replies.splice(index, 1);
+        return typeof (_base = window.URL || window.webkitURL).revokeObjectURL === "function" ? _base.revokeObjectURL(this.url) : void 0;
+      };
+
+      return _Class;
+
+    })(),
+    captcha: {
+      init: function() {
+        var _this = this;
+        if (-1 !== d.cookie.indexOf('pass_enabled=')) {
+          return;
+        }
+        if (!(this.isEnabled = !!$.id('captchaFormPart'))) {
+          return;
+        }
+        if ($.id('recaptcha_challenge_field_holder')) {
+          return this.ready();
+        } else {
+          this.onready = function() {
+            return _this.ready();
+          };
+          return $.on($.id('recaptcha_widget_div'), 'DOMNodeInserted', this.onready);
+        }
+      },
+      ready: function() {
+        var _this = this;
+        if (this.challenge = $.id('recaptcha_challenge_field_holder')) {
+          $.off($.id('recaptcha_widget_div'), 'DOMNodeInserted', this.onready);
+          delete this.onready;
+        } else {
+          return;
+        }
+        $.addClass(QR.el, 'captcha');
+        $.after($('.textarea', QR.el), $.el('div', {
+          className: 'captchaimg',
+          title: 'Reload',
+          innerHTML: '<img>'
+        }));
+        $.after($('.captchaimg', QR.el), $.el('div', {
+          className: 'captchainput',
+          innerHTML: '<input title=Verification class=field autocomplete=off size=1>'
+        }));
+        this.img = $('.captchaimg > img', QR.el);
+        this.input = $('.captchainput > input', QR.el);
+        $.on(this.img.parentNode, 'click', this.reload);
+        $.on(this.input, 'keydown', this.keydown);
+        $.on(this.challenge, 'DOMNodeInserted', function() {
+          return _this.load();
+        });
+        $.sync('captchas', function(arr) {
+          return _this.count(arr.length);
+        });
+        this.count($.get('captchas', []).length);
+        return this.reload();
+      },
+      save: function() {
+        var captcha, captchas, response;
+        if (!(response = this.input.value)) {
+          return;
+        }
+        captchas = $.get('captchas', []);
+        while ((captcha = captchas[0]) && captcha.time < Date.now()) {
+          captchas.shift();
+        }
+        captchas.push({
+          challenge: this.challenge.firstChild.value,
+          response: response,
+          time: this.timeout
+        });
+        $.set('captchas', captchas);
+        this.count(captchas.length);
+        return this.reload();
+      },
+      load: function() {
+        var challenge;
+        this.timeout = Date.now() + 4 * $.MINUTE;
+        challenge = this.challenge.firstChild.value;
+        this.img.alt = challenge;
+        this.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
+        return this.input.value = null;
+      },
+      count: function(count) {
+        this.input.placeholder = (function() {
+          switch (count) {
+            case 0:
+              return 'Verification (Shift + Enter to cache)';
+            case 1:
+              return 'Verification (1 cached captcha)';
+            default:
+              return "Verification (" + count + " cached captchas)";
+          }
+        })();
+        return this.input.alt = count;
+      },
+      reload: function(focus) {
+        $.globalEval('javascript:Recaptcha.reload("t")');
+        if (focus) {
+          return QR.captcha.input.focus();
+        }
+      },
+      keydown: function(e) {
+        var c;
+        c = QR.captcha;
+        if (e.keyCode === 8 && !c.input.value) {
+          c.reload();
+        } else if (e.keyCode === 13 && e.shiftKey) {
+          c.save();
+        } else {
+          return;
+        }
+        return e.preventDefault();
+      }
+    },
+    dialog: function() {
+      var fileInput, id, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+      QR.el = UI.dialog('qr', 'top:0;right:0;', '\
+<div class=move>\
+  Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
+  <span> <a class=close title=Close>×</a></span>\
+</div>\
+<form>\
+  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
+  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>\
+  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\
+  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>\
+  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\
+  <div class=warning></div>\
+</form>');
+      if (Conf['Remember QR size'] && $.engine === 'gecko') {
+        $.on(ta = $('textarea', QR.el), 'mouseup', function() {
+          return $.set('QR.size', this.style.cssText);
+        });
+        ta.style.cssText = $.get('QR.size', '');
+      }
+      mimeTypes = $('ul.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
+        switch (type) {
+          case 'jpg':
+            return 'image/jpeg';
+          case 'pdf':
+            return 'application/pdf';
+          case 'swf':
+            return 'application/x-shockwave-flash';
+          default:
+            return "image/" + type;
+        }
+      });
+      QR.mimeTypes = mimeTypes.split(', ');
+      QR.mimeTypes.push('');
+      fileInput = $('input[type=file]', QR.el);
+      fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
+      if ($.engine !== 'presto') {
+        fileInput.accept = mimeTypes;
+      }
+      QR.spoiler = !!$('input[name=spoiler]');
+      spoiler = $('#spoilerLabel', QR.el);
+      spoiler.hidden = !QR.spoiler;
+      QR.charaCounter = $('#charCount', QR.el);
+      ta = $('textarea', QR.el);
+      if (!g.REPLY) {
+        threads = '<option value=new>New thread</option>';
+        _ref = $$('.thread');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          thread = _ref[_i];
+          id = thread.id.slice(1);
+          threads += "<option value=" + id + ">Thread " + id + "</option>";
+        }
+        QR.threadSelector = g.BOARD === 'f' ? $('select[name=filetag]').cloneNode(true) : $.el('select', {
+          innerHTML: threads,
+          title: 'Create a new thread / Reply to a thread'
+        });
+        $.prepend($('.move > span', QR.el), QR.threadSelector);
+        $.on(QR.threadSelector, 'mousedown', function(e) {
+          return e.stopPropagation();
+        });
+      }
+      $.on($('#autohide', QR.el), 'change', QR.toggleHide);
+      $.on($('.close', QR.el), 'click', QR.close);
+      $.on($('#dump', QR.el), 'click', function() {
+        return QR.el.classList.toggle('dump');
+      });
+      $.on($('#addReply', QR.el), 'click', function() {
+        return new QR.reply().select();
+      });
+      $.on($('form', QR.el), 'submit', QR.submit);
+      $.on(ta, 'input', function() {
+        return QR.selected.el.lastChild.textContent = this.value;
+      });
+      $.on(ta, 'input', QR.characterCount);
+      $.on(fileInput, 'change', QR.fileInput);
+      $.on(fileInput, 'click', function(e) {
+        if (e.shiftKey) {
+          return QR.selected.rmFile() || e.preventDefault();
+        }
+      });
+      $.on(spoiler.firstChild, 'change', function() {
+        return $('input', QR.selected.el).click();
+      });
+      $.on($('.warning', QR.el), 'click', QR.cleanError);
+      new QR.reply().select();
+      _ref1 = ['name', 'email', 'sub', 'com'];
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        name = _ref1[_j];
+        $.on($("[name=" + name + "]", QR.el), 'input', function() {
+          var _ref2;
+          QR.selected[this.name] = this.value;
+          if (QR.cooldown.auto && QR.selected === QR.replies[0] && (0 < (_ref2 = QR.cooldown.seconds) && _ref2 <= 5)) {
+            return QR.cooldown.auto = false;
+          }
+        });
+      }
+      QR.status.input = $('input[type=submit]', QR.el);
+      QR.status();
+      QR.cooldown.init();
+      QR.captcha.init();
+      $.add(d.body, QR.el);
+      return $.event(QR.el, new CustomEvent('QRDialogCreation', {
+        bubbles: true
+      }));
+    },
+    submit: function(e) {
+      var callbacks, captcha, captchas, challenge, err, filetag, m, opts, post, reply, response, textOnly, threadID, _ref;
+      if (e != null) {
+        e.preventDefault();
+      }
+      if (QR.cooldown.seconds) {
+        QR.cooldown.auto = !QR.cooldown.auto;
+        QR.status();
+        return;
+      }
+      QR.abort();
+      reply = QR.replies[0];
+      if (g.BOARD === 'f' && !g.REPLY) {
+        filetag = QR.threadSelector.value;
+        threadID = 'new';
+      } else {
+        threadID = g.THREAD_ID || QR.threadSelector.value;
+      }
+      if (threadID === 'new') {
+        threadID = null;
+        if (((_ref = g.BOARD) === 'vg' || _ref === 'q') && !reply.sub) {
+          err = 'New threads require a subject.';
+        } else if (!(reply.file || (textOnly = !!$('input[name=textonly]', $.id('postForm'))))) {
+          err = 'No file selected.';
+        } else if (g.BOARD === 'f' && filetag === '9999') {
+          err = 'Invalid tag specified.';
+        }
+      } else if (!(reply.com || reply.file)) {
+        err = 'No file selected.';
+      }
+      if (QR.captcha.isEnabled && !err) {
+        captchas = $.get('captchas', []);
+        while ((captcha = captchas[0]) && captcha.time < Date.now()) {
+          captchas.shift();
+        }
+        if (captcha = captchas.shift()) {
+          challenge = captcha.challenge;
+          response = captcha.response;
+        } else {
+          challenge = QR.captcha.img.alt;
+          if (response = QR.captcha.input.value) {
+            QR.captcha.reload();
+          }
+        }
+        $.set('captchas', captchas);
+        QR.captcha.count(captchas.length);
+        if (!response) {
+          err = 'No valid captcha.';
+        } else {
+          response = response.trim();
+          if (!/\s/.test(response)) {
+            response = "" + response + " " + response;
+          }
+        }
+      }
+      if (err) {
+        QR.cooldown.auto = false;
+        QR.status();
+        QR.error(err);
+        return;
+      }
+      QR.cleanError();
+      QR.cooldown.auto = QR.replies.length > 1;
+      if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
+        QR.hide();
+      }
+      if (!QR.cooldown.auto && $.x('ancestor::div[@id="qr"]', d.activeElement)) {
+        d.activeElement.blur();
+      }
+      QR.status({
+        progress: '...'
+      });
+      post = {
+        resto: threadID,
+        name: reply.name,
+        email: reply.email,
+        sub: reply.sub,
+        com: reply.com,
+        upfile: reply.file,
+        filetag: filetag,
+        spoiler: reply.spoiler,
+        textonly: textOnly,
+        mode: 'regist',
+        pwd: (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $('input[name=pwd]').value,
+        recaptcha_challenge_field: challenge,
+        recaptcha_response_field: response
+      };
+      callbacks = {
+        onload: function() {
+          return QR.response(this.response);
+        },
+        onerror: function() {
+          QR.cooldown.auto = false;
+          QR.status();
+          return QR.error($.el('a', {
+            href: '//www.4chan.org/banned',
+            target: '_blank',
+            textContent: 'Connection error, or you are banned.'
+          }));
+        }
+      };
+      opts = {
+        form: $.formData(post),
+        upCallbacks: {
+          onload: function() {
+            return QR.status({
+              progress: '...'
+            });
+          },
+          onprogress: function(e) {
+            return QR.status({
+              progress: "" + (Math.round(e.loaded / e.total * 100)) + "%"
+            });
+          }
+        }
+      };
+      return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
+    },
+    response: function(html) {
+      var ban, board, err, persona, postID, reply, threadID, _, _ref, _ref1;
+      doc = d.implementation.createHTMLDocument('');
+      doc.documentElement.innerHTML = html;
+      if (ban = $('.banType', doc)) {
+        board = $('.board', doc).innerHTML;
+        err = $.el('span', {
+          innerHTML: ban.textContent.toLowerCase() === 'banned' ? ("You are banned on " + board + "! ;_;<br>") + "Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason." : ("You were issued a warning on " + board + " as " + ($('.nameBlock', doc).innerHTML) + ".<br>") + ("Reason: " + ($('.reason', doc).innerHTML))
+        });
+      } else if (err = doc.getElementById('errmsg')) {
+        if ((_ref = $('a', err)) != null) {
+          _ref.target = '_blank';
+        }
+      } else if (doc.title !== 'Post successful!') {
+        err = 'Connection error with sys.4chan.org.';
+      }
+      if (err) {
+        if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
+          if (/mistyped/i.test(err.textContent)) {
+            err = 'Error: You seem to have mistyped the CAPTCHA.';
+          }
+          QR.cooldown.auto = QR.captcha.isEnabled ? !!$.get('captchas', []).length : err === 'Connection error with sys.4chan.org.' ? true : false;
+          QR.cooldown.set({
+            delay: 2
+          });
+        } else {
+          QR.cooldown.auto = false;
+        }
+        QR.status();
+        QR.error(err);
+        return;
+      }
+      reply = QR.replies[0];
+      persona = $.get('QR.persona', {});
+      persona = {
+        name: reply.name,
+        email: /^sage$/.test(reply.email) ? persona.email : reply.email,
+        sub: Conf['Remember Subject'] ? reply.sub : null
+      };
+      $.set('QR.persona', persona);
+      _ref1 = doc.body.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
+      $.event(QR.el, new CustomEvent('QRPostSuccessful', {
+        bubbles: true,
+        detail: {
+          threadID: threadID,
+          postID: postID
+        }
+      }));
+      QR.cooldown.set({
+        post: reply,
+        isReply: threadID !== '0'
+      });
+      if (threadID === '0') {
+        location.pathname = "/" + g.BOARD + "/res/" + postID;
+      } else {
+        QR.cooldown.auto = QR.replies.length > 1;
+        if (Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto) {
+          $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
+        }
+      }
+      if (Conf['Persistent QR'] || QR.cooldown.auto) {
+        reply.rm();
+      } else {
+        QR.close();
+      }
+      QR.status();
+      return QR.resetFileInput();
+    },
+    abort: function() {
+      var _ref;
+      if ((_ref = QR.ajax) != null) {
+        _ref.abort();
+      }
+      delete QR.ajax;
+      return QR.status();
     }
   };
 
@@ -4144,6 +5056,7 @@
       initFeature('Thread Hiding', ThreadHiding);
       initFeature('Reply Hiding', ReplyHiding);
       initFeature('Recursive', Recursive);
+      initFeature('Quick Reply', QR);
       initFeature('Menu', Menu);
       initFeature('Report Link', ReportLink);
       initFeature('Thread Hiding (Menu)', ThreadHiding.menu);
@@ -4324,7 +5237,7 @@
       });
       return [message, error];
     },
-    css: "/* general */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.move {\ncursor: move;\n}\nlabel {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\n}\n.post {\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#header,\n#qr, #watcher {\nposition: fixed;\n}\n#notifications {\nz-index: 80;\n}\n#qp, #ihover {\nz-index: 70;\n}\n#menu {\nz-index: 60;\n}\n#updater, #stats {\nz-index: 50;\n}\n#header:hover {\nz-index: 40;\n}\n#qr {\nz-index: 30;\n}\n#header {\nz-index: 20;\n}\n#watcher {\nz-index: 10;\n}\n\n/* Header */\n.fourchan-x body {\nmargin-top: 2em;\n}\n.fourchan-x #boardNavDesktop,\n.fourchan-x #navtopright,\n.fourchan-x #boardNavDesktopFoot {\ndisplay: none !important;\n}\n#header {\ntop: 0;\nright: 0;\nleft: 0;\n}\n#header-bar {\nborder-width: 0 0 1px;\npadding: 4px;\nposition: relative;\ntransition: all .1s ease-in-out;\n-o-transition: all .1s ease-in-out;\n-moz-transition: all .1s ease-in-out;\n-webkit-transition: all .1s ease-in-out;\n}\n#header-bar.autohide:not(:hover) {\nmargin-bottom: -1em;\ntransform: translateY(-100%);\n-o-transform: translateY(-100%);\n-moz-transform: translateY(-100%);\n-webkit-transform: translateY(-100%);\ntransition: all .75s .25s ease-in-out;\n-o-transition: all .75s .25s ease-in-out;\n-moz-transition: all .75s .25s ease-in-out;\n-webkit-transition: all .75s .25s ease-in-out;\n}\n#toggle-header-bar {\ncursor: n-resize;\nleft: 0;\nright: 0;\nbottom: -8px;\nheight: 10px;\nposition: absolute;\n}\n#header-bar.autohide #toggle-header-bar {\ncursor: s-resize;\n}\n#header-bar a {\ntext-decoration: none;\npadding: 1px;\n}\n#header-bar > .menu-button {\nfloat: right;\npadding: 0;\n}\n\n/* notifications */\n#notifications {\ntext-align: center;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\ntransition: all .25s ease-in-out;\n-o-transition: all .25s ease-in-out;\n-moz-transition: all .25s ease-in-out;\n-webkit-transition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 40%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 40%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 40%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 40%, .9);\n}\n.notification > .close {\ncolor: white;\npadding: 4px 6px;\ntop: 0;\nright: 0;\nposition: absolute;\n}\n.message {\nbox-sizing: border-box;\npadding: 4px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* thread updater */\n#updater {\ntext-align: right;\n}\n#updater:not(:hover) {\nbackground: none;\nborder: none;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n.new {\ncolor: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\ntext-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\ntext-decoration: none !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp {\npadding: 2px 2px 5px;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 0;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\n}\n.qphl {\nbox-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\ndisplay: none;\n}\n#ihover {\nbox-sizing: border-box;\n-moz-box-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.opContainer.filter-highlight.qphl {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5),\n            0 0 0 2px rgba(216, 94, 49, .7);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply.qphl {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5),\n            0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\n}\n.menu-button > span {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nposition: absolute;\noutline: none;\n}\n.entry {\ncursor: pointer;\ndisplay: block;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.entry.has-submenu {\npadding-right: 20px;\n}\n.has-submenu::after {\ncontent: \"\";\nborder-left:   6px solid;\nborder-top:    4px solid transparent;\nborder-bottom: 4px solid transparent;\ndisplay: inline-block;\nmargin: 4px;\nposition: absolute;\nright: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\ndisplay: none;\n}\n.submenu {\nposition: absolute;\nmargin: -1px 0;\n}\n.entry input {\nmargin: 0;\n}\n\n/* general */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n\n/* Header */\n:root.yotsuba #header-bar {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a {\ncolor: #800000;\n}\n\n/* quote */\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.yotsuba .entry:not(:last-child) {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a {\ncolor: #34345C;\n}\n\n/* quote */\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.yotsuba-b .entry:not(:last-child) {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n\n/* Header */\n:root.futaba #header-bar {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a {\ncolor: #800000;\n}\n\n/* quote */\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.futaba .entry:not(:last-child) {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n\n/* Header */\n:root.burichan #header-bar {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a {\ncolor: #34345C;\n}\n\n/* quote */\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.burichan .entry:not(:last-child) {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n\n/* Header */\n:root.tomorrow #header-bar {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a {\ncolor: #81A2BE;\n}\n\n/* quote */\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* Menu */\n:root.tomorrow .entry:not(:last-child) {\nborder-bottom: 1px solid #111;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* general */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n\n/* Header */\n:root.photon #header-bar {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a {\ncolor: #FF6600;\n}\n\n/* quote */\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.photon .entry:not(:last-child) {\nborder-bottom: 1px solid #CCC;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
+    css: "/* general */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.move {\ncursor: move;\n}\nlabel {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\n}\n.post {\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#header,\n#qr, #watcher {\nposition: fixed;\n}\n#notifications {\nz-index: 80;\n}\n#qp, #ihover {\nz-index: 70;\n}\n#menu {\nz-index: 60;\n}\n#updater, #stats {\nz-index: 50;\n}\n#header:hover {\nz-index: 40;\n}\n#qr {\nz-index: 30;\n}\n#header {\nz-index: 20;\n}\n#watcher {\nz-index: 10;\n}\n\n/* Header */\n.fourchan-x body {\nmargin-top: 2em;\n}\n.fourchan-x #boardNavDesktop,\n.fourchan-x #navtopright,\n.fourchan-x #boardNavDesktopFoot {\ndisplay: none !important;\n}\n#header {\ntop: 0;\nright: 0;\nleft: 0;\n}\n#header-bar {\nborder-width: 0 0 1px;\npadding: 4px;\nposition: relative;\ntransition: all .1s ease-in-out;\n-o-transition: all .1s ease-in-out;\n-moz-transition: all .1s ease-in-out;\n-webkit-transition: all .1s ease-in-out;\n}\n#header-bar.autohide:not(:hover) {\nmargin-bottom: -1em;\ntransform: translateY(-100%);\n-o-transform: translateY(-100%);\n-moz-transform: translateY(-100%);\n-webkit-transform: translateY(-100%);\ntransition: all .75s .25s ease-in-out;\n-o-transition: all .75s .25s ease-in-out;\n-moz-transition: all .75s .25s ease-in-out;\n-webkit-transition: all .75s .25s ease-in-out;\n}\n#toggle-header-bar {\ncursor: n-resize;\nleft: 0;\nright: 0;\nbottom: -8px;\nheight: 10px;\nposition: absolute;\n}\n#header-bar.autohide #toggle-header-bar {\ncursor: s-resize;\n}\n#header-bar a {\ntext-decoration: none;\npadding: 1px;\n}\n#header-bar > .menu-button {\nfloat: right;\npadding: 0;\n}\n\n/* notifications */\n#notifications {\ntext-align: center;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\ntransition: all .25s ease-in-out;\n-o-transition: all .25s ease-in-out;\n-moz-transition: all .25s ease-in-out;\n-webkit-transition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 40%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 40%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 40%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 40%, .9);\n}\n.notification > .close {\ncolor: white;\npadding: 4px 6px;\ntop: 0;\nright: 0;\nposition: absolute;\n}\n.message {\nbox-sizing: border-box;\npadding: 4px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* thread updater */\n#updater {\ntext-align: right;\n}\n#updater:not(:hover) {\nbackground: none;\nborder: none;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n.new {\ncolor: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\ntext-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\ntext-decoration: none !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp {\npadding: 2px 2px 5px;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 0;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\n}\n.qphl {\nbox-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\ndisplay: none;\n}\n#ihover {\nbox-sizing: border-box;\n-moz-box-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.opContainer.filter-highlight.qphl {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5),\n            0 0 0 2px rgba(216, 94, 49, .7);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply.qphl {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5),\n            0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n\n/* QR */\n#qr > .move {\nmin-width: 300px;\noverflow: hidden;\nbox-sizing: border-box;\n-moz-box-sizing: border-box;\npadding: 0 2px;\n}\n#qr > .move > span {\nfloat: right;\n}\n#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {\ncursor: pointer;\n}\n#qr select,\n#qr > form {\nmargin: 0;\n}\n#dump {\nbackground: -webkit-linear-gradient(#EEE, #CCC);\nbackground: -moz-linear-gradient(#EEE, #CCC);\nbackground: -o-linear-gradient(#EEE, #CCC);\nbackground: linear-gradient(#EEE, #CCC);\nwidth: 10%;\n}\n.gecko #dump {\npadding: 1px 0 2px;\n}\n#dump:hover, #dump:focus {\nbackground: -webkit-linear-gradient(#FFF, #DDD);\nbackground: -moz-linear-gradient(#FFF, #DDD);\nbackground: -o-linear-gradient(#FFF, #DDD);\nbackground: linear-gradient(#FFF, #DDD);\n}\n#dump:active, .dump #dump:not(:hover):not(:focus) {\nbackground: -webkit-linear-gradient(#CCC, #DDD);\nbackground: -moz-linear-gradient(#CCC, #DDD);\nbackground: -o-linear-gradient(#CCC, #DDD);\nbackground: linear-gradient(#CCC, #DDD);\n}\n#qr:not(.dump) #replies, .dump > form > label {\ndisplay: none;\n}\n#replies {\ndisplay: block;\nheight: 100px;\nposition: relative;\n-webkit-user-select: none;\n-moz-user-select: none;\n-o-user-select: none;\nuser-select: none;\n}\n#replies > div {\ncounter-reset: thumbnails;\ntop: 0; right: 0; bottom: 0; left: 0;\nmargin: 0; padding: 0;\noverflow: hidden;\nposition: absolute;\nwhite-space: pre;\n}\n#replies > div:hover {\nbottom: -10px;\noverflow-x: auto;\nz-index: 1;\n}\n.thumbnail {\nbackground-color: rgba(0,0,0,.2) !important;\nbackground-position: 50% 20% !important;\nbackground-size: cover !important;\nborder: 1px solid #666;\nbox-sizing: border-box;\n-moz-box-sizing: border-box;\ncursor: move;\ndisplay: inline-block;\nheight: 90px; width: 90px;\nmargin: 5px; padding: 2px;\nopacity: .5;\noutline: none;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-webkit-transition: opacity .25s ease-in-out;\n-moz-transition: opacity .25s ease-in-out;\n-o-transition: opacity .25s ease-in-out;\ntransition: opacity .25s ease-in-out;\nvertical-align: top;\n}\n.thumbnail:hover, .thumbnail:focus {\nopacity: .9;\n}\n.thumbnail#selected {\nopacity: 1;\n}\n.thumbnail::before {\ncounter-increment: thumbnails;\ncontent: counter(thumbnails);\ncolor: #FFF;\nfont-weight: 700;\npadding: 3px;\nposition: absolute;\ntop: 0;\nright: 0;\ntext-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.thumbnail.drag {\nbox-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.thumbnail.over {\nborder-color: #FFF;\n}\n.thumbnail > span {\ncolor: #FFF;\n}\n.remove {\nbackground: none;\ncolor: #E00;\nfont-weight: 700;\npadding: 3px;\n}\n.remove:hover::after {\ncontent: \" Remove\";\n}\n.thumbnail > label {\nbackground: rgba(0,0,0,.5);\ncolor: #FFF;\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.thumbnail > label > input {\nmargin: 0;\n}\n#addReply {\ncolor: #333;\nfont-size: 3.5em;\nline-height: 100px;\n}\n#addReply:hover, #addReply:focus {\ncolor: #000;\n}\n.field {\nborder: 1px solid #CCC;\nbox-sizing: border-box;\n-moz-box-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\nmargin: 0;\npadding: 2px 4px 3px;\n-webkit-transition: color .25s, border .25s;\n-moz-transition: color .25s, border .25s;\n-o-transition: color .25s, border .25s;\ntransition: color .25s, border .25s;\n}\n.field:-moz-placeholder,\n.field:hover:-moz-placeholder {\ncolor: #AAA;\n}\n.field:hover, .field:focus {\nborder-color: #999;\ncolor: #000;\noutline: none;\n}\n#qr > form > div:first-child > .field:not(#dump) {\nwidth: 30%;\n}\n#qr textarea.field {\ndisplay: -webkit-box;\nmin-height: 160px;\nmin-width: 100%;\n}\n#qr.captcha textarea.field {\nmin-height: 120px;\n}\n.textarea {\nposition: relative;\n}\n#charCount {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nmargin: 1px;\nposition: absolute;\nbottom: 0;\nright: 0;\npointer-events: none;\n}\n#charCount.warning {\ncolor: red;\n}\n.captchainput > .field {\nmin-width: 100%;\n}\n.captchaimg {\nbackground: #FFF;\noutline: 1px solid #CCC;\noutline-offset: -1px;\ntext-align: center;\n}\n.captchaimg > img {\ndisplay: block;\nheight: 57px;\nwidth: 300px;\n}\n#qr [type=file] {\nmargin: 1px 0;\nwidth: 70%;\n}\n#qr [type=submit] {\nmargin: 1px 0;\npadding: 1px; /* not Gecko */\nwidth: 30%;\n}\n.gecko #qr [type=submit] {\npadding: 0 1px; /* Gecko does not respect box-sizing: border-box */\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\n}\n.menu-button > span {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nposition: absolute;\noutline: none;\n}\n.entry {\ncursor: pointer;\ndisplay: block;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.entry.has-submenu {\npadding-right: 20px;\n}\n.has-submenu::after {\ncontent: \"\";\nborder-left:   6px solid;\nborder-top:    4px solid transparent;\nborder-bottom: 4px solid transparent;\ndisplay: inline-block;\nmargin: 4px;\nposition: absolute;\nright: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\ndisplay: none;\n}\n.submenu {\nposition: absolute;\nmargin: -1px 0;\n}\n.entry input {\nmargin: 0;\n}\n\n/* general */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n\n/* Header */\n:root.yotsuba #header-bar {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a {\ncolor: #800000;\n}\n\n/* quote */\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.yotsuba .entry:not(:last-child) {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a {\ncolor: #34345C;\n}\n\n/* quote */\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.yotsuba-b .entry:not(:last-child) {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n\n/* Header */\n:root.futaba #header-bar {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a {\ncolor: #800000;\n}\n\n/* quote */\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.futaba .entry:not(:last-child) {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n\n/* Header */\n:root.burichan #header-bar {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a {\ncolor: #34345C;\n}\n\n/* quote */\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.burichan .entry:not(:last-child) {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n\n/* Header */\n:root.tomorrow #header-bar {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a {\ncolor: #81A2BE;\n}\n\n/* quote */\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* Menu */\n:root.tomorrow .entry:not(:last-child) {\nborder-bottom: 1px solid #111;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* general */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n\n/* Header */\n:root.photon #header-bar {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a {\ncolor: #FF6600;\n}\n\n/* quote */\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.photon .entry:not(:last-child) {\nborder-bottom: 1px solid #CCC;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
   };
 
   Main.init();

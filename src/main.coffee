@@ -295,6 +295,7 @@ Main =
     initFeature 'Thread Hiding',            ThreadHiding
     initFeature 'Reply Hiding',             ReplyHiding
     initFeature 'Recursive',                Recursive
+    initFeature 'Quick Reply',              QR
     initFeature 'Menu',                     Menu
     initFeature 'Report Link',              ReportLink
     initFeature 'Thread Hiding (Menu)',     ThreadHiding.menu
