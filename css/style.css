@@ -312,10 +312,11 @@ a[href="javascript:;"] {
   margin: 0;
   padding: 2px 4px 3px;
   outline: none;
-  width: 10%;
+  width: 30px;
 }
 .gecko #dump {
   padding: 1px 0 2px;
+  width: 10%;
 }
 #dump:hover, #dump:focus {
   background: -webkit-linear-gradient(#FFF, #DDD);
@@ -416,7 +417,15 @@ a[href="javascript:;"] {
   font-size: 3.5em;
   line-height: 100px;
 }
-#qr > form > div:first-child > .field:not(#dump) {
+.persona {
+  display: -webkit-flex;
+  display: flex;
+}
+.persona .field {
+  -webkit-flex: 1;
+  flex: 1;
+}
+.gecko .persona .field {
   width: 30%;
 }
 #qr textarea.field {
