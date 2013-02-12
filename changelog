@@ -3,7 +3,9 @@ alpha
   Major rewrite of 4chan X.
   New feature, the Header:
     Access the list of boards directly from the Header.
-    Access to settings and extra features easily from the Header's menu.
+    From the Header's menu, access to:
+      Settings
+      Quick Reply
     Can be auto-hidden.
   Added touch and multi-touch support for dragging windows.
   The Thread Updater will pause when offline, and resume when online.

@@ -1832,10 +1832,13 @@
         Main.css += "#postForm, .postingMode {\n  display: none;\n}";
       }
       link = $.el('a', {
-        textContent: 'Open the QR',
+        textContent: 'Quick Reply',
         href: 'javascript:;'
       });
-      $.on(link, 'click', QR.open);
+      $.on(link, 'click', function() {
+        Header.menu.close();
+        return QR.open();
+      });
       $.event('AddMenuEntry', {
         type: 'header',
         el: link
@@ -1848,7 +1851,7 @@
     },
     readyInit: function() {
       if (Conf['Persistent QR']) {
-        QR.dialog();
+        QR.open();
         if (Conf['Auto Hide QR']) {
           QR.hide();
         }
@@ -1865,7 +1868,14 @@
         QR.el.hidden = false;
         return QR.unhide();
       } else {
-        return QR.dialog();
+        try {
+          return QR.dialog();
+        } catch (err) {
+          return Main.handleErrors({
+            message: 'Quick Reply dialog creation crashed.',
+            error: err
+          });
+        }
       }
     },
     close: function() {

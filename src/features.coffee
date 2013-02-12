@@ -772,9 +772,11 @@ QR =
       """
 
     link = $.el 'a',
-      textContent: 'Open the QR'
+      textContent: 'Quick Reply'
       href: 'javascript:;'
-    $.on link, 'click', QR.open
+    $.on link, 'click', ->
+      Header.menu.close()
+      QR.open()
     $.event 'AddMenuEntry',
       type: 'header'
       el: link
@@ -787,7 +789,7 @@ QR =
 
   readyInit: ->
     if Conf['Persistent QR']
-      QR.dialog()
+      QR.open()
       QR.hide() if Conf['Auto Hide QR']
     $.on d, 'dragover',          QR.dragOver
     $.on d, 'drop',              QR.dropFile
@@ -801,7 +803,12 @@ QR =
       QR.el.hidden = false
       QR.unhide()
     else
-      QR.dialog()
+      try
+        QR.dialog()
+      catch err
+        Main.handleErrors
+          message: 'Quick Reply dialog creation crashed.'
+          error: err
   close: ->
     QR.el.hidden = true
     QR.abort()
