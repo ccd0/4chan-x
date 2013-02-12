@@ -778,8 +778,12 @@
         el.removeEventListener(event, handler, false);
       }
     },
-    event: function(event, detail) {
-      return d.dispatchEvent(new CustomEvent(event, {
+    event: function(event, detail, root) {
+      if (root == null) {
+        root = d;
+      }
+      return root.dispatchEvent(new CustomEvent(event, {
+        bubbles: true,
         detail: detail
       }));
     },
@@ -1005,7 +1009,9 @@
     };
 
     Notification.prototype.close = function() {
-      return $.rm(this.el);
+      if (this.el.parentNode) {
+        return $.rm(this.el);
+      }
     };
 
     return Notification;
@@ -1818,12 +1824,22 @@
 
   QR = {
     init: function() {
+      var link;
       if (!Conf['Quick Reply']) {
         return;
       }
       if (Conf['Hide Original Post Form']) {
         Main.css += "#postForm, .postingMode {\n  display: none;\n}";
       }
+      link = $.el('a', {
+        textContent: 'Open the QR',
+        href: 'javascript:;'
+      });
+      $.on(link, 'click', QR.open);
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: link
+      });
       Post.prototype.callbacks.push({
         name: 'Quick Reply',
         cb: this.node
@@ -1885,23 +1901,27 @@
     },
     error: function(err) {
       var el;
-      el = $('.warning', QR.el);
-      if (typeof err === 'string') {
-        el.textContent = err;
-      } else {
-        el.innerHTML = null;
-        $.add(el, err);
-      }
       QR.open();
+      if (typeof err === 'string') {
+        el = $.tn(err);
+      } else {
+        el = err;
+        el.removeAttribute('style');
+      }
       if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
         $('[autocomplete]', QR.el).focus();
       }
       if (d.hidden) {
-        return alert(el.textContent);
+        alert(el.textContent);
       }
+      return QR.lastNotification = new Notification('warning', el);
     },
     cleanError: function() {
-      return $('.warning', QR.el).textContent = null;
+      var _ref;
+      if ((_ref = QR.lastNotification) != null) {
+        _ref.close();
+      }
+      return delete QR.lastNotification;
     },
     status: function(data) {
       var disabled, input, value;
@@ -2064,7 +2084,7 @@
       range = caretPos + text.length;
       ta.setSelectionRange(range, range);
       ta.focus();
-      return $.event(ta, new Event('input'));
+      return ta.dispatchEvent(new Event('input'));
     },
     characterCount: function() {
       var count, counter;
@@ -2439,7 +2459,6 @@
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\
   <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>\
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\
-  <div class=warning></div>\
 </form>');
       if (Conf['Remember QR size'] && $.engine === 'gecko') {
         $.on(ta = $('textarea', QR.el), 'mouseup', function() {
@@ -2510,7 +2529,6 @@
       $.on(spoiler.firstChild, 'change', function() {
         return $('input', QR.selected.el).click();
       });
-      $.on($('.warning', QR.el), 'click', QR.cleanError);
       new QR.reply().select();
       _ref1 = ['name', 'email', 'sub', 'com'];
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
@@ -2528,9 +2546,7 @@
       QR.cooldown.init();
       QR.captcha.init();
       $.add(d.body, QR.el);
-      return $.event(QR.el, new CustomEvent('QRDialogCreation', {
-        bubbles: true
-      }));
+      return $.event(new CustomEvent('QRDialogCreation', null, QR.el));
     },
     submit: function(e) {
       var callbacks, captcha, captchas, challenge, err, filetag, m, opts, post, reply, response, textOnly, threadID, _ref;
@@ -2651,19 +2667,19 @@
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(html) {
-      var ban, board, err, persona, postID, reply, threadID, _, _ref, _ref1;
-      doc = d.implementation.createHTMLDocument('');
-      doc.documentElement.innerHTML = html;
-      if (ban = $('.banType', doc)) {
-        board = $('.board', doc).innerHTML;
+      var ban, board, err, h1, persona, postID, reply, threadID, tmpDoc, _, _ref, _ref1;
+      tmpDoc = d.implementation.createHTMLDocument('');
+      tmpDoc.documentElement.innerHTML = html;
+      if (ban = $('.banType', tmpDoc)) {
+        board = $('.board', tmpDoc).innerHTML;
         err = $.el('span', {
-          innerHTML: ban.textContent.toLowerCase() === 'banned' ? ("You are banned on " + board + "! ;_;<br>") + "Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason." : ("You were issued a warning on " + board + " as " + ($('.nameBlock', doc).innerHTML) + ".<br>") + ("Reason: " + ($('.reason', doc).innerHTML))
+          innerHTML: ban.textContent.toLowerCase() === 'banned' ? ("You are banned on " + board + "! ;_;<br>") + "Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason." : ("You were issued a warning on " + board + " as " + ($('.nameBlock', tmpDoc).innerHTML) + ".<br>") + ("Reason: " + ($('.reason', tmpDoc).innerHTML))
         });
-      } else if (err = doc.getElementById('errmsg')) {
+      } else if (err = tmpDoc.getElementById('errmsg')) {
         if ((_ref = $('a', err)) != null) {
           _ref.target = '_blank';
         }
-      } else if (doc.title !== 'Post successful!') {
+      } else if (tmpDoc.title !== 'Post successful!') {
         err = 'Connection error with sys.4chan.org.';
       }
       if (err) {
@@ -2682,6 +2698,8 @@
         QR.error(err);
         return;
       }
+      h1 = $('h1', tmpDoc);
+      QR.lastNotification = new Notification('success', h1.textContent, 5);
       reply = QR.replies[0];
       persona = $.get('QR.persona', {});
       persona = {
@@ -2690,14 +2708,11 @@
         sub: Conf['Remember Subject'] ? reply.sub : null
       };
       $.set('QR.persona', persona);
-      _ref1 = doc.body.lastChild.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
-      $.event(QR.el, new CustomEvent('QRPostSuccessful', {
-        bubbles: true,
-        detail: {
-          threadID: threadID,
-          postID: postID
-        }
-      }));
+      _ref1 = h1.nextSibling.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
+      $.event(new CustomEvent('QRPostSuccessful', {
+        threadID: threadID,
+        postID: postID
+      }, QR.el));
       QR.cooldown.set({
         post: reply,
         isReply: threadID !== '0'

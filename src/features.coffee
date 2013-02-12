@@ -95,7 +95,7 @@ class Notification
     @type = type
 
   close: ->
-    $.rm @el
+    $.rm @el if @el.parentNode
 
 Settings =
   init: ->
@@ -771,6 +771,14 @@ QR =
       }
       """
 
+    link = $.el 'a',
+      textContent: 'Open the QR'
+      href: 'javascript:;'
+    $.on link, 'click', QR.open
+    $.event 'AddMenuEntry',
+      type: 'header'
+      el: link
+
     Post::callbacks.push
       name: 'Quick Reply'
       cb:   @node
@@ -818,19 +826,20 @@ QR =
     @checked and QR.hide() or QR.unhide()
 
   error: (err) ->
-    el = $ '.warning', QR.el
-    if typeof err is 'string'
-      el.textContent = err
-    else
-      el.innerHTML = null
-      $.add el, err
     QR.open()
+    if typeof err is 'string'
+      el = $.tn err
+    else
+      el = err
+      el.removeAttribute 'style'
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
     alert el.textContent if d.hidden
+    QR.lastNotification = new Notification 'warning', el
   cleanError: ->
-    $('.warning', QR.el).textContent = null
+    QR.lastNotification?.close()
+    delete QR.lastNotification
 
   status: (data={}) ->
     return unless QR.el
@@ -978,7 +987,7 @@ QR =
     ta.focus()
 
     # Fire the 'input' event
-    $.event ta, new Event 'input'
+    ta.dispatchEvent new Event 'input'
 
   characterCount: ->
     counter = QR.charaCounter
@@ -1262,7 +1271,6 @@ QR =
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
   <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>
-  <div class=warning></div>
 </form>'
 
     if Conf['Remember QR size'] and $.engine is 'gecko'
@@ -1320,7 +1328,6 @@ QR =
     $.on fileInput,             'change',    QR.fileInput
     $.on fileInput,             'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
     $.on spoiler.firstChild,    'change',    -> $('input', QR.selected.el).click()
-    $.on $('.warning',  QR.el), 'click',     QR.cleanError
 
     new QR.reply().select()
     # save selected reply's data
@@ -1341,8 +1348,7 @@ QR =
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
-    $.event QR.el, new CustomEvent 'QRDialogCreation',
-      bubbles: true
+    $.event new CustomEvent 'QRDialogCreation', null, QR.el
 
   submit: (e) ->
     e?.preventDefault()
@@ -1453,20 +1459,20 @@ QR =
     QR.ajax = $.ajax $.id('postForm').parentNode.action, callbacks, opts
 
   response: (html) ->
-    doc = d.implementation.createHTMLDocument ''
-    doc.documentElement.innerHTML = html
-    if ban  = $ '.banType', doc # banned/warning
-      board = $('.board', doc).innerHTML
+    tmpDoc = d.implementation.createHTMLDocument ''
+    tmpDoc.documentElement.innerHTML = html
+    if ban  = $ '.banType', tmpDoc # banned/warning
+      board = $('.board', tmpDoc).innerHTML
       err   = $.el 'span', innerHTML:
         if ban.textContent.toLowerCase() is 'banned'
           "You are banned on #{board}! ;_;<br>" +
           "Click <a href=//www.4chan.org/banned target=_blank>here</a> to see the reason."
         else
-          "You were issued a warning on #{board} as #{$('.nameBlock', doc).innerHTML}.<br>" +
-          "Reason: #{$('.reason', doc).innerHTML}"
-    else if err = doc.getElementById 'errmsg' # error!
+          "You were issued a warning on #{board} as #{$('.nameBlock', tmpDoc).innerHTML}.<br>" +
+          "Reason: #{$('.reason', tmpDoc).innerHTML}"
+    else if err = tmpDoc.getElementById 'errmsg' # error!
       $('a', err)?.target = '_blank' # duplicate image link
-    else if doc.title isnt 'Post successful!'
+    else if tmpDoc.title isnt 'Post successful!'
       err = 'Connection error with sys.4chan.org.'
 
     if err
@@ -1493,6 +1499,9 @@ QR =
       QR.error err
       return
 
+    h1 = $ 'h1', tmpDoc
+    QR.lastNotification = new Notification 'success', h1.textContent, 5
+
     reply = QR.replies[0]
 
     persona = $.get 'QR.persona', {}
@@ -1502,14 +1511,13 @@ QR =
       sub:   if Conf['Remember Subject']  then reply.sub     else null
     $.set 'QR.persona', persona
 
-    [_, threadID, postID] = doc.body.lastChild.textContent.match /thread:(\d+),no:(\d+)/
+    [_, threadID, postID] = h1.nextSibling.textContent.match /thread:(\d+),no:(\d+)/
 
     # Post/upload confirmed as successful.
-    $.event QR.el, new CustomEvent 'QRPostSuccessful',
-      bubbles: true
-      detail:
-        threadID: threadID
-        postID:   postID
+    $.event new CustomEvent 'QRPostSuccessful', {
+      threadID
+      postID
+    }, QR.el
 
     QR.cooldown.set
       post:    reply
