@@ -2065,13 +2065,19 @@ QuoteBacklink =
       # Don't backlink the OP.
       continue if !(el = $.id "pi#{qid}") or !Conf['OP Backlinks'] and /\bop\b/.test el.parentNode.className
       link = a.cloneNode true
+      nodes = $.nodes [$.tn(' '), link]
+      if Conf['Quote Preview']
+        $.on link, 'mouseover', QuotePreview.mouseover
+      if Conf['Quote Inline']
+        $.on link, 'click', QuoteInline.toggle
+        QuoteInline.qiQuote link if Conf['Quote Hash Navigation']
       unless container = $.id "blc#{qid}"
         $.addClass el.parentNode, 'quoted'
         container = $.el 'span',
           className: 'container'
           id: "blc#{qid}"
         $.add el, container
-      $.add container, [$.tn(' '), link]
+      $.add container, nodes
       unless Conf["Backlinks Position"] is "default" or /\bop\b/.test el.parentNode.className
         el.parentNode.style.paddingBottom = "#{container.offsetHeight}px"
     return
@@ -2087,7 +2093,6 @@ QuoteInline =
       QuoteInline.qiQuote quote if Conf['Quote Hash Navigation'] and !post.isInlined
     for quote in post.backlinks
       $.on quote, 'click', QuoteInline.toggle
-      QuoteInline.qiQuote quote if Conf['Quote Hash Navigation'] and !post.isInlined
     return
 
   qiQuote: (quote) ->

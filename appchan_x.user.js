@@ -6372,7 +6372,7 @@
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
-      var a, container, el, link, qid, quote, quotes, _i, _len, _ref, _ref1;
+      var a, container, el, link, nodes, qid, quote, quotes, _i, _len, _ref, _ref1;
       if (post.isInlined) {
         return;
       }
@@ -6402,6 +6402,16 @@
           continue;
         }
         link = a.cloneNode(true);
+        nodes = $.nodes([$.tn(' '), link]);
+        if (Conf['Quote Preview']) {
+          $.on(link, 'mouseover', QuotePreview.mouseover);
+        }
+        if (Conf['Quote Inline']) {
+          $.on(link, 'click', QuoteInline.toggle);
+          if (Conf['Quote Hash Navigation']) {
+            QuoteInline.qiQuote(link);
+          }
+        }
         if (!(container = $.id("blc" + qid))) {
           $.addClass(el.parentNode, 'quoted');
           container = $.el('span', {
@@ -6410,7 +6420,7 @@
           });
           $.add(el, container);
         }
-        $.add(container, [$.tn(' '), link]);
+        $.add(container, nodes);
         if (!(Conf["Backlinks Position"] === "default" || /\bop\b/.test(el.parentNode.className))) {
           el.parentNode.style.paddingBottom = "" + container.offsetHeight + "px";
         }
@@ -6439,9 +6449,6 @@
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         quote = _ref1[_j];
         $.on(quote, 'click', QuoteInline.toggle);
-        if (Conf['Quote Hash Navigation'] && !post.isInlined) {
-          QuoteInline.qiQuote(quote);
-        }
       }
     },
     qiQuote: function(quote) {
@@ -11047,14 +11054,14 @@
       if (_conf['Remove Spoilers']) {
         RemoveSpoilers.init();
       }
-      if (_conf['Quote Backlinks']) {
-        QuoteBacklink.init();
+      if (_conf['Quote Inline']) {
+        QuoteInline.init();
       }
       if (_conf['Quote Preview']) {
         QuotePreview.init();
       }
-      if (_conf['Quote Inline']) {
-        QuoteInline.init();
+      if (_conf['Quote Backlinks']) {
+        QuoteBacklink.init();
       }
       if (_conf['Mark Owned Posts']) {
         MarkOwn.init();
@@ -11067,9 +11074,6 @@
       }
       if (_conf['Color user IDs']) {
         IDColor.init();
-      }
-      if (_conf['Replace GIF'] || _conf['Replace PNG'] || _conf['Replace JPG']) {
-        ImageReplace.init();
       }
       return $.ready(Main.featuresReady);
     },
@@ -11117,6 +11121,9 @@
       }
       if (_conf['Keybinds']) {
         Keybinds.init();
+      }
+      if (_conf['Replace GIF'] || _conf['Replace PNG'] || _conf['Replace JPG']) {
+        ImageReplace.init();
       }
       if (_conf['Fappe Tyme']) {
         FappeTyme.init();
