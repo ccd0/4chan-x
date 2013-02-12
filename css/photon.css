@@ -3,6 +3,9 @@
   background-color: #DDD;
   border-color: #CCC;
 }
+:root.photon .field:focus {
+  border-color: #EA8;
+}
 
 /* Header */
 :root.photon #header-bar {
@@ -17,6 +20,11 @@
 :root.photon .inline {
   border-color: #CCC;
   background-color: rgba(255, 255, 255, .14);
+}
+
+/* QR */
+:root.photon .qrpreview {
+  background-color: rgba(0, 0, 0, .15);
 }
 
 /* Menu */

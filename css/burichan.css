@@ -3,6 +3,9 @@
   background-color: #D6DAF0;
   border-color: #B7C5D9;
 }
+:root.burichan .field:focus {
+  border-color: #98E;
+}
 
 /* Header */
 :root.burichan #header-bar {
@@ -17,6 +20,11 @@
 :root.burichan .inline {
   border-color: #B7C5D9;
   background-color: rgba(255, 255, 255, .14);
+}
+
+/* QR */
+:root.burichan .qrpreview {
+  background-color: rgba(0, 0, 0, .15);
 }
 
 /* Menu */

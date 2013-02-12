@@ -45,7 +45,6 @@ Config =
       'Quick Reply':                  [true,  'WMD.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
       'Auto Hide QR':                 [false, 'Automatically hide the quick reply when posting.']
-      'Open Reply in New Tab':        [false, 'Open replies posted from the board pages in a new tab.']
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
       'Hide Original Post Form':      [true,  'Replace the normal post form with a shortcut to open the QR.']

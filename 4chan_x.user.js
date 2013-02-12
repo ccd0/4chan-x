@@ -100,7 +100,6 @@
         'Quick Reply': [true, 'WMD.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [false, 'Automatically hide the quick reply when posting.'],
-        'Open Reply in New Tab': [false, 'Open replies posted from the board pages in a new tab.'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
         'Hide Original Post Form': [true, 'Replace the normal post form with a shortcut to open the QR.']
@@ -1825,40 +1824,51 @@
   QR = {
     init: function() {
       var link;
-      if (!Conf['Quick Reply']) {
+      if (g.VIEW === 'catalog' || !Conf['Quick Reply']) {
         return;
       }
       if (Conf['Hide Original Post Form']) {
-        Main.css += "#postForm, .postingMode {\n  display: none;\n}";
+        $.addClass(doc, 'hide-original-post-form');
       }
       link = $.el('a', {
+        className: 'qr-shortcut',
         textContent: 'Quick Reply',
         href: 'javascript:;'
       });
       $.on(link, 'click', function() {
         Header.menu.close();
-        return QR.open();
+        QR.open();
+        if (g.BOARD.ID === 'f') {
+          if (g.VIEW === 'index') {
+            QR.threadSelector.value = '9999';
+          }
+        } else if (g.VIEW === 'thread') {
+          QR.threadSelector.value = g.THREAD;
+        } else {
+          QR.threadSelector.value = 'new';
+        }
+        return $('textarea', QR.el).focus();
       });
       $.event('AddMenuEntry', {
         type: 'header',
         el: link
       });
-      Post.prototype.callbacks.push({
+      $.on(d, 'dragover', QR.dragOver);
+      $.on(d, 'drop', QR.dropFile);
+      $.on(d, 'dragstart dragend', QR.drag);
+      $.on(d, '4chanXInitFinished', function() {
+        if (!Conf['Persistent QR']) {
+          return;
+        }
+        QR.open();
+        if (Conf['Auto Hide QR']) {
+          return QR.hide();
+        }
+      });
+      return Post.prototype.callbacks.push({
         name: 'Quick Reply',
         cb: this.node
       });
-      return $.ready(this.readyInit);
-    },
-    readyInit: function() {
-      if (Conf['Persistent QR']) {
-        QR.open();
-        if (Conf['Auto Hide QR']) {
-          QR.hide();
-        }
-      }
-      $.on(d, 'dragover', QR.dragOver);
-      $.on(d, 'drop', QR.dropFile);
-      return $.on(d, 'dragstart dragend', QR.drag);
     },
     node: function() {
       return $.on($('a[title="Quote this post"]', this.nodes.info), 'click', QR.quote);
@@ -1866,16 +1876,17 @@
     open: function() {
       if (QR.el) {
         QR.el.hidden = false;
-        return QR.unhide();
-      } else {
-        try {
-          return QR.dialog();
-        } catch (err) {
-          return Main.handleErrors({
-            message: 'Quick Reply dialog creation crashed.',
-            error: err
-          });
-        }
+        QR.unhide();
+        return;
+      }
+      try {
+        return QR.dialog();
+      } catch (err) {
+        delete QR.el;
+        return Main.handleErrors({
+          message: 'Quick Reply dialog creation crashed.',
+          error: err
+        });
       }
     },
     close: function() {
@@ -1895,7 +1906,7 @@
       if (!Conf['Remember Spoiler'] && (spoiler = $.id('spoiler')).checked) {
         spoiler.click();
       }
-      return QR.cleanError();
+      return QR.cleanNotification();
     },
     hide: function() {
       d.activeElement.blur();
@@ -1907,7 +1918,11 @@
       return $.id('autohide').checked = false;
     },
     toggleHide: function() {
-      return this.checked && QR.hide() || QR.unhide();
+      if (this.checked) {
+        return QR.hide();
+      } else {
+        return QR.unhide();
+      }
     },
     error: function(err) {
       var el;
@@ -1926,7 +1941,7 @@
       }
       return QR.lastNotification = new Notification('warning', el);
     },
-    cleanError: function() {
+    cleanNotification: function() {
       var _ref;
       if ((_ref = QR.lastNotification) != null) {
         _ref.close();
@@ -1948,14 +1963,11 @@
       }
       value = data.progress || QR.cooldown.seconds || value;
       input = QR.status.input;
-      input.value = QR.cooldown.auto && Conf['Cooldown'] ? value ? "Auto " + value : 'Auto' : value || 'Submit';
+      input.value = QR.cooldown.auto ? value ? "Auto " + value : 'Auto' : value || 'Submit';
       return input.disabled = disabled || false;
     },
     cooldown: {
       init: function() {
-        if (!Conf['Cooldown']) {
-          return;
-        }
         QR.cooldown.types = {
           thread: (function() {
             switch (g.BOARD) {
@@ -1993,9 +2005,6 @@
       },
       set: function(data) {
         var cooldown, hasFile, isReply, isSage, start, type;
-        if (!Conf['Cooldown']) {
-          return;
-        }
         start = Date.now();
         if (data.delay) {
           cooldown = {
@@ -2032,7 +2041,8 @@
           QR.status();
           return;
         }
-        if ((isReply = g.REPLY ? true : QR.threadSelector.value !== 'new')) {
+        isReply = g.BOARD.ID === 'f' && g.VIEW === 'thread' ? true : QR.threadSelector.value !== 'new';
+        if (isReply) {
           post = QR.replies[0];
           isSage = /sage/i.test(post.email);
           hasFile = !!post.file;
@@ -2073,19 +2083,20 @@
       }
     },
     quote: function(e) {
-      var caretPos, id, range, s, sel, ta, text, _ref;
+      var caretPos, post, range, s, sel, selectionRoot, ta, text;
       if (e != null) {
         e.preventDefault();
       }
       QR.open();
       ta = $('textarea', QR.el);
-      if (!(g.REPLY || ta.value)) {
+      if (QR.threadSelector && !ta.value && g.BOARD.ID !== 'f') {
         QR.threadSelector.value = $.x('ancestor::div[parent::div[@class="board"]]', this).id.slice(1);
       }
-      id = this.previousSibling.hash.slice(2);
-      text = ">>" + id + "\n";
+      post = Get.postFromRoot($.x('ancestor-or-self::div[contains(@class,"postContainer")][1]', this));
+      text = ">>" + post + "\n";
       sel = d.getSelection();
-      if ((s = sel.toString().trim()) && id === ((_ref = $.x('ancestor-or-self::blockquote', sel.anchorNode)) != null ? _ref.id.match(/\d+$/)[0] : void 0)) {
+      selectionRoot = $.x('ancestor-or-self::div[contains(@class,"postContainer")][1]', sel.anchorNode);
+      if ((s = sel.toString().trim()) && post.nodes.root === selectionRoot) {
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
       }
@@ -2125,7 +2136,7 @@
     },
     fileInput: function() {
       var file, _i, _len, _ref;
-      QR.cleanError();
+      QR.cleanNotification();
       if (this.files.length === 1) {
         file = this.files[0];
         if (file.size > this.max) {
@@ -2175,7 +2186,7 @@
         this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
         this.com = null;
         this.el = $.el('a', {
-          className: 'thumbnail',
+          className: 'qrpreview',
           draggable: true,
           href: 'javascript:;',
           innerHTML: '<a class=remove>×</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
@@ -2333,7 +2344,7 @@
       };
 
       _Class.prototype.rm = function() {
-        var index, _base;
+        var index, _ref;
         QR.resetFileInput();
         $.rm(this.el);
         index = QR.replies.indexOf(this);
@@ -2343,7 +2354,7 @@
           (QR.replies[index - 1] || QR.replies[index + 1]).select();
         }
         QR.replies.splice(index, 1);
-        return typeof (_base = window.URL || window.webkitURL).revokeObjectURL === "function" ? _base.revokeObjectURL(this.url) : void 0;
+        return (_ref = window.URL || window.webkitURL) != null ? _ref.revokeObjectURL(this.url) : void 0;
       };
 
       return _Class;
@@ -2418,7 +2429,7 @@
       },
       load: function() {
         var challenge;
-        this.timeout = Date.now() + 4 * $.MINUTE;
+        this.timeout = Date.now() + $.unsafeWindow.RecaptchaState.timeout * $.SECOND - $.MINUTE;
         challenge = this.challenge.firstChild.value;
         this.img.alt = challenge;
         this.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
@@ -2438,7 +2449,7 @@
         return this.input.alt = count;
       },
       reload: function(focus) {
-        $.globalEval('javascript:Recaptcha.reload("t")');
+        $.unsafeWindow.Recaptcha.reload('r');
         if (focus) {
           return QR.captcha.input.focus();
         }
@@ -2457,25 +2468,8 @@
       }
     },
     dialog: function() {
-      var fileInput, id, mimeTypes, name, spoiler, ta, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
-      QR.el = UI.dialog('qr', 'top:0;right:0;', '\
-<div class=move>\
-  Quick Reply <input type=checkbox id=autohide title=Auto-hide>\
-  <span> <a class=close title=Close>×</a></span>\
-</div>\
-<form>\
-  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\
-  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>\
-  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\
-  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>\
-  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\
-</form>');
-      if (Conf['Remember QR size'] && $.engine === 'gecko') {
-        $.on(ta = $('textarea', QR.el), 'mouseup', function() {
-          return $.set('QR.size', this.style.cssText);
-        });
-        ta.style.cssText = $.get('QR.size', '');
-      }
+      var fileInput, key, mimeTypes, name, span, spoiler, ta, thread, threads, _i, _len, _ref, _ref1;
+      QR.el = UI.dialog('qr', 'top:0;right:0;', "<div class=move>Quick Reply <input type=checkbox id=autohide title=Auto-hide><span> <a class=close title=Close>×</a></span></div>\n<form>\n  <div class=persona><input id=dump type=button title='Dump list' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\n  <div id=replies><div id=repliesList><a id=addReply href=javascript:; title=\"Add a reply\">+</a></div></div>\n  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\n  <div><input type=file title=\"Shift+Click to remove the selected file.\" multiple size=16><input type=submit></div>\n  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\n</form>");
       mimeTypes = $('ul.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':
@@ -2500,23 +2494,32 @@
       spoiler.hidden = !QR.spoiler;
       QR.charaCounter = $('#charCount', QR.el);
       ta = $('textarea', QR.el);
-      if (!g.REPLY) {
-        threads = '<option value=new>New thread</option>';
-        _ref = $$('.thread');
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          thread = _ref[_i];
-          id = thread.id.slice(1);
-          threads += "<option value=" + id + ">Thread " + id + "</option>";
+      span = $('.move > span', QR.el);
+      if (g.BOARD.ID === 'f') {
+        if (g.VIEW === 'index') {
+          QR.threadSelector = $('select[name=filetag]').cloneNode(true);
         }
-        QR.threadSelector = g.BOARD === 'f' ? $('select[name=filetag]').cloneNode(true) : $.el('select', {
-          innerHTML: threads,
+      } else {
+        QR.threadSelector = $.el('select', {
           title: 'Create a new thread / Reply to a thread'
         });
-        $.prepend($('.move > span', QR.el), QR.threadSelector);
-        $.on(QR.threadSelector, 'mousedown', function(e) {
-          return e.stopPropagation();
-        });
+        threads = '<option value=new>New thread</option>';
+        _ref = g.BOARD.threads;
+        for (key in _ref) {
+          thread = _ref[key];
+          threads += "<option value=" + thread.ID + ">Thread No." + thread.ID + "</option>";
+        }
+        QR.threadSelector.innerHTML = threads;
+        if (g.VIEW === 'thread') {
+          QR.threadSelector.value = g.THREAD;
+        }
       }
+      if (QR.threadSelector) {
+        $.prepend(span, QR.threadSelector);
+      }
+      $.on(span, 'mousedown', function(e) {
+        return e.stopPropagation();
+      });
       $.on($('#autohide', QR.el), 'change', QR.toggleHide);
       $.on($('.close', QR.el), 'click', QR.close);
       $.on($('#dump', QR.el), 'click', function() {
@@ -2541,8 +2544,8 @@
       });
       new QR.reply().select();
       _ref1 = ['name', 'email', 'sub', 'com'];
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        name = _ref1[_j];
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        name = _ref1[_i];
         $.on($("[name=" + name + "]", QR.el), 'input', function() {
           var _ref2;
           QR.selected[this.name] = this.value;
@@ -2570,19 +2573,19 @@
       }
       QR.abort();
       reply = QR.replies[0];
-      if (g.BOARD === 'f' && !g.REPLY) {
+      if (g.BOARD.ID === 'f' && g.VIEW === 'index') {
         filetag = QR.threadSelector.value;
         threadID = 'new';
       } else {
-        threadID = g.THREAD_ID || QR.threadSelector.value;
+        threadID = QR.threadSelector.value;
       }
       if (threadID === 'new') {
         threadID = null;
-        if (((_ref = g.BOARD) === 'vg' || _ref === 'q') && !reply.sub) {
+        if (((_ref = g.BOARD.ID) === 'vg' || _ref === 'q') && !reply.sub) {
           err = 'New threads require a subject.';
         } else if (!(reply.file || (textOnly = !!$('input[name=textonly]', $.id('postForm'))))) {
           err = 'No file selected.';
-        } else if (g.BOARD === 'f' && filetag === '9999') {
+        } else if (g.BOARD.ID === 'f' && filetag === '9999') {
           err = 'Invalid tag specified.';
         }
       } else if (!(reply.com || reply.file)) {
@@ -2619,7 +2622,7 @@
         QR.error(err);
         return;
       }
-      QR.cleanError();
+      QR.cleanNotification();
       QR.cooldown.auto = QR.replies.length > 1;
       if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
         QR.hide();
@@ -2727,13 +2730,11 @@
         post: reply,
         isReply: threadID !== '0'
       });
+      QR.cooldown.auto = QR.replies.length > 1;
       if (threadID === '0') {
-        location.pathname = "/" + g.BOARD + "/res/" + postID;
-      } else {
-        QR.cooldown.auto = QR.replies.length > 1;
-        if (Conf['Open Reply in New Tab'] && !g.REPLY && !QR.cooldown.auto) {
-          $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
-        }
+        $.open("/" + g.BOARD + "/res/" + postID);
+      } else if (g.VIEW === 'reply' && !QR.cooldown.auto) {
+        $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
       }
       if (Conf['Persistent QR'] || QR.cooldown.auto) {
         reply.rm();
@@ -3346,7 +3347,7 @@
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + '<br><em>' + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREAD === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</em></span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREAD === threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
+        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + '<br><em>' + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREAD === +threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</em></span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREAD === +threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -4880,14 +4881,17 @@
     }
 
     Post.prototype.kill = function(img) {
-      var quotelink, _i, _len, _ref;
+      var now, quotelink, _i, _len, _ref;
+      now = Date.now();
       if (this.file && !this.file.isDead) {
         this.file.isDead = true;
+        this.file.timeOfDeath = now;
       }
       if (img) {
         return;
       }
       this.isDead = true;
+      this.timeOfDeath = now;
       $.addClass(this.nodes.root, 'dead');
       _ref = Get.allQuotelinksLinkingTo(this);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -5112,15 +5116,15 @@
       if ((_ref = $('link[href*=mobile]', d.head)) != null) {
         _ref.disabled = true;
       }
+      $.addClass(doc, $.engine);
+      $.addClass(doc, 'fourchan-x');
       $.addStyle(Main.css);
-      style = null;
+      style = 'yotsuba-b';
       mainStyleSheet = $('link[title=switch]', d.head);
       styleSheets = $$('link[rel="alternate stylesheet"]', d.head);
       setStyle = function() {
         var styleSheet, _i, _len;
-        if (style) {
-          $.rmClass(doc, style);
-        }
+        $.rmClass(doc, style);
         for (_i = 0, _len = styleSheets.length; _i < _len; _i++) {
           styleSheet = styleSheets[_i];
           if (styleSheet.href === mainStyleSheet.href) {
@@ -5130,9 +5134,10 @@
         }
         return $.addClass(doc, style);
       };
-      $.addClass(doc, $.engine);
-      $.addClass(doc, 'fourchan-x');
       setStyle();
+      if (!mainStyleSheet) {
+        return;
+      }
       if (MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.OMutationObserver) {
         observer = new MutationObserver(setStyle);
         return observer.observe(mainStyleSheet, {
@@ -5144,7 +5149,7 @@
       }
     },
     initReady: function() {
-      var boardChild, errors, posts, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1;
+      var board, boardChild, errors, posts, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1;
       if (!$.hasClass(doc, 'fourchan-x')) {
         Main.initStyle();
       }
@@ -5158,40 +5163,43 @@
         }
         return;
       }
-      threads = [];
-      posts = [];
-      _ref = $('.board').children;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        boardChild = _ref[_i];
-        if (!$.hasClass(boardChild, 'thread')) {
-          continue;
-        }
-        thread = new Thread(boardChild.id.slice(1), g.BOARD);
-        threads.push(thread);
-        _ref1 = boardChild.children;
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          threadChild = _ref1[_j];
-          if (!$.hasClass(threadChild, 'postContainer')) {
+      if (board = $('.board')) {
+        threads = [];
+        posts = [];
+        _ref = board.children;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          boardChild = _ref[_i];
+          if (!$.hasClass(boardChild, 'thread')) {
             continue;
           }
-          try {
-            posts.push(new Post(threadChild, thread, g.BOARD));
-          } catch (err) {
-            if (!errors) {
-              errors = [];
+          thread = new Thread(boardChild.id.slice(1), g.BOARD);
+          threads.push(thread);
+          _ref1 = boardChild.children;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            threadChild = _ref1[_j];
+            if (!$.hasClass(threadChild, 'postContainer')) {
+              continue;
             }
-            errors.push({
-              message: "Parsing of Post No." + (threadChild.id.match(/\d+/)) + " failed. Post will be skipped.",
-              error: err
-            });
+            try {
+              posts.push(new Post(threadChild, thread, g.BOARD));
+            } catch (err) {
+              if (!errors) {
+                errors = [];
+              }
+              errors.push({
+                message: "Parsing of Post No." + (threadChild.id.match(/\d+/)) + " failed. Post will be skipped.",
+                error: err
+              });
+            }
           }
         }
+        if (errors) {
+          Main.handleErrors(errors);
+        }
+        Main.callbackNodes(Thread, threads);
+        Main.callbackNodes(Post, posts);
       }
-      if (errors) {
-        Main.handleErrors(errors);
-      }
-      Main.callbackNodes(Thread, threads);
-      return Main.callbackNodes(Post, posts);
+      return $.event('4chanXInitFinished');
     },
     callbackNodes: function(klass, nodes) {
       var callback, errors, i, len, node, _i, _j, _len, _ref;
@@ -5262,7 +5270,7 @@
       });
       return [message, error];
     },
-    css: "/* general */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.move {\ncursor: move;\n}\nlabel {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\n}\n.post {\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#header,\n#qr, #watcher {\nposition: fixed;\n}\n#notifications {\nz-index: 80;\n}\n#qp, #ihover {\nz-index: 70;\n}\n#menu {\nz-index: 60;\n}\n#updater, #stats {\nz-index: 50;\n}\n#header:hover {\nz-index: 40;\n}\n#qr {\nz-index: 30;\n}\n#header {\nz-index: 20;\n}\n#watcher {\nz-index: 10;\n}\n\n/* Header */\n.fourchan-x body {\nmargin-top: 2em;\n}\n.fourchan-x #boardNavDesktop,\n.fourchan-x #navtopright,\n.fourchan-x #boardNavDesktopFoot {\ndisplay: none !important;\n}\n#header {\ntop: 0;\nright: 0;\nleft: 0;\n}\n#header-bar {\nborder-width: 0 0 1px;\npadding: 4px;\nposition: relative;\ntransition: all .1s ease-in-out;\n-o-transition: all .1s ease-in-out;\n-moz-transition: all .1s ease-in-out;\n-webkit-transition: all .1s ease-in-out;\n}\n#header-bar.autohide:not(:hover) {\nmargin-bottom: -1em;\ntransform: translateY(-100%);\n-o-transform: translateY(-100%);\n-moz-transform: translateY(-100%);\n-webkit-transform: translateY(-100%);\ntransition: all .75s .25s ease-in-out;\n-o-transition: all .75s .25s ease-in-out;\n-moz-transition: all .75s .25s ease-in-out;\n-webkit-transition: all .75s .25s ease-in-out;\n}\n#toggle-header-bar {\ncursor: n-resize;\nleft: 0;\nright: 0;\nbottom: -8px;\nheight: 10px;\nposition: absolute;\n}\n#header-bar.autohide #toggle-header-bar {\ncursor: s-resize;\n}\n#header-bar a {\ntext-decoration: none;\npadding: 1px;\n}\n#header-bar > .menu-button {\nfloat: right;\npadding: 0;\n}\n\n/* notifications */\n#notifications {\ntext-align: center;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\ntransition: all .25s ease-in-out;\n-o-transition: all .25s ease-in-out;\n-moz-transition: all .25s ease-in-out;\n-webkit-transition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 40%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 40%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 40%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 40%, .9);\n}\n.notification > .close {\ncolor: white;\npadding: 4px 6px;\ntop: 0;\nright: 0;\nposition: absolute;\n}\n.message {\nbox-sizing: border-box;\npadding: 4px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* thread updater */\n#updater {\ntext-align: right;\n}\n#updater:not(:hover) {\nbackground: none;\nborder: none;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n.new {\ncolor: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\ntext-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\ntext-decoration: none !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp {\npadding: 2px 2px 5px;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 0;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\n}\n.qphl {\nbox-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\ndisplay: none;\n}\n#ihover {\nbox-sizing: border-box;\n-moz-box-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.opContainer.filter-highlight.qphl {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5),\n            0 0 0 2px rgba(216, 94, 49, .7);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply.qphl {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5),\n            0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n\n/* QR */\n#qr > .move {\nmin-width: 300px;\noverflow: hidden;\nbox-sizing: border-box;\n-moz-box-sizing: border-box;\npadding: 0 2px;\n}\n#qr > .move > span {\nfloat: right;\n}\n#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {\ncursor: pointer;\n}\n#qr select,\n#qr > form {\nmargin: 0;\n}\n#dump {\nbackground: -webkit-linear-gradient(#EEE, #CCC);\nbackground: -moz-linear-gradient(#EEE, #CCC);\nbackground: -o-linear-gradient(#EEE, #CCC);\nbackground: linear-gradient(#EEE, #CCC);\nwidth: 10%;\n}\n.gecko #dump {\npadding: 1px 0 2px;\n}\n#dump:hover, #dump:focus {\nbackground: -webkit-linear-gradient(#FFF, #DDD);\nbackground: -moz-linear-gradient(#FFF, #DDD);\nbackground: -o-linear-gradient(#FFF, #DDD);\nbackground: linear-gradient(#FFF, #DDD);\n}\n#dump:active, .dump #dump:not(:hover):not(:focus) {\nbackground: -webkit-linear-gradient(#CCC, #DDD);\nbackground: -moz-linear-gradient(#CCC, #DDD);\nbackground: -o-linear-gradient(#CCC, #DDD);\nbackground: linear-gradient(#CCC, #DDD);\n}\n#qr:not(.dump) #replies, .dump > form > label {\ndisplay: none;\n}\n#replies {\ndisplay: block;\nheight: 100px;\nposition: relative;\n-webkit-user-select: none;\n-moz-user-select: none;\n-o-user-select: none;\nuser-select: none;\n}\n#replies > div {\ncounter-reset: thumbnails;\ntop: 0; right: 0; bottom: 0; left: 0;\nmargin: 0; padding: 0;\noverflow: hidden;\nposition: absolute;\nwhite-space: pre;\n}\n#replies > div:hover {\nbottom: -10px;\noverflow-x: auto;\nz-index: 1;\n}\n.thumbnail {\nbackground-color: rgba(0,0,0,.2) !important;\nbackground-position: 50% 20% !important;\nbackground-size: cover !important;\nborder: 1px solid #666;\nbox-sizing: border-box;\n-moz-box-sizing: border-box;\ncursor: move;\ndisplay: inline-block;\nheight: 90px; width: 90px;\nmargin: 5px; padding: 2px;\nopacity: .5;\noutline: none;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-webkit-transition: opacity .25s ease-in-out;\n-moz-transition: opacity .25s ease-in-out;\n-o-transition: opacity .25s ease-in-out;\ntransition: opacity .25s ease-in-out;\nvertical-align: top;\n}\n.thumbnail:hover, .thumbnail:focus {\nopacity: .9;\n}\n.thumbnail#selected {\nopacity: 1;\n}\n.thumbnail::before {\ncounter-increment: thumbnails;\ncontent: counter(thumbnails);\ncolor: #FFF;\nfont-weight: 700;\npadding: 3px;\nposition: absolute;\ntop: 0;\nright: 0;\ntext-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.thumbnail.drag {\nbox-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.thumbnail.over {\nborder-color: #FFF;\n}\n.thumbnail > span {\ncolor: #FFF;\n}\n.remove {\nbackground: none;\ncolor: #E00;\nfont-weight: 700;\npadding: 3px;\n}\n.remove:hover::after {\ncontent: \" Remove\";\n}\n.thumbnail > label {\nbackground: rgba(0,0,0,.5);\ncolor: #FFF;\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.thumbnail > label > input {\nmargin: 0;\n}\n#addReply {\ncolor: #333;\nfont-size: 3.5em;\nline-height: 100px;\n}\n#addReply:hover, #addReply:focus {\ncolor: #000;\n}\n.field {\nborder: 1px solid #CCC;\nbox-sizing: border-box;\n-moz-box-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\nmargin: 0;\npadding: 2px 4px 3px;\n-webkit-transition: color .25s, border .25s;\n-moz-transition: color .25s, border .25s;\n-o-transition: color .25s, border .25s;\ntransition: color .25s, border .25s;\n}\n.field:-moz-placeholder,\n.field:hover:-moz-placeholder {\ncolor: #AAA;\n}\n.field:hover, .field:focus {\nborder-color: #999;\ncolor: #000;\noutline: none;\n}\n#qr > form > div:first-child > .field:not(#dump) {\nwidth: 30%;\n}\n#qr textarea.field {\ndisplay: -webkit-box;\nmin-height: 160px;\nmin-width: 100%;\n}\n#qr.captcha textarea.field {\nmin-height: 120px;\n}\n.textarea {\nposition: relative;\n}\n#charCount {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nmargin: 1px;\nposition: absolute;\nbottom: 0;\nright: 0;\npointer-events: none;\n}\n#charCount.warning {\ncolor: red;\n}\n.captchainput > .field {\nmin-width: 100%;\n}\n.captchaimg {\nbackground: #FFF;\noutline: 1px solid #CCC;\noutline-offset: -1px;\ntext-align: center;\n}\n.captchaimg > img {\ndisplay: block;\nheight: 57px;\nwidth: 300px;\n}\n#qr [type=file] {\nmargin: 1px 0;\nwidth: 70%;\n}\n#qr [type=submit] {\nmargin: 1px 0;\npadding: 1px; /* not Gecko */\nwidth: 30%;\n}\n.gecko #qr [type=submit] {\npadding: 0 1px; /* Gecko does not respect box-sizing: border-box */\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\n}\n.menu-button > span {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nposition: absolute;\noutline: none;\n}\n.entry {\ncursor: pointer;\ndisplay: block;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.entry.has-submenu {\npadding-right: 20px;\n}\n.has-submenu::after {\ncontent: \"\";\nborder-left:   6px solid;\nborder-top:    4px solid transparent;\nborder-bottom: 4px solid transparent;\ndisplay: inline-block;\nmargin: 4px;\nposition: absolute;\nright: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\ndisplay: none;\n}\n.submenu {\nposition: absolute;\nmargin: -1px 0;\n}\n.entry input {\nmargin: 0;\n}\n\n/* general */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n\n/* Header */\n:root.yotsuba #header-bar {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a {\ncolor: #800000;\n}\n\n/* quote */\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.yotsuba .entry:not(:last-child) {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a {\ncolor: #34345C;\n}\n\n/* quote */\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.yotsuba-b .entry:not(:last-child) {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n\n/* Header */\n:root.futaba #header-bar {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a {\ncolor: #800000;\n}\n\n/* quote */\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.futaba .entry:not(:last-child) {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n\n/* Header */\n:root.burichan #header-bar {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a {\ncolor: #34345C;\n}\n\n/* quote */\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.burichan .entry:not(:last-child) {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n\n/* Header */\n:root.tomorrow #header-bar {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a {\ncolor: #81A2BE;\n}\n\n/* quote */\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* Menu */\n:root.tomorrow .entry:not(:last-child) {\nborder-bottom: 1px solid #111;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* general */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n\n/* Header */\n:root.photon #header-bar {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a {\ncolor: #FF6600;\n}\n\n/* quote */\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* Menu */\n:root.photon .entry:not(:last-child) {\nborder-bottom: 1px solid #CCC;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
+    css: "/* general */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.field {\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\n-webkit-transition: color .25s, border-color .25s;\ntransition: color .25s, border-color .25s;\n}\n.field:-moz-placeholder,\n.field:hover:-moz-placeholder {\ncolor: #AAA !important;\n}\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.move {\ncursor: move;\n}\nlabel {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\n}\n.post {\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#header,\n#qr, #watcher {\nposition: fixed;\n}\n#notifications {\nz-index: 80;\n}\n#qp, #ihover {\nz-index: 70;\n}\n#menu {\nz-index: 60;\n}\n#updater, #stats {\nz-index: 50;\n}\n#header:hover {\nz-index: 40;\n}\n#qr {\nz-index: 30;\n}\n#header {\nz-index: 20;\n}\n#watcher {\nz-index: 10;\n}\n\n/* Header */\n.fourchan-x body {\nmargin-top: 2em;\n}\n.fourchan-x #boardNavDesktop,\n.fourchan-x #navtopright,\n.fourchan-x #boardNavDesktopFoot {\ndisplay: none !important;\n}\n#header {\ntop: 0;\nright: 0;\nleft: 0;\n}\n#header-bar {\nborder-width: 0 0 1px;\npadding: 4px;\nposition: relative;\n-webkit-transition: all .1s ease-in-out;\ntransition: all .1s ease-in-out;\n}\n#header-bar.autohide:not(:hover) {\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\n-webkit-transition: all .75s .25s ease-in-out;\ntransition: all .75s .25s ease-in-out;\n}\n#toggle-header-bar {\ncursor: n-resize;\nleft: 0;\nright: 0;\nbottom: -8px;\nheight: 10px;\nposition: absolute;\n}\n#header-bar.autohide #toggle-header-bar {\ncursor: s-resize;\n}\n#header-bar a {\ntext-decoration: none;\npadding: 1px;\n}\n#header-bar > .menu-button {\nfloat: right;\npadding: 0;\n}\n\n/* notifications */\n#notifications {\ntext-align: center;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\n-webkit-transition: all .25s ease-in-out;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 40%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 40%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 40%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 40%, .9);\n}\n.notification > .close {\ncolor: white;\npadding: 4px 6px;\ntop: 0;\nright: 0;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 4px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* thread updater */\n#updater {\ntext-align: right;\n}\n#updater:not(:hover) {\nbackground: none;\nborder: none;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n.new {\ncolor: limegreen;\n}\n\n/* quote */\n.quotelink.deadlink {\ntext-decoration: underline !important;\n}\n.deadlink:not(.quotelink) {\ntext-decoration: none !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp {\npadding: 2px 2px 5px;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 0;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\n}\n.qphl {\nbox-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* file */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\ndisplay: none;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.opContainer.filter-highlight.qphl {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5),\n            0 0 0 2px rgba(216, 94, 49, .7);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply.qphl {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5),\n            0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n\n/* QR */\n.hide-original-post-form #postForm,\n.hide-original-post-form .postingMode {\ndisplay: none;\n}\n#qr > .move {\nmin-width: 300px;\noverflow: hidden;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 0 2px;\n}\n#qr > .move > span {\nfloat: right;\n}\n#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {\ncursor: pointer;\n}\n#qr select {\nmargin: 0;\n}\n#dump {\nbackground: -webkit-linear-gradient(#EEE, #CCC);\nbackground: linear-gradient(#EEE, #CCC);\nborder: 1px solid #CCC;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\nwidth: 10%;\n}\n.gecko #dump {\npadding: 1px 0 2px;\n}\n#dump:hover, #dump:focus {\nbackground: -webkit-linear-gradient(#FFF, #DDD);\nbackground: linear-gradient(#FFF, #DDD);\n}\n#dump:active, .dump #dump:not(:hover):not(:focus) {\nbackground: -webkit-linear-gradient(#CCC, #DDD);\nbackground: linear-gradient(#CCC, #DDD);\n}\n#qr:not(.dump) #replies, .dump > form > label {\ndisplay: none;\n}\n#replies {\ndisplay: block;\nheight: 100px;\nposition: relative;\n-webkit-user-select: none;\n-moz-user-select: none;\n-o-user-select: none;\nuser-select: none;\n}\n#replies > div {\ncounter-reset: qrpreviews;\ntop: 0; right: 0; bottom: 0; left: 0;\nmargin: 0; padding: 0;\noverflow: hidden;\nposition: absolute;\nwhite-space: pre;\n}\n#replies > div:hover {\nbottom: -10px;\noverflow-x: auto;\nz-index: 1;\n}\n.qrpreview {\nbackground-position: 50% 20%;\nbackground-size: cover;\nborder: 1px solid #808080;\ncolor: #FFF !important;\nfont-size: 12px;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncursor: move;\ndisplay: inline-block;\nheight: 90px; width: 90px;\nmargin: 5px; padding: 2px;\nopacity: .6;\noutline: none;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-webkit-transition: opacity .25s ease-in-out;\ntransition: opacity .25s ease-in-out;\nvertical-align: top;\n}\n.qrpreview:hover, .qrpreview:focus {\nopacity: .9;\ncolor: #FFF !important;\n}\n.qrpreview#selected {\nopacity: 1;\n}\n.qrpreview::before {\ncounter-increment: qrpreviews;\ncontent: counter(qrpreviews);\nfont-weight: 700;\ntext-shadow: 0 0 3px #000, 0 0 5px #000;\nposition: absolute;\ntop: 3px; right: 3px;\n}\n.qrpreview.drag {\nborder-color: red;\nborder-style: dashed;\n}\n.qrpreview.over {\nborder-color: #FFF;\nborder-style: dashed;\n}\n.remove {\ncolor: #E00 !important;\nfont-weight: 700;\npadding: 3px;\n}\n.remove:hover::after {\ncontent: ' Remove';\n}\n.qrpreview > label {\nbackground: rgba(0, 0, 0, .5);\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.qrpreview > label > input {\nmargin: 1px 0;\nvertical-align: bottom;\n}\n#addReply {\nfont-size: 3.5em;\nline-height: 100px;\n}\n#qr > form > div:first-child > .field:not(#dump) {\nwidth: 30%;\n}\n#qr textarea.field {\ndisplay: -webkit-box;\nmin-height: 160px;\nmin-width: 100%;\n}\n#qr.captcha textarea.field {\nmin-height: 120px;\n}\n.textarea {\nposition: relative;\n}\n#charCount {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nmargin: 1px;\nposition: absolute;\nbottom: 0;\nright: 0;\npointer-events: none;\n}\n#charCount.warning {\ncolor: red;\n}\n.captchainput > .field {\nmin-width: 100%;\n}\n.captchaimg {\nbackground: #FFF;\noutline: 1px solid #CCC;\noutline-offset: -1px;\ntext-align: center;\n}\n.captchaimg > img {\ndisplay: block;\nheight: 57px;\nwidth: 300px;\n}\n#qr [type=file] {\nmargin: 1px 0;\nwidth: 70%;\n}\n#qr [type=submit] {\nmargin: 1px 0;\npadding: 1px; /* not Gecko */\nwidth: 30%;\n}\n.gecko #qr [type=submit] {\npadding: 0 1px; /* Gecko does not respect box-sizing: border-box */\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\n}\n.menu-button > span {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nposition: absolute;\noutline: none;\n}\n.entry {\ncursor: pointer;\ndisplay: block;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.entry.has-submenu {\npadding-right: 20px;\n}\n.has-submenu::after {\ncontent: \"\";\nborder-left:   6px solid;\nborder-top:    4px solid transparent;\nborder-bottom: 4px solid transparent;\ndisplay: inline-block;\nmargin: 4px;\nposition: absolute;\nright: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\ndisplay: none;\n}\n.submenu {\nposition: absolute;\nmargin: -1px 0;\n}\n.entry input {\nmargin: 0;\n}\n\n/* general */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a {\ncolor: #800000;\n}\n\n/* quote */\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.yotsuba .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba .entry:not(:last-child) {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a {\ncolor: #34345C;\n}\n\n/* quote */\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.yotsuba-b .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b .entry:not(:last-child) {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a {\ncolor: #800000;\n}\n\n/* quote */\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.futaba .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba .entry:not(:last-child) {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a {\ncolor: #34345C;\n}\n\n/* quote */\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.burichan .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan .entry:not(:last-child) {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* general */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .field:focus {\nborder-color: #000;\n}\n\n/* Header */\n:root.tomorrow #header-bar {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a {\ncolor: #81A2BE;\n}\n\n/* quote */\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n:root.tomorrow .qrpreview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n\n/* Menu */\n:root.tomorrow .entry:not(:last-child) {\nborder-bottom: 1px solid #111;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* general */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a {\ncolor: #FF6600;\n}\n\n/* quote */\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.photon .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon .entry:not(:last-child) {\nborder-bottom: 1px solid #CCC;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
   };
 
   Main.init();

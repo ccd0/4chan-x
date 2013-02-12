@@ -3,6 +3,9 @@
   background-color: #D6DAF0;
   border-color: #B7C5D9;
 }
+:root.yotsuba-b .field:focus {
+  border-color: #98E;
+}
 
 /* Header */
 :root.yotsuba-b #header-bar {
@@ -17,6 +20,11 @@
 :root.yotsuba-b .inline {
   border-color: #B7C5D9;
   background-color: rgba(255, 255, 255, .14);
+}
+
+/* QR */
+:root.yotsuba-b .qrpreview {
+  background-color: rgba(0, 0, 0, .15);
 }
 
 /* Menu */

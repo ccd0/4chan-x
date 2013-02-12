@@ -762,38 +762,41 @@ Recursive =
 
 QR =
   init: ->
-    return unless Conf['Quick Reply']
+    return if g.VIEW is 'catalog' or !Conf['Quick Reply']
 
     if Conf['Hide Original Post Form']
-      Main.css += """
-      #postForm, .postingMode {
-        display: none;
-      }
-      """
+      $.addClass doc, 'hide-original-post-form'
 
     link = $.el 'a',
+      className: 'qr-shortcut'
       textContent: 'Quick Reply'
       href: 'javascript:;'
     $.on link, 'click', ->
       Header.menu.close()
       QR.open()
+      if g.BOARD.ID is 'f'
+        if g.VIEW is 'index'
+          QR.threadSelector.value = '9999'
+      else if g.VIEW is 'thread'
+        QR.threadSelector.value = g.THREAD
+      else
+        QR.threadSelector.value = 'new'
+      $('textarea', QR.el).focus()
     $.event 'AddMenuEntry',
       type: 'header'
       el: link
 
-    Post::callbacks.push
-      name: 'Quick Reply'
-      cb:   @node
-
-    $.ready @readyInit
-
-  readyInit: ->
-    if Conf['Persistent QR']
-      QR.open()
-      QR.hide() if Conf['Auto Hide QR']
     $.on d, 'dragover',          QR.dragOver
     $.on d, 'drop',              QR.dropFile
     $.on d, 'dragstart dragend', QR.drag
+    $.on d, '4chanXInitFinished', ->
+      return unless Conf['Persistent QR']
+      QR.open()
+      QR.hide() if Conf['Auto Hide QR']
+
+    Post::callbacks.push
+      name: 'Quick Reply'
+      cb:   @node
 
   node: ->
     $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
@@ -802,13 +805,14 @@ QR =
     if QR.el
       QR.el.hidden = false
       QR.unhide()
-    else
-      try
-        QR.dialog()
-      catch err
-        Main.handleErrors
-          message: 'Quick Reply dialog creation crashed.'
-          error: err
+      return
+    try
+      QR.dialog()
+    catch err
+      delete QR.el
+      Main.handleErrors
+        message: 'Quick Reply dialog creation crashed.'
+        error: err
   close: ->
     QR.el.hidden = true
     QR.abort()
@@ -821,7 +825,7 @@ QR =
     QR.resetFileInput()
     if not Conf['Remember Spoiler'] and (spoiler = $.id 'spoiler').checked
       spoiler.click()
-    QR.cleanError()
+    QR.cleanNotification()
   hide: ->
     d.activeElement.blur()
     $.addClass QR.el, 'autohide'
@@ -830,7 +834,10 @@ QR =
     $.rmClass QR.el, 'autohide'
     $.id('autohide').checked = false
   toggleHide: ->
-    @checked and QR.hide() or QR.unhide()
+    if @checked
+      QR.hide()
+    else
+      QR.unhide()
 
   error: (err) ->
     QR.open()
@@ -844,20 +851,20 @@ QR =
       $('[autocomplete]', QR.el).focus()
     alert el.textContent if d.hidden
     QR.lastNotification = new Notification 'warning', el
-  cleanError: ->
+  cleanNotification: ->
     QR.lastNotification?.close()
     delete QR.lastNotification
 
   status: (data={}) ->
     return unless QR.el
-    if g.dead
+    if g.dead # XXX
       value    = 404
       disabled = true
       QR.cooldown.auto = false
     value = data.progress or QR.cooldown.seconds or value
     {input} = QR.status
     input.value =
-      if QR.cooldown.auto and Conf['Cooldown']
+      if QR.cooldown.auto
         if value then "Auto #{value}" else 'Auto'
       else
         value or 'Submit'
@@ -865,7 +872,6 @@ QR =
 
   cooldown:
     init: ->
-      return unless Conf['Cooldown']
       QR.cooldown.types =
         thread: switch g.BOARD
           when 'q' then 86400
@@ -883,12 +889,11 @@ QR =
       QR.cooldown.count()
     sync: (cooldowns) ->
       # Add each cooldowns, don't overwrite everything in case we
-      # still need to purge one in the current tab to auto-post.
+      # still need to prune one in the current tab to auto-post.
       for id of cooldowns
         QR.cooldown.cooldowns[id] = cooldowns[id]
       QR.cooldown.start()
     set: (data) ->
-      return unless Conf['Cooldown']
       start = Date.now()
       if data.delay
         cooldown = delay: data.delay
@@ -926,7 +931,12 @@ QR =
         QR.status()
         return
 
-      if (isReply = if g.REPLY then true else QR.threadSelector.value isnt 'new')
+      isReply =
+        if g.BOARD.ID is 'f' and g.VIEW is 'thread'
+          true
+        else
+          QR.threadSelector.value isnt 'new'
+      if isReply
         post    = QR.replies[0]
         isSage  = /sage/i.test post.email
         hasFile = !!post.file
@@ -973,14 +983,15 @@ QR =
     e?.preventDefault()
     QR.open()
     ta = $ 'textarea', QR.el
-    unless g.REPLY or ta.value
+    if QR.threadSelector and !ta.value and g.BOARD.ID isnt 'f'
       QR.threadSelector.value = $.x('ancestor::div[parent::div[@class="board"]]', @).id[1..]
     # Make sure we get the correct number, even with XXX censors
-    id   = @previousSibling.hash[2..]
-    text = ">>#{id}\n"
+    post = Get.postFromRoot $.x 'ancestor-or-self::div[contains(@class,"postContainer")][1]', @
+    text = ">>#{post}\n"
 
     sel = d.getSelection()
-    if (s = sel.toString().trim()) and id is $.x('ancestor-or-self::blockquote', sel.anchorNode)?.id.match(/\d+$/)[0]
+    selectionRoot = $.x 'ancestor-or-self::div[contains(@class,"postContainer")][1]', sel.anchorNode
+    if (s = sel.toString().trim()) and post.nodes.root is selectionRoot
       # XXX Opera doesn't retain `\n`s?
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
@@ -1019,7 +1030,7 @@ QR =
     QR.fileInput.call e.dataTransfer
     $.addClass QR.el, 'dump'
   fileInput: ->
-    QR.cleanError()
+    QR.cleanNotification()
     # Set or change current reply's file.
     if @files.length is 1
       file = @files[0]
@@ -1063,7 +1074,7 @@ QR =
       @com = null
 
       @el = $.el 'a',
-        className: 'thumbnail'
+        className: 'qrpreview'
         draggable: true
         href: 'javascript:;'
         innerHTML: '<a class=remove>×</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
@@ -1187,7 +1198,7 @@ QR =
       else if @el.id is 'selected'
         (QR.replies[index-1] or QR.replies[index+1]).select()
       QR.replies.splice index, 1
-      (window.URL or window.webkitURL).revokeObjectURL? @url
+      (window.URL or window.webkitURL)?.revokeObjectURL @url
 
   captcha:
     init: ->
@@ -1235,9 +1246,8 @@ QR =
       @count captchas.length
       @reload()
     load: ->
-      # Timeout is available at RecaptchaState.timeout in seconds.
-      # We use 5-1 minutes to give upload some time.
-      @timeout  = Date.now() + 4*$.MINUTE
+      # -1 minute to give upload some time.
+      @timeout  = Date.now() + $.unsafeWindow.RecaptchaState.timeout * $.SECOND - $.MINUTE
       challenge = @challenge.firstChild.value
       @img.alt  = challenge
       @img.src  = "//www.google.com/recaptcha/api/image?c=#{challenge}"
@@ -1252,8 +1262,8 @@ QR =
           "Verification (#{count} cached captchas)"
       @input.alt = count # For XTRM RICE.
     reload: (focus) ->
-      # the "t" argument prevents the input from being focused
-      $.globalEval 'javascript:Recaptcha.reload("t")'
+      # the 't' argument prevents the input from being focused
+      $.unsafeWindow.Recaptcha.reload 'r'
       # Focus if we meant to.
       QR.captcha.input.focus() if focus
     keydown: (e) ->
@@ -1267,23 +1277,16 @@ QR =
       e.preventDefault()
 
   dialog: ->
-    QR.el = UI.dialog 'qr', 'top:0;right:0;', '
-<div class=move>
-  Quick Reply <input type=checkbox id=autohide title=Auto-hide>
-  <span> <a class=close title=Close>×</a></span>
-</div>
-<form>
-  <div><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
-  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
-  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
-  <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>
-  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>
-</form>'
-
-    if Conf['Remember QR size'] and $.engine is 'gecko'
-      $.on ta = $('textarea', QR.el), 'mouseup', ->
-        $.set 'QR.size', @style.cssText
-      ta.style.cssText = $.get 'QR.size', ''
+    QR.el = UI.dialog 'qr', 'top:0;right:0;', """
+    <div class=move>Quick Reply <input type=checkbox id=autohide title=Auto-hide><span> <a class=close title=Close>×</a></span></div>
+    <form>
+      <div class=persona><input id=dump type=button title='Dump list' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
+      <div id=replies><div id=repliesList><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
+      <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
+      <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>
+      <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>
+    </form>
+    """
 
     # Allow only this board's supported files.
     mimeTypes = $('ul.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
@@ -1310,21 +1313,24 @@ QR =
     QR.charaCounter = $ '#charCount', QR.el
     ta              = $ 'textarea',    QR.el
 
-    unless g.REPLY
-      # Make a list with visible threads and an option to create a new one.
+    span = $('.move > span', QR.el)
+
+    # Make a list of visible threads.
+    if g.BOARD.ID is 'f'
+      if g.VIEW is 'index'
+        QR.threadSelector = $('select[name=filetag]').cloneNode true
+    else
+      QR.threadSelector = $.el 'select',
+        title: 'Create a new thread / Reply to a thread'
       threads = '<option value=new>New thread</option>'
-      for thread in $$ '.thread'
-        id = thread.id[1..]
-        threads += "<option value=#{id}>Thread #{id}</option>"
-      QR.threadSelector =
-        if g.BOARD is 'f'
-          $('select[name=filetag]').cloneNode true
-        else
-          $.el 'select'
-            innerHTML: threads
-            title: 'Create a new thread / Reply to a thread'
-      $.prepend $('.move > span', QR.el), QR.threadSelector
-      $.on QR.threadSelector,   'mousedown', (e) -> e.stopPropagation()
+      for key, thread of g.BOARD.threads
+        threads += "<option value=#{thread.ID}>Thread No.#{thread.ID}</option>"
+      QR.threadSelector.innerHTML = threads
+      if g.VIEW is 'thread'
+        QR.threadSelector.value = g.THREAD
+    if QR.threadSelector
+      $.prepend span, QR.threadSelector
+    $.on span,                  'mousedown', (e) -> e.stopPropagation()
     $.on $('#autohide', QR.el), 'change',    QR.toggleHide
     $.on $('.close',    QR.el), 'click',     QR.close
     $.on $('#dump',     QR.el), 'click',     -> QR.el.classList.toggle 'dump'
@@ -1366,20 +1372,20 @@ QR =
     QR.abort()
 
     reply = QR.replies[0]
-    if g.BOARD is 'f' and not g.REPLY
+    if g.BOARD.ID is 'f' and g.VIEW is 'index'
       filetag  = QR.threadSelector.value
       threadID = 'new'
     else
-      threadID = g.THREAD_ID or QR.threadSelector.value
+      threadID = QR.threadSelector.value
 
     # prevent errors
     if threadID is 'new'
       threadID = null
-      if g.BOARD in ['vg', 'q'] and !reply.sub
+      if g.BOARD.ID in ['vg', 'q'] and !reply.sub
         err = 'New threads require a subject.'
       else unless reply.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
         err = 'No file selected.'
-      else if g.BOARD is 'f' and filetag is '9999'
+      else if g.BOARD.ID is 'f' and filetag is '9999'
         err = 'Invalid tag specified.'
     else unless reply.com or reply.file
         err = 'No file selected.'
@@ -1412,7 +1418,7 @@ QR =
       QR.status()
       QR.error err
       return
-    QR.cleanError()
+    QR.cleanNotification()
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.replies.length > 1
@@ -1530,14 +1536,13 @@ QR =
       post:    reply
       isReply: threadID isnt '0'
 
+    # Enable auto-posting if we have stuff to post, disable it otherwise.
+    QR.cooldown.auto = QR.replies.length > 1
+
     if threadID is '0' # new thread
-      # auto-noko
-      location.pathname = "/#{g.BOARD}/res/#{postID}"
-    else
-      # Enable auto-posting if we have stuff to post, disable it otherwise.
-      QR.cooldown.auto = QR.replies.length > 1
-      if Conf['Open Reply in New Tab'] and !g.REPLY and !QR.cooldown.auto
-        $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
+      $.open "/#{g.BOARD}/res/#{postID}"
+    else if g.VIEW is 'reply' and !QR.cooldown.auto # posting from the index
+      $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
 
     if Conf['Persistent QR'] or QR.cooldown.auto
       reply.rm()
@@ -2092,7 +2097,7 @@ Build =
           '<br><em>' +
             "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"}>No.</a>" +
             "<a href='#{
-              if g.VIEW is 'thread' and g.THREAD is threadID
+              if g.VIEW is 'thread' and g.THREAD is +threadID
                 "javascript:quote(#{postID})"
               else
                 "/#{board}/res/#{threadID}#q#{postID}"
@@ -2114,7 +2119,7 @@ Build =
           "<span class='postNum desktop'>" +
             "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
             "<a href='#{
-              if g.VIEW is 'thread' and g.THREAD is threadID
+              if g.VIEW is 'thread' and g.THREAD is +threadID
                 "javascript:quote(#{postID})"
               else
                 "/#{board}/res/#{threadID}#q#{postID}"

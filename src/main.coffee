@@ -148,10 +148,13 @@ class Post
     @kill() if that.isArchived
 
   kill: (img) ->
+    now = Date.now()
     if @file and !@file.isDead
       @file.isDead = true
+      @file.timeOfDeath = now
     return if img
     @isDead = true
+    @timeOfDeath = now
     $.addClass @nodes.root, 'dead'
     # XXX style dead posts.
 
@@ -325,21 +328,22 @@ Main =
   initStyle: ->
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
+    $.addClass doc, $.engine
+    $.addClass doc, 'fourchan-x'
     $.addStyle Main.css
 
-    style          = null
+    style          = 'yotsuba-b'
     mainStyleSheet = $ 'link[title=switch]', d.head
     styleSheets    = $$ 'link[rel="alternate stylesheet"]', d.head
     setStyle = ->
-      $.rmClass doc, style if style
+      $.rmClass doc, style
       for styleSheet in styleSheets
         if styleSheet.href is mainStyleSheet.href
           style = styleSheet.title.toLowerCase().replace('new', '').trim().replace /\s+/g, '-'
           break
       $.addClass doc, style
-    $.addClass doc, $.engine
-    $.addClass doc, 'fourchan-x'
     setStyle()
+    return unless mainStyleSheet
     if MutationObserver = window.MutationObserver or window.WebKitMutationObserver or window.OMutationObserver
       observer = new MutationObserver setStyle
       observer.observe mainStyleSheet,
@@ -351,7 +355,7 @@ Main =
 
   initReady: ->
     unless $.hasClass doc, 'fourchan-x'
-      # Something might go wrong!
+      # Something might have gone wrong!
       Main.initStyle()
 
     if d.title is '4chan - 404 Not Found'
@@ -362,28 +366,31 @@ Main =
           postID: location.hash
       return
 
-    threads = []
-    posts   = []
+    if board = $ '.board'
+      threads = []
+      posts   = []
 
-    for boardChild in $('.board').children
-      continue unless $.hasClass boardChild, 'thread'
-      thread = new Thread boardChild.id[1..], g.BOARD
-      threads.push thread
-      for threadChild in boardChild.children
-        continue unless $.hasClass threadChild, 'postContainer'
-        try
-          posts.push new Post threadChild, thread, g.BOARD
-        catch err
-          # Skip posts that we failed to parse.
-          unless errors
-            errors = []
-          errors.push
-            message: "Parsing of Post No.#{threadChild.id.match(/\d+/)} failed. Post will be skipped."
-            error: err
-    Main.handleErrors errors if errors
+      for boardChild in board.children
+        continue unless $.hasClass boardChild, 'thread'
+        thread = new Thread boardChild.id[1..], g.BOARD
+        threads.push thread
+        for threadChild in boardChild.children
+          continue unless $.hasClass threadChild, 'postContainer'
+          try
+            posts.push new Post threadChild, thread, g.BOARD
+          catch err
+            # Skip posts that we failed to parse.
+            unless errors
+              errors = []
+            errors.push
+              message: "Parsing of Post No.#{threadChild.id.match(/\d+/)} failed. Post will be skipped."
+              error: err
+      Main.handleErrors errors if errors
 
-    Main.callbackNodes Thread, threads
-    Main.callbackNodes Post, posts
+      Main.callbackNodes Thread, threads
+      Main.callbackNodes Post, posts
+
+    $.event '4chanXInitFinished'
 
   callbackNodes: (klass, nodes) ->
     # get the nodes' length only once
