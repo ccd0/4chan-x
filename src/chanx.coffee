@@ -2131,7 +2131,12 @@ QuoteInline =
         q.parentNode
       else
         $.x 'ancestor-or-self::*[parent::blockquote][1]', q
-    $.after root, inline
+
+    if Conf['Quote Hash Navigation'] and !isBacklink
+      $.after root.nextElementSibling, inline
+    else
+      $.after root, inline
+
     Get.post board, threadID, postID, inline
 
     return unless el

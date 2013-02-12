@@ -6488,7 +6488,11 @@
         className: el ? 'inline' : 'inline crosspost'
       });
       root = (isBacklink = /\bbacklink\b/.test(q.className)) ? q.parentNode : $.x('ancestor-or-self::*[parent::blockquote][1]', q);
-      $.after(root, inline);
+      if (Conf['Quote Hash Navigation'] && !isBacklink) {
+        $.after(root.nextElementSibling, inline);
+      } else {
+        $.after(root, inline);
+      }
       Get.post(board, threadID, postID, inline);
       if (!el) {
         return;
