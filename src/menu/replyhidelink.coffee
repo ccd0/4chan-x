@@ -10,11 +10,12 @@ ReplyHideLink =
       textContent: 'Hide / Restore Post'
 
     $.on a, 'click', ->
-      menu   = $.id 'menu'
+      menu   = Menu.el
       id     = menu.dataset.id
       root   = $.id "pc#{id}"
       button = root.firstChild
       ReplyHiding.toggle button, root, id
+      Menu.close()
 
     Menu.addEntry
       el: a

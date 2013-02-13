@@ -4541,11 +4541,12 @@
       });
       $.on(a, 'click', function() {
         var button, id, menu, root;
-        menu = $.id('menu');
+        menu = Menu.el;
         id = menu.dataset.id;
         root = $.id("pc" + id);
         button = root.firstChild;
-        return ReplyHiding.toggle(button, root, id);
+        ReplyHiding.toggle(button, root, id);
+        return Menu.close();
       });
       return Menu.addEntry({
         el: a,
@@ -4607,9 +4608,10 @@
       });
       $.on(a, 'click', function() {
         var menu, thread;
-        menu = $.id('menu');
+        menu = Menu.el;
         thread = $.id("t" + menu.dataset.id);
-        return ThreadHiding.toggle(thread);
+        ThreadHiding.toggle(thread);
+        return Menu.close();
       });
       return Menu.addEntry({
         el: a,

@@ -8,10 +8,13 @@ ThreadHideLink =
       className: 'thread_hide_link'
       href: 'javascript:;'
       textContent: 'Hide / Restore Thread'
+
     $.on a, 'click', ->
-      menu   = $.id 'menu'
+      menu   = Menu.el
       thread = $.id "t#{menu.dataset.id}"
       ThreadHiding.toggle thread
+      Menu.close()
+
     Menu.addEntry
       el: a
       open: (post) ->
