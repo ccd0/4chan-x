@@ -16,7 +16,6 @@ $.extend = (object, properties) ->
 
 # Various prototypes I've wanted or needed to add.
 $.extend Array::,
-
   add: (object, position) ->
     keep = @slice position
     @length = position
@@ -36,6 +35,7 @@ $.extend Array::,
     args = arguments
     for arg in args
       @push.apply @, arg
+    return @
 
   remove: (object) ->
     if (index = @indexOf object) > -1

@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.1.0 - 2013-02-12
+ * appchan x - Version 1.1.0 - 2013-02-13
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -419,14 +419,13 @@
       return i;
     },
     pushArrays: function() {
-      var arg, args, _i, _len, _results;
+      var arg, args, _i, _len;
       args = arguments;
-      _results = [];
       for (_i = 0, _len = args.length; _i < _len; _i++) {
         arg = args[_i];
-        _results.push(this.push.apply(this, arg));
+        this.push.apply(this, arg);
       }
-      return _results;
+      return this;
     },
     remove: function(object) {
       var index;
@@ -3841,7 +3840,7 @@
     regString: /(\b([a-z]+:\/\/|[-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+|[-a-z0-9]+\.(com|net|tv|org|xxx|us)|[a-z]+:[a-z0-9]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s,]+)/gi,
     cypher: $.el('div'),
     node: function(post) {
-      var a, child, cypher, cypherText, data, embed, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results;
+      var a, child, cypher, cypherText, data, embed, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
       if (post.isInlined && !post.isCrosspost) {
         if (Conf['Embedding']) {
           _ref = $$('.embed', post.blockquote);
@@ -3856,7 +3855,6 @@
       cypher = Linkify.cypher;
       i = -1;
       len = snapshot.snapshotLength;
-      _results = [];
       while (++i < len) {
         nodes = [];
         node = snapshot.snapshotItem(i);
@@ -3917,9 +3915,8 @@
             nodes.push(child);
           }
         }
-        _results.push($.replace(node, nodes));
+        $.replace(node, nodes);
       }
-      return _results;
     },
     toggle: function() {
       var el, embed, style, type, url;
@@ -4772,19 +4769,15 @@
       return this.posts = $.get('ownedPosts', {});
     },
     node: function(post) {
-      var posts, quote, _i, _len, _ref, _results;
+      var posts, quote, _i, _len, _ref;
       posts = MarkOwn.posts;
       _ref = post.quotes;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         if (quote.hash && posts[quote.hash.slice(2)]) {
-          _results.push($.addClass(quote, 'ownpost'));
-        } else {
-          _results.push(void 0);
+          $.addClass(quote, 'ownpost');
         }
       }
-      return _results;
     }
   };
 
@@ -6718,7 +6711,7 @@
       }
     },
     mouseover: function(e) {
-      var board, child, children, el, path, postID, qp, quote, quoterID, threadID, _conf, _i, _j, _len, _len1, _ref, _results;
+      var board, child, children, el, path, postID, qp, quote, quoterID, threadID, _conf, _i, _j, _len, _len1, _ref;
       if (UI.el || /\binlined\b/.test(this.className)) {
         return;
       }
@@ -6800,16 +6793,12 @@
         }
         quoterID = $.x('ancestor::*[@id][1]', this).id.match(/\d+$/)[0];
         _ref = $$('.quotelink, .backlink', qp);
-        _results = [];
         for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
           quote = _ref[_j];
           if (quote.hash.slice(2) === quoterID) {
-            _results.push($.addClass(quote, 'forwardlink'));
-          } else {
-            _results.push(void 0);
+            $.addClass(quote, 'forwardlink');
           }
         }
-        return _results;
       }
     },
     mouseout: function(e) {
@@ -8543,12 +8532,11 @@
       return delete Style.addStyleReady;
     },
     remStyle: function() {
-      var head, i, len, node, nodes, _results;
+      var head, i, len, node, nodes;
       head = d.head;
       nodes = head.children;
       len = nodes.length;
       i = 0;
-      _results = [];
       while (i < len) {
         if (Style.headCount > 8) {
           break;
@@ -8560,9 +8548,8 @@
           len--;
           continue;
         }
-        _results.push(i++);
+        i++;
       }
-      return _results;
     },
     banner: function() {
       var banner, child, children, i, title;
@@ -10947,24 +10934,20 @@
       if (_conf['Thread Hiding']) {
         ThreadHiding.init();
       }
-      return $.ready(function() {
-        var a, nav, _i, _len, _ref, _results;
+      $.ready(function() {
+        var a, nav, _i, _len, _ref;
         if (_conf['Custom Navigation']) {
           CustomNavigation.init();
         }
         Options.init();
         MascotTools.init();
         _ref = ['boardNavDesktop', 'boardNavDesktopFoot'];
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           nav = _ref[_i];
           if (a = $("a[href*='/" + g.BOARD + "/']", $.id(nav))) {
-            _results.push($.addClass(a, 'current'));
-          } else {
-            _results.push(void 0);
+            $.addClass(a, 'current');
           }
         }
-        return _results;
       });
     },
     features: function() {

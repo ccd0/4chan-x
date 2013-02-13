@@ -89,6 +89,7 @@ QuotePreview =
       for quote in $$ '.quotelink, .backlink', qp
         if quote.hash[2..] is quoterID
           $.addClass quote, 'forwardlink'
+    return
 
   mouseout: (e) ->
     delete UI.el

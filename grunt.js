@@ -100,5 +100,4 @@ module.exports = function(grunt) {
   grunt.registerTask('release', 'concat:meta concat:latest default exec:commit exec:push');
   grunt.registerTask('patch',   'bump');
   grunt.registerTask('upgrade', 'bump:minor');
-
 };

@@ -218,6 +218,7 @@ data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' 
         len--
         continue
       i++
+    return
 
   banner: ->
     banner   = $ ".boardBanner", d.body

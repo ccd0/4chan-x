@@ -90,12 +90,6 @@ Linkify =
 
         cypher.innerHTML = (if link.indexOf(':') < 0 then (if link.indexOf('@') > 0 then 'mailto:' + link else 'http://' + link) else link).replace /<(wbr|s|\/s)>/g, ''
 
-        # The bloodied text walked away, mangled
-        # Attributes dropping out its opened gut
-        # For the RegEx Blade vibrated violently
-        # Ripping and tearing as it classified a
-        # Poor piece of prose out of its element
-        # Injured anchor arose an example of art
         a = $.el 'a',
           innerHTML: link
           className: 'linkify'
@@ -103,10 +97,8 @@ Linkify =
           target:    'blank'
           href:      cypher.textContent
 
-        # To die and rot inside burning embedder
         nodes = nodes.concat Linkify.embedder a
 
-        # The survivor shot down with no remorse
         data = data[index + link.length..]
 
       if data
@@ -120,6 +112,7 @@ Linkify =
 
       # They were replaced with constructs.
       $.replace node, nodes
+    return
 
   toggle: ->
     # We setup the link to be replaced by the embedded video

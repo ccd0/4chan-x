@@ -8,3 +8,4 @@ MarkOwn =
     for quote in post.quotes
       if quote.hash and posts[quote.hash[2..]]
         $.addClass quote, 'ownpost'
+    return

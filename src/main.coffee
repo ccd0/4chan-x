@@ -119,6 +119,8 @@ Main =
         if a = $ "a[href*='/#{g.BOARD}/']", $.id nav
           # Gotta make it work in temporary boards.
           $.addClass a, 'current'
+      return
+    return
 
   features: ->
     _conf = Conf
