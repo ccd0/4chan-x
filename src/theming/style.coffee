@@ -1894,9 +1894,11 @@ input[type="submit"] {
 }
 /* Posts */
 .postInfo {
-  padding: 3px 0 0 8px;
-  display: block !important;
+  display: block;
   width: auto;
+}
+.post {
+  padding: 3px 5px;
 }
 .file {
   padding-left: 8px;
@@ -3305,7 +3307,7 @@ s::before {
 s::after {
   content: '[/spoiler]';
 }
-" else unless _conf['Remove Spoilers'] "
+" else unless _conf['Remove Spoilers'] then "
 .spoiler:not(:hover) *,
 s:not(:hover) * {
   color: rgb(0,0,0) !important;
