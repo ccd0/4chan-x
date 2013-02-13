@@ -3294,6 +3294,18 @@ html {
     #{if _conf["Sidebar Glow"] then ", 0 2px 5px #{theme['Text']};" else ";"}
 }
 /* Fixes text spoilers */
+
+
+    #{if _conf['Remove Spoilers'] and _conf['Indicate Spoilers'] then "
+.spoiler::before,
+s::before {
+  content: '[spoiler]';
+}
+.spoiler::after,
+s::after {
+  content: '[/spoiler]';
+}
+" else unless _conf['Remove Spoilers'] "
 .spoiler:not(:hover) *,
 s:not(:hover) * {
   color: rgb(0,0,0) !important;
@@ -3308,7 +3320,7 @@ s {
 s:hover {
   color: #{theme["Text"]};
   background-color: transparent;
-}
+}" else ""}
 #exlinks-options,
 #options,
 #qrtab,

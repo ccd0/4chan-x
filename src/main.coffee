@@ -188,9 +188,6 @@ Main =
     if _conf['Resurrect Quotes']
       Quotify.init()
 
-    if _conf['Remove Spoilers']
-      RemoveSpoilers.init()
-
     if _conf['Quote Inline']
       QuoteInline.init()
 

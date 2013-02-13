@@ -3,7 +3,7 @@ RevealSpoilers =
     Main.callbacks.push @node
 
   node: (post) ->
-    {img} = post
+    img = post.img
     if not (img and /^Spoiler/.test img.alt) or post.isInlined and not post.isCrosspost or post.isArchived
       return
     img.removeAttribute 'style'
