@@ -1987,9 +1987,6 @@
 
   CustomNavigation = {
     init: function() {
-      return setTimeout(this.asyncInit);
-    },
-    asyncInit: function() {
       var a, i, len, link, navNodes, navigation, node, nodes;
       navigation = $("#boardNavDesktop", d.body);
       navNodes = navigation.childNodes;
