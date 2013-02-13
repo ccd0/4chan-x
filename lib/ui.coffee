@@ -130,8 +130,7 @@ UI = (->
           if next = @findNextEntry entry, +1
             @focus next
         when 39 # Right
-          if (submenu = $ '.submenu', entry)
-            next = submenu.firstElementChild
+          if (submenu = $ '.submenu', entry) and next = submenu.firstElementChild
             while nextPrev = @findNextEntry next, -1
               next = nextPrev
             @focus next

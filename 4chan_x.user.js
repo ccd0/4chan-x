@@ -349,8 +349,7 @@
             }
             break;
           case 39:
-            if ((submenu = $('.submenu', entry))) {
-              next = submenu.firstElementChild;
+            if ((submenu = $('.submenu', entry)) && (next = submenu.firstElementChild)) {
               while (nextPrev = this.findNextEntry(next, -1)) {
                 next = nextPrev;
               }
@@ -918,7 +917,7 @@
 
   Header = {
     init: function() {
-      var boardList, boardListButton, boardTitle, headerBar, menuButton, toggleBar;
+      var boardList, boardListButton, boardTitle, catalogToggler, headerBar, menuButton, toggleBar;
       this.menu = new UI.Menu('header');
       this.headerEl = $.el('div', {
         id: 'header',
@@ -955,6 +954,15 @@
       });
       $.on(toggleBar, 'click', this.toggleBar);
       $.prepend(headerBar, [menuButton, boardListButton, $.tn(' '), boardTitle, boardList, toggleBar]);
+      catalogToggler = $.el('label', {
+        innerHTML: "<input type=checkbox" + (g.VIEW === 'catalog' ? ' checked' : '') + "> Use catalog links"
+      });
+      $.on(catalogToggler.firstElementChild, 'change', this.toggleCatalogLinks);
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: catalogToggler,
+        order: 105
+      });
       $.asap((function() {
         return d.body;
       }), function() {
@@ -987,6 +995,17 @@
       headerEl = Header.headerEl;
       $('.board-name', headerEl).hidden = showBoardList;
       return $('.board-list', headerEl).hidden = !showBoardList;
+    },
+    toggleCatalogLinks: function() {
+      var a, as, root, useCatalog, _i, _len;
+      useCatalog = this.checked;
+      root = $('.board-list', Header.headerEl);
+      as = $$('a[href*="boards.4chan.org"]', root);
+      as.push($('.board-name', Header.headerEl));
+      for (_i = 0, _len = as.length; _i < _len; _i++) {
+        a = as[_i];
+        a.pathname = "/" + (a.pathname.split('/')[1]) + "/" + (useCatalog ? 'catalog' : '');
+      }
     },
     toggleBar: function() {
       var isAutohiding, message;
@@ -1050,7 +1069,7 @@
       $.event('AddMenuEntry', {
         type: 'header',
         el: link,
-        order: 100
+        order: 110
       });
       link = $.el('a', {
         className: 'fourchan-settings-link',
@@ -1063,7 +1082,7 @@
       $.event('AddMenuEntry', {
         type: 'header',
         el: link,
-        order: 101,
+        order: 111,
         open: function() {
           return !Conf['Disable 4chan\'s extension'];
         }

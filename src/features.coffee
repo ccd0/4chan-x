@@ -37,6 +37,14 @@ Header =
 
     $.prepend headerBar, [menuButton, boardListButton, $.tn(' '), boardTitle, boardList, toggleBar]
 
+    catalogToggler = $.el 'label',
+      innerHTML: "<input type=checkbox#{if g.VIEW is 'catalog' then ' checked' else ''}> Use catalog links"
+    $.on catalogToggler.firstElementChild, 'change', @toggleCatalogLinks
+    $.event 'AddMenuEntry',
+      type: 'header'
+      el: catalogToggler
+      order: 105
+
     $.asap (-> d.body), ->
       $.prepend d.body, Header.headerEl
     $.asap (-> $.id 'boardNavDesktop'), @setBoardList
@@ -60,6 +68,15 @@ Header =
     {headerEl} = Header
     $('.board-name', headerEl).hidden =  showBoardList
     $('.board-list', headerEl).hidden = !showBoardList
+
+  toggleCatalogLinks: ->
+    useCatalog = @checked
+    root = $ '.board-list', Header.headerEl
+    as = $$ 'a[href*="boards.4chan.org"]', root
+    as.push $ '.board-name', Header.headerEl
+    for a in as
+      a.pathname = "/#{a.pathname.split('/')[1]}/#{if useCatalog then 'catalog' else ''}"
+    return
 
   toggleBar: ->
     message = if isAutohiding = $.id('header-bar').classList.toggle 'autohide'
@@ -108,7 +125,7 @@ Settings =
     $.event 'AddMenuEntry',
       type: 'header'
       el: link
-      order: 100
+      order: 110
 
     # 4chan settings link
     link = $.el 'a',
@@ -119,7 +136,7 @@ Settings =
     $.event 'AddMenuEntry',
       type: 'header'
       el: link
-      order: 101
+      order: 111
       open: -> !Conf['Disable 4chan\'s extension']
 
     return unless Conf['Disable 4chan\'s extension']
