@@ -53,7 +53,8 @@ UI = (->
         @insertEntry entry, menu, data
 
       @focus $ '.entry', menu
-      $.on d, 'click', @close
+      $.on d, 'click',     @close
+      $.on d, 'CloseMenu', @close
       $.add d.body, menu
 
       # Position
@@ -99,7 +100,8 @@ UI = (->
       $.rm currentMenu
       currentMenu       = null
       lastToggledButton = null
-      $.off d, 'click', @close
+      $.off d, 'click',     @close
+      $.off d, 'CloseMenu', @close
 
     keybinds: (e) ->
       entry = $ '.focused', currentMenu

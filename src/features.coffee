@@ -128,7 +128,7 @@ Settings =
     settings.disableAll = true
     localStorage.setItem '4chan-settings', JSON.stringify settings
   open: ->
-    Header.menu.close()
+    $.event 'CloseMenu'
     # Here be settings
 
 Filter =
@@ -500,7 +500,7 @@ ThreadHiding =
       {thread} = ThreadHiding.menu
       ThreadHiding.hide thread, makeStub
       ThreadHiding.saveHiddenState thread, makeStub
-      Menu.close()
+      $.event 'CloseMenu'
 
   makeButton: (thread, type) ->
     a = $.el 'a',
@@ -661,7 +661,7 @@ ReplyHiding =
       else
         return
       ReplyHiding.saveHiddenState post, true, thisPost, makeStub, replies
-      Menu.close()
+      $.event 'CloseMenu'
 
   makeButton: (post, type) ->
     a = $.el 'a',

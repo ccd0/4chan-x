@@ -261,6 +261,7 @@
         }
         this.focus($('.entry', menu));
         $.on(d, 'click', this.close);
+        $.on(d, 'CloseMenu', this.close);
         $.add(d.body, menu);
         mRect = menu.getBoundingClientRect();
         bRect = button.getBoundingClientRect();
@@ -305,7 +306,8 @@
         $.rm(currentMenu);
         currentMenu = null;
         lastToggledButton = null;
-        return $.off(d, 'click', this.close);
+        $.off(d, 'click', this.close);
+        return $.off(d, 'CloseMenu', this.close);
       };
 
       Menu.prototype.keybinds = function(e) {
@@ -1060,7 +1062,7 @@
       return localStorage.setItem('4chan-settings', JSON.stringify(settings));
     },
     open: function() {
-      return Header.menu.close();
+      return $.event('CloseMenu');
     }
   };
 
@@ -1459,7 +1461,7 @@
         thread = ThreadHiding.menu.thread;
         ThreadHiding.hide(thread, makeStub);
         ThreadHiding.saveHiddenState(thread, makeStub);
-        return Menu.close();
+        return $.event('CloseMenu');
       }
     },
     makeButton: function(thread, type) {
@@ -1680,7 +1682,7 @@
           return;
         }
         ReplyHiding.saveHiddenState(post, true, thisPost, makeStub, replies);
-        return Menu.close();
+        return $.event('CloseMenu');
       }
     },
     makeButton: function(post, type) {
@@ -3809,7 +3811,7 @@
         href: 'javascript:;'
       });
       $.on(link, 'click', function() {
-        Header.menu.close();
+        $.event('CloseMenu');
         QR.open();
         if (g.BOARD.ID === 'f') {
           if (g.VIEW === 'index') {

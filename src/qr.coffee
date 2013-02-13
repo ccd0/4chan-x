@@ -10,7 +10,7 @@ QR =
       textContent: 'Quick Reply'
       href: 'javascript:;'
     $.on link, 'click', ->
-      Header.menu.close()
+      $.event 'CloseMenu'
       QR.open()
       if g.BOARD.ID is 'f'
         if g.VIEW is 'index'
