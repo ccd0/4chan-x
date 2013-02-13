@@ -105,6 +105,7 @@ a[href="javascript:;"] {
   transition: all .1s ease-in-out;
 }
 #header-bar.autohide:not(:hover) {
+  box-shadow: none;
   margin-bottom: -1em;
   -webkit-transform: translateY(-100%);
   transform: translateY(-100%);
