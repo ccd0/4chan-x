@@ -10,6 +10,7 @@ alpha
   QR changes:
     Creating threads outside of the index is now possible.
     Selection-to-quote also applies to selected text inside the post, not just inside the comment.
+    Quoting the OP will not insert the >>opnumber anymore unless the QR was already opened.
   Added touch and multi-touch support for dragging windows.
   The Thread Updater will pause when offline, and resume when online.
   Added Thread & Post Hiding in the Menu, with individual settings.

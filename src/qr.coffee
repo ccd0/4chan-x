@@ -219,20 +219,29 @@ QR =
 
   quote: (e) ->
     e?.preventDefault()
-    QR.open()
-    ta = $ 'textarea', QR.el
-    if QR.threadSelector and !ta.value and g.BOARD.ID isnt 'f'
-      QR.threadSelector.value = $.x('ancestor::div[parent::div[@class="board"]]', @).id[1..]
-    # Make sure we get the correct number, even with XXX censors
-    post = Get.postFromRoot $.x 'ancestor-or-self::div[contains(@class,"postContainer")][1]', @
-    text = ">>#{post}\n"
+    text = ""
 
     sel = d.getSelection()
-    selectionRoot = $.x 'ancestor-or-self::div[contains(@class,"postContainer")][1]', sel.anchorNode
+    selectionRoot = $.x 'ancestor::div[contains(@class,"postContainer")][1]', sel.anchorNode
+    post = Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
+    thread = g.BOARD.posts[Get.contextFromLink(@).thread]
+
     if (s = sel.toString().trim()) and post.nodes.root is selectionRoot
       # XXX Opera doesn't retain `\n`s?
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
+
+    text = if !text and post is thread and (!QR.el or QR.el.hidden)
+      # Don't quote the OP unless the QR was already opened once.
+      ""
+    else
+      ">>#{post}\n#{text}"
+
+    QR.open()
+    ta = $ 'textarea', QR.el
+    if QR.threadSelector and !ta.value and g.BOARD.ID isnt 'f'
+      QR.threadSelector.value = thread.ID
+    # Make sure we get the correct number, even with XXX censors
 
     caretPos = ta.selectionStart
     # Replace selection for text.

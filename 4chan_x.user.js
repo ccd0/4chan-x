@@ -4045,22 +4045,24 @@
       }
     },
     quote: function(e) {
-      var caretPos, post, range, s, sel, selectionRoot, ta, text;
+      var caretPos, post, range, s, sel, selectionRoot, ta, text, thread;
       if (e != null) {
         e.preventDefault();
       }
-      QR.open();
-      ta = $('textarea', QR.el);
-      if (QR.threadSelector && !ta.value && g.BOARD.ID !== 'f') {
-        QR.threadSelector.value = $.x('ancestor::div[parent::div[@class="board"]]', this).id.slice(1);
-      }
-      post = Get.postFromRoot($.x('ancestor-or-self::div[contains(@class,"postContainer")][1]', this));
-      text = ">>" + post + "\n";
+      text = "";
       sel = d.getSelection();
-      selectionRoot = $.x('ancestor-or-self::div[contains(@class,"postContainer")][1]', sel.anchorNode);
+      selectionRoot = $.x('ancestor::div[contains(@class,"postContainer")][1]', sel.anchorNode);
+      post = Get.postFromRoot($.x('ancestor::div[contains(@class,"postContainer")][1]', this));
+      thread = g.BOARD.posts[Get.contextFromLink(this).thread];
       if ((s = sel.toString().trim()) && post.nodes.root === selectionRoot) {
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
+      }
+      text = !text && post === thread && (!QR.el || QR.el.hidden) ? "" : ">>" + post + "\n" + text;
+      QR.open();
+      ta = $('textarea', QR.el);
+      if (QR.threadSelector && !ta.value && g.BOARD.ID !== 'f') {
+        QR.threadSelector.value = thread.ID;
       }
       caretPos = ta.selectionStart;
       ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
