@@ -17,7 +17,7 @@ Style =
         if !g.REPLY
           $.add d.body, catalogLink
         catalogLink.id = 'catalog'
-        
+
 
       # Give ExLinks and 4sight a little time to append their dialog links
       setTimeout (->
@@ -26,7 +26,6 @@ Style =
           $.on exLink, "click", ->
             setTimeout Style.rice, 100
         ), 500
-  
 
   agent: {
     'gecko':  '-moz-'
@@ -164,7 +163,7 @@ data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' 
     delete Style.remStyle
     delete Style.headCount
     delete Style.cleanup
-    
+
   observe: ->
     if MutationObserver
       observer = new MutationObserver onMutationObserver = @wrapper
@@ -173,7 +172,7 @@ data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' 
         subtree:   true
     else
       $.on d, 'DOMNodeInserted', @wrapper
-      
+
   wrapper: ->
     if d.head
       if Style.addStyleReady
@@ -202,7 +201,7 @@ data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' 
     # As JSColor doesn't really have any customization,
     # we don't save its sheet as a variable.
     $.addStyle Style.jsColorCSS(),                 'jsColor'
-    
+
     delete Style.addStyleReady
 
   remStyle: ->
@@ -231,27 +230,27 @@ data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' 
       if child.tagName.toLowerCase() is "img"
         child.id = "Banner"
         continue
-        
+
       if Conf['Custom Board Titles']
         child.innerHTML = $.get "#{g.BOARD}#{child.className}", child.innerHTML
-        
+
         $.on child, 'click', (e) ->
           if e.shiftKey
             @contentEditable = true
-          
+
         $.on child, 'keydown', (e) ->
           e.stopPropagation()
-          
+
         $.on child, 'focus', ->
           @textContent = @innerHTML
-          
+
         $.on child, 'blur', ->
           $.set "#{g.BOARD}#{@className}", @textContent
           @innerHTML = @textContent
           @contentEditable = false
-          
+
       $.prepend title, child
-      
+
     $.after banner, title
 
   padding: ->
@@ -324,7 +323,7 @@ body {
       else
         shift
 
-      return [ 
+      return [
         minmax rgb[0] + shift
         minmax rgb[1] + shift
         minmax rgb[2] + shift
@@ -382,9 +381,9 @@ body {
   background-position: 0 0;
 }
 .jscPadB {
-  left: 10px; 
-  top: 10px; 
-  border: 1px solid; 
+  left: 10px;
+  top: 10px;
+  border: 1px solid;
   border-color: ThreeDShadow ThreeDHighlight ThreeDHighlight ThreeDShadow;
 }
 .jscPadM {
@@ -509,7 +508,7 @@ div.navLinks > a:first-of-type:hover::after,
 """
     i = 0
     align = Style.sidebarLocation[0]
-    
+
     _conf = Conf
     notCatalog = !g.CATALOG
     notEither  = notCatalog and g.BOARD isnt 'f'
@@ -521,7 +520,7 @@ div.navLinks > a:first-of-type:hover::after,
       # Check which elements we actually have. Some are easy, because the script creates them so we'd know they're here
       # Some are hard, like 4sight, which we have no way of knowing if available without looking for it.
       for enabled in checks
-        position[position.length] = 
+        position[position.length] =
           if enabled
             first += spacer
           else
@@ -557,7 +556,7 @@ div.navLinks > a:first-of-type:hover::after,
         ]
       )
 
-      iconOffset = 
+      iconOffset =
         if align is 'left'
           250 - Style.sidebar
         else
@@ -3073,7 +3072,9 @@ textarea.field,
   width: 10%;
 }
 #qr .userInfo .field:not(#dump) {
-  width: 30%;
+  width: 95px;
+  max-width: 30%;
+  min-width: 30%;
 }
 #buttons input {
   width: 25%;
