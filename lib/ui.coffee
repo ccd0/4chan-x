@@ -52,7 +52,10 @@ UI = (->
       for entry in @entries
         @insertEntry entry, menu, data
 
-      @focus $ '.entry', menu
+      entry = $ '.entry', menu
+      while prevEntry = @findNextEntry entry, -1
+        entry = prevEntry
+      @focus entry
       $.on d, 'click',     @close
       $.on d, 'CloseMenu', @close
       $.add d.body, menu
@@ -103,6 +106,12 @@ UI = (->
       $.off d, 'click',     @close
       $.off d, 'CloseMenu', @close
 
+    findNextEntry: (entry, direction) ->
+      entries = Array::slice.call entry.parentNode.children
+      entries.sort (first, second) ->
+        +(first.style.order or first.style.webkitOrder) - +(second.style.order or second.style.webkitOrder)
+      entries[entries.indexOf(entry) + direction]
+
     keybinds: (e) ->
       entry = $ '.focused', currentMenu
       while subEntry = $ '.focused', entry
@@ -115,13 +124,16 @@ UI = (->
         when 13, 32 # Enter, Space
           entry.click()
         when 38 # Up
-          if next = entry.previousElementSibling
+          if next = @findNextEntry entry, -1
             @focus next
         when 40 # Down
-          if next = entry.nextElementSibling
+          if next = @findNextEntry entry, +1
             @focus next
         when 39 # Right
-          if (submenu = $ '.submenu', entry) and next = submenu.firstElementChild
+          if (submenu = $ '.submenu', entry)
+            next = submenu.firstElementChild
+            while nextPrev = @findNextEntry next, -1
+              next = nextPrev
             @focus next
         when 37 # Left
           if next = $.x 'parent::*[contains(@class,"submenu")]/parent::*', entry

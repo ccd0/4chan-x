@@ -493,7 +493,7 @@ a[href="javascript:;"] {
   vertical-align: middle;
 }
 #menu {
-  border-width: 1px 1px 0;
+  border-bottom: 0;
   display: -webkit-flex;
   display: flex;
   -webkit-flex-flow: column nowrap;
@@ -526,6 +526,7 @@ a[href="javascript:;"] {
   display: none;
 }
 .submenu {
+  border-bottom: 0;
   display: -webkit-flex;
   display: flex;
   -webkit-flex-flow: column nowrap;
