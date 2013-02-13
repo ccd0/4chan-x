@@ -4772,10 +4772,9 @@
       return this.posts = $.get('ownedPosts', {});
     },
     node: function(post) {
-      var posts, quote, quotes, _i, _len, _ref, _results;
+      var posts, quote, _i, _len, _ref, _results;
       posts = MarkOwn.posts;
-      quotes = [];
-      _ref = quotes.pushArrays(post.quotes, post.backlinks);
+      _ref = post.quotes;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
