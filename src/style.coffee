@@ -285,7 +285,9 @@ h2 {
   outline: none;
 }
 .userInfo > .field:not(#dump) {
-  width: 30%;
+  width: 95px;
+  min-width: 30%;
+  max-width: 30%;
 }
 #qr textarea.field {
   display: #{agent}box;
