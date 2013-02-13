@@ -28,7 +28,7 @@
 }
 
 /* Menu */
-:root.burichan .entry:not(:last-child) {
+:root.burichan .entry {
   border-bottom: 1px solid #B7C5D9;
 }
 :root.burichan .focused.entry {

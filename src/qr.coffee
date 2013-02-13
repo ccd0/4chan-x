@@ -23,6 +23,7 @@ QR =
     $.event 'AddMenuEntry',
       type: 'header'
       el: link
+      order: 10
 
     $.on d, 'dragover',          QR.dragOver
     $.on d, 'drop',              QR.dropFile

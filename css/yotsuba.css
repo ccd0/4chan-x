@@ -28,7 +28,7 @@
 }
 
 /* Menu */
-:root.yotsuba .entry:not(:last-child) {
+:root.yotsuba .entry {
   border-bottom: 1px solid #D9BFB7;
 }
 :root.yotsuba .focused.entry {

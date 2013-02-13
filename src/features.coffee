@@ -108,6 +108,7 @@ Settings =
     $.event 'AddMenuEntry',
       type: 'header'
       el: link
+      order: 100
 
     # 4chan settings link
     link = $.el 'a',
@@ -118,6 +119,7 @@ Settings =
     $.event 'AddMenuEntry',
       type: 'header'
       el: link
+      order: 101
       open: -> !Conf['Disable 4chan\'s extension']
 
     return unless Conf['Disable 4chan\'s extension']
@@ -308,6 +310,7 @@ Filter =
       entry =
         type: 'post'
         el: div
+        order: 50
         open: (post) ->
           Filter.menu.post = post
           true
@@ -485,6 +488,7 @@ ThreadHiding =
       $.event 'AddMenuEntry',
         type: 'post'
         el: div
+        order: 20
         open: ({thread, isReply}) ->
           if isReply or thread.isHidden
             return false
@@ -637,6 +641,7 @@ ReplyHiding =
       $.event 'AddMenuEntry',
         type: 'post'
         el: div
+        order: 20
         open: (post) ->
           if !post.isReply or post.isClone
             return false
@@ -806,6 +811,7 @@ ReportLink =
     $.event 'AddMenuEntry',
       type: 'post'
       el: a
+      order: 10
       open: (post) ->
         ReportLink.post = post
         !post.isDead
@@ -846,6 +852,7 @@ DeleteLink =
     $.event 'AddMenuEntry',
       type: 'post'
       el: div
+      order: 40
       open: (post) ->
         return false if post.isDead
         DeleteLink.post = post
@@ -935,6 +942,7 @@ DownloadLink =
     $.event 'AddMenuEntry',
       type: 'post'
       el: a
+      order: 70
       open: ({file}) ->
         return false unless file
         a.href     = file.URL
@@ -951,6 +959,7 @@ ArchiveLink =
     entry =
       type: 'post'
       el: div
+      order: 90
       open: ({ID: postID, thread: threadID, board}) ->
         redirect = Redirect.to {postID, threadID, board}
         redirect isnt "//boards.4chan.org/#{board}/"

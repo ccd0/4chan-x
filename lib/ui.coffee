@@ -174,6 +174,8 @@ UI = (->
         e.stopPropagation()
         @focus el
       ).bind @
+      {style} = el
+      style.webkitOrder = style.order = entry.order or 100
       return unless subEntries
       $.addClass el, 'has-submenu'
       for subEntry in subEntries

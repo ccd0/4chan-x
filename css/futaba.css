@@ -28,7 +28,7 @@
 }
 
 /* Menu */
-:root.futaba .entry:not(:last-child) {
+:root.futaba .entry {
   border-bottom: 1px solid #D9BFB7;
 }
 :root.futaba .focused.entry {

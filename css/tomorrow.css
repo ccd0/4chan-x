@@ -28,7 +28,7 @@
 }
 
 /* Menu */
-:root.tomorrow .entry:not(:last-child) {
+:root.tomorrow .entry {
   border-bottom: 1px solid #111;
 }
 :root.tomorrow .focused.entry {

@@ -28,7 +28,7 @@
 }
 
 /* Menu */
-:root.photon .entry:not(:last-child) {
+:root.photon .entry {
   border-bottom: 1px solid #CCC;
 }
 :root.photon .focused.entry {

@@ -493,12 +493,16 @@ a[href="javascript:;"] {
   vertical-align: middle;
 }
 #menu {
+  border-width: 1px 1px 0;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: column nowrap;
+  flex-flow: column nowrap;
   position: absolute;
   outline: none;
 }
 .entry {
   cursor: pointer;
-  display: block;
   outline: none;
   padding: 3px 7px;
   position: relative;
@@ -522,6 +526,10 @@ a[href="javascript:;"] {
   display: none;
 }
 .submenu {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: column nowrap;
+  flex-flow: column nowrap;
   position: absolute;
   margin: -1px 0;
 }
