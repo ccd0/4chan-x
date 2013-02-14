@@ -2410,21 +2410,24 @@ ThreadUpdater =
       {req} = ThreadUpdater
       switch req.status
         when 200
+          g.DEAD = false
           ThreadUpdater.parse JSON.parse(req.response).posts
           ThreadUpdater.lastModified = req.getResponseHeader 'Last-Modified'
           ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
         when 404
+          g.DEAD = true
           ThreadUpdater.set 'timer', null
           ThreadUpdater.set 'status', '404', 'warning'
           clearTimeout ThreadUpdater.timeoutID
           ThreadUpdater.thread.kill()
-          $.event 'ThreadUpdate', 404: true
+          $.event 'ThreadUpdate',
+            404: true
+            thread: ThreadUpdater.thread
           # if Conf['Unread Count']
           #   Unread.title = Unread.title.match(/^.+-/)[0] + ' 404'
           # else
           #   d.title = d.title.match(/^.+-/)[0] + ' 404'
           # Unread.update true
-          # QR.abort()
         else
           ThreadUpdater.outdateCount++
           ThreadUpdater.set 'timer',  ThreadUpdater.getInterval()
@@ -2536,6 +2539,7 @@ ThreadUpdater =
 
     $.event 'ThreadUpdate',
       404: false
+      thread: ThreadUpdater.thread
       newPosts: posts
       deletedPosts: deletedPosts
       deletedFiles: deletedFiles

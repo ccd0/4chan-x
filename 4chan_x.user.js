@@ -3907,17 +3907,20 @@
         req = ThreadUpdater.req;
         switch (req.status) {
           case 200:
+            g.DEAD = false;
             ThreadUpdater.parse(JSON.parse(req.response).posts);
             ThreadUpdater.lastModified = req.getResponseHeader('Last-Modified');
             ThreadUpdater.set('timer', ThreadUpdater.getInterval());
             break;
           case 404:
+            g.DEAD = true;
             ThreadUpdater.set('timer', null);
             ThreadUpdater.set('status', '404', 'warning');
             clearTimeout(ThreadUpdater.timeoutID);
             ThreadUpdater.thread.kill();
             $.event('ThreadUpdate', {
-              404: true
+              404: true,
+              thread: ThreadUpdater.thread
             });
             break;
           default:
@@ -4052,6 +4055,7 @@
       }
       return $.event('ThreadUpdate', {
         404: false,
+        thread: ThreadUpdater.thread,
         newPosts: posts,
         deletedPosts: deletedPosts,
         deletedFiles: deletedFiles
@@ -4104,6 +4108,13 @@
           return QR.hide();
         }
       });
+      $.on(d, 'ThreadUpdate', function() {
+        if (g.DEAD) {
+          return QR.abort();
+        } else {
+          return QR.status();
+        }
+      });
       return Post.prototype.callbacks.push({
         name: 'Quick Reply',
         cb: this.node
@@ -4145,7 +4156,7 @@
       if (!Conf['Remember Spoiler'] && (spoiler = $.id('spoiler')).checked) {
         spoiler.click();
       }
-      return QR.cleanNotification();
+      return QR.cleanNotifications();
     },
     hide: function() {
       d.activeElement.blur();
@@ -4178,14 +4189,17 @@
       if (d.hidden) {
         alert(el.textContent);
       }
-      return QR.lastNotification = new Notification('warning', el);
+      return QR.lastNotifications.push(new Notification('warning', el));
     },
-    cleanNotification: function() {
-      var _ref;
-      if ((_ref = QR.lastNotification) != null) {
-        _ref.close();
+    lastNotifications: [],
+    cleanNotifications: function() {
+      var notification, _i, _len, _ref;
+      _ref = QR.lastNotifications;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        notification = _ref[_i];
+        notification.close();
       }
-      return delete QR.lastNotification;
+      return QR.lastNotification = [];
     },
     status: function(data) {
       var disabled, input, value;
@@ -4377,7 +4391,7 @@
     },
     fileInput: function() {
       var file, _i, _len, _ref;
-      QR.cleanNotification();
+      QR.cleanNotifications();
       if (this.files.length === 1) {
         file = this.files[0];
         if (file.size > this.max) {
@@ -4395,11 +4409,9 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         file = _ref[_i];
         if (file.size > this.max) {
-          QR.error("File " + file.name + " is too large.");
-          break;
+          QR.error("File " + file.name + " is too large (" + ($.bytesToString(file.size)) + ").");
         } else if (-1 === QR.mimeTypes.indexOf(file.type)) {
           QR.error("" + file.name + ": Unsupported file type.");
-          break;
         }
         if (!QR.replies[QR.replies.length - 1].file) {
           QR.replies[QR.replies.length - 1].setFile(file);
@@ -4868,7 +4880,7 @@
         QR.error(err);
         return;
       }
-      QR.cleanNotification();
+      QR.cleanNotifications();
       QR.cooldown.auto = QR.replies.length > 1;
       if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
         QR.hide();
@@ -4927,6 +4939,7 @@
     },
     response: function(html) {
       var ban, board, err, h1, persona, postID, reply, threadID, tmpDoc, _, _ref, _ref1;
+      delete QR.ajax;
       tmpDoc = d.implementation.createHTMLDocument('');
       tmpDoc.documentElement.innerHTML = html;
       if (ban = $('.banType', tmpDoc)) {
@@ -4958,7 +4971,8 @@
         return;
       }
       h1 = $('h1', tmpDoc);
-      QR.lastNotification = new Notification('success', h1.textContent, 5);
+      QR.cleanNotifications();
+      QR.lastNotifications.push(new Notification('success', h1.textContent, 5));
       reply = QR.replies[0];
       persona = $.get('QR.persona', {});
       persona = {
@@ -4991,11 +5005,11 @@
       return QR.resetFileInput();
     },
     abort: function() {
-      var _ref;
-      if ((_ref = QR.ajax) != null) {
-        _ref.abort();
+      if (QR.ajax) {
+        QR.ajax.abort();
+        delete QR.ajax;
+        QR.error('QR upload aborted.');
       }
-      delete QR.ajax;
       return QR.status();
     }
   };

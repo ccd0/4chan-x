@@ -32,6 +32,11 @@ QR =
       return unless Conf['Persistent QR']
       QR.open()
       QR.hide() if Conf['Auto Hide QR']
+    $.on d, 'ThreadUpdate', ->
+      if g.DEAD
+        QR.abort()
+      else
+        QR.status()
 
     Post::callbacks.push
       name: 'Quick Reply'
@@ -64,7 +69,7 @@ QR =
     QR.resetFileInput()
     if not Conf['Remember Spoiler'] and (spoiler = $.id 'spoiler').checked
       spoiler.click()
-    QR.cleanNotification()
+    QR.cleanNotifications()
   hide: ->
     d.activeElement.blur()
     $.addClass QR.el, 'autohide'
@@ -89,10 +94,12 @@ QR =
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
     alert el.textContent if d.hidden
-    QR.lastNotification = new Notification 'warning', el
-  cleanNotification: ->
-    QR.lastNotification?.close()
-    delete QR.lastNotification
+    QR.lastNotifications.push new Notification 'warning', el
+  lastNotifications: []
+  cleanNotifications: ->
+    for notification in QR.lastNotifications
+      notification.close()
+    QR.lastNotification = []
 
   status: (data={}) ->
     return unless QR.el
@@ -278,7 +285,7 @@ QR =
     QR.fileInput.call e.dataTransfer
     $.addClass QR.el, 'dump'
   fileInput: ->
-    QR.cleanNotification()
+    QR.cleanNotifications()
     # Set or change current reply's file.
     if @files.length is 1
       file = @files[0]
@@ -294,11 +301,9 @@ QR =
     # Create new replies with these files.
     for file in @files
       if file.size > @max
-        QR.error "File #{file.name} is too large."
-        break
+        QR.error "File #{file.name} is too large (#{$.bytesToString file.size})."
       else if -1 is QR.mimeTypes.indexOf file.type
         QR.error "#{file.name}: Unsupported file type."
-        break
       unless QR.replies[QR.replies.length - 1].file
         # set last reply's file
         QR.replies[QR.replies.length - 1].setFile file
@@ -668,7 +673,7 @@ QR =
       QR.status()
       QR.error err
       return
-    QR.cleanNotification()
+    QR.cleanNotifications()
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.replies.length > 1
@@ -722,6 +727,8 @@ QR =
     QR.ajax = $.ajax $.id('postForm').parentNode.action, callbacks, opts
 
   response: (html) ->
+    delete QR.ajax
+
     tmpDoc = d.implementation.createHTMLDocument ''
     tmpDoc.documentElement.innerHTML = html
     if ban  = $ '.banType', tmpDoc # banned/warning
@@ -763,7 +770,8 @@ QR =
       return
 
     h1 = $ 'h1', tmpDoc
-    QR.lastNotification = new Notification 'success', h1.textContent, 5
+    QR.cleanNotifications()
+    QR.lastNotifications.push new Notification 'success', h1.textContent, 5
 
     reply = QR.replies[0]
 
@@ -803,6 +811,8 @@ QR =
     QR.resetFileInput()
 
   abort: ->
-    QR.ajax?.abort()
-    delete QR.ajax
+    if QR.ajax
+      QR.ajax.abort()
+      delete QR.ajax
+      QR.error 'QR upload aborted.'
     QR.status()
