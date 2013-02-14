@@ -103,7 +103,7 @@
  * @link      http://JSColor.com
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, EmbedLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MarkOwn, Markdown, MascotTools, Mascots, Menu, MutationObserver, Nav, Navigation, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
+  var $, $$, Anonymize, ArchiveLink, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Embed, EmbedLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MarkOwn, Markdown, MascotTools, Mascots, Menu, MutationObserver, Nav, Navigation, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
 
   Config = {
     main: {
@@ -3833,111 +3833,30 @@
     }
   };
 
-  Linkify = {
+  Embed = {
     init: function() {
+      if (Conf['Linkify']) {
+        this.node = this.inlined;
+      }
       return Main.callbacks.push(this.node);
     },
-    regString: /(\b([a-z]+:\/\/|[-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+|[-a-z0-9]+\.(com|net|tv|org|xxx|us)|[a-z]+:[a-z0-9]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s,]+)/gi,
-    cypher: $.el('div'),
     node: function(post) {
-      var a, child, cypher, cypherText, data, embed, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
+      if (Embed.inlined(post)) {
+
+      }
+    },
+    inlined: function(post) {
+      var embed, _i, _len, _ref;
       if (post.isInlined && !post.isCrosspost) {
-        if (Conf['Embedding']) {
-          _ref = $$('.embed', post.blockquote);
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            embed = _ref[_i];
-            $.on(embed, 'click', Linkify.toggle);
-          }
+        _ref = $$('.embed', post.blockquote);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          embed = _ref[_i];
+          $.on(embed, 'click', Linkify.toggle);
         }
-        return;
-      }
-      snapshot = d.evaluate('.//text()', post.blockquote, null, 6, null);
-      cypher = Linkify.cypher;
-      i = -1;
-      len = snapshot.snapshotLength;
-      while (++i < len) {
-        nodes = [];
-        node = snapshot.snapshotItem(i);
-        data = node.data;
-        if (!(node.parentNode && Linkify.regString.test(data))) {
-          continue;
-        }
-        Linkify.regString.lastIndex = 0;
-        cypherText = [];
-        if (next = node.nextSibling) {
-          cypher.textContent = node.textContent;
-          cypherText[0] = cypher.innerHTML;
-          while ((next.nodeName.toLowerCase() === 'wbr' || next.nodeName.toLowerCase() === 's') && (lookahead = next.nextSibling) && ((name = lookahead.nodeName) === "#text" || name.toLowerCase() === 'br')) {
-            cypher.textContent = lookahead.textContent;
-            cypherText.push((spoiler = next.innerHTML) ? "<s>" + (spoiler.replace(/</g, ' <')) + "</s>" : '<wbr>');
-            cypherText.push(cypher.innerHTML);
-            $.rm(next);
-            next = lookahead.nextSibling;
-            if (lookahead.nodeName === "#text") {
-              $.rm(lookahead);
-            }
-            if (!next) {
-              break;
-            }
-          }
-        }
-        if (cypherText.length) {
-          data = cypherText.join('');
-        }
-        links = data.match(Linkify.regString);
-        for (_j = 0, _len1 = links.length; _j < _len1; _j++) {
-          link = links[_j];
-          index = data.indexOf(link);
-          if (text = data.slice(0, index)) {
-            cypher.innerHTML = text;
-            _ref1 = cypher.childNodes;
-            for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-              child = _ref1[_k];
-              nodes.push(child);
-            }
-          }
-          cypher.innerHTML = (link.indexOf(':') < 0 ? (link.indexOf('@') > 0 ? 'mailto:' + link : 'http://' + link) : link).replace(/<(wbr|s|\/s)>/g, '');
-          a = $.el('a', {
-            innerHTML: link,
-            className: 'linkify',
-            rel: 'nofollow noreferrer',
-            target: 'blank',
-            href: cypher.textContent
-          });
-          nodes = nodes.concat(Linkify.embedder(a));
-          data = data.slice(index + link.length);
-        }
-        if (data) {
-          cypher.innerHTML = data;
-          _ref2 = cypher.childNodes;
-          for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
-            child = _ref2[_l];
-            nodes.push(child);
-          }
-        }
-        $.replace(node, nodes);
+        return true;
       }
     },
-    toggle: function() {
-      var el, embed, style, type, url;
-      embed = this.previousElementSibling;
-      if (this.className.contains("embedded")) {
-        el = $.el('a', {
-          rel: 'nofollow noreferrer',
-          target: 'blank',
-          className: 'linkify',
-          href: url = this.getAttribute("data-originalURL"),
-          textContent: this.getAttribute("data-title") || url
-        });
-        this.textContent = '(embed)';
-      } else {
-        el = (type = Linkify.types[this.getAttribute("data-service")]).el.call(this);
-        el.style.cssText = (style = type.style) ? style : "border: 0; width: " + ($.get('embedWidth', Config['embedWidth'])) + "px; height: " + ($.get('embedHeight', Config['embedHeight'])) + "px";
-        this.textContent = '(unembed)';
-      }
-      $.replace(embed, el);
-      return $.toggleClass(this, 'embedded');
-    },
+    regString: /(\b([a-z]+:\/\/|[-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+|[-a-z0-9]+\.(com|net|tv|org|xxx|us))[^\s,]+)/gi,
     types: {
       YouTube: {
         regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
@@ -4016,32 +3935,29 @@
         }
       }
     },
+    cb: function() {
+      var title;
+      return a.textContent = (function() {
+        switch (this.status) {
+          case 200:
+          case 304:
+            title = "[" + (embed.getAttribute('data-service')) + "] " + (service.text.call(this));
+            embed.setAttribute('data-title', title);
+            titles[embed.name] = [title, Date.now()];
+            $.set('CachedTitles', titles);
+            return title;
+          case 404:
+            return "[" + key + "] Not Found";
+          case 403:
+            return "[" + key + "] Forbidden or Private";
+          default:
+            return "[" + key + "] " + this.status + "'d";
+        }
+      }).call(this);
+    },
     embedder: function(a) {
-      var callbacks, embed, key, match, service, title, titles, type, _ref;
-      if (!Conf['Embedding']) {
-        return [a];
-      }
-      callbacks = function() {
-        var title;
-        return a.textContent = (function() {
-          switch (this.status) {
-            case 200:
-            case 304:
-              title = "[" + (embed.getAttribute('data-service')) + "] " + (service.text.call(this));
-              embed.setAttribute('data-title', title);
-              titles[embed.name] = [title, Date.now()];
-              $.set('CachedTitles', titles);
-              return title;
-            case 404:
-              return "[" + key + "] Not Found";
-            case 403:
-              return "[" + key + "] Forbidden or Private";
-            default:
-              return "[" + key + "] " + this.status + "'d";
-          }
-        }).call(this);
-      };
-      _ref = Linkify.types;
+      var embed, key, match, service, type, _ref;
+      _ref = Embed.types;
       for (key in _ref) {
         type = _ref[key];
         if (!(match = a.href.match(type.regExp))) {
@@ -4055,23 +3971,135 @@
         });
         embed.setAttribute('data-service', key);
         embed.setAttribute('data-originalURL', a.href);
-        $.on(embed, 'click', Linkify.toggle);
+        $.on(embed, 'click', Embed.toggle);
         if (Conf['Link Title'] && (service = type.title)) {
-          titles = $.get('CachedTitles', {});
-          if (title = titles[match[1]]) {
-            a.textContent = title[0];
-            embed.setAttribute('data-title', title[0]);
-          } else {
-            try {
-              $.cache(service.api.call(a), callbacks);
-            } catch (err) {
-              a.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
-            }
-          }
+          Embed.title(service);
         }
         return [a, $.tn(' '), embed];
       }
       return [a];
+    },
+    title: function(service) {
+      var title, titles;
+      titles = $.get('CachedTitles', {});
+      if (title = titles[match[1]]) {
+        a.textContent = title[0];
+        return embed.setAttribute('data-title', title[0]);
+      } else {
+        try {
+          return $.cache(service.api.call(a), Embedder.cb);
+        } catch (err) {
+          return a.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
+        }
+      }
+    },
+    toggle: function() {
+      var el, embed, style, type, url;
+      embed = this.previousElementSibling;
+      if (this.className.contains("embedded")) {
+        el = $.el('a', {
+          rel: 'nofollow noreferrer',
+          target: 'blank',
+          className: 'linkify',
+          href: url = this.getAttribute("data-originalURL"),
+          textContent: this.getAttribute("data-title") || url
+        });
+        this.textContent = '(embed)';
+      } else {
+        el = (type = Embed.types[this.getAttribute("data-service")]).el.call(this);
+        el.style.cssText = (style = type.style) ? style : "border: 0; width: " + ($.get('embedWidth', Config['embedWidth'])) + "px; height: " + ($.get('embedHeight', Config['embedHeight'])) + "px";
+        this.textContent = '(unembed)';
+      }
+      $.replace(embed, el);
+      return $.toggleClass(this, 'embedded');
+    }
+  };
+
+  Linkify = {
+    init: function() {
+      return Main.callbacks.push(this.node);
+    },
+    regString: /(\b([a-z]+:\/\/|[-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+|[-a-z0-9]+\.(com|net|tv|org|xxx|us)|[a-z]+:[a-z0-9?]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s,]+)/gi,
+    cypher: $.el('div'),
+    node: function(post) {
+      if (post.isInlined && !post.isCrosspost) {
+        return;
+      }
+      Linkify.prep($.X('.//text()', post.blockquote));
+    },
+    prep: function(snapshot) {
+      var cypher, cypherText, data, i, len, lookahead, name, next, node, nodes, spoiler, _results;
+      cypher = Linkify.cypher;
+      i = -1;
+      len = snapshot.snapshotLength;
+      _results = [];
+      while (++i < len) {
+        nodes = [];
+        node = snapshot.snapshotItem(i);
+        data = node.data;
+        if (!(node.parentNode && Linkify.regString.test(data))) {
+          continue;
+        }
+        Linkify.regString.lastIndex = 0;
+        cypherText = [];
+        if (next = node.nextSibling) {
+          cypher.textContent = node.textContent;
+          cypherText[0] = cypher.innerHTML;
+          while (((name = next.nodeName) === 'WBR' || name === 'S') && (lookahead = next.nextSibling) && (name = lookahead.nodeName) === "#text" || name === 'BR') {
+            cypher.textContent = lookahead.textContent;
+            cypherText.push((spoiler = next.innerHTML) ? "<s>" + spoiler + "</s>" : '<wbr>');
+            cypherText.push(cypher.innerHTML);
+            $.rm(next);
+            next = lookahead.nextSibling;
+            if (name === "#text") {
+              $.rm(lookahead);
+            }
+            if (!next) {
+              break;
+            }
+          }
+        }
+        if (cypherText.length) {
+          data = cypherText.join('');
+        }
+        _results.push(Linkify.replace(data));
+      }
+      return _results;
+    },
+    replace: function(data) {
+      var a, child, index, link, links, nodes, text, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      links = data.match(Linkify.regString);
+      for (_i = 0, _len = links.length; _i < _len; _i++) {
+        link = links[_i];
+        index = data.indexOf(link);
+        if (text = data.slice(0, index)) {
+          cypher.innerHTML = text;
+          _ref = cypher.childNodes;
+          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+            child = _ref[_j];
+            nodes.push(child);
+          }
+        }
+        cypher.innerHTML = (link.indexOf(':') < 0 ? (link.indexOf('@') > 0 ? 'mailto:' + link : 'http://' + link) : link).replace(/<(wbr|s|\/s)>/g, '');
+        a = $.el('a', {
+          innerHTML: link,
+          className: 'linkify',
+          rel: 'nofollow noreferrer',
+          target: 'blank',
+          href: cypher.textContent
+        });
+        nodes = nodes.concat(Embed.embedder(a));
+        data = data.slice(index + link.length);
+      }
+      if (data) {
+        cypher.innerHTML = data;
+        _ref1 = cypher.childNodes;
+        for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+          child = _ref1[_k];
+          nodes.push(child);
+        }
+      }
+      return $.replace(node, nodes);
     }
   };
 
