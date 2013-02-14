@@ -249,6 +249,17 @@ a[href="javascript:;"] {
 .fileText:not(:hover) .fnfull {
   display: none;
 }
+:root.fit-width .full-image {
+  max-width: 100%;
+}
+:root.gecko.fit-width .full-image,
+:root.presto.fit-width .full-image {
+  width: 100%;
+}
+.expanded-image > .op > .file > .fileThumb,
+.expanded-image > .op > .file > .fileThumb > .full-image {
+  float: none;
+}
 #ihover {
   -moz-box-sizing: border-box;
   box-sizing: border-box;

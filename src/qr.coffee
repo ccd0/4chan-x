@@ -96,7 +96,7 @@ QR =
 
   status: (data={}) ->
     return unless QR.el
-    if g.dead # XXX
+    if g.DEAD
       value    = 404
       disabled = true
       QR.cooldown.auto = false

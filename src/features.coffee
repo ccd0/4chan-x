@@ -38,7 +38,7 @@ Header =
     $.prepend headerBar, [menuButton, boardListButton, $.tn(' '), boardTitle, boardList, toggleBar]
 
     catalogToggler = $.el 'label',
-      innerHTML: "<input type=checkbox#{if g.VIEW is 'catalog' then ' checked' else ''}> Use catalog links"
+      innerHTML: "<input type=checkbox #{if g.VIEW is 'catalog' then 'checked' else ''}> Use catalog links"
     $.on catalogToggler.firstElementChild, 'change', @toggleCatalogLinks
     $.event 'AddMenuEntry',
       type: 'header'
@@ -811,7 +811,7 @@ Menu =
   toggle: (e) ->
     post =
       if @dataset.clone
-        Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
+        Get.postFromNode @
       else
         g.posts[@dataset.postid]
     Menu.menu.toggle e, @, post
@@ -1377,6 +1377,10 @@ Get =
     index  = root.dataset.clone
     post   = g.posts["#{board}.#{postID}"]
     if index then post.clones[index] else post
+  postFromNode: (root) ->
+    Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', root
+  contextFromLink: (quotelink) ->
+    Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', quotelink
   postDataFromLink: (link) ->
     if link.hostname is 'boards.4chan.org'
       path     = link.pathname.split '/'
@@ -1418,8 +1422,6 @@ Get =
     quotelinks.filter (quotelink) ->
       {board, postID} = Get.postDataFromLink quotelink
       board is post.board.ID and postID is post.ID
-  contextFromLink: (quotelink) ->
-    Get.postFromRoot $.x 'ancestor::div[parent::div[@class="thread"]][1]', quotelink
   postClone: (board, threadID, postID, root, context) ->
     if post = g.posts["#{board}.#{postID}"]
       Get.insert post, root, context
@@ -2085,6 +2087,171 @@ Sauce =
       nodes.push $.tn('\u00A0'), link @, Sauce.link.cloneNode true
     $.add @file.info, nodes
 
+ImageExpand =
+  init: ->
+    return if g.VIEW is 'catalog' or !Conf['Image Expansion']
+
+    Post::callbacks.push
+      name: 'Image Expansion'
+      cb:   @node
+
+  node: ->
+    return unless @file and @file.isImage
+    $.on @file.thumb.parentNode, 'click', ImageExpand.cb.toggle
+    if ImageExpand.on and !@isHidden
+      ImageExpand.expand @
+  cb:
+    toggle: (e) ->
+      return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
+      e.preventDefault()
+      ImageExpand.toggle Get.postFromNode @
+    all: ->
+      $.event 'CloseMenu'
+      ImageExpand.on = @checked
+      for ID, post of g.posts
+        for post in [post].concat post.clones
+          {file} = post
+          continue unless file and file.isImage
+          {thumb} = file
+          continue unless doc.contains thumb
+          if ImageExpand.on
+            if !ImageExpand.spoilers and file.isSpoiler or
+              ImageExpand.fromPosition and thumb.getBoundingClientRect().top < 0
+                continue
+            ImageExpand.expand post
+          else
+            ImageExpand.contract post
+      return
+    updateFitness: ->
+      {checked} = @
+      (if checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
+      return unless @name is 'Fit height'
+      if checked
+        $.on window, 'resize', ImageExpand.resize
+        unless ImageExpand.style
+          ImageExpand.style = $.addStyle ''
+        ImageExpand.resize()
+      else
+        $.off window, 'resize', ImageExpand.resize
+    spoilers: ->
+      ImageExpand.spoilers = @checked
+    position: ->
+      ImageExpand.fromPosition = @checked
+
+  toggle: (post) ->
+    {thumb} = post.file
+    unless thumb.hidden
+      ImageExpand.expand post
+      return
+    rect = thumb.parentNode.getBoundingClientRect()
+    if rect.bottom > 0 # Should be at least partially visible.
+      # Scroll back to the thumbnail when contracting the image
+      # to avoid being left miles away from the relevant post.
+      postRect = post.nodes.root.getBoundingClientRect()
+      headRect = $.id('header-bar').getBoundingClientRect()
+      top = postRect.top - headRect.top - headRect.height - 2
+      if $.engine is 'webkit'
+        d.body.scrollTop += top if rect.top  < 0
+        d.body.scrollLeft = 0   if rect.left < 0
+      else
+        d.documentElement.scrollTop += top if rect.top  < 0
+        d.documentElement.scrollLeft = 0   if rect.left < 0
+    ImageExpand.contract post
+
+  contract: (post) ->
+    {thumb} = post.file
+    thumb.hidden = false
+    if img = $ '.full-image', thumb.parentNode
+      img.hidden = true
+    $.rmClass post.nodes.root, 'expanded-image'
+
+  expand: (post) ->
+    # Do not expand images of hidden/filtered replies, or already expanded pictures.
+    {thumb} = post.file
+    return if post.isHidden or thumb.hidden
+    thumb.hidden = true
+    $.addClass post.nodes.root, 'expanded-image'
+    if img = $ '.full-image', thumb.parentNode
+      # Expand already loaded picture
+      img.hidden = false
+      return
+    img = $.el 'img',
+      className: 'full-image'
+      src: post.file.URL
+    $.on img, 'error', ImageExpand.error
+    $.after thumb, img
+
+  error: ->
+    post = Get.postFromNode @
+    ImageExpand.contract post
+    $.rm @
+    src = @src.split '/'
+    unless src[2] is 'images.4chan.org' and URL = Redirect.image src[3], src[5]
+      return if g.DEAD
+      {URL} = post.file
+    return if $.engine isnt 'webkit' and URL.split('/')[2] is 'images.4chan.org'
+    timeoutID = setTimeout ImageExpand.expand, 10000, post
+    # Only Chrome let userscripts do cross domain requests.
+    # Don't check for 404'd status in the archivers.
+    return if $.engine isnt 'webkit' or URL.split('/')[2] isnt 'images.4chan.org'
+    $.ajax URL, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
+      type: 'head'
+
+  menu:
+    init: ->
+      return if g.VIEW is 'catalog' or !Conf['Image Expansion']
+
+      el = $.el 'span',
+        textContent: 'Image expansion'
+
+      ImageExpand.menu.config = $.get 'ImageExpansionConfig',
+        'Fit width':  true
+        'Fit height': false
+        'Expand spoilers': false
+        'Expand from here': true
+
+      {createSubEntry} = ImageExpand.menu
+      subEntries = []
+      subEntries.push createSubEntry 'Expand all'
+      subEntries.push createSubEntry 'Fit width',  true
+      subEntries.push createSubEntry 'Fit height', true
+      subEntries.push createSubEntry 'Expand spoilers', true
+      subEntries.push createSubEntry 'Expand from here', true
+
+      $.event 'AddMenuEntry',
+        type: 'header'
+        el: el
+        order: 20
+        subEntries: subEntries
+
+    createSubEntry: (type, hasConfig) ->
+      label = $.el 'label',
+        innerHTML: "<input type=checkbox name='#{type}'> #{type}"
+      input = label.firstElementChild
+      switch type
+        when 'Expand all'
+          $.on input, 'change', ImageExpand.cb.all
+        when 'Expand spoilers'
+          label.title = 'Expand all images along with spoilers.'
+          $.on input, 'change', ImageExpand.cb.spoilers
+        when 'Expand from here'
+          label.title = 'Expand all images only from current position to thread end.'
+          $.on input, 'change', ImageExpand.cb.position
+        else
+          $.on input, 'change',  ImageExpand.cb.updateFitness
+      if hasConfig
+        input.checked = ImageExpand.menu.config[type]
+        $.event 'change', null, input
+        $.on input, 'change', ImageExpand.menu.saveConfig
+      el: label
+    saveConfig: ->
+      {config} = ImageExpand.menu
+      config[@name] = @checked
+      $.set 'ImageExpansionConfig', config
+
+  resize: ->
+    ImageExpand.style.textContent = ":root.fit-height .full-image {max-height:#{doc.clientHeight}px}"
+
 RevealSpoilers =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Reveal Spoilers']
@@ -2148,15 +2315,15 @@ ImageHover =
   error: ->
     return unless @parentNode
     src = @src.split '/'
-    unless src[2] is 'images.4chan.org' and url = Redirect.image src[3], src[5]
+    unless src[2] is 'images.4chan.org' and URL = Redirect.image src[3], src[5]
       return if g.DEAD
-      url = "//images.4chan.org/#{src[3]}/src/#{src[5]}"
-    return if $.engine isnt 'webkit' and url.split('/')[2] is 'images.4chan.org'
-    timeoutID = setTimeout (=> @src = url), 3000
+      {URL} = post.file
+    return if $.engine isnt 'webkit' and URL.split('/')[2] is 'images.4chan.org'
+    timeoutID = setTimeout (=> @src = URL), 3000
     # Only Chrome let userscripts do cross domain requests.
     # Don't check for 404'd status in the archivers.
-    return if $.engine isnt 'webkit' or url.split('/')[2] isnt 'images.4chan.org'
-    $.ajax url, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
+    return if $.engine isnt 'webkit' or URL.split('/')[2] isnt 'images.4chan.org'
+    $.ajax URL, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
       type: 'head'
 
 ThreadUpdater =

@@ -316,6 +316,8 @@ Main =
     initFeature 'Time Formatting',          Time
     initFeature 'File Info Formatting',     FileInfo
     initFeature 'Sauce',                    Sauce
+    initFeature 'Image Expansion',          ImageExpand
+    initFeature 'Image Expansion (Menu)',   ImageExpand.menu
     initFeature 'Reveal Spoilers',          RevealSpoilers
     initFeature 'Auto-GIF',                 AutoGIF
     initFeature 'Image Hover',              ImageHover

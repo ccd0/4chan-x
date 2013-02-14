@@ -22,7 +22,6 @@ Config =
     Imaging:
       'Auto-GIF':                     [false, 'Animate GIF thumbnails.']
       'Image Expansion':              [true,  'Expand images.']
-      'Expand From Position':         [true,  'Expand all images only from current position to thread end.']
       'Image Hover':                  [false, 'Show full image on mouseover.']
       'Sauce':                        [true,  'Add sauce links to images.']
       'Reveal Spoilers':              [false, 'Reveal spoiler thumbnails.']
@@ -161,4 +160,3 @@ Config =
       'Scroll BG':   [false, 'Auto-scroll background tabs.']
       'Auto Update': [true,  'Automatically fetch new posts.']
     'Interval': 30
-  imageFit: 'fit width'

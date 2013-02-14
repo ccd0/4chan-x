@@ -86,7 +86,8 @@ $.extend $,
   addStyle: (css) ->
     style = $.el 'style',
       textContent: css
-    $.add d.head, style
+    $.asap (-> d.head), ->
+      $.add d.head, style
     style
   x: (path, root=d.body) ->
     # XPathResult.ANY_UNORDERED_NODE_TYPE === 8
