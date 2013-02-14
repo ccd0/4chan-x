@@ -3555,8 +3555,11 @@
     error: function() {
       var URL, post, src, timeoutID;
       post = Get.postFromNode(this);
-      ImageExpand.contract(post);
       $.rm(this);
+      ImageExpand.contract(post);
+      if (this.hidden) {
+        return;
+      }
       src = this.src.split('/');
       if (!(src[2] === 'images.4chan.org' && (URL = Redirect.image(src[3], src[5])))) {
         if (g.DEAD) {

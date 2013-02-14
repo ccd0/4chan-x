@@ -2183,8 +2183,11 @@ ImageExpand =
 
   error: ->
     post = Get.postFromNode @
-    ImageExpand.contract post
     $.rm @
+    ImageExpand.contract post
+    if @hidden
+      # Don't try to re-expend if it was already contracted.
+      return
     src = @src.split '/'
     unless src[2] is 'images.4chan.org' and URL = Redirect.image src[3], src[5]
       return if g.DEAD
