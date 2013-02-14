@@ -733,10 +733,17 @@
         return setTimeout($.asap, 25, test, cb);
       }
     },
-    addStyle: function(css) {
+    addStyle: function(css, type) {
       var style;
-      style = $.el('style', {
+      style = type === 'style' || !window.URL ? $.el('style', {
         textContent: css
+      }) : $.el('link', {
+        rel: 'stylesheet',
+        href: URL.createObjectURL(new Blob([css]))
+      }, {
+        type: 'text/css'
+      }, {
+        title: g.NAMESPACE
       });
       $.asap((function() {
         return d.head;
@@ -3505,7 +3512,7 @@
         if (checked) {
           $.on(window, 'resize', ImageExpand.resize);
           if (!ImageExpand.style) {
-            ImageExpand.style = $.addStyle('');
+            ImageExpand.style = $.addStyle(null, 'style');
           }
           return ImageExpand.resize();
         } else {
@@ -4474,7 +4481,7 @@
       }
 
       _Class.prototype.setFile = function(file) {
-        var fileUrl, img, url,
+        var fileUrl, img,
           _this = this;
         this.file = file;
         this.el.title = "" + file.name + " (" + ($.bytesToString(file.size)) + ")";
@@ -4485,10 +4492,10 @@
           this.el.style.backgroundImage = null;
           return;
         }
-        if (!(url = window.URL || window.webkitURL)) {
+        if (!window.URL) {
           return;
         }
-        url.revokeObjectURL(this.url);
+        URL.revokeObjectURL(this.url);
         fileUrl = url.createObjectURL(file);
         img = $.el('img');
         $.on(img, 'load', function() {
@@ -4516,17 +4523,16 @@
           for (i = _i = 0; 0 <= l ? _i < l : _i > l; i = 0 <= l ? ++_i : --_i) {
             ui8a[i] = data.charCodeAt(i);
           }
-          _this.url = url.createObjectURL(new Blob([ui8a], {
+          _this.url = URL.createObjectURL(new Blob([ui8a], {
             type: 'image/png'
           }));
           _this.el.style.backgroundImage = "url(" + _this.url + ")";
-          return typeof url.revokeObjectURL === "function" ? url.revokeObjectURL(fileUrl) : void 0;
+          return URL.revokeObjectURL(fileUrl);
         });
         return img.src = fileUrl;
       };
 
       _Class.prototype.rmFile = function() {
-        var _base;
         QR.resetFileInput();
         delete this.file;
         this.el.title = null;
@@ -4534,7 +4540,10 @@
         if (QR.spoiler) {
           $('label', this.el).hidden = true;
         }
-        return typeof (_base = window.URL || window.webkitURL).revokeObjectURL === "function" ? _base.revokeObjectURL(this.url) : void 0;
+        if (!window.URL) {
+          return;
+        }
+        return URL.revokeObjectURL(this.url);
       };
 
       _Class.prototype.select = function() {
@@ -4599,7 +4608,7 @@
       };
 
       _Class.prototype.rm = function() {
-        var index, _ref;
+        var index;
         QR.resetFileInput();
         $.rm(this.el);
         index = QR.replies.indexOf(this);
@@ -4609,7 +4618,10 @@
           (QR.replies[index - 1] || QR.replies[index + 1]).select();
         }
         QR.replies.splice(index, 1);
-        return (_ref = window.URL || window.webkitURL) != null ? _ref.revokeObjectURL(this.url) : void 0;
+        if (!window.URL) {
+          return;
+        }
+        return URL.revokeObjectURL(this.url);
       };
 
       return _Class;

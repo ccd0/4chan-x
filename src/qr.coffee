@@ -351,9 +351,9 @@ QR =
       unless /^image/.test file.type
         @el.style.backgroundImage = null
         return
-      # XXX Opera does not support window.URL
-      return unless url = window.URL or window.webkitURL
-      url.revokeObjectURL @url
+      # XXX Opera does not support blob URL
+      return unless window.URL
+      URL.revokeObjectURL @url
 
       # Create a redimensioned thumbnail.
       fileUrl = url.createObjectURL file
@@ -388,9 +388,9 @@ QR =
         for i in  [0...l]
           ui8a[i] = data.charCodeAt i
 
-        @url = url.createObjectURL new Blob [ui8a], type: 'image/png'
+        @url = URL.createObjectURL new Blob [ui8a], type: 'image/png'
         @el.style.backgroundImage = "url(#{@url})"
-        url.revokeObjectURL? fileUrl
+        URL.revokeObjectURL fileUrl
 
       img.src = fileUrl
     rmFile: ->
@@ -399,7 +399,8 @@ QR =
       @el.title = null
       @el.style.backgroundImage = null
       $('label', @el).hidden = true if QR.spoiler
-      (window.URL or window.webkitURL).revokeObjectURL? @url
+      return unless window.URL
+      URL.revokeObjectURL @url
     select: ->
       QR.selected?.el.id = null
       QR.selected = @
@@ -446,7 +447,8 @@ QR =
       else if @el.id is 'selected'
         (QR.replies[index-1] or QR.replies[index+1]).select()
       QR.replies.splice index, 1
-      (window.URL or window.webkitURL)?.revokeObjectURL @url
+      return unless window.URL
+      URL.revokeObjectURL @url
 
   captcha:
     init: ->
