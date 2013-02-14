@@ -3916,8 +3916,9 @@
             ThreadUpdater.set('status', '404', 'warning');
             clearTimeout(ThreadUpdater.timeoutID);
             ThreadUpdater.thread.kill();
-            ThreadUpdater.outdateCount++;
-            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            $.event('ThreadUpdate', {
+              404: true
+            });
             break;
           default:
             ThreadUpdater.outdateCount++;
@@ -3988,7 +3989,7 @@
       });
     },
     parse: function(postObjects) {
-      var ID, count, files, index, node, nodes, num, post, postObject, posts, scroll, _i, _len, _ref;
+      var ID, count, deletedFiles, deletedPosts, files, index, node, nodes, num, post, postObject, posts, scroll, _i, _len, _ref;
       Build.spoilerRange[ThreadUpdater.thread.board] = postObjects[0].custom_spoiler;
       nodes = [];
       posts = [];
@@ -4010,6 +4011,8 @@
         nodes.push(node);
         posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board));
       }
+      deletedPosts = [];
+      deletedFiles = [];
       _ref = ThreadUpdater.thread.posts;
       for (ID in _ref) {
         post = _ref[ID];
@@ -4019,11 +4022,18 @@
         ID = +ID;
         if (-1 === index.indexOf(ID)) {
           post.kill();
+          deletedPosts.push(post);
         } else if (post.file && !post.file.isDead && -1 === files.indexOf(ID)) {
           post.kill(true);
+          deletedFiles.push(post);
         }
       }
-      if (count) {
+      if (!count) {
+        ThreadUpdater.set('status', null, null);
+        ThreadUpdater.outdateCount++;
+      } else {
+        ThreadUpdater.set('status', "+" + count, 'new');
+        ThreadUpdater.outdateCount = 0;
         if (Conf['Beep'] && $.hidden()) {
           if (!ThreadUpdater.audio) {
             ThreadUpdater.audio = $.el('audio', {
@@ -4032,20 +4042,20 @@
           }
           ThreadUpdater.audio.play();
         }
-        ThreadUpdater.set('status', "+" + count, 'new');
-        ThreadUpdater.outdateCount = 0;
-      } else {
-        ThreadUpdater.set('status', null, null);
-        ThreadUpdater.outdateCount++;
-        return;
+        ThreadUpdater.lastPost = posts[count - 1].ID;
+        Main.callbackNodes(Post, posts);
+        scroll = Conf['Auto Scroll'] && ThreadUpdater.scrollBG() && ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25;
+        $.add(ThreadUpdater.root, nodes);
+        if (scroll) {
+          nodes[0].scrollIntoView();
+        }
       }
-      ThreadUpdater.lastPost = posts[count - 1].ID;
-      Main.callbackNodes(Post, posts);
-      scroll = Conf['Auto Scroll'] && ThreadUpdater.scrollBG() && ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25;
-      $.add(ThreadUpdater.root, nodes);
-      if (scroll) {
-        return nodes[0].scrollIntoView();
-      }
+      return $.event('ThreadUpdate', {
+        404: false,
+        newPosts: posts,
+        deletedPosts: deletedPosts,
+        deletedFiles: deletedFiles
+      });
     }
   };
 

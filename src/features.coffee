@@ -2418,14 +2418,13 @@ ThreadUpdater =
           ThreadUpdater.set 'status', '404', 'warning'
           clearTimeout ThreadUpdater.timeoutID
           ThreadUpdater.thread.kill()
+          $.event 'ThreadUpdate', 404: true
           # if Conf['Unread Count']
           #   Unread.title = Unread.title.match(/^.+-/)[0] + ' 404'
           # else
           #   d.title = d.title.match(/^.+-/)[0] + ' 404'
           # Unread.update true
           # QR.abort()
-          ThreadUpdater.outdateCount++
-          ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
         else
           ThreadUpdater.outdateCount++
           ThreadUpdater.set 'timer',  ThreadUpdater.getInterval()
@@ -2502,32 +2501,41 @@ ThreadUpdater =
       nodes.push node
       posts.push new Post node, ThreadUpdater.thread, ThreadUpdater.thread.board
 
+    deletedPosts = []
+    deletedFiles = []
     # Check for deleted posts/files.
     for ID, post of ThreadUpdater.thread.posts
       continue if post.isDead
       ID = +ID
       if -1 is index.indexOf ID
         post.kill()
+        deletedPosts.push post
       else if post.file and !post.file.isDead and -1 is files.indexOf ID
         post.kill true
+        deletedFiles.push post
 
-    if count
-      if Conf['Beep'] and $.hidden() #and !Unread.replies.length
+    unless count
+      ThreadUpdater.set 'status', null, null
+      ThreadUpdater.outdateCount++
+    else
+      ThreadUpdater.set 'status', "+#{count}", 'new'
+      ThreadUpdater.outdateCount = 0
+      if Conf['Beep'] and $.hidden() # XXX and !Unread.replies.length
         unless ThreadUpdater.audio
           ThreadUpdater.audio = $.el 'audio', src: ThreadUpdater.beep
         ThreadUpdater.audio.play()
-      ThreadUpdater.set 'status', "+#{count}", 'new'
-      ThreadUpdater.outdateCount = 0
-    else
-      ThreadUpdater.set 'status', null, null
-      ThreadUpdater.outdateCount++
-      return
 
-    ThreadUpdater.lastPost = posts[count - 1].ID
-    Main.callbackNodes Post, posts
+      ThreadUpdater.lastPost = posts[count - 1].ID
+      Main.callbackNodes Post, posts
 
-    scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
-      ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
-    $.add ThreadUpdater.root, nodes
-    if scroll
-      nodes[0].scrollIntoView()
+      scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
+        ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
+      $.add ThreadUpdater.root, nodes
+      if scroll
+        nodes[0].scrollIntoView()
+
+    $.event 'ThreadUpdate',
+      404: false
+      newPosts: posts
+      deletedPosts: deletedPosts
+      deletedFiles: deletedFiles
