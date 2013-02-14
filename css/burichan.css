@@ -1,4 +1,4 @@
-/* general */
+/* General */
 :root.burichan .dialog {
   background-color: #D6DAF0;
   border-color: #B7C5D9;
@@ -16,7 +16,7 @@
   color: #34345C;
 }
 
-/* quote */
+/* Quote */
 :root.burichan .inline {
   border-color: #B7C5D9;
   background-color: rgba(255, 255, 255, .14);

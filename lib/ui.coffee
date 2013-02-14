@@ -286,13 +286,13 @@ UI = (->
       d.removeEventListener 'mouseup',   @up,   false
     localStorage.setItem "#{g.NAMESPACE}#{@id}.position", @style.cssText
 
-  hoverstart = ({root, el, initialEvent, events, asapTest, cb}) ->
+  hoverstart = ({root, el, initialEvent, endEvents, asapTest, cb}) ->
     o = {
       root:   root
       el:     el
       style:  el.style
       cb:     cb
-      events: events.split ' '
+      endEvents: endEvents.split ' '
       mousemove: (e) -> initialEvent = e
       clientHeight: doc.clientHeight
       clientWidth:  doc.clientWidth
@@ -310,7 +310,7 @@ UI = (->
         o.timeout = setTimeout asap, 25
     asap()
 
-    for event in o.events
+    for event in o.endEvents
       root.addEventListener event,     o.hoverend, false
     root.addEventListener 'mousemove', o.hover,    false
   hover = (e) ->
@@ -339,7 +339,7 @@ UI = (->
     style.right = right
   hoverend = ->
     @el.parentNode.removeChild @el
-    for event in @events
+    for event in @endEvents
       @root.removeEventListener event,     @hoverend,  false
     @root.removeEventListener 'mousemove', @hover,     false
     @root.removeEventListener 'mousemove', @mousemove, false

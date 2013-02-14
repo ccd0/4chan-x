@@ -1,4 +1,4 @@
-/* general */
+/* General */
 :root.tomorrow .dialog {
   background-color: #282A2E;
   border-color: #111;
@@ -16,7 +16,7 @@
   color: #81A2BE;
 }
 
-/* quote */
+/* Quote */
 :root.tomorrow .inline {
   border-color: #111;
   background-color: rgba(0, 0, 0, .14);

@@ -1,4 +1,4 @@
-/* general */
+/* General */
 :root.yotsuba .dialog {
   background-color: #F0E0D6;
   border-color: #D9BFB7;
@@ -16,7 +16,7 @@
   color: #800000;
 }
 
-/* quote */
+/* Quote */
 :root.yotsuba .inline {
   border-color: #D9BFB7;
   background-color: rgba(255, 255, 255, .14);

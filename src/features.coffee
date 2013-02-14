@@ -1769,7 +1769,7 @@ QuotePreview =
       root: @
       el: qp
       initialEvent: e
-      events: 'mouseout click'
+      endEvents: 'mouseout click'
       cb: QuotePreview.mouseout
       asapTest: -> qp.firstElementChild
 
@@ -2314,7 +2314,7 @@ ImageHover =
       root: @
       el: el
       initialEvent: e
-      events: 'mouseout'
+      endEvents: 'mouseout click'
       asapTest: -> el.naturalHeight
     $.on el, 'error', ImageHover.error
   error: ->

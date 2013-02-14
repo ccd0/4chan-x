@@ -1,4 +1,4 @@
-/* general */
+/* General */
 :root.photon .dialog {
   background-color: #DDD;
   border-color: #CCC;
@@ -16,7 +16,7 @@
   color: #FF6600;
 }
 
-/* quote */
+/* Quote */
 :root.photon .inline {
   border-color: #CCC;
   background-color: rgba(255, 255, 255, .14);
