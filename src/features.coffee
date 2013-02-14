@@ -2114,19 +2114,19 @@ ImageExpand =
     all: ->
       $.event 'CloseMenu'
       ImageExpand.on = @checked
+      posts = []
       for ID, post of g.posts
         for post in [post].concat post.clones
           {file} = post
-          continue unless file and file.isImage
-          {thumb} = file
-          continue unless doc.contains thumb
-          if ImageExpand.on
-            if !ImageExpand.spoilers and file.isSpoiler or
-              ImageExpand.fromPosition and thumb.getBoundingClientRect().top < 0
-                continue
-            ImageExpand.expand post
-          else
-            ImageExpand.contract post
+          continue unless file and file.isImage and doc.contains post.nodes.root
+          if ImageExpand.on and
+            (!ImageExpand.spoilers and file.isSpoiler or
+            ImageExpand.fromPosition and file.thumb.getBoundingClientRect().top < 0)
+              continue
+          posts.push post
+      func = if ImageExpand.on then ImageExpand.expand else ImageExpand.contract
+      for post in posts
+        func post
       return
     updateFitness: ->
       {checked} = @
@@ -2211,7 +2211,7 @@ ImageExpand =
       return if g.VIEW is 'catalog' or !Conf['Image Expansion']
 
       el = $.el 'span',
-        textContent: 'Image expansion'
+        textContent: 'Image Expansion'
 
       ImageExpand.menu.config = $.get 'ImageExpansionConfig',
         'Fit width':  true

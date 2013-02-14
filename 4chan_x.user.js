@@ -3467,9 +3467,10 @@
         return ImageExpand.toggle(Get.postFromNode(this));
       },
       all: function() {
-        var ID, file, post, thumb, _i, _len, _ref, _ref1;
+        var ID, file, func, post, posts, _i, _j, _len, _len1, _ref, _ref1;
         $.event('CloseMenu');
         ImageExpand.on = this.checked;
+        posts = [];
         _ref = g.posts;
         for (ID in _ref) {
           post = _ref[ID];
@@ -3477,22 +3478,19 @@
           for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
             post = _ref1[_i];
             file = post.file;
-            if (!(file && file.isImage)) {
+            if (!(file && file.isImage && doc.contains(post.nodes.root))) {
               continue;
             }
-            thumb = file.thumb;
-            if (!doc.contains(thumb)) {
+            if (ImageExpand.on && (!ImageExpand.spoilers && file.isSpoiler || ImageExpand.fromPosition && file.thumb.getBoundingClientRect().top < 0)) {
               continue;
             }
-            if (ImageExpand.on) {
-              if (!ImageExpand.spoilers && file.isSpoiler || ImageExpand.fromPosition && thumb.getBoundingClientRect().top < 0) {
-                continue;
-              }
-              ImageExpand.expand(post);
-            } else {
-              ImageExpand.contract(post);
-            }
+            posts.push(post);
           }
+        }
+        func = ImageExpand.on ? ImageExpand.expand : ImageExpand.contract;
+        for (_j = 0, _len1 = posts.length; _j < _len1; _j++) {
+          post = posts[_j];
+          func(post);
         }
       },
       updateFitness: function() {
@@ -3616,7 +3614,7 @@
           return;
         }
         el = $.el('span', {
-          textContent: 'Image expansion'
+          textContent: 'Image Expansion'
         });
         ImageExpand.menu.config = $.get('ImageExpansionConfig', {
           'Fit width': true,
