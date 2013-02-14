@@ -1,5 +1,17 @@
 master
 
+1.1.2
+Zixaphir
+- Bugfixes.
+
+1.1.1
+Zixaphir
+- Ability to mark owned posts
+- Ability to navigate thread via quote hashes with Quote Inline enabled
+- Ability to indicate spoilers with remove spoilers enabled
+- A really crude appchan x icon
+- Bugfixes
+
 1.1.0
 Zixaphir
 - Invisible Icons
