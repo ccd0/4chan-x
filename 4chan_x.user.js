@@ -521,19 +521,33 @@
       }
       return localStorage.setItem("" + g.NAMESPACE + this.id + ".position", this.style.cssText);
     };
-    hoverstart = function(root, el, events, cb) {
-      var event, o, _i, _len, _ref;
+    hoverstart = function(_arg) {
+      var asap, asapTest, cb, el, event, events, initialEvent, o, root, _i, _len, _ref;
+      root = _arg.root, el = _arg.el, initialEvent = _arg.initialEvent, events = _arg.events, asapTest = _arg.asapTest, cb = _arg.cb;
       o = {
         root: root,
         el: el,
         style: el.style,
         cb: cb,
         events: events.split(' '),
+        mousemove: function(e) {
+          return initialEvent = e;
+        },
         clientHeight: doc.clientHeight,
         clientWidth: doc.clientWidth
       };
       o.hover = hover.bind(o);
       o.hoverend = hoverend.bind(o);
+      root.addEventListener('mousemove', o.mousemove, false);
+      asap = function() {
+        if (asapTest()) {
+          root.removeEventListener('mousemove', o.mousemove, false);
+          return o.hover(initialEvent);
+        } else {
+          return o.timeout = setTimeout(asap, 25);
+        }
+      };
+      asap();
       _ref = o.events;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         event = _ref[_i];
@@ -568,6 +582,8 @@
         this.root.removeEventListener(event, this.hoverend, false);
       }
       this.root.removeEventListener('mousemove', this.hover, false);
+      this.root.removeEventListener('mousemove', this.mousemove, false);
+      clearTimeout(this.timeout);
       if (this.cb) {
         return this.cb.call(this);
       }
@@ -2923,7 +2939,16 @@
       });
       $.add(d.body, qp);
       Get.postClone(board, threadID, postID, qp, Get.contextFromLink(this));
-      UI.hover(this, qp, 'mouseout click', QuotePreview.mouseout);
+      UI.hover({
+        root: this,
+        el: qp,
+        initialEvent: e,
+        events: 'mouseout click',
+        cb: QuotePreview.mouseout,
+        asapTest: function() {
+          return qp.firstElementChild;
+        }
+      });
       if (!(origin = g.posts["" + board + "." + postID])) {
         return;
       }
@@ -3725,35 +3750,28 @@
       }
       return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover);
     },
-    mouseover: function() {
-      var el,
-        _this = this;
+    mouseover: function(e) {
+      var el;
       el = $.el('img', {
         id: 'ihover',
         src: this.parentNode.href
       });
       $.add(d.body, el);
-      $.on(el, 'load', function() {
-        return ImageHover.load(_this, el);
+      UI.hover({
+        root: this,
+        el: el,
+        initialEvent: e,
+        events: 'mouseout',
+        asapTest: function() {
+          return el.naturalHeight;
+        }
       });
-      $.on(el, 'error', ImageHover.error);
-      return UI.hover(this, el, 'mouseout');
-    },
-    load: function(root, el) {
-      var e, style;
-      if (!el.parentNode) {
-        return;
-      }
-      style = el.style;
-      e = new Event('mousemove');
-      e.clientX = -45 + parseInt(style.left);
-      e.clientY = 120 + parseInt(style.top);
-      return root.dispatchEvent(e);
+      return $.on(el, 'error', ImageHover.error);
     },
     error: function() {
       var URL, src, timeoutID,
         _this = this;
-      if (!this.parentNode) {
+      if (!doc.contains(this)) {
         return;
       }
       src = this.src.split('/');
@@ -3830,7 +3848,7 @@
           input = _ref1[_i];
           if (input.type === 'checkbox') {
             $.on(input, 'click', this.cb.checkbox.bind(this));
-            input.dispatchEvent(new Event('click'));
+            $.event('click', null, input);
           }
           switch (input.name) {
             case 'Scroll BG':
@@ -3842,7 +3860,7 @@
               break;
             case 'Interval':
               $.on(input, 'change', this.cb.interval.bind(this));
-              input.dispatchEvent(new Event('change'));
+              $.event('change', null, input);
               break;
             case 'Update Now':
               $.on(input, 'click', this.update.bind(this));

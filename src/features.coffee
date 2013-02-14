@@ -1765,7 +1765,13 @@ QuotePreview =
     $.add d.body, qp
     Get.postClone board, threadID, postID, qp, Get.contextFromLink @
 
-    UI.hover @, qp, 'mouseout click', QuotePreview.mouseout
+    UI.hover
+      root: @
+      el: qp
+      initialEvent: e
+      events: 'mouseout click'
+      cb: QuotePreview.mouseout
+      asapTest: -> qp.firstElementChild
 
     return unless origin = g.posts["#{board}.#{postID}"]
 
@@ -2172,7 +2178,7 @@ ImageExpand =
     thumb.hidden = true
     $.addClass post.nodes.root, 'expanded-image'
     if img = $ '.full-image', thumb.parentNode
-      # Expand already loaded picture
+      # Expand already loaded picture.
       img.hidden = false
       return
     img = $.el 'img',
@@ -2299,24 +2305,20 @@ ImageHover =
   node: ->
     return unless @file?.isImage
     $.on @file.thumb, 'mouseover', ImageHover.mouseover
-  mouseover: ->
+  mouseover: (e) ->
     el = $.el 'img'
       id: 'ihover'
       src: @parentNode.href
     $.add d.body, el
-    $.on el, 'load', => ImageHover.load @, el
+    UI.hover
+      root: @
+      el: el
+      initialEvent: e
+      events: 'mouseout'
+      asapTest: -> el.naturalHeight
     $.on el, 'error', ImageHover.error
-    UI.hover @, el, 'mouseout'
-  load: (root, el) ->
-    return unless el.parentNode
-    # 'Fake' mousemove event by giving required values.
-    {style} = el
-    e = new Event 'mousemove'
-    e.clientX = - 45 + parseInt style.left
-    e.clientY =  120 + parseInt style.top
-    root.dispatchEvent e
   error: ->
-    return unless @parentNode
+    return unless doc.contains @
     src = @src.split '/'
     unless src[2] is 'images.4chan.org' and URL = Redirect.image src[3], src[5]
       return if g.DEAD
@@ -2373,7 +2375,7 @@ ThreadUpdater =
       for input in $$ 'input', dialog
         if input.type is 'checkbox'
           $.on input, 'click', @cb.checkbox.bind @
-          input.dispatchEvent new Event 'click'
+          $.event 'click', null, input
         switch input.name
           when 'Scroll BG'
             $.on input, 'click', @cb.scrollBG.bind @
@@ -2382,7 +2384,7 @@ ThreadUpdater =
             $.on input, 'click', @cb.autoUpdate.bind @
           when 'Interval'
             $.on input, 'change', @cb.interval.bind @
-            input.dispatchEvent new Event 'change'
+            $.event 'change', null, input
           when 'Update Now'
             $.on input, 'click', @update.bind @
 

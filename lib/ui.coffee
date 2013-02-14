@@ -286,18 +286,30 @@ UI = (->
       d.removeEventListener 'mouseup',   @up,   false
     localStorage.setItem "#{g.NAMESPACE}#{@id}.position", @style.cssText
 
-  hoverstart = (root, el, events, cb) ->
+  hoverstart = ({root, el, initialEvent, events, asapTest, cb}) ->
     o = {
       root:   root
       el:     el
       style:  el.style
       cb:     cb
       events: events.split ' '
+      mousemove: (e) -> initialEvent = e
       clientHeight: doc.clientHeight
       clientWidth:  doc.clientWidth
     }
     o.hover    = hover.bind    o
     o.hoverend = hoverend.bind o
+
+    # Set position once content is loaded.
+    root.addEventListener 'mousemove', o.mousemove, false
+    asap = ->
+      if asapTest()
+        root.removeEventListener 'mousemove', o.mousemove, false
+        o.hover initialEvent
+      else
+        o.timeout = setTimeout asap, 25
+    asap()
+
     for event in o.events
       root.addEventListener event,     o.hoverend, false
     root.addEventListener 'mousemove', o.hover,    false
@@ -328,8 +340,10 @@ UI = (->
   hoverend = ->
     @el.parentNode.removeChild @el
     for event in @events
-      @root.removeEventListener event,     @hoverend, false
-    @root.removeEventListener 'mousemove', @hover,    false
+      @root.removeEventListener event,     @hoverend,  false
+    @root.removeEventListener 'mousemove', @hover,     false
+    @root.removeEventListener 'mousemove', @mousemove, false
+    clearTimeout @timeout
     @cb.call @ if @cb
 
 
