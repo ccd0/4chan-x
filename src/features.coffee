@@ -1768,7 +1768,7 @@ QuotePreview =
     UI.hover
       root: @
       el: qp
-      initialEvent: e
+      latestEvent: e
       endEvents: 'mouseout click'
       cb: QuotePreview.mouseout
       asapTest: -> qp.firstElementChild
@@ -2313,7 +2313,7 @@ ImageHover =
     UI.hover
       root: @
       el: el
-      initialEvent: e
+      latestEvent: e
       endEvents: 'mouseout click'
       asapTest: -> el.naturalHeight
     $.on el, 'error', ImageHover.error

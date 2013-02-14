@@ -522,27 +522,23 @@
       return localStorage.setItem("" + g.NAMESPACE + this.id + ".position", this.style.cssText);
     };
     hoverstart = function(_arg) {
-      var asap, asapTest, cb, el, endEvents, event, initialEvent, o, root, _i, _len, _ref;
-      root = _arg.root, el = _arg.el, initialEvent = _arg.initialEvent, endEvents = _arg.endEvents, asapTest = _arg.asapTest, cb = _arg.cb;
+      var asap, asapTest, cb, el, endEvents, event, latestEvent, o, root, _i, _len, _ref;
+      root = _arg.root, el = _arg.el, latestEvent = _arg.latestEvent, endEvents = _arg.endEvents, asapTest = _arg.asapTest, cb = _arg.cb;
       o = {
         root: root,
         el: el,
         style: el.style,
         cb: cb,
         endEvents: endEvents.split(' '),
-        mousemove: function(e) {
-          return initialEvent = e;
-        },
+        latestEvent: latestEvent,
         clientHeight: doc.clientHeight,
         clientWidth: doc.clientWidth
       };
       o.hover = hover.bind(o);
       o.hoverend = hoverend.bind(o);
-      root.addEventListener('mousemove', o.mousemove, false);
       asap = function() {
         if (asapTest()) {
-          root.removeEventListener('mousemove', o.mousemove, false);
-          return o.hover(initialEvent);
+          return o.hover(o.latestEvent);
         } else {
           return o.timeout = setTimeout(asap, 25);
         }
@@ -557,6 +553,7 @@
     };
     hover = function(e) {
       var clientX, clientY, height, left, right, style, top;
+      this.latestEvent = e;
       height = this.el.offsetHeight;
       clientX = e.clientX, clientY = e.clientY;
       top = clientY - 120;
@@ -582,7 +579,6 @@
         this.root.removeEventListener(event, this.hoverend, false);
       }
       this.root.removeEventListener('mousemove', this.hover, false);
-      this.root.removeEventListener('mousemove', this.mousemove, false);
       clearTimeout(this.timeout);
       if (this.cb) {
         return this.cb.call(this);
@@ -2942,7 +2938,7 @@
       UI.hover({
         root: this,
         el: qp,
-        initialEvent: e,
+        latestEvent: e,
         endEvents: 'mouseout click',
         cb: QuotePreview.mouseout,
         asapTest: function() {
@@ -3758,7 +3754,7 @@
       UI.hover({
         root: this,
         el: el,
-        initialEvent: e,
+        latestEvent: e,
         endEvents: 'mouseout click',
         asapTest: function() {
           return el.naturalHeight;
