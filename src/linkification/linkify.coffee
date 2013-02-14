@@ -29,7 +29,6 @@ Linkify =
       return
 
     snapshot = $.X './/text()', post.blockquote
-
     cypher = Linkify.cypher
     i      = -1
     len    = snapshot.snapshotLength
@@ -47,6 +46,8 @@ Linkify =
       cypherText = []
 
       if next = node.nextSibling
+        # This is one of the few examples in JS where what you
+        # put into a variable is different than what comes out
         cypher.textContent = node.textContent
         cypherText[0]      = cypher.innerHTML
 
