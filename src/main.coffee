@@ -158,7 +158,7 @@ class Post
     $.addClass @nodes.root, 'dead'
     # XXX style dead posts.
 
-    # Get quote/backlinks to this post
+    # Get quotelinks/backlinks to this post
     # and paint them (Dead).
     for quotelink in Get.allQuotelinksLinkingTo @
       continue if $.hasClass quotelink, 'deadlink'

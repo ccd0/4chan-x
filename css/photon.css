@@ -17,6 +17,9 @@
 }
 
 /* Quote */
+:root.photon .backlink.deadlink {
+  color: #F60 !important;
+}
 :root.photon .inline {
   border-color: #CCC;
   background-color: rgba(255, 255, 255, .14);

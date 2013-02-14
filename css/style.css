@@ -196,11 +196,11 @@ a[href="javascript:;"] {
 }
 
 /* Quote */
-.quotelink.deadlink {
-  text-decoration: underline !important;
-}
-.deadlink:not(.quotelink) {
+.deadlink {
   text-decoration: none !important;
+}
+.backlink.deadlink, .quotelink.deadlink {
+  text-decoration: underline !important;
 }
 .inlined {
   opacity: .5;

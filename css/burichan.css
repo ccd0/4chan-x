@@ -17,6 +17,9 @@
 }
 
 /* Quote */
+:root.burichan .backlink.deadlink {
+  color: #34345C !important;
+}
 :root.burichan .inline {
   border-color: #B7C5D9;
   background-color: rgba(255, 255, 255, .14);

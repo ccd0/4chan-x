@@ -17,6 +17,9 @@
 }
 
 /* Quote */
+:root.tomorrow .backlink.deadlink {
+  color: #81A2BE !important;
+}
 :root.tomorrow .inline {
   border-color: #111;
   background-color: rgba(0, 0, 0, .14);
