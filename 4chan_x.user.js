@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, Header, ImageExpand, ImageHover, Main, Menu, Notification, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, Header, ImageExpand, ImageHover, Main, Menu, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadHiding, ThreadUpdater, Time, UI, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -55,6 +55,7 @@
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps arbitrarily.'],
+        'Relative Post Dates': [false, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.'],
         'File Info Formatting': [true, 'Reformat the file information.'],
         'Comment Expansion': [true, 'Can expand too long comments.'],
         'Thread Expansion': [true, 'Can expand threads to view all replies.'],
@@ -834,8 +835,19 @@
     open: function(url) {
       return (GM_openInTab || window.open)(url, '_blank');
     },
-    hidden: function() {
-      return d.hidden || d.oHidden || d.mozHidden || d.webkitHidden;
+    debounce: function(wait, fn) {
+      var timeout;
+      timeout = null;
+      return function() {
+        if (timeout) {
+          clearTimeout(timeout);
+        } else {
+          fn.apply(this, arguments);
+        }
+        return timeout = setTimeout((function() {
+          return timeout = null;
+        }), wait);
+      };
     },
     queueTask: (function() {
       var execTask, taskChannel, taskQueue;
@@ -939,6 +951,34 @@
       return localStorage.setItem(g.NAMESPACE + name, JSON.stringify(value));
     }
   });
+
+  Polyfill = {
+    init: function() {
+      return Polyfill.visibility();
+    },
+    visibility: function() {
+      var event, prefix, property;
+      if ('visibilityState' in document) {
+        return;
+      }
+      if ('webkitVisibilityState' in document) {
+        prefix = 'webkit';
+      } else if ('mozVisibilityState' in document) {
+        prefix = 'moz';
+      } else {
+        return;
+      }
+      property = prefix + 'VisibilityState';
+      event = prefix + 'visibilitychange';
+      d.visibilityState = d[property];
+      d.hidden = d.visibilityState === 'hidden';
+      return $.on(d, event, function() {
+        d.visibilityState = d[property];
+        d.hidden = d.visibilityState === 'hidden';
+        return $.event('visibilitychange');
+      });
+    }
+  };
 
   Header = {
     init: function() {
@@ -2220,7 +2260,7 @@
         case 'u':
           return "//nsfw.foolz.us/" + board + "/full_image/" + filename;
         case 'po':
-          return "http://archive.thedarkcave.org/" + board + "/full_image/" + filename;
+          return "//archive.thedarkcave.org/" + board + "/full_image/" + filename;
         case 'ck':
         case 'lit':
           return "//fuuka.warosu.org/" + board + "/full_image/" + filename;
@@ -2263,8 +2303,10 @@
         case 'u':
         case 'kuku':
           return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
+        case 'c':
+        case 'int':
         case 'po':
-          return "http://archive.thedarkcave.org/_/api/chan/post/?board=" + board + "&num=" + postID;
+          return "//archive.thedarkcave.org/_/api/chan/post/?board=" + board + "&num=" + postID;
       }
     },
     to: function(data) {
@@ -2290,8 +2332,9 @@
         case 'kuku':
           url = Redirect.path('//nsfw.foolz.us', 'foolfuuka', data);
           break;
+        case 'int':
         case 'po':
-          url = Redirect.path('http://archive.thedarkcave.org', 'foolfuuka', data);
+          url = Redirect.path('//archive.thedarkcave.org', 'foolfuuka', data);
           break;
         case 'ck':
         case 'lit':
@@ -3284,6 +3327,73 @@
     }
   };
 
+  RelativeDates = {
+    INTERVAL: $.MINUTE,
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Relative Post Dates']) {
+        return;
+      }
+      $.on(d, 'visibilitychange ThreadUpdate', this.flush);
+      return Post.prototype.callbacks.push({
+        name: 'Relative Post Dates',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var dateEl, diff;
+      dateEl = this.nodes.date;
+      dateEl.title = dateEl.textContent;
+      diff = Date.now() - this.info.date;
+      dateEl.textContent = RelativeDates.relative(diff);
+      return RelativeDates.setUpdate(this, diff);
+    },
+    relative: function(diff) {
+      var number, rounded, unit;
+      unit = (number = diff / $.DAY) > 1 ? 'day' : (number = diff / $.HOUR) > 1 ? 'hour' : (number = diff / $.MINUTE) > 1 ? 'minute' : (number = diff / $.SECOND, 'second');
+      rounded = Math.round(number);
+      if (rounded !== 1) {
+        unit += 's';
+      }
+      return "" + rounded + " " + unit + " ago";
+    },
+    stale: [],
+    flush: $.debounce($.SECOND, function() {
+      var now, update, _i, _len, _ref;
+      if (d.hidden) {
+        return;
+      }
+      now = Date.now();
+      _ref = RelativeDates.stale;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        update = _ref[_i];
+        update(now);
+      }
+      RelativeDates.stale = [];
+      clearTimeout(RelativeDates.timeout);
+      return RelativeDates.timeout = setTimeout(RelativeDates.flush, RelativeDates.INTERVAL);
+    }),
+    setUpdate: function(post, diff) {
+      var dateEl, markStale, setOwnTimeout, update;
+      setOwnTimeout = function(diff) {
+        var delay;
+        delay = diff > $.HOUR ? diff % $.HOUR : diff > $.MINUTE ? diff % $.MINUTE : diff % $.SECOND;
+        return setTimeout(markStale, delay);
+      };
+      dateEl = post.nodes.date;
+      update = function(now) {
+        if (d.contains(dateEl)) {
+          diff = now - post.info.date;
+          dateEl.textContent = RelativeDates.relative(diff);
+          return setOwnTimeout(diff);
+        }
+      };
+      markStale = function() {
+        return RelativeDates.stale.push(update);
+      };
+      return setOwnTimeout(diff);
+    }
+  };
+
   FileInfo = {
     init: function() {
       if (g.VIEW === 'catalog' || !Conf['File Info Formatting']) {
@@ -3839,7 +3949,7 @@
       }
       $.on(window, 'online offline', ThreadUpdater.cb.online);
       $.on(d, 'QRPostSuccessful', ThreadUpdater.cb.post);
-      $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', ThreadUpdater.cb.visibility);
+      $.on(d, 'visibilitychange', ThreadUpdater.cb.visibility);
       ThreadUpdater.cb.online();
       return $.add(d.body, ThreadUpdater.dialog);
     },
@@ -3874,7 +3984,7 @@
         }
       },
       visibility: function() {
-        if ($.hidden()) {
+        if (d.hidden) {
           return;
         }
         ThreadUpdater.outdateCount = 0;
@@ -3886,7 +3996,7 @@
         return ThreadUpdater.scrollBG = Conf['Scroll BG'] ? function() {
           return true;
         } : function() {
-          return !$.hidden();
+          return !d.hidden;
         };
       },
       autoUpdate: function() {
@@ -3942,7 +4052,7 @@
       var i, j;
       i = ThreadUpdater.interval;
       j = Math.min(ThreadUpdater.outdateCount, 10);
-      if (!$.hidden()) {
+      if (!d.hidden) {
         j = Math.min(j, 7);
       }
       return ThreadUpdater.seconds = Math.max(i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
@@ -4037,7 +4147,7 @@
       } else {
         ThreadUpdater.set('status', "+" + count, 'new');
         ThreadUpdater.outdateCount = 0;
-        if (Conf['Beep'] && $.hidden()) {
+        if (Conf['Beep'] && d.hidden) {
           if (!ThreadUpdater.audio) {
             ThreadUpdater.audio = $.el('audio', {
               src: ThreadUpdater.beep
@@ -5381,6 +5491,7 @@
         return console.timeEnd("" + name + " initialization");
       };
       console.time('All initializations');
+      initFeature('Polyfill', Polyfill);
       initFeature('Header', Header);
       initFeature('Settings', Settings);
       initFeature('Resurrect Quotes', Quotify);
@@ -5404,6 +5515,7 @@
       initFeature('Mark Cross-thread Quotes', QuoteCT);
       initFeature('Anonymize', Anonymize);
       initFeature('Time Formatting', Time);
+      initFeature('Relative Post Dates', RelativeDates);
       initFeature('File Info Formatting', FileInfo);
       initFeature('Sauce', Sauce);
       initFeature('Image Expansion', ImageExpand);

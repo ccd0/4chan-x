@@ -1032,7 +1032,7 @@ Redirect =
       when 'u'
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
       when 'po'
-        "http://archive.thedarkcave.org/#{board}/full_image/#{filename}"
+        "//archive.thedarkcave.org/#{board}/full_image/#{filename}"
       when 'ck', 'lit'
         "//fuuka.warosu.org/#{board}/full_image/#{filename}"
       when 'diy', 'sci'
@@ -1049,8 +1049,8 @@ Redirect =
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-      when 'po'
-        "http://archive.thedarkcave.org/_/api/chan/post/?board=#{board}&num=#{postID}"
+      when 'c', 'int', 'po'
+        "//archive.thedarkcave.org/_/api/chan/post/?board=#{board}&num=#{postID}"
     # for fuuka-based archives:
     # https://github.com/eksopl/fuuka/issues/27
   to: (data) ->
@@ -1060,8 +1060,8 @@ Redirect =
         url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
       when 'u', 'kuku'
         url = Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
-      when 'po'
-        url = Redirect.path 'http://archive.thedarkcave.org', 'foolfuuka', data
+      when 'int', 'po'
+        url = Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
       when 'ck', 'lit'
         url = Redirect.path '//fuuka.warosu.org', 'fuuka', data
       when 'diy', 'sci'
@@ -1998,6 +1998,93 @@ Time =
     S: -> Time.zeroPad @getSeconds()
     y: -> @getFullYear() - 2000
 
+RelativeDates =
+  INTERVAL: $.MINUTE
+  init: ->
+    return if g.VIEW is 'catalog' or !Conf['Relative Post Dates']
+
+    # flush when page becomes visible again
+    $.on d, 'visibilitychange ThreadUpdate', @flush
+
+    Post::callbacks.push
+      name: 'Relative Post Dates'
+      cb:   @node
+  node: ->
+    dateEl = @nodes.date
+
+    # Show original absolute time as tooltip so users can still know exact times
+    # Since "Time Formatting" runs `node` before us, the title tooltip will
+    # pick up the user-formatted time instead of 4chan time when enabled.
+    dateEl.title = dateEl.textContent
+
+    diff = Date.now() - @info.date
+
+    dateEl.textContent = RelativeDates.relative diff
+    RelativeDates.setUpdate @, diff
+
+  # diff is milliseconds from now
+  relative: (diff) ->
+    unit = if (number = (diff / $.DAY)) > 1
+      'day'
+    else if (number = (diff / $.HOUR)) > 1
+      'hour'
+    else if (number = (diff / $.MINUTE)) > 1
+      'minute'
+    else
+      number = diff / $.SECOND
+      'second'
+
+    rounded = Math.round number
+    unit += 's' if rounded isnt 1 # pluralize
+
+    "#{rounded} #{unit} ago"
+
+  # changing all relative dates as soon as possible incurs many annoying
+  # redraws and scroll stuttering. Thus, sacrifice accuracy for UX/CPU economy,
+  # and perform redraws when the DOM is otherwise being manipulated (and scroll
+  # stuttering won't be noticed), falling back to INTERVAL while the page
+  # is visible.
+  #
+  # each individual dateTime element will add its update() function to the stale list
+  # when it is to be called.
+  stale: []
+  flush: $.debounce($.SECOND, ->
+    # no point in changing the dates until the user sees them
+    return if d.hidden
+
+    now = Date.now()
+    update now for update in RelativeDates.stale
+    RelativeDates.stale = []
+
+    # reset automatic flush
+    clearTimeout RelativeDates.timeout
+    RelativeDates.timeout = setTimeout RelativeDates.flush, RelativeDates.INTERVAL)
+
+  # create function `update()`, closed over post and diff, that, when called
+  # from `flush()`, updates the element, and re-calls `setOwnTimeout()` to
+  # re-add `update()` to the stale list later.
+  setUpdate: (post, diff) ->
+    setOwnTimeout = (diff) ->
+      delay = if diff > $.HOUR
+        diff % $.HOUR
+      else if diff > $.MINUTE
+        diff % $.MINUTE
+      else
+        diff % $.SECOND
+      setTimeout markStale, delay
+
+    dateEl = post.nodes.date
+    update = (now) ->
+      if d.contains dateEl # not removed from DOM
+        diff = now - post.info.date
+        dateEl.textContent = RelativeDates.relative diff
+        setOwnTimeout diff
+
+    markStale = -> RelativeDates.stale.push update
+
+    # kick off initial timeout with current diff
+    setOwnTimeout diff
+
 FileInfo =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['File Info Formatting']
@@ -2360,7 +2447,7 @@ ThreadUpdater =
 
     $.on window, 'online offline',   ThreadUpdater.cb.online
     $.on d,      'QRPostSuccessful', ThreadUpdater.cb.post
-    $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', ThreadUpdater.cb.visibility
+    $.on d,      'visibilitychange', ThreadUpdater.cb.visibility
 
     ThreadUpdater.cb.online()
     $.add d.body, ThreadUpdater.dialog
@@ -2387,7 +2474,7 @@ ThreadUpdater =
       ThreadUpdater.outdateCount = 0
       setTimeout ThreadUpdater.update, 1000 if ThreadUpdater.seconds > 2
     visibility: ->
-      return if $.hidden()
+      return if d.hidden
       # Reset the counter when we focus this tab.
       ThreadUpdater.outdateCount = 0
       if ThreadUpdater.seconds > ThreadUpdater.interval
@@ -2396,7 +2483,7 @@ ThreadUpdater =
       ThreadUpdater.scrollBG = if Conf['Scroll BG']
         -> true
       else
-        -> not $.hidden()
+        -> not d.hidden
     autoUpdate: ->
       if Conf['Auto Update This'] and ThreadUpdater.online
         ThreadUpdater.timeoutID = setTimeout ThreadUpdater.timeout, 1000
@@ -2447,7 +2534,7 @@ ThreadUpdater =
   getInterval: ->
     i = ThreadUpdater.interval
     j = Math.min ThreadUpdater.outdateCount, 10
-    unless $.hidden()
+    unless d.hidden
       # Lower the max refresh rate limit on visible tabs.
       j = Math.min j, 7
     ThreadUpdater.seconds = Math.max i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
@@ -2523,7 +2610,7 @@ ThreadUpdater =
     else
       ThreadUpdater.set 'status', "+#{count}", 'new'
       ThreadUpdater.outdateCount = 0
-      if Conf['Beep'] and $.hidden() # XXX and !Unread.replies.length
+      if Conf['Beep'] and d.hidden # XXX and !Unread.replies.length
         unless ThreadUpdater.audio
           ThreadUpdater.audio = $.el 'audio', src: ThreadUpdater.beep
         ThreadUpdater.audio.play()

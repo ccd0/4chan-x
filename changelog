@@ -26,8 +26,31 @@ alpha
   Fix unreadable inlined posts with the Tomorrow theme.
 
 master
+
+2.38.1
+- Mayhem
+  Fix a little regression introduced in 2.38.0 for webkit browsers.
+
+2.38.0
+- Queue
+  Add Relative Post Dates ("35 seconds ago"), disabled by default.
+- Mayhem
+  Add /int/ archive redirection for threads, and post resurrection.
+
+2.37.6
+- Mayhem
+  Fix image expanding.
+
+2.37.5
+- Mayhem
+  Fix quoting inside inlined backlinks.
+
+2.37.4
+- James Campos
+  Don't expand pdfs
 - Mayhem
   Add /po/ archive redirection for threads, images and post resurrection.
+  Fix quoting.
 
 2.37.3
 - Mayhem

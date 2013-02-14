@@ -295,6 +295,7 @@ Main =
       console.timeEnd "#{name} initialization"
 
     console.time 'All initializations'
+    initFeature 'Polyfill',                 Polyfill
     initFeature 'Header',                   Header
     initFeature 'Settings',                 Settings
     initFeature 'Resurrect Quotes',         Quotify
@@ -318,6 +319,7 @@ Main =
     initFeature 'Mark Cross-thread Quotes', QuoteCT
     initFeature 'Anonymize',                Anonymize
     initFeature 'Time Formatting',          Time
+    initFeature 'Relative Post Dates',      RelativeDates
     initFeature 'File Info Formatting',     FileInfo
     initFeature 'Sauce',                    Sauce
     initFeature 'Image Expansion',          ImageExpand
