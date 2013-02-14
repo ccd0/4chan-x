@@ -4395,7 +4395,7 @@
       if (this.files.length === 1) {
         file = this.files[0];
         if (file.size > this.max) {
-          QR.error('File too large.');
+          QR.error("File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(this.max)) + ").");
           QR.resetFileInput();
         } else if (-1 === QR.mimeTypes.indexOf(file.type)) {
           QR.error('Unsupported file type.');
@@ -4409,7 +4409,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         file = _ref[_i];
         if (file.size > this.max) {
-          QR.error("File " + file.name + " is too large (" + ($.bytesToString(file.size)) + ").");
+          QR.error("File " + file.name + " is too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(this.max)) + ").");
         } else if (-1 === QR.mimeTypes.indexOf(file.type)) {
           QR.error("" + file.name + ": Unsupported file type.");
         }
@@ -4472,7 +4472,7 @@
       }
 
       _Class.prototype.setFile = function(file) {
-        var fileUrl, img,
+        var fileURL, img,
           _this = this;
         this.file = file;
         this.el.title = "" + file.name + " (" + ($.bytesToString(file.size)) + ")";
@@ -4487,13 +4487,13 @@
           return;
         }
         URL.revokeObjectURL(this.url);
-        fileUrl = url.createObjectURL(file);
+        fileURL = URL.createObjectURL(file);
         img = $.el('img');
         $.on(img, 'load', function() {
           var c, data, i, l, s, ui8a, _i;
           s = 90 * 3;
           if (img.height < s || img.width < s) {
-            _this.url = fileUrl;
+            _this.url = fileURL;
             _this.el.style.backgroundImage = "url(" + _this.url + ")";
             return;
           }
@@ -4518,9 +4518,9 @@
             type: 'image/png'
           }));
           _this.el.style.backgroundImage = "url(" + _this.url + ")";
-          return URL.revokeObjectURL(fileUrl);
+          return URL.revokeObjectURL(fileURL);
         });
-        return img.src = fileUrl;
+        return img.src = fileURL;
       };
 
       _Class.prototype.rmFile = function() {

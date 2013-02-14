@@ -290,7 +290,7 @@ QR =
     if @files.length is 1
       file = @files[0]
       if file.size > @max
-        QR.error 'File too large.'
+        QR.error "File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString @max})."
         QR.resetFileInput()
       else if -1 is QR.mimeTypes.indexOf file.type
         QR.error 'Unsupported file type.'
@@ -301,7 +301,7 @@ QR =
     # Create new replies with these files.
     for file in @files
       if file.size > @max
-        QR.error "File #{file.name} is too large (#{$.bytesToString file.size})."
+        QR.error "File #{file.name} is too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString @max})."
       else if -1 is QR.mimeTypes.indexOf file.type
         QR.error "#{file.name}: Unsupported file type."
       unless QR.replies[QR.replies.length - 1].file
@@ -361,7 +361,7 @@ QR =
       URL.revokeObjectURL @url
 
       # Create a redimensioned thumbnail.
-      fileUrl = url.createObjectURL file
+      fileURL = URL.createObjectURL file
       img     = $.el 'img'
 
       $.on img, 'load', =>
@@ -371,7 +371,7 @@ QR =
         # to avoid crappy resized quality.
         s = 90*3
         if img.height < s or img.width < s
-          @url = fileUrl
+          @url = fileURL
           @el.style.backgroundImage = "url(#{@url})"
           return
         if img.height <= img.width
@@ -395,9 +395,9 @@ QR =
 
         @url = URL.createObjectURL new Blob [ui8a], type: 'image/png'
         @el.style.backgroundImage = "url(#{@url})"
-        URL.revokeObjectURL fileUrl
+        URL.revokeObjectURL fileURL
 
-      img.src = fileUrl
+      img.src = fileURL
     rmFile: ->
       QR.resetFileInput()
       delete @file
