@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                appchan x
 // @namespace           zixaphir
-// @version             1.1.1
+// @version             1.1.2
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           2013 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2009-2011 James Campos <james.r.campos@gmail.com>
@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.1.1 - 2013-02-14
+ * appchan x - Version 1.1.2 - 2013-02-14
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -8754,7 +8754,7 @@
           spacer = 19;
         }
         position = aligner(first, spacer, [true, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], $('#navtopright .exlinksOptionsLink', d.body), notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), notEither && _conf['Image Expansion'], notEither, g.REPLY, notEither && _conf['Fappe Tyme'], navlinks = ((!g.REPLY && _conf['Index Navigation']) || (g.REPLY && _conf['Reply Navigation'])) && notCatalog, navlinks]);
-        iconOffset = align === 'left' ? 250 - Style.sidebar : position[position.length - 1] - (_conf['4chan SS Sidebar'] ? 0 : position[position.length - 1] - Style.sidebar - parseInt(_conf["Right Thread Padding"], 10));
+        iconOffset = align === 'left' ? 250 - Style.sidebar : position[position.length - 1] - (_conf['4chan SS Sidebar'] ? 0 : Style.sidebar + parseInt(_conf["Right Thread Padding"], 10));
         if (iconOffset < 0) {
           iconOffset = 0;
         }
@@ -8764,7 +8764,7 @@
         }
       } else {
         position = aligner(2 + (_conf["4chan Banner"] === "at sidebar top" ? Style.logoOffset + 19 : 0), 19, [notEither && _conf['Image Expansion'], true, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), $('#navtopright .exlinksOptionsLink', d.body), notEither, g.REPLY, notEither && _conf['Fappe Tyme'], navlinks = ((!g.REPLY && _conf['Index Navigation']) || (g.REPLY && _conf['Reply Navigation'])) && notCatalog, navlinks]);
-        iconOffset = 20 - (_conf['4chan SS Sidebar'] ? 0 : Style.sidebar - parseInt(_conf[align.capitalize() + " Thread Padding"], 10));
+        iconOffset = 20 - (_conf['4chan SS Sidebar'] ? 0 : Style.sidebar + parseInt(_conf[align.capitalize() + " Thread Padding"], 10));
         css += "div.navLinks > a:first-of-type::after {\n  z-index: 89 !important;\n}\n#prefetch {\n  z-index: 95;\n}\n/* Image Expansion */\n#imgControls {\n  top: " + position[i++] + "px;\n}\n/* 4chan X Options */\n#settingsWindowLink {\n  top: " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after {\n  top: " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage,\n#globalMessage::after {\n  top: " + position[i++] + "px;\n}\n/* Watcher */\n" + (_conf["Slideout Watcher"] ? "#watcher, #watcher::after" : "") + " {\n  top: " + position[i++] + "px !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  top: " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  top: " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  top: " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  top: " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a:first-of-type {\n  top: " + position[i++] + "px !important;\n}\n#navlinks a:last-of-type {\n  top: " + position[i++] + "px !important;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 1px;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#navlinks a,\n#navtopright .exlinksOptionsLink::after,\n#settingsWindowLink,\n#boardNavDesktopFoot::after,\n#globalMessage::after,\n#imgControls,\n#fappeTyme,\n" + (_conf["Slideout Watcher"] ? "#watcher::after," : "") + "\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#catalog::after,\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": 3px !important;\n}\n#boardNavDesktopFoot {\n  z-index: 97 !important;\n}\n#globalMessage {\n  z-index: 98 !important;\n}\n#watcher {\n  z-index: " + (_conf["Slideout Watcher"] ? "99" : "10") + " !important;\n}\n" + (_conf["Slideout Watcher"] ? "#watcher:hover," : "") + "\n#boardNavDesktopFoot:hover,\n#globalMessage:hover {\n  z-index: 100 !important;\n}\n#boardNavDesktopFoot,\n#globalMessage,\n#watcher {\n  width: " + (233 + Style.sidebarOffset.W) + "px !important;\n  " + align + ": 18px !important;\n}\n" + (_conf['Boards Navigation'] === 'top' || _conf['Boards Navigation'] === 'sticky top' ? '#boardNavDesktop' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  padding-" + align + ": " + iconOffset + "px;\n}";
         if (_conf["Updater Position"] !== 'moveable') {
           css += "/* Updater + Stats */\n#updater,\n#stats {\n  " + align + ": " + (_conf["Updater Position"] === "top" ? "24" : "2") + "px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: " + (_conf["Updater Position"] === "top" ? "1px" : "auto") + " !important;\n  bottom: " + (_conf["Updater Position"] === "bottom" ? "2px" : "auto") + " !important;\n  " + (_conf["Updater Position"] === "top" ? "z-index: 96 !important;" : void 0) + "\n}";
@@ -11215,7 +11215,7 @@
         $.set('lastChecked', now);
         cutoff = now - 7 * $.DAY;
         hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
-        ownedPosts = MarkOwn.posts;
+        ownedPosts = $.get('ownedPosts', {});
         titles = $.get('CachedTitles', {});
         for (id in hiddenThreads) {
           timestamp = hiddenThreads[id];
@@ -11371,7 +11371,7 @@
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '1.1.1',
+    version: '1.1.2',
     callbacks: []
   };
 

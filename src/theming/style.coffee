@@ -564,7 +564,7 @@ div.navLinks > a:first-of-type:hover::after,
           position[position.length - 1] - (if _conf['4chan SS Sidebar']
             0
           else
-            position[position.length - 1] - Style.sidebar - parseInt(_conf["Right Thread Padding"], 10))
+            Style.sidebar + parseInt(_conf["Right Thread Padding"], 10))
       if iconOffset < 0 then iconOffset = 0
 
       css += """
@@ -695,7 +695,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
       iconOffset = 20 - (if _conf['4chan SS Sidebar']
         0
       else
-        Style.sidebar - parseInt _conf[align.capitalize() + " Thread Padding"], 10)
+        Style.sidebar + parseInt _conf[align.capitalize() + " Thread Padding"], 10)
 
       css += """
 div.navLinks > a:first-of-type::after {
