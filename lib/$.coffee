@@ -90,9 +90,7 @@ $.extend $,
     else
       $.el 'link',
         rel: 'stylesheet'
-        href: URL.createObjectURL new Blob [css],
-          type: 'text/css'
-        title: g.NAMESPACE
+        href: URL.createObjectURL new Blob([css], type: 'text/css')
     $.asap (-> d.head), ->
       $.add d.head, style
     style

@@ -739,11 +739,9 @@
         textContent: css
       }) : $.el('link', {
         rel: 'stylesheet',
-        href: URL.createObjectURL(new Blob([css]))
-      }, {
-        type: 'text/css'
-      }, {
-        title: g.NAMESPACE
+        href: URL.createObjectURL(new Blob([css], {
+          type: 'text/css'
+        }))
       });
       $.asap((function() {
         return d.head;
