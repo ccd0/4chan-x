@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.1.1 - 2013-02-13
+ * appchan x - Version 1.1.1 - 2013-02-14
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -4780,8 +4780,6 @@
         quote = _ref[_i];
         if (quote.hash && posts[quote.hash.slice(2)]) {
           _results.push($.addClass(quote, 'ownpost'));
-        } else {
-          _results.push(void 0);
         }
       }
       return _results;
@@ -11175,7 +11173,7 @@
         $.set('lastChecked', now);
         cutoff = now - 7 * $.DAY;
         hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
-        ownedPosts = MarkOwn.posts;
+        ownedPosts = $.get('ownedPosts', {});
         titles = $.get('CachedTitles', {});
         for (id in hiddenThreads) {
           timestamp = hiddenThreads[id];

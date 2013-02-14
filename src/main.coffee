@@ -323,7 +323,7 @@ Main =
 
       cutoff        = now - 7*$.DAY
       hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
-      ownedPosts    = MarkOwn.posts
+      ownedPosts    = $.get 'ownedPosts', {}
       titles        = $.get 'CachedTitles', {}
 
       for id, timestamp of hiddenThreads
