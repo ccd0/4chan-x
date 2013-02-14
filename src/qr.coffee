@@ -611,7 +611,7 @@ QR =
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
-    $.event new CustomEvent 'QRDialogCreation', null, QR.el
+    $.event 'QRDialogCreation', null, QR.el
 
   submit: (e) ->
     e?.preventDefault()
@@ -777,7 +777,7 @@ QR =
     [_, threadID, postID] = h1.nextSibling.textContent.match /thread:(\d+),no:(\d+)/
 
     # Post/upload confirmed as successful.
-    $.event new CustomEvent 'QRPostSuccessful', {
+    $.event 'QRPostSuccessful', {
       threadID
       postID
     }, QR.el

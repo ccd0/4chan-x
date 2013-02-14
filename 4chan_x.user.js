@@ -3786,16 +3786,62 @@
 
   ThreadUpdater = {
     init: function() {
+      var checked, conf, html, name, _ref;
       if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
         return;
       }
+      html = '';
+      _ref = Config.updater.checkbox;
+      for (name in _ref) {
+        conf = _ref[name];
+        checked = Conf[name] ? 'checked' : '';
+        html += "<div><label title='" + conf[1] + "'><input name='" + name + "' type=checkbox " + checked + "> " + name + "</label></div>";
+      }
+      checked = Conf['Auto Update'] ? 'checked' : '';
+      html = "<div class=move><span id=update-status></span> <span id=update-timer></span></div>\n" + html + "\n<div><label title='Controls whether *this* thread automatically updates or not'><input type=checkbox name='Auto Update This' " + checked + "> Auto Update This</label></div>\n<div><label><input type=number name=Interval class=field min=5 value=" + Conf['Interval'] + "> Refresh rate (s)</label></div>\n<div><input value='Update Now' type=button name='Update Now'></div>";
+      this.dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
+      this.timer = $('#update-timer', this.dialog);
+      this.status = $('#update-status', this.dialog);
       return Thread.prototype.callbacks.push({
         name: 'Thread Updater',
         cb: this.node
       });
     },
     node: function() {
-      return new ThreadUpdater.Updater(this);
+      var input, _i, _len, _ref;
+      ThreadUpdater.thread = this;
+      ThreadUpdater.root = this.posts[this].nodes.root.parentNode;
+      ThreadUpdater.lastPost = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0];
+      ThreadUpdater.outdateCount = 0;
+      ThreadUpdater.lastModified = '0';
+      _ref = $$('input', ThreadUpdater.dialog);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        input = _ref[_i];
+        if (input.type === 'checkbox') {
+          $.on(input, 'change', $.cb.checked);
+        }
+        switch (input.name) {
+          case 'Scroll BG':
+            $.on(input, 'change', ThreadUpdater.cb.scrollBG);
+            ThreadUpdater.cb.scrollBG();
+            break;
+          case 'Auto Update This':
+            $.on(input, 'change', ThreadUpdater.cb.autoUpdate);
+            $.event('change', null, input);
+            break;
+          case 'Interval':
+            $.on(input, 'change', ThreadUpdater.cb.interval);
+            ThreadUpdater.cb.interval.call(input);
+            break;
+          case 'Update Now':
+            $.on(input, 'click', ThreadUpdater.update);
+        }
+      }
+      $.on(window, 'online offline', ThreadUpdater.cb.online);
+      $.on(d, 'QRPostSuccessful', ThreadUpdater.cb.post);
+      $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', ThreadUpdater.cb.visibility);
+      ThreadUpdater.cb.online();
+      return $.add(d.body, ThreadUpdater.dialog);
     },
     /*
       http://freesound.org/people/pierrecartoons1979/sounds/90112/
@@ -3803,279 +3849,204 @@
     */
 
     beep: 'data:audio/wav;base64,UklGRjQDAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAc21wbDwAAABBAAADAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkYXRhzAIAAGMms8em0tleMV4zIpLVo8nhfSlcPR102Ki+5JspVEkdVtKzs+K1NEhUIT7DwKrcy0g6WygsrM2k1NpiLl0zIY/WpMrjgCdbPhxw2Kq+5Z4qUkkdU9K1s+K5NkVTITzBwqnczko3WikrqM+l1NxlLF0zIIvXpsnjgydZPhxs2ay95aIrUEkdUdC3suK8N0NUIjq+xKrcz002WioppdGm091pK1w0IIjYp8jkhydXPxxq2K295aUrTkoeTs65suK+OUFUIzi7xqrb0VA0WSoootKm0t5tKlo1H4TYqMfkiydWQBxm16+85actTEseS8y7seHAPD9TIza5yKra01QyWSson9On0d5wKVk2H4DYqcfkjidUQB1j1rG75KsvSkseScu8seDCPz1TJDW2yara1FYxWSwnm9Sn0N9zKVg2H33ZqsXkkihSQR1g1bK65K0wSEsfR8i+seDEQTxUJTOzy6rY1VowWC0mmNWoz993KVc3H3rYq8TklSlRQh1d1LS647AyR0wgRMbAsN/GRDpTJTKwzKrX1l4vVy4lldWpzt97KVY4IXbUr8LZljVPRCxhw7W3z6ZISkw1VK+4sMWvXEhSPk6buay9sm5JVkZNiLWqtrJ+TldNTnquqbCwilZXU1BwpKirrpNgWFhTaZmnpquZbFlbVmWOpaOonHZcXlljhaGhpZ1+YWBdYn2cn6GdhmdhYGN3lp2enIttY2Jjco+bnJuOdGZlZXCImJqakHpoZ2Zug5WYmZJ/bGlobX6RlpeSg3BqaW16jZSVkoZ0bGtteImSk5KIeG5tbnaFkJKRinxxbm91gY2QkIt/c3BwdH6Kj4+LgnZxcXR8iI2OjIR5c3J0e4WLjYuFe3VzdHmCioyLhn52dHR5gIiKioeAeHV1eH+GiYqHgXp2dnh9hIiJh4J8eHd4fIKHiIeDfXl4eHyBhoeHhH96eHmA',
-    Updater: (function() {
+    cb: {
+      online: function() {
+        if (ThreadUpdater.online = navigator.onLine) {
+          ThreadUpdater.outdateCount = 0;
+          ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+          if (Conf['Auto Update This']) {
+            ThreadUpdater.update();
+          }
+          ThreadUpdater.set('status', null, null);
+        } else {
+          ThreadUpdater.set('timer', null);
+          ThreadUpdater.set('status', 'Offline', 'warning');
+        }
+        return ThreadUpdater.cb.autoUpdate();
+      },
+      post: function(e) {
+        if (!(Conf['Auto Update This'] && +e.detail.threadID === this.thread.ID)) {
+          return;
+        }
+        this.outdateCount = 0;
+        if (this.seconds > 2) {
+          return setTimeout(this.update.bind(this), 1000);
+        }
+      },
+      visibility: function() {
+        if ($.hidden()) {
+          return;
+        }
+        ThreadUpdater.outdateCount = 0;
+        if (ThreadUpdater.seconds > ThreadUpdater.interval) {
+          return ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+        }
+      },
+      scrollBG: function() {
+        return ThreadUpdater.scrollBG = Conf['Scroll BG'] ? function() {
+          return true;
+        } : function() {
+          return !$.hidden();
+        };
+      },
+      autoUpdate: function() {
+        if (Conf['Auto Update This'] && ThreadUpdater.online) {
+          return ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
+        } else {
+          return clearTimeout(ThreadUpdater.timeoutID);
+        }
+      },
+      interval: function() {
+        var val;
+        val = Math.max(5, parseInt(this.value, 10));
+        ThreadUpdater.interval = this.value = val;
+        return $.cb.value.call(this);
+      },
+      load: function() {
+        var klass, req, text, _ref, _ref1;
+        req = ThreadUpdater.req;
+        switch (req.status) {
+          case 200:
+            ThreadUpdater.parse(JSON.parse(req.response).posts);
+            ThreadUpdater.lastModified = req.getResponseHeader('Last-Modified');
+            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            break;
+          case 404:
+            ThreadUpdater.set('timer', null);
+            ThreadUpdater.set('status', '404', 'warning');
+            clearTimeout(ThreadUpdater.timeoutID);
+            ThreadUpdater.thread.kill();
+            ThreadUpdater.outdateCount++;
+            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            break;
+          default:
+            ThreadUpdater.outdateCount++;
+            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            /*
+                      Status Code 304: Not modified
+                      By sending the `If-Modified-Since` header we get a proper status code, and no response.
+                      This saves bandwidth for both the user and the servers and avoid unnecessary computation.
+            */
 
-      function _Class(thread) {
-        var checked, dialog, html, input, name, title, val, _i, _len, _ref, _ref1;
-        this.thread = thread;
-        html = '<div class=move><span id=status></span> <span id=timer></span></div>';
-        _ref = Config.updater.checkbox;
-        for (name in _ref) {
-          val = _ref[name];
-          title = val[1];
-          checked = Conf[name] ? 'checked' : '';
-          html += "<div><label title='" + title + "'>" + name + "<input name='" + name + "' type=checkbox " + checked + "></label></div>";
+            _ref1 = (_ref = req.status) === 0 || _ref === 304 ? [null, null] : ["" + req.statusText + " (" + req.status + ")", 'warning'], text = _ref1[0], klass = _ref1[1];
+            ThreadUpdater.set('status', text, klass);
         }
-        checked = Conf['Auto Update'] ? 'checked' : '';
-        html += "<div><label title='Controls whether *this* thread automatically updates or not'>Auto Update This<input name='Auto Update This' type=checkbox " + checked + "></label></div>\n<div><label>Interval (s)<input type=number name=Interval class=field min=5 value=" + Conf['Interval'] + "></label></div>\n<div><input value='Update Now' type=button name='Update Now'></div>";
-        dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
-        this.timer = $('#timer', dialog);
-        this.status = $('#status', dialog);
-        this.unsuccessfulFetchCount = 0;
-        this.lastModified = '0';
-        this.threadRoot = thread.posts[thread].nodes.root.parentNode;
-        this.lastPost = +this.threadRoot.lastElementChild.id.slice(2);
-        _ref1 = $$('input', dialog);
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          input = _ref1[_i];
-          if (input.type === 'checkbox') {
-            $.on(input, 'click', this.cb.checkbox.bind(this));
-            $.event('click', null, input);
-          }
-          switch (input.name) {
-            case 'Scroll BG':
-              $.on(input, 'click', this.cb.scrollBG.bind(this));
-              this.cb.scrollBG.call(this);
-              break;
-            case 'Auto Update This':
-              $.on(input, 'click', this.cb.autoUpdate.bind(this));
-              break;
-            case 'Interval':
-              $.on(input, 'change', this.cb.interval.bind(this));
-              $.event('change', null, input);
-              break;
-            case 'Update Now':
-              $.on(input, 'click', this.update.bind(this));
-          }
-        }
-        $.on(window, 'online offline', this.cb.online.bind(this));
-        $.on(d, 'QRPostSuccessful', this.cb.post.bind(this));
-        $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility.bind(this));
-        this.cb.online.call(this);
-        $.add(d.body, dialog);
+        return delete ThreadUpdater.req;
       }
-
-      _Class.prototype.cb = {
-        online: function() {
-          if (this.online = navigator.onLine) {
-            this.unsuccessfulFetchCount = 0;
-            this.set('timer', this.getInterval());
-            if (Conf['Auto Update This']) {
-              this.update();
-            }
-            this.set('status', null);
-            this.status.className = null;
-          } else {
-            this.status.className = 'warning';
-            this.set('status', 'Offline');
-            this.set('timer', null);
-          }
-          return this.cb.autoUpdate.call(this);
-        },
-        post: function(e) {
-          if (!(this['Auto Update This'] && +e.detail.threadID === this.thread.ID)) {
-            return;
-          }
-          this.unsuccessfulFetchCount = 0;
-          if (this.seconds > 2) {
-            return setTimeout(this.update.bind(this), 1000);
-          }
-        },
-        visibility: function() {
-          if ($.hidden()) {
-            return;
-          }
-          this.unsuccessfulFetchCount = 0;
-          if (this.seconds > this.interval) {
-            return this.set('timer', this.getInterval());
-          }
-        },
-        checkbox: function(e) {
-          var checked, input, name;
-          input = e.target;
-          checked = input.checked, name = input.name;
-          this[name] = checked;
-          return $.cb.checked.call(input);
-        },
-        scrollBG: function() {
-          return this.scrollBG = this['Scroll BG'] ? function() {
-            return true;
-          } : function() {
-            return !$.hidden();
-          };
-        },
-        autoUpdate: function() {
-          if (this['Auto Update This'] && this.online) {
-            return this.timeoutID = setTimeout(this.timeout.bind(this), 1000);
-          } else {
-            return clearTimeout(this.timeoutID);
-          }
-        },
-        interval: function(e) {
-          var input, val;
-          input = e.target;
-          val = Math.max(5, parseInt(input.value, 10));
-          this.interval = input.value = val;
-          return $.cb.value.call(input);
-        },
-        load: function() {
-          switch (this.req.status) {
-            case 404:
-              this.set('timer', null);
-              this.set('status', '404');
-              this.status.className = 'warning';
-              clearTimeout(this.timeoutID);
-              this.thread.isDead = true;
-              break;
-            case 0:
-            case 304:
-              /*
-                          Status Code 304: Not modified
-                          By sending the `If-Modified-Since` header we get a proper status code, and no response.
-                          This saves bandwidth for both the user and the servers and avoid unnecessary computation.
-              */
-
-              this.unsuccessfulFetchCount++;
-              this.set('timer', this.getInterval());
-              this.set('status', null);
-              this.status.className = null;
-              break;
-            case 200:
-              this.parse(JSON.parse(this.req.response).posts);
-              this.lastModified = this.req.getResponseHeader('Last-Modified');
-              this.set('timer', this.getInterval());
-              break;
-            default:
-              this.unsuccessfulFetchCount++;
-              this.set('timer', this.getInterval());
-              this.set('status', "" + this.req.statusText + " (" + this.req.status + ")");
-              this.status.className = 'warning';
-          }
-          return delete this.req;
+    },
+    getInterval: function() {
+      var i, j;
+      i = ThreadUpdater.interval;
+      j = Math.min(ThreadUpdater.outdateCount, 10);
+      if (!$.hidden()) {
+        j = Math.min(j, 7);
+      }
+      return ThreadUpdater.seconds = Math.max(i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
+    },
+    set: function(name, text, klass) {
+      var el, node;
+      el = ThreadUpdater[name];
+      if (node = el.firstChild) {
+        node.data = text;
+      } else {
+        el.textContent = text;
+      }
+      if (klass !== void 0) {
+        return el.className = klass;
+      }
+    },
+    timeout: function() {
+      var n;
+      ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
+      if (!(n = --ThreadUpdater.seconds)) {
+        return ThreadUpdater.update();
+      } else if (n <= -60) {
+        ThreadUpdater.set('status', 'Retrying', null);
+        return ThreadUpdater.update();
+      } else if (n > 0) {
+        return ThreadUpdater.set('timer', n);
+      }
+    },
+    update: function() {
+      var url;
+      if (!ThreadUpdater.online) {
+        return;
+      }
+      ThreadUpdater.seconds = 0;
+      ThreadUpdater.set('timer', '...');
+      if (ThreadUpdater.req) {
+        ThreadUpdater.req.onloadend = null;
+        ThreadUpdater.req.abort();
+      }
+      url = "//api.4chan.org/" + ThreadUpdater.thread.board + "/res/" + ThreadUpdater.thread + ".json";
+      return ThreadUpdater.req = $.ajax(url, {
+        onloadend: ThreadUpdater.cb.load
+      }, {
+        headers: {
+          'If-Modified-Since': ThreadUpdater.lastModified
         }
-      };
-
-      _Class.prototype.getInterval = function() {
-        var i, j;
-        i = this.interval;
-        j = Math.min(this.unsuccessfulFetchCount, 10);
-        if (!$.hidden()) {
-          j = Math.min(j, 7);
+      });
+    },
+    parse: function(postObjects) {
+      var ID, count, files, index, node, nodes, num, post, postObject, posts, scroll, _i, _len, _ref;
+      Build.spoilerRange[ThreadUpdater.thread.board] = postObjects[0].custom_spoiler;
+      nodes = [];
+      posts = [];
+      index = [];
+      files = [];
+      count = 0;
+      for (_i = 0, _len = postObjects.length; _i < _len; _i++) {
+        postObject = postObjects[_i];
+        num = postObject.no;
+        index.push(num);
+        if (postObject.fsize) {
+          files.push(num);
         }
-        return this.seconds = Math.max(i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
-      };
-
-      _Class.prototype.set = function(name, text) {
-        var el, node;
-        el = this[name];
-        if (node = el.firstChild) {
-          return node.data = text;
-        } else {
-          return el.textContent = text;
+        if (num <= ThreadUpdater.lastPost) {
+          continue;
         }
-      };
-
-      _Class.prototype.timeout = function() {
-        var n;
-        this.timeoutID = setTimeout(this.timeout.bind(this), 1000);
-        if (!(n = --this.seconds)) {
-          return this.update();
-        } else if (n <= -60) {
-          this.set('status', 'Retrying');
-          this.status.className = null;
-          return this.update();
-        } else if (n > 0) {
-          return this.set('timer', n);
+        count++;
+        node = Build.postFromObject(postObject, ThreadUpdater.thread.board.ID);
+        nodes.push(node);
+        posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board));
+      }
+      _ref = ThreadUpdater.thread.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
+        if (post.isDead) {
+          continue;
         }
-      };
-
-      _Class.prototype.update = function() {
-        var url;
-        if (!this.online) {
-          return;
+        ID = +ID;
+        if (-1 === index.indexOf(ID)) {
+          post.kill();
+        } else if (post.file && !post.file.isDead && -1 === files.indexOf(ID)) {
+          post.kill(true);
         }
-        this.seconds = 0;
-        this.set('timer', '...');
-        if (this.req) {
-          this.req.onloadend = null;
-          this.req.abort();
-        }
-        url = "//api.4chan.org/" + this.thread.board + "/res/" + this.thread + ".json";
-        return this.req = $.ajax(url, {
-          onloadend: this.cb.load.bind(this)
-        }, {
-          headers: {
-            'If-Modified-Since': this.lastModified
+      }
+      if (count) {
+        if (Conf['Beep'] && $.hidden()) {
+          if (!ThreadUpdater.audio) {
+            ThreadUpdater.audio = $.el('audio', {
+              src: ThreadUpdater.beep
+            });
           }
-        });
-      };
-
-      _Class.prototype.parse = function(postObjects) {
-        var ID, count, i, image, index, node, nodes, num, post, postObject, posts, scroll, _i, _len, _ref;
-        Build.spoilerRange[this.thread.board] = postObjects[0].custom_spoiler;
-        nodes = [];
-        posts = [];
-        index = [];
-        image = [];
-        count = 0;
-        for (_i = 0, _len = postObjects.length; _i < _len; _i++) {
-          postObject = postObjects[_i];
-          num = postObject.no;
-          index.push(num);
-          if (postObject.ext) {
-            image.push(num);
-          }
-          if (num <= this.lastPost) {
-            continue;
-          }
-          count++;
-          node = Build.postFromObject(postObject, this.thread.board.ID);
-          nodes.push(node);
-          posts.push(new Post(node, this.thread, this.thread.board));
+          ThreadUpdater.audio.play();
         }
-        _ref = this.thread.posts;
-        for (i in _ref) {
-          post = _ref[i];
-          if (post.isDead) {
-            continue;
-          }
-          ID = post.ID;
-          if (-1 === index.indexOf(ID)) {
-            post.kill();
-          } else if (post.file && !post.file.isDead && -1 === image.indexOf(ID)) {
-            post.kill(true);
-          }
-        }
-        if (count) {
-          if (Conf['Beep'] && $.hidden() && (Unread.replies.length === 0)) {
-            if (!this.audio) {
-              this.audio = $.el('audio', {
-                src: ThreadUpdater.beep
-              });
-            }
-            audio.play();
-          }
-          this.set('status', "+" + count);
-          this.status.className = 'new';
-          this.unsuccessfulFetchCount = 0;
-        } else {
-          this.set('status', null);
-          this.status.className = null;
-          this.unsuccessfulFetchCount++;
-          return;
-        }
-        this.lastPost = posts[count - 1].ID;
-        Main.callbackNodes(Post, posts);
-        scroll = this['Auto Scroll'] && this.scrollBG() && this.threadRoot.getBoundingClientRect().bottom - doc.clientHeight < 25;
-        $.add(this.threadRoot, nodes);
-        if (scroll) {
-          return nodes[0].scrollIntoView();
-        }
-      };
-
-      return _Class;
-
-    })()
+        ThreadUpdater.set('status', "+" + count, 'new');
+        ThreadUpdater.outdateCount = 0;
+      } else {
+        ThreadUpdater.set('status', null, null);
+        ThreadUpdater.outdateCount++;
+        return;
+      }
+      ThreadUpdater.lastPost = posts[count - 1].ID;
+      Main.callbackNodes(Post, posts);
+      scroll = Conf['Auto Scroll'] && ThreadUpdater.scrollBG() && ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25;
+      $.add(ThreadUpdater.root, nodes);
+      if (scroll) {
+        return nodes[0].scrollIntoView();
+      }
+    }
   };
 
   QR = {
@@ -4824,7 +4795,7 @@
       QR.cooldown.init();
       QR.captcha.init();
       $.add(d.body, QR.el);
-      return $.event(new CustomEvent('QRDialogCreation', null, QR.el));
+      return $.event('QRDialogCreation', null, QR.el);
     },
     submit: function(e) {
       var callbacks, captcha, captchas, challenge, err, filetag, m, opts, post, reply, response, textOnly, threadID, _ref;
@@ -4987,10 +4958,10 @@
       };
       $.set('QR.persona', persona);
       _ref1 = h1.nextSibling.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
-      $.event(new CustomEvent('QRPostSuccessful', {
+      $.event('QRPostSuccessful', {
         threadID: threadID,
         postID: postID
-      }, QR.el));
+      }, QR.el);
       QR.cooldown.set({
         post: reply,
         isReply: threadID !== '0'
@@ -5051,6 +5022,11 @@
       this.posts = {};
       g.threads["" + board + "." + this] = board.threads[this] = this;
     }
+
+    Thread.prototype.kill = function() {
+      this.isDead = true;
+      return this.timeOfDeath = Date.now();
+    };
 
     return Thread;
 
@@ -5579,7 +5555,7 @@
       });
       return [message, error];
     },
-    css: "/* General */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.field {\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\n-webkit-transition: color .25s, border-color .25s;\ntransition: color .25s, border-color .25s;\n}\n.field:-moz-placeholder,\n.field:hover:-moz-placeholder {\ncolor: #AAA !important;\n}\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.move {\ncursor: move;\n}\nlabel {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\n}\n.post {\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#header,\n#qr, #watcher {\nposition: fixed;\n}\n#notifications {\nz-index: 80;\n}\n#qp, #ihover {\nz-index: 70;\n}\n#menu {\nz-index: 60;\n}\n#updater, #stats {\nz-index: 50;\n}\n#header:hover {\nz-index: 40;\n}\n#qr {\nz-index: 30;\n}\n#header {\nz-index: 20;\n}\n#watcher {\nz-index: 10;\n}\n\n/* Header */\n.fourchan-x body {\nmargin-top: 2em;\n}\n.fourchan-x #boardNavDesktop,\n.fourchan-x #navtopright,\n.fourchan-x #boardNavDesktopFoot {\ndisplay: none !important;\n}\n#header {\ntop: 0;\nright: 0;\nleft: 0;\n}\n#header-bar {\nborder-width: 0 0 1px;\npadding: 4px;\nposition: relative;\n-webkit-transition: all .1s ease-in-out;\ntransition: all .1s ease-in-out;\n}\n#header-bar.autohide:not(:hover) {\nbox-shadow: none;\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\n-webkit-transition: all .75s .25s ease-in-out;\ntransition: all .75s .25s ease-in-out;\n}\n#toggle-header-bar {\ncursor: n-resize;\nleft: 0;\nright: 0;\nbottom: -8px;\nheight: 10px;\nposition: absolute;\n}\n#header-bar.autohide #toggle-header-bar {\ncursor: s-resize;\n}\n#header-bar a {\ntext-decoration: none;\npadding: 1px;\n}\n#header-bar > .menu-button {\nfloat: right;\npadding: 0;\n}\n\n/* Notifications */\n#notifications {\ntext-align: center;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\n-webkit-transition: all .25s ease-in-out;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 40%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 40%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 40%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 40%, .9);\n}\n.notification > .close {\ncolor: white;\npadding: 4px 6px;\ntop: 0;\nright: 0;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 4px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* Thread Updater */\n#updater {\ntext-align: right;\n}\n#updater:not(:hover) {\nbackground: none;\nborder: none;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n.new {\ncolor: limegreen;\n}\n\n/* Quote */\n.deadlink {\ntext-decoration: none !important;\n}\n.backlink.deadlink, .quotelink.deadlink {\ntext-decoration: underline !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp {\npadding: 2px 2px 5px;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 0;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\n}\n.qphl {\nbox-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* File */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\ndisplay: none;\n}\n:root.fit-width .full-image {\nmax-width: 100%;\n}\n:root.gecko.fit-width .full-image,\n:root.presto.fit-width .full-image {\nwidth: 100%;\n}\n.expanded-image > .op > .file::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.opContainer.filter-highlight.qphl {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5),\n            0 0 0 2px rgba(216, 94, 49, .7);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply.qphl {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5),\n            0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n\n/* QR */\n.hide-original-post-form #postForm,\n.hide-original-post-form .postingMode {\ndisplay: none;\n}\n#qr > .move {\nmin-width: 300px;\noverflow: hidden;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 0 2px;\n}\n#qr > .move > span {\nfloat: right;\n}\n#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {\ncursor: pointer;\n}\n#qr select {\nmargin: 0;\n}\n#dump {\nbackground: -webkit-linear-gradient(#EEE, #CCC);\nbackground: linear-gradient(#EEE, #CCC);\nborder: 1px solid #CCC;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\nwidth: 30px;\n}\n.gecko #dump {\npadding: 1px 0 2px;\nwidth: 10%;\n}\n#dump:hover, #dump:focus {\nbackground: -webkit-linear-gradient(#FFF, #DDD);\nbackground: linear-gradient(#FFF, #DDD);\n}\n#dump:active, .dump #dump:not(:hover):not(:focus) {\nbackground: -webkit-linear-gradient(#CCC, #DDD);\nbackground: linear-gradient(#CCC, #DDD);\n}\n#qr:not(.dump) #replies, .dump > form > label {\ndisplay: none;\n}\n#replies {\ndisplay: block;\nheight: 100px;\nposition: relative;\n-webkit-user-select: none;\n-moz-user-select: none;\n-o-user-select: none;\nuser-select: none;\n}\n#replies > div {\ncounter-reset: qrpreviews;\ntop: 0; right: 0; bottom: 0; left: 0;\nmargin: 0; padding: 0;\noverflow: hidden;\nposition: absolute;\nwhite-space: pre;\n}\n#replies > div:hover {\nbottom: -10px;\noverflow-x: auto;\nz-index: 1;\n}\n.qrpreview {\nbackground-position: 50% 20%;\nbackground-size: cover;\nborder: 1px solid #808080;\ncolor: #FFF !important;\nfont-size: 12px;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncursor: move;\ndisplay: inline-block;\nheight: 90px; width: 90px;\nmargin: 5px; padding: 2px;\nopacity: .6;\noutline: none;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-webkit-transition: opacity .25s ease-in-out;\ntransition: opacity .25s ease-in-out;\nvertical-align: top;\n}\n.qrpreview:hover, .qrpreview:focus {\nopacity: .9;\ncolor: #FFF !important;\n}\n.qrpreview#selected {\nopacity: 1;\n}\n.qrpreview::before {\ncounter-increment: qrpreviews;\ncontent: counter(qrpreviews);\nfont-weight: 700;\ntext-shadow: 0 0 3px #000, 0 0 5px #000;\nposition: absolute;\ntop: 3px; right: 3px;\n}\n.qrpreview.drag {\nborder-color: red;\nborder-style: dashed;\n}\n.qrpreview.over {\nborder-color: #FFF;\nborder-style: dashed;\n}\n.remove {\ncolor: #E00 !important;\nfont-weight: 700;\npadding: 3px;\n}\n.remove:hover::after {\ncontent: ' Remove';\n}\n.qrpreview > label {\nbackground: rgba(0, 0, 0, .5);\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.qrpreview > label > input {\nmargin: 1px 0;\nvertical-align: bottom;\n}\n#addReply {\nfont-size: 3.5em;\nline-height: 100px;\n}\n.persona {\ndisplay: -webkit-flex;\ndisplay: flex;\n}\n.persona .field {\n-webkit-flex: 1;\nflex: 1;\n}\n.gecko .persona .field {\nwidth: 30%;\n}\n#qr textarea.field {\ndisplay: -webkit-box;\nmin-height: 160px;\nmin-width: 100%;\n}\n#qr.captcha textarea.field {\nmin-height: 120px;\n}\n.textarea {\nposition: relative;\n}\n#charCount {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nmargin: 1px;\nposition: absolute;\nbottom: 0;\nright: 0;\npointer-events: none;\n}\n#charCount.warning {\ncolor: red;\n}\n.captchainput > .field {\nmin-width: 100%;\n}\n.captchaimg {\nbackground: #FFF;\noutline: 1px solid #CCC;\noutline-offset: -1px;\ntext-align: center;\n}\n.captchaimg > img {\ndisplay: block;\nheight: 57px;\nwidth: 300px;\n}\n#qr [type=file] {\nmargin: 1px 0;\nwidth: 70%;\n}\n#qr [type=submit] {\nmargin: 1px 0;\npadding: 1px; /* not Gecko */\nwidth: 30%;\n}\n.gecko #qr [type=submit] {\npadding: 0 1px; /* Gecko does not respect box-sizing: border-box */\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\n}\n.menu-button > span {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-flow: column nowrap;\nflex-flow: column nowrap;\nposition: absolute;\noutline: none;\n}\n.entry {\ncursor: pointer;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.entry.has-submenu {\npadding-right: 20px;\n}\n.has-submenu::after {\ncontent: '';\nborder-left:   6px solid;\nborder-top:    4px solid transparent;\nborder-bottom: 4px solid transparent;\ndisplay: inline-block;\nmargin: 4px;\nposition: absolute;\nright: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\ndisplay: none;\n}\n.submenu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-flow: column nowrap;\nflex-flow: column nowrap;\nposition: absolute;\nmargin: -1px 0;\n}\n.entry input {\nmargin: 0;\n}\n\n/* General */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a {\ncolor: #800000;\n}\n\n/* Quote */\n:root.yotsuba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.yotsuba .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba .entry {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a {\ncolor: #34345C;\n}\n\n/* Quote */\n:root.yotsuba-b .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.yotsuba-b .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b .entry {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a {\ncolor: #800000;\n}\n\n/* Quote */\n:root.futaba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.futaba .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba .entry {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a {\ncolor: #34345C;\n}\n\n/* Quote */\n:root.burichan .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.burichan .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan .entry {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .field:focus {\nborder-color: #000;\n}\n\n/* Header */\n:root.tomorrow #header-bar {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a {\ncolor: #81A2BE;\n}\n\n/* Quote */\n:root.tomorrow .backlink.deadlink {\ncolor: #81A2BE !important;\n}\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n:root.tomorrow .qrpreview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n\n/* Menu */\n:root.tomorrow .entry {\nborder-bottom: 1px solid #111;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* General */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a {\ncolor: #FF6600;\n}\n\n/* Quote */\n:root.photon .backlink.deadlink {\ncolor: #F60 !important;\n}\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.photon .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon .entry {\nborder-bottom: 1px solid #CCC;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
+    css: "/* General */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.field {\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\n-webkit-transition: color .25s, border-color .25s;\ntransition: color .25s, border-color .25s;\n}\n.field:-moz-placeholder,\n.field:hover:-moz-placeholder {\ncolor: #AAA !important;\n}\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.move {\ncursor: move;\n}\nlabel {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\n}\n.post {\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#qp, #ihover,\n#updater, #stats,\n#header,\n#qr, #watcher {\nposition: fixed;\n}\n#notifications {\nz-index: 80;\n}\n#qp, #ihover {\nz-index: 70;\n}\n#menu {\nz-index: 60;\n}\n#updater, #stats {\nz-index: 50;\n}\n#header:hover {\nz-index: 40;\n}\n#qr {\nz-index: 30;\n}\n#header {\nz-index: 20;\n}\n#watcher {\nz-index: 10;\n}\n\n/* Header */\n.fourchan-x body {\nmargin-top: 2em;\n}\n.fourchan-x #boardNavDesktop,\n.fourchan-x #navtopright,\n.fourchan-x #boardNavDesktopFoot {\ndisplay: none !important;\n}\n#header {\ntop: 0;\nright: 0;\nleft: 0;\n}\n#header-bar {\nborder-width: 0 0 1px;\npadding: 4px;\nposition: relative;\n-webkit-transition: all .1s ease-in-out;\ntransition: all .1s ease-in-out;\n}\n#header-bar.autohide:not(:hover) {\nbox-shadow: none;\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\n-webkit-transition: all .75s .25s ease-in-out;\ntransition: all .75s .25s ease-in-out;\n}\n#toggle-header-bar {\ncursor: n-resize;\nleft: 0;\nright: 0;\nbottom: -8px;\nheight: 10px;\nposition: absolute;\n}\n#header-bar.autohide #toggle-header-bar {\ncursor: s-resize;\n}\n#header-bar a {\ntext-decoration: none;\npadding: 1px;\n}\n#header-bar > .menu-button {\nfloat: right;\npadding: 0;\n}\n\n/* Notifications */\n#notifications {\ntext-align: center;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\n-webkit-transition: all .25s ease-in-out;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 40%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 40%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 40%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 40%, .9);\n}\n.notification > .close {\ncolor: white;\npadding: 4px 6px;\ntop: 0;\nright: 0;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 4px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* Thread Updater */\n#updater:not(:hover) {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n#updater > .move {\npadding: 0 3px;\n}\n#updater > div:last-child {\ntext-align: center;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n.new {\ncolor: limegreen;\n}\n\n/* Quote */\n.deadlink {\ntext-decoration: none !important;\n}\n.backlink.deadlink, .quotelink.deadlink {\ntext-decoration: underline !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp {\npadding: 2px 2px 5px;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 0;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\n}\n.qphl {\nbox-shadow: 0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* File */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\ndisplay: none;\n}\n:root.fit-width .full-image {\nmax-width: 100%;\n}\n:root.gecko.fit-width .full-image,\n:root.presto.fit-width .full-image {\nwidth: 100%;\n}\n.expanded-image > .op > .file::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.opContainer.filter-highlight.qphl {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5),\n            0 0 0 2px rgba(216, 94, 49, .7);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply.qphl {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5),\n            0 0 0 2px rgba(216, 94, 49, .7);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n\n/* QR */\n.hide-original-post-form #postForm,\n.hide-original-post-form .postingMode {\ndisplay: none;\n}\n#qr > .move {\nmin-width: 300px;\noverflow: hidden;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 0 2px;\n}\n#qr > .move > span {\nfloat: right;\n}\n#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {\ncursor: pointer;\n}\n#qr select {\nmargin: 0;\n}\n#dump {\nbackground: -webkit-linear-gradient(#EEE, #CCC);\nbackground: linear-gradient(#EEE, #CCC);\nborder: 1px solid #CCC;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\nwidth: 30px;\n}\n.gecko #dump {\npadding: 1px 0 2px;\nwidth: 10%;\n}\n#dump:hover, #dump:focus {\nbackground: -webkit-linear-gradient(#FFF, #DDD);\nbackground: linear-gradient(#FFF, #DDD);\n}\n#dump:active, .dump #dump:not(:hover):not(:focus) {\nbackground: -webkit-linear-gradient(#CCC, #DDD);\nbackground: linear-gradient(#CCC, #DDD);\n}\n#qr:not(.dump) #replies, .dump > form > label {\ndisplay: none;\n}\n#replies {\ndisplay: block;\nheight: 100px;\nposition: relative;\n-webkit-user-select: none;\n-moz-user-select: none;\n-o-user-select: none;\nuser-select: none;\n}\n#replies > div {\ncounter-reset: qrpreviews;\ntop: 0; right: 0; bottom: 0; left: 0;\nmargin: 0; padding: 0;\noverflow: hidden;\nposition: absolute;\nwhite-space: pre;\n}\n#replies > div:hover {\nbottom: -10px;\noverflow-x: auto;\nz-index: 1;\n}\n.qrpreview {\nbackground-position: 50% 20%;\nbackground-size: cover;\nborder: 1px solid #808080;\ncolor: #FFF !important;\nfont-size: 12px;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncursor: move;\ndisplay: inline-block;\nheight: 90px; width: 90px;\nmargin: 5px; padding: 2px;\nopacity: .6;\noutline: none;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-webkit-transition: opacity .25s ease-in-out;\ntransition: opacity .25s ease-in-out;\nvertical-align: top;\n}\n.qrpreview:hover, .qrpreview:focus {\nopacity: .9;\ncolor: #FFF !important;\n}\n.qrpreview#selected {\nopacity: 1;\n}\n.qrpreview::before {\ncounter-increment: qrpreviews;\ncontent: counter(qrpreviews);\nfont-weight: 700;\ntext-shadow: 0 0 3px #000, 0 0 5px #000;\nposition: absolute;\ntop: 3px; right: 3px;\n}\n.qrpreview.drag {\nborder-color: red;\nborder-style: dashed;\n}\n.qrpreview.over {\nborder-color: #FFF;\nborder-style: dashed;\n}\n.remove {\ncolor: #E00 !important;\nfont-weight: 700;\npadding: 3px;\n}\n.remove:hover::after {\ncontent: ' Remove';\n}\n.qrpreview > label {\nbackground: rgba(0, 0, 0, .5);\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.qrpreview > label > input {\nmargin: 1px 0;\nvertical-align: bottom;\n}\n#addReply {\nfont-size: 3.5em;\nline-height: 100px;\n}\n.persona {\ndisplay: -webkit-flex;\ndisplay: flex;\n}\n.persona .field {\n-webkit-flex: 1;\nflex: 1;\n}\n.gecko .persona .field {\nwidth: 30%;\n}\n#qr textarea.field {\ndisplay: -webkit-box;\nmin-height: 160px;\nmin-width: 100%;\n}\n#qr.captcha textarea.field {\nmin-height: 120px;\n}\n.textarea {\nposition: relative;\n}\n#charCount {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nmargin: 1px;\nposition: absolute;\nbottom: 0;\nright: 0;\npointer-events: none;\n}\n#charCount.warning {\ncolor: red;\n}\n.captchainput > .field {\nmin-width: 100%;\n}\n.captchaimg {\nbackground: #FFF;\noutline: 1px solid #CCC;\noutline-offset: -1px;\ntext-align: center;\n}\n.captchaimg > img {\ndisplay: block;\nheight: 57px;\nwidth: 300px;\n}\n#qr [type=file] {\nmargin: 1px 0;\nwidth: 70%;\n}\n#qr [type=submit] {\nmargin: 1px 0;\npadding: 1px; /* not Gecko */\nwidth: 30%;\n}\n.gecko #qr [type=submit] {\npadding: 0 1px; /* Gecko does not respect box-sizing: border-box */\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\n}\n.menu-button > span {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-flow: column nowrap;\nflex-flow: column nowrap;\nposition: absolute;\noutline: none;\n}\n.entry {\ncursor: pointer;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.entry.has-submenu {\npadding-right: 20px;\n}\n.has-submenu::after {\ncontent: '';\nborder-left:   6px solid;\nborder-top:    4px solid transparent;\nborder-bottom: 4px solid transparent;\ndisplay: inline-block;\nmargin: 4px;\nposition: absolute;\nright: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\ndisplay: none;\n}\n.submenu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-flow: column nowrap;\nflex-flow: column nowrap;\nposition: absolute;\nmargin: -1px 0;\n}\n.entry input {\nmargin: 0;\n}\n\n/* General */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a {\ncolor: #800000;\n}\n\n/* Quote */\n:root.yotsuba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.yotsuba .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba .entry {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a {\ncolor: #34345C;\n}\n\n/* Quote */\n:root.yotsuba-b .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.yotsuba-b .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b .entry {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a {\ncolor: #800000;\n}\n\n/* Quote */\n:root.futaba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.futaba .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba .entry {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a {\ncolor: #34345C;\n}\n\n/* Quote */\n:root.burichan .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.burichan .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan .entry {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .field:focus {\nborder-color: #000;\n}\n\n/* Header */\n:root.tomorrow #header-bar {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a {\ncolor: #81A2BE;\n}\n\n/* Quote */\n:root.tomorrow .backlink.deadlink {\ncolor: #81A2BE !important;\n}\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n:root.tomorrow .qrpreview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n\n/* Menu */\n:root.tomorrow .entry {\nborder-bottom: 1px solid #111;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* General */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a {\ncolor: #FF6600;\n}\n\n/* Quote */\n:root.photon .backlink.deadlink {\ncolor: #F60 !important;\n}\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.photon .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon .entry {\nborder-bottom: 1px solid #CCC;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
   };
 
   Main.init();

@@ -178,12 +178,16 @@ a[href="javascript:;"] {
 }
 
 /* Thread Updater */
-#updater {
-  text-align: right;
-}
 #updater:not(:hover) {
   background: none;
   border: none;
+  box-shadow: none;
+}
+#updater > .move {
+  padding: 0 3px;
+}
+#updater > div:last-child {
+  text-align: center;
 }
 #updater input[type=number] {
   width: 4em;

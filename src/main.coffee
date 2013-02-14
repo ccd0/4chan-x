@@ -24,6 +24,10 @@ class Thread
 
     g.threads["#{board}.#{@}"] = board.threads[@] = @
 
+  kill: ->
+    @isDead = true
+    @timeOfDeath = Date.now()
+
 class Post
   callbacks: []
   toString: -> @ID
