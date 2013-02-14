@@ -2100,7 +2100,6 @@ ImageExpand =
     Post::callbacks.push
       name: 'Image Expansion'
       cb:   @node
-
   node: ->
     return unless @file and @file.isImage
     $.on @file.thumb.parentNode, 'click', ImageExpand.cb.toggle
@@ -2120,15 +2119,15 @@ ImageExpand =
           {file} = post
           continue unless file and file.isImage and doc.contains post.nodes.root
           if ImageExpand.on and
-            (!ImageExpand.spoilers and file.isSpoiler or
-            ImageExpand.fromPosition and file.thumb.getBoundingClientRect().top < 0)
+            (!Conf['Expand spoilers'] and file.isSpoiler or
+            Conf['Expand from here'] and file.thumb.getBoundingClientRect().top < 0)
               continue
           posts.push post
       func = if ImageExpand.on then ImageExpand.expand else ImageExpand.contract
       for post in posts
         func post
       return
-    updateFitness: ->
+    setFitness: ->
       {checked} = @
       (if checked then $.addClass else $.rmClass) doc, @name.toLowerCase().replace /\s+/g, '-'
       return unless @name is 'Fit height'
@@ -2139,10 +2138,6 @@ ImageExpand =
         ImageExpand.resize()
       else
         $.off window, 'resize', ImageExpand.resize
-    spoilers: ->
-      ImageExpand.spoilers = @checked
-    position: ->
-      ImageExpand.fromPosition = @checked
 
   toggle: (post) ->
     {thumb} = post.file
@@ -2213,19 +2208,11 @@ ImageExpand =
       el = $.el 'span',
         textContent: 'Image Expansion'
 
-      ImageExpand.menu.config = $.get 'ImageExpansionConfig',
-        'Fit width':  true
-        'Fit height': false
-        'Expand spoilers': false
-        'Expand from here': true
-
       {createSubEntry} = ImageExpand.menu
       subEntries = []
       subEntries.push createSubEntry 'Expand all'
-      subEntries.push createSubEntry 'Fit width',  true
-      subEntries.push createSubEntry 'Fit height', true
-      subEntries.push createSubEntry 'Expand spoilers', true
-      subEntries.push createSubEntry 'Expand from here', true
+      for key, conf of Config.imageExpansion
+        subEntries.push createSubEntry key, conf
 
       $.event 'AddMenuEntry',
         type: 'header'
@@ -2233,30 +2220,21 @@ ImageExpand =
         order: 20
         subEntries: subEntries
 
-    createSubEntry: (type, hasConfig) ->
+    createSubEntry: (type, config) ->
       label = $.el 'label',
         innerHTML: "<input type=checkbox name='#{type}'> #{type}"
       input = label.firstElementChild
       switch type
         when 'Expand all'
           $.on input, 'change', ImageExpand.cb.all
-        when 'Expand spoilers'
-          label.title = 'Expand all images along with spoilers.'
-          $.on input, 'change', ImageExpand.cb.spoilers
-        when 'Expand from here'
-          label.title = 'Expand all images only from current position to thread end.'
-          $.on input, 'change', ImageExpand.cb.position
-        else
-          $.on input, 'change',  ImageExpand.cb.updateFitness
-      if hasConfig
-        input.checked = ImageExpand.menu.config[type]
+        when 'Fit width', 'Fit height'
+          $.on input, 'change', ImageExpand.cb.setFitness
+      if config
+        label.title   = config[1]
+        input.checked = Conf[type]
         $.event 'change', null, input
-        $.on input, 'change', ImageExpand.menu.saveConfig
+        $.on input, 'change', $.cb.checked
       el: label
-    saveConfig: ->
-      {config} = ImageExpand.menu
-      config[@name] = @checked
-      $.set 'ImageExpansionConfig', config
 
   resize: ->
     ImageExpand.style.textContent = ":root.fit-height .full-image {max-height:#{doc.clientHeight}px}"

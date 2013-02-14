@@ -115,6 +115,12 @@
         'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.']
       }
     },
+    imageExpansion: {
+      'Fit width': [true, null],
+      'Fit height': [false, null],
+      'Expand spoilers': [false, 'Expand all images along with spoilers.'],
+      'Expand from here': [true, 'Expand all images only from current position to thread end.']
+    },
     filter: {
       name: ['# Filter any namefags:', '#/^(?!Anonymous$)/'].join('\n'),
       uniqueID: ['# Filter a specific ID:', '#/Txhvk1Tl/'].join('\n'),
@@ -3477,7 +3483,7 @@
             if (!(file && file.isImage && doc.contains(post.nodes.root))) {
               continue;
             }
-            if (ImageExpand.on && (!ImageExpand.spoilers && file.isSpoiler || ImageExpand.fromPosition && file.thumb.getBoundingClientRect().top < 0)) {
+            if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && file.thumb.getBoundingClientRect().top < 0)) {
               continue;
             }
             posts.push(post);
@@ -3489,7 +3495,7 @@
           func(post);
         }
       },
-      updateFitness: function() {
+      setFitness: function() {
         var checked;
         checked = this.checked;
         (checked ? $.addClass : $.rmClass)(doc, this.name.toLowerCase().replace(/\s+/g, '-'));
@@ -3505,12 +3511,6 @@
         } else {
           return $.off(window, 'resize', ImageExpand.resize);
         }
-      },
-      spoilers: function() {
-        return ImageExpand.spoilers = this.checked;
-      },
-      position: function() {
-        return ImageExpand.fromPosition = this.checked;
       }
     },
     toggle: function(post) {
@@ -3605,26 +3605,21 @@
     },
     menu: {
       init: function() {
-        var createSubEntry, el, subEntries;
+        var conf, createSubEntry, el, key, subEntries, _ref;
         if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
           return;
         }
         el = $.el('span', {
           textContent: 'Image Expansion'
         });
-        ImageExpand.menu.config = $.get('ImageExpansionConfig', {
-          'Fit width': true,
-          'Fit height': false,
-          'Expand spoilers': false,
-          'Expand from here': true
-        });
         createSubEntry = ImageExpand.menu.createSubEntry;
         subEntries = [];
         subEntries.push(createSubEntry('Expand all'));
-        subEntries.push(createSubEntry('Fit width', true));
-        subEntries.push(createSubEntry('Fit height', true));
-        subEntries.push(createSubEntry('Expand spoilers', true));
-        subEntries.push(createSubEntry('Expand from here', true));
+        _ref = Config.imageExpansion;
+        for (key in _ref) {
+          conf = _ref[key];
+          subEntries.push(createSubEntry(key, conf));
+        }
         return $.event('AddMenuEntry', {
           type: 'header',
           el: el,
@@ -3632,7 +3627,7 @@
           subEntries: subEntries
         });
       },
-      createSubEntry: function(type, hasConfig) {
+      createSubEntry: function(type, config) {
         var input, label;
         label = $.el('label', {
           innerHTML: "<input type=checkbox name='" + type + "'> " + type
@@ -3642,31 +3637,19 @@
           case 'Expand all':
             $.on(input, 'change', ImageExpand.cb.all);
             break;
-          case 'Expand spoilers':
-            label.title = 'Expand all images along with spoilers.';
-            $.on(input, 'change', ImageExpand.cb.spoilers);
-            break;
-          case 'Expand from here':
-            label.title = 'Expand all images only from current position to thread end.';
-            $.on(input, 'change', ImageExpand.cb.position);
-            break;
-          default:
-            $.on(input, 'change', ImageExpand.cb.updateFitness);
+          case 'Fit width':
+          case 'Fit height':
+            $.on(input, 'change', ImageExpand.cb.setFitness);
         }
-        if (hasConfig) {
-          input.checked = ImageExpand.menu.config[type];
+        if (config) {
+          label.title = config[1];
+          input.checked = Conf[type];
           $.event('change', null, input);
-          $.on(input, 'change', ImageExpand.menu.saveConfig);
+          $.on(input, 'change', $.cb.checked);
         }
         return {
           el: label
         };
-      },
-      saveConfig: function() {
-        var config;
-        config = ImageExpand.menu.config;
-        config[this.name] = this.checked;
-        return $.set('ImageExpansionConfig', config);
       }
     },
     resize: function() {

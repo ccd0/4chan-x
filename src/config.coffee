@@ -57,6 +57,11 @@ Config =
       'Resurrect Quotes':             [true,  'Linkify dead quotes to archives.']
       'Mark OP Quotes':               [true,  'Add \'(OP)\' to OP quotes.']
       'Mark Cross-thread Quotes':     [true,  'Add \'(Cross-thread)\' to cross-threads quotes.']
+  imageExpansion:
+    'Fit width':        [true,  null]
+    'Fit height':       [false, null]
+    'Expand spoilers':  [false, 'Expand all images along with spoilers.']
+    'Expand from here': [true,  'Expand all images only from current position to thread end.']
   filter:
     name: [
       '# Filter any namefags:'
