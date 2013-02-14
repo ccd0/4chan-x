@@ -2383,9 +2383,9 @@ ThreadUpdater =
         ThreadUpdater.set 'status', 'Offline', 'warning'
       ThreadUpdater.cb.autoUpdate()
     post: (e) ->
-      return unless Conf['Auto Update This'] and +e.detail.threadID is @thread.ID
-      @outdateCount = 0
-      setTimeout @update.bind(@), 1000 if @seconds > 2
+      return unless Conf['Auto Update This'] and +e.detail.threadID is ThreadUpdater.thread.ID
+      ThreadUpdater.outdateCount = 0
+      setTimeout ThreadUpdater.update, 1000 if ThreadUpdater.seconds > 2
     visibility: ->
       return if $.hidden()
       # Reset the counter when we focus this tab.

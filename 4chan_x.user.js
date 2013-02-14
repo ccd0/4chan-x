@@ -3865,12 +3865,12 @@
         return ThreadUpdater.cb.autoUpdate();
       },
       post: function(e) {
-        if (!(Conf['Auto Update This'] && +e.detail.threadID === this.thread.ID)) {
+        if (!(Conf['Auto Update This'] && +e.detail.threadID === ThreadUpdater.thread.ID)) {
           return;
         }
-        this.outdateCount = 0;
-        if (this.seconds > 2) {
-          return setTimeout(this.update.bind(this), 1000);
+        ThreadUpdater.outdateCount = 0;
+        if (ThreadUpdater.seconds > 2) {
+          return setTimeout(ThreadUpdater.update, 1000);
         }
       },
       visibility: function() {
