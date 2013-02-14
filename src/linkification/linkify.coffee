@@ -6,92 +6,59 @@ Linkify =
     \b(
       [a-z]+:// # http://, ftp://
       |
-      [-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+ # www.test-9.com
+      [a-z]{3,}\.[-a-z0-9]+\.[a-z]+
       |
-      [-a-z0-9]+\.(com|net|tv|org|xxx|us) # this-is-my-web-sight.net.
+      [-a-z0-9]+\.[a-z]{2,4} # this-is-my-web-sight.net.
       |
-      [a-z]+:[a-z0-9?] # mailto:, magnet:
+      [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ # IP Address
+      |
+      [a-z]{3,}:[a-z0-9?] # mailto:, magnet:
       |
       [a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9] # E-mails, also possibly anonymous:password@192.168.2.1
     )
-    [^\s,]+ # Terminate at Whitespace
+    [^\s'"]+ # Terminate at Whitespace
   )///gi
+
+  check: ->
+    true
 
   cypher: $.el 'div'
 
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
-    
-    Linkify.prep $.X './/text()', post.blockquote
+    Linkify.replace LinkParser $.X('.//text()', post.blockquote), Linkify.regString, Linkify.check
 
-    return
-    
-  prep: (snapshot) ->
+  replace: (parsed) ->
     cypher = Linkify.cypher
-    i      = -1
-    len    = snapshot.snapshotLength
-
-    while ++i < len
+    for pair in parsed
       nodes = []
-      node  = snapshot.snapshotItem i
-      data  = node.data
+      [node, data] = pair
+      links = data.match Linkify.regString
 
-      continue unless node.parentNode and Linkify.regString.test data
-      Linkify.regString.lastIndex = 0
+      for link in links
+        index = data.indexOf link
 
-      cypherText = []
+        if text = data[...index]
+          cypher.innerHTML = text
+          for child in cypher.childNodes
+            nodes.push child
 
-      if next = node.nextSibling
-        cypher.textContent = node.textContent
-        cypherText[0]      = cypher.innerHTML
+        cypher.innerHTML = (if link.indexOf(':') < 0 then (if link.indexOf('@') > 0 then 'mailto:' + link else 'http://' + link) else link).replace /<(wbr|s|\/s)>/g, ''
 
-        while ((name = next.nodeName) is 'WBR' or name is 'S') and (lookahead = next.nextSibling) and (name = lookahead.nodeName) is "#text" or name is 'BR'
-          cypher.textContent = lookahead.textContent
+        a = $.el 'a',
+          innerHTML: link
+          className: 'linkify'
+          rel:       'nofollow noreferrer'
+          target:    'blank'
+          href:      cypher.textContent
 
-          cypherText.push if spoiler = next.innerHTML then "<s>#{spoiler}</s>" else '<wbr>'
-          cypherText.push cypher.innerHTML
+        nodes.push a
 
-          $.rm next
-          next = lookahead.nextSibling
-          $.rm lookahead if name is "#text"
+        data = data[index + link.length..]
 
-          unless next
-            break
+      if data
+        cypher.innerHTML = data 
 
-      if cypherText.length
-        data = cypherText.join ''
-        
-      Linkify.replace data
+        nodes.push child for child in cypher.childNodes
 
-  replace: (data) ->
-    links = data.match Linkify.regString
-
-    for link in links
-      index = data.indexOf link
-
-      if text = data[...index]
-        # press button get bacon
-        cypher.innerHTML = text
-        for child in cypher.childNodes
-          nodes.push child
-
-      cypher.innerHTML = (if link.indexOf(':') < 0 then (if link.indexOf('@') > 0 then 'mailto:' + link else 'http://' + link) else link).replace /<(wbr|s|\/s)>/g, ''
-
-      a = $.el 'a',
-        innerHTML: link
-        className: 'linkify'
-        rel:       'nofollow noreferrer'
-        target:    'blank'
-        href:      cypher.textContent
-
-      nodes = nodes.concat Embed.embedder a
-
-      data = data[index + link.length..]
-
-    if data
-      cypher.innerHTML = data
-
-      for child in cypher.childNodes
-        nodes.push child
-
-    $.replace node, nodes
+      $.replace node, nodes

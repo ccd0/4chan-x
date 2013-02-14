@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.1.1 - 2013-02-13
+ * appchan x - Version 1.1.1 - 2013-02-14
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -103,7 +103,7 @@
  * @link      http://JSColor.com
  */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Embed, EmbedLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MarkOwn, Markdown, MascotTools, Mascots, Menu, MutationObserver, Nav, Navigation, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
+  var $, $$, Anonymize, ArchiveLink, BanChecker, Build, CatalogLinks, Conf, Config, CustomNavigation, DeleteLink, DownloadLink, Embed, EmbedLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Get, IDColor, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, LinkParser, Linkify, Main, MarkOwn, Markdown, MascotTools, Mascots, Menu, MutationObserver, Nav, Navigation, Options, Prefetch, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Redirect, ReplyHideLink, ReplyHiding, ReportLink, RevealSpoilers, Sauce, StrikethroughQuotes, Style, ThemeTools, Themes, ThreadHideLink, ThreadHiding, ThreadStats, Time, TitlePost, UI, Unread, Updater, Watcher, d, editMascot, editTheme, g, userNavigation, _base;
 
   Config = {
     main: {
@@ -3835,8 +3835,18 @@
 
   Embed = {
     init: function() {
+      var link, _i, _len, _ref;
       if (Conf['Linkify']) {
-        this.node = this.inlined;
+        this.node = function(post) {
+          if (Embed.inlined(post)) {
+
+          }
+        };
+        _ref = $$('.linkify', post.blockquote);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          link = _ref[_i];
+          Embed.embedder(link);
+        }
       }
       return Main.callbacks.push(this.node);
     },
@@ -3848,16 +3858,25 @@
     inlined: function(post) {
       var embed, _i, _len, _ref;
       if (post.isInlined && !post.isCrosspost) {
-        _ref = $$('.embed', post.blockquote);
+        _ref = $$('.embedder', post.blockquote);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           embed = _ref[_i];
           $.on(embed, 'click', Linkify.toggle);
         }
         return true;
       }
+      return false;
     },
-    regString: /(\b([a-z]+:\/\/|[-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+|[-a-z0-9]+\.(com|net|tv|org|xxx|us))[^\s,]+)/gi,
-    types: {
+    check: function(data) {
+      var service;
+      for (service in Embed.services) {
+        if (service.regExp.test(data)) {
+          return true;
+        }
+      }
+    },
+    regString: /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]+|[-a-z0-9]+\.[a-z]{2,4}|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)[^\s'"]+)/gi,
+    services: {
       YouTube: {
         regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
         el: function() {
@@ -3955,31 +3974,23 @@
         }
       }).call(this);
     },
-    embedder: function(a) {
-      var embed, key, match, service, type, _ref;
-      _ref = Embed.types;
-      for (key in _ref) {
-        type = _ref[key];
-        if (!(match = a.href.match(type.regExp))) {
-          continue;
-        }
-        embed = $.el('a', {
-          name: (a.name = match[1]),
-          className: 'embed',
-          href: 'javascript:;',
-          textContent: '(embed)'
-        });
-        embed.setAttribute('data-service', key);
-        embed.setAttribute('data-originalURL', a.href);
-        $.on(embed, 'click', Embed.toggle);
-        if (Conf['Link Title'] && (service = type.title)) {
-          Embed.title(service);
-        }
-        return [a, $.tn(' '), embed];
+    embedder: function(link) {
+      var embed, titleLink;
+      embed = $.el('a', {
+        name: (link.name = match[1]),
+        className: 'embedder',
+        href: 'javascript:;',
+        textContent: '(embed)'
+      });
+      embed.setAttribute('data-service', key);
+      embed.setAttribute('data-originalURL', link.href);
+      $.on(embed, 'click', Embed.toggle);
+      if (Conf['Link Title'] && (titleLink = service.titleLink)) {
+        Embed.title(titleLink);
       }
-      return [a];
+      return $.after(link, [$.tn(' '), embed]);
     },
-    title: function(service) {
+    title: function(titleLink) {
       var title, titles;
       titles = $.get('CachedTitles', {});
       if (title = titles[match[1]]) {
@@ -3987,14 +3998,14 @@
         return embed.setAttribute('data-title', title[0]);
       } else {
         try {
-          return $.cache(service.api.call(a), Embedder.cb);
+          return $.cache(titleLink.api.call(a), Embedder.cb);
         } catch (err) {
           return a.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
         }
       }
     },
     toggle: function() {
-      var el, embed, style, type, url;
+      var el, embed, service, style, url;
       embed = this.previousElementSibling;
       if (this.className.contains("embedded")) {
         el = $.el('a', {
@@ -4006,8 +4017,8 @@
         });
         this.textContent = '(embed)';
       } else {
-        el = (type = Embed.types[this.getAttribute("data-service")]).el.call(this);
-        el.style.cssText = (style = type.style) ? style : "border: 0; width: " + ($.get('embedWidth', Config['embedWidth'])) + "px; height: " + ($.get('embedHeight', Config['embedHeight'])) + "px";
+        el = (service = Embed.services[this.getAttribute("data-service")]).el.call(this);
+        el.style.cssText = (style = service.style) ? style : "border: 0; width: " + ($.get('embedWidth', Config['embedWidth'])) + "px; height: " + ($.get('embedHeight', Config['embedHeight'])) + "px";
         this.textContent = '(unembed)';
       }
       $.replace(embed, el);
@@ -4019,88 +4030,106 @@
     init: function() {
       return Main.callbacks.push(this.node);
     },
-    regString: /(\b([a-z]+:\/\/|[-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+|[-a-z0-9]+\.(com|net|tv|org|xxx|us)|[a-z]+:[a-z0-9?]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s,]+)/gi,
+    regString: /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]+|[-a-z0-9]+\.[a-z]{2,4}|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|[a-z]{3,}:[a-z0-9?]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi,
+    check: function() {
+      return true;
+    },
     cypher: $.el('div'),
     node: function(post) {
       if (post.isInlined && !post.isCrosspost) {
         return;
       }
-      Linkify.prep($.X('.//text()', post.blockquote));
+      return Linkify.replace(LinkParser($.X('.//text()', post.blockquote), Linkify.regString, Linkify.check));
     },
-    prep: function(snapshot) {
-      var cypher, cypherText, data, i, len, lookahead, name, next, node, nodes, spoiler, _results;
+    replace: function(parsed) {
+      var a, child, cypher, data, index, link, links, node, nodes, pair, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _results;
       cypher = Linkify.cypher;
-      i = -1;
-      len = snapshot.snapshotLength;
       _results = [];
-      while (++i < len) {
+      for (_i = 0, _len = parsed.length; _i < _len; _i++) {
+        pair = parsed[_i];
         nodes = [];
-        node = snapshot.snapshotItem(i);
-        data = node.data;
-        if (!(node.parentNode && Linkify.regString.test(data))) {
-          continue;
-        }
-        Linkify.regString.lastIndex = 0;
-        cypherText = [];
-        if (next = node.nextSibling) {
-          cypher.textContent = node.textContent;
-          cypherText[0] = cypher.innerHTML;
-          while (((name = next.nodeName) === 'WBR' || name === 'S') && (lookahead = next.nextSibling) && (name = lookahead.nodeName) === "#text" || name === 'BR') {
-            cypher.textContent = lookahead.textContent;
-            cypherText.push((spoiler = next.innerHTML) ? "<s>" + spoiler + "</s>" : '<wbr>');
-            cypherText.push(cypher.innerHTML);
-            $.rm(next);
-            next = lookahead.nextSibling;
-            if (name === "#text") {
-              $.rm(lookahead);
-            }
-            if (!next) {
-              break;
+        node = pair[0], data = pair[1];
+        links = data.match(Linkify.regString);
+        for (_j = 0, _len1 = links.length; _j < _len1; _j++) {
+          link = links[_j];
+          index = data.indexOf(link);
+          if (text = data.slice(0, index)) {
+            cypher.innerHTML = text;
+            _ref = cypher.childNodes;
+            for (_k = 0, _len2 = _ref.length; _k < _len2; _k++) {
+              child = _ref[_k];
+              nodes.push(child);
             }
           }
+          cypher.innerHTML = (link.indexOf(':') < 0 ? (link.indexOf('@') > 0 ? 'mailto:' + link : 'http://' + link) : link).replace(/<(wbr|s|\/s)>/g, '');
+          a = $.el('a', {
+            innerHTML: link,
+            className: 'linkify',
+            rel: 'nofollow noreferrer',
+            target: 'blank',
+            href: cypher.textContent
+          });
+          nodes.push(a);
+          data = data.slice(index + link.length);
         }
-        if (cypherText.length) {
-          data = cypherText.join('');
-        }
-        _results.push(Linkify.replace(data));
-      }
-      return _results;
-    },
-    replace: function(data) {
-      var a, child, index, link, links, nodes, text, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
-      links = data.match(Linkify.regString);
-      for (_i = 0, _len = links.length; _i < _len; _i++) {
-        link = links[_i];
-        index = data.indexOf(link);
-        if (text = data.slice(0, index)) {
-          cypher.innerHTML = text;
-          _ref = cypher.childNodes;
-          for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-            child = _ref[_j];
+        if (data) {
+          cypher.innerHTML = data;
+          _ref1 = cypher.childNodes;
+          for (_l = 0, _len3 = _ref1.length; _l < _len3; _l++) {
+            child = _ref1[_l];
             nodes.push(child);
           }
         }
-        cypher.innerHTML = (link.indexOf(':') < 0 ? (link.indexOf('@') > 0 ? 'mailto:' + link : 'http://' + link) : link).replace(/<(wbr|s|\/s)>/g, '');
-        a = $.el('a', {
-          innerHTML: link,
-          className: 'linkify',
-          rel: 'nofollow noreferrer',
-          target: 'blank',
-          href: cypher.textContent
-        });
-        nodes = nodes.concat(Embed.embedder(a));
-        data = data.slice(index + link.length);
+        _results.push($.replace(node, nodes));
       }
-      if (data) {
-        cypher.innerHTML = data;
-        _ref1 = cypher.childNodes;
-        for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-          child = _ref1[_k];
-          nodes.push(child);
+      return _results;
+    }
+  };
+
+  LinkParser = function(snapshot, regex, check) {
+    var cypher, cypherText, data, i, j, k, len, lookahead, name1, name2, next, node, results, spoiler;
+    cypher = Linkify.cypher;
+    i = -1;
+    len = snapshot.snapshotLength;
+    results = [];
+    while (++i < len) {
+      node = snapshot.snapshotItem(i);
+      data = node.data;
+      if (!(node.parentNode && regex.test(data))) {
+        continue;
+      }
+      regex.lastIndex = 0;
+      if (!check(data)) {
+        continue;
+      }
+      cypherText = [];
+      if (next = node.nextSibling) {
+        cypher.textContent = node.textContent;
+        cypherText[0] = cypher.innerHTML;
+        j = 0;
+        while (((name1 = next.nodeName) === 'WBR' || name1 === 'S') && (lookahead = next.nextSibling) && (name2 = lookahead.nodeName) === "#text" || name2 === 'BR') {
+          cypher.textContent = lookahead.textContent;
+          cypherText.push((spoiler = next.innerHTML) ? "<s>" + spoiler + "</s>" : '<wbr>');
+          cypherText.push(cypher.innerHTML);
+          $.rm(next);
+          next = lookahead.nextSibling;
+          if (name2 === "#text") {
+            if (snapshot.snapshotItem(k = ++j + i) === lookahead) {
+              delete snapshot.snapshotItem(k);
+            }
+            $.rm(lookahead);
+          }
+          if (!next) {
+            break;
+          }
         }
       }
-      return $.replace(node, nodes);
+      if (cypherText.length) {
+        data = cypherText.join('');
+      }
+      results.push([node, data]);
     }
+    return results;
   };
 
   ArchiveLink = {

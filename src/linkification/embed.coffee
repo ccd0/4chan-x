@@ -1,31 +1,41 @@
 Embed =
   init: ->
     if Conf['Linkify']
-      @node = @inlined
+      @node = (post) ->
+        return if Embed.inlined post
+
+      Embed.embedder link for link in $$ '.linkify', post.blockquote
 
     Main.callbacks.push @node
 
   node: (post) ->
     return if Embed.inlined post
-      
+    
+    
+
   inlined: (post) ->
     if post.isInlined and not post.isCrosspost
-      for embed in $$('.embed', post.blockquote)
-        $.on embed, 'click', Linkify.toggle
+      $.on embed, 'click', Linkify.toggle for embed in $$('.embedder', post.blockquote)
       return true
+    return false
+
+  check: (data) ->
+    return true for service of Embed.services when service.regExp.test data
 
   regString: ///(
     \b(
       [a-z]+:// # http://, ftp://
       |
-      [-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+
+      [a-z]{3,}\.[-a-z0-9]+\.[a-z]+
       |
-      [-a-z0-9]+\.(com|net|tv|org|xxx|us)
+      [-a-z0-9]+\.[a-z]{2,4} # this-is-my-web-sight.net.
+      |
+      [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ # IP Address
     )
-    [^\s,]+
+    [^\s'"]+ # Terminate at Whitespace
   )///gi
 
-  types:
+  services:
     YouTube:
       regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
       el: ->
@@ -97,28 +107,24 @@ Embed =
       else
         "[#{key}] #{@status}'d"
 
-  embedder: (a) ->
-    for key, type of Embed.types
-      continue unless match = a.href.match type.regExp
+  embedder: (link) ->
+    embed = $.el 'a'
+      name:         (link.name = match[1])
+      className:    'embedder'
+      href:         'javascript:;'
+      textContent:  '(embed)'
 
-      embed = $.el 'a'
-        name:         (a.name = match[1])
-        className:    'embed'
-        href:         'javascript:;'
-        textContent:  '(embed)'
+    embed.setAttribute 'data-service',     key
+    embed.setAttribute 'data-originalURL', link.href
 
-      embed.setAttribute 'data-service',     key
-      embed.setAttribute 'data-originalURL', a.href
+    $.on embed, 'click', Embed.toggle
 
-      $.on embed, 'click', Embed.toggle
+    if Conf['Link Title'] and titleLink = service.titleLink
+      Embed.title titleLink
 
-      if Conf['Link Title'] and service = type.title
-        Embed.title service
+    $.after link, [$.tn(' '), embed]
 
-      return [a, $.tn(' '), embed]
-    return [a]
-
-  title: (service) ->
+  title: (titleLink) ->
     titles = $.get 'CachedTitles', {}
 
     if title = titles[match[1]]
@@ -126,7 +132,7 @@ Embed =
       embed.setAttribute 'data-title', title[0]
     else
       try
-        $.cache service.api.call(a), Embedder.cb
+        $.cache titleLink.api.call(a), Embedder.cb
       catch err
         a.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
 
@@ -149,10 +155,10 @@ Embed =
     # Embed
     else
       # We create an element to embed
-      el = (type = Embed.types[@getAttribute("data-service")]).el.call @
+      el = (service = Embed.services[@getAttribute("data-service")]).el.call @
 
       # Set style values.
-      el.style.cssText = if style = type.style
+      el.style.cssText = if style = service.style
         style
       else
         "border: 0; width: #{$.get 'embedWidth', Config['embedWidth']}px; height: #{$.get 'embedHeight', Config['embedHeight']}px"
