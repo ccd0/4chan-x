@@ -51,7 +51,7 @@
   Config = {
     main: {
       Enhancing: {
-        'Disable 4chan\'s extension': [true, 'Avoid conflicts between 4chan X Alpha and 4chan\'s inline extension.'],
+        'Enable 4chan\'s extension': [false, 'Compatibility between 4chan X Alpha and 4chan\'s inline extension is NOT guaranteed.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps arbitrarily.'],
@@ -1135,10 +1135,10 @@
         el: link,
         order: 111,
         open: function() {
-          return !Conf['Disable 4chan\'s extension'];
+          return !Conf['Enable 4chan\'s extension'];
         }
       });
-      if (!Conf['Disable 4chan\'s extension']) {
+      if (!Conf['Enable 4chan\'s extension']) {
         return;
       }
       settings = JSON.parse(localStorage.getItem('4chan-settings')) || {};

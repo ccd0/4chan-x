@@ -137,9 +137,9 @@ Settings =
       type: 'header'
       el: link
       order: 111
-      open: -> !Conf['Disable 4chan\'s extension']
+      open: -> !Conf['Enable 4chan\'s extension']
 
-    return unless Conf['Disable 4chan\'s extension']
+    return unless Conf['Enable 4chan\'s extension']
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
     return if settings.disableAll
     settings.disableAll = true
