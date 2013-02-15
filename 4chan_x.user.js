@@ -3314,7 +3314,7 @@
   };
 
   RelativeDates = {
-    INTERVAL: $.MINUTE,
+    INTERVAL: $.MINUTE / 2,
     init: function() {
       if (g.VIEW === 'catalog' || !Conf['Relative Post Dates']) {
         return;

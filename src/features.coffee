@@ -1995,14 +1995,14 @@ Time =
     y: -> @getFullYear() - 2000
 
 RelativeDates =
-  INTERVAL: $.MINUTE
+  INTERVAL: $.MINUTE / 2
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Relative Post Dates']
 
-    # flush when page becomes visible again
+    # Flush when page becomes visible again or when the thread updates.
     $.on d, 'visibilitychange ThreadUpdate', @flush
 
-    # setup the timeout
+    # Start the timeout.
     @flush()
 
     Post::callbacks.push
@@ -2012,14 +2012,14 @@ RelativeDates =
     return if @isClone
 
     # Show original absolute time as tooltip so users can still know exact times
-    # Since "Time Formatting" runs `node` before us, the title tooltip will
+    # Since "Time Formatting" runs its `node` before us, the title tooltip will
     # pick up the user-formatted time instead of 4chan time when enabled.
     dateEl = @nodes.date
     dateEl.title = dateEl.textContent
 
     RelativeDates.setUpdate @
 
-  # diff is milliseconds from now
+  # diff is milliseconds from now.
   relative: (diff, now, date) ->
     unit = if (number = (diff / $.DAY)) >= 1
       years  = now.getYear()  - date.getYear()
@@ -2053,29 +2053,29 @@ RelativeDates =
 
     "#{rounded} #{unit} ago"
 
-  # changing all relative dates as soon as possible incurs many annoying
+  # Changing all relative dates as soon as possible incurs many annoying
   # redraws and scroll stuttering. Thus, sacrifice accuracy for UX/CPU economy,
   # and perform redraws when the DOM is otherwise being manipulated (and scroll
   # stuttering won't be noticed), falling back to INTERVAL while the page
   # is visible.
   #
-  # each individual dateTime element will add its update() function to the stale list
+  # Each individual dateTime element will add its update() function to the stale list
   # when it is to be called.
   stale: []
   flush: ->
-    # no point in changing the dates until the user sees them
+    # No point in changing the dates until the user sees them.
     return if d.hidden
 
     now = new Date()
     update now for update in RelativeDates.stale
     RelativeDates.stale = []
 
-    # reset automatic flush
+    # Reset automatic flush.
     clearTimeout RelativeDates.timeout
     RelativeDates.timeout = setTimeout RelativeDates.flush, RelativeDates.INTERVAL
 
-  # create function `update()`, closed over post and diff, that, when called
-  # from `flush()`, updates the element, and re-calls `setOwnTimeout()` to
+  # Create function `update()`, closed over post, that, when called
+  # from `flush()`, updates the elements, and re-calls `setOwnTimeout()` to
   # re-add `update()` to the stale list later.
   setUpdate: (post) ->
     setOwnTimeout = (diff) ->
@@ -2099,7 +2099,7 @@ RelativeDates =
 
     markStale = -> RelativeDates.stale.push update
 
-    # kick off initial timeout with current diff
+    # Kick off initial timeout.
     update new Date()
 
 FileInfo =
