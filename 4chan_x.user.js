@@ -17,7 +17,7 @@
 // @run-at       document-start
 // @updateURL    https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.meta.js
 // @downloadURL  https://github.com/MayhemYDG/4chan-x/raw/stable/4chan_x.user.js
-// @icon         https://github.com/MayhemYDG/4chan-x/raw/stable/img/icon.gif
+// @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
 /* 4chan X Alpha - Version 3.0.0 - 2013-02-15
@@ -55,7 +55,7 @@
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps arbitrarily.'],
-        'Relative Post Dates': [true, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.'],
+        'Relative Post Dates': [false, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.'],
         'File Info Formatting': [true, 'Reformat the file information.'],
         'Comment Expansion': [true, 'Can expand too long comments.'],
         'Thread Expansion': [true, 'Can expand threads to view all replies.'],

@@ -16,7 +16,6 @@
     "grunt-contrib-clean": "0.3.x",
     "grunt-contrib-coffee": "0.3.x",
     "grunt-exec": "0.3.x",
-    "grunt-image-embed": "0.2.x",
     "qunitjs": "1.x.x"
   },
   "license": "MIT",

@@ -17,5 +17,5 @@
 // @run-at       document-start
 // @updateURL    <%= meta.repo %>raw/stable/<%= meta.files.metajs %>
 // @downloadURL  <%= meta.repo %>raw/stable/<%= meta.files.userjs %>
-// @icon         <%= meta.repo %>raw/stable/img/icon.gif
+// @icon         data:image/gif;base64,<%= grunt.file.read('img/icon.gif', {encoding: 'base64'}).toString('base64') %>
 // ==/UserScript==
