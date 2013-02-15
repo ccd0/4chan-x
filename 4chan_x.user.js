@@ -835,20 +835,6 @@
     open: function(url) {
       return (GM_openInTab || window.open)(url, '_blank');
     },
-    debounce: function(wait, fn) {
-      var timeout;
-      timeout = null;
-      return function() {
-        if (timeout) {
-          clearTimeout(timeout);
-        } else {
-          fn.apply(this, arguments);
-        }
-        return timeout = setTimeout((function() {
-          return timeout = null;
-        }), wait);
-      };
-    },
     queueTask: (function() {
       var execTask, taskChannel, taskQueue;
       taskQueue = [];
@@ -3334,18 +3320,21 @@
         return;
       }
       $.on(d, 'visibilitychange ThreadUpdate', this.flush);
+      this.flush();
       return Post.prototype.callbacks.push({
         name: 'Relative Post Dates',
         cb: this.node
       });
     },
     node: function() {
-      var dateEl, diff;
+      var dateEl;
+      if (this.isClone) {
+        RelativeDates.flush();
+        return;
+      }
       dateEl = this.nodes.date;
       dateEl.title = dateEl.textContent;
-      diff = Date.now() - this.info.date;
-      dateEl.textContent = RelativeDates.relative(diff);
-      return RelativeDates.setUpdate(this, diff);
+      return RelativeDates.setUpdate(this);
     },
     relative: function(diff) {
       var number, rounded, unit;
@@ -3357,7 +3346,7 @@
       return "" + rounded + " " + unit + " ago";
     },
     stale: [],
-    flush: $.debounce($.SECOND, function() {
+    flush: function() {
       var now, update, _i, _len, _ref;
       if (d.hidden) {
         return;
@@ -3371,26 +3360,30 @@
       RelativeDates.stale = [];
       clearTimeout(RelativeDates.timeout);
       return RelativeDates.timeout = setTimeout(RelativeDates.flush, RelativeDates.INTERVAL);
-    }),
-    setUpdate: function(post, diff) {
-      var dateEl, markStale, setOwnTimeout, update;
+    },
+    setUpdate: function(post) {
+      var markStale, setOwnTimeout, update;
       setOwnTimeout = function(diff) {
         var delay;
         delay = diff > $.HOUR ? diff % $.HOUR : diff > $.MINUTE ? diff % $.MINUTE : diff % $.SECOND;
         return setTimeout(markStale, delay);
       };
-      dateEl = post.nodes.date;
       update = function(now) {
-        if (d.contains(dateEl)) {
-          diff = now - post.info.date;
-          dateEl.textContent = RelativeDates.relative(diff);
-          return setOwnTimeout(diff);
+        var dateEl, diff, relative, singlePost, _i, _len, _ref;
+        diff = now - post.info.date;
+        relative = RelativeDates.relative(diff);
+        _ref = [post].concat(post.clones);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          singlePost = _ref[_i];
+          dateEl = singlePost.nodes.date;
+          dateEl.textContent = relative;
         }
+        return setOwnTimeout(diff);
       };
       markStale = function() {
         return RelativeDates.stale.push(update);
       };
-      return setOwnTimeout(diff);
+      return update(Date.now());
     }
   };
 

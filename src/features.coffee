@@ -2002,21 +2002,24 @@ RelativeDates =
     # flush when page becomes visible again
     $.on d, 'visibilitychange ThreadUpdate', @flush
 
+    # setup the timeout
+    @flush()
+
     Post::callbacks.push
       name: 'Relative Post Dates'
       cb:   @node
   node: ->
-    dateEl = @nodes.date
+    if @isClone
+      RelativeDates.flush()
+      return
 
     # Show original absolute time as tooltip so users can still know exact times
     # Since "Time Formatting" runs `node` before us, the title tooltip will
     # pick up the user-formatted time instead of 4chan time when enabled.
+    dateEl = @nodes.date
     dateEl.title = dateEl.textContent
 
-    diff = Date.now() - @info.date
-
-    dateEl.textContent = RelativeDates.relative diff
-    RelativeDates.setUpdate @, diff
+    RelativeDates.setUpdate @
 
   # diff is milliseconds from now
   relative: (diff) ->
@@ -2044,7 +2047,7 @@ RelativeDates =
   # each individual dateTime element will add its update() function to the stale list
   # when it is to be called.
   stale: []
-  flush: $.debounce($.SECOND, ->
+  flush: ->
     # no point in changing the dates until the user sees them
     return if d.hidden
 
@@ -2054,12 +2057,12 @@ RelativeDates =
 
     # reset automatic flush
     clearTimeout RelativeDates.timeout
-    RelativeDates.timeout = setTimeout RelativeDates.flush, RelativeDates.INTERVAL)
+    RelativeDates.timeout = setTimeout RelativeDates.flush, RelativeDates.INTERVAL
 
   # create function `update()`, closed over post and diff, that, when called
   # from `flush()`, updates the element, and re-calls `setOwnTimeout()` to
   # re-add `update()` to the stale list later.
-  setUpdate: (post, diff) ->
+  setUpdate: (post) ->
     setOwnTimeout = (diff) ->
       delay = if diff > $.HOUR
         diff % $.HOUR
@@ -2069,17 +2072,18 @@ RelativeDates =
         diff % $.SECOND
       setTimeout markStale, delay
 
-    dateEl = post.nodes.date
     update = (now) ->
-      if d.contains dateEl # not removed from DOM
-        diff = now - post.info.date
-        dateEl.textContent = RelativeDates.relative diff
-        setOwnTimeout diff
+      diff = now - post.info.date
+      relative = RelativeDates.relative diff
+      for singlePost in [post].concat post.clones
+        dateEl = singlePost.nodes.date
+        dateEl.textContent = relative
+      setOwnTimeout diff
 
     markStale = -> RelativeDates.stale.push update
 
     # kick off initial timeout with current diff
-    setOwnTimeout diff
+    update Date.now()
 
 FileInfo =
   init: ->
