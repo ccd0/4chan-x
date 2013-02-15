@@ -55,7 +55,7 @@
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps arbitrarily.'],
-        'Relative Post Dates': [false, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.'],
+        'Relative Post Dates': [true, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.'],
         'File Info Formatting': [true, 'Reformat the file information.'],
         'Comment Expansion': [true, 'Can expand too long comments.'],
         'Thread Expansion': [true, 'Can expand threads to view all replies.'],
@@ -3329,16 +3329,15 @@
     node: function() {
       var dateEl;
       if (this.isClone) {
-        RelativeDates.flush();
         return;
       }
       dateEl = this.nodes.date;
       dateEl.title = dateEl.textContent;
       return RelativeDates.setUpdate(this);
     },
-    relative: function(diff) {
-      var number, rounded, unit;
-      unit = (number = diff / $.DAY) > 1 ? 'day' : (number = diff / $.HOUR) > 1 ? 'hour' : (number = diff / $.MINUTE) > 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
+    relative: function(diff, now, date) {
+      var days, months, number, rounded, unit, years;
+      unit = (number = diff / $.DAY) >= 1 ? (years = now.getYear() - date.getYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = (months + 12) % 12) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
       rounded = Math.round(number);
       if (rounded !== 1) {
         unit += 's';
@@ -3351,7 +3350,7 @@
       if (d.hidden) {
         return;
       }
-      now = Date.now();
+      now = new Date();
       _ref = RelativeDates.stale;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         update = _ref[_i];
@@ -3365,13 +3364,14 @@
       var markStale, setOwnTimeout, update;
       setOwnTimeout = function(diff) {
         var delay;
-        delay = diff > $.DAY ? diff % $.DAY : diff > $.HOUR ? diff % $.HOUR : diff > $.MINUTE ? diff % $.MINUTE : diff % $.SECOND;
+        delay = diff >= $.DAY ? diff % $.DAY : diff >= $.HOUR ? diff % $.HOUR : diff >= $.MINUTE ? diff % $.MINUTE : diff % $.SECOND;
         return setTimeout(markStale, delay);
       };
       update = function(now) {
-        var diff, relative, singlePost, _i, _len, _ref;
-        diff = now - post.info.date;
-        relative = RelativeDates.relative(diff);
+        var date, diff, relative, singlePost, _i, _len, _ref;
+        date = post.info.date;
+        diff = now - date;
+        relative = RelativeDates.relative(diff, now, date);
         _ref = [post].concat(post.clones);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           singlePost = _ref[_i];
@@ -3382,7 +3382,7 @@
       markStale = function() {
         return RelativeDates.stale.push(update);
       };
-      return update(Date.now());
+      return update(new Date());
     }
   };
 

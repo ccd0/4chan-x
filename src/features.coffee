@@ -2009,9 +2009,7 @@ RelativeDates =
       name: 'Relative Post Dates'
       cb:   @node
   node: ->
-    if @isClone
-      RelativeDates.flush()
-      return
+    return if @isClone
 
     # Show original absolute time as tooltip so users can still know exact times
     # Since "Time Formatting" runs `node` before us, the title tooltip will
@@ -2022,12 +2020,28 @@ RelativeDates =
     RelativeDates.setUpdate @
 
   # diff is milliseconds from now
-  relative: (diff) ->
-    unit = if (number = (diff / $.DAY)) > 1
-      'day'
-    else if (number = (diff / $.HOUR)) > 1
+  relative: (diff, now, date) ->
+    unit = if (number = (diff / $.DAY)) >= 1
+      years  = now.getYear()  - date.getYear()
+      months = now.getMonth() - date.getMonth()
+      days   = now.getDate()  - date.getDate()
+      if years > 1
+        number = years - (months < 0 or months is 0 and days < 0)
+        'year'
+      else if years is 1 and (months > 0 or months is 0 and days >= 0)
+        number = years
+        'year'
+      else if (months = (months+12)%12 ) > 1
+        number = months - (days < 0)
+        'month'
+      else if months is 1 and days >= 0
+        number = months
+        'month'
+      else
+        'day'
+    else if (number = (diff / $.HOUR)) >= 1
       'hour'
-    else if (number = (diff / $.MINUTE)) > 1
+    else if (number = (diff / $.MINUTE)) >= 1
       'minute'
     else
       # prevent "-1 seconds ago"
@@ -2052,7 +2066,7 @@ RelativeDates =
     # no point in changing the dates until the user sees them
     return if d.hidden
 
-    now = Date.now()
+    now = new Date()
     update now for update in RelativeDates.stale
     RelativeDates.stale = []
 
@@ -2065,19 +2079,20 @@ RelativeDates =
   # re-add `update()` to the stale list later.
   setUpdate: (post) ->
     setOwnTimeout = (diff) ->
-      delay = if diff > $.DAY
+      delay = if diff >= $.DAY
         diff % $.DAY
-      else if diff > $.HOUR
+      else if diff >= $.HOUR
         diff % $.HOUR
-      else if diff > $.MINUTE
+      else if diff >= $.MINUTE
         diff % $.MINUTE
       else
         diff % $.SECOND
       setTimeout markStale, delay
 
     update = (now) ->
-      diff = now - post.info.date
-      relative = RelativeDates.relative diff
+      {date} = post.info
+      diff = now - date
+      relative = RelativeDates.relative diff, now, date
       for singlePost in [post].concat post.clones
         singlePost.nodes.date.textContent = relative
       setOwnTimeout diff
@@ -2085,7 +2100,7 @@ RelativeDates =
     markStale = -> RelativeDates.stale.push update
 
     # kick off initial timeout with current diff
-    update Date.now()
+    update new Date()
 
 FileInfo =
   init: ->
