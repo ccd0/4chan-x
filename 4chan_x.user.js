@@ -20,7 +20,7 @@
 // @icon         https://github.com/MayhemYDG/4chan-x/raw/stable/img/icon.gif
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2013-02-14
+/* 4chan X Alpha - Version 3.0.0 - 2013-02-15
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -2464,7 +2464,7 @@
         emailStart = '';
         emailEnd = '';
       }
-      subject = subject ? "<span class=subject>" + subject + "</span>" : '';
+      subject = "<span class=subject>" + (subject || '') + "</span>";
       userID = !capcode && uniqueID ? (" <span class='posteruid id_" + uniqueID + "'>(ID: ") + ("<span class=hand title='Highlight posts by this ID'>" + uniqueID + "</span>)</span> ") : '';
       switch (capcode) {
         case 'admin':
