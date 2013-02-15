@@ -1135,10 +1135,10 @@
         el: link,
         order: 111,
         open: function() {
-          return !Conf['Enable 4chan\'s extension'];
+          return Conf['Enable 4chan\'s extension'];
         }
       });
-      if (!Conf['Enable 4chan\'s extension']) {
+      if (Conf['Enable 4chan\'s extension']) {
         return;
       }
       settings = JSON.parse(localStorage.getItem('4chan-settings')) || {};
