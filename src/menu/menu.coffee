@@ -16,6 +16,7 @@ Menu =
     $.on d, 'AddMenuEntry', (e) -> Menu.addEntry e.detail
 
     Main.callbacks.push @node
+
   node: (post) ->
     if post.isInlined and !post.isCrosspost
       a = $ '.menu_button', post.el
@@ -91,7 +92,7 @@ Menu =
     el.focus()
 
   close: ->
-    {el} = Menu
+    el = Menu.el
     $.rm el
     for focused in $$ '.focused.entry', el
       $.rmClass focused, 'focused'

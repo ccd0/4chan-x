@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                4chan x
 // @namespace           aeosynth
-// @version             1.1.0
+// @version             1.1.2
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           2013 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2009-2011 James Campos <james.r.campos@gmail.com>
@@ -15,11 +15,11 @@
 // @run-at              document-start
 // @updateURL           https://github.com/zixaphir/appchan-x/raw/stable/4chan_x.meta.js
 // @downloadURL         https://github.com/zixaphir/appchan-x/raw/stable/4chan_x.user.js
-// @icon                https://github.com/zixaphir/appchan-x/raw/stable/img/icon.gif
+// @icon                data:image/gif;base64,R0lGODlhYAAQAJEAAGbMM////wAAAP///yH5BAEAAAMALAAAAABgABAAAAL8nI+py+0Po5y02ruEFmh7PnxbJ3KecR4pqoWr2iajIgR2AIb3bu43WPPhdENiLmg7Jn25EODZFDwBTSIPJRwir1tuElvshrNf1RR4lv2QPZzmG9zA16c4uO3+WeVl55Qq9RdVZlc4p3VYdcfXBpSo0ufyJ1gVx2j0huhmWKSW1Xhpd0czSZVBhucl1Hj6acVkBNnZIcggdgh7y0qTFIoaOypTqoiZCTpjiRwp66jp8RhsVmrq2bzbsbz3AcxpDfztBxUIVT0qij0LtsoN3c1MSx5eSQiNTqzL7mzed+4khfZPBrIRL1jEoFHCRYw6A1usKGiiQwgMFCtalFAAADs=
 // ==/UserScript==
 
 /*
- * 4chan x - Version 1.1.0 - 2013-02-12
+ * 4chan x - Version 1.1.2 - 2013-02-14
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -174,7 +174,8 @@
         'Auto Watch Reply': [false, 'Automatically watch threads that you reply to'],
         'Color user IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
         'Mark Owned Posts': [true, 'Mark quotes to posts you\'ve authored.'],
-        'Remove Spoilers': [false, 'Remove all spoilers in text.']
+        'Remove Spoilers': [false, 'Remove all spoilers in text.'],
+        'Indicate Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled.']
       },
       Posting: {
         'Cooldown': [true, 'Prevent "flood detected" errors.'],
@@ -1462,9 +1463,6 @@
 
   CustomNavigation = {
     init: function() {
-      return setTimeout(this.asyncInit);
-    },
-    asyncInit: function() {
       var a, i, len, link, navNodes, navigation, node, nodes;
       navigation = $("#boardNavDesktop", d.body);
       navNodes = navigation.childNodes;
@@ -4021,11 +4019,12 @@
       });
       $.on(a, 'click', function() {
         var button, id, menu, root;
-        menu = $.id('menu');
+        menu = Menu.el;
         id = menu.dataset.id;
         root = $.id("pc" + id);
         button = root.firstChild;
-        return ReplyHiding.toggle(button, root, id);
+        ReplyHiding.toggle(button, root, id);
+        return Menu.close();
       });
       return Menu.addEntry({
         el: a,
@@ -4087,9 +4086,10 @@
       });
       $.on(a, 'click', function() {
         var menu, thread;
-        menu = $.id('menu');
+        menu = Menu.el;
         thread = $.id("t" + menu.dataset.id);
-        return ThreadHiding.toggle(thread);
+        ThreadHiding.toggle(thread);
+        return Menu.close();
       });
       return Menu.addEntry({
         el: a,
@@ -4249,17 +4249,14 @@
       return this.posts = $.get('ownedPosts', {});
     },
     node: function(post) {
-      var posts, quote, quotes, _i, _len, _ref, _results;
+      var posts, quote, _i, _len, _ref, _results;
       posts = MarkOwn.posts;
-      quotes = [];
-      _ref = quotes.pushArrays(post.quotes, post.backlinks);
+      _ref = post.quotes;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         if (quote.hash && posts[quote.hash.slice(2)]) {
           _results.push($.addClass(quote, 'ownpost'));
-        } else {
-          _results.push(void 0);
         }
       }
       return _results;
@@ -4268,14 +4265,22 @@
 
   RemoveSpoilers = {
     init: function() {
+      if (Conf['Indicate Spoilers']) {
+        this.wrapper = function(text) {
+          return "[spoiler]" + text + "[/spoiler]";
+        };
+      }
       return Main.callbacks.push(this.node);
+    },
+    wrapper: function(text) {
+      return text;
     },
     node: function(post) {
       var spoiler, spoilers, _i, _len;
       spoilers = $$('s', post.el);
       for (_i = 0, _len = spoilers.length; _i < _len; _i++) {
         spoiler = spoilers[_i];
-        $.replace(spoiler, $.tn(spoiler.textContent));
+        $.replace(spoiler, $.tn(RemoveSpoilers.wrapper(spoiler.textContent)));
       }
     }
   };
@@ -7079,7 +7084,7 @@
         $.set('lastChecked', now);
         cutoff = now - 7 * $.DAY;
         hiddenThreads = $.get("hiddenThreads/" + g.BOARD + "/", {});
-        ownedPosts = MarkOwn.posts;
+        ownedPosts = $.get('ownedPosts', {});
         titles = $.get('CachedTitles', {});
         for (id in hiddenThreads) {
           timestamp = hiddenThreads[id];
@@ -7235,7 +7240,7 @@
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
-    version: '1.1.0',
+    version: '1.1.2',
     callbacks: []
   };
 

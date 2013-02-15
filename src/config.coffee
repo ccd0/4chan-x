@@ -242,6 +242,10 @@ Config =
         false
         'Remove all spoilers in text.'
       ]
+      'Indicate Spoilers': [
+        false
+        'Indicate spoilers if Remove Spoilers is enabled.'
+      ]
 
     Posting:
       'Cooldown': [
