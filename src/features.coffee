@@ -2030,7 +2030,8 @@ RelativeDates =
     else if (number = (diff / $.MINUTE)) > 1
       'minute'
     else
-      number = diff / $.SECOND
+      # prevent "-1 seconds ago"
+      number = Math.max(0, diff) / $.SECOND
       'second'
 
     rounded = Math.round number
@@ -2064,7 +2065,9 @@ RelativeDates =
   # re-add `update()` to the stale list later.
   setUpdate: (post) ->
     setOwnTimeout = (diff) ->
-      delay = if diff > $.HOUR
+      delay = if diff > $.DAY
+        diff % $.DAY
+      else if diff > $.HOUR
         diff % $.HOUR
       else if diff > $.MINUTE
         diff % $.MINUTE

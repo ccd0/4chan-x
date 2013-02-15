@@ -3338,7 +3338,7 @@
     },
     relative: function(diff) {
       var number, rounded, unit;
-      unit = (number = diff / $.DAY) > 1 ? 'day' : (number = diff / $.HOUR) > 1 ? 'hour' : (number = diff / $.MINUTE) > 1 ? 'minute' : (number = diff / $.SECOND, 'second');
+      unit = (number = diff / $.DAY) > 1 ? 'day' : (number = diff / $.HOUR) > 1 ? 'hour' : (number = diff / $.MINUTE) > 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
       rounded = Math.round(number);
       if (rounded !== 1) {
         unit += 's';
@@ -3365,7 +3365,7 @@
       var markStale, setOwnTimeout, update;
       setOwnTimeout = function(diff) {
         var delay;
-        delay = diff > $.HOUR ? diff % $.HOUR : diff > $.MINUTE ? diff % $.MINUTE : diff % $.SECOND;
+        delay = diff > $.DAY ? diff % $.DAY : diff > $.HOUR ? diff % $.HOUR : diff > $.MINUTE ? diff % $.MINUTE : diff % $.SECOND;
         return setTimeout(markStale, delay);
       };
       update = function(now) {
