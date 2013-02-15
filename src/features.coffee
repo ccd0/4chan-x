@@ -2076,8 +2076,7 @@ RelativeDates =
       diff = now - post.info.date
       relative = RelativeDates.relative diff
       for singlePost in [post].concat post.clones
-        dateEl = singlePost.nodes.date
-        dateEl.textContent = relative
+        singlePost.nodes.date.textContent = relative
       setOwnTimeout diff
 
     markStale = -> RelativeDates.stale.push update

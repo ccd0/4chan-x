@@ -3369,14 +3369,13 @@
         return setTimeout(markStale, delay);
       };
       update = function(now) {
-        var dateEl, diff, relative, singlePost, _i, _len, _ref;
+        var diff, relative, singlePost, _i, _len, _ref;
         diff = now - post.info.date;
         relative = RelativeDates.relative(diff);
         _ref = [post].concat(post.clones);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           singlePost = _ref[_i];
-          dateEl = singlePost.nodes.date;
-          dateEl.textContent = relative;
+          singlePost.nodes.date.textContent = relative;
         }
         return setOwnTimeout(diff);
       };
