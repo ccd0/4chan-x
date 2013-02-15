@@ -16,12 +16,6 @@ class Thread
     @fullID = "#{@board}.#{@ID}"
     @posts  = {}
 
-    # XXX Can't check when parsing single posts
-    #     move to Post constructor? unless @isReply
-    # postInfo  = $ '.postInfo', root.firstElementChild
-    # @isClosed = !!$ 'img[title=Closed]', postInfo
-    # @isSticky = !!$ 'img[title=Sticky]', postInfo
-
     g.threads["#{board}.#{@}"] = board.threads[@] = @
 
   kill: ->
@@ -152,15 +146,23 @@ class Post
     @kill() if that.isArchived
 
   kill: (img) ->
-    now = Date.now()
+    now = new Date()
     if @file and !@file.isDead
       @file.isDead = true
       @file.timeOfDeath = now
+      $.after $('input', @nodes.info), $.el 'strong',
+        className: 'warning'
+        textContent: '[File deleted]'
     return if img
     @isDead = true
     @timeOfDeath = now
     $.addClass @nodes.root, 'dead'
-    # XXX style dead posts.
+    if strong = $ 'strong.warning', @nodes.info
+      strong.textContent = '[Deleted]'
+    else
+      $.after $('input', @nodes.info), $.el 'strong',
+        className: 'warning'
+        textContent: '[Deleted]'
 
     # Get quotelinks/backlinks to this post
     # and paint them (Dead).

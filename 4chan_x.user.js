@@ -5286,11 +5286,15 @@
     }
 
     Post.prototype.kill = function(img) {
-      var now, quotelink, _i, _len, _ref;
-      now = Date.now();
+      var now, quotelink, strong, _i, _len, _ref;
+      now = new Date();
       if (this.file && !this.file.isDead) {
         this.file.isDead = true;
         this.file.timeOfDeath = now;
+        $.after($('input', this.nodes.info), $.el('strong', {
+          className: 'warning',
+          textContent: '[File deleted]'
+        }));
       }
       if (img) {
         return;
@@ -5298,6 +5302,14 @@
       this.isDead = true;
       this.timeOfDeath = now;
       $.addClass(this.nodes.root, 'dead');
+      if (strong = $('strong.warning', this.nodes.info)) {
+        strong.textContent = '[Deleted]';
+      } else {
+        $.after($('input', this.nodes.info), $.el('strong', {
+          className: 'warning',
+          textContent: '[Deleted]'
+        }));
+      }
       _ref = Get.allQuotelinksLinkingTo(this);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
