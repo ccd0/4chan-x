@@ -145,25 +145,29 @@ class Post
     g.posts["#{board}.#{@}"] = thread.posts[@] = board.posts[@] = @
     @kill() if that.isArchived
 
-  kill: (img) ->
-    now = new Date()
-    if @file and !@file.isDead
+  kill: (file, now) ->
+    now or= new Date()
+    if file
       @file.isDead = true
       @file.timeOfDeath = now
-      $.after $('input', @nodes.info), $.el 'strong',
-        className: 'warning'
-        textContent: '[File deleted]'
-    return if img
-    @isDead = true
-    @timeOfDeath = now
-    $.addClass @nodes.root, 'dead'
-    if strong = $ 'strong.warning', @nodes.info
-      strong.textContent = '[Deleted]'
+      $.addClass @nodes.root, 'deleted-file'
     else
-      $.after $('input', @nodes.info), $.el 'strong',
-        className: 'warning'
-        textContent: '[Deleted]'
+      @isDead = true
+      @timeOfDeath = now
+      $.addClass @nodes.root, 'deleted-post'
 
+    unless strong = $ 'strong.warning', @nodes.info
+      strong = $.el 'strong',
+          className: 'warning'
+          textContent: '[Deleted]'
+      $.after $('input', @nodes.info), strong
+    strong.textContent = if file then '[File deleted]' else '[Deleted]'
+
+    return if @isClone
+    for clone in @clones
+      clone.kill file, now
+
+    return if file
     # Get quotelinks/backlinks to this post
     # and paint them (Dead).
     for quotelink in Get.allQuotelinksLinkingTo @

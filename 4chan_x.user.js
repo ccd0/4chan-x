@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2013-02-15
+/* 4chan X Alpha - Version 3.0.0 - 2013-02-16
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -3364,7 +3364,7 @@
       var markStale, setOwnTimeout, update;
       setOwnTimeout = function(diff) {
         var delay;
-        delay = diff >= $.DAY ? diff % $.DAY : diff >= $.HOUR ? diff % $.HOUR : diff >= $.MINUTE ? diff % $.MINUTE : diff % $.SECOND;
+        delay = diff < $.MINUTE ? diff % $.SECOND : diff < $.HOUR ? diff % $.MINUTE : diff < $.DAY ? diff % $.HOUR : diff % $.DAY;
         return setTimeout(markStale, delay);
       };
       update = function(now) {
@@ -5285,34 +5285,40 @@
       }
     }
 
-    Post.prototype.kill = function(img) {
-      var now, quotelink, strong, _i, _len, _ref;
-      now = new Date();
-      if (this.file && !this.file.isDead) {
+    Post.prototype.kill = function(file, now) {
+      var clone, quotelink, strong, _i, _j, _len, _len1, _ref, _ref1;
+      now || (now = new Date());
+      if (file) {
         this.file.isDead = true;
         this.file.timeOfDeath = now;
-        $.after($('input', this.nodes.info), $.el('strong', {
-          className: 'warning',
-          textContent: '[File deleted]'
-        }));
-      }
-      if (img) {
-        return;
-      }
-      this.isDead = true;
-      this.timeOfDeath = now;
-      $.addClass(this.nodes.root, 'dead');
-      if (strong = $('strong.warning', this.nodes.info)) {
-        strong.textContent = '[Deleted]';
+        $.addClass(this.nodes.root, 'deleted-file');
       } else {
-        $.after($('input', this.nodes.info), $.el('strong', {
+        this.isDead = true;
+        this.timeOfDeath = now;
+        $.addClass(this.nodes.root, 'deleted-post');
+      }
+      if (!(strong = $('strong.warning', this.nodes.info))) {
+        strong = $.el('strong', {
           className: 'warning',
           textContent: '[Deleted]'
-        }));
+        });
+        $.after($('input', this.nodes.info), strong);
       }
-      _ref = Get.allQuotelinksLinkingTo(this);
+      strong.textContent = file ? '[File deleted]' : '[Deleted]';
+      if (this.isClone) {
+        return;
+      }
+      _ref = this.clones;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quotelink = _ref[_i];
+        clone = _ref[_i];
+        clone.kill(file, now);
+      }
+      if (file) {
+        return;
+      }
+      _ref1 = Get.allQuotelinksLinkingTo(this);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        quotelink = _ref1[_j];
         if ($.hasClass(quotelink, 'deadlink')) {
           continue;
         }

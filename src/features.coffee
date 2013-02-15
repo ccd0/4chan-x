@@ -2079,14 +2079,14 @@ RelativeDates =
   # re-add `update()` to the stale list later.
   setUpdate: (post) ->
     setOwnTimeout = (diff) ->
-      delay = if diff >= $.DAY
-        diff % $.DAY
-      else if diff >= $.HOUR
-        diff % $.HOUR
-      else if diff >= $.MINUTE
-        diff % $.MINUTE
-      else
+      delay = if diff < $.MINUTE
         diff % $.SECOND
+      else if diff < $.HOUR
+        diff % $.MINUTE
+      else if diff < $.DAY
+        diff % $.HOUR
+      else
+        diff % $.DAY
       setTimeout markStale, delay
 
     update = (now) ->
