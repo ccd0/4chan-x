@@ -2413,6 +2413,47 @@ ImageHover =
     $.ajax URL, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
       type: 'head'
 
+ThreadStats =
+  init: ->
+    return if g.VIEW isnt 'thread' or !Conf['Thread Stats']
+    @dialog = UI.dialog 'thread-stats', 'bottom: 0; left: 0;', """
+      <div class=move><span id=post-count>0</span> / <span id=file-count>0</span></div>
+      """
+
+    @postCount = @fileCount = 0
+    @postCountEl = $ '#post-count', @dialog
+    @fileCountEl = $ '#file-count', @dialog
+    @fileLimit = # XXX need up to date data on this, check browser
+      switch g.BOARD
+        when 'a', 'b', 'v', 'co', 'mlp'
+          251
+        when 'vg'
+          376
+        else
+          151
+
+    Thread::callbacks.push
+      name: 'Thread Stats'
+      cb:   @node
+  node: ->
+    for ID, post of @posts
+      ThreadStats.postCount++
+      ThreadStats.fileCount++ if post.file
+    ThreadStats.update()
+    $.on d, 'ThreadUpdate', ThreadStats.onUpdate
+    $.add d.body, ThreadStats.dialog
+  onUpdate: (e) ->
+    for post in e.detail.newPosts
+      ThreadStats.postCount++
+      ThreadStats.fileCount++ if post.file
+    ThreadStats.postCount -= e.detail.deletedPosts.length
+    ThreadStats.fileCount -= e.detail.deletedFiles.length
+    ThreadStats.update()
+  update: ->
+    @postCountEl.textContent = ThreadStats.postCount
+    @fileCountEl.textContent = ThreadStats.fileCount
+    (if ThreadStats.fileCount > ThreadStats.fileLimit then $.addClass else $.rmClass) ThreadStats.fileCountEl, 'warning'
+
 ThreadUpdater =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']

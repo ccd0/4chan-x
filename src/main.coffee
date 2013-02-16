@@ -333,6 +333,7 @@ Main =
     initFeature 'Reveal Spoilers',          RevealSpoilers
     initFeature 'Auto-GIF',                 AutoGIF
     initFeature 'Image Hover',              ImageHover
+    initFeature 'Thread Stats',             ThreadStats
     initFeature 'Thread Updater',           ThreadUpdater
     console.timeEnd 'All initializations'
 
