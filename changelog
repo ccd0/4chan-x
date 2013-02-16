@@ -17,6 +17,7 @@ alpha
     There is now a setting to allow expanding spoilers.
   Added touch and multi-touch support for dragging windows.
   The Thread Updater will pause when offline, and resume when online.
+  Thread Stats post and file count will adjust with deleted posts.
   Added Thread & Post Hiding in the Menu, with individual settings.
   Thread & Post Hiding Buttons can now be disabled in the settings.
   Recursive Hiding will be automatically applied when manually hiding a post.
