@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, Favicon, FileInfo, Filter, Get, Header, ImageExpand, ImageHover, Main, Menu, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, Time, UI, Unread, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, ExpandComment, Favicon, FileInfo, Filter, Get, Header, ImageExpand, ImageHover, Main, Menu, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, Time, UI, Unread, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -2653,7 +2653,7 @@
           });
         } else {
           $.addClass(root, 'warning');
-          root.textContent = status === 404 ? "Thread No." + threadID + " 404'd." : "Error " + req.status + ": " + req.statusText + ".";
+          root.textContent = status === 404 ? "Thread No." + threadID + " 404'd." : "Error " + req.statusText + " (" + req.status + ").";
         }
         return;
       }
@@ -3069,7 +3069,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
         containers = [QuoteBacklink.getContainer(quote)];
-        if (post = g.posts[quote]) {
+        if ((post = g.posts[quote]) && post.nodes.backlinkContainer) {
           _ref1 = post.clones;
           for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
             clone = _ref1[_j];
@@ -3091,11 +3091,11 @@
     },
     secondNode: function() {
       var container;
-      if (this.isClone && this.origin.nodes.backlinkContainer) {
+      if (this.isClone && (this.origin.isReply || Conf['OP Backlinks'])) {
         this.nodes.backlinkContainer = $('.container', this.nodes.info);
         return;
       }
-      if (!(Conf['OP Backlinks'] || this.isReply)) {
+      if (!(this.isReply || Conf['OP Backlinks'])) {
         return;
       }
       container = QuoteBacklink.getContainer(this.fullID);
@@ -3888,6 +3888,86 @@
       }, {
         type: 'head'
       });
+    }
+  };
+
+  ExpandComment = {
+    init: function() {
+      if (g.VIEW !== 'index' || !Conf['Comment Expansion']) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Comment Expansion',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var a;
+      if (a = $('.abbr > a', this.nodes.comment)) {
+        return $.on(a, 'click', ExpandComment.expand);
+      }
+    },
+    expand: function(e) {
+      var a, post;
+      e.preventDefault();
+      post = Get.postFromNode(this);
+      this.textContent = "Post No." + post + " Loading...";
+      a = this;
+      return $.cache("//api.4chan.org" + this.pathname + ".json", function() {
+        return ExpandComment.parse(this, a, post);
+      });
+    },
+    parse: function(req, a, post) {
+      var comment, href, postObj, posts, prev, quote, spoilerRange, _i, _j, _len, _len1, _ref;
+      if (req.status !== 200) {
+        a.textContent = "Error " + req.statusText + " (" + req.status + ")";
+        return;
+      }
+      posts = JSON.parse(req.response).posts;
+      if (spoilerRange = posts[0].custom_spoiler) {
+        Build.spoilerRange[g.BOARD] = spoilerRange;
+      }
+      for (_i = 0, _len = posts.length; _i < _len; _i++) {
+        postObj = posts[_i];
+        if (postObj.no === post.ID) {
+          break;
+        }
+      }
+      if (postObj.no !== post.ID) {
+        a.textContent = "Post No." + post + " not found.";
+        return;
+      }
+      comment = post.nodes.comment;
+      comment.innerHTML = postObj.com;
+      _ref = $$('.quotelink', comment);
+      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+        quote = _ref[_j];
+        href = quote.getAttribute('href');
+        if (href[0] === '/') {
+          continue;
+        }
+        quote.href = "/" + post.board + "/res/" + href;
+      }
+      post.parseComment();
+      post.parseQuotes();
+      if (Conf['Resurrect Quotes']) {
+        Quotify.node.call(post);
+      }
+      if (Conf['Quote Preview']) {
+        QuotePreview.node.call(post);
+      }
+      if (Conf['Quote Inline']) {
+        QuoteInline.node.call(post);
+      }
+      if (Conf['Mark OP Quotes']) {
+        QuoteOP.node.call(post);
+      }
+      if (Conf['Mark Cross-thread Quotes']) {
+        QuoteCT.node.call(post);
+      }
+      prev = comment.previousSibling;
+      $.rm(comment);
+      return $.after(prev, comment);
     }
   };
 
@@ -5373,7 +5453,7 @@
     };
 
     function Post(root, thread, board, that) {
-      var alt, anchor, bq, capcode, data, date, email, file, fileInfo, flag, hash, i, info, name, node, nodes, pathname, post, quotelink, quotes, size, subject, text, thumb, tripcode, uniqueID, unit, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2;
+      var alt, anchor, capcode, date, email, file, fileInfo, flag, info, name, post, size, subject, thumb, tripcode, uniqueID, unit;
       this.thread = thread;
       this.board = board;
       if (that == null) {
@@ -5424,40 +5504,8 @@
         this.nodes.date = date;
         this.info.date = new Date(date.dataset.utc * 1000);
       }
-      bq = this.nodes.comment.cloneNode(true);
-      _ref = $$('.abbr, .capcodeReplies, .exif, b', bq);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        node = _ref[_i];
-        $.rm(node);
-      }
-      text = [];
-      nodes = d.evaluate('.//br|.//text()', bq, null, 7, null);
-      for (i = _j = 0, _ref1 = nodes.snapshotLength; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
-        text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
-      }
-      this.info.comment = text.join('').trim().replace(/\s+$/gm, '');
-      quotes = {};
-      _ref2 = $$('.quotelink', this.nodes.comment);
-      for (_k = 0, _len1 = _ref2.length; _k < _len1; _k++) {
-        quotelink = _ref2[_k];
-        hash = quotelink.hash;
-        if (!hash) {
-          continue;
-        }
-        pathname = quotelink.pathname;
-        if (/catalog$/.test(pathname)) {
-          continue;
-        }
-        if (quotelink.hostname !== 'boards.4chan.org') {
-          continue;
-        }
-        this.nodes.quotelinks.push(quotelink);
-        if (quotelink.parentNode.parentNode.className === 'capcodeReplies') {
-          continue;
-        }
-        quotes["" + (pathname.split('/')[1]) + "." + hash.slice(2)] = true;
-      }
-      this.quotes = Object.keys(quotes);
+      this.parseComment();
+      this.parseQuotes();
       if ((file = $('.file', post)) && (thumb = $('img[data-md5]', file))) {
         alt = thumb.alt;
         anchor = thumb.parentNode;
@@ -5490,6 +5538,51 @@
         this.kill();
       }
     }
+
+    Post.prototype.parseComment = function() {
+      var bq, data, i, node, nodes, text, _i, _j, _len, _ref, _ref1;
+      bq = this.nodes.comment.cloneNode(true);
+      _ref = $$('.abbr, .capcodeReplies, .exif, b', bq);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        node = _ref[_i];
+        $.rm(node);
+      }
+      text = [];
+      nodes = d.evaluate('.//br|.//text()', bq, null, 7, null);
+      for (i = _j = 0, _ref1 = nodes.snapshotLength; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
+        text.push((data = nodes.snapshotItem(i).data) ? data : '\n');
+      }
+      return this.info.comment = text.join('').trim().replace(/\s+$/gm, '');
+    };
+
+    Post.prototype.parseQuotes = function() {
+      var hash, pathname, quotelink, quotes, _i, _len, _ref;
+      quotes = {};
+      _ref = $$('.quotelink', this.nodes.comment);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quotelink = _ref[_i];
+        hash = quotelink.hash;
+        if (!hash) {
+          continue;
+        }
+        pathname = quotelink.pathname;
+        if (/catalog$/.test(pathname)) {
+          continue;
+        }
+        if (quotelink.hostname !== 'boards.4chan.org') {
+          continue;
+        }
+        this.nodes.quotelinks.push(quotelink);
+        if (quotelink.parentNode.parentNode.className === 'capcodeReplies') {
+          continue;
+        }
+        quotes["" + (pathname.split('/')[1]) + "." + hash.slice(2)] = true;
+      }
+      if (this.isClone) {
+        return;
+      }
+      return this.quotes = Object.keys(quotes);
+    };
 
     Post.prototype.kill = function(file, now) {
       var clone, quotelink, strong, _i, _j, _len, _len1, _ref, _ref1;
@@ -5556,7 +5649,7 @@
     __extends(Clone, _super);
 
     function Clone(origin, context) {
-      var file, index, info, inline, inlined, key, nodes, post, quotelink, root, val, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _ref3, _ref4;
+      var file, index, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
       this.origin = origin;
       this.context = context;
       _ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
@@ -5612,18 +5705,12 @@
       if (nodes.date) {
         this.nodes.date = $('.dateTime', info);
       }
-      _ref3 = $$('.quotelink', this.nodes.comment);
-      for (_l = 0, _len3 = _ref3.length; _l < _len3; _l++) {
-        quotelink = _ref3[_l];
-        if (quotelink.hash || $.hasClass(quotelink, 'deadlink')) {
-          this.nodes.quotelinks.push(quotelink);
-        }
-      }
+      this.parseQuotes();
       if (origin.file) {
         this.file = {};
-        _ref4 = origin.file;
-        for (key in _ref4) {
-          val = _ref4[key];
+        _ref3 = origin.file;
+        for (key in _ref3) {
+          val = _ref3[key];
           this.file[key] = val;
         }
         file = $('.file', post);
@@ -5739,6 +5826,7 @@
       initFeature('Reveal Spoilers', RevealSpoilers);
       initFeature('Auto-GIF', AutoGIF);
       initFeature('Image Hover', ImageHover);
+      initFeature('Comment Expansion', ExpandComment);
       initFeature('Thread Excerpt', ThreadExcerpt);
       initFeature('Favicon', Favicon);
       initFeature('Unread', Unread);

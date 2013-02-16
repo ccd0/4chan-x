@@ -66,47 +66,8 @@ class Post
       @nodes.date     = date
       @info.date      = new Date date.dataset.utc * 1000
 
-    # Get the comment's text.
-    # <br> -> \n
-    # Remove:
-    #   'Comment too long'...
-    #   Admin/Mod/Dev replies. (/q/)
-    #   EXIF data. (/p/)
-    #   Rolls. (/tg/)
-    #   Preceding and following new lines.
-    #   Trailing spaces.
-    bq = @nodes.comment.cloneNode true
-    for node in $$ '.abbr, .capcodeReplies, .exif, b', bq
-      $.rm node
-    text = []
-    # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE === 7
-    nodes = d.evaluate './/br|.//text()', bq, null, 7, null
-    for i in [0...nodes.snapshotLength]
-      text.push if data = nodes.snapshotItem(i).data then data else '\n'
-    @info.comment = text.join('').trim().replace /\s+$/gm, ''
-
-    quotes = {}
-    for quotelink in $$ '.quotelink', @nodes.comment
-      # Don't add board links. (>>>/b/)
-      hash = quotelink.hash
-      continue unless hash
-
-      # Don't add catalog links. (>>>/b/catalog or >>>/b/search)
-      pathname = quotelink.pathname
-      continue if /catalog$/.test pathname
-
-      # Don't add rules links. (>>>/a/rules)
-      # Don't add text-board quotelinks. (>>>/img/1234)
-      continue if quotelink.hostname isnt 'boards.4chan.org'
-
-      @nodes.quotelinks.push quotelink
-
-      # Don't count capcode replies as quotes. (Admin/Mod/Dev Replies: ...)
-      continue if quotelink.parentNode.parentNode.className is 'capcodeReplies'
-
-      # Basically, only add quotes that link to posts on an imageboard.
-      quotes["#{pathname.split('/')[1]}.#{hash[2..]}"] = true
-    @quotes = Object.keys quotes
+    @parseComment()
+    @parseQuotes()
 
     if (file = $ '.file', post) and thumb = $ 'img[data-md5]', file
       # Supports JPG/PNG/GIF/PDF.
@@ -144,6 +105,51 @@ class Post
     @clones  = []
     g.posts["#{board}.#{@}"] = thread.posts[@] = board.posts[@] = @
     @kill() if that.isArchived
+
+  parseComment: ->
+    # Get the comment's text.
+    # <br> -> \n
+    # Remove:
+    #   'Comment too long'...
+    #   Admin/Mod/Dev replies. (/q/)
+    #   EXIF data. (/p/)
+    #   Rolls. (/tg/)
+    #   Preceding and following new lines.
+    #   Trailing spaces.
+    bq = @nodes.comment.cloneNode true
+    for node in $$ '.abbr, .capcodeReplies, .exif, b', bq
+      $.rm node
+    text = []
+    # XPathResult.ORDERED_NODE_SNAPSHOT_TYPE === 7
+    nodes = d.evaluate './/br|.//text()', bq, null, 7, null
+    for i in [0...nodes.snapshotLength]
+      text.push if data = nodes.snapshotItem(i).data then data else '\n'
+    @info.comment = text.join('').trim().replace /\s+$/gm, ''
+
+  parseQuotes: ->
+    quotes = {}
+    for quotelink in $$ '.quotelink', @nodes.comment
+      # Don't add board links. (>>>/b/)
+      hash = quotelink.hash
+      continue unless hash
+
+      # Don't add catalog links. (>>>/b/catalog or >>>/b/search)
+      pathname = quotelink.pathname
+      continue if /catalog$/.test pathname
+
+      # Don't add rules links. (>>>/a/rules)
+      # Don't add text-board quotelinks. (>>>/img/1234)
+      continue if quotelink.hostname isnt 'boards.4chan.org'
+
+      @nodes.quotelinks.push quotelink
+
+      # Don't count capcode replies as quotes. (Admin/Mod/Dev Replies: ...)
+      continue if quotelink.parentNode.parentNode.className is 'capcodeReplies'
+
+      # Basically, only add quotes that link to posts on an imageboard.
+      quotes["#{pathname.split('/')[1]}.#{hash[2..]}"] = true
+    return if @isClone
+    @quotes = Object.keys quotes
 
   kill: (file, now) ->
     now or= new Date()
@@ -228,10 +234,7 @@ class Clone extends Post
     if nodes.date
       @nodes.date     = $ '.dateTime',    info
 
-    for quotelink in $$ '.quotelink', @nodes.comment
-      # See comments in Post's constructor.
-      if quotelink.hash or $.hasClass quotelink, 'deadlink'
-        @nodes.quotelinks.push quotelink
+    @parseQuotes()
 
     if origin.file
       # Copy values, point to relevant elements.
@@ -333,6 +336,7 @@ Main =
     initFeature 'Reveal Spoilers',          RevealSpoilers
     initFeature 'Auto-GIF',                 AutoGIF
     initFeature 'Image Hover',              ImageHover
+    initFeature 'Comment Expansion',        ExpandComment
     initFeature 'Thread Excerpt',           ThreadExcerpt
     initFeature 'Favicon',                  Favicon
     initFeature 'Unread',                   Unread

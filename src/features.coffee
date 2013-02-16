@@ -1469,7 +1469,7 @@ Get =
           if status is 404
             "Thread No.#{threadID} 404'd."
           else
-            "Error #{req.status}: #{req.statusText}."
+            "Error #{req.statusText} (#{req.status})."
       return
 
     posts = JSON.parse(req.response).posts
@@ -1839,7 +1839,9 @@ QuoteBacklink =
       textContent: QuoteBacklink.funk @ID
     for quote in @quotes
       containers = [QuoteBacklink.getContainer quote]
-      if post = g.posts[quote]
+      if (post = g.posts[quote]) and post.nodes.backlinkContainer
+        # Don't add OP clones when OP Backlinks is disabled,
+        # as the clones won't have the backlink containers.
         for clone in post.clones
           containers.push clone.nodes.backlinkContainer
       for container in containers
@@ -1851,11 +1853,11 @@ QuoteBacklink =
         $.add container, [$.tn(' '), link]
     return
   secondNode: ->
-    if @isClone and @origin.nodes.backlinkContainer
+    if @isClone and (@origin.isReply or Conf['OP Backlinks'])
       @nodes.backlinkContainer = $ '.container', @nodes.info
       return
     # Don't backlink the OP.
-    return unless Conf['OP Backlinks'] or @isReply
+    return unless @isReply or Conf['OP Backlinks']
     container = QuoteBacklink.getContainer @fullID
     @nodes.backlinkContainer = container
     $.add @nodes.info, container
@@ -2419,6 +2421,62 @@ ImageHover =
     return if $.engine isnt 'webkit' or URL.split('/')[2] isnt 'images.4chan.org'
     $.ajax URL, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
       type: 'head'
+
+ExpandComment =
+  init: ->
+    return if g.VIEW isnt 'index' or !Conf['Comment Expansion']
+
+    Post::callbacks.push
+      name: 'Comment Expansion'
+      cb:   @node
+  node: ->
+    if a = $ '.abbr > a', @nodes.comment
+      $.on a, 'click', ExpandComment.expand
+  expand: (e) ->
+    e.preventDefault()
+    post = Get.postFromNode @
+    @textContent = "Post No.#{post} Loading..."
+    a = @
+    $.cache "//api.4chan.org#{@pathname}.json", -> ExpandComment.parse @, a, post
+  parse: (req, a, post) ->
+    if req.status isnt 200
+      a.textContent = "Error #{req.statusText} (#{req.status})"
+      return
+
+    posts = JSON.parse(req.response).posts
+    if spoilerRange = posts[0].custom_spoiler
+      Build.spoilerRange[g.BOARD] = spoilerRange
+
+    for postObj in posts
+      break if postObj.no is post.ID
+    if postObj.no isnt post.ID
+      a.textContent = "Post No.#{post} not found."
+      return
+
+    {comment} = post.nodes
+    comment.innerHTML = postObj.com
+    for quote in $$ '.quotelink', comment
+      href = quote.getAttribute 'href'
+      continue if href[0] is '/' # Cross-board quote, or board link
+      quote.href = "/#{post.board}/res/#{href}" # Fix pathnames
+    post.parseComment()
+    post.parseQuotes()
+    if Conf['Resurrect Quotes']
+      Quotify.node.call      post
+    if Conf['Quote Preview']
+      QuotePreview.node.call post
+    if Conf['Quote Inline']
+      QuoteInline.node.call  post
+    if Conf['Mark OP Quotes']
+      QuoteOP.node.call      post
+    if Conf['Mark Cross-thread Quotes']
+      QuoteCT.node.call      post
+    # XXX g code
+    # XXX sci math
+    # Fix linkifiers:
+    prev = comment.previousSibling
+    $.rm comment
+    $.after prev, comment
 
 ThreadExcerpt =
   init: ->
