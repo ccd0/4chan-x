@@ -2478,6 +2478,88 @@ ExpandComment =
     $.rm comment
     $.after prev, comment
 
+ExpandThread =
+  init: ->
+    return if g.VIEW isnt 'index' or !Conf['Thread Expansion']
+
+    Thread::callbacks.push
+      name: 'Thread Expansion'
+      cb:   @node
+  node: ->
+    op   = @posts[@]
+    return unless span = $ '.summary', op.nodes.root.parentNode
+    a = $.el 'a',
+      textContent: "+ #{span.textContent}"
+      className: 'summary'
+      href: 'javascript:;'
+    $.on a, 'click', ExpandThread.cbToggle
+    $.replace span, a
+
+  cbToggle: ->
+    op = Get.postFromRoot @previousElementSibling
+    ExpandThread.toggle op.thread
+
+  toggle: (thread) ->
+    threadRoot = thread.posts[thread].nodes.root.parentNode
+    url = "//api.4chan.org/#{thread.board}/res/#{thread}.json"
+    a   = $ '.summary', threadRoot
+
+    text = a.textContent
+    switch text[0]
+      when '+'
+        a.textContent = text.replace '+', '× Loading...'
+        $.cache url, -> ExpandThread.parse @, thread, a
+
+      when '×'
+        a.textContent = text.replace '× Loading...', '+'
+
+      when '-'
+        a.textContent = text.replace '-', '+'
+        #goddamit moot
+        num = switch g.BOARD
+          # XXX boards config
+          when 'b', 'vg', 'q' then 3
+          when 't' then 1
+          else 5
+        replies = $$('.thread > .replyContainer', threadRoot)[...-num]
+        for reply in replies
+          if Conf['Quote Inline']
+            # rm clones
+            inlined.click() while inlined = $ '.inlined', reply
+          $.rm reply
+    return
+
+  parse: (req, thread, a) ->
+    return if a.textContent[0] is '+'
+
+    if req.status isnt 200
+      a.textContent = "Error #{req.statusText} (#{req.status})"
+      $.off a, 'click', ExpandThread.cb.toggle
+      return
+
+    a.textContent = a.textContent.replace '× Loading...', '-'
+
+    posts = JSON.parse(req.response).posts
+    if spoilerRange = posts[0].custom_spoiler
+      Build.spoilerRange[g.BOARD] = spoilerRange
+
+    replies  = posts[1..]
+    posts    = []
+    nodes    = []
+    for reply in replies
+      if post = thread.posts[reply.no]
+        nodes.push post.nodes.root
+        continue
+      node = Build.postFromObject reply, thread.board
+      post = new Post node, thread, thread.board
+      link = $ 'a[title="Highlight this post"]', node
+      link.href = "res/#{thread}#p#{post}"
+      link.nextSibling.href = "res/#{thread}#q#{post}"
+      posts.push post
+      nodes.push node
+    Main.callbackNodes Post, posts
+    $.after a, nodes
+
 ThreadExcerpt =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Excerpt']

@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2013-02-16
+/* 4chan X Alpha - Version 3.0.0 - 2013-02-17
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, ExpandComment, Favicon, FileInfo, Filter, Get, Header, ImageExpand, ImageHover, Main, Menu, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, Time, UI, Unread, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, Header, ImageExpand, ImageHover, Main, Menu, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, Time, UI, Unread, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -3971,6 +3971,114 @@
     }
   };
 
+  ExpandThread = {
+    init: function() {
+      if (g.VIEW !== 'index' || !Conf['Thread Expansion']) {
+        return;
+      }
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Expansion',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var a, op, span;
+      op = this.posts[this];
+      if (!(span = $('.summary', op.nodes.root.parentNode))) {
+        return;
+      }
+      a = $.el('a', {
+        textContent: "+ " + span.textContent,
+        className: 'summary',
+        href: 'javascript:;'
+      });
+      $.on(a, 'click', ExpandThread.cbToggle);
+      return $.replace(span, a);
+    },
+    cbToggle: function() {
+      var op;
+      op = Get.postFromRoot(this.previousElementSibling);
+      return ExpandThread.toggle(op.thread);
+    },
+    toggle: function(thread) {
+      var a, inlined, num, replies, reply, text, threadRoot, url, _i, _len;
+      threadRoot = thread.posts[thread].nodes.root.parentNode;
+      url = "//api.4chan.org/" + thread.board + "/res/" + thread + ".json";
+      a = $('.summary', threadRoot);
+      text = a.textContent;
+      switch (text[0]) {
+        case '+':
+          a.textContent = text.replace('+', '× Loading...');
+          $.cache(url, function() {
+            return ExpandThread.parse(this, thread, a);
+          });
+          break;
+        case '×':
+          a.textContent = text.replace('× Loading...', '+');
+          break;
+        case '-':
+          a.textContent = text.replace('-', '+');
+          num = (function() {
+            switch (g.BOARD) {
+              case 'b':
+              case 'vg':
+              case 'q':
+                return 3;
+              case 't':
+                return 1;
+              default:
+                return 5;
+            }
+          })();
+          replies = $$('.thread > .replyContainer', threadRoot).slice(0, -num);
+          for (_i = 0, _len = replies.length; _i < _len; _i++) {
+            reply = replies[_i];
+            if (Conf['Quote Inline']) {
+              while (inlined = $('.inlined', reply)) {
+                inlined.click();
+              }
+            }
+            $.rm(reply);
+          }
+      }
+    },
+    parse: function(req, thread, a) {
+      var link, node, nodes, post, posts, replies, reply, spoilerRange, _i, _len;
+      if (a.textContent[0] === '+') {
+        return;
+      }
+      if (req.status !== 200) {
+        a.textContent = "Error " + req.statusText + " (" + req.status + ")";
+        $.off(a, 'click', ExpandThread.cb.toggle);
+        return;
+      }
+      a.textContent = a.textContent.replace('× Loading...', '-');
+      posts = JSON.parse(req.response).posts;
+      if (spoilerRange = posts[0].custom_spoiler) {
+        Build.spoilerRange[g.BOARD] = spoilerRange;
+      }
+      replies = posts.slice(1);
+      posts = [];
+      nodes = [];
+      for (_i = 0, _len = replies.length; _i < _len; _i++) {
+        reply = replies[_i];
+        if (post = thread.posts[reply.no]) {
+          nodes.push(post.nodes.root);
+          continue;
+        }
+        node = Build.postFromObject(reply, thread.board);
+        post = new Post(node, thread, thread.board);
+        link = $('a[title="Highlight this post"]', node);
+        link.href = "res/" + thread + "#p" + post;
+        link.nextSibling.href = "res/" + thread + "#q" + post;
+        posts.push(post);
+        nodes.push(node);
+      }
+      Main.callbackNodes(Post, posts);
+      return $.after(a, nodes);
+    }
+  };
+
   ThreadExcerpt = {
     init: function() {
       if (g.VIEW !== 'thread' || !Conf['Thread Excerpt']) {
@@ -5827,6 +5935,7 @@
       initFeature('Auto-GIF', AutoGIF);
       initFeature('Image Hover', ImageHover);
       initFeature('Comment Expansion', ExpandComment);
+      initFeature('Thread Expansion', ExpandThread);
       initFeature('Thread Excerpt', ThreadExcerpt);
       initFeature('Favicon', Favicon);
       initFeature('Unread', Unread);
