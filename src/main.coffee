@@ -334,6 +334,7 @@ Main =
     initFeature 'Auto-GIF',                 AutoGIF
     initFeature 'Image Hover',              ImageHover
     initFeature 'Thread Excerpt',           ThreadExcerpt
+    initFeature 'Favicon',                  Favicon
     initFeature 'Unread',                   Unread
     initFeature 'Thread Stats',             ThreadStats
     initFeature 'Thread Updater',           ThreadUpdater

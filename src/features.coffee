@@ -2432,7 +2432,7 @@ ThreadExcerpt =
 
 Unread =
   init: ->
-    return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Favicon']
+    return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Tab Icon']
     $.on d, 'ThreadUpdate',            @onUpdate
     $.on d, 'QRPostSuccessful',        @post
     $.on d, 'scroll visibilitychange', @read
@@ -2480,7 +2480,63 @@ Unread =
     Unread.update()
 
   update: ->
-    d.title = "(#{Unread.posts.length}) #{Unread.title}"
+    count = Unread.posts.length
+
+    if Conf['Unread Count']
+      d.title = "(#{Unread.posts.length}) #{Unread.title}"
+
+    return unless Conf['Unread Tab Icon']
+
+    Favicon.el.href =
+      if g.DEAD
+        if count
+          Favicon.unreadDead
+        else
+          Favicon.dead
+      else
+        if count
+          Favicon.unread
+        else
+          Favicon.default
+
+    # `favicon.href = href` doesn't work on Firefox.
+    # `favicon.href = href` isn't enough on Opera.
+    # Opera won't always update the favicon if the href didn't change.
+    $.add d.head, Favicon.el
+
+Favicon =
+  init: ->
+    $.ready ->
+      Favicon.el      = $ 'link[rel="shortcut icon"]', d.head
+      Favicon.el.type = 'image/x-icon'
+      {href}          = Favicon.el
+      Favicon.SFW     = /ws\.ico$/.test href
+      Favicon.default = href
+      Favicon.switch()
+
+  switch: ->
+    switch Conf['favicon']
+      when 'ferongr'
+        Favicon.unreadDead = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/ferongr/unreadDead.gif", {encoding: "base64"}).toString("base64") %>'
+        Favicon.unreadSFW  = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/ferongr/unreadSFW.gif", {encoding: "base64"}).toString("base64") %>'
+        Favicon.unreadNSFW = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/ferongr/unreadNSFW.gif", {encoding: "base64"}).toString("base64") %>'
+      when 'xat-'
+        Favicon.unreadDead = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadDead.png", {encoding: "base64"}).toString("base64") %>'
+        Favicon.unreadSFW  = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadSFW.png", {encoding: "base64"}).toString("base64") %>'
+        Favicon.unreadNSFW = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadNSFW.png", {encoding: "base64"}).toString("base64") %>'
+      when 'Mayhem'
+        Favicon.unreadDead = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadDead.png", {encoding: "base64"}).toString("base64") %>'
+        Favicon.unreadSFW  = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadSFW.png", {encoding: "base64"}).toString("base64") %>'
+        Favicon.unreadNSFW = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadNSFW.png", {encoding: "base64"}).toString("base64") %>'
+      when 'Original'
+        Favicon.unreadDead = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/Original/unreadDead.gif", {encoding: "base64"}).toString("base64") %>'
+        Favicon.unreadSFW  = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/Original/unreadSFW.gif", {encoding: "base64"}).toString("base64") %>'
+        Favicon.unreadNSFW = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/Original/unreadNSFW.gif", {encoding: "base64"}).toString("base64") %>'
+    Favicon.unread = if Favicon.SFW then Favicon.unreadSFW else Favicon.unreadNSFW
+
+  empty: 'data:image/gif;base64,<%= grunt.file.read("img/favicons/empty.gif", {encoding: "base64"}).toString("base64") %>'
+  dead:  'data:image/gif;base64,<%= grunt.file.read("img/favicons/dead.gif",  {encoding: "base64"}).toString("base64") %>'
+
 
 ThreadStats =
   init: ->

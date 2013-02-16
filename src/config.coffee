@@ -35,7 +35,7 @@ Config =
     Monitoring:
       'Thread Updater':               [true,  'Fetch and insert new replies. Has more options in its own dialog.']
       'Unread Count':                 [true,  'Show the unread posts count in the tab title.']
-      'Unread Favicon':               [true,  'Show a different favicon when there are unread posts.']
+      'Unread Tab Icon':              [true,  'Show a different favicon when there are unread posts.']
       'Thread Excerpt':               [true,  'Show an excerpt of the thread in the tab title.']
       'Thread Stats':                 [true,  'Display reply and image count.']
       'Thread Watcher':               [true,  'Bookmark threads.']
