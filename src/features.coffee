@@ -1366,6 +1366,13 @@ Build =
     container
 
 Get =
+  threadExcerpt: (thread) ->
+    op = thread.posts[thread]
+    excerpt = op.info.subject?.trim() or
+      op.info.comment.replace(/\n+/g, ' // ') or
+      Conf['Anonymize'] and 'Anonymous' or
+      $('.nameBlock', op.nodes.info).textContent.trim()
+    "/#{thread.board}/ - #{excerpt}"
   postFromRoot: (root) ->
     link   = $ 'a[title="Highlight this post"]', root
     board  = link.pathname.split('/')[1]
@@ -2412,6 +2419,16 @@ ImageHover =
     return if $.engine isnt 'webkit' or URL.split('/')[2] isnt 'images.4chan.org'
     $.ajax URL, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
       type: 'head'
+
+ThreadExcerpt =
+  init: ->
+    return if g.VIEW isnt 'thread' or !Conf['Thread Excerpt']
+
+    Thread::callbacks.push
+      name: 'Thread Excerpt'
+      cb:   @node
+  node: ->
+    d.title = Get.threadExcerpt @
 
 ThreadStats =
   init: ->

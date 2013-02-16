@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, Header, ImageExpand, ImageHover, Main, Menu, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadHiding, ThreadStats, ThreadUpdater, Time, UI, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, Header, ImageExpand, ImageHover, Main, Menu, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, Time, UI, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -90,7 +90,7 @@
         'Thread Updater': [true, 'Fetch and insert new replies. Has more options in its own dialog.'],
         'Unread Count': [true, 'Show the unread posts count in the tab title.'],
         'Unread Favicon': [true, 'Show a different favicon when there are unread posts.'],
-        'Post in Title': [true, 'Show the thread\'s subject in the tab title.'],
+        'Thread Excerpt': [true, 'Show an excerpt of the thread in the tab title.'],
         'Thread Stats': [true, 'Display reply and image count.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
         'Auto Watch': [true, 'Automatically watch threads that you start.'],
@@ -2533,6 +2533,12 @@
   };
 
   Get = {
+    threadExcerpt: function(thread) {
+      var excerpt, op, _ref;
+      op = thread.posts[thread];
+      excerpt = ((_ref = op.info.subject) != null ? _ref.trim() : void 0) || op.info.comment.replace(/\n+/g, ' // ') || Conf['Anonymize'] && 'Anonymous' || $('.nameBlock', op.nodes.info).textContent.trim();
+      return "/" + thread.board + "/ - " + excerpt;
+    },
     postFromRoot: function(root) {
       var board, index, link, post, postID;
       link = $('a[title="Highlight this post"]', root);
@@ -3883,6 +3889,21 @@
       }, {
         type: 'head'
       });
+    }
+  };
+
+  ThreadExcerpt = {
+    init: function() {
+      if (g.VIEW !== 'thread' || !Conf['Thread Excerpt']) {
+        return;
+      }
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Excerpt',
+        cb: this.node
+      });
+    },
+    node: function() {
+      return d.title = Get.threadExcerpt(this);
     }
   };
 
@@ -5596,6 +5617,7 @@
       initFeature('Reveal Spoilers', RevealSpoilers);
       initFeature('Auto-GIF', AutoGIF);
       initFeature('Image Hover', ImageHover);
+      initFeature('Thread Excerpt', ThreadExcerpt);
       initFeature('Thread Stats', ThreadStats);
       initFeature('Thread Updater', ThreadUpdater);
       console.timeEnd('All initializations');
