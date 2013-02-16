@@ -2430,6 +2430,58 @@ ThreadExcerpt =
   node: ->
     d.title = Get.threadExcerpt @
 
+Unread =
+  init: ->
+    return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Favicon']
+    $.on d, 'ThreadUpdate',            @onUpdate
+    $.on d, 'QRPostSuccessful',        @post
+    $.on d, 'scroll visibilitychange', @read
+
+    Thread::callbacks.push
+      name: 'Unread'
+      cb:   @node
+
+  node: ->
+    Unread.yourPosts = []
+    Unread.posts     = []
+    Unread.title     = d.title
+    posts = []
+    for ID, post of @posts
+      posts.push post if post.isReply
+    Unread.addPosts posts
+    Unread.update()
+
+  addPosts: (newPosts) ->
+    unless d.hidden
+      height = doc.clientHeight
+    for post in newPosts
+      if (index = Unread.yourPosts.indexOf post.ID) isnt -1
+        Unread.yourPosts.splice index, 1
+      else if !post.isHidden and (d.hidden or post.nodes.root.getBoundingClientRect().bottom > height)
+        Unread.posts.push post
+    return
+
+  onUpdate: (e) ->
+    unless e.detail[404]
+      Unread.addPosts e.detail.newPosts
+    Unread.update()
+
+  post: (e) ->
+    Unread.yourPosts.push +e.detail.postID
+
+  read: ->
+    height = doc.clientHeight
+    for post, i in Unread.posts
+      {bottom} = post.nodes.root.getBoundingClientRect()
+      break if bottom > height # post is not completely read
+    return unless i
+
+    Unread.posts = Unread.posts[i..]
+    Unread.update()
+
+  update: ->
+    d.title = "(#{Unread.posts.length}) #{Unread.title}"
+
 ThreadStats =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Stats']

@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, Header, ImageExpand, ImageHover, Main, Menu, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, Time, UI, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, FileInfo, Filter, Get, Header, ImageExpand, ImageHover, Main, Menu, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, Time, UI, Unread, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -151,7 +151,6 @@
       'submit QR': ['alt+s', 'Submit post.'],
       'watch': ['w', 'Watch thread.'],
       'update': ['u', 'Update the thread now.'],
-      'read thread': ['r', 'Mark thread as read.'],
       'expand image': ['E', 'Expand selected image.'],
       'expand images': ['e', 'Expand all images.'],
       'front page': ['0', 'Jump to page 0.'],
@@ -3907,6 +3906,80 @@
     }
   };
 
+  Unread = {
+    init: function() {
+      if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Favicon']) {
+        return;
+      }
+      $.on(d, 'ThreadUpdate', this.onUpdate);
+      $.on(d, 'QRPostSuccessful', this.post);
+      $.on(d, 'scroll visibilitychange', this.read);
+      return Thread.prototype.callbacks.push({
+        name: 'Unread',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var ID, post, posts, _ref;
+      Unread.yourPosts = [];
+      Unread.posts = [];
+      Unread.title = d.title;
+      posts = [];
+      _ref = this.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
+        if (post.isReply) {
+          posts.push(post);
+        }
+      }
+      Unread.addPosts(posts);
+      return Unread.update();
+    },
+    addPosts: function(newPosts) {
+      var height, index, post, _i, _len;
+      if (!d.hidden) {
+        height = doc.clientHeight;
+      }
+      for (_i = 0, _len = newPosts.length; _i < _len; _i++) {
+        post = newPosts[_i];
+        if ((index = Unread.yourPosts.indexOf(post.ID)) !== -1) {
+          Unread.yourPosts.splice(index, 1);
+        } else if (!post.isHidden && (d.hidden || post.nodes.root.getBoundingClientRect().bottom > height)) {
+          Unread.posts.push(post);
+        }
+      }
+    },
+    onUpdate: function(e) {
+      if (!e.detail[404]) {
+        Unread.addPosts(e.detail.newPosts);
+      }
+      return Unread.update();
+    },
+    post: function(e) {
+      return Unread.yourPosts.push(+e.detail.postID);
+    },
+    read: function() {
+      var bottom, height, i, post, _i, _len, _ref;
+      height = doc.clientHeight;
+      _ref = Unread.posts;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        post = _ref[i];
+        bottom = post.nodes.root.getBoundingClientRect().bottom;
+        if (bottom > height) {
+          break;
+        }
+      }
+      if (!i) {
+        return;
+      }
+      Unread.posts = Unread.posts.slice(i);
+      return Unread.update();
+    },
+    update: function() {
+      return d.title = "(" + Unread.posts.length + ") " + Unread.title;
+    }
+  };
+
   ThreadStats = {
     init: function() {
       if (g.VIEW !== 'thread' || !Conf['Thread Stats']) {
@@ -5618,6 +5691,7 @@
       initFeature('Auto-GIF', AutoGIF);
       initFeature('Image Hover', ImageHover);
       initFeature('Thread Excerpt', ThreadExcerpt);
+      initFeature('Unread', Unread);
       initFeature('Thread Stats', ThreadStats);
       initFeature('Thread Updater', ThreadUpdater);
       console.timeEnd('All initializations');
