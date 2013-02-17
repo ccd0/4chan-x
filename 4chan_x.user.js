@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, Header, ImageExpand, ImageHover, Main, Menu, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, Time, UI, Unread, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, Header, ImageExpand, ImageHover, Main, Menu, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -93,8 +93,8 @@
         'Thread Excerpt': [true, 'Show an excerpt of the thread in the tab title.'],
         'Thread Stats': [true, 'Display reply and image count.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
-        'Auto Watch': [true, 'Automatically watch threads that you start.'],
-        'Auto Watch Reply': [false, 'Automatically watch threads that you reply to.']
+        'Auto Watch': [true, 'Automatically watch threads you start.'],
+        'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
       },
       Posting: {
         'Quick Reply': [true, 'WMD.'],
@@ -1112,7 +1112,7 @@
       var link, settings;
       link = $.el('a', {
         className: 'settings-link',
-        textContent: '4chan X Settings',
+        textContent: '4chan X Alpha Settings',
         href: 'javascript:;'
       });
       $.on(link, 'click', Settings.open);
@@ -4231,7 +4231,7 @@
       this.postCountEl = $('#post-count', this.dialog);
       this.fileCountEl = $('#file-count', this.dialog);
       this.fileLimit = (function() {
-        switch (g.BOARD) {
+        switch (g.BOARD.ID) {
           case 'a':
           case 'b':
           case 'v':
@@ -4560,6 +4560,118 @@
         deletedPosts: deletedPosts,
         deletedFiles: deletedFiles
       });
+    }
+  };
+
+  ThreadWatcher = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Thread Watcher']) {
+        return;
+      }
+      this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', '<div class=move>Thread Watcher</div>');
+      $.on(d, 'QRPostSuccessful', this.cb.post);
+      $.on(d, '4chanXInitFinished', this.ready);
+      $.sync('WatchedThreads', this.refresh);
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Watcher',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var favicon, op;
+      op = this.posts[this];
+      favicon = $.el('img', {
+        className: 'favicon'
+      });
+      $.on(favicon, 'click', ThreadWatcher.cb.toggle);
+      $.before($('input', op.nodes.post), favicon);
+      if (g.VIEW === 'thread' && this.ID === $.get('AutoWatch', 0)) {
+        ThreadWatcher.watch(this);
+        return $["delete"]('AutoWatch');
+      }
+    },
+    ready: function() {
+      ThreadWatcher.refresh();
+      return $.add(d.body, ThreadWatcher.dialog);
+    },
+    refresh: function(watched) {
+      var ID, board, div, favicon, id, link, nodes, op, props, thread, x, _ref, _ref1;
+      watched || (watched = $.get('WatchedThreads', {}));
+      nodes = [$('.move', ThreadWatcher.dialog)];
+      for (board in watched) {
+        _ref = watched[board];
+        for (id in _ref) {
+          props = _ref[id];
+          x = $.el('a', {
+            textContent: '×',
+            href: 'javascript:;'
+          });
+          $.on(x, 'click', ThreadWatcher.cb.x);
+          link = $.el('a', props);
+          link.title = link.textContent;
+          div = $.el('div');
+          $.add(div, [x, $.tn(' '), link]);
+          nodes.push(div);
+        }
+      }
+      ThreadWatcher.dialog.innerHTML = '';
+      $.add(ThreadWatcher.dialog, nodes);
+      watched = watched[g.BOARD] || {};
+      _ref1 = g.BOARD.threads;
+      for (ID in _ref1) {
+        thread = _ref1[ID];
+        op = thread.posts[thread];
+        favicon = $('.favicon', op.nodes.post);
+        favicon.src = ID in watched ? Favicon["default"] : Favicon.empty;
+      }
+    },
+    cb: {
+      toggle: function() {
+        return ThreadWatcher.toggle(Get.postFromNode(this).thread);
+      },
+      x: function() {
+        var thread;
+        thread = this.nextElementSibling.pathname.split('/');
+        return ThreadWatcher.unwatch(thread[1], thread[3]);
+      },
+      post: function(e) {
+        var postID, threadID, _ref;
+        _ref = e.detail, postID = _ref.postID, threadID = _ref.threadID;
+        if (threadID === '0') {
+          if (Conf['Auto Watch']) {
+            return $.set('AutoWatch', +postID);
+          }
+        } else if (Conf['Auto Watch Reply']) {
+          return ThreadWatcher.watch(g.BOARD.threads[threadID]);
+        }
+      }
+    },
+    toggle: function(thread) {
+      var op;
+      op = thread.posts[thread];
+      if ($('.favicon', op.nodes.post).src === Favicon.empty) {
+        return ThreadWatcher.watch(thread);
+      } else {
+        return ThreadWatcher.unwatch(thread.board, thread.ID);
+      }
+    },
+    unwatch: function(board, threadID) {
+      var watched;
+      watched = $.get('WatchedThreads', {});
+      delete watched[board][threadID];
+      ThreadWatcher.refresh(watched);
+      return $.set('WatchedThreads', watched);
+    },
+    watch: function(thread) {
+      var watched, _name;
+      watched = $.get('WatchedThreads', {});
+      watched[_name = thread.board] || (watched[_name] = {});
+      watched[thread.board][thread] = {
+        href: "/" + thread.board + "/res/" + thread,
+        textContent: Get.threadExcerpt(thread)
+      };
+      ThreadWatcher.refresh(watched);
+      return $.set('WatchedThreads', watched);
     }
   };
 
@@ -5945,6 +6057,7 @@
       initFeature('Unread', Unread);
       initFeature('Thread Stats', ThreadStats);
       initFeature('Thread Updater', ThreadUpdater);
+      initFeature('Thread Watcher', ThreadWatcher);
       console.timeEnd('All initializations');
       $.on(d, '4chanMainInit', Main.initStyle);
       return $.ready(Main.initReady);

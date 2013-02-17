@@ -119,7 +119,7 @@ Settings =
     # 4chan X settings link
     link = $.el 'a',
       className:   'settings-link'
-      textContent: '4chan X Settings'
+      textContent: '<%= meta.name %> Settings'
       href:        'javascript:;'
     $.on link, 'click', Settings.open
     $.event 'AddMenuEntry',
@@ -2686,7 +2686,7 @@ ThreadStats =
     @postCountEl = $ '#post-count', @dialog
     @fileCountEl = $ '#file-count', @dialog
     @fileLimit = # XXX boards config, need up to date data on this, check browser
-      switch g.BOARD
+      switch g.BOARD.ID
         when 'a', 'b', 'v', 'co', 'mlp'
           251
         when 'vg'
@@ -2950,3 +2950,96 @@ ThreadUpdater =
       newPosts: posts
       deletedPosts: deletedPosts
       deletedFiles: deletedFiles
+
+ThreadWatcher =
+  init: ->
+    return if g.VIEW is 'catalog' or !Conf['Thread Watcher']
+    @dialog = UI.dialog 'watcher', 'top: 50px; left: 0px;',
+      '<div class=move>Thread Watcher</div>'
+
+    $.on d, 'QRPostSuccessful',   @cb.post
+    $.on d, '4chanXInitFinished', @ready
+    $.sync  'WatchedThreads',     @refresh
+
+    Thread::callbacks.push
+      name: 'Thread Watcher'
+      cb:   @node
+
+  node: ->
+    op = @posts[@]
+    favicon = $.el 'img',
+      className: 'favicon'
+    $.on favicon, 'click', ThreadWatcher.cb.toggle
+    $.before $('input', op.nodes.post), favicon
+    if g.VIEW is 'thread' and @ID is $.get 'AutoWatch', 0
+      ThreadWatcher.watch @
+      $.delete 'AutoWatch'
+
+  ready: ->
+    ThreadWatcher.refresh()
+    $.add d.body, ThreadWatcher.dialog
+
+  refresh: (watched) ->
+    watched or= $.get 'WatchedThreads', {}
+    nodes = [$('.move', ThreadWatcher.dialog)]
+    for board of watched
+      for id, props of watched[board]
+        x = $.el 'a',
+          textContent: '×'
+          href: 'javascript:;'
+        $.on x, 'click', ThreadWatcher.cb.x
+        link = $.el 'a', props
+        link.title = link.textContent
+
+        div = $.el 'div'
+        $.add div, [x, $.tn(' '), link]
+        nodes.push div
+
+    ThreadWatcher.dialog.innerHTML = ''
+    $.add ThreadWatcher.dialog, nodes
+
+    watched = watched[g.BOARD] or {}
+    for ID, thread of g.BOARD.threads
+      op = thread.posts[thread]
+      favicon = $ '.favicon', op.nodes.post
+      favicon.src = if ID of watched
+        Favicon.default
+      else
+        Favicon.empty
+    return
+
+  cb:
+    toggle: ->
+      ThreadWatcher.toggle Get.postFromNode(@).thread
+    x: ->
+      thread = @nextElementSibling.pathname.split '/'
+      ThreadWatcher.unwatch thread[1], thread[3]
+    post: (e) ->
+      {postID, threadID} = e.detail
+      if threadID is '0'
+        if Conf['Auto Watch']
+          $.set 'AutoWatch', +postID
+      else if Conf['Auto Watch Reply']
+        ThreadWatcher.watch g.BOARD.threads[threadID]
+
+  toggle: (thread) ->
+    op = thread.posts[thread]
+    if $('.favicon', op.nodes.post).src is Favicon.empty
+      ThreadWatcher.watch thread
+    else
+      ThreadWatcher.unwatch thread.board, thread.ID
+
+  unwatch: (board, threadID) ->
+    watched = $.get 'WatchedThreads', {}
+    delete watched[board][threadID]
+    ThreadWatcher.refresh watched
+    $.set 'WatchedThreads', watched
+
+  watch: (thread) ->
+    watched = $.get 'WatchedThreads', {}
+    watched[thread.board] or= {}
+    watched[thread.board][thread] =
+      href: "/#{thread.board}/res/#{thread}"
+      textContent: Get.threadExcerpt thread
+    ThreadWatcher.refresh watched
+    $.set 'WatchedThreads', watched

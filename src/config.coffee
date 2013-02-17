@@ -39,8 +39,8 @@ Config =
       'Thread Excerpt':               [true,  'Show an excerpt of the thread in the tab title.']
       'Thread Stats':                 [true,  'Display reply and image count.']
       'Thread Watcher':               [true,  'Bookmark threads.']
-      'Auto Watch':                   [true,  'Automatically watch threads that you start.']
-      'Auto Watch Reply':             [false, 'Automatically watch threads that you reply to.']
+      'Auto Watch':                   [true,  'Automatically watch threads you start.']
+      'Auto Watch Reply':             [false, 'Automatically watch threads you reply to.']
     Posting:
       'Quick Reply':                  [true,  'WMD.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']

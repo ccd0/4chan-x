@@ -343,6 +343,7 @@ Main =
     initFeature 'Unread',                   Unread
     initFeature 'Thread Stats',             ThreadStats
     initFeature 'Thread Updater',           ThreadUpdater
+    initFeature 'Thread Watcher',           ThreadWatcher
     console.timeEnd 'All initializations'
 
     $.on d, '4chanMainInit', Main.initStyle
