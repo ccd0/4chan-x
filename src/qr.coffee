@@ -231,7 +231,7 @@ QR =
 
     sel = d.getSelection()
     selectionRoot = $.x 'ancestor::div[contains(@class,"postContainer")][1]', sel.anchorNode
-    post = Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', @
+    post = Get.postFromNode @
     thread = g.BOARD.posts[Get.contextFromLink(@).thread]
 
     if (s = sel.toString().trim()) and post.nodes.root is selectionRoot
@@ -249,7 +249,6 @@ QR =
     ta = $ 'textarea', QR.el
     if QR.threadSelector and !ta.value and g.BOARD.ID isnt 'f'
       QR.threadSelector.value = thread.ID
-    # Make sure we get the correct number, even with XXX censors
 
     caretPos = ta.selectionStart
     # Replace selection for text.

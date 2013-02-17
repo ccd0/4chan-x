@@ -1025,6 +1025,196 @@ ArchiveLink =
       open: open
     }
 
+Keybinds =
+  init: ->
+    return if g.VIEW is 'catalog' or !Conf['Keybinds']
+
+    $.on d, 'keydown',  Keybinds.keydown
+    $.on d, '4chanXInitFinished', ->
+      for node in $$ '[accesskey]'
+        node.removeAttribute 'accesskey'
+
+  keydown: (e) ->
+    return unless key = Keybinds.keyCode e
+    {target} = e
+    if target.nodeName in ['INPUT', 'TEXTAREA']
+      return unless (key is 'Esc') or (/(Alt|Ctrl|Meta)\+/.test key)
+
+    threadRoot = Nav.getThread()
+    thread = Get.postFromNode($('.op', threadRoot)).thread
+    switch key
+      # QR & Options
+      when Conf['Open empty QR']
+        Keybinds.qr threadRoot
+      when Conf['Open QR']
+        Keybinds.qr threadRoot, true
+      when Conf['Open options']
+        Settings.open()
+      when Conf['Close']
+        if $.id 'settings'
+          Options.close()
+        else if (notifications = $$ '.notification').length
+          for notification in notifications
+            $('.close', notification).click()
+        else if QR.el
+          QR.close()
+      when Conf['Spoiler tags']
+        return if target.nodeName isnt 'TEXTAREA'
+        Keybinds.tags 'spoiler', target
+      when Conf['Code tags']
+        return if target.nodeName isnt 'TEXTAREA'
+        Keybinds.tags 'code', target
+      when Conf['Submit QR']
+        QR.submit() if QR.el and !QR.status()
+      # Thread related
+      when Conf['Watch']
+        ThreadWatcher.toggle thread
+      when Conf['Update']
+        ThreadUpdater.update()
+      # Images
+      when Conf['Expand image']
+        Keybinds.img threadRoot
+      when Conf['Expand images']
+        Keybinds.img threadRoot, true
+      # Board Navigation
+      when Conf['Front page']
+        window.location = "/#{g.BOARD}/0#delform"
+      when Conf['Open front page']
+        $.open url "/#{g.BOARD}/#delform"
+      when Conf['Next page']
+        if form = $ '.next form'
+          window.location = form.action
+      when Conf['Previous page']
+        if form = $ '.prev form'
+          window.location = form.action
+      # Thread Navigation
+      when Conf['Next thread']
+        return if g.VIEW is 'thread'
+        Nav.scroll +1
+      when Conf['Previous thread']
+        return if g.VIEW is 'thread'
+        Nav.scroll -1
+      when Conf['Expand thread']
+        ExpandThread.toggle thread
+      when Conf['Open thread']
+        Keybinds.open thread
+      when Conf['Open thread tab']
+        Keybinds.open thread, true
+      # Reply Navigation
+      when Conf['Next reply']
+        Keybinds.hl +1, threadRoot
+      when Conf['Previous reply']
+        Keybinds.hl -1, threadRoot
+      when Conf['Hide']
+        ThreadHiding.toggle thread
+      else
+        return
+    e.preventDefault()
+
+  keyCode: (e) ->
+    key = switch kc = e.keyCode
+      when 8 # return
+        ''
+      when 13
+        'Enter'
+      when 27
+        'Esc'
+      when 37
+        'Left'
+      when 38
+        'Up'
+      when 39
+        'Right'
+      when 40
+        'Down'
+      else
+        if 48 <= kc <= 57 or 65 <= kc <= 90 # 0-9, A-Z
+          String.fromCharCode(kc).toLowerCase()
+        else
+          null
+    if key
+      if e.altKey   then key = 'Alt+'   + key
+      if e.ctrlKey  then key = 'Ctrl+'  + key
+      if e.metaKey  then key = 'Meta+'  + key
+      if e.shiftKey then key = 'Shift+' + key
+    key
+
+  qr: (thread, quote) ->
+    return unless Conf['Quick Reply']
+    QR.open()
+    if quote
+      QR.quote.call $ 'input', $('.post.highlight', thread) or thread
+    $('textarea', QR.el).focus()
+
+  tags: (tag, ta) ->
+    value    = ta.value
+    selStart = ta.selectionStart
+    selEnd   = ta.selectionEnd
+
+    ta.value =
+      value[...selStart] +
+      "[#{tag}]" + value[selStart...selEnd] + "[/#{tag}]" +
+      value[selEnd..]
+
+    # Move the caret to the end of the selection.
+    range = "[#{tag}]".length + selEnd
+    ta.setSelectionRange range, range
+
+    # Fire the 'input' event
+    $.event 'input', null, ta
+
+  img: (thread, all) ->
+    if all
+      input = ImageExpand.expandAllInput
+      input.checked = !input.checked
+      ImageExpand.cb.all.call input
+    else
+      post = Get.postFromNode $('.post.highlight', thread) or $ '.op', thread
+      ImageExpand.toggle post
+
+  open: (thread, tab) ->
+    return if g.VIEW isnt 'index'
+    url = "//boards.4chan.org/#{thread.board}/res/#{thread}"
+    if tab
+      $.open url
+    else
+      location.href = url
+
+  hl: (delta, thread) ->
+    headRect  = $.id('header-bar').getBoundingClientRect()
+    topMargin = headRect.top + headRect.height
+    if postEl = $ '.reply.highlight', thread
+      $.rmClass postEl, 'highlight'
+      rect = postEl.getBoundingClientRect()
+      if rect.bottom >= topMargin and rect.top <= d.documentElement.clientHeight # We're at least partially visible
+        root = postEl.parentNode
+        next = $.x 'child::div[contains(@class,"post reply")]',
+          if delta is +1 then root.nextElementSibling else root.previousElementSibling
+        unless next
+          @focus postEl
+          return
+        return unless g.VIEW is 'thread' or $.x('ancestor::div[parent::div[@class="board"]]', next) is thread
+        rect = next.getBoundingClientRect()
+        if rect.top < 0 or rect.bottom > d.documentElement.clientHeight
+          if delta is -1
+            window.scrollBy 0, rect.top - topMargin
+          else
+            next.scrollIntoView false
+        @focus next
+        return
+
+    replies = $$ '.reply', thread
+    replies.reverse() if delta is -1
+    for reply in replies
+      rect = reply.getBoundingClientRect()
+      if delta is +1 and rect.top >= topMargin or delta is -1 and rect.bottom <= d.documentElement.clientHeight
+        @focus reply
+        return
+
+  focus: (post) ->
+    $.addClass post, 'highlight'
+    $('a[title="Highlight this post"]', post).focus()
+
 Nav =
   init: ->
     return if g.VIEW isnt 'index' or !Conf['Index Navigation']
@@ -2388,6 +2578,7 @@ ImageExpand =
       switch type
         when 'Expand all'
           $.on input, 'change', ImageExpand.cb.all
+          ImageExpand.expandAllInput = input
         when 'Fit width', 'Fit height'
           $.on input, 'change', ImageExpand.cb.setFitness
       if config

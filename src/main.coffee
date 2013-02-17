@@ -345,6 +345,7 @@ Main =
     initFeature 'Thread Updater',           ThreadUpdater
     initFeature 'Thread Watcher',           ThreadWatcher
     initFeature 'Index Navigation',         Nav
+    initFeature 'Keybinds',                 Keybinds
     console.timeEnd 'All initializations'
 
     $.on d, '4chanMainInit', Main.initStyle

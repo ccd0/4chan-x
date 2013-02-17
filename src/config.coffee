@@ -130,33 +130,34 @@ Config =
   favicon: 'ferongr'
   hotkeys:
     # QR & Options
-    'open QR':            ['q',      'Open QR with post number inserted.']
-    'open empty QR':      ['Q',      'Open QR without post number inserted.']
-    'open options':       ['alt+o',  'Open Options.']
-    'close':              ['Esc',    'Close Options or QR.']
-    'spoiler tags':       ['ctrl+s', 'Insert spoiler tags.']
-    'code tags':          ['alt+c',  'Insert code tags.']
-    'submit QR':          ['alt+s',  'Submit post.']
+    'Open empty QR':      ['q',       'Open QR without post number inserted.']
+    'Open QR':            ['Shift+q', 'Open QR with post number inserted.']
+    'Open options':       ['Alt+o',   'Open Options.']
+    'Close':              ['Esc',     'Close Settings, Notifications or QR.']
+    'Spoiler tags':       ['Ctrl+s',  'Insert spoiler tags.']
+    'Code tags':          ['Alt+c',   'Insert code tags.']
+    'Submit QR':          ['Alt+s',   'Submit post.']
     # Thread related
-    'watch':              ['w',      'Watch thread.']
-    'update':             ['u',      'Update the thread now.']
+    'Watch':              ['w',       'Watch thread.']
+    'Update':             ['u',       'Update the thread now.']
     # Images
-    'expand image':       ['E',      'Expand selected image.']
-    'expand images':      ['e',      'Expand all images.']
+    'Expand image':       ['Shift+e', 'Expand selected image.']
+    'Expand images':      ['e',       'Expand all images.']
     # Board Navigation
-    'front page':         ['0',      'Jump to page 0.']
-    'next page':          ['Right',  'Jump to the next page.']
-    'previous page':      ['Left',   'Jump to the previous page.']
+    'Front page':         ['0',       'Jump to page 0.']
+    'Open front page':    ['Shift+0', 'Open page 0 in a new tab.']
+    'Next page':          ['Right',   'Jump to the next page.']
+    'Previous page':      ['Left',    'Jump to the previous page.']
     # Thread Navigation
-    'next thread':        ['Down',   'See next thread.']
-    'previous thread':    ['Up',     'See previous thread.']
-    'expand thread':      ['ctrl+e', 'Expand thread.']
-    'open thread':        ['o',      'Open thread in current tab.']
-    'open thread tab':    ['O',      'Open thread in new tab.']
+    'Next thread':        ['Down',    'See next thread.']
+    'Previous thread':    ['Up',      'See previous thread.']
+    'Expand thread':      ['Ctrl+e',   'Expand thread.']
+    'Open thread':        ['o',       'Open thread in current tab.']
+    'Open thread tab':    ['Shift+o', 'Open thread in new tab.']
     # Reply Navigation
-    'next reply':         ['j',      'Select next reply.']
-    'previous reply':     ['k',      'Select previous reply.']
-    'hide':               ['x',      'Hide thread.']
+    'Next reply':         ['j',       'Select next reply.']
+    'Previous reply':     ['k',       'Select previous reply.']
+    'Hide':               ['x',       'Hide thread.']
   updater:
     checkbox:
       'Beep':        [false, 'Beep on new post to completely read thread.']
