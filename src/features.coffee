@@ -2428,13 +2428,25 @@ ExpandComment =
       cb:   @node
   node: ->
     if a = $ '.abbr > a', @nodes.comment
-      $.on a, 'click', ExpandComment.expand
-  expand: (e) ->
+      $.on a, 'click', ExpandComment.cb
+  cb: (e) ->
     e.preventDefault()
     post = Get.postFromNode @
-    @textContent = "Post No.#{post} Loading..."
-    a = @
-    $.cache "//api.4chan.org#{@pathname}.json", -> ExpandComment.parse @, a, post
+    ExpandComment.expand post
+  expand: (post) ->
+    if post.nodes.longComment
+      $.replace post.nodes.shortComment, post.nodes.longComment
+      post.nodes.comment = post.nodes.longComment
+      return
+    return unless a = $ '.abbr > a', post.nodes.comment
+    a.textContent = "Post No.#{post} Loading..."
+    $.cache "//api.4chan.org#{a.pathname}.json", -> ExpandComment.parse @, a, post
+  contract: (post) ->
+    return unless post.nodes.shortComment
+    a = a = $ '.abbr > a', post.nodes.shortComment
+    a.textContent = 'here'
+    $.replace post.nodes.longComment, post.nodes.shortComment
+    post.nodes.comment = post.nodes.shortComment
   parse: (req, a, post) ->
     if req.status isnt 200
       a.textContent = "Error #{req.statusText} (#{req.status})"
@@ -2450,9 +2462,9 @@ ExpandComment =
       a.textContent = "Post No.#{post} not found."
       return
 
-    {comment} = post.nodes
-    comment.innerHTML = postObj.com
-    for quote in $$ '.quotelink', comment
+    clone = post.nodes.comment.cloneNode false
+    clone.innerHTML = postObj.com
+    for quote in $$ '.quotelink', clone
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
       quote.href = "/#{post.board}/res/#{href}" # Fix pathnames
@@ -2470,10 +2482,9 @@ ExpandComment =
       QuoteCT.node.call      post
     # XXX g code
     # XXX sci math
-    # Fix linkifiers:
-    prev = comment.previousSibling
-    $.rm comment
-    $.after prev, comment
+    post.nodes.shortComment = post.nodes.comment
+    $.replace post.nodes.comment, clone
+    post.nodes.comment = post.nodes.longComment = clone
 
 ExpandThread =
   init: ->
@@ -2506,12 +2517,14 @@ ExpandThread =
       when '+'
         a.textContent = text.replace '+', '× Loading...'
         $.cache url, -> ExpandThread.parse @, thread, a
+        ExpandComment.expand thread.posts[thread]
 
       when '×'
         a.textContent = text.replace '× Loading...', '+'
 
       when '-'
         a.textContent = text.replace '-', '+'
+        ExpandComment.contract thread.posts[thread]
         #goddamit moot
         num = switch g.BOARD
           # XXX boards config

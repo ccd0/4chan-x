@@ -3912,21 +3912,42 @@
     node: function() {
       var a;
       if (a = $('.abbr > a', this.nodes.comment)) {
-        return $.on(a, 'click', ExpandComment.expand);
+        return $.on(a, 'click', ExpandComment.cb);
       }
     },
-    expand: function(e) {
-      var a, post;
+    cb: function(e) {
+      var post;
       e.preventDefault();
       post = Get.postFromNode(this);
-      this.textContent = "Post No." + post + " Loading...";
-      a = this;
-      return $.cache("//api.4chan.org" + this.pathname + ".json", function() {
+      return ExpandComment.expand(post);
+    },
+    expand: function(post) {
+      var a;
+      if (post.nodes.longComment) {
+        $.replace(post.nodes.shortComment, post.nodes.longComment);
+        post.nodes.comment = post.nodes.longComment;
+        return;
+      }
+      if (!(a = $('.abbr > a', post.nodes.comment))) {
+        return;
+      }
+      a.textContent = "Post No." + post + " Loading...";
+      return $.cache("//api.4chan.org" + a.pathname + ".json", function() {
         return ExpandComment.parse(this, a, post);
       });
     },
+    contract: function(post) {
+      var a;
+      if (!post.nodes.shortComment) {
+        return;
+      }
+      a = a = $('.abbr > a', post.nodes.shortComment);
+      a.textContent = 'here';
+      $.replace(post.nodes.longComment, post.nodes.shortComment);
+      return post.nodes.comment = post.nodes.shortComment;
+    },
     parse: function(req, a, post) {
-      var comment, href, postObj, posts, prev, quote, spoilerRange, _i, _j, _len, _len1, _ref;
+      var clone, href, postObj, posts, quote, spoilerRange, _i, _j, _len, _len1, _ref;
       if (req.status !== 200) {
         a.textContent = "Error " + req.statusText + " (" + req.status + ")";
         return;
@@ -3945,9 +3966,9 @@
         a.textContent = "Post No." + post + " not found.";
         return;
       }
-      comment = post.nodes.comment;
-      comment.innerHTML = postObj.com;
-      _ref = $$('.quotelink', comment);
+      clone = post.nodes.comment.cloneNode(false);
+      clone.innerHTML = postObj.com;
+      _ref = $$('.quotelink', clone);
       for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
         quote = _ref[_j];
         href = quote.getAttribute('href');
@@ -3973,9 +3994,9 @@
       if (Conf['Mark Cross-thread Quotes']) {
         QuoteCT.node.call(post);
       }
-      prev = comment.previousSibling;
-      $.rm(comment);
-      return $.after(prev, comment);
+      post.nodes.shortComment = post.nodes.comment;
+      $.replace(post.nodes.comment, clone);
+      return post.nodes.comment = post.nodes.longComment = clone;
     }
   };
 
@@ -4020,12 +4041,14 @@
           $.cache(url, function() {
             return ExpandThread.parse(this, thread, a);
           });
+          ExpandComment.expand(thread.posts[thread]);
           break;
         case '×':
           a.textContent = text.replace('× Loading...', '+');
           break;
         case '-':
           a.textContent = text.replace('-', '+');
+          ExpandComment.contract(thread.posts[thread]);
           num = (function() {
             switch (g.BOARD) {
               case 'b':
