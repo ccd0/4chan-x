@@ -27,7 +27,7 @@ Watcher =
     for board of watched
       for id, props of watched[board]
         x = $.el 'a',
-          textContent: 'Å~'
+          textContent: '√ó'
           href: 'javascript:;'
         $.on x, 'click', Watcher.cb.x
         link = $.el 'a', props

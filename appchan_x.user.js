@@ -5260,7 +5260,7 @@
         for (id in _ref) {
           props = _ref[id];
           x = $.el('a', {
-            textContent: '�~',
+            textContent: '×',
             href: 'javascript:;'
           });
           $.on(x, 'click', Watcher.cb.x);
