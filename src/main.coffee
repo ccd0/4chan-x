@@ -350,6 +350,9 @@ Main =
     $.ready Main.initReady
 
   initStyle: ->
+    if $ 'link[href*="favicon-status.ico"]', d.head
+      # 404 error page or similar.
+      return
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
     $.addClass doc, $.engine

@@ -97,7 +97,7 @@
         'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
       },
       Posting: {
-        'Quick Reply': [true, 'WMD.'],
+        'Quick Reply': [true, 'Weapon of mass destruction.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [false, 'Automatically hide the quick reply when posting.'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
@@ -1020,6 +1020,9 @@
       $.asap((function() {
         return d.body;
       }), function() {
+        if ($('link[href*="favicon-status.ico"]', d.head)) {
+          return;
+        }
         return $.prepend(d.body, Header.headerEl);
       });
       return $.asap((function() {
@@ -4738,15 +4741,9 @@
       $.on(d, 'dragover', QR.dragOver);
       $.on(d, 'drop', QR.dropFile);
       $.on(d, 'dragstart dragend', QR.drag);
-      $.on(d, '4chanXInitFinished', function() {
-        if (!Conf['Persistent QR']) {
-          return;
-        }
-        QR.open();
-        if (Conf['Auto Hide QR']) {
-          return QR.hide();
-        }
-      });
+      if (Conf['Persistent QR']) {
+        $.on(d, '4chanXInitFinished', QR.persist);
+      }
       $.on(d, 'ThreadUpdate', function() {
         if (g.DEAD) {
           return QR.abort();
@@ -4761,6 +4758,12 @@
     },
     node: function() {
       return $.on($('a[title="Quote this post"]', this.nodes.info), 'click', QR.quote);
+    },
+    persist: function() {
+      QR.open();
+      if (Conf['Auto Hide QR']) {
+        return QR.hide();
+      }
     },
     open: function() {
       if (QR.el) {
@@ -6091,6 +6094,9 @@
     },
     initStyle: function() {
       var MutationObserver, mainStyleSheet, observer, setStyle, style, styleSheets, _ref;
+      if ($('link[href*="favicon-status.ico"]', d.head)) {
+        return;
+      }
       if ((_ref = $('link[href*=mobile]', d.head)) != null) {
         _ref.disabled = true;
       }

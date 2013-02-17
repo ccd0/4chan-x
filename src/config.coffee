@@ -42,7 +42,7 @@ Config =
       'Auto Watch':                   [true,  'Automatically watch threads you start.']
       'Auto Watch Reply':             [false, 'Automatically watch threads you reply to.']
     Posting:
-      'Quick Reply':                  [true,  'WMD.']
+      'Quick Reply':                  [true,  'Weapon of mass destruction.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
       'Auto Hide QR':                 [false, 'Automatically hide the quick reply when posting.']
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']

@@ -25,13 +25,10 @@ QR =
       el: link
       order: 10
 
-    $.on d, 'dragover',          QR.dragOver
-    $.on d, 'drop',              QR.dropFile
-    $.on d, 'dragstart dragend', QR.drag
-    $.on d, '4chanXInitFinished', ->
-      return unless Conf['Persistent QR']
-      QR.open()
-      QR.hide() if Conf['Auto Hide QR']
+    $.on d, 'dragover',           QR.dragOver
+    $.on d, 'drop',               QR.dropFile
+    $.on d, 'dragstart dragend',  QR.drag
+    $.on d, '4chanXInitFinished', QR.persist if Conf['Persistent QR']
     $.on d, 'ThreadUpdate', ->
       if g.DEAD
         QR.abort()
@@ -45,6 +42,9 @@ QR =
   node: ->
     $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
 
+  persist: ->
+    QR.open()
+    QR.hide() if Conf['Auto Hide QR']
   open: ->
     if QR.el
       QR.el.hidden = false
