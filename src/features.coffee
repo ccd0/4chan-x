@@ -1027,6 +1027,8 @@ ArchiveLink =
 
 Nav =
   init: ->
+    return if g.VIEW isnt 'index' or !Conf['Index Navigation']
+
     span = $.el 'span',
       id: 'navlinks'
     prev = $.el 'a',
@@ -1043,16 +1045,10 @@ Nav =
     $.on d, '4chanXInitFinished', -> $.add d.body, span
 
   prev: ->
-    if g.VIEW is 'thread'
-      window.scrollTo 0, 0
-    else
-      Nav.scroll -1
+    Nav.scroll -1
 
   next: ->
-    if g.VIEW is 'thread'
-      window.scrollTo 0, d.body.scrollHeight
-    else
-      Nav.scroll +1
+    Nav.scroll +1
 
   getThread: (full) ->
     headRect  = $.id('header-bar').getBoundingClientRect()

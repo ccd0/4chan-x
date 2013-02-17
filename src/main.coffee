@@ -344,7 +344,7 @@ Main =
     initFeature 'Thread Stats',             ThreadStats
     initFeature 'Thread Updater',           ThreadUpdater
     initFeature 'Thread Watcher',           ThreadWatcher
-    initFeature 'Index/Reply Navigation',   Nav
+    initFeature 'Index Navigation',         Nav
     console.timeEnd 'All initializations'
 
     $.on d, '4chanMainInit', Main.initStyle

@@ -10,7 +10,6 @@ Config =
       'Comment Expansion':            [true,  'Can expand too long comments.']
       'Thread Expansion':             [true,  'Can expand threads to view all replies.']
       'Index Navigation':             [false, 'Navigate to previous / next thread.']
-      'Reply Navigation':             [false, 'Navigate to top / bottom of thread.']
       'Check for Updates':            [true,  'Check for updated versions of <%= meta.name %>.']
     Filtering:
       'Anonymize':                    [false, 'Turn everyone Anonymous.']

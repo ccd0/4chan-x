@@ -60,7 +60,6 @@
         'Comment Expansion': [true, 'Can expand too long comments.'],
         'Thread Expansion': [true, 'Can expand threads to view all replies.'],
         'Index Navigation': [false, 'Navigate to previous / next thread.'],
-        'Reply Navigation': [false, 'Navigate to top / bottom of thread.'],
         'Check for Updates': [true, 'Check for updated versions of 4chan X Alpha.']
       },
       Filtering: {
@@ -2237,6 +2236,9 @@
   Nav = {
     init: function() {
       var next, prev, span;
+      if (g.VIEW !== 'index' || !Conf['Index Navigation']) {
+        return;
+      }
       span = $.el('span', {
         id: 'navlinks'
       });
@@ -2256,18 +2258,10 @@
       });
     },
     prev: function() {
-      if (g.VIEW === 'thread') {
-        return window.scrollTo(0, 0);
-      } else {
-        return Nav.scroll(-1);
-      }
+      return Nav.scroll(-1);
     },
     next: function() {
-      if (g.VIEW === 'thread') {
-        return window.scrollTo(0, d.body.scrollHeight);
-      } else {
-        return Nav.scroll(+1);
-      }
+      return Nav.scroll(+1);
     },
     getThread: function(full) {
       var headRect, i, rect, thread, threads, topMargin, _i, _len;
@@ -6153,7 +6147,7 @@
       initFeature('Thread Stats', ThreadStats);
       initFeature('Thread Updater', ThreadUpdater);
       initFeature('Thread Watcher', ThreadWatcher);
-      initFeature('Index/Reply Navigation', Nav);
+      initFeature('Index Navigation', Nav);
       console.timeEnd('All initializations');
       $.on(d, '4chanMainInit', Main.initStyle);
       return $.ready(Main.initReady);
