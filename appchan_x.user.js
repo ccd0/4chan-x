@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.1.2 - 2013-02-14
+ * appchan x - Version 1.1.2 - 2013-02-17
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -692,7 +692,7 @@
     get: function(name, defaultValue) {
       var value;
       name = Main.namespace + name;
-      if (value = GM_getValue(name)) {
+      if ((value = GM_getValue(name)) && value !== 'undefined') {
         return JSON.parse(value);
       } else {
         return defaultValue;
