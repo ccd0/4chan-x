@@ -54,7 +54,7 @@ a[href="javascript:;"] {
 /* fixed, z-index */
 #qp, #ihover,
 #updater, #thread-stats,
-#header,
+#navlinks, #header,
 #qr, #watcher {
   position: fixed;
 }
@@ -67,7 +67,7 @@ a[href="javascript:;"] {
 #menu {
   z-index: 60;
 }
-#updater, #thread-stats {
+#navlinks, #updater, #thread-stats {
   z-index: 50;
 }
 #header:hover {
@@ -302,6 +302,13 @@ a[href="javascript:;"] {
   max-height: 100%;
   max-width: 75%;
   padding-bottom: 16px;
+}
+
+/* Index/Reply Navigation */
+#navlinks {
+  font-size: 16px;
+  top: 25px;
+  right: 10px;
 }
 
 /* Filter */
