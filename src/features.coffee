@@ -1080,7 +1080,7 @@ Keybinds =
       when Conf['Front page']
         window.location = "/#{g.BOARD}/0#delform"
       when Conf['Open front page']
-        $.open url "/#{g.BOARD}/#delform"
+        $.open "/#{g.BOARD}/#delform"
       when Conf['Next page']
         if form = $ '.next form'
           window.location = form.action

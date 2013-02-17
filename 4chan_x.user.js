@@ -2319,7 +2319,7 @@
           window.location = "/" + g.BOARD + "/0#delform";
           break;
         case Conf['Open front page']:
-          $.open(url("/" + g.BOARD + "/#delform"));
+          $.open("/" + g.BOARD + "/#delform");
           break;
         case Conf['Next page']:
           if (form = $('.next form')) {
