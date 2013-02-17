@@ -199,6 +199,30 @@ a[href="javascript:;"] {
   color: limegreen;
 }
 
+/* Thread Watcher */
+#watcher {
+  padding-bottom: 3px;
+  position: absolute;
+  overflow: hidden;
+  white-space: nowrap;
+}
+#watcher:not(:hover) {
+  max-height: 220px;
+}
+#watcher > .move {
+  padding-top: 3px;
+}
+#watcher > div {
+  max-width: 200px;
+  overflow: hidden;
+  padding-left: 3px;
+  padding-right: 3px;
+  text-overflow: ellipsis;
+}
+#watcher a {
+  text-decoration: none;
+}
+
 /* Thread Stats */
 #thread-stats {
   background: none;
