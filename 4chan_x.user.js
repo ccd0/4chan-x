@@ -2906,7 +2906,7 @@
       }
     },
     add: function(quotelink, board, threadID, postID, context) {
-      var inline, isBacklink, post;
+      var i, inline, isBacklink, post;
       isBacklink = $.hasClass(quotelink, 'backlink');
       inline = $.el('div', {
         id: "i" + postID,
@@ -2919,7 +2919,11 @@
       }
       if (isBacklink && Conf['Forward Hiding']) {
         $.addClass(post.nodes.root, 'forwarded');
-        return post.forwarded++ || (post.forwarded = 1);
+        post.forwarded++ || (post.forwarded = 1);
+      }
+      if (Unread.posts && (i = Unread.posts.indexOf(post)) !== -1) {
+        Unread.posts.splice(i, 1);
+        return Unread.update();
       }
     },
     rm: function(quotelink, board, threadID, postID, context) {
@@ -4533,7 +4537,7 @@
       } else {
         ThreadUpdater.set('status', "+" + count, 'new');
         ThreadUpdater.outdateCount = 0;
-        if (Conf['Beep'] && d.hidden) {
+        if (Conf['Beep'] && d.hidden && Unread.posts && !Unread.posts.length) {
           if (!ThreadUpdater.audio) {
             ThreadUpdater.audio = $.el('audio', {
               src: ThreadUpdater.beep

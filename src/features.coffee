@@ -1024,7 +1024,6 @@ ArchiveLink =
 
 Redirect =
   image: (board, filename) ->
-    # XXX need to differentiate between thumbnail only and full_image for img src=
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch "#{board}"
       when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg'
@@ -1709,11 +1708,10 @@ QuoteInline =
       $.addClass post.nodes.root, 'forwarded'
       post.forwarded++ or post.forwarded = 1
 
-    # Decrease the unread count if this post is in the array of unread reply.
-    # XXX
-    # if (i = Unread.replies.indexOf el) isnt -1
-    #   Unread.replies.splice i, 1
-    #   Unread.update true
+    # Decrease the unread count if this post is in the array of unread posts.
+    if Unread.posts and (i = Unread.posts.indexOf post) isnt -1
+      Unread.posts.splice i, 1
+      Unread.update()
 
   rm: (quotelink, board, threadID, postID, context) ->
     isBacklink = $.hasClass quotelink, 'backlink'
@@ -2170,7 +2168,6 @@ Sauce =
     links = []
     for link in Conf['sauces'].split '\n'
       continue if link[0] is '#'
-      # XXX .trim() is there to fix Opera reading two different line breaks.
       links.push @createSauceLink link.trim()
     return unless links.length
     @links = links
@@ -2688,7 +2685,7 @@ ThreadStats =
     @postCount = @fileCount = 0
     @postCountEl = $ '#post-count', @dialog
     @fileCountEl = $ '#file-count', @dialog
-    @fileLimit = # XXX need up to date data on this, check browser
+    @fileLimit = # XXX boards config, need up to date data on this, check browser
       switch g.BOARD
         when 'a', 'b', 'v', 'co', 'mlp'
           251
@@ -2933,7 +2930,7 @@ ThreadUpdater =
     else
       ThreadUpdater.set 'status', "+#{count}", 'new'
       ThreadUpdater.outdateCount = 0
-      if Conf['Beep'] and d.hidden # XXX and !Unread.replies.length
+      if Conf['Beep'] and d.hidden and Unread.posts and !Unread.posts.length
         unless ThreadUpdater.audio
           ThreadUpdater.audio = $.el 'audio', src: ThreadUpdater.beep
         ThreadUpdater.audio.play()
