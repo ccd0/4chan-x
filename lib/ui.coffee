@@ -1,4 +1,4 @@
-UI = (->
+UI = do ->
   dialog = (id, position, html) ->
     el = d.createElement 'div'
     el.className = 'dialog'
@@ -349,4 +349,3 @@ UI = (->
     Menu:   Menu
     hover:  hoverstart
   }
-)()

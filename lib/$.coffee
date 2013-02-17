@@ -53,7 +53,7 @@ $.extend $,
     r.withCredentials = type is 'post'
     r.send form
     r
-  cache: (->
+  cache: do ->
     reqs = {}
     (url, cb) ->
       if req = reqs[url]
@@ -70,7 +70,6 @@ $.extend $,
         onerror: -> delete reqs[url]
       req.callbacks = [cb]
       reqs[url] = req
-  )()
   cb:
     checked: ->
       $.set @name, @checked
@@ -140,7 +139,7 @@ $.extend $,
     root.dispatchEvent new CustomEvent event, {bubbles: true, detail}
   open: (url) ->
     (GM_openInTab or window.open) url, '_blank'
-  queueTask: (->
+  queueTask: do ->
     # inspired by https://www.w3.org/Bugs/Public/show_bug.cgi?id=15007
     taskQueue = []
     execTask = ->
@@ -158,7 +157,6 @@ $.extend $,
       ->
         taskQueue.push arguments
         setTimeout execTask, 0
-  )()
   globalEval: (code) ->
     script = $.el 'script',
       textContent: code
@@ -171,11 +169,10 @@ $.extend $,
     else if unsafeWindow isnt window # Firefox
       unsafeWindow
     else # Chrome
-      (->
+      do ->
         p = d.createElement 'p'
         p.setAttribute 'onclick', 'return window'
         p.onclick()
-      )()
   bytesToString: (size) ->
     unit = 0 # Bytes
     while size >= 1024
@@ -207,7 +204,7 @@ if GM_deleteValue?
     localStorage.setItem name, value
     GM_setValue name, value
 else if window.opera
-  (->
+  do ->
     # http://www.opera.com/docs/userjs/specs/#scriptstorage
     # http://www.opera.com/docs/userjs/using/#securepages
     # >The scriptStorage object is available only during
@@ -229,7 +226,6 @@ else if window.opera
       # for `storage` events
       localStorage.setItem name, value
       scriptStorage[name] = value
-  )()
 else
   $.delete = (name) ->
     localStorage.removeItem g.NAMESPACE + name
