@@ -884,58 +884,62 @@
     }
   });
 
-  $.extend($, typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null ? {
-    "delete": function(name) {
+  if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
+    $["delete"] = function(name) {
       return GM_deleteValue(g.NAMESPACE + name);
-    },
-    get: function(name, defaultValue) {
+    };
+    $.get = function(name, defaultValue) {
       var value;
       if (value = GM_getValue(g.NAMESPACE + name)) {
         return JSON.parse(value);
       } else {
         return defaultValue;
       }
-    },
-    set: function(name, value) {
+    };
+    $.set = function(name, value) {
       name = g.NAMESPACE + name;
       value = JSON.stringify(value);
       localStorage.setItem(name, value);
       return GM_setValue(name, value);
-    }
-  } : window.opera ? {
-    "delete": function(name) {
-      return delete opera.scriptStorage[g.NAMESPACE + name];
-    },
-    get: function(name, defaultValue) {
-      var value;
-      if (value = opera.scriptStorage[g.NAMESPACE + name]) {
-        return JSON.parse(value);
-      } else {
-        return defaultValue;
-      }
-    },
-    set: function(name, value) {
-      name = g.NAMESPACE + name;
-      value = JSON.stringify(value);
-      localStorage.setItem(name, value);
-      return opera.scriptStorage[name] = value;
-    }
-  } : {
-    "delete": function(name) {
+    };
+  } else if (window.opera) {
+    (function() {
+      var scriptStorage;
+      scriptStorage = opera.scriptStorage;
+      $["delete"] = function(name) {
+        return delete scriptStorage[g.NAMESPACE + name];
+      };
+      $.get = function(name, defaultValue) {
+        var value;
+        if (value = scriptStorage[g.NAMESPACE + name]) {
+          return JSON.parse(value);
+        } else {
+          return defaultValue;
+        }
+      };
+      return $.set = function(name, value) {
+        name = g.NAMESPACE + name;
+        value = JSON.stringify(value);
+        localStorage.setItem(name, value);
+        return scriptStorage[name] = value;
+      };
+    })();
+  } else {
+    $["delete"] = function(name) {
       return localStorage.removeItem(g.NAMESPACE + name);
-    },
-    get: function(name, defaultValue) {
+    };
+    $.get = function(name, defaultValue) {
       var value;
       if (value = localStorage.getItem(g.NAMESPACE + name)) {
         return JSON.parse(value);
       } else {
         return defaultValue;
       }
-    },
-    set: function(name, value) {
+    };
+    $.set = function(name, value) {
       return localStorage.setItem(g.NAMESPACE + name, JSON.stringify(value));
-    }
-  });
+    };
+  }
 
   Polyfill = {
     init: function() {

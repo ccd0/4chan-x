@@ -192,42 +192,51 @@ $.extend $,
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
 
-$.extend $,
-  if GM_deleteValue?
-    delete: (name) ->
-      GM_deleteValue g.NAMESPACE + name
-    get: (name, defaultValue) ->
-      if value = GM_getValue g.NAMESPACE + name
+if GM_deleteValue?
+  $.delete = (name) ->
+    GM_deleteValue g.NAMESPACE + name
+  $.get = (name, defaultValue) ->
+    if value = GM_getValue g.NAMESPACE + name
+      JSON.parse value
+    else
+      defaultValue
+  $.set = (name, value) ->
+    name  = g.NAMESPACE + name
+    value = JSON.stringify value
+    # for `storage` events
+    localStorage.setItem name, value
+    GM_setValue name, value
+else if window.opera
+  (->
+    # http://www.opera.com/docs/userjs/specs/#scriptstorage
+    # http://www.opera.com/docs/userjs/using/#securepages
+    # >The scriptStorage object is available only during
+    # the main User JavaScript thread, being therefore
+    # accessible only in the main body of the user script.
+    # To access the storage object later, keep a reference
+    # to the object.
+    {scriptStorage} = opera
+    $.delete = (name) ->
+      delete scriptStorage[g.NAMESPACE + name]
+    $.get = (name, defaultValue) ->
+      if value = scriptStorage[g.NAMESPACE + name]
         JSON.parse value
       else
         defaultValue
-    set: (name, value) ->
+    $.set = (name, value) ->
       name  = g.NAMESPACE + name
       value = JSON.stringify value
       # for `storage` events
       localStorage.setItem name, value
-      GM_setValue name, value
-  else if window.opera
-    delete: (name)->
-      delete opera.scriptStorage[g.NAMESPACE + name]
-    get: (name, defaultValue) ->
-      if value = opera.scriptStorage[g.NAMESPACE + name]
-        JSON.parse value
-      else
-        defaultValue
-    set: (name, value) ->
-      name  = g.NAMESPACE + name
-      value = JSON.stringify value
-      # for `storage` events
-      localStorage.setItem name, value
-      opera.scriptStorage[name] = value
-  else
-    delete: (name) ->
-      localStorage.removeItem g.NAMESPACE + name
-    get: (name, defaultValue) ->
-      if value = localStorage.getItem g.NAMESPACE + name
-        JSON.parse value
-      else
-        defaultValue
-    set: (name, value) ->
-      localStorage.setItem g.NAMESPACE + name, JSON.stringify value
+      scriptStorage[name] = value
+  )()
+else
+  $.delete = (name) ->
+    localStorage.removeItem g.NAMESPACE + name
+  $.get = (name, defaultValue) ->
+    if value = localStorage.getItem g.NAMESPACE + name
+      JSON.parse value
+    else
+      defaultValue
+  $.set = (name, value) ->
+    localStorage.setItem g.NAMESPACE + name, JSON.stringify value
