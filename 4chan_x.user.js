@@ -2256,14 +2256,14 @@
       });
     },
     prev: function() {
-      if (g.VIEW === 'reply') {
+      if (g.VIEW === 'thread') {
         return window.scrollTo(0, 0);
       } else {
         return Nav.scroll(-1);
       }
     },
     next: function() {
-      if (g.VIEW === 'reply') {
+      if (g.VIEW === 'thread') {
         return window.scrollTo(0, d.body.scrollHeight);
       } else {
         return Nav.scroll(+1);
