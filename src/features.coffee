@@ -3200,6 +3200,11 @@ ThreadUpdater =
       if scroll
         nodes[0].scrollIntoView()
 
+      $.event '4chanParsingDone',
+        threadId: ThreadUpdater.thread.ID
+        offset: ThreadUpdater.root.children.length - count
+        limit: ThreadUpdater.root.children.length
+
     $.event 'ThreadUpdate',
       404: false
       thread: ThreadUpdater.thread
