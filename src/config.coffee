@@ -151,7 +151,7 @@ Config =
     # Thread Navigation
     'Next thread':        ['Down',    'See next thread.']
     'Previous thread':    ['Up',      'See previous thread.']
-    'Expand thread':      ['Ctrl+e',   'Expand thread.']
+    'Expand thread':      ['Ctrl+e',  'Expand thread.']
     'Open thread':        ['o',       'Open thread in current tab.']
     'Open thread tab':    ['Shift+o', 'Open thread in new tab.']
     # Reply Navigation

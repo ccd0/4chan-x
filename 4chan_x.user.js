@@ -4276,7 +4276,7 @@
       return post.nodes.comment = post.nodes.shortComment;
     },
     parse: function(req, a, post) {
-      var clone, href, postObj, posts, quote, spoilerRange, _i, _j, _len, _len1, _ref;
+      var clone, comment, href, postObj, posts, quote, spoilerRange, _i, _j, _len, _len1, _ref;
       if (req.status !== 200) {
         a.textContent = "Error " + req.statusText + " (" + req.status + ")";
         return;
@@ -4295,7 +4295,8 @@
         a.textContent = "Post No." + post + " not found.";
         return;
       }
-      clone = post.nodes.comment.cloneNode(false);
+      comment = post.nodes.comment;
+      clone = comment.cloneNode(false);
       clone.innerHTML = postObj.com;
       _ref = $$('.quotelink', clone);
       for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
@@ -4306,6 +4307,9 @@
         }
         quote.href = "/" + post.board + "/res/" + href;
       }
+      post.nodes.shortComment = comment;
+      $.replace(comment, clone);
+      post.nodes.comment = post.nodes.longComment = clone;
       post.parseComment();
       post.parseQuotes();
       if (Conf['Resurrect Quotes']) {
@@ -4321,11 +4325,8 @@
         QuoteOP.node.call(post);
       }
       if (Conf['Mark Cross-thread Quotes']) {
-        QuoteCT.node.call(post);
+        return QuoteCT.node.call(post);
       }
-      post.nodes.shortComment = post.nodes.comment;
-      $.replace(post.nodes.comment, clone);
-      return post.nodes.comment = post.nodes.longComment = clone;
     }
   };
 

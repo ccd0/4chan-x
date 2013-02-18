@@ -2704,12 +2704,16 @@ ExpandComment =
       a.textContent = "Post No.#{post} not found."
       return
 
-    clone = post.nodes.comment.cloneNode false
+    {comment} = post.nodes
+    clone = comment.cloneNode false
     clone.innerHTML = postObj.com
     for quote in $$ '.quotelink', clone
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
       quote.href = "/#{post.board}/res/#{href}" # Fix pathnames
+    post.nodes.shortComment = comment
+    $.replace comment, clone
+    post.nodes.comment = post.nodes.longComment = clone
     post.parseComment()
     post.parseQuotes()
     if Conf['Resurrect Quotes']
@@ -2724,9 +2728,6 @@ ExpandComment =
       QuoteCT.node.call      post
     # XXX g code
     # XXX sci math
-    post.nodes.shortComment = post.nodes.comment
-    $.replace post.nodes.comment, clone
-    post.nodes.comment = post.nodes.longComment = clone
 
 ExpandThread =
   init: ->
