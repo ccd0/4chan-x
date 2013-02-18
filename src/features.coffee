@@ -1495,10 +1495,11 @@ Build =
           fileThumb += '.png'
           file.twidth = file.theight = 100
 
-      imgSrc = "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href='#{file.url}' target=_blank>" +
-        "<img src='#{fileThumb}' alt='#{fileSize}' data-md5=#{file.MD5} style='width:#{file.twidth}px;height:#{file.theight}px'></a>"
+      if board isnt 'f'
+        imgSrc = "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href='#{file.url}' target=_blank>" +
+          "<img src='#{fileThumb}' alt='#{fileSize}' data-md5=#{file.MD5} style='height: #{file.theight}px; width: #{file.twidth}px;'></a>"
 
-      # Ha Ha filenames.
+      # Ha ha, filenames!
       # html -> text, translate WebKit's %22s into "s
       a = $.el 'a', innerHTML: file.name
       filename = a.textContent.replace /%22/g, '"'
@@ -1559,7 +1560,6 @@ Build =
             capcodeStart + capcode + userID + flag + sticky + closed +
             "<br>#{subject}" +
           "</span><span class='dateTime postNum' data-utc=#{dateUTC}>#{date}" +
-          '<br><em>' +
             "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"}>No.</a>" +
             "<a href='#{
               if g.VIEW is 'thread' and g.THREAD is +threadID
@@ -1567,7 +1567,7 @@ Build =
               else
                 "/#{board}/res/#{threadID}#q#{postID}"
               }'>#{postID}</a>" +
-          '</em></span>' +
+          '</span>' +
         '</div>' +
 
         (if isOP then fileHTML else '') +
