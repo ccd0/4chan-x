@@ -9,7 +9,6 @@
 // @match        *://images.4chan.org/*
 // @match        *://sys.4chan.org/*
 // @match        *://api.4chan.org/*
-// @match        *://*.foolz.us/api/*
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
@@ -2614,11 +2613,8 @@
         case 'v':
         case 'vg':
         case 'wsg':
-        case 'dev':
-        case 'foolz':
           return "//archive.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
         case 'u':
-        case 'kuku':
           return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
         case 'c':
         case 'int':

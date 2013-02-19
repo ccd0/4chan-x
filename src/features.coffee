@@ -1285,9 +1285,9 @@ Redirect =
         "//archive.nyafuu.org/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch "#{board}"
-      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
+      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg'
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-      when 'u', 'kuku'
+      when 'u'
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'c', 'int', 'po'
         "//archive.thedarkcave.org/_/api/chan/post/?board=#{board}&num=#{postID}"

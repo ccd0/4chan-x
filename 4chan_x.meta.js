@@ -9,7 +9,6 @@
 // @match        *://images.4chan.org/*
 // @match        *://sys.4chan.org/*
 // @match        *://api.4chan.org/*
-// @match        *://*.foolz.us/api/*
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_deleteValue
