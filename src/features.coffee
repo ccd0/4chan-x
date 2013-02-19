@@ -151,6 +151,47 @@ Settings =
     $.event 'CloseMenu'
     # Here be settings
 
+Fourchan =
+  init: ->
+    return if g.VIEW is 'catalog'
+
+    board = g.BOARD.ID
+    if board is 'g'
+      Post::callbacks.push
+        name: 'Parse /g/ code'
+        cb:   @code
+    if board is 'sci'
+      Post::callbacks.push
+        name: 'Parse /sci/ math'
+        cb:   @math
+  code: ->
+    return if @isClone
+    for pre in $$ '.prettyprint', @nodes.comment
+      pre.innerHTML = $.unsafeWindow.prettyPrintOne pre.innerHTML
+    return
+  math: ->
+    return if @isClone or !$ '.math', @nodes.comment
+    # https://github.com/MayhemYDG/4chan-x/issues/645#issuecomment-13704562
+    {jsMath} = $.unsafeWindow
+    if jsMath
+      if jsMath.loaded
+        # process one post
+        jsMath.ProcessBeforeShowing @nodes.post
+      else
+        # load jsMath and process whole document
+        # Yes this requires to be globalEval'd, don't ask me why.
+        $.globalEval """
+          jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);
+          jsMath.Autoload.LoadJsMath();
+          """
+  parseThread: (threadID, offset, limit) ->
+    # Fix /sci/
+    # Fix /g/
+    $.event '4chanParsingDone',
+      threadId: threadID
+      offset: offset
+      limit: limit
+
 Filter =
   filters: {}
   init: ->
@@ -1064,6 +1105,9 @@ Keybinds =
       when Conf['Code tags']
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'code', target
+      when Conf['Math tags']
+        return if target.nodeName isnt 'TEXTAREA'
+        Keybinds.tags 'math', target
       when Conf['Submit QR']
         QR.submit() if QR.el and !QR.status()
       # Thread related
@@ -2726,8 +2770,10 @@ ExpandComment =
       QuoteOP.node.call      post
     if Conf['Mark Cross-thread Quotes']
       QuoteCT.node.call      post
-    # XXX g code
-    # XXX sci math
+    if g.BOARD.ID is 'g'
+      Fourchan.code.call     post
+    if g.BOARD.ID is 'sci'
+      Fourchan.math.call     post
 
 ExpandThread =
   init: ->
@@ -2812,6 +2858,12 @@ ExpandThread =
       nodes.push node
     Main.callbackNodes Post, posts
     $.after a, nodes
+
+    # Enable 4chan features.
+    if Conf['Enable 4chan\'s extension']
+      $.unsafeWindow.Parser.parseThread thread.ID, 1, nodes.length
+    else
+      Fourchan.parseThread thread.ID, 1, nodes.length
 
 ThreadExcerpt =
   init: ->
@@ -3200,10 +3252,14 @@ ThreadUpdater =
       if scroll
         nodes[0].scrollIntoView()
 
-      $.event '4chanParsingDone',
-        threadId: ThreadUpdater.thread.ID
-        offset: ThreadUpdater.root.children.length - count
-        limit: ThreadUpdater.root.children.length
+      $.queueTask ->
+        # Enable 4chan features.
+        threadID = ThreadUpdater.thread.ID
+        {length} = ThreadUpdater.root.children
+        if Conf['Enable 4chan\'s extension']
+          $.unsafeWindow.Parser.parseThread threadID, -count
+        else
+          Fourchan.parseThread threadID, length - count, length
 
     $.event 'ThreadUpdate',
       404: false

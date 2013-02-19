@@ -22,6 +22,7 @@ alpha
   Thread & Post Hiding Buttons can now be disabled in the settings.
   Recursive Hiding will be automatically applied when manually hiding a post.
   Visible posts will not be taken into account towards the unread count.
+  Added [math] tags keybind.
   Fix Chrome's install warning saying that 4chan X would execute on all domains.
   Fix Quote Backlinks not affecting inlined quotes.
   Fix Quote Highlighting not affecting inlined quotes.

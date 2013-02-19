@@ -42,7 +42,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -146,6 +146,7 @@
       'Close': ['Esc', 'Close Settings, Notifications or QR.'],
       'Spoiler tags': ['Ctrl+s', 'Insert spoiler tags.'],
       'Code tags': ['Alt+c', 'Insert code tags.'],
+      'Math tags': ['Alt+m', 'Insert math tags.'],
       'Submit QR': ['Alt+s', 'Submit post.'],
       'Watch': ['w', 'Watch thread.'],
       'Update': ['u', 'Update the thread now.'],
@@ -1155,6 +1156,60 @@
     },
     open: function() {
       return $.event('CloseMenu');
+    }
+  };
+
+  Fourchan = {
+    init: function() {
+      var board;
+      if (g.VIEW === 'catalog') {
+        return;
+      }
+      board = g.BOARD.ID;
+      if (board === 'g') {
+        Post.prototype.callbacks.push({
+          name: 'Parse /g/ code',
+          cb: this.code
+        });
+      }
+      if (board === 'sci') {
+        return Post.prototype.callbacks.push({
+          name: 'Parse /sci/ math',
+          cb: this.math
+        });
+      }
+    },
+    code: function() {
+      var pre, _i, _len, _ref;
+      if (this.isClone) {
+        return;
+      }
+      _ref = $$('.prettyprint', this.nodes.comment);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        pre = _ref[_i];
+        pre.innerHTML = $.unsafeWindow.prettyPrintOne(pre.innerHTML);
+      }
+    },
+    math: function() {
+      var jsMath;
+      if (this.isClone || !$('.math', this.nodes.comment)) {
+        return;
+      }
+      jsMath = $.unsafeWindow.jsMath;
+      if (jsMath) {
+        if (jsMath.loaded) {
+          return jsMath.ProcessBeforeShowing(this.nodes.post);
+        } else {
+          return $.globalEval("jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);\njsMath.Autoload.LoadJsMath();");
+        }
+      }
+    },
+    parseThread: function(threadID, offset, limit) {
+      return $.event('4chanParsingDone', {
+        threadId: threadID,
+        offset: offset,
+        limit: limit
+      });
     }
   };
 
@@ -2296,6 +2351,12 @@
             return;
           }
           Keybinds.tags('code', target);
+          break;
+        case Conf['Math tags']:
+          if (target.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          Keybinds.tags('math', target);
           break;
         case Conf['Submit QR']:
           if (QR.el && !QR.status()) {
@@ -4323,7 +4384,13 @@
         QuoteOP.node.call(post);
       }
       if (Conf['Mark Cross-thread Quotes']) {
-        return QuoteCT.node.call(post);
+        QuoteCT.node.call(post);
+      }
+      if (g.BOARD.ID === 'g') {
+        Fourchan.code.call(post);
+      }
+      if (g.BOARD.ID === 'sci') {
+        return Fourchan.math.call(post);
       }
     }
   };
@@ -4434,7 +4501,12 @@
         nodes.push(node);
       }
       Main.callbackNodes(Post, posts);
-      return $.after(a, nodes);
+      $.after(a, nodes);
+      if (Conf['Enable 4chan\'s extension']) {
+        return $.unsafeWindow.Parser.parseThread(thread.ID, 1, nodes.length);
+      } else {
+        return Fourchan.parseThread(thread.ID, 1, nodes.length);
+      }
     }
   };
 
@@ -4907,10 +4979,15 @@
         if (scroll) {
           nodes[0].scrollIntoView();
         }
-        $.event('4chanParsingDone', {
-          threadId: ThreadUpdater.thread.ID,
-          offset: ThreadUpdater.root.children.length - count,
-          limit: ThreadUpdater.root.children.length
+        $.queueTask(function() {
+          var length, threadID;
+          threadID = ThreadUpdater.thread.ID;
+          length = ThreadUpdater.root.children.length;
+          if (Conf['Enable 4chan\'s extension']) {
+            return $.unsafeWindow.Parser.parseThread(threadID, -count);
+          } else {
+            return Fourchan.parseThread(threadID, length - count, length);
+          }
         });
       }
       return $.event('ThreadUpdate', {
@@ -5883,6 +5960,7 @@
           return QR.response(this.response);
         },
         onerror: function() {
+          delete QR.ajax;
           QR.cooldown.auto = false;
           QR.status();
           return QR.error($.el('a', {
@@ -6381,6 +6459,7 @@
       initFeature('Polyfill', Polyfill);
       initFeature('Header', Header);
       initFeature('Settings', Settings);
+      initFeature('Fourchan thingies', Fourchan);
       initFeature('Resurrect Quotes', Quotify);
       initFeature('Filter', Filter);
       initFeature('Thread Hiding', ThreadHiding);

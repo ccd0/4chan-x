@@ -307,6 +307,7 @@ Main =
     initFeature 'Polyfill',                 Polyfill
     initFeature 'Header',                   Header
     initFeature 'Settings',                 Settings
+    initFeature 'Fourchan thingies',        Fourchan
     initFeature 'Resurrect Quotes',         Quotify
     initFeature 'Filter',                   Filter
     initFeature 'Thread Hiding',            ThreadHiding

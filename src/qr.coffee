@@ -705,6 +705,7 @@ QR =
       onload: ->
         QR.response @response
       onerror: ->
+        delete QR.ajax
         # Connection error, or
         # CORS disabled error on www.4chan.org/banned
         QR.cooldown.auto = false
