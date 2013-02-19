@@ -2928,7 +2928,10 @@ Unread =
     count = Unread.posts.length
 
     if Conf['Unread Count']
-      d.title = "(#{Unread.posts.length}) #{Unread.title}"
+      d.title = if g.DEAD
+        "(#{Unread.posts.length}) /#{g.BOARD}/ - 404"
+      else
+        "(#{Unread.posts.length}) #{Unread.title}"
 
     return unless Conf['Unread Tab Icon']
 
@@ -3138,11 +3141,6 @@ ThreadUpdater =
           $.event 'ThreadUpdate',
             404: true
             thread: ThreadUpdater.thread
-          # if Conf['Unread Count']
-          #   Unread.title = Unread.title.match(/^.+-/)[0] + ' 404'
-          # else
-          #   d.title = d.title.match(/^.+-/)[0] + ' 404'
-          # Unread.update true
         else
           ThreadUpdater.outdateCount++
           ThreadUpdater.set 'timer',  ThreadUpdater.getInterval()

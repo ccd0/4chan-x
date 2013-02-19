@@ -4598,7 +4598,7 @@
       var count;
       count = Unread.posts.length;
       if (Conf['Unread Count']) {
-        d.title = "(" + Unread.posts.length + ") " + Unread.title;
+        d.title = g.DEAD ? "(" + Unread.posts.length + ") /" + g.BOARD + "/ - 404" : "(" + Unread.posts.length + ") " + Unread.title;
       }
       if (!Conf['Unread Tab Icon']) {
         return;
