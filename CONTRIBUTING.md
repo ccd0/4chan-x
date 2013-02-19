@@ -18,7 +18,7 @@ Open your console with:
 - Clone 4chan X.
 - `cd` into it.
 - Install [node.js](http://nodejs.org/).
-- Install [Grunt](http://gruntjs.com/) with `npm install -g grunt`.
+- Install [Grunt's CLI](http://gruntjs.com/) with `npm install -g grunt-cli`.
 - Install 4chan X dependencies with `npm install`.
 
 ### Build

@@ -1,24 +1,34 @@
 {
-  "name": "4chan-X-Alpha",
+  "name": "4chan-X",
   "version": "3.0.0",
-  "author": "Nicolas Stepien <stepien.nicolas@gmail.com>",
   "description": "Cross-browser userscript for maximum lurking on 4chan.",
-  "scripts": {
-    "test": "grunt test"
+  "meta": {
+    "name": "4chan X Alpha",
+    "repo": "https://github.com/MayhemYDG/4chan-x/",
+    "page": "http://mayhemydg.github.com/4chan-x/",
+    "mainBranch": "v3",
+    "files": {
+      "metajs": "4chan_x.meta.js",
+      "userjs": "4chan_x.user.js",
+      "latestjs": "latestv3.js"
+    }
+  },
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "grunt-bump": "~0.0.x",
+    "grunt-contrib-clean": "~0.4.0",
+    "grunt-contrib-coffee": "~0.4.0",
+    "grunt-contrib-concat": "~0.1.2",
+    "grunt-contrib-watch": "~0.2.0",
+    "grunt-exec": "~0.4.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/MayhemYDG/4chan-x.git"
+    "url": "git://github.com/MayhemYDG/4chan-x.git"
   },
-  "devDependencies": {
-    "grunt": "0.3.x",
-    "grunt-bump": "0.0.x",
-    "grunt-contrib-clean": "0.3.x",
-    "grunt-contrib-coffee": "0.3.x",
-    "grunt-exec": "0.3.x",
-    "qunitjs": "1.x.x"
-  },
+  "author": "Nicolas Stepien <stepien.nicolas@gmail.com>",
   "license": "MIT",
+  "readmeFilename": "README.md",
   "engines": {
     "node": ">=0.8"
   }

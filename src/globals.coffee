@@ -6,8 +6,8 @@ Conf = {}
 d    = document
 doc  = d.documentElement
 g =
-  VERSION:   '<%= pkg.version %>'
-  NAMESPACE: "<%= pkg.name.replace(/-/g, '_') %>."
+  VERSION:   '<%= version %>'
+  NAMESPACE: "<%= meta.name %>."
   boards:  {}
   threads: {}
   posts:   {}

@@ -1,5 +1,5 @@
-/* <%= meta.name %> - Version <%= pkg.version %> - <%= grunt.template.today('yyyy-mm-dd') %>
- * http://mayhemydg.github.com/4chan-x/
+/* <%= meta.name %> - Version <%= version %> - <%= grunt.template.today('yyyy-mm-dd') %>
+ * <%= meta.page %>
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012-<%= grunt.template.today('yyyy') %> Nicolas Stepien <stepien.nicolas@gmail.com>

@@ -2910,25 +2910,25 @@ Favicon =
   switch: ->
     switch Conf['favicon']
       when 'ferongr'
-        Favicon.unreadDead = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/ferongr/unreadDead.gif", {encoding: "base64"}).toString("base64") %>'
-        Favicon.unreadSFW  = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/ferongr/unreadSFW.gif", {encoding: "base64"}).toString("base64") %>'
-        Favicon.unreadNSFW = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/ferongr/unreadNSFW.gif", {encoding: "base64"}).toString("base64") %>'
+        Favicon.unreadDead = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/ferongr/unreadDead.gif", {encoding: "base64"}) %>'
+        Favicon.unreadSFW  = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/ferongr/unreadSFW.gif", {encoding: "base64"}) %>'
+        Favicon.unreadNSFW = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/ferongr/unreadNSFW.gif", {encoding: "base64"}) %>'
       when 'xat-'
-        Favicon.unreadDead = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadDead.png", {encoding: "base64"}).toString("base64") %>'
-        Favicon.unreadSFW  = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadSFW.png", {encoding: "base64"}).toString("base64") %>'
-        Favicon.unreadNSFW = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadNSFW.png", {encoding: "base64"}).toString("base64") %>'
+        Favicon.unreadDead = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadDead.png", {encoding: "base64"}) %>'
+        Favicon.unreadSFW  = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadSFW.png", {encoding: "base64"}) %>'
+        Favicon.unreadNSFW = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadNSFW.png", {encoding: "base64"}) %>'
       when 'Mayhem'
-        Favicon.unreadDead = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadDead.png", {encoding: "base64"}).toString("base64") %>'
-        Favicon.unreadSFW  = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadSFW.png", {encoding: "base64"}).toString("base64") %>'
-        Favicon.unreadNSFW = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadNSFW.png", {encoding: "base64"}).toString("base64") %>'
+        Favicon.unreadDead = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadDead.png", {encoding: "base64"}) %>'
+        Favicon.unreadSFW  = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadSFW.png", {encoding: "base64"}) %>'
+        Favicon.unreadNSFW = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadNSFW.png", {encoding: "base64"}) %>'
       when 'Original'
-        Favicon.unreadDead = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/Original/unreadDead.gif", {encoding: "base64"}).toString("base64") %>'
-        Favicon.unreadSFW  = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/Original/unreadSFW.gif", {encoding: "base64"}).toString("base64") %>'
-        Favicon.unreadNSFW = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/Original/unreadNSFW.gif", {encoding: "base64"}).toString("base64") %>'
+        Favicon.unreadDead = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/Original/unreadDead.gif", {encoding: "base64"}) %>'
+        Favicon.unreadSFW  = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/Original/unreadSFW.gif", {encoding: "base64"}) %>'
+        Favicon.unreadNSFW = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/Original/unreadNSFW.gif", {encoding: "base64"}) %>'
     Favicon.unread = if Favicon.SFW then Favicon.unreadSFW else Favicon.unreadNSFW
 
-  empty: 'data:image/gif;base64,<%= grunt.file.read("img/favicons/empty.gif", {encoding: "base64"}).toString("base64") %>'
-  dead:  'data:image/gif;base64,<%= grunt.file.read("img/favicons/dead.gif",  {encoding: "base64"}).toString("base64") %>'
+  empty: 'data:image/gif;base64,<%= grunt.file.read("img/favicons/empty.gif", {encoding: "base64"}) %>'
+  dead:  'data:image/gif;base64,<%= grunt.file.read("img/favicons/dead.gif",  {encoding: "base64"}) %>'
 
 
 ThreadStats =
@@ -3032,7 +3032,7 @@ ThreadUpdater =
   http://freesound.org/people/pierrecartoons1979/sounds/90112/
   cc-by-nc-3.0
   ###
-  beep: 'data:audio/wav;base64,<%= grunt.file.read("audio/beep.wav", {encoding: "base64"}).toString("base64") %>'
+  beep: 'data:audio/wav;base64,<%= grunt.file.read("audio/beep.wav", {encoding: "base64"}) %>'
 
   cb:
     online: ->
