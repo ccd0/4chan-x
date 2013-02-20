@@ -258,8 +258,30 @@ Settings =
     # XXX TODO
 
   keybinds: (section) ->
-    # XXX TODO
-
+    section.innerHTML = """
+      <div class=warning #{if Conf['Keybinds'] then 'hidden' else ''}><code>Keybinds</code> are disabled.</div>
+      <div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Enter</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div>
+      <div>Press <kbd>Return</kbd> to disable a keybind.</div>
+      <table><tbody>
+        <tr><th>Actions</th><th>Keybinds</th></tr>
+      </tbody></table>
+    """
+    tbody = $ 'tbody', section
+    for key, arr of Config.hotkeys
+      tr = $.el 'tr',
+        innerHTML: "<td>#{arr[1]}</td><td><input class=field></td>"
+      input = $ 'input', tr
+      input.name  = key
+      input.value = $.get key, Conf[key]
+      $.on input, 'keydown', Settings.keybind
+      $.add tbody, tr
+  keybind: (e) ->
+    return if e.keyCode is 9 # tab
+    e.preventDefault()
+    e.stopPropagation()
+    return unless (key = Keybinds.keyCode e)?
+    @value = key
+    $.cb.value.call @
 
 Fourchan =
   init: ->
@@ -1264,6 +1286,7 @@ Keybinds =
       else
         return
     e.preventDefault()
+    e.stopPropagation()
 
   keyCode: (e) ->
     key = switch kc = e.keyCode

@@ -1273,7 +1273,38 @@
     filter: function(section) {},
     sauce: function(section) {},
     rice: function(section) {},
-    keybinds: function(section) {}
+    keybinds: function(section) {
+      var arr, input, key, tbody, tr, _ref, _results;
+      section.innerHTML = "<div class=warning " + (Conf['Keybinds'] ? 'hidden' : '') + "><code>Keybinds</code> are disabled.</div>\n<div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Enter</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div>\n<div>Press <kbd>Return</kbd> to disable a keybind.</div>\n<table><tbody>\n  <tr><th>Actions</th><th>Keybinds</th></tr>\n</tbody></table>";
+      tbody = $('tbody', section);
+      _ref = Config.hotkeys;
+      _results = [];
+      for (key in _ref) {
+        arr = _ref[key];
+        tr = $.el('tr', {
+          innerHTML: "<td>" + arr[1] + "</td><td><input class=field></td>"
+        });
+        input = $('input', tr);
+        input.name = key;
+        input.value = $.get(key, Conf[key]);
+        $.on(input, 'keydown', Settings.keybind);
+        _results.push($.add(tbody, tr));
+      }
+      return _results;
+    },
+    keybind: function(e) {
+      var key;
+      if (e.keyCode === 9) {
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      if ((key = Keybinds.keyCode(e)) == null) {
+        return;
+      }
+      this.value = key;
+      return $.cb.value.call(this);
+    }
   };
 
   Fourchan = {
@@ -2542,7 +2573,8 @@
         default:
           return;
       }
-      return e.preventDefault();
+      e.preventDefault();
+      return e.stopPropagation();
     },
     keyCode: function(e) {
       var kc, key;
