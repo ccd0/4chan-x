@@ -3531,7 +3531,10 @@ ThreadUpdater =
         ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
       $.add ThreadUpdater.root, nodes
       if scroll
-        nodes[0].scrollIntoView()
+        if Conf['Bottom scroll']
+          d.body.scrollTop = d.body.clientHeight
+        else
+          nodes[0].scrollIntoView()
 
       $.queueTask ->
         # Enable 4chan features.
