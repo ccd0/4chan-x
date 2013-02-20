@@ -244,13 +244,15 @@ a[href="javascript:;"] {
   overflow: auto;
 }
 .section-main ul,
-.section-sauce ul {
+.section-sauce ul,
+.section-rice ul {
   list-style: none;
   margin: 0;
   padding: 8px;
 }
 .section-main li,
-.section-sauce li {
+.section-sauce li,
+.section-rice li {
   padding-left: 4px;
 }
 .section-main label {

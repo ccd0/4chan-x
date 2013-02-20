@@ -261,10 +261,10 @@ Settings =
       <div>Lines starting with a <code>#</code> will be ignored.</div>
       <div>You can specify a display text by appending <code>;text:[text]</code> to the url.</div>
       <ul>These parameters will be replaced by their corresponding values:
-        <li>%turl: Thumbnail url.</li>
-        <li>%url: Full image url.</li>
-        <li>%md5: MD5 hash.</li>
-        <li>%board: Current board.</li>
+        <li><code>%turl</code>: Thumbnail url.</li>
+        <li><code>%url</code>: Full image url.</li>
+        <li><code>%md5</code>: MD5 hash.</li>
+        <li><code>%board</code>: Current board.</li>
       </ul>
       <textarea name=sauces class=field></textarea>
     """
@@ -273,7 +273,74 @@ Settings =
     $.on sauce, 'change', $.cb.value
 
   rice: (section) ->
-    # XXX TODO
+    section.innerHTML = """
+      <div class=warning #{if Conf['Time Formatting'] then 'hidden' else ''}><code>Time Formatting</code> is disabled.</div>
+      <ul>Time formatting
+        <li><input name=time class=field>: <span class=time-preview></span></li>
+        <li>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</li>
+        <li>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></li>
+        <li>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></li>
+        <li>Year: <code>%y</code></li>
+        <li>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></li>
+        <li>Minute: <code>%M</code></li>
+        <li>Second: <code>%S</code></li>
+      </ul>
+      <div class=warning #{if Conf['Quote Backlinks'] then 'hidden' else ''}><code>Quote Backlinks</code> are disabled.</div>
+      <ul>Backlink formatting
+        <li><input name=backlink class=field>: <span class=backlink-preview></span></li>
+      </ul>
+      <div class=warning #{if Conf['File Info Formatting'] then 'hidden' else ''}><code>File Info Formatting</code> is disabled.</div>
+      <ul>File Info Formatting
+        <li><input name=fileInfo class=field>: <span class='fileText file-info-preview'></span></li>
+        <li>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</li>
+        <li>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</li>
+        <li>Spoiler indicator: <code>%p</code></li>
+        <li>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</li>
+        <li>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</li>
+      </ul>
+      <div class=warning #{if Conf['Unread Tab Icon'] then 'hidden' else ''}><code>Unread Tab Icon</code> is disabled.</div>
+      <div>Unread favicons</div>
+      <select name=favicon>
+        <option value=ferongr>ferongr</option>
+        <option value=xat->xat-</option>
+        <option value=Mayhem>Mayhem</option>
+        <option value=Original>Original</option>
+      </select>
+      <span class=favicon-preview></span>
+    """
+    for name in ['time', 'backlink', 'fileInfo', 'favicon']
+      input = $ "[name=#{name}]", section
+      input.value = $.get 'name', Conf[name]
+      event = if input.nodeName is 'SELECT'
+        'change'
+      else
+        'input'
+      $.on input, event, $.cb.value
+      $.on input, event, Settings[name]
+      Settings[name].call input
+    return
+  time: ->
+    funk = Time.createFunc @value
+    @nextElementSibling.textContent = funk Time, new Date()
+  backlink: ->
+    @nextElementSibling.textContent = Conf['backlink'].replace /%id/, '123456789'
+  fileInfo: ->
+    data =
+      isReply: true
+      file:
+        URL: '//images.4chan.org/g/src/1334437723720.jpg'
+        name: 'd9bb2efc98dd0df141a94399ff5880b7.jpg'
+        size: '276 KB'
+        sizeInBytes: 276 * 1024
+        dimensions: '1280x720'
+        isImage: true
+        isSpoiler: true
+    funk = FileInfo.createFunc @value
+    @nextElementSibling.innerHTML = funk FileInfo, data
+  favicon: ->
+    Favicon.switch()
+    Unread.update()
+    @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
 
   keybinds: (section) ->
     section.innerHTML = """
@@ -2578,7 +2645,7 @@ FileInfo =
       c is '<' and '&lt;' or '&gt;'
   formatters:
     t: -> @file.URL.match(/\d+\..+$/)[0]
-    T: -> "<a href=#{FileInfo.data.link} target=_blank>#{FileInfo.formatters.t.call @}</a>"
+    T: -> "<a href=#{@file.URL} target=_blank>#{FileInfo.formatters.t.call @}</a>"
     l: -> "<a href=#{@file.URL} target=_blank>#{FileInfo.formatters.n.call @}</a>"
     L: -> "<a href=#{@file.URL} target=_blank>#{FileInfo.formatters.N.call @}</a>"
     n: ->
