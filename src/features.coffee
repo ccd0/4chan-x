@@ -340,7 +340,7 @@ Settings =
     @nextElementSibling.innerHTML = funk FileInfo, data
   favicon: ->
     Favicon.switch()
-    Unread.update()
+    Unread.update() if g.VIEW is 'thread' and Conf['Unread Tab Icon']
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
 
   keybinds: (section) ->

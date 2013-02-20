@@ -301,7 +301,8 @@ Main =
         Main.handleErrors
           message: "\"#{name}\" initialization crashed."
           error: err
-      console.timeEnd "#{name} initialization"
+      finally
+        console.timeEnd "#{name} initialization"
 
     console.time 'All initializations'
     initFeature 'Polyfill',                 Polyfill
