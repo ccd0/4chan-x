@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         4chan X Alpha
+// @name         4chan X Beta
 // @version      3.0.0
 // @description  Cross-browser userscript for maximum lurking on 4chan.
 // @copyright    2009-2011 James Campos <james.r.campos@gmail.com>

@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         4chan X Alpha
+// @name         4chan X Beta
 // @version      3.0.0
 // @description  Cross-browser userscript for maximum lurking on 4chan.
 // @copyright    2009-2011 James Campos <james.r.campos@gmail.com>
@@ -19,7 +19,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Alpha - Version 3.0.0 - 2013-02-20
+/* 4chan X Beta - Version 3.0.0 - 2013-02-20
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -50,7 +50,7 @@
   Config = {
     main: {
       Enhancing: {
-        'Enable 4chan\'s extension': [false, 'Compatibility between 4chan X Alpha and 4chan\'s inline extension is NOT guaranteed.'],
+        'Enable 4chan\'s extension': [false, 'Compatibility between 4chan X Beta and 4chan\'s inline extension is NOT guaranteed.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps arbitrarily.'],
@@ -59,7 +59,7 @@
         'Comment Expansion': [true, 'Can expand too long comments.'],
         'Thread Expansion': [true, 'Can expand threads to view all replies.'],
         'Index Navigation': [false, 'Navigate to previous / next thread.'],
-        'Check for Updates': [true, 'Check for updated versions of 4chan X Alpha.']
+        'Check for Updates': [true, 'Check for updated versions of 4chan X Beta.']
       },
       Filtering: {
         'Anonymize': [false, 'Turn everyone Anonymous.'],
@@ -188,7 +188,7 @@
 
   g = {
     VERSION: '3.0.0',
-    NAMESPACE: "4chan X Alpha.",
+    NAMESPACE: "4chan X Beta.",
     boards: {},
     threads: {},
     posts: {}
@@ -1119,7 +1119,7 @@
       var link, settings;
       link = $.el('a', {
         className: 'settings-link',
-        textContent: '4chan X Alpha Settings',
+        textContent: '4chan X Beta Settings',
         href: 'javascript:;'
       });
       $.on(link, 'click', Settings.open);
@@ -1173,7 +1173,7 @@
         return;
       }
       $.event('CloseMenu');
-      html = "<div id=settings class=dialog>\n  <nav>\n    <div class=sections-list></div>\n    <div class=credits>\n      <a href='http://mayhemydg.github.com/4chan-x/' target=_blank>4chan X Alpha</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/changelog' target=_blank>" + g.VERSION + "</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/issues' target=_blank>Issues</a> |\n      <a href=javascript:; class=close title=Close>×</a>\n    </div>\n  </nav>\n  <hr>\n  <div class=section-container><section></section></div>\n</div>";
+      html = "<div id=settings class=dialog>\n  <nav>\n    <div class=sections-list></div>\n    <div class=credits>\n      <a href='http://mayhemydg.github.com/4chan-x/' target=_blank>4chan X Beta</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/changelog' target=_blank>" + g.VERSION + "</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/issues' target=_blank>Issues</a> |\n      <a href=javascript:; class=close title=Close>×</a>\n    </div>\n  </nav>\n  <hr>\n  <div class=section-container><section></section></div>\n</div>";
       Settings.dialog = overlay = $.el('div', {
         id: 'overlay',
         innerHTML: html
