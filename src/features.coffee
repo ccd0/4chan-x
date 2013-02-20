@@ -152,7 +152,7 @@ Settings =
     Settings.addSection 'Rice',     Settings.rice
     Settings.addSection 'Keybinds', Settings.keybinds
     $.on d, 'AddSettingsSection',   Settings.addSection
-    $.on d, 'OpenSettings',         (e) -> Settings.open e.detail.title
+    $.on d, 'OpenSettings',         (e) -> Settings.open e.detail
 
     return if Conf['Enable 4chan\'s extension']
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}

@@ -1155,7 +1155,7 @@
       Settings.addSection('Keybinds', Settings.keybinds);
       $.on(d, 'AddSettingsSection', Settings.addSection);
       $.on(d, 'OpenSettings', function(e) {
-        return Settings.open(e.detail.title);
+        return Settings.open(e.detail);
       });
       if (Conf['Enable 4chan\'s extension']) {
         return;
