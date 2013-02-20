@@ -211,8 +211,8 @@ a[href="javascript:;"] {
   padding: 3px;
   display: -webkit-flex;
   display: flex;
-  -webkit-flex-flow: column nowrap;
-  flex-flow: column nowrap;
+  -webkit-flex-direction: column;
+  flex-direction: column;
 }
 #settings > nav {
   display: -webkit-flex;
@@ -657,8 +657,8 @@ a[href="javascript:;"] {
   border-bottom: 0;
   display: -webkit-flex;
   display: flex;
-  -webkit-flex-flow: column nowrap;
-  flex-flow: column nowrap;
+  -webkit-flex-direction: column;
+  flex-direction: column;
   position: absolute;
   outline: none;
 }
@@ -690,8 +690,8 @@ a[href="javascript:;"] {
   border-bottom: 0;
   display: -webkit-flex;
   display: flex;
-  -webkit-flex-flow: column nowrap;
-  flex-flow: column nowrap;
+  -webkit-flex-direction: column;
+  flex-direction: column;
   position: absolute;
   margin: -1px 0;
 }
