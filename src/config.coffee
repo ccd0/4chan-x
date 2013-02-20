@@ -72,7 +72,7 @@ Config =
       '#/Txhvk1Tl/'
     ].join '\n'
     tripcode: [
-      '# Filter any tripfags'
+      '# Filter any tripfag'
       '#/^!/'
     ].join '\n'
     capcode: [

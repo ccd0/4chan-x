@@ -258,10 +258,27 @@ a[href="javascript:;"] {
 .section-main label {
   text-decoration: underline;
 }
+.section-filter ul {
+  padding: 0;
+}
+.section-filter li {
+  margin: 10px 40px;
+}
+.section-filter textarea {
+  height: 500px;
+}
 .section-sauce textarea {
   height: 350px;
+}
+#settings textarea {
+  font-family: monospace;
   min-width: 100%;
   max-width: 100%;
+}
+#settings code {
+  color: #000;
+  background-color: #FFF;
+  padding: 0 2px;
 }
 .unscroll {
   overflow: hidden;
