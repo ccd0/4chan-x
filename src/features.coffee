@@ -223,6 +223,7 @@ Settings =
     section.innerHTML = null
     section.className = "section-#{@title.toLowerCase().replace /\s+/g, '-'}"
     @open section, g
+    section.scrollTop = 0
 
   main: (section) ->
     for key, obj of Config.main

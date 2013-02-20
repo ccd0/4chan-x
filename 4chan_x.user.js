@@ -1233,7 +1233,8 @@
       section = $('section', Settings.dialog);
       section.innerHTML = null;
       section.className = "section-" + (this.title.toLowerCase().replace(/\s+/g, '-'));
-      return this.open(section, g);
+      this.open(section, g);
+      return section.scrollTop = 0;
     },
     main: function(section) {
       var ID, arr, checked, description, hiddenNum, key, li, obj, post, thread, ul, _ref, _ref1, _ref2;
