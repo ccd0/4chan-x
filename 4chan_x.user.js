@@ -4842,6 +4842,9 @@
     },
     onUpdate: function(e) {
       var post, _i, _len, _ref;
+      if (e.detail[404]) {
+        return;
+      }
       _ref = e.detail.newPosts;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         post = _ref[_i];

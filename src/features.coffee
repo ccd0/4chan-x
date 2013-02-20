@@ -3149,6 +3149,7 @@ ThreadStats =
     $.on d, 'ThreadUpdate', ThreadStats.onUpdate
     $.add d.body, ThreadStats.dialog
   onUpdate: (e) ->
+    return if e.detail[404]
     for post in e.detail.newPosts
       ThreadStats.postCount++
       ThreadStats.fileCount++ if post.file
