@@ -243,16 +243,23 @@ a[href="javascript:;"] {
   left: 0;
   overflow: auto;
 }
-.section-main ul {
+.section-main ul,
+.section-sauce ul {
   list-style: none;
   margin: 0;
   padding: 8px;
 }
-.section-main li {
+.section-main li,
+.section-sauce li {
   padding-left: 4px;
 }
 .section-main label {
   text-decoration: underline;
+}
+.section-sauce textarea {
+  height: 350px;
+  min-width: 100%;
+  max-width: 100%;
 }
 .unscroll {
   overflow: hidden;

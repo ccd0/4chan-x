@@ -256,7 +256,21 @@ Settings =
     # XXX TODO
 
   sauce: (section) ->
-    # XXX TODO
+    section.innerHTML = """
+      <div class=warning #{if Conf['Sauce'] then 'hidden' else ''}><code>Sauce</code> is disabled.</div>
+      <div>Lines starting with a <code>#</code> will be ignored.</div>
+      <div>You can specify a display text by appending <code>;text:[text]</code> to the url.</div>
+      <ul>These parameters will be replaced by their corresponding values:
+        <li>%turl: Thumbnail url.</li>
+        <li>%url: Full image url.</li>
+        <li>%md5: MD5 hash.</li>
+        <li>%board: Current board.</li>
+      </ul>
+      <textarea name=sauces class=field></textarea>
+    """
+    sauce = $ 'textarea', section
+    sauce.value = $.get 'sauces', Conf['sauces']
+    $.on sauce, 'change', $.cb.value
 
   rice: (section) ->
     # XXX TODO
@@ -264,7 +278,7 @@ Settings =
   keybinds: (section) ->
     section.innerHTML = """
       <div class=warning #{if Conf['Keybinds'] then 'hidden' else ''}><code>Keybinds</code> are disabled.</div>
-      <div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Enter</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div>
+      <div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div>
       <div>Press <kbd>Return</kbd> to disable a keybind.</div>
       <table><tbody>
         <tr><th>Actions</th><th>Keybinds</th></tr>
