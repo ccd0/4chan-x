@@ -2883,6 +2883,7 @@ ImageExpand =
 
       el = $.el 'span',
         textContent: 'Image Expansion'
+        className: 'image-expansion-link'
 
       {createSubEntry} = ImageExpand.menu
       subEntries = []
