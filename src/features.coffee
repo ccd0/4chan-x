@@ -142,14 +142,123 @@ Settings =
       order: 111
       open: -> Conf['Enable 4chan\'s extension']
 
+    $.on d, 'AddSettingsSection', Settings.addSection
+
+    unless $.get 'previousversion'
+      $.set 'previousversion', '<%= version %>'
+      $.on d, '4chanXInitFinished', Settings.open
+
+    Settings.addSection 'Main',     Settings.main
+    Settings.addSection 'Filter',   Settings.filter
+    Settings.addSection 'Sauce',    Settings.sauce
+    Settings.addSection 'Rice',     Settings.rice
+    Settings.addSection 'Keybinds', Settings.keybinds
+
     return if Conf['Enable 4chan\'s extension']
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
     return if settings.disableAll
     settings.disableAll = true
     localStorage.setItem '4chan-settings', JSON.stringify settings
+
   open: ->
+    return if Settings.dialog
     $.event 'CloseMenu'
-    # Here be settings
+
+    html = """
+      <div id=settings class=dialog>
+        <nav>
+          <div class=sections-list></div>
+          <div class=credits>
+            <a href='<%= meta.page %>' target=_blank><%= meta.name %></a> |
+            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/changelog' target=_blank><%= version %></a> |
+            <a href='<%= meta.repo %>issues' target=_blank>Issues</a>
+          </div>
+        </nav>
+        <hr>
+        <div class=section-container><section></section></div>
+      </div>
+    """
+
+    Settings.dialog = dialog = $.el 'div',
+      id: 'overlay'
+      innerHTML: html
+
+    links = []
+    for section in Settings.sections
+      link = $.el 'a',
+        textContent: section.title
+        href: 'javascript:;'
+      $.on link, 'click', Settings.openSection.bind section
+      links.push link, $.tn ' | '
+    links.pop()
+    links[0].click()
+    $.add $('.sections-list', dialog), links
+
+    $.on dialog, 'click', Settings.close
+    $.on dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
+
+    d.body.style.width = "#{d.body.clientWidth}px"
+    $.addClass d.body, 'unscroll'
+    $.add d.body, dialog
+  close: ->
+    return unless Settings.dialog
+    d.body.style.removeProperty 'width'
+    $.rmClass d.body, 'unscroll'
+    $.rm Settings.dialog
+    delete Settings.dialog
+
+  sections: []
+  addSection: (title, open) ->
+    if typeof title isnt 'string'
+      {title, open} = title.detail
+    Settings.sections.push {title, open}
+  openSection: ->
+    section = $ 'section', Settings.dialog
+    section.innerHTML = null
+    section.className = null
+    $.addClass section, "section-#{@title.toLowerCase().replace /\s+/g, '-'}"
+    @open section, g
+
+  main: (section) ->
+    for key, obj of Config.main
+      ul = $.el 'ul',
+        textContent: key
+      for key, arr of obj
+        checked = if $.get(key, Conf[key]) then 'checked' else ''
+        description = arr[1]
+        li = $.el 'li',
+          innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
+        $.on $('input', li), 'click', $.cb.checked
+        $.add ul, li
+      $.add section, ul
+
+    hiddenNum = 0
+    for ID, thread of ThreadHiding.getHiddenThreads().threads
+      hiddenNum++
+    for ID, thread of ReplyHiding.getHiddenPosts().threads
+      for ID, post of thread
+        $.log post
+        hiddenNum++
+    li = $.el 'li',
+      innerHTML: "<button>Hidden: #{hiddenNum}</button> <span class=description>: Clear manually hidden threads and posts on /#{g.BOARD}/."
+    $.on $('button', li), 'click', ->
+      @textContent = 'Hidden: 0'
+      $.delete "hiddenThreads.#{g.BOARD}"
+      $.delete "hiddenPosts.#{g.BOARD}"
+    $.after $('input[name="Stubs"]', section).parentNode.parentNode, li
+
+  filter: (section) ->
+    # XXX TODO
+
+  sauce: (section) ->
+    # XXX TODO
+
+  rice: (section) ->
+    # XXX TODO
+
+  keybinds: (section) ->
+    # XXX TODO
+
 
 Fourchan =
   init: ->
@@ -456,8 +565,8 @@ Filter =
           re
       $.set type, save
 
-      # Open the options and display & focus the relevant filter textarea.
-      # Options.dialog()
+      # Open the settings and display & focus the relevant filter textarea.
+      Settings.open()
       # select = $ 'select[name=filter]', $.id 'options'
       # select.value = type
       # $.event select, new Event 'change'
@@ -1093,7 +1202,7 @@ Keybinds =
         Settings.open()
       when Conf['Close']
         if $.id 'settings'
-          Options.close()
+          Settings.close()
         else if (notifications = $$ '.notification').length
           for notification in notifications
             $('.close', notification).click()

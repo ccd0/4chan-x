@@ -52,11 +52,15 @@ a[href="javascript:;"] {
 }
 
 /* fixed, z-index */
+#overlay,
 #qp, #ihover,
 #updater, #thread-stats,
 #navlinks, #header,
 #qr, #watcher {
   position: fixed;
+}
+#overlay {
+  z-index: 999;
 }
 #notifications {
   z-index: 80;
@@ -175,6 +179,77 @@ a[href="javascript:;"] {
   max-height: 200px;
   width: 100%;
   overflow: auto;
+}
+
+/* Settings */
+#overlay {
+  background-color: rgba(0, 0, 0, .5);
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+#settings {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  box-shadow: 0 0 15px rgba(0, 0, 0, .15);
+  height: 600px;
+  min-height: 0;
+  max-height: 100%;
+  width: 900px;
+  min-width: 0;
+  max-width: 100%;
+  padding: 3px;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-flow: column nowrap;
+  flex-flow: column nowrap;
+}
+#settings > nav {
+  display: -webkit-flex;
+  display: flex;
+  padding: 2px 2px 0;
+}
+#settings > nav a {
+  text-decoration: underline;
+}
+.sections-list {
+  -webkit-flex: 1;
+  flex: 1;
+}
+.section-container {
+  -webkit-flex: 1;
+  flex: 1;
+  position: relative;
+}
+.section-container > section {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: auto;
+}
+.section-main ul {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+}
+.section-main li {
+  padding-left: 10px;
+}
+.section-main label {
+  text-decoration: underline;
+}
+.unscroll {
+  overflow: hidden;
 }
 
 /* Thread Updater */
