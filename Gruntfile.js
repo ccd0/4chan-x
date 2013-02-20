@@ -75,7 +75,7 @@ module.exports = function(grunt) {
     }
   });
 
-  // grunt.loadNpmTasks('grunt-bump');
+  grunt.loadNpmTasks('grunt-bump');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-coffee');
   grunt.loadNpmTasks('grunt-contrib-concat');
@@ -84,7 +84,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['concat:coffee', 'coffee:script', 'concat:script', 'concat:metadata', 'clean']);
   grunt.registerTask('release', ['default', 'exec:commit', 'exec:push']);
-  // grunt.registerTask('patch',   'bump');
-  // grunt.registerTask('upgrade', 'bump:minor');
+  grunt.registerTask('patch',   ['bump']);
+  grunt.registerTask('upgrade', ['bump:minor']);
 
 };
