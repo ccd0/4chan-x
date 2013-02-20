@@ -145,7 +145,7 @@ Settings =
     $.on d, 'AddSettingsSection', Settings.addSection
 
     unless $.get 'previousversion'
-      $.set 'previousversion', '<%= version %>'
+      $.set 'previousversion', g.VERSION
       $.on d, '4chanXInitFinished', Settings.open
 
     Settings.addSection 'Main',     Settings.main
@@ -171,7 +171,8 @@ Settings =
           <div class=credits>
             <a href='<%= meta.page %>' target=_blank><%= meta.name %></a> |
             <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/changelog' target=_blank><%= version %></a> |
-            <a href='<%= meta.repo %>issues' target=_blank>Issues</a>
+            <a href='<%= meta.repo %>issues' target=_blank>Issues</a> |
+            <a href=javascript:; class=close title=Close>×</a>
           </div>
         </nav>
         <hr>
@@ -179,7 +180,7 @@ Settings =
       </div>
     """
 
-    Settings.dialog = dialog = $.el 'div',
+    Settings.dialog = overlay = $.el 'div',
       id: 'overlay'
       innerHTML: html
 
@@ -192,14 +193,15 @@ Settings =
       links.push link, $.tn ' | '
     links.pop()
     links[0].click()
-    $.add $('.sections-list', dialog), links
+    $.add $('.sections-list', overlay), links
 
-    $.on dialog, 'click', Settings.close
-    $.on dialog.firstElementChild, 'click', (e) -> e.stopPropagation()
+    $.on $('.close', overlay), 'click', Settings.close
+    $.on overlay,              'click', Settings.close
+    $.on overlay.firstElementChild, 'click', (e) -> e.stopPropagation()
 
     d.body.style.width = "#{d.body.clientWidth}px"
     $.addClass d.body, 'unscroll'
-    $.add d.body, dialog
+    $.add d.body, overlay
   close: ->
     return unless Settings.dialog
     d.body.style.removeProperty 'width'
@@ -215,8 +217,7 @@ Settings =
   openSection: ->
     section = $ 'section', Settings.dialog
     section.innerHTML = null
-    section.className = null
-    $.addClass section, "section-#{@title.toLowerCase().replace /\s+/g, '-'}"
+    section.className = "section-#{@title.toLowerCase().replace /\s+/g, '-'}"
     @open section, g
 
   main: (section) ->
@@ -240,7 +241,7 @@ Settings =
         $.log post
         hiddenNum++
     li = $.el 'li',
-      innerHTML: "<button>Hidden: #{hiddenNum}</button> <span class=description>: Clear manually hidden threads and posts on /#{g.BOARD}/."
+      innerHTML: "<button>Hidden: #{hiddenNum}</button><span class=description>: Clear manually hidden threads and posts on /#{g.BOARD}/."
     $.on $('button', li), 'click', ->
       @textContent = 'Hidden: 0'
       $.delete "hiddenThreads.#{g.BOARD}"

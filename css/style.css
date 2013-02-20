@@ -89,6 +89,8 @@ a[href="javascript:;"] {
 
 /* Header */
 .fourchan-x body {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   margin-top: 2em;
 }
 .fourchan-x #boardNavDesktop,
@@ -220,6 +222,10 @@ a[href="javascript:;"] {
 #settings > nav a {
   text-decoration: underline;
 }
+#settings > nav a.close {
+  text-decoration: none;
+  padding: 2px;
+}
 .sections-list {
   -webkit-flex: 1;
   flex: 1;
@@ -243,7 +249,7 @@ a[href="javascript:;"] {
   padding: 8px;
 }
 .section-main li {
-  padding-left: 10px;
+  padding-left: 4px;
 }
 .section-main label {
   text-decoration: underline;

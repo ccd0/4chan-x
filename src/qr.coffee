@@ -532,7 +532,7 @@ QR =
 
   dialog: ->
     QR.el = UI.dialog 'qr', 'top:0;right:0;', """
-    <div class=move>Quick Reply <input type=checkbox id=autohide title=Auto-hide><span> <a class=close title=Close>×</a></span></div>
+    <div class=move>Quick Reply <input type=checkbox id=autohide title=Auto-hide><span> <a href=javascript:; class=close title=Close>×</a></span></div>
     <form>
       <div class=persona><input id=dump type=button title='Dump list' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
       <div id=replies><div id=repliesList><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
