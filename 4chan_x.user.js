@@ -1144,7 +1144,6 @@
           return Conf['Enable 4chan\'s extension'];
         }
       });
-      $.on(d, 'AddSettingsSection', Settings.addSection);
       if (!$.get('previousversion')) {
         $.set('previousversion', g.VERSION);
         $.on(d, '4chanXInitFinished', Settings.open);
@@ -1154,6 +1153,10 @@
       Settings.addSection('Sauce', Settings.sauce);
       Settings.addSection('Rice', Settings.rice);
       Settings.addSection('Keybinds', Settings.keybinds);
+      $.on(d, 'AddSettingsSection', Settings.addSection);
+      $.on(d, 'OpenSettings', function(e) {
+        return Settings.open(e.detail.title);
+      });
       if (Conf['Enable 4chan\'s extension']) {
         return;
       }
@@ -1164,13 +1167,13 @@
       settings.disableAll = true;
       return localStorage.setItem('4chan-settings', JSON.stringify(settings));
     },
-    open: function() {
-      var html, link, links, overlay, section, _i, _len, _ref;
+    open: function(openSection) {
+      var html, link, links, overlay, section, sectionToOpen, _i, _len, _ref;
       if (Settings.dialog) {
         return;
       }
       $.event('CloseMenu');
-      html = "<div id=settings class=dialog>\n  <nav>\n    <div class=sections-list></div>\n    <div class=credits>\n      <a href='http://mayhemydg.github.com/4chan-x/' target=_blank>4chan X Alpha</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/changelog' target=_blank>3.0.0</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/issues' target=_blank>Issues</a> |\n      <a href=javascript:; class=close title=Close>×</a>\n    </div>\n  </nav>\n  <hr>\n  <div class=section-container><section></section></div>\n</div>";
+      html = "<div id=settings class=dialog>\n  <nav>\n    <div class=sections-list></div>\n    <div class=credits>\n      <a href='http://mayhemydg.github.com/4chan-x/' target=_blank>4chan X Alpha</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/changelog' target=_blank>" + g.VERSION + "</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/issues' target=_blank>Issues</a> |\n      <a href=javascript:; class=close title=Close>×</a>\n    </div>\n  </nav>\n  <hr>\n  <div class=section-container><section></section></div>\n</div>";
       Settings.dialog = overlay = $.el('div', {
         id: 'overlay',
         innerHTML: html
@@ -1185,9 +1188,16 @@
         });
         $.on(link, 'click', Settings.openSection.bind(section));
         links.push(link, $.tn(' | '));
+        if (section.title === openSection) {
+          sectionToOpen = link;
+        }
       }
       links.pop();
-      links[0].click();
+      if (sectionToOpen) {
+        sectionToOpen.click();
+      } else {
+        links[0].click();
+      }
       $.add($('.sections-list', overlay), links);
       $.on($('.close', overlay), 'click', Settings.close);
       $.on(overlay, 'click', Settings.close);
@@ -1621,7 +1631,7 @@
         save = $.get(type, '');
         save = save ? "" + save + "\n" + re : re;
         $.set(type, save);
-        return Settings.open();
+        return Settings.open('Filter');
       }
     }
   };

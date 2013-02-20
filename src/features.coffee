@@ -142,8 +142,6 @@ Settings =
       order: 111
       open: -> Conf['Enable 4chan\'s extension']
 
-    $.on d, 'AddSettingsSection', Settings.addSection
-
     unless $.get 'previousversion'
       $.set 'previousversion', g.VERSION
       $.on d, '4chanXInitFinished', Settings.open
@@ -153,6 +151,8 @@ Settings =
     Settings.addSection 'Sauce',    Settings.sauce
     Settings.addSection 'Rice',     Settings.rice
     Settings.addSection 'Keybinds', Settings.keybinds
+    $.on d, 'AddSettingsSection',   Settings.addSection
+    $.on d, 'OpenSettings',         (e) -> Settings.open e.detail.title
 
     return if Conf['Enable 4chan\'s extension']
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
@@ -160,7 +160,7 @@ Settings =
     settings.disableAll = true
     localStorage.setItem '4chan-settings', JSON.stringify settings
 
-  open: ->
+  open: (openSection) ->
     return if Settings.dialog
     $.event 'CloseMenu'
 
@@ -170,7 +170,7 @@ Settings =
           <div class=sections-list></div>
           <div class=credits>
             <a href='<%= meta.page %>' target=_blank><%= meta.name %></a> |
-            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/changelog' target=_blank><%= version %></a> |
+            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/changelog' target=_blank>#{g.VERSION}</a> |
             <a href='<%= meta.repo %>issues' target=_blank>Issues</a> |
             <a href=javascript:; class=close title=Close>×</a>
           </div>
@@ -191,8 +191,12 @@ Settings =
         href: 'javascript:;'
       $.on link, 'click', Settings.openSection.bind section
       links.push link, $.tn ' | '
+      sectionToOpen = link if section.title is openSection
     links.pop()
-    links[0].click()
+    if sectionToOpen
+      sectionToOpen.click()
+    else
+      links[0].click()
     $.add $('.sections-list', overlay), links
 
     $.on $('.close', overlay), 'click', Settings.close
@@ -589,11 +593,10 @@ Filter =
       $.set type, save
 
       # Open the settings and display & focus the relevant filter textarea.
-      Settings.open()
+      Settings.open 'Filter'
       # select = $ 'select[name=filter]', $.id 'options'
       # select.value = type
       # $.event select, new Event 'change'
-      # $.id('filter_tab').checked = true
       # ta = select.nextElementSibling
       # tl = ta.textLength
       # ta.setSelectionRange tl, tl
