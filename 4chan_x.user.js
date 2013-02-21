@@ -135,7 +135,7 @@
       filesize: [''].join('\n'),
       MD5: [''].join('\n')
     },
-    sauces: ['http://iqdb.org/?url=%turl', 'http://www.google.com/searchbyimage?image_url=%turl', '#http://tineye.com/search?url=%turl', '#http://saucenao.com/search.php?db=999&url=%turl', '#http://3d.iqdb.org/?url=%turl', '#http://regex.info/exif.cgi?imgurl=%url', '# uploaders:', '#http://imgur.com/upload?url=%url;text:Upload to imgur', '#http://omploader.org/upload?url1=%url;text:Upload to omploader', '# "View Same" in archives:', '#//archive.foolz.us/_/search/image/%md5/;text:View same on foolz', '#//archive.foolz.us/%board/search/image/%md5/;text:View same on foolz /%board/', '#//archive.installgentoo.net/%board/image/%md5;text:View same on installgentoo /%board/'].join('\n'),
+    sauces: ['http://iqdb.org/?url=%turl', 'http://www.google.com/searchbyimage?image_url=%turl', '#http://tineye.com/search?url=%turl', '#http://saucenao.com/search.php?db=999&url=%turl', '#http://3d.iqdb.org/?url=%turl', '#http://regex.info/exif.cgi?imgurl=%url', '# uploaders:', '#http://imgur.com/upload?url=%url;text:Upload to imgur', '#http://omploader.org/upload?url1=%url;text:Upload to omploader', '# "View Same" in archives:', '#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz', '#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/', '#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/'].join('\n'),
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
     fileInfo: '%l (%p%s, %r)',
@@ -143,7 +143,7 @@
     hotkeys: {
       'Open empty QR': ['q', 'Open QR without post number inserted.'],
       'Open QR': ['Shift+q', 'Open QR with post number inserted.'],
-      'Open options': ['Alt+o', 'Open Options.'],
+      'Open settings': ['Alt+o', 'Open Settings.'],
       'Close': ['Esc', 'Close Settings, Notifications or QR.'],
       'Spoiler tags': ['Ctrl+s', 'Insert spoiler tags.'],
       'Code tags': ['Alt+c', 'Insert code tags.'],
@@ -1128,7 +1128,7 @@
       $.event('AddMenuEntry', {
         type: 'header',
         el: link,
-        order: 110
+        order: 111
       });
       link = $.el('a', {
         className: 'fourchan-settings-link',
@@ -1141,7 +1141,7 @@
       $.event('AddMenuEntry', {
         type: 'header',
         el: link,
-        order: 111,
+        order: 110,
         open: function() {
           return Conf['Enable 4chan\'s extension'];
         }
@@ -1299,7 +1299,7 @@
       a = $.el('a', {
         className: 'warning',
         textContent: 'Save me!',
-        download: "4chan X Beta-" + now + ".json",
+        download: "4chan X Beta v" + g.VERSION + "-" + now + ".json",
         href: "data:application/json;base64," + (btoa(unescape(encodeURIComponent(JSON.stringify(data))))),
         target: '_blank'
       });
@@ -1341,9 +1341,68 @@
       return reader.readAsText(file);
     },
     loadSettings: function(data) {
-      var key, val, _ref;
-      if (data.version.split('.')[0] === '2') {
-        data = Settings.convertSettingsFromV2(data);
+      var key, val, version, _ref;
+      version = data.version.split('.');
+      if (version[0] === '2') {
+        data = Settings.convertSettings(data, {
+          'Disable 4chan\'s extension': '',
+          'Catalog Links': '',
+          'Reply Navigation': '',
+          'Show Stubs': 'Stubs',
+          'Image Auto-Gif': 'Auto-GIF',
+          'Expand From Current': '',
+          'Unread Favicon': 'Unread Tab Icon',
+          'Post in Title': 'Thread Excerpt',
+          'Auto Hide QR': '',
+          'Open Reply in New Tab': '',
+          'Remember QR size': '',
+          'Indicate OP quote': 'Mark OP Quotes',
+          'Indicate Cross-thread Quotes': 'Mark Cross-thread Quotes',
+          'uniqueid': 'uniqueID',
+          'mod': 'capcode',
+          'country': 'flag',
+          'md5': 'MD5',
+          'openEmptyQR': 'Open empty QR',
+          'openQR': 'Open QR',
+          'openOptions': 'Open settings',
+          'close': 'Close',
+          'spoiler': 'Spoiler tags',
+          'code': 'Code tags',
+          'submit': 'Submit QR',
+          'watch': 'Watch',
+          'update': 'Update',
+          'unreadCountTo0': '',
+          'expandAllImages': 'Expand image',
+          'expandImage': 'Expand images',
+          'zero': 'Front page',
+          'nextPage': 'Next page',
+          'previousPage': 'Previous page',
+          'nextThread': 'Next thread',
+          'previousThread': 'Previous thread',
+          'expandThread': 'Expand thread',
+          'openThreadTab': 'Open thread',
+          'openThread': 'Open thread tab',
+          'nextReply': 'Next reply',
+          'previousReply': 'Previous reply',
+          'hide': 'Hide',
+          'Scrolling': 'Auto Scroll',
+          'Verbose': ''
+        });
+        data.Conf.sauces = data.Conf.sauces.replace(/\$\d/g, function(c) {
+          $.log(c);
+          switch (c) {
+            case '$1':
+              return '%turl';
+            case '$2':
+              return '%url';
+            case '$3':
+              return '%MD5';
+            case '$4':
+              return '%board';
+            default:
+              return c;
+          }
+        });
       }
       _ref = data.Conf;
       for (key in _ref) {
@@ -1352,7 +1411,15 @@
       }
       return $.set('WatchedThreads', data.WatchedThreads);
     },
-    convertSettingsFromV2: function(data) {
+    convertSettings: function(data, map) {
+      var newKey, prevKey;
+      for (prevKey in map) {
+        newKey = map[prevKey];
+        if (newKey) {
+          data.Conf[newKey] = data.Conf[prevKey];
+        }
+        delete data.Conf[prevKey];
+      }
       return data;
     },
     filter: function(section) {
@@ -1380,7 +1447,7 @@
     },
     sauce: function(section) {
       var sauce;
-      section.innerHTML = "<div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Sauce</code> is disabled.</div>\n<div>Lines starting with a <code>#</code> will be ignored.</div>\n<div>You can specify a display text by appending <code>;text:[text]</code> to the url.</div>\n<ul>These parameters will be replaced by their corresponding values:\n  <li><code>%turl</code>: Thumbnail url.</li>\n  <li><code>%url</code>: Full image url.</li>\n  <li><code>%md5</code>: MD5 hash.</li>\n  <li><code>%board</code>: Current board.</li>\n</ul>\n<textarea name=sauces class=field></textarea>";
+      section.innerHTML = "<div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Sauce</code> is disabled.</div>\n<div>Lines starting with a <code>#</code> will be ignored.</div>\n<div>You can specify a display text by appending <code>;text:[text]</code> to the url.</div>\n<ul>These parameters will be replaced by their corresponding values:\n  <li><code>%turl</code>: Thumbnail url.</li>\n  <li><code>%url</code>: Full image url.</li>\n  <li><code>%MD5</code>: MD5 hash.</li>\n  <li><code>%board</code>: Current board.</li>\n</ul>\n<textarea name=sauces class=field></textarea>";
       sauce = $('textarea', section);
       sauce.value = $.get('sauces', Conf['sauces']);
       return $.on(sauce, 'change', $.cb.value);
@@ -1392,7 +1459,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         name = _ref[_i];
         input = $("[name=" + name + "]", section);
-        input.value = $.get('name', Conf[name]);
+        input.value = $.get(name, Conf[name]);
         event = input.nodeName === 'SELECT' ? 'change' : 'input';
         $.on(input, event, $.cb.value);
         $.on(input, event, Settings[name]);
@@ -4237,7 +4304,7 @@
             return "' + post.file.thumbURL + '";
           case '%url':
             return "' + post.file.URL + '";
-          case '%md5':
+          case '%MD5':
             return "' + encodeURIComponent(post.file.MD5) + '";
           case '%board':
             return "' + post.board + '";

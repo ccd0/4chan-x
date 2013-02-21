@@ -128,7 +128,7 @@ Settings =
     $.event 'AddMenuEntry',
       type: 'header'
       el: link
-      order: 110
+      order: 111
 
     # 4chan settings link
     link = $.el 'a',
@@ -139,7 +139,7 @@ Settings =
     $.event 'AddMenuEntry',
       type: 'header'
       el: link
-      order: 111
+      order: 110
       open: -> Conf['Enable 4chan\'s extension']
 
     unless $.get 'previousversion'
@@ -274,7 +274,7 @@ Settings =
     a = $.el 'a',
       className: 'warning'
       textContent: 'Save me!'
-      download: "<%= meta.name %>-#{now}.json"
+      download: "<%= meta.name %> v#{g.VERSION}-#{now}.json"
       href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data}"
       target: '_blank'
     if $.engine isnt 'gecko'
@@ -304,13 +304,75 @@ Settings =
         $.log err.stack
     reader.readAsText file
   loadSettings: (data) ->
-    if data.version.split('.')[0] is '2'
-      data = Settings.convertSettingsFromV2 data
+    version = data.version.split '.'
+    if version[0] is '2'
+      data = Settings.convertSettings data,
+        # General confs
+        'Disable 4chan\'s extension': ''
+        'Catalog Links': ''
+        'Reply Navigation': ''
+        'Show Stubs': 'Stubs'
+        'Image Auto-Gif': 'Auto-GIF'
+        'Expand From Current': ''
+        'Unread Favicon': 'Unread Tab Icon'
+        'Post in Title': 'Thread Excerpt'
+        'Auto Hide QR': ''
+        'Open Reply in New Tab': ''
+        'Remember QR size': ''
+        'Indicate OP quote': 'Mark OP Quotes'
+        'Indicate Cross-thread Quotes': 'Mark Cross-thread Quotes'
+        # filter
+        'uniqueid': 'uniqueID'
+        'mod': 'capcode'
+        'country': 'flag'
+        'md5': 'MD5'
+        # keybinds
+        'openEmptyQR': 'Open empty QR'
+        'openQR': 'Open QR'
+        'openOptions': 'Open settings'
+        'close': 'Close'
+        'spoiler': 'Spoiler tags'
+        'code': 'Code tags'
+        'submit': 'Submit QR'
+        'watch': 'Watch'
+        'update': 'Update'
+        'unreadCountTo0': ''
+        'expandAllImages': 'Expand image'
+        'expandImage': 'Expand images'
+        'zero': 'Front page'
+        'nextPage': 'Next page'
+        'previousPage': 'Previous page'
+        'nextThread': 'Next thread'
+        'previousThread': 'Previous thread'
+        'expandThread': 'Expand thread'
+        'openThreadTab': 'Open thread'
+        'openThread': 'Open thread tab'
+        'nextReply': 'Next reply'
+        'previousReply': 'Previous reply'
+        'hide': 'Hide'
+        # updater
+        'Scrolling': 'Auto Scroll'
+        'Verbose': ''
+      data.Conf.sauces = data.Conf.sauces.replace /\$\d/g, (c) ->
+        $.log c
+        switch c
+          when '$1'
+            '%turl'
+          when '$2'
+            '%url'
+          when '$3'
+            '%MD5'
+          when '$4'
+            '%board'
+          else
+            c
     for key, val of data.Conf
       $.set key, val
     $.set 'WatchedThreads', data.WatchedThreads
-  convertSettingsFromV2: (data) ->
-    # XXX TODO
+  convertSettings: (data, map) ->
+    for prevKey, newKey of map
+      data.Conf[newKey] = data.Conf[prevKey] if newKey
+      delete data.Conf[prevKey]
     data
 
   filter: (section) ->
@@ -386,7 +448,7 @@ Settings =
       <ul>These parameters will be replaced by their corresponding values:
         <li><code>%turl</code>: Thumbnail url.</li>
         <li><code>%url</code>: Full image url.</li>
-        <li><code>%md5</code>: MD5 hash.</li>
+        <li><code>%MD5</code>: MD5 hash.</li>
         <li><code>%board</code>: Current board.</li>
       </ul>
       <textarea name=sauces class=field></textarea>
@@ -433,7 +495,7 @@ Settings =
     """
     for name in ['time', 'backlink', 'fileInfo', 'favicon']
       input = $ "[name=#{name}]", section
-      input.value = $.get 'name', Conf[name]
+      input.value = $.get name, Conf[name]
       event = if input.nodeName is 'SELECT'
         'change'
       else
@@ -2808,7 +2870,7 @@ Sauce =
           "' + post.file.thumbURL + '"
         when '%url'
           "' + post.file.URL + '"
-        when '%md5'
+        when '%MD5'
           "' + encodeURIComponent(post.file.MD5) + '"
         when '%board'
           "' + post.board + '"

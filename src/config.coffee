@@ -120,9 +120,9 @@ Config =
     '#http://imgur.com/upload?url=%url;text:Upload to imgur'
     '#http://omploader.org/upload?url1=%url;text:Upload to omploader'
     '# "View Same" in archives:'
-    '#//archive.foolz.us/_/search/image/%md5/;text:View same on foolz'
-    '#//archive.foolz.us/%board/search/image/%md5/;text:View same on foolz /%board/'
-    '#//archive.installgentoo.net/%board/image/%md5;text:View same on installgentoo /%board/'
+    '#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz'
+    '#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/'
+    '#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/'
   ].join '\n'
   time: '%m/%d/%y(%a)%H:%M:%S'
   backlink: '>>%id'
@@ -132,7 +132,7 @@ Config =
     # QR & Options
     'Open empty QR':      ['q',       'Open QR without post number inserted.']
     'Open QR':            ['Shift+q', 'Open QR with post number inserted.']
-    'Open options':       ['Alt+o',   'Open Options.']
+    'Open settings':      ['Alt+o',   'Open Settings.']
     'Close':              ['Esc',     'Close Settings, Notifications or QR.']
     'Spoiler tags':       ['Ctrl+s',  'Insert spoiler tags.']
     'Code tags':          ['Alt+c',   'Insert code tags.']
