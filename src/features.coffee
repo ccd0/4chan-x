@@ -3400,7 +3400,6 @@ ThreadStats =
       <div class=move><span id=post-count>0</span> / <span id=file-count>0</span></div>
       """
 
-    @postCount = @fileCount = 0
     @postCountEl = $ '#post-count', @dialog
     @fileCountEl = $ '#file-count', @dialog
     @fileLimit = # XXX boards config, need up to date data on this, check browser
@@ -3416,24 +3415,21 @@ ThreadStats =
       name: 'Thread Stats'
       cb:   @node
   node: ->
-    for ID, post of @posts
-      ThreadStats.postCount++
-      ThreadStats.fileCount++ if post.file
+    ThreadStats.thread = @
     ThreadStats.update()
-    $.on d, 'ThreadUpdate', ThreadStats.onUpdate
+    $.on d, 'ThreadUpdate', ThreadStats.update
     $.add d.body, ThreadStats.dialog
-  onUpdate: (e) ->
-    return if e.detail[404]
-    for post in e.detail.newPosts
-      ThreadStats.postCount++
-      ThreadStats.fileCount++ if post.file
-    ThreadStats.postCount -= e.detail.deletedPosts.length
-    ThreadStats.fileCount -= e.detail.deletedFiles.length
-    ThreadStats.update()
   update: ->
-    @postCountEl.textContent = ThreadStats.postCount
-    @fileCountEl.textContent = ThreadStats.fileCount
-    (if ThreadStats.fileCount > ThreadStats.fileLimit then $.addClass else $.rmClass) ThreadStats.fileCountEl, 'warning'
+    postCount = 0
+    fileCount = 0
+    for ID, post of ThreadStats.thread.posts
+      continue if post.isDead
+      postCount++
+      continue if !post.file or post.file.isDead
+      fileCount++
+    ThreadStats.postCountEl.textContent = postCount
+    ThreadStats.fileCountEl.textContent = fileCount
+    (if fileCount > ThreadStats.fileLimit then $.addClass else $.rmClass) ThreadStats.fileCountEl, 'warning'
 
 ThreadUpdater =
   init: ->

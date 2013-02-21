@@ -5041,7 +5041,6 @@
         return;
       }
       this.dialog = UI.dialog('thread-stats', 'bottom: 0; left: 0;', "<div class=move><span id=post-count>0</span> / <span id=file-count>0</span></div>");
-      this.postCount = this.fileCount = 0;
       this.postCountEl = $('#post-count', this.dialog);
       this.fileCountEl = $('#file-count', this.dialog);
       this.fileLimit = (function() {
@@ -5064,40 +5063,30 @@
       });
     },
     node: function() {
-      var ID, post, _ref;
-      _ref = this.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
-        ThreadStats.postCount++;
-        if (post.file) {
-          ThreadStats.fileCount++;
-        }
-      }
+      ThreadStats.thread = this;
       ThreadStats.update();
-      $.on(d, 'ThreadUpdate', ThreadStats.onUpdate);
+      $.on(d, 'ThreadUpdate', ThreadStats.update);
       return $.add(d.body, ThreadStats.dialog);
     },
-    onUpdate: function(e) {
-      var post, _i, _len, _ref;
-      if (e.detail[404]) {
-        return;
-      }
-      _ref = e.detail.newPosts;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        post = _ref[_i];
-        ThreadStats.postCount++;
-        if (post.file) {
-          ThreadStats.fileCount++;
-        }
-      }
-      ThreadStats.postCount -= e.detail.deletedPosts.length;
-      ThreadStats.fileCount -= e.detail.deletedFiles.length;
-      return ThreadStats.update();
-    },
     update: function() {
-      this.postCountEl.textContent = ThreadStats.postCount;
-      this.fileCountEl.textContent = ThreadStats.fileCount;
-      return (ThreadStats.fileCount > ThreadStats.fileLimit ? $.addClass : $.rmClass)(ThreadStats.fileCountEl, 'warning');
+      var ID, fileCount, post, postCount, _ref;
+      postCount = 0;
+      fileCount = 0;
+      _ref = ThreadStats.thread.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
+        if (post.isDead) {
+          continue;
+        }
+        postCount++;
+        if (!post.file || post.file.isDead) {
+          continue;
+        }
+        fileCount++;
+      }
+      ThreadStats.postCountEl.textContent = postCount;
+      ThreadStats.fileCountEl.textContent = fileCount;
+      return (fileCount > ThreadStats.fileLimit ? $.addClass : $.rmClass)(ThreadStats.fileCountEl, 'warning');
     }
   };
 
