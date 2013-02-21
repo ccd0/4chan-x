@@ -163,7 +163,7 @@ Config =
     checkbox:
       'Beep':          [false, 'Beep on new post to completely read thread.']
       'Auto Scroll':   [false, 'Scroll updated posts into view. Only enabled at bottom of page.']
-      'Bottom scroll': [false, 'Always scroll to the bottom, not the first new post. Useful for event threads.']
+      'Bottom Scroll': [false, 'Always scroll to the bottom, not the first new post. Useful for event threads.']
       'Scroll BG':     [false, 'Auto-scroll background tabs.']
       'Auto Update':   [true,  'Automatically fetch new posts.']
     'Interval': 30

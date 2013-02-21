@@ -3531,8 +3531,8 @@ ThreadUpdater =
         ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
       $.add ThreadUpdater.root, nodes
       if scroll
-        if Conf['Bottom scroll']
-          d.body.scrollTop = d.body.clientHeight
+        if Conf['Bottom Scroll']
+          (if $.engine is 'webkit' then d.body else doc).scrollTop = d.body.clientHeight
         else
           nodes[0].scrollIntoView()
 
