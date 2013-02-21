@@ -226,6 +226,18 @@ Settings =
     section.scrollTop = 0
 
   main: (section) ->
+    section.innerHTML = """
+      <div class=imp-exp>
+        <button class=export>Export settings</button>
+        <button class=import>Import settings</button>
+        <input type=file style='visibility:hidden'>
+      </div>
+      <p class=imp-exp-result></p>
+    """
+    $.on $('.export', section), 'click',  Settings.export
+    $.on $('.import', section), 'click',  Settings.import
+    $.on $('input',   section), 'change', Settings.onImport
+
     for key, obj of Config.main
       ul = $.el 'ul',
         textContent: key
@@ -252,6 +264,54 @@ Settings =
       $.delete "hiddenThreads.#{g.BOARD}"
       $.delete "hiddenPosts.#{g.BOARD}"
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, li
+  export: ->
+    now  = Date.now()
+    data =
+      version: g.VERSION
+      date: now
+      Conf: Conf
+      WatchedThreads: $.get('WatchedThreads', {})
+    a = $.el 'a',
+      className: 'warning'
+      textContent: 'Save me!'
+      download: "<%= meta.name %>-#{now}.json"
+      href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data}"
+      target: '_blank'
+    if $.engine isnt 'gecko'
+      a.click()
+      return
+    # XXX Firefox won't let us download automatically.
+    output = @parentNode.nextElementSibling
+    output.innerHTML = null
+    $.add output, a
+  import: ->
+    @nextElementSibling.click()
+  onImport: ->
+    return unless file = @files[0]
+    output = @parentNode.nextElementSibling
+    unless confirm 'Your current settings will be entirely overwritten, are you sure?'
+      output.textContent = 'Import aborted.'
+      return
+    reader = new FileReader()
+    reader.onload = (e) ->
+      try
+        data = JSON.parse decodeURIComponent escape e.target.result
+        Settings.loadSettings data
+        if confirm 'Import successful. Refresh now?'
+          window.location.reload()
+      catch err
+        output.textContent = 'Import failed due to an error.'
+        $.log err.stack
+    reader.readAsText file
+  loadSettings: (data) ->
+    if data.version.split('.')[0] is '2'
+      data = Settings.convertSettingsFromV2 data
+    for key, val of data.Conf
+      $.set key, val
+    $.set 'WatchedThreads', data.WatchedThreads
+  convertSettingsFromV2: (data) ->
+    # XXX TODO
+    data
 
   filter: (section) ->
     section.innerHTML = """

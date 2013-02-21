@@ -1240,6 +1240,10 @@
     },
     main: function(section) {
       var ID, arr, checked, description, hiddenNum, key, li, obj, post, thread, ul, _ref, _ref1, _ref2;
+      section.innerHTML = "<div class=imp-exp>\n  <button class=export>Export settings</button>\n  <button class=import>Import settings</button>\n  <input type=file style='visibility:hidden'>\n</div>\n<p class=imp-exp-result></p>";
+      $.on($('.export', section), 'click', Settings["export"]);
+      $.on($('.import', section), 'click', Settings["import"]);
+      $.on($('input', section), 'change', Settings.onImport);
       _ref = Config.main;
       for (key in _ref) {
         obj = _ref[key];
@@ -1282,6 +1286,74 @@
         return $["delete"]("hiddenPosts." + g.BOARD);
       });
       return $.after($('input[name="Stubs"]', section).parentNode.parentNode, li);
+    },
+    "export": function() {
+      var a, data, now, output;
+      now = Date.now();
+      data = {
+        version: g.VERSION,
+        date: now,
+        Conf: Conf,
+        WatchedThreads: $.get('WatchedThreads', {})
+      };
+      a = $.el('a', {
+        className: 'warning',
+        textContent: 'Save me!',
+        download: "4chan X Beta-" + now + ".json",
+        href: "data:application/json;base64," + (btoa(unescape(encodeURIComponent(JSON.stringify(data))))),
+        target: '_blank'
+      });
+      if ($.engine !== 'gecko') {
+        a.click();
+        return;
+      }
+      output = this.parentNode.nextElementSibling;
+      output.innerHTML = null;
+      return $.add(output, a);
+    },
+    "import": function() {
+      return this.nextElementSibling.click();
+    },
+    onImport: function() {
+      var file, output, reader;
+      if (!(file = this.files[0])) {
+        return;
+      }
+      output = this.parentNode.nextElementSibling;
+      if (!confirm('Your current settings will be entirely overwritten, are you sure?')) {
+        output.textContent = 'Import aborted.';
+        return;
+      }
+      reader = new FileReader();
+      reader.onload = function(e) {
+        var data;
+        try {
+          data = JSON.parse(decodeURIComponent(escape(e.target.result)));
+          Settings.loadSettings(data);
+          if (confirm('Import successful. Refresh now?')) {
+            return window.location.reload();
+          }
+        } catch (err) {
+          output.textContent = 'Import failed due to an error.';
+          return $.log(err.stack);
+        }
+      };
+      return reader.readAsText(file);
+    },
+    loadSettings: function(data) {
+      var key, val, _ref;
+      if (data.version.split('.')[0] === '2') {
+        data = Settings.convertSettingsFromV2(data);
+      }
+      _ref = data.Conf;
+      for (key in _ref) {
+        val = _ref[key];
+        $.set(key, val);
+      }
+      return $.set('WatchedThreads', data.WatchedThreads);
+    },
+    convertSettingsFromV2: function(data) {
+      return data;
     },
     filter: function(section) {
       var select;
