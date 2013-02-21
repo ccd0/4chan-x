@@ -2762,7 +2762,7 @@
       if (postEl = $('.reply.highlight', thread)) {
         $.rmClass(postEl, 'highlight');
         rect = postEl.getBoundingClientRect();
-        if (rect.bottom >= topMargin && rect.top <= d.documentElement.clientHeight) {
+        if (rect.bottom >= topMargin && rect.top <= doc.clientHeight) {
           root = postEl.parentNode;
           next = $.x('child::div[contains(@class,"post reply")]', delta === +1 ? root.nextElementSibling : root.previousElementSibling);
           if (!next) {
@@ -2773,7 +2773,7 @@
             return;
           }
           rect = next.getBoundingClientRect();
-          if (rect.top < 0 || rect.bottom > d.documentElement.clientHeight) {
+          if (rect.top < 0 || rect.bottom > doc.clientHeight) {
             if (delta === -1) {
               window.scrollBy(0, rect.top - topMargin);
             } else {
@@ -2791,7 +2791,7 @@
       for (_i = 0, _len = replies.length; _i < _len; _i++) {
         reply = replies[_i];
         rect = reply.getBoundingClientRect();
-        if (delta === +1 && rect.top >= topMargin || delta === -1 && rect.bottom <= d.documentElement.clientHeight) {
+        if (delta === +1 && rect.top >= topMargin || delta === -1 && rect.bottom <= doc.clientHeight) {
           this.focus(reply);
           return;
         }
@@ -4265,7 +4265,7 @@
       }
     },
     toggle: function(post) {
-      var headRect, postRect, rect, thumb, top;
+      var headRect, postRect, rect, root, thumb, top;
       thumb = post.file.thumb;
       if (!thumb.hidden) {
         ImageExpand.expand(post);
@@ -4276,20 +4276,12 @@
         postRect = post.nodes.root.getBoundingClientRect();
         headRect = $.id('header-bar').getBoundingClientRect();
         top = postRect.top - headRect.top - headRect.height - 2;
-        if ($.engine === 'webkit') {
-          if (rect.top < 0) {
-            d.body.scrollTop += top;
-          }
-          if (rect.left < 0) {
-            d.body.scrollLeft = 0;
-          }
-        } else {
-          if (rect.top < 0) {
-            d.documentElement.scrollTop += top;
-          }
-          if (rect.left < 0) {
-            d.documentElement.scrollLeft = 0;
-          }
+        root = $.engine === 'webkit' ? d.body : doc;
+        if (rect.top < 0) {
+          root.scrollTop += top;
+        }
+        if (rect.left < 0) {
+          root.scrollLeft = 0;
         }
       }
       return ImageExpand.contract(post);

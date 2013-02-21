@@ -1511,7 +1511,7 @@ Keybinds =
     if postEl = $ '.reply.highlight', thread
       $.rmClass postEl, 'highlight'
       rect = postEl.getBoundingClientRect()
-      if rect.bottom >= topMargin and rect.top <= d.documentElement.clientHeight # We're at least partially visible
+      if rect.bottom >= topMargin and rect.top <= doc.clientHeight # We're at least partially visible
         root = postEl.parentNode
         next = $.x 'child::div[contains(@class,"post reply")]',
           if delta is +1 then root.nextElementSibling else root.previousElementSibling
@@ -1520,7 +1520,7 @@ Keybinds =
           return
         return unless g.VIEW is 'thread' or $.x('ancestor::div[parent::div[@class="board"]]', next) is thread
         rect = next.getBoundingClientRect()
-        if rect.top < 0 or rect.bottom > d.documentElement.clientHeight
+        if rect.top < 0 or rect.bottom > doc.clientHeight
           if delta is -1
             window.scrollBy 0, rect.top - topMargin
           else
@@ -1532,7 +1532,7 @@ Keybinds =
     replies.reverse() if delta is -1
     for reply in replies
       rect = reply.getBoundingClientRect()
-      if delta is +1 and rect.top >= topMargin or delta is -1 and rect.bottom <= d.documentElement.clientHeight
+      if delta is +1 and rect.top >= topMargin or delta is -1 and rect.bottom <= doc.clientHeight
         @focus reply
         return
 
@@ -2826,13 +2826,13 @@ ImageExpand =
       # to avoid being left miles away from the relevant post.
       postRect = post.nodes.root.getBoundingClientRect()
       headRect = $.id('header-bar').getBoundingClientRect()
-      top = postRect.top - headRect.top - headRect.height - 2
-      if $.engine is 'webkit'
-        d.body.scrollTop += top if rect.top  < 0
-        d.body.scrollLeft = 0   if rect.left < 0
+      top  = postRect.top - headRect.top - headRect.height - 2
+      root = if $.engine is 'webkit'
+        d.body
       else
-        d.documentElement.scrollTop += top if rect.top  < 0
-        d.documentElement.scrollLeft = 0   if rect.left < 0
+        doc
+      root.scrollTop += top if rect.top  < 0
+      root.scrollLeft = 0   if rect.left < 0
     ImageExpand.contract post
 
   contract: (post) ->
