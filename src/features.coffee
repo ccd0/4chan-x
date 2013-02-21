@@ -337,8 +337,8 @@ Settings =
         'watch': 'Watch'
         'update': 'Update'
         'unreadCountTo0': ''
-        'expandAllImages': 'Expand image'
-        'expandImage': 'Expand images'
+        'expandAllImages': 'Expand images'
+        'expandImage': 'Expand image'
         'zero': 'Front page'
         'nextPage': 'Next page'
         'previousPage': 'Previous page'
@@ -354,7 +354,6 @@ Settings =
         'Scrolling': 'Auto Scroll'
         'Verbose': ''
       data.Conf.sauces = data.Conf.sauces.replace /\$\d/g, (c) ->
-        $.log c
         switch c
           when '$1'
             '%turl'
@@ -366,6 +365,10 @@ Settings =
             '%board'
           else
             c
+      for key, val of Config.hotkeys
+        continue unless key of data.Conf
+        data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, (s) -> "#{s[0].toUpperCase()}#{s[1..]}").replace /(^|.+\+)[A-Z]$/g, (s) ->
+          "Shift+#{s[0...-1]}#{s[-1..].toLowerCase()}"
     for key, val of data.Conf
       $.set key, val
     $.set 'WatchedThreads', data.WatchedThreads
@@ -1481,7 +1484,7 @@ Keybinds =
     return unless key = Keybinds.keyCode e
     {target} = e
     if target.nodeName in ['INPUT', 'TEXTAREA']
-      return unless (key is 'Esc') or (/(Alt|Ctrl|Meta)\+/.test key)
+      return unless /(Esc|Alt|Ctrl|Meta)/.test key
 
     threadRoot = Nav.getThread()
     thread = Get.postFromNode($('.op', threadRoot)).thread
@@ -1491,7 +1494,7 @@ Keybinds =
         Keybinds.qr threadRoot
       when Conf['Open QR']
         Keybinds.qr threadRoot, true
-      when Conf['Open options']
+      when Conf['Open settings']
         Settings.open()
       when Conf['Close']
         if $.id 'settings'

@@ -1341,7 +1341,7 @@
       return reader.readAsText(file);
     },
     loadSettings: function(data) {
-      var key, val, version, _ref;
+      var key, val, version, _ref, _ref1;
       version = data.version.split('.');
       if (version[0] === '2') {
         data = Settings.convertSettings(data, {
@@ -1372,8 +1372,8 @@
           'watch': 'Watch',
           'update': 'Update',
           'unreadCountTo0': '',
-          'expandAllImages': 'Expand image',
-          'expandImage': 'Expand images',
+          'expandAllImages': 'Expand images',
+          'expandImage': 'Expand image',
           'zero': 'Front page',
           'nextPage': 'Next page',
           'previousPage': 'Previous page',
@@ -1389,7 +1389,6 @@
           'Verbose': ''
         });
         data.Conf.sauces = data.Conf.sauces.replace(/\$\d/g, function(c) {
-          $.log(c);
           switch (c) {
             case '$1':
               return '%turl';
@@ -1403,10 +1402,22 @@
               return c;
           }
         });
+        _ref = Config.hotkeys;
+        for (key in _ref) {
+          val = _ref[key];
+          if (!(key in data.Conf)) {
+            continue;
+          }
+          data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, function(s) {
+            return "" + (s[0].toUpperCase()) + s.slice(1);
+          }).replace(/(^|.+\+)[A-Z]$/g, function(s) {
+            return "Shift+" + s.slice(0, -1) + (s.slice(-1).toLowerCase());
+          });
+        }
       }
-      _ref = data.Conf;
-      for (key in _ref) {
-        val = _ref[key];
+      _ref1 = data.Conf;
+      for (key in _ref1) {
+        val = _ref1[key];
         $.set(key, val);
       }
       return $.set('WatchedThreads', data.WatchedThreads);
@@ -2694,7 +2705,7 @@
       }
       target = e.target;
       if ((_ref = target.nodeName) === 'INPUT' || _ref === 'TEXTAREA') {
-        if (!((key === 'Esc') || (/(Alt|Ctrl|Meta)\+/.test(key)))) {
+        if (!/(Esc|Alt|Ctrl|Meta)/.test(key)) {
           return;
         }
       }
@@ -2707,7 +2718,7 @@
         case Conf['Open QR']:
           Keybinds.qr(threadRoot, true);
           break;
-        case Conf['Open options']:
+        case Conf['Open settings']:
           Settings.open();
           break;
         case Conf['Close']:
