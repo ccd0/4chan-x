@@ -3285,9 +3285,6 @@ ThreadExcerpt =
 Unread =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Tab Icon']
-    $.on d, 'ThreadUpdate',            @onUpdate
-    $.on d, 'QRPostSuccessful',        @post
-    $.on d, 'scroll visibilitychange', @read
 
     Thread::callbacks.push
       name: 'Unread'
@@ -3302,6 +3299,9 @@ Unread =
       posts.push post if post.isReply
     Unread.addPosts posts
     Unread.update()
+    $.on d, 'ThreadUpdate',            @onUpdate
+    $.on d, 'QRPostSuccessful',        @post
+    $.on d, 'scroll visibilitychange', @read
 
   addPosts: (newPosts) ->
     unless d.hidden

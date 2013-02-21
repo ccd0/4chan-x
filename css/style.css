@@ -383,7 +383,7 @@ a[href="javascript:;"] {
   max-width: 500px;
 }
 .qphl {
-  box-shadow: 0 0 0 2px rgba(216, 94, 49, .7);
+  outline: 2px solid rgba(216, 94, 49, .7);
 }
 
 /* File */
@@ -422,16 +422,8 @@ a[href="javascript:;"] {
 .opContainer.filter-highlight {
   box-shadow: inset 5px 0 rgba(255, 0, 0, .5);
 }
-.opContainer.filter-highlight.qphl {
-  box-shadow: inset 5px 0 rgba(255, 0, 0, .5),
-              0 0 0 2px rgba(216, 94, 49, .7);
-}
 .filter-highlight > .reply {
   box-shadow: -5px 0 rgba(255, 0, 0, .5);
-}
-.filter-highlight > .reply.qphl {
-  box-shadow: -5px 0 rgba(255, 0, 0, .5),
-              0 0 0 2px rgba(216, 94, 49, .7);
 }
 
 /* Thread & Reply Hiding */
