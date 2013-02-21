@@ -3299,9 +3299,9 @@ Unread =
       posts.push post if post.isReply
     Unread.addPosts posts
     Unread.update()
-    $.on d, 'ThreadUpdate',            @onUpdate
-    $.on d, 'QRPostSuccessful',        @post
-    $.on d, 'scroll visibilitychange', @read
+    $.on d, 'ThreadUpdate',            Unread.onUpdate
+    $.on d, 'QRPostSuccessful',        Unread.post
+    $.on d, 'scroll visibilitychange', Unread.read
 
   addPosts: (newPosts) ->
     unless d.hidden

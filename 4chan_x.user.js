@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-02-21
+/* 4chan X Beta - Version 3.0.0 - 2013-02-22
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -4937,9 +4937,9 @@
       }
       Unread.addPosts(posts);
       Unread.update();
-      $.on(d, 'ThreadUpdate', this.onUpdate);
-      $.on(d, 'QRPostSuccessful', this.post);
-      return $.on(d, 'scroll visibilitychange', this.read);
+      $.on(d, 'ThreadUpdate', Unread.onUpdate);
+      $.on(d, 'QRPostSuccessful', Unread.post);
+      return $.on(d, 'scroll visibilitychange', Unread.read);
     },
     addPosts: function(newPosts) {
       var height, index, post, _i, _len;
