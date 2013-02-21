@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.1.2 - 2013-02-14
+ * appchan x - Version 1.1.2 - 2013-02-21
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -691,7 +691,7 @@
     get: function(name, defaultValue) {
       var value;
       name = Main.namespace + name;
-      if (value = GM_getValue(name)) {
+      if ((value = GM_getValue(name)) && value !== 'undefined') {
         return JSON.parse(value);
       } else {
         return defaultValue;
@@ -5257,7 +5257,7 @@
         for (id in _ref) {
           props = _ref[id];
           x = $.el('a', {
-            textContent: '�~',
+            textContent: '×',
             href: 'javascript:;'
           });
           $.on(x, 'click', Watcher.cb.x);
@@ -8675,7 +8675,7 @@
     },
     iconPositions: function() {
       var align, aligner, css, first, i, iconOffset, navlinks, notCatalog, notEither, position, spacer, _conf;
-      css = "#navtopright .exlinksOptionsLink::after,\n#settingsWindowLink,\ndiv.navLinks > a:first-of-type::after,\n" + (Conf['Slideout Watcher'] ? '#watcher::after,' : '') + "\n#globalMessage::after,\n#boardNavDesktopFoot::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#imgControls label:first-of-type::after,\n#catalog::after,\n#fappeTyme {\n  position: fixed;\n  display: block;\n  width: 15px;\n  height: 15px;\n  content: \"\";\n  overflow: hidden;\n  opacity: " + (Conf['Invisible Icons'] ? 0 : 0.5) + ";\n}\n#imgControls {\n  position: fixed;\n}\n#settingsWindowLink {\n  visibility: visible;\n  background-position: 0 0;\n}\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  cursor: pointer;\n  background-position: 0 -15px;\n}\n#watcher::after {\n  background-position: 0 -30px;\n}\n#globalMessage::after {\n  background-position: 0 -45px;\n}\n#boardNavDesktopFoot::after {\n  background-position: 0 -60px;\n}\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  visibility: visible;\n  cursor: pointer;\n  background-position: 0 -75px;\n}\n#imgControls label:first-of-type::after {\n  position: static;\n  background-position: 0 -90px;\n}\n#navtopright .exlinksOptionsLink::after {\n  background-position: 0 -105px;\n}\n#catalog::after {\n  visibility: visible;\n  background-position: 0 -120px;\n}\n#fappeTyme {\n  background-position: 0 -135px;\n}\n#boardNavDesktopFoot:hover::after,\n#globalMessage:hover::after,\n#imgControls label:hover:first-of-type::after,\n#navlinks a:hover,\n#settingsWindowLink:hover,\n#navtopright .exlinksOptionsLink:hover::after,\n#qr #qrtab,\n#watcher:hover::after,\n.thumbnail#selected,\nbody > a[style=\"cursor: pointer; float: right;\"]:hover::after,\ndiv.navLinks > a:first-of-type:hover::after,\n#catalog:hover::after,\n#fappeTyme:hover {\n  opacity: 1;\n}";
+      css = "#navtopright .exlinksOptionsLink::after,\n#settingsWindowLink,\ndiv.navLinks > a:first-of-type::after,\n" + (Conf['Slideout Watcher'] ? '#watcher::after,' : '') + "\n" + (Conf['Announcements'] === 'slideout' ? '#globalMessage::after,' : '') + "\n#boardNavDesktopFoot::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#imgControls label:first-of-type::after,\n#catalog::after,\n#fappeTyme {\n  position: fixed;\n  display: block;\n  width: 15px;\n  height: 15px;\n  content: \"\";\n  overflow: hidden;\n  opacity: " + (Conf['Invisible Icons'] ? 0 : 0.5) + ";\n}\n#imgControls {\n  position: fixed;\n}\n#settingsWindowLink {\n  visibility: visible;\n  background-position: 0 0;\n}\ndiv.navLinks > a:first-of-type::after {\n  visibility: visible;\n  cursor: pointer;\n  background-position: 0 -15px;\n}\n#watcher::after {\n  background-position: 0 -30px;\n}\n#globalMessage::after {\n  background-position: 0 -45px;\n}\n#boardNavDesktopFoot::after {\n  background-position: 0 -60px;\n}\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  visibility: visible;\n  cursor: pointer;\n  background-position: 0 -75px;\n}\n#imgControls label:first-of-type::after {\n  position: static;\n  background-position: 0 -90px;\n}\n#navtopright .exlinksOptionsLink::after {\n  background-position: 0 -105px;\n}\n#catalog::after {\n  visibility: visible;\n  background-position: 0 -120px;\n}\n#fappeTyme {\n  background-position: 0 -135px;\n}\n#boardNavDesktopFoot:hover::after,\n#globalMessage:hover::after,\n#imgControls label:hover:first-of-type::after,\n#navlinks a:hover,\n#settingsWindowLink:hover,\n#navtopright .exlinksOptionsLink:hover::after,\n#qr #qrtab,\n#watcher:hover::after,\n.thumbnail#selected,\nbody > a[style=\"cursor: pointer; float: right;\"]:hover::after,\ndiv.navLinks > a:first-of-type:hover::after,\n#catalog:hover::after,\n#fappeTyme:hover {\n  opacity: 1;\n}";
       i = 0;
       align = Style.sidebarLocation[0];
       _conf = Conf;
