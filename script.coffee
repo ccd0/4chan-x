@@ -2185,7 +2185,14 @@ Options =
 <hr>
 <div id=content>
   <input type=radio name=tab hidden id=main_tab checked>
-  <div></div>
+  <div>
+    <div class=imp-exp>
+      <button class=export>Export settings</button>
+      <button class=import>Import settings</button>
+      <input type=file style="visibility:hidden">
+    </div>
+    <p class=imp-exp-result></p>
+  </div>
   <input type=radio name=tab hidden id=sauces_tab>
   <div>
     <div class=warning><code>Sauce</code> is disabled.</div>
@@ -2266,6 +2273,10 @@ Options =
     </tbody></table>
   </div>
 </div>'
+
+    $.on $('#main_tab + div .export', dialog), 'click',  Options.export
+    $.on $('#main_tab + div .import', dialog), 'click',  Options.import
+    $.on $('#main_tab + div input',   dialog), 'change', Options.onImport
 
     #main
     for key, obj of Config.main
@@ -2422,6 +2433,49 @@ Options =
     Favicon.switch()
     Unread.update true
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
+
+  export: ->
+    now  = Date.now()
+    data =
+      version: Main.version
+      date: now
+      Conf: Conf
+      WatchedThreads: $.get('watched', {})
+    a = $.el 'a',
+      className: 'warning'
+      textContent: 'Save me!'
+      download: "4chan X v#{Main.version}-#{now}.json"
+      href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data}"
+      target: '_blank'
+    if $.engine isnt 'gecko'
+      a.click()
+      return
+    # XXX Firefox won't let us download automatically.
+    output = @parentNode.nextElementSibling
+    output.innerHTML = null
+    $.add output, a
+  import: ->
+    @nextElementSibling.click()
+  onImport: ->
+    return unless file = @files[0]
+    output = @parentNode.nextElementSibling
+    unless confirm 'Your current settings will be entirely overwritten, are you sure?'
+      output.textContent = 'Import aborted.'
+      return
+    reader = new FileReader()
+    reader.onload = (e) ->
+      try
+        data = JSON.parse decodeURIComponent escape e.target.result
+        Options.loadSettings data
+        if confirm 'Import successful. Refresh now?'
+          window.location.reload()
+      catch err
+        output.textContent = 'Import failed due to an error.'
+    reader.readAsText file
+  loadSettings: (data) ->
+    for key, val of data.Conf
+      $.set key, val
+    $.set 'watched', data.WatchedThreads
 
 Updater =
   init: ->

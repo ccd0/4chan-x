@@ -2737,7 +2737,14 @@
 <hr>\
 <div id=content>\
   <input type=radio name=tab hidden id=main_tab checked>\
-  <div></div>\
+  <div>\
+    <div class=imp-exp>\
+      <button class=export>Export settings</button>\
+      <button class=import>Import settings</button>\
+      <input type=file style="visibility:hidden">\
+    </div>\
+    <p class=imp-exp-result></p>\
+  </div>\
   <input type=radio name=tab hidden id=sauces_tab>\
   <div>\
     <div class=warning><code>Sauce</code> is disabled.</div>\
@@ -2819,6 +2826,9 @@
   </div>\
 </div>'
       });
+      $.on($('#main_tab + div .export', dialog), 'click', Options["export"]);
+      $.on($('#main_tab + div .import', dialog), 'click', Options["import"]);
+      $.on($('#main_tab + div input', dialog), 'change', Options.onImport);
       _ref = Config.main;
       for (key in _ref) {
         obj = _ref[key];
@@ -2994,6 +3004,67 @@
       Favicon["switch"]();
       Unread.update(true);
       return this.nextElementSibling.innerHTML = "<img src=" + Favicon.unreadSFW + "> <img src=" + Favicon.unreadNSFW + "> <img src=" + Favicon.unreadDead + ">";
+    },
+    "export": function() {
+      var a, data, now, output;
+      now = Date.now();
+      data = {
+        version: Main.version,
+        date: now,
+        Conf: Conf,
+        WatchedThreads: $.get('watched', {})
+      };
+      a = $.el('a', {
+        className: 'warning',
+        textContent: 'Save me!',
+        download: "4chan X v" + Main.version + "-" + now + ".json",
+        href: "data:application/json;base64," + (btoa(unescape(encodeURIComponent(JSON.stringify(data))))),
+        target: '_blank'
+      });
+      if ($.engine !== 'gecko') {
+        a.click();
+        return;
+      }
+      output = this.parentNode.nextElementSibling;
+      output.innerHTML = null;
+      return $.add(output, a);
+    },
+    "import": function() {
+      return this.nextElementSibling.click();
+    },
+    onImport: function() {
+      var file, output, reader;
+      if (!(file = this.files[0])) {
+        return;
+      }
+      output = this.parentNode.nextElementSibling;
+      if (!confirm('Your current settings will be entirely overwritten, are you sure?')) {
+        output.textContent = 'Import aborted.';
+        return;
+      }
+      reader = new FileReader();
+      reader.onload = function(e) {
+        var data;
+        try {
+          data = JSON.parse(decodeURIComponent(escape(e.target.result)));
+          Options.loadSettings(data);
+          if (confirm('Import successful. Refresh now?')) {
+            return window.location.reload();
+          }
+        } catch (err) {
+          return output.textContent = 'Import failed due to an error.';
+        }
+      };
+      return reader.readAsText(file);
+    },
+    loadSettings: function(data) {
+      var key, val, _ref;
+      _ref = data.Conf;
+      for (key in _ref) {
+        val = _ref[key];
+        $.set(key, val);
+      }
+      return $.set('watched', data.WatchedThreads);
     }
   };
 
