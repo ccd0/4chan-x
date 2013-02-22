@@ -3361,36 +3361,36 @@
       };
     },
     allQuotelinksLinkingTo: function(post) {
-      var ID, quote, quotedPost, quotelinks, quoterPost, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+      var ID, quote, quotedPost, quotelinks, quoterPost, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
       quotelinks = [];
       _ref = g.posts;
       for (ID in _ref) {
         quoterPost = _ref[ID];
-        if (-1 !== quoterPost.quotes.indexOf(post.fullID)) {
-          _ref1 = [quoterPost].concat(quoterPost.clones);
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            quoterPost = _ref1[_i];
+        if (_ref1 = post.fullID, __indexOf.call(quoterPost.quotes, _ref1) >= 0) {
+          _ref2 = [quoterPost].concat(quoterPost.clones);
+          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+            quoterPost = _ref2[_i];
             quotelinks.push.apply(quotelinks, quoterPost.nodes.quotelinks);
           }
         }
       }
       if (Conf['Quote Backlinks']) {
-        _ref2 = post.quotes;
-        for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
-          quote = _ref2[_j];
+        _ref3 = post.quotes;
+        for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+          quote = _ref3[_j];
           if (!(quotedPost = g.posts[quote])) {
             continue;
           }
-          _ref3 = [quotedPost].concat(quotedPost.clones);
-          for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
-            quotedPost = _ref3[_k];
+          _ref4 = [quotedPost].concat(quotedPost.clones);
+          for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
+            quotedPost = _ref4[_k];
             quotelinks.push.apply(quotelinks, Array.prototype.slice.call(quotedPost.nodes.backlinks));
           }
         }
       }
       return quotelinks.filter(function(quotelink) {
-        var board, postID, _ref4;
-        _ref4 = Get.postDataFromLink(quotelink), board = _ref4.board, postID = _ref4.postID;
+        var board, postID, _ref5;
+        _ref5 = Get.postDataFromLink(quotelink), board = _ref5.board, postID = _ref5.postID;
         return board === post.board.ID && postID === post.ID;
       });
     },
@@ -3911,7 +3911,7 @@
       });
     },
     node: function() {
-      var board, op, postID, quote, quotelinks, quotes, _i, _j, _len, _len1, _ref;
+      var board, op, postID, quote, quotelinks, quotes, _i, _j, _len, _len1, _ref, _ref1;
       if (this.isClone && this.thread === this.context.thread) {
         return;
       }
@@ -3919,19 +3919,19 @@
         return;
       }
       quotelinks = this.nodes.quotelinks;
-      if (this.isClone && -1 < quotes.indexOf(this.fullID)) {
+      if (this.isClone && (_ref = this.thread.fullID, __indexOf.call(quotes, _ref) >= 0)) {
         for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
           quote = quotelinks[_i];
           quote.textContent = quote.textContent.replace(QuoteOP.text, '');
         }
       }
       op = (this.isClone ? this.context : this).thread.fullID;
-      if (!(-1 < quotes.indexOf(op))) {
+      if (__indexOf.call(quotes, op) < 0) {
         return;
       }
       for (_j = 0, _len1 = quotelinks.length; _j < _len1; _j++) {
         quote = quotelinks[_j];
-        _ref = Get.postDataFromLink(quote), board = _ref.board, postID = _ref.postID;
+        _ref1 = Get.postDataFromLink(quote), board = _ref1.board, postID = _ref1.postID;
         if (("" + board + "." + postID) === op) {
           $.add(quote, $.tn(QuoteOP.text));
         }
@@ -4942,18 +4942,14 @@
       return $.on(d, 'scroll visibilitychange', Unread.read);
     },
     addPosts: function(newPosts) {
-      var height, index, post, _i, _len;
-      if (!d.hidden) {
-        height = doc.clientHeight;
-      }
+      var post, _i, _len, _ref;
       for (_i = 0, _len = newPosts.length; _i < _len; _i++) {
         post = newPosts[_i];
-        if ((index = Unread.yourPosts.indexOf(post.ID)) !== -1) {
-          Unread.yourPosts.splice(index, 1);
-        } else if (!post.isHidden && (d.hidden || post.nodes.root.getBoundingClientRect().bottom > height)) {
+        if (!((_ref = post.ID, __indexOf.call(Unread.yourPosts, _ref) >= 0) || post.isHidden)) {
           Unread.posts.push(post);
         }
       }
+      return Unread.read();
     },
     onUpdate: function(e) {
       if (!e.detail[404]) {
@@ -4964,8 +4960,11 @@
     post: function(e) {
       return Unread.yourPosts.push(+e.detail.postID);
     },
-    read: function() {
+    read: function(e) {
       var bottom, height, i, post, _i, _len, _ref;
+      if (d.hidden || !Unread.posts.length) {
+        return;
+      }
       height = doc.clientHeight;
       _ref = Unread.posts;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -4979,7 +4978,9 @@
         return;
       }
       Unread.posts = Unread.posts.slice(i);
-      return Unread.update();
+      if (e) {
+        return Unread.update();
+      }
     },
     update: function() {
       var count;
@@ -5329,10 +5330,10 @@
           continue;
         }
         ID = +ID;
-        if (-1 === index.indexOf(ID)) {
+        if (__indexOf.call(index, ID) < 0) {
           post.kill();
           deletedPosts.push(post);
-        } else if (post.file && !post.file.isDead && -1 === files.indexOf(ID)) {
+        } else if (post.file && !post.file.isDead && __indexOf.call(files, ID) < 0) {
           post.kill(true);
           deletedFiles.push(post);
         }

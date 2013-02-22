@@ -2097,7 +2097,7 @@ Get =
     #   if it did quote this post,
     #   get all their backlinks.
     for ID, quoterPost of g.posts
-      if -1 isnt quoterPost.quotes.indexOf post.fullID
+      if post.fullID in quoterPost.quotes
         for quoterPost in [quoterPost].concat quoterPost.clones
           quotelinks.push.apply quotelinks, quoterPost.nodes.quotelinks
     # Second:
@@ -2571,13 +2571,13 @@ QuoteOP =
     quotelinks = @nodes.quotelinks
 
     # rm (OP) from cross-thread quotes.
-    if @isClone and -1 < quotes.indexOf @fullID
+    if @isClone and @thread.fullID in quotes
       for quote in quotelinks
         quote.textContent = quote.textContent.replace QuoteOP.text, ''
 
     op = (if @isClone then @context else @).thread.fullID
     # add (OP) to quotes quoting this context's OP.
-    return unless -1 < quotes.indexOf op
+    return unless op in quotes
     for quote in quotelinks
       {board, postID} = Get.postDataFromLink quote
       if "#{board}.#{postID}" is op
@@ -3304,14 +3304,10 @@ Unread =
     $.on d, 'scroll visibilitychange', Unread.read
 
   addPosts: (newPosts) ->
-    unless d.hidden
-      height = doc.clientHeight
     for post in newPosts
-      if (index = Unread.yourPosts.indexOf post.ID) isnt -1
-        Unread.yourPosts.splice index, 1
-      else if !post.isHidden and (d.hidden or post.nodes.root.getBoundingClientRect().bottom > height)
+      unless post.ID in Unread.yourPosts or post.isHidden
         Unread.posts.push post
-    return
+    Unread.read()
 
   onUpdate: (e) ->
     unless e.detail[404]
@@ -3321,7 +3317,8 @@ Unread =
   post: (e) ->
     Unread.yourPosts.push +e.detail.postID
 
-  read: ->
+  read: (e) ->
+    return if d.hidden or !Unread.posts.length
     height = doc.clientHeight
     for post, i in Unread.posts
       {bottom} = post.nodes.root.getBoundingClientRect()
@@ -3329,7 +3326,7 @@ Unread =
     return unless i
 
     Unread.posts = Unread.posts[i..]
-    Unread.update()
+    Unread.update() if e
 
   update: ->
     count = Unread.posts.length
@@ -3627,10 +3624,10 @@ ThreadUpdater =
     for ID, post of ThreadUpdater.thread.posts
       continue if post.isDead
       ID = +ID
-      if -1 is index.indexOf ID
+      unless ID in index
         post.kill()
         deletedPosts.push post
-      else if post.file and !post.file.isDead and -1 is files.indexOf ID
+      else if post.file and !post.file.isDead and ID not in files
         post.kill true
         deletedFiles.push post
 
