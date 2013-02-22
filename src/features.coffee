@@ -165,7 +165,7 @@ Settings =
     $.event 'CloseMenu'
 
     html = """
-      <div id=settings class=dialog>
+      <div id=fourchanx-settings class=dialog>
         <nav>
           <div class=sections-list></div>
           <div class=credits>
