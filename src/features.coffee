@@ -32,7 +32,7 @@ Header =
 
     toggleBar = $.el 'div',
       id: 'toggle-header-bar'
-      title: 'Toggle the header bar position.'
+      title: 'Toggle the header auto-hiding.'
     $.on toggleBar, 'click', @toggleBar
 
     $.prepend headerBar, [menuButton, boardListButton, $.tn(' '), boardTitle, boardList, toggleBar]

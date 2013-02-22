@@ -30,7 +30,7 @@
 .move {
   cursor: move;
 }
-label {
+label, .favicon {
   cursor: pointer;
 }
 a[href="javascript:;"] {

@@ -58,8 +58,8 @@ Config =
       'Mark OP Quotes':               [true,  'Add \'(OP)\' to OP quotes.']
       'Mark Cross-thread Quotes':     [true,  'Add \'(Cross-thread)\' to cross-threads quotes.']
   imageExpansion:
-    'Fit width':        [true,  null]
-    'Fit height':       [false, null]
+    'Fit width':        [true,  '']
+    'Fit height':       [false, '']
     'Expand spoilers':  [true,  'Expand all images along with spoilers.']
     'Expand from here': [true,  'Expand all images only from current position to thread end.']
   filter:
