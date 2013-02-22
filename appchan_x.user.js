@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.1.2 - 2013-02-21
+ * appchan x - Version 1.1.2 - 2013-02-22
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -11191,7 +11191,7 @@
         for (id in ownedPosts) {
           timestamp = ownedPosts[id];
           if (timestamp < cutoff) {
-            delete ownPosts[id];
+            delete ownedPosts[id];
           }
         }
         for (id in titles) {

@@ -336,7 +336,7 @@ Main =
 
       for id, timestamp of ownedPosts
         if timestamp < cutoff
-          delete ownPosts[id]
+          delete ownedPosts[id]
 
       for id of titles
         if titles[id][1] < cutoff
