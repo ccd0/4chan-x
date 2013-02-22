@@ -6069,7 +6069,7 @@
     captcha: {
       init: function() {
         var _this = this;
-        if (d.cookie.indexOf('pass_enabled=1;') >= 0) {
+        if (d.cookie.indexOf('pass_enabled=1') >= 0) {
           return;
         }
         if (!(this.isEnabled = !!$.id('captchaFormPart'))) {
