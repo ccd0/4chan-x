@@ -1,6 +1,6 @@
 Config =
   main:
-    Enhancing:
+    'Miscellaneous':
       'Enable 4chan\'s extension':    [false, 'Compatibility between <%= meta.name %> and 4chan\'s inline extension is NOT guaranteed.']
       '404 Redirect':                 [true,  'Redirect dead threads and images.']
       'Keybinds':                     [true,  'Bind actions to keyboard shortcuts.']
@@ -11,7 +11,7 @@ Config =
       'Thread Expansion':             [true,  'Can expand threads to view all replies.']
       'Index Navigation':             [false, 'Navigate to previous / next thread.']
       'Check for Updates':            [true,  'Check for updated versions of <%= meta.name %>.']
-    Filtering:
+    'Filtering':
       'Anonymize':                    [false, 'Turn everyone Anonymous.']
       'Filter':                       [true,  'Self-moderation placebo.']
       'Recursive Hiding':             [true,  'Hide replies of hidden posts, recursively.']
@@ -19,19 +19,19 @@ Config =
       'Reply Hiding':                 [true,  'Hide single replies.']
       'Thread/Reply Hiding Buttons':  [true,  'Make buttons to hide threads / replies, in addition to menu links.']
       'Stubs':                        [true,  'Make stubs of hidden threads / replies.']
-    Imaging:
+    'Images':
       'Auto-GIF':                     [false, 'Animate GIF thumbnails.']
       'Image Expansion':              [true,  'Expand images.']
       'Image Hover':                  [false, 'Show full image on mouseover.']
       'Sauce':                        [true,  'Add sauce links to images.']
       'Reveal Spoilers':              [false, 'Reveal spoiler thumbnails.']
-    Menu:
+    'Menu':
       'Menu':                         [true,  'Add a drop-down menu in posts.']
       'Report Link':                  [true,  'Add a report link to the menu.']
       'Delete Link':                  [true,  'Add post and image deletion links to the menu.']
       'Download Link':                [true,  'Add a download with original filename link to the menu. Chrome-only currently.']
       'Archive Link':                 [true,  'Add an archive link to the menu.']
-    Monitoring:
+    'Monitoring':
       'Thread Updater':               [true,  'Fetch and insert new replies. Has more options in its own dialog.']
       'Unread Count':                 [true,  'Show the unread posts count in the tab title.']
       'Unread Tab Icon':              [true,  'Show a different favicon when there are unread posts.']
@@ -40,21 +40,21 @@ Config =
       'Thread Watcher':               [true,  'Bookmark threads.']
       'Auto Watch':                   [true,  'Automatically watch threads you start.']
       'Auto Watch Reply':             [false, 'Automatically watch threads you reply to.']
-    Posting:
+    'Posting':
       'Quick Reply':                  [true,  'Weapon of mass destruction.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
       'Auto Hide QR':                 [false, 'Automatically hide the quick reply when posting.']
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
       'Hide Original Post Form':      [true,  'Hide the normal post form.']
-    Quoting:
+    'Quote links':
       'Quote Backlinks':              [true,  'Add quote backlinks.']
       'OP Backlinks':                 [false, 'Add backlinks to the OP.']
-      'Quote Inline':                 [true,  'Inline quoted post on click.']
+      'Quote Inlining':               [true,  'Inline quoted post on click.']
       'Forward Hiding':               [true,  'Hide original posts of inlined backlinks.']
-      'Quote Preview':                [true,  'Show quoted post on hover.']
+      'Quote Previewing':             [true,  'Show quoted post on hover.']
       'Quote Highlighting':           [true,  'Highlight the previewed post.']
-      'Resurrect Quotes':             [true,  'Linkify dead quotes to archives.']
+      'Resurrect Quotes':             [true,  'Link dead quotes to the archives.']
       'Mark OP Quotes':               [true,  'Add \'(OP)\' to OP quotes.']
       'Mark Cross-thread Quotes':     [true,  'Add \'(Cross-thread)\' to cross-threads quotes.']
   imageExpansion:

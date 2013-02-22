@@ -319,6 +319,8 @@ Settings =
         'Auto Hide QR': ''
         'Open Reply in New Tab': ''
         'Remember QR size': ''
+        'Quote Inline': 'Quote Inlining'
+        'Quote Preview': 'Quote Previewing'
         'Indicate OP quote': 'Mark OP Quotes'
         'Indicate Cross-thread Quotes': 'Mark Cross-thread Quotes'
         # filter
@@ -2354,10 +2356,10 @@ Quotify =
 
 QuoteInline =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Quote Inline']
+    return if g.VIEW is 'catalog' or !Conf['Quote Inlining']
 
     Post::callbacks.push
-      name: 'Quote Inline'
+      name: 'Quote Inlining'
       cb:   @node
   node: ->
     for link in @nodes.quotelinks
@@ -2435,10 +2437,10 @@ QuoteInline =
 
 QuotePreview =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Quote Preview']
+    return if g.VIEW is 'catalog' or !Conf['Quote Previewing']
 
     Post::callbacks.push
-      name: 'Quote Preview'
+      name: 'Quote Previewing'
       cb:   @node
   node: ->
     for link in @nodes.quotelinks
@@ -2535,9 +2537,9 @@ QuoteBacklink =
           containers.push clone.nodes.backlinkContainer
       for container in containers
         link = a.cloneNode true
-        if Conf['Quote Preview']
+        if Conf['Quote Previewing']
           $.on link, 'mouseover', QuotePreview.mouseover
-        if Conf['Quote Inline']
+        if Conf['Quote Inlining']
           $.on link, 'click', QuoteInline.toggle
         $.add container, [$.tn(' '), link]
     return
@@ -3169,9 +3171,9 @@ ExpandComment =
     post.parseQuotes()
     if Conf['Resurrect Quotes']
       Quotify.node.call      post
-    if Conf['Quote Preview']
+    if Conf['Quote Previewing']
       QuotePreview.node.call post
-    if Conf['Quote Inline']
+    if Conf['Quote Inlining']
       QuoteInline.node.call  post
     if Conf['Mark OP Quotes']
       QuoteOP.node.call      post
@@ -3229,7 +3231,7 @@ ExpandThread =
           else 5
         replies = $$('.thread > .replyContainer', threadRoot)[...-num]
         for reply in replies
-          if Conf['Quote Inline']
+          if Conf['Quote Inlining']
             # rm clones
             inlined.click() while inlined = $ '.inlined', reply
           $.rm reply

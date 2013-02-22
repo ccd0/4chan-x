@@ -323,8 +323,8 @@ Main =
     initFeature 'Filter (Menu)',            Filter.menu
     initFeature 'Download Link',            DownloadLink
     initFeature 'Archive Link',             ArchiveLink
-    initFeature 'Quote Inline',             QuoteInline
-    initFeature 'Quote Preview',            QuotePreview
+    initFeature 'Quote Inlining',           QuoteInline
+    initFeature 'Quote Previewing',         QuotePreview
     initFeature 'Quote Backlinks',          QuoteBacklink
     initFeature 'Mark OP Quotes',           QuoteOP
     initFeature 'Mark Cross-thread Quotes', QuoteCT

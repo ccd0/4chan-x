@@ -50,7 +50,7 @@
 
   Config = {
     main: {
-      Enhancing: {
+      'Miscellaneous': {
         'Enable 4chan\'s extension': [false, 'Compatibility between 4chan X Beta and 4chan\'s inline extension is NOT guaranteed.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
@@ -62,7 +62,7 @@
         'Index Navigation': [false, 'Navigate to previous / next thread.'],
         'Check for Updates': [true, 'Check for updated versions of 4chan X Beta.']
       },
-      Filtering: {
+      'Filtering': {
         'Anonymize': [false, 'Turn everyone Anonymous.'],
         'Filter': [true, 'Self-moderation placebo.'],
         'Recursive Hiding': [true, 'Hide replies of hidden posts, recursively.'],
@@ -71,21 +71,21 @@
         'Thread/Reply Hiding Buttons': [true, 'Make buttons to hide threads / replies, in addition to menu links.'],
         'Stubs': [true, 'Make stubs of hidden threads / replies.']
       },
-      Imaging: {
+      'Images': {
         'Auto-GIF': [false, 'Animate GIF thumbnails.'],
         'Image Expansion': [true, 'Expand images.'],
         'Image Hover': [false, 'Show full image on mouseover.'],
         'Sauce': [true, 'Add sauce links to images.'],
         'Reveal Spoilers': [false, 'Reveal spoiler thumbnails.']
       },
-      Menu: {
+      'Menu': {
         'Menu': [true, 'Add a drop-down menu in posts.'],
         'Report Link': [true, 'Add a report link to the menu.'],
         'Delete Link': [true, 'Add post and image deletion links to the menu.'],
         'Download Link': [true, 'Add a download with original filename link to the menu. Chrome-only currently.'],
         'Archive Link': [true, 'Add an archive link to the menu.']
       },
-      Monitoring: {
+      'Monitoring': {
         'Thread Updater': [true, 'Fetch and insert new replies. Has more options in its own dialog.'],
         'Unread Count': [true, 'Show the unread posts count in the tab title.'],
         'Unread Tab Icon': [true, 'Show a different favicon when there are unread posts.'],
@@ -95,7 +95,7 @@
         'Auto Watch': [true, 'Automatically watch threads you start.'],
         'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
       },
-      Posting: {
+      'Posting': {
         'Quick Reply': [true, 'Weapon of mass destruction.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [false, 'Automatically hide the quick reply when posting.'],
@@ -103,14 +103,14 @@
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
         'Hide Original Post Form': [true, 'Hide the normal post form.']
       },
-      Quoting: {
+      'Quote links': {
         'Quote Backlinks': [true, 'Add quote backlinks.'],
         'OP Backlinks': [false, 'Add backlinks to the OP.'],
-        'Quote Inline': [true, 'Inline quoted post on click.'],
+        'Quote Inlining': [true, 'Inline quoted post on click.'],
         'Forward Hiding': [true, 'Hide original posts of inlined backlinks.'],
-        'Quote Preview': [true, 'Show quoted post on hover.'],
+        'Quote Previewing': [true, 'Show quoted post on hover.'],
         'Quote Highlighting': [true, 'Highlight the previewed post.'],
-        'Resurrect Quotes': [true, 'Linkify dead quotes to archives.'],
+        'Resurrect Quotes': [true, 'Link dead quotes to the archives.'],
         'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
         'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.']
       }
@@ -1356,6 +1356,8 @@
           'Auto Hide QR': '',
           'Open Reply in New Tab': '',
           'Remember QR size': '',
+          'Quote Inline': 'Quote Inlining',
+          'Quote Preview': 'Quote Previewing',
           'Indicate OP quote': 'Mark OP Quotes',
           'Indicate Cross-thread Quotes': 'Mark Cross-thread Quotes',
           'uniqueid': 'uniqueID',
@@ -3644,11 +3646,11 @@
 
   QuoteInline = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Quote Inline']) {
+      if (g.VIEW === 'catalog' || !Conf['Quote Inlining']) {
         return;
       }
       return Post.prototype.callbacks.push({
-        name: 'Quote Inline',
+        name: 'Quote Inlining',
         cb: this.node
       });
     },
@@ -3736,11 +3738,11 @@
 
   QuotePreview = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Quote Preview']) {
+      if (g.VIEW === 'catalog' || !Conf['Quote Previewing']) {
         return;
       }
       return Post.prototype.callbacks.push({
-        name: 'Quote Preview',
+        name: 'Quote Previewing',
         cb: this.node
       });
     },
@@ -3868,10 +3870,10 @@
         for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
           container = containers[_k];
           link = a.cloneNode(true);
-          if (Conf['Quote Preview']) {
+          if (Conf['Quote Previewing']) {
             $.on(link, 'mouseover', QuotePreview.mouseover);
           }
-          if (Conf['Quote Inline']) {
+          if (Conf['Quote Inlining']) {
             $.on(link, 'click', QuoteInline.toggle);
           }
           $.add(container, [$.tn(' '), link]);
@@ -4761,10 +4763,10 @@
       if (Conf['Resurrect Quotes']) {
         Quotify.node.call(post);
       }
-      if (Conf['Quote Preview']) {
+      if (Conf['Quote Previewing']) {
         QuotePreview.node.call(post);
       }
-      if (Conf['Quote Inline']) {
+      if (Conf['Quote Inlining']) {
         QuoteInline.node.call(post);
       }
       if (Conf['Mark OP Quotes']) {
@@ -4846,7 +4848,7 @@
           replies = $$('.thread > .replyContainer', threadRoot).slice(0, -num);
           for (_i = 0, _len = replies.length; _i < _len; _i++) {
             reply = replies[_i];
-            if (Conf['Quote Inline']) {
+            if (Conf['Quote Inlining']) {
               while (inlined = $('.inlined', reply)) {
                 inlined.click();
               }
@@ -6860,8 +6862,8 @@
       initFeature('Filter (Menu)', Filter.menu);
       initFeature('Download Link', DownloadLink);
       initFeature('Archive Link', ArchiveLink);
-      initFeature('Quote Inline', QuoteInline);
-      initFeature('Quote Preview', QuotePreview);
+      initFeature('Quote Inlining', QuoteInline);
+      initFeature('Quote Previewing', QuotePreview);
       initFeature('Quote Backlinks', QuoteBacklink);
       initFeature('Mark OP Quotes', QuoteOP);
       initFeature('Mark Cross-thread Quotes', QuoteCT);
