@@ -140,7 +140,7 @@ Settings =
       type: 'header'
       el: link
       order: 110
-      open: -> Conf['Enable 4chan\'s extension']
+      open: -> Conf['Enable 4chan\'s Extension']
 
     unless $.get 'previousversion'
       $.set 'previousversion', g.VERSION
@@ -154,7 +154,7 @@ Settings =
     $.on d, 'AddSettingsSection',   Settings.addSection
     $.on d, 'OpenSettings',         (e) -> Settings.open e.detail
 
-    return if Conf['Enable 4chan\'s extension']
+    return if Conf['Enable 4chan\'s Extension']
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
     return if settings.disableAll
     settings.disableAll = true
@@ -888,7 +888,7 @@ ThreadHiding =
   node: ->
     if data = ThreadHiding.hiddenThreads.threads[@]
       ThreadHiding.hide @, data.makeStub
-    return unless Conf['Thread/Reply Hiding Buttons']
+    return unless Conf['Hiding Buttons']
     $.prepend @posts[@].nodes.root, ThreadHiding.makeButton @, 'hide'
 
   getHiddenThreads: ->
@@ -1054,7 +1054,7 @@ ReplyHiding =
           ReplyHiding.hide @, data.makeStub, data.hideRecursively
         else
           Recursive.hide   @, data.makeStub
-    return unless Conf['Thread/Reply Hiding Buttons']
+    return unless Conf['Hiding Buttons']
     $.replace $('.sideArrows', @nodes.root), ReplyHiding.makeButton @, 'hide'
 
   getHiddenPosts: ->
@@ -3269,7 +3269,7 @@ ExpandThread =
     $.after a, nodes
 
     # Enable 4chan features.
-    if Conf['Enable 4chan\'s extension']
+    if Conf['Enable 4chan\'s Extension']
       $.unsafeWindow.Parser.parseThread thread.ID, 1, nodes.length
     else
       Fourchan.parseThread thread.ID, 1, nodes.length
@@ -3660,7 +3660,7 @@ ThreadUpdater =
         # Enable 4chan features.
         threadID = ThreadUpdater.thread.ID
         {length} = ThreadUpdater.root.children
-        if Conf['Enable 4chan\'s extension']
+        if Conf['Enable 4chan\'s Extension']
           $.unsafeWindow.Parser.parseThread threadID, -count
         else
           Fourchan.parseThread threadID, length - count, length

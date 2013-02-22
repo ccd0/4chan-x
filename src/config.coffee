@@ -1,7 +1,7 @@
 Config =
   main:
     'Miscellaneous':
-      'Enable 4chan\'s extension':    [false, 'Compatibility between <%= meta.name %> and 4chan\'s inline extension is NOT guaranteed.']
+      'Enable 4chan\'s Extension':    [false, 'Compatibility between <%= meta.name %> and 4chan\'s inline extension is NOT guaranteed.']
       '404 Redirect':                 [true,  'Redirect dead threads and images.']
       'Keybinds':                     [true,  'Bind actions to keyboard shortcuts.']
       'Time Formatting':              [true,  'Localize and format timestamps arbitrarily.']
@@ -17,7 +17,7 @@ Config =
       'Recursive Hiding':             [true,  'Hide replies of hidden posts, recursively.']
       'Thread Hiding':                [true,  'Hide entire threads.']
       'Reply Hiding':                 [true,  'Hide single replies.']
-      'Thread/Reply Hiding Buttons':  [true,  'Make buttons to hide threads / replies, in addition to menu links.']
+      'Hiding Buttons':               [true,  'Make buttons to hide threads / replies, in addition to menu links.']
       'Stubs':                        [true,  'Make stubs of hidden threads / replies.']
     'Images':
       'Auto-GIF':                     [false, 'Animate GIF thumbnails.']

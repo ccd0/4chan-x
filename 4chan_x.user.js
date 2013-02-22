@@ -51,7 +51,7 @@
   Config = {
     main: {
       'Miscellaneous': {
-        'Enable 4chan\'s extension': [false, 'Compatibility between 4chan X Beta and 4chan\'s inline extension is NOT guaranteed.'],
+        'Enable 4chan\'s Extension': [false, 'Compatibility between 4chan X Beta and 4chan\'s inline extension is NOT guaranteed.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps arbitrarily.'],
@@ -68,7 +68,7 @@
         'Recursive Hiding': [true, 'Hide replies of hidden posts, recursively.'],
         'Thread Hiding': [true, 'Hide entire threads.'],
         'Reply Hiding': [true, 'Hide single replies.'],
-        'Thread/Reply Hiding Buttons': [true, 'Make buttons to hide threads / replies, in addition to menu links.'],
+        'Hiding Buttons': [true, 'Make buttons to hide threads / replies, in addition to menu links.'],
         'Stubs': [true, 'Make stubs of hidden threads / replies.']
       },
       'Images': {
@@ -1143,7 +1143,7 @@
         el: link,
         order: 110,
         open: function() {
-          return Conf['Enable 4chan\'s extension'];
+          return Conf['Enable 4chan\'s Extension'];
         }
       });
       if (!$.get('previousversion')) {
@@ -1159,7 +1159,7 @@
       $.on(d, 'OpenSettings', function(e) {
         return Settings.open(e.detail);
       });
-      if (Conf['Enable 4chan\'s extension']) {
+      if (Conf['Enable 4chan\'s Extension']) {
         return;
       }
       settings = JSON.parse(localStorage.getItem('4chan-settings')) || {};
@@ -1890,7 +1890,7 @@
       if (data = ThreadHiding.hiddenThreads.threads[this]) {
         ThreadHiding.hide(this, data.makeStub);
       }
-      if (!Conf['Thread/Reply Hiding Buttons']) {
+      if (!Conf['Hiding Buttons']) {
         return;
       }
       return $.prepend(this.posts[this].nodes.root, ThreadHiding.makeButton(this, 'hide'));
@@ -2112,7 +2112,7 @@
           }
         }
       }
-      if (!Conf['Thread/Reply Hiding Buttons']) {
+      if (!Conf['Hiding Buttons']) {
         return;
       }
       return $.replace($('.sideArrows', this.nodes.root), ReplyHiding.makeButton(this, 'hide'));
@@ -4891,7 +4891,7 @@
       }
       Main.callbackNodes(Post, posts);
       $.after(a, nodes);
-      if (Conf['Enable 4chan\'s extension']) {
+      if (Conf['Enable 4chan\'s Extension']) {
         return $.unsafeWindow.Parser.parseThread(thread.ID, 1, nodes.length);
       } else {
         return Fourchan.parseThread(thread.ID, 1, nodes.length);
@@ -5369,7 +5369,7 @@
           var length, threadID;
           threadID = ThreadUpdater.thread.ID;
           length = ThreadUpdater.root.children.length;
-          if (Conf['Enable 4chan\'s extension']) {
+          if (Conf['Enable 4chan\'s Extension']) {
             return $.unsafeWindow.Parser.parseThread(threadID, -count);
           } else {
             return Fourchan.parseThread(threadID, length - count, length);
