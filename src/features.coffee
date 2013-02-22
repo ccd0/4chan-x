@@ -878,9 +878,9 @@ ThreadHiding =
   init: ->
     return if g.VIEW isnt 'index' or !Conf['Thread Hiding']
 
+    Misc.clearThreads "hiddenThreads.#{g.BOARD}"
     @getHiddenThreads()
     @syncFromCatalog()
-    @clean()
     Thread::callbacks.push
       name: 'Thread Hiding'
       cb:   @node
@@ -894,9 +894,7 @@ ThreadHiding =
   getHiddenThreads: ->
     hiddenThreads = $.get "hiddenThreads.#{g.BOARD}"
     unless hiddenThreads
-      hiddenThreads =
-        threads: {}
-        lastChecked: Date.now()
+      hiddenThreads = threads: {}
       $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
     ThreadHiding.hiddenThreads = hiddenThreads
 
@@ -916,26 +914,6 @@ ThreadHiding =
       delete threads[threadID]
 
     $.set "hiddenThreads.#{g.BOARD}", ThreadHiding.hiddenThreads
-
-  clean: ->
-    {hiddenThreads} = ThreadHiding
-    {lastChecked}   = hiddenThreads
-    hiddenThreads.lastChecked = now = Date.now()
-
-    return if lastChecked > now - $.DAY
-
-    unless Object.keys(hiddenThreads.threads).length
-      $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
-      return
-
-    $.ajax "//api.4chan.org/#{g.BOARD}/catalog.json", onload: ->
-      threads = {}
-      for obj in JSON.parse @response
-        for thread in obj.threads
-          if thread.no of hiddenThreads.threads
-            threads[thread.no] = hiddenThreads.threads[thread.no]
-      hiddenThreads.threads = threads
-      $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
 
   menu:
     init: ->
@@ -1040,8 +1018,8 @@ ReplyHiding =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Reply Hiding']
 
+    Misc.clearThreads "hiddenPosts.#{g.BOARD}"
     @getHiddenPosts()
-    @clean()
     Post::callbacks.push
       name: 'Reply Hiding'
       cb:   @node
@@ -1060,31 +1038,9 @@ ReplyHiding =
   getHiddenPosts: ->
     hiddenPosts = $.get "hiddenPosts.#{g.BOARD}"
     unless hiddenPosts
-      hiddenPosts =
-        threads: {}
-        lastChecked: Date.now()
+      hiddenPosts = threads: {}
       $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
     ReplyHiding.hiddenPosts = hiddenPosts
-
-  clean: ->
-    {hiddenPosts} = ReplyHiding
-    {lastChecked} = hiddenPosts
-    hiddenPosts.lastChecked = now = Date.now()
-
-    return if lastChecked > now - $.DAY
-
-    unless Object.keys(hiddenPosts.threads).length
-      $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
-      return
-
-    $.ajax "//api.4chan.org/#{g.BOARD}/catalog.json", onload: ->
-      threads = {}
-      for obj in JSON.parse @response
-        for thread in obj.threads
-          if thread.no of hiddenPosts.threads
-            threads[thread.no] = hiddenPosts.threads[thread.no]
-      hiddenPosts.threads = threads
-      $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
 
   menu:
     init: ->
@@ -2285,6 +2241,33 @@ Get =
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
 
+Misc = # super semantic
+  clearThreads: (key) ->
+    now  = Date.now()
+    data = $.get key, threads: {}
+
+    unless data.lastChecked
+      data.lastChecked = now
+      $.set key, data
+      return
+
+    return if data.lastChecked > now - $.DAY
+
+    data.lastChecked = now
+
+    unless Object.keys(data.threads).length
+      $.set key, data
+      return
+
+    $.ajax "//api.4chan.org/#{g.BOARD}/catalog.json", onload: ->
+      threads = {}
+      for obj in JSON.parse @response
+        for thread in obj.threads
+          if thread.no of data.threads
+            threads[thread.no] = data.threads[thread.no]
+      data.threads = threads
+      $.set key, data
+
 Quotify =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Resurrect Quotes']
@@ -3288,6 +3271,7 @@ Unread =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Tab Icon']
 
+    Misc.clearThreads "lastReadPosts.#{g.BOARD}"
     Thread::callbacks.push
       name: 'Unread'
       cb:   @node

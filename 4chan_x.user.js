@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1897,9 +1897,9 @@
       if (g.VIEW !== 'index' || !Conf['Thread Hiding']) {
         return;
       }
+      Misc.clearThreads("hiddenThreads." + g.BOARD);
       this.getHiddenThreads();
       this.syncFromCatalog();
-      this.clean();
       return Thread.prototype.callbacks.push({
         name: 'Thread Hiding',
         cb: this.node
@@ -1920,8 +1920,7 @@
       hiddenThreads = $.get("hiddenThreads." + g.BOARD);
       if (!hiddenThreads) {
         hiddenThreads = {
-          threads: {},
-          lastChecked: Date.now()
+          threads: {}
         };
         $.set("hiddenThreads." + g.BOARD, hiddenThreads);
       }
@@ -1944,38 +1943,6 @@
         delete threads[threadID];
       }
       return $.set("hiddenThreads." + g.BOARD, ThreadHiding.hiddenThreads);
-    },
-    clean: function() {
-      var hiddenThreads, lastChecked, now;
-      hiddenThreads = ThreadHiding.hiddenThreads;
-      lastChecked = hiddenThreads.lastChecked;
-      hiddenThreads.lastChecked = now = Date.now();
-      if (lastChecked > now - $.DAY) {
-        return;
-      }
-      if (!Object.keys(hiddenThreads.threads).length) {
-        $.set("hiddenThreads." + g.BOARD, hiddenThreads);
-        return;
-      }
-      return $.ajax("//api.4chan.org/" + g.BOARD + "/catalog.json", {
-        onload: function() {
-          var obj, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
-          threads = {};
-          _ref = JSON.parse(this.response);
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            obj = _ref[_i];
-            _ref1 = obj.threads;
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              thread = _ref1[_j];
-              if (thread.no in hiddenThreads.threads) {
-                threads[thread.no] = hiddenThreads.threads[thread.no];
-              }
-            }
-          }
-          hiddenThreads.threads = threads;
-          return $.set("hiddenThreads." + g.BOARD, hiddenThreads);
-        }
-      });
     },
     menu: {
       init: function() {
@@ -2111,8 +2078,8 @@
       if (g.VIEW === 'catalog' || !Conf['Reply Hiding']) {
         return;
       }
+      Misc.clearThreads("hiddenPosts." + g.BOARD);
       this.getHiddenPosts();
-      this.clean();
       return Post.prototype.callbacks.push({
         name: 'Reply Hiding',
         cb: this.node
@@ -2142,44 +2109,11 @@
       hiddenPosts = $.get("hiddenPosts." + g.BOARD);
       if (!hiddenPosts) {
         hiddenPosts = {
-          threads: {},
-          lastChecked: Date.now()
+          threads: {}
         };
         $.set("hiddenPosts." + g.BOARD, hiddenPosts);
       }
       return ReplyHiding.hiddenPosts = hiddenPosts;
-    },
-    clean: function() {
-      var hiddenPosts, lastChecked, now;
-      hiddenPosts = ReplyHiding.hiddenPosts;
-      lastChecked = hiddenPosts.lastChecked;
-      hiddenPosts.lastChecked = now = Date.now();
-      if (lastChecked > now - $.DAY) {
-        return;
-      }
-      if (!Object.keys(hiddenPosts.threads).length) {
-        $.set("hiddenPosts." + g.BOARD, hiddenPosts);
-        return;
-      }
-      return $.ajax("//api.4chan.org/" + g.BOARD + "/catalog.json", {
-        onload: function() {
-          var obj, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
-          threads = {};
-          _ref = JSON.parse(this.response);
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            obj = _ref[_i];
-            _ref1 = obj.threads;
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              thread = _ref1[_j];
-              if (thread.no in hiddenPosts.threads) {
-                threads[thread.no] = hiddenPosts.threads[thread.no];
-              }
-            }
-          }
-          hiddenPosts.threads = threads;
-          return $.set("hiddenPosts." + g.BOARD, hiddenPosts);
-        }
-      });
     },
     menu: {
       init: function() {
@@ -3582,6 +3516,48 @@
     }
   };
 
+  Misc = {
+    clearThreads: function(key) {
+      var data, now;
+      now = Date.now();
+      data = $.get(key, {
+        threads: {}
+      });
+      if (!data.lastChecked) {
+        data.lastChecked = now;
+        $.set(key, data);
+        return;
+      }
+      if (data.lastChecked > now - $.DAY) {
+        return;
+      }
+      data.lastChecked = now;
+      if (!Object.keys(data.threads).length) {
+        $.set(key, data);
+        return;
+      }
+      return $.ajax("//api.4chan.org/" + g.BOARD + "/catalog.json", {
+        onload: function() {
+          var obj, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+          threads = {};
+          _ref = JSON.parse(this.response);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            obj = _ref[_i];
+            _ref1 = obj.threads;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              thread = _ref1[_j];
+              if (thread.no in data.threads) {
+                threads[thread.no] = data.threads[thread.no];
+              }
+            }
+          }
+          data.threads = threads;
+          return $.set(key, data);
+        }
+      });
+    }
+  };
+
   Quotify = {
     init: function() {
       if (g.VIEW === 'catalog' || !Conf['Resurrect Quotes']) {
@@ -4939,6 +4915,7 @@
       if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Tab Icon']) {
         return;
       }
+      Misc.clearThreads("lastReadPosts." + g.BOARD);
       return Thread.prototype.callbacks.push({
         name: 'Unread',
         cb: this.node
