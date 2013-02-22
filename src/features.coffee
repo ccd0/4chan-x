@@ -889,7 +889,7 @@ ThreadHiding =
     if data = ThreadHiding.hiddenThreads.threads[@]
       ThreadHiding.hide @, data.makeStub
     return unless Conf['Hiding Buttons']
-    $.prepend @posts[@].nodes.root, ThreadHiding.makeButton @, 'hide'
+    $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
 
   getHiddenThreads: ->
     hiddenThreads = $.get "hiddenThreads.#{g.BOARD}"
@@ -981,8 +981,7 @@ ThreadHiding =
 
   hide: (thread, makeStub=Conf['Stubs']) ->
     return if thread.hidden
-    op = thread.posts[thread]
-    threadRoot = op.nodes.root.parentNode
+    threadRoot = thread.OP.nodes.root.parentNode
     threadRoot.hidden = thread.isHidden = true
 
     unless makeStub
@@ -1013,7 +1012,7 @@ ThreadHiding =
     if thread.stub
       $.rm thread.stub
       delete thread.stub
-    threadRoot = thread.posts[thread].nodes.root.parentNode
+    threadRoot = thread.OP.nodes.root.parentNode
     threadRoot.nextElementSibling.hidden =
       threadRoot.hidden = thread.isHidden = false
 
@@ -1948,12 +1947,12 @@ Build =
 
     sticky =
       if isSticky
-        ' <img src=//static.4chan.org/image/sticky.gif alt=Sticky title=Sticky style="height:16px;width:16px">'
+        ' <img src=//static.4chan.org/image/sticky.gif alt=Sticky title=Sticky class=stickyIcon>'
       else
         ''
     closed =
       if isClosed
-        ' <img src=//static.4chan.org/image/closed.gif alt=Closed title=Closed style="height:16px;width:16px">'
+        ' <img src=//static.4chan.org/image/closed.gif alt=Closed title=Closed class=closedIcon>'
       else
         ''
 
@@ -2022,11 +2021,11 @@ Build =
 
 Get =
   threadExcerpt: (thread) ->
-    op = thread.posts[thread]
-    excerpt = op.info.subject?.trim() or
-      op.info.comment.replace(/\n+/g, ' // ') or
+    {OP} = thread
+    excerpt = OP.info.subject?.trim() or
+      OP.info.comment.replace(/\n+/g, ' // ') or
       Conf['Anonymize'] and 'Anonymous' or
-      $('.nameBlock', op.nodes.info).textContent.trim()
+      $('.nameBlock', OP.nodes.info).textContent.trim()
     "/#{thread.board}/ - #{excerpt}"
   postFromRoot: (root) ->
     link   = $ 'a[title="Highlight this post"]', root
@@ -3182,8 +3181,7 @@ ExpandThread =
       name: 'Thread Expansion'
       cb:   @node
   node: ->
-    op   = @posts[@]
-    return unless span = $ '.summary', op.nodes.root.parentNode
+    return unless span = $ '.summary', @OP.nodes.root.parentNode
     a = $.el 'a',
       textContent: "+ #{span.textContent}"
       className: 'summary'
@@ -3196,7 +3194,7 @@ ExpandThread =
     ExpandThread.toggle op.thread
 
   toggle: (thread) ->
-    threadRoot = thread.posts[thread].nodes.root.parentNode
+    threadRoot = thread.OP.nodes.root.parentNode
     url = "//api.4chan.org/#{thread.board}/res/#{thread}.json"
     a   = $ '.summary', threadRoot
 
@@ -3205,14 +3203,14 @@ ExpandThread =
       when '+'
         a.textContent = text.replace '+', '× Loading...'
         $.cache url, -> ExpandThread.parse @, thread, a
-        ExpandComment.expand thread.posts[thread]
+        ExpandComment.expand thread.OP
 
       when '×'
         a.textContent = text.replace '× Loading...', '+'
 
       when '-'
         a.textContent = text.replace '-', '+'
-        ExpandComment.contract thread.posts[thread]
+        ExpandComment.contract thread.OP
         #goddamit moot
         num = switch g.BOARD
           # XXX boards config
@@ -3459,7 +3457,7 @@ ThreadUpdater =
 
   node: ->
     ThreadUpdater.thread       = @
-    ThreadUpdater.root         = @posts[@].nodes.root.parentNode
+    ThreadUpdater.root         = @OP.nodes.root.parentNode
     ThreadUpdater.lastPost     = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0]
     ThreadUpdater.outdateCount = 0
     ThreadUpdater.lastModified = '0'
@@ -3688,11 +3686,10 @@ ThreadWatcher =
       cb:   @node
 
   node: ->
-    op = @posts[@]
     favicon = $.el 'img',
       className: 'favicon'
     $.on favicon, 'click', ThreadWatcher.cb.toggle
-    $.before $('input', op.nodes.post), favicon
+    $.before $('input', @OP.nodes.post), favicon
     if g.VIEW is 'thread' and @ID is $.get 'AutoWatch', 0
       ThreadWatcher.watch @
       $.delete 'AutoWatch'
@@ -3722,8 +3719,7 @@ ThreadWatcher =
 
     watched = watched[g.BOARD] or {}
     for ID, thread of g.BOARD.threads
-      op = thread.posts[thread]
-      favicon = $ '.favicon', op.nodes.post
+      favicon = $ '.favicon', thread.OP.nodes.post
       favicon.src = if ID of watched
         Favicon.default
       else
@@ -3745,8 +3741,7 @@ ThreadWatcher =
         ThreadWatcher.watch g.BOARD.threads[threadID]
 
   toggle: (thread) ->
-    op = thread.posts[thread]
-    if $('.favicon', op.nodes.post).src is Favicon.empty
+    if $('.favicon', thread.OP.nodes.post).src is Favicon.empty
       ThreadWatcher.watch thread
     else
       ThreadWatcher.unwatch thread.board, thread.ID

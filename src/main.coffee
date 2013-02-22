@@ -101,7 +101,11 @@ class Post
       if @file.isImage = /(jpg|png|gif)$/i.test @file.name
         @file.dimensions = @file.text.textContent.match(/\d+x\d+/)[0]
 
-    @isReply = $.hasClass post, 'reply'
+    unless @isReply = $.hasClass post, 'reply'
+      @thread.OP = @
+      @thread.isSticky = !!$ '.stickyIcon', @nodes.info
+      @thread.isClosed = !!$ '.closedIcon', @nodes.info
+
     @clones  = []
     g.posts["#{board}.#{@}"] = thread.posts[@] = board.posts[@] = @
     @kill() if that.isArchived

@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-02-22
+/* 4chan X Beta - Version 3.0.0 - 2013-02-23
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -1913,7 +1913,7 @@
       if (!Conf['Hiding Buttons']) {
         return;
       }
-      return $.prepend(this.posts[this].nodes.root, ThreadHiding.makeButton(this, 'hide'));
+      return $.prepend(this.OP.nodes.root, ThreadHiding.makeButton(this, 'hide'));
     },
     getHiddenThreads: function() {
       var hiddenThreads;
@@ -2032,15 +2032,14 @@
       return ThreadHiding.saveHiddenState(thread);
     },
     hide: function(thread, makeStub) {
-      var a, numReplies, op, opInfo, span, threadRoot;
+      var a, numReplies, opInfo, span, threadRoot;
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
       }
       if (thread.hidden) {
         return;
       }
-      op = thread.posts[thread];
-      threadRoot = op.nodes.root.parentNode;
+      threadRoot = thread.OP.nodes.root.parentNode;
       threadRoot.hidden = thread.isHidden = true;
       if (!makeStub) {
         threadRoot.nextElementSibling.hidden = true;
@@ -2070,7 +2069,7 @@
         $.rm(thread.stub);
         delete thread.stub;
       }
-      threadRoot = thread.posts[thread].nodes.root.parentNode;
+      threadRoot = thread.OP.nodes.root.parentNode;
       return threadRoot.nextElementSibling.hidden = threadRoot.hidden = thread.isHidden = false;
     }
   };
@@ -3259,8 +3258,8 @@
         fileHTML = '';
       }
       tripcode = tripcode ? " <span class=postertrip>" + tripcode + "</span>" : '';
-      sticky = isSticky ? ' <img src=//static.4chan.org/image/sticky.gif alt=Sticky title=Sticky style="height:16px;width:16px">' : '';
-      closed = isClosed ? ' <img src=//static.4chan.org/image/closed.gif alt=Closed title=Closed style="height:16px;width:16px">' : '';
+      sticky = isSticky ? ' <img src=//static.4chan.org/image/sticky.gif alt=Sticky title=Sticky class=stickyIcon>' : '';
+      closed = isClosed ? ' <img src=//static.4chan.org/image/closed.gif alt=Closed title=Closed class=closedIcon>' : '';
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
@@ -3281,9 +3280,9 @@
 
   Get = {
     threadExcerpt: function(thread) {
-      var excerpt, op, _ref;
-      op = thread.posts[thread];
-      excerpt = ((_ref = op.info.subject) != null ? _ref.trim() : void 0) || op.info.comment.replace(/\n+/g, ' // ') || Conf['Anonymize'] && 'Anonymous' || $('.nameBlock', op.nodes.info).textContent.trim();
+      var OP, excerpt, _ref;
+      OP = thread.OP;
+      excerpt = ((_ref = OP.info.subject) != null ? _ref.trim() : void 0) || OP.info.comment.replace(/\n+/g, ' // ') || Conf['Anonymize'] && 'Anonymous' || $('.nameBlock', OP.nodes.info).textContent.trim();
       return "/" + thread.board + "/ - " + excerpt;
     },
     postFromRoot: function(root) {
@@ -4798,9 +4797,8 @@
       });
     },
     node: function() {
-      var a, op, span;
-      op = this.posts[this];
-      if (!(span = $('.summary', op.nodes.root.parentNode))) {
+      var a, span;
+      if (!(span = $('.summary', this.OP.nodes.root.parentNode))) {
         return;
       }
       a = $.el('a', {
@@ -4818,7 +4816,7 @@
     },
     toggle: function(thread) {
       var a, inlined, num, replies, reply, text, threadRoot, url, _i, _len;
-      threadRoot = thread.posts[thread].nodes.root.parentNode;
+      threadRoot = thread.OP.nodes.root.parentNode;
       url = "//api.4chan.org/" + thread.board + "/res/" + thread + ".json";
       a = $('.summary', threadRoot);
       text = a.textContent;
@@ -4828,14 +4826,14 @@
           $.cache(url, function() {
             return ExpandThread.parse(this, thread, a);
           });
-          ExpandComment.expand(thread.posts[thread]);
+          ExpandComment.expand(thread.OP);
           break;
         case '×':
           a.textContent = text.replace('× Loading...', '+');
           break;
         case '-':
           a.textContent = text.replace('-', '+');
-          ExpandComment.contract(thread.posts[thread]);
+          ExpandComment.contract(thread.OP);
           num = (function() {
             switch (g.BOARD) {
               case 'b':
@@ -5137,7 +5135,7 @@
     node: function() {
       var input, _i, _len, _ref;
       ThreadUpdater.thread = this;
-      ThreadUpdater.root = this.posts[this].nodes.root.parentNode;
+      ThreadUpdater.root = this.OP.nodes.root.parentNode;
       ThreadUpdater.lastPost = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0];
       ThreadUpdater.outdateCount = 0;
       ThreadUpdater.lastModified = '0';
@@ -5419,13 +5417,12 @@
       });
     },
     node: function() {
-      var favicon, op;
-      op = this.posts[this];
+      var favicon;
       favicon = $.el('img', {
         className: 'favicon'
       });
       $.on(favicon, 'click', ThreadWatcher.cb.toggle);
-      $.before($('input', op.nodes.post), favicon);
+      $.before($('input', this.OP.nodes.post), favicon);
       if (g.VIEW === 'thread' && this.ID === $.get('AutoWatch', 0)) {
         ThreadWatcher.watch(this);
         return $["delete"]('AutoWatch');
@@ -5436,7 +5433,7 @@
       return $.add(d.body, ThreadWatcher.dialog);
     },
     refresh: function(watched) {
-      var ID, board, div, favicon, id, link, nodes, op, props, thread, x, _ref, _ref1;
+      var ID, board, div, favicon, id, link, nodes, props, thread, x, _ref, _ref1;
       watched || (watched = $.get('WatchedThreads', {}));
       nodes = [$('.move', ThreadWatcher.dialog)];
       for (board in watched) {
@@ -5461,8 +5458,7 @@
       _ref1 = g.BOARD.threads;
       for (ID in _ref1) {
         thread = _ref1[ID];
-        op = thread.posts[thread];
-        favicon = $('.favicon', op.nodes.post);
+        favicon = $('.favicon', thread.OP.nodes.post);
         favicon.src = ID in watched ? Favicon["default"] : Favicon.empty;
       }
     },
@@ -5488,9 +5484,7 @@
       }
     },
     toggle: function(thread) {
-      var op;
-      op = thread.posts[thread];
-      if ($('.favicon', op.nodes.post).src === Favicon.empty) {
+      if ($('.favicon', thread.OP.nodes.post).src === Favicon.empty) {
         return ThreadWatcher.watch(thread);
       } else {
         return ThreadWatcher.unwatch(thread.board, thread.ID);
@@ -6599,7 +6593,11 @@
           this.file.dimensions = this.file.text.textContent.match(/\d+x\d+/)[0];
         }
       }
-      this.isReply = $.hasClass(post, 'reply');
+      if (!(this.isReply = $.hasClass(post, 'reply'))) {
+        this.thread.OP = this;
+        this.thread.isSticky = !!$('.stickyIcon', this.nodes.info);
+        this.thread.isClosed = !!$('.closedIcon', this.nodes.info);
+      }
       this.clones = [];
       g.posts["" + board + "." + this] = thread.posts[this] = board.posts[this] = this;
       if (that.isArchived) {
