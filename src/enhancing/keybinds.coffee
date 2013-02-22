@@ -45,6 +45,7 @@ Keybinds =
     keys[_conf.sageru] = ->
       $("[name=email]", QR.el).value = "sage"
       QR.selected.email = "sage"
+
     # Thread related
     keys[_conf.watch] = (thread) ->
       Watcher.toggle thread
@@ -59,15 +60,16 @@ Keybinds =
       Keybinds.img thread
     keys[_conf.expandAllImages] = (thread) ->
       Keybinds.img thread, true
+
     # Board Navigation
     keys[_conf.zero] = ->
       window.location = "/#{g.BOARD}/0#delform"
     keys[_conf.nextPage] = ->
       if form = $ '.next form'
         window.location = form.action
-     keys[_conf.previousPage] = ->
-      if form = $ '.prev form'
-        window.location = form.action
+    keys[_conf.previousPage] = ->
+     if form = $ '.prev form'
+       window.location = form.action
 
     # Thread Navigation
     keys[_conf.nextThread] = ->

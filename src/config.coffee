@@ -1,8 +1,8 @@
 # JavaScript "Globals"
 Config =
+
 # Depending on the category, the following objects are used to store default settings, generate layouts, and hold the various settings available for appchan x.
   main:
-
     Enhancing:
       'Catalog Links': [
         true
@@ -724,6 +724,10 @@ div.post.highlight {
       'Block Ads': [
         false
         'Block advertisements. It\'s probably better to use AdBlock for this.'
+      ]
+      'Bolds': [
+        true
+        'Bold text for usernames and such.'
       ]
       'Shrink Ads': [
         false

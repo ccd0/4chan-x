@@ -1682,7 +1682,7 @@ s {
 }
 .inlined {
   font-style: italic;
-  font-weight: 800;
+  #{if _conf["Bolds"] then 'font-weight: 800;' else ''}
 }
 #watcher > .move,
 .backlink:not(.filtered),
@@ -2228,7 +2228,7 @@ input[type=checkbox]:checked + .rice {
 }
 .name,
 .post-author {
-  font-weight: 600;
+  #{if _conf["Bolds"] then 'font-weight: 600;' else ''}
 }
 .post-author .post-tripcode {
   font-weight: 400;
@@ -3432,7 +3432,7 @@ a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
 }
 .subject {
   color: #{theme["Subjects"]} !important;
-  font-weight: 600;
+  #{if _conf["Bolds"] then 'font-weight: 600;' else ''}
 }
 .dateTime,
 .post-ago {
