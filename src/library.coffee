@@ -231,7 +231,7 @@ $.extend $,
       GM_deleteValue name
     get: (name, defaultValue) ->
       name = Main.namespace + name
-      if value = GM_getValue name
+      if (value = GM_getValue name) and value isnt 'undefined'
         JSON.parse value
       else
         defaultValue

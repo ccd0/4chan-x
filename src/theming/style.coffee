@@ -436,7 +436,7 @@ body {
 #settingsWindowLink,
 div.navLinks > a:first-of-type::after,
 #{if Conf['Slideout Watcher'] then '#watcher::after,' else ''}
-#globalMessage::after,
+#{if Conf['Announcements'] is 'slideout' then '#globalMessage::after,' else ''}
 #boardNavDesktopFoot::after,
 body > a[style="cursor: pointer; float: right;"]::after,
 #imgControls label:first-of-type::after,

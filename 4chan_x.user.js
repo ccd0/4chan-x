@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * 4chan x - Version 1.1.2 - 2013-02-14
+ * 4chan x - Version 1.1.2 - 2013-02-22
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -603,7 +603,7 @@
     get: function(name, defaultValue) {
       var value;
       name = Main.namespace + name;
-      if (value = GM_getValue(name)) {
+      if ((value = GM_getValue(name)) && value !== 'undefined') {
         return JSON.parse(value);
       } else {
         return defaultValue;
@@ -4758,7 +4758,7 @@
         for (id in _ref) {
           props = _ref[id];
           x = $.el('a', {
-            textContent: '�~',
+            textContent: '×',
             href: 'javascript:;'
           });
           $.on(x, 'click', Watcher.cb.x);
@@ -7102,7 +7102,7 @@
         for (id in ownedPosts) {
           timestamp = ownedPosts[id];
           if (timestamp < cutoff) {
-            delete ownPosts[id];
+            delete ownedPosts[id];
           }
         }
         for (id in titles) {
