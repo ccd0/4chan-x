@@ -5690,9 +5690,11 @@
     },
     cooldown: {
       init: function() {
+        var board;
+        board = g.BOARD.ID;
         QR.cooldown.types = {
           thread: (function() {
-            switch (g.BOARD) {
+            switch (board) {
               case 'q':
                 return 86400;
               case 'b':
@@ -5703,13 +5705,13 @@
                 return 300;
             }
           })(),
-          sage: g.BOARD === 'q' ? 600 : 60,
-          file: g.BOARD === 'q' ? 300 : 30,
-          post: g.BOARD === 'q' ? 60 : 30
+          sage: board === 'q' ? 600 : 60,
+          file: board === 'q' ? 300 : 30,
+          post: board === 'q' ? 60 : 30
         };
-        QR.cooldown.cooldowns = $.get("" + g.BOARD + ".cooldown", {});
+        QR.cooldown.cooldowns = $.get("" + board + ".cooldown", {});
         QR.cooldown.start();
-        return $.sync("" + g.BOARD + ".cooldown", QR.cooldown.sync);
+        return $.sync("" + board + ".cooldown", QR.cooldown.sync);
       },
       start: function() {
         if (QR.cooldown.isCounting) {

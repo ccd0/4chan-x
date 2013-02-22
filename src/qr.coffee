@@ -118,17 +118,18 @@ QR =
 
   cooldown:
     init: ->
+      board = g.BOARD.ID
       QR.cooldown.types =
-        thread: switch g.BOARD
+        thread: switch board
           when 'q' then 86400
           when 'b', 'soc', 'r9k' then 600
           else 300
-        sage: if g.BOARD is 'q' then 600 else 60
-        file: if g.BOARD is 'q' then 300 else 30
-        post: if g.BOARD is 'q' then 60  else 30
-      QR.cooldown.cooldowns = $.get "#{g.BOARD}.cooldown", {}
+        sage: if board is 'q' then 600 else 60
+        file: if board is 'q' then 300 else 30
+        post: if board is 'q' then 60  else 30
+      QR.cooldown.cooldowns = $.get "#{board}.cooldown", {}
       QR.cooldown.start()
-      $.sync "#{g.BOARD}.cooldown", QR.cooldown.sync
+      $.sync "#{board}.cooldown", QR.cooldown.sync
     start: ->
       return if QR.cooldown.isCounting
       QR.cooldown.isCounting = true
