@@ -6056,7 +6056,7 @@
     captcha: {
       init: function() {
         var _this = this;
-        if (__indexOf.call(d.cookie, 'pass_enabled=') < 0) {
+        if (__indexOf.call(d.cookie, 'pass_enabled=') >= 0) {
           return;
         }
         if (!(this.isEnabled = !!$.id('captchaFormPart'))) {
@@ -6428,7 +6428,7 @@
       });
       QR.cooldown.auto = QR.replies.length > 1;
       if (threadID === '0') {
-        $.open("/" + g.BOARD + "/res/" + postID);
+        $.open("//boards.4chan.org//" + g.BOARD + "/res/" + postID);
       } else if (g.VIEW === 'reply' && !QR.cooldown.auto) {
         $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
       }

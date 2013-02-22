@@ -456,7 +456,7 @@ QR =
 
   captcha:
     init: ->
-      return unless 'pass_enabled=' in d.cookie
+      return if 'pass_enabled=' in d.cookie
       return unless @isEnabled = !!$.id 'captchaFormPart'
       if $.id 'recaptcha_challenge_field_holder'
         @ready()
@@ -798,7 +798,7 @@ QR =
     QR.cooldown.auto = QR.replies.length > 1
 
     if threadID is '0' # new thread
-      $.open "/#{g.BOARD}/res/#{postID}"
+      $.open "//boards.4chan.org/#{g.BOARD}/res/#{postID}"
     else if g.VIEW is 'reply' and !QR.cooldown.auto # posting from the index
       $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
 
