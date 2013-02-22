@@ -2000,9 +2000,8 @@
         innerHTML: "<span>[&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;]</span>",
         href: 'javascript:;'
       });
-      $.on(a, 'click', function() {
-        return ThreadHiding.toggle(thread);
-      });
+      a.setAttribute('data-fullid', thread.fullID);
+      $.on(a, 'click', ThreadHiding.toggle);
       return a;
     },
     saveHiddenState: function(thread, makeStub) {
@@ -2022,6 +2021,9 @@
       return localStorage.setItem("4chan-hide-t-" + g.BOARD, JSON.stringify(hiddenThreadsCatalog));
     },
     toggle: function(thread) {
+      if (!(thread instanceof Thread)) {
+        thread = g.threads[this.dataset.fullid];
+      }
       if (thread.isHidden) {
         ThreadHiding.show(thread);
       } else {
@@ -2188,9 +2190,7 @@
         innerHTML: "<span>[&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;]</span>",
         href: 'javascript:;'
       });
-      $.on(a, 'click', function() {
-        return ReplyHiding.toggle(post);
-      });
+      $.on(a, 'click', ReplyHiding.toggle);
       return a;
     },
     saveHiddenState: function(post, isHiding, thisPost, makeStub, hideRecursively) {
@@ -2214,7 +2214,9 @@
       }
       return $.set("hiddenPosts." + g.BOARD, hiddenPosts);
     },
-    toggle: function(post) {
+    toggle: function() {
+      var post;
+      post = Get.postFromNode(this);
       if (post.isHidden) {
         ReplyHiding.show(post);
       } else {

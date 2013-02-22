@@ -953,7 +953,8 @@ ThreadHiding =
       className: "#{type}-thread-button"
       innerHTML: "<span>[&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;]</span>"
       href:      'javascript:;'
-    $.on a, 'click', -> ThreadHiding.toggle thread
+    a.setAttribute 'data-fullid', thread.fullID
+    $.on a, 'click', ThreadHiding.toggle
     a
 
   saveHiddenState: (thread, makeStub) ->
@@ -970,6 +971,8 @@ ThreadHiding =
     localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify hiddenThreadsCatalog
 
   toggle: (thread) ->
+    unless thread instanceof Thread
+      thread = g.threads[@dataset.fullid]
     if thread.isHidden
       ThreadHiding.show thread
     else
@@ -1092,7 +1095,7 @@ ReplyHiding =
       className: "#{type}-reply-button"
       innerHTML: "<span>[&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;]</span>"
       href:      'javascript:;'
-    $.on a, 'click', -> ReplyHiding.toggle post
+    $.on a, 'click', ReplyHiding.toggle
     a
 
   saveHiddenState: (post, isHiding, thisPost, makeStub, hideRecursively) ->
@@ -1112,7 +1115,8 @@ ReplyHiding =
         delete hiddenPosts.threads[post.thread]
     $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
 
-  toggle: (post) ->
+  toggle: ->
+    post = Get.postFromNode @
     if post.isHidden
       ReplyHiding.show post
     else
