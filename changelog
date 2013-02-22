@@ -1,6 +1,7 @@
-alpha
+beta
 - Mayhem
   Major rewrite of 4chan X.
+
   New feature, the Header:
     Access the list of boards directly from the Header.
     From the Header's menu, access to:
@@ -8,21 +9,31 @@ alpha
       Quick Reply shortcut
       Image Expansion
     Can be auto-hidden.
+
   QR changes:
     Creating threads outside of the index is now possible.
     Selection-to-quote also applies to selected text inside the post, not just inside the comment.
     Quoting the OP will not insert the >>opnumber anymore unless the QR was already opened.
+
   Image Expansion changes:
     Expanding OP images won't squish replies anymore.
     There is now a setting to allow expanding spoilers.
+
+  Thread Updater changes:
+    The Thread Updater will pause when offline, and resume when online.
+    Added an option to always auto-scroll to the bottom.
+
+  Unread posts changes:
+    Read posts won't be marked as unread after reloading a thread.
+    Visible posts will not be taken into account towards the unread count.
+
+  Thread/Post Hiding changes:
+    Added Thread & Post Hiding in the Menu, with individual settings.
+    Thread & Post Hiding Buttons can now be disabled in the settings.
+    Recursive Hiding will be automatically applied when manually hiding a post.
+
   Added touch and multi-touch support for dragging windows.
-  The Thread Updater will pause when offline, and resume when online.
-  Added an option to always auto-scroll to the bottom.
   Thread Stats post and file count will adjust with deleted posts.
-  Added Thread & Post Hiding in the Menu, with individual settings.
-  Thread & Post Hiding Buttons can now be disabled in the settings.
-  Recursive Hiding will be automatically applied when manually hiding a post.
-  Visible posts will not be taken into account towards the unread count.
   Added [math] tags keybind.
   Fix Chrome's install warning saying that 4chan X would execute on all domains.
   Fix Quote Backlinks not affecting inlined quotes.

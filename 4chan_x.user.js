@@ -836,6 +836,26 @@
     open: function(url) {
       return (GM_openInTab || window.open)(url, '_blank');
     },
+    debounce: function(wait, fn) {
+      var args, exec, that, timeout;
+      timeout = null;
+      that = null;
+      args = null;
+      exec = function() {
+        fn.apply(that, args);
+        return timeout = null;
+      };
+      return function() {
+        args = arguments;
+        that = this;
+        if (timeout) {
+          clearTimeout(timeout);
+        } else {
+          exec();
+        }
+        return timeout = setTimeout(exec, wait);
+      };
+    },
     queueTask: (function() {
       var execTask, taskChannel, taskQueue;
       taskQueue = [];
@@ -4926,6 +4946,10 @@
     },
     node: function() {
       var ID, post, posts, _ref;
+      Unread.thread = this;
+      Unread.lastReadPost = $.get("lastReadPosts." + this.board, {
+        threads: {}
+      }).threads[this] || 0;
       Unread.yourPosts = [];
       Unread.posts = [];
       Unread.title = d.title;
@@ -4938,26 +4962,26 @@
         }
       }
       Unread.addPosts(posts);
-      Unread.update();
       $.on(d, 'ThreadUpdate', Unread.onUpdate);
       $.on(d, 'QRPostSuccessful', Unread.post);
       return $.on(d, 'scroll visibilitychange', Unread.read);
     },
     addPosts: function(newPosts) {
-      var post, _i, _len, _ref;
+      var ID, post, _i, _len;
       for (_i = 0, _len = newPosts.length; _i < _len; _i++) {
         post = newPosts[_i];
-        if (!((_ref = post.ID, __indexOf.call(Unread.yourPosts, _ref) >= 0) || post.isHidden)) {
+        ID = post.ID;
+        if (!(ID <= Unread.lastReadPost || post.isHidden || __indexOf.call(Unread.yourPosts, ID) >= 0)) {
           Unread.posts.push(post);
         }
       }
-      return Unread.read();
+      Unread.read();
+      return Unread.update();
     },
     onUpdate: function(e) {
       if (!e.detail[404]) {
-        Unread.addPosts(e.detail.newPosts);
+        return Unread.addPosts(e.detail.newPosts);
       }
-      return Unread.update();
     },
     post: function(e) {
       return Unread.yourPosts.push(+e.detail.postID);
@@ -4979,11 +5003,21 @@
       if (!i) {
         return;
       }
+      Unread.lastReadPost = Unread.posts[i - 1].ID;
+      Unread.saveLastReadPost();
       Unread.posts = Unread.posts.slice(i);
       if (e) {
         return Unread.update();
       }
     },
+    saveLastReadPost: $.debounce($.SECOND, function() {
+      var lastReadPosts;
+      lastReadPosts = $.get("lastReadPosts." + Unread.thread.board, {
+        threads: {}
+      });
+      lastReadPosts.threads[Unread.thread] = Unread.lastReadPost;
+      return $.set("lastReadPosts." + Unread.thread.board, lastReadPosts);
+    }),
     update: function() {
       var count;
       count = Unread.posts.length;

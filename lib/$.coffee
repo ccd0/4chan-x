@@ -139,6 +139,24 @@ $.extend $,
     root.dispatchEvent new CustomEvent event, {bubbles: true, detail}
   open: (url) ->
     (GM_openInTab or window.open) url, '_blank'
+  debounce: (wait, fn) ->
+    timeout = null
+    that    = null
+    args    = null
+    exec    = ->
+      fn.apply that, args
+      timeout = null
+    ->
+      args = arguments
+      that = this
+      if timeout
+        # stop current reset
+        clearTimeout timeout
+      else
+        exec()
+
+      # after wait, let next invocation execute immediately
+      timeout = setTimeout exec, wait
   queueTask: do ->
     # inspired by https://www.w3.org/Bugs/Public/show_bug.cgi?id=15007
     taskQueue = []

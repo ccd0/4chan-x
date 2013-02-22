@@ -60,15 +60,20 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      files: [
-        'package.json',
-        'lib/**/*.coffee',
-        'src/**/*.coffee',
-        'src/**/*.js',
-        'css/**/*.css',
-        'img/*'
-      ],
-      tasks: 'default'
+      all: {
+        options: {
+          interrupt: true
+        },
+        files: [
+          'package.json',
+          'lib/**/*.coffee',
+          'src/**/*.coffee',
+          'src/**/*.js',
+          'css/**/*.css',
+          'img/*'
+        ],
+        tasks: 'default'
+      }
     },
     clean: {
       tmp: 'tmp'

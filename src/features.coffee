@@ -3293,28 +3293,30 @@ Unread =
       cb:   @node
 
   node: ->
-    Unread.yourPosts = []
-    Unread.posts     = []
-    Unread.title     = d.title
+    Unread.thread       = @
+    Unread.lastReadPost = $.get("lastReadPosts.#{@board}", threads: {}).threads[@] or 0
+    Unread.yourPosts    = []
+    Unread.posts        = []
+    Unread.title        = d.title
     posts = []
     for ID, post of @posts
       posts.push post if post.isReply
     Unread.addPosts posts
-    Unread.update()
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'QRPostSuccessful',        Unread.post
     $.on d, 'scroll visibilitychange', Unread.read
 
   addPosts: (newPosts) ->
     for post in newPosts
-      unless post.ID in Unread.yourPosts or post.isHidden
+      {ID} = post
+      unless ID <= Unread.lastReadPost or post.isHidden or ID in Unread.yourPosts
         Unread.posts.push post
     Unread.read()
+    Unread.update()
 
   onUpdate: (e) ->
     unless e.detail[404]
       Unread.addPosts e.detail.newPosts
-    Unread.update()
 
   post: (e) ->
     Unread.yourPosts.push +e.detail.postID
@@ -3327,8 +3329,16 @@ Unread =
       break if bottom > height # post is not completely read
     return unless i
 
+    Unread.lastReadPost = Unread.posts[i - 1].ID
+    Unread.saveLastReadPost()
     Unread.posts = Unread.posts[i..]
     Unread.update() if e
+
+  saveLastReadPost: $.debounce($.SECOND, ->
+    lastReadPosts = $.get "lastReadPosts.#{Unread.thread.board}", threads: {}
+    lastReadPosts.threads[Unread.thread] = Unread.lastReadPost
+    $.set "lastReadPosts.#{Unread.thread.board}", lastReadPosts
+  )
 
   update: ->
     count = Unread.posts.length
