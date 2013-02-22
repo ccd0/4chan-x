@@ -4,12 +4,14 @@ ReplyHiding =
 
   node: (post) ->
     return if post.isInlined or post.ID is post.threadID
-    side = $ '.sideArrows', post.root
-    side.className = 'hide_reply_button'
-    side.innerHTML = '<a href="javascript:;"><span>[<span></span>]</span></a>'
-    $.on side.firstChild, 'click', ->
-      ReplyHiding.toggle button = @parentNode, root = button.parentNode, id = root.id[2..]
+    el = $ '.postInfo', post.root
+    hide = $.el 'span'
+      className: 'hide_reply_button'
+      innerHTML: "<a href='javascript:;' id='hide#{post.ID}'>[ - ]</a>"
+    $.on hide.firstChild, 'click', ->
+      ReplyHiding.toggle button = @parentNode.parentNode, root = $.id("pc#{id = @id[4..]}"), id
 
+    $.add el, hide
     if post.ID of g.hiddenReplies
       ReplyHiding.hide post.root
 
@@ -29,12 +31,11 @@ ReplyHiding =
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
   hide: (root, show_stub=Conf['Show Stubs']) ->
-    side = $('.hide_reply_button', root) or $('.sideArrows', root)
-    $.addClass side.parentNode, 'hidden'
-    return if side.hidden # already hidden once by the filter
-    side.hidden = true
-    el = side.nextElementSibling
-    el.hidden = true
+    hide = $('.hide_reply_button', root) or $('.sideArrows', root)
+    return if hide.hidden # already hidden once by the filter
+    $.addClass hide, 'hidden'
+    hide.hidden = true
+    root.hidden = true
 
     $.addClass root, 'hidden'
 
@@ -42,21 +43,21 @@ ReplyHiding =
 
     stub = $.el 'div',
       className: 'stub'
-      innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
+      innerHTML: "<a href='javascript:;' id='show#{id = root.id[2..]}'><span>[ + ]</span> </a>"
     a = stub.firstChild
     $.on  a, 'click', ->
-      ReplyHiding.toggle button = @parentNode, root = button.parentNode, id = root.id[2..]
-    $.add a, $.tn if Conf['Anonymize'] then 'Anonymous' else $('.desktop > .nameBlock', el).textContent
+      ReplyHiding.toggle button = @parentNode, root = $.id("pc#{@id[4..]}"), id
+    $.add a, $.tn if Conf['Anonymize'] then 'Anonymous' else $('.desktop > .nameBlock', root).textContent
     if Conf['Menu']
       menuButton = Menu.a.cloneNode true
       $.on menuButton, 'click', Menu.toggle
       $.add stub, [$.tn(' '), menuButton]
-    $.prepend root, stub
+    $.before root, stub
 
   show: (root) ->
-    if stub = $ '.stub', root
-      $.rm stub
+    if stub = root.previousElementSibling
+      $.rm stub if stub.className is 'stub'
     ($('.hide_reply_button', root) or $('.sideArrows', root)).hidden = false
-    $('.post',       root).hidden = false
+    root.hidden = false
 
     $.rmClass root, 'hidden'
