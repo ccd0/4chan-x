@@ -140,6 +140,7 @@ a[href="javascript:;"] {
 
 /* Notifications */
 #notifications {
+  height: 0;
   text-align: center;
 }
 .notification {
@@ -167,8 +168,10 @@ a[href="javascript:;"] {
 .notification.success {
   background-color: hsla(104, 100%, 40%, .9);
 }
-.notification > .close {
+.notification a {
   color: white;
+}
+.notification > .close {
   padding: 4px 6px;
   top: 0;
   right: 0;
