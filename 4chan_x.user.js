@@ -5316,9 +5316,37 @@
         }
       });
     },
+    updateThreadStatus: function(title, OP) {
+      var icon, message, root, titleLC;
+      titleLC = title.toLowerCase();
+      if (ThreadUpdater.thread["is" + title] === !!OP[titleLC]) {
+        return;
+      }
+      if (!(ThreadUpdater.thread["is" + title] = !!OP[titleLC])) {
+        message = title === 'Sticky' ? 'The thread is not a sticky anymore.' : 'The thread is not closed anymore.';
+        new Notification('info', message, 30);
+        $.rm($("." + titleLC + "Icon", ThreadUpdater.thread.OP.nodes.info));
+        return;
+      }
+      message = title === 'Sticky' ? 'The thread is now a sticky.' : 'The thread is now closed.';
+      new Notification('info', message, 30);
+      icon = $.el('img', {
+        src: "//static.4chan.org/image/" + titleLC + ".gif",
+        alt: title,
+        title: title,
+        className: "" + titleLC + "Icon"
+      });
+      root = $('[title="Quote this post"]', ThreadUpdater.thread.OP.nodes.info);
+      if (title === 'Closed') {
+        root = $('.stickyIcon', ThreadUpdater.thread.OP.nodes.info) || root;
+      }
+      return $.after(root, [$.tn(' '), icon]);
+    },
     parse: function(postObjects) {
       var ID, count, deletedFiles, deletedPosts, files, index, node, nodes, num, post, postObject, posts, scroll, _i, _len, _ref;
       Build.spoilerRange[ThreadUpdater.thread.board] = postObjects[0].custom_spoiler;
+      ThreadUpdater.updateThreadStatus('Sticky', postObjects[0]);
+      ThreadUpdater.updateThreadStatus('Closed', postObjects[0]);
       nodes = [];
       posts = [];
       index = [];

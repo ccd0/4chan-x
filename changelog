@@ -20,6 +20,7 @@ beta
     There is now a setting to allow expanding spoilers.
 
   Thread Updater changes:
+    The Thread Updater will now notify of sticky/closed status change and update the icons.
     The Thread Updater will pause when offline, and resume when online.
     Added an option to always auto-scroll to the bottom.
 

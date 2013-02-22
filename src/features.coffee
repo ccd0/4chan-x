@@ -3599,8 +3599,37 @@ ThreadUpdater =
     ThreadUpdater.req = $.ajax url, onloadend: ThreadUpdater.cb.load,
       headers: 'If-Modified-Since': ThreadUpdater.lastModified
 
+  updateThreadStatus: (title, OP) ->
+    titleLC = title.toLowerCase()
+    return if ThreadUpdater.thread["is#{title}"] is !!OP[titleLC]
+    unless ThreadUpdater.thread["is#{title}"] = !!OP[titleLC]
+      message = if title is 'Sticky'
+        'The thread is not a sticky anymore.'
+      else
+        'The thread is not closed anymore.'
+      new Notification 'info', message, 30
+      $.rm $ ".#{titleLC}Icon", ThreadUpdater.thread.OP.nodes.info
+      return
+    message = if title is 'Sticky'
+      'The thread is now a sticky.'
+    else
+      'The thread is now closed.'
+    new Notification 'info', message, 30
+    icon = $.el 'img',
+      src: "//static.4chan.org/image/#{titleLC}.gif"
+      alt: title
+      title: title
+      className: "#{titleLC}Icon"
+    root = $ '[title="Quote this post"]', ThreadUpdater.thread.OP.nodes.info
+    if title is 'Closed'
+      root = $('.stickyIcon', ThreadUpdater.thread.OP.nodes.info) or root
+    $.after root, [$.tn(' '), icon]
+
   parse: (postObjects) ->
     Build.spoilerRange[ThreadUpdater.thread.board] = postObjects[0].custom_spoiler
+
+    ThreadUpdater.updateThreadStatus 'Sticky', postObjects[0]
+    ThreadUpdater.updateThreadStatus 'Closed', postObjects[0]
 
     nodes = [] # post container elements
     posts = [] # post objects
