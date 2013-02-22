@@ -5823,14 +5823,14 @@
       return $.addClass(QR.el, 'dump');
     },
     fileInput: function() {
-      var file, _i, _len, _ref;
+      var file, _i, _len, _ref, _ref1, _ref2;
       QR.cleanNotifications();
       if (this.files.length === 1) {
         file = this.files[0];
         if (file.size > this.max) {
           QR.error("File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(this.max)) + ").");
           QR.resetFileInput();
-        } else if (-1 === QR.mimeTypes.indexOf(file.type)) {
+        } else if (_ref = file.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
           QR.error('Unsupported file type.');
           QR.resetFileInput();
         } else {
@@ -5838,12 +5838,12 @@
         }
         return;
       }
-      _ref = this.files;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        file = _ref[_i];
+      _ref1 = this.files;
+      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+        file = _ref1[_i];
         if (file.size > this.max) {
           QR.error("File " + file.name + " is too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(this.max)) + ").");
-        } else if (-1 === QR.mimeTypes.indexOf(file.type)) {
+        } else if (_ref2 = file.type, __indexOf.call(QR.mimeTypes, _ref2) < 0) {
           QR.error("" + file.name + ": Unsupported file type.");
         }
         if (!QR.replies[QR.replies.length - 1].file) {
@@ -6054,7 +6054,7 @@
     captcha: {
       init: function() {
         var _this = this;
-        if (-1 !== d.cookie.indexOf('pass_enabled=')) {
+        if (__indexOf.call(d.cookie, 'pass_enabled=') < 0) {
           return;
         }
         if (!(this.isEnabled = !!$.id('captchaFormPart'))) {

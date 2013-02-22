@@ -291,7 +291,7 @@ QR =
       if file.size > @max
         QR.error "File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString @max})."
         QR.resetFileInput()
-      else if -1 is QR.mimeTypes.indexOf file.type
+      else unless file.type in QR.mimeTypes
         QR.error 'Unsupported file type.'
         QR.resetFileInput()
       else
@@ -301,7 +301,7 @@ QR =
     for file in @files
       if file.size > @max
         QR.error "File #{file.name} is too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString @max})."
-      else if -1 is QR.mimeTypes.indexOf file.type
+      else unless file.type in QR.mimeTypes
         QR.error "#{file.name}: Unsupported file type."
       unless QR.replies[QR.replies.length - 1].file
         # set last reply's file
@@ -456,7 +456,7 @@ QR =
 
   captcha:
     init: ->
-      return if -1 isnt d.cookie.indexOf 'pass_enabled='
+      return unless 'pass_enabled=' in d.cookie
       return unless @isEnabled = !!$.id 'captchaFormPart'
       if $.id 'recaptcha_challenge_field_holder'
         @ready()
