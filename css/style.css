@@ -347,7 +347,7 @@ a[href="javascript:;"] {
 .inlined {
   opacity: .5;
 }
-#qp input, .forwarded {
+#qp input {
   display: none;
 }
 .quotelink.forwardlink,
@@ -370,13 +370,15 @@ a[href="javascript:;"] {
   margin: 0 !important;
   padding: 1px 2px !important;
 }
-#qp {
-  padding: 2px 2px 5px;
+#qp > .opContainer::after {
+  content: '';
+  clear: both;
+  display: table;
 }
 #qp .post {
   border: none;
   margin: 0;
-  padding: 0;
+  padding: 2px 2px 5px;
 }
 #qp img {
   max-height: 300px;

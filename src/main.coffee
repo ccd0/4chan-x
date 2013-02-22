@@ -215,7 +215,7 @@ class Clone extends Post
 
     root.hidden = false # post hiding
     $.rmClass root, 'forwarded' # quote inlining
-    # $.rmClass post, 'highlight' # keybind navigation
+    $.rmClass post, 'highlight' # keybind navigation, ID highlighting
 
     if nodes.subject
       @nodes.subject  = $ '.subject',     info
