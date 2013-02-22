@@ -2315,6 +2315,7 @@
   Keybinds = {
     init: function() {
       var node, _i, _len, _ref;
+      this.bindings = this.bind();
       _ref = $$('[accesskey]');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         node = _ref[_i];
@@ -2322,8 +2323,142 @@
       }
       return $.on(d, 'keydown', Keybinds.keydown);
     },
+    bind: function() {
+      var keys, _conf;
+      _conf = Conf;
+      keys = {};
+      keys[_conf.openQR] = function(thread) {
+        return Keybinds.qr(thread, true);
+      };
+      keys[_conf.openEmptyQR] = function(thread) {
+        return Keybinds.qr(thread);
+      };
+      keys[_conf.openOptions] = function() {
+        if (!$.id('overlay')) {
+          return Options.dialog();
+        }
+      };
+      keys[_conf.close] = function() {
+        var o;
+        if (o = $.id('overlay')) {
+          return Options.close.call(o);
+        } else if (QR.el) {
+          return QR.close();
+        }
+      };
+      keys[_conf.submit] = function() {
+        if (QR.el && !QR.status()) {
+          return QR.submit();
+        }
+      };
+      keys[_conf.hideQR] = function() {
+        if (QR.el) {
+          if (QR.el.hidden) {
+            return QR.el.hidden = false;
+          }
+          return QR.autohide.click();
+        } else {
+          return QR.open();
+        }
+      };
+      keys[_conf.toggleCatalog] = function() {
+        return CatalogLinks.toggle();
+      };
+      keys[_conf.spoiler] = function() {
+        if (!(($('[name=spoiler]')) && nodeName === 'textarea')) {
+          return;
+        }
+        return Keybinds.tags('spoiler', target);
+      };
+      keys[_conf.math] = function() {
+        if (!(g.BOARD === (!!$('script[src^="//boards.4chan.org/jsMath/"]', d.head)) && nodeName === 'textarea')) {
+          return;
+        }
+        return Keybinds.tags('math', target);
+      };
+      keys[_conf.eqn] = function() {
+        if (!(g.BOARD === (!!$('script[src^="//boards.4chan.org/jsMath/"]', d.head)) && nodeName === 'textarea')) {
+          return;
+        }
+        return Keybinds.tags('eqn', target);
+      };
+      keys[_conf.code] = function() {
+        if (!(g.BOARD === Main.hasCodeTags && nodeName === 'textarea')) {
+          return;
+        }
+        return Keybinds.tags('code', target);
+      };
+      keys[_conf.sageru] = function() {
+        $("[name=email]", QR.el).value = "sage";
+        return QR.selected.email = "sage";
+      };
+      keys[_conf.watch] = function(thread) {
+        return Watcher.toggle(thread);
+      };
+      keys[_conf.update] = function() {
+        return Updater.update();
+      };
+      keys[_conf.unreadCountTo0] = function() {
+        Unread.replies = [];
+        return Unread.update(true);
+      };
+      keys[_conf.expandImage] = function(thread) {
+        return Keybinds.img(thread);
+      };
+      keys[_conf.expandAllImages] = function(thread) {
+        return Keybinds.img(thread, true);
+      };
+      keys[_conf.zero] = function() {
+        return window.location = "/" + g.BOARD + "/0#delform";
+      };
+      keys[_conf.nextPage] = function() {
+        var form;
+        if (form = $('.next form')) {
+          return window.location = form.action;
+        }
+      };
+      keys[_conf.previousPage] = function() {
+        var form;
+        if (form = $('.prev form')) {
+          return window.location = form.action;
+        }
+      };
+      keys[_conf.nextThread] = function() {
+        if (g.REPLY) {
+          return;
+        }
+        return Nav.scroll(+1);
+      };
+      keys[_conf.previousThread] = function() {
+        if (g.REPLY) {
+          return;
+        }
+        return Nav.scroll(-1);
+      };
+      keys[_conf.expandThread] = function(thread) {
+        return ExpandThread.toggle(thread);
+      };
+      keys[_conf.openThread] = function(thread) {
+        return Keybinds.open(thread);
+      };
+      keys[_conf.openThreadTab] = function(thread) {
+        return Keybinds.open(thread, true);
+      };
+      keys[_conf.nextReply] = function(thread) {
+        return Keybinds.hl(+1, thread);
+      };
+      keys[_conf.previousReply] = function(thread) {
+        return Keybinds.hl(-1, thread);
+      };
+      keys[_conf.hide] = function(thread) {
+        if (/\bthread\b/.test(thread.className)) {
+          return ThreadHiding.toggle(thread);
+        }
+      };
+      return keys;
+    },
     keydown: function(e) {
-      var form, key, nodeName, o, target, thread, _conf;
+      var bind, key, nodeName, target, thread;
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
@@ -2334,136 +2469,10 @@
         }
       }
       thread = Nav.getThread();
-      _conf = Conf;
-      switch (key) {
-        case _conf.openQR:
-          Keybinds.qr(thread, true);
-          break;
-        case _conf.openEmptyQR:
-          Keybinds.qr(thread);
-          break;
-        case _conf.openOptions:
-          if (!$.id('overlay')) {
-            Options.dialog();
-          }
-          break;
-        case _conf.close:
-          if (o = $.id('overlay')) {
-            Options.close.call(o);
-          } else if (QR.el) {
-            QR.close();
-          }
-          break;
-        case _conf.submit:
-          if (QR.el && !QR.status()) {
-            QR.submit();
-          }
-          break;
-        case _conf.hideQR:
-          if (QR.el) {
-            if (QR.el.hidden) {
-              return QR.el.hidden = false;
-            }
-            QR.autohide.click();
-          } else {
-            QR.open();
-          }
-          break;
-        case _conf.toggleCatalog:
-          CatalogLinks.toggle();
-          break;
-        case _conf.spoiler:
-          if (!(($('[name=spoiler]')) && nodeName === 'textarea')) {
-            return;
-          }
-          Keybinds.tags('spoiler', target);
-          break;
-        case _conf.math:
-          if (!(g.BOARD === (!!$('script[src^="//boards.4chan.org/jsMath/"]', d.head)) && nodeName === 'textarea')) {
-            return;
-          }
-          Keybinds.tags('math', target);
-          break;
-        case _conf.eqn:
-          if (!(g.BOARD === (!!$('script[src^="//boards.4chan.org/jsMath/"]', d.head)) && nodeName === 'textarea')) {
-            return;
-          }
-          Keybinds.tags('eqn', target);
-          break;
-        case _conf.code:
-          if (!(g.BOARD === Main.hasCodeTags && nodeName === 'textarea')) {
-            return;
-          }
-          Keybinds.tags('code', target);
-          break;
-        case _conf.sageru:
-          $("[name=email]", QR.el).value = "sage";
-          QR.selected.email = "sage";
-          break;
-        case _conf.watch:
-          Watcher.toggle(thread);
-          break;
-        case _conf.update:
-          Updater.update();
-          break;
-        case _conf.unreadCountTo0:
-          Unread.replies = [];
-          Unread.update(true);
-          break;
-        case _conf.expandImage:
-          Keybinds.img(thread);
-          break;
-        case _conf.expandAllImages:
-          Keybinds.img(thread, true);
-          break;
-        case _conf.zero:
-          window.location = "/" + g.BOARD + "/0#delform";
-          break;
-        case _conf.nextPage:
-          if (form = $('.next form')) {
-            window.location = form.action;
-          }
-          break;
-        case _conf.previousPage:
-          if (form = $('.prev form')) {
-            window.location = form.action;
-          }
-          break;
-        case _conf.nextThread:
-          if (g.REPLY) {
-            return;
-          }
-          Nav.scroll(+1);
-          break;
-        case _conf.previousThread:
-          if (g.REPLY) {
-            return;
-          }
-          Nav.scroll(-1);
-          break;
-        case _conf.expandThread:
-          ExpandThread.toggle(thread);
-          break;
-        case _conf.openThread:
-          Keybinds.open(thread);
-          break;
-        case _conf.openThreadTab:
-          Keybinds.open(thread, true);
-          break;
-        case _conf.nextReply:
-          Keybinds.hl(+1, thread);
-          break;
-        case _conf.previousReply:
-          Keybinds.hl(-1, thread);
-          break;
-        case _conf.hide:
-          if (/\bthread\b/.test(thread.className)) {
-            ThreadHiding.toggle(thread);
-          }
-          break;
-        default:
-          return;
+      if (!(bind = Keybinds.bindings[key])) {
+        return;
       }
+      bind(thread);
       return e.preventDefault();
     },
     keyCode: function(e) {
