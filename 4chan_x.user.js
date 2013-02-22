@@ -1679,7 +1679,7 @@
         return;
       }
       return Post.prototype.callbacks.push({
-        name: 'Thread Hiding',
+        name: 'Filter',
         cb: this.node
       });
     },
@@ -2104,7 +2104,7 @@
       if (!Conf['Hiding Buttons']) {
         return;
       }
-      return $.replace($('.sideArrows', this.nodes.root), ReplyHiding.makeButton(this, 'hide'));
+      return $.replace(this.nodes.root.firstElementChild, ReplyHiding.makeButton(this, 'hide'));
     },
     getHiddenPosts: function() {
       var hiddenPosts;
@@ -2348,20 +2348,25 @@
       }
       return $.add(this.nodes.info, [$.tn('\u00A0'), button]);
     },
-    makeButton: function(post) {
+    makeButton: (function() {
       var a;
-      a = $.el('a', {
-        className: 'menu-button',
-        innerHTML: '[<span></span>]',
-        href: 'javascript:;'
-      });
-      a.setAttribute('data-postid', post.fullID);
-      if (post.isClone) {
-        a.setAttribute('data-clone', true);
-      }
-      $.on(a, 'click', Menu.toggle);
-      return a;
-    },
+      a = null;
+      return function(post) {
+        var clone;
+        a || (a = $.el('a', {
+          className: 'menu-button',
+          innerHTML: '[<span></span>]',
+          href: 'javascript:;'
+        }));
+        clone = a.cloneNode(true);
+        clone.setAttribute('data-postid', post.fullID);
+        if (post.isClone) {
+          clone.setAttribute('data-clone', true);
+        }
+        $.on(clone, 'click', Menu.toggle);
+        return clone;
+      };
+    })(),
     toggle: function(e) {
       var post;
       post = this.dataset.clone ? Get.postFromNode(this) : g.posts[this.dataset.postid];
@@ -4611,7 +4616,7 @@
         return;
       }
       return Post.prototype.callbacks.push({
-        name: 'Auto-GIF',
+        name: 'Image Hover',
         cb: this.node
       });
     },

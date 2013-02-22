@@ -666,7 +666,7 @@ Filter =
 
     return unless Object.keys(@filters).length
     Post::callbacks.push
-      name: 'Thread Hiding'
+      name: 'Filter'
       cb:   @node
 
   createFilter: (regexp, op, stub, hl, top) ->
@@ -1036,7 +1036,7 @@ ReplyHiding =
         else
           Recursive.hide   @, data.makeStub
     return unless Conf['Hiding Buttons']
-    $.replace $('.sideArrows', @nodes.root), ReplyHiding.makeButton @, 'hide'
+    $.replace @nodes.root.firstElementChild, ReplyHiding.makeButton @, 'hide'
 
   getHiddenPosts: ->
     hiddenPosts = $.get "hiddenPosts.#{g.BOARD}"
@@ -1209,15 +1209,18 @@ Menu =
       return
     $.add @nodes.info, [$.tn('\u00A0'), button]
 
-  makeButton: (post) ->
-    a = $.el 'a',
-      className: 'menu-button'
-      innerHTML: '[<span></span>]'
-      href:      'javascript:;'
-    a.setAttribute 'data-postid', post.fullID
-    a.setAttribute 'data-clone', true if post.isClone
-    $.on a, 'click', Menu.toggle
-    a
+  makeButton: do ->
+    a = null
+    (post) ->
+      a or= $.el 'a',
+        className: 'menu-button'
+        innerHTML: '[<span></span>]'
+        href:      'javascript:;'
+      clone = a.cloneNode true
+      clone.setAttribute 'data-postid', post.fullID
+      clone.setAttribute 'data-clone', true if post.isClone
+      $.on clone, 'click', Menu.toggle
+      clone
 
   toggle: (e) ->
     post =
@@ -3070,7 +3073,7 @@ ImageHover =
     return if g.VIEW is 'catalog' or !Conf['Image Hover']
 
     Post::callbacks.push
-      name: 'Auto-GIF'
+      name: 'Image Hover'
       cb:   @node
   node: ->
     return unless @file?.isImage

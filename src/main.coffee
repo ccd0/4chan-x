@@ -431,6 +431,7 @@ Main =
     # get the nodes' length only once
     len = nodes.length
     for callback in klass::callbacks
+      # console.profile callback.name
       for i in [0...len]
         node = nodes[i]
         try
@@ -441,6 +442,7 @@ Main =
           errors.push
             message: "\"#{callback.name}\" crashed on #{klass.name} No.#{node} (/#{node.board}/)."
             error: err
+      # console.profileEnd callback.name
     Main.handleErrors errors if errors
 
   handleErrors: (errors) ->
