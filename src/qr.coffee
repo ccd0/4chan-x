@@ -456,7 +456,9 @@ QR =
 
   captcha:
     init: ->
-      return if 'pass_enabled=' in d.cookie
+      # XXX CoffeeScrit's indexOf doesn't wanna work here ???
+      # return if 'pass_enabled=1;' in d.cookie
+      return if d.cookie.indexOf('pass_enabled=1;') >= 0
       return unless @isEnabled = !!$.id 'captchaFormPart'
       if $.id 'recaptcha_challenge_field_holder'
         @ready()

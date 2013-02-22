@@ -6056,7 +6056,7 @@
     captcha: {
       init: function() {
         var _this = this;
-        if (__indexOf.call(d.cookie, 'pass_enabled=') >= 0) {
+        if (d.cookie.indexOf('pass_enabled=1;') >= 0) {
           return;
         }
         if (!(this.isEnabled = !!$.id('captchaFormPart'))) {
