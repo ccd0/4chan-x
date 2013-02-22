@@ -1011,7 +1011,7 @@
       $.on(toggleBar, 'click', this.toggleBar);
       $.prepend(headerBar, [menuButton, boardListButton, $.tn(' '), boardTitle, boardList, toggleBar]);
       catalogToggler = $.el('label', {
-        innerHTML: "<input type=checkbox " + (g.VIEW === 'catalog' ? 'checked' : '') + "> Use catalog links"
+        innerHTML: "<input type=checkbox " + (g.VIEW === 'catalog' ? 'checked' : '') + "> Use catalog board links"
       });
       $.on(catalogToggler.firstElementChild, 'change', this.toggleCatalogLinks);
       $.event('AddMenuEntry', {

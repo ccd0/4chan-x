@@ -38,7 +38,7 @@ Header =
     $.prepend headerBar, [menuButton, boardListButton, $.tn(' '), boardTitle, boardList, toggleBar]
 
     catalogToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{if g.VIEW is 'catalog' then 'checked' else ''}> Use catalog links"
+      innerHTML: "<input type=checkbox #{if g.VIEW is 'catalog' then 'checked' else ''}> Use catalog board links"
     $.on catalogToggler.firstElementChild, 'change', @toggleCatalogLinks
     $.event 'AddMenuEntry',
       type: 'header'
