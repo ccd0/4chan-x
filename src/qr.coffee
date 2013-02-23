@@ -647,8 +647,10 @@ QR =
         err = 'No file selected.'
       else if g.BOARD.ID is 'f' and filetag is '9999'
         err = 'Invalid tag specified.'
+    else if g.BOARD.threads[threadID].isSticky
+      err = 'You can\'t reply to this thread anymore.'
     else unless reply.com or reply.file
-        err = 'No file selected.'
+      err = 'No file selected.'
 
     if QR.captcha.isEnabled and !err
       # get oldest valid captcha

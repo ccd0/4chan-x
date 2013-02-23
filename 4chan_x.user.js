@@ -2512,9 +2512,10 @@
     },
     cooldown: {
       start: function(e) {
-        var fullID, seconds;
-        seconds = g.BOARD.ID === 'q' ? 600 : 30;
-        fullID = "" + g.BOARD + "." + e.detail.postID;
+        var board, fullID, postID, seconds, _ref;
+        _ref = e.detail, board = _ref.board, postID = _ref.postID;
+        seconds = board.ID === 'q' ? 600 : 30;
+        fullID = "" + board + "." + postID;
         return DeleteLink.cooldown.count(fullID, seconds, seconds);
       },
       count: function(fullID, seconds, length) {
@@ -6339,6 +6340,8 @@
         } else if (g.BOARD.ID === 'f' && filetag === '9999') {
           err = 'Invalid tag specified.';
         }
+      } else if (g.BOARD.threads[threadID].isSticky) {
+        err = 'You can\'t reply to this thread anymore.';
       } else if (!(reply.com || reply.file)) {
         err = 'No file selected.';
       }

@@ -1341,12 +1341,13 @@ DeleteLink =
 
   cooldown:
     start: (e) ->
+      {board, postID} = e.detail
       seconds =
-        if g.BOARD.ID is 'q'
+        if board.ID is 'q'
           600
         else
           30
-      fullID = "#{g.BOARD}.#{e.detail.postID}"
+      fullID = "#{board}.#{postID}"
       DeleteLink.cooldown.count fullID, seconds, seconds
     count: (fullID, seconds, length) ->
       return unless 0 <= seconds <= length
