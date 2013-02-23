@@ -6417,7 +6417,7 @@
       };
       callbacks = {
         onload: function() {
-          return QR.response(this.response);
+          return QR.response(this);
         },
         onerror: function() {
           delete QR.ajax;
@@ -6447,11 +6447,11 @@
       };
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
-    response: function(html) {
+    response: function(req) {
       var ban, board, err, h1, persona, postID, reply, threadID, tmpDoc, _, _ref, _ref1;
       delete QR.ajax;
       tmpDoc = d.implementation.createHTMLDocument('');
-      tmpDoc.documentElement.innerHTML = html;
+      tmpDoc.documentElement.innerHTML = req.response;
       if (ban = $('.banType', tmpDoc)) {
         board = $('.board', tmpDoc).innerHTML;
         err = $.el('span', {
@@ -6463,6 +6463,8 @@
         }
       } else if (tmpDoc.title !== 'Post successful!') {
         err = 'Connection error with sys.4chan.org.';
+      } else if (req.status !== 200) {
+        err = "Error " + req.statusText + " (" + req.status + ")";
       }
       if (err) {
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {

@@ -720,7 +720,7 @@ QR =
 
     callbacks =
       onload: ->
-        QR.response @response
+        QR.response @
       onerror: ->
         delete QR.ajax
         # Connection error, or
@@ -743,11 +743,11 @@ QR =
 
     QR.ajax = $.ajax $.id('postForm').parentNode.action, callbacks, opts
 
-  response: (html) ->
+  response: (req) ->
     delete QR.ajax
 
     tmpDoc = d.implementation.createHTMLDocument ''
-    tmpDoc.documentElement.innerHTML = html
+    tmpDoc.documentElement.innerHTML = req.response
     if ban  = $ '.banType', tmpDoc # banned/warning
       board = $('.board', tmpDoc).innerHTML
       err   = $.el 'span', innerHTML:
@@ -761,6 +761,8 @@ QR =
       $('a', err)?.target = '_blank' # duplicate image link
     else if tmpDoc.title isnt 'Post successful!'
       err = 'Connection error with sys.4chan.org.'
+    else if req.status isnt 200
+      err = "Error #{req.statusText} (#{req.status})"
 
     if err
       if /captcha|verification/i.test(err.textContent) or err is 'Connection error with sys.4chan.org.'
