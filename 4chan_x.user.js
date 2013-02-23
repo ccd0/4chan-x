@@ -4835,15 +4835,19 @@
           a.textContent = text.replace('-', '+');
           ExpandComment.contract(thread.OP);
           num = (function() {
-            switch (g.BOARD) {
-              case 'b':
-              case 'vg':
-              case 'q':
-                return 3;
-              case 't':
-                return 1;
-              default:
-                return 5;
+            if (thread.isSticky) {
+              return 1;
+            } else {
+              switch (g.BOARD) {
+                case 'b':
+                case 'vg':
+                case 'q':
+                  return 3;
+                case 't':
+                  return 1;
+                default:
+                  return 5;
+              }
             }
           })();
           replies = $$('.thread > .replyContainer', threadRoot).slice(0, -num);

@@ -3212,7 +3212,9 @@ ExpandThread =
         a.textContent = text.replace '-', '+'
         ExpandComment.contract thread.OP
         #goddamit moot
-        num = switch g.BOARD
+        num = if thread.isSticky
+          1
+        else switch g.BOARD
           # XXX boards config
           when 'b', 'vg', 'q' then 3
           when 't' then 1
