@@ -1,9 +1,12 @@
 ImageHover =
   init: ->
+    QuoteInline.callbacks.push @node
     Main.callbacks.push @node
+
   node: (post) ->
     return if (!post.img or post.hasPDF)
     $.on post.img, 'mouseover', ImageHover.mouseover
+
   mouseover: ->
     # Make sure to remove the previous image hover
     # in case it got stuck. Opera-only bug?

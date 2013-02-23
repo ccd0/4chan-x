@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.1.2 - 2013-02-22
+ * appchan x - Version 1.1.2 - 2013-02-23
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -3418,6 +3418,7 @@
       if (g.BOARD === 'f') {
         return;
       }
+      QuoteInline.callbacks.push(this.node);
       Main.callbacks.push(this.node);
       return this.dialog();
     },
@@ -3605,6 +3606,7 @@
 
   ImageHover = {
     init: function() {
+      QuoteInline.callbacks.push(this.node);
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
@@ -3686,6 +3688,7 @@
       if (g.BOARD === 'f') {
         return;
       }
+      QuoteInline.callbacks.push(this.node);
       QuotePreview.callbacks.push(this.node);
       return Main.callbacks.push(this.node);
     },
