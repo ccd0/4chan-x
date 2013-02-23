@@ -4981,7 +4981,6 @@
       Unread.lastReadPost = $.get("lastReadPosts." + this.board, {
         threads: {}
       }).threads[this] || 0;
-      Unread.yourPosts = [];
       Unread.posts = [];
       Unread.title = d.title;
       posts = [];
@@ -4994,15 +4993,17 @@
       }
       Unread.addPosts(posts);
       $.on(d, 'ThreadUpdate', Unread.onUpdate);
-      $.on(d, 'QRPostSuccessful', Unread.post);
       return $.on(d, 'scroll visibilitychange', Unread.read);
     },
     addPosts: function(newPosts) {
-      var ID, post, _i, _len;
+      var ID, post, yourPosts, _i, _len;
+      if (Conf['Quick Reply']) {
+        yourPosts = QR.yourPosts.threads[Unread.thread];
+      }
       for (_i = 0, _len = newPosts.length; _i < _len; _i++) {
         post = newPosts[_i];
         ID = post.ID;
-        if (!(ID <= Unread.lastReadPost || post.isHidden || __indexOf.call(Unread.yourPosts, ID) >= 0)) {
+        if (!(ID <= Unread.lastReadPost || post.isHidden || yourPosts && __indexOf.call(yourPosts, ID) >= 0)) {
           Unread.posts.push(post);
         }
       }
@@ -5015,9 +5016,6 @@
       } else {
         return Unread.addPosts(e.detail.newPosts);
       }
-    },
-    post: function(e) {
-      return Unread.yourPosts.push(e.detail.postID);
     },
     read: function(e) {
       var bottom, height, i, post, _i, _len, _ref;

@@ -3310,7 +3310,6 @@ Unread =
   node: ->
     Unread.thread       = @
     Unread.lastReadPost = $.get("lastReadPosts.#{@board}", threads: {}).threads[@] or 0
-    Unread.yourPosts    = []
     Unread.posts        = []
     Unread.title        = d.title
     posts = []
@@ -3318,13 +3317,14 @@ Unread =
       posts.push post if post.isReply
     Unread.addPosts posts
     $.on d, 'ThreadUpdate',            Unread.onUpdate
-    $.on d, 'QRPostSuccessful',        Unread.post
     $.on d, 'scroll visibilitychange', Unread.read
 
   addPosts: (newPosts) ->
+    if Conf['Quick Reply']
+      yourPosts = QR.yourPosts.threads[Unread.thread]
     for post in newPosts
       {ID} = post
-      unless ID <= Unread.lastReadPost or post.isHidden or ID in Unread.yourPosts
+      unless ID <= Unread.lastReadPost or post.isHidden or yourPosts and ID in yourPosts
         Unread.posts.push post
     Unread.read()
     Unread.update()
@@ -3334,9 +3334,6 @@ Unread =
       Unread.update()
     else
       Unread.addPosts e.detail.newPosts
-
-  post: (e) ->
-    Unread.yourPosts.push e.detail.postID
 
   read: (e) ->
     return if d.hidden or !Unread.posts.length
