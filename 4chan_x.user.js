@@ -4978,7 +4978,7 @@
       }
     },
     post: function(e) {
-      return Unread.yourPosts.push(+e.detail.postID);
+      return Unread.yourPosts.push(e.detail.postID);
     },
     read: function(e) {
       var bottom, height, i, post, _i, _len, _ref;
@@ -5203,7 +5203,7 @@
         return ThreadUpdater.cb.autoUpdate();
       },
       post: function(e) {
-        if (!(Conf['Auto Update This'] && +e.detail.threadID === ThreadUpdater.thread.ID)) {
+        if (!(Conf['Auto Update This'] && e.detail.threadID === ThreadUpdater.thread.ID)) {
           return;
         }
         ThreadUpdater.outdateCount = 0;
@@ -5513,14 +5513,14 @@
         return ThreadWatcher.unwatch(thread[1], thread[3]);
       },
       post: function(e) {
-        var postID, threadID, _ref;
-        _ref = e.detail, postID = _ref.postID, threadID = _ref.threadID;
-        if (threadID === '0') {
+        var board, postID, threadID, _ref;
+        _ref = e.detail, board = _ref.board, postID = _ref.postID, threadID = _ref.threadID;
+        if (postID === threadID) {
           if (Conf['Auto Watch']) {
-            return $.set('AutoWatch', +postID);
+            return $.set('AutoWatch', threadID);
           }
         } else if (Conf['Auto Watch Reply']) {
-          return ThreadWatcher.watch(g.BOARD.threads[threadID]);
+          return ThreadWatcher.watch(board.threads[threadID]);
         }
       }
     },
@@ -6473,16 +6473,19 @@
       };
       $.set('QR.persona', persona);
       _ref1 = h1.nextSibling.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
+      threadID = +threadID;
+      postID = +postID;
       $.event('QRPostSuccessful', {
-        threadID: threadID,
+        board: g.BOARD,
+        threadID: threadID || postID,
         postID: postID
       }, QR.el);
       QR.cooldown.set({
         post: reply,
-        isReply: threadID !== '0'
+        isReply: !!threadID
       });
       QR.cooldown.auto = QR.replies.length > 1;
-      if (threadID === '0') {
+      if (!threadID) {
         $.open("//boards.4chan.org/" + g.BOARD + "/res/" + postID);
       } else if (g.VIEW === 'reply' && !QR.cooldown.auto) {
         $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);

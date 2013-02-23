@@ -3312,7 +3312,7 @@ Unread =
       Unread.addPosts e.detail.newPosts
 
   post: (e) ->
-    Unread.yourPosts.push +e.detail.postID
+    Unread.yourPosts.push e.detail.postID
 
   read: (e) ->
     return if d.hidden or !Unread.posts.length
@@ -3511,7 +3511,7 @@ ThreadUpdater =
         ThreadUpdater.set 'status', 'Offline', 'warning'
       ThreadUpdater.cb.autoUpdate()
     post: (e) ->
-      return unless Conf['Auto Update This'] and +e.detail.threadID is ThreadUpdater.thread.ID
+      return unless Conf['Auto Update This'] and e.detail.threadID is ThreadUpdater.thread.ID
       ThreadUpdater.outdateCount = 0
       setTimeout ThreadUpdater.update, 1000 if ThreadUpdater.seconds > 2
     visibility: ->
@@ -3770,12 +3770,12 @@ ThreadWatcher =
       thread = @nextElementSibling.pathname.split '/'
       ThreadWatcher.unwatch thread[1], thread[3]
     post: (e) ->
-      {postID, threadID} = e.detail
-      if threadID is '0'
+      {board, postID, threadID} = e.detail
+      if postID is threadID
         if Conf['Auto Watch']
-          $.set 'AutoWatch', +postID
+          $.set 'AutoWatch', threadID
       else if Conf['Auto Watch Reply']
-        ThreadWatcher.watch g.BOARD.threads[threadID]
+        ThreadWatcher.watch board.threads[threadID]
 
   toggle: (thread) ->
     if $('.favicon', thread.OP.nodes.post).src is Favicon.empty
