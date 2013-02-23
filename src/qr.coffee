@@ -719,7 +719,7 @@ QR =
         QR.error $.el 'a',
           href: '//www.4chan.org/banned',
           target: '_blank',
-          textContent: 'Connection error, or you are banned.'
+          textContent: 'Network error.'
     opts =
       form: $.formData post
       upCallbacks:
