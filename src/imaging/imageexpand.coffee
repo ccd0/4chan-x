@@ -1,6 +1,7 @@
 ImageExpand =
   init: ->
     return if g.BOARD is 'f'
+    QuoteInline.callbacks.push @node
     Main.callbacks.push @node
     @dialog()
 
