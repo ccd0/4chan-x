@@ -407,7 +407,9 @@ QR =
       return unless window.URL
       URL.revokeObjectURL @url
     select: ->
-      QR.selected?.el.id = null
+      if QR.selected
+        QR.selected.el.id = null
+        QR.selected.forceSave()
       QR.selected = @
       @el.id = 'selected'
       # Scroll the list to center the focused reply.
@@ -415,10 +417,16 @@ QR =
       rectList = @el.parentNode.getBoundingClientRect()
       @el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
       # Load this reply's values.
-      for data in ['name', 'email', 'sub', 'com']
-        $("[name=#{data}]", QR.el).value = @[data]
+      for name in ['name', 'email', 'sub', 'com']
+        $("[name=#{name}]", QR.el).value = @[name]
       QR.characterCount.call $ 'textarea', QR.el
       $('#spoiler', QR.el).checked = @spoiler
+    forceSave: ->
+      # Do this in case people use extensions
+      # that do not trigger the `input` event.
+      for name in ['name', 'email', 'sub', 'com']
+        @[name] = $("[name=#{name}]", QR.el).value
+      return
     dragStart: ->
       $.addClass @, 'drag'
     dragEnter: ->
@@ -632,6 +640,7 @@ QR =
       return
 
     reply = QR.replies[0]
+    reply.forceSave() if reply is QR.selected
     if g.BOARD.ID is 'f' and g.VIEW is 'index'
       filetag  = QR.threadSelector.value
       threadID = 'new'

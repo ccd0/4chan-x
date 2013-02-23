@@ -6029,22 +6029,32 @@
       };
 
       _Class.prototype.select = function() {
-        var data, rectEl, rectList, _i, _len, _ref, _ref1;
-        if ((_ref = QR.selected) != null) {
-          _ref.el.id = null;
+        var name, rectEl, rectList, _i, _len, _ref;
+        if (QR.selected) {
+          QR.selected.el.id = null;
+          QR.selected.forceSave();
         }
         QR.selected = this;
         this.el.id = 'selected';
         rectEl = this.el.getBoundingClientRect();
         rectList = this.el.parentNode.getBoundingClientRect();
         this.el.parentNode.scrollLeft += rectEl.left + rectEl.width / 2 - rectList.left - rectList.width / 2;
-        _ref1 = ['name', 'email', 'sub', 'com'];
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          data = _ref1[_i];
-          $("[name=" + data + "]", QR.el).value = this[data];
+        _ref = ['name', 'email', 'sub', 'com'];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          name = _ref[_i];
+          $("[name=" + name + "]", QR.el).value = this[name];
         }
         QR.characterCount.call($('textarea', QR.el));
         return $('#spoiler', QR.el).checked = this.spoiler;
+      };
+
+      _Class.prototype.forceSave = function() {
+        var name, _i, _len, _ref;
+        _ref = ['name', 'email', 'sub', 'com'];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          name = _ref[_i];
+          this[name] = $("[name=" + name + "]", QR.el).value;
+        }
       };
 
       _Class.prototype.dragStart = function() {
@@ -6325,6 +6335,9 @@
         return;
       }
       reply = QR.replies[0];
+      if (reply === QR.selected) {
+        reply.forceSave();
+      }
       if (g.BOARD.ID === 'f' && g.VIEW === 'index') {
         filetag = QR.threadSelector.value;
         threadID = 'new';
