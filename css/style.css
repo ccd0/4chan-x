@@ -344,7 +344,7 @@ a[href="javascript:;"] {
 .deadlink {
   text-decoration: none !important;
 }
-.backlink.deadlink, .quotelink.deadlink {
+.backlink.deadlink:not(.forwardlink), .quotelink.deadlink:not(.forwardlink) {
   text-decoration: underline !important;
 }
 .inlined {

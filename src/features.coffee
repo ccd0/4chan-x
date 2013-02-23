@@ -3308,10 +3308,11 @@ Unread =
       cb:   @node
 
   node: ->
-    Unread.thread       = @
-    Unread.lastReadPost = $.get("lastReadPosts.#{@board}", threads: {}).threads[@] or 0
-    Unread.posts        = []
-    Unread.title        = d.title
+    Unread.thread          = @
+    Unread.lastReadPost    = $.get("lastReadPosts.#{@board}", threads: {}).threads[@] or 0
+    Unread.posts           = []
+    Unread.postsQuotingYou = []
+    Unread.title           = d.title
     posts = []
     for ID, post of @posts
       posts.push post if post.isReply
@@ -3321,13 +3322,25 @@ Unread =
 
   addPosts: (newPosts) ->
     if Conf['Quick Reply']
-      yourPosts = QR.yourPosts.threads[Unread.thread]
+      {yourPosts} = QR
+      youInThisThread = yourPosts.threads[Unread.thread]
     for post in newPosts
       {ID} = post
-      unless ID <= Unread.lastReadPost or post.isHidden or yourPosts and ID in yourPosts
-        Unread.posts.push post
+      if ID <= Unread.lastReadPost or post.isHidden or youInThisThread and ID in youInThisThread
+        continue
+      Unread.posts.push post
+      Unread.addPostQuotingYou post, yourPosts if yourPosts
     Unread.read()
     Unread.update()
+
+  addPostQuotingYou: (post, yourPosts) ->
+    for quote in post.quotes
+      [board, quoteID] = quote.split '.'
+      continue unless board is Unread.thread.board.ID
+      for thread, postIDs of yourPosts.threads
+        if +quoteID in postIDs
+          Unread.postsQuotingYou.push post
+          return
 
   onUpdate: (e) ->
     if e.detail[404]
@@ -3346,6 +3359,9 @@ Unread =
     Unread.lastReadPost = Unread.posts[i - 1].ID
     Unread.saveLastReadPost()
     Unread.posts = Unread.posts[i..]
+    for post, i in Unread.postsQuotingYou
+      break if post.ID > Unread.lastReadPost
+    Unread.postsQuotingYou = Unread.postsQuotingYou[i..]
     Unread.update() if e
 
   saveLastReadPost: $.debounce($.SECOND, ->
@@ -3367,12 +3383,16 @@ Unread =
 
     Favicon.el.href =
       if g.DEAD
-        if count
+        if Unread.postsQuotingYou.length
+          '//static.4chan.org/image/favicon-status.ico' # XXX
+        else if count
           Favicon.unreadDead
         else
           Favicon.dead
       else
-        if count
+        if Unread.postsQuotingYou.length
+          '//static.4chan.org/image/favicon-status.ico' # XXX
+        else if count
           Favicon.unread
         else
           Favicon.default
