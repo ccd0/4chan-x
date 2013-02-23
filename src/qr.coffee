@@ -812,8 +812,8 @@ QR =
     $.set 'QR.persona', persona
 
     [_, threadID, postID] = h1.nextSibling.textContent.match /thread:(\d+),no:(\d+)/
-    threadID = +threadID
     postID   = +postID
+    threadID = +threadID or postID
 
     (QR.yourPosts.threads[threadID] or= []).push postID
     $.set "yourPosts.#{g.BOARD}", QR.yourPosts
@@ -821,7 +821,7 @@ QR =
     # Post/upload confirmed as successful.
     $.event 'QRPostSuccessful', {
       board: g.BOARD
-      threadID: threadID or postID
+      threadID
       postID
     }, QR.el
 
@@ -832,9 +832,9 @@ QR =
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.replies.length > 1
 
-    unless threadID # new thread
-      $.open "//boards.4chan.org/#{g.BOARD}/res/#{postID}"
-    else if g.VIEW is 'reply' and !QR.cooldown.auto # posting from the index
+    if threadID is postID # new thread
+      $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}"
+    else if g.VIEW is 'index' and !QR.cooldown.auto # posting from the index
       $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
 
     if Conf['Persistent QR'] or QR.cooldown.auto

@@ -10,8 +10,9 @@ beta
         Quick Reply shortcut
         Image Expansion
       Can be auto-hidden.
-    (You):
+    Egocentrism:
       "(You)" will be added to quotes linking to your posts.
+      Delete links in the post menu will only appear for your posts.
 
   QR changes:
     Clicking the submit button while uploading will abort the upload and won't start re-uploading automatically anymore.

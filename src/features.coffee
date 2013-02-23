@@ -1254,7 +1254,7 @@ ReportLink =
 
 DeleteLink =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Delete Link']
+    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Delete Link'] or !Conf['Quick Reply']
 
     div = $.el 'div',
       className: 'delete-link'
@@ -1275,17 +1275,19 @@ DeleteLink =
     fileEntry =
       el: fileEl
       open: ({file}) ->
+        return false if !file or file.isDead
         fileEl.textContent = 'File'
         $.on fileEl, 'click', DeleteLink.delete
-        !!file
+        true
 
     $.event 'AddMenuEntry',
       type: 'post'
       el: div
       order: 40
       open: (post) ->
-        return false if post.isDead
+        return false if post.isDead or !((thread = QR.yourPosts.threads[post.thread]) and post.ID in thread)
         DeleteLink.post = post
+        DeleteLink.cooldown.start post
         node = div.firstChild
         if seconds = DeleteLink.cooldown[post.fullID]
           node.textContent = "Delete (#{seconds})"
@@ -1295,8 +1297,6 @@ DeleteLink =
           delete DeleteLink.cooldown.el
         true
       subEntries: [postEntry, fileEntry]
-
-    $.on d, 'QRPostSuccessful', @cooldown.start
 
   delete: ->
     {post} = DeleteLink
@@ -1340,15 +1340,14 @@ DeleteLink =
     $.on link, 'click', DeleteLink.delete
 
   cooldown:
-    start: (e) ->
-      {board, postID} = e.detail
-      seconds =
-        if board.ID is 'q'
-          600
-        else
-          30
-      fullID = "#{board}.#{postID}"
-      DeleteLink.cooldown.count fullID, seconds, seconds
+    start: (post) ->
+      return if post.fullID of DeleteLink.cooldown
+      length = if post.board.ID is 'q'
+        600
+      else
+        30
+      seconds = Math.ceil (length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND
+      DeleteLink.cooldown.count post.fullID, seconds, length
     count: (fullID, seconds, length) ->
       return unless 0 <= seconds <= length
       setTimeout DeleteLink.cooldown.count, 1000, fullID, seconds-1, length

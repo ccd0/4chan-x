@@ -2409,7 +2409,7 @@
   DeleteLink = {
     init: function() {
       var div, fileEl, fileEntry, postEl, postEntry;
-      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Delete Link']) {
+      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Delete Link'] || !Conf['Quick Reply']) {
         return;
       }
       div = $.el('div', {
@@ -2437,21 +2437,25 @@
         open: function(_arg) {
           var file;
           file = _arg.file;
+          if (!file || file.isDead) {
+            return false;
+          }
           fileEl.textContent = 'File';
           $.on(fileEl, 'click', DeleteLink["delete"]);
-          return !!file;
+          return true;
         }
       };
-      $.event('AddMenuEntry', {
+      return $.event('AddMenuEntry', {
         type: 'post',
         el: div,
         order: 40,
         open: function(post) {
-          var node, seconds;
-          if (post.isDead) {
+          var node, seconds, thread, _ref;
+          if (post.isDead || !((thread = QR.yourPosts.threads[post.thread]) && (_ref = post.ID, __indexOf.call(thread, _ref) >= 0))) {
             return false;
           }
           DeleteLink.post = post;
+          DeleteLink.cooldown.start(post);
           node = div.firstChild;
           if (seconds = DeleteLink.cooldown[post.fullID]) {
             node.textContent = "Delete (" + seconds + ")";
@@ -2464,7 +2468,6 @@
         },
         subEntries: [postEntry, fileEntry]
       });
-      return $.on(d, 'QRPostSuccessful', this.cooldown.start);
     },
     "delete": function() {
       var form, link, m, post, pwd;
@@ -2512,12 +2515,14 @@
       return $.on(link, 'click', DeleteLink["delete"]);
     },
     cooldown: {
-      start: function(e) {
-        var board, fullID, postID, seconds, _ref;
-        _ref = e.detail, board = _ref.board, postID = _ref.postID;
-        seconds = board.ID === 'q' ? 600 : 30;
-        fullID = "" + board + "." + postID;
-        return DeleteLink.cooldown.count(fullID, seconds, seconds);
+      start: function(post) {
+        var length, seconds;
+        if (post.fullID in DeleteLink.cooldown) {
+          return;
+        }
+        length = post.board.ID === 'q' ? 600 : 30;
+        seconds = Math.ceil((length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND);
+        return DeleteLink.cooldown.count(post.fullID, seconds, length);
       },
       count: function(fullID, seconds, length) {
         var el;
@@ -6537,13 +6542,13 @@
       };
       $.set('QR.persona', persona);
       _ref1 = h1.nextSibling.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
-      threadID = +threadID;
       postID = +postID;
+      threadID = +threadID || postID;
       ((_base = QR.yourPosts.threads)[threadID] || (_base[threadID] = [])).push(postID);
       $.set("yourPosts." + g.BOARD, QR.yourPosts);
       $.event('QRPostSuccessful', {
         board: g.BOARD,
-        threadID: threadID || postID,
+        threadID: threadID,
         postID: postID
       }, QR.el);
       QR.cooldown.set({
@@ -6551,9 +6556,9 @@
         isReply: !!threadID
       });
       QR.cooldown.auto = QR.replies.length > 1;
-      if (!threadID) {
-        $.open("//boards.4chan.org/" + g.BOARD + "/res/" + postID);
-      } else if (g.VIEW === 'reply' && !QR.cooldown.auto) {
+      if (threadID === postID) {
+        $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID);
+      } else if (g.VIEW === 'index' && !QR.cooldown.auto) {
         $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
       }
       if (Conf['Persistent QR'] || QR.cooldown.auto) {
