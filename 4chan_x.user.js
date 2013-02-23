@@ -6319,7 +6319,10 @@
         QR.status();
         return;
       }
-      QR.abort();
+      if (QR.ajax) {
+        QR.abort();
+        return;
+      }
       reply = QR.replies[0];
       if (g.BOARD.ID === 'f' && g.VIEW === 'index') {
         filetag = QR.threadSelector.value;

@@ -626,7 +626,10 @@ QR =
       QR.cooldown.auto = !QR.cooldown.auto
       QR.status()
       return
-    QR.abort()
+
+    if QR.ajax
+      QR.abort()
+      return
 
     reply = QR.replies[0]
     if g.BOARD.ID is 'f' and g.VIEW is 'index'

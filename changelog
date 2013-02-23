@@ -11,6 +11,7 @@ beta
     Can be auto-hidden.
 
   QR changes:
+    Clicking the submit button while uploading will abort the upload and won't start re-uploading automatically anymore.
     Creating threads outside of the index is now possible.
     Selection-to-quote also applies to selected text inside the post, not just inside the comment.
     Quoting the OP will not insert the >>opnumber anymore unless the QR was already opened.
