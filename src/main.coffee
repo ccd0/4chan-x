@@ -309,8 +309,8 @@ Main =
     Main.hasCodeTags = !! $ 'script[src^="//static.4chan.org/js/prettify/prettify"]'
 
     if MutationObserver
-      observer = new MutationObserver Main.observer
-      observer.observe board,
+      Main.observer = new MutationObserver Main.observe
+      Main.observer.observe board,
         childList: true
         subtree: true
     else
@@ -370,15 +370,15 @@ Main =
       $.on $('#dismiss_xupdate', xupdate), 'click', -> $.rm xupdate
       $.prepend $.id('delform'), xupdate
 
-  preParse: (node) ->
-    parentClass = node.parentNode.className
+  preParse: (node, threadID) ->
+    parentClass = if parent = node.parentNode then parent.className else ""
     el   = $ '.post', node
     post =
       root:        node
       el:          el
       class:       el.className
       ID:          el.id.match(/\d+$/)[0]
-      threadID:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0]
+      threadID:    g.THREAD_ID or if parent then $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0] else threadID
       isArchived:  parentClass.contains    'archivedPost'
       isInlined:   /\binline\b/.test       parentClass
       isCrosspost: parentClass.contains    'crosspost'
@@ -405,13 +405,16 @@ Main =
         alert "AppChan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err}\n#{err.stack}" if notify
     return
 
-  observer: (mutations) ->
+  observe: (mutations) ->
     nodes = []
     for mutation in mutations
       for addedNode in mutation.addedNodes
         if /\bpostContainer\b/.test addedNode.className
           nodes.push Main.preParse addedNode
     Main.node nodes if nodes.length
+
+    if d.readyState is 'complete'
+      Main.observer.disconnect()
 
   listener: (e) ->
     {target} = e

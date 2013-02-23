@@ -1,6 +1,13 @@
 QuoteInline =
   init: ->
+    ExpandComment.callbacks.push @node
     Main.callbacks.push @node
+    
+  callbacks: []
+  
+  callback: (node) ->
+    for callback in QuotePreview.callbacks
+      callback node
 
   node: (post) ->
     for quote in post.quotes
@@ -43,6 +50,7 @@ QuoteInline =
       postID   = q.dataset.id
 
     el = if board is g.BOARD then $.id "p#{postID}" else false
+
     inline = $.el 'div',
       id: "i#{postID}"
       className: if el then 'inline' else 'inline crosspost'
@@ -58,7 +66,7 @@ QuoteInline =
     else
       $.after root, inline
 
-    Get.post board, threadID, postID, inline
+    Get.post board, threadID, postID, inline, QuoteInline.callback
 
     return unless el
 

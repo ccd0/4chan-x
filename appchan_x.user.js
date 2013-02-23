@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.1.2 - 2013-02-21
+ * appchan x - Version 1.1.2 - 2013-02-22
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -2028,6 +2028,17 @@
         $.on(a.firstElementChild, 'click', ExpandComment.expand);
       }
     },
+    callbacks: [],
+    node: function(node) {
+      var callback, _i, _len, _ref, _results;
+      _ref = ExpandComment.callbacks;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
+        _results.push(callback(node));
+      }
+      return _results;
+    },
     expand: function(e) {
       var a, replyID, threadID, _, _ref;
       e.preventDefault();
@@ -2078,30 +2089,7 @@
         quotes: quotes,
         backlinks: []
       };
-      if (_conf['Linkify']) {
-        Linkify.node(post);
-      }
-      if (_conf['Resurrect Quotes']) {
-        Quotify.node(post);
-      }
-      if (_conf['Quote Preview']) {
-        QuotePreview.node(post);
-      }
-      if (_conf['Quote Inline']) {
-        QuoteInline.node(post);
-      }
-      if (_conf['Indicate OP quote']) {
-        QuoteOP.node(post);
-      }
-      if (_conf['Indicate Cross-thread Quotes']) {
-        QuoteCT.node(post);
-      }
-      if (_conf['RemoveSpoilers']) {
-        RemoveSpoilers.node(post);
-      }
-      if (_conf['Color user IDs']) {
-        IDColor.node(post);
-      }
+      ExpandComment.node(post);
       $.replace(bq, clone);
       return Main.prettify(clone);
     }
@@ -2162,7 +2150,7 @@
       }
     },
     parse: function(req, thread, a) {
-      var backlink, id, link, nodes, post, posts, replies, reply, spoilerRange, status, threadID, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var backlink, id, link, node, nodes, post, posts, replies, reply, spoilerRange, status, threadID, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1;
       if ((status = req.status) !== 200) {
         a.textContent = "" + status + " " + req.statusText;
         $.off(a, 'click', ExpandThread.cb.toggle);
@@ -2197,6 +2185,12 @@
           $.rm(backlink);
         }
       }
+      posts = [];
+      for (_l = 0, _len3 = nodes.length; _l < _len3; _l++) {
+        node = nodes[_l];
+        posts.push(Main.preParse(node));
+      }
+      Main.node(posts);
       return $.after(a, nodes);
     }
   };
@@ -2207,6 +2201,7 @@
         return;
       }
       this.setFormats();
+      QuotePreview.callbacks.push(this.node);
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
@@ -2793,6 +2788,7 @@
   Time = {
     init: function() {
       Time.foo();
+      QuotePreview.callbacks.push(this.node);
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
@@ -2886,6 +2882,7 @@
 
   Anonymize = {
     init: function() {
+      QuotePreview.callbacks.push(this.node);
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
@@ -3693,6 +3690,7 @@
       if (g.BOARD === 'f') {
         return;
       }
+      QuotePreview.callbacks.push(this.node);
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
@@ -3761,6 +3759,8 @@
 
   RevealSpoilers = {
     init: function() {
+      QuotePreview.callbacks.push(this.node);
+      ExpandComment.callbacks.push(this.node);
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
@@ -3845,21 +3845,29 @@
 
   Linkify = {
     init: function() {
-      return Main.callbacks.push(this.node);
+      QuoteInline.callbacks.push(this.node);
+      QuotePreview.callbacks.push(this.node);
+      ExpandComment.callbacks.push(this.node);
+      Main.callbacks.push(this.node);
+      return this.inline = Conf['Embedding'] ? function(post) {
+        var embed, _i, _len, _ref, _results;
+        _ref = $$('.embed', post.blockquote);
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          embed = _ref[_i];
+          _results.push($.on(embed, 'click', Linkify.toggle));
+        }
+        return _results;
+      } : function() {
+        return true;
+      };
     },
     regString: /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]+|[-a-z0-9]+\.[a-z]{2,4}|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|[a-z]{3,}:[a-z0-9?]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi,
     cypher: $.el('div'),
-    node: function(post) {
-      var a, child, cypher, cypherText, data, embed, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results;
-      if (post.isInlined && !post.isCrosspost) {
-        if (Conf['Embedding']) {
-          _ref = $$('.embed', post.blockquote);
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            embed = _ref[_i];
-            $.on(embed, 'click', Linkify.toggle);
-          }
-        }
-        return;
+    node: function(post, isInlined, isCrossPost) {
+      var a, child, cypher, cypherText, data, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _results;
+      if (isInlined && !isCrossPost) {
+        return Linkify.inline(post);
       }
       snapshot = $.X('.//text()', post.blockquote);
       cypher = Linkify.cypher;
@@ -3896,14 +3904,14 @@
           data = cypherText.join('');
         }
         links = data.match(Linkify.regString);
-        for (_j = 0, _len1 = links.length; _j < _len1; _j++) {
-          link = links[_j];
+        for (_i = 0, _len = links.length; _i < _len; _i++) {
+          link = links[_i];
           index = data.indexOf(link);
           if (text = data.slice(0, index)) {
             cypher.innerHTML = text;
-            _ref1 = cypher.childNodes;
-            for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-              child = _ref1[_k];
+            _ref = cypher.childNodes;
+            for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+              child = _ref[_j];
               nodes.push(child);
             }
           }
@@ -3920,9 +3928,9 @@
         }
         if (data) {
           cypher.innerHTML = data;
-          _ref2 = cypher.childNodes;
-          for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
-            child = _ref2[_l];
+          _ref1 = cypher.childNodes;
+          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+            child = _ref1[_k];
             nodes.push(child);
           }
         }
@@ -4696,9 +4704,8 @@
 
   IDColor = {
     init: function() {
-      if (!['b', 'q', 'soc'].contains(g.BOARD)) {
-        return;
-      }
+      QuotePreview.callbacks.push(this.node);
+      ExpandComment.callbacks.push(this.node);
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
@@ -5124,7 +5131,7 @@
         return delete Updater.request;
       },
       update: function(posts) {
-        var count, id, lastPost, nodes, post, scroll, spoilerRange;
+        var count, id, lastPost, node, nodes, post, scroll, spoilerRange, _i, _len;
         if (spoilerRange = posts[0].custom_spoiler) {
           Build.spoilerRange[g.BOARD] = spoilerRange;
         }
@@ -5161,6 +5168,12 @@
           return;
         }
         scroll = Conf['Scrolling'] && Updater.scrollBG() && lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25;
+        posts = [];
+        for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+          node = nodes[_i];
+          posts.push(Main.preParse(node));
+        }
+        Main.node(posts);
         $.add(Updater.thread, nodes.reverse());
         if (scroll && (nodes != null)) {
           return nodes[0].scrollIntoView();
@@ -6561,6 +6574,7 @@
 
   QuoteCT = {
     init: function() {
+      ExpandComment.callbacks.push(this.node);
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
@@ -6584,7 +6598,19 @@
 
   QuoteInline = {
     init: function() {
+      ExpandComment.callbacks.push(this.node);
       return Main.callbacks.push(this.node);
+    },
+    callbacks: [],
+    callback: function(node) {
+      var callback, _i, _len, _ref, _results;
+      _ref = QuotePreview.callbacks;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
+        _results.push(callback(node));
+      }
+      return _results;
     },
     node: function(post) {
       var quote, _i, _j, _len, _len1, _ref, _ref1;
@@ -6654,7 +6680,7 @@
       } else {
         $.after(root, inline);
       }
-      Get.post(board, threadID, postID, inline);
+      Get.post(board, threadID, postID, inline, QuoteInline.callback);
       if (!el) {
         return;
       }
@@ -6696,8 +6722,29 @@
     }
   };
 
+  QuoteOP = {
+    init: function() {
+      ExpandComment.callbacks.push(this.node);
+      return Main.callbacks.push(this.node);
+    },
+    node: function(post) {
+      var quote, _i, _len, _ref;
+      if (post.isInlined && !post.isCrosspost) {
+        return;
+      }
+      _ref = post.quotes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        if (quote.hash.slice(2) === post.threadID) {
+          $.add(quote, $.tn('\u00A0(OP)'));
+        }
+      }
+    }
+  };
+
   QuotePreview = {
     init: function() {
+      ExpandComment.callbacks.push(this.node);
       Main.callbacks.push(this.node);
       return $.ready(function() {
         return $.add(d.body, QuotePreview.el = $.el('div', {
@@ -6705,6 +6752,17 @@
           className: 'reply dialog'
         }));
       });
+    },
+    callbacks: [],
+    callback: function(node) {
+      var callback, _i, _len, _ref, _results;
+      _ref = QuotePreview.callbacks;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
+        _results.push(callback(node));
+      }
+      return _results;
     },
     node: function(post) {
       var quote, _i, _j, _len, _len1, _ref, _ref1;
@@ -6760,33 +6818,7 @@
           post.fileInfo = img.parentNode.previousElementSibling;
           post.img = img;
         }
-        if (_conf['Reveal Spoilers']) {
-          RevealSpoilers.node(post);
-        }
-        if (_conf['Time Formatting']) {
-          Time.node(post);
-        }
-        if (_conf['File Info Formatting']) {
-          FileInfo.node(post);
-        }
-        if (_conf['Linkify']) {
-          Linkify.node(post);
-        }
-        if (_conf['Resurrect Quotes']) {
-          Quotify.node(post);
-        }
-        if (_conf['Anonymize']) {
-          Anonymize.node(post);
-        }
-        if (_conf['Replace GIF'] || _conf['Replace PNG'] || _conf['Replace JPG']) {
-          ImageReplace.node(post);
-        }
-        if (_conf['Color user IDs'] && ['b', 'q', 'soc'].contains(board)) {
-          IDColor.node(post);
-        }
-        if (_conf['RemoveSpoilers']) {
-          return RemoveSpoilers.node(post);
-        }
+        return QuotePreview.callback(post);
       });
       $.on(this, 'mousemove', UI.hover);
       $.on(this, 'mouseout click', QuotePreview.mouseout);
@@ -6826,27 +6858,10 @@
     }
   };
 
-  QuoteOP = {
-    init: function() {
-      return Main.callbacks.push(this.node);
-    },
-    node: function(post) {
-      var quote, _i, _len, _ref;
-      if (post.isInlined && !post.isCrosspost) {
-        return;
-      }
-      _ref = post.quotes;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        if (quote.hash.slice(2) === post.threadID) {
-          $.add(quote, $.tn('\u00A0(OP)'));
-        }
-      }
-    }
-  };
-
   Quotify = {
     init: function() {
+      QuotePreview.callbacks.push(this.node);
+      ExpandComment.callbacks.push(this.node);
       return Main.callbacks.push(this.node);
     },
     node: function(post) {
@@ -11058,7 +11073,7 @@
       return $.ready(Main.featuresReady);
     },
     featuresReady: function() {
-      var a, board, nav, node, nodes, now, observer, _conf, _i, _j, _len, _len1, _ref, _ref1;
+      var a, board, nav, node, nodes, now, _conf, _i, _j, _len, _len1, _ref, _ref1;
       _conf = Conf;
       if (/^4chan - 404/.test(d.title)) {
         if (_conf['404 Redirect'] && /^\d+$/.test(g.THREAD_ID)) {
@@ -11153,8 +11168,8 @@
       });
       Main.hasCodeTags = !!$('script[src^="//static.4chan.org/js/prettify/prettify"]');
       if (MutationObserver) {
-        observer = new MutationObserver(Main.observer);
-        observer.observe(board, {
+        Main.observer = new MutationObserver(Main.observe);
+        Main.observer.observe(board, {
           childList: true,
           subtree: true
         });
@@ -11230,16 +11245,16 @@
         return $.prepend($.id('delform'), xupdate);
       }
     },
-    preParse: function(node) {
-      var el, img, imgParent, parentClass, post;
-      parentClass = node.parentNode.className;
+    preParse: function(node, threadID) {
+      var el, img, imgParent, parent, parentClass, post;
+      parentClass = (parent = node.parentNode) ? parent.className : "";
       el = $('.post', node);
       post = {
         root: node,
         el: el,
         "class": el.className,
         ID: el.id.match(/\d+$/)[0],
-        threadID: g.THREAD_ID || $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0],
+        threadID: g.THREAD_ID || (parent ? $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0] : threadID),
         isArchived: parentClass.contains('archivedPost'),
         isInlined: /\binline\b/.test(parentClass),
         isCrosspost: parentClass.contains('crosspost'),
@@ -11275,7 +11290,7 @@
         }
       }
     },
-    observer: function(mutations) {
+    observe: function(mutations) {
       var addedNode, mutation, nodes, _i, _j, _len, _len1, _ref;
       nodes = [];
       for (_i = 0, _len = mutations.length; _i < _len; _i++) {
@@ -11289,7 +11304,10 @@
         }
       }
       if (nodes.length) {
-        return Main.node(nodes);
+        Main.node(nodes);
+      }
+      if (d.readyState === 'complete') {
+        return Main.observer.disconnect();
       }
     },
     listener: function(e) {

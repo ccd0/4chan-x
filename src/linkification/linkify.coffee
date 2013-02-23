@@ -1,6 +1,16 @@
 Linkify =
   init: ->
+    QuoteInline.callbacks.push @node
+    QuotePreview.callbacks.push @node
+    ExpandComment.callbacks.push @node
     Main.callbacks.push @node
+    
+    @inline = if Conf['Embedding']
+      (post) ->
+        for embed in $$('.embed', post.blockquote)
+          $.on embed, 'click', Linkify.toggle
+    else
+      -> true
 
   regString: ///(
     \b(
@@ -21,13 +31,9 @@ Linkify =
 
   cypher: $.el 'div'
 
-  node: (post) ->
-    if post.isInlined and not post.isCrosspost
-      if Conf['Embedding']
-        for embed in $$('.embed', post.blockquote)
-          $.on embed, 'click', Linkify.toggle
-      return
-
+  node: (post, isInlined, isCrossPost) ->
+    if isInlined and not isCrossPost then return Linkify.inline(post)
+      
     snapshot = $.X './/text()', post.blockquote
     cypher = Linkify.cypher
     i      = -1

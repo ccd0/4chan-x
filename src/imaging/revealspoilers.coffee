@@ -1,5 +1,7 @@
 RevealSpoilers =
   init: ->
+    QuotePreview.callbacks.push @node
+    ExpandComment.callbacks.push @node
     Main.callbacks.push @node
 
   node: (post) ->

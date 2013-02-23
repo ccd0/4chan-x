@@ -1,6 +1,8 @@
 Anonymize =
   init: ->
+    QuotePreview.callbacks.push @node
     Main.callbacks.push @node
+
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
     name = $ '.postInfo .name', post.el

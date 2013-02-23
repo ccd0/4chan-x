@@ -2,6 +2,7 @@ FileInfo =
   init: ->
     return if g.BOARD is 'f'
     @setFormats()
+    QuotePreview.callbacks.push @node
     Main.callbacks.push @node
 
   node: (post) ->

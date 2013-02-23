@@ -1,6 +1,7 @@
 Time =
   init: ->
     Time.foo()
+    QuotePreview.callbacks.push @node
     Main.callbacks.push @node
 
   node: (post) ->
