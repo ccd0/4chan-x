@@ -1,7 +1,10 @@
 Style =
   init: ->
-
-    Style.setup()
+    @agent = {
+      'gecko':  '-moz-'
+      'webkit': '-webkit-'
+      'presto': '-o-'
+    }[$.engine]
 
     $.ready ->
       Style.rice(d.body)
@@ -27,11 +30,83 @@ Style =
             setTimeout Style.rice, 100
         ), 500
 
-  agent: {
-    'gecko':  '-moz-'
-    'webkit': '-webkit-'
-    'presto': '-o-'
-  }[$.engine]
+    @setup()
+
+  setup: ->
+    if d.head
+      @addStyleReady()
+      @remStyle()
+      unless Style.headCount
+        return @cleanup()
+    @observe()
+
+  observe: ->
+    if MutationObserver
+      Style.observer = new MutationObserver onMutationObserver = @wrapper
+      Style.observer.observe d,
+        childList: true
+        subtree:   true
+    else
+      $.on d, 'DOMNodeInserted', @wrapper
+
+  wrapper: ->
+    if d.head
+      if Style.addStyleReady
+        Style.addStyleReady()
+
+      Style.remStyle()
+
+      if not Style.headCount or d.readyState is 'complete'
+        if Style.observer
+          Style.observer.disconnect()
+        else
+          $.off d, 'DOMNodeInserted', Style.wrapper
+        Style.cleanup()
+
+  cleanup: ->
+    delete Style.observe
+    delete Style.wrapper
+    delete Style.remStyle
+    delete Style.headCount
+    delete Style.cleanup
+
+  addStyle: (theme) ->
+    _conf = Conf
+    unless theme
+      theme = Themes[_conf['theme']]
+
+    MascotTools.init _conf["mascot"]
+    Style.layoutCSS.textContent = Style.layout()
+    Style.themeCSS.textContent  = Style.theme(theme)
+    Style.iconPositions()
+
+  headCount: 12
+
+  addStyleReady: ->
+    theme = Themes[Conf['theme']]
+    $.extend Style,
+      layoutCSS:    $.addStyle Style.layout(),     'layout'
+      themeCSS:     $.addStyle Style.theme(theme), 'theme'
+      icons:        $.addStyle "",                 'icons'
+      paddingSheet: $.addStyle "",                 'padding'
+      mascot:       $.addStyle "",                 'mascotSheet'
+
+    # Non-customizable
+    $.addStyle Style.jsColorCSS(),                 'jsColor'
+
+    delete Style.addStyleReady
+
+  remStyle: ->
+    nodes = d.head.children
+    i     = nodes.length
+    while i--
+      break unless Style.headCount
+      node = nodes[i]
+      if (node.nodeName is 'STYLE' and !node.id) or ("#{node.rel}".contains('stylesheet') and node.href[..3] isnt 'data')
+        Style.headCount--
+        $.rm node
+        continue
+    return
 
   emoji: (position) ->
     _conf = Conf
@@ -134,91 +209,6 @@ data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' 
       g: parseInt(bgHex.substr(2, 2), 16) / 255
       b: parseInt(bgHex.substr(4, 2), 16) / 255
     }
-
-  addStyle: (theme) ->
-    _conf = Conf
-    unless theme
-      theme = Themes[_conf['theme']]
-
-    MascotTools.init _conf["mascot"]
-    Style.layoutCSS.textContent = Style.layout()
-    Style.themeCSS.textContent  = Style.theme(theme)
-    Style.iconPositions()
-
-  setup: ->
-    if d.head
-      @addStyleReady()
-      @remStyle()
-      if Style.headCount > 8
-        @cleanup()
-        return
-    @observe()
-
-  headCount: 0
-
-  cleanup: ->
-    delete Style.setup
-    delete Style.observe
-    delete Style.wrapper
-    delete Style.remStyle
-    delete Style.headCount
-    delete Style.cleanup
-
-  observe: ->
-    if MutationObserver
-      observer = new MutationObserver onMutationObserver = @wrapper
-      observer.observe d,
-        childList: true
-        subtree:   true
-    else
-      $.on d, 'DOMNodeInserted', @wrapper
-
-  wrapper: ->
-    if d.head
-      if Style.addStyleReady
-        Style.addStyleReady()
-
-      Style.remStyle()
-
-      if Style.headcount > 8
-
-        if observer
-          observer.disconnect()
-        else
-          $.off d, 'DOMNodeInserted', Style.wrapper
-
-        Style.cleanup()
-
-  addStyleReady: ->
-    theme = Themes[Conf['theme']]
-    $.extend Style,
-      layoutCSS:    $.addStyle Style.layout(),     'layout'
-      themeCSS:     $.addStyle Style.theme(theme), 'theme'
-      icons:        $.addStyle "",                 'icons'
-      paddingSheet: $.addStyle "",                 'padding'
-      mascot:       $.addStyle "",                 'mascotSheet'
-
-    # As JSColor doesn't really have any customization,
-    # we don't save its sheet as a variable.
-    $.addStyle Style.jsColorCSS(),                 'jsColor'
-
-    delete Style.addStyleReady
-
-  remStyle: ->
-    head  = d.head
-    nodes = head.children
-    len   = nodes.length
-    i     = 0
-    while i < len
-      break if Style.headCount > 8
-      node = nodes[i]
-      if (node.nodeName is 'style' and !node.id) or "#{node.rel}".contains 'stylesheet'
-        Style.headCount++
-        $.rm node
-        len--
-        continue
-      i++
-    return
 
   banner: ->
     banner   = $ ".boardBanner", d.body
@@ -883,15 +873,29 @@ div.navLinks > a:first-of-type::after {
     css = """
 /* Cleanup */
 #postForm,
+.hidden,
 .mobile,
 .postingMode,
-.riced {
+.riced,
+.sideArrows,
+[hidden] {
   display: none;
 }
+/* Defaults */
 body {
   font-size: #{parseInt(_conf["Font Size"], 10)}px;
   font-family: #{_conf["Font"]};
+  min-height: 100%;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  margin-#{Style.sidebarLocation[0]}: #{Style.sidebar}px;
+  margin-#{Style.sidebarLocation[1]}: 2px;
+  padding: 0;
+  padding-left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
+  padding-right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
 }
+/* Replies */
+
 /* Element Replacing */
 .rice {
   cursor: pointer;
@@ -908,7 +912,6 @@ body {
   text-align: left;
 }
 .selectrice::after {
-  display: block;
   content: "";
   border-right: .25em solid transparent;
   border-left: .25em solid transparent;
@@ -917,7 +920,6 @@ body {
   top: .5em;
 }
 .selectrice::before {
-  display: block;
   content: "";
   height: 1.7em;
   position: absolute;

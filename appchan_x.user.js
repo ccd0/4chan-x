@@ -8327,8 +8327,12 @@
 
   Style = {
     init: function() {
-      Style.setup();
-      return $.ready(function() {
+      this.agent = {
+        'gecko': '-moz-',
+        'webkit': '-webkit-',
+        'presto': '-o-'
+      }[$.engine];
+      $.ready(function() {
         var catalogLink;
         Style.rice(d.body);
         if (!$.id('navtopright')) {
@@ -8356,12 +8360,94 @@
           }
         }), 500);
       });
+      return this.setup();
     },
-    agent: {
-      'gecko': '-moz-',
-      'webkit': '-webkit-',
-      'presto': '-o-'
-    }[$.engine],
+    setup: function() {
+      if (d.head) {
+        this.addStyleReady();
+        this.remStyle();
+        if (!Style.headCount) {
+          return this.cleanup();
+        }
+      }
+      return this.observe();
+    },
+    observe: function() {
+      var onMutationObserver;
+      if (MutationObserver) {
+        Style.observer = new MutationObserver(onMutationObserver = this.wrapper);
+        return Style.observer.observe(d, {
+          childList: true,
+          subtree: true
+        });
+      } else {
+        return $.on(d, 'DOMNodeInserted', this.wrapper);
+      }
+    },
+    wrapper: function() {
+      if (d.head) {
+        if (Style.addStyleReady) {
+          Style.addStyleReady();
+        }
+        Style.remStyle();
+        if (!Style.headCount || d.readyState === 'complete') {
+          if (Style.observer) {
+            Style.observer.disconnect();
+          } else {
+            $.off(d, 'DOMNodeInserted', Style.wrapper);
+          }
+          return Style.cleanup();
+        }
+      }
+    },
+    cleanup: function() {
+      delete Style.observe;
+      delete Style.wrapper;
+      delete Style.remStyle;
+      delete Style.headCount;
+      return delete Style.cleanup;
+    },
+    addStyle: function(theme) {
+      var _conf;
+      _conf = Conf;
+      if (!theme) {
+        theme = Themes[_conf['theme']];
+      }
+      MascotTools.init(_conf["mascot"]);
+      Style.layoutCSS.textContent = Style.layout();
+      Style.themeCSS.textContent = Style.theme(theme);
+      return Style.iconPositions();
+    },
+    headCount: 12,
+    addStyleReady: function() {
+      var theme;
+      theme = Themes[Conf['theme']];
+      $.extend(Style, {
+        layoutCSS: $.addStyle(Style.layout(), 'layout'),
+        themeCSS: $.addStyle(Style.theme(theme), 'theme'),
+        icons: $.addStyle("", 'icons'),
+        paddingSheet: $.addStyle("", 'padding'),
+        mascot: $.addStyle("", 'mascotSheet')
+      });
+      $.addStyle(Style.jsColorCSS(), 'jsColor');
+      return delete Style.addStyleReady;
+    },
+    remStyle: function() {
+      var i, node, nodes;
+      nodes = d.head.children;
+      i = nodes.length;
+      while (i--) {
+        if (!Style.headCount) {
+          break;
+        }
+        node = nodes[i];
+        if ((node.nodeName === 'STYLE' && !node.id) || (("" + node.rel).contains('stylesheet') && node.href.slice(0, 4) !== 'data')) {
+          Style.headCount--;
+          $.rm(node);
+          continue;
+        }
+      }
+    },
     emoji: function(position) {
       var category, css, icon, key, margin, name, _conf, _i, _len;
       _conf = Conf;
@@ -8474,98 +8560,6 @@
         g: parseInt(bgHex.substr(2, 2), 16) / 255,
         b: parseInt(bgHex.substr(4, 2), 16) / 255
       });
-    },
-    addStyle: function(theme) {
-      var _conf;
-      _conf = Conf;
-      if (!theme) {
-        theme = Themes[_conf['theme']];
-      }
-      MascotTools.init(_conf["mascot"]);
-      Style.layoutCSS.textContent = Style.layout();
-      Style.themeCSS.textContent = Style.theme(theme);
-      return Style.iconPositions();
-    },
-    setup: function() {
-      if (d.head) {
-        this.addStyleReady();
-        this.remStyle();
-        if (Style.headCount > 8) {
-          this.cleanup();
-          return;
-        }
-      }
-      return this.observe();
-    },
-    headCount: 0,
-    cleanup: function() {
-      delete Style.setup;
-      delete Style.observe;
-      delete Style.wrapper;
-      delete Style.remStyle;
-      delete Style.headCount;
-      return delete Style.cleanup;
-    },
-    observe: function() {
-      var observer, onMutationObserver;
-      if (MutationObserver) {
-        observer = new MutationObserver(onMutationObserver = this.wrapper);
-        return observer.observe(d, {
-          childList: true,
-          subtree: true
-        });
-      } else {
-        return $.on(d, 'DOMNodeInserted', this.wrapper);
-      }
-    },
-    wrapper: function() {
-      if (d.head) {
-        if (Style.addStyleReady) {
-          Style.addStyleReady();
-        }
-        Style.remStyle();
-        if (Style.headcount > 8) {
-          if (observer) {
-            observer.disconnect();
-          } else {
-            $.off(d, 'DOMNodeInserted', Style.wrapper);
-          }
-          return Style.cleanup();
-        }
-      }
-    },
-    addStyleReady: function() {
-      var theme;
-      theme = Themes[Conf['theme']];
-      $.extend(Style, {
-        layoutCSS: $.addStyle(Style.layout(), 'layout'),
-        themeCSS: $.addStyle(Style.theme(theme), 'theme'),
-        icons: $.addStyle("", 'icons'),
-        paddingSheet: $.addStyle("", 'padding'),
-        mascot: $.addStyle("", 'mascotSheet')
-      });
-      $.addStyle(Style.jsColorCSS(), 'jsColor');
-      return delete Style.addStyleReady;
-    },
-    remStyle: function() {
-      var head, i, len, node, nodes;
-      head = d.head;
-      nodes = head.children;
-      len = nodes.length;
-      i = 0;
-      while (i < len) {
-        if (Style.headCount > 8) {
-          break;
-        }
-        node = nodes[i];
-        if ((node.nodeName === 'style' && !node.id) || ("" + node.rel).contains('stylesheet')) {
-          Style.headCount++;
-          $.rm(node);
-          len--;
-          continue;
-        }
-        i++;
-      }
     },
     banner: function() {
       var banner, child, children, i, title;
@@ -8771,7 +8765,7 @@
         medium: 4,
         large: 8
       }[_conf["Reply Spacing"]];
-      return css = "/* Cleanup */\n#postForm,\n.mobile,\n.postingMode,\n.riced {\n  display: none;\n}\nbody {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n}\n/* Element Replacing */\n.rice {\n  cursor: pointer;\n  width: 9px;\n  height: 9px;\n  margin: 2px 3px;\n  display: inline-block;\n  vertical-align: bottom;\n}\n.selectrice {\n  position: relative;\n  cursor: default;\n  overflow: hidden;\n  text-align: left;\n}\n.selectrice::after {\n  display: block;\n  content: \"\";\n  border-right: .25em solid transparent;\n  border-left: .25em solid transparent;\n  position: absolute;\n  right: .4em;\n  top: .5em;\n}\n.selectrice::before {\n  display: block;\n  content: \"\";\n  height: 1.7em;\n  position: absolute;\n  right: 1.3em;\n  top: 0;\n}\n.selectrice ul {\n  padding: 0;\n  position: fixed;\n  max-height: 120px;\n  overflow-y: auto;\n  overflow-x: hidden;\n  z-index: 99999;\n}\ninput[type=checkbox]:checked + .rice {\n  background-attachment: scroll;\n  background-repeat: no-repeat;\n  background-position: bottom right;\n}";
+      return css = "/* Cleanup */\n#postForm,\n.hidden,\n.mobile,\n.postingMode,\n.riced,\n.sideArrows,\n[hidden] {\n  display: none;\n}\n/* Defaults */\nbody {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 1px;\n  margin-bottom: 1px;\n  margin-" + Style.sidebarLocation[0] + ": " + Style.sidebar + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0;\n  padding-left: " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n  padding-right: " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;\n}\n/* Replies */\n\n/* Element Replacing */\n.rice {\n  cursor: pointer;\n  width: 9px;\n  height: 9px;\n  margin: 2px 3px;\n  display: inline-block;\n  vertical-align: bottom;\n}\n.selectrice {\n  position: relative;\n  cursor: default;\n  overflow: hidden;\n  text-align: left;\n}\n.selectrice::after {\n  content: \"\";\n  border-right: .25em solid transparent;\n  border-left: .25em solid transparent;\n  position: absolute;\n  right: .4em;\n  top: .5em;\n}\n.selectrice::before {\n  content: \"\";\n  height: 1.7em;\n  position: absolute;\n  right: 1.3em;\n  top: 0;\n}\n.selectrice ul {\n  padding: 0;\n  position: fixed;\n  max-height: 120px;\n  overflow-y: auto;\n  overflow-x: hidden;\n  z-index: 99999;\n}\ninput[type=checkbox]:checked + .rice {\n  background-attachment: scroll;\n  background-repeat: no-repeat;\n  background-position: bottom right;\n}";
     },
     theme: function(theme) {
       var background, backgroundC, bgColor, css, fileHeading, icons, replyHeading, _conf;
