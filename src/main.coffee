@@ -330,6 +330,7 @@ Main =
     initFeature 'Quote Inlining',           QuoteInline
     initFeature 'Quote Previewing',         QuotePreview
     initFeature 'Quote Backlinks',          QuoteBacklink
+    initFeature 'Mark Quotes of You',       QuoteYou
     initFeature 'Mark OP Quotes',           QuoteOP
     initFeature 'Mark Cross-thread Quotes', QuoteCT
     initFeature 'Anonymize',                Anonymize

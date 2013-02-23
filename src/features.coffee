@@ -2546,6 +2546,28 @@ QuoteBacklink =
     @containers[id] or=
       $.el 'span', className: 'container'
 
+QuoteYou =
+  init: ->
+    return if g.VIEW is 'catalog' or !Conf['Mark Quotes of You'] or !Conf['Quick Reply']
+
+    # \u00A0 is nbsp
+    @text = '\u00A0(You)'
+    Post::callbacks.push
+      name: 'Mark Quotes of You'
+      cb:   @node
+  node: ->
+    # Stop there if it's a clone.
+    return if @isClone
+    # Stop there if there's no quotes in that post.
+    return unless (quotes = @quotes).length
+    {quotelinks} = @nodes
+
+    for quotelink in quotelinks
+      {threadID, postID} = Get.postDataFromLink quotelink
+      if (thread = QR.yourPosts.threads[threadID]) and postID in thread
+        $.add quotelink, $.tn QuoteYou.text
+    return
+
 QuoteOP =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Mark OP Quotes']
@@ -2560,20 +2582,20 @@ QuoteOP =
     return if @isClone and @thread is @context.thread
     # Stop there if there's no quotes in that post.
     return unless (quotes = @quotes).length
-    quotelinks = @nodes.quotelinks
+    {quotelinks} = @nodes
 
     # rm (OP) from cross-thread quotes.
     if @isClone and @thread.fullID in quotes
-      for quote in quotelinks
-        quote.textContent = quote.textContent.replace QuoteOP.text, ''
+      for quotelink in quotelinks
+        quotelink.textContent = quotelink.textContent.replace QuoteOP.text, ''
 
     op = (if @isClone then @context else @).thread.fullID
     # add (OP) to quotes quoting this context's OP.
     return unless op in quotes
-    for quote in quotelinks
-      {board, postID} = Get.postDataFromLink quote
+    for quotelink in quotelinks
+      {board, postID} = Get.postDataFromLink quotelink
       if "#{board}.#{postID}" is op
-        $.add quote, $.tn QuoteOP.text
+        $.add quotelink, $.tn QuoteOP.text
     return
 
 QuoteCT =
@@ -2590,16 +2612,16 @@ QuoteCT =
     return if @isClone and @thread is @context.thread
     # Stop there if there's no quotes in that post.
     return unless (quotes = @quotes).length
-    quotelinks = @nodes.quotelinks
+    {quotelinks} = @nodes
 
     {board, thread} = if @isClone then @context else @
-    for quote in quotelinks
-      data = Get.postDataFromLink quote
+    for quotelink in quotelinks
+      data = Get.postDataFromLink quotelink
       continue unless data.threadID # deadlink
       if @isClone
-        quote.textContent = quote.textContent.replace QuoteCT.text, ''
+        quotelink.textContent = quotelink.textContent.replace QuoteCT.text, ''
       if data.board is @board.ID and data.threadID isnt thread.ID
-        $.add quote, $.tn QuoteCT.text
+        $.add quotelink, $.tn QuoteCT.text
     return
 
 Anonymize =

@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, d, doc, g,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -111,6 +111,7 @@
         'Quote Previewing': [true, 'Show quoted post on hover.'],
         'Quote Highlighting': [true, 'Highlight the previewed post.'],
         'Resurrect Quotes': [true, 'Link dead quotes to the archives.'],
+        'Mark Quotes of You': [true, 'Add \'(You)\' to quotes linking to your posts.'],
         'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
         'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.']
       }
@@ -3904,6 +3905,36 @@
     }
   };
 
+  QuoteYou = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Mark Quotes of You'] || !Conf['Quick Reply']) {
+        return;
+      }
+      this.text = '\u00A0(You)';
+      return Post.prototype.callbacks.push({
+        name: 'Mark Quotes of You',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var postID, quotelink, quotelinks, quotes, thread, threadID, _i, _len, _ref;
+      if (this.isClone) {
+        return;
+      }
+      if (!(quotes = this.quotes).length) {
+        return;
+      }
+      quotelinks = this.nodes.quotelinks;
+      for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
+        quotelink = quotelinks[_i];
+        _ref = Get.postDataFromLink(quotelink), threadID = _ref.threadID, postID = _ref.postID;
+        if ((thread = QR.yourPosts.threads[threadID]) && __indexOf.call(thread, postID) >= 0) {
+          $.add(quotelink, $.tn(QuoteYou.text));
+        }
+      }
+    }
+  };
+
   QuoteOP = {
     init: function() {
       if (g.VIEW === 'catalog' || !Conf['Mark OP Quotes']) {
@@ -3916,7 +3947,7 @@
       });
     },
     node: function() {
-      var board, op, postID, quote, quotelinks, quotes, _i, _j, _len, _len1, _ref, _ref1;
+      var board, op, postID, quotelink, quotelinks, quotes, _i, _j, _len, _len1, _ref, _ref1;
       if (this.isClone && this.thread === this.context.thread) {
         return;
       }
@@ -3926,8 +3957,8 @@
       quotelinks = this.nodes.quotelinks;
       if (this.isClone && (_ref = this.thread.fullID, __indexOf.call(quotes, _ref) >= 0)) {
         for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
-          quote = quotelinks[_i];
-          quote.textContent = quote.textContent.replace(QuoteOP.text, '');
+          quotelink = quotelinks[_i];
+          quotelink.textContent = quotelink.textContent.replace(QuoteOP.text, '');
         }
       }
       op = (this.isClone ? this.context : this).thread.fullID;
@@ -3935,10 +3966,10 @@
         return;
       }
       for (_j = 0, _len1 = quotelinks.length; _j < _len1; _j++) {
-        quote = quotelinks[_j];
-        _ref1 = Get.postDataFromLink(quote), board = _ref1.board, postID = _ref1.postID;
+        quotelink = quotelinks[_j];
+        _ref1 = Get.postDataFromLink(quotelink), board = _ref1.board, postID = _ref1.postID;
         if (("" + board + "." + postID) === op) {
-          $.add(quote, $.tn(QuoteOP.text));
+          $.add(quotelink, $.tn(QuoteOP.text));
         }
       }
     }
@@ -3956,7 +3987,7 @@
       });
     },
     node: function() {
-      var board, data, quote, quotelinks, quotes, thread, _i, _len, _ref;
+      var board, data, quotelink, quotelinks, quotes, thread, _i, _len, _ref;
       if (this.isClone && this.thread === this.context.thread) {
         return;
       }
@@ -3966,16 +3997,16 @@
       quotelinks = this.nodes.quotelinks;
       _ref = this.isClone ? this.context : this, board = _ref.board, thread = _ref.thread;
       for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
-        quote = quotelinks[_i];
-        data = Get.postDataFromLink(quote);
+        quotelink = quotelinks[_i];
+        data = Get.postDataFromLink(quotelink);
         if (!data.threadID) {
           continue;
         }
         if (this.isClone) {
-          quote.textContent = quote.textContent.replace(QuoteCT.text, '');
+          quotelink.textContent = quotelink.textContent.replace(QuoteCT.text, '');
         }
         if (data.board === this.board.ID && data.threadID !== thread.ID) {
-          $.add(quote, $.tn(QuoteCT.text));
+          $.add(quotelink, $.tn(QuoteCT.text));
         }
       }
     }
@@ -6962,6 +6993,7 @@
       initFeature('Quote Inlining', QuoteInline);
       initFeature('Quote Previewing', QuotePreview);
       initFeature('Quote Backlinks', QuoteBacklink);
+      initFeature('Mark Quotes of You', QuoteYou);
       initFeature('Mark OP Quotes', QuoteOP);
       initFeature('Mark Cross-thread Quotes', QuoteCT);
       initFeature('Anonymize', Anonymize);

@@ -2,13 +2,16 @@ beta
 - Mayhem
   Major rewrite of 4chan X.
 
-  New feature, the Header:
-    Access the list of boards directly from the Header.
-    From the Header's menu, access to:
-      Settings
-      Quick Reply shortcut
-      Image Expansion
-    Can be auto-hidden.
+  New features:
+    Header:
+      Access the list of boards directly from the Header.
+      From the Header's menu, access to:
+        Settings
+        Quick Reply shortcut
+        Image Expansion
+      Can be auto-hidden.
+    (You):
+      "(You)" will be added to quotes linking to your posts.
 
   QR changes:
     Clicking the submit button while uploading will abort the upload and won't start re-uploading automatically anymore.
