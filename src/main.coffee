@@ -106,7 +106,7 @@ class Post
       @thread.isSticky = !!$ '.stickyIcon', @nodes.info
       @thread.isClosed = !!$ '.closedIcon', @nodes.info
 
-    @clones  = []
+    @clones = []
     g.posts["#{board}.#{@}"] = thread.posts[@] = board.posts[@] = @
     @kill() if that.isArchived
 

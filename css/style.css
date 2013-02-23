@@ -350,7 +350,7 @@ a[href="javascript:;"] {
 .inlined {
   opacity: .5;
 }
-#qp input {
+#qp input, .forwarded {
   display: none;
 }
 .quotelink.forwardlink,
@@ -445,7 +445,8 @@ a[href="javascript:;"] {
 
 /* QR */
 .hide-original-post-form #postForm,
-.hide-original-post-form .postingMode {
+.hide-original-post-form .postingMode,
+#qr.autohide:not(:hover) > form {
   display: none;
 }
 #qr > .move {
