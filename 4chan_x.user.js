@@ -5088,7 +5088,7 @@
       return $.add(d.body, ThreadStats.dialog);
     },
     update: function() {
-      var ID, fileCount, post, postCount, _ref;
+      var ID, fileCount, funk, post, postCount, _ref;
       postCount = 0;
       fileCount = 0;
       _ref = ThreadStats.thread.posts;
@@ -5105,7 +5105,8 @@
       }
       ThreadStats.postCountEl.textContent = postCount;
       ThreadStats.fileCountEl.textContent = fileCount;
-      return (fileCount > ThreadStats.fileLimit ? $.addClass : $.rmClass)(ThreadStats.fileCountEl, 'warning');
+      funk = ThreadStats.isSticky || fileCount <= ThreadStats.fileLimit ? $.rmClass : $.addClass;
+      return funk(ThreadStats.fileCountEl, 'warning');
     }
   };
 

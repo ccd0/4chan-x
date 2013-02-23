@@ -3427,7 +3427,11 @@ ThreadStats =
       fileCount++
     ThreadStats.postCountEl.textContent = postCount
     ThreadStats.fileCountEl.textContent = fileCount
-    (if fileCount > ThreadStats.fileLimit then $.addClass else $.rmClass) ThreadStats.fileCountEl, 'warning'
+    funk = if ThreadStats.isSticky or fileCount <= ThreadStats.fileLimit
+      $.rmClass
+    else
+      $.addClass
+    funk ThreadStats.fileCountEl, 'warning'
 
 ThreadUpdater =
   init: ->

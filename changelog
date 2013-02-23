@@ -28,13 +28,16 @@ beta
     Read posts won't be marked as unread after reloading a thread.
     Visible posts will not be taken into account towards the unread count.
 
+  Thread Stats changes:
+    Post and file count will now adjust with deleted posts.
+    The file count will not go red anymore when the thread is a sticky.
+
   Thread/Post Hiding changes:
     Added Thread & Post Hiding in the Menu, with individual settings.
     Thread & Post Hiding Buttons can now be disabled in the settings.
     Recursive Hiding will be automatically applied when manually hiding a post.
 
   Added touch and multi-touch support for dragging windows.
-  Thread Stats post and file count will adjust with deleted posts.
   Added [math] tags keybind.
   Fix Chrome's install warning saying that 4chan X would execute on all domains.
   Fix Quote Backlinks not affecting inlined quotes.
