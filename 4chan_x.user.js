@@ -4720,7 +4720,7 @@
       if (!post.nodes.shortComment) {
         return;
       }
-      a = a = $('.abbr > a', post.nodes.shortComment);
+      a = $('.abbr > a', post.nodes.shortComment);
       a.textContent = 'here';
       $.replace(post.nodes.longComment, post.nodes.shortComment);
       return post.nodes.comment = post.nodes.shortComment;
@@ -4815,7 +4815,7 @@
       return ExpandThread.toggle(op.thread);
     },
     toggle: function(thread) {
-      var a, inlined, num, replies, reply, text, threadRoot, url, _i, _len;
+      var a, inlined, num, post, replies, reply, text, threadRoot, url, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
       threadRoot = thread.OP.nodes.root.parentNode;
       url = "//api.4chan.org/" + thread.board + "/res/" + thread + ".json";
       a = $('.summary', threadRoot);
@@ -4826,14 +4826,17 @@
           $.cache(url, function() {
             return ExpandThread.parse(this, thread, a);
           });
-          ExpandComment.expand(thread.OP);
+          _ref = $$('.thread > .postContainer', threadRoot);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            post = _ref[_i];
+            ExpandComment.expand(Get.postFromRoot(post));
+          }
           break;
         case '×':
           a.textContent = text.replace('× Loading...', '+');
           break;
         case '-':
           a.textContent = text.replace('-', '+');
-          ExpandComment.contract(thread.OP);
           num = (function() {
             if (thread.isSticky) {
               return 1;
@@ -4851,14 +4854,19 @@
             }
           })();
           replies = $$('.thread > .replyContainer', threadRoot).slice(0, -num);
-          for (_i = 0, _len = replies.length; _i < _len; _i++) {
-            reply = replies[_i];
+          for (_j = 0, _len1 = replies.length; _j < _len1; _j++) {
+            reply = replies[_j];
             if (Conf['Quote Inlining']) {
               while (inlined = $('.inlined', reply)) {
                 inlined.click();
               }
             }
             $.rm(reply);
+          }
+          _ref1 = $$('.thread > .postContainer', threadRoot);
+          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+            post = _ref1[_k];
+            ExpandComment.contract(Get.postFromRoot(post));
           }
       }
     },

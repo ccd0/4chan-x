@@ -3127,7 +3127,7 @@ ExpandComment =
     $.cache "//api.4chan.org#{a.pathname}.json", -> ExpandComment.parse @, a, post
   contract: (post) ->
     return unless post.nodes.shortComment
-    a = a = $ '.abbr > a', post.nodes.shortComment
+    a = $ '.abbr > a', post.nodes.shortComment
     a.textContent = 'here'
     $.replace post.nodes.longComment, post.nodes.shortComment
     post.nodes.comment = post.nodes.shortComment
@@ -3203,14 +3203,14 @@ ExpandThread =
       when '+'
         a.textContent = text.replace '+', '× Loading...'
         $.cache url, -> ExpandThread.parse @, thread, a
-        ExpandComment.expand thread.OP
+        for post in $$ '.thread > .postContainer', threadRoot
+          ExpandComment.expand Get.postFromRoot post
 
       when '×'
         a.textContent = text.replace '× Loading...', '+'
 
       when '-'
         a.textContent = text.replace '-', '+'
-        ExpandComment.contract thread.OP
         #goddamit moot
         num = if thread.isSticky
           1
@@ -3225,6 +3225,8 @@ ExpandThread =
             # rm clones
             inlined.click() while inlined = $ '.inlined', reply
           $.rm reply
+        for post in $$ '.thread > .postContainer', threadRoot
+          ExpandComment.contract Get.postFromRoot post
     return
 
   parse: (req, thread, a) ->
