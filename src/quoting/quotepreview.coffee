@@ -1,5 +1,6 @@
 QuotePreview =
   init: ->
+    QuoteInline.callbacks.push @node
     ExpandComment.callbacks.push @node
     Main.callbacks.push @node
 

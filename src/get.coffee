@@ -1,7 +1,10 @@
 Get =
-  post: (board, threadID, postID, root, cb) ->
+  post: (board, threadID, postID, root, cb, cb2) ->
     if board is g.BOARD and post = $.id "pc#{postID}"
-      $.add root, Get.cleanPost post.cloneNode true
+      post = Get.cleanPost post.cloneNode true
+      if cb2
+        cb2 Main.preParse post
+      $.add root, post
       return
 
     root.innerHTML = "<div class=post>Loading post No.#{postID}...</div>"
@@ -46,8 +49,8 @@ Get =
           root.textContent = "Post No.#{postID} was not found."
         return
 
+    cb(post) if cb
     $.replace root.firstChild, Get.cleanPost Build.postFromObject post, board
-    cb() if cb
 
   parseArchivedPost: (req, board, postID, root, cb) ->
     data = JSON.parse req.response

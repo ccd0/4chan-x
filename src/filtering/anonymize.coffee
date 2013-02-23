@@ -4,7 +4,6 @@ Anonymize =
     Main.callbacks.push @node
 
   node: (post) ->
-    return if post.isInlined and not post.isCrosspost
     name = $ '.postInfo .name', post.el
     name.textContent = 'Anonymous'
     if (trip = name.nextElementSibling) and trip.className is 'postertrip'

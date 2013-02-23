@@ -2206,7 +2206,7 @@
     },
     node: function(post) {
       var alt, filename, node, _ref;
-      if (post.isInlined && !post.isCrosspost || !post.fileInfo) {
+      if (!post.fileInfo) {
         return;
       }
       node = post.fileInfo.firstElementChild;
@@ -2793,9 +2793,6 @@
     },
     node: function(post) {
       var node;
-      if (post.isInlined && !post.isCrosspost) {
-        return;
-      }
       node = $('.postInfo > .dateTime', post.el);
       Time.date = new Date(node.dataset.utc * 1000);
       return node.textContent = Time.funk(Time);
@@ -2887,9 +2884,6 @@
     },
     node: function(post) {
       var name, parent, trip;
-      if (post.isInlined && !post.isCrosspost) {
-        return;
-      }
       name = $('.postInfo .name', post.el);
       name.textContent = 'Anonymous';
       if ((trip = name.nextElementSibling) && trip.className === 'postertrip') {
@@ -3766,7 +3760,7 @@
     node: function(post) {
       var img, s;
       img = post.img;
-      if (!(img && /^Spoiler/.test(img.alt)) || post.isInlined && !post.isCrosspost || post.isArchived) {
+      if (!(img && /^Spoiler/.test(img.alt)) || post.isArchived) {
         return;
       }
       img.removeAttribute('style');
@@ -3829,7 +3823,7 @@
     node: function(post) {
       var img, link, nodes, _i, _len, _ref;
       img = post.img;
-      if (post.isInlined && !post.isCrosspost || !img) {
+      if (!img) {
         return;
       }
       img = img.parentNode;
@@ -3845,30 +3839,26 @@
 
   Linkify = {
     init: function() {
-      QuoteInline.callbacks.push(this.node);
+      if (Conf['Embedding']) {
+        QuoteInline.callbacks.push(function(post) {
+          var embed, _i, _len, _ref, _results;
+          _ref = $$('.embed', post.blockquote);
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            embed = _ref[_i];
+            _results.push($.on(embed, 'click', Linkify.toggle));
+          }
+          return _results;
+        });
+      }
       QuotePreview.callbacks.push(this.node);
       ExpandComment.callbacks.push(this.node);
-      Main.callbacks.push(this.node);
-      return this.inline = Conf['Embedding'] ? function(post) {
-        var embed, _i, _len, _ref, _results;
-        _ref = $$('.embed', post.blockquote);
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          embed = _ref[_i];
-          _results.push($.on(embed, 'click', Linkify.toggle));
-        }
-        return _results;
-      } : function() {
-        return true;
-      };
+      return Main.callbacks.push(this.node);
     },
     regString: /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]+|[-a-z0-9]+\.[a-z]{2,4}|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|[a-z]{3,}:[a-z0-9?]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi,
     cypher: $.el('div'),
-    node: function(post, isInlined, isCrossPost) {
+    node: function(post) {
       var a, child, cypher, cypherText, data, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _results;
-      if (isInlined && !isCrossPost) {
-        return Linkify.inline(post);
-      }
       snapshot = $.X('.//text()', post.blockquote);
       cypher = Linkify.cypher;
       i = -1;
@@ -6598,13 +6588,25 @@
 
   QuoteInline = {
     init: function() {
+      this.callbacks.push(this.node);
       ExpandComment.callbacks.push(this.node);
       return Main.callbacks.push(this.node);
     },
     callbacks: [],
-    callback: function(node) {
+    cb: function(node) {
       var callback, _i, _len, _ref, _results;
-      _ref = QuotePreview.callbacks;
+      _ref = Main.callbacks;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        callback = _ref[_i];
+        _results.push(callback(node));
+      }
+      return _results;
+    },
+    cb2: function(node) {
+      var callback, _i, _len, _ref, _results;
+      node.isInlined = true;
+      _ref = QuoteInline.callbacks;
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
@@ -6680,7 +6682,7 @@
       } else {
         $.after(root, inline);
       }
-      Get.post(board, threadID, postID, inline, QuoteInline.callback);
+      Get.post(board, threadID, postID, inline, QuoteInline.cb, QuoteInline.cb2);
       if (!el) {
         return;
       }
@@ -6744,6 +6746,7 @@
 
   QuotePreview = {
     init: function() {
+      QuoteInline.callbacks.push(this.node);
       ExpandComment.callbacks.push(this.node);
       Main.callbacks.push(this.node);
       return $.ready(function() {
@@ -10503,10 +10506,14 @@
   };
 
   Get = {
-    post: function(board, threadID, postID, root, cb) {
+    post: function(board, threadID, postID, root, cb, cb2) {
       var post, url;
       if (board === g.BOARD && (post = $.id("pc" + postID))) {
-        $.add(root, Get.cleanPost(post.cloneNode(true)));
+        post = Get.cleanPost(post.cloneNode(true));
+        if (cb2) {
+          cb2(Main.preParse(post));
+        }
+        $.add(root, post);
         return;
       }
       root.innerHTML = "<div class=post>Loading post No." + postID + "...</div>";
@@ -10556,10 +10563,10 @@
           return;
         }
       }
-      $.replace(root.firstChild, Get.cleanPost(Build.postFromObject(post, board)));
       if (cb) {
-        return cb();
+        cb(post);
       }
+      return $.replace(root.firstChild, Get.cleanPost(Build.postFromObject(post, board)));
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
       var bq, comment, data, o, _ref;

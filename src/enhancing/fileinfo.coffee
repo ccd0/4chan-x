@@ -6,7 +6,7 @@ FileInfo =
     Main.callbacks.push @node
 
   node: (post) ->
-    return if post.isInlined and not post.isCrosspost or not post.fileInfo
+    return if not post.fileInfo
     node = post.fileInfo.firstElementChild
     alt  = post.img.alt
     filename = $('span', node)?.title or node.title

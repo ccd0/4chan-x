@@ -1,12 +1,18 @@
 QuoteInline =
   init: ->
+    @callbacks.push @node
     ExpandComment.callbacks.push @node
     Main.callbacks.push @node
     
   callbacks: []
   
-  callback: (node) ->
-    for callback in QuotePreview.callbacks
+  cb:  (node) ->
+    for callback in Main.callbacks
+      callback node
+
+  cb2: (node) ->
+    node.isInlined = true
+    for callback in QuoteInline.callbacks
       callback node
 
   node: (post) ->
@@ -66,7 +72,7 @@ QuoteInline =
     else
       $.after root, inline
 
-    Get.post board, threadID, postID, inline, QuoteInline.callback
+    Get.post board, threadID, postID, inline, QuoteInline.cb, QuoteInline.cb2
 
     return unless el
 
