@@ -4,6 +4,7 @@ Linkify =
       QuoteInline.callbacks.push (post) ->
         for embed in $$('.embed', post.blockquote)
           $.on embed, 'click', Linkify.toggle
+        return
     QuotePreview.callbacks.push @node
     ExpandComment.callbacks.push @node
     Main.callbacks.push @node

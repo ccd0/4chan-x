@@ -7,13 +7,16 @@ QuoteInline =
   callbacks: []
   
   cb:  (node) ->
+    node.isInlined = true
     for callback in Main.callbacks
       callback node
+    return
 
   cb2: (node) ->
     node.isInlined = true
     for callback in QuoteInline.callbacks
       callback node
+    return
 
   node: (post) ->
     for quote in post.quotes

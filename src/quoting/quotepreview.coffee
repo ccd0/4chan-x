@@ -13,6 +13,7 @@ QuotePreview =
   callback: (node) ->
     for callback in QuotePreview.callbacks
       callback node
+    return
 
   node: (post) ->
     for quote in post.quotes

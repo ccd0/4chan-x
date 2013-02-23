@@ -9,6 +9,7 @@ ExpandComment =
   node: (node) ->
     for callback in ExpandComment.callbacks
       callback node
+    return
 
   expand: (e) ->
     e.preventDefault()

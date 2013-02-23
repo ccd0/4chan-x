@@ -2030,14 +2030,12 @@
     },
     callbacks: [],
     node: function(node) {
-      var callback, _i, _len, _ref, _results;
+      var callback, _i, _len, _ref;
       _ref = ExpandComment.callbacks;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
-        _results.push(callback(node));
+        callback(node);
       }
-      return _results;
     },
     expand: function(e) {
       var a, replyID, threadID, _, _ref;
@@ -3841,14 +3839,12 @@
     init: function() {
       if (Conf['Embedding']) {
         QuoteInline.callbacks.push(function(post) {
-          var embed, _i, _len, _ref, _results;
+          var embed, _i, _len, _ref;
           _ref = $$('.embed', post.blockquote);
-          _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             embed = _ref[_i];
-            _results.push($.on(embed, 'click', Linkify.toggle));
+            $.on(embed, 'click', Linkify.toggle);
           }
-          return _results;
         });
       }
       QuotePreview.callbacks.push(this.node);
@@ -6594,25 +6590,22 @@
     },
     callbacks: [],
     cb: function(node) {
-      var callback, _i, _len, _ref, _results;
+      var callback, _i, _len, _ref;
+      node.isInlined = true;
       _ref = Main.callbacks;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
-        _results.push(callback(node));
+        callback(node);
       }
-      return _results;
     },
     cb2: function(node) {
-      var callback, _i, _len, _ref, _results;
+      var callback, _i, _len, _ref;
       node.isInlined = true;
       _ref = QuoteInline.callbacks;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
-        _results.push(callback(node));
+        callback(node);
       }
-      return _results;
     },
     node: function(post) {
       var quote, _i, _j, _len, _len1, _ref, _ref1;
@@ -6758,14 +6751,12 @@
     },
     callbacks: [],
     callback: function(node) {
-      var callback, _i, _len, _ref, _results;
+      var callback, _i, _len, _ref;
       _ref = QuotePreview.callbacks;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
-        _results.push(callback(node));
+        callback(node);
       }
-      return _results;
     },
     node: function(post) {
       var quote, _i, _j, _len, _len1, _ref, _ref1;
