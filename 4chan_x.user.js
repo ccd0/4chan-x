@@ -5558,6 +5558,8 @@
       if (g.VIEW === 'catalog' || !Conf['Quick Reply']) {
         return;
       }
+      Misc.clearThreads("yourPosts." + g.BOARD);
+      this.syncYourPosts();
       if (Conf['Hide Original Post Form']) {
         $.addClass(doc, 'hide-original-post-form');
       }
@@ -5662,6 +5664,16 @@
       } else {
         return QR.unhide();
       }
+    },
+    syncYourPosts: function(yourPosts) {
+      if (yourPosts) {
+        QR.yourPosts = yourPosts;
+        return;
+      }
+      QR.yourPosts = $.get("yourPosts." + g.BOARD, {
+        threads: {}
+      });
+      return $.sync("yourPosts." + g.BOARD, QR.syncYourPosts);
     },
     error: function(err) {
       var el;
@@ -6448,7 +6460,7 @@
       return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
     },
     response: function(req) {
-      var ban, board, err, h1, persona, postID, reply, threadID, tmpDoc, _, _ref, _ref1;
+      var ban, board, err, h1, persona, postID, reply, threadID, tmpDoc, _, _base, _ref, _ref1;
       delete QR.ajax;
       tmpDoc = d.implementation.createHTMLDocument('');
       tmpDoc.documentElement.innerHTML = req.response;
@@ -6496,6 +6508,8 @@
       _ref1 = h1.nextSibling.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
       threadID = +threadID;
       postID = +postID;
+      ((_base = QR.yourPosts.threads)[threadID] || (_base[threadID] = [])).push(postID);
+      $.set("yourPosts." + g.BOARD, QR.yourPosts);
       $.event('QRPostSuccessful', {
         board: g.BOARD,
         threadID: threadID || postID,
