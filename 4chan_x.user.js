@@ -5010,7 +5010,9 @@
       return Unread.update();
     },
     onUpdate: function(e) {
-      if (!e.detail[404]) {
+      if (e.detail[404]) {
+        return Unread.update();
+      } else {
         return Unread.addPosts(e.detail.newPosts);
       }
     },

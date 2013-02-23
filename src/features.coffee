@@ -3330,7 +3330,9 @@ Unread =
     Unread.update()
 
   onUpdate: (e) ->
-    unless e.detail[404]
+    if e.detail[404]
+      Unread.update()
+    else
       Unread.addPosts e.detail.newPosts
 
   post: (e) ->
