@@ -1261,7 +1261,7 @@
     },
     main: function(section) {
       var ID, arr, checked, description, hiddenNum, key, li, obj, post, thread, ul, _ref, _ref1, _ref2;
-      section.innerHTML = "<div class=imp-exp>\n  <button class=export>Export settings</button>\n  <button class=import>Import settings</button>\n  <input type=file style='visibility:hidden'>\n</div>\n<p class=imp-exp-result></p>";
+      section.innerHTML = "<div class=imp-exp>\n  <button class=export>Export Settings</button>\n  <button class=import>Import Settings</button>\n  <input type=file style='visibility:hidden'>\n</div>\n<p class=imp-exp-result></p>";
       $.on($('.export', section), 'click', Settings["export"]);
       $.on($('.import', section), 'click', Settings["import"]);
       $.on($('input', section), 'change', Settings.onImport);

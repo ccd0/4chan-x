@@ -228,8 +228,8 @@ Settings =
   main: (section) ->
     section.innerHTML = """
       <div class=imp-exp>
-        <button class=export>Export settings</button>
-        <button class=import>Import settings</button>
+        <button class=export>Export Settings</button>
+        <button class=import>Import Settings</button>
         <input type=file style='visibility:hidden'>
       </div>
       <p class=imp-exp-result></p>
