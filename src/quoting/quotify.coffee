@@ -1,6 +1,9 @@
 Quotify =
   init: ->
+    QuotePreview.callbacks.push @node
+    ExpandComment.callbacks.push @node
     Main.callbacks.push @node
+
   node: (post) ->
     return if post.isInlined and not post.isCrosspost
     for deadlink in $$ '.deadlink', post.blockquote

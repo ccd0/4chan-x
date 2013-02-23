@@ -1,10 +1,19 @@
 QuotePreview =
   init: ->
+    QuoteInline.callbacks.push @node
+    ExpandComment.callbacks.push @node
     Main.callbacks.push @node
 
     $.ready -> $.add d.body, QuotePreview.el = $.el 'div',
       id: 'qp'
       className: 'reply dialog'
+  
+  callbacks: []
+  
+  callback: (node) ->
+    for callback in QuotePreview.callbacks
+      callback node
+    return
 
   node: (post) ->
     for quote in post.quotes
@@ -35,7 +44,6 @@ QuotePreview =
       threadID = 0
       postID   = @dataset.id
 
-
     UI.el = qp
     UI.hover e
 
@@ -50,24 +58,8 @@ QuotePreview =
       if img = $ 'img[data-md5]', qp
         post.fileInfo = img.parentNode.previousElementSibling
         post.img      = img
-      if _conf['Reveal Spoilers']
-        RevealSpoilers.node post
-      if _conf['Time Formatting']
-        Time.node           post
-      if _conf['File Info Formatting']
-        FileInfo.node       post
-      if _conf['Linkify']
-        Linkify.node        post
-      if _conf['Resurrect Quotes']
-        Quotify.node        post
-      if _conf['Anonymize']
-        Anonymize.node      post
-      if _conf['Replace GIF'] or _conf['Replace PNG'] or _conf['Replace JPG']
-        ImageReplace.node   post
-      if _conf['Color user IDs'] and ['b', 'q', 'soc'].contains board
-        IDColor.node        post
-      if _conf['RemoveSpoilers']
-        RemoveSpoilers.node post
+      
+      QuotePreview.callback post
 
     $.on @, 'mousemove',      UI.hover
     $.on @, 'mouseout click', QuotePreview.mouseout
@@ -100,14 +92,3 @@ QuotePreview =
 
     $.off @, 'mousemove',      UI.hover
     $.off @, 'mouseout click', QuotePreview.mouseout
-
-QuoteOP =
-  init: ->
-    Main.callbacks.push @node
-  node: (post) ->
-    return if post.isInlined and not post.isCrosspost
-    for quote in post.quotes
-      if quote.hash[2..] is post.threadID
-        # \u00A0 is nbsp
-        $.add quote, $.tn '\u00A0(OP)'
-    return

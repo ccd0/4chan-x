@@ -1,6 +1,7 @@
 ImageReplace =
   init: ->
     return if g.BOARD is 'f'
+    QuotePreview.callbacks.push @node
     Main.callbacks.push @node
 
   node: (post) ->
