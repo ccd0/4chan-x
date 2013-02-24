@@ -704,8 +704,8 @@ QR =
         challenge = captcha.challenge
         response  = captcha.response
       else
-        challenge   = QR.captcha.img.alt
-        if response = QR.captcha.input.value then QR.captcha.reload()
+        challenge   = QR.captcha.nodes.img.alt
+        if response = QR.captcha.nodes.input.value then QR.captcha.reload()
       $.set 'captchas', captchas
       QR.captcha.count captchas
       unless response

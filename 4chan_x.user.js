@@ -6499,8 +6499,8 @@
           challenge = captcha.challenge;
           response = captcha.response;
         } else {
-          challenge = QR.captcha.img.alt;
-          if (response = QR.captcha.input.value) {
+          challenge = QR.captcha.nodes.img.alt;
+          if (response = QR.captcha.nodes.input.value) {
             QR.captcha.reload();
           }
         }
