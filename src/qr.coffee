@@ -496,7 +496,7 @@ QR =
       index = QR.replies.indexOf @
       if QR.replies.length is 1
         new QR.reply().select()
-      else if @el.id is 'selected'
+      else if @ is QR.selected
         (QR.replies[index-1] or QR.replies[index+1]).select()
       QR.replies.splice index, 1
       return unless window.URL
@@ -531,26 +531,47 @@ QR =
 
       $.on imgContainer, 'click',   @reload.bind @
       $.on @nodes.input, 'keydown', @keydown.bind @
-      $.sync 'captchas', @count.bind @
-      @count $.get 'captchas', []
+      $.sync 'captchas', @sync.bind @
+      @sync $.get 'captchas', []
       # start with an uncached captcha
       @reload()
 
       $.addClass QR.nodes.el, 'has-captcha'
       $.after QR.nodes.com.parentNode, [imgContainer, inputContainer]
+    sync: (@captchas) ->
+      @count()
+    getOne: ->
+      @clear()
+      if captcha = @captchas.shift()
+        {challenge, response} = captcha
+        @count()
+        $.set 'captchas', @captchas
+      else
+        challenge   = @nodes.img.alt
+        if response = @nodes.input.value then @reload()
+      if response
+        response = response.trim()
+        # one-word-captcha:
+        # If there's only one word, duplicate it.
+        response = "#{response} #{response}" unless /\s/.test response
+      {challenge, response}
     save: ->
       return unless response = @nodes.input.value.trim()
-      captchas = $.get 'captchas', []
-      # Remove old captchas.
-      while (captcha = captchas[0]) and captcha.time < Date.now()
-        captchas.shift()
-      captchas.push
+      @captchas.push
         challenge: @nodes.challenge.firstChild.value
         response:  response
-        time:      @timeout
-      $.set 'captchas', captchas
-      @count captchas
+        timeout:   @timeout
+      @count()
       @reload()
+      $.set 'captchas', @captchas
+    clear: ->
+      now = Date.now()
+      for captcha, i in @captchas
+        break if captcha.timeout > now
+      return unless i
+      @captchas = @captchas[i..]
+      @count()
+      $.set 'captchas', @captchas
     load: ->
       # -1 minute to give upload some time.
       @timeout  = Date.now() + $.unsafeWindow.RecaptchaState.timeout * $.SECOND - $.MINUTE
@@ -558,8 +579,9 @@ QR =
       @nodes.img.alt = challenge
       @nodes.img.src = "//www.google.com/recaptcha/api/image?c=#{challenge}"
       @nodes.input.value = null
-    count: (arr) ->
-      count = arr.length
+      @clear()
+    count: ->
+      count = @captchas.length
       @nodes.input.placeholder = switch count
         when 0
           'Verification (Shift + Enter to cache)'
@@ -709,26 +731,8 @@ QR =
       err = 'No file selected.'
 
     if QR.captcha.isEnabled and !err
-      # get oldest valid captcha
-      captchas = $.get 'captchas', []
-      # remove old captchas
-      while (captcha = captchas[0]) and captcha.time < Date.now()
-        captchas.shift()
-      if captcha  = captchas.shift()
-        challenge = captcha.challenge
-        response  = captcha.response
-      else
-        challenge   = QR.captcha.nodes.img.alt
-        if response = QR.captcha.nodes.input.value then QR.captcha.reload()
-      $.set 'captchas', captchas
-      QR.captcha.count captchas
-      unless response
-        err = 'No valid captcha.'
-      else
-        response = response.trim()
-        # one-word-captcha:
-        # If there's only one word, duplicate it.
-        response = "#{response} #{response}" unless /\s/.test response
+      {challenge, response} = QR.captcha.getOne()
+      err = 'No valid captcha.' unless response
 
     if err
       # stop auto-posting
@@ -818,7 +822,7 @@ QR =
           err = 'Error: You seem to have mistyped the CAPTCHA.'
         # Enable auto-post if we have some cached captchas.
         QR.cooldown.auto = if QR.captcha.isEnabled
-          !!$.get('captchas', []).length
+          !!QR.captcha.captchas.length
         else if err is 'Connection error with sys.4chan.org.'
           true
         else

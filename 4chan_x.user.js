@@ -6250,7 +6250,7 @@
         index = QR.replies.indexOf(this);
         if (QR.replies.length === 1) {
           new QR.reply().select();
-        } else if (this.el.id === 'selected') {
+        } else if (this === QR.selected) {
           (QR.replies[index - 1] || QR.replies[index + 1]).select();
         }
         QR.replies.splice(index, 1);
@@ -6303,29 +6303,70 @@
         }
         $.on(imgContainer, 'click', this.reload.bind(this));
         $.on(this.nodes.input, 'keydown', this.keydown.bind(this));
-        $.sync('captchas', this.count.bind(this));
-        this.count($.get('captchas', []));
+        $.sync('captchas', this.sync.bind(this));
+        this.sync($.get('captchas', []));
         this.reload();
         $.addClass(QR.nodes.el, 'has-captcha');
         return $.after(QR.nodes.com.parentNode, [imgContainer, inputContainer]);
       },
+      sync: function(captchas) {
+        this.captchas = captchas;
+        return this.count();
+      },
+      getOne: function() {
+        var captcha, challenge, response;
+        this.clear();
+        if (captcha = this.captchas.shift()) {
+          challenge = captcha.challenge, response = captcha.response;
+          this.count();
+          $.set('captchas', this.captchas);
+        } else {
+          challenge = this.nodes.img.alt;
+          if (response = this.nodes.input.value) {
+            this.reload();
+          }
+        }
+        if (response) {
+          response = response.trim();
+          if (!/\s/.test(response)) {
+            response = "" + response + " " + response;
+          }
+        }
+        return {
+          challenge: challenge,
+          response: response
+        };
+      },
       save: function() {
-        var captcha, captchas, response;
+        var response;
         if (!(response = this.nodes.input.value.trim())) {
           return;
         }
-        captchas = $.get('captchas', []);
-        while ((captcha = captchas[0]) && captcha.time < Date.now()) {
-          captchas.shift();
-        }
-        captchas.push({
+        this.captchas.push({
           challenge: this.nodes.challenge.firstChild.value,
           response: response,
-          time: this.timeout
+          timeout: this.timeout
         });
-        $.set('captchas', captchas);
-        this.count(captchas);
-        return this.reload();
+        this.count();
+        this.reload();
+        return $.set('captchas', this.captchas);
+      },
+      clear: function() {
+        var captcha, i, now, _i, _len, _ref;
+        now = Date.now();
+        _ref = this.captchas;
+        for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+          captcha = _ref[i];
+          if (captcha.timeout > now) {
+            break;
+          }
+        }
+        if (!i) {
+          return;
+        }
+        this.captchas = this.captchas.slice(i);
+        this.count();
+        return $.set('captchas', this.captchas);
       },
       load: function() {
         var challenge;
@@ -6333,11 +6374,12 @@
         challenge = this.nodes.challenge.firstChild.value;
         this.nodes.img.alt = challenge;
         this.nodes.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
-        return this.nodes.input.value = null;
+        this.nodes.input.value = null;
+        return this.clear();
       },
-      count: function(arr) {
+      count: function() {
         var count;
-        count = arr.length;
+        count = this.captchas.length;
         this.nodes.input.placeholder = (function() {
           switch (count) {
             case 0:
@@ -6466,7 +6508,7 @@
       return $.event('QRDialogCreation', null, dialog);
     },
     submit: function(e) {
-      var callbacks, captcha, captchas, challenge, err, filetag, m, opts, post, reply, response, textOnly, threadID, _ref;
+      var callbacks, challenge, err, filetag, m, opts, post, reply, response, textOnly, threadID, _ref, _ref1;
       if (e != null) {
         e.preventDefault();
       }
@@ -6508,28 +6550,9 @@
         err = 'No file selected.';
       }
       if (QR.captcha.isEnabled && !err) {
-        captchas = $.get('captchas', []);
-        while ((captcha = captchas[0]) && captcha.time < Date.now()) {
-          captchas.shift();
-        }
-        if (captcha = captchas.shift()) {
-          challenge = captcha.challenge;
-          response = captcha.response;
-        } else {
-          challenge = QR.captcha.nodes.img.alt;
-          if (response = QR.captcha.nodes.input.value) {
-            QR.captcha.reload();
-          }
-        }
-        $.set('captchas', captchas);
-        QR.captcha.count(captchas);
+        _ref1 = QR.captcha.getOne(), challenge = _ref1.challenge, response = _ref1.response;
         if (!response) {
           err = 'No valid captcha.';
-        } else {
-          response = response.trim();
-          if (!/\s/.test(response)) {
-            response = "" + response + " " + response;
-          }
         }
       }
       if (err) {
@@ -6620,7 +6643,7 @@
           if (/mistyped/i.test(err.textContent)) {
             err = 'Error: You seem to have mistyped the CAPTCHA.';
           }
-          QR.cooldown.auto = QR.captcha.isEnabled ? !!$.get('captchas', []).length : err === 'Connection error with sys.4chan.org.' ? true : false;
+          QR.cooldown.auto = QR.captcha.isEnabled ? !!QR.captcha.captchas.length : err === 'Connection error with sys.4chan.org.' ? true : false;
           QR.cooldown.set({
             delay: 2
           });
