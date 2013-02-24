@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.1.2 - 2013-02-23
+ * appchan x - Version 1.1.2 - 2013-02-24
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -6592,22 +6592,23 @@
       return Main.callbacks.push(this.node);
     },
     callbacks: [],
-    cb: function(node) {
+    cb: function(post, root) {
       var callback, _i, _len, _ref;
-      node.isInlined = true;
+      post.isCrosspost = post.isInlined = true;
+      post.threadID = $.x('ancestor::div[parent::div[@class="board"]]', root).id.match(/\d+$/)[0];
       _ref = Main.callbacks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
-        callback(node);
+        callback(post);
       }
     },
-    cb2: function(node) {
+    cb2: function(post) {
       var callback, _i, _len, _ref;
-      node.isInlined = true;
+      post.isInlined = true;
       _ref = QuoteInline.callbacks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
-        callback(node);
+        callback(post);
       }
     },
     node: function(post) {
@@ -6801,20 +6802,11 @@
       }
       UI.el = qp;
       UI.hover(e);
-      Get.post(board, threadID, postID, qp, function() {
-        var bq, img, post, _conf;
+      Get.post(board, threadID, postID, qp, function(post) {
+        var _conf;
         _conf = Conf;
-        bq = $('blockquote', qp);
-        Main.prettify(bq);
-        post = {
-          el: qp,
-          blockquote: bq,
-          isArchived: qp.className.contains('archivedPost')
-        };
-        if (img = $('img[data-md5]', qp)) {
-          post.fileInfo = img.parentNode.previousElementSibling;
-          post.img = img;
-        }
+        Main.prettify(post.blockquote);
+        post.isArchived = qp.className.contains('archivedPost');
         return QuotePreview.callback(post);
       });
       $.on(this, 'mousemove', UI.hover);
@@ -10522,7 +10514,7 @@
       }
     },
     parsePost: function(req, board, threadID, postID, root, cb) {
-      var post, posts, spoilerRange, status, url, _i, _len;
+      var post, postNode, posts, spoilerRange, status, url, _i, _len;
       status = req.status;
       if (status !== 200) {
         if (url = Redirect.post(board, postID)) {
@@ -10557,10 +10549,11 @@
           return;
         }
       }
+      post = Main.preParse(postNode = Get.cleanPost(Build.postFromObject(post, board)));
       if (cb) {
-        cb(post);
+        cb(post, root);
       }
-      return $.replace(root.firstChild, Get.cleanPost(Build.postFromObject(post, board)));
+      return $.replace(root.firstChild, postNode);
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
       var bq, comment, data, o, _ref;
@@ -11246,7 +11239,7 @@
         return $.prepend($.id('delform'), xupdate);
       }
     },
-    preParse: function(node, threadID) {
+    preParse: function(node) {
       var el, img, imgParent, parent, parentClass, post;
       parentClass = (parent = node.parentNode) ? parent.className : "";
       el = $('.post', node);
@@ -11255,7 +11248,7 @@
         el: el,
         "class": el.className,
         ID: el.id.match(/\d+$/)[0],
-        threadID: g.THREAD_ID || (parent ? $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0] : threadID),
+        threadID: g.THREAD_ID || (parent ? $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0] : void 0),
         isArchived: parentClass.contains('archivedPost'),
         isInlined: /\binline\b/.test(parentClass),
         isCrosspost: parentClass.contains('crosspost'),

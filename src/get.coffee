@@ -49,8 +49,10 @@ Get =
           root.textContent = "Post No.#{postID} was not found."
         return
 
-    cb(post) if cb
-    $.replace root.firstChild, Get.cleanPost Build.postFromObject post, board
+    post = Main.preParse postNode = Get.cleanPost Build.postFromObject post, board
+
+    cb(post, root) if cb
+    $.replace root.firstChild, postNode
 
   parseArchivedPost: (req, board, postID, root, cb) ->
     data = JSON.parse req.response
