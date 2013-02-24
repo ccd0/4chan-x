@@ -6,7 +6,7 @@ ThreadHiding =
     for thread in $$ '.thread'
       a = $.el 'a',
         className: 'hide_thread_button'
-        innerHTML: '<span>[<span></span>]</span>'
+        innerHTML: '<span>[ - ]</span>'
         href: 'javascript:;'
       $.on a, 'click', ->
         ThreadHiding.toggle $.x 'ancestor::div[@class="thread"][1]', @

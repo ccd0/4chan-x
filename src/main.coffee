@@ -313,8 +313,12 @@ Main =
       Main.observer.observe board,
         childList: true
         subtree: true
+      $.ready ->
+        Main.observer.disconnect()
     else
       $.on board, 'DOMNodeInserted', Main.listener
+      $.ready ->
+        $.off board, 'DOMNodeInserted', Main.listener
     return
 
   prune: ->
@@ -408,13 +412,8 @@ Main =
   observe: (mutations) ->
     nodes = []
     for mutation in mutations
-      for addedNode in mutation.addedNodes
-        if /\bpostContainer\b/.test addedNode.className
-          nodes.push Main.preParse addedNode
+      nodes.push Main.preParse addedNode for addedNode in mutation.addedNodes when /\bpostContainer\b/.test addedNode.className
     Main.node nodes if nodes.length
-
-    if d.readyState is 'complete'
-      Main.observer.disconnect()
 
   listener: (e) ->
     {target} = e

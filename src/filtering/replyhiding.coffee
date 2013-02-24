@@ -7,11 +7,11 @@ ReplyHiding =
     el = $ '.postInfo', post.root
     hide = $.el 'span'
       className: 'hide_reply_button'
-      innerHTML: "<a href='javascript:;' id='hide#{post.ID}'>[ - ]</a>"
+      innerHTML: " <a href='javascript:;' id='hide#{post.ID}'>[ - ]</a>"
     $.on hide.firstChild, 'click', ->
       ReplyHiding.toggle button = @parentNode.parentNode, root = $.id("pc#{id = @id[4..]}"), id
 
-    $.add el, [$.tn(' '), hide]
+    $.add el, hide
     if post.ID of g.hiddenReplies
       ReplyHiding.hide post.root
 

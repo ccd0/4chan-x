@@ -867,16 +867,17 @@ div.navLinks > a:first-of-type::after {
     }[_conf.Sidebar] or (252 + Style.sidebarOffset.W)
 
     Style.replyMargin = {
-      none:     0
       minimal:  1
       small:    2
       medium:   4
       large:    8
-    }[_conf["Reply Spacing"]]
+    }[_conf["Reply Spacing"]] or 0
 
     css = """
 /* Cleanup */
 #postForm,
+.fileText:hover .fntrunc,
+.fileText:not(:hover) .fnfull,
 .hidden,
 .hidden_thread ~ div,
 .hidden_thread ~ a,
@@ -904,22 +905,50 @@ body {
 hr {
   clear: both;
 }
-/* Replies */
-.hide_reply_button {
-  float: right;
-}
-.post .menu_button {
-  float: right;
-}
-.menu_button > span {
+/* Symbols */
+.dropmarker {
   display: inline-block;
   margin: 2px 2px 3px;
   border-top: .5em solid;
   border-right: .3em solid transparent;
   border-left: .3em solid transparent;
 }
+/* Dialogs */
+#iHover,
+#qp,
+#qr {
+  position: fixed;
+}
+#globalMessage {
+
+}
+#updater {
+  position: fixed;
+}
+#watcher {
+  position: fixed;
+}
+#menu {
+  position: absolute
+}
+/* Posts */
+.summary {
+margin-bottom: #{Style.replyMargin}px;
+}
+.postContainer {
+margin-bottom: #{Style.replyMargin}px;
+}
+.hide_reply_button {
+  float: right;
+  margin: 0 3px;
+}
+.post .menu_button {
+  float: right;
+  margin: 0 3px;
+}
 .fileThumb {
   float: left;
+  margin: 3px 20px;
 }
 .reply.post {
   display: inline-block;
@@ -975,6 +1004,7 @@ input:checked + .rice {
   overflow-x: hidden;
   z-index: 99999;
 }
+
 /* Post Form */
 
 """

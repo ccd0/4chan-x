@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.1.2 - 2013-02-23
+ * appchan x - Version 1.1.2 - 2013-02-24
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -3182,13 +3182,13 @@
       el = $('.postInfo', post.root);
       hide = $.el('span', {
         className: 'hide_reply_button',
-        innerHTML: "<a href='javascript:;' id='hide" + post.ID + "'>[ - ]</a>"
+        innerHTML: " <a href='javascript:;' id='hide" + post.ID + "'>[ - ]</a>"
       });
       $.on(hide.firstChild, 'click', function() {
         var button, id, root;
         return ReplyHiding.toggle(button = this.parentNode.parentNode, root = $.id("pc" + (id = this.id.slice(4))), id);
       });
-      $.add(el, [$.tn(' '), hide]);
+      $.add(el, hide);
       if (post.ID in g.hiddenReplies) {
         return ReplyHiding.hide(post.root);
       }
@@ -3295,7 +3295,7 @@
         thread = _ref[_i];
         a = $.el('a', {
           className: 'hide_thread_button',
-          innerHTML: '<span>[<span></span>]</span>',
+          innerHTML: '<span>[ - ]</span>',
           href: 'javascript:;'
         });
         $.on(a, 'click', function() {
@@ -4363,7 +4363,7 @@
       this.a = $.el('a', {
         className: 'menu_button',
         href: 'javascript:;',
-        innerHTML: '[<span></span>]'
+        innerHTML: '[<span class=dropmarker></span>]'
       });
       this.el = $.el('div', {
         className: 'reply dialog',
@@ -8773,13 +8773,12 @@
         hide: 2
       }[_conf.Sidebar] || (252 + Style.sidebarOffset.W);
       Style.replyMargin = {
-        none: 0,
         minimal: 1,
         small: 2,
         medium: 4,
         large: 8
-      }[_conf["Reply Spacing"]];
-      return css = "/* Cleanup */\n#postForm,\n.hidden,\n.hidden_thread ~ div,\n.hidden_thread ~ a,\n.mobile,\n.postingMode,\n.riced,\n.sideArrows,\n[hidden] {\n  display: none;\n}\n/* Defaults */\na {\n  text-decoration: none;\n}\nbody {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 1px;\n  margin-bottom: 1px;\n  margin-" + Style.sidebarLocation[0] + ": " + Style.sidebar + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0 " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px 0 " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n}\nhr {\n  clear: both;\n}\n/* Replies */\n.hide_reply_button {\n  float: right;\n}\n.post .menu_button {\n  float: right;\n}\n.menu_button > span {\n  display: inline-block;\n  margin: 2px 2px 3px;\n  border-top: .5em solid;\n  border-right: .3em solid transparent;\n  border-left: .3em solid transparent;\n}\n.fileThumb {\n  float: left;\n}\n.reply.post {\n  display: inline-block;\n  " + (_conf["Fit Width Replies"] ? "width: 100%;" : "") + "\n}\n/* Reply Clearfix */\n.reply.post blockquote {\n  clear: right;\n}\n/* Element Replacing */\n/* Checkboxes */\n.rice {\n  cursor: pointer;\n  width: 9px;\n  height: 9px;\n  margin: 2px 3px;\n  display: inline-block;\n  vertical-align: bottom;\n}\ninput:checked + .rice {\n  background-attachment: scroll;\n  background-repeat: no-repeat;\n  background-position: bottom right;\n}\n/* Selects */\n.selectrice {\n  position: relative;\n  cursor: default;\n  overflow: hidden;\n  text-align: left;\n}\n.selectrice::after {\n  content: \"\";\n  border-right: .25em solid transparent;\n  border-left: .25em solid transparent;\n  position: absolute;\n  right: .4em;\n  top: .5em;\n}\n.selectrice::before {\n  content: \"\";\n  height: 1.7em;\n  position: absolute;\n  right: 1.3em;\n  top: 0;\n}\n/* Select Dropdown */\n.selectrice ul {\n  padding: 0;\n  position: fixed;\n  max-height: 120px;\n  overflow-y: auto;\n  overflow-x: hidden;\n  z-index: 99999;\n}\n/* Post Form */\n";
+      }[_conf["Reply Spacing"]] || 0;
+      return css = "/* Cleanup */\n#postForm,\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.hidden,\n.hidden_thread ~ div,\n.hidden_thread ~ a,\n.mobile,\n.postingMode,\n.riced,\n.sideArrows,\n[hidden] {\n  display: none;\n}\n/* Defaults */\na {\n  text-decoration: none;\n}\nbody {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 1px;\n  margin-bottom: 1px;\n  margin-" + Style.sidebarLocation[0] + ": " + Style.sidebar + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0 " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px 0 " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n}\nhr {\n  clear: both;\n}\n/* Symbols */\n.dropmarker {\n  display: inline-block;\n  margin: 2px 2px 3px;\n  border-top: .5em solid;\n  border-right: .3em solid transparent;\n  border-left: .3em solid transparent;\n}\n/* Dialogs */\n#iHover,\n#qp,\n#qr {\n  position: fixed;\n}\n#globalMessage {\n\n}\n#updater {\n  position: fixed;\n}\n#watcher {\n  position: fixed;\n}\n#menu {\n  position: absolute\n}\n/* Posts */\n.summary {\nmargin-bottom: " + Style.replyMargin + "px;\n}\n.postContainer {\nmargin-bottom: " + Style.replyMargin + "px;\n}\n.hide_reply_button {\n  float: right;\n  margin: 0 3px;\n}\n.post .menu_button {\n  float: right;\n  margin: 0 3px;\n}\n.fileThumb {\n  float: left;\n  margin: 3px 20px;\n}\n.reply.post {\n  display: inline-block;\n  " + (_conf["Fit Width Replies"] ? "width: 100%;" : "") + "\n}\n/* Reply Clearfix */\n.reply.post blockquote {\n  clear: right;\n}\n/* Element Replacing */\n/* Checkboxes */\n.rice {\n  cursor: pointer;\n  width: 9px;\n  height: 9px;\n  margin: 2px 3px;\n  display: inline-block;\n  vertical-align: bottom;\n}\ninput:checked + .rice {\n  background-attachment: scroll;\n  background-repeat: no-repeat;\n  background-position: bottom right;\n}\n/* Selects */\n.selectrice {\n  position: relative;\n  cursor: default;\n  overflow: hidden;\n  text-align: left;\n}\n.selectrice::after {\n  content: \"\";\n  border-right: .25em solid transparent;\n  border-left: .25em solid transparent;\n  position: absolute;\n  right: .4em;\n  top: .5em;\n}\n.selectrice::before {\n  content: \"\";\n  height: 1.7em;\n  position: absolute;\n  right: 1.3em;\n  top: 0;\n}\n/* Select Dropdown */\n.selectrice ul {\n  padding: 0;\n  position: fixed;\n  max-height: 120px;\n  overflow-y: auto;\n  overflow-x: hidden;\n  z-index: 99999;\n}\n\n/* Post Form */\n";
     },
     theme: function(theme) {
       var background, backgroundC, bgColor, css, fileHeading, icons, replyHeading, _conf;
@@ -11088,8 +11087,14 @@
           childList: true,
           subtree: true
         });
+        $.ready(function() {
+          return Main.observer.disconnect();
+        });
       } else {
         $.on(board, 'DOMNodeInserted', Main.listener);
+        $.ready(function() {
+          return $.off(board, 'DOMNodeInserted', Main.listener);
+        });
       }
     },
     prune: function() {
@@ -11219,10 +11224,7 @@
         }
       }
       if (nodes.length) {
-        Main.node(nodes);
-      }
-      if (d.readyState === 'complete') {
-        return Main.observer.disconnect();
+        return Main.node(nodes);
       }
     },
     listener: function(e) {
