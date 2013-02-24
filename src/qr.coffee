@@ -15,14 +15,8 @@ QR =
     $.on link, 'click', ->
       $.event 'CloseMenu'
       QR.open()
-      if g.BOARD.ID is 'f'
-        if g.VIEW is 'index'
-          QR.threadSelector.value = '9999'
-      else if g.VIEW is 'thread'
-        QR.threadSelector.value = g.THREAD
-      else
-        QR.threadSelector.value = 'new'
-      $('textarea', QR.el).focus()
+      QR.resetThreadSelector()
+      QR.nodes.com.focus()
     $.event 'AddMenuEntry',
       type: 'header'
       el: link
@@ -49,37 +43,37 @@ QR =
     QR.open()
     QR.hide() if Conf['Auto Hide QR']
   open: ->
-    if QR.el
-      QR.el.hidden = false
+    if QR.nodes
+      QR.nodes.el.hidden = false
       QR.unhide()
       return
     try
       QR.dialog()
     catch err
-      delete QR.el
+      delete QR.nodes
       Main.handleErrors
         message: 'Quick Reply dialog creation crashed.'
         error: err
   close: ->
-    QR.el.hidden = true
+    QR.nodes.el.hidden = true
     QR.abort()
     d.activeElement.blur()
-    $.rmClass QR.el, 'dump'
+    $.rmClass QR.nodes.el, 'dump'
     for i in QR.replies
       QR.replies[0].rm()
     QR.cooldown.auto = false
     QR.status()
     QR.resetFileInput()
-    if not Conf['Remember Spoiler'] and (spoiler = $.id 'spoiler').checked
-      spoiler.click()
+    if !Conf['Remember Spoiler'] and QR.nodes.spoiler.checked
+      QR.nodes.spoiler.click()
     QR.cleanNotifications()
   hide: ->
     d.activeElement.blur()
-    $.addClass QR.el, 'autohide'
-    $.id('autohide').checked = true
+    $.addClass QR.nodes.el, 'autohide'
+    QR.nodes.autohide.checked = true
   unhide: ->
-    $.rmClass QR.el, 'autohide'
-    $.id('autohide').checked = false
+    $.rmClass QR.nodes.el, 'autohide'
+    QR.nodes.autohide.checked = false
   toggleHide: ->
     if @checked
       QR.hide()
@@ -102,29 +96,29 @@ QR =
       el.removeAttribute 'style'
     if QR.captcha.isEnabled and /captcha|verification/i.test el.textContent
       # Focus the captcha input on captcha error.
-      $('[autocomplete]', QR.el).focus()
+      QR.captcha.nodes.input.focus()
     alert el.textContent if d.hidden
-    QR.lastNotifications.push new Notification 'warning', el
-  lastNotifications: []
+    QR.notifications.push new Notification 'warning', el
+  notifications: []
   cleanNotifications: ->
-    for notification in QR.lastNotifications
+    for notification in QR.notifications
       notification.close()
-    QR.lastNotification = []
+    QR.notifications = []
 
   status: (data={}) ->
-    return unless QR.el
+    return unless QR.nodes
     if g.DEAD
       value    = 404
       disabled = true
       QR.cooldown.auto = false
     value = data.progress or QR.cooldown.seconds or value
-    {input} = QR.status
-    input.value =
+    {status} = QR.nodes
+    status.value =
       if QR.cooldown.auto
         if value then "Auto #{value}" else 'Auto'
       else
         value or 'Submit'
-    input.disabled = disabled or false
+    status.disabled = disabled or false
 
   cooldown:
     init: ->
@@ -137,9 +131,9 @@ QR =
         sage: if board is 'q' then 600 else 60
         file: if board is 'q' then 300 else 30
         post: if board is 'q' then 60  else 30
-      QR.cooldown.cooldowns = $.get "#{board}.cooldown", {}
+      QR.cooldown.cooldowns = $.get "cooldown.#{board}", {}
       QR.cooldown.start()
-      $.sync "#{board}.cooldown", QR.cooldown.sync
+      $.sync "cooldown.#{board}", QR.cooldown.sync
     start: ->
       return if QR.cooldown.isCounting
       QR.cooldown.isCounting = true
@@ -158,26 +152,25 @@ QR =
         isSage  = /sage/i.test data.post.email
         hasFile = !!data.post.file
         isReply = data.isReply
-        type =
-          unless isReply
-            'thread'
-          else if isSage
-            'sage'
-          else if hasFile
-            'file'
-          else
-            'post'
+        type = unless isReply
+          'thread'
+        else if isSage
+          'sage'
+        else if hasFile
+          'file'
+        else
+          'post'
         cooldown =
           isReply: isReply
           isSage:  isSage
           hasFile: hasFile
           timeout: start + QR.cooldown.types[type] * $.SECOND
       QR.cooldown.cooldowns[start] = cooldown
-      $.set "#{g.BOARD}.cooldown", QR.cooldown.cooldowns
+      $.set "cooldown.#{g.BOARD}", QR.cooldown.cooldowns
       QR.cooldown.start()
     unset: (id) ->
       delete QR.cooldown.cooldowns[id]
-      $.set "#{g.BOARD}.cooldown", QR.cooldown.cooldowns
+      $.set "cooldown.#{g.BOARD}", QR.cooldown.cooldowns
     count: ->
       if Object.keys(QR.cooldown.cooldowns).length
         setTimeout QR.cooldown.count, 1000
@@ -188,11 +181,10 @@ QR =
         QR.status()
         return
 
-      isReply =
-        if g.BOARD.ID is 'f' and g.VIEW is 'thread'
-          true
-        else
-          QR.threadSelector.value isnt 'new'
+      isReply = if g.BOARD.ID is 'f'
+        g.VIEW is 'thread'
+      else
+        QR.nodes.thread.value isnt 'new'
       if isReply
         post    = QR.replies[0]
         isSage  = /sage/i.test post.email
@@ -213,15 +205,14 @@ QR =
         if isReply is cooldown.isReply
           # Only cooldowns relevant to this post can set the seconds value.
           # Unset outdated cooldowns that can no longer impact us.
-          type =
-            unless isReply
-              'thread'
-            else if isSage and cooldown.isSage
-              'sage'
-            else if hasFile and cooldown.hasFile
-              'file'
-            else
-              'post'
+          type = unless isReply
+            'thread'
+          else if isSage and cooldown.isSage
+            'sage'
+          else if hasFile and cooldown.hasFile
+            'file'
+          else
+            'post'
           elapsed = Math.floor (now - start) / 1000
           if elapsed >= 0 # clock changed since then?
             seconds = Math.max seconds, types[type] - elapsed
@@ -243,23 +234,23 @@ QR =
     sel = d.getSelection()
     selectionRoot = $.x 'ancestor::div[contains(@class,"postContainer")][1]', sel.anchorNode
     post = Get.postFromNode @
-    thread = g.BOARD.posts[Get.contextFromLink(@).thread]
+    {OP} = Get.contextFromLink(@).thread
 
     if (s = sel.toString().trim()) and post.nodes.root is selectionRoot
       # XXX Opera doesn't retain `\n`s?
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
 
-    text = if !text and post is thread and (!QR.el or QR.el.hidden)
+    text = if !text and post is OP and (!QR.nodes or QR.nodes.el.hidden)
       # Don't quote the OP unless the QR was already opened once.
       ""
     else
       ">>#{post}\n#{text}"
 
     QR.open()
-    ta = $ 'textarea', QR.el
+    ta = QR.nodes.com
     if QR.threadSelector and !ta.value and g.BOARD.ID isnt 'f'
-      QR.threadSelector.value = thread.ID
+      QR.threadSelector.value = OP.ID
 
     caretPos = ta.selectionStart
     # Replace selection for text.
@@ -270,11 +261,11 @@ QR =
     ta.focus()
 
     # Fire the 'input' event
-    ta.dispatchEvent new Event 'input'
+    $.event 'input', null, ta
 
   characterCount: ->
-    counter = QR.charaCounter
-    count   = @textLength
+    counter = QR.nodes.charCount
+    count   = QR.nodes.com.textLength
     counter.textContent = count
     counter.hidden      = count < 1000
     (if count > 1500 then $.addClass else $.rmClass) counter, 'warning'
@@ -292,15 +283,20 @@ QR =
     return unless e.dataTransfer.files.length
     e.preventDefault()
     QR.open()
-    QR.fileInput.call e.dataTransfer
-    $.addClass QR.el, 'dump'
-  fileInput: ->
+    QR.fileInput e.dataTransfer.files
+    $.addClass QR.nodes.el, 'dump'
+  fileInput: (files) ->
+    unless files instanceof FileList
+      files = @files
+    {length} = files
+    return unless length
+    max = QR.nodes.fileInput.max
     QR.cleanNotifications()
     # Set or change current reply's file.
-    if @files.length is 1
-      file = @files[0]
-      if file.size > @max
-        QR.error "File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString @max})."
+    if length is 1
+      file = files[0]
+      if file.size > max
+        QR.error "File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
         QR.resetFileInput()
       else unless file.type in QR.mimeTypes
         QR.error 'Unsupported file type.'
@@ -309,9 +305,9 @@ QR =
         QR.selected.setFile file
       return
     # Create new replies with these files.
-    for file in @files
-      if file.size > @max
-        QR.error "File #{file.name} is too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString @max})."
+    for file in files
+      if file.size > max
+        QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
       else unless file.type in QR.mimeTypes
         QR.error "#{file.name}: Unsupported file type."
       unless QR.replies[QR.replies.length - 1].file
@@ -319,16 +315,24 @@ QR =
         QR.replies[QR.replies.length - 1].setFile file
       else
         new QR.reply().setFile file
-    $.addClass QR.el, 'dump'
+    $.addClass QR.nodes.el, 'dump'
     QR.resetFileInput() # reset input
   resetFileInput: ->
-    $('[type=file]', QR.el).value = null
+    QR.nodes.fileInput.value = null
+  resetThreadSelector: ->
+    if g.BOARD.ID is 'f'
+      if g.VIEW is 'index'
+        QR.nodes.flashTag.value = '9999'
+    else if g.VIEW is 'thread'
+      QR.nodes.thread.value = g.THREAD
+    else
+      QR.nodes.thread.value = 'new'
 
   replies: []
   reply: class
     constructor: ->
       # set values, or null, to avoid 'undefined' values in inputs
-      prev     = QR.replies[QR.replies.length-1]
+      prev     = QR.replies[QR.replies.length - 1]
       persona  = $.get 'QR.persona', {}
       @name    = if prev then prev.name else persona.name or null
       @email   = if prev and !/^sage$/.test prev.email then prev.email   else persona.email or null
@@ -336,33 +340,36 @@ QR =
       @spoiler = if prev and Conf['Remember Spoiler']  then prev.spoiler else false
       @com = null
 
-      @el = $.el 'a',
+      el = $.el 'a',
         className: 'qrpreview'
         draggable: true
         href: 'javascript:;'
         innerHTML: '<a class=remove>×</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
-      $('input', @el).checked = @spoiler
-      $.on @el,               'click',      => @select()
-      $.on $('.remove', @el), 'click',  (e) =>
-        e.stopPropagation()
-        @rm()
-      $.on $('label',   @el), 'click',  (e) => e.stopPropagation()
-      $.on $('input',   @el), 'change', (e) =>
-        @spoiler = e.target.checked
-        $.id('spoiler').checked = @spoiler if @el.id is 'selected'
-      $.before $('#addReply', QR.el), @el
 
-      $.on @el, 'dragstart', @dragStart
-      $.on @el, 'dragenter', @dragEnter
-      $.on @el, 'dragleave', @dragLeave
-      $.on @el, 'dragover',  @dragOver
-      $.on @el, 'dragend',   @dragEnd
-      $.on @el, 'drop',      @drop
+      @nodes =
+        el:      el
+        rm:      el.firstChild
+        label:   $ 'label', el
+        spoiler: $ 'input', el
+        span:    el.lastChild
+
+      @nodes.spoiler.checked = @spoiler
+
+      $.on el,             'click',  @select.bind @
+      $.on @nodes.rm,      'click',  (e) => e.stopPropagation(); @rm()
+      $.on @nodes.label,   'click',  (e) => e.stopPropagation()
+      $.on @nodes.spoiler, 'change', (e) =>
+        @spoiler = e.target.checked
+        QR.nodes.spoiler.checked = @spoiler if @ is QR.selected
+      $.before QR.nodes.addReply, el
+
+      for event in ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop']
+        $.on el, event.toLowerCase(), @[event]
 
       QR.replies.push @
     setFile: (@file) ->
-      @el.title = "#{file.name} (#{$.bytesToString file.size})"
-      $('label', @el).hidden = false if QR.spoiler
+      @nodes.el.title     = "#{file.name} (#{$.bytesToString file.size})"
+      @nodes.label.hidden = false if QR.spoiler
       unless /^image/.test file.type
         @el.style.backgroundImage = null
         return
@@ -382,7 +389,7 @@ QR =
         s = 90*3
         if img.height < s or img.width < s
           @url = fileURL
-          @el.style.backgroundImage = "url(#{@url})"
+          @nodes.el.style.backgroundImage = "url(#{@url})"
           return
         if img.height <= img.width
           img.width  = s / img.height * img.width
@@ -394,7 +401,13 @@ QR =
         c.height = img.height
         c.width  = img.width
         c.getContext('2d').drawImage img, 0, 0, img.width, img.height
-        # Support for toBlob fucking when?
+        applyBlob = (blob) =>
+          @url = URL.createObjectURL blob
+          @nodes.el.style.backgroundImage = "url(#{@url})"
+          URL.revokeObjectURL fileURL
+        if c.toBlob
+          c.toBlob applyBlob
+          return
         data = atob c.toDataURL().split(',')[1]
 
         # DataUrl to Binary code from Aeosynth's 4chan X repo
@@ -403,39 +416,47 @@ QR =
         for i in  [0...l]
           ui8a[i] = data.charCodeAt i
 
-        @url = URL.createObjectURL new Blob [ui8a], type: 'image/png'
-        @el.style.backgroundImage = "url(#{@url})"
-        URL.revokeObjectURL fileURL
+        applyBlob new Blob [ui8a], type: 'image/png'
 
       img.src = fileURL
     rmFile: ->
       QR.resetFileInput()
       delete @file
-      @el.title = null
-      @el.style.backgroundImage = null
-      $('label', @el).hidden = true if QR.spoiler
+      @nodes.el.title = null
+      @nodes.el.style.backgroundImage = null
+      @nodes.label.hidden = true if QR.spoiler
       return unless window.URL
       URL.revokeObjectURL @url
     select: ->
       if QR.selected
-        QR.selected.el.id = null
+        QR.selected.nodes.el.id = null
         QR.selected.forceSave()
       QR.selected = @
-      @el.id = 'selected'
+      @nodes.el.id = 'selected'
       # Scroll the list to center the focused reply.
-      rectEl   = @el.getBoundingClientRect()
-      rectList = @el.parentNode.getBoundingClientRect()
-      @el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
+      rectEl   = @nodes.el.getBoundingClientRect()
+      rectList = @nodes.el.parentNode.getBoundingClientRect()
+      @nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
       # Load this reply's values.
       for name in ['name', 'email', 'sub', 'com']
-        $("[name=#{name}]", QR.el).value = @[name]
-      QR.characterCount.call $ 'textarea', QR.el
-      $('#spoiler', QR.el).checked = @spoiler
+        QR.nodes[name].value = @[name]
+      QR.characterCount()
+      QR.nodes.spoiler.checked = @spoiler
+    save: (input) ->
+      {value} = input
+      @[input.name] = value
+      return if input.nodeName isnt 'TEXTAREA'
+      @nodes.span.textContent = value
+      QR.characterCount()
+      # Disable auto-posting if you're typing in the first reply
+      # during the last 5 seconds of the cooldown.
+      if QR.cooldown.auto and @ is QR.replies[0] and 0 < QR.cooldown.seconds <= 5
+        QR.cooldown.auto = false
     forceSave: ->
       # Do this in case people use extensions
       # that do not trigger the `input` event.
       for name in ['name', 'email', 'sub', 'com']
-        @[name] = $("[name=#{name}]", QR.el).value
+        @save QR.nodes[name]
       return
     dragStart: ->
       $.addClass @, 'drag'
@@ -463,7 +484,7 @@ QR =
         $.rmClass el, 'over'
     rm: ->
       QR.resetFileInput()
-      $.rm @el
+      $.rm @nodes.el
       index = QR.replies.indexOf @
       if QR.replies.length is 1
         new QR.reply().select()
@@ -475,84 +496,80 @@ QR =
 
   captcha:
     init: ->
-      # XXX CoffeeScrit's indexOf doesn't wanna work here ???
-      # return if 'pass_enabled=1' in d.cookie
       return if d.cookie.indexOf('pass_enabled=1') >= 0
       return unless @isEnabled = !!$.id 'captchaFormPart'
-      if $.id 'recaptcha_challenge_field_holder'
-        @ready()
-      else
-        @onready = => @ready()
-        $.on $.id('recaptcha_widget_div'), 'DOMNodeInserted', @onready
+      $.asap (-> $.id 'recaptcha_challenge_field_holder'), @ready.bind @
     ready: ->
-      if @challenge = $.id 'recaptcha_challenge_field_holder'
-        $.off $.id('recaptcha_widget_div'), 'DOMNodeInserted', @onready
-        delete @onready
-      else
-        return
-      $.addClass QR.el, 'captcha'
-      $.after $('.textarea', QR.el), $.el 'div',
+      imgContainer = $.el 'div',
         className: 'captchaimg'
         title: 'Reload'
         innerHTML: '<img>'
-      $.after $('.captchaimg', QR.el), $.el 'div',
+      inputContainer = $.el 'div',
         className: 'captchainput'
         innerHTML: '<input title=Verification class=field autocomplete=off size=1>'
-      @img   = $ '.captchaimg > img', QR.el
-      @input = $ '.captchainput > input', QR.el
-      $.on @img.parentNode, 'click',              @reload
-      $.on @input,          'keydown',            @keydown
-      $.on @challenge,      'DOMNodeInserted', => @load()
-      $.sync 'captchas', (arr) => @count arr.length
-      @count $.get('captchas', []).length
+      @nodes =
+        challenge:      $.id 'recaptcha_challenge_field_holder'
+        imgContainer:   imgContainer
+        inputContainer: inputContainer
+        img:            imgContainer.firstChild
+        input:          inputContainer.firstChild
+
+      $.on imgContainer,     'click',           @reload.bind @
+      $.on @nodes.input,     'keydown',         @keydown.bind @
+      $.on @nodes.challenge, 'DOMNodeInserted', @load.bind @
+      $.sync 'captchas', @count.bind @
+      @count $.get 'captchas', []
       # start with an uncached captcha
       @reload()
+
+      $.addClass QR.nodes.el, 'has-captcha'
+      $.after QR.nodes.com.parentNode, [imgContainer, inputContainer]
     save: ->
-      return unless response = @input.value
+      return unless response = @nodes.input.value.trim()
       captchas = $.get 'captchas', []
       # Remove old captchas.
       while (captcha = captchas[0]) and captcha.time < Date.now()
         captchas.shift()
       captchas.push
-        challenge: @challenge.firstChild.value
+        challenge: @nodes.challenge.firstChild.value
         response:  response
         time:      @timeout
       $.set 'captchas', captchas
-      @count captchas.length
+      @count captchas
       @reload()
     load: ->
       # -1 minute to give upload some time.
       @timeout  = Date.now() + $.unsafeWindow.RecaptchaState.timeout * $.SECOND - $.MINUTE
-      challenge = @challenge.firstChild.value
-      @img.alt  = challenge
-      @img.src  = "//www.google.com/recaptcha/api/image?c=#{challenge}"
-      @input.value = null
-    count: (count) ->
-      @input.placeholder = switch count
+      challenge = @nodes.challenge.firstChild.value
+      @nodes.img.alt = challenge
+      @nodes.img.src = "//www.google.com/recaptcha/api/image?c=#{challenge}"
+      @nodes.input.value = null
+    count: (arr) ->
+      count = arr.length
+      @nodes.input.placeholder = switch count
         when 0
           'Verification (Shift + Enter to cache)'
         when 1
           'Verification (1 cached captcha)'
         else
           "Verification (#{count} cached captchas)"
-      @input.alt = count # For XTRM RICE.
+      @nodes.input.alt = count # For XTRM RICE.
     reload: (focus) ->
       # the 't' argument prevents the input from being focused
       $.unsafeWindow.Recaptcha.reload 't'
       # Focus if we meant to.
-      QR.captcha.input.focus() if focus
+      @nodes.input.focus() if focus
     keydown: (e) ->
-      c = QR.captcha
-      if e.keyCode is 8 and not c.input.value
-        c.reload()
+      if e.keyCode is 8 and not @nodes.input.value
+        @reload()
       else if e.keyCode is 13 and e.shiftKey
-        c.save()
+        @save()
       else
         return
       e.preventDefault()
 
   dialog: ->
-    QR.el = UI.dialog 'qr', 'top:0;right:0;', """
+    dialog = UI.dialog 'qr', 'top:0;right:0;', """
     <div class=move>Quick Reply <input type=checkbox id=autohide title=Auto-hide><span> <a href=javascript:; class=close title=Close>×</a></span></div>
     <form>
       <div class=persona><input id=dump type=button title='Dump list' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
@@ -563,8 +580,27 @@ QR =
     </form>
     """
 
+    QR.nodes = nodes =
+      el:          dialog
+      move:        $ '.move',         dialog
+      autohide:    $ '#autohide',     dialog
+      close:       $ '.close',        dialog
+      form:        $ 'form',          dialog
+      dump:        $ '#dump',         dialog
+      name:        $ '[name=name]',   dialog
+      email:       $ '[name=email]',  dialog
+      sub:         $ '[name=sub]',    dialog
+      com:         $ '[name=com]',    dialog
+      replies:     $ '#replies',      dialog
+      repliesList: $ '#repliesList',  dialog
+      addReply:    $ '#addReply',     dialog
+      charCount:   $ '#charCount',    dialog
+      fileInput:   $ '[type=file]',   dialog
+      spoiler:     $ '#spoiler',      dialog
+      status:      $ '[type=submit]', dialog
+
     # Allow only this board's supported files.
-    mimeTypes = $('ul.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
+    mimeTypes = $('ul.rules > li').textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
       switch type
         when 'jpg'
           'image/jpeg'
@@ -577,66 +613,50 @@ QR =
     QR.mimeTypes = mimeTypes.split ', '
     # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
     QR.mimeTypes.push ''
-    fileInput        = $ 'input[type=file]', QR.el
-    fileInput.max    = $('input[name=MAX_FILE_SIZE]').value
-    fileInput.accept = mimeTypes if $.engine isnt 'presto' # Opera's accept attribute is fucked up
+    nodes.fileInput.max    = $('input[name=MAX_FILE_SIZE]').value
+    nodes.fileInput.accept = mimeTypes if $.engine isnt 'presto' # Opera's accept attribute is fucked up
 
-    QR.spoiler     = !!$ 'input[name=spoiler]'
-    spoiler        = $ '#spoilerLabel', QR.el
-    spoiler.hidden = !QR.spoiler
+    QR.spoiler = !!$ 'input[name=spoiler]'
+    nodes.spoiler.parentNode.hidden = !QR.spoiler
 
-    QR.charaCounter = $ '#charCount', QR.el
-    ta              = $ 'textarea',    QR.el
-
-    span = $('.move > span', QR.el)
-
-    # Make a list of visible threads.
+    span = nodes.autohide.nextElementSibling
     if g.BOARD.ID is 'f'
       if g.VIEW is 'index'
-        QR.threadSelector = $('select[name=filetag]').cloneNode true
-    else
-      QR.threadSelector = $.el 'select',
-        title: 'Create a new thread / Reply to a thread'
+        nodes.flashTag = $('select[name=filetag]').cloneNode true
+        $.prepend span, nodes.flashTag
+    else # Make a list of visible threads.
+      nodes.thread = $.el 'select',
+        title: 'Create a new thread / Reply'
       threads = '<option value=new>New thread</option>'
       for key, thread of g.BOARD.threads
         threads += "<option value=#{thread.ID}>Thread No.#{thread.ID}</option>"
-      QR.threadSelector.innerHTML = threads
-      if g.VIEW is 'thread'
-        QR.threadSelector.value = g.THREAD
-    if QR.threadSelector
-      $.prepend span, QR.threadSelector
-    $.on span,                  'mousedown', (e) -> e.stopPropagation()
-    $.on $('#autohide', QR.el), 'change',    QR.toggleHide
-    $.on $('.close',    QR.el), 'click',     QR.close
-    $.on $('#dump',     QR.el), 'click',     -> QR.el.classList.toggle 'dump'
-    $.on $('#addReply', QR.el), 'click',     -> new QR.reply().select()
-    $.on $('form',      QR.el), 'submit',    QR.submit
-    $.on ta,                    'input',     -> QR.selected.el.lastChild.textContent = @value
-    $.on ta,                    'input',     QR.characterCount
-    $.on fileInput,             'change',    QR.fileInput
-    $.on fileInput,             'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
-    $.on spoiler.firstChild,    'change',    -> $('input', QR.selected.el).click()
+      nodes.thread.innerHTML = threads
+      $.prepend span, nodes.thread
+    QR.resetThreadSelector()
+
+    $.on span,            'mousedown', (e) -> e.stopPropagation()
+    $.on nodes.autohide,  'change',    QR.toggleHide
+    $.on nodes.close,     'click',     QR.close
+    $.on nodes.dump,      'click',     -> QR.nodes.el.classList.toggle 'dump'
+    $.on nodes.addReply,  'click',     -> new QR.reply().select()
+    $.on nodes.form,      'submit',    QR.submit
+    $.on nodes.fileInput, 'change',    QR.fileInput
+    $.on nodes.fileInput, 'click',     (e) -> if e.shiftKey then QR.selected.rmFile(); e.preventDefault()
+    $.on nodes.spoiler,   'change',    -> $('input', QR.selected.el).click()
 
     new QR.reply().select()
     # save selected reply's data
     for name in ['name', 'email', 'sub', 'com']
-      # The input event replaces keyup, change and paste events.
-      $.on $("[name=#{name}]", QR.el), 'input', ->
-        QR.selected[@name] = @value
-        # Disable auto-posting if you're typing in the first reply
-        # during the last 5 seconds of the cooldown.
-        if QR.cooldown.auto and QR.selected is QR.replies[0] and 0 < QR.cooldown.seconds <= 5
-          QR.cooldown.auto = false
+      $.on nodes[name], 'input', -> QR.selected.save @
 
-    QR.status.input = $ 'input[type=submit]', QR.el
     QR.status()
     QR.cooldown.init()
     QR.captcha.init()
-    $.add d.body, QR.el
+    $.add d.body, dialog
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
-    $.event 'QRDialogCreation', null, QR.el
+    $.event 'QRDialogCreation', null, dialog
 
   submit: (e) ->
     e?.preventDefault()
@@ -651,11 +671,14 @@ QR =
 
     reply = QR.replies[0]
     reply.forceSave() if reply is QR.selected
-    if g.BOARD.ID is 'f' and g.VIEW is 'index'
-      filetag  = QR.threadSelector.value
-      threadID = 'new'
+    if g.BOARD.ID is 'f'
+      if g.VIEW is 'index'
+        filetag  = QR.nodes.flashTag.value
+        threadID = 'new'
+      else
+        threadID = g.THREAD
     else
-      threadID = QR.threadSelector.value
+      threadID = QR.nodes.thread.value
 
     # prevent errors
     if threadID is 'new'
@@ -684,7 +707,7 @@ QR =
         challenge   = QR.captcha.img.alt
         if response = QR.captcha.input.value then QR.captcha.reload()
       $.set 'captchas', captchas
-      QR.captcha.count captchas.length
+      QR.captcha.count captchas
       unless response
         err = 'No valid captcha.'
       else
@@ -780,15 +803,14 @@ QR =
         if /mistyped/i.test err.textContent
           err = 'Error: You seem to have mistyped the CAPTCHA.'
         # Enable auto-post if we have some cached captchas.
-        QR.cooldown.auto =
-          if QR.captcha.isEnabled
-            !!$.get('captchas', []).length
-          else if err is 'Connection error with sys.4chan.org.'
-            true
-          else
-            # Something must've gone terribly wrong if you get captcha errors without captchas.
-            # Don't auto-post indefinitely in that case.
-            false
+        QR.cooldown.auto = if QR.captcha.isEnabled
+          !!$.get('captchas', []).length
+        else if err is 'Connection error with sys.4chan.org.'
+          true
+        else
+          # Something must've gone terribly wrong if you get captcha errors without captchas.
+          # Don't auto-post indefinitely in that case.
+          false
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
         QR.cooldown.set delay: 2
@@ -800,7 +822,7 @@ QR =
 
     h1 = $ 'h1', tmpDoc
     QR.cleanNotifications()
-    QR.lastNotifications.push new Notification 'success', h1.textContent, 5
+    QR.notifications.push new Notification 'success', h1.textContent, 5
 
     reply = QR.replies[0]
 
@@ -823,7 +845,7 @@ QR =
       board: g.BOARD
       threadID
       postID
-    }, QR.el
+    }, QR.nodes.el
 
     QR.cooldown.set
       post:    reply

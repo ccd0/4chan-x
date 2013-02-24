@@ -1466,7 +1466,7 @@ Keybinds =
         else if (notifications = $$ '.notification').length
           for notification in notifications
             $('.close', notification).click()
-        else if QR.el
+        else if QR.nodes
           QR.close()
       when Conf['Spoiler tags']
         return if target.nodeName isnt 'TEXTAREA'
@@ -1478,7 +1478,7 @@ Keybinds =
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'math', target
       when Conf['Submit QR']
-        QR.submit() if QR.el and !QR.status()
+        QR.submit() if QR.nodes and !QR.status()
       # Thread related
       when Conf['Watch']
         ThreadWatcher.toggle thread
@@ -1558,7 +1558,7 @@ Keybinds =
     QR.open()
     if quote
       QR.quote.call $ 'input', $('.post.highlight', thread) or thread
-    $('textarea', QR.el).focus()
+    QR.nodes.com.focus()
 
   tags: (tag, ta) ->
     value    = ta.value
@@ -2880,7 +2880,7 @@ Sauce =
       name: 'Sauce'
       cb:   @node
   createSauceLink: (link) ->
-    link = link.replace /%(t?url|md5|board)/g, (parameter) ->
+    link = link.replace /%(t?url|MD5|board)/g, (parameter) ->
       switch parameter
         when '%turl'
           "' + post.file.thumbURL + '"

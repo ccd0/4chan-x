@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-02-23
+/* 4chan X Beta - Version 3.0.0 - 2013-02-24
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -2698,7 +2698,7 @@
               notification = notifications[_i];
               $('.close', notification).click();
             }
-          } else if (QR.el) {
+          } else if (QR.nodes) {
             QR.close();
           }
           break;
@@ -2721,7 +2721,7 @@
           Keybinds.tags('math', target);
           break;
         case Conf['Submit QR']:
-          if (QR.el && !QR.status()) {
+          if (QR.nodes && !QR.status()) {
             QR.submit();
           }
           break;
@@ -2839,7 +2839,7 @@
       if (quote) {
         QR.quote.call($('input', $('.post.highlight', thread) || thread));
       }
-      return $('textarea', QR.el).focus();
+      return QR.nodes.com.focus();
     },
     tags: function(tag, ta) {
       var range, selEnd, selStart, value;
@@ -4350,7 +4350,7 @@
     },
     createSauceLink: function(link) {
       var m, text;
-      link = link.replace(/%(t?url|md5|board)/g, function(parameter) {
+      link = link.replace(/%(t?url|MD5|board)/g, function(parameter) {
         switch (parameter) {
           case '%turl':
             return "' + post.file.thumbURL + '";
@@ -5658,16 +5658,8 @@
       $.on(link, 'click', function() {
         $.event('CloseMenu');
         QR.open();
-        if (g.BOARD.ID === 'f') {
-          if (g.VIEW === 'index') {
-            QR.threadSelector.value = '9999';
-          }
-        } else if (g.VIEW === 'thread') {
-          QR.threadSelector.value = g.THREAD;
-        } else {
-          QR.threadSelector.value = 'new';
-        }
-        return $('textarea', QR.el).focus();
+        QR.resetThreadSelector();
+        return QR.nodes.com.focus();
       });
       $.event('AddMenuEntry', {
         type: 'header',
@@ -5702,15 +5694,15 @@
       }
     },
     open: function() {
-      if (QR.el) {
-        QR.el.hidden = false;
+      if (QR.nodes) {
+        QR.nodes.el.hidden = false;
         QR.unhide();
         return;
       }
       try {
         return QR.dialog();
       } catch (err) {
-        delete QR.el;
+        delete QR.nodes;
         return Main.handleErrors({
           message: 'Quick Reply dialog creation crashed.',
           error: err
@@ -5718,11 +5710,11 @@
       }
     },
     close: function() {
-      var i, spoiler, _i, _len, _ref;
-      QR.el.hidden = true;
+      var i, _i, _len, _ref;
+      QR.nodes.el.hidden = true;
       QR.abort();
       d.activeElement.blur();
-      $.rmClass(QR.el, 'dump');
+      $.rmClass(QR.nodes.el, 'dump');
       _ref = QR.replies;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         i = _ref[_i];
@@ -5731,19 +5723,19 @@
       QR.cooldown.auto = false;
       QR.status();
       QR.resetFileInput();
-      if (!Conf['Remember Spoiler'] && (spoiler = $.id('spoiler')).checked) {
-        spoiler.click();
+      if (!Conf['Remember Spoiler'] && QR.nodes.spoiler.checked) {
+        QR.nodes.spoiler.click();
       }
       return QR.cleanNotifications();
     },
     hide: function() {
       d.activeElement.blur();
-      $.addClass(QR.el, 'autohide');
-      return $.id('autohide').checked = true;
+      $.addClass(QR.nodes.el, 'autohide');
+      return QR.nodes.autohide.checked = true;
     },
     unhide: function() {
-      $.rmClass(QR.el, 'autohide');
-      return $.id('autohide').checked = false;
+      $.rmClass(QR.nodes.el, 'autohide');
+      return QR.nodes.autohide.checked = false;
     },
     toggleHide: function() {
       if (this.checked) {
@@ -5772,29 +5764,29 @@
         el.removeAttribute('style');
       }
       if (QR.captcha.isEnabled && /captcha|verification/i.test(el.textContent)) {
-        $('[autocomplete]', QR.el).focus();
+        QR.captcha.nodes.input.focus();
       }
       if (d.hidden) {
         alert(el.textContent);
       }
-      return QR.lastNotifications.push(new Notification('warning', el));
+      return QR.notifications.push(new Notification('warning', el));
     },
-    lastNotifications: [],
+    notifications: [],
     cleanNotifications: function() {
       var notification, _i, _len, _ref;
-      _ref = QR.lastNotifications;
+      _ref = QR.notifications;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         notification = _ref[_i];
         notification.close();
       }
-      return QR.lastNotification = [];
+      return QR.notifications = [];
     },
     status: function(data) {
-      var disabled, input, value;
+      var disabled, status, value;
       if (data == null) {
         data = {};
       }
-      if (!QR.el) {
+      if (!QR.nodes) {
         return;
       }
       if (g.DEAD) {
@@ -5803,9 +5795,9 @@
         QR.cooldown.auto = false;
       }
       value = data.progress || QR.cooldown.seconds || value;
-      input = QR.status.input;
-      input.value = QR.cooldown.auto ? value ? "Auto " + value : 'Auto' : value || 'Submit';
-      return input.disabled = disabled || false;
+      status = QR.nodes.status;
+      status.value = QR.cooldown.auto ? value ? "Auto " + value : 'Auto' : value || 'Submit';
+      return status.disabled = disabled || false;
     },
     cooldown: {
       init: function() {
@@ -5828,9 +5820,9 @@
           file: board === 'q' ? 300 : 30,
           post: board === 'q' ? 60 : 30
         };
-        QR.cooldown.cooldowns = $.get("" + board + ".cooldown", {});
+        QR.cooldown.cooldowns = $.get("cooldown." + board, {});
         QR.cooldown.start();
-        return $.sync("" + board + ".cooldown", QR.cooldown.sync);
+        return $.sync("cooldown." + board, QR.cooldown.sync);
       },
       start: function() {
         if (QR.cooldown.isCounting) {
@@ -5866,12 +5858,12 @@
           };
         }
         QR.cooldown.cooldowns[start] = cooldown;
-        $.set("" + g.BOARD + ".cooldown", QR.cooldown.cooldowns);
+        $.set("cooldown." + g.BOARD, QR.cooldown.cooldowns);
         return QR.cooldown.start();
       },
       unset: function(id) {
         delete QR.cooldown.cooldowns[id];
-        return $.set("" + g.BOARD + ".cooldown", QR.cooldown.cooldowns);
+        return $.set("cooldown." + g.BOARD, QR.cooldown.cooldowns);
       },
       count: function() {
         var cooldown, cooldowns, elapsed, hasFile, isReply, isSage, now, post, seconds, start, type, types, update, _ref;
@@ -5884,7 +5876,7 @@
           QR.status();
           return;
         }
-        isReply = g.BOARD.ID === 'f' && g.VIEW === 'thread' ? true : QR.threadSelector.value !== 'new';
+        isReply = g.BOARD.ID === 'f' ? g.VIEW === 'thread' : QR.nodes.thread.value !== 'new';
         if (isReply) {
           post = QR.replies[0];
           isSage = /sage/i.test(post.email);
@@ -5926,7 +5918,7 @@
       }
     },
     quote: function(e) {
-      var caretPos, post, range, s, sel, selectionRoot, ta, text, thread;
+      var OP, caretPos, post, range, s, sel, selectionRoot, ta, text;
       if (e != null) {
         e.preventDefault();
       }
@@ -5934,28 +5926,28 @@
       sel = d.getSelection();
       selectionRoot = $.x('ancestor::div[contains(@class,"postContainer")][1]', sel.anchorNode);
       post = Get.postFromNode(this);
-      thread = g.BOARD.posts[Get.contextFromLink(this).thread];
+      OP = Get.contextFromLink(this).thread.OP;
       if ((s = sel.toString().trim()) && post.nodes.root === selectionRoot) {
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
       }
-      text = !text && post === thread && (!QR.el || QR.el.hidden) ? "" : ">>" + post + "\n" + text;
+      text = !text && post === OP && (!QR.nodes || QR.nodes.el.hidden) ? "" : ">>" + post + "\n" + text;
       QR.open();
-      ta = $('textarea', QR.el);
+      ta = QR.nodes.com;
       if (QR.threadSelector && !ta.value && g.BOARD.ID !== 'f') {
-        QR.threadSelector.value = thread.ID;
+        QR.threadSelector.value = OP.ID;
       }
       caretPos = ta.selectionStart;
       ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
       range = caretPos + text.length;
       ta.setSelectionRange(range, range);
       ta.focus();
-      return ta.dispatchEvent(new Event('input'));
+      return $.event('input', null, ta);
     },
     characterCount: function() {
       var count, counter;
-      counter = QR.charaCounter;
-      count = this.textLength;
+      counter = QR.nodes.charCount;
+      count = QR.nodes.com.textLength;
       counter.textContent = count;
       counter.hidden = count < 1000;
       return (count > 1500 ? $.addClass : $.rmClass)(counter, 'warning');
@@ -5976,16 +5968,24 @@
       }
       e.preventDefault();
       QR.open();
-      QR.fileInput.call(e.dataTransfer);
-      return $.addClass(QR.el, 'dump');
+      QR.fileInput(e.dataTransfer.files);
+      return $.addClass(QR.nodes.el, 'dump');
     },
-    fileInput: function() {
-      var file, _i, _len, _ref, _ref1, _ref2;
+    fileInput: function(files) {
+      var file, length, max, _i, _len, _ref, _ref1;
+      if (!(files instanceof FileList)) {
+        files = this.files;
+      }
+      length = files.length;
+      if (!length) {
+        return;
+      }
+      max = QR.nodes.fileInput.max;
       QR.cleanNotifications();
-      if (this.files.length === 1) {
-        file = this.files[0];
-        if (file.size > this.max) {
-          QR.error("File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(this.max)) + ").");
+      if (length === 1) {
+        file = files[0];
+        if (file.size > max) {
+          QR.error("File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
           QR.resetFileInput();
         } else if (_ref = file.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
           QR.error('Unsupported file type.');
@@ -5995,12 +5995,11 @@
         }
         return;
       }
-      _ref1 = this.files;
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        file = _ref1[_i];
-        if (file.size > this.max) {
-          QR.error("File " + file.name + " is too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(this.max)) + ").");
-        } else if (_ref2 = file.type, __indexOf.call(QR.mimeTypes, _ref2) < 0) {
+      for (_i = 0, _len = files.length; _i < _len; _i++) {
+        file = files[_i];
+        if (file.size > max) {
+          QR.error("" + file.name + ": File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
+        } else if (_ref1 = file.type, __indexOf.call(QR.mimeTypes, _ref1) < 0) {
           QR.error("" + file.name + ": Unsupported file type.");
         }
         if (!QR.replies[QR.replies.length - 1].file) {
@@ -6009,17 +6008,28 @@
           new QR.reply().setFile(file);
         }
       }
-      $.addClass(QR.el, 'dump');
+      $.addClass(QR.nodes.el, 'dump');
       return QR.resetFileInput();
     },
     resetFileInput: function() {
-      return $('[type=file]', QR.el).value = null;
+      return QR.nodes.fileInput.value = null;
+    },
+    resetThreadSelector: function() {
+      if (g.BOARD.ID === 'f') {
+        if (g.VIEW === 'index') {
+          return QR.nodes.flashTag.value = '9999';
+        }
+      } else if (g.VIEW === 'thread') {
+        return QR.nodes.thread.value = g.THREAD;
+      } else {
+        return QR.nodes.thread.value = 'new';
+      }
     },
     replies: [],
     reply: (function() {
 
       function _Class() {
-        var persona, prev,
+        var el, event, persona, prev, _i, _len, _ref,
           _this = this;
         prev = QR.replies[QR.replies.length - 1];
         persona = $.get('QR.persona', {});
@@ -6028,36 +6038,40 @@
         this.sub = prev && Conf['Remember Subject'] ? prev.sub : Conf['Remember Subject'] ? persona.sub : null;
         this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
         this.com = null;
-        this.el = $.el('a', {
+        el = $.el('a', {
           className: 'qrpreview',
           draggable: true,
           href: 'javascript:;',
           innerHTML: '<a class=remove>×</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
         });
-        $('input', this.el).checked = this.spoiler;
-        $.on(this.el, 'click', function() {
-          return _this.select();
-        });
-        $.on($('.remove', this.el), 'click', function(e) {
+        this.nodes = {
+          el: el,
+          rm: el.firstChild,
+          label: $('label', el),
+          spoiler: $('input', el),
+          span: el.lastChild
+        };
+        this.nodes.spoiler.checked = this.spoiler;
+        $.on(el, 'click', this.select.bind(this));
+        $.on(this.nodes.rm, 'click', function(e) {
           e.stopPropagation();
           return _this.rm();
         });
-        $.on($('label', this.el), 'click', function(e) {
+        $.on(this.nodes.label, 'click', function(e) {
           return e.stopPropagation();
         });
-        $.on($('input', this.el), 'change', function(e) {
+        $.on(this.nodes.spoiler, 'change', function(e) {
           _this.spoiler = e.target.checked;
-          if (_this.el.id === 'selected') {
-            return $.id('spoiler').checked = _this.spoiler;
+          if (_this === QR.selected) {
+            return QR.nodes.spoiler.checked = _this.spoiler;
           }
         });
-        $.before($('#addReply', QR.el), this.el);
-        $.on(this.el, 'dragstart', this.dragStart);
-        $.on(this.el, 'dragenter', this.dragEnter);
-        $.on(this.el, 'dragleave', this.dragLeave);
-        $.on(this.el, 'dragover', this.dragOver);
-        $.on(this.el, 'dragend', this.dragEnd);
-        $.on(this.el, 'drop', this.drop);
+        $.before(QR.nodes.addReply, el);
+        _ref = ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop'];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          event = _ref[_i];
+          $.on(el, event.toLowerCase(), this[event]);
+        }
         QR.replies.push(this);
       }
 
@@ -6065,9 +6079,9 @@
         var fileURL, img,
           _this = this;
         this.file = file;
-        this.el.title = "" + file.name + " (" + ($.bytesToString(file.size)) + ")";
+        this.nodes.el.title = "" + file.name + " (" + ($.bytesToString(file.size)) + ")";
         if (QR.spoiler) {
-          $('label', this.el).hidden = false;
+          this.nodes.label.hidden = false;
         }
         if (!/^image/.test(file.type)) {
           this.el.style.backgroundImage = null;
@@ -6080,11 +6094,11 @@
         fileURL = URL.createObjectURL(file);
         img = $.el('img');
         $.on(img, 'load', function() {
-          var c, data, i, l, s, ui8a, _i;
+          var applyBlob, c, data, i, l, s, ui8a, _i;
           s = 90 * 3;
           if (img.height < s || img.width < s) {
             _this.url = fileURL;
-            _this.el.style.backgroundImage = "url(" + _this.url + ")";
+            _this.nodes.el.style.backgroundImage = "url(" + _this.url + ")";
             return;
           }
           if (img.height <= img.width) {
@@ -6098,17 +6112,24 @@
           c.height = img.height;
           c.width = img.width;
           c.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
+          applyBlob = function(blob) {
+            _this.url = URL.createObjectURL(blob);
+            _this.nodes.el.style.backgroundImage = "url(" + _this.url + ")";
+            return URL.revokeObjectURL(fileURL);
+          };
+          if (c.toBlob) {
+            c.toBlob(applyBlob);
+            return;
+          }
           data = atob(c.toDataURL().split(',')[1]);
           l = data.length;
           ui8a = new Uint8Array(l);
           for (i = _i = 0; 0 <= l ? _i < l : _i > l; i = 0 <= l ? ++_i : --_i) {
             ui8a[i] = data.charCodeAt(i);
           }
-          _this.url = URL.createObjectURL(new Blob([ui8a], {
+          return applyBlob(new Blob([ui8a], {
             type: 'image/png'
           }));
-          _this.el.style.backgroundImage = "url(" + _this.url + ")";
-          return URL.revokeObjectURL(fileURL);
         });
         return img.src = fileURL;
       };
@@ -6116,10 +6137,10 @@
       _Class.prototype.rmFile = function() {
         QR.resetFileInput();
         delete this.file;
-        this.el.title = null;
-        this.el.style.backgroundImage = null;
+        this.nodes.el.title = null;
+        this.nodes.el.style.backgroundImage = null;
         if (QR.spoiler) {
-          $('label', this.el).hidden = true;
+          this.nodes.label.hidden = true;
         }
         if (!window.URL) {
           return;
@@ -6130,21 +6151,35 @@
       _Class.prototype.select = function() {
         var name, rectEl, rectList, _i, _len, _ref;
         if (QR.selected) {
-          QR.selected.el.id = null;
+          QR.selected.nodes.el.id = null;
           QR.selected.forceSave();
         }
         QR.selected = this;
-        this.el.id = 'selected';
-        rectEl = this.el.getBoundingClientRect();
-        rectList = this.el.parentNode.getBoundingClientRect();
-        this.el.parentNode.scrollLeft += rectEl.left + rectEl.width / 2 - rectList.left - rectList.width / 2;
+        this.nodes.el.id = 'selected';
+        rectEl = this.nodes.el.getBoundingClientRect();
+        rectList = this.nodes.el.parentNode.getBoundingClientRect();
+        this.nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width / 2 - rectList.left - rectList.width / 2;
         _ref = ['name', 'email', 'sub', 'com'];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
-          $("[name=" + name + "]", QR.el).value = this[name];
+          QR.nodes[name].value = this[name];
         }
-        QR.characterCount.call($('textarea', QR.el));
-        return $('#spoiler', QR.el).checked = this.spoiler;
+        QR.characterCount();
+        return QR.nodes.spoiler.checked = this.spoiler;
+      };
+
+      _Class.prototype.save = function(input) {
+        var value, _ref;
+        value = input.value;
+        this[input.name] = value;
+        if (input.nodeName !== 'TEXTAREA') {
+          return;
+        }
+        this.nodes.span.textContent = value;
+        QR.characterCount();
+        if (QR.cooldown.auto && this === QR.replies[0] && (0 < (_ref = QR.cooldown.seconds) && _ref <= 5)) {
+          return QR.cooldown.auto = false;
+        }
       };
 
       _Class.prototype.forceSave = function() {
@@ -6152,7 +6187,7 @@
         _ref = ['name', 'email', 'sub', 'com'];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
-          this[name] = $("[name=" + name + "]", QR.el).value;
+          this.save(QR.nodes[name]);
         }
       };
 
@@ -6201,7 +6236,7 @@
       _Class.prototype.rm = function() {
         var index;
         QR.resetFileInput();
-        $.rm(this.el);
+        $.rm(this.nodes.el);
         index = QR.replies.indexOf(this);
         if (QR.replies.length === 1) {
           new QR.reply().select();
@@ -6220,56 +6255,46 @@
     })(),
     captcha: {
       init: function() {
-        var _this = this;
         if (d.cookie.indexOf('pass_enabled=1') >= 0) {
           return;
         }
         if (!(this.isEnabled = !!$.id('captchaFormPart'))) {
           return;
         }
-        if ($.id('recaptcha_challenge_field_holder')) {
-          return this.ready();
-        } else {
-          this.onready = function() {
-            return _this.ready();
-          };
-          return $.on($.id('recaptcha_widget_div'), 'DOMNodeInserted', this.onready);
-        }
+        return $.asap((function() {
+          return $.id('recaptcha_challenge_field_holder');
+        }), this.ready.bind(this));
       },
       ready: function() {
-        var _this = this;
-        if (this.challenge = $.id('recaptcha_challenge_field_holder')) {
-          $.off($.id('recaptcha_widget_div'), 'DOMNodeInserted', this.onready);
-          delete this.onready;
-        } else {
-          return;
-        }
-        $.addClass(QR.el, 'captcha');
-        $.after($('.textarea', QR.el), $.el('div', {
+        var imgContainer, inputContainer;
+        imgContainer = $.el('div', {
           className: 'captchaimg',
           title: 'Reload',
           innerHTML: '<img>'
-        }));
-        $.after($('.captchaimg', QR.el), $.el('div', {
+        });
+        inputContainer = $.el('div', {
           className: 'captchainput',
           innerHTML: '<input title=Verification class=field autocomplete=off size=1>'
-        }));
-        this.img = $('.captchaimg > img', QR.el);
-        this.input = $('.captchainput > input', QR.el);
-        $.on(this.img.parentNode, 'click', this.reload);
-        $.on(this.input, 'keydown', this.keydown);
-        $.on(this.challenge, 'DOMNodeInserted', function() {
-          return _this.load();
         });
-        $.sync('captchas', function(arr) {
-          return _this.count(arr.length);
-        });
-        this.count($.get('captchas', []).length);
-        return this.reload();
+        this.nodes = {
+          challenge: $.id('recaptcha_challenge_field_holder'),
+          imgContainer: imgContainer,
+          inputContainer: inputContainer,
+          img: imgContainer.firstChild,
+          input: inputContainer.firstChild
+        };
+        $.on(imgContainer, 'click', this.reload.bind(this));
+        $.on(this.nodes.input, 'keydown', this.keydown.bind(this));
+        $.on(this.nodes.challenge, 'DOMNodeInserted', this.load.bind(this));
+        $.sync('captchas', this.count.bind(this));
+        this.count($.get('captchas', []));
+        this.reload();
+        $.addClass(QR.nodes.el, 'has-captcha');
+        return $.after(QR.nodes.com.parentNode, [imgContainer, inputContainer]);
       },
       save: function() {
         var captcha, captchas, response;
-        if (!(response = this.input.value)) {
+        if (!(response = this.nodes.input.value.trim())) {
           return;
         }
         captchas = $.get('captchas', []);
@@ -6277,24 +6302,26 @@
           captchas.shift();
         }
         captchas.push({
-          challenge: this.challenge.firstChild.value,
+          challenge: this.nodes.challenge.firstChild.value,
           response: response,
           time: this.timeout
         });
         $.set('captchas', captchas);
-        this.count(captchas.length);
+        this.count(captchas);
         return this.reload();
       },
       load: function() {
         var challenge;
         this.timeout = Date.now() + $.unsafeWindow.RecaptchaState.timeout * $.SECOND - $.MINUTE;
-        challenge = this.challenge.firstChild.value;
-        this.img.alt = challenge;
-        this.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
-        return this.input.value = null;
+        challenge = this.nodes.challenge.firstChild.value;
+        this.nodes.img.alt = challenge;
+        this.nodes.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
+        return this.nodes.input.value = null;
       },
-      count: function(count) {
-        this.input.placeholder = (function() {
+      count: function(arr) {
+        var count;
+        count = arr.length;
+        this.nodes.input.placeholder = (function() {
           switch (count) {
             case 0:
               return 'Verification (Shift + Enter to cache)';
@@ -6304,21 +6331,19 @@
               return "Verification (" + count + " cached captchas)";
           }
         })();
-        return this.input.alt = count;
+        return this.nodes.input.alt = count;
       },
       reload: function(focus) {
         $.unsafeWindow.Recaptcha.reload('t');
         if (focus) {
-          return QR.captcha.input.focus();
+          return this.nodes.input.focus();
         }
       },
       keydown: function(e) {
-        var c;
-        c = QR.captcha;
-        if (e.keyCode === 8 && !c.input.value) {
-          c.reload();
+        if (e.keyCode === 8 && !this.nodes.input.value) {
+          this.reload();
         } else if (e.keyCode === 13 && e.shiftKey) {
-          c.save();
+          this.save();
         } else {
           return;
         }
@@ -6326,9 +6351,28 @@
       }
     },
     dialog: function() {
-      var fileInput, key, mimeTypes, name, span, spoiler, ta, thread, threads, _i, _len, _ref, _ref1;
-      QR.el = UI.dialog('qr', 'top:0;right:0;', "<div class=move>Quick Reply <input type=checkbox id=autohide title=Auto-hide><span> <a href=javascript:; class=close title=Close>×</a></span></div>\n<form>\n  <div class=persona><input id=dump type=button title='Dump list' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\n  <div id=replies><div id=repliesList><a id=addReply href=javascript:; title=\"Add a reply\">+</a></div></div>\n  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\n  <div><input type=file title=\"Shift+Click to remove the selected file.\" multiple size=16><input type=submit></div>\n  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\n</form>");
-      mimeTypes = $('ul.rules').firstElementChild.textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
+      var dialog, key, mimeTypes, name, nodes, span, thread, threads, _i, _len, _ref, _ref1;
+      dialog = UI.dialog('qr', 'top:0;right:0;', "<div class=move>Quick Reply <input type=checkbox id=autohide title=Auto-hide><span> <a href=javascript:; class=close title=Close>×</a></span></div>\n<form>\n  <div class=persona><input id=dump type=button title='Dump list' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>\n  <div id=replies><div id=repliesList><a id=addReply href=javascript:; title=\"Add a reply\">+</a></div></div>\n  <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>\n  <div><input type=file title=\"Shift+Click to remove the selected file.\" multiple size=16><input type=submit></div>\n  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\n</form>");
+      QR.nodes = nodes = {
+        el: dialog,
+        move: $('.move', dialog),
+        autohide: $('#autohide', dialog),
+        close: $('.close', dialog),
+        form: $('form', dialog),
+        dump: $('#dump', dialog),
+        name: $('[name=name]', dialog),
+        email: $('[name=email]', dialog),
+        sub: $('[name=sub]', dialog),
+        com: $('[name=com]', dialog),
+        replies: $('#replies', dialog),
+        repliesList: $('#repliesList', dialog),
+        addReply: $('#addReply', dialog),
+        charCount: $('#charCount', dialog),
+        fileInput: $('[type=file]', dialog),
+        spoiler: $('#spoiler', dialog),
+        status: $('[type=submit]', dialog)
+      };
+      mimeTypes = $('ul.rules > li').textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':
             return 'image/jpeg';
@@ -6342,24 +6386,21 @@
       });
       QR.mimeTypes = mimeTypes.split(', ');
       QR.mimeTypes.push('');
-      fileInput = $('input[type=file]', QR.el);
-      fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
+      nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
       if ($.engine !== 'presto') {
-        fileInput.accept = mimeTypes;
+        nodes.fileInput.accept = mimeTypes;
       }
       QR.spoiler = !!$('input[name=spoiler]');
-      spoiler = $('#spoilerLabel', QR.el);
-      spoiler.hidden = !QR.spoiler;
-      QR.charaCounter = $('#charCount', QR.el);
-      ta = $('textarea', QR.el);
-      span = $('.move > span', QR.el);
+      nodes.spoiler.parentNode.hidden = !QR.spoiler;
+      span = nodes.autohide.nextElementSibling;
       if (g.BOARD.ID === 'f') {
         if (g.VIEW === 'index') {
-          QR.threadSelector = $('select[name=filetag]').cloneNode(true);
+          nodes.flashTag = $('select[name=filetag]').cloneNode(true);
+          $.prepend(span, nodes.flashTag);
         }
       } else {
-        QR.threadSelector = $.el('select', {
-          title: 'Create a new thread / Reply to a thread'
+        nodes.thread = $.el('select', {
+          title: 'Create a new thread / Reply'
         });
         threads = '<option value=new>New thread</option>';
         _ref = g.BOARD.threads;
@@ -6367,57 +6408,45 @@
           thread = _ref[key];
           threads += "<option value=" + thread.ID + ">Thread No." + thread.ID + "</option>";
         }
-        QR.threadSelector.innerHTML = threads;
-        if (g.VIEW === 'thread') {
-          QR.threadSelector.value = g.THREAD;
-        }
+        nodes.thread.innerHTML = threads;
+        $.prepend(span, nodes.thread);
       }
-      if (QR.threadSelector) {
-        $.prepend(span, QR.threadSelector);
-      }
+      QR.resetThreadSelector();
       $.on(span, 'mousedown', function(e) {
         return e.stopPropagation();
       });
-      $.on($('#autohide', QR.el), 'change', QR.toggleHide);
-      $.on($('.close', QR.el), 'click', QR.close);
-      $.on($('#dump', QR.el), 'click', function() {
-        return QR.el.classList.toggle('dump');
+      $.on(nodes.autohide, 'change', QR.toggleHide);
+      $.on(nodes.close, 'click', QR.close);
+      $.on(nodes.dump, 'click', function() {
+        return QR.nodes.el.classList.toggle('dump');
       });
-      $.on($('#addReply', QR.el), 'click', function() {
+      $.on(nodes.addReply, 'click', function() {
         return new QR.reply().select();
       });
-      $.on($('form', QR.el), 'submit', QR.submit);
-      $.on(ta, 'input', function() {
-        return QR.selected.el.lastChild.textContent = this.value;
-      });
-      $.on(ta, 'input', QR.characterCount);
-      $.on(fileInput, 'change', QR.fileInput);
-      $.on(fileInput, 'click', function(e) {
+      $.on(nodes.form, 'submit', QR.submit);
+      $.on(nodes.fileInput, 'change', QR.fileInput);
+      $.on(nodes.fileInput, 'click', function(e) {
         if (e.shiftKey) {
-          return QR.selected.rmFile() || e.preventDefault();
+          QR.selected.rmFile();
+          return e.preventDefault();
         }
       });
-      $.on(spoiler.firstChild, 'change', function() {
+      $.on(nodes.spoiler, 'change', function() {
         return $('input', QR.selected.el).click();
       });
       new QR.reply().select();
       _ref1 = ['name', 'email', 'sub', 'com'];
       for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
         name = _ref1[_i];
-        $.on($("[name=" + name + "]", QR.el), 'input', function() {
-          var _ref2;
-          QR.selected[this.name] = this.value;
-          if (QR.cooldown.auto && QR.selected === QR.replies[0] && (0 < (_ref2 = QR.cooldown.seconds) && _ref2 <= 5)) {
-            return QR.cooldown.auto = false;
-          }
+        $.on(nodes[name], 'input', function() {
+          return QR.selected.save(this);
         });
       }
-      QR.status.input = $('input[type=submit]', QR.el);
       QR.status();
       QR.cooldown.init();
       QR.captcha.init();
-      $.add(d.body, QR.el);
-      return $.event('QRDialogCreation', null, QR.el);
+      $.add(d.body, dialog);
+      return $.event('QRDialogCreation', null, dialog);
     },
     submit: function(e) {
       var callbacks, captcha, captchas, challenge, err, filetag, m, opts, post, reply, response, textOnly, threadID, _ref;
@@ -6437,11 +6466,15 @@
       if (reply === QR.selected) {
         reply.forceSave();
       }
-      if (g.BOARD.ID === 'f' && g.VIEW === 'index') {
-        filetag = QR.threadSelector.value;
-        threadID = 'new';
+      if (g.BOARD.ID === 'f') {
+        if (g.VIEW === 'index') {
+          filetag = QR.nodes.flashTag.value;
+          threadID = 'new';
+        } else {
+          threadID = g.THREAD;
+        }
       } else {
-        threadID = QR.threadSelector.value;
+        threadID = QR.nodes.thread.value;
       }
       if (threadID === 'new') {
         threadID = null;
@@ -6472,7 +6505,7 @@
           }
         }
         $.set('captchas', captchas);
-        QR.captcha.count(captchas.length);
+        QR.captcha.count(captchas);
         if (!response) {
           err = 'No valid captcha.';
         } else {
@@ -6583,7 +6616,7 @@
       }
       h1 = $('h1', tmpDoc);
       QR.cleanNotifications();
-      QR.lastNotifications.push(new Notification('success', h1.textContent, 5));
+      QR.notifications.push(new Notification('success', h1.textContent, 5));
       reply = QR.replies[0];
       persona = $.get('QR.persona', {});
       persona = {
@@ -6601,7 +6634,7 @@
         board: g.BOARD,
         threadID: threadID,
         postID: postID
-      }, QR.el);
+      }, QR.nodes.el);
       QR.cooldown.set({
         post: reply,
         isReply: !!threadID
@@ -7242,7 +7275,7 @@
       });
       return [message, error];
     },
-    css: "/* General */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.field {\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\n-webkit-transition: color .25s, border-color .25s;\ntransition: color .25s, border-color .25s;\n}\n.field::-moz-placeholder,\n.field:hover::-moz-placeholder {\ncolor: #AAA !important;\n}\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.move {\ncursor: move;\n}\nlabel, .favicon {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\n}\n.post {\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#overlay,\n#qp, #ihover,\n#updater, #thread-stats,\n#navlinks, #header,\n#qr, #watcher {\nposition: fixed;\n}\n#overlay {\nz-index: 999;\n}\n#notifications {\nz-index: 80;\n}\n#qp, #ihover {\nz-index: 70;\n}\n#menu {\nz-index: 60;\n}\n#navlinks, #updater, #thread-stats {\nz-index: 50;\n}\n#header:hover {\nz-index: 40;\n}\n#qr {\nz-index: 30;\n}\n#header {\nz-index: 20;\n}\n#watcher {\nz-index: 10;\n}\n\n/* Header */\n.fourchan-x body {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmargin-top: 2em;\n}\n.fourchan-x #boardNavDesktop,\n.fourchan-x #navtopright,\n.fourchan-x #boardNavDesktopFoot {\ndisplay: none !important;\n}\n#header {\ntop: 0;\nright: 0;\nleft: 0;\n}\n#header-bar {\nborder-width: 0 0 1px;\npadding: 4px;\nposition: relative;\n-webkit-transition: all .1s ease-in-out;\ntransition: all .1s ease-in-out;\n}\n#header-bar.autohide:not(:hover) {\nbox-shadow: none;\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\n-webkit-transition: all .75s .25s ease-in-out;\ntransition: all .75s .25s ease-in-out;\n}\n#toggle-header-bar {\ncursor: n-resize;\nleft: 0;\nright: 0;\nbottom: -8px;\nheight: 10px;\nposition: absolute;\n}\n#header-bar.autohide #toggle-header-bar {\ncursor: s-resize;\n}\n#header-bar a {\ntext-decoration: none;\npadding: 1px;\n}\n#header-bar > .menu-button {\nfloat: right;\npadding: 0;\n}\n\n/* Notifications */\n#notifications {\nheight: 0;\ntext-align: center;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\n-webkit-transition: all .25s ease-in-out;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 40%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 40%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 40%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 40%, .9);\n}\n.notification a {\ncolor: white;\n}\n.notification > .close {\npadding: 4px 6px;\ntop: 0;\nright: 0;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 4px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* Settings */\n#overlay {\nbackground-color: rgba(0, 0, 0, .5);\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-align-items: center;\nalign-items: center;\n-webkit-justify-content: center;\njustify-content: center;\nposition: fixed;\ntop: 0;\nleft: 0;\nheight: 100%;\nwidth: 100%;\n}\n#fourchanx-settings {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nbox-shadow: 0 0 15px rgba(0, 0, 0, .15);\nheight: 600px;\nmin-height: 0;\nmax-height: 100%;\nwidth: 900px;\nmin-width: 0;\nmax-width: 100%;\npadding: 3px;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\n}\n#fourchanx-settings > nav {\ndisplay: -webkit-flex;\ndisplay: flex;\npadding: 2px 2px 0;\n}\n#fourchanx-settings > nav a {\ntext-decoration: underline;\n}\n#fourchanx-settings > nav a.close {\ntext-decoration: none;\npadding: 2px;\n}\n.sections-list {\n-webkit-flex: 1;\nflex: 1;\n}\n.section-container {\n-webkit-flex: 1;\nflex: 1;\nposition: relative;\n}\n.section-container > section {\nposition: absolute;\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\noverflow: auto;\n}\n.section-main ul,\n.section-sauce ul,\n.section-rice ul {\nlist-style: none;\nmargin: 0;\npadding: 8px;\n}\n.section-main li,\n.section-sauce li,\n.section-rice li {\npadding-left: 4px;\n}\n.section-main label {\ntext-decoration: underline;\n}\n.section-filter ul {\npadding: 0;\n}\n.section-filter li {\nmargin: 10px 40px;\n}\n.section-filter textarea {\nheight: 500px;\n}\n.section-sauce textarea {\nheight: 350px;\n}\n#fourchanx-settings textarea {\nfont-family: monospace;\nmin-width: 100%;\nmax-width: 100%;\n}\n#fourchanx-settings code {\ncolor: #000;\nbackground-color: #FFF;\npadding: 0 2px;\n}\n.unscroll {\noverflow: hidden;\n}\n\n/* Thread Updater */\n#updater:not(:hover) {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n#updater > .move {\npadding: 0 3px;\n}\n#updater > div:last-child {\ntext-align: center;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n.new {\ncolor: limegreen;\n}\n\n/* Thread Watcher */\n#watcher {\npadding-bottom: 3px;\nposition: absolute;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#watcher:not(:hover) {\nmax-height: 220px;\n}\n#watcher > .move {\npadding-top: 3px;\n}\n#watcher > div {\nmax-width: 200px;\noverflow: hidden;\npadding-left: 3px;\npadding-right: 3px;\ntext-overflow: ellipsis;\n}\n#watcher a {\ntext-decoration: none;\n}\n\n/* Thread Stats */\n#thread-stats {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n\n/* Quote */\n.deadlink {\ntext-decoration: none !important;\n}\n.backlink.deadlink:not(.forwardlink), .quotelink.deadlink:not(.forwardlink) {\ntext-decoration: underline !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp > .opContainer::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 2px 2px 5px;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\n}\n.qphl {\noutline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* File */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\ndisplay: none;\n}\n:root.fit-width .full-image {\nmax-width: 100%;\n}\n:root.gecko.fit-width .full-image,\n:root.presto.fit-width .full-image {\nwidth: 100%;\n}\n.expanded-image > .op > .file::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n\n/* Index/Reply Navigation */\n#navlinks {\nfont-size: 16px;\ntop: 25px;\nright: 10px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n\n/* QR */\n.hide-original-post-form #postForm,\n.hide-original-post-form .postingMode,\n#qr.autohide:not(:hover) > form {\ndisplay: none;\n}\n#qr > .move {\nmin-width: 300px;\noverflow: hidden;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 0 2px;\n}\n#qr > .move > span {\nfloat: right;\n}\n#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {\ncursor: pointer;\n}\n#qr select {\nmargin: 0;\n}\n#dump {\nbackground: -webkit-linear-gradient(#EEE, #CCC);\nbackground: linear-gradient(#EEE, #CCC);\nborder: 1px solid #CCC;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\nwidth: 30px;\n}\n.gecko #dump {\npadding: 1px 0 2px;\nwidth: 10%;\n}\n#dump:hover, #dump:focus {\nbackground: -webkit-linear-gradient(#FFF, #DDD);\nbackground: linear-gradient(#FFF, #DDD);\n}\n#dump:active, .dump #dump:not(:hover):not(:focus) {\nbackground: -webkit-linear-gradient(#CCC, #DDD);\nbackground: linear-gradient(#CCC, #DDD);\n}\n#qr:not(.dump) #replies, .dump > form > label {\ndisplay: none;\n}\n#replies {\ndisplay: block;\nheight: 100px;\nposition: relative;\n-webkit-user-select: none;\n-moz-user-select: none;\n-o-user-select: none;\nuser-select: none;\n}\n#replies > div {\ncounter-reset: qrpreviews;\ntop: 0; right: 0; bottom: 0; left: 0;\nmargin: 0; padding: 0;\noverflow: hidden;\nposition: absolute;\nwhite-space: pre;\n}\n#replies > div:hover {\nbottom: -10px;\noverflow-x: auto;\nz-index: 1;\n}\n.qrpreview {\nbackground-position: 50% 20%;\nbackground-size: cover;\nborder: 1px solid #808080;\ncolor: #FFF !important;\nfont-size: 12px;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncursor: move;\ndisplay: inline-block;\nheight: 90px; width: 90px;\nmargin: 5px; padding: 2px;\nopacity: .6;\noutline: none;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-webkit-transition: opacity .25s ease-in-out;\ntransition: opacity .25s ease-in-out;\nvertical-align: top;\n}\n.qrpreview:hover, .qrpreview:focus {\nopacity: .9;\ncolor: #FFF !important;\n}\n.qrpreview#selected {\nopacity: 1;\n}\n.qrpreview::before {\ncounter-increment: qrpreviews;\ncontent: counter(qrpreviews);\nfont-weight: 700;\ntext-shadow: 0 0 3px #000, 0 0 5px #000;\nposition: absolute;\ntop: 3px; right: 3px;\n}\n.qrpreview.drag {\nborder-color: red;\nborder-style: dashed;\n}\n.qrpreview.over {\nborder-color: #FFF;\nborder-style: dashed;\n}\n.remove {\ncolor: #E00 !important;\nfont-weight: 700;\npadding: 3px;\n}\n.remove:hover::after {\ncontent: ' Remove';\n}\n.qrpreview > label {\nbackground: rgba(0, 0, 0, .5);\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.qrpreview > label > input {\nmargin: 1px 0;\nvertical-align: bottom;\n}\n#addReply {\nfont-size: 3.5em;\nline-height: 100px;\n}\n.persona {\ndisplay: -webkit-flex;\ndisplay: flex;\n}\n.persona .field {\n-webkit-flex: 1;\nflex: 1;\n}\n.gecko .persona .field {\nwidth: 30%;\n}\n#qr textarea.field {\ndisplay: -webkit-box;\nmin-height: 160px;\nmin-width: 100%;\n}\n#qr.captcha textarea.field {\nmin-height: 120px;\n}\n.textarea {\nposition: relative;\n}\n#charCount {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nmargin: 1px;\nposition: absolute;\nbottom: 0;\nright: 0;\npointer-events: none;\n}\n#charCount.warning {\ncolor: red;\n}\n.captchainput > .field {\nmin-width: 100%;\n}\n.captchaimg {\nbackground: #FFF;\noutline: 1px solid #CCC;\noutline-offset: -1px;\ntext-align: center;\n}\n.captchaimg > img {\ndisplay: block;\nheight: 57px;\nwidth: 300px;\n}\n#qr [type=file] {\nmargin: 1px 0;\nwidth: 70%;\n}\n#qr [type=submit] {\nmargin: 1px 0;\npadding: 1px; /* not Gecko */\nwidth: 30%;\n}\n.gecko #qr [type=submit] {\npadding: 0 1px; /* Gecko does not respect box-sizing: border-box */\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\n}\n.menu-button > span {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\noutline: none;\n}\n.entry {\ncursor: pointer;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n/* XXX firefox fix */\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\n}\n.entry.has-submenu {\npadding-right: 20px;\n}\n.has-submenu::after {\ncontent: '';\nborder-left:   6px solid;\nborder-top:    4px solid transparent;\nborder-bottom: 4px solid transparent;\ndisplay: inline-block;\nmargin: 4px;\nposition: absolute;\nright: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\ndisplay: none;\n}\n.submenu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\nmargin: -1px 0;\n}\n.entry input {\nmargin: 0;\n}\n\n/* General */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a {\ncolor: #800000;\n}\n\n/* Quote */\n:root.yotsuba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.yotsuba .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba .entry {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a {\ncolor: #34345C;\n}\n\n/* Quote */\n:root.yotsuba-b .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.yotsuba-b .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b .entry {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a {\ncolor: #800000;\n}\n\n/* Quote */\n:root.futaba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.futaba .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba .entry {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a {\ncolor: #34345C;\n}\n\n/* Quote */\n:root.burichan .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.burichan .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan .entry {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .field:focus {\nborder-color: #000;\n}\n\n/* Header */\n:root.tomorrow #header-bar {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a {\ncolor: #81A2BE;\n}\n\n/* Quote */\n:root.tomorrow .backlink.deadlink {\ncolor: #81A2BE !important;\n}\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n:root.tomorrow .qrpreview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n\n/* Menu */\n:root.tomorrow .entry {\nborder-bottom: 1px solid #111;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* General */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a {\ncolor: #FF6600;\n}\n\n/* Quote */\n:root.photon .backlink.deadlink {\ncolor: #F60 !important;\n}\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.photon .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon .entry {\nborder-bottom: 1px solid #CCC;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
+    css: "/* General */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.field {\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\n-webkit-transition: color .25s, border-color .25s;\ntransition: color .25s, border-color .25s;\n}\n.field::-moz-placeholder,\n.field:hover::-moz-placeholder {\ncolor: #AAA !important;\n}\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.move {\ncursor: move;\n}\nlabel, .favicon {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\n}\n.post {\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#overlay,\n#qp, #ihover,\n#updater, #thread-stats,\n#navlinks, #header,\n#qr, #watcher {\nposition: fixed;\n}\n#overlay {\nz-index: 999;\n}\n#notifications {\nz-index: 80;\n}\n#qp, #ihover {\nz-index: 70;\n}\n#menu {\nz-index: 60;\n}\n#navlinks, #updater, #thread-stats {\nz-index: 50;\n}\n#header:hover {\nz-index: 40;\n}\n#qr {\nz-index: 30;\n}\n#header {\nz-index: 20;\n}\n#watcher {\nz-index: 10;\n}\n\n/* Header */\n.fourchan-x body {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmargin-top: 2em;\n}\n.fourchan-x #boardNavDesktop,\n.fourchan-x #navtopright,\n.fourchan-x #boardNavDesktopFoot {\ndisplay: none !important;\n}\n#header {\ntop: 0;\nright: 0;\nleft: 0;\n}\n#header-bar {\nborder-width: 0 0 1px;\npadding: 4px;\nposition: relative;\n-webkit-transition: all .1s ease-in-out;\ntransition: all .1s ease-in-out;\n}\n#header-bar.autohide:not(:hover) {\nbox-shadow: none;\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\n-webkit-transition: all .75s .25s ease-in-out;\ntransition: all .75s .25s ease-in-out;\n}\n#toggle-header-bar {\ncursor: n-resize;\nleft: 0;\nright: 0;\nbottom: -8px;\nheight: 10px;\nposition: absolute;\n}\n#header-bar.autohide #toggle-header-bar {\ncursor: s-resize;\n}\n#header-bar a {\ntext-decoration: none;\npadding: 1px;\n}\n#header-bar > .menu-button {\nfloat: right;\npadding: 0;\n}\n\n/* Notifications */\n#notifications {\nheight: 0;\ntext-align: center;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\n-webkit-transition: all .25s ease-in-out;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 40%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 40%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 40%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 40%, .9);\n}\n.notification a {\ncolor: white;\n}\n.notification > .close {\npadding: 4px 6px;\ntop: 0;\nright: 0;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 4px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* Settings */\n#overlay {\nbackground-color: rgba(0, 0, 0, .5);\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-align-items: center;\nalign-items: center;\n-webkit-justify-content: center;\njustify-content: center;\nposition: fixed;\ntop: 0;\nleft: 0;\nheight: 100%;\nwidth: 100%;\n}\n#fourchanx-settings {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nbox-shadow: 0 0 15px rgba(0, 0, 0, .15);\nheight: 600px;\nmin-height: 0;\nmax-height: 100%;\nwidth: 900px;\nmin-width: 0;\nmax-width: 100%;\npadding: 3px;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\n}\n#fourchanx-settings > nav {\ndisplay: -webkit-flex;\ndisplay: flex;\npadding: 2px 2px 0;\n}\n#fourchanx-settings > nav a {\ntext-decoration: underline;\n}\n#fourchanx-settings > nav a.close {\ntext-decoration: none;\npadding: 2px;\n}\n.sections-list {\n-webkit-flex: 1;\nflex: 1;\n}\n.section-container {\n-webkit-flex: 1;\nflex: 1;\nposition: relative;\n}\n.section-container > section {\nposition: absolute;\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\noverflow: auto;\n}\n.section-main ul,\n.section-sauce ul,\n.section-rice ul {\nlist-style: none;\nmargin: 0;\npadding: 8px;\n}\n.section-main li,\n.section-sauce li,\n.section-rice li {\npadding-left: 4px;\n}\n.section-main label {\ntext-decoration: underline;\n}\n.section-filter ul {\npadding: 0;\n}\n.section-filter li {\nmargin: 10px 40px;\n}\n.section-filter textarea {\nheight: 500px;\n}\n.section-sauce textarea {\nheight: 350px;\n}\n#fourchanx-settings textarea {\nfont-family: monospace;\nmin-width: 100%;\nmax-width: 100%;\n}\n#fourchanx-settings code {\ncolor: #000;\nbackground-color: #FFF;\npadding: 0 2px;\n}\n.unscroll {\noverflow: hidden;\n}\n\n/* Thread Updater */\n#updater:not(:hover) {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n#updater > .move {\npadding: 0 3px;\n}\n#updater > div:last-child {\ntext-align: center;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n.new {\ncolor: limegreen;\n}\n\n/* Thread Watcher */\n#watcher {\npadding-bottom: 3px;\nposition: absolute;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#watcher:not(:hover) {\nmax-height: 220px;\n}\n#watcher > .move {\npadding-top: 3px;\n}\n#watcher > div {\nmax-width: 200px;\noverflow: hidden;\npadding-left: 3px;\npadding-right: 3px;\ntext-overflow: ellipsis;\n}\n#watcher a {\ntext-decoration: none;\n}\n\n/* Thread Stats */\n#thread-stats {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n\n/* Quote */\n.deadlink {\ntext-decoration: none !important;\n}\n.backlink.deadlink:not(.forwardlink), .quotelink.deadlink:not(.forwardlink) {\ntext-decoration: underline !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp > .opContainer::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 2px 2px 5px;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\n}\n.qphl {\noutline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* File */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\ndisplay: none;\n}\n:root.fit-width .full-image {\nmax-width: 100%;\n}\n:root.gecko.fit-width .full-image,\n:root.presto.fit-width .full-image {\nwidth: 100%;\n}\n.expanded-image > .op > .file::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n\n/* Index/Reply Navigation */\n#navlinks {\nfont-size: 16px;\ntop: 25px;\nright: 10px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n\n/* QR */\n.hide-original-post-form #postForm,\n.hide-original-post-form .postingMode,\n#qr.autohide:not(:hover) > form {\ndisplay: none;\n}\n#qr > .move {\nmin-width: 300px;\noverflow: hidden;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 0 2px;\n}\n#qr > .move > span {\nfloat: right;\n}\n#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {\ncursor: pointer;\n}\n#qr select {\nmargin: 0;\n}\n#dump {\nbackground: -webkit-linear-gradient(#EEE, #CCC);\nbackground: linear-gradient(#EEE, #CCC);\nborder: 1px solid #CCC;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\nwidth: 30px;\n}\n.gecko #dump {\npadding: 1px 0 2px;\nwidth: 10%;\n}\n#dump:hover, #dump:focus {\nbackground: -webkit-linear-gradient(#FFF, #DDD);\nbackground: linear-gradient(#FFF, #DDD);\n}\n#dump:active, .dump #dump:not(:hover):not(:focus) {\nbackground: -webkit-linear-gradient(#CCC, #DDD);\nbackground: linear-gradient(#CCC, #DDD);\n}\n#qr:not(.dump) #replies, .dump > form > label {\ndisplay: none;\n}\n#replies {\ndisplay: block;\nheight: 100px;\nposition: relative;\n-webkit-user-select: none;\n-moz-user-select: none;\n-o-user-select: none;\nuser-select: none;\n}\n#replies > div {\ncounter-reset: qrpreviews;\ntop: 0; right: 0; bottom: 0; left: 0;\nmargin: 0; padding: 0;\noverflow: hidden;\nposition: absolute;\nwhite-space: pre;\n}\n#replies > div:hover {\nbottom: -10px;\noverflow-x: auto;\nz-index: 1;\n}\n.qrpreview {\nbackground-position: 50% 20%;\nbackground-size: cover;\nborder: 1px solid #808080;\ncolor: #FFF !important;\nfont-size: 12px;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncursor: move;\ndisplay: inline-block;\nheight: 90px; width: 90px;\nmargin: 5px; padding: 2px;\nopacity: .6;\noutline: none;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-webkit-transition: opacity .25s ease-in-out;\ntransition: opacity .25s ease-in-out;\nvertical-align: top;\n}\n.qrpreview:hover, .qrpreview:focus {\nopacity: .9;\ncolor: #FFF !important;\n}\n.qrpreview#selected {\nopacity: 1;\n}\n.qrpreview::before {\ncounter-increment: qrpreviews;\ncontent: counter(qrpreviews);\nfont-weight: 700;\ntext-shadow: 0 0 3px #000, 0 0 5px #000;\nposition: absolute;\ntop: 3px; right: 3px;\n}\n.qrpreview.drag {\nborder-color: red;\nborder-style: dashed;\n}\n.qrpreview.over {\nborder-color: #FFF;\nborder-style: dashed;\n}\n.remove {\ncolor: #E00 !important;\nfont-weight: 700;\npadding: 3px;\n}\n.remove:hover::after {\ncontent: ' Remove';\n}\n.qrpreview > label {\nbackground: rgba(0, 0, 0, .5);\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.qrpreview > label > input {\nmargin: 1px 0;\nvertical-align: bottom;\n}\n#addReply {\nfont-size: 3.5em;\nline-height: 100px;\n}\n.persona {\ndisplay: -webkit-flex;\ndisplay: flex;\n}\n.persona .field {\n-webkit-flex: 1;\nflex: 1;\n}\n.gecko .persona .field {\nwidth: 30%;\n}\n#qr textarea.field {\ndisplay: -webkit-box;\nmin-height: 160px;\nmin-width: 100%;\n}\n#qr.has-captcha textarea.field {\nmin-height: 120px;\n}\n.textarea {\nposition: relative;\n}\n#charCount {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nmargin: 1px;\nposition: absolute;\nbottom: 0;\nright: 0;\npointer-events: none;\n}\n#charCount.warning {\ncolor: red;\n}\n.captchainput > .field {\nmin-width: 100%;\n}\n.captchaimg {\nbackground: #FFF;\noutline: 1px solid #CCC;\noutline-offset: -1px;\ntext-align: center;\n}\n.captchaimg > img {\ndisplay: block;\nheight: 57px;\nwidth: 300px;\n}\n#qr [type=file] {\nmargin: 1px 0;\nwidth: 70%;\n}\n#qr [type=submit] {\nmargin: 1px 0;\npadding: 1px; /* not Gecko */\nwidth: 30%;\n}\n.gecko #qr [type=submit] {\npadding: 0 1px; /* Gecko does not respect box-sizing: border-box */\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\n}\n.menu-button > span {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\noutline: none;\n}\n.entry {\ncursor: pointer;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n/* XXX firefox fix */\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\n}\n.entry.has-submenu {\npadding-right: 20px;\n}\n.has-submenu::after {\ncontent: '';\nborder-left:   6px solid;\nborder-top:    4px solid transparent;\nborder-bottom: 4px solid transparent;\ndisplay: inline-block;\nmargin: 4px;\nposition: absolute;\nright: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\ndisplay: none;\n}\n.submenu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\nmargin: -1px 0;\n}\n.entry input {\nmargin: 0;\n}\n\n/* General */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a {\ncolor: #800000;\n}\n\n/* Quote */\n:root.yotsuba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.yotsuba .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba .entry {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a {\ncolor: #34345C;\n}\n\n/* Quote */\n:root.yotsuba-b .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.yotsuba-b .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b .entry {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a {\ncolor: #800000;\n}\n\n/* Quote */\n:root.futaba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.futaba .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba .entry {\nborder-bottom: 1px solid #D9BFB7;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a {\ncolor: #34345C;\n}\n\n/* Quote */\n:root.burichan .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.burichan .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan .entry {\nborder-bottom: 1px solid #B7C5D9;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .field:focus {\nborder-color: #000;\n}\n\n/* Header */\n:root.tomorrow #header-bar {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a {\ncolor: #81A2BE;\n}\n\n/* Quote */\n:root.tomorrow .backlink.deadlink {\ncolor: #81A2BE !important;\n}\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n:root.tomorrow .qrpreview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n\n/* Menu */\n:root.tomorrow .entry {\nborder-bottom: 1px solid #111;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* General */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a {\ncolor: #FF6600;\n}\n\n/* Quote */\n:root.photon .backlink.deadlink {\ncolor: #F60 !important;\n}\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n:root.photon .qrpreview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon .entry {\nborder-bottom: 1px solid #CCC;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
   };
 
   Main.init();

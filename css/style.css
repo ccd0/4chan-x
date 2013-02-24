@@ -593,7 +593,7 @@ a[href="javascript:;"] {
   min-height: 160px;
   min-width: 100%;
 }
-#qr.captcha textarea.field {
+#qr.has-captcha textarea.field {
   min-height: 120px;
 }
 .textarea {
