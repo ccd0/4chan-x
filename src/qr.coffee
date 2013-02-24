@@ -8,6 +8,16 @@ QR =
     if Conf['Hide Original Post Form']
       $.addClass doc, 'hide-original-post-form'
 
+    $.on d, '4chanXInitFinished', @initReady
+
+    Post::callbacks.push
+      name: 'Quick Reply'
+      cb:   @node
+
+  initReady: ->
+    QR.postingIsEnable = !!$.id 'postForm'
+    return unless QR.postingIsEnable
+
     link = $.el 'a',
       className: 'qr-shortcut'
       textContent: 'Quick Reply'
@@ -25,16 +35,13 @@ QR =
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
-    $.on d, '4chanXInitFinished', QR.persist if Conf['Persistent QR']
     $.on d, 'ThreadUpdate', ->
       if g.DEAD
         QR.abort()
       else
         QR.status()
 
-    Post::callbacks.push
-      name: 'Quick Reply'
-      cb:   @node
+    QR.persist() if Conf['Persistent QR']
 
   node: ->
     $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
@@ -229,6 +236,7 @@ QR =
 
   quote: (e) ->
     e?.preventDefault()
+    return unless QR.postingIsEnable
     text = ""
 
     sel = d.getSelection()

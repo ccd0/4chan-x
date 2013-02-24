@@ -2832,7 +2832,7 @@
       return key;
     },
     qr: function(thread, quote) {
-      if (!Conf['Quick Reply']) {
+      if (!(Conf['Quick Reply'] && QR.postingIsEnable)) {
         return;
       }
       QR.open();
@@ -5641,7 +5641,6 @@
 
   QR = {
     init: function() {
-      var link;
       if (g.VIEW === 'catalog' || !Conf['Quick Reply']) {
         return;
       }
@@ -5649,6 +5648,18 @@
       this.syncYourPosts();
       if (Conf['Hide Original Post Form']) {
         $.addClass(doc, 'hide-original-post-form');
+      }
+      $.on(d, '4chanXInitFinished', this.initReady);
+      return Post.prototype.callbacks.push({
+        name: 'Quick Reply',
+        cb: this.node
+      });
+    },
+    initReady: function() {
+      var link;
+      QR.postingIsEnable = !!$.id('postForm');
+      if (!QR.postingIsEnable) {
+        return;
       }
       link = $.el('a', {
         className: 'qr-shortcut',
@@ -5669,9 +5680,6 @@
       $.on(d, 'dragover', QR.dragOver);
       $.on(d, 'drop', QR.dropFile);
       $.on(d, 'dragstart dragend', QR.drag);
-      if (Conf['Persistent QR']) {
-        $.on(d, '4chanXInitFinished', QR.persist);
-      }
       $.on(d, 'ThreadUpdate', function() {
         if (g.DEAD) {
           return QR.abort();
@@ -5679,10 +5687,9 @@
           return QR.status();
         }
       });
-      return Post.prototype.callbacks.push({
-        name: 'Quick Reply',
-        cb: this.node
-      });
+      if (Conf['Persistent QR']) {
+        return QR.persist();
+      }
     },
     node: function() {
       return $.on($('a[title="Quote this post"]', this.nodes.info), 'click', QR.quote);
@@ -5921,6 +5928,9 @@
       var OP, caretPos, post, range, s, sel, selectionRoot, ta, text;
       if (e != null) {
         e.preventDefault();
+      }
+      if (!QR.postingIsEnable) {
+        return;
       }
       text = "";
       sel = d.getSelection();

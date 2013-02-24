@@ -1554,7 +1554,7 @@ Keybinds =
     key
 
   qr: (thread, quote) ->
-    return unless Conf['Quick Reply']
+    return unless Conf['Quick Reply'] and QR.postingIsEnable
     QR.open()
     if quote
       QR.quote.call $ 'input', $('.post.highlight', thread) or thread
