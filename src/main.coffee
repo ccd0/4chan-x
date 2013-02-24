@@ -374,7 +374,7 @@ Main =
       $.on $('#dismiss_xupdate', xupdate), 'click', -> $.rm xupdate
       $.prepend $.id('delform'), xupdate
 
-  preParse: (node, threadID) ->
+  preParse: (node) ->
     parentClass = if parent = node.parentNode then parent.className else ""
     el   = $ '.post', node
     post =
@@ -382,7 +382,7 @@ Main =
       el:          el
       class:       el.className
       ID:          el.id.match(/\d+$/)[0]
-      threadID:    g.THREAD_ID or if parent then $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0] else threadID
+      threadID:    g.THREAD_ID or if parent then $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0]
       isArchived:  parentClass.contains    'archivedPost'
       isInlined:   /\binline\b/.test       parentClass
       isCrosspost: parentClass.contains    'crosspost'

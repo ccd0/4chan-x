@@ -47,18 +47,10 @@ QuotePreview =
     UI.el = qp
     UI.hover e
 
-    Get.post board, threadID, postID, qp, ->
+    Get.post board, threadID, postID, qp, (post) ->
       _conf = Conf
-      bq = $ 'blockquote', qp
-      Main.prettify bq
-      post =
-        el: qp
-        blockquote: bq
-        isArchived: qp.className.contains 'archivedPost'
-      if img = $ 'img[data-md5]', qp
-        post.fileInfo = img.parentNode.previousElementSibling
-        post.img      = img
-      
+      Main.prettify post.blockquote
+      post.isArchived = qp.className.contains 'archivedPost'
       QuotePreview.callback post
 
     $.on @, 'mousemove',      UI.hover

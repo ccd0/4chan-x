@@ -6,16 +6,17 @@ QuoteInline =
     
   callbacks: []
   
-  cb:  (node) ->
-    node.isInlined = true
+  cb: (post, root) ->
+    post.isCrosspost = post.isInlined = true
+    post.threadID = $.x('ancestor::div[parent::div[@class="board"]]', root).id.match(/\d+$/)[0]
     for callback in Main.callbacks
-      callback node
+      callback post
     return
 
-  cb2: (node) ->
-    node.isInlined = true
+  cb2: (post) ->
+    post.isInlined = true
     for callback in QuoteInline.callbacks
-      callback node
+      callback post
     return
 
   node: (post) ->
