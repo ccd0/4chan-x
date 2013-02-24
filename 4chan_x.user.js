@@ -6276,7 +6276,7 @@
         }), this.ready.bind(this));
       },
       ready: function() {
-        var imgContainer, inputContainer;
+        var MutationObserver, imgContainer, inputContainer, observer;
         imgContainer = $.el('div', {
           className: 'captchaimg',
           title: 'Reload',
@@ -6293,9 +6293,16 @@
           img: imgContainer.firstChild,
           input: inputContainer.firstChild
         };
+        if (MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.OMutationObserver) {
+          observer = new MutationObserver(this.load.bind(this));
+          observer.observe(this.nodes.challenge, {
+            childList: true
+          });
+        } else {
+          $.on(this.nodes.challenge, 'DOMNodeInserted', this.load.bind(this));
+        }
         $.on(imgContainer, 'click', this.reload.bind(this));
         $.on(this.nodes.input, 'keydown', this.keydown.bind(this));
-        $.on(this.nodes.challenge, 'DOMNodeInserted', this.load.bind(this));
         $.sync('captchas', this.count.bind(this));
         this.count($.get('captchas', []));
         this.reload();

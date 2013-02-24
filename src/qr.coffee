@@ -522,9 +522,15 @@ QR =
         img:            imgContainer.firstChild
         input:          inputContainer.firstChild
 
-      $.on imgContainer,     'click',           @reload.bind @
-      $.on @nodes.input,     'keydown',         @keydown.bind @
-      $.on @nodes.challenge, 'DOMNodeInserted', @load.bind @
+      if MutationObserver = window.MutationObserver or window.WebKitMutationObserver or window.OMutationObserver
+        observer = new MutationObserver @load.bind @
+        observer.observe @nodes.challenge,
+          childList: true
+      else
+        $.on @nodes.challenge, 'DOMNodeInserted', @load.bind @
+
+      $.on imgContainer, 'click',   @reload.bind @
+      $.on @nodes.input, 'keydown', @keydown.bind @
       $.sync 'captchas', @count.bind @
       @count $.get 'captchas', []
       # start with an uncached captcha
