@@ -29,7 +29,8 @@ Style =
           $.on exLink, "click", ->
             setTimeout Style.rice, 100
         ), 500
-
+    
+    Main.callbacks.push @node
     @setup()
 
   setup: ->
@@ -127,6 +128,9 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
 }\n
 """
     css.join ""
+  
+  node: (post) ->
+    Style.rice post.el
 
   rice: (source)->
     checkboxes = $$('[type=checkbox]:not(.riced)', source)
@@ -874,6 +878,8 @@ div.navLinks > a:first-of-type::after {
 /* Cleanup */
 #postForm,
 .hidden,
+.hidden_thread ~ div,
+.hidden_thread ~ a,
 .mobile,
 .postingMode,
 .riced,
@@ -882,6 +888,9 @@ div.navLinks > a:first-of-type::after {
   display: none;
 }
 /* Defaults */
+a {
+  text-decoration: none;
+}
 body {
   font-size: #{parseInt(_conf["Font Size"], 10)}px;
   font-family: #{_conf["Font"]};
@@ -890,13 +899,38 @@ body {
   margin-bottom: 1px;
   margin-#{Style.sidebarLocation[0]}: #{Style.sidebar}px;
   margin-#{Style.sidebarLocation[1]}: 2px;
-  padding: 0;
-  padding-left: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
-  padding-right: #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  padding: 0 #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px 0 #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
+}
+hr {
+  clear: both;
 }
 /* Replies */
-
+.hide_reply_button {
+  float: right;
+}
+.post .menu_button {
+  float: right;
+}
+.menu_button > span {
+  display: inline-block;
+  margin: 2px 2px 3px;
+  border-top: .5em solid;
+  border-right: .3em solid transparent;
+  border-left: .3em solid transparent;
+}
+.fileThumb {
+  float: left;
+}
+.reply.post {
+  display: inline-block;
+  #{if _conf["Fit Width Replies"] then "width: 100%;" else ""}
+}
+/* Reply Clearfix */
+.reply.post blockquote {
+  clear: right;
+}
 /* Element Replacing */
+/* Checkboxes */
 .rice {
   cursor: pointer;
   width: 9px;
@@ -905,6 +939,12 @@ body {
   display: inline-block;
   vertical-align: bottom;
 }
+input:checked + .rice {
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  background-position: bottom right;
+}
+/* Selects */
 .selectrice {
   position: relative;
   cursor: default;
@@ -926,6 +966,7 @@ body {
   right: 1.3em;
   top: 0;
 }
+/* Select Dropdown */
 .selectrice ul {
   padding: 0;
   position: fixed;
@@ -934,11 +975,8 @@ body {
   overflow-x: hidden;
   z-index: 99999;
 }
-input[type=checkbox]:checked + .rice {
-  background-attachment: scroll;
-  background-repeat: no-repeat;
-  background-position: bottom right;
-}
+/* Post Form */
+
 """
 
   theme: (theme) ->

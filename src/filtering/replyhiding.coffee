@@ -11,7 +11,7 @@ ReplyHiding =
     $.on hide.firstChild, 'click', ->
       ReplyHiding.toggle button = @parentNode.parentNode, root = $.id("pc#{id = @id[4..]}"), id
 
-    $.add el, hide
+    $.add el, [$.tn(' '), hide]
     if post.ID of g.hiddenReplies
       ReplyHiding.hide post.root
 
@@ -19,7 +19,6 @@ ReplyHiding =
     quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href$='#p#{id}']"
     if /\bstub\b/.test button.className
       ReplyHiding.show root
-      $.rmClass root, 'hidden'
       for quote in quotes
         $.rmClass quote, 'filtered'
       delete g.hiddenReplies[id]
@@ -31,9 +30,8 @@ ReplyHiding =
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
   hide: (root, show_stub=Conf['Show Stubs']) ->
-    hide = $('.hide_reply_button', root) or $('.sideArrows', root)
+    hide = $('.hide_reply_button', root)
     return if hide.hidden # already hidden once by the filter
-    $.addClass hide, 'hidden'
     hide.hidden = true
     root.hidden = true
 
@@ -57,7 +55,7 @@ ReplyHiding =
   show: (root) ->
     if stub = root.previousElementSibling
       $.rm stub if stub.className is 'stub'
-    ($('.hide_reply_button', root) or $('.sideArrows', root)).hidden = false
+    ($('.hide_reply_button', root)).hidden = false
     root.hidden = false
 
     $.rmClass root, 'hidden'

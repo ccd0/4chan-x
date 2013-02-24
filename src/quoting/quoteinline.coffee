@@ -70,7 +70,7 @@ QuoteInline =
       else
         $.x 'ancestor-or-self::*[parent::blockquote][1]', q
 
-    if Conf['Quote Hash Navigation'] and !isBacklink
+    if Conf['Quote Hash Navigation'] and !isBacklink and root is q
       $.after root.nextElementSibling, inline
     else
       $.after root, inline

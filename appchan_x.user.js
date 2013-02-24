@@ -3188,7 +3188,7 @@
         var button, id, root;
         return ReplyHiding.toggle(button = this.parentNode.parentNode, root = $.id("pc" + (id = this.id.slice(4))), id);
       });
-      $.add(el, hide);
+      $.add(el, [$.tn(' '), hide]);
       if (post.ID in g.hiddenReplies) {
         return ReplyHiding.hide(post.root);
       }
@@ -3198,7 +3198,6 @@
       quotes = $$(".quotelink[href$='#p" + id + "'], .backlink[href$='#p" + id + "']");
       if (/\bstub\b/.test(button.className)) {
         ReplyHiding.show(root);
-        $.rmClass(root, 'hidden');
         for (_i = 0, _len = quotes.length; _i < _len; _i++) {
           quote = quotes[_i];
           $.rmClass(quote, 'filtered');
@@ -3219,11 +3218,10 @@
       if (show_stub == null) {
         show_stub = Conf['Show Stubs'];
       }
-      hide = $('.hide_reply_button', root) || $('.sideArrows', root);
+      hide = $('.hide_reply_button', root);
       if (hide.hidden) {
         return;
       }
-      $.addClass(hide, 'hidden');
       hide.hidden = true;
       root.hidden = true;
       $.addClass(root, 'hidden');
@@ -3254,7 +3252,7 @@
           $.rm(stub);
         }
       }
-      ($('.hide_reply_button', root) || $('.sideArrows', root)).hidden = false;
+      ($('.hide_reply_button', root)).hidden = false;
       root.hidden = false;
       return $.rmClass(root, 'hidden');
     }
@@ -3301,9 +3299,9 @@
           href: 'javascript:;'
         });
         $.on(a, 'click', function() {
-          return ThreadHiding.toggle(this.parentElement);
+          return ThreadHiding.toggle($.x('ancestor::div[@class="thread"][1]', this));
         });
-        $.prepend(thread, a);
+        $.add($('.op .postInfo', thread), a);
         if (thread.id.slice(1) in this.hiddenThreads) {
           ThreadHiding.hide(thread);
         }
@@ -6677,7 +6675,7 @@
         className: el ? 'inline' : 'inline crosspost'
       });
       root = (isBacklink = /\bbacklink\b/.test(q.className)) ? q.parentNode : $.x('ancestor-or-self::*[parent::blockquote][1]', q);
-      if (Conf['Quote Hash Navigation'] && !isBacklink) {
+      if (Conf['Quote Hash Navigation'] && !isBacklink && root === q) {
         $.after(root.nextElementSibling, inline);
       } else {
         $.after(root, inline);
@@ -8372,6 +8370,7 @@
           }
         }), 500);
       });
+      Main.callbacks.push(this.node);
       return this.setup();
     },
     setup: function() {
@@ -8476,6 +8475,9 @@
         }
       }
       return css.join("");
+    },
+    node: function(post) {
+      return Style.rice(post.el);
     },
     rice: function(source) {
       var checkbox, checkboxes, div, select, selects, _i, _j, _len, _len1;
@@ -8777,7 +8779,7 @@
         medium: 4,
         large: 8
       }[_conf["Reply Spacing"]];
-      return css = "/* Cleanup */\n#postForm,\n.hidden,\n.mobile,\n.postingMode,\n.riced,\n.sideArrows,\n[hidden] {\n  display: none;\n}\n/* Defaults */\nbody {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 1px;\n  margin-bottom: 1px;\n  margin-" + Style.sidebarLocation[0] + ": " + Style.sidebar + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0;\n  padding-left: " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n  padding-right: " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;\n}\n/* Replies */\n\n/* Element Replacing */\n.rice {\n  cursor: pointer;\n  width: 9px;\n  height: 9px;\n  margin: 2px 3px;\n  display: inline-block;\n  vertical-align: bottom;\n}\n.selectrice {\n  position: relative;\n  cursor: default;\n  overflow: hidden;\n  text-align: left;\n}\n.selectrice::after {\n  content: \"\";\n  border-right: .25em solid transparent;\n  border-left: .25em solid transparent;\n  position: absolute;\n  right: .4em;\n  top: .5em;\n}\n.selectrice::before {\n  content: \"\";\n  height: 1.7em;\n  position: absolute;\n  right: 1.3em;\n  top: 0;\n}\n.selectrice ul {\n  padding: 0;\n  position: fixed;\n  max-height: 120px;\n  overflow-y: auto;\n  overflow-x: hidden;\n  z-index: 99999;\n}\ninput[type=checkbox]:checked + .rice {\n  background-attachment: scroll;\n  background-repeat: no-repeat;\n  background-position: bottom right;\n}";
+      return css = "/* Cleanup */\n#postForm,\n.hidden,\n.hidden_thread ~ div,\n.hidden_thread ~ a,\n.mobile,\n.postingMode,\n.riced,\n.sideArrows,\n[hidden] {\n  display: none;\n}\n/* Defaults */\na {\n  text-decoration: none;\n}\nbody {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 1px;\n  margin-bottom: 1px;\n  margin-" + Style.sidebarLocation[0] + ": " + Style.sidebar + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0 " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px 0 " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n}\nhr {\n  clear: both;\n}\n/* Replies */\n.hide_reply_button {\n  float: right;\n}\n.post .menu_button {\n  float: right;\n}\n.menu_button > span {\n  display: inline-block;\n  margin: 2px 2px 3px;\n  border-top: .5em solid;\n  border-right: .3em solid transparent;\n  border-left: .3em solid transparent;\n}\n.fileThumb {\n  float: left;\n}\n.reply.post {\n  display: inline-block;\n  " + (_conf["Fit Width Replies"] ? "width: 100%;" : "") + "\n}\n/* Reply Clearfix */\n.reply.post blockquote {\n  clear: right;\n}\n/* Element Replacing */\n/* Checkboxes */\n.rice {\n  cursor: pointer;\n  width: 9px;\n  height: 9px;\n  margin: 2px 3px;\n  display: inline-block;\n  vertical-align: bottom;\n}\ninput:checked + .rice {\n  background-attachment: scroll;\n  background-repeat: no-repeat;\n  background-position: bottom right;\n}\n/* Selects */\n.selectrice {\n  position: relative;\n  cursor: default;\n  overflow: hidden;\n  text-align: left;\n}\n.selectrice::after {\n  content: \"\";\n  border-right: .25em solid transparent;\n  border-left: .25em solid transparent;\n  position: absolute;\n  right: .4em;\n  top: .5em;\n}\n.selectrice::before {\n  content: \"\";\n  height: 1.7em;\n  position: absolute;\n  right: 1.3em;\n  top: 0;\n}\n/* Select Dropdown */\n.selectrice ul {\n  padding: 0;\n  position: fixed;\n  max-height: 120px;\n  overflow-y: auto;\n  overflow-x: hidden;\n  z-index: 99999;\n}\n/* Post Form */\n";
     },
     theme: function(theme) {
       var background, backgroundC, bgColor, css, fileHeading, icons, replyHeading, _conf;
