@@ -26,6 +26,10 @@
 }
 
 /* QR */
+.yotsuba #dump-list::-webkit-scrollbar-thumb {
+  background-color: #F0E0D6;
+  border-color: #D9BFB7;
+}
 :root.yotsuba .qrpreview {
   background-color: rgba(0, 0, 0, .15);
 }

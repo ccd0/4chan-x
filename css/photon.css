@@ -26,6 +26,10 @@
 }
 
 /* QR */
+.photon #dump-list::-webkit-scrollbar-thumb {
+  background-color: #DDD;
+  border-color: #CCC;
+}
 :root.photon .qrpreview {
   background-color: rgba(0, 0, 0, .15);
 }

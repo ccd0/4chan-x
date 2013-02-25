@@ -537,9 +537,15 @@ a[href="javascript:;"] {
   white-space: nowrap;
 }
 #dump-list:hover {
-  bottom: -10px;
+  bottom: -12px;
   overflow-x: auto;
   z-index: 1;
+}
+#dump-list::-webkit-scrollbar {
+  height: 12px;
+}
+#dump-list::-webkit-scrollbar-thumb {
+  border: 1px solid;
 }
 .qrpreview {
   background-position: 50% 20%;
