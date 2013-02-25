@@ -449,7 +449,7 @@ a[href="javascript:;"] {
 #qr.autohide:not(:hover) > form {
   display: none;
 }
-#autohide, #qr select, #dump-button, .remove, .captcha-img {
+#qr select, #dump-button, .remove, .captcha-img {
   cursor: pointer;
 }
 #qr > div {
@@ -654,6 +654,9 @@ a[href="javascript:;"] {
   height: 57px;
   width: 300px;
 }
+#file-n-submit > input {
+  margin: 0;
+}
 #file-n-submit.has-file #qr-no-file {
   visibility: hidden;
 }
@@ -676,6 +679,7 @@ a[href="javascript:;"] {
 }
 #qr-filename-container {
   position: relative;
+  margin-left: 2px;
 }
 #qr-filename {
   position: absolute;
@@ -687,8 +691,8 @@ a[href="javascript:;"] {
 #qr-filerm {
   padding: 0 2px;
 }
-#qr-file-spoiler {
-  margin: 1px;
+#file-n-submit > #qr-file-spoiler {
+  margin: 0 2px;
 }
 #qr input[type='file'] {
   position: absolute;
