@@ -511,6 +511,9 @@ a[href="javascript:;"] {
   background: -webkit-linear-gradient(#CCC, #DDD);
   background: linear-gradient(#CCC, #DDD);
 }
+.gecko #dump-button {
+  padding: 0;
+}
 #qr:not(.dump) #dump-list-container {
   display: none;
 }
@@ -633,23 +636,21 @@ a[href="javascript:;"] {
   height: 57px;
   width: 300px;
 }
-#file-n-submit.has-file > #qr-no-file,
-#file-n-submit:not(.has-file) > #qr-filename-container,
-#file-n-submit:not(.has-file) > #qr-file-spoiler,
-#file-n-submit:not(.has-file) > #qr-filerm {
-  display: none;
+#file-n-submit.has-file #qr-no-file {
+  visibility: hidden;
 }
-#qr-no-file,
-#qr-filename-container,
-#qr-file-spoiler,
-#qr-filerm {
-  line-height: 2;
+#file-n-submit:not(.has-file) #qr-filename,
+#file-n-submit:not(.has-file) #qr-file-spoiler,
+#file-n-submit:not(.has-file) #qr-filerm {
+  display: none;
 }
 #file-n-submit {
   display: -webkit-flex;
   display: flex;
   -webkit-flex-direction: row;
   flex-direction: row;
+  -webkit-align-items: center;
+  align-items: center;
 }
 #qr-no-file, #qr-filename-container {
   -webkit-flex: 1;
@@ -669,7 +670,7 @@ a[href="javascript:;"] {
   padding: 0 2px;
 }
 #qr-file-spoiler {
-  margin: 6px 1px;
+  margin: 1px;
 }
 #qr input[type='file'] {
   position: absolute;
