@@ -876,16 +876,23 @@ div.navLinks > a:first-of-type::after {
     css = """
 /* Cleanup */
 #postForm,
-.fileText:hover .fntrunc,
-.fileText:not(:hover) .fnfull,
+#qr .warning:empty,
 .hidden,
-.hidden_thread ~ div,
-.hidden_thread ~ a,
 .mobile,
 .postingMode,
 .riced,
 .sideArrows,
 [hidden] {
+  display: none;
+}
+/* File Name Trunctuate */
+.fileText:hover .fntrunc,
+.fileText:not(:hover) .fnfull {
+  display: none;
+}
+/* Hidden Threads */
+.hidden_thread ~ div,
+.hidden_thread ~ a {
   display: none;
 }
 /* Defaults */
@@ -904,9 +911,11 @@ body {
 }
 hr {
   clear: both;
+  border: 0;
 }
 /* Symbols */
 .dropmarker {
+  vertical-align: middle;
   display: inline-block;
   margin: 2px 2px 3px;
   border-top: .5em solid;
@@ -914,6 +923,9 @@ hr {
   border-left: .3em solid transparent;
 }
 /* Dialogs */
+.move {
+  cursor: pointer;
+}
 #iHover,
 #qp,
 #qr {
@@ -933,10 +945,14 @@ hr {
 }
 /* Posts */
 .summary {
-margin-bottom: #{Style.replyMargin}px;
+  margin-bottom: #{Style.replyMargin}px;
 }
 .postContainer {
-margin-bottom: #{Style.replyMargin}px;
+  margin-bottom: #{Style.replyMargin}px;
+}
+.hide_thread_button {
+  float: right;
+  margin: 0 3px;
 }
 .hide_reply_button {
   float: right;
@@ -957,6 +973,42 @@ margin-bottom: #{Style.replyMargin}px;
 /* Reply Clearfix */
 .reply.post blockquote {
   clear: right;
+}
+/* Menu */
+.entry {
+  border-bottom: 1px solid rgba(0,0,0,.25);
+  cursor: pointer;
+  display: block;
+  outline: none;
+  padding: 3px 7px;
+  position: relative;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.entry:last-of-type {
+  border-bottom: 0;
+}
+.focused.entry {
+  background: rgba(255,255,255,.33);
+}
+.hasSubMenu::after {
+  content: "";
+  border-#{position}: .5em solid;
+  border-top: .3em solid transparent;
+  border-bottom: .3em solid transparent;
+  display: inline-block;
+  margin: .3em;
+  position: absolute;
+  right: 3px;
+}
+.subMenu {
+  display: none;
+  position: absolute;
+  #{position}: 100%;
+  top: -1px;
+}
+.focused .subMenu {
+  display: block;
 }
 /* Element Replacing */
 /* Checkboxes */
@@ -1004,9 +1056,50 @@ input:checked + .rice {
   overflow-x: hidden;
   z-index: 99999;
 }
-
 /* Post Form */
-
+#file {
+  line-height: 17px;
+  display: inline-block;
+}
+#threadselect .selectrice {
+  display: inline-block;
+}
+#qr .warning {
+  min-height: 1.7em;
+  vertical-align: middle;
+  padding: 0 1px;
+}
+.field,
+.selectrice,
+button,
+input:not([type=radio]) {
+  font-size: #{parseInt(_conf["Font Size"], 10)}px;
+  height: 1.7em;
+  vertical-align: middle;
+  padding: 0 1px;
+}
+#dump {
+  width: 10%;
+  min-width: 10%;
+  max-width: 10%;
+  margin: 0;
+}
+input.field {
+  #{Style.agent}box-sizing: border-box;
+  width: 75px;
+  max-width: 29.33%;
+  min-width: 29.33%;
+  margin-left: 0.66%
+}
+[type="file"] {
+  position: absolute;
+  opacity: 0;
+  z-index: -1;
+}
+/* Dumping UI */
+:not(.dump) #replies {
+  display: none;
+}
 """
 
   theme: (theme) ->
