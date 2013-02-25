@@ -138,7 +138,7 @@ $.extend $,
   event: (event, detail, root=d) ->
     root.dispatchEvent new CustomEvent event, {bubbles: true, detail}
   open: (url) ->
-    (GM_openInTab or window.open) url, '_blank'
+    (window.GM_openInTab or window.open) url, '_blank'
   debounce: (wait, fn) ->
     timeout = null
     that    = null

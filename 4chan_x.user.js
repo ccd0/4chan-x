@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-02-25
+/* 4chan X Beta - Version 3.0.0 - 2013-02-26
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -836,7 +836,7 @@
       }));
     },
     open: function(url) {
-      return (GM_openInTab || window.open)(url, '_blank');
+      return (window.GM_openInTab || window.open)(url, '_blank');
     },
     debounce: function(wait, fn) {
       var args, exec, that, timeout;
@@ -6008,8 +6008,7 @@
           QR.error("" + file.name + ": File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
         } else if (_ref1 = file.type, __indexOf.call(QR.mimeTypes, _ref1) < 0) {
           QR.error("" + file.name + ": Unsupported file type.");
-        }
-        if (!QR.replies[QR.replies.length - 1].file) {
+        } else if (!QR.replies[QR.replies.length - 1].file) {
           QR.replies[QR.replies.length - 1].setFile(file);
         } else {
           new QR.reply().setFile(file);
@@ -6079,7 +6078,7 @@
       }
 
       _Class.prototype.setFile = function(file) {
-        var fileURL, img,
+        var fileURL, img, reader,
           _this = this;
         this.file = file;
         this.filename = "" + file.name + " (" + ($.bytesToString(file.size)) + ")";
@@ -6087,40 +6086,48 @@
         if (QR.spoiler) {
           this.nodes.label.hidden = false;
         }
+        if (window.URL) {
+          URL.revokeObjectURL(this.url);
+        }
         this.showFileData();
         if (!/^image/.test(file.type)) {
-          this.el.style.backgroundImage = null;
+          this.nodes.el.style.backgroundImage = null;
           return;
         }
         if (!window.URL) {
+          reader = new FileReader();
+          reader.onload = function(e) {
+            return _this.nodes.el.style.backgroundImage = "url(" + e.target.result + ")";
+          };
+          reader.readAsDataURL(file);
           return;
         }
-        URL.revokeObjectURL(this.url);
         fileURL = URL.createObjectURL(file);
         img = $.el('img');
-        $.on(img, 'load', function() {
-          var applyBlob, c, data, i, l, s, ui8a, _i;
+        img.onload = function() {
+          var applyBlob, c, data, height, i, l, s, ui8a, width, _i;
           s = 90 * 3;
-          if (img.height < s || img.width < s) {
+          height = img.height, width = img.width;
+          if (height < s || width < s) {
             _this.url = fileURL;
             _this.nodes.el.style.backgroundImage = "url(" + _this.url + ")";
             return;
           }
-          if (img.height <= img.width) {
-            img.width = s / img.height * img.width;
-            img.height = s;
+          if (height <= width) {
+            width = s / height * width;
+            height = s;
           } else {
-            img.height = s / img.width * img.height;
-            img.width = s;
+            height = s / width * height;
+            width = s;
           }
           c = $.el('canvas');
-          c.height = img.height;
-          c.width = img.width;
-          c.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
+          c.height = img.height = height;
+          c.width = img.width = width;
+          c.getContext('2d').drawImage(img, 0, 0, width, height);
+          URL.revokeObjectURL(fileURL);
           applyBlob = function(blob) {
             _this.url = URL.createObjectURL(blob);
-            _this.nodes.el.style.backgroundImage = "url(" + _this.url + ")";
-            return URL.revokeObjectURL(fileURL);
+            return _this.nodes.el.style.backgroundImage = "url(" + _this.url + ")";
           };
           if (c.toBlob) {
             c.toBlob(applyBlob);
@@ -6135,7 +6142,7 @@
           return applyBlob(new Blob([ui8a], {
             type: 'image/png'
           }));
-        });
+        };
         return img.src = fileURL;
       };
 

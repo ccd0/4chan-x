@@ -313,7 +313,7 @@ QR =
         QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
       else unless file.type in QR.mimeTypes
         QR.error "#{file.name}: Unsupported file type."
-      unless QR.replies[QR.replies.length - 1].file
+      else unless QR.replies[QR.replies.length - 1].file
         # set last reply's file
         QR.replies[QR.replies.length - 1].setFile file
       else
@@ -371,42 +371,49 @@ QR =
       @filename           = "#{file.name} (#{$.bytesToString file.size})"
       @nodes.el.title     = @filename
       @nodes.label.hidden = false if QR.spoiler
+      URL.revokeObjectURL @url if window.URL
       @showFileData()
       unless /^image/.test file.type
-        @el.style.backgroundImage = null
+        @nodes.el.style.backgroundImage = null
         return
+
       # XXX Opera does not support blob URL
-      return unless window.URL
-      URL.revokeObjectURL @url
+      unless window.URL
+        reader = new FileReader()
+        reader.onload = (e) =>
+          @nodes.el.style.backgroundImage = "url(#{e.target.result})"
+        reader.readAsDataURL file
+        return
 
       # Create a redimensioned thumbnail.
       fileURL = URL.createObjectURL file
       img     = $.el 'img'
 
-      $.on img, 'load', =>
+      img.onload = =>
         # Generate thumbnails only if they're really big.
         # Resized pictures through canvases look like ass,
         # so we generate thumbnails `s` times bigger then expected
         # to avoid crappy resized quality.
         s = 90*3
-        if img.height < s or img.width < s
+        {height, width} = img
+        if height < s or width < s
           @url = fileURL
           @nodes.el.style.backgroundImage = "url(#{@url})"
           return
-        if img.height <= img.width
-          img.width  = s / img.height * img.width
-          img.height = s
+        if height <= width
+          width  = s / height * width
+          height = s
         else
-          img.height = s / img.width  * img.height
-          img.width  = s
+          height = s / width  * height
+          width  = s
         c = $.el 'canvas'
-        c.height = img.height
-        c.width  = img.width
-        c.getContext('2d').drawImage img, 0, 0, img.width, img.height
+        c.height = img.height = height
+        c.width  = img.width  = width
+        c.getContext('2d').drawImage img, 0, 0, width, height
+        URL.revokeObjectURL fileURL
         applyBlob = (blob) =>
           @url = URL.createObjectURL blob
           @nodes.el.style.backgroundImage = "url(#{@url})"
-          URL.revokeObjectURL fileURL
         if c.toBlob
           c.toBlob applyBlob
           return
