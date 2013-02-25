@@ -60,6 +60,7 @@ QR =
         error: err
   close: ->
     QR.nodes.el.hidden = true
+    QR.cleanNotifications()
     QR.abort()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
@@ -69,7 +70,6 @@ QR =
     QR.status()
     if !Conf['Remember Spoiler'] and QR.nodes.spoiler.checked
       QR.nodes.spoiler.click()
-    QR.cleanNotifications()
   hide: ->
     d.activeElement.blur()
     $.addClass QR.nodes.el, 'autohide'

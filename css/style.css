@@ -456,8 +456,12 @@ a[href="javascript:;"] {
   min-width: 300px;
   display: -webkit-flex;
   display: flex;
+  -webkit-align-items: center;
+  align-items: center;
 }
 #qr .move {
+  -webkit-align-self: stretch;
+  align-self: stretch;
   -webkit-flex: 1;
   flex: 1;
 }
