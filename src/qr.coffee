@@ -67,7 +67,6 @@ QR =
       QR.replies[0].rm()
     QR.cooldown.auto = false
     QR.status()
-    QR.resetFileInput()
     if !Conf['Remember Spoiler'] and QR.nodes.spoiler.checked
       QR.nodes.spoiler.click()
     QR.cleanNotifications()
@@ -292,7 +291,8 @@ QR =
     $.addClass QR.nodes.el, 'dump'
   fileInput: (files) ->
     unless files instanceof FileList
-      files = @files
+      files = Array::slice.call @files
+    QR.nodes.fileInput.value = null # Don't hold the files from being modified on windows
     {length} = files
     return unless length
     max = QR.nodes.fileInput.max
@@ -302,10 +302,8 @@ QR =
       file = files[0]
       if file.size > max
         QR.error "File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
-        QR.resetFileInput()
       else unless file.type in QR.mimeTypes
         QR.error 'Unsupported file type.'
-        QR.resetFileInput()
       else
         QR.selected.setFile file
       return
@@ -321,9 +319,6 @@ QR =
       else
         new QR.reply().setFile file
     $.addClass QR.nodes.el, 'dump'
-    QR.resetFileInput() # reset input
-  resetFileInput: ->
-    QR.nodes.fileInput.value = null
   resetThreadSelector: ->
     if g.BOARD.ID is 'f'
       if g.VIEW is 'index'
@@ -373,8 +368,10 @@ QR =
 
       QR.replies.push @
     setFile: (@file) ->
-      @nodes.el.title     = "#{file.name} (#{$.bytesToString file.size})"
+      @filename           = "#{file.name} (#{$.bytesToString file.size})"
+      @nodes.el.title     = @filename
       @nodes.label.hidden = false if QR.spoiler
+      @showFileData()
       unless /^image/.test file.type
         @el.style.backgroundImage = null
         return
@@ -425,13 +422,22 @@ QR =
 
       img.src = fileURL
     rmFile: ->
-      QR.resetFileInput()
       delete @file
+      delete @filename
       @nodes.el.title = null
       @nodes.el.style.backgroundImage = null
       @nodes.label.hidden = true if QR.spoiler
+      @showFileData()
       return unless window.URL
       URL.revokeObjectURL @url
+    showFileData: (hide) ->
+      if @file
+        QR.nodes.filename.textContent = @filename
+        QR.nodes.filename.title       = @filename
+        QR.nodes.spoiler.checked      = @spoiler if QR.spoiler
+        $.addClass QR.nodes.fileSubmit, 'has-file'
+      else
+        $.rmClass QR.nodes.fileSubmit, 'has-file'
     select: ->
       if QR.selected
         QR.selected.nodes.el.id = null
@@ -445,8 +451,8 @@ QR =
       # Load this reply's values.
       for name in ['name', 'email', 'sub', 'com']
         QR.nodes[name].value = @[name]
+      @showFileData()
       QR.characterCount()
-      QR.nodes.spoiler.checked = @spoiler
     save: (input) ->
       {value} = input
       @[input.dataset.name] = value
@@ -488,7 +494,6 @@ QR =
       if el = $ '.over', @parentNode
         $.rmClass el, 'over'
     rm: ->
-      QR.resetFileInput()
       $.rm @nodes.el
       index = QR.replies.indexOf @
       if QR.replies.length is 1
@@ -614,20 +619,24 @@ QR =
         <input data-name=email title=E-mail  placeholder=E-mail  class=field size=1>
         <input data-name=sub   title=Subject placeholder=Subject class=field size=1>
       </div>
-      <div id=dump-list>
-        <div id=dump-list-container>
+      <div id=dump-list-container>
+        <div id=dump-list>
           <a id=addReply href=javascript:; title="Add a reply">+</a>
         </div>
       </div>
       <div class=textarea>
         <textarea data-name=com title=Comment placeholder=Comment class=field></textarea>
-        <span id=charCount></span>
+        <span id=char-count></span>
       </div>
-      <div>
-        <input type=file title="Shift+Click to remove the selected file." multiple size=16>
+      <div id=file-n-submit>
+        <input id=qr-file-button type=button value='Choose files'>
+        <span id=qr-no-file>No selected file</span>
+        <span id=qr-filename-container><span id=qr-filename></span></span>
+        <a id=qr-filerm href=javascript:; title='Remove file'>×</a>
+        <input type=checkbox id=qr-file-spoiler title='Spoiler image'>
         <input type=submit>
       </div>
-      <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>
+      <input type=file multiple>
     </form>
     """.replace />\s+</g, '><' # get rid of spaces between elements
 
@@ -643,10 +652,14 @@ QR =
       sub:        $ '[data-name=sub]',   dialog
       com:        $ '[data-name=com]',   dialog
       addReply:   $ '#addReply',         dialog
-      charCount:  $ '#charCount',        dialog
-      fileInput:  $ '[type=file]',       dialog
-      spoiler:    $ '#spoiler',          dialog
+      charCount:  $ '#char-count',       dialog
+      fileSubmit: $ '#file-n-submit',    dialog
+      fileButton: $ '#qr-file-button',   dialog
+      filename:   $ '#qr-filename',      dialog
+      fileRM:     $ '#qr-filerm',        dialog
+      spoiler:    $ '#qr-file-spoiler',  dialog
       status:     $ '[type=submit]',     dialog
+      fileInput:  $ '[type=file]',       dialog
 
     # Allow only this board's supported files.
     mimeTypes = $('ul.rules > li').textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
@@ -666,12 +679,12 @@ QR =
     nodes.fileInput.accept = mimeTypes if $.engine isnt 'presto' # Opera's accept attribute is fucked up
 
     QR.spoiler = !!$ 'input[name=spoiler]'
-    nodes.spoiler.parentNode.hidden = !QR.spoiler
+    nodes.spoiler.hidden = !QR.spoiler
 
     if g.BOARD.ID is 'f'
       if g.VIEW is 'index'
         nodes.flashTag = $('select[name=filetag]').cloneNode true
-        $.after QR.nodes.autohide, nodes.flashTag
+        $.after nodes.autohide, nodes.flashTag
     else # Make a list of visible threads.
       nodes.thread = $.el 'select',
         title: 'Create a new thread / Reply'
@@ -679,17 +692,18 @@ QR =
       for key, thread of g.BOARD.threads
         threads += "<option value=#{thread.ID}>Thread No.#{thread.ID}</option>"
       nodes.thread.innerHTML = threads
-      $.after QR.nodes.autohide, nodes.thread
+      $.after nodes.autohide, nodes.thread
     QR.resetThreadSelector()
 
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
-    $.on nodes.dumpButton, 'click',  -> QR.nodes.el.classList.toggle 'dump'
+    $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
     $.on nodes.addReply,   'click',  -> new QR.reply().select()
     $.on nodes.form,       'submit', QR.submit
+    $.on nodes.fileButton, 'click',  -> QR.nodes.fileInput.click()
+    $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
+    $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.fileInput
-    $.on nodes.fileInput,  'click',  (e) -> if e.shiftKey then QR.selected.rmFile(); e.preventDefault()
-    $.on nodes.spoiler,    'change', -> $('input', QR.selected.el).click()
 
     new QR.reply().select()
     # save selected reply's data
@@ -894,7 +908,6 @@ QR =
       QR.close()
 
     QR.status()
-    QR.resetFileInput()
 
   abort: ->
     if QR.ajax

@@ -511,10 +511,10 @@ a[href="javascript:;"] {
   background: -webkit-linear-gradient(#CCC, #DDD);
   background: linear-gradient(#CCC, #DDD);
 }
-#qr:not(.dump) #dump-list, .dump #spoilerLabel {
+#qr:not(.dump) #dump-list-container {
   display: none;
 }
-#dump-list {
+#dump-list-container {
   height: 100px;
   position: relative;
   -webkit-user-select: none;
@@ -522,14 +522,14 @@ a[href="javascript:;"] {
   -o-user-select: none;
   user-select: none;
 }
-#dump-list-container {
+#dump-list {
   counter-reset: qrpreviews;
   top: 0; right: 0; bottom: 0; left: 0;
   overflow: hidden;
   position: absolute;
   white-space: pre;
 }
-#dump-list-container:hover {
+#dump-list:hover {
   bottom: -10px;
   overflow-x: auto;
   z-index: 1;
@@ -611,7 +611,7 @@ a[href="javascript:;"] {
 .textarea {
   position: relative;
 }
-#charCount {
+#char-count {
   color: #000;
   background: hsla(0, 0%, 100%, .5);
   font-size: 8pt;
@@ -620,7 +620,7 @@ a[href="javascript:;"] {
   right: 1px;
   pointer-events: none;
 }
-#charCount.warning {
+#char-count.warning {
   color: red;
 }
 .captcha-img {
@@ -633,17 +633,47 @@ a[href="javascript:;"] {
   height: 57px;
   width: 300px;
 }
-#qr [type='file'] {
-  margin: 1px 0;
-  width: 70%;
+#file-n-submit.has-file > #qr-no-file,
+#file-n-submit:not(.has-file) > #qr-filename-container,
+#file-n-submit:not(.has-file) > #qr-file-spoiler,
+#file-n-submit:not(.has-file) > #qr-filerm {
+  display: none;
 }
-#qr [type='submit'] {
-  margin: 1px 0;
-  padding: 1px; /* not Gecko */
-  width: 30%;
+#qr-no-file,
+#qr-filename-container,
+#qr-file-spoiler,
+#qr-filerm {
+  line-height: 2;
 }
-.gecko #qr [type='submit'] {
-  padding: 0 1px; /* Gecko does not respect box-sizing: border-box */
+#file-n-submit {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+}
+#qr-no-file, #qr-filename-container {
+  -webkit-flex: 1;
+  flex: 1;
+}
+#qr-filename-container {
+  position: relative;
+}
+#qr-filename {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+#qr-filerm {
+  padding: 0 2px;
+}
+#qr-file-spoiler {
+  margin: 6px 1px;
+}
+#qr input[type='file'] {
+  position: absolute;
+  visibility: hidden;
 }
 
 /* Menu */
