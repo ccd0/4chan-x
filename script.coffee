@@ -1911,7 +1911,7 @@ QR =
         if g.BOARD is 'f'
           $('select[name=filetag]').cloneNode true
         else
-          $.el 'select'
+          $.el 'select',
             innerHTML: threads
             title: 'Create a new thread / Reply to a thread'
       $.prepend $('.move > span', QR.el), QR.threadSelector
@@ -2165,7 +2165,7 @@ Options =
       Options.dialog()
 
   dialog: ->
-    dialog = $.el 'div'
+    dialog = $.el 'div',
       id: 'options'
       className: 'reply dialog'
       innerHTML: '<div id=optionsbar>
@@ -4181,7 +4181,7 @@ ImageHover =
     # Don't stop other elements from dragging
     return if UI.el
 
-    el = UI.el = $.el 'img'
+    el = UI.el = $.el 'img',
       id: 'ihover'
       src: @parentNode.href
     $.add d.body, el

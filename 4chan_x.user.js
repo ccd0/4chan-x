@@ -3119,8 +3119,8 @@
       return $.on(d, 'visibilitychange', this.cb.visibility);
     },
     /*
-      http://freesound.org/people/pierrecartoons1979/sounds/90112/
-      cc-by-nc-3.0
+    http://freesound.org/people/pierrecartoons1979/sounds/90112/
+    cc-by-nc-3.0
     */
 
     audio: $.el('audio', {
@@ -3193,9 +3193,9 @@
           case 0:
           case 304:
             /*
-                      Status Code 304: Not modified
-                      By sending the `If-Modified-Since` header we get a proper status code, and no response.
-                      This saves bandwidth for both the user and the servers and avoid unnecessary computation.
+            Status Code 304: Not modified
+            By sending the `If-Modified-Since` header we get a proper status code, and no response.
+            This saves bandwidth for both the user and the servers and avoid unnecessary computation.
             */
 
             Updater.unsuccessfulFetchCount++;
@@ -4039,8 +4039,8 @@
     },
     post: function(o, isArchived) {
       /*
-          This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
-          @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
+      This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
+      @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
       */
 
       var a, board, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
