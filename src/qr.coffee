@@ -361,7 +361,7 @@ QR =
       $.on @nodes.spoiler, 'change', (e) =>
         @spoiler = e.target.checked
         QR.nodes.spoiler.checked = @spoiler if @ is QR.selected
-      $.before QR.nodes.addReply, el
+      $.add QR.nodes.dumpList, el
 
       for event in ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop']
         $.on el, event.toLowerCase(), @[event]
@@ -620,9 +620,8 @@ QR =
         <input data-name=sub   title=Subject placeholder=Subject class=field size=1>
       </div>
       <div id=dump-list-container>
-        <div id=dump-list>
-          <a id=addReply href=javascript:; title="Add a reply">+</a>
-        </div>
+        <div id=dump-list></div>
+        <a id=addReply href=javascript:; title="Add a reply">+</a>
       </div>
       <div class=textarea>
         <textarea data-name=com title=Comment placeholder=Comment class=field></textarea>
@@ -653,6 +652,7 @@ QR =
       email:      $ '[data-name=email]', dialog
       sub:        $ '[data-name=sub]',   dialog
       com:        $ '[data-name=com]',   dialog
+      dumpList:   $ '#dump-list',        dialog
       addReply:   $ '#addReply',         dialog
       charCount:  $ '#char-count',       dialog
       fileSubmit: $ '#file-n-submit',    dialog
