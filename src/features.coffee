@@ -3100,7 +3100,7 @@ ImageHover =
     return unless @file?.isImage
     $.on @file.thumb, 'mouseover', ImageHover.mouseover
   mouseover: (e) ->
-    el = $.el 'img'
+    el = $.el 'img',
       id: 'ihover'
       src: @parentNode.href
     $.add d.body, el
