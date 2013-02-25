@@ -534,7 +534,7 @@ a[href="javascript:;"] {
   top: 0; right: 0; bottom: 0; left: 0;
   overflow: hidden;
   position: absolute;
-  white-space: pre;
+  white-space: nowrap;
 }
 #dump-list:hover {
   bottom: -10px;
@@ -561,6 +561,7 @@ a[href="javascript:;"] {
   -webkit-transition: opacity .25s ease-in-out;
   transition: opacity .25s ease-in-out;
   vertical-align: top;
+  white-space: pre;
 }
 .qrpreview:hover, .qrpreview:focus {
   opacity: .9;

@@ -471,6 +471,8 @@ QR =
       return
     dragStart: ->
       $.addClass @, 'drag'
+    dragEnd: ->
+      $.rmClass @, 'drag'
     dragEnter: ->
       $.addClass @, 'over'
     dragLeave: ->
@@ -479,20 +481,15 @@ QR =
       e.preventDefault()
       e.dataTransfer.dropEffect = 'move'
     drop: ->
-      el    = $ '.drag', @parentNode
-      index = (el) -> Array::slice.call(el.parentNode.children).indexOf el
+      el       = $ '.drag', @parentNode
+      index    = (el) -> Array::slice.call(el.parentNode.children).indexOf el
       oldIndex = index el
       newIndex = index @
-      if oldIndex < newIndex
-        $.after  @, el
-      else
-        $.before @, el
+      $.rmClass el, 'drag' # Opera doesn't fire dragEnd if we drop it on something else
+      $.rmClass @,  'over'
+      (if oldIndex < newIndex then $.after else $.before) @, el
       reply = QR.replies.splice(oldIndex, 1)[0]
       QR.replies.splice newIndex, 0, reply
-    dragEnd: ->
-      $.rmClass @, 'drag'
-      if el = $ '.over', @parentNode
-        $.rmClass el, 'over'
     rm: ->
       $.rm @nodes.el
       index = QR.replies.indexOf @
