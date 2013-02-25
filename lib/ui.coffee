@@ -199,7 +199,7 @@ UI = do ->
   dragstart = (e) ->
     # prevent text selection
     e.preventDefault()
-    el = @parentNode
+    el = $.x 'ancestor::div[contains(@class,"dialog")][1]', @
     if isTouching = e.type is 'touchstart'
       e = e.changedTouches[e.changedTouches.length - 1]
     # distance from pointer to el edge is constant; calculate it here.

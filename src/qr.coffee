@@ -36,10 +36,7 @@ QR =
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
     $.on d, 'ThreadUpdate', ->
-      if g.DEAD
-        QR.abort()
-      else
-        QR.status()
+      QR.abort() if g.DEAD
 
     QR.persist() if Conf['Persistent QR']
 
@@ -512,15 +509,14 @@ QR =
         className: 'captchaimg'
         title: 'Reload'
         innerHTML: '<img>'
-      inputContainer = $.el 'div',
-        className: 'captchainput'
-        innerHTML: '<input title=Verification class=field autocomplete=off size=1>'
+      input = $.el 'input',
+        className: 'captcha-input field'
+        title: 'Verification'
+        autocomplete: 'off'
       @nodes =
-        challenge:      $.id 'recaptcha_challenge_field_holder'
-        imgContainer:   imgContainer
-        inputContainer: inputContainer
-        img:            imgContainer.firstChild
-        input:          inputContainer.firstChild
+        challenge: $.id 'recaptcha_challenge_field_holder'
+        img:       imgContainer.firstChild
+        input:     input
 
       if MutationObserver = window.MutationObserver or window.WebKitMutationObserver or window.OMutationObserver
         observer = new MutationObserver @load.bind @
@@ -530,14 +526,14 @@ QR =
         $.on @nodes.challenge, 'DOMNodeInserted', @load.bind @
 
       $.on imgContainer, 'click',   @reload.bind @
-      $.on @nodes.input, 'keydown', @keydown.bind @
+      $.on input,        'keydown', @keydown.bind @
       $.sync 'captchas', @sync.bind @
       @sync $.get 'captchas', []
       # start with an uncached captcha
       @reload()
 
       $.addClass QR.nodes.el, 'has-captcha'
-      $.after QR.nodes.com.parentNode, [imgContainer, inputContainer]
+      $.after QR.nodes.com.parentNode, [imgContainer, input]
     sync: (@captchas) ->
       @count()
     getOne: ->
@@ -558,7 +554,7 @@ QR =
     save: ->
       return unless response = @nodes.input.value.trim()
       @captchas.push
-        challenge: @nodes.challenge.firstChild.value
+        challenge: @nodes.img.alt
         response:  response
         timeout:   @timeout
       @count()
@@ -606,15 +602,34 @@ QR =
 
   dialog: ->
     dialog = UI.dialog 'qr', 'top:0;right:0;', """
-    <div class=move>Quick Reply <input type=checkbox id=autohide title=Auto-hide><span> <a href=javascript:; class=close title=Close>×</a></span></div>
+    <div>
+      <input type=checkbox id=autohide title=Auto-hide>
+      <span class=move></span>
+      <a href=javascript:; class=close title=Close>×</a>
+    </div>
     <form>
-      <div class=persona><input id=dump type=button title='Dump list' value=+><input name=name title=Name placeholder=Name class=field size=1><input name=email title=E-mail placeholder=E-mail class=field size=1><input name=sub title=Subject placeholder=Subject class=field size=1></div>
-      <div id=replies><div id=repliesList><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
-      <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span></div>
-      <div><input type=file title="Shift+Click to remove the selected file." multiple size=16><input type=submit></div>
+      <div class=persona>
+        <input id=dump-button type=button title='Dump list' value=+>
+        <input name=name  title=Name    placeholder=Name    class=field size=1>
+        <input name=email title=E-mail  placeholder=E-mail  class=field size=1>
+        <input name=sub   title=Subject placeholder=Subject class=field size=1>
+      </div>
+      <div id=dump-list>
+        <div id=dump-list-container>
+          <a id=addReply href=javascript:; title="Add a reply">+</a>
+        </div>
+      </div>
+      <div class=textarea>
+        <textarea name=com title=Comment placeholder=Comment class=field></textarea>
+        <span id=charCount></span>
+      </div>
+      <div>
+        <input type=file title="Shift+Click to remove the selected file." multiple size=16>
+        <input type=submit>
+      </div>
       <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>
     </form>
-    """
+    """.replace />\s+</g, '><' # get rid of spaces between elements
 
     QR.nodes = nodes =
       el:          dialog
@@ -622,13 +637,11 @@ QR =
       autohide:    $ '#autohide',     dialog
       close:       $ '.close',        dialog
       form:        $ 'form',          dialog
-      dump:        $ '#dump',         dialog
+      dumpButton:  $ '#dump-button',  dialog
       name:        $ '[name=name]',   dialog
       email:       $ '[name=email]',  dialog
       sub:         $ '[name=sub]',    dialog
       com:         $ '[name=com]',    dialog
-      replies:     $ '#replies',      dialog
-      repliesList: $ '#repliesList',  dialog
       addReply:    $ '#addReply',     dialog
       charCount:   $ '#charCount',    dialog
       fileInput:   $ '[type=file]',   dialog
@@ -655,11 +668,10 @@ QR =
     QR.spoiler = !!$ 'input[name=spoiler]'
     nodes.spoiler.parentNode.hidden = !QR.spoiler
 
-    span = nodes.autohide.nextElementSibling
     if g.BOARD.ID is 'f'
       if g.VIEW is 'index'
         nodes.flashTag = $('select[name=filetag]').cloneNode true
-        $.prepend span, nodes.flashTag
+        $.after QR.nodes.autohide, nodes.flashTag
     else # Make a list of visible threads.
       nodes.thread = $.el 'select',
         title: 'Create a new thread / Reply'
@@ -667,18 +679,17 @@ QR =
       for key, thread of g.BOARD.threads
         threads += "<option value=#{thread.ID}>Thread No.#{thread.ID}</option>"
       nodes.thread.innerHTML = threads
-      $.prepend span, nodes.thread
+      $.after QR.nodes.autohide, nodes.thread
     QR.resetThreadSelector()
 
-    $.on span,            'mousedown', (e) -> e.stopPropagation()
-    $.on nodes.autohide,  'change',    QR.toggleHide
-    $.on nodes.close,     'click',     QR.close
-    $.on nodes.dump,      'click',     -> QR.nodes.el.classList.toggle 'dump'
-    $.on nodes.addReply,  'click',     -> new QR.reply().select()
-    $.on nodes.form,      'submit',    QR.submit
-    $.on nodes.fileInput, 'change',    QR.fileInput
-    $.on nodes.fileInput, 'click',     (e) -> if e.shiftKey then QR.selected.rmFile(); e.preventDefault()
-    $.on nodes.spoiler,   'change',    -> $('input', QR.selected.el).click()
+    $.on nodes.autohide,   'change', QR.toggleHide
+    $.on nodes.close,      'click',  QR.close
+    $.on nodes.dumpButton, 'click',  -> QR.nodes.el.classList.toggle 'dump'
+    $.on nodes.addReply,   'click',  -> new QR.reply().select()
+    $.on nodes.form,       'submit', QR.submit
+    $.on nodes.fileInput,  'change', QR.fileInput
+    $.on nodes.fileInput,  'click',  (e) -> if e.shiftKey then QR.selected.rmFile(); e.preventDefault()
+    $.on nodes.spoiler,    'change', -> $('input', QR.selected.el).click()
 
     new QR.reply().select()
     # save selected reply's data

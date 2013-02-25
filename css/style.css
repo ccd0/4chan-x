@@ -14,8 +14,8 @@
   margin: 0;
   padding: 2px 4px 3px;
   outline: none;
-  -webkit-transition: color .25s, border-color .25s;
-  transition: color .25s, border-color .25s;
+  -webkit-transition: color .25s, border-color .25s, -webkit-flex .25s;
+  transition: color .25s, border-color .25s, flex .25s;
 }
 .field::-moz-placeholder,
 .field:hover::-moz-placeholder {
@@ -449,23 +449,52 @@ a[href="javascript:;"] {
 #qr.autohide:not(:hover) > form {
   display: none;
 }
-#qr > .move {
-  min-width: 300px;
-  overflow: hidden;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  padding: 0 2px;
-}
-#qr > .move > span {
-  float: right;
-}
-#autohide, .close, #qr select, #dump, .remove, .captchaimg, #qr div.warning {
+#autohide, #qr select, #dump-button, .remove, .captchaimg {
   cursor: pointer;
+}
+#qr > div {
+  min-width: 300px;
+  display: -webkit-flex;
+  display: flex;
+}
+#qr .move {
+  -webkit-flex: 1;
+  flex: 1;
 }
 #qr select {
   margin: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  background: none;
 }
-#dump {
+.presto #qr select {
+  height: 1em;
+}
+#qr .close {
+  padding: 0 3px;
+}
+#qr > form {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+.persona {
+  display: -webkit-flex;
+  display: flex;
+}
+.persona .field {
+  -webkit-flex: 1;
+  flex: 1;
+}
+.persona .field:hover,
+.persona .field:focus {
+  -webkit-flex: 4;
+  flex: 4;
+}
+#dump-button {
   background: -webkit-linear-gradient(#EEE, #CCC);
   background: linear-gradient(#EEE, #CCC);
   border: 1px solid #CCC;
@@ -474,23 +503,18 @@ a[href="javascript:;"] {
   outline: none;
   width: 30px;
 }
-.gecko #dump {
-  padding: 1px 0 2px;
-  width: 10%;
-}
-#dump:hover, #dump:focus {
+#dump-button:hover, #dump-button:focus {
   background: -webkit-linear-gradient(#FFF, #DDD);
   background: linear-gradient(#FFF, #DDD);
 }
-#dump:active, .dump #dump:not(:hover):not(:focus) {
+#dump-button:active, .dump #dump-button:not(:hover):not(:focus) {
   background: -webkit-linear-gradient(#CCC, #DDD);
   background: linear-gradient(#CCC, #DDD);
 }
-#qr:not(.dump) #replies, .dump > form > label {
+#qr:not(.dump) #dump-list, .dump #spoilerLabel {
   display: none;
 }
-#replies {
-  display: block;
+#dump-list {
   height: 100px;
   position: relative;
   -webkit-user-select: none;
@@ -498,15 +522,14 @@ a[href="javascript:;"] {
   -o-user-select: none;
   user-select: none;
 }
-#replies > div {
+#dump-list-container {
   counter-reset: qrpreviews;
   top: 0; right: 0; bottom: 0; left: 0;
-  margin: 0; padding: 0;
   overflow: hidden;
   position: absolute;
   white-space: pre;
 }
-#replies > div:hover {
+#dump-list-container:hover {
   bottom: -10px;
   overflow-x: auto;
   z-index: 1;
@@ -577,23 +600,12 @@ a[href="javascript:;"] {
   font-size: 3.5em;
   line-height: 100px;
 }
-.persona {
-  display: -webkit-flex;
-  display: flex;
-}
-.persona .field {
-  -webkit-flex: 1;
-  flex: 1;
-}
-.gecko .persona .field {
-  width: 30%;
-}
-#qr textarea.field {
-  display: -webkit-box;
+#qr textarea {
   min-height: 160px;
   min-width: 100%;
+  display: block;
 }
-#qr.has-captcha textarea.field {
+#qr.has-captcha textarea {
   min-height: 120px;
 }
 .textarea {
@@ -603,39 +615,34 @@ a[href="javascript:;"] {
   color: #000;
   background: hsla(0, 0%, 100%, .5);
   font-size: 8pt;
-  margin: 1px;
   position: absolute;
-  bottom: 0;
-  right: 0;
+  bottom: 1px;
+  right: 1px;
   pointer-events: none;
 }
 #charCount.warning {
   color: red;
 }
-.captchainput > .field {
-  min-width: 100%;
-}
 .captchaimg {
   background: #FFF;
   outline: 1px solid #CCC;
   outline-offset: -1px;
-  text-align: center;
 }
 .captchaimg > img {
   display: block;
   height: 57px;
   width: 300px;
 }
-#qr [type=file] {
+#qr [type='file'] {
   margin: 1px 0;
   width: 70%;
 }
-#qr [type=submit] {
+#qr [type='submit'] {
   margin: 1px 0;
   padding: 1px; /* not Gecko */
   width: 30%;
 }
-.gecko #qr [type=submit] {
+.gecko #qr [type='submit'] {
   padding: 0 1px; /* Gecko does not respect box-sizing: border-box */
 }
 
