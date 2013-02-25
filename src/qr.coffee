@@ -291,7 +291,7 @@ QR =
     $.addClass QR.nodes.el, 'dump'
   fileInput: (files) ->
     unless files instanceof FileList
-      files = Array::slice.call @files
+      files = [@files...]
     QR.nodes.fileInput.value = null # Don't hold the files from being modified on windows
     {length} = files
     return unless length
@@ -482,7 +482,7 @@ QR =
       e.dataTransfer.dropEffect = 'move'
     drop: ->
       el       = $ '.drag', @parentNode
-      index    = (el) -> Array::slice.call(el.parentNode.children).indexOf el
+      index    = (el) -> [el.parentNode.children...].indexOf el
       oldIndex = index el
       newIndex = index @
       $.rmClass el, 'drag' # Opera doesn't fire dragEnd if we drop it on something else

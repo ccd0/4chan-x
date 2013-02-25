@@ -57,8 +57,7 @@ Header =
       if a = $ "a[href*='/#{g.BOARD}/']", nav
         a.className = 'current'
         $('.board-title', Header.headerEl).textContent = a.title
-      $.add $('.board-list', Header.headerEl),
-        Array::slice.call nav.childNodes
+      $.add $('.board-list', Header.headerEl), [nav.childNodes...]
 
   toggleBoardList: ->
     node = @firstElementChild.firstChild
@@ -2073,7 +2072,7 @@ Get =
       for quote in post.quotes
         continue unless quotedPost = g.posts[quote]
         for quotedPost in [quotedPost].concat quotedPost.clones
-          quotelinks.push.apply quotelinks, Array::slice.call quotedPost.nodes.backlinks
+          quotelinks.push.apply quotelinks, [quotedPost.nodes.backlinks...]
     # Third:
     #   Filter out irrelevant quotelinks.
     quotelinks.filter (quotelink) ->
@@ -2287,7 +2286,7 @@ Quotify =
       if deadlink.parentNode.className is 'prettyprint'
         # Don't quotify deadlinks inside code tags,
         # un-`span` them.
-        $.replace deadlink, Array::slice.call deadlink.childNodes
+        $.replace deadlink, [deadlink.childNodes...]
         continue
 
       quote = deadlink.textContent

@@ -44,6 +44,7 @@
 
 (function() {
   var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, d, doc, g,
+    __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -323,7 +324,7 @@
 
       Menu.prototype.findNextEntry = function(entry, direction) {
         var entries;
-        entries = Array.prototype.slice.call(entry.parentNode.children);
+        entries = __slice.call(entry.parentNode.children);
         entries.sort(function(first, second) {
           return +(first.style.order || first.style.webkitOrder) - +(second.style.order || second.style.webkitOrder);
         });
@@ -611,7 +612,7 @@
     if (root == null) {
       root = d.body;
     }
-    return Array.prototype.slice.call(root.querySelectorAll(selector));
+    return __slice.call(root.querySelectorAll(selector));
   };
 
   $.extend = function(object, properties) {
@@ -1059,7 +1060,7 @@
           a.className = 'current';
           $('.board-title', Header.headerEl).textContent = a.title;
         }
-        return $.add($('.board-list', Header.headerEl), Array.prototype.slice.call(nav.childNodes));
+        return $.add($('.board-list', Header.headerEl), __slice.call(nav.childNodes));
       }
     },
     toggleBoardList: function() {
@@ -3353,7 +3354,7 @@
           _ref4 = [quotedPost].concat(quotedPost.clones);
           for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
             quotedPost = _ref4[_k];
-            quotelinks.push.apply(quotelinks, Array.prototype.slice.call(quotedPost.nodes.backlinks));
+            quotelinks.push.apply(quotelinks, __slice.call(quotedPost.nodes.backlinks));
           }
         }
       }
@@ -3590,7 +3591,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         deadlink = _ref[_i];
         if (deadlink.parentNode.className === 'prettyprint') {
-          $.replace(deadlink, Array.prototype.slice.call(deadlink.childNodes));
+          $.replace(deadlink, __slice.call(deadlink.childNodes));
           continue;
         }
         quote = deadlink.textContent;
@@ -5981,7 +5982,7 @@
     fileInput: function(files) {
       var file, length, max, _i, _len, _ref, _ref1;
       if (!(files instanceof FileList)) {
-        files = Array.prototype.slice.call(this.files);
+        files = __slice.call(this.files);
       }
       QR.nodes.fileInput.value = null;
       length = files.length;
@@ -6234,7 +6235,7 @@
         var el, index, newIndex, oldIndex, reply;
         el = $('.drag', this.parentNode);
         index = function(el) {
-          return Array.prototype.slice.call(el.parentNode.children).indexOf(el);
+          return __slice.call(el.parentNode.children).indexOf(el);
         };
         oldIndex = index(el);
         newIndex = index(this);

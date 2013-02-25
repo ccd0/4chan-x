@@ -107,7 +107,7 @@ UI = do ->
       $.off d, 'CloseMenu', @close
 
     findNextEntry: (entry, direction) ->
-      entries = Array::slice.call entry.parentNode.children
+      entries = [entry.parentNode.children...]
       entries.sort (first, second) ->
         +(first.style.order or first.style.webkitOrder) - +(second.style.order or second.style.webkitOrder)
       entries[entries.indexOf(entry) + direction]

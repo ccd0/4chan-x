@@ -4,7 +4,7 @@
 $ = (selector, root=d.body) ->
   root.querySelector selector
 $$ = (selector, root=d.body) ->
-  Array::slice.call root.querySelectorAll selector
+  [root.querySelectorAll(selector)...]
 
 $.extend = (object, properties) ->
   for key, val of properties
