@@ -869,7 +869,7 @@ div.post.highlight {
       ]
 
     'Post Form':
-      'Compact Post Form Inputs':[
+      'Compact Post Form Inputs': [
         true
         'Use compact inputs on the post form.'
       ]

@@ -900,6 +900,7 @@ a {
   text-decoration: none;
 }
 body {
+  outline: none;
   font-size: #{parseInt(_conf["Font Size"], 10)}px;
   font-family: #{_conf["Font"]};
   min-height: 100%;
@@ -908,6 +909,12 @@ body {
   margin-#{Style.sidebarLocation[0]}: #{Style.sidebar}px;
   margin-#{Style.sidebarLocation[1]}: 2px;
   padding: 0 #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px 0 #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
+}
+button,
+input,
+textarea {
+  font-size: #{parseInt(_conf["Font Size"], 10)}px;
+  font-family: #{_conf["Font"]};
 }
 hr {
   clear: both;
@@ -1042,7 +1049,7 @@ input:checked + .rice {
 }
 .selectrice::before {
   content: "";
-  height: 1.7em;
+  height: 1.5em;
   position: absolute;
   right: 1.3em;
   top: 0;
@@ -1057,48 +1064,193 @@ input:checked + .rice {
   z-index: 99999;
 }
 /* Post Form */
-#file {
-  line-height: 17px;
-  display: inline-block;
-}
-#threadselect .selectrice {
-  display: inline-block;
+#qr .close {
+  float: right;
 }
 #qr .warning {
-  min-height: 1.7em;
+  min-height: 1.5em;
   vertical-align: middle;
   padding: 0 1px;
+}
+.userInfo {
+  width: 250px;
+  max-width: 100%;
+  min-width: 100%;
+}
+#dump {
+  width: 10%;
+  margin: 0;
+}
+#{if _conf['Compact Post Form Inputs'] then "
+.userInfo input.field {
+  width: 29.7%;
+  margin-left: 0.3%;
+}
+#qr textarea.field {
+  height: 14.8em;
+  min-height: 9em;
+}
+#qr.captcha textarea.field {
+  height: 9em;
+}
+" else "
+.userInfo input.field {
+  width: 100%;
+}
+.userInfo input.field[name='name'] {
+  width: 89.7%;
+  margin-left: 0.3%
+}
+#qr textarea.field {
+  height: 11.6em;
+  min-height: 6em;
+}
+#qr.captcha textarea.field {
+  height: 6em;
+}
+"}
+input[title="Verification"],
+.captchaimg {
+  margin: 1px 0 0;
 }
 .field,
 .selectrice,
 button,
 input:not([type=radio]) {
-  font-size: #{parseInt(_conf["Font Size"], 10)}px;
-  height: 1.7em;
+  #{Style.agent}box-sizing: border-box;
+  font-size: #{parseInt(_conf['Font Size'], 10)}px;
+  height: 1.5em;
+  margin: 1px 0 0;
   vertical-align: middle;
   padding: 0 1px;
 }
-#dump {
-  width: 10%;
-  min-width: 10%;
-  max-width: 10%;
-  margin: 0;
+#qr textarea {
+  min-width: 100%;
 }
-input.field {
-  #{Style.agent}box-sizing: border-box;
-  width: 75px;
-  max-width: 29.33%;
-  min-width: 29.33%;
-  margin-left: 0.66%
+[type='submit'] {
+  width: 25%;
 }
-[type="file"] {
+[type='file'] {
   position: absolute;
   opacity: 0;
   z-index: -1;
 }
+/* Fake File Input */
+#file {
+  #{Style.agent}box-sizing: border-box;
+  display: inline-block;
+  width: 74.7%;
+  margin-right: 0.3%;
+}
+/* Thread Select / Spoiler Label */
+#threadselect {
+  vertical-align: middle;
+  width: 49%;
+  display: inline-block;
+}
+#spoilerLabel {
+  vertical-align: middle;
+  width: 49%;
+  display: inline-block;
+  text-align: right;
+}
+#threadselect:empty + #spoilerLabel {
+  display: inline-block;
+  width: 100%;
+}
 /* Dumping UI */
-:not(.dump) #replies {
+.dump #replies {
+  display: block;
+}
+#replies {
   display: none;
+  height: 90px;
+  position: relative;
+}
+#replies > div {
+  counter-reset: thumbnails;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  white-space: pre;
+}
+#replies > div:hover {
+  overflow-x: auto;
+}
+
+.thumbnail {
+  #{Style.agent}box-sizing: border-box;
+  cursor: move;
+  border: 1px solid transparent;
+  background-color: rgba(0,0,0,.2);
+  background-position: 50% 20%;
+  background-size: cover;
+  display: inline-block;
+  height: 90px;
+  width: 90px;
+  padding: 2px;
+  opacity: .5;
+  overflow: hidden;
+  position: relative;
+  text-shadow: 0 1px 1px #000;
+  #{Style.agent}transition: opacity .25s ease-in-out;
+  vertical-align: top;
+}
+.thumbnail:hover,
+.thumbnail:focus {
+  opacity: .9;
+}
+.thumbnail::before {
+  counter-increment: thumbnails;
+  content: counter(thumbnails);
+  color: #fff;
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  text-shadow: 0 0 3px #000, 0 0 8px #000;
+}
+.thumbnail#selected {
+  opacity: 1;
+}
+.thumbnail.drag {
+  box-shadow: 0 0 10px rgba(0,0,0,.5);
+}
+.thumbnail.over {
+  border-color: #fff;
+}
+.thumbnail > span {
+  color: #fff;
+}
+.remove {
+  background: none;
+  color: #e00;
+  font-weight: 700;
+  padding: 3px;
+}
+a:only-of-type > .remove {
+  display: none;
+}
+.remove:hover::after {
+  content: " Remove";
+}
+.thumbnail > label {
+  background: rgba(0,0,0,.5);
+  color: #fff;
+  right: 0; bottom: 0; left: 0;
+  position: absolute;
+  text-align: center;
+}
+.thumbnail > label > input {
+  margin: 0;
+}
+#addReply {
+  cursor: pointer;
+  font-size: 3.5em;
+  line-height: 90px;
+  margin: 0 0.5em;
 }
 """
 
@@ -1403,6 +1555,7 @@ input[type=checkbox]:checked + .rice {
   background: #{theme["Checkbox Checked Background"]};
   background-image: url(#{Icons.header.png + (if Style.lightTheme then "AkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" else "AkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==")});
 }
+#addReply,
 #dump,
 .button,
 .entry,
@@ -1417,6 +1570,7 @@ a {
 .quotelink {
   color: #{theme["Quotelinks"]};
 }
+#addReply:hover,
 #dump:hover,
 .entry:hover,
 .sideArrows a:hover,

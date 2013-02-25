@@ -383,7 +383,6 @@ QR =
 
       img.src = fileUrl
 
-
     rmFile: ->
       QR.resetFileInput()
       delete @file
@@ -393,7 +392,8 @@ QR =
       (window.URL or window.webkitURL).revokeObjectURL? @url
 
     select: ->
-      QR.selected?.el.id = null
+      return if QR.selected is @
+      QR.selected?.el.removeAttribute 'id'
       QR.selected = @
       @el.id = 'selected'
       # Scroll the list to center the focused reply.
@@ -451,6 +451,7 @@ QR =
       index = QR.replies.indexOf @
       if QR.replies.length is 1
         new QR.reply().select()
+        $.rmClass QR.el, 'dump'
       else if @el.id is 'selected'
         (QR.replies[index-1] or QR.replies[index+1]).select()
       QR.replies.splice index, 1
@@ -568,7 +569,7 @@ QR =
 <form>
   <div class=warning></div>
   <div class=userInfo><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field><input name=email title=E-mail placeholder=E-mail class=field><input name=sub title=Subject placeholder=Subject class=field></div>
-  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
+  <div id=replies><div><span id=addReply href=javascript:; title="Add a reply">+</a></div></div>
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span><div style=clear:both></div></div>
   <div id=buttons><input type=file multiple size=16><div id=file class=field></div><input type=submit></div>
   <div id=threadselect></div>
