@@ -876,13 +876,15 @@ div.navLinks > a:first-of-type::after {
     css = """
 /* Cleanup */
 #postForm,
-#qr .warning:empty,
-.hidden,
 .mobile,
 .postingMode,
 .riced,
-.sideArrows,
-[hidden] {
+.sideArrows {
+  display: none;
+}
+/* Empties */
+#qr .warning:empty,
+#threadselect:empty {
   display: none;
 }
 /* File Name Trunctuate */
@@ -890,10 +892,12 @@ div.navLinks > a:first-of-type::after {
 .fileText:not(:hover) .fnfull {
   display: none;
 }
-/* Hidden Threads */
+/* Hidden Content */
+.hidden,
 .hidden_thread ~ div,
-.hidden_thread ~ a {
-  display: none;
+.hidden_thread ~ a,
+[hidden] {
+  display: none !important;
 }
 /* Defaults */
 a {
@@ -933,9 +937,12 @@ hr {
 .move {
   cursor: pointer;
 }
-#iHover,
-#qp,
-#qr {
+#iHover {
+  position: fixed;
+  max-width: 85%;
+  max-height: 85%;
+}
+#qp {
   position: fixed;
 }
 #globalMessage {
@@ -994,9 +1001,6 @@ hr {
 }
 .entry:last-of-type {
   border-bottom: 0;
-}
-.focused.entry {
-  background: rgba(255,255,255,.33);
 }
 .hasSubMenu::after {
   content: "";
@@ -1064,6 +1068,10 @@ input:checked + .rice {
   z-index: 99999;
 }
 /* Post Form */
+#qr {
+  position: fixed;
+  padding: 1px;
+}
 #qr .close {
   float: right;
 }
