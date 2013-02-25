@@ -254,8 +254,8 @@ QR =
 
     QR.open()
     ta = QR.nodes.com
-    if QR.threadSelector and !ta.value and g.BOARD.ID isnt 'f'
-      QR.threadSelector.value = OP.ID
+    if QR.nodes.thread and !ta.value
+      QR.nodes.thread.value = OP.ID
 
     caretPos = ta.selectionStart
     # Replace selection for text.
@@ -506,7 +506,7 @@ QR =
       $.asap (-> $.id 'recaptcha_challenge_field_holder'), @ready.bind @
     ready: ->
       imgContainer = $.el 'div',
-        className: 'captchaimg'
+        className: 'captcha-img'
         title: 'Reload'
         innerHTML: '<img>'
       input = $.el 'input',

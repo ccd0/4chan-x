@@ -449,7 +449,7 @@ a[href="javascript:;"] {
 #qr.autohide:not(:hover) > form {
   display: none;
 }
-#autohide, #qr select, #dump-button, .remove, .captchaimg {
+#autohide, #qr select, #dump-button, .remove, .captcha-img {
   cursor: pointer;
 }
 #qr > div {
@@ -623,12 +623,12 @@ a[href="javascript:;"] {
 #charCount.warning {
   color: red;
 }
-.captchaimg {
+.captcha-img {
   background: #FFF;
   outline: 1px solid #CCC;
   outline-offset: -1px;
 }
-.captchaimg > img {
+.captcha-img > img {
   display: block;
   height: 57px;
   width: 300px;
