@@ -6179,7 +6179,7 @@
       _Class.prototype.save = function(input) {
         var value, _ref;
         value = input.value;
-        this[input.name] = value;
+        this[input.dataset.name] = value;
         if (input.nodeName !== 'TEXTAREA') {
           return;
         }
@@ -6408,7 +6408,7 @@
     },
     dialog: function() {
       var dialog, key, mimeTypes, name, nodes, thread, threads, _i, _len, _ref, _ref1;
-      dialog = UI.dialog('qr', 'top:0;right:0;', "<div>\n  <input type=checkbox id=autohide title=Auto-hide>\n  <span class=move></span>\n  <a href=javascript:; class=close title=Close>×</a>\n</div>\n<form>\n  <div class=persona>\n    <input id=dump-button type=button title='Dump list' value=+>\n    <input name=name  title=Name    placeholder=Name    class=field size=1>\n    <input name=email title=E-mail  placeholder=E-mail  class=field size=1>\n    <input name=sub   title=Subject placeholder=Subject class=field size=1>\n  </div>\n  <div id=dump-list>\n    <div id=dump-list-container>\n      <a id=addReply href=javascript:; title=\"Add a reply\">+</a>\n    </div>\n  </div>\n  <div class=textarea>\n    <textarea name=com title=Comment placeholder=Comment class=field></textarea>\n    <span id=charCount></span>\n  </div>\n  <div>\n    <input type=file title=\"Shift+Click to remove the selected file.\" multiple size=16>\n    <input type=submit>\n  </div>\n  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\n</form>".replace(/>\s+</g, '><'));
+      dialog = UI.dialog('qr', 'top:0;right:0;', "<div>\n  <input type=checkbox id=autohide title=Auto-hide>\n  <span class=move></span>\n  <a href=javascript:; class=close title=Close>×</a>\n</div>\n<form>\n  <div class=persona>\n    <input id=dump-button type=button title='Dump list' value=+>\n    <input data-name=name  title=Name    placeholder=Name    class=field size=1>\n    <input data-name=email title=E-mail  placeholder=E-mail  class=field size=1>\n    <input data-name=sub   title=Subject placeholder=Subject class=field size=1>\n  </div>\n  <div id=dump-list>\n    <div id=dump-list-container>\n      <a id=addReply href=javascript:; title=\"Add a reply\">+</a>\n    </div>\n  </div>\n  <div class=textarea>\n    <textarea data-name=com title=Comment placeholder=Comment class=field></textarea>\n    <span id=charCount></span>\n  </div>\n  <div>\n    <input type=file title=\"Shift+Click to remove the selected file.\" multiple size=16>\n    <input type=submit>\n  </div>\n  <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image</label>\n</form>".replace(/>\s+</g, '><'));
       QR.nodes = nodes = {
         el: dialog,
         move: $('.move', dialog),
@@ -6416,10 +6416,10 @@
         close: $('.close', dialog),
         form: $('form', dialog),
         dumpButton: $('#dump-button', dialog),
-        name: $('[name=name]', dialog),
-        email: $('[name=email]', dialog),
-        sub: $('[name=sub]', dialog),
-        com: $('[name=com]', dialog),
+        name: $('[data-name=name]', dialog),
+        email: $('[data-name=email]', dialog),
+        sub: $('[data-name=sub]', dialog),
+        com: $('[data-name=com]', dialog),
         addReply: $('#addReply', dialog),
         charCount: $('#charCount', dialog),
         fileInput: $('[type=file]', dialog),

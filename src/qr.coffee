@@ -449,7 +449,7 @@ QR =
       QR.nodes.spoiler.checked = @spoiler
     save: (input) ->
       {value} = input
-      @[input.name] = value
+      @[input.dataset.name] = value
       return if input.nodeName isnt 'TEXTAREA'
       @nodes.span.textContent = value
       QR.characterCount()
@@ -610,9 +610,9 @@ QR =
     <form>
       <div class=persona>
         <input id=dump-button type=button title='Dump list' value=+>
-        <input name=name  title=Name    placeholder=Name    class=field size=1>
-        <input name=email title=E-mail  placeholder=E-mail  class=field size=1>
-        <input name=sub   title=Subject placeholder=Subject class=field size=1>
+        <input data-name=name  title=Name    placeholder=Name    class=field size=1>
+        <input data-name=email title=E-mail  placeholder=E-mail  class=field size=1>
+        <input data-name=sub   title=Subject placeholder=Subject class=field size=1>
       </div>
       <div id=dump-list>
         <div id=dump-list-container>
@@ -620,7 +620,7 @@ QR =
         </div>
       </div>
       <div class=textarea>
-        <textarea name=com title=Comment placeholder=Comment class=field></textarea>
+        <textarea data-name=com title=Comment placeholder=Comment class=field></textarea>
         <span id=charCount></span>
       </div>
       <div>
@@ -632,21 +632,21 @@ QR =
     """.replace />\s+</g, '><' # get rid of spaces between elements
 
     QR.nodes = nodes =
-      el:          dialog
-      move:        $ '.move',         dialog
-      autohide:    $ '#autohide',     dialog
-      close:       $ '.close',        dialog
-      form:        $ 'form',          dialog
-      dumpButton:  $ '#dump-button',  dialog
-      name:        $ '[name=name]',   dialog
-      email:       $ '[name=email]',  dialog
-      sub:         $ '[name=sub]',    dialog
-      com:         $ '[name=com]',    dialog
-      addReply:    $ '#addReply',     dialog
-      charCount:   $ '#charCount',    dialog
-      fileInput:   $ '[type=file]',   dialog
-      spoiler:     $ '#spoiler',      dialog
-      status:      $ '[type=submit]', dialog
+      el:         dialog
+      move:       $ '.move',             dialog
+      autohide:   $ '#autohide',         dialog
+      close:      $ '.close',            dialog
+      form:       $ 'form',              dialog
+      dumpButton: $ '#dump-button',      dialog
+      name:       $ '[data-name=name]',  dialog
+      email:      $ '[data-name=email]', dialog
+      sub:        $ '[data-name=sub]',   dialog
+      com:        $ '[data-name=com]',   dialog
+      addReply:   $ '#addReply',         dialog
+      charCount:  $ '#charCount',        dialog
+      fileInput:  $ '[type=file]',       dialog
+      spoiler:    $ '#spoiler',          dialog
+      status:     $ '[type=submit]',     dialog
 
     # Allow only this board's supported files.
     mimeTypes = $('ul.rules > li').textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
