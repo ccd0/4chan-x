@@ -135,8 +135,10 @@ Get =
         twidth:    data.media.preview_w
         isSpoiler: data.media.spoiler is '1'
 
-    $.replace root.firstChild, Get.cleanPost Build.post o, true
-    cb() if cb
+    post = Main.preParse postNode = Get.cleanPost Build.post o, true
+
+    cb(post, root) if cb
+    $.replace root.firstChild, postNode
 
   cleanPost: (root) ->
     post = $ '.post', root

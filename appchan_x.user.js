@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.1.2 - 2013-02-24
+ * appchan x - Version 1.1.2 - 2013-02-25
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -10556,7 +10556,7 @@
       return $.replace(root.firstChild, postNode);
     },
     parseArchivedPost: function(req, board, postID, root, cb) {
-      var bq, comment, data, o, _ref;
+      var bq, comment, data, o, post, postNode, _ref;
       data = JSON.parse(req.response);
       if (data.error) {
         $.addClass(root, 'warning');
@@ -10633,10 +10633,11 @@
           isSpoiler: data.media.spoiler === '1'
         };
       }
-      $.replace(root.firstChild, Get.cleanPost(Build.post(o, true)));
+      post = Main.preParse(postNode = Get.cleanPost(Build.post(o, true)));
       if (cb) {
-        return cb();
+        cb(post, root);
       }
+      return $.replace(root.firstChild, postNode);
     },
     cleanPost: function(root) {
       var child, el, els, inline, inlined, now, post, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
