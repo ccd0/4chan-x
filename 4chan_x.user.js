@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-02-26
+/* 4chan X Beta - Version 3.0.0 - 2013-02-27
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -6079,6 +6079,22 @@
         QR.posts.push(this);
       }
 
+      _Class.prototype.rm = function() {
+        var index;
+        $.rm(this.nodes.el);
+        index = QR.posts.indexOf(this);
+        if (QR.posts.length === 1) {
+          new QR.post().select();
+        } else if (this === QR.selected) {
+          (QR.posts[index - 1] || QR.posts[index + 1]).select();
+        }
+        QR.posts.splice(index, 1);
+        if (!window.URL) {
+          return;
+        }
+        return URL.revokeObjectURL(this.url);
+      };
+
       _Class.prototype.lock = function(lock) {
         var name, _i, _len, _ref;
         if (lock == null) {
@@ -6100,6 +6116,53 @@
 
       _Class.prototype.unlock = function() {
         return this.lock(false);
+      };
+
+      _Class.prototype.select = function() {
+        var name, rectEl, rectList, _i, _len, _ref;
+        if (QR.selected) {
+          QR.selected.nodes.el.id = null;
+          QR.selected.forceSave();
+        }
+        QR.selected = this;
+        this.lock(this.isLocked);
+        this.nodes.el.id = 'selected';
+        rectEl = this.nodes.el.getBoundingClientRect();
+        rectList = this.nodes.el.parentNode.getBoundingClientRect();
+        this.nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width / 2 - rectList.left - rectList.width / 2;
+        _ref = ['name', 'email', 'sub', 'com'];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          name = _ref[_i];
+          QR.nodes[name].value = this[name];
+        }
+        this.showFileData();
+        return QR.characterCount();
+      };
+
+      _Class.prototype.save = function(input) {
+        var value, _ref;
+        value = input.value;
+        this[input.dataset.name] = value;
+        if (input.nodeName !== 'TEXTAREA') {
+          return;
+        }
+        this.nodes.span.textContent = value;
+        QR.characterCount();
+        if (QR.cooldown.auto && this === QR.posts[0] && (0 < (_ref = QR.cooldown.seconds) && _ref <= 5)) {
+          return QR.cooldown.auto = false;
+        }
+      };
+
+      _Class.prototype.forceSave = function() {
+        var name, _i, _len, _ref;
+        if (this !== QR.selected) {
+          return;
+        }
+        _ref = ['name', 'email', 'sub', 'com'];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          name = _ref[_i];
+          this.save(QR.nodes[name]);
+        }
       };
 
       _Class.prototype.setFile = function(file) {
@@ -6199,50 +6262,6 @@
         }
       };
 
-      _Class.prototype.select = function() {
-        var name, rectEl, rectList, _i, _len, _ref;
-        if (QR.selected) {
-          QR.selected.nodes.el.id = null;
-          QR.selected.forceSave();
-        }
-        QR.selected = this;
-        this.lock(this.isLocked);
-        this.nodes.el.id = 'selected';
-        rectEl = this.nodes.el.getBoundingClientRect();
-        rectList = this.nodes.el.parentNode.getBoundingClientRect();
-        this.nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width / 2 - rectList.left - rectList.width / 2;
-        _ref = ['name', 'email', 'sub', 'com'];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          name = _ref[_i];
-          QR.nodes[name].value = this[name];
-        }
-        this.showFileData();
-        return QR.characterCount();
-      };
-
-      _Class.prototype.save = function(input) {
-        var value, _ref;
-        value = input.value;
-        this[input.dataset.name] = value;
-        if (input.nodeName !== 'TEXTAREA') {
-          return;
-        }
-        this.nodes.span.textContent = value;
-        QR.characterCount();
-        if (QR.cooldown.auto && this === QR.posts[0] && (0 < (_ref = QR.cooldown.seconds) && _ref <= 5)) {
-          return QR.cooldown.auto = false;
-        }
-      };
-
-      _Class.prototype.forceSave = function() {
-        var name, _i, _len, _ref;
-        _ref = ['name', 'email', 'sub', 'com'];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          name = _ref[_i];
-          this.save(QR.nodes[name]);
-        }
-      };
-
       _Class.prototype.dragStart = function() {
         return $.addClass(this, 'drag');
       };
@@ -6280,22 +6299,6 @@
         (oldIndex < newIndex ? $.after : $.before)(this, el);
         post = QR.posts.splice(oldIndex, 1)[0];
         return QR.posts.splice(newIndex, 0, post);
-      };
-
-      _Class.prototype.rm = function() {
-        var index;
-        $.rm(this.nodes.el);
-        index = QR.posts.indexOf(this);
-        if (QR.posts.length === 1) {
-          new QR.post().select();
-        } else if (this === QR.selected) {
-          (QR.posts[index - 1] || QR.posts[index + 1]).select();
-        }
-        QR.posts.splice(index, 1);
-        if (!window.URL) {
-          return;
-        }
-        return URL.revokeObjectURL(this.url);
       };
 
       return _Class;
@@ -6558,9 +6561,7 @@
         return;
       }
       post = QR.posts[0];
-      if (post === QR.selected) {
-        post.forceSave();
-      }
+      post.forceSave();
       if (g.BOARD.ID === 'f') {
         if (g.VIEW === 'index') {
           filetag = QR.nodes.flashTag.value;

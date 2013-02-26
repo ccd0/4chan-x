@@ -379,6 +379,16 @@ QR =
 
       @unlock()
       QR.posts.push @
+    rm: ->
+      $.rm @nodes.el
+      index = QR.posts.indexOf @
+      if QR.posts.length is 1
+        new QR.post().select()
+      else if @ is QR.selected
+        (QR.posts[index-1] or QR.posts[index+1]).select()
+      QR.posts.splice index, 1
+      return unless window.URL
+      URL.revokeObjectURL @url
     lock: (lock=true) ->
       @isLocked = lock
       return unless @ is QR.selected
@@ -390,6 +400,39 @@ QR =
       @nodes.el.draggable = !lock
     unlock: ->
       @lock false
+    select: ->
+      if QR.selected
+        QR.selected.nodes.el.id = null
+        QR.selected.forceSave()
+      QR.selected = @
+      @lock @isLocked
+      @nodes.el.id = 'selected'
+      # Scroll the list to center the focused post.
+      rectEl   = @nodes.el.getBoundingClientRect()
+      rectList = @nodes.el.parentNode.getBoundingClientRect()
+      @nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
+      # Load this post's values.
+      for name in ['name', 'email', 'sub', 'com']
+        QR.nodes[name].value = @[name]
+      @showFileData()
+      QR.characterCount()
+    save: (input) ->
+      {value} = input
+      @[input.dataset.name] = value
+      return if input.nodeName isnt 'TEXTAREA'
+      @nodes.span.textContent = value
+      QR.characterCount()
+      # Disable auto-posting if you're typing in the first post
+      # during the last 5 seconds of the cooldown.
+      if QR.cooldown.auto and @ is QR.posts[0] and 0 < QR.cooldown.seconds <= 5
+        QR.cooldown.auto = false
+    forceSave: ->
+      return unless @ is QR.selected
+      # Do this in case people use extensions
+      # that do not trigger the `input` event.
+      for name in ['name', 'email', 'sub', 'com']
+        @save QR.nodes[name]
+      return
     setFile: (@file) ->
       @filename           = "#{file.name} (#{$.bytesToString file.size})"
       @nodes.el.title     = @filename
@@ -468,38 +511,6 @@ QR =
         $.addClass QR.nodes.fileSubmit, 'has-file'
       else
         $.rmClass QR.nodes.fileSubmit, 'has-file'
-    select: ->
-      if QR.selected
-        QR.selected.nodes.el.id = null
-        QR.selected.forceSave()
-      QR.selected = @
-      @lock @isLocked
-      @nodes.el.id = 'selected'
-      # Scroll the list to center the focused post.
-      rectEl   = @nodes.el.getBoundingClientRect()
-      rectList = @nodes.el.parentNode.getBoundingClientRect()
-      @nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
-      # Load this post's values.
-      for name in ['name', 'email', 'sub', 'com']
-        QR.nodes[name].value = @[name]
-      @showFileData()
-      QR.characterCount()
-    save: (input) ->
-      {value} = input
-      @[input.dataset.name] = value
-      return if input.nodeName isnt 'TEXTAREA'
-      @nodes.span.textContent = value
-      QR.characterCount()
-      # Disable auto-posting if you're typing in the first post
-      # during the last 5 seconds of the cooldown.
-      if QR.cooldown.auto and @ is QR.posts[0] and 0 < QR.cooldown.seconds <= 5
-        QR.cooldown.auto = false
-    forceSave: ->
-      # Do this in case people use extensions
-      # that do not trigger the `input` event.
-      for name in ['name', 'email', 'sub', 'com']
-        @save QR.nodes[name]
-      return
     dragStart: ->
       $.addClass @, 'drag'
     dragEnd: ->
@@ -522,16 +533,6 @@ QR =
       (if oldIndex < newIndex then $.after else $.before) @, el
       post = QR.posts.splice(oldIndex, 1)[0]
       QR.posts.splice newIndex, 0, post
-    rm: ->
-      $.rm @nodes.el
-      index = QR.posts.indexOf @
-      if QR.posts.length is 1
-        new QR.post().select()
-      else if @ is QR.selected
-        (QR.posts[index-1] or QR.posts[index+1]).select()
-      QR.posts.splice index, 1
-      return unless window.URL
-      URL.revokeObjectURL @url
 
   captcha:
     init: ->
@@ -763,7 +764,7 @@ QR =
       return
 
     post = QR.posts[0]
-    post.forceSave() if post is QR.selected
+    post.forceSave()
     if g.BOARD.ID is 'f'
       if g.VIEW is 'index'
         filetag  = QR.nodes.flashTag.value
