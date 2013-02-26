@@ -63,7 +63,7 @@ QR =
         error: err
   close: ->
     if QR.req
-      QR.abort() unless QR.req.isUploadFinished
+      QR.abort()
       return
     QR.nodes.el.hidden = true
     QR.cleanNotifications()
@@ -740,7 +740,7 @@ QR =
     e?.preventDefault()
 
     if QR.req
-      QR.abort() unless QR.req.isUploadFinished
+      QR.abort()
       return
 
     if QR.cooldown.seconds
@@ -933,7 +933,7 @@ QR =
     QR.status()
 
   abort: ->
-    if QR.req
+    if QR.req and !QR.req.isUploadFinished
       QR.req.abort()
       delete QR.req
       QR.notifications.push new Notification 'info', 'QR upload aborted.', 5

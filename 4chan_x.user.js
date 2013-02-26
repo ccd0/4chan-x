@@ -5720,9 +5720,7 @@
     close: function() {
       var i, _i, _len, _ref;
       if (QR.req) {
-        if (!QR.req.isUploadFinished) {
-          QR.abort();
-        }
+        QR.abort();
         return;
       }
       QR.nodes.el.hidden = true;
@@ -6523,9 +6521,7 @@
         e.preventDefault();
       }
       if (QR.req) {
-        if (!QR.req.isUploadFinished) {
-          QR.abort();
-        }
+        QR.abort();
         return;
       }
       if (QR.cooldown.seconds) {
@@ -6704,7 +6700,7 @@
       return QR.status();
     },
     abort: function() {
-      if (QR.req) {
+      if (QR.req && !QR.req.isUploadFinished) {
         QR.req.abort();
         delete QR.req;
         QR.notifications.push(new Notification('info', 'QR upload aborted.', 5));
