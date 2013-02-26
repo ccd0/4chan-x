@@ -961,7 +961,8 @@ hr {
   position: fixed;
 }
 #menu {
-  position: absolute
+  position: absolute;
+  outline: none;
 }
 /* Posts */
 .summary {
@@ -985,6 +986,9 @@ hr {
 .fileThumb {
   float: left;
   margin: 3px 20px;
+}
+.fileThumb img {
+  outline: none;
 }
 .reply.post {
   display: inline-block;
