@@ -159,7 +159,10 @@ QR =
         QR.cooldown.cooldowns[id] = cooldowns[id]
       QR.cooldown.start()
     set: (data) ->
-      start = Date.now()
+      start = if data.req
+        data.req.uploadEndTime
+      else
+        Date.now()
       if data.delay
         cooldown = delay: data.delay
       else
@@ -186,14 +189,14 @@ QR =
       delete QR.cooldown.cooldowns[id]
       $.set "cooldown.#{g.BOARD}", QR.cooldown.cooldowns
     count: ->
-      if Object.keys(QR.cooldown.cooldowns).length
-        setTimeout QR.cooldown.count, 1000
-      else
+      unless Object.keys(QR.cooldown.cooldowns).length
         $.delete "#{g.BOARD}.cooldown"
         delete QR.cooldown.isCounting
         delete QR.cooldown.seconds
         QR.status()
         return
+
+      setTimeout QR.cooldown.count, 1000
 
       isReply = if g.BOARD.ID is 'f'
         g.VIEW is 'thread'
@@ -826,6 +829,7 @@ QR =
         onload: ->
           # Upload done, waiting for server response.
           QR.req.isUploadFinished = true
+          QR.req.uploadEndTime    = Date.now()
           QR.req.progress = '...'
           QR.status()
         onprogress: (e) ->
@@ -912,6 +916,7 @@ QR =
     }, QR.nodes.el
 
     QR.cooldown.set
+      req:     req
       post:    reply
       isReply: !!threadID
 

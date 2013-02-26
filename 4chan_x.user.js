@@ -5849,7 +5849,7 @@
       },
       set: function(data) {
         var cooldown, hasFile, isReply, isSage, start, type;
-        start = Date.now();
+        start = data.req ? data.req.uploadEndTime : Date.now();
         if (data.delay) {
           cooldown = {
             delay: data.delay
@@ -5876,15 +5876,14 @@
       },
       count: function() {
         var cooldown, cooldowns, elapsed, hasFile, isReply, isSage, now, post, seconds, start, type, types, update, _ref;
-        if (Object.keys(QR.cooldown.cooldowns).length) {
-          setTimeout(QR.cooldown.count, 1000);
-        } else {
+        if (!Object.keys(QR.cooldown.cooldowns).length) {
           $["delete"]("" + g.BOARD + ".cooldown");
           delete QR.cooldown.isCounting;
           delete QR.cooldown.seconds;
           QR.status();
           return;
         }
+        setTimeout(QR.cooldown.count, 1000);
         isReply = g.BOARD.ID === 'f' ? g.VIEW === 'thread' : QR.nodes.thread.value !== 'new';
         if (isReply) {
           post = QR.replies[0];
@@ -6615,6 +6614,7 @@
         upCallbacks: {
           onload: function() {
             QR.req.isUploadFinished = true;
+            QR.req.uploadEndTime = Date.now();
             QR.req.progress = '...';
             return QR.status();
           },
@@ -6686,6 +6686,7 @@
         postID: postID
       }, QR.nodes.el);
       QR.cooldown.set({
+        req: req,
         post: reply,
         isReply: !!threadID
       });
