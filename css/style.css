@@ -547,7 +547,7 @@ a[href="javascript:;"] {
 #dump-list::-webkit-scrollbar-thumb {
   border: 1px solid;
 }
-.qrpreview {
+.qr-preview {
   background-position: 50% 20%;
   background-size: cover;
   border: 1px solid #808080;
@@ -569,14 +569,14 @@ a[href="javascript:;"] {
   vertical-align: top;
   white-space: pre;
 }
-.qrpreview:hover, .qrpreview:focus {
+.qr-preview:hover, .qr-preview:focus {
   opacity: .9;
   color: #FFF !important;
 }
-.qrpreview#selected {
+.qr-preview#selected {
   opacity: 1;
 }
-.qrpreview::before {
+.qr-preview::before {
   counter-increment: qrpreviews;
   content: counter(qrpreviews);
   font-weight: 700;
@@ -584,11 +584,11 @@ a[href="javascript:;"] {
   position: absolute;
   top: 3px; right: 3px;
 }
-.qrpreview.drag {
+.qr-preview.drag {
   border-color: red;
   border-style: dashed;
 }
-.qrpreview.over {
+.qr-preview.over {
   border-color: #FFF;
   border-style: dashed;
 }
@@ -600,17 +600,17 @@ a[href="javascript:;"] {
 .remove:hover::after {
   content: ' Remove';
 }
-.qrpreview > label {
+.qr-preview > label {
   background: rgba(0, 0, 0, .5);
   right: 0; bottom: 0; left: 0;
   position: absolute;
   text-align: center;
 }
-.qrpreview > label > input {
+.qr-preview > label > input {
   margin: 1px 0;
   vertical-align: bottom;
 }
-#addReply {
+#add-post {
   display: inline-block;
   font-size: 30px;
   height: 30px;

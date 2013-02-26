@@ -69,8 +69,8 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
-    for i in QR.replies
-      QR.replies[0].rm()
+    for i in QR.posts
+      QR.posts[0].rm()
     QR.cooldown.auto = false
     QR.status()
     if !Conf['Remember Spoiler'] and QR.nodes.spoiler.checked
@@ -165,7 +165,7 @@ QR =
       else
         isSage  = /sage/i.test data.post.email
         hasFile = !!data.post.file
-        isReply = data.isReply
+        {isReply} = data
         type = unless isReply
           'thread'
         else if isSage
@@ -200,7 +200,7 @@ QR =
       else
         QR.nodes.thread.value isnt 'new'
       if isReply
-        post    = QR.replies[0]
+        post    = QR.posts[0]
         isSage  = /sage/i.test post.email
         hasFile = !!post.file
       now     = Date.now()
@@ -308,7 +308,7 @@ QR =
     return unless length
     max = QR.nodes.fileInput.max
     QR.cleanNotifications()
-    # Set or change current reply's file.
+    # Set or change current post's file.
     if length is 1
       file = files[0]
       if file.size > max
@@ -318,17 +318,17 @@ QR =
       else
         QR.selected.setFile file
       return
-    # Create new replies with these files.
+    # Create new posts with these files.
     for file in files
       if file.size > max
         QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
       else unless file.type in QR.mimeTypes
         QR.error "#{file.name}: Unsupported file type."
-      else unless QR.replies[QR.replies.length - 1].file
-        # set last reply's file
-        QR.replies[QR.replies.length - 1].setFile file
+      else unless QR.posts[QR.posts.length - 1].file
+        # set last post's file
+        QR.posts[QR.posts.length - 1].setFile file
       else
-        new QR.reply().setFile file
+        new QR.post().setFile file
     $.addClass QR.nodes.el, 'dump'
   resetThreadSelector: ->
     if g.BOARD.ID is 'f'
@@ -339,11 +339,11 @@ QR =
     else
       QR.nodes.thread.value = 'new'
 
-  replies: []
-  reply: class
+  posts: []
+  post: class
     constructor: ->
       # set values, or null, to avoid 'undefined' values in inputs
-      prev     = QR.replies[QR.replies.length - 1]
+      prev     = QR.posts[QR.posts.length - 1]
       persona  = $.get 'QR.persona', {}
       @name    = if prev then prev.name else persona.name or null
       @email   = if prev and !/^sage$/.test prev.email then prev.email   else persona.email or null
@@ -352,7 +352,7 @@ QR =
       @com = null
 
       el = $.el 'a',
-        className: 'qrpreview'
+        className: 'qr-preview'
         draggable: true
         href: 'javascript:;'
         innerHTML: '<a class=remove>×</a><label hidden><input type=checkbox> Spoiler</label><span></span>'
@@ -377,7 +377,7 @@ QR =
       for event in ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop']
         $.on el, event.toLowerCase(), @[event]
 
-      QR.replies.push @
+      QR.posts.push @
     setFile: (@file) ->
       @filename           = "#{file.name} (#{$.bytesToString file.size})"
       @nodes.el.title     = @filename
@@ -462,11 +462,11 @@ QR =
         QR.selected.forceSave()
       QR.selected = @
       @nodes.el.id = 'selected'
-      # Scroll the list to center the focused reply.
+      # Scroll the list to center the focused post.
       rectEl   = @nodes.el.getBoundingClientRect()
       rectList = @nodes.el.parentNode.getBoundingClientRect()
       @nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
-      # Load this reply's values.
+      # Load this post's values.
       for name in ['name', 'email', 'sub', 'com']
         QR.nodes[name].value = @[name]
       @showFileData()
@@ -477,9 +477,9 @@ QR =
       return if input.nodeName isnt 'TEXTAREA'
       @nodes.span.textContent = value
       QR.characterCount()
-      # Disable auto-posting if you're typing in the first reply
+      # Disable auto-posting if you're typing in the first post
       # during the last 5 seconds of the cooldown.
-      if QR.cooldown.auto and @ is QR.replies[0] and 0 < QR.cooldown.seconds <= 5
+      if QR.cooldown.auto and @ is QR.posts[0] and 0 < QR.cooldown.seconds <= 5
         QR.cooldown.auto = false
     forceSave: ->
       # Do this in case people use extensions
@@ -506,16 +506,16 @@ QR =
       $.rmClass el, 'drag' # Opera doesn't fire dragEnd if we drop it on something else
       $.rmClass @,  'over'
       (if oldIndex < newIndex then $.after else $.before) @, el
-      reply = QR.replies.splice(oldIndex, 1)[0]
-      QR.replies.splice newIndex, 0, reply
+      post = QR.posts.splice(oldIndex, 1)[0]
+      QR.posts.splice newIndex, 0, post
     rm: ->
       $.rm @nodes.el
-      index = QR.replies.indexOf @
-      if QR.replies.length is 1
-        new QR.reply().select()
+      index = QR.posts.indexOf @
+      if QR.posts.length is 1
+        new QR.post().select()
       else if @ is QR.selected
-        (QR.replies[index-1] or QR.replies[index+1]).select()
-      QR.replies.splice index, 1
+        (QR.posts[index-1] or QR.posts[index+1]).select()
+      QR.posts.splice index, 1
       return unless window.URL
       URL.revokeObjectURL @url
 
@@ -636,7 +636,7 @@ QR =
       </div>
       <div id=dump-list-container>
         <div id=dump-list></div>
-        <a id=addReply href=javascript:; title="Add a reply">+</a>
+        <a id=add-post href=javascript:; title="Add a post">+</a>
       </div>
       <div class=textarea>
         <textarea data-name=com title=Comment placeholder=Comment class=field></textarea>
@@ -668,7 +668,7 @@ QR =
       sub:        $ '[data-name=sub]',   dialog
       com:        $ '[data-name=com]',   dialog
       dumpList:   $ '#dump-list',        dialog
-      addReply:   $ '#addReply',         dialog
+      addPost:    $ '#add-post',         dialog
       charCount:  $ '#char-count',       dialog
       fileSubmit: $ '#file-n-submit',    dialog
       fileButton: $ '#qr-file-button',   dialog
@@ -715,15 +715,15 @@ QR =
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
-    $.on nodes.addReply,   'click',  -> new QR.reply().select()
+    $.on nodes.addPost,    'click',  -> new QR.post().select()
     $.on nodes.form,       'submit', QR.submit
     $.on nodes.fileButton, 'click',  -> QR.nodes.fileInput.click()
     $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.fileInput
 
-    new QR.reply().select()
-    # save selected reply's data
+    new QR.post().select()
+    # save selected post's data
     for name in ['name', 'email', 'sub', 'com']
       $.on nodes[name], 'input', -> QR.selected.save @
 
@@ -748,8 +748,8 @@ QR =
       QR.status()
       return
 
-    reply = QR.replies[0]
-    reply.forceSave() if reply is QR.selected
+    post = QR.posts[0]
+    post.forceSave() if post is QR.selected
     if g.BOARD.ID is 'f'
       if g.VIEW is 'index'
         filetag  = QR.nodes.flashTag.value
@@ -762,15 +762,15 @@ QR =
     # prevent errors
     if threadID is 'new'
       threadID = null
-      if g.BOARD.ID in ['vg', 'q'] and !reply.sub
+      if g.BOARD.ID in ['vg', 'q'] and !post.sub
         err = 'New threads require a subject.'
-      else unless reply.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
+      else unless post.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
         err = 'No file selected.'
       else if g.BOARD.ID is 'f' and filetag is '9999'
         err = 'Invalid tag specified.'
     else if g.BOARD.threads[threadID].isSticky
       err = 'You can\'t reply to this thread anymore.'
-    else unless reply.com or reply.file
+    else unless post.com or post.file
       err = 'No file selected.'
 
     if QR.captcha.isEnabled and !err
@@ -786,22 +786,22 @@ QR =
     QR.cleanNotifications()
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
-    QR.cooldown.auto = QR.replies.length > 1
-    if Conf['Auto Hide QR'] and not QR.cooldown.auto
+    QR.cooldown.auto = QR.posts.length > 1
+    if Conf['Auto Hide QR'] and !QR.cooldown.auto
       QR.hide()
-    if not QR.cooldown.auto and $.x 'ancestor::div[@id="qr"]', d.activeElement
+    if !QR.cooldown.auto and $.x 'ancestor::div[@id="qr"]', d.activeElement
       # Unfocus the focused element if it is one within the QR and we're not auto-posting.
       d.activeElement.blur()
 
-    post =
+    postData =
       resto:    threadID
-      name:     reply.name
-      email:    reply.email
-      sub:      reply.sub
-      com:      reply.com
-      upfile:   reply.file
+      name:     post.name
+      email:    post.email
+      sub:      post.sub
+      com:      post.com
+      upfile:   post.file
       filetag:  filetag
-      spoiler:  reply.spoiler
+      spoiler:  post.spoiler
       textonly: textOnly
       mode:     'regist'
       pwd: if m = d.cookie.match(/4chan_pass=([^;]+)/) then decodeURIComponent m[1] else $.id('postPassword').value
@@ -821,7 +821,7 @@ QR =
           target: '_blank',
           textContent: 'Network error.'
     opts =
-      form: $.formData post
+      form: $.formData postData
       upCallbacks:
         onload: ->
           # Upload done, waiting for server response.
@@ -889,13 +889,13 @@ QR =
     QR.cleanNotifications()
     QR.notifications.push new Notification 'success', h1.textContent, 5
 
-    reply = QR.replies[0]
+    post = QR.posts[0]
 
     persona = $.get 'QR.persona', {}
     persona =
-      name:  reply.name
-      email: if /^sage$/.test reply.email then persona.email else reply.email
-      sub:   if Conf['Remember Subject']  then reply.sub     else null
+      name:  post.name
+      email: if /^sage$/.test post.email then persona.email else post.email
+      sub:   if Conf['Remember Subject'] then post.sub      else null
     $.set 'QR.persona', persona
 
     [_, threadID, postID] = h1.nextSibling.textContent.match /thread:(\d+),no:(\d+)/
@@ -914,11 +914,11 @@ QR =
 
     QR.cooldown.set
       start:   req.uploadEndTime
-      post:    reply
+      post:    post
       isReply: !!threadID
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
-    QR.cooldown.auto = QR.replies.length > 1
+    QR.cooldown.auto = QR.posts.length > 1
 
     if threadID is postID # new thread
       $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}"
@@ -926,7 +926,7 @@ QR =
       $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
 
     if Conf['Persistent QR'] or QR.cooldown.auto
-      reply.rm()
+      post.rm()
     else
       QR.close()
 

@@ -30,7 +30,7 @@
   background-color: #D6DAF0;
   border-color: #B7C5D9;
 }
-:root.burichan .qrpreview {
+:root.burichan .qr-preview {
   background-color: rgba(0, 0, 0, .15);
 }
 

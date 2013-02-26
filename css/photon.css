@@ -30,7 +30,7 @@
   background-color: #DDD;
   border-color: #CCC;
 }
-:root.photon .qrpreview {
+:root.photon .qr-preview {
   background-color: rgba(0, 0, 0, .15);
 }
 
