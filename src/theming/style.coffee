@@ -910,7 +910,7 @@ body {
   min-height: 100%;
   margin-top: 1px;
   margin-bottom: 1px;
-  margin-#{Style.sidebarLocation[0]}: #{Style.sidebar}px;
+  margin-#{Style.sidebarLocation[0]}: #{if /^boards\.4chan\.org$/.test(location.hostname) then Style.sidebar else '2'}px;
   margin-#{Style.sidebarLocation[1]}: 2px;
   padding: 0 #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px 0 #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
 }
@@ -1259,6 +1259,147 @@ a:only-of-type > .remove {
   font-size: 3.5em;
   line-height: 90px;
   margin: 0 0.5em;
+}
+
+/* Catalog */
+#content .navLinks,
+#info .navLinks,
+.btn-wrap {
+  display: block;
+}
+.navLinks > .btn-wrap:not(:first-of-type)::before {
+  content: ' - ';
+}
+.button {
+  cursor: pointer;
+}
+#content .btn-wrap,
+#info .btn-wrap {
+  display: inline-block;
+}
+#settings .selectrice {
+  width: 100px;
+  display: inline-block;
+}
+#post-preview {
+  position: absolute;
+  z-index: 100;
+}
+#settings,
+#threads,
+#info .navLinks,
+#content .navLinks {
+  text-align: center;
+}
+#threads .thread {
+  vertical-align: top;
+  display: inline-block;
+  word-wrap: break-word;
+  overflow: hidden;
+  margin-top: 5px;
+  padding: 5px 0 3px;
+  text-align: center;
+}
+.thread {
+  padding: 0;
+  position: relative;
+  #{(unless _conf['Images Overlap Post Form'] then "z-index: 0;" else "")}
+}
+.extended-small .thread,
+.small .thread {
+  width: 165px;
+  max-height: 320px;
+}
+.small .teaser,
+.large .teaser {
+  display: none;
+}
+.extended-large .thread,
+.large .thread {
+  width: 270px;
+  max-height: 410px;
+}
+.extended-small .thumb,
+.small .thumb {
+  max-width: 150px;
+  max-height: 150px;
+}
+/* Front Page */
+#logo {
+  text-align: center;
+}
+#doc {
+  margin: 0 auto;
+  width: 1000px;
+  position: relative;
+}
+#boards .boxcontent {
+  vertical-align: top;
+  text-align: center;
+}
+#filter-container,
+#options-container {
+  float: right;
+  position: relative;
+}
+#optionsmenu {
+  top: 100% !important;
+  left: 0 !important;
+}
+#boards .column {
+  -moz-box-sizing: border-box;
+  display: inline-block;
+  width: 16em;
+  text-align: left;
+  vertical-align: top;
+}
+.bd ul,
+.boxcontent ul {
+  vertical-align: top;
+  padding: 0;
+}
+.right-box .boxcontent ul {
+  padding: 0 10px;
+}
+.yuimenuitem,
+.boxcontent li {
+  list-style-type: none;
+}
+.bd ul {
+  margin: 0;
+}
+.yuimenuitem::before {
+  content: " [ ] ";
+  font-family: monospace;
+}
+.yuimenuitem-checked::before {
+  content: " [x] "
+}
+.yui-u {
+  display: inline-block;
+  vertical-align: top;
+  width: 475px;
+  margin: 10px;
+}
+#recent-images .boxcontent {
+  text-align: center;
+}
+#ft {
+  text-align: center;
+} 
+#ft ul {
+  padding: 0;
+}
+#ft li {
+  list-style-type: none;
+  display: inline-block;
+  width: 100px;
+}
+#preview-tooltip-nws,
+#preview-tooltip-ws,
+#ft .fill,
+.clear-bug {
+  display: none;
 }
 """
 
