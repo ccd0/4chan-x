@@ -919,5 +919,5 @@ QR =
     if QR.ajax
       QR.ajax.abort()
       delete QR.ajax
-      QR.error 'QR upload aborted.'
+      QR.notifications.push new Notification 'info', 'QR upload aborted.', 5
     QR.status()
