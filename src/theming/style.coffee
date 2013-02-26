@@ -939,11 +939,17 @@ hr {
 }
 #iHover {
   position: fixed;
-  max-width: 85%;
-  max-height: 85%;
+  max-height: 97%;
+  max-width: 75%;
+  padding: 10px;
 }
 #qp {
   position: fixed;
+}
+#qp blockquote::after {
+  clear: both;
+  display: block;
+  content: "";
 }
 #globalMessage {
 
@@ -988,6 +994,11 @@ hr {
 .reply.post blockquote {
   clear: right;
 }
+.inline blockquote::after {
+  clear: both;
+  display: block;
+  content: "";
+}
 /* Menu */
 .entry {
   border-bottom: 1px solid rgba(0,0,0,.25);
@@ -999,7 +1010,7 @@ hr {
   text-decoration: none;
   white-space: nowrap;
 }
-.entry:last-of-type {
+.entry:last-child {
   border-bottom: 0;
 }
 .hasSubMenu::after {
@@ -1260,7 +1271,327 @@ a:only-of-type > .remove {
   line-height: 90px;
   margin: 0 0.5em;
 }
-
+/* Ads */
+img.topad,
+img.middlead,
+img.bottomad {
+  opacity: 0.3;
+  #{Style.agent}transition: opacity .3s linear;
+}
+img.topad:hover,
+img.middlead:hover,
+img.bottomad:hover {
+  opacity: 1;
+}
+/* Options */
+#overlay {
+  position: fixed;
+  z-index: 998;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  background: rgba(0,0,0,.5);
+}
+#options {
+  width: 1000px;
+  top: 10%;
+  bottom: 10%;
+  right: 50%;
+  left: 50%;
+  margin-left: -500px;
+  position: absolute;
+  padding: .3em;
+}
+#options h3,
+.keybinds_tab,
+.mascots_tab,
+.main_tab,
+.style_tab {
+  text-align: center;
+}
+.keybinds_tab table,
+.main_tab ul,
+.style_tab ul {
+  text-align: left;
+}
+#options ul {
+  padding: 0;
+}
+#optionsContent {
+  overflow: auto;
+  position: absolute;
+  top: 1.7em;
+  right: 5px;
+  bottom: 5px;
+  left: 5px;
+}
+#optionsbar {
+  padding: 0 3px;
+}
+#optionsbar label {
+  cursor: pointer;
+}
+.tabs label {
+  position: relative;
+  padding: 0 4px;
+  z-index: 1;
+  height: 1.4em;
+  display: inline-block;
+  border-width: 1px 1px 0 1px;
+  border-color: transparent;
+  border-style: solid;
+}
+#credits {
+  float: right;
+}
+#optionsContent > input:not(:checked) + div {
+  display: none;
+}
+#options h3 {
+  margin: 0;
+}
+.main_tab li,
+.style_tab li,
+.rice_tab li {
+  overflow: visible;
+  padding: 0 5px 0 7px;
+  list-style-type: none;
+}
+#options tr:nth-of-type(2n+1),
+.main_tab li:nth-of-type(2n+1),
+.rice_tab li:nth-of-type(2n+1),
+.style_tab li:nth-of-type(2n+1),
+.keybinds_tab li:nth-of-type(2n+1),
+.selectrice li:nth-of-type(2n+1) {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+article li {
+  margin: 10px 0 10px 2em;
+}
+#options .option {
+  width: 50%;
+  display: inline-block;
+}
+.optionlabel {
+  padding-left: 18px;
+}
+.rice + .optionlabel {
+  padding-left: 0;
+}
+#options .style_tab ul,
+#options .main_tab ul {
+  vertical-align: top;
+  #{if _conf["Single Column Mode"] then "margin: 0 auto 6px;" else "margin: 0 3px 6px;\n display: inline-block;"}
+}
+.main_tab li,
+.styleoption {
+  text-align: left;
+}
+.style_tab .suboptions ul {
+  width: 370px;
+}
+.main_tab ul {
+  width: 200px;
+}
+.suboptions,
+#mascotcontent,
+#themecontent {
+  overflow: auto;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 1.7em;
+  left: 0;
+}
+.mAlign {
+  height: 250px;
+  vertical-align: middle;
+  display: table-cell;
+}
+#themecontent {
+  top: 1.7em;
+}
+#save,
+.stylesettings {
+  position: absolute;
+  right: 10px;
+  bottom: 0;
+}
+.style_tab .suboptions {
+  bottom: 0;
+}
+#optionsContent textarea {
+  font-family: monospace;
+  min-height: 350px;
+  resize: vertical;
+  width: 100%;
+}
+/* Mascot Tab */
+#mascot_hide {
+  padding: 3px;
+  position: absolute;
+  top: 2px;
+  right: 18px;
+}
+#mascot_hide .rice {
+  float: left;
+}
+#mascot_hide > div {
+  height: 0;
+  text-align: right;
+  overflow: hidden;
+}
+#mascot_hide:hover > div {
+  height: auto;
+}
+#mascot_hide label {
+  width: 100%;
+  display: block;
+  clear: both;
+  text-decoration: none;
+}
+.mascots {
+  padding: 0;
+  text-align: center;
+}
+.mascot,
+.mascotcontainer {
+  overflow: hidden;
+}
+.mascot {
+  position: relative;
+  border: none;
+  margin: 5px;
+  padding: 0;
+  width: 200px;
+  display: inline-block;
+  background-color: transparent;
+}
+.mascotcontainer {
+  height: 250px;
+  border: 0;
+  margin: 0;
+  max-height: 250px;
+  cursor: pointer;
+  bottom: 0;
+  border-width: 0 1px 1px;
+  border-style: solid;
+  border-color: transparent;
+  overflow: hidden;
+}
+.mascot img {
+  max-width: 200px;
+}
+.mascotname,
+.mascotoptions {
+  padding: 0;
+  width: 100%;
+}
+.mascot .mascotoptions {
+opacity: 0;
+  #{Style.agent}transition: opacity .3s linear;
+}
+.mascot:hover .mascotoptions {
+  opacity: 1;
+}
+.mascotoptions {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+}
+.mascotoptions a {
+  display: inline-block;
+  width: 33%;
+}
+#upload {
+  position: absolute;
+  width: 100px;
+  left: 50%;
+  margin-left: -50px;
+  text-align: center;
+  bottom: 0;
+}
+#mascots_batch {
+  position: absolute;
+  left: 10px;
+  bottom: 0;
+}
+/* Themes Tab */
+.theme_tab h1 {
+  position: absolute;
+  right: 300px;
+  bottom: 10px;
+  margin: 0;
+  #{Style.agent}transition: all .2s ease-in-out;
+  opacity: 0;
+}
+.theme_tab .selectedtheme h1 {
+  right: 11px;
+  opacity: 1;
+}
+#themeContainer {
+  margin-bottom: 3px;
+}
+#addthemes {
+  position: absolute;
+  left: 10px;
+  bottom: 0;
+}
+.theme {
+  margin: 1em;
+}
+/* Theme Editor */
+#themeConf {
+  position: fixed;
+  #{Style.sidebarLocation[1]}: 2px;
+  #{Style.sidebarLocation[0]}: auto;
+  top: 0;
+  bottom: 0;
+  width: 296px;
+}
+#themebar input {
+  width: 30%;
+}
+.color {
+  width: 10%;
+  border-left: none !important;
+  color: transparent !important;
+}
+.colorfield {
+  width: 90%;
+}
+.themevar textarea {
+  min-width: 100%;
+  max-width: 100%;
+  height: 20em;
+}
+/* Mascot Editor */
+#mascotConf {
+  position: fixed;
+  height: 17em;
+  bottom: 0;
+  left: 50%;
+  width: 500px;
+  margin-left: -250px;
+  overflow: auto;
+}
+#mascotConf .option,
+#mascotConf .optionlabel {
+  #{Style.agent}box-sizing: border-box;
+  width: 50%;
+  display: inline-block;
+  vertical-align: middle;
+}
+#mascotConf .option input {
+  width: 100%;
+}
+#close {
+  position: absolute;
+  left: 10px;
+  bottom: 0;
+}
 /* Catalog */
 #content .navLinks,
 #info .navLinks,

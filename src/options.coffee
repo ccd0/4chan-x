@@ -54,7 +54,7 @@ Options =
     <textarea name=sauces id=sauces class=field></textarea>
   </div>
   <input type=radio name=tab hidden id=filter_tab>
-  <div>
+  <div class=filter_tab>
     <div class=warning><code>Filter</code> is disabled.</div>
     <select name=filter>
       <option value=guide>Guide</option>
@@ -424,13 +424,13 @@ Options =
 
     # The overlay over 4chan and under the options dialog you can click to close.
     overlay = $.el 'div', id: 'overlay'
+    $.on dialog,  'click', (e) -> e.stopPropagation()
     $.on overlay, 'click', Options.close
-    $.add d.body, overlay
-    dialog.style.visibility = 'hidden'
 
     # Add options dialog to the DOM.
-    $.add d.body, dialog
-    dialog.style.visibility = 'visible'
+    $.add overlay, dialog
+
+    $.add d.body, overlay
 
     # For theme and mascot edit dialogs, mostly. Allows the user to return to the tab that opened the edit dialog.
     if tab
@@ -498,7 +498,7 @@ Options =
           # Instead of writing a style sheet for each theme, we hard-code the colors into each preview.
           # 4chan SS / OneeChan also do this, and inspired it here.
           div = $.el 'div',
-            className: if name is Conf['theme'] then 'selectedtheme' else ''
+            className: "theme #{if name is Conf['theme'] then 'selectedtheme' else ''}"
             id:        name
             innerHTML: "
 <div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
@@ -639,6 +639,7 @@ Options =
 
           div = $.el 'div',
             id:        name
+            className: theme
             innerHTML: "
 <div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
   <div style='padding: 3px 0px 0px 8px;'>
@@ -949,7 +950,7 @@ Options =
 
         $.add li, input
 
-        #Generate inputs for list
+        # Generate inputs for list
         for itemIndex, item of link
 
           # Avoid iterating through prototypes.
@@ -971,7 +972,7 @@ Options =
             userNavigation.links[@parentElement.firstChild.value][@name] = @value
             $.set "userNavigation", userNavigation
 
-          $.add li, input
+          $.add li, [input, $.tn ' ']
 
         # Add Custom Link
         addLink = $.el "a"

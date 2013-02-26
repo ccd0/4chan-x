@@ -12,7 +12,7 @@ ThemeTools =
       else
         editTheme["Theme"] = key += " [custom]"
     else
-      editTheme = {}
+      editTheme = JSON.parse(JSON.stringify(Themes['Yotsuba B']))
       editTheme["Theme"] = "Untitled"
       editTheme["Author"] = "Author"
       editTheme["Author Tripcode"] = "Unknown"

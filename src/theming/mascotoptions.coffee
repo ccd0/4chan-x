@@ -119,57 +119,48 @@ MascotTools =
       name: [
         "Mascot Name"
         ""
-        "The name of the Mascot"
         "text"
       ]
       image: [
         "Image"
         ""
-        "Image of Mascot. Accepts Base64 as well as URLs. Shift+Click field to upload."
         "text"
       ]
       category: [
         "Category"
         MascotTools.categories[0]
-        "A general categorization of the mascot."
         "select"
         MascotTools.categories
       ]
       position: [
         "Position"
         "default"
-        "Where the mascot is anchored in the Sidebar. The default option places the mascot above the Post Form or on the bottom of the page, depending on the Post Form setting."
         "select"
         ["default", "top", "bottom"]
       ]
       height: [
         "Height"
         "auto"
-        "This value is used for manually setting a height for the mascot."
         "text"
       ]
       width: [
         "Width"
         "auto"
-        "This value is used for manually setting a width for the mascot."
         "text"
       ]
       vOffset: [
         "Vertical Offset"
         "0"
-        "This value moves the mascot vertically away from the anchor point."
         "number"
       ]
       hOffset: [
         "Horizontal Offset"
         "0"
-        "This value moves the mascot further away from the edge of the screen, in pixels."
         "number"
       ]
       center: [
         "Center Mascot"
         false
-        "If this is enabled, Appchan X will attempt to pad the mascot with 25 pixels of Horizontal Offset when the \"Sidebar Setting\" is set to \"large\" in an attempt to \"re-center\" the mascot. If you are having problems placing your mascot properly, ensure this is not enabled."
         "checkbox"
       ]
 
@@ -191,7 +182,7 @@ MascotTools =
 "
     for name, item of layout
 
-      switch item[3]
+      switch item[2]
 
         when "text"
           div = @input item, name
@@ -245,8 +236,8 @@ MascotTools =
 
         when "select"
           value = editMascot[name] or item[1]
-          optionHTML = "<h2>#{item[0]}</h2><span class=description>#{item[2]}</span><div class=option><select name='#{name}' value='#{value}'><br>"
-          for option in item[4]
+          optionHTML = "<div class=optionlabel>#{item[0]}</div><div class=option><select name='#{name}' value='#{value}'><br>"
+          for option in item[3]
             optionHTML = optionHTML + "<option value=\"#{option}\">#{option}</option>"
           optionHTML = optionHTML + "</select>"
           div = $.el 'div',
@@ -264,7 +255,7 @@ MascotTools =
           value = editMascot[name] or item[1]
           div = $.el "div",
             className: "mascotvar"
-            innerHTML: "<h2><label><input type=#{item[3]} class=field name='#{name}' #{if value then 'checked'}>#{item[0]}</label></h2><span class=description>#{item[2]}</span>"
+            innerHTML: "<label><input type=#{item[2]} class=field name='#{name}' #{if value then 'checked'}>#{item[0]}</label>"
           $.on $('input', div), 'click', ->
             editMascot[@name] = if @checked then true else false
             MascotTools.addMascot editMascot
@@ -292,7 +283,7 @@ MascotTools =
 
     div = $.el "div",
       className: "mascotvar"
-      innerHTML: "<h2>#{item[0]}</h2><span class=description>#{item[2]}</span><div class=option><input type=#{item[3]} class=field name='#{name}' placeholder='#{item[0]}' value='#{value}'></div>"
+      innerHTML: "<div class=optionlabel>#{item[0]}</div><div class=option><input type=#{item[2]} class=field name='#{name}' placeholder='#{item[0]}' value='#{value}'></div>"
 
     return div
 
