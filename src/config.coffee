@@ -729,6 +729,10 @@ div.post.highlight {
         false
         'Make 4chan advertisements smaller.'
       ]
+      'Bolds': [
+        true
+        'Bold text for names and such'
+      ]
       'Sidebar Glow': [
         false
         'Adds a glow to the sidebar\'s text.'
