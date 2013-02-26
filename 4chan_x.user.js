@@ -2554,7 +2554,7 @@
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Download Link']) {
         return;
       }
-      if ($.el('a').download === void 0) {
+      if ($.engine === 'gecko' || $.el('a').download === void 0) {
         return;
       }
       a = $.el('a', {

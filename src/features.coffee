@@ -1363,8 +1363,9 @@ DownloadLink =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Download Link']
 
+    # Firefox won't let us download cross-domain content.
     # Test for download feature support.
-    return if $.el('a').download is undefined
+    return if $.engine is 'gecko' or $.el('a').download is undefined
     a = $.el 'a',
       className: 'download-link'
       textContent: 'Download file'
