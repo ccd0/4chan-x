@@ -27,6 +27,10 @@
 .field:hover, .field:focus {
   color: #000;
 }
+.field[disabled] {
+  background-color: #F2F2F2;
+  color: #888;
+}
 .move {
   cursor: move;
 }

@@ -377,7 +377,19 @@ QR =
       for event in ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop']
         $.on el, event.toLowerCase(), @[event]
 
+      @unlock()
       QR.posts.push @
+    lock: (lock=true) ->
+      @isLocked = lock
+      return unless @ is QR.selected
+      for name in ['name', 'email', 'sub', 'com', 'fileButton', 'spoiler']
+        QR.nodes[name].disabled = lock
+      @nodes.rm.style.visibility =
+        QR.nodes.fileRM.style.visibility = if lock then 'hidden' else ''
+      @nodes.spoiler.disabled = lock
+      @nodes.el.draggable = !lock
+    unlock: ->
+      @lock false
     setFile: (@file) ->
       @filename           = "#{file.name} (#{$.bytesToString file.size})"
       @nodes.el.title     = @filename
@@ -461,6 +473,7 @@ QR =
         QR.selected.nodes.el.id = null
         QR.selected.forceSave()
       QR.selected = @
+      @lock @isLocked
       @nodes.el.id = 'selected'
       # Scroll the list to center the focused post.
       rectEl   = @nodes.el.getBoundingClientRect()
@@ -499,12 +512,13 @@ QR =
       e.preventDefault()
       e.dataTransfer.dropEffect = 'move'
     drop: ->
-      el       = $ '.drag', @parentNode
+      el = $ '.drag', @parentNode
+      $.rmClass el, 'drag' # Opera doesn't fire dragEnd if we drop it on something else
+      $.rmClass @,  'over'
+      return unless @draggable
       index    = (el) -> [el.parentNode.children...].indexOf el
       oldIndex = index el
       newIndex = index @
-      $.rmClass el, 'drag' # Opera doesn't fire dragEnd if we drop it on something else
-      $.rmClass @,  'over'
       (if oldIndex < newIndex then $.after else $.before) @, el
       post = QR.posts.splice(oldIndex, 1)[0]
       QR.posts.splice newIndex, 0, post
@@ -793,6 +807,8 @@ QR =
       # Unfocus the focused element if it is one within the QR and we're not auto-posting.
       d.activeElement.blur()
 
+    post.lock()
+
     postData =
       resto:    threadID
       name:     post.name
@@ -812,14 +828,11 @@ QR =
       onload: QR.response
       onerror: ->
         delete QR.req
-        # Connection error, or
-        # CORS disabled error on www.4chan.org/banned
+        post.unlock()
         QR.cooldown.auto = false
         QR.status()
-        QR.error $.el 'a',
-          href: '//www.4chan.org/banned',
-          target: '_blank',
-          textContent: 'Network error.'
+        # Connection error.
+        QR.error 'Network error.'
     opts =
       form: $.formData postData
       upCallbacks:
@@ -843,6 +856,8 @@ QR =
   response: ->
     {req} = QR
     delete QR.req
+
+    post = QR.posts[0]
 
     tmpDoc = d.implementation.createHTMLDocument ''
     tmpDoc.documentElement.innerHTML = req.response
@@ -889,8 +904,6 @@ QR =
     QR.cleanNotifications()
     QR.notifications.push new Notification 'success', h1.textContent, 5
 
-    post = QR.posts[0]
-
     persona = $.get 'QR.persona', {}
     persona =
       name:  post.name
@@ -936,5 +949,6 @@ QR =
     if QR.req and !QR.req.isUploadFinished
       QR.req.abort()
       delete QR.req
+      QR.posts[0].unlock()
       QR.notifications.push new Notification 'info', 'QR upload aborted.', 5
     QR.status()
