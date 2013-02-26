@@ -5849,7 +5849,7 @@
       },
       set: function(data) {
         var cooldown, hasFile, isReply, isSage, start, type;
-        start = data.req ? data.req.uploadEndTime : Date.now();
+        start = data.start || Date.now();
         if (data.delay) {
           cooldown = {
             delay: data.delay
@@ -6686,7 +6686,7 @@
         postID: postID
       }, QR.nodes.el);
       QR.cooldown.set({
-        req: req,
+        start: req.uploadEndTime,
         post: reply,
         isReply: !!threadID
       });

@@ -159,10 +159,7 @@ QR =
         QR.cooldown.cooldowns[id] = cooldowns[id]
       QR.cooldown.start()
     set: (data) ->
-      start = if data.req
-        data.req.uploadEndTime
-      else
-        Date.now()
+      start = data.start or Date.now()
       if data.delay
         cooldown = delay: data.delay
       else
@@ -916,7 +913,7 @@ QR =
     }, QR.nodes.el
 
     QR.cooldown.set
-      req:     req
+      start:   req.uploadEndTime
       post:    reply
       isReply: !!threadID
 
