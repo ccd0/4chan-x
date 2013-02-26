@@ -5684,6 +5684,8 @@
       $.on(d, 'ThreadUpdate', function() {
         if (g.DEAD) {
           return QR.abort();
+        } else {
+          return QR.status();
         }
       });
       if (Conf['Persistent QR']) {
@@ -5786,11 +5788,8 @@
       }
       return QR.notifications = [];
     },
-    status: function(data) {
+    status: function() {
       var disabled, status, value;
-      if (data == null) {
-        data = {};
-      }
       if (!QR.nodes) {
         return;
       }
@@ -5799,9 +5798,9 @@
         disabled = true;
         QR.cooldown.auto = false;
       }
-      value = data.progress || QR.cooldown.seconds || value;
+      value = QR.req ? QR.req.progress : QR.cooldown.seconds || value;
       status = QR.nodes.status;
-      status.value = QR.cooldown.auto ? value ? "Auto " + value : 'Auto' : value || 'Submit';
+      status.value = !value ? 'Submit' : QR.cooldown.auto ? "Auto " + value : value;
       return status.disabled = disabled || false;
     },
     cooldown: {
@@ -6519,13 +6518,13 @@
       if (e != null) {
         e.preventDefault();
       }
+      if (QR.req) {
+        QR.abort();
+        return;
+      }
       if (QR.cooldown.seconds) {
         QR.cooldown.auto = !QR.cooldown.auto;
         QR.status();
-        return;
-      }
-      if (QR.ajax) {
-        QR.abort();
         return;
       }
       reply = QR.replies[0];
@@ -6576,9 +6575,6 @@
       if (!QR.cooldown.auto && $.x('ancestor::div[@id="qr"]', d.activeElement)) {
         d.activeElement.blur();
       }
-      QR.status({
-        progress: '...'
-      });
       post = {
         resto: threadID,
         name: reply.name,
@@ -6595,11 +6591,9 @@
         recaptcha_response_field: response
       };
       callbacks = {
-        onload: function() {
-          return QR.response(this);
-        },
+        onload: QR.response,
         onerror: function() {
-          delete QR.ajax;
+          delete QR.req;
           QR.cooldown.auto = false;
           QR.status();
           return QR.error($.el('a', {
@@ -6613,22 +6607,23 @@
         form: $.formData(post),
         upCallbacks: {
           onload: function() {
-            return QR.status({
-              progress: '...'
-            });
+            QR.req.progress = '...';
+            return QR.status();
           },
           onprogress: function(e) {
-            return QR.status({
-              progress: "" + (Math.round(e.loaded / e.total * 100)) + "%"
-            });
+            QR.req.progress = "" + (Math.round(e.loaded / e.total * 100)) + "%";
+            return QR.status();
           }
         }
       };
-      return QR.ajax = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
+      QR.req = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
+      QR.req.progress = '...';
+      return QR.status();
     },
-    response: function(req) {
-      var ban, board, err, h1, persona, postID, reply, threadID, tmpDoc, _, _base, _ref, _ref1;
-      delete QR.ajax;
+    response: function() {
+      var ban, board, err, h1, persona, postID, reply, req, threadID, tmpDoc, _, _base, _ref, _ref1;
+      req = QR.req;
+      delete QR.req;
       tmpDoc = d.implementation.createHTMLDocument('');
       tmpDoc.documentElement.innerHTML = req.response;
       if (ban = $('.banType', tmpDoc)) {
@@ -6700,9 +6695,9 @@
       return QR.status();
     },
     abort: function() {
-      if (QR.ajax) {
-        QR.ajax.abort();
-        delete QR.ajax;
+      if (QR.req) {
+        QR.req.abort();
+        delete QR.req;
         QR.notifications.push(new Notification('info', 'QR upload aborted.', 5));
       }
       return QR.status();

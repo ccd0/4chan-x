@@ -36,7 +36,10 @@ QR =
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
     $.on d, 'ThreadUpdate', ->
-      QR.abort() if g.DEAD
+      if g.DEAD
+        QR.abort()
+      else
+        QR.status()
 
     QR.persist() if Conf['Persistent QR']
 
@@ -108,19 +111,25 @@ QR =
       notification.close()
     QR.notifications = []
 
-  status: (data={}) ->
+  status: ->
     return unless QR.nodes
     if g.DEAD
       value    = 404
       disabled = true
       QR.cooldown.auto = false
-    value = data.progress or QR.cooldown.seconds or value
+
+    value = if QR.req
+      QR.req.progress
+    else
+      QR.cooldown.seconds or value
+
     {status} = QR.nodes
-    status.value =
-      if QR.cooldown.auto
-        if value then "Auto #{value}" else 'Auto'
-      else
-        value or 'Submit'
+    status.value = unless value
+      'Submit'
+    else if QR.cooldown.auto
+      "Auto #{value}"
+    else
+      value
     status.disabled = disabled or false
 
   cooldown:
@@ -727,13 +736,14 @@ QR =
 
   submit: (e) ->
     e?.preventDefault()
+
+    if QR.req
+      QR.abort()
+      return
+
     if QR.cooldown.seconds
       QR.cooldown.auto = !QR.cooldown.auto
       QR.status()
-      return
-
-    if QR.ajax
-      QR.abort()
       return
 
     reply = QR.replies[0]
@@ -781,10 +791,6 @@ QR =
       # Unfocus the focused element if it is one within the QR and we're not auto-posting.
       d.activeElement.blur()
 
-    # Starting to upload might take some time.
-    # Provide some feedback that we're starting to submit.
-    QR.status progress: '...'
-
     post =
       resto:    threadID
       name:     reply.name
@@ -801,10 +807,9 @@ QR =
       recaptcha_response_field:  response
 
     callbacks =
-      onload: ->
-        QR.response @
+      onload: QR.response
       onerror: ->
-        delete QR.ajax
+        delete QR.req
         # Connection error, or
         # CORS disabled error on www.4chan.org/banned
         QR.cooldown.auto = false
@@ -817,16 +822,23 @@ QR =
       form: $.formData post
       upCallbacks:
         onload: ->
-          # Upload done, waiting for response.
-          QR.status progress: '...'
+          # Upload done, waiting for server response.
+          QR.req.progress = '...'
+          QR.status()
         onprogress: (e) ->
           # Uploading...
-          QR.status progress: "#{Math.round e.loaded / e.total * 100}%"
+          QR.req.progress = "#{Math.round e.loaded / e.total * 100}%"
+          QR.status()
 
-    QR.ajax = $.ajax $.id('postForm').parentNode.action, callbacks, opts
+    QR.req = $.ajax $.id('postForm').parentNode.action, callbacks, opts
+    # Starting to upload might take some time.
+    # Provide some feedback that we're starting to submit.
+    QR.req.progress = '...'
+    QR.status()
 
-  response: (req) ->
-    delete QR.ajax
+  response: ->
+    {req} = QR
+    delete QR.req
 
     tmpDoc = d.implementation.createHTMLDocument ''
     tmpDoc.documentElement.innerHTML = req.response
@@ -916,8 +928,8 @@ QR =
     QR.status()
 
   abort: ->
-    if QR.ajax
-      QR.ajax.abort()
-      delete QR.ajax
+    if QR.req
+      QR.req.abort()
+      delete QR.req
       QR.notifications.push new Notification 'info', 'QR upload aborted.', 5
     QR.status()
