@@ -5719,9 +5719,14 @@
     },
     close: function() {
       var i, _i, _len, _ref;
+      if (QR.req) {
+        if (!QR.req.isUploadFinished) {
+          QR.abort();
+        }
+        return;
+      }
       QR.nodes.el.hidden = true;
       QR.cleanNotifications();
-      QR.abort();
       d.activeElement.blur();
       $.rmClass(QR.nodes.el, 'dump');
       _ref = QR.replies;
@@ -6519,7 +6524,9 @@
         e.preventDefault();
       }
       if (QR.req) {
-        QR.abort();
+        if (!QR.req.isUploadFinished) {
+          QR.abort();
+        }
         return;
       }
       if (QR.cooldown.seconds) {
@@ -6607,6 +6614,7 @@
         form: $.formData(post),
         upCallbacks: {
           onload: function() {
+            QR.req.isUploadFinished = true;
             QR.req.progress = '...';
             return QR.status();
           },

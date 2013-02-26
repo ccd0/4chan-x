@@ -62,9 +62,11 @@ QR =
         message: 'Quick Reply dialog creation crashed.'
         error: err
   close: ->
+    if QR.req
+      QR.abort() unless QR.req.isUploadFinished
+      return
     QR.nodes.el.hidden = true
     QR.cleanNotifications()
-    QR.abort()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
     for i in QR.replies
@@ -738,7 +740,7 @@ QR =
     e?.preventDefault()
 
     if QR.req
-      QR.abort()
+      QR.abort() unless QR.req.isUploadFinished
       return
 
     if QR.cooldown.seconds
@@ -823,6 +825,7 @@ QR =
       upCallbacks:
         onload: ->
           # Upload done, waiting for server response.
+          QR.req.isUploadFinished = true
           QR.req.progress = '...'
           QR.status()
         onprogress: (e) ->
