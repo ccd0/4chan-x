@@ -289,6 +289,7 @@ Main =
 
     switch location.hostname
       when 'sys.4chan.org'
+        Report.init()
         return
       when 'images.4chan.org'
         $.ready ->

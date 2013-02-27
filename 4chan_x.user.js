@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, d, doc, g,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -6788,6 +6788,34 @@
     }
   };
 
+  Report = {
+    init: function() {
+      if (!/report/.test(location.search)) {
+        return;
+      }
+      return $.ready(this.ready);
+    },
+    ready: function() {
+      var field, form;
+      form = $('form');
+      field = $.id('recaptcha_response_field');
+      $.on(field, 'keydown', function(e) {
+        if (e.keyCode === 8 && !field.value) {
+          return $.unsafeWindow.Recaptcha.reload('t');
+        }
+      });
+      return $.on(form, 'submit', function(e) {
+        var response;
+        e.preventDefault();
+        response = field.value.trim();
+        if (!/\s/.test(response)) {
+          field.value = "" + response + " " + response;
+        }
+        return form.submit();
+      });
+    }
+  };
+
   Board = (function() {
 
     Board.prototype.toString = function() {
@@ -7159,6 +7187,7 @@
       }
       switch (location.hostname) {
         case 'sys.4chan.org':
+          Report.init();
           return;
         case 'images.4chan.org':
           $.ready(function() {

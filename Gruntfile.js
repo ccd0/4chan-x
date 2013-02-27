@@ -16,6 +16,7 @@ module.exports = function(grunt) {
           'lib/polyfill.coffee',
           'src/features.coffee',
           'src/qr.coffee',
+          'src/report.coffee',
           'src/main.coffee'
         ],
         dest: 'tmp/script.coffee'
@@ -65,6 +66,7 @@ module.exports = function(grunt) {
           interrupt: true
         },
         files: [
+          'Gruntfile.js',
           'package.json',
           'lib/**/*.coffee',
           'src/**/*.coffee',
