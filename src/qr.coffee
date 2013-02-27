@@ -310,7 +310,7 @@ QR =
     QR.open()
     QR.fileInput files
   fileInput: (files) ->
-    if files instanceof Event # file input
+    if @ instanceof Element #or files instanceof Event # file input
       files = [@files...]
       QR.nodes.fileInput.value = null # Don't hold the files from being modified on windows
     {length} = files
@@ -339,9 +339,9 @@ QR =
         QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
       else unless file.type in QR.mimeTypes
         QR.error "#{file.name}: Unsupported file type."
-      else if (post = QR.posts[QR.posts.length - 1]).file
-        post = new QR.post()
       else
+        if (post = QR.posts[QR.posts.length - 1]).file
+          post = new QR.post()
         post.setFile file
     $.addClass QR.nodes.el, 'dump'
   resetThreadSelector: ->
@@ -627,6 +627,7 @@ QR =
       @count()
       $.set 'captchas', @captchas
     load: ->
+      return unless @nodes.challenge.firstChild
       # -1 minute to give upload some time.
       @timeout  = Date.now() + $.unsafeWindow.RecaptchaState.timeout * $.SECOND - $.MINUTE
       challenge = @nodes.challenge.firstChild.value

@@ -661,9 +661,12 @@
       fd = new FormData();
       for (key in form) {
         val = form[key];
-        if (val instanceof Blob) {
+        if (!val) {
+          continue;
+        }
+        if (val.size && val.name) {
           fd.append(key, val, val.name);
-        } else if (val) {
+        } else {
           fd.append(key, val);
         }
       }
@@ -6008,7 +6011,7 @@
     },
     fileInput: function(files) {
       var file, length, max, post, _i, _len, _ref, _ref1;
-      if (files instanceof Event) {
+      if (this instanceof Element) {
         files = __slice.call(this.files);
         QR.nodes.fileInput.value = null;
       }
@@ -6042,9 +6045,10 @@
           QR.error("" + file.name + ": File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
         } else if (_ref1 = file.type, __indexOf.call(QR.mimeTypes, _ref1) < 0) {
           QR.error("" + file.name + ": Unsupported file type.");
-        } else if ((post = QR.posts[QR.posts.length - 1]).file) {
-          post = new QR.post();
         } else {
+          if ((post = QR.posts[QR.posts.length - 1]).file) {
+            post = new QR.post();
+          }
           post.setFile(file);
         }
       }
@@ -6459,6 +6463,9 @@
       },
       load: function() {
         var challenge;
+        if (!this.nodes.challenge.firstChild) {
+          return;
+        }
         this.timeout = Date.now() + $.unsafeWindow.RecaptchaState.timeout * $.SECOND - $.MINUTE;
         challenge = this.nodes.challenge.firstChild.value;
         this.nodes.img.alt = challenge;

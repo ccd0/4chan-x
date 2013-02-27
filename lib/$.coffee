@@ -39,9 +39,12 @@ $.extend $,
       return new FormData form
     fd = new FormData()
     for key, val of form
-      if val instanceof Blob
+      continue unless val
+      # XXX GM bug
+      # if val instanceof Blob
+      if val.size and val.name
         fd.append key, val, val.name
-      else if val
+      else
         fd.append key, val
     fd
   ajax: (url, callbacks, opts={}) ->
