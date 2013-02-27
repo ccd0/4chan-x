@@ -571,6 +571,7 @@ QR =
         className: 'captcha-input field'
         title: 'Verification'
         autocomplete: 'off'
+        spellcheck: false
       @nodes =
         challenge: $.id 'recaptcha_challenge_field_holder'
         img:       imgContainer.firstChild

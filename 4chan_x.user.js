@@ -6379,7 +6379,8 @@
         input = $.el('input', {
           className: 'captcha-input field',
           title: 'Verification',
-          autocomplete: 'off'
+          autocomplete: 'off',
+          spellcheck: false
         });
         this.nodes = {
           challenge: $.id('recaptcha_challenge_field_holder'),
