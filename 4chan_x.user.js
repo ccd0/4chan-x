@@ -661,7 +661,9 @@
       fd = new FormData();
       for (key in form) {
         val = form[key];
-        if (val) {
+        if (val instanceof Blob) {
+          fd.append(key, val, val.name);
+        } else if (val) {
           fd.append(key, val);
         }
       }
@@ -5678,6 +5680,9 @@
         el: link,
         order: 10
       });
+      if ($.engine === 'webkit') {
+        $.on(d, 'paste', QR.paste);
+      }
       $.on(d, 'dragover', QR.dragOver);
       $.on(d, 'drop', QR.dropFile);
       $.on(d, 'dragstart dragend', QR.drag);
@@ -5980,12 +5985,33 @@
       QR.fileInput(e.dataTransfer.files);
       return $.addClass(QR.nodes.el, 'dump');
     },
+    paste: function(e) {
+      var blob, files, item, _i, _len, _ref;
+      files = [];
+      _ref = e.clipboardData.items;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        item = _ref[_i];
+        if (item.kind === 'file') {
+          blob = item.getAsFile();
+          blob.name = 'file';
+          if (blob.type) {
+            blob.name += '.' + blob.type.split('/')[1];
+          }
+          files.push(blob);
+        }
+      }
+      if (!files.length) {
+        return;
+      }
+      QR.open();
+      return QR.fileInput(files);
+    },
     fileInput: function(files) {
       var file, length, max, post, _i, _len, _ref, _ref1;
-      if (!(files instanceof FileList)) {
+      if (files instanceof Event) {
         files = __slice.call(this.files);
+        QR.nodes.fileInput.value = null;
       }
-      QR.nodes.fileInput.value = null;
       length = files.length;
       if (!length) {
         return;

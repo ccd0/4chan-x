@@ -39,7 +39,10 @@ $.extend $,
       return new FormData form
     fd = new FormData()
     for key, val of form
-      fd.append key, val if val
+      if val instanceof Blob
+        fd.append key, val, val.name
+      else if val
+        fd.append key, val
     fd
   ajax: (url, callbacks, opts={}) ->
     {type, headers, upCallbacks, form} = opts

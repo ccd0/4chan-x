@@ -32,6 +32,8 @@ QR =
       el: link
       order: 10
 
+    if $.engine is 'webkit'
+      $.on d, 'paste',            QR.paste
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
@@ -296,10 +298,21 @@ QR =
     QR.open()
     QR.fileInput e.dataTransfer.files
     $.addClass QR.nodes.el, 'dump'
+  paste: (e) ->
+    files = []
+    for item in e.clipboardData.items
+      if item.kind is 'file'
+        blob = item.getAsFile()
+        blob.name  = 'file'
+        blob.name += '.' + blob.type.split('/')[1] if blob.type
+        files.push blob
+    return unless files.length
+    QR.open()
+    QR.fileInput files
   fileInput: (files) ->
-    unless files instanceof FileList
+    if files instanceof Event # file input
       files = [@files...]
-    QR.nodes.fileInput.value = null # Don't hold the files from being modified on windows
+      QR.nodes.fileInput.value = null # Don't hold the files from being modified on windows
     {length} = files
     return unless length
     max = QR.nodes.fileInput.max
