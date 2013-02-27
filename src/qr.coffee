@@ -681,9 +681,9 @@ QR =
     <form>
       <div class=persona>
         <input id=dump-button type=button title='Dump list' value=+>
-        <input data-name=name  title=Name    placeholder=Name    class=field size=1>
-        <input data-name=email title=E-mail  placeholder=E-mail  class=field size=1>
-        <input data-name=sub   title=Subject placeholder=Subject class=field size=1>
+        <input name=name  data-name=name  title=Name    placeholder=Name    class=field size=1>
+        <input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1>
+        <input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1>
       </div>
       <div id=dump-list-container>
         <div id=dump-list></div>
