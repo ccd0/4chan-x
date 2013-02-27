@@ -195,10 +195,7 @@ QR =
 
       setTimeout QR.cooldown.count, 1000
 
-      isReply = if g.BOARD.ID is 'f'
-        g.VIEW is 'thread'
-      else
-        QR.nodes.thread.value isnt 'new'
+      isReply = QR.nodes.thread.value isnt 'new'
       if isReply
         post    = QR.posts[0]
         isSage  = /sage/i.test post.email
@@ -264,8 +261,7 @@ QR =
 
     QR.open()
     ta = QR.nodes.com
-    if QR.nodes.thread and !ta.value
-      QR.nodes.thread.value = OP.ID
+    QR.nodes.thread.value = OP.ID unless ta.value
 
     caretPos = ta.selectionStart
     # Replace selection for text.
@@ -331,10 +327,7 @@ QR =
         new QR.post().setFile file
     $.addClass QR.nodes.el, 'dump'
   resetThreadSelector: ->
-    if g.BOARD.ID is 'f'
-      if g.VIEW is 'index'
-        QR.nodes.flashTag.value = '9999'
-    else if g.VIEW is 'thread'
+    if g.VIEW is 'thread'
       QR.nodes.thread.value = g.THREAD
     else
       QR.nodes.thread.value = 'new'
@@ -639,6 +632,9 @@ QR =
     dialog = UI.dialog 'qr', 'top:0;right:0;', """
     <div>
       <input type=checkbox id=autohide title=Auto-hide>
+      <select title='Create a new thread / Reply'>
+        <option value=new>New thread</option>
+      </select>
       <span class=move></span>
       <a href=javascript:; class=close title=Close>×</a>
     </div>
@@ -675,6 +671,7 @@ QR =
       el:         dialog
       move:       $ '.move',             dialog
       autohide:   $ '#autohide',         dialog
+      thread:     $ 'select',            dialog
       close:      $ '.close',            dialog
       form:       $ 'form',              dialog
       dumpButton: $ '#dump-button',      dialog
@@ -714,17 +711,25 @@ QR =
     nodes.spoiler.hidden = !QR.spoiler
 
     if g.BOARD.ID is 'f'
-      if g.VIEW is 'index'
-        nodes.flashTag = $('select[name=filetag]').cloneNode true
-        $.after nodes.autohide, nodes.flashTag
-    else # Make a list of visible threads.
-      nodes.thread = $.el 'select',
-        title: 'Create a new thread / Reply'
-      threads = '<option value=new>New thread</option>'
-      for key, thread of g.BOARD.threads
-        threads += "<option value=#{thread.ID}>Thread No.#{thread.ID}</option>"
-      nodes.thread.innerHTML = threads
-      $.after nodes.autohide, nodes.thread
+      nodes.flashTag = $.el 'select',
+        name: 'filetag'
+        innerHTML: """
+          <option value=0>Hentai</option>
+          <option value=6>Porn</option>
+          <option value=1>Japanese</option>
+          <option value=2>Anime</option>
+          <option value=3>Game</option>
+          <option value=5>Loop</option>
+          <option value=4 selected>Other</option>
+        """
+      $.add nodes.form, nodes.flashTag
+
+    # Make a list of threads.
+    for thread of g.BOARD.threads
+      $.add nodes.thread, $.el 'option',
+        value: thread
+        textContent: "Thread No.#{thread}"
+    $.after nodes.autohide, nodes.thread
     QR.resetThreadSelector()
 
     $.on nodes.autohide,   'change', QR.toggleHide
@@ -766,13 +771,8 @@ QR =
     post = QR.posts[0]
     post.forceSave()
     if g.BOARD.ID is 'f'
-      if g.VIEW is 'index'
-        filetag  = QR.nodes.flashTag.value
-        threadID = 'new'
-      else
-        threadID = g.THREAD
-    else
-      threadID = QR.nodes.thread.value
+      filetag = QR.nodes.flashTag.value
+    threadID = QR.nodes.thread.value
 
     # prevent errors
     if threadID is 'new'
@@ -781,8 +781,6 @@ QR =
         err = 'New threads require a subject.'
       else unless post.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
         err = 'No file selected.'
-      else if g.BOARD.ID is 'f' and filetag is '9999'
-        err = 'Invalid tag specified.'
     else if g.BOARD.threads[threadID].isSticky
       err = 'You can\'t reply to this thread anymore.'
     else unless post.com or post.file

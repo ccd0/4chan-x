@@ -5882,7 +5882,7 @@
           return;
         }
         setTimeout(QR.cooldown.count, 1000);
-        isReply = g.BOARD.ID === 'f' ? g.VIEW === 'thread' : QR.nodes.thread.value !== 'new';
+        isReply = QR.nodes.thread.value !== 'new';
         if (isReply) {
           post = QR.posts[0];
           isSage = /sage/i.test(post.email);
@@ -5943,7 +5943,7 @@
       text = !text && post === OP && (!QR.nodes || QR.nodes.el.hidden) ? "" : ">>" + post + "\n" + text;
       QR.open();
       ta = QR.nodes.com;
-      if (QR.nodes.thread && !ta.value) {
+      if (!ta.value) {
         QR.nodes.thread.value = OP.ID;
       }
       caretPos = ta.selectionStart;
@@ -6018,11 +6018,7 @@
       return $.addClass(QR.nodes.el, 'dump');
     },
     resetThreadSelector: function() {
-      if (g.BOARD.ID === 'f') {
-        if (g.VIEW === 'index') {
-          return QR.nodes.flashTag.value = '9999';
-        }
-      } else if (g.VIEW === 'thread') {
+      if (g.VIEW === 'thread') {
         return QR.nodes.thread.value = g.THREAD;
       } else {
         return QR.nodes.thread.value = 'new';
@@ -6450,12 +6446,13 @@
       }
     },
     dialog: function() {
-      var dialog, key, mimeTypes, name, nodes, thread, threads, _i, _len, _ref, _ref1;
-      dialog = UI.dialog('qr', 'top:0;right:0;', "<div>\n  <input type=checkbox id=autohide title=Auto-hide>\n  <span class=move></span>\n  <a href=javascript:; class=close title=Close>×</a>\n</div>\n<form>\n  <div class=persona>\n    <input id=dump-button type=button title='Dump list' value=+>\n    <input data-name=name  title=Name    placeholder=Name    class=field size=1>\n    <input data-name=email title=E-mail  placeholder=E-mail  class=field size=1>\n    <input data-name=sub   title=Subject placeholder=Subject class=field size=1>\n  </div>\n  <div id=dump-list-container>\n    <div id=dump-list></div>\n    <a id=add-post href=javascript:; title=\"Add a post\">+</a>\n  </div>\n  <div class=textarea>\n    <textarea data-name=com title=Comment placeholder=Comment class=field></textarea>\n    <span id=char-count></span>\n  </div>\n  <div id=file-n-submit>\n    <input id=qr-file-button type=button value='Choose files'>\n    <span id=qr-filename-container>\n      <span id=qr-no-file>No selected file</span>\n      <span id=qr-filename></span>\n    </span>\n    <a id=qr-filerm href=javascript:; title='Remove file' tabindex=-1>×</a>\n    <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=-1>\n    <input type=submit>\n  </div>\n  <input type=file multiple>\n</form>".replace(/>\s+</g, '><'));
+      var dialog, mimeTypes, name, nodes, thread, _i, _len, _ref;
+      dialog = UI.dialog('qr', 'top:0;right:0;', "<div>\n  <input type=checkbox id=autohide title=Auto-hide>\n  <select title='Create a new thread / Reply'>\n    <option value=new>New thread</option>\n  </select>\n  <span class=move></span>\n  <a href=javascript:; class=close title=Close>×</a>\n</div>\n<form>\n  <div class=persona>\n    <input id=dump-button type=button title='Dump list' value=+>\n    <input data-name=name  title=Name    placeholder=Name    class=field size=1>\n    <input data-name=email title=E-mail  placeholder=E-mail  class=field size=1>\n    <input data-name=sub   title=Subject placeholder=Subject class=field size=1>\n  </div>\n  <div id=dump-list-container>\n    <div id=dump-list></div>\n    <a id=add-post href=javascript:; title=\"Add a post\">+</a>\n  </div>\n  <div class=textarea>\n    <textarea data-name=com title=Comment placeholder=Comment class=field></textarea>\n    <span id=char-count></span>\n  </div>\n  <div id=file-n-submit>\n    <input id=qr-file-button type=button value='Choose files'>\n    <span id=qr-filename-container>\n      <span id=qr-no-file>No selected file</span>\n      <span id=qr-filename></span>\n    </span>\n    <a id=qr-filerm href=javascript:; title='Remove file' tabindex=-1>×</a>\n    <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=-1>\n    <input type=submit>\n  </div>\n  <input type=file multiple>\n</form>".replace(/>\s+</g, '><'));
       QR.nodes = nodes = {
         el: dialog,
         move: $('.move', dialog),
         autohide: $('#autohide', dialog),
+        thread: $('select', dialog),
         close: $('.close', dialog),
         form: $('form', dialog),
         dumpButton: $('#dump-button', dialog),
@@ -6495,23 +6492,19 @@
       QR.spoiler = !!$('input[name=spoiler]');
       nodes.spoiler.hidden = !QR.spoiler;
       if (g.BOARD.ID === 'f') {
-        if (g.VIEW === 'index') {
-          nodes.flashTag = $('select[name=filetag]').cloneNode(true);
-          $.after(nodes.autohide, nodes.flashTag);
-        }
-      } else {
-        nodes.thread = $.el('select', {
-          title: 'Create a new thread / Reply'
+        nodes.flashTag = $.el('select', {
+          name: 'filetag',
+          innerHTML: "<option value=0>Hentai</option>\n<option value=6>Porn</option>\n<option value=1>Japanese</option>\n<option value=2>Anime</option>\n<option value=3>Game</option>\n<option value=5>Loop</option>\n<option value=4 selected>Other</option>"
         });
-        threads = '<option value=new>New thread</option>';
-        _ref = g.BOARD.threads;
-        for (key in _ref) {
-          thread = _ref[key];
-          threads += "<option value=" + thread.ID + ">Thread No." + thread.ID + "</option>";
-        }
-        nodes.thread.innerHTML = threads;
-        $.after(nodes.autohide, nodes.thread);
+        $.add(nodes.form, nodes.flashTag);
       }
+      for (thread in g.BOARD.threads) {
+        $.add(nodes.thread, $.el('option', {
+          value: thread,
+          textContent: "Thread No." + thread
+        }));
+      }
+      $.after(nodes.autohide, nodes.thread);
       QR.resetThreadSelector();
       $.on(nodes.autohide, 'change', QR.toggleHide);
       $.on(nodes.close, 'click', QR.close);
@@ -6533,9 +6526,9 @@
       });
       $.on(nodes.fileInput, 'change', QR.fileInput);
       new QR.post().select();
-      _ref1 = ['name', 'email', 'sub', 'com'];
-      for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-        name = _ref1[_i];
+      _ref = ['name', 'email', 'sub', 'com'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        name = _ref[_i];
         $.on(nodes[name], 'input', function() {
           return QR.selected.save(this);
         });
@@ -6563,23 +6556,15 @@
       post = QR.posts[0];
       post.forceSave();
       if (g.BOARD.ID === 'f') {
-        if (g.VIEW === 'index') {
-          filetag = QR.nodes.flashTag.value;
-          threadID = 'new';
-        } else {
-          threadID = g.THREAD;
-        }
-      } else {
-        threadID = QR.nodes.thread.value;
+        filetag = QR.nodes.flashTag.value;
       }
+      threadID = QR.nodes.thread.value;
       if (threadID === 'new') {
         threadID = null;
         if (((_ref = g.BOARD.ID) === 'vg' || _ref === 'q') && !post.sub) {
           err = 'New threads require a subject.';
         } else if (!(post.file || (textOnly = !!$('input[name=textonly]', $.id('postForm'))))) {
           err = 'No file selected.';
-        } else if (g.BOARD.ID === 'f' && filetag === '9999') {
-          err = 'Invalid tag specified.';
         }
       } else if (g.BOARD.threads[threadID].isSticky) {
         err = 'You can\'t reply to this thread anymore.';
