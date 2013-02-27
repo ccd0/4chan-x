@@ -16,6 +16,7 @@ beta
       Delete links in the post menu will only appear for your posts.
 
   QR changes:
+    Opening text files will insert their content in the comment field.
     Cooldown start time is now more accurate, which means shorter cooldown period and faster auto-posting.
     Clicking the submit button while uploading will abort the upload and won't start re-uploading automatically anymore.
     Closing the QR while uploading will abort the upload and won't close the QR anymore.

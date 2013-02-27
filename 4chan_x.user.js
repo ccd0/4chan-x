@@ -5981,7 +5981,7 @@
       return $.addClass(QR.nodes.el, 'dump');
     },
     fileInput: function(files) {
-      var file, length, max, _i, _len, _ref, _ref1;
+      var file, length, max, post, _i, _len, _ref, _ref1;
       if (!(files instanceof FileList)) {
         files = __slice.call(this.files);
       }
@@ -5994,7 +5994,9 @@
       QR.cleanNotifications();
       if (length === 1) {
         file = files[0];
-        if (file.size > max) {
+        if (/^text/.test(file.type)) {
+          QR.selected.pasteText(file);
+        } else if (file.size > max) {
           QR.error("File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
         } else if (_ref = file.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
           QR.error('Unsupported file type.');
@@ -6005,14 +6007,19 @@
       }
       for (_i = 0, _len = files.length; _i < _len; _i++) {
         file = files[_i];
-        if (file.size > max) {
+        if (/^text/.test(file.type)) {
+          if ((post = QR.posts[QR.posts.length - 1]).com) {
+            post = new QR.post();
+          }
+          post.pasteText(file);
+        } else if (file.size > max) {
           QR.error("" + file.name + ": File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
         } else if (_ref1 = file.type, __indexOf.call(QR.mimeTypes, _ref1) < 0) {
           QR.error("" + file.name + ": Unsupported file type.");
-        } else if (!QR.posts[QR.posts.length - 1].file) {
-          QR.posts[QR.posts.length - 1].setFile(file);
+        } else if ((post = QR.posts[QR.posts.length - 1]).file) {
+          post = new QR.post();
         } else {
-          new QR.post().setFile(file);
+          post.setFile(file);
         }
       }
       return $.addClass(QR.nodes.el, 'dump');
@@ -6258,6 +6265,26 @@
         }
       };
 
+      _Class.prototype.pasteText = function(file) {
+        var reader,
+          _this = this;
+        reader = new FileReader();
+        reader.onload = function(e) {
+          var text;
+          text = e.target.result;
+          if (_this.com) {
+            _this.com += "\n" + text;
+          } else {
+            _this.com = text;
+          }
+          if (QR.selected === _this) {
+            QR.nodes.com.value = _this.com;
+          }
+          return _this.nodes.span.textContent = _this.com;
+        };
+        return reader.readAsText(file);
+      };
+
       _Class.prototype.dragStart = function() {
         return $.addClass(this, 'drag');
       };
@@ -6487,7 +6514,7 @@
       QR.mimeTypes.push('');
       nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
       if ($.engine !== 'presto') {
-        nodes.fileInput.accept = mimeTypes;
+        nodes.fileInput.accept = "text/*, " + mimeTypes;
       }
       QR.spoiler = !!$('input[name=spoiler]');
       nodes.spoiler.hidden = !QR.spoiler;

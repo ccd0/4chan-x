@@ -307,7 +307,9 @@ QR =
     # Set or change current post's file.
     if length is 1
       file = files[0]
-      if file.size > max
+      if /^text/.test file.type
+        QR.selected.pasteText file
+      else if file.size > max
         QR.error "File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
       else unless file.type in QR.mimeTypes
         QR.error 'Unsupported file type.'
@@ -316,15 +318,18 @@ QR =
       return
     # Create new posts with these files.
     for file in files
-      if file.size > max
+      if /^text/.test file.type
+        if (post = QR.posts[QR.posts.length - 1]).com
+          post = new QR.post()
+        post.pasteText file
+      else if file.size > max
         QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
       else unless file.type in QR.mimeTypes
         QR.error "#{file.name}: Unsupported file type."
-      else unless QR.posts[QR.posts.length - 1].file
-        # set last post's file
-        QR.posts[QR.posts.length - 1].setFile file
+      else if (post = QR.posts[QR.posts.length - 1]).file
+        post = new QR.post()
       else
-        new QR.post().setFile file
+        post.setFile file
     $.addClass QR.nodes.el, 'dump'
   resetThreadSelector: ->
     if g.VIEW is 'thread'
@@ -504,6 +509,18 @@ QR =
         $.addClass QR.nodes.fileSubmit, 'has-file'
       else
         $.rmClass QR.nodes.fileSubmit, 'has-file'
+    pasteText: (file) ->
+      reader = new FileReader()
+      reader.onload = (e) =>
+        text = e.target.result
+        if @com
+          @com += "\n#{text}"
+        else
+          @com = text
+        if QR.selected is @
+          QR.nodes.com.value    = @com
+        @nodes.span.textContent = @com
+      reader.readAsText file
     dragStart: ->
       $.addClass @, 'drag'
     dragEnd: ->
@@ -705,7 +722,7 @@ QR =
     # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
     QR.mimeTypes.push ''
     nodes.fileInput.max    = $('input[name=MAX_FILE_SIZE]').value
-    nodes.fileInput.accept = mimeTypes if $.engine isnt 'presto' # Opera's accept attribute is fucked up
+    nodes.fileInput.accept = "text/*, #{mimeTypes}" if $.engine isnt 'presto' # Opera's accept attribute is fucked up
 
     QR.spoiler = !!$ 'input[name=spoiler]'
     nodes.spoiler.hidden = !QR.spoiler
