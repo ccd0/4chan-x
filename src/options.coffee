@@ -7,11 +7,13 @@ Options =
       Options.dialog()
 
     a = $.el 'a',
-      id:    'settingsWindowLink'
+      id:    'appchanOptions'
       title: 'Appchan X Settings'
       href:  'javascript:;'
+
     $.on a, 'click', ->
       Options.dialog()
+
     $.replace $.id('settingsWindowLink'), a
 
   dialog: (tab) ->
@@ -19,10 +21,14 @@ Options =
       if confirm "Opening the options dialog will close and discard any theme changes made with the theme editor."
         ThemeTools.close()
       return
+
     if Conf['editMode'] is "mascot"
       if confirm "Opening the options dialog will close and discard any mascot changes made with the mascot editor."
         MascotTools.close()
       return
+
+    d.body.style.overflow = 'hidden'
+
     dialog = Options.el = $.el 'div'
       id: 'options'
       className: 'reply dialog'
@@ -1064,6 +1070,7 @@ Options =
       Options.persona.button.textContent = "Copy from #{if Options.persona.select.value is 'global' then 'current board' else 'global'}"
 
   close: ->
+    d.body.style.overflow = ''
     $.rm $.id 'options'
     $.rm $.id 'overlay'
     delete Options.el

@@ -428,7 +428,7 @@ body {
   iconPositions: ->
     css = """
 #navtopright .exlinksOptionsLink::after,
-#settingsWindowLink,
+#appchanOptions,
 div.navLinks > a:first-of-type::after,
 #{if Conf['Slideout Watcher'] then '#watcher::after,' else ''}
 #{if Conf['Announcements'] is 'slideout' then '#globalMessage::after,' else ''}
@@ -448,7 +448,7 @@ body > a[style="cursor: pointer; float: right;"]::after,
 #imgControls {
   position: fixed;
 }
-#settingsWindowLink {
+#appchanOptions {
   visibility: visible;
   background-position: 0 0;
 }
@@ -489,7 +489,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #globalMessage:hover::after,
 #imgControls label:hover:first-of-type::after,
 #navlinks a:hover,
-#settingsWindowLink:hover,
+#appchanOptions:hover,
 #navtopright .exlinksOptionsLink:hover::after,
 #qr #qrtab,
 #watcher:hover::after,
@@ -569,7 +569,7 @@ div.navLinks > a:first-of-type::after {
   z-index: 9;
 }
 /* 4chan X Options */
-#settingsWindowLink {
+#appchanOptions {
   #{align}: #{position[i++]}px;
 }
 /* Slideout Navigation */
@@ -627,7 +627,7 @@ div.navLinks > a:first-of-type::after {
 }
 #boardNavDesktopFoot::after,
 #navtopright .exlinksOptionsLink::after,
-#settingsWindowLink,
+#appchanOptions,
 #watcher::after,
 #globalMessage::after,
 #imgControls,
@@ -703,7 +703,7 @@ div.navLinks > a:first-of-type::after {
   top: #{position[i++]}px;
 }
 /* 4chan X Options */
-#settingsWindowLink {
+#appchanOptions {
   top: #{position[i++]}px;
 }
 /* Slideout Navigation */
@@ -755,7 +755,7 @@ div.navLinks > a:first-of-type::after {
 }
 #navlinks a,
 #navtopright .exlinksOptionsLink::after,
-#settingsWindowLink,
+#appchanOptions,
 #boardNavDesktopFoot::after,
 #globalMessage::after,
 #imgControls,
@@ -2118,7 +2118,7 @@ a .name {
 }
 
 #navtopright .exlinksOptionsLink::after,
-#settingsWindowLink,
+#appchanOptions,
 .navLinks > a:first-of-type::after,
 #watcher::after,
 #globalMessage::after,
