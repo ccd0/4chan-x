@@ -2948,7 +2948,7 @@ ImageExpand =
       if checked
         $.on window, 'resize', ImageExpand.resize
         unless ImageExpand.style
-          ImageExpand.style = $.addStyle null, 'style'
+          ImageExpand.style = $.addStyle null
         ImageExpand.resize()
       else
         $.off window, 'resize', ImageExpand.resize

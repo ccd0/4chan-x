@@ -88,14 +88,9 @@ $.extend $,
       cb()
     else
       setTimeout $.asap, 25, test, cb
-  addStyle: (css, type) ->
-    style = if type is 'style' or !window.URL
-      $.el 'style',
-        textContent: css
-    else
-      $.el 'link',
-        rel: 'stylesheet'
-        href: URL.createObjectURL new Blob([css], type: 'text/css')
+  addStyle: (css) ->
+    style = $.el 'style',
+      textContent: css
     $.asap (-> d.head), ->
       $.add d.head, style
     style

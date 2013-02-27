@@ -742,15 +742,10 @@
         return setTimeout($.asap, 25, test, cb);
       }
     },
-    addStyle: function(css, type) {
+    addStyle: function(css) {
       var style;
-      style = type === 'style' || !window.URL ? $.el('style', {
+      style = $.el('style', {
         textContent: css
-      }) : $.el('link', {
-        rel: 'stylesheet',
-        href: URL.createObjectURL(new Blob([css], {
-          type: 'text/css'
-        }))
       });
       $.asap((function() {
         return d.head;
@@ -4453,7 +4448,7 @@
         if (checked) {
           $.on(window, 'resize', ImageExpand.resize);
           if (!ImageExpand.style) {
-            ImageExpand.style = $.addStyle(null, 'style');
+            ImageExpand.style = $.addStyle(null);
           }
           return ImageExpand.resize();
         } else {
