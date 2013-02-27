@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                appchan x
 // @namespace           zixaphir
-// @version             1.1.2
+// @version             1.1.3
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           2013 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2009-2011 James Campos <james.r.campos@gmail.com>
@@ -19,7 +19,7 @@
 // ==/UserScript==
 
 /*
- * appchan x - Version 1.1.2 - 2013-02-26
+ * appchan x - Version 1.1.3 - 2013-02-26
  *
  * Licensed under the MIT license.
  * https://github.com/zixaphir/appchan-x/blob/master/LICENSE
@@ -304,8 +304,8 @@
         '4chan SS Navigation': [false, 'Try to emulate the appearance of 4chan SS\'s Navigation.'],
         '4chan SS Sidebar': [false, 'Try to emulate the appearance of 4chan SS\'s Sidebar.'],
         'Block Ads': [false, 'Block advertisements. It\'s probably better to use AdBlock for this.'],
-        'Bolds': [true, 'Bold text for usernames and such.'],
         'Shrink Ads': [false, 'Make 4chan advertisements smaller.'],
+        'Bolds': [true, 'Bold text for names and such'],
         'Sidebar Glow': [false, 'Adds a glow to the sidebar\'s text.'],
         'Circle Checkboxes': [false, 'Make checkboxes circular.'],
         'Custom CSS': [false, 'Add (more) custom CSS to Appchan X'],
@@ -11123,7 +11123,7 @@
         for (id in ownedPosts) {
           timestamp = ownedPosts[id];
           if (timestamp < cutoff) {
-            delete ownPosts[id];
+            delete ownedPosts[id];
           }
         }
         for (id in titles) {
@@ -11261,7 +11261,7 @@
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: 'appchan_x.',
-    version: '1.1.2',
+    version: '1.1.3',
     callbacks: []
   };
 

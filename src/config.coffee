@@ -725,13 +725,13 @@ div.post.highlight {
         false
         'Block advertisements. It\'s probably better to use AdBlock for this.'
       ]
-      'Bolds': [
-        true
-        'Bold text for usernames and such.'
-      ]
       'Shrink Ads': [
         false
         'Make 4chan advertisements smaller.'
+      ]
+      'Bolds': [
+        true
+        'Bold text for names and such'
       ]
       'Sidebar Glow': [
         false
