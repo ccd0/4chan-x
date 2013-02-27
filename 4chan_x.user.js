@@ -5836,6 +5836,8 @@
           post: board === 'q' ? 60 : 30
         };
         QR.cooldown.cooldowns = $.get("cooldown." + board, {});
+        QR.cooldown.upSpd = 0;
+        QR.cooldown.upSpdAccuracy = .5;
         QR.cooldown.start();
         return $.sync("cooldown." + board, QR.cooldown.sync);
       },
@@ -5854,16 +5856,21 @@
         return QR.cooldown.start();
       },
       set: function(data) {
-        var cooldown, hasFile, isReply, isSage, start, type;
-        start = data.start || Date.now();
-        if (data.delay) {
+        var cooldown, delay, hasFile, isReply, isSage, post, req, start, type, upSpd;
+        req = data.req, post = data.post, isReply = data.isReply, delay = data.delay;
+        start = req ? req.uploadEndTime : Date.now();
+        if (delay) {
           cooldown = {
-            delay: data.delay
+            delay: delay
           };
         } else {
-          isSage = /sage/i.test(data.post.email);
-          hasFile = !!data.post.file;
-          isReply = data.isReply;
+          if (post.file) {
+            upSpd = post.file.size / ((req.uploadEndTime - req.uploadStartTime) / $.SECOND);
+            QR.cooldown.upSpdAccuracy = ((upSpd > QR.cooldown.upSpd * .9) + QR.cooldown.upSpdAccuracy) / 2;
+            QR.cooldown.upSpd = upSpd;
+          }
+          isSage = /sage/i.test(post.email);
+          hasFile = !!post.file;
           type = !isReply ? 'thread' : isSage ? 'sage' : hasFile ? 'file' : 'post';
           cooldown = {
             isReply: isReply,
@@ -5881,7 +5888,7 @@
         return $.set("cooldown." + g.BOARD, QR.cooldown.cooldowns);
       },
       count: function() {
-        var cooldown, cooldowns, elapsed, hasFile, isReply, isSage, now, post, seconds, start, type, types, update, _ref;
+        var cooldown, cooldowns, elapsed, hasFile, isReply, isSage, now, post, seconds, start, type, types, upSpd, upSpdAccuracy, update, _ref;
         if (!Object.keys(QR.cooldown.cooldowns).length) {
           $["delete"]("" + g.BOARD + ".cooldown");
           delete QR.cooldown.isCounting;
@@ -5889,16 +5896,14 @@
           QR.status();
           return;
         }
-        setTimeout(QR.cooldown.count, 1000);
-        isReply = QR.nodes.thread.value !== 'new';
-        if (isReply) {
-          post = QR.posts[0];
-          isSage = /sage/i.test(post.email);
-          hasFile = !!post.file;
-        }
+        setTimeout(QR.cooldown.count, $.SECOND);
         now = Date.now();
+        post = QR.posts[0];
+        isReply = QR.nodes.thread.value !== 'new';
+        isSage = /sage/i.test(post.email);
+        hasFile = !!post.file;
         seconds = null;
-        _ref = QR.cooldown, types = _ref.types, cooldowns = _ref.cooldowns;
+        _ref = QR.cooldown, types = _ref.types, cooldowns = _ref.cooldowns, upSpd = _ref.upSpd, upSpdAccuracy = _ref.upSpdAccuracy;
         for (start in cooldowns) {
           cooldown = cooldowns[start];
           if ('delay' in cooldown) {
@@ -5912,9 +5917,13 @@
           }
           if (isReply === cooldown.isReply) {
             type = !isReply ? 'thread' : isSage && cooldown.isSage ? 'sage' : hasFile && cooldown.hasFile ? 'file' : 'post';
-            elapsed = Math.floor((now - start) / 1000);
+            elapsed = Math.floor((now - start) / $.SECOND);
             if (elapsed >= 0) {
               seconds = Math.max(seconds, types[type] - elapsed);
+              if (hasFile && upSpd) {
+                seconds -= Math.floor(post.file.size / upSpd * upSpdAccuracy);
+                seconds = Math.max(seconds, 0);
+              }
             }
           }
           if (!((start <= now && now <= cooldown.timeout))) {
@@ -5926,7 +5935,7 @@
         if (update) {
           QR.status();
         }
-        if (seconds === 0 && QR.cooldown.auto) {
+        if (seconds === 0 && QR.cooldown.auto && !QR.req) {
           return QR.submit();
         }
       }
@@ -6694,6 +6703,7 @@
         }
       };
       QR.req = $.ajax($.id('postForm').parentNode.action, callbacks, opts);
+      QR.req.uploadStartTime = Date.now();
       QR.req.progress = '...';
       return QR.status();
     },
@@ -6702,6 +6712,7 @@
       req = QR.req;
       delete QR.req;
       post = QR.posts[0];
+      post.unlock();
       tmpDoc = d.implementation.createHTMLDocument('');
       tmpDoc.documentElement.innerHTML = req.response;
       if (ban = $('.banType', tmpDoc)) {
@@ -6754,20 +6765,19 @@
         threadID: threadID,
         postID: postID
       }, QR.nodes.el);
+      QR.cooldown.auto = QR.posts.length > 1;
+      post.rm();
       QR.cooldown.set({
-        start: req.uploadEndTime,
+        req: req,
         post: post,
         isReply: !!threadID
       });
-      QR.cooldown.auto = QR.posts.length > 1;
       if (threadID === postID) {
         $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID);
       } else if (g.VIEW === 'index' && !QR.cooldown.auto) {
         $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
       }
-      if (Conf['Persistent QR'] || QR.cooldown.auto) {
-        post.rm();
-      } else {
+      if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
         QR.close();
       }
       return QR.status();

@@ -148,6 +148,8 @@ QR =
         file: if board is 'q' then 300 else 30
         post: if board is 'q' then 60  else 30
       QR.cooldown.cooldowns = $.get "cooldown.#{board}", {}
+      QR.cooldown.upSpd = 0
+      QR.cooldown.upSpdAccuracy = .5
       QR.cooldown.start()
       $.sync "cooldown.#{board}", QR.cooldown.sync
     start: ->
@@ -161,13 +163,17 @@ QR =
         QR.cooldown.cooldowns[id] = cooldowns[id]
       QR.cooldown.start()
     set: (data) ->
-      start = data.start or Date.now()
-      if data.delay
-        cooldown = delay: data.delay
+      {req, post, isReply, delay} = data
+      start = if req then req.uploadEndTime else Date.now()
+      if delay
+        cooldown = {delay}
       else
-        isSage  = /sage/i.test data.post.email
-        hasFile = !!data.post.file
-        {isReply} = data
+        if post.file
+          upSpd = post.file.size / ((req.uploadEndTime - req.uploadStartTime) / $.SECOND)
+          QR.cooldown.upSpdAccuracy = ((upSpd > QR.cooldown.upSpd * .9) + QR.cooldown.upSpdAccuracy) / 2
+          QR.cooldown.upSpd = upSpd
+        isSage  = /sage/i.test post.email
+        hasFile = !!post.file
         type = unless isReply
           'thread'
         else if isSage
@@ -195,16 +201,15 @@ QR =
         QR.status()
         return
 
-      setTimeout QR.cooldown.count, 1000
+      setTimeout QR.cooldown.count, $.SECOND
 
-      isReply = QR.nodes.thread.value isnt 'new'
-      if isReply
-        post    = QR.posts[0]
-        isSage  = /sage/i.test post.email
-        hasFile = !!post.file
       now     = Date.now()
+      post    = QR.posts[0]
+      isReply = QR.nodes.thread.value isnt 'new'
+      isSage  = /sage/i.test post.email
+      hasFile = !!post.file
       seconds = null
-      {types, cooldowns} = QR.cooldown
+      {types, cooldowns, upSpd, upSpdAccuracy} = QR.cooldown
 
       for start, cooldown of cooldowns
         if 'delay' of cooldown
@@ -226,9 +231,12 @@ QR =
             'file'
           else
             'post'
-          elapsed = Math.floor (now - start) / 1000
+          elapsed = Math.floor (now - start) / $.SECOND
           if elapsed >= 0 # clock changed since then?
             seconds = Math.max seconds, types[type] - elapsed
+            if hasFile and upSpd
+              seconds -= Math.floor post.file.size / upSpd * upSpdAccuracy
+              seconds  = Math.max seconds, 0
         unless start <= now <= cooldown.timeout
           QR.cooldown.unset start
 
@@ -238,7 +246,7 @@ QR =
       update = seconds isnt null or !!QR.cooldown.seconds
       QR.cooldown.seconds = seconds
       QR.status() if update
-      QR.submit() if seconds is 0 and QR.cooldown.auto
+      QR.submit() if seconds is 0 and QR.cooldown.auto and !QR.req
 
   quote: (e) ->
     e?.preventDefault()
@@ -881,6 +889,7 @@ QR =
     QR.req = $.ajax $.id('postForm').parentNode.action, callbacks, opts
     # Starting to upload might take some time.
     # Provide some feedback that we're starting to submit.
+    QR.req.uploadStartTime = Date.now()
     QR.req.progress = '...'
     QR.status()
 
@@ -889,6 +898,7 @@ QR =
     delete QR.req
 
     post = QR.posts[0]
+    post.unlock()
 
     tmpDoc = d.implementation.createHTMLDocument ''
     tmpDoc.documentElement.innerHTML = req.response
@@ -956,22 +966,22 @@ QR =
       postID
     }, QR.nodes.el
 
-    QR.cooldown.set
-      start:   req.uploadEndTime
-      post:    post
-      isReply: !!threadID
-
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.posts.length > 1
+
+    post.rm()
+
+    QR.cooldown.set
+      req:     req
+      post:    post
+      isReply: !!threadID
 
     if threadID is postID # new thread
       $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}"
     else if g.VIEW is 'index' and !QR.cooldown.auto # posting from the index
       $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
 
-    if Conf['Persistent QR'] or QR.cooldown.auto
-      post.rm()
-    else
+    unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()
 
     QR.status()

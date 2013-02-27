@@ -19,6 +19,7 @@ beta
     Opening text files will insert their content in the comment field.
     Pasting files/images (e.g. from another website) in Chrome will open them in the QR.
     Cooldown start time is now more accurate, which means shorter cooldown period and faster auto-posting.
+    Cooldown remaining time will adjust to your upload speed and file size for faster auto-posting.
     Clicking the submit button while uploading will abort the upload and won't start re-uploading automatically anymore.
     Closing the QR while uploading will abort the upload and won't close the QR anymore.
     Creating threads outside of the index is now possible.
