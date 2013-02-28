@@ -1300,7 +1300,6 @@
         thread = _ref2[ID];
         for (ID in thread) {
           post = thread[ID];
-          $.log(post);
           hiddenNum++;
         }
       }
@@ -3265,7 +3264,7 @@
           capcodeStart = '';
           capcode = '';
       }
-      flag = flagCode ? (" <img src='" + staticPath + "/image/country/" + (board === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
+      flag = flagCode ? (" <img src='" + staticPath + "/image/country/" + (board.ID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
       if (file != null ? file.isDeleted : void 0) {
         fileHTML = isOP ? ("<div id=f" + postID + " class=file><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted.gif' alt='File deleted.' class='fileDeleted retina'>") + "</span></div>" : ("<div id=f" + postID + " class=file><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted-res.gif' alt='File deleted.' class='fileDeletedRes retina'>") + "</span></div>";
       } else if (file) {
@@ -3287,7 +3286,7 @@
             file.twidth = file.theight = 100;
           }
         }
-        if (board !== 'f') {
+        if (board.ID !== 'f') {
           imgSrc = ("<a class='fileThumb" + (file.isSpoiler ? ' imgspoiler' : '') + "' href='" + file.url + "' target=_blank>") + ("<img src='" + fileThumb + "' alt='" + fileSize + "' data-md5=" + file.MD5 + " style='height: " + file.theight + "px; width: " + file.twidth + "px;'></a>");
         }
         a = $.el('a', {
@@ -5504,7 +5503,7 @@
           continue;
         }
         count++;
-        node = Build.postFromObject(postObject, ThreadUpdater.thread.board.ID);
+        node = Build.postFromObject(postObject, ThreadUpdater.thread.board);
         nodes.push(node);
         posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board));
       }

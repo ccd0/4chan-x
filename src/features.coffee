@@ -254,7 +254,6 @@ Settings =
       hiddenNum++
     for ID, thread of ReplyHiding.getHiddenPosts().threads
       for ID, post of thread
-        $.log post
         hiddenNum++
     div = $.el 'div',
       innerHTML: "<button>Hidden: #{hiddenNum}</button><span class=description>: Clear manually hidden threads and posts on /#{g.BOARD}/."
@@ -1906,7 +1905,7 @@ Build =
 
     flag =
       if flagCode
-       " <img src='#{staticPath}/image/country/#{if board is 'pol' then 'troll/' else ''}" +
+        " <img src='#{staticPath}/image/country/#{if board.ID is 'pol' then 'troll/' else ''}" +
         flagCode.toLowerCase() + ".gif' alt=#{flagCode} title='#{flagName}' class=countryFlag>"
       else
         ''
@@ -1940,7 +1939,7 @@ Build =
           fileThumb += '.png'
           file.twidth = file.theight = 100
 
-      if board isnt 'f'
+      if board.ID isnt 'f'
         imgSrc = "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href='#{file.url}' target=_blank>" +
           "<img src='#{fileThumb}' alt='#{fileSize}' data-md5=#{file.MD5} style='height: #{file.theight}px; width: #{file.twidth}px;'></a>"
 
@@ -3741,7 +3740,7 @@ ThreadUpdater =
       continue if num <= ThreadUpdater.lastPost
       # Insert new posts, not older ones.
       count++
-      node = Build.postFromObject postObject, ThreadUpdater.thread.board.ID
+      node = Build.postFromObject postObject, ThreadUpdater.thread.board
       nodes.push node
       posts.push new Post node, ThreadUpdater.thread, ThreadUpdater.thread.board
 
