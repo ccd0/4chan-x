@@ -16,6 +16,11 @@
   color: #81A2BE;
 }
 
+/* Settings */
+:root.tomorrow #fourchanx-settings fieldset {
+  border-color: #111;
+}
+
 /* Quote */
 :root.tomorrow .backlink.deadlink {
   color: #81A2BE !important;

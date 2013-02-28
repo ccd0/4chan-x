@@ -238,16 +238,16 @@ Settings =
     $.on $('input',   section), 'change', Settings.onImport
 
     for key, obj of Config.main
-      ul = $.el 'ul',
-        textContent: key
+      fs = $.el 'fieldset',
+        innerHTML: "<legend>#{key}</legend>"
       for key, arr of obj
         checked = if $.get(key, Conf[key]) then 'checked' else ''
         description = arr[1]
-        li = $.el 'li',
+        div = $.el 'div',
           innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
-        $.on $('input', li), 'click', $.cb.checked
-        $.add ul, li
-      $.add section, ul
+        $.on $('input', div), 'click', $.cb.checked
+        $.add fs, div
+      $.add section, fs
 
     hiddenNum = 0
     for ID, thread of ThreadHiding.getHiddenThreads().threads
@@ -256,13 +256,13 @@ Settings =
       for ID, post of thread
         $.log post
         hiddenNum++
-    li = $.el 'li',
+    div = $.el 'div',
       innerHTML: "<button>Hidden: #{hiddenNum}</button><span class=description>: Clear manually hidden threads and posts on /#{g.BOARD}/."
-    $.on $('button', li), 'click', ->
+    $.on $('button', div), 'click', ->
       @textContent = 'Hidden: 0'
       $.delete "hiddenThreads.#{g.BOARD}"
       $.delete "hiddenPosts.#{g.BOARD}"
-    $.after $('input[name="Stubs"]', section).parentNode.parentNode, li
+    $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
   export: ->
     now  = Date.now()
     data =
@@ -381,7 +381,6 @@ Settings =
 
   filter: (section) ->
     section.innerHTML = """
-      <div class=warning #{if Conf['Sauce'] then 'hidden' else ''}><code>Filter</code> is disabled.</div>
       <select name=filter>
         <option value=guide>Guide</option>
         <option value=name>Name</option>
@@ -414,6 +413,7 @@ Settings =
       $.add div, ta
       return
     div.innerHTML = """
+      <div class=warning #{if Conf['Sauce'] then 'hidden' else ''}><code>Filter</code> is disabled.</div>
       <p>
         Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
         Lines starting with a <code>#</code> will be ignored.<br>
@@ -463,43 +463,49 @@ Settings =
 
   rice: (section) ->
     section.innerHTML = """
-      <div class=warning #{if Conf['Time Formatting'] then 'hidden' else ''}><code>Time Formatting</code> is disabled.</div>
-      <ul>Time formatting
-        <li><input name=time class=field>: <span class=time-preview></span></li>
-        <li>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</li>
-        <li>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></li>
-        <li>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></li>
-        <li>Year: <code>%y</code></li>
-        <li>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></li>
-        <li>Minute: <code>%M</code></li>
-        <li>Second: <code>%S</code></li>
-      </ul>
-      <div class=warning #{if Conf['Quote Backlinks'] then 'hidden' else ''}><code>Quote Backlinks</code> are disabled.</div>
-      <ul>Backlink formatting
-        <li><input name=backlink class=field>: <span class=backlink-preview></span></li>
-      </ul>
-      <div class=warning #{if Conf['File Info Formatting'] then 'hidden' else ''}><code>File Info Formatting</code> is disabled.</div>
-      <ul>File Info Formatting
-        <li><input name=fileInfo class=field>: <span class='fileText file-info-preview'></span></li>
-        <li>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</li>
-        <li>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</li>
-        <li>Spoiler indicator: <code>%p</code></li>
-        <li>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</li>
-        <li>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</li>
-      </ul>
-      <div class=warning #{if Conf['Unread Tab Icon'] then 'hidden' else ''}><code>Unread Tab Icon</code> is disabled.</div>
-      <div>Unread favicons</div>
-      <select name=favicon>
-        <option value=ferongr>ferongr</option>
-        <option value=xat->xat-</option>
-        <option value=Mayhem>Mayhem</option>
-        <option value=Original>Original</option>
-      </select>
-      <span class=favicon-preview></span>
-      <div>Custom CSS</div>
-      <div class=warning #{if Conf['Custom CSS'] then 'hidden' else ''}><code>Custom CSS</code> is disabled.</div>
-      <button id=apply-css>Apply CSS</button>
-      <textarea name=usercss class=field></textarea>
+      <fieldset>
+        <legend>Time Formatting <span class=warning #{if Conf['Time Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
+        <div><input name=time class=field>: <span class=time-preview></span></div>
+        <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>
+        <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>
+        <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>
+        <div>Year: <code>%y</code></div>
+        <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>
+        <div>Minute: <code>%M</code></div>
+        <div>Second: <code>%S</code></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Quote Backlinks formatting <span class=warning #{if Conf['Quote Backlinks'] then 'hidden' else ''}>is disabled.</span></legend>
+        <div><input name=backlink class=field>: <span class=backlink-preview></span></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>File Info Formatting <span class=warning #{if Conf['File Info Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
+        <div><input name=fileInfo class=field>: <span class='fileText file-info-preview'></span></div>
+        <div>divnk: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>
+        <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>
+        <div>Spoiler indicator: <code>%p</code></div>
+        <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>
+        <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Unread Tab Icon <span class=warning #{if Conf['Unread Tab Icon'] then 'hidden' else ''}>is disabled.</span></legend>
+        <select name=favicon>
+          <option value=ferongr>ferongr</option>
+          <option value=xat->xat-</option>
+          <option value=Mayhem>Mayhem</option>
+          <option value=Original>Original</option>
+        </select>
+        <span class=favicon-preview></span>
+      </fieldset>
+
+      <fieldset>
+        <legend>Custom CSS <span class=warning #{if Conf['Custom CSS'] then 'hidden' else ''}>is disabled.</span></legend>
+        <button id=apply-css>Apply CSS</button>
+        <textarea name=usercss class=field></textarea>
+      </fieldset>
     """
     for name in ['time', 'backlink', 'fileInfo', 'favicon', 'usercss']
       input = $ "[name=#{name}]", section

@@ -16,6 +16,11 @@
   color: #34345C;
 }
 
+/* Settings */
+:root.yotsuba-b #fourchanx-settings fieldset {
+  border-color: #B7C5D9;
+}
+
 /* Quote */
 :root.yotsuba-b .backlink.deadlink {
   color: #34345C !important;

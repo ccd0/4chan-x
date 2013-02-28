@@ -16,6 +16,11 @@
   color: #800000;
 }
 
+/* Settings */
+:root.futaba #fourchanx-settings fieldset {
+  border-color: #D9BFB7;
+}
+
 /* Quote */
 :root.futaba .backlink.deadlink {
   color: #00E !important;

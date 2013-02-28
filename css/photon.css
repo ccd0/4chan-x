@@ -16,6 +16,11 @@
   color: #FF6600;
 }
 
+/* Settings */
+:root.photon #fourchanx-settings fieldset {
+  border-color: #CCC;
+}
+
 /* Quote */
 :root.photon .backlink.deadlink {
   color: #F60 !important;

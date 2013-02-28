@@ -16,6 +16,11 @@
   color: #34345C;
 }
 
+/* Settings */
+:root.burichan #fourchanx-settings fieldset {
+  border-color: #B7C5D9;
+}
+
 /* Quote */
 :root.burichan .backlink.deadlink {
   color: #34345C !important;
