@@ -134,14 +134,16 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
 
   rice: (source)->
     checkboxes = $$('[type=checkbox]:not(.riced)', source)
+    click = ->
+      @check.click()
     for checkbox in checkboxes
       $.addClass checkbox, 'riced'
       div = $.el 'div',
         className: 'rice'
+      div.check = checkbox
       $.after checkbox, div
       if div.parentElement.tagName.toLowerCase() != 'label'
-        $.on div, 'click', ->
-          checkbox.click()
+        $.on div, 'click', click
     selects = $$('select:not(.riced)', source)
     for select in selects
       $.addClass select, 'riced'
@@ -1068,7 +1070,7 @@ input:checked + .rice {
 }
 .selectrice::before {
   content: "";
-  height: 1.5em;
+  height: 1.6em;
   position: absolute;
   right: 1.3em;
   top: 0;
@@ -1091,7 +1093,7 @@ input:checked + .rice {
   float: right;
 }
 #qr .warning {
-  min-height: 1.5em;
+  min-height: 1.6em;
   vertical-align: middle;
   padding: 0 1px;
 }
@@ -1142,7 +1144,7 @@ button,
 input:not([type=radio]) {
   #{Style.agent}box-sizing: border-box;
   font-size: #{parseInt(_conf['Font Size'], 10)}px;
-  height: 1.5em;
+  height: 1.6em;
   margin: 1px 0 0;
   vertical-align: middle;
   padding: 0 1px;
