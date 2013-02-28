@@ -277,6 +277,9 @@ a[href="javascript:;"] {
 .section-sauce textarea {
   height: 350px;
 }
+.section-rice textarea {
+  height: 150px;
+}
 #fourchanx-settings textarea {
   font-family: monospace;
   min-width: 100%;

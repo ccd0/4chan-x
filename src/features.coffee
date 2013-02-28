@@ -496,18 +496,23 @@ Settings =
         <option value=Original>Original</option>
       </select>
       <span class=favicon-preview></span>
+      <div>Custom CSS</div>
+      <div class=warning #{if Conf['Custom CSS'] then 'hidden' else ''}><code>Custom CSS</code> is disabled.</div>
+      <button id=apply-css>Apply CSS</button>
+      <textarea name=usercss class=field></textarea>
     """
-    for name in ['time', 'backlink', 'fileInfo', 'favicon']
+    for name in ['time', 'backlink', 'fileInfo', 'favicon', 'usercss']
       input = $ "[name=#{name}]", section
       input.value = $.get name, Conf[name]
-      event = if input.nodeName is 'SELECT'
+      event = if name in ['favicon', 'usercss']
         'change'
       else
         'input'
       $.on input, event, $.cb.value
-      $.on input, event, Settings[name]
-      Settings[name].call input
-    return
+      unless name in ['usercss']
+        $.on input, event, Settings[name]
+        Settings[name].call input
+    $.on $.id('apply-css'), 'click', Settings.usercss
   time: ->
     funk = Time.createFunc @value
     @nextElementSibling.textContent = funk Time, new Date()
@@ -530,6 +535,11 @@ Settings =
     Favicon.switch()
     Unread.update() if g.VIEW is 'thread' and Conf['Unread Tab Icon']
     @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
+  usercss: ->
+    if Conf['Custom CSS']
+      CustomCSS.update()
+    else
+      CustomCSS.rmStyle()
 
   keybinds: (section) ->
     section.innerHTML = """
@@ -597,6 +607,21 @@ Fourchan =
       threadId: threadID
       offset: offset
       limit: limit
+
+CustomCSS =
+  init: ->
+    return if !Conf['Custom CSS']
+    @addStyle()
+  addStyle: ->
+    @style = $.addStyle Conf['usercss']
+  rmStyle: ->
+    if @style
+      $.rm @style
+      delete @style
+  update: ->
+    unless @style
+      @addStyle()
+    @style.textContent = Conf['usercss']
 
 Filter =
   filters: {}

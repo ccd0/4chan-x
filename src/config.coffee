@@ -10,6 +10,7 @@ Config =
       'Comment Expansion':            [true,  'Can expand too long comments.']
       'Thread Expansion':             [true,  'Can expand threads to view all replies.']
       'Index Navigation':             [false, 'Navigate to previous / next thread.']
+      'Custom CSS':                   [false, 'Apply custom CSS to 4chan.']
       'Check for Updates':            [true,  'Check for updated versions of <%= meta.name %>.']
     'Filtering':
       'Anonymize':                    [false, 'Turn everyone Anonymous.']
@@ -129,6 +130,7 @@ Config =
   backlink: '>>%id'
   fileInfo: '%l (%p%s, %r)'
   favicon: 'ferongr'
+  usercss: ''
   hotkeys:
     # QR & Options
     'Open empty QR':      ['q',       'Open QR without post number inserted.']
