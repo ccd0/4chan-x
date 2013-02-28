@@ -2143,7 +2143,7 @@
       if (!Conf['Hiding Buttons']) {
         return;
       }
-      return $.replace(this.nodes.root.firstElementChild, ReplyHiding.makeButton(this, 'hide'));
+      return $.replace($('.sideArrows', this.nodes.root), ReplyHiding.makeButton(this, 'hide'));
     },
     getHiddenPosts: function() {
       var hiddenPosts;

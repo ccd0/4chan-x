@@ -1064,7 +1064,7 @@ ReplyHiding =
         else
           Recursive.hide   @, data.makeStub
     return unless Conf['Hiding Buttons']
-    $.replace @nodes.root.firstElementChild, ReplyHiding.makeButton @, 'hide'
+    $.replace $('.sideArrows', @nodes.root), ReplyHiding.makeButton @, 'hide'
 
   getHiddenPosts: ->
     hiddenPosts = $.get "hiddenPosts.#{g.BOARD}"
