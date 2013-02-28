@@ -197,6 +197,8 @@ UI = do ->
 
 
   dragstart = (e) ->
+    if e.type is 'mousedown' and e.button isnt 0 # not LMB
+      return
     # prevent text selection
     e.preventDefault()
     el = $.x 'ancestor::div[contains(@class,"dialog")][1]', @

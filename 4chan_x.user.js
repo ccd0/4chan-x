@@ -452,6 +452,9 @@
     })();
     dragstart = function(e) {
       var el, isTouching, o, rect, screenHeight, screenWidth;
+      if (e.type === 'mousedown' && e.button !== 0) {
+        return;
+      }
       e.preventDefault();
       el = $.x('ancestor::div[contains(@class,"dialog")][1]', this);
       if (isTouching = e.type === 'touchstart') {
