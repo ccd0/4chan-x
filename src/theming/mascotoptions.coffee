@@ -195,7 +195,7 @@ MascotTools =
               MascotTools.addMascot editMascot
               Style.addStyle()
 
-            fileInput = $.el 'input'
+            fileInput = $.el 'input',
               type:     "file"
               accept:   "image/*"
               title:    "imagefile"

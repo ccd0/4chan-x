@@ -29,7 +29,7 @@ Options =
 
     d.body.style.overflow = 'hidden'
 
-    dialog = Options.el = $.el 'div'
+    dialog = Options.el = $.el 'div',
       id: 'options'
       className: 'reply dialog'
       innerHTML: '<div id=optionsbar>
@@ -215,7 +215,7 @@ Options =
     # I start by gathering all of the main configuration category objects
     for key, obj of Config.main
       # and creating an unordered list for the main categories.
-      ul = $.el 'ul'
+      ul = $.el 'ul',
         innerHTML: "<h3>#{key}</h3>"
 
       # Then I gather the variables from each category
@@ -355,7 +355,7 @@ Options =
     for category, obj of Config.style
 
       # Create unordered lists for categories.
-      ul = $.el 'ul'
+      ul = $.el 'ul',
         innerHTML: "<h3>#{category}</h3>"
 
       # Pull options from categories of config
@@ -698,14 +698,14 @@ Options =
       unless mode
         mode = "default"
 
-      parentdiv = $.el "div"
+      parentdiv = $.el "div",
         id: "mascotContainer"
 
       suboptions = $.el "div",
         className: "suboptions"
         innerHTML: "<div class=warning><code>Mascots</code> are currently disabled. Please enable them in the Style tab to use mascot options.</div>"
 
-      mascotHide = $.el "div"
+      mascotHide = $.el "div",
         id:        "mascot_hide"
         className: "reply"
         innerHTML: "Hide Categories <span></span><div></div>"
@@ -723,11 +723,11 @@ Options =
           if Conf["Hidden Categories"].contains category
             ul[category].hidden = true
 
-          header = $.el "h3"
+          header = $.el "h3",
             className:   "mascotHeader"
             textContent: category
 
-          categories.push option = $.el "label"
+          categories.push option = $.el "label",
             name:     category
             innerHTML: "<input name='#{category}' type=checkbox #{if Conf["Hidden Categories"].contains(category) then 'checked' else ''}>#{category}"
 
@@ -907,14 +907,14 @@ Options =
   customNavigation:
     dialog: (dialog) ->
       div = $ "#customNavigation", dialog
-      ul = $.el "ul"
-      ul.innerHTML = "Custom Navigation"
+      ul = $.el "ul",
+        textContent: "Custom Navigation"
 
       # Delimiter
-      li = $.el "li"
+      li = $.el "li",
         className: "delimiter"
         textContent: "delimiter: "
-      input = $.el "input"
+      input = $.el "input",
         className: "field"
         name:      "delimiter"
       input.setAttribute "value", userNavigation.delimiter
@@ -931,7 +931,7 @@ Options =
       $.add ul, li
 
       # Description of Syntax.
-      li = $.el "li"
+      li = $.el "li",
         innerHTML: "Navigation Syntax:<br>Display Name | Title / Alternate Text | URL"
       $.add ul, li
 
@@ -948,7 +948,7 @@ Options =
 
         # This input holds the index of the current link in the userNavigation array/object.
         li = $.el "li"
-        input = $.el "input"
+        input = $.el "input",
           className: "hidden"
           value:     index
           type:      "hidden"
@@ -964,7 +964,7 @@ Options =
             continue
 
           # Fill input with relevant values.
-          input = $.el "input"
+          input = $.el "input",
             className:   "field"
             name:        itemIndex
             value:       item
@@ -981,7 +981,7 @@ Options =
           $.add li, [input, $.tn ' ']
 
         # Add Custom Link
-        addLink = $.el "a"
+        addLink = $.el "a",
           textContent: " + "
           href: "javascript:;"
 
@@ -997,7 +997,7 @@ Options =
           Options.customNavigation.cleanup()
 
         # Delete Custom Link
-        removeLink = $.el "a"
+        removeLink = $.el "a",
           textContent: " x "
           href: "javascript:;"
 
@@ -1011,7 +1011,7 @@ Options =
 
       # Final addLink Button. Allows the user to add a new item
       # to the bottom of the list or add an item if none exist.
-      li = $.el "li"
+      li = $.el "li",
         innerHTML: "<a name='add' href='javascript:;'>+</a> | <a name='reset' href='javascript:;'>Reset</a>"
 
       $.on $('a[name=add]', li), "click", ->

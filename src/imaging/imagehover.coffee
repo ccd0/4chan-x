@@ -18,7 +18,7 @@ ImageHover =
     # Don't stop other elements from dragging
     return if UI.el
 
-    el = UI.el = $.el 'img'
+    el = UI.el = $.el 'img',
       id: 'ihover'
       src: @parentNode.href
     $.add d.body, el

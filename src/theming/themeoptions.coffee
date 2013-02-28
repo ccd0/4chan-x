@@ -117,7 +117,7 @@ ThemeTools =
       switch item
         when "Background Image"
           input.className = 'field'
-          fileInput = $.el 'input'
+          fileInput = $.el 'input',
             type: 'file'
             accept:   "image/*"
             title:    "BG Image"
@@ -138,7 +138,7 @@ ThemeTools =
         else
           input.className = "colorfield"
 
-          colorInput = $.el 'input'
+          colorInput = $.el 'input',
             className: 'color'
             value: "##{Style.colorToHex input.value}"
 

@@ -92,7 +92,7 @@ ImageExpand =
       # Expand already loaded picture
       img.hidden = false
       return
-    img = $.el 'img'
+    img = $.el 'img',
       src:       src
       className: 'fullSize'
     $.on img, 'error', ImageExpand.error

@@ -88,7 +88,7 @@ Main =
       $.ready ->
         $.on window, 'message', Main.message
         $.set 'lastUpdate', now
-        $.add d.head, $.el 'script'
+        $.add d.head, $.el 'script',
           src: 'https://github.com/zixaphir/appchan-x/raw/master/latest.js'
 
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
@@ -366,7 +366,7 @@ Main =
   message: (e) ->
     {version} = e.data
     if version and version isnt Main.version
-      xupdate = $.el 'div'
+      xupdate = $.el 'div',
         id: 'xupdater'
         className: 'reply'
         innerHTML:
@@ -435,7 +435,6 @@ Main =
       else
         return
     $.globalEval "#{code}".replace '_id_', bq.id
-
   namespace: '<%= pkg.name.replace(/-/g, '_') %>.'
   version:   '<%= pkg.version %>'
   callbacks: []

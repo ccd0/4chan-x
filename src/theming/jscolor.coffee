@@ -213,28 +213,15 @@ JSColor =
 
     drawPicker = (x, y) ->
       unless p = JSColor.picker
-        JSColor.picker = p =
-          box:  $.el 'div'
-            className: 'jscBox'
-          boxB: $.el 'div'
-            className: 'jscBoxB'
-          pad:  $.el 'div'
-            className: 'jscPad'
-          padB: $.el 'div'
-            className: 'jscPadB'
-          padM: $.el 'div'
-            className: 'jscPadM'
-          sld:  $.el 'div'
-            className: 'jscSld'
-          sldB: $.el 'div'
-            className: 'jscSldB'
-          sldM: $.el 'div'
-            className: 'jscSldM'
-          btn:  $.el 'div'
-            className: 'jscBtn'
-          btnS: $.el 'span'
-            className: 'jscBtnS'
-          btnT: $.tn 'Close'
+        elements = ['box', 'boxB', 'pad', 'padB', 'padM', 'sld', 'sldB', 'sldM', 'btn']
+        p = {}
+        for item in elements
+          p[item] = $.el 'div', {className: "jsc#{item.capitalize()}"}
+
+        p.btnS = $.el 'span', {className: 'jscBtnS'}
+        p.btnT = $.tn 'Close'
+
+        JSColor.picker = p
 
         $.add p.box,  [p.sldB, p.sldM, p.padB, p.padM, p.btn]
         $.add p.sldB, p.sld

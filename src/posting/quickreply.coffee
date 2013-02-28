@@ -6,7 +6,7 @@ QR =
 
   asyncInit: ->
     unless Conf['Persistent QR']
-      link = $.el 'a'
+      link = $.el 'a',
         innerHTML: "Open Post Form"
         id: "showQR"
         href: "javascript:;"
@@ -364,9 +364,9 @@ QR =
         else
           img.height = s / img.width  * img.height
           img.width  = s
-        c = $.el 'canvas'
-        c.height = img.height
-        c.width  = img.width
+        c = $.el 'canvas',
+          height: img.height
+          width:  img.width
         c.getContext('2d').drawImage img, 0, 0, img.width, img.height
         # Support for toBlob fucking when?
         data = atob c.toDataURL().split(',')[1]
@@ -621,7 +621,7 @@ QR =
         if g.BOARD is 'f'
           $('select[name=filetag]').cloneNode(true)
         else
-          $.el 'select'
+          $.el 'select',
             innerHTML: threads
             title: 'Create a new thread / Reply to a thread'
 
@@ -805,7 +805,7 @@ QR =
     doc.documentElement.innerHTML = html
     if ban  = $ '.banType', doc # banned/warning
       board = $('.board', doc).innerHTML
-      err   = $.el 'span'
+      err   = $.el 'span',
       if ban.textContent.toLowerCase() is 'banned'
         if Conf['Check for Bans']
           $.delete 'lastBanCheck'

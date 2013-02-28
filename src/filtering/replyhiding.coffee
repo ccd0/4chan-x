@@ -5,7 +5,7 @@ ReplyHiding =
   node: (post) ->
     return if post.isInlined or post.ID is post.threadID
     el = $ '.postInfo', post.root
-    hide = $.el 'span'
+    hide = $.el 'span',
       className: 'hide_reply_button'
       innerHTML: " <a href='javascript:;' id='hide#{post.ID}'>[ - ]</a>"
     $.on hide.firstChild, 'click', ->

@@ -156,7 +156,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
           return Style.rmOption()
         rect = @getBoundingClientRect()
         {clientHeight} = d.documentElement
-        ul = Style.ul = $.el 'ul'
+        ul = Style.ul = $.el 'ul',
           id: "selectrice"
         {style} = ul
         style.width = "#{rect.width}px"
@@ -167,7 +167,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
         style.left = "#{rect.left}px"
         select = @previousSibling
         for option in select.options
-          li = $.el 'li'
+          li = $.el 'li',
             textContent: option.textContent
           li.setAttribute 'data-value', option.value
           $.on li, 'click', (e) ->
@@ -218,7 +218,7 @@ data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' 
 
   banner: ->
     banner   = $ ".boardBanner", d.body
-    title    = $.el "div"
+    title    = $.el "div",
       id:    "boardTitle"
     children = banner.children
     i        = children.length

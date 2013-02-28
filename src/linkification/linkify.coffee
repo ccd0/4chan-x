@@ -112,7 +112,7 @@ Linkify =
     # Unembed.
     if @className.contains "embedded"
       # Recreate the original link.
-      el = $.el 'a'
+      el = $.el 'a',
         rel:         'nofollow noreferrer'
         target:      'blank'
         className:   'linkify'
@@ -141,7 +141,7 @@ Linkify =
     YouTube:
       regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
       el: ->
-        $.el 'iframe'
+        $.el 'iframe',
           src: "//www.youtube.com/embed/#{@name}"
       title:
         api:  -> "https://gdata.youtube.com/feeds/api/videos/#{@name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
@@ -151,13 +151,13 @@ Linkify =
       regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
       style: 'border: 0; width: 150px; height: 45px;'
       el: ->
-        $.el 'object'
+        $.el 'object',
           innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
 
     Vimeo:
       regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
       el: ->
-        $.el 'iframe'
+        $.el 'iframe',
           src: "//player.vimeo.com/video/#{@name}"
       title:
         api:  -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{@name}"
@@ -166,13 +166,13 @@ Linkify =
     LiveLeak:
       regExp:  /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
       el: ->
-        $.el 'iframe'
+        $.el 'iframe',
           src: "http://www.liveleak.com/e/#{@name}?autostart=true"
 
     audio:
       regExp:  /(.*\.(mp3|ogg|wav))$/
       el: ->
-        $.el 'audio'
+        $.el 'audio',
           controls:    'controls'
           preload:     'auto'
           src:         @name
@@ -180,7 +180,7 @@ Linkify =
     SoundCloud:
       regExp:  /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
       el: ->
-        div = $.el 'div'
+        div = $.el 'div',
           className: "soundcloud"
           name:      "soundcloud"
         $.ajax(
@@ -212,7 +212,7 @@ Linkify =
     for key, type of Linkify.types
       continue unless match = a.href.match type.regExp
 
-      embed = $.el 'a'
+      embed = $.el 'a',
         name:         (a.name = match[1])
         className:    'embed'
         href:         'javascript:;'
