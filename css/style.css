@@ -690,6 +690,7 @@ a[href="javascript:;"] {
   flex: 1;
 }
 #qr-filename-container {
+  cursor: default;
   position: relative;
   margin-left: 2px;
 }

@@ -317,6 +317,8 @@ QR =
     return unless files.length
     QR.open()
     QR.fileInput files
+  openFileInput: ->
+    QR.nodes.fileInput.click()
   fileInput: (files) ->
     if @ instanceof Element #or files instanceof Event # file input
       files = [@files...]
@@ -772,12 +774,13 @@ QR =
     $.after nodes.autohide, nodes.thread
     QR.resetThreadSelector()
 
+    for node in [nodes.fileButton, nodes.filename.parentNode]
+      $.on node,           'click',  QR.openFileInput
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
     $.on nodes.addPost,    'click',  -> new QR.post().select()
     $.on nodes.form,       'submit', QR.submit
-    $.on nodes.fileButton, 'click',  -> QR.nodes.fileInput.click()
     $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.fileInput
