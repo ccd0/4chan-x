@@ -1711,7 +1711,7 @@ Redirect =
   image: (board, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch "#{board}"
-      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg'
+      when 'a', 'jp', 'm', 'q', 'tg', 'vg', 'wsg'
         "//archive.foolz.us/#{board}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
@@ -1719,11 +1719,9 @@ Redirect =
         "//archive.thedarkcave.org/#{board}/full_image/#{filename}"
       when 'ck', 'lit'
         "//fuuka.warosu.org/#{board}/full_image/#{filename}"
-      when 'diy', 'sci'
-        "//archive.installgentoo.net/#{board}/full_image/#{filename}"
       when 'cgl', 'g', 'mu', 'w'
         "//rbt.asia/#{board}/full_image/#{filename}"
-      when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
+      when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{board}/full_image/#{filename}"
       when 'c'
         "//archive.nyafuu.org/#{board}/full_image/#{filename}"
@@ -1740,9 +1738,9 @@ Redirect =
   to: (data) ->
     {board} = data
     switch "#{board}"
-      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
+      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg'
         url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
-      when 'u', 'kuku'
+      when 'u'
         url = Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
       when 'int', 'po'
         url = Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data

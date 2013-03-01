@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-02-28
+/* 4chan X Beta - Version 3.0.0 - 2013-03-01
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -3025,14 +3025,10 @@
     image: function(board, filename) {
       switch ("" + board) {
         case 'a':
-        case 'co':
         case 'jp':
         case 'm':
         case 'q':
-        case 'sp':
         case 'tg':
-        case 'tv':
-        case 'v':
         case 'vg':
         case 'wsg':
           return "//archive.foolz.us/" + board + "/full_image/" + filename;
@@ -3043,19 +3039,13 @@
         case 'ck':
         case 'lit':
           return "//fuuka.warosu.org/" + board + "/full_image/" + filename;
-        case 'diy':
-        case 'sci':
-          return "//archive.installgentoo.net/" + board + "/full_image/" + filename;
         case 'cgl':
         case 'g':
         case 'mu':
         case 'w':
           return "//rbt.asia/" + board + "/full_image/" + filename;
         case 'an':
-        case 'fit':
         case 'k':
-        case 'mlp':
-        case 'r9k':
         case 'toy':
         case 'x':
           return "http://archive.heinessen.com/" + board + "/full_image/" + filename;
@@ -3100,12 +3090,9 @@
         case 'v':
         case 'vg':
         case 'wsg':
-        case 'dev':
-        case 'foolz':
           url = Redirect.path('//archive.foolz.us', 'foolfuuka', data);
           break;
         case 'u':
-        case 'kuku':
           url = Redirect.path('//nsfw.foolz.us', 'foolfuuka', data);
           break;
         case 'int':
