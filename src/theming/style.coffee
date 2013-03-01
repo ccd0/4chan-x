@@ -557,7 +557,7 @@ div.navLinks > a:first-of-type:hover::after,
         if align is 'left'
           250 - Style.sidebar
         else
-          position[position.length - 1] - (if _conf['4chan SS Sidebar']
+          position[position.length - 1] - (if _conf['4chan SS Navigation']
             0
           else
             Style.sidebar + parseInt(_conf["Right Thread Padding"], 10))
@@ -688,7 +688,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
         ]
       )
 
-      iconOffset = 20 - (if _conf['4chan SS Sidebar']
+      iconOffset = 20 - (if _conf['4chan SS Navigation']
         0
       else
         Style.sidebar + parseInt _conf[align.capitalize() + " Thread Padding"], 10)
@@ -894,6 +894,12 @@ div.navLinks > a:first-of-type::after {
 .fileText:not(:hover) .fnfull {
   display: none;
 }
+/* Unnecessary */
+#qp input,
+#qp .rice,
+.inline .rice {
+  display: none !important;
+}
 /* Hidden Content */
 .hidden,
 .hidden_thread ~ div,
@@ -935,6 +941,112 @@ hr {
   border-right: .3em solid transparent;
   border-left: .3em solid transparent;
 }
+/* Navigation */
+#boardNavDesktop {
+  z-index: 90;
+  border-width: 1px;
+#{{
+"sticky top": "
+  position: fixed;
+  top: 0;
+  border-top-width: 0;"
+
+"sticky bottom": "
+  position: fixed;
+  bottom: 0;
+  border-bottom-width: 0;"
+
+"top": "
+  position: absolute;
+  top: 0;
+  border-top-width: 0;"
+
+"hide": "
+  position: fixed;
+  top: 110%;"
+
+}[_conf['Boards Navigation']]}
+#{
+if _conf['4chan SS Navigation'] then "
+  left: 0;
+  right: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0 !important;"
+else "
+  #{Style.sidebarLocation[0]}: #{Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  #{Style.sidebarLocation[1]}: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+#{if _conf["Hide Navigation Decorations"] then "
+  font-size: 0;
+  color: transparent;
+  word-spacing: 2px;
+" else ""}
+   text-align: #{_conf["Navigation Alignment"]};
+}
+/* Pagination */
+.pagelist {
+  z-index: 90;
+  border-width: 1px;
+#{{
+"sticky top": "
+  position: fixed;
+  top: 0;
+  border-top-width: 0;"
+
+"sticky bottom": "
+  position: fixed;
+  bottom: 0;
+  border-bottom-width: 0;"
+
+"top": "
+  position: absolute;
+  top: 0;
+  border-top-width: 0;"
+
+"bottom": "
+  position: static;"
+
+"hide": "
+  display: none;"
+
+}[_conf['Pagination']]}
+#{
+if _conf['4chan SS Navigation'] then "
+  left: 0;
+  right: 0;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0 !important;"
+else "
+  #{Style.sidebarLocation[0]}: #{Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px;
+  #{Style.sidebarLocation[1]}: #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2}px;"
+}
+#{if _conf["Hide Navigation Decorations"] then "
+  font-size: 0;
+  color: transparent;
+  word-spacing: 0;
+" else ""}
+  text-align: #{_conf["Pagination Alignment"]};
+}
+.pagelist input,
+.pagelist div {
+  vertical-align: middle;
+}
+#boardNavDesktop a {
+  font-size: #{parseInt(_conf["Font Size"], 10)}px;
+}
+#{if _conf["Hide Navigation Decorations"] then "
+.pages a {
+  margin: 0 1px;
+  font-size: #{parseInt(_conf["Font Size"], 10)}px;
+}" else ""}
+.next,
+.pages,
+.prev {
+  display: inline-block;
+  margin: 0 3px;
+}
 /* Dialogs */
 .move {
   cursor: pointer;
@@ -952,6 +1064,10 @@ hr {
   clear: both;
   display: block;
   content: "";
+}
+#qp img {
+  max-height: 300px;
+  max-width: 500px;
 }
 #globalMessage {
 
@@ -973,17 +1089,20 @@ hr {
 .postContainer {
   margin-bottom: #{Style.replyMargin}px;
 }
-.hide_thread_button {
-  float: right;
-  margin: 0 3px;
-}
+.menu_button,
+.hide_thread_button,
 .hide_reply_button {
   float: right;
   margin: 0 3px;
+  opacity: 0;
+  #{Style.agent}transition: opacity .3s ease-out 0s;
 }
-.post .menu_button {
-  float: right;
-  margin: 0 3px;
+.post:hover .hide_reply_button,
+.post:hover .menu_button,
+.post:hover .hide_thread_button,
+.inline .hide_reply_button,
+.inline .menu_button {
+  opacity: 1;
 }
 .fileThumb {
   float: left;
@@ -1088,6 +1207,84 @@ input:checked + .rice {
 #qr {
   position: fixed;
   padding: 1px;
+#{{
+"fixed": "
+  overflow: visible;
+  top: auto !important;
+  bottom: 1.6em !important;
+  #{Style.sidebarLocation[0]}: 0 !important;
+  #{Style.sidebarLocation[1]}: auto !important;"
+
+"slideout": "
+  overflow: visible;
+  top: auto !important;
+  bottom: 1.6em !important;
+  #{Style.sidebarLocation[0]}: -#{233 + Style.sidebarOffset.W}px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+}
+#qr:hover,
+#qr.focus,
+#qr.dump {
+  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;"
+
+"tabbed slideout": "
+  overflow: visible;
+  top: auto !important;
+  bottom: 1.6em !important;
+  #{Style.sidebarLocation[0]}: -#{251 + Style.sidebarOffset.W}px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+}
+#qr:hover,
+#qr.focus,
+#qr.dump {
+  #{Style.sidebarLocation[0]}: 0 !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+}
+#qr #qrtab {
+  #{Style.agent}transform: rotate(#{(if Style.sidebarLocation[0] is "left" then "" else "-")}90deg);
+  #{Style.agent}transform-origin: bottom #{Style.sidebarLocation[0]};
+  position: fixed;
+  bottom: 220px;
+  #{Style.sidebarLocation[0]}: 0;
+  width: 110px;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  border-width: 1px 1px 0 1px;
+  cursor: default;
+  text-rendering: optimizeLegibility;
+}
+#qr:hover #qrtab,
+#qr.focus #qrtab,
+#qr.dump #qrtab {
+  opacity: 0;
+  #{Style.sidebarLocation[0]}: #{252 + Style.sidebarOffset.W}px;
+  #{Style.agent}transition: opacity .3s linear, #{Style.sidebarLocation[0]} .3s linear;
+}
+#qrtab input,
+#qrtab .rice,
+#qrtab span {
+  display: none;"
+
+"transparent fade": "
+  overflow: visible;
+  top: auto !important;
+  bottom: 1.6em !important;
+  overflow: visible;
+  top: auto !important;
+  bottom: 1.6em !important;
+  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+  opacity: 0.2;
+  #{Style.agent}transition: opacity .3s ease-in-out 1s;
+}
+#qr:hover,
+#qr.focus,
+#qr.dump {
+  opacity: 1;
+  #{Style.agent}transition: opacity .3s linear;"
+}[_conf['Post Form Style']] or ""}
 }
 #qr .close {
   float: right;
@@ -1098,7 +1295,7 @@ input:checked + .rice {
   padding: 0 1px;
 }
 .userInfo {
-  width: 250px;
+  width: 248px;
   max-width: 100%;
   min-width: 100%;
 }
@@ -1152,7 +1349,7 @@ input:not([type=radio]) {
 #qr textarea {
   min-width: 100%;
 }
-[type='submit'] {
+#qr [type='submit'] {
   width: 25%;
 }
 [type='file'] {
@@ -1210,9 +1407,7 @@ input:not([type=radio]) {
   #{Style.agent}box-sizing: border-box;
   cursor: move;
   border: 1px solid transparent;
-  background-color: rgba(0,0,0,.2);
-  background-position: 50% 20%;
-  background-size: cover;
+  background: rgba(0,0,0,.2) 50% 20% cover;
   display: inline-block;
   height: 90px;
   width: 90px;
@@ -1927,7 +2122,8 @@ textarea.field:focus {
 #boardNavDesktop,
 .pagelist {
   background: #{theme["Navigation Background"]};
-  border: 1px solid #{theme["Navigation Border"]};
+  border-style: solid;
+  border-color: #{theme["Navigation Border"]};
 }
 #delform {
   background: #{theme["Thread Wrapper Background"]};
@@ -2262,7 +2458,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
   border: 1px solid #{theme["Dialog Border"]};
 }\n
 """
-    if _conf["Post Form Style"] is "float" or _conf["Post Form Decorations"]
+    if _conf["Post Form Decorations"]
       css += """
 #qr {
   border: 1px solid #{theme["Buttons Border"]};
