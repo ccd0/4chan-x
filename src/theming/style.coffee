@@ -881,7 +881,10 @@ div.navLinks > a:first-of-type::after {
 .mobile,
 .postingMode,
 .riced,
-.sideArrows {
+.sideArrows,
+body > br,
+body > div[style^="text-align"],
+body > hr {
   display: none;
 }
 /* Empties */
@@ -907,6 +910,10 @@ div.navLinks > a:first-of-type::after {
 [hidden] {
   display: none !important;
 }
+/* Hide last horizontal rule, keep clear functionality. */
+.board > hr:last-of-type {
+  visibility: hidden;
+}
 /* Defaults */
 a {
   text-decoration: none;
@@ -931,6 +938,8 @@ textarea {
 hr {
   clear: both;
   border: 0;
+  padding: 0;
+  margin: 0;
 }
 /* Symbols */
 .dropmarker {
@@ -1075,6 +1084,12 @@ else "
 #updater {
   position: fixed;
 }
+#updater:not(:hover) > div:not(.move) {
+  display: none;
+}
+#updater .field {
+  width: 100px;
+}
 #watcher {
   position: fixed;
 }
@@ -1207,15 +1222,20 @@ input:checked + .rice {
 #qr {
   position: fixed;
   padding: 1px;
+  border: 1px solid transparent;
+}
 #{{
 "fixed": "
+#qr {
   overflow: visible;
   top: auto !important;
   bottom: 1.6em !important;
   #{Style.sidebarLocation[0]}: 0 !important;
-  #{Style.sidebarLocation[1]}: auto !important;"
+  #{Style.sidebarLocation[1]}: auto !important;
+}"
 
 "slideout": "
+#qr {
   overflow: visible;
   top: auto !important;
   bottom: 1.6em !important;
@@ -1226,9 +1246,11 @@ input:checked + .rice {
 #qr.focus,
 #qr.dump {
   #{Style.sidebarLocation[0]}: 2px !important;
-  #{Style.sidebarLocation[1]}: auto !important;"
+  #{Style.sidebarLocation[1]}: auto !important;
+}"
 
 "tabbed slideout": "
+#qr {
   overflow: visible;
   top: auto !important;
   bottom: 1.6em !important;
@@ -1248,12 +1270,9 @@ input:checked + .rice {
   bottom: 220px;
   #{Style.sidebarLocation[0]}: 0;
   width: 110px;
-  display: inline-block;
   text-align: center;
-  vertical-align: middle;
   border-width: 1px 1px 0 1px;
   cursor: default;
-  text-rendering: optimizeLegibility;
 }
 #qr:hover #qrtab,
 #qr.focus #qrtab,
@@ -1265,9 +1284,11 @@ input:checked + .rice {
 #qrtab input,
 #qrtab .rice,
 #qrtab span {
-  display: none;"
+  display: none;
+}"
 
 "transparent fade": "
+#qr {
   overflow: visible;
   top: auto !important;
   bottom: 1.6em !important;
@@ -1283,9 +1304,14 @@ input:checked + .rice {
 #qr.focus,
 #qr.dump {
   opacity: 1;
-  #{Style.agent}transition: opacity .3s linear;"
+  #{Style.agent}transition: opacity .3s linear;
+}"
 }[_conf['Post Form Style']] or ""}
+#{unless ['slideout', 'tabbed slideout'].contains _conf['Post Form Style'] then "
+.autohide:not(:hover) > form {
+  display: none !important;
 }
+" else ""}
 #qr .close {
   float: right;
 }
@@ -1331,8 +1357,17 @@ input:checked + .rice {
   height: 6em;
 }
 "}
-input[title="Verification"],
 .captchaimg {
+  margin: 1px 0 0;
+  text-align: center;
+}
+.captchaimg img {
+  width: 100%;
+  height: 4em;
+  width: 246px;
+}
+.captchainput .field {
+  width: 100%;
   margin: 1px 0 0;
 }
 .field,
@@ -1343,7 +1378,7 @@ input:not([type=radio]) {
   font-size: #{parseInt(_conf['Font Size'], 10)}px;
   height: 1.6em;
   margin: 1px 0 0;
-  vertical-align: middle;
+  vertical-align: bottom;
   padding: 0 1px;
 }
 #qr textarea {
@@ -1366,12 +1401,12 @@ input:not([type=radio]) {
 }
 /* Thread Select / Spoiler Label */
 #threadselect {
-  vertical-align: middle;
+  vertical-align: bottom;
   width: 49%;
   display: inline-block;
 }
 #spoilerLabel {
-  vertical-align: middle;
+  vertical-align: bottom;
   width: 49%;
   display: inline-block;
   text-align: right;
@@ -1402,7 +1437,6 @@ input:not([type=radio]) {
 #replies > div:hover {
   overflow-x: auto;
 }
-
 .thumbnail {
   #{Style.agent}box-sizing: border-box;
   cursor: move;
@@ -1834,7 +1868,6 @@ opacity: 0;
 }
 .thread {
   padding: 0;
-  position: relative;
   #{(unless _conf['Images Overlap Post Form'] then "z-index: 0;" else "")}
 }
 .extended-small .thread,
@@ -2314,7 +2347,6 @@ a .name {
 #mascot img {
   #{Style.agent}transform: scaleX(#{(if Style.sidebarLocation[0] is "left" then "-" else "")}1);
 }
-
 #navtopright .exlinksOptionsLink::after,
 #appchanOptions,
 .navLinks > a:first-of-type::after,
@@ -2461,7 +2493,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
     if _conf["Post Form Decorations"]
       css += """
 #qr {
-  border: 1px solid #{theme["Buttons Border"]};
+  border-color: #{theme["Buttons Border"]};
   background: #{backgroundC};
   box-shadow: #{if _conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
 }\n

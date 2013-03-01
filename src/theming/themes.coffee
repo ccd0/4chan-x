@@ -97,8 +97,10 @@ Themes =
     'Shadow Color'                : 'rgba(0,0,0,.05)'
     'Custom CSS'                  : """
 .board {
-box-shadow: 0px 10px 10px 2px rgba(128,128,128,0.5);
-border-radius: 3px;
+  box-shadow: 0px 10px 10px 2px rgba(128,128,128,0.5);
+  border-radius: 3px;
+}
+.thread {
   padding:10px;
 }
 #options.reply.dialog,
@@ -315,7 +317,7 @@ input[type="radio"]:checked {
   background: linear-gradient(#595959, #393939);
   border: 1px solid #151515;
 }
-.board {
+.thread {
   padding: 7px;
 }
 .subject:hover,
@@ -731,9 +733,11 @@ div.reply.highlight div.reply {
   color: rgb(130,163,100);
 }
 .board {
-  padding: 1px 0 2px 0;
   box-shadow: 0 20px 40px 10px rgba(0,0,0,0.1);
   border-radius: 4px;
+}
+.thread {
+  padding: 1px 0 2px 0;
 }
 :not(#themes) .rice {
   box-shadow: 1px 1px 1px rgb(204, 204, 204) inset,
@@ -743,7 +747,7 @@ div.reply.highlight div.reply {
   border: none;
 }
 #qp .prettyprint {
-  background-color: rgba(0,0,0,.3);
+  background-color: rgba(0,0,0,0.3);
   border: 1px solid rgba(0,0,0,0.5);
 }
 #qp span.tag {
@@ -817,7 +821,7 @@ div.reply.highlight div.reply {
     'Warnings'                    : 'rgb(108,113,196)'
     'Shadow Color'                : 'rgba(0,0,0,.1)'
     'Custom CSS'                  : """
-#qp div.post{
+#qp div.post {
   background-color:rgba(7,54,66,0.9);
   border:1px solid rgba(79,95,143,0.9);
 }
@@ -870,7 +874,7 @@ div.reply.highlight div.reply {
     'Warnings'                    : 'rgb(128,0,0)'
     'Shadow Color'                : 'rgba(0,0,0,.05)'
     'Custom CSS'                  : """
-#qp div.post{
+#qp div.post {
   background-color:rgba(240,192,176,1);
   box-shadow:5px 5px 5px rgba(128,128,128,0.5);
 }
@@ -1209,7 +1213,7 @@ textarea,
     "Warnings"                    : "rgb(79,79,79)"
     "Shadow Color"                : "rgba(0,0,0,.1)"
     "Custom CSS"                  : """
-.board {
+.thread {
   padding: 1px 2px;
 }
 .rice {
@@ -1287,7 +1291,7 @@ textarea,
     "Warnings"                    : "rgb(204,102,102)"
     "Shadow Color"                : "rgba(0,0,0,.1)"
     "Custom CSS"                  : """
-.board {
+.thread {
   padding: 1px 2px;
 }
 .rice {
@@ -1451,7 +1455,7 @@ textarea,
     "Warnings"                    : "rgb(153,0,0)"
     "Shadow Color"                : "rgba(0,0,0,.05)"
     "Custom CSS"                  : """
-.board {
+.thread {
   padding: 1px 2px;
 }
 .rice {
@@ -1622,7 +1626,7 @@ textarea,
     "Warnings"                    : "rgb(201,144,144)"
     "Shadow Color"                : "rgba(0,0,0,.1)"
     "Custom CSS"                  : """
-.board {
+.thread {
   padding: 1px 2px;
 }
 .rice {
@@ -1880,7 +1884,7 @@ textarea,
     "Custom CSS"                  : """
 html {
 }
-.board {
+.thread {
   padding: 3px 4px;
 }
 .rice {
@@ -1980,7 +1984,7 @@ a:not([href='javascript:;']){
     "Warnings"                    : "rgb(200,40,41)"
     "Shadow Color"                : "rgba(0,0,0,.05)"
     "Custom CSS"                  : """
-.board {
+.thread {
   padding: 1px 2px;
 }
 .rice {
@@ -2057,7 +2061,7 @@ textarea,
     "Warnings"                    : "rgb(79,79,79)"
     "Shadow Color"                : "rgba(0,0,0,.1)"
     "Custom CSS"                  : """
-.board {
+.thread {
   padding: 1px 2px;
 }
 .rice {
