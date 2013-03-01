@@ -7291,6 +7291,7 @@
       initFeature('Index Navigation', Nav);
       initFeature('Keybinds', Keybinds);
       console.timeEnd('All initializations');
+      $.on(d, 'AddCallback', Main.addCallback);
       $.on(d, '4chanMainInit', Main.initStyle);
       return $.ready(Main.initReady);
     },
@@ -7415,6 +7416,13 @@
       if (errors) {
         return Main.handleErrors(errors);
       }
+    },
+    addCallback: function(e) {
+      var Klass, obj;
+      obj = e.detail;
+      Klass = obj.type === 'Post' ? Post : Thread;
+      obj.callback.isAddon = true;
+      return Klass.prototype.callbacks.push(obj.callback);
     },
     handleErrors: function(errors) {
       var div, error, logs, _i, _len;

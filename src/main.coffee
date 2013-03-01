@@ -357,6 +357,7 @@ Main =
     initFeature 'Keybinds',                 Keybinds
     console.timeEnd 'All initializations'
 
+    $.on d, 'AddCallback',   Main.addCallback
     $.on d, '4chanMainInit', Main.initStyle
     $.ready Main.initReady
 
@@ -449,6 +450,15 @@ Main =
             error: err
       # console.profileEnd callback.name
     Main.handleErrors errors if errors
+
+  addCallback: (e) ->
+    obj   = e.detail
+    Klass = if obj.type is 'Post'
+      Post
+    else
+      Thread
+    obj.callback.isAddon = true
+    Klass::callbacks.push obj.callback
 
   handleErrors: (errors) ->
     unless 'length' of errors
