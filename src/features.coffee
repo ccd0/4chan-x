@@ -46,10 +46,8 @@ Header =
       order: 105
 
     $.asap (-> d.body), ->
-      if $ 'link[href*="favicon-status.ico"]', d.head
-        # 404 error page or similar.
-        return
-      $.prepend d.body, Header.headerEl
+      if Main.isThisPageLegit()
+        $.prepend d.body, Header.headerEl
     $.asap (-> $.id 'boardNavDesktop'), @setBoardList
 
   setBoardList: ->

@@ -361,9 +361,7 @@ Main =
     $.ready Main.initReady
 
   initStyle: ->
-    if $ 'link[href*="favicon-status.ico"]', d.head
-      # 404 error page or similar.
-      return
+    return unless Main.isThisPageLegit()
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
     $.addClass doc, $.engine
@@ -486,6 +484,12 @@ Main =
     error = $.el 'div',
       textContent: error
     [message, error]
+
+  isThisPageLegit: ->
+    # 404 error page or similar.
+    unless 'thisPageIsLegit' of Main
+      Main.thisPageIsLegit = !$('link[href*="favicon-status.ico"]', d.head) and d.title isnt '4chan - Temporarily Offline'
+    Main.thisPageIsLegit
 
   css: """
   <%= grunt.file.read('css/style.css') %>
