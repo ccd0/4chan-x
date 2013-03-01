@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-03-01
+/* 4chan X Beta - Version 3.0.0 - 2013-03-02
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -98,7 +98,7 @@
         'Auto Watch Reply': [false, 'Automatically watch threads you reply to.']
       },
       'Posting': {
-        'Quick Reply': [true, 'Weapon of mass destruction.'],
+        'Quick Reply': [true, 'All-in-one form to reply, create threads, automate dumping and more.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [false, 'Automatically hide the quick reply when posting.'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
