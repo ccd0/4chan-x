@@ -4920,7 +4920,6 @@
         case 'jp':
         case 'm':
         case 'q':
-        case 'sp':
         case 'tg':
         case 'vg':
         case 'wsg':
