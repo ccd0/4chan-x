@@ -417,6 +417,7 @@ QR =
         QR.nodes[name].disabled = lock
       @nodes.rm.style.visibility =
         QR.nodes.fileRM.style.visibility = if lock then 'hidden' else ''
+      (if lock then $.off else $.on) QR.nodes.filename.parentNode, 'click', QR.openFileInput
       @nodes.spoiler.disabled = lock
       @nodes.el.draggable = !lock
     unlock: ->

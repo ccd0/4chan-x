@@ -6174,6 +6174,7 @@
           QR.nodes[name].disabled = lock;
         }
         this.nodes.rm.style.visibility = QR.nodes.fileRM.style.visibility = lock ? 'hidden' : '';
+        (lock ? $.off : $.on)(QR.nodes.filename.parentNode, 'click', QR.openFileInput);
         this.nodes.spoiler.disabled = lock;
         return this.nodes.el.draggable = !lock;
       };
