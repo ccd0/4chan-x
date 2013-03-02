@@ -3023,9 +3023,15 @@ ImageExpand =
 
   completeExpand: (post) ->
     {thumb} = post.file
-    return unless $.hasClass thumb, 'expanding'
+    rect = post.nodes.root.getBoundingClientRect()
     $.addClass post.nodes.root, 'expanded-image'
-    $.rmClass  thumb, 'expanding'
+    $.rmClass  post.file.thumb, 'expanding'
+    if rect.top + rect.height <= 0
+      root = if $.engine is 'webkit'
+        d.body
+      else
+        doc
+      root.scrollTop += post.nodes.root.clientHeight - rect.height
     post.file.isExpanded = true
 
   error: ->

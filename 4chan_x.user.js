@@ -4543,13 +4543,15 @@
       return $.after(thumb, img);
     },
     completeExpand: function(post) {
-      var thumb;
+      var rect, root, thumb;
       thumb = post.file.thumb;
-      if (!$.hasClass(thumb, 'expanding')) {
-        return;
-      }
+      rect = post.nodes.root.getBoundingClientRect();
       $.addClass(post.nodes.root, 'expanded-image');
-      $.rmClass(thumb, 'expanding');
+      $.rmClass(post.file.thumb, 'expanding');
+      if (rect.top + rect.height <= 0) {
+        root = $.engine === 'webkit' ? d.body : doc;
+        root.scrollTop += post.nodes.root.clientHeight - rect.height;
+      }
       return post.file.isExpanded = true;
     },
     error: function() {
