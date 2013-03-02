@@ -250,6 +250,7 @@ class Clone extends Post
       @file.info  = file.firstElementChild
       @file.text  = @file.info.firstElementChild
       @file.thumb = $ 'img[data-md5]', file
+      @file.fullImage = $ '.full-image'
 
     @isDead  = true if origin.isDead
     @isClone = true

@@ -58,7 +58,7 @@ UI = do ->
       @focus entry
       $.on d, 'click',     @close
       $.on d, 'CloseMenu', @close
-      $.add d.body, menu
+      $.add button, menu
 
       # Position
       mRect   = menu.getBoundingClientRect()
@@ -67,19 +67,24 @@ UI = do ->
       bLeft   = doc.scrollLeft + d.body.scrollLeft + bRect.left
       cHeight = doc.clientHeight
       cWidth  = doc.clientWidth
-      top =
-        if bRect.top + bRect.height + mRect.height < cHeight
-          bTop + bRect.height + 2
-        else
-          bTop - mRect.height - 2
-      left =
-        if bRect.left + mRect.width < cWidth
-          bLeft
-        else
-          bLeft + bRect.width - mRect.width
+      if bRect.top + bRect.height + mRect.height < cHeight
+        # XXX calc(100% + 2px) would have been better, but >Presto.
+        top    = bRect.height + 2 + 'px'
+        bottom = 'auto'
+      else
+        top    = 'auto'
+        bottom = bRect.height + 2 + 'px'
+      if bRect.left + mRect.width < cWidth
+        left  = '0px'
+        right = 'auto'
+      else
+        left  = 'auto'
+        right = '0px'
       {style} = menu
-      style.top  = top  + 'px'
-      style.left = left + 'px'
+      style.top    = top
+      style.right  = right
+      style.bottom = bottom
+      style.left   = left
 
       menu.focus()
 

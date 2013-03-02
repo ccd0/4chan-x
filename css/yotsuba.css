@@ -40,6 +40,9 @@
 }
 
 /* Menu */
+:root.yotsuba #menu {
+  color: #800000;
+}
 :root.yotsuba .entry {
   border-bottom: 1px solid #D9BFB7;
 }

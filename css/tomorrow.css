@@ -46,6 +46,9 @@
 }
 
 /* Menu */
+:root.tomorrow #menu {
+  color: #C5C8C6;
+}
 :root.tomorrow .entry {
   border-bottom: 1px solid #111;
 }

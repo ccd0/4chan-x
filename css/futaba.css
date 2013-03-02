@@ -40,6 +40,9 @@
 }
 
 /* Menu */
+:root.futaba #menu {
+  color: #800000;
+}
 :root.futaba .entry {
   border-bottom: 1px solid #D9BFB7;
 }

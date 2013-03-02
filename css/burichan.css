@@ -40,6 +40,9 @@
 }
 
 /* Menu */
+:root.burichan #menu {
+  color: #000000;
+}
 :root.burichan .entry {
   border-bottom: 1px solid #B7C5D9;
 }

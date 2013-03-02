@@ -133,7 +133,7 @@ a[href="javascript:;"] {
 #header-bar.autohide #toggle-header-bar {
   cursor: s-resize;
 }
-#header-bar a {
+#header-bar a:not(.entry) {
   text-decoration: none;
   padding: 1px;
 }
@@ -720,6 +720,7 @@ a[href="javascript:;"] {
 /* Menu */
 .menu-button {
   display: inline-block;
+  position: relative;
 }
 .menu-button > span {
   border-top:   6px solid;

@@ -40,6 +40,9 @@
 }
 
 /* Menu */
+:root.photon #menu {
+  color: #333;
+}
 :root.photon .entry {
   border-bottom: 1px solid #CCC;
 }
