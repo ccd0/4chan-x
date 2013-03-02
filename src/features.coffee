@@ -2952,8 +2952,10 @@ ImageExpand =
       ImageExpand.toggle Get.postFromNode @
     all: ->
       $.event 'CloseMenu'
-      ImageExpand.on = @checked
-      posts = []
+      func = if ImageExpand.on = @checked
+        ImageExpand.expand
+      else
+        ImageExpand.contract
       for ID, post of g.posts
         for post in [post].concat post.clones
           {file} = post
@@ -2962,10 +2964,7 @@ ImageExpand =
             (!Conf['Expand spoilers'] and file.isSpoiler or
             Conf['Expand from here'] and file.thumb.getBoundingClientRect().top < 0)
               continue
-          posts.push post
-      func = if ImageExpand.on then ImageExpand.expand else ImageExpand.contract
-      for post in posts
-        func post
+          $.queueTask func, post
       return
     setFitness: ->
       {checked} = @
@@ -2981,7 +2980,7 @@ ImageExpand =
 
   toggle: (post) ->
     {thumb} = post.file
-    unless thumb.hidden
+    unless post.file.isExpanded or $.hasClass thumb, 'expanding'
       ImageExpand.expand post
       return
     rect = thumb.parentNode.getBoundingClientRect()
@@ -3000,35 +2999,43 @@ ImageExpand =
     ImageExpand.contract post
 
   contract: (post) ->
-    {thumb} = post.file
-    thumb.hidden = false
-    if img = $ '.full-image', thumb.parentNode
-      img.hidden = true
     $.rmClass post.nodes.root, 'expanded-image'
+    $.rmClass post.file.thumb, 'expanding'
+    post.file.isExpanded = false
 
   expand: (post) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
     {thumb} = post.file
-    return if post.isHidden or thumb.hidden
-    thumb.hidden = true
-    $.addClass post.nodes.root, 'expanded-image'
-    if img = $ '.full-image', thumb.parentNode
-      # Expand already loaded picture.
-      img.hidden = false
+    return if post.isHidden or post.file.isExpanded or $.hasClass thumb, 'expanding'
+    $.addClass thumb, 'expanding'
+    if post.file.fullImage
+      # Expand already-loaded picture.
+      $.asap (-> post.file.fullImage.naturalHeight), ->
+        ImageExpand.completeExpand post
       return
-    img = $.el 'img',
+    post.file.fullImage = img = $.el 'img',
       className: 'full-image'
       src: post.file.URL
     $.on img, 'error', ImageExpand.error
+    $.asap (-> post.file.fullImage.naturalHeight), ->
+      ImageExpand.completeExpand post
     $.after thumb, img
+
+  completeExpand: (post) ->
+    {thumb} = post.file
+    return unless $.hasClass thumb, 'expanding'
+    $.addClass post.nodes.root, 'expanded-image'
+    $.rmClass  thumb, 'expanding'
+    post.file.isExpanded = true
 
   error: ->
     post = Get.postFromNode @
     $.rm @
-    ImageExpand.contract post
-    if @hidden
+    delete post.file.fullImage
+    unless post.file.isExpanded
       # Don't try to re-expend if it was already contracted.
       return
+    ImageExpand.contract post
     src = @src.split '/'
     unless src[2] is 'images.4chan.org' and URL = Redirect.image src[3], src[5]
       return if g.DEAD

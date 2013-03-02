@@ -405,8 +405,18 @@ a[href="javascript:;"] {
 
 /* File */
 .fileText:hover .fntrunc,
-.fileText:not(:hover) .fnfull {
+.fileText:not(:hover) .fnfull,
+.expanded-image > .post > .file > .fileThumb > img[data-md5],
+:not(.expanded-image) > .post > .file > .fileThumb > .full-image {
   display: none;
+}
+.expanding {
+  opacity: .5;
+}
+.expanded-image > .op > .file::after {
+  content: '';
+  clear: both;
+  display: table;
 }
 :root.fit-width .full-image {
   max-width: 100%;
@@ -414,11 +424,6 @@ a[href="javascript:;"] {
 :root.gecko.fit-width .full-image,
 :root.presto.fit-width .full-image {
   width: 100%;
-}
-.expanded-image > .op > .file::after {
-  content: '';
-  clear: both;
-  display: table;
 }
 #ihover {
   -moz-box-sizing: border-box;
