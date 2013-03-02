@@ -5211,6 +5211,9 @@
     },
     onUpdate: function(e) {
       var fileCount, fileLimit, postCount, postLimit, _ref;
+      if (e.detail[404]) {
+        return;
+      }
       _ref = e.detail, postCount = _ref.postCount, fileCount = _ref.fileCount, postLimit = _ref.postLimit, fileLimit = _ref.fileLimit;
       return ThreadStats.update(postCount, fileCount, postLimit, fileLimit);
     },

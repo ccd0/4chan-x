@@ -3503,6 +3503,7 @@ ThreadStats =
     $.on d, 'ThreadUpdate', ThreadStats.onUpdate
     $.add d.body, ThreadStats.dialog
   onUpdate: (e) ->
+    return if e.detail[404]
     {postCount, fileCount, postLimit, fileLimit} = e.detail
     ThreadStats.update postCount, fileCount, postLimit, fileLimit
   update: (postCount, fileCount, postLimit, fileLimit) ->
