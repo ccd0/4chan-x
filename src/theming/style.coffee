@@ -29,7 +29,7 @@ Style =
           $.on exLink, "click", ->
             setTimeout Style.rice, 100
         ), 500
-    
+
     Main.callbacks.push @node
     @setup()
 
@@ -128,7 +128,7 @@ a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
 }\n
 """
     css.join ""
-  
+
   node: (post) ->
     Style.rice post.el
 
@@ -431,7 +431,7 @@ body {
     css = """
 #navtopright .exlinksOptionsLink::after,
 #appchanOptions,
-div.navLinks > a:first-of-type::after,
+body > div.navLinks > a:first-of-type::after,
 #{if Conf['Slideout Watcher'] then '#watcher::after,' else ''}
 #{if Conf['Announcements'] is 'slideout' then '#globalMessage::after,' else ''}
 #boardNavDesktopFoot::after,
@@ -439,6 +439,7 @@ body > a[style="cursor: pointer; float: right;"]::after,
 #imgControls label:first-of-type::after,
 #catalog::after,
 #fappeTyme {
+  z-index: 90;
   position: fixed;
   display: block;
   width: 15px;
@@ -447,6 +448,27 @@ body > a[style="cursor: pointer; float: right;"]::after,
   overflow: hidden;
   opacity: #{if Conf['Invisible Icons'] then 0 else 0.5};
 }
+#navtopright .exlinksOptionsLink,
+body > div.navLinks > a:first-of-type,
+#{if Conf['Slideout Watcher'] then '#watcher,' else ''}
+#{if Conf['Announcements'] is 'slideout' then '#globalMessage,' else ''}
+#boardNavDesktopFoot,
+body > a[style="cursor: pointer; float: right;"],
+#catalog {
+  z-index: 88;
+}
+#navtopright .exlinksOptionsLink:hover,
+body > div.navLinks > a:first-of-type:hover,
+#{if Conf['Slideout Watcher'] then '#watcher:hover,' else ''}
+#{if Conf['Announcements'] is 'slideout' then '#globalMessage:hover,' else ''}
+#boardNavDesktopFoot:hover,
+body > a[style="cursor: pointer; float: right;"]:hover,
+#catalog:hover {
+  z-index: 89;
+}
+#imgControls {
+  z-index: 91;
+}
 #imgControls {
   position: fixed;
 }
@@ -454,8 +476,7 @@ body > a[style="cursor: pointer; float: right;"]::after,
   visibility: visible;
   background-position: 0 0;
 }
-div.navLinks > a:first-of-type::after {
-  visibility: visible;
+body > div.navLinks > a:first-of-type::after {
   cursor: pointer;
   background-position: 0 -15px;
 }
@@ -564,12 +585,6 @@ div.navLinks > a:first-of-type:hover::after,
       if iconOffset < 0 then iconOffset = 0
 
       css += """
-div.navLinks > a:first-of-type::after {
-  z-index: 99 !important;
-}
-#prefetch {
-  z-index: 9;
-}
 /* 4chan X Options */
 #appchanOptions {
   #{align}: #{position[i++]}px;
@@ -643,12 +658,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #{if _conf["Slideout Watcher"] then "#watcher," else ""}
 #boardNavDesktopFoot {
   top: 16px !important;
-  z-index: 98 !important;
-}
-#globalMessage:hover,
-#{if _conf["Slideout Watcher"] then "#watcher:hover," else ""}
-#boardNavDesktopFoot:hover {
-  z-index: 99 !important;
 }
 #{if _conf['Boards Navigation'] is 'top' or _conf['Boards Navigation'] is 'sticky top' then '#boardNavDesktop' else if _conf['Pagination'] is 'top' or _conf['Pagination'] is 'sticky top' then '.pagelist'} {
   padding-#{align}: #{iconOffset}px;
@@ -694,12 +703,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
         Style.sidebar + parseInt _conf[align.capitalize() + " Thread Padding"], 10)
 
       css += """
-div.navLinks > a:first-of-type::after {
-  z-index: 89 !important;
-}
-#prefetch {
-  z-index: 95;
-}
 /* Image Expansion */
 #imgControls {
   top: #{position[i++]}px;
@@ -768,20 +771,6 @@ body > a[style="cursor: pointer; float: right;"]::after,
 div.navLinks > a:first-of-type::after {
   #{align}: 3px !important;
 }
-#boardNavDesktopFoot {
-  z-index: 97 !important;
-}
-#globalMessage {
-  z-index: 98 !important;
-}
-#watcher {
-  z-index: #{if _conf["Slideout Watcher"] then "99" else "10"} !important;
-}
-#{if _conf["Slideout Watcher"] then "#watcher:hover," else ""}
-#boardNavDesktopFoot:hover,
-#globalMessage:hover {
-  z-index: 100 !important;
-}
 #boardNavDesktopFoot,
 #globalMessage,
 #watcher {
@@ -802,7 +791,6 @@ div.navLinks > a:first-of-type::after {
   #{Style.sidebarLocation[1]}: auto !important;
   top: #{if _conf["Updater Position"] == "top" then "1px" else "auto"} !important;
   bottom: #{if _conf["Updater Position"] == "bottom" then "2px" else "auto"} !important;
-  #{if _conf["Updater Position"] == "top" then "z-index: 96 !important;"}
 }
 """
 
@@ -879,8 +867,9 @@ div.navLinks > a:first-of-type::after {
 
     css = """
 /* Cleanup */
-#absBot,
+#absbot,
 #delPassword,
+#navbotright,
 #postForm,
 .mobile,
 .postingMode,
@@ -914,6 +903,16 @@ body > hr {
 .hidden_thread ~ a,
 [hidden] {
   display: none !important;
+}
+/* Hidden UI */
+#catalog,
+#navtopright,
+.cataloglink,
+.navLinks,
+a[style="cursor: pointer; float: right;"] {
+  position: fixed;
+  top: 100%;
+  left: 100%;
 }
 /* Hide last horizontal rule, keep clear functionality. */
 .board > hr:last-of-type {
@@ -957,7 +956,7 @@ hr {
 }
 /* Navigation */
 #boardNavDesktop {
-  z-index: 90;
+  z-index: 85;
   border-width: 1px;
 #{{
 "sticky top": "
@@ -1000,7 +999,7 @@ else "
 }
 /* Pagination */
 .pagelist {
-  z-index: 90;
+  z-index: 85;
   border-width: 1px;
 #{{
 "sticky top": "
@@ -1073,6 +1072,7 @@ else "
 }
 #qp {
   position: fixed;
+  z-index: 96;
 }
 #qp blockquote::after {
   clear: both;
@@ -1112,6 +1112,41 @@ else "
 #updater .field {
   width: 50px;
 }
+/* Image Expansion */
+#imgControls .rice {
+  display: none;
+}
+#imgControls {
+  width: 15px;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+#imgContainer {
+  float: #{Style.sidebarLocation[0]};
+}
+#imgContainer,
+#imgControls:hover {
+  width: 110px;
+}
+#imgControls label {
+  float: #{Style.sidebarLocation[0]};
+}
+#imgControls .selectrice {
+  float: #{Style.sidebarLocation[1]};
+  width: 90px;
+}
+.fitwidth .fullSize {
+  max-width: 100%;
+  width: 100%;
+}
+
+#{if _conf['Images Overlap Post Form'] then "
+.fullSize {
+  position: relative;
+  z-index: 96;
+}" else ""
+}
+
 /* Delete Buttons */
 .deleteform {
   position: fixed;
@@ -1146,6 +1181,48 @@ else "
 .deleteform input {
   margin: 0 1px 0 0;
 }
+/* Slideout Navigation */
+#boardNavDesktopFoot:not(:hover) {
+  border-color: transparent;
+  background-color: transparent;
+}
+#boardNavDesktopFoot {
+  #{Style.agent}box-sizing: border-box;
+}
+#{{
+compact: "
+#boardNavDesktopFoot {
+  word-spacing: 1px;
+}
+#boardNavDesktopFoot:hover {
+  height: #{if _conf["Slideout Transitions"] then '84px' else 'auto'};
+}
+"
+list: "
+#boardNavDesktopFoot a {
+  display: block;
+}
+#boardNavDesktopFoot:hover {
+  height: #{if _conf["Slideout Transitions"] then '400px' else 'auto'};
+  max-height: 400px;
+  overflow-y: scroll;
+}
+#boardNavDesktopFoot a::after {
+  content: ' - ' attr(title);
+}
+#boardNavDesktopFoot a[href*='//boards.4chan.org/']::after,
+#boardNavDesktopFoot a[href*='//rs.4chan.org/']::after {
+  content: '/ - ' attr(title);
+}
+#boardNavDesktopFoot a[href*='//boards.4chan.org/']::before,
+#boardNavDesktopFoot a[href*='//rs.4chan.org/']::before {
+  content: '/';
+}
+"
+hide: "
+#boardNavDesktopFoot {
+  display: none;
+}"}[_conf["Slideout Navigation"]]}
 /* Posts */
 .summary {
   margin-bottom: #{Style.replyMargin}px;
@@ -1182,6 +1259,12 @@ else "
 /* Reply Clearfix */
 .reply.post blockquote {
   clear: right;
+}
+/* Summary */
+#{
+if _conf["Fit Width Replies"]
+  ".summary { clear: both; float: left; }"
+else ""
 }
 /* Inlined */
 .inline .replyContainer {
@@ -1279,11 +1362,13 @@ input:checked + .rice {
 }
 /* Post Form */
 #qr {
+  z-index: 95;
   position: fixed;
   padding: 1px;
   border: 1px solid transparent;
   min-width: #{width}px;
 }
+
 #{{
 "fixed": "
 #qr {
@@ -1323,9 +1408,9 @@ input:checked + .rice {
 #qr #qrtab {
   #{Style.agent}transform: rotate(#{(if Style.sidebarLocation[0] is "left" then "" else "-")}90deg);
   #{Style.agent}transform-origin: bottom #{Style.sidebarLocation[0]};
-  position: fixed;
-  bottom: 220px;
-  #{Style.sidebarLocation[0]}: 0;
+  position: absolute;
+  top: 0;
+  #{Style.sidebarLocation[0]}: 100%;
   width: 110px;
   text-align: center;
   border-width: 1px 1px 0 1px;
@@ -1336,7 +1421,6 @@ input:checked + .rice {
 #qr.dump #qrtab {
   opacity: 0;
   #{Style.sidebarLocation[0]}: #{252 + Style.sidebarOffset.W}px;
-  #{Style.agent}transition: opacity .3s linear, #{Style.sidebarLocation[0]} .3s linear;
 }
 #qrtab input,
 #qrtab .rice,
@@ -1346,8 +1430,6 @@ input:checked + .rice {
 
 "transparent fade": "
 #qr {
-  top: auto !important;
-  bottom: 1.6em !important;
   overflow: visible;
   top: auto !important;
   bottom: 1.6em !important;
@@ -1363,14 +1445,34 @@ input:checked + .rice {
   #{Style.agent}transition: opacity .3s linear;
 }"
 }[_conf['Post Form Style']] or ""}
+
 #{
 unless _conf['Post Form Style'] is 'tabbed slideout'
-  unless _conf['Post Form Style'] is 'float' or _conf['Show Post Form Header'] 
+  unless _conf['Post Form Style'] is 'float' or _conf['Show Post Form Header']
     "#qrtab { display: none; }"
-  else unless _conf['Post Form Style'] is 'slideout' 
+  else unless _conf['Post Form Style'] is 'slideout'
     ".autohide:not(:hover) > form { display: none !important; }"
   else ""
 else ""}
+
+#{
+if _conf['Post Form Style'] isnt 'float' and _conf["Post Form Slideout Transitions"] then "
+#qr {
+  #{Style.agent}transition: #{Style.sidebarLocation[0]} .3s ease-in-out 1s;
+}
+#qr:hover,
+#qr.focus,
+#qr.dump {
+  #{Style.agent}transition: #{Style.sidebarLocation[0]} .3s linear;
+}
+#qrtab {
+  #{Style.agent}transition: opacity .3s ease-in-out 1s;
+}
+#qr:hover #qrtab {
+  #{Style.agent}transition: opacity .3s linear;
+}"
+}
+
 #qr .close {
   float: right;
 }
@@ -1390,7 +1492,9 @@ else ""}
   width: 10%;
   margin: 0;
 }
-#{if _conf['Compact Post Form Inputs'] then "
+
+#{
+if _conf['Compact Post Form Inputs'] then "
 .userInfo input.field {
   width: 29.6%;
   margin-left: 0.4%;
@@ -1416,8 +1520,17 @@ else ""}
 }
 #qr.captcha textarea.field {
   height: 6em;
+}"
 }
-"}
+
+#{
+if _conf["Tripcode Hider"] then "
+input.field.tripped:not(:hover):not(:focus) {
+  color: transparent !important;
+  text-shadow: none !important;
+}" else ""
+}
+
 .captchaimg {
   margin: 1px 0 0;
   text-align: center;
@@ -1579,6 +1692,21 @@ img.middlead:hover,
 img.bottomad:hover {
   opacity: 1;
 }
+#{if _conf["Block Ads"] then "
+/* AdBlock Minus */
+.bottomad + hr,
+a[href*='jlist'],
+  img[src^='//static.4chan.org/support/'] {
+  display: none;
+}
+" else ""}
+#{if _conf["Shrink Ads"] then "
+a[href*='jlist'],
+img[src^='//static.4chan.org/support/'] {
+  width: 500px;
+  height: auto;
+}
+" else ""}
 /* Options */
 #overlay {
   position: fixed;
@@ -2013,7 +2141,7 @@ opacity: 0;
 }
 #ft {
   text-align: center;
-} 
+}
 #ft ul {
   padding: 0;
 }
@@ -2037,7 +2165,7 @@ opacity: 0;
 
     Style.lightTheme = bgColor.isLight()
 
-    icons = Icons.header.png + Icons.themes[_conf["Icons"]][if Style.lightTheme then "light" else "dark"]
+    icons = Icons.header.png + Icons.themes[_conf["Icons"]]
 
     css = """
 .hide_thread_button span > span,
@@ -2331,7 +2459,14 @@ textarea {
 }
 input[type=checkbox]:checked + .rice {
   background: #{theme["Checkbox Checked Background"]};
-  background-image: url(#{Icons.header.png + (if Style.lightTheme then "AkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==" else "AkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg==")});
+  background-image: url(#{
+Icons.header.png + (
+  if Style.lightTheme
+    "AkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg=="
+  else
+    "AkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg=="
+  )
+});
 }
 #addReply,
 #dump,
@@ -2421,8 +2556,16 @@ a[style="cursor: pointer; float: right;"]::after,
 #catalog::after,
 #fappeTyme {
   background-image: url('#{icons}');
+#{unless Style.lightTheme then "
+filter: url(\"
+data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='
+1 -1 0 0 1
+ 1 -1 0 0 1
+ 1 -1 0 0 1
+ 0 0 0 1 0' /></filter></svg>#filters
+\");" else ""}
 }
-#{theme["Custom CSS"]}\n
+#{theme["Custom CSS"]}
 """
 
     css += (if Style.lightTheme then """

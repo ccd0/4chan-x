@@ -22,8 +22,10 @@ QuoteBacklink =
       textContent: QuoteBacklink.funk post.ID
 
     if Conf['Mark Owned Posts']
-      if a.hash and MarkOwn.posts[a.hash[2..]]
+      if MarkOwn.posts[post.ID]
         $.addClass a, 'ownpost'
+        a.textContent += " (You)"
+        owned = true
 
     for qid of quotes
       # Don't backlink the OP.
@@ -40,6 +42,10 @@ QuoteBacklink =
 
       unless container = $.id "blc#{qid}"
         $.addClass el.parentNode, 'quoted'
+
+        if owned
+          $.addClass el.parentNode, 'youQuoted'
+
         container = $.el 'span',
           className: 'container'
           id: "blc#{qid}"

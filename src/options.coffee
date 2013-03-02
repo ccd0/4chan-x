@@ -508,7 +508,8 @@ Options =
             id:        name
             innerHTML: "
 <div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
-  <div style='padding: 3px 0px 0px 8px;'>
+  <div>
+    <div style='cursor: pointer; width: 9px; height: 9px; margin: 2px 3px; display: inline-block; vertical-align: bottom; background: #{theme['Checkbox Background']}; border: 1px solid #{theme['Checkbox Border']};'></div>
     <span style='color:#{theme['Subjects']}!important; font-weight: 600 !important'>
       #{name}
     </span>
