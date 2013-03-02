@@ -42,6 +42,7 @@ beta
 
   Thread Stats changes:
     Post and file count will now adjust with deleted posts.
+    The post count will now go red past the bump limit.
     The file count will not go red anymore when the thread is a sticky.
 
   Thread/Post Hiding changes:

@@ -3488,38 +3488,28 @@ ThreadStats =
 
     @postCountEl = $ '#post-count', @dialog
     @fileCountEl = $ '#file-count', @dialog
-    @fileLimit = # XXX boards config, need up to date data on this, check browser
-      switch g.BOARD.ID
-        when 'a', 'b', 'v', 'co', 'mlp'
-          251
-        when 'vg'
-          376
-        else
-          151
 
     Thread::callbacks.push
       name: 'Thread Stats'
       cb:   @node
   node: ->
-    ThreadStats.thread = @
-    ThreadStats.update()
-    $.on d, 'ThreadUpdate', ThreadStats.update
-    $.add d.body, ThreadStats.dialog
-  update: ->
     postCount = 0
     fileCount = 0
-    for ID, post of ThreadStats.thread.posts
-      continue if post.isDead
+    for ID, post of @posts
       postCount++
-      continue if !post.file or post.file.isDead
-      fileCount++
+      fileCount++ if post.file
+    ThreadStats.update postCount, fileCount
+    ThreadStats.thread = @
+    $.on d, 'ThreadUpdate', ThreadStats.onUpdate
+    $.add d.body, ThreadStats.dialog
+  onUpdate: (e) ->
+    {postCount, fileCount, postLimit, fileLimit} = e.detail
+    ThreadStats.update postCount, fileCount, postLimit, fileLimit
+  update: (postCount, fileCount, postLimit, fileLimit) ->
     ThreadStats.postCountEl.textContent = postCount
     ThreadStats.fileCountEl.textContent = fileCount
-    funk = if ThreadStats.isSticky or fileCount <= ThreadStats.fileLimit
-      $.rmClass
-    else
-      $.addClass
-    funk ThreadStats.fileCountEl, 'warning'
+    (if postLimit and !ThreadStats.thread.isSticky then $.addClass else $.rmClass) ThreadStats.postCountEl, 'warning'
+    (if fileLimit and !ThreadStats.thread.isSticky then $.addClass else $.rmClass) ThreadStats.fileCountEl, 'warning'
 
 ThreadUpdater =
   init: ->
@@ -3718,10 +3708,11 @@ ThreadUpdater =
     $.after root, [$.tn(' '), icon]
 
   parse: (postObjects) ->
-    Build.spoilerRange[ThreadUpdater.thread.board] = postObjects[0].custom_spoiler
+    OP = postObjects[0]
+    Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler
 
-    ThreadUpdater.updateThreadStatus 'Sticky', postObjects[0]
-    ThreadUpdater.updateThreadStatus 'Closed', postObjects[0]
+    ThreadUpdater.updateThreadStatus 'Sticky', OP
+    ThreadUpdater.updateThreadStatus 'Closed', OP
 
     nodes = [] # post container elements
     posts = [] # post objects
@@ -3791,6 +3782,10 @@ ThreadUpdater =
       newPosts: posts
       deletedPosts: deletedPosts
       deletedFiles: deletedFiles
+      postCount: OP.replies + 1
+      fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
+      postLimit: !!OP.bumplimit
+      fileLimit: !!OP.imagelimit
 
 ThreadWatcher =
   init: ->

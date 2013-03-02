@@ -5187,51 +5187,38 @@
       this.dialog = UI.dialog('thread-stats', 'bottom: 0; left: 0;', "<div class=move><span id=post-count>0</span> / <span id=file-count>0</span></div>");
       this.postCountEl = $('#post-count', this.dialog);
       this.fileCountEl = $('#file-count', this.dialog);
-      this.fileLimit = (function() {
-        switch (g.BOARD.ID) {
-          case 'a':
-          case 'b':
-          case 'v':
-          case 'co':
-          case 'mlp':
-            return 251;
-          case 'vg':
-            return 376;
-          default:
-            return 151;
-        }
-      })();
       return Thread.prototype.callbacks.push({
         name: 'Thread Stats',
         cb: this.node
       });
     },
     node: function() {
-      ThreadStats.thread = this;
-      ThreadStats.update();
-      $.on(d, 'ThreadUpdate', ThreadStats.update);
-      return $.add(d.body, ThreadStats.dialog);
-    },
-    update: function() {
-      var ID, fileCount, funk, post, postCount, _ref;
+      var ID, fileCount, post, postCount, _ref;
       postCount = 0;
       fileCount = 0;
-      _ref = ThreadStats.thread.posts;
+      _ref = this.posts;
       for (ID in _ref) {
         post = _ref[ID];
-        if (post.isDead) {
-          continue;
-        }
         postCount++;
-        if (!post.file || post.file.isDead) {
-          continue;
+        if (post.file) {
+          fileCount++;
         }
-        fileCount++;
       }
+      ThreadStats.update(postCount, fileCount);
+      ThreadStats.thread = this;
+      $.on(d, 'ThreadUpdate', ThreadStats.onUpdate);
+      return $.add(d.body, ThreadStats.dialog);
+    },
+    onUpdate: function(e) {
+      var fileCount, fileLimit, postCount, postLimit, _ref;
+      _ref = e.detail, postCount = _ref.postCount, fileCount = _ref.fileCount, postLimit = _ref.postLimit, fileLimit = _ref.fileLimit;
+      return ThreadStats.update(postCount, fileCount, postLimit, fileLimit);
+    },
+    update: function(postCount, fileCount, postLimit, fileLimit) {
       ThreadStats.postCountEl.textContent = postCount;
       ThreadStats.fileCountEl.textContent = fileCount;
-      funk = ThreadStats.isSticky || fileCount <= ThreadStats.fileLimit ? $.rmClass : $.addClass;
-      return funk(ThreadStats.fileCountEl, 'warning');
+      (postLimit && !ThreadStats.thread.isSticky ? $.addClass : $.rmClass)(ThreadStats.postCountEl, 'warning');
+      return (fileLimit && !ThreadStats.thread.isSticky ? $.addClass : $.rmClass)(ThreadStats.fileCountEl, 'warning');
     }
   };
 
@@ -5469,10 +5456,11 @@
       return $.after(root, [$.tn(' '), icon]);
     },
     parse: function(postObjects) {
-      var ID, count, deletedFiles, deletedPosts, files, index, node, nodes, num, post, postObject, posts, scroll, _i, _len, _ref;
-      Build.spoilerRange[ThreadUpdater.thread.board] = postObjects[0].custom_spoiler;
-      ThreadUpdater.updateThreadStatus('Sticky', postObjects[0]);
-      ThreadUpdater.updateThreadStatus('Closed', postObjects[0]);
+      var ID, OP, count, deletedFiles, deletedPosts, files, index, node, nodes, num, post, postObject, posts, scroll, _i, _len, _ref;
+      OP = postObjects[0];
+      Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
+      ThreadUpdater.updateThreadStatus('Sticky', OP);
+      ThreadUpdater.updateThreadStatus('Closed', OP);
       nodes = [];
       posts = [];
       index = [];
@@ -5551,7 +5539,11 @@
         thread: ThreadUpdater.thread,
         newPosts: posts,
         deletedPosts: deletedPosts,
-        deletedFiles: deletedFiles
+        deletedFiles: deletedFiles,
+        postCount: OP.replies + 1,
+        fileCount: OP.images + (!!ThreadUpdater.thread.OP.file && !ThreadUpdater.thread.OP.file.isDead),
+        postLimit: !!OP.bumplimit,
+        fileLimit: !!OP.imagelimit
       });
     }
   };
