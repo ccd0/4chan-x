@@ -897,7 +897,7 @@ div.post.highlight {
       'Textarea Resize': [
         'vertical'
         'Options to resize the post form\'s comment box.'
-        ['both', 'horizontal', 'vertical', 'none', 'auto-expand']
+        ['both', 'horizontal', 'vertical', 'none']
       ]
       'Tripcode Hider': [
         true

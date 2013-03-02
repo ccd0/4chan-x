@@ -849,6 +849,8 @@ div.navLinks > a:first-of-type::after {
       else
         0
 
+    width = 248 + Style.sidebarOffset.W
+
     Style.sidebarLocation = if _conf["Sidebar Location"] is "left"
       ["left",  "right"]
     else
@@ -877,11 +879,14 @@ div.navLinks > a:first-of-type::after {
 
     css = """
 /* Cleanup */
+#absBot,
+#delPassword,
 #postForm,
 .mobile,
 .postingMode,
 .riced,
 .sideArrows,
+.stylechanger,
 body > br,
 body > div[style^="text-align"],
 body > hr {
@@ -1081,21 +1086,65 @@ else "
 #globalMessage {
 
 }
-#updater {
-  position: fixed;
-}
-#updater:not(:hover) > div:not(.move) {
-  display: none;
-}
-#updater .field {
-  width: 100px;
-}
 #watcher {
   position: fixed;
 }
 #menu {
   position: absolute;
   outline: none;
+}
+/* Updater */
+#updater {
+  position: fixed;
+}
+#updater:not(:hover) > div:not(.move) {
+  display: none;
+}
+#updater:hover {
+  padding: 2px;
+}
+#updater input {
+  text-align: right;
+}
+#updater .rice {
+  float: left;
+}
+#updater .field {
+  width: 50px;
+}
+/* Delete Buttons */
+.deleteform {
+  position: fixed;
+  width: 0;
+  bottom: 0;
+  right: 0;
+  border-width: 1px 0 0 1px;
+  border-style: solid;
+  font-size: 0;
+  color: transparent;
+}
+.deleteform:hover {
+  width: auto;
+}
+.deleteform::before {
+  border-width: 1px 0 0 1px;
+  border-style: solid;
+  content: 'X';
+  display: block;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  font-size: #{_conf['Font Size']}px;
+  #{Style.agent}box-sizing: border-box;
+  height: 1.6em;
+  width: 1.4em;
+  text-align: center;
+}
+.deleteform:hover::before {
+  display: none;
+}
+.deleteform input {
+  margin: 0 1px 0 0;
 }
 /* Posts */
 .summary {
@@ -1134,6 +1183,14 @@ else "
 .reply.post blockquote {
   clear: right;
 }
+/* Inlined */
+.inline .replyContainer {
+  display: inline-block;
+}
+.inline .reply.post {
+  width: auto;
+}
+/* Inlined Clearfix */
 .inline blockquote::after {
   clear: both;
   display: block;
@@ -1172,6 +1229,8 @@ else "
 .focused .subMenu {
   display: block;
 }
+/* Emoji */
+#{unless _conf["Emoji"] is "disable" then Style.emoji _conf["Emoji Position"] else ""}
 /* Element Replacing */
 /* Checkboxes */
 .rice {
@@ -1223,11 +1282,11 @@ input:checked + .rice {
   position: fixed;
   padding: 1px;
   border: 1px solid transparent;
+  min-width: #{width}px;
 }
 #{{
 "fixed": "
 #qr {
-  overflow: visible;
   top: auto !important;
   bottom: 1.6em !important;
   #{Style.sidebarLocation[0]}: 0 !important;
@@ -1236,7 +1295,6 @@ input:checked + .rice {
 
 "slideout": "
 #qr {
-  overflow: visible;
   top: auto !important;
   bottom: 1.6em !important;
   #{Style.sidebarLocation[0]}: -#{233 + Style.sidebarOffset.W}px !important;
@@ -1245,13 +1303,12 @@ input:checked + .rice {
 #qr:hover,
 #qr.focus,
 #qr.dump {
-  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[0]}: 0 !important;
   #{Style.sidebarLocation[1]}: auto !important;
 }"
 
 "tabbed slideout": "
 #qr {
-  overflow: visible;
   top: auto !important;
   bottom: 1.6em !important;
   #{Style.sidebarLocation[0]}: -#{251 + Style.sidebarOffset.W}px !important;
@@ -1289,7 +1346,6 @@ input:checked + .rice {
 
 "transparent fade": "
 #qr {
-  overflow: visible;
   top: auto !important;
   bottom: 1.6em !important;
   overflow: visible;
@@ -1307,11 +1363,14 @@ input:checked + .rice {
   #{Style.agent}transition: opacity .3s linear;
 }"
 }[_conf['Post Form Style']] or ""}
-#{unless ['slideout', 'tabbed slideout'].contains _conf['Post Form Style'] then "
-.autohide:not(:hover) > form {
-  display: none !important;
-}
-" else ""}
+#{
+unless _conf['Post Form Style'] is 'tabbed slideout'
+  unless _conf['Post Form Style'] is 'float' or _conf['Show Post Form Header'] 
+    "#qrtab { display: none; }"
+  else unless _conf['Post Form Style'] is 'slideout' 
+    ".autohide:not(:hover) > form { display: none !important; }"
+  else ""
+else ""}
 #qr .close {
   float: right;
 }
@@ -1319,6 +1378,8 @@ input:checked + .rice {
   min-height: 1.6em;
   vertical-align: middle;
   padding: 0 1px;
+  border-width: 1px;
+  border-style: solid;
 }
 .userInfo {
   width: 248px;
@@ -1331,8 +1392,8 @@ input:checked + .rice {
 }
 #{if _conf['Compact Post Form Inputs'] then "
 .userInfo input.field {
-  width: 29.7%;
-  margin-left: 0.3%;
+  width: 29.6%;
+  margin-left: 0.4%;
 }
 #qr textarea.field {
   height: 14.8em;
@@ -1346,8 +1407,8 @@ input:checked + .rice {
   width: 100%;
 }
 .userInfo input.field[name='name'] {
-  width: 89.7%;
-  margin-left: 0.3%
+  width: 89.6%;
+  margin-left: 0.4%
 }
 #qr textarea.field {
   height: 11.6em;
@@ -1396,8 +1457,8 @@ input:not([type=radio]) {
 #file {
   #{Style.agent}box-sizing: border-box;
   display: inline-block;
-  width: 74.7%;
-  margin-right: 0.3%;
+  width: 74.6%;
+  margin-right: 0.4%;
 }
 /* Thread Select / Spoiler Label */
 #threadselect {
@@ -1801,6 +1862,7 @@ opacity: 0;
   min-width: 100%;
   max-width: 100%;
   height: 20em;
+  resize: #{_conf['Textarea Resize']};
 }
 /* Mascot Editor */
 #mascotConf {
@@ -2061,9 +2123,7 @@ html {
     #{if _conf["Sidebar Glow"] then ", 0 2px 5px #{theme['Text']};" else ";"}
 }
 /* Fixes text spoilers */
-
-
-    #{if _conf['Remove Spoilers'] and _conf['Indicate Spoilers'] then "
+#{if _conf['Remove Spoilers'] and _conf['Indicate Spoilers'] then "
 .spoiler::before,
 s::before {
   content: '[spoiler]';
@@ -2175,9 +2235,11 @@ a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Dialog Border"]};
 }
+.deleteform::before,
+.deleteform,
 #qr .warning {
   background: #{theme["Input Background"]};
-  border: 1px solid #{theme["Input Border"]};
+  border-color: #{theme["Input Border"]};
 }
 .disabledwarning,
 .warning {
@@ -2211,6 +2273,7 @@ a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
 .abbr,
 .boxbar,
 .boxcontent,
+.deleteform::before,
 .pages strong,
 .pln,
 .reply,
