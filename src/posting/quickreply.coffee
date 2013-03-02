@@ -1,6 +1,7 @@
 QR =
   init: ->
     return unless $.id 'postForm'
+    QuoteInline.callbacks.push @node
     Main.callbacks.push @node
     setTimeout @asyncInit
 
