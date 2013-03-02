@@ -2138,7 +2138,7 @@ Get =
       return
 
     {status} = req
-    if status isnt 200
+    if status not in [200, 304]
       # The thread can die by the time we check a quote.
       if url = Redirect.post board, postID
         $.cache url, ->
@@ -3180,8 +3180,9 @@ ExpandComment =
     $.replace post.nodes.longComment, post.nodes.shortComment
     post.nodes.comment = post.nodes.shortComment
   parse: (req, a, post) ->
-    if req.status isnt 200
-      a.textContent = "Error #{req.statusText} (#{req.status})"
+    {status} = req
+    if status not in [200, 304]
+      a.textContent = "Error #{req.statusText} (#{status})"
       return
 
     posts = JSON.parse(req.response).posts
@@ -3279,9 +3280,9 @@ ExpandThread =
 
   parse: (req, thread, a) ->
     return if a.textContent[0] is '+'
-
-    if req.status isnt 200
-      a.textContent = "Error #{req.statusText} (#{req.status})"
+    {status} = req
+    if status not in [200, 304]
+      a.textContent = "Error #{req.statusText} (#{status})"
       $.off a, 'click', ExpandThread.cb.toggle
       return
 

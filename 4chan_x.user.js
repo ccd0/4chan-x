@@ -3425,7 +3425,7 @@
         return;
       }
       status = req.status;
-      if (status !== 200) {
+      if (status !== 200 && status !== 304) {
         if (url = Redirect.post(board, postID)) {
           $.cache(url, function() {
             return Get.archivedPost(this, board, postID, root, context);
@@ -4788,9 +4788,10 @@
       return post.nodes.comment = post.nodes.shortComment;
     },
     parse: function(req, a, post) {
-      var clone, comment, href, postObj, posts, quote, spoilerRange, _i, _j, _len, _len1, _ref;
-      if (req.status !== 200) {
-        a.textContent = "Error " + req.statusText + " (" + req.status + ")";
+      var clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _len, _len1, _ref;
+      status = req.status;
+      if (status !== 200 && status !== 304) {
+        a.textContent = "Error " + req.statusText + " (" + status + ")";
         return;
       }
       posts = JSON.parse(req.response).posts;
@@ -4933,12 +4934,13 @@
       }
     },
     parse: function(req, thread, a) {
-      var link, node, nodes, post, posts, replies, reply, spoilerRange, _i, _len;
+      var link, node, nodes, post, posts, replies, reply, spoilerRange, status, _i, _len;
       if (a.textContent[0] === '+') {
         return;
       }
-      if (req.status !== 200) {
-        a.textContent = "Error " + req.statusText + " (" + req.status + ")";
+      status = req.status;
+      if (status !== 200 && status !== 304) {
+        a.textContent = "Error " + req.statusText + " (" + status + ")";
         $.off(a, 'click', ExpandThread.cb.toggle);
         return;
       }
