@@ -1507,6 +1507,11 @@ else ""
   display: block;
   content: "";
 }
+/* Quotes */
+.inlined {
+  font-style: italic;
+  #{if _conf["Bolds"] then 'font-weight: 800;' else ''}
+}
 /* Backlinks */
 #{{
 "lower left": "
