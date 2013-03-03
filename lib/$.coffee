@@ -138,8 +138,14 @@ $.extend $,
     return
   event: (event, detail, root=d) ->
     root.dispatchEvent new CustomEvent event, {bubbles: true, detail}
-  open: (url) ->
-    (window.GM_openInTab or window.open) url, '_blank'
+  open: do ->
+    if GM_openInTab?
+      (URL) ->
+        # XXX fix GM opening file://// for protocol-less URLs.
+        a = $.el 'a', href: URL
+        GM_openInTab a.href, '_blank'
+    else
+      (URL) -> window.open URL, '_blank'
   debounce: (wait, fn) ->
     timeout = null
     that    = null

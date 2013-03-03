@@ -981,9 +981,9 @@ QR =
       isReply: !!threadID
 
     if threadID is postID # new thread
-      $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}"
+      $.open "/#{g.BOARD}/res/#{threadID}"
     else if g.VIEW is 'index' and !QR.cooldown.auto # posting from the index
-      $.open "//boards.4chan.org/#{g.BOARD}/res/#{threadID}#p#{postID}"
+      $.open "/#{g.BOARD}/res/#{threadID}#p#{postID}"
 
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()

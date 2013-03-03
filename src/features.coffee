@@ -1616,7 +1616,7 @@ Keybinds =
 
   open: (thread, tab) ->
     return if g.VIEW isnt 'index'
-    url = "//boards.4chan.org/#{thread.board}/res/#{thread}"
+    url = "/#{thread.board}/res/#{thread}"
     if tab
       $.open url
     else
@@ -3023,6 +3023,7 @@ ImageExpand =
 
   completeExpand: (post) ->
     {thumb} = post.file
+    return unless $.hasClass thumb, 'expanding' # contracted before the image loaded
     rect = post.nodes.root.getBoundingClientRect()
     $.addClass post.nodes.root, 'expanded-image'
     $.rmClass  post.file.thumb, 'expanding'

@@ -300,7 +300,7 @@ Main =
         return
 
     initFeature = (name, module) ->
-      console.time "#{name} initialization"
+      # console.time "#{name} initialization"
       try
         module.init()
       catch err
@@ -308,9 +308,9 @@ Main =
           message: "\"#{name}\" initialization crashed."
           error: err
       finally
-        console.timeEnd "#{name} initialization"
+        # console.timeEnd "#{name} initialization"
 
-    console.time 'All initializations'
+    # console.time 'All initializations'
     initFeature 'Polyfill',                 Polyfill
     initFeature 'Header',                   Header
     initFeature 'Settings',                 Settings
@@ -356,7 +356,7 @@ Main =
     initFeature 'Thread Watcher',           ThreadWatcher
     initFeature 'Index Navigation',         Nav
     initFeature 'Keybinds',                 Keybinds
-    console.timeEnd 'All initializations'
+    # console.timeEnd 'All initializations'
 
     $.on d, 'AddCallback',   Main.addCallback
     $.on d, '4chanMainInit', Main.initStyle

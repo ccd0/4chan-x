@@ -842,9 +842,21 @@
         detail: detail
       }));
     },
-    open: function(url) {
-      return (window.GM_openInTab || window.open)(url, '_blank');
-    },
+    open: (function() {
+      if (typeof GM_openInTab !== "undefined" && GM_openInTab !== null) {
+        return function(URL) {
+          var a;
+          a = $.el('a', {
+            href: URL
+          });
+          return GM_openInTab(a.href, '_blank');
+        };
+      } else {
+        return function(URL) {
+          return window.open(URL, '_blank');
+        };
+      }
+    })(),
     debounce: function(wait, fn) {
       var args, exec, that, timeout;
       timeout = null;
@@ -2907,7 +2919,7 @@
       if (g.VIEW !== 'index') {
         return;
       }
-      url = "//boards.4chan.org/" + thread.board + "/res/" + thread;
+      url = "/" + thread.board + "/res/" + thread;
       if (tab) {
         return $.open(url);
       } else {
@@ -4533,6 +4545,9 @@
     completeExpand: function(post) {
       var rect, root, thumb;
       thumb = post.file.thumb;
+      if (!$.hasClass(thumb, 'expanding')) {
+        return;
+      }
       rect = post.nodes.root.getBoundingClientRect();
       $.addClass(post.nodes.root, 'expanded-image');
       $.rmClass(post.file.thumb, 'expanding');
@@ -6808,9 +6823,9 @@
         isReply: !!threadID
       });
       if (threadID === postID) {
-        $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID);
+        $.open("/" + g.BOARD + "/res/" + threadID);
       } else if (g.VIEW === 'index' && !QR.cooldown.auto) {
-        $.open("//boards.4chan.org/" + g.BOARD + "/res/" + threadID + "#p" + postID);
+        $.open("/" + g.BOARD + "/res/" + threadID + "#p" + postID);
       }
       if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
         QR.close();
@@ -7243,7 +7258,6 @@
           return;
       }
       initFeature = function(name, module) {
-        console.time("" + name + " initialization");
         try {
           return module.init();
         } catch (err) {
@@ -7252,10 +7266,9 @@
             error: err
           });
         } finally {
-          console.timeEnd("" + name + " initialization");
+
         }
       };
-      console.time('All initializations');
       initFeature('Polyfill', Polyfill);
       initFeature('Header', Header);
       initFeature('Settings', Settings);
@@ -7301,7 +7314,6 @@
       initFeature('Thread Watcher', ThreadWatcher);
       initFeature('Index Navigation', Nav);
       initFeature('Keybinds', Keybinds);
-      console.timeEnd('All initializations');
       $.on(d, 'AddCallback', Main.addCallback);
       $.on(d, '4chanMainInit', Main.initStyle);
       return $.ready(Main.initReady);
