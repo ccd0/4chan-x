@@ -1194,11 +1194,12 @@ else "
 .move {
   cursor: pointer;
 }
-#iHover {
+#ihover {
   position: fixed;
   max-height: 97%;
   max-width: 75%;
   padding: 10px;
+  z-index: 96;
 }
 #qp {
   position: fixed;
@@ -2645,14 +2646,13 @@ textarea.field:focus {
 #qp .post,
 #xupdater,
 .reply.post {
-  border: 1px solid #{theme["Reply Border"]};
+  border-width: 1px;
+  border-style: solid;
+  border-color: #{theme["Reply Border"]};
   background: #{theme["Reply Background"]};
 }
 .thread > .replyContainer > .reply.post {
   border-width: #{if _conf['Post Spacing'] is "0" then "1px 1px 0 1px" else '1px'};
-  border-style: solid;
-  border-color: #{theme["Reply Border"]};
-  background: #{theme["Reply Background"]};
 }
 .exblock.reply,
 .reply.post.highlight,
