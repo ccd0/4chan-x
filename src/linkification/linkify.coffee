@@ -35,7 +35,7 @@ Linkify =
     len    = snapshot.snapshotLength
 
     while ++i < len
-      nodes = []
+      nodes = d.createDocumentFragment()
       node  = snapshot.snapshotItem i
       data  = node.data
 
@@ -78,7 +78,7 @@ Linkify =
           # press button get bacon
           cypher.innerHTML = text
           for child in cypher.childNodes
-            nodes.push child
+            $.add nodes, child
 
         cypher.innerHTML = (if link.indexOf(':') < 0 then (if link.indexOf('@') > 0 then 'mailto:' + link else 'http://' + link) else link).replace /<(wbr|s|\/s)>/g, ''
 
@@ -89,7 +89,7 @@ Linkify =
           target:    'blank'
           href:      cypher.textContent
 
-        nodes = nodes.concat Linkify.embedder a
+        $.add nodes, Linkify.embedder a
 
         data = data[index + link.length..]
 
@@ -100,7 +100,7 @@ Linkify =
 
         # Convert <wbr> into elements
         for child in cypher.childNodes
-          nodes.push child
+          $.add nodes, child
 
       # They were replaced with constructs.
       $.replace node, nodes
