@@ -143,7 +143,7 @@ $.extend $,
       (URL) ->
         # XXX fix GM opening file://// for protocol-less URLs.
         a = $.el 'a', href: URL
-        GM_openInTab a.href, '_blank'
+        GM_openInTab a.href
     else
       (URL) -> window.open URL, '_blank'
   debounce: (wait, fn) ->

@@ -849,7 +849,7 @@
           a = $.el('a', {
             href: URL
           });
-          return GM_openInTab(a.href, '_blank');
+          return GM_openInTab(a.href);
         };
       } else {
         return function(URL) {
