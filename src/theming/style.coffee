@@ -849,12 +849,7 @@ div.navLinks > a:first-of-type::after {
       hide:     2
     }[_conf.Sidebar] or (252 + Style.sidebarOffset.W)
 
-    Style.replyMargin = {
-      minimal:  1
-      small:    2
-      medium:   4
-      large:    8
-    }[_conf["Reply Spacing"]] or 0
+    Style.replyMargin = _conf["Post Spacing"]
 
     css = """
 /* Cleanup */
@@ -863,6 +858,7 @@ div.navLinks > a:first-of-type::after {
 #delform > hr:last-of-type,
 #navbotright,
 #postForm,
+.boardBanner > div,
 .mobile,
 .postingMode,
 .riced,
@@ -890,12 +886,14 @@ body > hr {
   display: none !important;
 }
 /* Hidden Content */
+#{if _conf["Recursive Filtering"] then ".hidden + .threadContainer," else ""}
 .hidden,
 .hidden_thread ~ div,
 .hidden_thread ~ a,
 [hidden] {
   display: none !important;
 }
+
 /* Hidden UI */
 #catalog,
 #navlinks,
@@ -1062,6 +1060,83 @@ else "
   display: inline-block;
   margin: 0 3px;
 }
+/* Banner */
+.boardBanner {
+  z-index: -1;
+  line-height: 0;
+}
+#{if _conf["Faded 4chan Banner"] then "
+.boardBanner {
+  opacity: 0.5;
+  #{Style.agent}transition: opacity 0.3s ease-in-out .5s;
+}
+.boardBanner:hover {
+  opacity: 1;
+  #{Style.agent}transition: opacity 0.3s ease-in;
+}
+" else ""}
+#{if _conf["4chan Banner Reflection"] then "
+/* From 4chan SS / OneeChan */
+.gecko .boardBanner::after {
+  background-image: -moz-element(#Banner);
+  bottom: -100%;
+  content: '';
+  left: 0;
+  mask: url(\"data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask\");
+  opacity: 0.3;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  -moz-transform: scaleY(-1);
+}
+.webkit #Banner {
+  -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));
+}
+" else ""}
+#{{
+"at sidebar top": "
+.boardBanner {
+  position: fixed;
+  top: 18px;
+  #{Style.sidebarLocation[0]}: 2px;
+}
+.boardBanner img {
+  width: #{width}px;
+}"
+"at sidebar bottom": "
+.boardBanner {
+  position: fixed;
+  bottom: 270px;
+  #{Style.sidebarLocation[0]}: 2px;
+}
+.boardBanner img {
+  width: #{width}px;
+}"
+
+"under post form": "
+  .boardBanner {
+  position: fixed;
+  bottom: 130px;
+  #{Style.sidebarLocation[0]}: 2px;
+}
+.boardBanner img {
+  width: #{width}px;
+}"
+
+"at top": "
+.boardBanner {
+  position: relative;
+  display: table;
+  margin: 0 auto;
+  text-align: center;
+  z-index: -1;
+}"
+
+"hide": "
+.boardBanner {
+  display: none;
+}"
+}[_conf["4chan Banner"]]}
 /* Dialogs */
 .move {
   cursor: pointer;
@@ -1199,7 +1274,7 @@ else "
 #boardNavDesktopFoot {
   position: fixed;
   width: #{width}px;
-  #{Style.sidebarLocation[0]}: 0;
+  #{Style.sidebarLocation[0]}: 2px;
   text-align: center;
   font-size: 0;
   color: transparent;
@@ -1212,7 +1287,7 @@ else "
 }
 #boardNavDesktopFoot:hover {
   #{Style.agent}box-sizing: border-box;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 #boardNavDesktopFoot:not(:hover) {
   border-color: transparent;
@@ -1258,7 +1333,7 @@ hide: "
 #{ if _conf['Slideout Watcher'] then "
 #watcher {
   width: #{width}px;
-  #{Style.sidebarLocation[0]}: 0 !important;
+  #{Style.sidebarLocation[0]}: 2px !important;
   #{Style.sidebarLocation[1]}: auto !important;
 }
 #watcher .move {
@@ -1266,20 +1341,39 @@ hide: "
 }
 #watcher:hover {
   #{Style.agent}box-sizing: border-box;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 #watcher:not(:hover) {
-  border-color: transparent;
-  background-color: transparent;
   height: 0;
   overflow: hidden;
 }" else "
 #watcher {
   width: 200px;
-  #{Style.sidebarLocation[0]}: 0;
 }
 "}
 /* Announcements */
+#globalMessage {
+  text-align: center;
+}
+#{if _conf['Announcements'] is 'slideout' then "
+#globalMessage {
+  position: fixed;
+  padding: 2px;
+  width: #{width}px;
+  #{Style.sidebarLocation[0]}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+}
+#globalMessage h3 {
+  margin: 0;
+}
+#globalMessage:hover {
+  #{Style.agent}box-sizing: border-box;
+  overflow-y: auto;
+}
+#globalMessage:not(:hover) {
+  height: 0;
+  overflow: hidden;
+}" else ""}
 /* Posts */
 .summary {
   margin-bottom: #{Style.replyMargin}px;
@@ -1313,6 +1407,9 @@ hide: "
   display: inline-block;
   #{if _conf["Fit Width Replies"] then "width: 100%;" else ""}
 }
+.post blockquote {
+  margin: #{_conf['Vertical Post Padding']}px #{_conf['Horizontal Post Padding']}px;
+}
 /* Reply Clearfix */
 .reply.post blockquote {
   clear: right;
@@ -1339,6 +1436,60 @@ else ""
   display: block;
   content: "";
 }
+/* Backlinks */
+#{{
+"lower left": "
+.container {
+  padding: 0 5px;
+  max-width: 100%;
+}
+.reply.quoted {
+  position: relative;
+  padding-bottom: 1.7em;
+}
+.reply .container {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 0 5px;
+}
+.reply .container::before {
+  content: 'REPLIES: ';
+}
+.inline .container {
+  position: static;
+  max-width: 100%;
+}
+.inline .container::before {
+  content: '';
+}"
+
+'lower right': "
+.reply.quoted {
+  position: relative;
+  padding-bottom: 1.7em;
+}
+.reply .container {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+.container::before {
+  content: 'REPLIES: ';
+}
+.container {
+  max-width: 100%;
+  padding: 0 5px;
+}
+.inline .container {
+  position: static;
+  float: none;
+}
+.inline .container::before {
+  content: '';
+}"
+
+'default': ""}[_conf["Backlinks Position"]]}
 /* Menu */
 .entry {
   border-bottom: 1px solid rgba(0,0,0,.25);
@@ -2406,9 +2557,14 @@ textarea.field:focus {
 #mouseover,
 #post-preview,
 #qp .post,
-#xupdater,
-.reply.post {
+#xupdater {
   border: 1px solid #{theme["Reply Border"]};
+  background: #{theme["Reply Background"]};
+}
+.reply.post {
+  border-width: #{if _conf['Post Spacing'] is 0 then "1px 1px 0 1px" else '1px'};
+  border-style: solid;
+  border-color: #{theme["Reply Border"]};
   background: #{theme["Reply Background"]};
 }
 .exblock.reply,
@@ -2710,13 +2866,13 @@ data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' 
     if _conf["Color Reply Headings"]
       css += """
 .postInfo {
-  background: #{if (replyHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgb(" + (replyHeading.shiftRGB 16, true) + ")" else "rgba(0,0,0,0.1)"};
+  background: #{if (replyHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgb(" + (replyHeading.shiftRGB 10, true) + ")" else "rgba(0,0,0,0.1)"};
 }\n"""
 
     if _conf["Color File Info"]
       css += """
 .file {
-  background: #{if (fileHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgb(" + (fileHeading.shiftRGB 8, true) + ")" else "rgba(0,0,0,0.1)"};
+  background: #{if (fileHeading = new Style.color Style.colorToHex theme["Reply Background"]) then "rgb(" + (fileHeading.shiftRGB 6, true) + ")" else "rgba(0,0,0,0.1)"};
 }\n
 """
     if _conf["OP Background"]

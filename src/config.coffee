@@ -697,15 +697,20 @@ div.post.highlight {
         false
         'Hides vanilla report and delete functionality and UI. This does not affect Appchan\'s Menu functionality.'
       ]
-      'Reply Spacing': [
-        'small'
+      'Post Spacing': [
+        '2'
         'The amount of space between replies.'
-        ['none', 'minimal', 'small', 'medium', 'large']
+        'text'
       ]
-      'Reply Padding': [
-        'normal'
-        'The padding around post content of replies.'
-        ['phat', 'normal', 'slim', 'super slim', 'anorexia']
+      'Vertical Post Padding': [
+        '5'
+        'The vertical padding around post content of replies.'
+        'text'
+      ]
+      'Horizontal Post Padding': [
+        '20'
+        'The horizontal padding around post content of replies.'
+        'text'
       ]
       'Hide Horizontal Rules': [
         false
