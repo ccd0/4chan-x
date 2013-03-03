@@ -665,7 +665,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
   #{Style.sidebarLocation[1]}: auto !important;
   top: auto !important;
   bottom: auto !important;
-  #{_conf["Updater Position"]}: 1.6em !important;
+  #{if _conf["Updater Position"] is 'top' then "top: 1.6em !important" else "bottom: 0 !important"};
 }
 """
     else
@@ -928,6 +928,19 @@ body {
   margin-#{Style.sidebarLocation[1]}: 2px;
   padding: 0 #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px 0 #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
 }
+#{if _conf["4chan SS Sidebar"] then "
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  #{Style.sidebarLocation[0]}: 0;
+  width: #{if _conf["Sidebar"] is 'large' then 305 else if _conf['Sidebar'] is 'normal' then 254 else if _conf['Sidebar'] is 'minimal' then 27 else 0}px;
+  z-index: 1;
+  #{Style.agent}box-sizing: border-box;
+  display: block;
+}
+" else ""}
 button,
 input,
 textarea {
@@ -1137,6 +1150,46 @@ else "
   display: none;
 }"
 }[_conf["4chan Banner"]]}
+/* Board Title */
+#boardTitle {
+  font-size: #{parseInt(_conf["Font Size"], 10) + 10}px;
+  text-align: center;
+  z-index: 4;
+#{{
+"at sidebar top": "
+  position: fixed;
+  #{Style.sidebarLocation[0]}: 2px;
+  top: #{(if Style.logoOffset is 0 and _conf["Icon Orientation"] isnt "vertical" then 40 else 21) + Style.logoOffset}px;
+  width: #{width}px;
+"
+
+"at sidebar bottom": "
+  position: fixed;
+  #{Style.sidebarLocation[0]}: 2px;
+  bottom: 280px;
+  width: #{width}px;
+"
+
+"under post form": "
+  position: fixed;
+  #{Style.sidebarLocation[0]}: 2px;
+  bottom: 140px;
+  width: #{width}px;
+"
+
+"at top": ""
+
+"hide": "
+  display: none;
+"}[_conf["Board Title"]]}
+}
+.boardTitle a {
+  font-size: #{parseInt(_conf["Font Size"], 10) + 10}px;
+}
+.boardSubtitle,
+.boardSubtitle a {
+  font-size: #{parseInt(_conf["Font Size"], 10) - 1}px;
+}
 /* Dialogs */
 .move {
   cursor: pointer;
@@ -1160,12 +1213,6 @@ else "
   max-height: 300px;
   max-width: 500px;
 }
-#globalMessage {
-
-}
-#watcher {
-  position: fixed;
-}
 #menu {
   position: absolute;
   outline: none;
@@ -1174,12 +1221,10 @@ else "
 #updater {
   position: fixed;
   z-index: 84;
+  padding: 2px;
 }
 #updater:not(:hover) > div:not(.move) {
   display: none;
-}
-#updater:hover {
-  padding: 2px;
 }
 #updater input {
   text-align: right;
@@ -1396,6 +1441,9 @@ hide: "
 .inline .menu_button {
   opacity: 1;
 }
+.fileInfo {
+  padding: 0 3px;
+}
 .fileThumb {
   float: left;
   margin: 3px 20px;
@@ -1414,6 +1462,22 @@ hide: "
 .reply.post blockquote {
   clear: right;
 }
+/* OP */
+#{if _conf["OP Background"] then "
+.op.post {
+  #{Style.agent}box-sizing: border-box;
+}
+.op .postInfo {
+  padding: 3px 3px 0;
+}
+.op .fileInfo {
+  padding: 0 3px;
+}
+.op blockquote::after {
+  clear: both;
+  display: block;
+  content: '';
+}" else ""}
 /* Summary */
 #{
 if _conf["Fit Width Replies"]
@@ -1783,6 +1847,16 @@ input:not([type=radio]) {
   position: absolute;
   opacity: 0;
   z-index: -1;
+}
+#showQR {
+  display: #{if _conf["Hide Show Post Form"] then "none" else "block"};
+  z-index: 6;
+  #{Style.sidebarLocation[0]}: 2px;
+  width: #{width}px;
+  background-color: transparent;
+  text-align: center;
+  position: fixed;
+  top: auto;
 }
 /* Fake File Input */
 #file {
@@ -2557,12 +2631,13 @@ textarea.field:focus {
 #mouseover,
 #post-preview,
 #qp .post,
-#xupdater {
+#xupdater,
+.reply.post {
   border: 1px solid #{theme["Reply Border"]};
   background: #{theme["Reply Background"]};
 }
-.reply.post {
-  border-width: #{if _conf['Post Spacing'] is 0 then "1px 1px 0 1px" else '1px'};
+.thread > .replyContainer > .reply.post {
+  border-width: #{if _conf['Post Spacing'] is "0" then "1px 1px 0 1px" else '1px'};
   border-style: solid;
   border-color: #{theme["Reply Border"]};
   background: #{theme["Reply Background"]};
@@ -2789,9 +2864,9 @@ a[style="cursor: pointer; float: right;"]::after,
 #{unless Style.lightTheme then "
 filter: url(\"
 data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='
-1 -1 0 0 1
- 1 -1 0 0 1
- 1 -1 0 0 1
+-1 0 0 0 1
+ 0 -1 0 0 1
+ 0 0 -1 0 1
  0 0 0 1 0' /></filter></svg>#filters
 \");" else ""}
 }

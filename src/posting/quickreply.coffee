@@ -66,7 +66,7 @@ QR =
     QR.autohide.checked = false
 
   toggleHide: ->
-    QR.autohide.checked and QR.hide() or QR.unhide()
+    @checked and QR.hide() or QR.unhide()
 
   error: (err) ->
     if typeof err is 'string'
