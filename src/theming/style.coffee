@@ -1323,7 +1323,8 @@ else "
   text-align: center;
   font-size: 0;
   color: transparent;
-  padding: 2px;
+  overflow: hidden;
+  #{Style.agent}box-sizing: border-box;
 }
 #boardNavDesktopFoot a,
 #boardNavDesktopFoot a::after,
@@ -1331,14 +1332,16 @@ else "
   font-size: #{_conf['Font Size']}px;
 }
 #boardNavDesktopFoot:hover {
-  #{Style.agent}box-sizing: border-box;
   overflow-y: auto;
+  padding: 2px;
 }
 #boardNavDesktopFoot:not(:hover) {
   border-color: transparent;
   background-color: transparent;
   height: 0;
   overflow: hidden;
+  padding: 0;
+  border: 0 none;
 }
 #{{
 compact: "
@@ -1380,17 +1383,19 @@ hide: "
   width: #{width}px;
   #{Style.sidebarLocation[0]}: 2px !important;
   #{Style.sidebarLocation[1]}: auto !important;
+  #{Style.agent}box-sizing: border-box;
 }
 #watcher .move {
   cursor: default;
 }
 #watcher:hover {
-  #{Style.agent}box-sizing: border-box;
   overflow-y: auto;
 }
 #watcher:not(:hover) {
   height: 0;
   overflow: hidden;
+  border: 0 none;
+  padding: 0;
 }" else "
 #watcher {
   width: 200px;
@@ -1418,6 +1423,8 @@ hide: "
 #globalMessage:not(:hover) {
   height: 0;
   overflow: hidden;
+  padding: 0;
+  border: 0 none;
 }" else ""}
 /* Posts */
 .summary {
