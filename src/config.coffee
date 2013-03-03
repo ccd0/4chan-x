@@ -693,6 +693,10 @@ div.post.highlight {
         true
         'Replies fit the entire width of the page.'
       ]
+      'Hide Delete UI': [
+        false
+        'Hides vanilla report and delete functionality and UI. This does not affect Appchan\'s Menu functionality.'
+      ]
       'Reply Spacing': [
         'small'
         'The amount of space between replies.'
@@ -786,10 +790,6 @@ div.post.highlight {
       'Rounded Edges': [
         false
         'Round the edges of various 4chan elements.'
-      ]
-      'Slideout Transitions' : [
-        false
-        'Animate slideouts.'
       ]
       'Underline Links': [
         false

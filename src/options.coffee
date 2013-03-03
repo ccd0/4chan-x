@@ -1177,19 +1177,22 @@ Options =
 
   mouseover: (e) ->
     if mouseover = $.id 'mouseover'
-      if mouseover is UI.el
-        delete UI.el
-      $.rm mouseover
+      if children = mouseover.childNodes
+        for child in children
+          $.rm child
+    else
+      mouseover = $.el 'div',
+        id:        'mouseover'
+        className: 'dialog'
 
-    UI.el = mouseover = @nextSibling.cloneNode true
-    mouseover.id = 'mouseover'
-    mouseover.className = 'dialog'
-    mouseover.style.display = ''
+      $.add d.body, mouseover
+      
+    mouseover.innerHTML = @innerHTML
+
+    UI.el = mouseover
 
     $.on @, 'mousemove',      Options.hover
     $.on @, 'mouseout',       Options.mouseout
-
-    $.add d.body, mouseover
 
     return
 
@@ -1197,5 +1200,9 @@ Options =
     UI.hover e, "menu"
 
   mouseout: (e) ->
-    UI.hoverend()
+    mouseover = UI.el
+    for child in mouseover.childNodes
+      $.rm child
+    delete UI.el
+
     $.off @, 'mousemove',     Options.hover

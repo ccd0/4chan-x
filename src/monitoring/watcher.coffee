@@ -33,7 +33,7 @@ Watcher =
         link = $.el 'a', props
         link.title = link.textContent
 
-        div = $.el 'div',
+        div = $.el 'div'
         $.add div, [x, $.tn(' '), link]
         nodes.push div
 

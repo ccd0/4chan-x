@@ -269,7 +269,7 @@ data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' 
     css += """
 }
 body {
-  padding-bottom: 15px;\n
+  padding-bottom: 0;\n
 """
 
     if Style.padding.pages? and (_conf["Pagination"] is "sticky top" or _conf["Pagination"] is "sticky bottom" or _conf["Pagination"] is "top")
@@ -531,7 +531,7 @@ div.navLinks > a:first-of-type:hover::after,
     notCatalog = !g.CATALOG
     notEither  = notCatalog and g.BOARD isnt 'f'
 
-    aligner = (first, spacer, checks) ->
+    aligner = (first, checks) ->
       # Create a position to hold values
       position = [first]
 
@@ -540,24 +540,16 @@ div.navLinks > a:first-of-type:hover::after,
       for enabled in checks
         position[position.length] =
           if enabled
-            first += spacer
+            first += 19
           else
             first
 
       position
 
     if _conf["Icon Orientation"] is "horizontal"
-      if align is 'left'
-        first  = 231 + Style.sidebarOffset.W
-        spacer = -19
-
-      else
-        first  = 2
-        spacer = 19
 
       position = aligner(
-        first
-        spacer
+        2
         [
           true
           _conf['Slideout Navigation'] isnt 'hide'
@@ -657,7 +649,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 #{if _conf["Announcements"] is "slideout" then "#globalMessage," else ""}
 #{if _conf["Slideout Watcher"] then "#watcher," else ""}
 #boardNavDesktopFoot {
-  top: 16px !important;
+  top: 17px !important;
 }
 #{if _conf['Boards Navigation'] is 'top' or _conf['Boards Navigation'] is 'sticky top' then '#boardNavDesktop' else if _conf['Pagination'] is 'top' or _conf['Pagination'] is 'sticky top' then '.pagelist'} {
   padding-#{align}: #{iconOffset}px;
@@ -680,7 +672,6 @@ body > a[style="cursor: pointer; float: right;"]::after {
 
       position = aligner(
         2 + (if _conf["4chan Banner"] is "at sidebar top" then (Style.logoOffset + 19) else 0)
-        19
         [
           notEither and _conf['Image Expansion']
           true
@@ -697,7 +688,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
         ]
       )
 
-      iconOffset = 20 - (if _conf['4chan SS Navigation']
+      iconOffset = 20 + (if _conf['Updater Position'] is 'top' then 100) - (if _conf['4chan SS Navigation']
         0
       else
         Style.sidebar + parseInt _conf[align.capitalize() + " Thread Padding"], 10)
@@ -869,6 +860,7 @@ div.navLinks > a:first-of-type::after {
 /* Cleanup */
 #absbot,
 #delPassword,
+#delform > hr:last-of-type,
 #navbotright,
 #postForm,
 .mobile,
@@ -906,6 +898,7 @@ body > hr {
 }
 /* Hidden UI */
 #catalog,
+#navlinks,
 #navtopright,
 .cataloglink,
 .navLinks,
@@ -918,6 +911,10 @@ a[style="cursor: pointer; float: right;"] {
 .board > hr:last-of-type {
   visibility: hidden;
 }
+/* Fappe Tyme */
+.fappeTyme .thread > .noFile {
+  display: none;
+}
 /* Defaults */
 a {
   text-decoration: none;
@@ -927,8 +924,8 @@ body {
   font-size: #{parseInt(_conf["Font Size"], 10)}px;
   font-family: #{_conf["Font"]};
   min-height: 100%;
-  margin-top: 1px;
-  margin-bottom: 1px;
+  margin-top: 0;
+  margin-bottom: 0;
   margin-#{Style.sidebarLocation[0]}: #{if /^boards\.4chan\.org$/.test(location.hostname) then Style.sidebar else '2'}px;
   margin-#{Style.sidebarLocation[1]}: 2px;
   padding: 0 #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px 0 #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
@@ -954,9 +951,14 @@ hr {
   border-right: .3em solid transparent;
   border-left: .3em solid transparent;
 }
+/* Thread / Reply Nav */
+#navlinks a {
+  position: fixed;
+  z-index: 85;
+}
 /* Navigation */
 #boardNavDesktop {
-  z-index: 85;
+  z-index: 8;
   border-width: 1px;
 #{{
 "sticky top": "
@@ -1096,6 +1098,7 @@ else "
 /* Updater */
 #updater {
   position: fixed;
+  z-index: 84;
 }
 #updater:not(:hover) > div:not(.move) {
   display: none;
@@ -1148,8 +1151,18 @@ else "
 }
 
 /* Delete Buttons */
+#{if _conf['Hide Delete UI'] then "
+.deleteform,
+.post .rice {
+  display: none;
+}
+.postInfo {
+  padding: 0 0 0 3px;
+}
+" else "
 .deleteform {
   position: fixed;
+  z-index: 90;
   width: 0;
   bottom: 0;
   right: 0;
@@ -1162,6 +1175,7 @@ else "
   width: auto;
 }
 .deleteform::before {
+  z-index: 90;
   border-width: 1px 0 0 1px;
   border-style: solid;
   content: 'X';
@@ -1180,22 +1194,36 @@ else "
 }
 .deleteform input {
   margin: 0 1px 0 0;
-}
+}"}
 /* Slideout Navigation */
+#boardNavDesktopFoot {
+  position: fixed;
+  width: #{width}px;
+  #{Style.sidebarLocation[0]}: 0;
+  text-align: center;
+  font-size: 0;
+  color: transparent;
+  padding: 2px;
+}
+#boardNavDesktopFoot a,
+#boardNavDesktopFoot a::after,
+#boardNavDesktopFoot a::before {
+  font-size: #{_conf['Font Size']}px;
+}
+#boardNavDesktopFoot:hover {
+  #{Style.agent}box-sizing: border-box;
+  overflow-y: scroll;
+}
 #boardNavDesktopFoot:not(:hover) {
   border-color: transparent;
   background-color: transparent;
-}
-#boardNavDesktopFoot {
-  #{Style.agent}box-sizing: border-box;
+  height: 0;
+  overflow: hidden;
 }
 #{{
 compact: "
 #boardNavDesktopFoot {
   word-spacing: 1px;
-}
-#boardNavDesktopFoot:hover {
-  height: #{if _conf["Slideout Transitions"] then '84px' else 'auto'};
 }
 "
 list: "
@@ -1203,9 +1231,7 @@ list: "
   display: block;
 }
 #boardNavDesktopFoot:hover {
-  height: #{if _conf["Slideout Transitions"] then '400px' else 'auto'};
   max-height: 400px;
-  overflow-y: scroll;
 }
 #boardNavDesktopFoot a::after {
   content: ' - ' attr(title);
@@ -1223,6 +1249,37 @@ hide: "
 #boardNavDesktopFoot {
   display: none;
 }"}[_conf["Slideout Navigation"]]}
+/* Watcher */
+#watcher {
+  position: fixed;
+  z-index: 86;
+  padding: 2px;
+}
+#{ if _conf['Slideout Watcher'] then "
+#watcher {
+  width: #{width}px;
+  #{Style.sidebarLocation[0]}: 0 !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+}
+#watcher .move {
+  cursor: default;
+}
+#watcher:hover {
+  #{Style.agent}box-sizing: border-box;
+  overflow-y: scroll;
+}
+#watcher:not(:hover) {
+  border-color: transparent;
+  background-color: transparent;
+  height: 0;
+  overflow: hidden;
+}" else "
+#watcher {
+  width: 200px;
+  #{Style.sidebarLocation[0]}: 0;
+}
+"}
+/* Announcements */
 /* Posts */
 .summary {
   margin-bottom: #{Style.replyMargin}px;
@@ -1267,11 +1324,14 @@ if _conf["Fit Width Replies"]
 else ""
 }
 /* Inlined */
+.inline {
+  margin: 2px 8px 2px 2px;
+}
+.post .inline {
+  margin: 2px;
+}
 .inline .replyContainer {
   display: inline-block;
-}
-.inline .reply.post {
-  width: auto;
 }
 /* Inlined Clearfix */
 .inline blockquote::after {
@@ -1448,11 +1508,13 @@ input:checked + .rice {
 
 #{
 unless _conf['Post Form Style'] is 'tabbed slideout'
-  unless _conf['Post Form Style'] is 'float' or _conf['Show Post Form Header']
-    "#qrtab { display: none; }"
-  else unless _conf['Post Form Style'] is 'slideout'
-    ".autohide:not(:hover) > form { display: none !important; }"
-  else ""
+  (
+    unless _conf['Post Form Style'] is 'float' or _conf['Show Post Form Header']
+      "#qrtab { display: none; }"
+    else unless _conf['Post Form Style'] is 'slideout'
+      ".autohide:not(:hover) > form { display: none !important; }"
+    else ""
+  ) + "#qrtab { margin-bottom: 1px; }"
 else ""}
 
 #{
@@ -1497,7 +1559,7 @@ if _conf['Post Form Style'] isnt 'float' and _conf["Post Form Slideout Transitio
 if _conf['Compact Post Form Inputs'] then "
 .userInfo input.field {
   width: 29.6%;
-  margin-left: 0.4%;
+  margin: 0 0 0 0.4%;
 }
 #qr textarea.field {
   height: 14.8em;
@@ -1506,13 +1568,15 @@ if _conf['Compact Post Form Inputs'] then "
 #qr.captcha textarea.field {
   height: 9em;
 }
+
 " else "
+
 .userInfo input.field {
   width: 100%;
 }
 .userInfo input.field[name='name'] {
   width: 89.6%;
-  margin-left: 0.4%
+  margin: 0 0 0 0.4%;
 }
 #qr textarea.field {
   height: 11.6em;
@@ -1531,6 +1595,9 @@ input.field.tripped:not(:hover):not(:focus) {
 }" else ""
 }
 
+#qr textarea {
+  resize: #{_conf['Textarea Resize']};
+}
 .captchaimg {
   margin: 1px 0 0;
   text-align: center;
@@ -1796,6 +1863,7 @@ article li {
 #options .option {
   width: 50%;
   display: inline-block;
+  vertical-align: bottom;
 }
 .optionlabel {
   padding-left: 18px;
@@ -1850,6 +1918,15 @@ article li {
   min-height: 350px;
   resize: vertical;
   width: 100%;
+}
+/* Hover Functionality */
+#mouseover {
+  z-index: 999;
+  position: fixed;
+  max-width: 70%;
+}
+#mouseover:empty {
+  display: none;
 }
 /* Mascot Tab */
 #mascot_hide {
@@ -1990,7 +2067,7 @@ opacity: 0;
   min-width: 100%;
   max-width: 100%;
   height: 20em;
-  resize: #{_conf['Textarea Resize']};
+  resize: vertical;
 }
 /* Mascot Editor */
 #mascotConf {
@@ -2541,9 +2618,6 @@ a .name {
 #options li,
 .selectrice li:not(:first-of-type) {
   border-top: 1px solid #{if Style.lightTheme then "rgba(0,0,0,0.05)" else "rgba(255,255,255,0.025)"};
-}
-#mascot img {
-  #{Style.agent}transform: scaleX(#{(if Style.sidebarLocation[0] is "left" then "-" else "")}1);
 }
 #navtopright .exlinksOptionsLink::after,
 #appchanOptions,

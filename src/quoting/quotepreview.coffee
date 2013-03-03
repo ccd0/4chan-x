@@ -58,9 +58,6 @@ QuotePreview =
 
     _conf = Conf
 
-    if _conf['Fappe Tyme']
-      $.rmClass qp.firstElementChild, 'noFile'
-
     if el = $.id "p#{postID}"
       _conf = Conf
       if _conf['Quote Highlighting']

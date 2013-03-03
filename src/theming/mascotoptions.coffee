@@ -52,6 +52,7 @@ MascotTools =
     else
       '-1'
   };
+  #{if Style.sidebarLocation[0] is "left" then "#{Style.agent}transform: scaleX(-1);" else ""}
   bottom: #{
     if mascot.position is 'top'
       'auto'
