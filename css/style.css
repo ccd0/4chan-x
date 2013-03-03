@@ -734,6 +734,7 @@ a[href="javascript:;"] {
   border-bottom: 0;
   display: -webkit-flex;
   display: flex;
+  margin: 2px 0;
   -webkit-flex-direction: column;
   flex-direction: column;
   position: absolute;

@@ -67,19 +67,14 @@ UI = do ->
       bLeft   = doc.scrollLeft + d.body.scrollLeft + bRect.left
       cHeight = doc.clientHeight
       cWidth  = doc.clientWidth
-      if bRect.top + bRect.height + mRect.height < cHeight
-        # XXX calc(100% + 2px) would have been better, but >Presto.
-        top    = bRect.height + 2 + 'px'
-        bottom = 'auto'
+      [top, bottom] = if bRect.top + bRect.height + mRect.height < cHeight
+        ['100%', null]
       else
-        top    = 'auto'
-        bottom = bRect.height + 2 + 'px'
-      if bRect.left + mRect.width < cWidth
-        left  = '0px'
-        right = 'auto'
+        [null, '100%']
+      [left, right] = if bRect.left + mRect.width < cWidth
+        ['0px', null]
       else
-        left  = 'auto'
-        right = '0px'
+        [null, '0px']
       {style} = menu
       style.top    = top
       style.right  = right
