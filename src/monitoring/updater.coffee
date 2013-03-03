@@ -89,12 +89,10 @@ Updater =
       setTimeout Updater.update, 500
 
     checkpost: (status) ->
-      unless status is 404 or Updater.save.contains(Updater.postID) or Updater.checkPostCount >= 10
-        check = (delay) ->
-          setTimeout Updater.update, delay
-        return check ++Updater.checkPostCount * 500
-      Updater.save = []
+      unless status is 404 or Updater.foundPost or Updater.checkPostCount >= 10
+        return setTimeout Updater.update, ++Updater.checkPostCount * 500
       Updater.checkPostCount = 0
+      delete Updater.foundPost
       delete Updater.postID
 
     visibility: ->
@@ -192,7 +190,9 @@ Updater =
       id = +lastPost.id[2..]
       nodes = for post in posts.reverse()
         break if post.no <= id # Make sure to not insert older posts.
-        Updater.save.push post.no if Updater.postID
+        if Updater.postID
+          if "#{post.no}" is Updater.postID
+            Updater.foundPost = true
         Build.postFromObject post, g.BOARD
 
       count = nodes.length
