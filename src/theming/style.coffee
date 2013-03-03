@@ -1466,6 +1466,10 @@ hide: "
 .post blockquote {
   margin: #{_conf['Vertical Post Padding']}px #{_conf['Horizontal Post Padding']}px;
 }
+.spoiler,
+s {
+  text-decoration: none;
+}
 /* Reply Clearfix */
 .reply.post blockquote {
   clear: right;
@@ -2581,15 +2585,11 @@ s:not(:hover) * {
   color: rgb(0,0,0) !important;
   text-shadow: none !important;
 }
-.spoiler,
-s {
-  color: rgb(0,0,0);
+.spoiler:not(:hover),
+s:not(:hover) {
   background-color: rgb(0,0,0);
-}
-.spoiler:hover,
-s:hover {
-  color: #{theme["Text"]};
-  background-color: transparent;
+  color: rgb(0,0,0) !important;
+  text-shadow: none !important;
 }" else ""}
 #exlinks-options,
 #options,
