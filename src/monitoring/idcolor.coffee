@@ -1,6 +1,7 @@
 IDColor =
   init: ->
-    return unless ['b', 'q', 'soc'].contains g.BOARD
+    QuotePreview.callbacks.push @node
+    ExpandComment.callbacks.push @node
     Main.callbacks.push @node
 
   node: (post) ->

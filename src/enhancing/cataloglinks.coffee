@@ -4,7 +4,7 @@ CatalogLinks =
       id:        'toggleCatalog'
       innerHTML: '[<a href=javascript:;></a>]'
     $.on (a = el.firstElementChild), 'click', @toggle
-    $.add $.id('boardNavDesktop'), el
+    $.add $.id('boardNavDesktop'), [$.tn(' '), el]
 
     # Set links on load.
     @toggle.call a, true

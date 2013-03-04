@@ -1,8 +1,98 @@
 Keybinds =
   init: ->
+    @bindings = @bind()
     for node in $$ '[accesskey]'
       node.removeAttribute 'accesskey'
     $.on d, 'keydown',  Keybinds.keydown
+
+  bind: ->
+    _conf = Conf
+    keys  = {}
+    
+    # QR & Options
+    keys[_conf.openQR] = (thread) ->
+      Keybinds.qr thread, true
+    keys[_conf.openEmptyQR] = (thread) ->
+      Keybinds.qr thread
+    keys[_conf.openOptions] = ->
+      Options.dialog() unless $.id 'overlay'
+    keys[_conf.close] = ->
+      if o = $.id 'overlay'
+        Options.close.call o
+      else if QR.el
+        QR.close()
+    keys[_conf.submit] = ->
+      QR.submit() if QR.el and !QR.status()
+    keys[_conf.hideQR] = ->
+      if QR.el
+        return QR.el.hidden = false if QR.el.hidden
+        QR.autohide.click()
+      else QR.open()
+    keys[_conf.toggleCatalog] = ->
+      CatalogLinks.toggle()
+    keys[_conf.spoiler] = ->
+      return unless ($ '[name=spoiler]') and nodeName is 'textarea'
+      Keybinds.tags 'spoiler', target
+    keys[_conf.math] = ->
+      return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and nodeName is 'textarea'
+      Keybinds.tags 'math', target
+    keys[_conf.eqn] = ->
+      return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and nodeName is 'textarea'
+      Keybinds.tags 'eqn', target
+    keys[_conf.code] = ->
+      return unless g.BOARD is Main.hasCodeTags and nodeName is 'textarea'
+      Keybinds.tags 'code', target
+    keys[_conf.sageru] = ->
+      $("[name=email]", QR.el).value = "sage"
+      QR.selected.email = "sage"
+
+    # Thread related
+    keys[_conf.watch] = (thread) ->
+      Watcher.toggle thread
+    keys[_conf.update] = ->
+      Updater.update()
+    keys[_conf.unreadCountTo0] = ->
+      Unread.replies = []
+      Unread.update true
+
+    # Images
+    keys[_conf.expandImage] = (thread) ->
+      Keybinds.img thread
+    keys[_conf.expandAllImages] = (thread) ->
+      Keybinds.img thread, true
+
+    # Board Navigation
+    keys[_conf.zero] = ->
+      window.location = "/#{g.BOARD}/0#delform"
+    keys[_conf.nextPage] = ->
+      if form = $ '.next form'
+        window.location = form.action
+    keys[_conf.previousPage] = ->
+     if form = $ '.prev form'
+       window.location = form.action
+
+    # Thread Navigation
+    keys[_conf.nextThread] = ->
+      return if g.REPLY
+      Nav.scroll +1
+    keys[_conf.previousThread] = ->
+      return if g.REPLY
+      Nav.scroll -1
+    keys[_conf.expandThread] = (thread) ->
+      ExpandThread.toggle thread
+    keys[_conf.openThread] = (thread) ->
+      Keybinds.open thread
+    keys[_conf.openThreadTab] = (thread) ->
+      Keybinds.open thread, true
+
+    # Reply Navigation
+    keys[_conf.nextReply] = (thread) ->
+      Keybinds.hl +1, thread
+    keys[_conf.previousReply] = (thread) ->
+      Keybinds.hl -1, thread
+    keys[_conf.hide] = (thread) ->
+      ThreadHiding.toggle thread if /\bthread\b/.test thread.className
+    return keys
 
   keydown: (e) ->
     return unless key = Keybinds.keyCode e
@@ -11,88 +101,10 @@ Keybinds =
       return unless (key is 'Esc') or (/\+/.test key)
 
     thread = Nav.getThread()
-    _conf  = Conf
-    switch key
-      # QR & Options
-      when _conf.openQR
-        Keybinds.qr thread, true
-      when _conf.openEmptyQR
-        Keybinds.qr thread
-      when _conf.openOptions
-        Options.dialog() unless $.id 'overlay'
-      when _conf.close
-        if o = $.id 'overlay'
-          Options.close.call o
-        else if QR.el
-          QR.close()
-      when _conf.submit
-        QR.submit() if QR.el and !QR.status()
-      when _conf.hideQR
-        if QR.el
-          return QR.el.hidden = false if QR.el.hidden
-          QR.autohide.click()
-        else QR.open()
-      when _conf.toggleCatalog
-        CatalogLinks.toggle()
-      when _conf.spoiler
-        return unless ($ '[name=spoiler]') and nodeName is 'textarea'
-        Keybinds.tags 'spoiler', target
-      when _conf.math
-        return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and nodeName is 'textarea'
-        Keybinds.tags 'math', target
-      when _conf.eqn
-        return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and nodeName is 'textarea'
-        Keybinds.tags 'eqn', target
-      when _conf.code
-        return unless g.BOARD is Main.hasCodeTags and nodeName is 'textarea'
-        Keybinds.tags 'code', target
-      when _conf.sageru
-        $("[name=email]", QR.el).value = "sage"
-        QR.selected.email = "sage"
-      # Thread related
-      when _conf.watch
-        Watcher.toggle thread
-      when _conf.update
-        Updater.update()
-      when _conf.unreadCountTo0
-        Unread.replies = []
-        Unread.update true
-      # Images
-      when _conf.expandImage
-        Keybinds.img thread
-      when _conf.expandAllImages
-        Keybinds.img thread, true
-      # Board Navigation
-      when _conf.zero
-        window.location = "/#{g.BOARD}/0#delform"
-      when _conf.nextPage
-        if form = $ '.next form'
-          window.location = form.action
-       when _conf.previousPage
-        if form = $ '.prev form'
-          window.location = form.action
-      # Thread Navigation
-      when _conf.nextThread
-        return if g.REPLY
-        Nav.scroll +1
-      when _conf.previousThread
-        return if g.REPLY
-        Nav.scroll -1
-      when _conf.expandThread
-        ExpandThread.toggle thread
-      when _conf.openThread
-        Keybinds.open thread
-      when _conf.openThreadTab
-        Keybinds.open thread, true
-      # Reply Navigation
-      when _conf.nextReply
-        Keybinds.hl +1, thread
-      when _conf.previousReply
-        Keybinds.hl -1, thread
-      when _conf.hide
-        ThreadHiding.toggle thread if /\bthread\b/.test thread.className
-      else
-        return
+
+    return unless bind = Keybinds.bindings[key]
+    bind(thread)
+
     e.preventDefault()
 
   keyCode: (e) ->

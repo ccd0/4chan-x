@@ -76,7 +76,7 @@ Updater =
   ###
 
   audio:
-    $.el 'audio'
+    $.el 'audio',
       src: 'data:audio/wav;base64,UklGRjQDAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAc21wbDwAAABBAAADAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkYXRhzAIAAGMms8em0tleMV4zIpLVo8nhfSlcPR102Ki+5JspVEkdVtKzs+K1NEhUIT7DwKrcy0g6WygsrM2k1NpiLl0zIY/WpMrjgCdbPhxw2Kq+5Z4qUkkdU9K1s+K5NkVTITzBwqnczko3WikrqM+l1NxlLF0zIIvXpsnjgydZPhxs2ay95aIrUEkdUdC3suK8N0NUIjq+xKrcz002WioppdGm091pK1w0IIjYp8jkhydXPxxq2K295aUrTkoeTs65suK+OUFUIzi7xqrb0VA0WSoootKm0t5tKlo1H4TYqMfkiydWQBxm16+85actTEseS8y7seHAPD9TIza5yKra01QyWSson9On0d5wKVk2H4DYqcfkjidUQB1j1rG75KsvSkseScu8seDCPz1TJDW2yara1FYxWSwnm9Sn0N9zKVg2H33ZqsXkkihSQR1g1bK65K0wSEsfR8i+seDEQTxUJTOzy6rY1VowWC0mmNWoz993KVc3H3rYq8TklSlRQh1d1LS647AyR0wgRMbAsN/GRDpTJTKwzKrX1l4vVy4lldWpzt97KVY4IXbUr8LZljVPRCxhw7W3z6ZISkw1VK+4sMWvXEhSPk6buay9sm5JVkZNiLWqtrJ+TldNTnquqbCwilZXU1BwpKirrpNgWFhTaZmnpquZbFlbVmWOpaOonHZcXlljhaGhpZ1+YWBdYn2cn6GdhmdhYGN3lp2enIttY2Jjco+bnJuOdGZlZXCImJqakHpoZ2Zug5WYmZJ/bGlobX6RlpeSg3BqaW16jZSVkoZ0bGtteImSk5KIeG5tbnaFkJKRinxxbm91gY2QkIt/c3BwdH6Kj4+LgnZxcXR8iI2OjIR5c3J0e4WLjYuFe3VzdHmCioyLhn52dHR5gIiKioeAeHV1eH+GiYqHgXp2dnh9hIiJh4J8eHd4fIKHiIeDfXl4eHyBhoeHhH96eHmA'
 
   cb:
@@ -86,12 +86,10 @@ Updater =
       setTimeout Updater.update, 500
 
     checkpost: (status) ->
-      unless status is 404 or Updater.save.contains(Updater.postID) or Updater.checkPostCount >= 10
-        check = (delay) ->
-          setTimeout Updater.update, delay
-        return check ++Updater.checkPostCount * 500
-      Updater.save = []
+      unless status is 404 or Updater.foundPost or Updater.checkPostCount >= 10
+        return setTimeout Updater.update, ++Updater.checkPostCount * 500
       Updater.checkPostCount = 0
+      delete Updater.foundPost
       delete Updater.postID
 
     visibility: ->
@@ -189,7 +187,9 @@ Updater =
       id = +lastPost.id[2..]
       nodes = for post in posts.reverse()
         break if post.no <= id # Make sure to not insert older posts.
-        Updater.save.push post.no if Updater.postID
+        if Updater.postID
+          if "#{post.no}" is Updater.postID
+            Updater.foundPost = true
         Build.postFromObject post, g.BOARD
 
       count = nodes.length
@@ -207,6 +207,12 @@ Updater =
 
       scroll = Conf['Scrolling'] and Updater.scrollBG() and
         lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
+
+      posts = []
+      for node in nodes
+        posts.push Main.preParse node
+      Main.node posts
+
       $.add Updater.thread, nodes.reverse()
       if scroll and nodes?
         nodes[0].scrollIntoView()

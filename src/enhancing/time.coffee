@@ -1,10 +1,10 @@
 Time =
   init: ->
     Time.foo()
+    QuotePreview.callbacks.push @node
     Main.callbacks.push @node
 
   node: (post) ->
-    return if post.isInlined and not post.isCrosspost
     node             = $ '.postInfo > .dateTime', post.el
     Time.date        = new Date node.dataset.utc * 1000
     node.textContent = Time.funk Time

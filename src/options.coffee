@@ -23,7 +23,7 @@ Options =
       $.prepend setting, [$.tn('['), a, $.tn('] ')]
 
   dialog: ->
-    dialog = Options.el = $.el 'div'
+    dialog = Options.el = $.el 'div',
       id: 'options'
       className: 'reply dialog'
       innerHTML: '<div id=optionsbar>
@@ -57,7 +57,7 @@ Options =
     <textarea name=sauces id=sauces class=field></textarea>
   </div>
   <input type=radio name=tab hidden id=filter_tab>
-  <div>
+  <div class=filter_tab>
     <div class=warning><code>Filter</code> is disabled.</div>
     <select name=filter>
       <option value=guide>Guide</option>
@@ -206,7 +206,7 @@ Options =
     # I start by gathering all of the main configuration category objects
     for key, obj of Config.main
       # and creating an unordered list for the main categories.
-      ul = $.el 'ul'
+      ul = $.el 'ul',
         textContent: key
 
       # Then I gather the variables from each category
@@ -339,6 +339,7 @@ Options =
 
     # The overlay over 4chan and under the options dialog you can click to close.
     overlay = $.el 'div', id: 'overlay'
+    $.on dialog,  'click', (e) -> e.stopPropagation()
     $.on overlay, 'click', Options.close
     $.on dialog,  'click', (e) -> e.stopPropagation()
     $.add overlay, dialog
@@ -378,14 +379,14 @@ Options =
   customNavigation:
     dialog: (dialog) ->
       div = $ "#customNavigation", dialog
-      ul = $.el "ul"
-      ul.innerHTML = "Custom Navigation"
+      ul = $.el "ul",
+        textContent: "Custom Navigation"
 
       # Delimiter
-      li = $.el "li"
+      li = $.el "li",
         className: "delimiter"
         textContent: "delimiter: "
-      input = $.el "input"
+      input = $.el "input",
         className: "field"
         name:      "delimiter"
       input.setAttribute "value", userNavigation.delimiter
@@ -402,7 +403,7 @@ Options =
       $.add ul, li
 
       # Description of Syntax.
-      li = $.el "li"
+      li = $.el "li",
         innerHTML: "Navigation Syntax:<br>Display Name | Title / Alternate Text | URL"
       $.add ul, li
 
@@ -419,7 +420,7 @@ Options =
 
         # This input holds the index of the current link in the userNavigation array/object.
         li = $.el "li"
-        input = $.el "input"
+        input = $.el "input",
           className: "hidden"
           value:     index
           type:      "hidden"
@@ -427,7 +428,7 @@ Options =
 
         $.add li, input
 
-        #Generate inputs for list
+        # Generate inputs for list
         for itemIndex, item of link
 
           # Avoid iterating through prototypes.
@@ -435,7 +436,7 @@ Options =
             continue
 
           # Fill input with relevant values.
-          input = $.el "input"
+          input = $.el "input",
             className:   "field"
             name:        itemIndex
             value:       item
@@ -449,10 +450,10 @@ Options =
             userNavigation.links[@parentElement.firstChild.value][@name] = @value
             $.set "userNavigation", userNavigation
 
-          $.add li, input
+          $.add li, [input, $.tn ' ']
 
         # Add Custom Link
-        addLink = $.el "a"
+        addLink = $.el "a",
           textContent: " + "
           href: "javascript:;"
 
@@ -468,7 +469,7 @@ Options =
           Options.customNavigation.cleanup()
 
         # Delete Custom Link
-        removeLink = $.el "a"
+        removeLink = $.el "a",
           textContent: " x "
           href: "javascript:;"
 
@@ -482,7 +483,7 @@ Options =
 
       # Final addLink Button. Allows the user to add a new item
       # to the bottom of the list or add an item if none exist.
-      li = $.el "li"
+      li = $.el "li",
         innerHTML: "<a name='add' href='javascript:;'>+</a> | <a name='reset' href='javascript:;'>Reset</a>"
 
       $.on $('a[name=add]', li), "click", ->
@@ -646,19 +647,22 @@ Options =
 
   mouseover: (e) ->
     if mouseover = $.id 'mouseover'
-      if mouseover is UI.el
-        delete UI.el
-      $.rm mouseover
+      if children = mouseover.childNodes
+        for child in children
+          $.rm child
+    else
+      mouseover = $.el 'div',
+        id:        'mouseover'
+        className: 'dialog reply'
 
-    UI.el = mouseover = @nextSibling.cloneNode true
-    mouseover.id = 'mouseover'
-    mouseover.className = 'dialog reply'
-    mouseover.style.display = ''
+      $.add d.body, mouseover
+      
+    mouseover.innerHTML = @nextSibling.innerHTML
+
+    UI.el = mouseover
 
     $.on @, 'mousemove',      Options.hover
     $.on @, 'mouseout',       Options.mouseout
-
-    $.add d.body, mouseover
 
     return
 
@@ -666,5 +670,9 @@ Options =
     UI.hover e, "menu"
 
   mouseout: (e) ->
-    UI.hoverend()
+    mouseover = UI.el
+    for child in mouseover.childNodes
+      $.rm child
+    delete UI.el
+
     $.off @, 'mousemove',     Options.hover

@@ -29,7 +29,7 @@ BanChecker =
 
   prepend: (reason) ->
     unless BanChecker.el
-      Banchecker.el = el = $.el 'h2'
+      Banchecker.el = el = $.el 'h2',
         id:    'banmessage'
         class: 'warning'
         innerHTML: "

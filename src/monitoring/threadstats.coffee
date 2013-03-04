@@ -1,21 +1,17 @@
 ThreadStats =
   init: ->
 
-    ThreadStats.postcount = $.el 'span'
+    ThreadStats.postcount = $.el 'span',
       id:          'postcount'
       textContent: '0'
 
-    ThreadStats.imagecount = $.el 'span'
+    ThreadStats.imagecount = $.el 'span',
       id:          'imagecount'
       textContent: '0'
 
     if Conf['Thread Updater'] and move = Updater.count.parentElement
       container = $.el 'span'
-      $.add container, $.tn('[')
-      $.add container, ThreadStats.postcount
-      $.add container, $.tn(' / ')
-      $.add container, ThreadStats.imagecount
-      $.add container, $.tn('] ')
+      $.add container, [$.tn('['), ThreadStats.postcount, $.tn(' / '), ThreadStats.imagecount, $.tn('] ')]
       $.prepend move, container
     else
       dialog = UI.dialog 'stats', 'bottom: 0; left: 0;', '<div class=move></div>'

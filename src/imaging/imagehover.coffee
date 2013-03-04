@@ -1,9 +1,12 @@
 ImageHover =
   init: ->
+    QuoteInline.callbacks.push @node
     Main.callbacks.push @node
+
   node: (post) ->
     return if (!post.img or post.hasPDF)
     $.on post.img, 'mouseover', ImageHover.mouseover
+
   mouseover: ->
     # Make sure to remove the previous image hover
     # in case it got stuck. Opera-only bug?
@@ -15,7 +18,7 @@ ImageHover =
     # Don't stop other elements from dragging
     return if UI.el
 
-    el = UI.el = $.el 'img'
+    el = UI.el = $.el 'img',
       id: 'ihover'
       src: @parentNode.href
     $.add d.body, el

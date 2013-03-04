@@ -339,7 +339,6 @@ h2 {
 .gecko #qr [type=submit] {
   padding: 0 1px; /* Gecko does not respect box-sizing: border-box */
 }
-
 .fileText:hover .fntrunc,
 .fileText:not(:hover) .fnfull {
   display: none;
@@ -351,23 +350,19 @@ h2 {
 .presto .fitwidth img[data-md5] + img {
   width: 100%;
 }
-
 #qr, #qp, #updater, #stats, #ihover, #overlay, #navlinks, #mouseover {
   position: fixed;
 }
-
 #ihover {
   max-height: 97%;
   max-width: 75%;
   padding-bottom: 18px;
 }
-
 #navlinks {
   font-size: 16px;
   top: 25px;
   right: 5px;
 }
-
 body {
   box-sizing: border-box;
   #{agent}box-sizing: border-box;

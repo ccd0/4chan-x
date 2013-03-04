@@ -1,6 +1,23 @@
 QuoteInline =
   init: ->
+    @callbacks.push @node
+    ExpandComment.callbacks.push @node
     Main.callbacks.push @node
+    
+  callbacks: []
+  
+  cb: (post, root) ->
+    post.isCrosspost = post.isInlined = true
+    post.threadID = $.x('ancestor::div[parent::div[@class="board"]]', root).id.match(/\d+$/)[0]
+    for callback in Main.callbacks
+      callback post
+    return
+
+  cb2: (post) ->
+    post.isInlined = true
+    for callback in QuoteInline.callbacks
+      callback post
+    return
 
   node: (post) ->
     for quote in post.quotes
@@ -43,6 +60,7 @@ QuoteInline =
       postID   = q.dataset.id
 
     el = if board is g.BOARD then $.id "p#{postID}" else false
+
     inline = $.el 'div',
       id: "i#{postID}"
       className: if el then 'inline' else 'inline crosspost'
@@ -53,12 +71,12 @@ QuoteInline =
       else
         $.x 'ancestor-or-self::*[parent::blockquote][1]', q
 
-    if Conf['Quote Hash Navigation'] and !isBacklink
+    if Conf['Quote Hash Navigation'] and !isBacklink and root is q
       $.after root.nextElementSibling, inline
     else
       $.after root, inline
 
-    Get.post board, threadID, postID, inline
+    Get.post board, threadID, postID, inline, QuoteInline.cb, QuoteInline.cb2
 
     return unless el
 

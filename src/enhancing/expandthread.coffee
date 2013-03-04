@@ -15,11 +15,11 @@ ExpandThread =
 
     switch a.textContent[0]
       when '+'
-        a.textContent = a.textContent.replace '+', 'Å~ Loading...'
+        a.textContent = a.textContent.replace '+', '√ó Loading...'
         $.cache url, -> ExpandThread.parse @, thread, a
 
       when 'X'
-        a.textContent = a.textContent.replace 'Å~ Loading...', '+'
+        a.textContent = a.textContent.replace '√ó Loading...', '+'
         $.cache.requests[url].abort()
 
       when '-'
@@ -41,7 +41,7 @@ ExpandThread =
       $.off a, 'click', ExpandThread.cb.toggle
       return
 
-    a.textContent = a.textContent.replace 'Å~ Loading...', '-'
+    a.textContent = a.textContent.replace '√ó Loading...', '-'
 
     posts = JSON.parse(req.response).posts
     if spoilerRange = posts[0].custom_spoiler
@@ -57,10 +57,22 @@ ExpandThread =
       link.href = "res/#{threadID}#p#{id}"
       link.nextSibling.href = "res/#{threadID}#q#{id}"
       nodes.push post
-    # eat everything, then replace with fresh full posts
+
+    # Eat everything, then replace with fresh full posts
     for post in $$ '.summary ~ .replyContainer', a.parentNode
       $.rm post
+
     for backlink in $$ '.backlink', a.previousElementSibling
       # Keep backlinks from other threads.
       $.rm backlink unless $.id backlink.hash[1..]
+    
+    # Parse posts and add features.
+    posts = []
+    for node in nodes
+      post = Main.preParse node
+      post.threadID = threadID
+      posts.push post
+
+    Main.node posts
+
     $.after a, nodes

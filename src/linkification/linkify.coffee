@@ -1,52 +1,47 @@
 Linkify =
   init: ->
+    if Conf['Embedding']
+      QuoteInline.callbacks.push (post) ->
+        for embed in $$('.embed', post.blockquote)
+          $.on embed, 'click', Linkify.toggle
+        return
+    QuotePreview.callbacks.push @node
+    ExpandComment.callbacks.push @node
     Main.callbacks.push @node
 
   regString: ///(
     \b(
       [a-z]+:// # http://, ftp://
       |
-      [-a-z0-9]+\.[-a-z0-9]+\.[-a-z0-9]+ # www.test-9.com
+      [a-z]{3,}\.[-a-z0-9]+\.[a-z]+
       |
-      [-a-z0-9]+\.(com|net|tv|org|xxx|us) # this-is-my-web-sight.net.
+      [-a-z0-9]+\.[a-z]{2,4} # this-is-my-web-sight.net.
       |
-      [a-z]+:[a-z0-9] # mailto:, magnet:
+      [0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ # IP Address
+      |
+      [a-z]{3,}:[a-z0-9?] # mailto:, magnet:
       |
       [a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9] # E-mails, also possibly anonymous:password@192.168.2.1
     )
-    [^\s,]+ # Terminate at Whitespace
+    [^\s'"]+ # Terminate at Whitespace
   )///gi
 
   cypher: $.el 'div'
 
   node: (post) ->
-    if post.isInlined and not post.isCrosspost
-      if Conf['Embedding']
-        for embed in $$('.embed', post.blockquote)
-          $.on embed, 'click', Linkify.toggle
-      return
-
-    snapshot = d.evaluate './/text()', post.blockquote, null, 6, null
-
-    # By using an out-of-document element to hold text I
-    # can use the browser's methods and properties for
-    # character escaping, instead of depending on loose code
+    snapshot = $.X './/text()', post.blockquote
     cypher = Linkify.cypher
     i      = -1
     len    = snapshot.snapshotLength
 
     while ++i < len
-      nodes = []
+      nodes = d.createDocumentFragment()
       node  = snapshot.snapshotItem i
       data  = node.data
 
       # Test for valid links
       continue unless node.parentNode and Linkify.regString.test data
 
-      # Regex.test stores the index of its last match.
-      # Because I am matching different nodes, this causes issues,
-      # like the next checked line failing to test
-      # (which also resets ...lastIndex)
       Linkify.regString.lastIndex = 0
 
       cypherText = []
@@ -74,28 +69,19 @@ Linkify =
       if cypherText.length
         data = cypherText.join ''
 
-      # Re-check for links due to string merging.
       links = data.match Linkify.regString
 
       for link in links
         index = data.indexOf link
 
-        # Potential text before this valid link.
-        # Convert <wbr> and spoilers into elements
         if text = data[...index]
           # press button get bacon
           cypher.innerHTML = text
           for child in cypher.childNodes
-            nodes.push child
+            $.add nodes, child
 
         cypher.innerHTML = (if link.indexOf(':') < 0 then (if link.indexOf('@') > 0 then 'mailto:' + link else 'http://' + link) else link).replace /<(wbr|s|\/s)>/g, ''
 
-        # The bloodied text walked away, mangled
-        # Attributes dropping out its opened gut
-        # For the RegEx Blade vibrated violently
-        # Ripping and tearing as it classified a
-        # Poor piece of prose out of its element
-        # Injured anchor arose an example of art
         a = $.el 'a',
           innerHTML: link
           className: 'linkify'
@@ -103,10 +89,8 @@ Linkify =
           target:    'blank'
           href:      cypher.textContent
 
-        # To die and rot inside burning embedder
-        nodes = nodes.concat Linkify.embedder a
+        $.add nodes, Linkify.embedder a
 
-        # The survivor shot down with no remorse
         data = data[index + link.length..]
 
       if data
@@ -116,7 +100,7 @@ Linkify =
 
         # Convert <wbr> into elements
         for child in cypher.childNodes
-          nodes.push child
+          $.add nodes, child
 
       # They were replaced with constructs.
       $.replace node, nodes
@@ -128,7 +112,7 @@ Linkify =
     # Unembed.
     if @className.contains "embedded"
       # Recreate the original link.
-      el = $.el 'a'
+      el = $.el 'a',
         rel:         'nofollow noreferrer'
         target:      'blank'
         className:   'linkify'
@@ -157,7 +141,7 @@ Linkify =
     YouTube:
       regExp:  /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/
       el: ->
-        $.el 'iframe'
+        $.el 'iframe',
           src: "//www.youtube.com/embed/#{@name}"
       title:
         api:  -> "https://gdata.youtube.com/feeds/api/videos/#{@name}?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode"
@@ -167,13 +151,13 @@ Linkify =
       regExp:  /.*(?:vocaroo.com\/)([^#\&\?]*).*/
       style: 'border: 0; width: 150px; height: 45px;'
       el: ->
-        $.el 'object'
+        $.el 'object',
           innerHTML:  "<embed src='http://vocaroo.com/player.swf?playMediaID=#{@name.replace /^i\//, ''}&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
 
     Vimeo:
       regExp:  /.*(?:vimeo.com\/)([^#\&\?]*).*/
       el: ->
-        $.el 'iframe'
+        $.el 'iframe',
           src: "//player.vimeo.com/video/#{@name}"
       title:
         api:  -> "https://vimeo.com/api/oembed.json?url=http://vimeo.com/#{@name}"
@@ -182,13 +166,13 @@ Linkify =
     LiveLeak:
       regExp:  /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/
       el: ->
-        $.el 'iframe'
+        $.el 'iframe',
           src: "http://www.liveleak.com/e/#{@name}?autostart=true"
 
     audio:
       regExp:  /(.*\.(mp3|ogg|wav))$/
       el: ->
-        $.el 'audio'
+        $.el 'audio',
           controls:    'controls'
           preload:     'auto'
           src:         @name
@@ -196,7 +180,7 @@ Linkify =
     SoundCloud:
       regExp:  /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
       el: ->
-        div = $.el 'div'
+        div = $.el 'div',
           className: "soundcloud"
           name:      "soundcloud"
         $.ajax(
@@ -205,7 +189,12 @@ Linkify =
           onloadend: ->
             @div.innerHTML = JSON.parse(@responseText).html
           false)
-        div
+
+    pastebin:
+      regExp:  /.*(?:pastebin.com\/)([^#\&\?]*).*/
+      el: ->
+        div = $.el 'iframe',
+          src: "http://pastebin.com/embed_iframe.php?i=#{@name}"
 
   embedder: (a) ->
     return [a] unless Conf['Embedding']
@@ -228,7 +217,7 @@ Linkify =
     for key, type of Linkify.types
       continue unless match = a.href.match type.regExp
 
-      embed = $.el 'a'
+      embed = $.el 'a',
         name:         (a.name = match[1])
         className:    'embed'
         href:         'javascript:;'

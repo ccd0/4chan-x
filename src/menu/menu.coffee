@@ -4,7 +4,7 @@ Menu =
     @a = $.el 'a',
       className: 'menu_button'
       href:      'javascript:;'
-      innerHTML: '[<span></span>]'
+      innerHTML: '[<span class=dropmarker></span>]'
     @el = $.el 'div',
       className: 'reply dialog'
       id:        'menu'

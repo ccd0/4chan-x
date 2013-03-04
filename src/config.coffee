@@ -2,7 +2,6 @@
 Config =
 # Depending on the category, the following objects are used to store default settings, generate layouts, and hold the various settings available for 4chan x.
   main:
-
     Enhancing:
       'Catalog Links': [
         true

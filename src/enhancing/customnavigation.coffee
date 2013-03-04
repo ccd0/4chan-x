@@ -18,7 +18,7 @@ CustomNavigation =
 
     while i++ < len
       link = userNavigation.links[i]
-      a = $.el 'a'
+      a = $.el 'a',
         textContent:    link[0]
         title:          link[1]
         href:           link[2]

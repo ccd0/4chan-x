@@ -9,8 +9,8 @@ ThreadHiding =
         innerHTML: '<span>[ - ]</span>'
         href: 'javascript:;'
       $.on a, 'click', ->
-        ThreadHiding.toggle @parentElement
-      $.prepend thread, a
+        ThreadHiding.toggle $.x 'ancestor::div[@class="thread"][1]', @
+      $.add $('.op .postInfo', thread), a
 
       if thread.id[1..] of @hiddenThreads
         ThreadHiding.hide thread

@@ -1,12 +1,13 @@
 QR =
   init: ->
     return unless $.id 'postForm'
+    QuoteInline.callbacks.push @node
     Main.callbacks.push @node
     setTimeout @asyncInit
 
   asyncInit: ->
     unless Conf['Persistent QR']
-      link = $.el 'a'
+      link = $.el 'a',
         innerHTML: "Open Post Form"
         id: "showQR"
         href: "javascript:;"
@@ -65,7 +66,7 @@ QR =
     QR.autohide.checked = false
 
   toggleHide: ->
-    QR.autohide.checked and QR.hide() or QR.unhide()
+    @checked and QR.hide() or QR.unhide()
 
   error: (err) ->
     if typeof err is 'string'
@@ -363,9 +364,9 @@ QR =
         else
           img.height = s / img.width  * img.height
           img.width  = s
-        c = $.el 'canvas'
-        c.height = img.height
-        c.width  = img.width
+        c = $.el 'canvas',
+          height: img.height
+          width:  img.width
         c.getContext('2d').drawImage img, 0, 0, img.width, img.height
         # Support for toBlob fucking when?
         data = atob c.toDataURL().split(',')[1]
@@ -382,7 +383,6 @@ QR =
 
       img.src = fileUrl
 
-
     rmFile: ->
       QR.resetFileInput()
       delete @file
@@ -392,7 +392,8 @@ QR =
       (window.URL or window.webkitURL).revokeObjectURL? @url
 
     select: ->
-      QR.selected?.el.id = null
+      return if QR.selected is @
+      QR.selected?.el.removeAttribute 'id'
       QR.selected = @
       @el.id = 'selected'
       # Scroll the list to center the focused reply.
@@ -450,6 +451,7 @@ QR =
       index = QR.replies.indexOf @
       if QR.replies.length is 1
         new QR.reply().select()
+        $.rmClass QR.el, 'dump'
       else if @el.id is 'selected'
         (QR.replies[index-1] or QR.replies[index+1]).select()
       QR.replies.splice index, 1
@@ -568,7 +570,7 @@ QR =
 <form>
   <div class=warning></div>
   <div class=userInfo><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field><input name=email title=E-mail placeholder=E-mail class=field><input name=sub title=Subject placeholder=Subject class=field></div>
-  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
+  <div id=replies><div><span id=addReply href=javascript:; title="Add a reply">+</a></div></div>
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span><div style=clear:both></div></div>
   <input type=file multiple size=16><input type=submit>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
@@ -619,7 +621,7 @@ QR =
         if g.BOARD is 'f'
           $('select[name=filetag]').cloneNode(true)
         else
-          $.el 'select'
+          $.el 'select',
             innerHTML: threads
             title: 'Create a new thread / Reply to a thread'
 
@@ -795,7 +797,7 @@ QR =
     doc.documentElement.innerHTML = html
     if ban  = $ '.banType', doc # banned/warning
       board = $('.board', doc).innerHTML
-      err   = $.el 'span'
+      err   = $.el 'span',
       if ban.textContent.toLowerCase() is 'banned'
         if Conf['Check for Bans']
           $.delete 'lastBanCheck'

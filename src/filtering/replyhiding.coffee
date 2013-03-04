@@ -16,7 +16,6 @@ ReplyHiding =
     quotes = $$ ".quotelink[href$='#p#{id}'], .backlink[href$='#p#{id}']"
     if /\bstub\b/.test button.className
       ReplyHiding.show root
-      $.rmClass root, 'hidden'
       for quote in quotes
         $.rmClass quote, 'filtered'
       delete g.hiddenReplies[id]
@@ -28,12 +27,10 @@ ReplyHiding =
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
   hide: (root, show_stub=Conf['Show Stubs']) ->
-    side = $('.hide_reply_button', root) or $('.sideArrows', root)
-    $.addClass side.parentNode, 'hidden'
-    return if side.hidden # already hidden once by the filter
-    side.hidden = true
-    el = side.nextElementSibling
-    el.hidden = true
+    hide = $ '.sideArrows', root
+    return if hide.hidden # already hidden once by the filter
+    hide.hidden = true
+    root.hidden = true
 
     $.addClass root, 'hidden'
 
@@ -41,21 +38,21 @@ ReplyHiding =
 
     stub = $.el 'div',
       className: 'stub'
-      innerHTML: '<a href="javascript:;"><span>[ + ]</span> </a>'
+      innerHTML: "<a href='javascript:;' id='show#{id = root.id[2..]}'><span>[ + ]</span> </a>"
     a = stub.firstChild
     $.on  a, 'click', ->
-      ReplyHiding.toggle button = @parentNode, root = button.parentNode, id = root.id[2..]
-    $.add a, $.tn if Conf['Anonymize'] then 'Anonymous' else $('.desktop > .nameBlock', el).textContent
+      ReplyHiding.toggle button = @parentNode, root = $.id("pc#{@id[4..]}"), id
+    $.add a, $.tn if Conf['Anonymize'] then 'Anonymous' else $('.desktop > .nameBlock', root).textContent
     if Conf['Menu']
       menuButton = Menu.a.cloneNode true
       $.on menuButton, 'click', Menu.toggle
       $.add stub, [$.tn(' '), menuButton]
-    $.prepend root, stub
+    $.before root, stub
 
   show: (root) ->
-    if stub = $ '.stub', root
-      $.rm stub
-    ($('.hide_reply_button', root) or $('.sideArrows', root)).hidden = false
-    $('.post',       root).hidden = false
+    if stub = root.previousElementSibling
+      $.rm stub if stub.className is 'stub'
+    ($ '.sideArrows', root).hidden = false
+    root.hidden = false
 
     $.rmClass root, 'hidden'

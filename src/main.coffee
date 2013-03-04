@@ -97,6 +97,8 @@ Main =
         if a = $ "a[href*='/#{g.BOARD}/']", $.id nav
           # Gotta make it work in temporary boards.
           $.addClass a, 'current'
+      return
+    return
 
   features: ->
     _conf = Conf
@@ -286,12 +288,16 @@ Main =
     Main.hasCodeTags = !! $ 'script[src^="//static.4chan.org/js/prettify/prettify"]'
 
     if MutationObserver
-      observer = new MutationObserver Main.observer
-      observer.observe board,
+      Main.observer = new MutationObserver Main.observe
+      Main.observer.observe board,
         childList: true
         subtree: true
+      $.ready ->
+        Main.observer.disconnect()
     else
       $.on board, 'DOMNodeInserted', Main.listener
+      $.ready ->
+        $.off board, 'DOMNodeInserted', Main.listener
     return
 
   prune: ->
@@ -339,7 +345,7 @@ Main =
   message: (e) ->
     {version} = e.data
     if version and version isnt Main.version
-      xupdate = $.el 'div'
+      xupdate = $.el 'div',
         id: 'xupdater'
         className: 'reply'
         innerHTML:
@@ -348,14 +354,14 @@ Main =
       $.prepend $.id('delform'), xupdate
 
   preParse: (node) ->
-    parentClass = node.parentNode.className
+    parentClass = if parent = node.parentNode then parent.className else ""
     el   = $ '.post', node
     post =
       root:        node
       el:          el
       class:       el.className
       ID:          el.id.match(/\d+$/)[0]
-      threadID:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0]
+      threadID:    g.THREAD_ID or if parent then $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0]
       isArchived:  parentClass.contains    'archivedPost'
       isInlined:   /\binline\b/.test       parentClass
       isCrosspost: parentClass.contains    'crosspost'
@@ -382,12 +388,10 @@ Main =
         alert "4chan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err}\n#{err.stack}" if notify
     return
 
-  observer: (mutations) ->
+  observe: (mutations) ->
     nodes = []
     for mutation in mutations
-      for addedNode in mutation.addedNodes
-        if /\bpostContainer\b/.test addedNode.className
-          nodes.push Main.preParse addedNode
+      nodes.push Main.preParse addedNode for addedNode in mutation.addedNodes when /\bpostContainer\b/.test addedNode.className
     Main.node nodes if nodes.length
 
   listener: (e) ->
@@ -410,7 +414,6 @@ Main =
       else
         return
     $.globalEval "#{code}".replace '_id_', bq.id
-
   namespace: '<%= pkg.name.replace(/-/g, '_') %>.'
   version:   '<%= pkg.version %>'
   callbacks: []
