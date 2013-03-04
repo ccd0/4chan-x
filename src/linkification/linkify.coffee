@@ -77,7 +77,7 @@ Linkify =
         if text = data[...index]
           # press button get bacon
           cypher.innerHTML = text
-          for child in cypher.childNodes
+          for child in [cypher.childNodes...]
             $.add nodes, child
 
         cypher.innerHTML = (if link.indexOf(':') < 0 then (if link.indexOf('@') > 0 then 'mailto:' + link else 'http://' + link) else link).replace /<(wbr|s|\/s)>/g, ''
@@ -99,7 +99,7 @@ Linkify =
         cypher.innerHTML = data
 
         # Convert <wbr> into elements
-        for child in cypher.childNodes
+        for child in [cypher.childNodes...]
           $.add nodes, child
 
       # They were replaced with constructs.
