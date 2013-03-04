@@ -15,11 +15,11 @@ ExpandThread =
 
     switch a.textContent[0]
       when '+'
-        a.textContent = a.textContent.replace '+', 'Å~ Loading...'
+        a.textContent = a.textContent.replace '+', '√ó Loading...'
         $.cache url, -> ExpandThread.parse @, thread, a
 
       when 'X'
-        a.textContent = a.textContent.replace 'Å~ Loading...', '+'
+        a.textContent = a.textContent.replace '√ó Loading...', '+'
         $.cache.requests[url].abort()
 
       when '-'
@@ -41,7 +41,7 @@ ExpandThread =
       $.off a, 'click', ExpandThread.cb.toggle
       return
 
-    a.textContent = a.textContent.replace 'Å~ Loading...', '-'
+    a.textContent = a.textContent.replace '√ó Loading...', '-'
 
     posts = JSON.parse(req.response).posts
     if spoilerRange = posts[0].custom_spoiler
@@ -69,7 +69,10 @@ ExpandThread =
     # Parse posts and add features.
     posts = []
     for node in nodes
-      posts.push Main.preParse node
+      post = Main.preParse node
+      post.threadID = threadID
+      posts.push post
+
     Main.node posts
 
     $.after a, nodes

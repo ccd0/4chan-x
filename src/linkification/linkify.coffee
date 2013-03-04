@@ -189,7 +189,12 @@ Linkify =
           onloadend: ->
             @div.innerHTML = JSON.parse(@responseText).html
           false)
-        div
+
+    pastebin:
+      regExp:  /.*(?:pastebin.com\/)([^#\&\?]*).*/
+      el: ->
+        div = $.el 'iframe',
+          src: "http://pastebin.com/embed_iframe.php?i=#{@name}"
 
   embedder: (a) ->
     return [a] unless Conf['Embedding']

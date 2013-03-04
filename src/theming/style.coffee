@@ -893,7 +893,6 @@ body > hr {
 [hidden] {
   display: none !important;
 }
-
 /* Hidden UI */
 #catalog,
 #navlinks,
@@ -1537,6 +1536,13 @@ else ""
 .reply .container::before {
   content: 'REPLIES: ';
 }
+#qp .container {
+  position: static;
+  max-width: 100%;
+}
+#qp .container::before {
+  content: '';
+}
 .inline .container {
   position: static;
   max-width: 100%;
@@ -1561,6 +1567,13 @@ else ""
 .container {
   max-width: 100%;
   padding: 0 5px;
+}
+#qp .container {
+  position: static;
+  max-width: 100%;
+}
+#qp .container::before {
+  content: '';
 }
 .inline .container {
   position: static;
