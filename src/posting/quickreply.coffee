@@ -431,7 +431,7 @@ QR =
 
     drop: ->
       el    = $ '.drag', @parentNode
-      index = (el) -> Array::slice.call(el.parentNode.children).indexOf el
+      index = (el) -> [el.parentNode.children...].indexOf el
       oldIndex = index el
       newIndex = index @
       if oldIndex < newIndex
