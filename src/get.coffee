@@ -142,7 +142,7 @@ Get =
 
   cleanPost: (root) ->
     post = $ '.post', root
-    for child in Array::slice.call root.childNodes
+    for child in [root.childNodes...]
       $.rm child unless child is post
 
     # Remove inlined posts inside of this post.

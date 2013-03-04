@@ -259,7 +259,7 @@ $.extend $,
 
 $$ = (selector, root) ->
   root or= d.body
-  if result = Array::slice.call root.querySelectorAll selector
+  if result = [root.querySelectorAll(selector)...]
     return result
   return null
 
