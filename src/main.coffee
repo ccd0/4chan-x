@@ -89,6 +89,12 @@ Main =
       if _conf['Custom Navigation']
         CustomNavigation.init()
 
+      for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
+        if a = $ "a[href*='/#{g.BOARD}/']", $.id nav
+          # Gotta make it work in temporary boards.
+          $.addClass a, 'current'
+      return
+
   features: ->
     _conf = Conf
 
