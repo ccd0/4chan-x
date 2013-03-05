@@ -8,7 +8,7 @@ MarkOwn =
 
     for quote in post.quotes when quote.hash and posts[quote.hash[2..]]
       owned = true
-      $.addClass quote, 'ownpost'
+      $.addClass quote, 'ownreply'
       quote.textContent += " (You)"
 
     if owned
