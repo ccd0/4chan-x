@@ -60,8 +60,6 @@ Main =
 
     # Major features
 
-    Style.init()
-
     now = Date.now()
     if _conf['Check for Updates'] and $.get('lastUpdate', 0) < now - 18 * $.HOUR
       $.ready ->
@@ -91,17 +89,11 @@ Main =
       if _conf['Custom Navigation']
         CustomNavigation.init()
 
-      Options.init()
-
-      for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
-        if a = $ "a[href*='/#{g.BOARD}/']", $.id nav
-          # Gotta make it work in temporary boards.
-          $.addClass a, 'current'
-      return
-    return
-
   features: ->
     _conf = Conf
+
+    Style.init()
+
     if _conf['Filter']
       Filter.init()
       StrikethroughQuotes.init()
