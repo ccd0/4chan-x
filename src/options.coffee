@@ -203,34 +203,22 @@ Options =
         @id = 'selected_tab'
 
     # Main
-    # I start by gathering all of the main configuration category objects
     for key, obj of Config.main
-      # and creating an unordered list for the main categories.
       ul = $.el 'ul',
         textContent: key
 
-      # Then I gather the variables from each category
       for key, arr of obj
 
-        # I use the object's key to pull from the Conf variable
-        # which is created from the saved localstorage in the "Main" class.
         checked = if $.get(key, Conf[key]) then 'checked' else ''
         description = arr[1]
 
-        # I create a list item to represent the option, with a checkbox to change it.
         li = $.el 'li',
-          innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}><span class=\"optionlabel\">#{key}</span><div style=\"display: none\">#{description}</div></label>"
+          innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}><span class=\"optionlabel\">#{key}</span></label><span>: #{description}</span>"
 
-        # The option is both changed and saved on click.
         $.on $('input', li), 'click', $.cb.checked
 
-        # Mouseover Labels
-        $.on $(".optionlabel", li), 'mouseover', Options.mouseover
-
-        # We add the list item to the unordered list
         $.add ul, li
 
-      # And add the list to the main tab of the options dialog.
       $.add $('#main_tab + div', dialog), ul
 
     # Clear Hidden button.
@@ -632,47 +620,3 @@ Options =
     Favicon.switch()
     Unread.update true
     @previousElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
-
-  selectTheme: ->
-    if currentTheme = $.id(Conf['theme'])
-      $.rmClass currentTheme, 'selectedtheme'
-
-    if Conf["NSFW/SFW Themes"]
-      $.set "theme_#{g.TYPE}", @id
-    else
-      $.set "theme", @id
-    Conf['theme'] = @id
-    $.addClass @, 'selectedtheme'
-    Style.addStyle()
-
-  mouseover: (e) ->
-    if mouseover = $.id 'mouseover'
-      if children = mouseover.childNodes
-        for child in children
-          $.rm child
-    else
-      mouseover = $.el 'div',
-        id:        'mouseover'
-        className: 'dialog reply'
-
-      $.add d.body, mouseover
-      
-    mouseover.innerHTML = @nextSibling.innerHTML
-
-    UI.el = mouseover
-
-    $.on @, 'mousemove',      Options.hover
-    $.on @, 'mouseout',       Options.mouseout
-
-    return
-
-  hover: (e) ->
-    UI.hover e, "menu"
-
-  mouseout: (e) ->
-    mouseover = UI.el
-    for child in mouseover.childNodes
-      $.rm child
-    delete UI.el
-
-    $.off @, 'mousemove',     Options.hover
