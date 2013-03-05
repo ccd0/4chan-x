@@ -563,7 +563,7 @@ Options =
     $.cb.value.call @
 
   filter: ->
-    el = @nextSibling.nextSibling
+    el = @nextSibling
 
     if (name = @value) isnt 'guide'
       ta = $.el 'textarea',
