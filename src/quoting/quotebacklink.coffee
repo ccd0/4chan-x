@@ -23,7 +23,7 @@ QuoteBacklink =
 
     if Conf['Mark Owned Posts']
       if MarkOwn.posts[post.ID]
-        $.addClass a, 'ownpost'
+        $.addClass a, 'ownreply'
         a.textContent += " (You)"
         owned = true
 
