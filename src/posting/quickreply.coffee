@@ -6,17 +6,15 @@ QR =
     setTimeout @asyncInit
 
   asyncInit: ->
-    unless Conf['Persistent QR']
-      link = $.el 'a',
-        innerHTML: "Open Post Form"
-        id: "showQR"
-        href: "javascript:;"
-
-      $.on link, 'click', ->
+    if Conf['Hide Original Post Form']
+      link = $.el 'h1',
+        innerHTML: "<a href=javascript:;>#{title = if g.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
+        title:     title
+      $.on link.firstChild, 'click', ->
         QR.open()
         unless g.REPLY
           QR.threadSelector.value =
-            unless g.BOARD is 'f'
+            if g.BOARD is 'f'
               '9999'
             else
               'new'
@@ -27,6 +25,7 @@ QR =
 
     if Conf['Persistent QR']
       QR.dialog()
+      QR.hide() if Conf['Auto Hide QR']
 
     $.on d, 'dragover',          QR.dragOver
     $.on d, 'drop',              QR.dropFile

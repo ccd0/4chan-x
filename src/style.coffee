@@ -538,4 +538,6 @@ div.opContainer {
 .threadContainer {
   margin-left: 20px;
   border-left: 1px solid black;
-}""" + (if Conf["Custom CSS"] then Conf["customCSS"] else "")
+}
+#{if Conf["Custom CSS"] then Conf["customCSS"] else ""}
+#{if Conf['Quick Reply'] and Conf['Hide Original Post Form'] then '#postForm { display: none; }' else ''}"""

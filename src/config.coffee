@@ -247,6 +247,10 @@ Config =
       ]
 
     Posting:
+      'Quick Reply': [
+        true
+        'Reply without leaving the page'
+      ]
       'Cooldown': [
         true
         'Prevent "flood detected" errors.'
@@ -282,6 +286,10 @@ Config =
       'Remember Sage': [
         false
         'Remember email even if it contains sage.'
+      ]
+      'Hide Original Post Form': [
+        true
+        'Replace the normal post form with a shortcut to open the QR'
       ]
       'Markdown': [
         false

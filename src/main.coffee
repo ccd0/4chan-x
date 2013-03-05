@@ -226,7 +226,8 @@ Main =
 
     # Major features.
 
-    QR.init()
+    if _conf['Quick Reply']
+      QR.init()
 
     if _conf['Image Expansion']
       ImageExpand.init()
