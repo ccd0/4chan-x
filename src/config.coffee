@@ -217,6 +217,10 @@ Config =
         true
         'Display reply and image count'
       ]
+      'Merged Updater and Stats': [
+        false
+        'Merges the updater and thread stats into one container.'
+      ]
       'Thread Watcher': [
         true
         'Bookmark threads'

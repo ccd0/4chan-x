@@ -9,7 +9,7 @@ ThreadStats =
       id:          'imagecount'
       textContent: '0'
 
-    if Conf['Thread Updater'] and move = Updater.count.parentElement
+    if Conf['Thread Updater'] and Conf['Merged Updater and Stats'] and move = Updater.count.parentElement
       container = $.el 'span'
       $.add container, [$.tn('['), ThreadStats.postcount, $.tn(' / '), ThreadStats.imagecount, $.tn('] ')]
       $.prepend move, container
