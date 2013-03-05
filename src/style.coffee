@@ -340,7 +340,7 @@ h2 {
   padding: 0 1px; /* Gecko does not respect box-sizing: border-box */
 }
 #spoilerLabel:not([hidden]) {
-  display: block !important;
+  display: block;
 }
 .fileText:hover .fntrunc,
 .fileText:not(:hover) .fnfull {
