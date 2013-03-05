@@ -291,8 +291,9 @@ Main =
       Main.observer.observe board,
         childList: true
         subtree: true
-      $.ready ->
-        Main.observer.disconnect()
+      if g.REPLY
+        $.ready ->
+          Main.observer.disconnect()
     else
       $.on board, 'DOMNodeInserted', Main.listener
       $.ready ->

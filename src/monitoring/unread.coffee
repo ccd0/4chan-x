@@ -3,7 +3,8 @@ Unread =
     @title = d.title
     $.on d, 'QRPostSuccessful', @post
     @update()
-    $.on window, 'scroll focus', Unread.scroll
+    $.on window, 'scroll', Unread.scroll
+    $.on window, 'focus', Unread.focus
     Main.callbacks.push @node
 
   replies: []
@@ -21,12 +22,17 @@ Unread =
     count = Unread.replies.push el
     Unread.update count is 1
 
+  focus: ->
+    Unread.count() unless Unread.replies is 0
+
   scroll: ->
-    return if $.hidden()
+    Unread.count() unless $.hidden() or Unread.replies is 0
+
+  count: ->
     height = d.documentElement.clientHeight
     for reply, i in Unread.replies
       {bottom} = reply.getBoundingClientRect()
-      if bottom > height #post is not completely read
+      if bottom > height # Post is not completely read
         break
     return if i is 0
 
