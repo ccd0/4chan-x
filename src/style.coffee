@@ -339,6 +339,9 @@ h2 {
 .gecko #qr [type=submit] {
   padding: 0 1px; /* Gecko does not respect box-sizing: border-box */
 }
+#spoilerLabel:not([hidden]) {
+  display: block !important;
+}
 .fileText:hover .fntrunc,
 .fileText:not(:hover) .fnfull {
   display: none;
