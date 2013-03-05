@@ -567,12 +567,12 @@ QR =
   <div id=threadselect></div>
 </div>
 <form>
-  <div class=warning></div>
   <div class=userInfo><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field><input name=email title=E-mail placeholder=E-mail class=field><input name=sub title=Subject placeholder=Subject class=field></div>
   <div id=replies><div><span id=addReply href=javascript:; title="Add a reply">+</a></div></div>
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span><div style=clear:both></div></div>
   <input type=file multiple size=16><input type=submit>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
+  <div class=warning></div>
 </form>'
 
     if Conf['Remember QR size']
