@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-03-03
+/* 4chan X Beta - Version 3.0.0 - 2013-03-05
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, CustomCSS, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, CustomCSS, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, d, doc, g,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -2149,7 +2149,8 @@
           if (data.thisPost) {
             ReplyHiding.hide(this, data.makeStub, data.hideRecursively);
           } else {
-            Recursive.hide(this, data.makeStub);
+            Recursive.apply(ReplyHiding.hide, this, data.makeStub, true);
+            Recursive.add(ReplyHiding.hide, this, data.makeStub, true);
           }
         }
       }
@@ -2185,7 +2186,7 @@
         });
         $.on(apply, 'click', ReplyHiding.menu.hide);
         thisPost = $.el('label', {
-          innerHTML: '<input type=checkbox name=thisPost checked=true> This post'
+          innerHTML: '<input type=checkbox name=thisPost checked> This post'
         });
         replies = $.el('label', {
           innerHTML: "<input type=checkbox name=replies  checked=" + Conf['Recursive Hiding'] + "> Hide replies"
@@ -2227,7 +2228,8 @@
         if (thisPost) {
           ReplyHiding.hide(post, makeStub, replies);
         } else if (replies) {
-          Recursive.hide(post, makeStub);
+          Recursive.apply(ReplyHiding.hide, post, makeStub, true);
+          Recursive.add(ReplyHiding.hide, post, makeStub, true);
         } else {
           return;
         }
@@ -2289,7 +2291,8 @@
       }
       post.isHidden = true;
       if (hideRecursively) {
-        Recursive.hide(post, makeStub, true);
+        Recursive.apply(ReplyHiding.hide, post, makeStub, true);
+        Recursive.add(ReplyHiding.hide, post, makeStub, true);
       }
       _ref = Get.allQuotelinksLinkingTo(post);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2312,8 +2315,11 @@
       }
       return $.prepend(post.nodes.root, post.nodes.stub);
     },
-    show: function(post) {
+    show: function(post, showRecursively) {
       var quotelink, _i, _len, _ref;
+      if (showRecursively == null) {
+        showRecursively = Conf['Recursive Hiding'];
+      }
       if (post.nodes.stub) {
         $.rm(post.nodes.stub);
         delete post.nodes.stub;
@@ -2321,6 +2327,10 @@
         post.nodes.root.hidden = false;
       }
       post.isHidden = false;
+      if (showRecursively) {
+        Recursive.apply(ReplyHiding.show, post, true);
+        Recursive.rm(ReplyHiding.hide, post);
+      }
       _ref = Get.allQuotelinksLinkingTo(post);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
@@ -2330,51 +2340,94 @@
   };
 
   Recursive = {
-    toHide: [],
+    recursives: {},
     init: function() {
+      if (g.VIEW === 'catalog') {
+        return;
+      }
+      $.unsafeWindow.Recursive = this;
+      $.unsafeWindow.ReplyHiding = ReplyHiding;
       return Post.prototype.callbacks.push({
         name: 'Recursive',
         cb: this.node
       });
     },
     node: function() {
-      var board, postID, quote, quotelink, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
+      var i, obj, quote, recursive, _i, _j, _len, _len1, _ref, _ref1;
       if (this.isClone) {
         return;
       }
       _ref = this.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
-        if (__indexOf.call(Recursive.toHide, quote) >= 0) {
-          ReplyHiding.hide(this, !!g.posts[quote].nodes.stub, true);
-        }
-      }
-      _ref1 = this.nodes.quotelinks;
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        quotelink = _ref1[_j];
-        _ref2 = Get.postDataFromLink(quotelink), board = _ref2.board, postID = _ref2.postID;
-        if ((_ref3 = g.posts["" + board + "." + postID]) != null ? _ref3.isHidden : void 0) {
-          $.addClass(quotelink, 'filtered');
+        if (obj = Recursive.recursives[quote]) {
+          _ref1 = obj.recursives;
+          for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
+            recursive = _ref1[i];
+            recursive.apply(null, [this].concat(__slice.call(obj.args[i])));
+          }
         }
       }
     },
-    hide: function(post, makeStub) {
-      var ID, fullID, quote, _i, _len, _ref, _ref1;
+    add: function() {
+      var args, obj, post, recursive, _base, _name;
+      recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+      obj = (_base = Recursive.recursives)[_name = post.fullID] || (_base[_name] = {
+        recursives: [],
+        args: []
+      });
+      obj.recursives.push(recursive);
+      return obj.args.push(args);
+    },
+    rm: function(recursive, post) {
+      var i, obj, rec, _i, _len, _ref;
+      if (!(obj = Recursive.recursives[post.fullID])) {
+        return;
+      }
+      _ref = obj.recursives;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        rec = _ref[i];
+        if (rec === recursive) {
+          obj.recursives.splice(i, 1);
+          obj.args.splice(i, 1);
+        }
+      }
+    },
+    apply: function() {
+      var ID, args, fullID, post, recursive, _ref;
+      recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
       fullID = post.fullID;
-      Recursive.toHide.push(fullID);
       _ref = g.posts;
       for (ID in _ref) {
         post = _ref[ID];
-        if (!post.isReply) {
-          continue;
+        if (__indexOf.call(post.quotes, fullID) >= 0) {
+          recursive.apply(null, [post].concat(__slice.call(args)));
         }
-        _ref1 = post.quotes;
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          quote = _ref1[_i];
-          if (quote === fullID) {
-            ReplyHiding.hide(post, makeStub, true);
-            break;
-          }
+      }
+    }
+  };
+
+  QuoteStrikeThrough = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Reply Hiding'] && !Conf['Filter']) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Strike-through Quotes',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var board, postID, quotelink, _i, _len, _ref, _ref1, _ref2;
+      if (this.isClone) {
+        return;
+      }
+      _ref = this.nodes.quotelinks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quotelink = _ref[_i];
+        _ref1 = Get.postDataFromLink(quotelink), board = _ref1.board, postID = _ref1.postID;
+        if ((_ref2 = g.posts["" + board + "." + postID]) != null ? _ref2.isHidden : void 0) {
+          $.addClass(quotelink, 'filtered');
         }
       }
     }
@@ -7279,6 +7332,7 @@
       initFeature('Thread Hiding', ThreadHiding);
       initFeature('Reply Hiding', ReplyHiding);
       initFeature('Recursive', Recursive);
+      initFeature('Strike-through Quotes', QuoteStrikeThrough);
       initFeature('Quick Reply', QR);
       initFeature('Menu', Menu);
       initFeature('Report Link', ReportLink);

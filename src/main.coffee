@@ -321,6 +321,7 @@ Main =
     initFeature 'Thread Hiding',            ThreadHiding
     initFeature 'Reply Hiding',             ReplyHiding
     initFeature 'Recursive',                Recursive
+    initFeature 'Strike-through Quotes',    QuoteStrikeThrough
     initFeature 'Quick Reply',              QR
     initFeature 'Menu',                     Menu
     initFeature 'Report Link',              ReportLink

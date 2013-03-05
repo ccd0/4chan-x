@@ -1060,7 +1060,8 @@ ReplyHiding =
         if data.thisPost
           ReplyHiding.hide @, data.makeStub, data.hideRecursively
         else
-          Recursive.hide   @, data.makeStub
+          Recursive.apply ReplyHiding.hide, @, data.makeStub, true
+          Recursive.add ReplyHiding.hide, @, data.makeStub, true
     return unless Conf['Hiding Buttons']
     $.replace $('.sideArrows', @nodes.root), ReplyHiding.makeButton @, 'hide'
 
@@ -1085,7 +1086,7 @@ ReplyHiding =
       $.on apply, 'click', ReplyHiding.menu.hide
 
       thisPost = $.el 'label',
-        innerHTML: '<input type=checkbox name=thisPost checked=true> This post'
+        innerHTML: '<input type=checkbox name=thisPost checked> This post'
       replies  = $.el 'label',
         innerHTML: "<input type=checkbox name=replies  checked=#{Conf['Recursive Hiding']}> Hide replies"
       makeStub = $.el 'label',
@@ -1110,7 +1111,8 @@ ReplyHiding =
       if thisPost
         ReplyHiding.hide post, makeStub, replies
       else if replies
-        Recursive.hide   post, makeStub
+        Recursive.apply ReplyHiding.hide, post, makeStub, true
+        Recursive.add ReplyHiding.hide, post, makeStub, true
       else
         return
       ReplyHiding.saveHiddenState post, true, thisPost, makeStub, replies
@@ -1153,7 +1155,9 @@ ReplyHiding =
     return if post.isHidden
     post.isHidden = true
 
-    Recursive.hide post, makeStub, true if hideRecursively
+    if hideRecursively
+      Recursive.apply ReplyHiding.hide, post, makeStub, true
+      Recursive.add ReplyHiding.hide, post, makeStub, true
 
     for quotelink in Get.allQuotelinksLinkingTo post
       $.addClass quotelink, 'filtered'
@@ -1176,47 +1180,75 @@ ReplyHiding =
       $.add post.nodes.stub, [$.tn(' '), Menu.makeButton post]
     $.prepend post.nodes.root, post.nodes.stub
 
-  show: (post) ->
+  show: (post, showRecursively=Conf['Recursive Hiding']) ->
     if post.nodes.stub
       $.rm post.nodes.stub
       delete post.nodes.stub
     else
       post.nodes.root.hidden = false
     post.isHidden = false
+    if showRecursively
+      Recursive.apply ReplyHiding.show, post, true
+      Recursive.rm ReplyHiding.hide, post
     for quotelink in Get.allQuotelinksLinkingTo post
       $.rmClass quotelink, 'filtered'
     return
 
 Recursive =
-  toHide: []
+  recursives: {}
   init: ->
+    return if g.VIEW is 'catalog'
+    $.unsafeWindow.Recursive = @
+    $.unsafeWindow.ReplyHiding = ReplyHiding
+
     Post::callbacks.push
       name: 'Recursive'
       cb:   @node
 
   node: ->
     return if @isClone
-    # In fetched posts:
-    #  - Strike-through quotelinks
-    #  - Hide recursively
     for quote in @quotes
-      if quote in Recursive.toHide
-        ReplyHiding.hide @, !!g.posts[quote].nodes.stub, true
+      if obj = Recursive.recursives[quote]
+        for recursive, i in obj.recursives
+          recursive @, obj.args[i]...
+    return
+
+  add: (recursive, post, args...) ->
+    obj = Recursive.recursives[post.fullID] or=
+      recursives: []
+      args: []
+    obj.recursives.push recursive
+    obj.args.push args
+
+  rm: (recursive, post) ->
+    return unless obj = Recursive.recursives[post.fullID]
+    for rec, i in obj.recursives
+      if rec is recursive
+        obj.recursives.splice i, 1
+        obj.args.splice i, 1
+    return
+
+  apply: (recursive, post, args...) ->
+    {fullID} = post
+    for ID, post of g.posts
+      if fullID in post.quotes
+        recursive post, args...
+    return
+
+QuoteStrikeThrough =
+  init: ->
+    return if g.VIEW is 'catalog' or !Conf['Reply Hiding'] and !Conf['Filter']
+
+    Post::callbacks.push
+      name: 'Strike-through Quotes'
+      cb:   @node
+
+  node: ->
+    return if @isClone
     for quotelink in @nodes.quotelinks
       {board, postID} = Get.postDataFromLink quotelink
       if g.posts["#{board}.#{postID}"]?.isHidden
         $.addClass quotelink, 'filtered'
-    return
-
-  hide: (post, makeStub) ->
-    {fullID} = post
-    Recursive.toHide.push fullID
-    for ID, post of g.posts
-      continue if !post.isReply
-      for quote in post.quotes
-        if quote is fullID
-          ReplyHiding.hide post, makeStub, true
-          break
     return
 
 Menu =
