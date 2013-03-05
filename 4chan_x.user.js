@@ -7417,19 +7417,20 @@
       }
     },
     initReady: function() {
-      var board, boardChild, errors, posts, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1;
-      if (!$.hasClass(doc, 'fourchan-x')) {
-        Main.initStyle();
-      }
+      var board, boardChild, errors, href, posts, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1;
       if (d.title === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
-          location.href = Redirect.to({
+          href = Redirect.to({
             board: g.BOARD,
             threadID: g.THREAD,
             postID: location.hash
           });
+          location.href = href || ("/" + g.BOARD + "/");
         }
         return;
+      }
+      if (!$.hasClass(doc, 'fourchan-x')) {
+        Main.initStyle();
       }
       if (board = $('.board')) {
         threads = [];

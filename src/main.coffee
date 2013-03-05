@@ -397,17 +397,18 @@ Main =
       $.on mainStyleSheet, 'DOMAttrModified', setStyle
 
   initReady: ->
-    unless $.hasClass doc, 'fourchan-x'
-      # Something might have gone wrong!
-      Main.initStyle()
-
     if d.title is '4chan - 404 Not Found'
       if Conf['404 Redirect'] and g.VIEW is 'thread'
-        location.href = Redirect.to
+        href = Redirect.to
           board: g.BOARD
           threadID: g.THREAD
           postID: location.hash
+        location.href = href or "/#{g.BOARD}/"
       return
+
+    unless $.hasClass doc, 'fourchan-x'
+      # Something might have gone wrong!
+      Main.initStyle()
 
     if board = $ '.board'
       threads = []
