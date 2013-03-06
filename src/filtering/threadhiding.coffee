@@ -38,8 +38,8 @@ ThreadHiding =
       ThreadHiding.hiddenThreads[id] = Date.now()
     $.set "hiddenThreads/#{g.BOARD}/", ThreadHiding.hiddenThreads
 
-  hide: (thread, show_stub=Conf['Show Stubs']) ->
-    unless show_stub
+  hide: (thread) ->
+    unless Conf['Show Stubs']
       thread.hidden = true
       thread.nextElementSibling.hidden = true
       return

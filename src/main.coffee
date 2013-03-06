@@ -102,12 +102,12 @@ Main =
 
     if _conf['Filter']
       Filter.init()
-      StrikethroughQuotes.init()
-    else if _conf['Reply Hiding'] or _conf['Reply Hiding Link']
-      StrikethroughQuotes.init()
 
     if _conf['Reply Hiding']
       ReplyHiding.init()
+
+    if _conf['Reply Hiding'] or _conf['Reply Hiding Link'] or _conf['Filter']
+      StrikethroughQuotes.init()
 
     if _conf['Anonymize']
       Anonymize.init()

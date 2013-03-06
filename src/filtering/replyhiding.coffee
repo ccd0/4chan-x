@@ -26,15 +26,13 @@ ReplyHiding =
       g.hiddenReplies[id] = Date.now()
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
-  hide: (root, show_stub=Conf['Show Stubs']) ->
-    hide = $ '.sideArrows', root
-    return if hide.hidden # already hidden once by the filter
-    hide.hidden = true
+  hide: (root) ->
+    return if root.hidden # already hidden once by the filter
     root.hidden = true
 
     $.addClass root, 'hidden'
 
-    return unless show_stub
+    return unless Conf['Show Stubs']
 
     stub = $.el 'div',
       className: 'stub'
