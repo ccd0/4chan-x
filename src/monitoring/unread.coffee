@@ -17,8 +17,8 @@ Unread =
     if (index = Unread.foresee.indexOf post.ID) isnt -1
       Unread.foresee.splice index, 1
       return
-    {el} = post
-    return if el.hidden or /\bop\b/.test(post.class) or post.isInlined
+    {el, root} = post
+    return if root.hidden or /\bop\b/.test(post.class) or post.isInlined
     count = Unread.replies.push el
     Unread.update count is 1
 
