@@ -2964,12 +2964,12 @@ RelativeDates =
   # re-add `update()` to the stale list later.
   setUpdate: (dateEl, utc, diff) ->
     setOwnTimeout = (diff) ->
-      delay = if diff > $.HOUR
-        diff % $.HOUR
-      else if diff > $.MINUTE
-        diff % $.MINUTE
+      delay = if diff < $.MINUTE
+        $.SECOND - (diff + $.SECOND / 2) % $.SECOND
+      else if diff < $.HOUR
+        $.MINUTE - (diff + $.MINUTE / 2) % $.MINUTE
       else
-        diff % $.SECOND
+        $.HOUR - (diff + $.HOUR / 2) % $.HOUR
       setTimeout markStale, delay
 
     update = (now) ->
