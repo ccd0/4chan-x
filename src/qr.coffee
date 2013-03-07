@@ -409,7 +409,7 @@ QR =
         (QR.posts[index-1] or QR.posts[index+1]).select()
       QR.posts.splice index, 1
       return unless window.URL
-      URL.revokeObjectURL @url
+      URL.revokeObjectURL @URL
     lock: (lock=true) ->
       @isLocked = lock
       return unless @ is QR.selected
@@ -459,23 +459,25 @@ QR =
       @filename           = "#{file.name} (#{$.bytesToString file.size})"
       @nodes.el.title     = @filename
       @nodes.label.hidden = false if QR.spoiler
-      URL.revokeObjectURL @url if window.URL
+      URL.revokeObjectURL @URL if window.URL
       @showFileData()
       unless /^image/.test file.type
         @nodes.el.style.backgroundImage = null
         return
-
+      @setThumbnail()
+    setThumbnail: (fileURL) ->
       # XXX Opera does not support blob URL
-      unless window.URL
-        reader = new FileReader()
-        reader.onload = (e) =>
-          @nodes.el.style.backgroundImage = "url(#{e.target.result})"
-        reader.readAsDataURL file
-        return
-
       # Create a redimensioned thumbnail.
-      fileURL = URL.createObjectURL file
-      img     = $.el 'img'
+      unless window.URL
+        unless fileURL
+          reader = new FileReader()
+          reader.onload = (e) =>
+            @setThumbnail e.target.result
+          reader.readAsDataURL @file
+      else
+        fileURL = URL.createObjectURL @file
+
+      img = $.el 'img'
 
       img.onload = =>
         # Generate thumbnails only if they're really big.
@@ -485,8 +487,8 @@ QR =
         s = 90*3
         {height, width} = img
         if height < s or width < s
-          @url = fileURL
-          @nodes.el.style.backgroundImage = "url(#{@url})"
+          @URL = fileURL
+          @nodes.el.style.backgroundImage = "url(#{@URL})"
           return
         if height <= width
           width  = s / height * width
@@ -498,10 +500,14 @@ QR =
         c.height = img.height = height
         c.width  = img.width  = width
         c.getContext('2d').drawImage img, 0, 0, width, height
+        unless window.URL
+          @nodes.el.style.backgroundImage = "url(#{c.toDataURL()})"
+          delete @URL
+          return
         URL.revokeObjectURL fileURL
         applyBlob = (blob) =>
-          @url = URL.createObjectURL blob
-          @nodes.el.style.backgroundImage = "url(#{@url})"
+          @URL = URL.createObjectURL blob
+          @nodes.el.style.backgroundImage = "url(#{@URL})"
         if c.toBlob
           c.toBlob applyBlob
           return
@@ -524,7 +530,7 @@ QR =
       @nodes.label.hidden = true if QR.spoiler
       @showFileData()
       return unless window.URL
-      URL.revokeObjectURL @url
+      URL.revokeObjectURL @URL
     showFileData: (hide) ->
       if @file
         QR.nodes.filename.textContent = @filename

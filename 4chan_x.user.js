@@ -6297,7 +6297,7 @@
         if (!window.URL) {
           return;
         }
-        return URL.revokeObjectURL(this.url);
+        return URL.revokeObjectURL(this.URL);
       };
 
       _Class.prototype.lock = function(lock) {
@@ -6372,8 +6372,6 @@
       };
 
       _Class.prototype.setFile = function(file) {
-        var fileURL, img, reader,
-          _this = this;
         this.file = file;
         this.filename = "" + file.name + " (" + ($.bytesToString(file.size)) + ")";
         this.nodes.el.title = this.filename;
@@ -6381,30 +6379,38 @@
           this.nodes.label.hidden = false;
         }
         if (window.URL) {
-          URL.revokeObjectURL(this.url);
+          URL.revokeObjectURL(this.URL);
         }
         this.showFileData();
         if (!/^image/.test(file.type)) {
           this.nodes.el.style.backgroundImage = null;
           return;
         }
+        return this.setThumbnail();
+      };
+
+      _Class.prototype.setThumbnail = function(fileURL) {
+        var img, reader,
+          _this = this;
         if (!window.URL) {
-          reader = new FileReader();
-          reader.onload = function(e) {
-            return _this.nodes.el.style.backgroundImage = "url(" + e.target.result + ")";
-          };
-          reader.readAsDataURL(file);
-          return;
+          if (!fileURL) {
+            reader = new FileReader();
+            reader.onload = function(e) {
+              return _this.setThumbnail(e.target.result);
+            };
+            reader.readAsDataURL(this.file);
+          }
+        } else {
+          fileURL = URL.createObjectURL(this.file);
         }
-        fileURL = URL.createObjectURL(file);
         img = $.el('img');
         img.onload = function() {
           var applyBlob, c, data, height, i, l, s, ui8a, width, _i;
           s = 90 * 3;
           height = img.height, width = img.width;
           if (height < s || width < s) {
-            _this.url = fileURL;
-            _this.nodes.el.style.backgroundImage = "url(" + _this.url + ")";
+            _this.URL = fileURL;
+            _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
             return;
           }
           if (height <= width) {
@@ -6418,10 +6424,15 @@
           c.height = img.height = height;
           c.width = img.width = width;
           c.getContext('2d').drawImage(img, 0, 0, width, height);
+          if (!window.URL) {
+            _this.nodes.el.style.backgroundImage = "url(" + (c.toDataURL()) + ")";
+            delete _this.URL;
+            return;
+          }
           URL.revokeObjectURL(fileURL);
           applyBlob = function(blob) {
-            _this.url = URL.createObjectURL(blob);
-            return _this.nodes.el.style.backgroundImage = "url(" + _this.url + ")";
+            _this.URL = URL.createObjectURL(blob);
+            return _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
           };
           if (c.toBlob) {
             c.toBlob(applyBlob);
@@ -6452,7 +6463,7 @@
         if (!window.URL) {
           return;
         }
-        return URL.revokeObjectURL(this.url);
+        return URL.revokeObjectURL(this.URL);
       };
 
       _Class.prototype.showFileData = function(hide) {
