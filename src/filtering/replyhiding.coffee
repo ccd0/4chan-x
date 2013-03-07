@@ -48,9 +48,9 @@ ReplyHiding =
     $.before root, stub
 
   show: (root) ->
-    if stub = root.previousElementSibling
-      $.rm stub if stub.className is 'stub'
-    ($ '.sideArrows', root).hidden = false
+    $.rm stub if (stub = root.previousElementSibling) and stub.className is 'stub'
     root.hidden = false
-
     $.rmClass root, 'hidden'
+
+  unhide: (post) ->
+    ReplyHiding.show post.root if post.root.hidden

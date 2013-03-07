@@ -108,6 +108,8 @@ Main =
 
     if _conf['Reply Hiding'] or _conf['Reply Hiding Link'] or _conf['Filter']
       StrikethroughQuotes.init()
+      QuotePreview.callbacks.push ReplyHiding.unhide
+      QuoteInline.callbacks.push ReplyHiding.unhide
 
     if _conf['Anonymize']
       Anonymize.init()
@@ -370,6 +372,7 @@ Main =
       backlinks:   el.getElementsByClassName 'backlink'
       fileInfo:    false
       img:         false
+
     if img = $ 'img[data-md5]', el
       # Make sure to not add deleted images,
       # those do not have a data-md5 attribute.

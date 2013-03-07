@@ -7,9 +7,9 @@ QuotePreview =
     $.ready -> $.add d.body, QuotePreview.el = $.el 'div',
       id: 'qp'
       className: 'reply dialog'
-  
+
   callbacks: []
-  
+
   callback: (node) ->
     for callback in QuotePreview.callbacks
       callback node
@@ -48,7 +48,6 @@ QuotePreview =
     UI.hover e
 
     Get.post board, threadID, postID, qp, (post) ->
-      _conf = Conf
       Main.prettify post.blockquote
       post.isArchived = qp.className.contains 'archivedPost'
       QuotePreview.callback post

@@ -18,7 +18,7 @@ QuoteBacklink =
 
     a = $.el 'a',
       href: "/#{g.BOARD}/res/#{post.threadID}#p#{post.ID}"
-      className: if post.el.hidden then 'filtered backlink' else 'backlink'
+      className: if post.root.hidden then 'filtered backlink' else 'backlink'
       textContent: QuoteBacklink.funk post.ID
 
     if Conf['Mark Owned Posts']
