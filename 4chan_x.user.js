@@ -4354,7 +4354,7 @@
       var markStale, setOwnTimeout, update;
       setOwnTimeout = function(diff) {
         var delay;
-        delay = diff < $.MINUTE ? diff % $.SECOND : diff < $.HOUR ? diff % $.MINUTE : diff < $.DAY ? diff % $.HOUR : diff % $.DAY;
+        delay = diff < $.MINUTE ? $.SECOND - (diff + $.SECOND / 2) % $.SECOND : diff < $.HOUR ? $.MINUTE - (diff + $.MINUTE / 2) % $.MINUTE : diff < $.DAY ? $.HOUR - (diff + $.HOUR / 2) % $.HOUR : $.DAY - (diff + $.DAY / 2) % $.DAY;
         return setTimeout(markStale, delay);
       };
       update = function(now) {

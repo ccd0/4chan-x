@@ -59,6 +59,10 @@ beta
   Fix user ID highlighting on fetched posts.
 
 master
+
+2.39.0
+- Queue
+  Fix rare bug in Relative Post Dates.
 - Mayhem
   Add Import/Export settings.
 

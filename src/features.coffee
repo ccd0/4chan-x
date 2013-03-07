@@ -2897,13 +2897,13 @@ RelativeDates =
   setUpdate: (post) ->
     setOwnTimeout = (diff) ->
       delay = if diff < $.MINUTE
-        diff % $.SECOND
+        $.SECOND - (diff + $.SECOND / 2) % $.SECOND
       else if diff < $.HOUR
-        diff % $.MINUTE
+        $.MINUTE - (diff + $.MINUTE / 2) % $.MINUTE
       else if diff < $.DAY
-        diff % $.HOUR
+        $.HOUR - (diff + $.HOUR / 2) % $.HOUR
       else
-        diff % $.DAY
+        $.DAY - (diff + $.DAY / 2) % $.DAY
       setTimeout markStale, delay
 
     update = (now) ->
