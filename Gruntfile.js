@@ -56,7 +56,7 @@ module.exports = function(grunt) {
         stdout: true
       },
       push: {
-        command: 'git push && git push --tags',
+        command: 'git push origin --all && git push origin --tags',
         stdout: true
       }
     },

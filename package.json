@@ -12,11 +12,11 @@
       "userjs": "4chan_x.user.js"
     }
   },
-  "dependencies": {
+  "devDependencies": {
     "grunt": "~0.4.0",
     "grunt-bump": "~0.0.0",
     "grunt-contrib-clean": "~0.4.0",
-    "grunt-contrib-coffee": "~0.5.0",
+    "grunt-contrib-coffee": "~0.6.0",
     "grunt-contrib-concat": "~0.1.0",
     "grunt-contrib-watch": "~0.3.0",
     "grunt-exec": "~0.4.0"

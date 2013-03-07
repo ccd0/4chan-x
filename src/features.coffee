@@ -1076,6 +1076,7 @@ ReplyHiding =
     init: ->
       return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Reply Hiding']
 
+      # Hide
       div = $.el 'div',
         className: 'hide-reply-link'
         textContent: 'Hide reply'
@@ -1097,11 +1098,42 @@ ReplyHiding =
         el: div
         order: 20
         open: (post) ->
-          if !post.isReply or post.isClone
+          if !post.isReply or post.isClone or post.isHidden
             return false
           ReplyHiding.menu.post = post
           true
         subEntries: [{el: apply}, {el: thisPost}, {el: replies}, {el: makeStub}]
+
+      # Show
+      div = $.el 'div',
+        className: 'show-reply-link'
+        textContent: 'Show reply'
+
+      apply = $.el 'a',
+        textContent: 'Apply'
+        href: 'javascript:;'
+      $.on apply, 'click', ReplyHiding.menu.show
+
+      thisPost = $.el 'label',
+        innerHTML: '<input type=checkbox name=thisPost> This post'
+      replies  = $.el 'label',
+        innerHTML: "<input type=checkbox name=replies> Show replies"
+
+      $.event 'AddMenuEntry',
+        type: 'post'
+        el: div
+        order: 20
+        open: (post) ->
+          if !post.isReply or post.isClone
+            return false
+          thread = ReplyHiding.getHiddenPosts().threads[post.thread]
+          unless post.isHidden or data = thread?[post]
+            return false
+          ReplyHiding.menu.post = post
+          thisPost.firstChild.checked = post.isHidden
+          replies.firstChild.checked  = if data?.hideRecursively? then data.hideRecursively else Conf['Recursive Hiding']
+          true
+        subEntries: [{el: apply}, {el: thisPost}, {el: replies}]
     hide: ->
       parent   = @parentNode
       thisPost = $('input[name=thisPost]', parent).checked
@@ -1116,6 +1148,23 @@ ReplyHiding =
       else
         return
       ReplyHiding.saveHiddenState post, true, thisPost, makeStub, replies
+      $.event 'CloseMenu'
+    show: ->
+      parent   = @parentNode
+      thisPost = $('input[name=thisPost]', parent).checked
+      replies  = $('input[name=replies]',  parent).checked
+      {post}   = ReplyHiding.menu
+      thread   = ReplyHiding.getHiddenPosts().threads[post.thread]
+      data     = thread?[post]
+      if thisPost
+        ReplyHiding.show post, replies
+      else if replies
+        Recursive.apply ReplyHiding.show, post, true
+        Recursive.rm ReplyHiding.hide, post, true
+      else
+        return
+      if data
+        ReplyHiding.saveHiddenState post, !(thisPost and replies), !thisPost, data.makeStub, !replies
       $.event 'CloseMenu'
 
   makeButton: (post, type) ->
@@ -1198,8 +1247,6 @@ Recursive =
   recursives: {}
   init: ->
     return if g.VIEW is 'catalog'
-    $.unsafeWindow.Recursive = @
-    $.unsafeWindow.ReplyHiding = ReplyHiding
 
     Post::callbacks.push
       name: 'Recursive'

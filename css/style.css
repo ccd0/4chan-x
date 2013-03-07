@@ -459,6 +459,9 @@ a[href="javascript:;"] {
 .stub ~ .post {
   display: none !important;
 }
+.stub input {
+  display: inline-block;
+}
 
 /* QR */
 .hide-original-post-form #postForm,
