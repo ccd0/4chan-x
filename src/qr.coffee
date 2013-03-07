@@ -474,6 +474,7 @@ QR =
           reader.onload = (e) =>
             @setThumbnail e.target.result
           reader.readAsDataURL @file
+          return
       else
         fileURL = URL.createObjectURL @file
 
@@ -484,10 +485,10 @@ QR =
         # Resized pictures through canvases look like ass,
         # so we generate thumbnails `s` times bigger then expected
         # to avoid crappy resized quality.
-        s = 90*3
+        s = 90*2
         {height, width} = img
         if height < s or width < s
-          @URL = fileURL
+          @URL = fileURL if window.URL
           @nodes.el.style.backgroundImage = "url(#{@URL})"
           return
         if height <= width

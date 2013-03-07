@@ -577,8 +577,8 @@ a[href="javascript:;"] {
   box-sizing: border-box;
   cursor: move;
   display: inline-block;
-  height: 90px; width: 90px;
-  margin: 5px; padding: 2px;
+  height: 92px; width: 92px;
+  margin: 4px; padding: 2px;
   opacity: .6;
   outline: none;
   overflow: hidden;
