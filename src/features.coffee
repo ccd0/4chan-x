@@ -423,7 +423,7 @@ Settings =
           For example: <code>boards:a,jp;</code>.
         </li>
         <li>
-          Filter OPs only along with their threads (`only`), replies only (`no`, this is default), or both (`yes`).<br>
+          Filter OPs only along with their threads (`only`), replies only (`no`), or both (`yes`, this is default).<br>
           For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.
         </li>
         <li>
@@ -662,8 +662,8 @@ Filter =
             continue
 
         # Filter OPs along with their threads, replies only, or both.
-        # Defaults to replies only.
-        op = filter.match(/[^t]op:(yes|no|only)/)?[1] or 'no'
+        # Defaults to both.
+        op = filter.match(/[^t]op:(yes|no|only)/)?[1] or 'yes'
 
         # Overrule the `Show Stubs` setting.
         # Defaults to stub showing.
