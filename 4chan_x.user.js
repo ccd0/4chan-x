@@ -2085,14 +2085,15 @@
       return ThreadHiding.saveHiddenState(thread);
     },
     hide: function(thread, makeStub) {
-      var a, numReplies, opInfo, span, threadRoot;
+      var OP, a, numReplies, opInfo, span, threadRoot;
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
       }
       if (thread.hidden) {
         return;
       }
-      threadRoot = thread.OP.nodes.root.parentNode;
+      OP = thread.OP;
+      threadRoot = OP.nodes.root.parentNode;
       threadRoot.hidden = thread.isHidden = true;
       if (!makeStub) {
         threadRoot.nextElementSibling.hidden = true;
@@ -2104,7 +2105,7 @@
       }
       numReplies += $$('.opContainer ~ .replyContainer', threadRoot).length;
       numReplies = numReplies === 1 ? '1 reply' : "" + numReplies + " replies";
-      opInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', op.nodes.info).textContent;
+      opInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', OP.nodes.info).textContent;
       a = ThreadHiding.makeButton(thread, 'show');
       $.add(a, $.tn(" " + opInfo + " (" + numReplies + ")"));
       thread.stub = $.el('div', {
@@ -2112,7 +2113,7 @@
       });
       $.add(thread.stub, a);
       if (Conf['Menu']) {
-        $.add(thread.stub, [$.tn(' '), Menu.makeButton(op)]);
+        $.add(thread.stub, [$.tn(' '), Menu.makeButton(OP)]);
       }
       return $.before(threadRoot, thread.stub);
     },

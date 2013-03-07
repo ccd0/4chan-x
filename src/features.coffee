@@ -1008,7 +1008,8 @@ ThreadHiding =
 
   hide: (thread, makeStub=Conf['Stubs']) ->
     return if thread.hidden
-    threadRoot = thread.OP.nodes.root.parentNode
+    {OP} = thread
+    threadRoot = OP.nodes.root.parentNode
     threadRoot.hidden = thread.isHidden = true
 
     unless makeStub
@@ -1024,7 +1025,7 @@ ThreadHiding =
       if Conf['Anonymize']
         'Anonymous'
       else
-        $('.nameBlock', op.nodes.info).textContent
+        $('.nameBlock', OP.nodes.info).textContent
 
     a = ThreadHiding.makeButton thread, 'show'
     $.add a, $.tn " #{opInfo} (#{numReplies})"
@@ -1032,7 +1033,7 @@ ThreadHiding =
       className: 'stub'
     $.add thread.stub, a
     if Conf['Menu']
-      $.add thread.stub, [$.tn(' '), Menu.makeButton op]
+      $.add thread.stub, [$.tn(' '), Menu.makeButton OP]
     $.before threadRoot, thread.stub
 
   show: (thread) ->
