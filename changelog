@@ -24,7 +24,6 @@ beta
     Closing the QR while uploading will abort the upload and won't close the QR anymore.
     Creating threads outside of the index is now possible.
     Selection-to-quote also applies to selected text inside the post, not just inside the comment.
-    Quoting the OP will not insert the >>opnumber anymore unless the QR was already opened.
     Added thumbnailing support for Opera.
 
   Image Expansion changes:

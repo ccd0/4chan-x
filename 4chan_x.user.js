@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-03-07
+/* 4chan X Beta - Version 3.0.0 - 2013-03-08
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -3000,7 +3000,7 @@
       return key;
     },
     qr: function(thread, quote) {
-      if (!(Conf['Quick Reply'] && QR.postingIsEnable)) {
+      if (!(Conf['Quick Reply'] && QR.postingIsEnabled)) {
         return;
       }
       QR.open();
@@ -5823,8 +5823,8 @@
     },
     initReady: function() {
       var link;
-      QR.postingIsEnable = !!$.id('postForm');
-      if (!QR.postingIsEnable) {
+      QR.postingIsEnabled = !!$.id('postForm');
+      if (!QR.postingIsEnabled) {
         return;
       }
       link = $.el('a', {
@@ -6105,19 +6105,18 @@
       if (e != null) {
         e.preventDefault();
       }
-      if (!QR.postingIsEnable) {
+      if (!QR.postingIsEnabled) {
         return;
       }
-      text = "";
       sel = d.getSelection();
       selectionRoot = $.x('ancestor::div[contains(@class,"postContainer")][1]', sel.anchorNode);
       post = Get.postFromNode(this);
       OP = Get.contextFromLink(this).thread.OP;
+      text = ">>" + post + "\n";
       if ((s = sel.toString().trim()) && post.nodes.root === selectionRoot) {
         s = s.replace(/\n/g, '\n>');
         text += ">" + s + "\n";
       }
-      text = !text && post === OP && (!QR.nodes || QR.nodes.el.hidden) ? "" : ">>" + post + "\n" + text;
       QR.open();
       ta = QR.nodes.com;
       if (!ta.value) {

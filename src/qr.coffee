@@ -15,8 +15,8 @@ QR =
       cb:   @node
 
   initReady: ->
-    QR.postingIsEnable = !!$.id 'postForm'
-    return unless QR.postingIsEnable
+    QR.postingIsEnabled = !!$.id 'postForm'
+    return unless QR.postingIsEnabled
 
     link = $.el 'a',
       className: 'qr-shortcut'
@@ -250,24 +250,18 @@ QR =
 
   quote: (e) ->
     e?.preventDefault()
-    return unless QR.postingIsEnable
-    text = ""
+    return unless QR.postingIsEnabled
 
     sel = d.getSelection()
     selectionRoot = $.x 'ancestor::div[contains(@class,"postContainer")][1]', sel.anchorNode
     post = Get.postFromNode @
     {OP} = Get.contextFromLink(@).thread
 
+    text = ">>#{post}\n"
     if (s = sel.toString().trim()) and post.nodes.root is selectionRoot
       # XXX Opera doesn't retain `\n`s?
       s = s.replace /\n/g, '\n>'
       text += ">#{s}\n"
-
-    text = if !text and post is OP and (!QR.nodes or QR.nodes.el.hidden)
-      # Don't quote the OP unless the QR was already opened once.
-      ""
-    else
-      ">>#{post}\n#{text}"
 
     QR.open()
     ta = QR.nodes.com
