@@ -299,6 +299,11 @@ a[href="javascript:;"] {
   overflow: hidden;
 }
 
+/* Unread */
+#unread-line {
+  margin: 0;
+}
+
 /* Thread Updater */
 #updater:not(:hover) {
   background: none;

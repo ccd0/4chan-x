@@ -36,6 +36,7 @@ beta
     Added an option to always auto-scroll to the bottom.
 
   Unread posts changes:
+    A line will distinguish read post from unread ones.
     Read posts won't be marked as unread after reloading a thread.
     Visible posts will not be taken into account towards the unread count.
 

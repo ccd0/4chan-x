@@ -3446,6 +3446,8 @@ Unread =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Tab Icon']
 
+    Unread.hr = $.el 'hr',
+      id: 'unread-line'
     Misc.clearThreads "lastReadPosts.#{g.BOARD}"
     Thread::callbacks.push
       name: 'Unread'
@@ -3461,8 +3463,14 @@ Unread =
     for ID, post of @posts
       posts.push post if post.isReply
     Unread.addPosts posts
+    if Unread.hr.parentNode
+      Unread.hr.scrollIntoView false
+    else if posts.length and !Unread.posts.length
+      # Scroll to the last read post.
+      posts[posts.length - 1].nodes.root.scrollIntoView()
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
+    $.on d, 'visibilitychange',        Unread.setLine
 
   addPosts: (newPosts) ->
     if Conf['Quick Reply']
@@ -3476,6 +3484,8 @@ Unread =
       Unread.addPostQuotingYou post, yourPosts if yourPosts
     Unread.read()
     Unread.update()
+    # Force line on visible threads if there were no unread posts previously.
+    Unread.setLine Unread.posts[0] in newPosts
 
   addPostQuotingYou: (post, yourPosts) ->
     for quote in post.quotes
@@ -3513,6 +3523,15 @@ Unread =
     lastReadPosts.threads[Unread.thread] = Unread.lastReadPost
     $.set "lastReadPosts.#{Unread.thread.board}", lastReadPosts
   )
+
+  setLine: (force) ->
+    return unless d.hidden or force is true
+    if post = Unread.posts[0]
+      {root} = post.nodes
+      if root isnt $ '.thread > .replyContainer', root.parentNode # not the first reply
+        $.before root, Unread.hr
+    else if Unread.hr.parentNode
+      $.rm Unread.hr
 
   update: ->
     count = Unread.posts.length
