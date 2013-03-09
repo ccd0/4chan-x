@@ -1,35 +1,32 @@
 ## Reporting bugs
 
-1. Make sure your **browser** & **4chan X** are up to date.
-2. Disable your other extensions & scripts.
+1. Make sure both your **browser** and **4chan X** are up to date.
+2. Disable your other extensions & scripts to identify conflicts.
 3. If your issue persists:
   1. Report precise steps to reproduce the problem.
   2. Report console errors, if any.
-  3. Report browser and browser version.
+  3. Report browser version.
+  4. Include your exported settings.
 
 Open your console with:
-- `Ctrl + Shift + J` on Chrome & Firefox
+- `Ctrl + Shift + J` on Chrome.
+- `Ctrl + Shift + K` on Firefox.
 - `Ctrl + Shift + O` on Opera.
 
 ## Development & Contribution
 
 ### Get started
 
-- Clone 4chan X.
-- `cd` into it.
 - Install [node.js](http://nodejs.org/).
 - Install [Grunt's CLI](http://gruntjs.com/) with `npm install -g grunt-cli`.
+- Clone 4chan X.
+- `cd` into it.
 - Install 4chan X dependencies with `npm install`.
 
 ### Build
 
 - Build with `grunt`.
-- For development (continuous builds), run `grunt watch`.
-
-### Test
-
-- You must have [PhantomJS](http://phantomjs.org/) installed. (need [help](https://github.com/gruntjs/grunt/blob/master/docs/faq.md#why-does-grunt-complain-that-phantomjs-isnt-installed)?)
-- Run test units with `grunt test`.
+- Continuously build with `grunt watch`.
 
 ### Release
 
@@ -37,12 +34,12 @@ Open your console with:
 - To upgrade, run `grunt upgrade` (`0.x.0` version bump).
 - Release with `grunt release`.
 
-Note: this is only used to release new 4chan X versions, and is not needed or wanted in pull requests.
+Note: this is only used to release new 4chan X versions, and is **not** needed or wanted in pull requests.
 
 ### Contribute
 
-- Edit the CoffeeScript source.
+- Edit the CoffeeScript sources.
 - Build the JavaScript.
 - If the edits affect regular users, edit the changelog.
-- Fork the repo.
-- Send a pull request.
+- Fork the repository.
+- Open a pull request.
