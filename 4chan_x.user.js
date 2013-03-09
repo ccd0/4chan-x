@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-03-08
+/* 4chan X Beta - Version 3.0.0 - 2013-03-09
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -4631,7 +4631,7 @@
       $.rmClass(post.file.thumb, 'expanding');
       return post.file.isExpanded = false;
     },
-    expand: function(post) {
+    expand: function(post, src) {
       var img, thumb;
       thumb = post.file.thumb;
       if (post.isHidden || post.file.isExpanded || $.hasClass(thumb, 'expanding')) {
@@ -4648,7 +4648,7 @@
       }
       post.file.fullImage = img = $.el('img', {
         className: 'full-image',
-        src: post.file.URL
+        src: src || post.file.URL
       });
       $.on(img, 'error', ImageExpand.error);
       $.asap((function() {
@@ -4678,32 +4678,42 @@
       post = Get.postFromNode(this);
       $.rm(this);
       delete post.file.fullImage;
-      if (!post.file.isExpanded) {
+      if (!$.hasClass(post.file.thumb, 'expanding')) {
         return;
       }
       ImageExpand.contract(post);
       src = this.src.split('/');
-      if (!(src[2] === 'images.4chan.org' && (URL = Redirect.image(src[3], src[5])))) {
-        if (g.DEAD) {
+      if (src[2] === 'images.4chan.org') {
+        if (URL = Redirect.image(src[3], src[5])) {
+          setTimeout(ImageExpand.expand, 10000, post, URL);
           return;
         }
-        URL = post.file.URL;
-      }
-      if ($.engine !== 'webkit' && URL.split('/')[2] === 'images.4chan.org') {
-        return;
+        if (g.DEAD || post.isDead || post.file.isDead) {
+          return;
+        }
       }
       timeoutID = setTimeout(ImageExpand.expand, 10000, post);
-      if ($.engine !== 'webkit' || URL.split('/')[2] !== 'images.4chan.org') {
-        return;
-      }
-      return $.ajax(URL, {
-        onreadystatechange: (function() {
-          if (this.status === 404) {
-            return clearTimeout(timeoutID);
+      return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
+        onload: function() {
+          var postObj, _i, _len, _ref;
+          if (this.status !== 200) {
+            return;
           }
-        })
-      }, {
-        type: 'head'
+          _ref = JSON.parse(this.response).posts;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            postObj = _ref[_i];
+            if (postObj.no === post.ID) {
+              break;
+            }
+          }
+          if (postObj.no !== post.ID) {
+            clearTimeout(timeoutID);
+            return post.kill();
+          } else if (postObj.filedeleted) {
+            clearTimeout(timeoutID);
+            return post.kill(true);
+          }
+        }
       });
     },
     menu: {
@@ -4833,11 +4843,13 @@
       return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover);
     },
     mouseover: function(e) {
-      var el;
+      var el, post;
+      post = Get.postFromNode(this);
       el = $.el('img', {
         id: 'ihover',
-        src: this.parentNode.href
+        src: post.file.URL
       });
+      el.setAttribute('data-fullid', post.fullID);
       $.add(d.body, el);
       UI.hover({
         root: this,
@@ -4851,35 +4863,46 @@
       return $.on(el, 'error', ImageHover.error);
     },
     error: function() {
-      var URL, src, timeoutID,
+      var URL, post, src, timeoutID,
         _this = this;
       if (!doc.contains(this)) {
         return;
       }
+      post = g.posts[this.dataset.fullid];
       src = this.src.split('/');
-      if (!(src[2] === 'images.4chan.org' && (URL = Redirect.image(src[3], src[5])))) {
-        if (g.DEAD) {
+      if (src[2] === 'images.4chan.org') {
+        if (URL = Redirect.image(src[3], src[5].replace(/\?.+$/, ''))) {
+          this.src = URL;
           return;
         }
-        URL = post.file.URL;
-      }
-      if ($.engine !== 'webkit' && URL.split('/')[2] === 'images.4chan.org') {
-        return;
+        if (g.DEAD || post.isDead || post.file.isDead) {
+          return;
+        }
       }
       timeoutID = setTimeout((function() {
-        return _this.src = URL;
+        return _this.src = post.file.URL + '?' + Date.now();
       }), 3000);
-      if ($.engine !== 'webkit' || URL.split('/')[2] !== 'images.4chan.org') {
-        return;
-      }
-      return $.ajax(URL, {
-        onreadystatechange: (function() {
-          if (this.status === 404) {
-            return clearTimeout(timeoutID);
+      return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
+        onload: function() {
+          var postObj, _i, _len, _ref;
+          if (this.status !== 200) {
+            return;
           }
-        })
-      }, {
-        type: 'head'
+          _ref = JSON.parse(this.response).posts;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            postObj = _ref[_i];
+            if (postObj.no === post.ID) {
+              break;
+            }
+          }
+          if (postObj.no !== post.ID) {
+            clearTimeout(timeoutID);
+            return post.kill();
+          } else if (postObj.filedeleted) {
+            clearTimeout(timeoutID);
+            return post.kill(true);
+          }
+        }
       });
     }
   };

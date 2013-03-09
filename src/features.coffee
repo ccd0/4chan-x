@@ -3083,19 +3083,19 @@ ImageExpand =
     $.rmClass post.file.thumb, 'expanding'
     post.file.isExpanded = false
 
-  expand: (post) ->
+  expand: (post, src) ->
     # Do not expand images of hidden/filtered replies, or already expanded pictures.
     {thumb} = post.file
     return if post.isHidden or post.file.isExpanded or $.hasClass thumb, 'expanding'
     $.addClass thumb, 'expanding'
     if post.file.fullImage
-      # Expand already-loaded picture.
+      # Expand already-loaded/ing picture.
       $.asap (-> post.file.fullImage.naturalHeight), ->
         ImageExpand.completeExpand post
       return
     post.file.fullImage = img = $.el 'img',
       className: 'full-image'
-      src: post.file.URL
+      src: src or post.file.URL
     $.on img, 'error', ImageExpand.error
     $.asap (-> post.file.fullImage.naturalHeight), ->
       ImageExpand.completeExpand post
@@ -3119,21 +3119,31 @@ ImageExpand =
     post = Get.postFromNode @
     $.rm @
     delete post.file.fullImage
-    unless post.file.isExpanded
+    unless $.hasClass post.file.thumb, 'expanding'
       # Don't try to re-expend if it was already contracted.
       return
     ImageExpand.contract post
+
     src = @src.split '/'
-    unless src[2] is 'images.4chan.org' and URL = Redirect.image src[3], src[5]
-      return if g.DEAD
-      {URL} = post.file
-    return if $.engine isnt 'webkit' and URL.split('/')[2] is 'images.4chan.org'
+    if src[2] is 'images.4chan.org'
+      if URL = Redirect.image src[3], src[5]
+        setTimeout ImageExpand.expand, 10000, post, URL
+        return
+      if g.DEAD or post.isDead or post.file.isDead
+        return
+
     timeoutID = setTimeout ImageExpand.expand, 10000, post
-    # Only Chrome let userscripts do cross domain requests.
-    # Don't check for 404'd status in the archivers.
-    return if $.engine isnt 'webkit' or URL.split('/')[2] isnt 'images.4chan.org'
-    $.ajax URL, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
-      type: 'head'
+    # XXX CORS for images.4chan.org WHEN?
+    $.ajax "//api.4chan.org/#{post.board}/res/#{post.thread}.json", onload: ->
+      return if @status isnt 200
+      for postObj in JSON.parse(@response).posts
+        break if postObj.no is post.ID
+      if postObj.no isnt post.ID
+        clearTimeout timeoutID
+        post.kill()
+      else if postObj.filedeleted
+        clearTimeout timeoutID
+        post.kill true
 
   menu:
     init: ->
@@ -3220,9 +3230,11 @@ ImageHover =
     return unless @file?.isImage
     $.on @file.thumb, 'mouseover', ImageHover.mouseover
   mouseover: (e) ->
+    post = Get.postFromNode @
     el = $.el 'img',
       id: 'ihover'
-      src: @parentNode.href
+      src: post.file.URL
+    el.setAttribute 'data-fullid', post.fullID
     $.add d.body, el
     UI.hover
       root: @
@@ -3233,17 +3245,28 @@ ImageHover =
     $.on el, 'error', ImageHover.error
   error: ->
     return unless doc.contains @
+    post = g.posts[@dataset.fullid]
+
     src = @src.split '/'
-    unless src[2] is 'images.4chan.org' and URL = Redirect.image src[3], src[5]
-      return if g.DEAD
-      {URL} = post.file
-    return if $.engine isnt 'webkit' and URL.split('/')[2] is 'images.4chan.org'
-    timeoutID = setTimeout (=> @src = URL), 3000
-    # Only Chrome let userscripts do cross domain requests.
-    # Don't check for 404'd status in the archivers.
-    return if $.engine isnt 'webkit' or URL.split('/')[2] isnt 'images.4chan.org'
-    $.ajax URL, onreadystatechange: (-> clearTimeout timeoutID if @status is 404),
-      type: 'head'
+    if src[2] is 'images.4chan.org'
+      if URL = Redirect.image src[3], src[5].replace /\?.+$/, ''
+        @src = URL
+        return
+      if g.DEAD or post.isDead or post.file.isDead
+        return
+
+    timeoutID = setTimeout (=> @src = post.file.URL + '?' + Date.now()), 3000
+    # XXX CORS for images.4chan.org WHEN?
+    $.ajax "//api.4chan.org/#{post.board}/res/#{post.thread}.json", onload: ->
+      return if @status isnt 200
+      for postObj in JSON.parse(@response).posts
+        break if postObj.no is post.ID
+      if postObj.no isnt post.ID
+        clearTimeout timeoutID
+        post.kill()
+      else if postObj.filedeleted
+        clearTimeout timeoutID
+        post.kill true
 
 ExpandComment =
   init: ->
