@@ -1127,6 +1127,7 @@
       this.el = $.el('div', {
         innerHTML: '<a href=javascript:; class=close title=Close>×</a><div class=message></div>'
       });
+      this.el.style.opacity = 0;
       this.setType(type);
       $.on(this.el.firstElementChild, 'click', this.close);
       if (typeof content === 'string') {
@@ -1147,6 +1148,8 @@
       }
       $.off(d, 'visibilitychange', this.add);
       $.add($.id('notifications'), this.el);
+      this.el.clientHeight;
+      this.el.style.opacity = 1;
       if (this.timeout) {
         return setTimeout(this.close, this.timeout * $.SECOND);
       }
@@ -6964,7 +6967,7 @@
       if (err) {
         if (/captcha|verification/i.test(err.textContent) || err === 'Connection error with sys.4chan.org.') {
           if (/mistyped/i.test(err.textContent)) {
-            err = 'Error: You seem to have mistyped the CAPTCHA.';
+            err = 'You seem to have mistyped the CAPTCHA.';
           }
           QR.cooldown.auto = QR.captcha.isEnabled ? !!QR.captcha.captchas.length : err === 'Connection error with sys.4chan.org.' ? true : false;
           QR.cooldown.set({

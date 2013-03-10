@@ -96,6 +96,7 @@ class Notification
 
     @el = $.el 'div',
       innerHTML: '<a href=javascript:; class=close title=Close>×</a><div class=message></div>'
+    @el.style.opacity = 0
     @setType type
     $.on @el.firstElementChild, 'click', @close
     if typeof content is 'string'
@@ -113,6 +114,8 @@ class Notification
       return
     $.off d, 'visibilitychange', @add
     $.add $.id('notifications'), @el
+    @el.clientHeight # force reflow
+    @el.style.opacity = 1
     setTimeout @close, @timeout * $.SECOND if @timeout
 
   close = ->
