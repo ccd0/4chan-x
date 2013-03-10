@@ -1,0 +1,1 @@
+postMessage({version:'<%= pkg.version %>'},'*')
