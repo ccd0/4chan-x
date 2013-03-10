@@ -1118,35 +1118,41 @@
   };
 
   Notification = (function() {
+    var add, close;
 
     function Notification(type, content, timeout) {
-      var el;
-      this.type = type;
+      this.timeout = timeout;
+      this.add = add.bind(this);
+      this.close = close.bind(this);
       this.el = $.el('div', {
-        className: "notification " + type,
         innerHTML: '<a href=javascript:; class=close title=Close>×</a><div class=message></div>'
       });
-      $.on(this.el.firstElementChild, 'click', this.close.bind(this));
+      this.setType(type);
+      $.on(this.el.firstElementChild, 'click', this.close);
       if (typeof content === 'string') {
         content = $.tn(content);
       }
       $.add(this.el.lastElementChild, content);
-      if (timeout) {
-        setTimeout(this.close.bind(this), timeout * $.SECOND);
-      }
-      el = this.el;
-      $.ready(function() {
-        return $.add($.id('notifications'), el);
-      });
+      $.ready(this.add);
     }
 
     Notification.prototype.setType = function(type) {
-      $.rmClass(this.el, this.type);
-      $.addClass(this.el, type);
-      return this.type = type;
+      return this.el.className = "notification " + type;
     };
 
-    Notification.prototype.close = function() {
+    add = function() {
+      if (d.hidden) {
+        $.on(d, 'visibilitychange', this.add);
+        return;
+      }
+      $.off(d, 'visibilitychange', this.add);
+      $.add($.id('notifications'), this.el);
+      if (this.timeout) {
+        return setTimeout(this.close, this.timeout * $.SECOND);
+      }
+    };
+
+    close = function() {
       if (this.el.parentNode) {
         return $.rm(this.el);
       }

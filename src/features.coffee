@@ -90,28 +90,32 @@ Header =
     Header.menu.toggle e, @, g
 
 class Notification
-  constructor: (@type, content, timeout) ->
+  constructor: (type, content, @timeout) ->
+    @add   = add.bind @
+    @close = close.bind @
+
     @el = $.el 'div',
-      className: "notification #{type}"
       innerHTML: '<a href=javascript:; class=close title=Close>×</a><div class=message></div>'
-    $.on @el.firstElementChild, 'click', @close.bind @
+    @setType type
+    $.on @el.firstElementChild, 'click', @close
     if typeof content is 'string'
       content = $.tn content
     $.add @el.lastElementChild, content
 
-    if timeout
-      setTimeout @close.bind(@), timeout * $.SECOND
-
-    el = @el
-    $.ready ->
-      $.add $.id('notifications'), el
+    $.ready @add
 
   setType: (type) ->
-    $.rmClass  @el, @type
-    $.addClass @el,  type
-    @type = type
+    @el.className = "notification #{type}"
 
-  close: ->
+  add = ->
+    if d.hidden
+      $.on d, 'visibilitychange', @add
+      return
+    $.off d, 'visibilitychange', @add
+    $.add $.id('notifications'), @el
+    setTimeout @close, @timeout * $.SECOND if @timeout
+
+  close = ->
     $.rm @el if @el.parentNode
 
 Settings =
