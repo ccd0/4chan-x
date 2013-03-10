@@ -143,7 +143,7 @@ Config =
     'Submit QR':          ['Alt+s',   'Submit post.']
     # Thread related
     'Watch':              ['w',       'Watch thread.']
-    'Update':             ['u',       'Update the thread now.']
+    'Update':             ['r',       'Update the thread now.']
     # Images
     'Expand image':       ['Shift+e', 'Expand selected image.']
     'Expand images':      ['e',       'Expand all images.']

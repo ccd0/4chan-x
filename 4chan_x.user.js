@@ -154,7 +154,7 @@
       'Math tags': ['Alt+m', 'Insert math tags.'],
       'Submit QR': ['Alt+s', 'Submit post.'],
       'Watch': ['w', 'Watch thread.'],
-      'Update': ['u', 'Update the thread now.'],
+      'Update': ['r', 'Update the thread now.'],
       'Expand image': ['Shift+e', 'Expand selected image.'],
       'Expand images': ['e', 'Expand all images.'],
       'Front page': ['0', 'Jump to page 0.'],
