@@ -161,16 +161,16 @@ a[href="javascript:;"] {
   transition: all .25s ease-in-out;
 }
 .notification.error {
-  background-color: hsla(0, 100%, 40%, .9);
+  background-color: hsla(0, 100%, 38%, .9);
 }
 .notification.warning {
-  background-color: hsla(36, 100%, 40%, .9);
+  background-color: hsla(36, 100%, 38%, .9);
 }
 .notification.info {
-  background-color: hsla(200, 100%, 40%, .9);
+  background-color: hsla(200, 100%, 38%, .9);
 }
 .notification.success {
-  background-color: hsla(104, 100%, 40%, .9);
+  background-color: hsla(104, 100%, 38%, .9);
 }
 .notification a {
   color: white;
