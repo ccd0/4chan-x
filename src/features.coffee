@@ -175,7 +175,7 @@ Settings =
           <div class=credits>
             <a href='<%= meta.page %>' target=_blank><%= meta.name %></a> |
             <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/changelog' target=_blank>#{g.VERSION}</a> |
-            <a href='<%= meta.repo %>issues' target=_blank>Issues</a> |
+            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |
             <a href=javascript:; class=close title=Close>×</a>
           </div>
         </nav>
