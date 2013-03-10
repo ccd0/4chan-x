@@ -66,6 +66,7 @@ a[href="javascript:;"] {
 }
 
 .thread > .hidden_thread ~ *,
+.hidden .sideArrows,
 [hidden],
 #globalMessage.hidden,
 #content > [name=tab]:not(:checked) + div,

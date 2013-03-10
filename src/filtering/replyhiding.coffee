@@ -27,8 +27,9 @@ ReplyHiding =
     $.set "hiddenReplies/#{g.BOARD}/", g.hiddenReplies
 
   hide: (root) ->
-    return if root.hidden # already hidden once by the filter
-    root.hidden = true
+    post = $ '.post', root
+    return if post.hidden # already hidden once by the filter
+    post.hidden = true
 
     $.addClass root, 'hidden'
 
@@ -36,21 +37,25 @@ ReplyHiding =
 
     stub = $.el 'div',
       className: 'stub'
-      innerHTML: "<a href='javascript:;' id='show#{id = root.id[2..]}'><span>[ + ]</span> </a>"
+      innerHTML: "<a href='javascript:;' id='show#{id = root.id[2..]}'>#{if Conf['Anonymize'] then 'Anonymous' else $('.desktop > .nameBlock', root).textContent} <span>[ + ]</span> </a>"
     a = stub.firstChild
     $.on  a, 'click', ->
       ReplyHiding.toggle button = @parentNode, root = $.id("pc#{@id[4..]}"), id
-    $.add a, $.tn if Conf['Anonymize'] then 'Anonymous' else $('.desktop > .nameBlock', root).textContent
+
     if Conf['Menu']
       menuButton = Menu.a.cloneNode true
       $.on menuButton, 'click', Menu.toggle
       $.add stub, [$.tn(' '), menuButton]
-    $.before root, stub
+
+    $.prepend root, stub
 
   show: (root) ->
-    $.rm stub if (stub = root.previousElementSibling) and stub.className is 'stub'
-    root.hidden = false
+    $.rm stub if (stub = $ '.stub', root)
+
+    post = $ '.post', root
+    post.hidden = false
+
     $.rmClass root, 'hidden'
 
   unhide: (post) ->
-    ReplyHiding.show post.root if post.root.hidden
+    ReplyHiding.show post.root if post.el.hidden
