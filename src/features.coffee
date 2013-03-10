@@ -569,6 +569,7 @@ Settings =
       input.value = $.get key, Conf[key]
       $.on input, 'keydown', Settings.keybind
       $.add tbody, tr
+    return
   keybind: (e) ->
     return if e.keyCode is 9 # tab
     e.preventDefault()
@@ -1558,6 +1559,7 @@ Keybinds =
     $.on d, '4chanXInitFinished', ->
       for node in $$ '[accesskey]'
         node.removeAttribute 'accesskey'
+      return
 
   keydown: (e) ->
     return unless key = Keybinds.keyCode e

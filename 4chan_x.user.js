@@ -1570,11 +1570,10 @@
       }
     },
     keybinds: function(section) {
-      var arr, input, key, tbody, tr, _ref, _results;
+      var arr, input, key, tbody, tr, _ref;
       section.innerHTML = "<div class=warning " + (Conf['Keybinds'] ? 'hidden' : '') + "><code>Keybinds</code> are disabled.</div>\n<div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div>\n<div>Press <kbd>Return</kbd> to disable a keybind.</div>\n<table><tbody>\n  <tr><th>Actions</th><th>Keybinds</th></tr>\n</tbody></table>";
       tbody = $('tbody', section);
       _ref = Config.hotkeys;
-      _results = [];
       for (key in _ref) {
         arr = _ref[key];
         tr = $.el('tr', {
@@ -1584,9 +1583,8 @@
         input.name = key;
         input.value = $.get(key, Conf[key]);
         $.on(input, 'keydown', Settings.keybind);
-        _results.push($.add(tbody, tr));
+        $.add(tbody, tr);
       }
-      return _results;
     },
     keybind: function(e) {
       var key;
@@ -2834,14 +2832,12 @@
       }
       $.on(d, 'keydown', Keybinds.keydown);
       return $.on(d, '4chanXInitFinished', function() {
-        var node, _i, _len, _ref, _results;
+        var node, _i, _len, _ref;
         _ref = $$('[accesskey]');
-        _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           node = _ref[_i];
-          _results.push(node.removeAttribute('accesskey'));
+          node.removeAttribute('accesskey');
         }
-        return _results;
       });
     },
     keydown: function(e) {
