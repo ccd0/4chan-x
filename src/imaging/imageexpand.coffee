@@ -1,6 +1,7 @@
 ImageExpand =
   init: ->
     return if g.BOARD is 'f'
+    QuoteInline.callbacks.push @node
     Main.callbacks.push @node
     @dialog()
 
@@ -91,7 +92,7 @@ ImageExpand =
       # Expand already loaded picture
       img.hidden = false
       return
-    img = $.el 'img'
+    img = $.el 'img',
       src:       src
       className: 'fullSize'
     $.on img, 'error', ImageExpand.error
@@ -125,7 +126,6 @@ ImageExpand =
     $.on select, 'change', $.cb.value
     $.on select, 'change', ImageExpand.cb.typeChange
     $.on $('input', controls), 'click', ImageExpand.cb.all
-    Style.rice controls
 
     $.prepend $.id('delform'), controls
 

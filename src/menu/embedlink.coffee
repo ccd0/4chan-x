@@ -1,6 +1,6 @@
 EmbedLink =
   init: ->
-    a = $.el 'a'
+    a = $.el 'a',
       className: 'embed_link'
       textContent: 'Embed all in post'
 

@@ -16,7 +16,6 @@ $.extend = (object, properties) ->
 
 # Various prototypes I've wanted or needed to add.
 $.extend Array::,
-
   add: (object, position) ->
     keep = @slice position
     @length = position
@@ -36,6 +35,7 @@ $.extend Array::,
     args = arguments
     for arg in args
       @push.apply @, arg
+    return @
 
   remove: (object) ->
     if (index = @indexOf object) > -1
@@ -163,10 +163,12 @@ $.extend $,
     # window_ext1.Node !== window_ext2.Node
     unless nodes instanceof Array
       return nodes
-    frag = d.createDocumentFragment()
+    frag = $.frag()
     for node in nodes
-      frag.appendChild node
+      $.add frag, node
     frag
+  frag: ->
+    d.createDocumentFragment()
   add: (parent, children) ->
     parent.appendChild $.nodes children
   prepend: (parent, children) ->
@@ -259,7 +261,7 @@ $.extend $,
 
 $$ = (selector, root) ->
   root or= d.body
-  if result = Array::slice.call root.querySelectorAll selector
+  if result = [root.querySelectorAll(selector)...]
     return result
   return null
 

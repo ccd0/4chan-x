@@ -1,11 +1,11 @@
 ﻿Nav =
   # ▲ ▼
   init: ->
-    span = $.el 'span'
+    span = $.el 'span',
       id: 'navlinks'
-    prev = $.el 'a'
+    prev = $.el 'a',
       href: 'javascript:;'
-    next = $.el 'a'
+    next = $.el 'a',
       href: 'javascript:;'
 
     $.on prev, 'click', @prev

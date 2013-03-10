@@ -35,7 +35,7 @@ Sauce =
 
   node: (post) ->
     {img} = post
-    return if post.isInlined and not post.isCrosspost or not img
+    return unless img
     img   = img.parentNode
     nodes = []
     for link in Sauce.links

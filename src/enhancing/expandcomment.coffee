@@ -3,6 +3,13 @@ ExpandComment =
     for a in $$ '.abbr'
       $.on a.firstElementChild, 'click', ExpandComment.expand
     return
+  
+  callbacks: []
+  
+  node: (node) ->
+    for callback in ExpandComment.callbacks
+      callback node
+    return
 
   expand: (e) ->
     e.preventDefault()
@@ -31,30 +38,19 @@ ExpandComment =
     bq = $.id "m#{replyID}"
     clone = bq.cloneNode false
     clone.innerHTML = post.com
+
     for quote in quotes = clone.getElementsByClassName 'quotelink'
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote
       quote.href = "res/#{href}" # Fix pathnames
+
     post =
       blockquote: clone
       threadID:   threadID
       quotes:     quotes
       backlinks:  []
-    if _conf['Linkify']
-      Linkify.node        post
-    if _conf['Resurrect Quotes']
-      Quotify.node        post
-    if _conf['Quote Preview']
-      QuotePreview.node   post
-    if _conf['Quote Inline']
-      QuoteInline.node    post
-    if _conf['Indicate OP quote']
-      QuoteOP.node        post
-    if _conf['Indicate Cross-thread Quotes']
-      QuoteCT.node        post
-    if _conf['RemoveSpoilers']
-      RemoveSpoilers.node post
-    if _conf['Color user IDs']
-      IDColor.node        post
+
+    ExpandComment.node post
+
     $.replace bq, clone
     Main.prettify clone

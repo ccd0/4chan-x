@@ -1,5 +1,6 @@
 QuoteCT =
   init: ->
+    ExpandComment.callbacks.push @node
     Main.callbacks.push @node
 
   node: (post) ->

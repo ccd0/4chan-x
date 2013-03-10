@@ -21,7 +21,7 @@ Open your console with:
 - Clone Appchan X.
 - `cd` into it.
 - Install [node.js](http://nodejs.org/).
-- Install [Grunt](http://gruntjs.com/) with `npm install -g grunt`.
+- Install [Grunt's CLI](http://gruntjs.com/) with `npm install -g grunt-cli`.
 - Install Appchan X dependencies with `npm install`.
 
 ### Build

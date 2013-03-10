@@ -7,8 +7,6 @@ Main =
     for key, val of Conf
       Conf[key] = $.get key, val
 
-    Conf['Hidden Categories'] = $.get "Hidden Categories", ["Questionable"]
-
     path = location.pathname
     pathname = path[1..].split '/'
     [g.BOARD, temp] = pathname
@@ -26,32 +24,10 @@ Main =
     # Scope a local _conf variable for performance.
     _conf = Conf
 
-    if _conf["NSFW/SFW Mascots"]
-      g.MASCOTSTRING = "Enabled Mascots #{g.TYPE}"
-    else
-      g.MASCOTSTRING = "Enabled Mascots"
-
-    # Load user themes, mascots, and their various statuses.
-    userNavigation = $.get "userNavigation", Navigation
-
-    for name, theme of $.get "userThemes", {}
-      Themes[name] = theme
-
-    for name, mascot of $.get "userMascots", {}
-      Mascots[name] = mascot
-
-    Conf["Enabled Mascots"]       = $.get "Enabled Mascots",      []
-    Conf["Enabled Mascots sfw"]   = $.get "Enabled Mascots sfw",  []
-    Conf["Enabled Mascots nsfw"]  = $.get "Enabled Mascots nsfw", []
-    Conf["Deleted Mascots"]       = $.get "Deleted Mascots",      []
-
     # Setup Fill some per board configuration values with their global equivalents.
     if _conf["Interval per board"]
       Conf["Interval_"   + g.BOARD] = $.get "Interval_"   + g.BOARD, Conf["Interval"]
       Conf["BGInterval_" + g.BOARD] = $.get "BGInterval_" + g.BOARD, Conf["BGInteval"]
-
-    if _conf["NSFW/SFW Themes"]
-      Conf["theme"] = $.get "theme_#{g.TYPE}", Conf["theme"]
 
     switch location.hostname
       when 'sys.4chan.org'
@@ -76,20 +52,21 @@ Main =
             location.href = url if url
         return
 
+    # Load user themes, mascots, and their various statuses.
+    userNavigation = $.get "userNavigation", Navigation
+
     # Prune objects that have expired.
     Main.prune()
 
     # Major features
-
-    Style.init()
 
     now = Date.now()
     if _conf['Check for Updates'] and $.get('lastUpdate', 0) < now - 18 * $.HOUR
       $.ready ->
         $.on window, 'message', Main.message
         $.set 'lastUpdate', now
-        $.add d.head, $.el 'script'
-          src: 'https://github.com/zixaphir/appchan-x/raw/master/latest.js'
+        $.add d.head, $.el 'script',
+          src: 'https://github.com/zixaphir/appchan-x/raw/4chanX/latest.js'
 
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
     settings.disableAll = true
@@ -112,24 +89,27 @@ Main =
       if _conf['Custom Navigation']
         CustomNavigation.init()
 
-      Options.init()
-      MascotTools.init()
-
       for nav in ['boardNavDesktop', 'boardNavDesktopFoot']
         if a = $ "a[href*='/#{g.BOARD}/']", $.id nav
           # Gotta make it work in temporary boards.
           $.addClass a, 'current'
+      return
 
   features: ->
     _conf = Conf
+
+    Style.init()
+
     if _conf['Filter']
       Filter.init()
-      StrikethroughQuotes.init()
-    else if _conf['Reply Hiding'] or _conf['Reply Hiding Link']
-      StrikethroughQuotes.init()
 
     if _conf['Reply Hiding']
       ReplyHiding.init()
+
+    if _conf['Reply Hiding'] or _conf['Reply Hiding Link'] or _conf['Filter']
+      StrikethroughQuotes.init()
+      QuotePreview.callbacks.push ReplyHiding.unhide
+      QuoteInline.callbacks.push ReplyHiding.unhide
 
     if _conf['Anonymize']
       Anonymize.init()
@@ -188,6 +168,9 @@ Main =
     if _conf['Resurrect Quotes']
       Quotify.init()
 
+    if _conf['Remove Spoilers']
+      RemoveSpoilers.init()
+
     if _conf['Quote Inline']
       QuoteInline.init()
 
@@ -243,9 +226,8 @@ Main =
 
     # Major features.
 
-    QR.init()
-
-    MascotTools.init()
+    if _conf['Quick Reply']
+      QR.init()
 
     if _conf['Image Expansion']
       ImageExpand.init()
@@ -296,23 +278,27 @@ Main =
 
     board = $ '.board'
     nodes = []
-    for node in $$ '.postContainer', board
-      nodes.push Main.preParse node
-    Main.node nodes, ->
+    ready = ->
       if d.readyState is "complete"
         return true
       false
+    for node in $$ '.postContainer', board
+      Main.node Main.preParse(node), ready
 
     # Execute these scripts on inserted posts, not page init.
     Main.hasCodeTags = !! $ 'script[src^="//static.4chan.org/js/prettify/prettify"]'
 
     if MutationObserver
-      observer = new MutationObserver Main.observer
-      observer.observe board,
+      Main.observer = new MutationObserver Main.observe
+      Main.observer.observe board,
         childList: true
         subtree: true
+      $.ready ->
+        Main.observer.disconnect()
     else
       $.on board, 'DOMNodeInserted', Main.listener
+      $.ready ->
+        $.off board, 'DOMNodeInserted', Main.listener
     return
 
   prune: ->
@@ -360,7 +346,7 @@ Main =
   message: (e) ->
     {version} = e.data
     if version and version isnt Main.version
-      xupdate = $.el 'div'
+      xupdate = $.el 'div',
         id: 'xupdater'
         className: 'reply'
         innerHTML:
@@ -369,14 +355,14 @@ Main =
       $.prepend $.id('delform'), xupdate
 
   preParse: (node) ->
-    parentClass = node.parentNode.className
+    parentClass = if parent = node.parentElement then parent.className else ""
     el   = $ '.post', node
     post =
       root:        node
       el:          el
       class:       el.className
       ID:          el.id.match(/\d+$/)[0]
-      threadID:    g.THREAD_ID or $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0]
+      threadID:    g.THREAD_ID or if parent then $.x('ancestor::div[parent::div[@class="board"]]', node).id.match(/\d+$/)[0]
       isArchived:  parentClass.contains    'archivedPost'
       isInlined:   /\binline\b/.test       parentClass
       isCrosspost: parentClass.contains    'crosspost'
@@ -385,6 +371,7 @@ Main =
       backlinks:   el.getElementsByClassName 'backlink'
       fileInfo:    false
       img:         false
+
     if img = $ 'img[data-md5]', el
       # Make sure to not add deleted images,
       # those do not have a data-md5 attribute.
@@ -395,26 +382,23 @@ Main =
     Main.prettify post.blockquote
     post
 
-  node: (nodes, notify) ->
+  node: (node, notify) ->
     for callback in Main.callbacks
       try
-        callback node for node in nodes
+        callback node
       catch err
-        alert "AppChan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err}\n#{err.stack}" if notify
+        alert "4chan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err}\n#{err.stack}" if notify
     return
 
-  observer: (mutations) ->
+  observe: (mutations) ->
     nodes = []
     for mutation in mutations
-      for addedNode in mutation.addedNodes
-        if /\bpostContainer\b/.test addedNode.className
-          nodes.push Main.preParse addedNode
-    Main.node nodes if nodes.length
+      Main.node Main.preParse addedNode for addedNode in mutation.addedNodes when /\bpostContainer\b/.test addedNode.className
 
   listener: (e) ->
     {target} = e
     if /\bpostContainer\b/.test(target.className)
-      Main.node [Main.preParse target]
+      Main.node Main.preParse target
 
   prettify: (bq) ->
     return unless Main.hasCodeTags
@@ -431,7 +415,6 @@ Main =
       else
         return
     $.globalEval "#{code}".replace '_id_', bq.id
-
   namespace: '<%= pkg.name.replace(/-/g, '_') %>.'
   version:   '<%= pkg.version %>'
   callbacks: []

@@ -15,7 +15,6 @@ Prefetch =
       $.after first, controls
     else
       $.before first, controls
-    Style.rice controls
 
   change: ->
     $.off @, 'change', Prefetch.change

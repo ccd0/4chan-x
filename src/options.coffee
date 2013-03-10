@@ -6,39 +6,42 @@ Options =
       Favicon.init() unless Favicon.el
       Options.dialog()
 
-    a = $.el 'a',
-      id:    'settingsWindowLink'
-      title: 'Appchan X Settings'
-      href:  'javascript:;'
-    $.on a, 'click', ->
-      Options.dialog()
-    $.replace $.id('settingsWindowLink'), a
+    for settings in ['navtopright', 'navbotright']
+      a = $.el 'a',
+        className:   'settingsWindowLink'
+        textContent: '4chan X Settings'
+        href:        'javascript:;'
+      $.on a, 'click', ->
+        Options.dialog()
 
-  dialog: (tab) ->
-    if Conf['editMode'] is "theme"
-      if confirm "Opening the options dialog will close and discard any theme changes made with the theme editor."
-        ThemeTools.close()
-      return
-    if Conf['editMode'] is "mascot"
-      if confirm "Opening the options dialog will close and discard any mascot changes made with the mascot editor."
-        MascotTools.close()
-      return
-    dialog = Options.el = $.el 'div'
+      setting = $.id(settings)
+
+      if Conf['Disable 4chan\'s extension']
+        $.replace setting.childNodes[1], a
+        continue
+
+      $.prepend setting, [$.tn('['), a, $.tn('] ')]
+
+  dialog: ->
+    dialog = Options.el = $.el 'div',
       id: 'options'
       className: 'reply dialog'
       innerHTML: '<div id=optionsbar>
   <div id=credits>
     <label for=apply>Apply</label>
-    | <a target=_blank href=http://zixaphir.github.com/appchan-x/>AppChan X</a>
-    | <a target=_blank href=https://raw.github.com/zixaphir/appchan-x/master/changelog>' + Main.version + '</a>
-    | <a target=_blank href=http://zixaphir.github.com/appchan-x/#bug-report>Issues</a>
+    | <a target=_blank href=http://zixaphir.github.com/appchan-x/>4chan X</a>
+    | <a target=_blank href=https://raw.github.com/zixaphir/appchan-x/4chanX/changelog>' + Main.version + '</a>
   </div>
   <div class=tabs>
-    <label for=style_tab id=selected_tab>Style</label><label for=theme_tab>Themes</label><label for=mascot_tab>Mascots</label><label for=main_tab>Script</label><label for=filter_tab>Filter</label><label for=sauces_tab>Sauce</label><label for=keybinds_tab>Keybinds</label><label for=rice_tab>Rice</label>
+    <label for=main_tab id=selected_tab>Main</label>
+    | <label for=filter_tab>Filter</label>
+    | <label for=sauces_tab>Sauce</label>
+    | <label for=keybinds_tab>Keybinds</label>
+    | <label for=rice_tab>Rice</label>
   </div>
 </div>
-<div id=optionsContent>
-  <input type=radio name=tab hidden id=main_tab>
+<div id=content>
+  <input type=radio name=tab hidden id=main_tab checked>
   <div class=main_tab></div>
   <input type=radio name=tab hidden id=sauces_tab>
   <div class=sauces_tab>
@@ -54,7 +57,7 @@ Options =
     <textarea name=sauces id=sauces class=field></textarea>
   </div>
   <input type=radio name=tab hidden id=filter_tab>
-  <div>
+  <div class=filter_tab>
     <div class=warning><code>Filter</code> is disabled.</div>
     <select name=filter>
       <option value=guide>Guide</option>
@@ -189,12 +192,6 @@ Options =
       <tr><th>Actions</th><th>Keybinds</th></tr>
     </tbody></table>
   </div>
-  <input type=radio name=tab hidden id=style_tab checked>
-  <div class=style_tab></div>
-  <input type=radio name=tab hidden id=theme_tab>
-  <div class=theme_tab></div>
-  <input type=radio name=tab hidden id=mascot_tab>
-  <div class=mascot_tab></div>
   <input type=radio name=tab hidden onClick="document.location.reload()" id=apply>
   <div>Reloading page with new settings.</div>
 </div>'
@@ -206,34 +203,22 @@ Options =
         @id = 'selected_tab'
 
     # Main
-    # I start by gathering all of the main configuration category objects
     for key, obj of Config.main
-      # and creating an unordered list for the main categories.
-      ul = $.el 'ul'
-        innerHTML: "<h3>#{key}</h3>"
+      ul = $.el 'ul',
+        textContent: key
 
-      # Then I gather the variables from each category
       for key, arr of obj
 
-        # I use the object's key to pull from the Conf variable
-        # which is created from the saved localstorage in the "Main" class.
         checked = if $.get(key, Conf[key]) then 'checked' else ''
         description = arr[1]
 
-        # I create a list item to represent the option, with a checkbox to change it.
         li = $.el 'li',
-          innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}><span class=\"optionlabel\">#{key}</span><div style=\"display: none\">#{description}</div></label>"
+          innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}><span class=\"optionlabel\">#{key}</span></label><span>: #{description}</span>"
 
-        # The option is both changed and saved on click.
         $.on $('input', li), 'click', $.cb.checked
 
-        # Mouseover Labels
-        $.on $(".optionlabel", li), 'mouseover', Options.mouseover
-
-        # We add the list item to the unordered list
         $.add ul, li
 
-      # And add the list to the main tab of the options dialog.
       $.add $('#main_tab + div', dialog), ul
 
     # Clear Hidden button.
@@ -340,102 +325,19 @@ Options =
       $.on input, 'keydown', Options.keybind
       $.add $('#keybinds_tab + div tbody', dialog), tr
 
-    # Style
-    # Create a div to put everything in filled with a warning that shows if style is disabled.
-    div = $.el 'div',
-      className: "suboptions"
-
-    # Pull categories from config
-    for category, obj of Config.style
-
-      # Create unordered lists for categories.
-      ul = $.el 'ul'
-        innerHTML: "<h3>#{category}</h3>"
-
-      # Pull options from categories of config
-      for optionname, arr of obj
-
-        # Save the description for more readable code.
-        description = arr[1]
-
-        # Verify the option variable type. If text, text input, if not text, select.
-        # If there is no second array cell, it's a checkbox.
-        # And create a list item and fill it
-        # Adding the JS to change and save it.
-        if arr[2] is 'text'
-          li = $.el 'li',
-            className: "styleoption"
-            innerHTML: "<div class=\"option\"><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></div><div class =\"option\"><input name=\"#{optionname}\" style=\"width: 100%\"></div>"
-          styleSetting = $ "input[name='#{optionname}']", li
-          styleSetting.value = $.get optionname, Conf[optionname]
-          $.on styleSetting, 'blur', ->
-            $.cb.value.call @
-            Style.addStyle()
-
-        else if arr[2]
-          liHTML = "<div class=\"option\"><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></div><div class =\"option\"><select name=\"#{optionname}\"></div>"
-          for selectoption, optionvalue in arr[2]
-            liHTML += "<option value=\"#{selectoption}\">#{selectoption}</option>"
-          liHTML += "</select>"
-          li = $.el 'li',
-            innerHTML: liHTML
-            className: "styleoption"
-          styleSetting = $ "select[name='#{optionname}']", li
-          styleSetting.value = $.get optionname, Conf[optionname]
-          $.on styleSetting, 'change', ->
-            $.cb.value.call @
-            Style.addStyle()
-
-        else
-          checked = if $.get(optionname, Conf[optionname]) then 'checked' else ''
-          li = $.el 'li',
-            className: "styleoption"
-            innerHTML: "<label><input type=checkbox name=\"#{optionname}\" #{checked}><span class=\"optionlabel\">#{optionname}</span><div style=\"display: none\">#{description}</div></label>"
-          $.on $('input', li), 'click', ->
-            $.cb.checked.call @
-            Style.addStyle()
-
-        # Mouseover Labels.
-        $.on $(".optionlabel", li), 'mouseover', Options.mouseover
-
-        # No matter what kinda option it is, it'll be a list item, so I separate that from the if...else if... else statements
-        $.add ul, li
-
-      # And after I'm done iterating through the category options, I can add the resulting list to the div.
-      $.add div, ul
-
-    # And after I'm done iterating through the categories themselves, I can add the resulting div to the dialog
-    $.add $('#style_tab + div', dialog), div
-
-    # Themes
-    # Because adding new themes clears the whole theme dialog, the dialog is created by its own method.
-    @themeTab dialog
-
-    # Mascots
-    # Because adding new mascots or changing style settings clears the whole mascot dialog,
-    # the dialog is created by its own method.
-    $.on $('#mascot_tab', Options.el), 'click', ->
-      if el = $.id "mascotContainer"
-        $.rm el
-      Options.mascotTab.dialog Options.el
-
-    # Indicators for disabled or enabled options that may cause conflicts.
-    Options.indicators dialog
-
     # The overlay over 4chan and under the options dialog you can click to close.
     overlay = $.el 'div', id: 'overlay'
+    $.on dialog,  'click', (e) -> e.stopPropagation()
     $.on overlay, 'click', Options.close
+    $.on dialog,  'click', (e) -> e.stopPropagation()
+    $.add overlay, dialog
     $.add d.body, overlay
-    dialog.style.visibility = 'hidden'
+    d.body.style.setProperty 'width', "#{d.body.clientWidth}px", null
+    $.addClass d.body, 'unscroll'
 
-    # Add options dialog to the DOM.
-    $.add d.body, dialog
-    dialog.style.visibility = 'visible'
-
-    # For theme and mascot edit dialogs, mostly. Allows the user to return to the tab that opened the edit dialog.
-    if tab
-      $("[for='#{tab}_tab']", dialog).click()
-
+    # Indicate disabled options
+    @indicators dialog
+    
     # Fill values, mostly. See each section for the value of the variable used as an argument.
     # Argument will be treated as 'this' by each method.
     Options.filter.call   filter
@@ -443,9 +345,6 @@ Options =
     Options.time.call     time
     Options.fileInfo.call fileInfo
     Options.favicon.call  favicon
-
-    # Rice checkboxes.
-    Style.rice dialog
 
   indicators: (dialog) ->
     indicators = {}
@@ -465,449 +364,17 @@ Options =
 
     return
 
-  themeTab: (dialog = Options.el, mode) ->
-
-    unless mode
-      mode = 'default'
-
-    parentdiv  = $.el 'div',
-      id:        "themeContainer"
-
-    suboptions = $.el 'div',
-      className: "suboptions"
-      id:        "themes"
-
-    # Get the names of all mascots and sort them alphabetically...
-    keys = Object.keys(Themes)
-    keys.sort()
-
-    # And use the sorted list to display all available themes to the user.
-
-    if mode is "default"
-
-      for name in keys
-        theme = Themes[name]
-
-        # Themes aren't actually deleted, but are marked as such.
-        # Megaupload did something similar with illegal files and got in trouble for it.
-        # I do it like this to allow new themes to be added to the user's appchan x when
-        # I update the Themes variable. Otherwise, there would be no way to prevent deleted
-        # themes from being readded.
-        unless theme["Deleted"]
-
-          # Instead of writing a style sheet for each theme, we hard-code the colors into each preview.
-          # 4chan SS / OneeChan also do this, and inspired it here.
-          div = $.el 'div',
-            className: if name is Conf['theme'] then 'selectedtheme' else ''
-            id:        name
-            innerHTML: "
-<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
-  <div style='padding: 3px 0px 0px 8px;'>
-    <span style='color:#{theme['Subjects']}!important; font-weight: 600 !important'>
-      #{name}
-    </span>
-    <span style='color:#{theme['Names']}!important; font-weight: 600 !important'>
-      #{theme['Author']}
-    </span>
-    <span style='color:#{theme['Sage']}!important'>
-      (SAGE)
-    </span>
-    <span style='color:#{theme['Tripcodes']}!important'>
-      #{theme['Author Tripcode']}
-    </span>
-    <time style='color:#{theme['Timestamps']}'>
-      20XX.01.01 12:00
-    </time>
-    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Post Numbers']}!important;' href='javascript:;'>
-      No.27583594
-    </a>
-    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important;' href='javascript:;' name='#{name}' class=edit>
-      &gt;&gt;edit
-    </a>
-    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important;' href='javascript:;' name='#{name}' class=export>
-      &gt;&gt;export
-    </a>
-    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important;' href='javascript:;' name='#{name}' class=delete>
-      &gt;&gt;delete
-    </a>
-  </div>
-  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>
-    <a style='color:#{theme['Quotelinks']}!important; text-shadow: none;'>
-      &gt;&gt;27582902
-    </a>
-    <br>
-    Post content is right here.
-  </blockquote>
-  <h1 style='color: #{theme['Text']}'>
-    Selected
-  </h1>
-</div>"
-
-          div.style.backgroundColor = theme['Background Color']
-
-          # Theme Editting. themeoptions.coffee.
-          $.on $('a.edit', div), 'click', (e) ->
-            e.preventDefault()
-            e.stopPropagation()
-            ThemeTools.init @name
-            Options.close()
-
-          # Theme Exporting
-          $.on $('a.export', div), 'click', (e) ->
-            e.preventDefault()
-            e.stopPropagation()
-            exportTheme = Themes[@name]
-            exportTheme['Theme'] = @name
-            exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme))
-
-            if window.open exportedTheme, "_blank"
-              return
-            else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
-              window.location exportedTheme
-
-          # Delete Theme.
-          $.on $('a.delete', div), 'click', (e) ->
-            e.preventDefault()
-            e.stopPropagation()
-            container = $.id @name
-
-            # We don't let the user delete a theme if there is no other theme available
-            # because themes can't function without one.
-            unless container.previousSibling or container.nextSibling
-              alert "Cannot delete theme (No other themes available)."
-              return
-
-            if confirm "Are you sure you want to delete \"#{@name}\"?"
-              if @name is Conf['theme']
-                if settheme = container.previousSibling or container.nextSibling
-                  Conf['theme'] = settheme.id
-                  $.addClass settheme, 'selectedtheme'
-                  $.set 'theme', Conf['theme']
-              Themes[@name]["Deleted"] = true
-              userThemes = $.get "userThemes", {}
-              userThemes[@name] = Themes[@name]
-              $.set 'userThemes', userThemes
-              $.rm container
-
-          $.on div, 'click', Options.selectTheme
-          $.add suboptions, div
-
-      div = $.el 'div',
-        id:        'addthemes'
-        innerHTML: "
-<a id=newtheme href='javascript:;'>New Theme</a> /
- <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> /
- <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> /
- <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden> /
- <a id=tUndelete href='javascript:;'>Undelete Theme</a>
-  "
-
-      # Create New Theme.
-      $.on $("#newtheme", div), 'click', ->
-        # We prepare ThemeTools to expect no incoming theme.
-        # themeoptions.coffee
-        ThemeTools.init "untitled"
-        Options.close()
-
-      # Essentially, you can't open a file dialog without a file input,
-      # but I don't want to show the user a file input.
-      $.on $("#import", div), 'click', ->
-        @nextSibling.click()
-      $.on $("#importbutton", div), 'change', (evt) ->
-        ThemeTools.importtheme "appchan", evt
-
-      $.on $("#OCimport", div), 'click', ->
-        @nextSibling.click()
-      $.on $("#OCimportbutton", div), 'change', (evt) ->
-        ThemeTools.importtheme "oneechan", evt
-
-      $.on $("#SSimportbutton", div), 'change', (evt) ->
-        ThemeTools.importtheme "SS", evt
-      $.on $("#SSimport", div), 'click', ->
-        @nextSibling.click()
-
-      $.on $('#tUndelete', div), 'click', ->
-        $.rm $.id "themeContainer"
-        Options.themeTab Options.el, 'undelete'
-
-    else
-
-      for name in keys
-        theme = Themes[name]
-
-        if theme["Deleted"]
-
-          div = $.el 'div',
-            id:        name
-            innerHTML: "
-<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
-  <div style='padding: 3px 0px 0px 8px;'>
-    <span style='color:#{theme['Subjects']}!important; font-weight: 600 !important'>#{name}</span>
-    <span style='color:#{theme['Names']}!important; font-weight: 600 !important'>#{theme['Author']}</span>
-    <span style='color:#{theme['Sage']}!important'>(SAGE)</span>
-    <span style='color:#{theme['Tripcodes']}!important'>#{theme['Author Tripcode']}</span>
-    <time style='color:#{theme['Timestamps']}'>20XX.01.01 12:00</time>
-    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important;' href='javascript:;'>No.27583594</a>
-  </div>
-  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>
-    <a style='color:#{theme['Quotelinks']}!important; text-shadow: none;'>
-      &gt;&gt;27582902
-    </a>
-    <br>
-    I forgive you for using VLC to open me. ;__;
-  </blockquote>
-</div>"
-
-          $.on div, 'click', ->
-            if confirm "Are you sure you want to undelete \"#{@id}\"?"
-              Themes[@id]["Deleted"] = false
-              userThemes = $.get "userThemes", {}
-              userThemes[@id] = Themes[@id]
-              $.set 'userThemes', userThemes
-              $.rm @
-
-          $.add suboptions, div
-
-      div = $.el 'div',
-        id:        'addthemes'
-        innerHTML: "<a href='javascript:;'>Return</a>"
-
-      $.on $('a', div), 'click', ->
-        $.rm $.id "themeContainer"
-        Options.themeTab()
-
-    $.add parentdiv, suboptions
-    $.add parentdiv, div
-    $.add $('#theme_tab + div', dialog), parentdiv
-    Options.indicators dialog
-
-
-  mascotTab:
-    dialog: (dialog, mode) ->
-      dialog or= Options.el
-      ul = {}
-      categories = []
-
-      unless mode
-        mode = "default"
-
-      parentdiv = $.el "div"
-        id: "mascotContainer"
-
-      suboptions = $.el "div",
-        className: "suboptions"
-        innerHTML: "<div class=warning><code>Mascots</code> are currently disabled. Please enable them in the Style tab to use mascot options.</div>"
-
-      mascotHide = $.el "div"
-        id:        "mascot_hide"
-        className: "reply"
-        innerHTML: "Hide Categories <span></span><div></div>"
-
-      keys = Object.keys Mascots
-      keys.sort()
-
-      if mode is 'default'
-        # Create a keyed Unordered List Element and hide option for each mascot category.
-        for category in MascotTools.categories
-          ul[category] = $.el "ul",
-            className:   "mascots"
-            id:          category
-
-          if Conf["Hidden Categories"].contains category
-            ul[category].hidden = true
-
-          header = $.el "h3"
-            className:   "mascotHeader"
-            textContent: category
-
-          categories.push option = $.el "label"
-            name:     category
-            innerHTML: "<input name='#{category}' type=checkbox #{if Conf["Hidden Categories"].contains(category) then 'checked' else ''}>#{category}"
-
-          $.on $('input', option), 'change', ->
-            Options.mascotTab.toggle.call @
-
-          $.add ul[category], header
-          $.add suboptions, ul[category]
-
-        for name in keys
-          unless Conf["Deleted Mascots"].contains name
-            mascot = Mascots[name]
-            li = $.el 'li',
-              className: 'mascot'
-              id:        name
-              innerHTML: "
-<div class='mascotname'>#{name.replace /_/g, " "}</div>
-<div class='mascotcontainer'><div class='mAlign #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'></div></div>
-<div class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a><a class=delete name='#{name}' href='javascript:;'>Delete</a><a class=export name='#{name}' href='javascript:;'>Export</a></div>"
-
-            if Conf[g.MASCOTSTRING].contains name
-              $.addClass li, 'enabled'
-
-            $.on $('a.edit', li), 'click', (e) ->
-              e.stopPropagation()
-              MascotTools.dialog @name
-              Options.close()
-
-            $.on $('a.delete', li), 'click', (e) ->
-              e.stopPropagation()
-              if confirm "Are you sure you want to delete \"#{@name}\"?"
-                if Conf['mascot'] is @name
-                  MascotTools.init()
-                for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
-                  Conf[type].remove @name
-                  $.set type, Conf[type]
-                Conf["Deleted Mascots"].push @name
-                $.set "Deleted Mascots", Conf["Deleted Mascots"]
-                $.rm $.id @name
-
-            # Mascot Exporting
-            $.on $('a.export', li), 'click', (e) ->
-              e.stopPropagation()
-              exportMascot = Mascots[@name]
-              exportMascot['Mascot'] = @name
-              exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot))
-
-              if window.open exportedMascot, "_blank"
-                return
-              else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
-                window.location exportedMascot
-
-            $.on li, 'click', ->
-              if Conf[g.MASCOTSTRING].remove @id
-                if Conf['mascot'] is @id
-                  MascotTools.init()
-              else
-                Conf[g.MASCOTSTRING].push @id
-                MascotTools.init @id
-              $.toggleClass @, 'enabled'
-              $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
-
-            if MascotTools.categories.contains mascot.category
-              $.add ul[mascot.category], li
-            else
-              $.add ul[MascotTools.categories[0]], li
-        
-        
-        $.add $('div', mascotHide), categories
-
-        batchmascots = $.el 'div',
-          id:        "mascots_batch"
-          innerHTML: "
-<a href=\"javascript:;\" id=clear>Clear All</a> /
- <a href=\"javascript:;\" id=selectAll>Select All</a> /
- <a href=\"javascript:;\" id=createNew>Add Mascot</a> /
- <a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden> /
- <a href=\"javascript:;\" id=undelete>Undelete Mascots</a> /
- <a href=\"http://appchan.booru.org/\" target=_blank>Get More Mascots!</a>
-"
-
-        $.on $('#clear', batchmascots), 'click', ->
-          enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]))
-          for name in enabledMascots
-            $.rmClass $.id(name), 'enabled'
-          $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING] = []
-
-        $.on $('#selectAll', batchmascots), 'click', ->
-          for name, mascot of Mascots
-            unless Conf["Hidden Categories"].contains(mascot.category) or Conf[g.MASCOTSTRING].contains(name) or Conf["Deleted Mascots"].contains(name)
-              $.addClass $.id(name), 'enabled'
-              Conf[g.MASCOTSTRING].push name
-          $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
-
-        $.on $('#createNew', batchmascots), 'click', ->
-          MascotTools.dialog()
-          Options.close()
-
-        $.on $("#importMascot", batchmascots), 'click', ->
-          @nextSibling.click()
-
-        $.on $("#importMascotButton", batchmascots), 'change', (evt) ->
-          MascotTools.importMascot evt
-
-        $.on $('#undelete', batchmascots), 'click', ->
-          unless Conf["Deleted Mascots"].length > 0
-            alert "No mascots have been deleted."
-            return
-          $.rm $.id "mascotContainer"
-          Options.mascotTab.dialog Options.el, 'undelete'
-
-      else
-        ul = $.el "ul",
-          className:   "mascots"
-          id:          category
-
-        for name in keys
-          if Conf["Deleted Mascots"].contains name
-            mascot = Mascots[name]
-            li = $.el 'li',
-              className: 'mascot'
-              id:        name
-              innerHTML: "
-<div class='mascotname'>#{name.replace /_/g, " "}</span>
-<div class='container #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'></div>
-"
-
-            $.on li, 'click', ->
-              if confirm "Are you sure you want to undelete \"#{@id}\"?"
-                Conf["Deleted Mascots"].remove @id
-                $.set "Deleted Mascots", Conf["Deleted Mascots"]
-                $.rm @
-
-            $.add ul, li
-
-        $.add suboptions, ul
-
-        batchmascots = $.el 'div',
-          id:        "mascots_batch"
-          innerHTML: "<a href=\"javascript:;\" id=\"return\">Return</a>"
-
-        $.on $('#return', batchmascots), 'click', ->
-          $.rm $.id "mascotContainer"
-          Options.mascotTab.dialog()
-
-      $.add parentdiv, [suboptions, batchmascots, mascotHide]
-
-      Style.rice parentdiv
-
-      $.add $('#mascot_tab + div', dialog), parentdiv
-      Options.indicators dialog
-
-    toggle: ->
-      if @checked
-        $.id(@name).hidden = true
-        Conf["Hidden Categories"].push @name
-        
-        # Gather all names of enabled mascots in the hidden category in every context it could be enabled.
-        for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
-        
-          i = (setting = Conf[type]).length
-          
-          while i--
-            name = setting[i]
-            continue unless Mascot[name].category is @name
-            setting.remove name
-            continue unless type is g.MASCOTSTRING
-            $.rmClass $.id(name), 'enabled'
-          $.set type, setting
-
-      else
-        $.id(@name).hidden = false
-        Conf["Hidden Categories"].remove @name
-
-      $.set "Hidden Categories", Conf["Hidden Categories"]
-
   customNavigation:
     dialog: (dialog) ->
       div = $ "#customNavigation", dialog
-      ul = $.el "ul"
-      ul.innerHTML = "Custom Navigation"
+      ul = $.el "ul",
+        textContent: "Custom Navigation"
 
       # Delimiter
-      li = $.el "li"
+      li = $.el "li",
         className: "delimiter"
         textContent: "delimiter: "
-      input = $.el "input"
+      input = $.el "input",
         className: "field"
         name:      "delimiter"
       input.setAttribute "value", userNavigation.delimiter
@@ -924,7 +391,7 @@ Options =
       $.add ul, li
 
       # Description of Syntax.
-      li = $.el "li"
+      li = $.el "li",
         innerHTML: "Navigation Syntax:<br>Display Name | Title / Alternate Text | URL"
       $.add ul, li
 
@@ -941,7 +408,7 @@ Options =
 
         # This input holds the index of the current link in the userNavigation array/object.
         li = $.el "li"
-        input = $.el "input"
+        input = $.el "input",
           className: "hidden"
           value:     index
           type:      "hidden"
@@ -949,7 +416,7 @@ Options =
 
         $.add li, input
 
-        #Generate inputs for list
+        # Generate inputs for list
         for itemIndex, item of link
 
           # Avoid iterating through prototypes.
@@ -957,7 +424,7 @@ Options =
             continue
 
           # Fill input with relevant values.
-          input = $.el "input"
+          input = $.el "input",
             className:   "field"
             name:        itemIndex
             value:       item
@@ -971,10 +438,10 @@ Options =
             userNavigation.links[@parentElement.firstChild.value][@name] = @value
             $.set "userNavigation", userNavigation
 
-          $.add li, input
+          $.add li, [input, $.tn ' ']
 
         # Add Custom Link
-        addLink = $.el "a"
+        addLink = $.el "a",
           textContent: " + "
           href: "javascript:;"
 
@@ -990,7 +457,7 @@ Options =
           Options.customNavigation.cleanup()
 
         # Delete Custom Link
-        removeLink = $.el "a"
+        removeLink = $.el "a",
           textContent: " x "
           href: "javascript:;"
 
@@ -1004,7 +471,7 @@ Options =
 
       # Final addLink Button. Allows the user to add a new item
       # to the bottom of the list or add an item if none exist.
-      li = $.el "li"
+      li = $.el "li",
         innerHTML: "<a name='add' href='javascript:;'>+</a> | <a name='reset' href='javascript:;'>Reset</a>"
 
       $.on $('a[name=add]', li), "click", ->
@@ -1063,9 +530,9 @@ Options =
       Options.persona.button.textContent = "Copy from #{if Options.persona.select.value is 'global' then 'current board' else 'global'}"
 
   close: ->
-    $.rm $.id 'options'
-    $.rm $.id 'overlay'
-    delete Options.el
+    $.rm @
+    d.body.style.removeProperty 'width'
+    $.rmClass d.body, 'unscroll'
 
   clearHidden: ->
     #'hidden' might be misleading; it's the number of IDs we're *looking* for,
@@ -1084,7 +551,7 @@ Options =
     $.cb.value.call @
 
   filter: ->
-    el = @nextSibling.nextSibling
+    el = @nextSibling
 
     if (name = @value) isnt 'guide'
       ta = $.el 'textarea',
@@ -1153,40 +620,3 @@ Options =
     Favicon.switch()
     Unread.update true
     @previousElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
-
-  selectTheme: ->
-    if currentTheme = $.id(Conf['theme'])
-      $.rmClass currentTheme, 'selectedtheme'
-
-    if Conf["NSFW/SFW Themes"]
-      $.set "theme_#{g.TYPE}", @id
-    else
-      $.set "theme", @id
-    Conf['theme'] = @id
-    $.addClass @, 'selectedtheme'
-    Style.addStyle()
-
-  mouseover: (e) ->
-    if mouseover = $.id 'mouseover'
-      if mouseover is UI.el
-        delete UI.el
-      $.rm mouseover
-
-    UI.el = mouseover = @nextSibling.cloneNode true
-    mouseover.id = 'mouseover'
-    mouseover.className = 'dialog'
-    mouseover.style.display = ''
-
-    $.on @, 'mousemove',      Options.hover
-    $.on @, 'mouseout',       Options.mouseout
-
-    $.add d.body, mouseover
-
-    return
-
-  hover: (e) ->
-    UI.hover e, "menu"
-
-  mouseout: (e) ->
-    UI.hoverend()
-    $.off @, 'mousemove',     Options.hover

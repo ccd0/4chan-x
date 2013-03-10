@@ -6,11 +6,11 @@ ThreadHiding =
     for thread in $$ '.thread'
       a = $.el 'a',
         className: 'hide_thread_button'
-        innerHTML: '<span>[<span></span>]</span>'
+        innerHTML: '<span>[ - ]</span>'
         href: 'javascript:;'
       $.on a, 'click', ->
-        ThreadHiding.toggle @parentElement
-      $.prepend thread, a
+        ThreadHiding.toggle $.x 'ancestor::div[@class="thread"][1]', @
+      $.add $('.op .postInfo', thread), a
 
       if thread.id[1..] of @hiddenThreads
         ThreadHiding.hide thread
@@ -38,8 +38,8 @@ ThreadHiding =
       ThreadHiding.hiddenThreads[id] = Date.now()
     $.set "hiddenThreads/#{g.BOARD}/", ThreadHiding.hiddenThreads
 
-  hide: (thread, show_stub=Conf['Show Stubs']) ->
-    unless show_stub
+  hide: (thread) ->
+    unless Conf['Show Stubs']
       thread.hidden = true
       thread.nextElementSibling.hidden = true
       return

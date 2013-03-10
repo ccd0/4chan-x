@@ -1,21 +1,20 @@
 QR =
   init: ->
     return unless $.id 'postForm'
+    QuoteInline.callbacks.push @node
     Main.callbacks.push @node
     setTimeout @asyncInit
 
   asyncInit: ->
-    unless Conf['Persistent QR']
-      link = $.el 'a'
-        innerHTML: "Open Post Form"
-        id: "showQR"
-        href: "javascript:;"
-
-      $.on link, 'click', ->
+    if Conf['Hide Original Post Form']
+      link = $.el 'h1',
+        innerHTML: "<a href=javascript:;>#{title = if g.REPLY then 'Reply to Thread' else 'Start a Thread'}</a>"
+        title:     title
+      $.on link.firstChild, 'click', ->
         QR.open()
         unless g.REPLY
           QR.threadSelector.value =
-            unless g.BOARD is 'f'
+            if g.BOARD is 'f'
               '9999'
             else
               'new'
@@ -26,6 +25,7 @@ QR =
 
     if Conf['Persistent QR']
       QR.dialog()
+      QR.hide() if Conf['Auto Hide QR']
 
     $.on d, 'dragover',          QR.dragOver
     $.on d, 'drop',              QR.dropFile
@@ -65,7 +65,7 @@ QR =
     QR.autohide.checked = false
 
   toggleHide: ->
-    QR.autohide.checked and QR.hide() or QR.unhide()
+    @checked and QR.hide() or QR.unhide()
 
   error: (err) ->
     if typeof err is 'string'
@@ -292,7 +292,6 @@ QR =
 
   resetFileInput: ->
     QR.fileEl.value = null
-    QR.riceFile.innerHTML = QR.defaultMessage
 
   replies: []
   reply: class
@@ -364,9 +363,9 @@ QR =
         else
           img.height = s / img.width  * img.height
           img.width  = s
-        c = $.el 'canvas'
-        c.height = img.height
-        c.width  = img.width
+        c = $.el 'canvas',
+          height: img.height
+          width:  img.width
         c.getContext('2d').drawImage img, 0, 0, img.width, img.height
         # Support for toBlob fucking when?
         data = atob c.toDataURL().split(',')[1]
@@ -383,7 +382,6 @@ QR =
 
       img.src = fileUrl
 
-
     rmFile: ->
       QR.resetFileInput()
       delete @file
@@ -393,7 +391,8 @@ QR =
       (window.URL or window.webkitURL).revokeObjectURL? @url
 
     select: ->
-      QR.selected?.el.id = null
+      return if QR.selected is @
+      QR.selected?.el.removeAttribute 'id'
       QR.selected = @
       @el.id = 'selected'
       # Scroll the list to center the focused reply.
@@ -430,7 +429,7 @@ QR =
 
     drop: ->
       el    = $ '.drag', @parentNode
-      index = (el) -> Array::slice.call(el.parentNode.children).indexOf el
+      index = (el) -> [el.parentNode.children...].indexOf el
       oldIndex = index el
       newIndex = index @
       if oldIndex < newIndex
@@ -451,6 +450,7 @@ QR =
       index = QR.replies.indexOf @
       if QR.replies.length is 1
         new QR.reply().select()
+        $.rmClass QR.el, 'dump'
       else if @el.id is 'selected'
         (QR.replies[index-1] or QR.replies[index+1]).select()
       QR.replies.splice index, 1
@@ -562,17 +562,17 @@ QR =
   dialog: ->
     QR.el = UI.dialog 'qr', 'bottom: 0; right: 0;', '
 <div id=qrtab class=move>
-  <label><input type=checkbox id=autohide title=Auto-hide> Post Form</label>
+  <label><input type=checkbox id=autohide title=Auto-hide> Quick Reply</label>
   <span> <a class=close title=Close>×</a> </span>
+  <div id=threadselect></div>
 </div>
 <form>
-  <div class=warning></div>
   <div class=userInfo><input id=dump type=button title="Dump list" value=+ class=field><input name=name title=Name placeholder=Name class=field><input name=email title=E-mail placeholder=E-mail class=field><input name=sub title=Subject placeholder=Subject class=field></div>
-  <div id=replies><div><a id=addReply href=javascript:; title="Add a reply">+</a></div></div>
+  <div id=replies><div><span id=addReply href=javascript:; title="Add a reply">+</a></div></div>
   <div class=textarea><textarea name=com title=Comment placeholder=Comment class=field></textarea><span id=charCount></span><div style=clear:both></div></div>
-  <div id=buttons><input type=file multiple size=16><div id=file class=field></div><input type=submit></div>
-  <div id=threadselect></div>
+  <input type=file multiple size=16><input type=submit>
   <label id=spoilerLabel><input type=checkbox id=spoiler> Spoiler Image?</label>
+  <div class=warning></div>
 </form>'
 
     if Conf['Remember QR size']
@@ -620,7 +620,7 @@ QR =
         if g.BOARD is 'f'
           $('select[name=filetag]').cloneNode(true)
         else
-          $.el 'select'
+          $.el 'select',
             innerHTML: threads
             title: 'Create a new thread / Reply to a thread'
 
@@ -630,20 +630,12 @@ QR =
 
       $.on QR.threadSelector,     'mousedown', (e) -> e.stopPropagation()
 
-    QR.riceFile = $("#file", QR.el)
     i = 0
     size = QR.fileEl.max
     size /= 1024 while i++ < 2
-    QR.riceFile.innerHTML = QR.defaultMessage = "<span class='placeholder'>Browse...</span>"
-    QR.riceFile.title     = "Max: #{size}MB, Shift+Click to Clear."
-    $.on QR.riceFile,             'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault() else QR.fileEl.click()
     $.on QR.fileEl,               'change',
-    $.on QR.fileEl,               'change',    ->
-      QR.riceFile.textContent = QR.fileEl.value
-      QR.fileInput.call @
+    $.on QR.fileEl,               'change',    QR.fileInput
     $.on QR.fileEl,               'click',     (e) -> if e.shiftKey then QR.selected.rmFile() or e.preventDefault()
-    Style.rice QR.el
-
 
     $.on QR.autohide,             'change',    QR.toggleHide
     $.on $('.close',    QR.el),   'click',     QR.close
@@ -804,7 +796,7 @@ QR =
     doc.documentElement.innerHTML = html
     if ban  = $ '.banType', doc # banned/warning
       board = $('.board', doc).innerHTML
-      err   = $.el 'span'
+      err   = $.el 'span',
       if ban.textContent.toLowerCase() is 'banned'
         if Conf['Check for Bans']
           $.delete 'lastBanCheck'
