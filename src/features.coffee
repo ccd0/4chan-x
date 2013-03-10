@@ -3482,10 +3482,10 @@ Unread =
         continue
       Unread.posts.push post
       Unread.addPostQuotingYou post, yourPosts if yourPosts
-    Unread.read()
-    Unread.update()
     # Force line on visible threads if there were no unread posts previously.
     Unread.setLine Unread.posts[0] in newPosts
+    Unread.read()
+    Unread.update()
 
   addPostQuotingYou: (post, yourPosts) ->
     for quote in post.quotes

@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-03-09
+/* 4chan X Beta - Version 3.0.0 - 2013-03-10
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -5216,9 +5216,9 @@
           Unread.addPostQuotingYou(post, yourPosts);
         }
       }
+      Unread.setLine((_ref = Unread.posts[0], __indexOf.call(newPosts, _ref) >= 0));
       Unread.read();
-      Unread.update();
-      return Unread.setLine((_ref = Unread.posts[0], __indexOf.call(newPosts, _ref) >= 0));
+      return Unread.update();
     },
     addPostQuotingYou: function(post, yourPosts) {
       var board, postIDs, quote, quoteID, thread, _i, _len, _ref, _ref1, _ref2;
