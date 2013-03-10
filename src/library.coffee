@@ -163,10 +163,12 @@ $.extend $,
     # window_ext1.Node !== window_ext2.Node
     unless nodes instanceof Array
       return nodes
-    frag = d.createDocumentFragment()
+    frag = $.frag()
     for node in nodes
-      frag.appendChild node
+      $.add frag, node
     frag
+  frag: ->
+    d.createDocumentFragment()
   add: (parent, children) ->
     parent.appendChild $.nodes children
   prepend: (parent, children) ->

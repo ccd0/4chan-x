@@ -35,7 +35,7 @@ Linkify =
     len    = snapshot.snapshotLength
 
     while ++i < len
-      nodes = d.createDocumentFragment()
+      nodes = $.frag()
       node  = snapshot.snapshotItem i
       data  = node.data
 

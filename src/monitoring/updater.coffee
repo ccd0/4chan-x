@@ -208,12 +208,12 @@ Updater =
       scroll = Conf['Scrolling'] and Updater.scrollBG() and
         lastPost.getBoundingClientRect().bottom - d.documentElement.clientHeight < 25
 
-      posts = []
-      for node in nodes
-        posts.push Main.preParse node
-      Main.node posts
+      for node in nodes.reverse()
+        frag = $.frag()
+        $.add frag, node
+        Main.node Main.preParse node
+        $.add Updater.thread, frag
 
-      $.add Updater.thread, nodes.reverse()
       if scroll and nodes?
         nodes[0].scrollIntoView()
 

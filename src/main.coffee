@@ -278,12 +278,12 @@ Main =
 
     board = $ '.board'
     nodes = []
-    for node in $$ '.postContainer', board
-      nodes.push Main.preParse node
-    Main.node nodes, ->
+    ready = ->
       if d.readyState is "complete"
         return true
       false
+    for node in $$ '.postContainer', board
+      Main.node Main.preParse(node), ready
 
     # Execute these scripts on inserted posts, not page init.
     Main.hasCodeTags = !! $ 'script[src^="//static.4chan.org/js/prettify/prettify"]'
@@ -293,9 +293,8 @@ Main =
       Main.observer.observe board,
         childList: true
         subtree: true
-      if g.REPLY
-        $.ready ->
-          Main.observer.disconnect()
+      $.ready ->
+        Main.observer.disconnect()
     else
       $.on board, 'DOMNodeInserted', Main.listener
       $.ready ->
@@ -356,7 +355,7 @@ Main =
       $.prepend $.id('delform'), xupdate
 
   preParse: (node) ->
-    parentClass = if parent = node.parentNode then parent.className else ""
+    parentClass = if parent = node.parentElement then parent.className else ""
     el   = $ '.post', node
     post =
       root:        node
@@ -383,10 +382,10 @@ Main =
     Main.prettify post.blockquote
     post
 
-  node: (nodes, notify) ->
+  node: (node, notify) ->
     for callback in Main.callbacks
       try
-        callback node for node in nodes
+        callback node
       catch err
         alert "4chan X has experienced an error. You can help by sending this snippet to:\nhttps://github.com/zixaphir/appchan-x/issues\n\n#{Main.version}\n#{window.location}\n#{navigator.userAgent}\n\n#{err}\n#{err.stack}" if notify
     return
@@ -394,13 +393,12 @@ Main =
   observe: (mutations) ->
     nodes = []
     for mutation in mutations
-      nodes.push Main.preParse addedNode for addedNode in mutation.addedNodes when /\bpostContainer\b/.test addedNode.className
-    Main.node nodes if nodes.length
+      Main.node Main.preParse addedNode for addedNode in mutation.addedNodes when /\bpostContainer\b/.test addedNode.className
 
   listener: (e) ->
     {target} = e
     if /\bpostContainer\b/.test(target.className)
-      Main.node [Main.preParse target]
+      Main.node Main.preParse target
 
   prettify: (bq) ->
     return unless Main.hasCodeTags

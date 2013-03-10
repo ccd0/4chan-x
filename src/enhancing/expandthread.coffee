@@ -24,7 +24,7 @@ ExpandThread =
 
       when '-'
         a.textContent = a.textContent.replace '-', '+'
-        #goddamit moot
+        # Goddamit moot
         num = switch g.BOARD
           when 'b', 'vg', 'q' then 3
           when 't' then 1
@@ -67,12 +67,10 @@ ExpandThread =
       $.rm backlink unless $.id backlink.hash[1..]
     
     # Parse posts and add features.
-    posts = []
     for node in nodes
+      frag = $.frag()
+      $.add frag, node
       post = Main.preParse node
       post.threadID = threadID
-      posts.push post
-
-    Main.node posts
-
-    $.after a, nodes
+      Main.node post
+      $.add thread, frag
