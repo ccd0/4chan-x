@@ -2822,9 +2822,9 @@
       if (g.VIEW === 'catalog' || !Conf['Keybinds']) {
         return;
       }
-      $.on(d, 'keydown', Keybinds.keydown);
       return $.on(d, '4chanXInitFinished', function() {
         var node, _i, _len, _ref;
+        $.on(d, 'keydown', Keybinds.keydown);
         _ref = $$('[accesskey]');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           node = _ref[_i];

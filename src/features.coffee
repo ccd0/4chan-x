@@ -1550,8 +1550,8 @@ Keybinds =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Keybinds']
 
-    $.on d, 'keydown',  Keybinds.keydown
     $.on d, '4chanXInitFinished', ->
+      $.on d, 'keydown',  Keybinds.keydown
       for node in $$ '[accesskey]'
         node.removeAttribute 'accesskey'
       return
