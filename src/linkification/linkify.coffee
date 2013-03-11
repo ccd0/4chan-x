@@ -86,7 +86,7 @@ Linkify =
           innerHTML: link
           className: 'linkify'
           rel:       'nofollow noreferrer'
-          target:    'blank'
+          target:    '_blank'
           href:      cypher.textContent
 
         $.add nodes, Linkify.embedder a
