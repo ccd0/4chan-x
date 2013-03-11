@@ -927,11 +927,7 @@ ThreadHiding =
     $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
 
   getHiddenThreads: ->
-    hiddenThreads = $.get "hiddenThreads.#{g.BOARD}"
-    unless hiddenThreads
-      hiddenThreads = threads: {}
-      $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
-    ThreadHiding.hiddenThreads = hiddenThreads
+    ThreadHiding.hiddenThreads = $.get "hiddenThreads.#{g.BOARD}", threads: {}
 
   syncFromCatalog: ->
     # Sync hidden threads from the catalog into the index.
@@ -948,7 +944,10 @@ ThreadHiding =
       continue if threadID of threads
       delete threads[threadID]
 
-    $.set "hiddenThreads.#{g.BOARD}", ThreadHiding.hiddenThreads
+    if Object.keys(threads).length
+      $.set "hiddenThreads.#{g.BOARD}", ThreadHiding.hiddenThreads
+    else
+      $.delete "hiddenThreads.#{g.BOARD}"
 
   menu:
     init: ->
@@ -1075,11 +1074,7 @@ ReplyHiding =
     $.replace $('.sideArrows', @nodes.root), ReplyHiding.makeButton @, 'hide'
 
   getHiddenPosts: ->
-    hiddenPosts = $.get "hiddenPosts.#{g.BOARD}"
-    unless hiddenPosts
-      hiddenPosts = threads: {}
-      $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
-    ReplyHiding.hiddenPosts = hiddenPosts
+    ReplyHiding.hiddenPosts = $.get "hiddenPosts.#{g.BOARD}", threads: {}
 
   menu:
     init: ->
@@ -2364,21 +2359,13 @@ Get =
 
 Misc = # super semantic
   clearThreads: (key) ->
-    now  = Date.now()
-    data = $.get key, threads: {}
-
-    unless data.lastChecked
-      data.lastChecked = now
-      $.set key, data
-      return
-
-    return if data.lastChecked > now - $.DAY
-
-    data.lastChecked = now
+    return unless data = $.get key
 
     unless Object.keys(data.threads).length
-      $.set key, data
+      $.delete key
       return
+
+    return if data.lastChecked > Date.now() - 12 * $.HOUR
 
     $.ajax "//api.4chan.org/#{g.BOARD}/catalog.json", onload: ->
       threads = {}
@@ -2386,7 +2373,11 @@ Misc = # super semantic
         for thread in obj.threads
           if thread.no of data.threads
             threads[thread.no] = data.threads[thread.no]
-      data.threads = threads
+      unless Object.keys(threads).length
+        $.delete key
+        return
+      data.threads     = threads
+      data.lastChecked = Date.now()
       $.set key, data
 
 Quotify =
@@ -4012,6 +4003,7 @@ ThreadWatcher =
   unwatch: (board, threadID) ->
     watched = $.get 'WatchedThreads', {}
     delete watched[board][threadID]
+    delete watched[board] unless Object.keys(watched[board]).length
     ThreadWatcher.refresh watched
     $.set 'WatchedThreads', watched
 

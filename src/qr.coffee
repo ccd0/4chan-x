@@ -192,7 +192,10 @@ QR =
       QR.cooldown.start()
     unset: (id) ->
       delete QR.cooldown.cooldowns[id]
-      $.set "cooldown.#{g.BOARD}", QR.cooldown.cooldowns
+      if Object.keys(QR.cooldown.cooldowns).length
+        $.set "cooldown.#{g.BOARD}", QR.cooldown.cooldowns
+      else
+        $.delete "cooldown.#{g.BOARD}"
     count: ->
       unless Object.keys(QR.cooldown.cooldowns).length
         $.delete "#{g.BOARD}.cooldown"

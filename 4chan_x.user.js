@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-03-10
+/* 4chan X Beta - Version 3.0.0 - 2013-03-11
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -1976,15 +1976,9 @@
       return $.prepend(this.OP.nodes.root, ThreadHiding.makeButton(this, 'hide'));
     },
     getHiddenThreads: function() {
-      var hiddenThreads;
-      hiddenThreads = $.get("hiddenThreads." + g.BOARD);
-      if (!hiddenThreads) {
-        hiddenThreads = {
-          threads: {}
-        };
-        $.set("hiddenThreads." + g.BOARD, hiddenThreads);
-      }
-      return ThreadHiding.hiddenThreads = hiddenThreads;
+      return ThreadHiding.hiddenThreads = $.get("hiddenThreads." + g.BOARD, {
+        threads: {}
+      });
     },
     syncFromCatalog: function() {
       var hiddenThreadsOnCatalog, threadID, threads;
@@ -2002,7 +1996,11 @@
         }
         delete threads[threadID];
       }
-      return $.set("hiddenThreads." + g.BOARD, ThreadHiding.hiddenThreads);
+      if (Object.keys(threads).length) {
+        return $.set("hiddenThreads." + g.BOARD, ThreadHiding.hiddenThreads);
+      } else {
+        return $["delete"]("hiddenThreads." + g.BOARD);
+      }
     },
     menu: {
       init: function() {
@@ -2168,15 +2166,9 @@
       return $.replace($('.sideArrows', this.nodes.root), ReplyHiding.makeButton(this, 'hide'));
     },
     getHiddenPosts: function() {
-      var hiddenPosts;
-      hiddenPosts = $.get("hiddenPosts." + g.BOARD);
-      if (!hiddenPosts) {
-        hiddenPosts = {
-          threads: {}
-        };
-        $.set("hiddenPosts." + g.BOARD, hiddenPosts);
-      }
-      return ReplyHiding.hiddenPosts = hiddenPosts;
+      return ReplyHiding.hiddenPosts = $.get("hiddenPosts." + g.BOARD, {
+        threads: {}
+      });
     },
     menu: {
       init: function() {
@@ -3691,22 +3683,15 @@
 
   Misc = {
     clearThreads: function(key) {
-      var data, now;
-      now = Date.now();
-      data = $.get(key, {
-        threads: {}
-      });
-      if (!data.lastChecked) {
-        data.lastChecked = now;
-        $.set(key, data);
+      var data;
+      if (!(data = $.get(key))) {
         return;
       }
-      if (data.lastChecked > now - $.DAY) {
-        return;
-      }
-      data.lastChecked = now;
       if (!Object.keys(data.threads).length) {
-        $.set(key, data);
+        $["delete"](key);
+        return;
+      }
+      if (data.lastChecked > Date.now() - 12 * $.HOUR) {
         return;
       }
       return $.ajax("//api.4chan.org/" + g.BOARD + "/catalog.json", {
@@ -3724,7 +3709,12 @@
               }
             }
           }
+          if (!Object.keys(threads).length) {
+            $["delete"](key);
+            return;
+          }
           data.threads = threads;
+          data.lastChecked = Date.now();
           return $.set(key, data);
         }
       });
@@ -5841,6 +5831,9 @@
       var watched;
       watched = $.get('WatchedThreads', {});
       delete watched[board][threadID];
+      if (!Object.keys(watched[board]).length) {
+        delete watched[board];
+      }
       ThreadWatcher.refresh(watched);
       return $.set('WatchedThreads', watched);
     },
@@ -6097,7 +6090,11 @@
       },
       unset: function(id) {
         delete QR.cooldown.cooldowns[id];
-        return $.set("cooldown." + g.BOARD, QR.cooldown.cooldowns);
+        if (Object.keys(QR.cooldown.cooldowns).length) {
+          return $.set("cooldown." + g.BOARD, QR.cooldown.cooldowns);
+        } else {
+          return $["delete"]("cooldown." + g.BOARD);
+        }
       },
       count: function() {
         var cooldown, cooldowns, elapsed, hasFile, isReply, isSage, now, post, seconds, start, type, types, upSpd, upSpdAccuracy, update, _ref;
