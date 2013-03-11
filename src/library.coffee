@@ -88,7 +88,8 @@ $.extend $,
     parse = JSON.parse
     $.on window, 'storage', (e) ->
       cb parse e.newValue if e.key is key
-  id: d.getElementById.bind d
+  id: (id) ->
+    d.getElementById id
   formData: (arg) ->
     if arg instanceof HTMLFormElement
       fd = new FormData arg
