@@ -4,3 +4,4 @@ tmp/
 Cakefile
 script.coffee
 *~
+*.db
