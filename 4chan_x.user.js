@@ -1022,7 +1022,7 @@
       var catalogToggler, headerEl;
       headerEl = $.el('div', {
         id: 'header',
-        innerHTML: ("<div id=header-bar class=dialog>\n  <span class='menu-button brackets-wrap'><a href=javascript:;><i></i></a></span>\n  <span class=brackets-wrap hidden>top secret</span>\n\n  <span id=board-list>\n    <span id=custom-board-list></span>\n    <span id=full-board-list hidden></span>\n  </span>\n\n  <!--\n  <span class='show-board-list-button brackets-wrap' title=\"Toggle the board list.\"><a href=javascript:;>+</a></span>\n  <a class=board-name href=\"/" + g.BOARD + "/\">\n    <span class=board-path>/" + g.BOARD + "/</span> - <span class=board-title>...</span>\n  </a>\n  <span class=board-list hidden></span>\n  -->\n\n  <div id=toggle-header-bar title=\"Toggle the header auto-hiding.\"></div>\n</div>\n<div id=notifications></div>").replace(/>\s+</g, '><')
+        innerHTML: "<div id=header-bar class=dialog>\n  <span class='menu-button brackets-wrap'><a href=javascript:;><i></i></a></span>\n  <span class=brackets-wrap hidden>top secret</span>\n  <span id=board-list>\n    <span id=custom-board-list></span>\n    <span id=full-board-list hidden></span>\n  </span>\n  <div id=toggle-header-bar title=\"Toggle the header auto-hiding.\"></div>\n</div>\n<div id=notifications></div>".replace(/>\s+</g, '><')
       });
       this.headerBar = $('#header-bar', headerEl);
       this.setBarVisibility(Conf['Header auto-hide']);

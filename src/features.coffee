@@ -6,20 +6,10 @@ Header =
         <div id=header-bar class=dialog>
           <span class='menu-button brackets-wrap'><a href=javascript:;><i></i></a></span>
           <span class=brackets-wrap hidden>top secret</span>
-
           <span id=board-list>
             <span id=custom-board-list></span>
             <span id=full-board-list hidden></span>
           </span>
-
-          <!--
-          <span class='show-board-list-button brackets-wrap' title="Toggle the board list."><a href=javascript:;>+</a></span>
-          <a class=board-name href="/#{g.BOARD}/">
-            <span class=board-path>/#{g.BOARD}/</span> - <span class=board-title>...</span>
-          </a>
-          <span class=board-list hidden></span>
-          -->
-
           <div id=toggle-header-bar title="Toggle the header auto-hiding."></div>
         </div>
         <div id=notifications></div>
