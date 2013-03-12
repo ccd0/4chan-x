@@ -1077,6 +1077,11 @@
     },
     generateBoardList: function(text) {
       var as, list, nodes;
+      list = $('#custom-board-list', Header.bar);
+      list.innerHTML = null;
+      if (!text) {
+        return;
+      }
       as = $$('#full-board-list a', Header.bar).slice(0, -2);
       nodes = text.match(/[\w@]+(-(all|title|full|text:"[^"]+"))?|[^\w@]+/g).map(function(t) {
         var a, board, m, _i, _len;
@@ -1112,8 +1117,6 @@
         }
         return $.tn(t);
       });
-      list = $('#custom-board-list', Header.bar);
-      list.innerHTML = null;
       return $.add(list, nodes);
     },
     toggleBoardList: function() {

@@ -59,6 +59,9 @@ Header =
     Header.setCatalogLinks Conf['Header catalog links']
 
   generateBoardList: (text) ->
+    list = $ '#custom-board-list', Header.bar
+    list.innerHTML = null
+    return unless text
     as = $$('#full-board-list a', Header.bar)[0...-2] # ignore the Settings and Home links
     nodes = text.match(/[\w@]+(-(all|title|full|text:"[^"]+"))?|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
@@ -87,8 +90,6 @@ Header =
             $.log t, t.match /-text:"(.+)"$/
           return a
       $.tn t
-    list = $ '#custom-board-list', Header.bar
-    list.innerHTML = null
     $.add list, nodes
 
   toggleBoardList: ->
