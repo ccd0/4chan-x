@@ -4,7 +4,7 @@ return unless /^(boards|images|sys)\.4chan\.org$/.test location.hostname
 
 Conf = {}
 d    = document
-doc  = d.documentElement
+doc  = null
 g =
   VERSION:   '<%= version %>'
   NAMESPACE: "<%= meta.name %>."

@@ -260,6 +260,9 @@ class Clone extends Post
 
 Main =
   init: ->
+    $.asap (-> d.documentElement), ->
+      doc = d.documentElement
+
     # flatten Config into Conf
     # and get saved or default values
     flatten = (parent, obj) ->

@@ -190,7 +190,7 @@
 
   d = document;
 
-  doc = d.documentElement;
+  doc = null;
 
   g = {
     VERSION: '3.0.0',
@@ -5835,9 +5835,6 @@
       }
       Misc.clearThreads("yourPosts." + g.BOARD);
       this.syncYourPosts();
-      if (Conf['Hide Original Post Form']) {
-        $.addClass(doc, 'hide-original-post-form');
-      }
       $.on(d, '4chanXInitFinished', this.initReady);
       return Post.prototype.callbacks.push({
         name: 'Quick Reply',
@@ -5849,6 +5846,9 @@
       QR.postingIsEnabled = !!$.id('postForm');
       if (!QR.postingIsEnabled) {
         return;
+      }
+      if (Conf['Hide Original Post Form']) {
+        $.addClass(doc, 'hide-original-post-form');
       }
       link = $.el('a', {
         className: 'qr-shortcut',
@@ -7364,6 +7364,11 @@
   Main = {
     init: function() {
       var flatten, initFeature, key, pathname, val;
+      $.asap((function() {
+        return d.documentElement;
+      }), function() {
+        return doc = d.documentElement;
+      });
       flatten = function(parent, obj) {
         var key, val;
         if (obj instanceof Array) {

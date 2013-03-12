@@ -5,9 +5,6 @@ QR =
     Misc.clearThreads "yourPosts.#{g.BOARD}"
     @syncYourPosts()
 
-    if Conf['Hide Original Post Form']
-      $.addClass doc, 'hide-original-post-form'
-
     $.on d, '4chanXInitFinished', @initReady
 
     Post::callbacks.push
@@ -17,6 +14,9 @@ QR =
   initReady: ->
     QR.postingIsEnabled = !!$.id 'postForm'
     return unless QR.postingIsEnabled
+
+    if Conf['Hide Original Post Form']
+      $.addClass doc, 'hide-original-post-form'
 
     link = $.el 'a',
       className: 'qr-shortcut'
