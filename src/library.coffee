@@ -272,7 +272,7 @@ UI =
       className: 'reply dialog'
       innerHTML: html
       id:        id
-    el.style.cssText = $.get id + ".position", position
+    el.style.cssText = $.get id + ".cords", position
     if move = $ '.move',  el
       move.addEventListener 'mousedown', UI.dragstart, false
     el
