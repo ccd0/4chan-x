@@ -119,8 +119,8 @@ a[href="javascript:;"] {
   margin-bottom: -1em;
   -webkit-transform: translateY(-100%);
   transform: translateY(-100%);
-  -webkit-transition: all .75s .25s ease-in-out;
-  transition: all .75s .25s ease-in-out;
+  -webkit-transition: all 2s 2s ease-in-out;
+  transition: all 2s 2s ease-in-out;
 }
 #toggle-header-bar {
   cursor: n-resize;
@@ -129,6 +129,10 @@ a[href="javascript:;"] {
   bottom: -8px;
   height: 10px;
   position: absolute;
+}
+#header-bar.autohide:not(:hover) #toggle-header-bar, #toggle-header-bar:hover {
+  bottom: -16px;
+  height: 18px;
 }
 #header-bar.autohide #toggle-header-bar {
   cursor: s-resize;
