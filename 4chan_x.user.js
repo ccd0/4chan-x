@@ -100,7 +100,7 @@
       'Posting': {
         'Quick Reply': [true, 'All-in-one form to reply, create threads, automate dumping and more.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
-        'Auto Hide QR': [false, 'Automatically hide the quick reply when posting.'],
+        'Auto-Hide QR': [false, 'Automatically hide the quick reply when posting.'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
         'Hide Original Post Form': [true, 'Hide the normal post form.']
@@ -139,6 +139,8 @@
       MD5: [''].join('\n')
     },
     sauces: ['http://iqdb.org/?url=%turl', 'http://www.google.com/searchbyimage?image_url=%turl', '#http://tineye.com/search?url=%turl', '#http://saucenao.com/search.php?db=999&url=%turl', '#http://3d.iqdb.org/?url=%turl', '#http://regex.info/exif.cgi?imgurl=%url', '# uploaders:', '#http://imgur.com/upload?url=%url;text:Upload to imgur', '#http://omploader.org/upload?url1=%url;text:Upload to omploader', '# "View Same" in archives:', '#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz', '#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/', '#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/'].join('\n'),
+    'Header auto-hide': false,
+    'Header catalog links': false,
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
     fileInfo: '%l (%p%s, %r)',
@@ -1018,19 +1020,20 @@
       var catalogToggler, headerEl;
       headerEl = $.el('div', {
         id: 'header',
-        innerHTML: ("<div id=header-bar class=dialog>\n  <span class='menu-button brackets-wrap'><a href=javascript:;><i></i></a></span>\n  <span class=brackets-wrap hidden>top secret</span>\n  <span id=board-list hidden>next-gen board-list</span>\n  <span class='show-board-list-button brackets-wrap' title=\"Toggle the board list.\"><a href=javascript:;>+</a></span>\n  <a class=board-name href=\"/" + g.BOARD + "/" + (g.VIEW === 'catalog' ? 'catalog' : '') + "\">\n    <span class=board-path>/" + g.BOARD + "/</span> - <span class=board-title>...</span>\n  </a>\n  <span class=board-list hidden></span>\n  <div id=toggle-header-bar title=\"Toggle the header auto-hiding.\"></div>\n</div>\n<div id=notifications></div>").replace(/>\s+</g, '><')
+        innerHTML: ("<div id=header-bar class=dialog>\n  <span class='menu-button brackets-wrap'><a href=javascript:;><i></i></a></span>\n  <span class=brackets-wrap hidden>top secret</span>\n  <span id=board-list hidden>next-gen board-list</span>\n  <span class='show-board-list-button brackets-wrap' title=\"Toggle the board list.\"><a href=javascript:;>+</a></span>\n  <a class=board-name href=\"/" + g.BOARD + "/\">\n    <span class=board-path>/" + g.BOARD + "/</span> - <span class=board-title>...</span>\n  </a>\n  <span class=board-list hidden></span>\n  <div id=toggle-header-bar title=\"Toggle the header auto-hiding.\"></div>\n</div>\n<div id=notifications></div>").replace(/>\s+</g, '><')
       });
       this.headerBar = $('#header-bar', headerEl);
-      Header.setBarVisibility($.get('autohideHeaderBar', false));
-      $.sync('autohideHeaderBar', Header.setBarVisibility);
+      Header.setBarVisibility(Conf['Header auto-hide']);
+      $.sync('Header auto-hide', Header.setBarVisibility);
       this.menu = new UI.Menu('header');
       $.on($('.menu-button', this.headerBar), 'click', this.menuToggle);
       $.on($('.show-board-list-button', this.headerBar), 'click', this.toggleBoardList);
       $.on($('#toggle-header-bar', this.headerBar), 'click', this.toggleBar);
       catalogToggler = $.el('label', {
-        innerHTML: "<input type=checkbox " + (g.VIEW === 'catalog' ? 'checked' : '') + "> Use catalog board links"
+        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + "> Use catalog board links"
       });
       $.on(catalogToggler.firstElementChild, 'change', this.toggleCatalogLinks);
+      $.sync('Header catalog links', this.setCatalogLinks);
       $.event('AddMenuEntry', {
         type: 'header',
         el: catalogToggler,
@@ -1054,7 +1057,8 @@
           a.className = 'current';
           $('.board-title', Header.headerBar).textContent = a.title;
         }
-        return $.add($('.board-list', Header.headerBar), __slice.call(nav.childNodes));
+        $.add($('.board-list', Header.headerBar), __slice.call(nav.childNodes));
+        return Header.setCatalogLinks(Conf['Header catalog links']);
       }
     },
     toggleBoardList: function() {
@@ -1073,9 +1077,8 @@
       $('.board-name', headerBar).hidden = showBoardList;
       return $('.board-list', headerBar).hidden = !showBoardList;
     },
-    toggleCatalogLinks: function() {
-      var a, as, root, useCatalog, _i, _len;
-      useCatalog = this.checked;
+    setCatalogLinks: function(useCatalog) {
+      var a, as, root, _i, _len;
       root = $('.board-list', Header.headerBar);
       as = $$('a[href*="boards.4chan.org"]', root);
       as.push($('.board-name', Header.headerBar));
@@ -1083,6 +1086,10 @@
         a = as[_i];
         a.pathname = "/" + (a.pathname.split('/')[1]) + "/" + (useCatalog ? 'catalog' : '');
       }
+    },
+    toggleCatalogLinks: function() {
+      Header.setCatalogLinks(this.checked);
+      return $.set('Header catalog links', this.checked);
     },
     setBarVisibility: function(hide) {
       return (hide ? $.addClass : $.rmClass)(Header.headerBar, 'autohide');
@@ -1093,7 +1100,7 @@
       Header.setBarVisibility(hide);
       message = hide ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
       new Notification('info', message, 2);
-      return $.set('autohideHeaderBar', hide);
+      return $.set('Header auto-hide', hide);
     },
     menuToggle: function(e) {
       return Header.menu.toggle(e, this, g);
@@ -5897,7 +5904,7 @@
     },
     persist: function() {
       QR.open();
-      if (Conf['Auto Hide QR']) {
+      if (Conf['Auto-Hide QR']) {
         return QR.hide();
       }
     },
@@ -6870,7 +6877,7 @@
       }
       QR.cleanNotifications();
       QR.cooldown.auto = QR.posts.length > 1;
-      if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
+      if (Conf['Auto-Hide QR'] && !QR.cooldown.auto) {
         QR.hide();
       }
       if (!QR.cooldown.auto && $.x('ancestor::div[@id="qr"]', d.activeElement)) {

@@ -8,7 +8,7 @@ Header =
           <span class=brackets-wrap hidden>top secret</span>
           <span id=board-list hidden>next-gen board-list</span>
           <span class='show-board-list-button brackets-wrap' title="Toggle the board list."><a href=javascript:;>+</a></span>
-          <a class=board-name href="/#{g.BOARD}/#{if g.VIEW is 'catalog' then 'catalog' else ''}">
+          <a class=board-name href="/#{g.BOARD}/">
             <span class=board-path>/#{g.BOARD}/</span> - <span class=board-title>...</span>
           </a>
           <span class=board-list hidden></span>
@@ -18,8 +18,8 @@ Header =
       """.replace />\s+</g, '><' # get rid of spaces between elements
 
     @headerBar = $ '#header-bar', headerEl
-    Header.setBarVisibility $.get 'autohideHeaderBar', false
-    $.sync 'autohideHeaderBar', Header.setBarVisibility
+    Header.setBarVisibility Conf['Header auto-hide']
+    $.sync 'Header auto-hide', Header.setBarVisibility
 
     @menu = new UI.Menu 'header'
     $.on $('.menu-button',            @headerBar), 'click', @menuToggle
@@ -27,8 +27,9 @@ Header =
     $.on $('#toggle-header-bar',      @headerBar), 'click', @toggleBar
 
     catalogToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{if g.VIEW is 'catalog' then 'checked' else ''}> Use catalog board links"
+      innerHTML: "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}> Use catalog board links"
     $.on catalogToggler.firstElementChild, 'change', @toggleCatalogLinks
+    $.sync 'Header catalog links', @setCatalogLinks
     $.event 'AddMenuEntry',
       type: 'header'
       el: catalogToggler
@@ -45,6 +46,7 @@ Header =
         a.className = 'current'
         $('.board-title', Header.headerBar).textContent = a.title
       $.add $('.board-list', Header.headerBar), [nav.childNodes...]
+      Header.setCatalogLinks Conf['Header catalog links']
 
   toggleBoardList: ->
     node = @firstElementChild.firstChild
@@ -60,14 +62,16 @@ Header =
     $('.board-name', headerBar).hidden =  showBoardList
     $('.board-list', headerBar).hidden = !showBoardList
 
-  toggleCatalogLinks: ->
-    useCatalog = @checked
+  setCatalogLinks: (useCatalog) ->
     root = $ '.board-list', Header.headerBar
     as = $$ 'a[href*="boards.4chan.org"]', root
     as.push $ '.board-name', Header.headerBar
     for a in as
       a.pathname = "/#{a.pathname.split('/')[1]}/#{if useCatalog then 'catalog' else ''}"
     return
+  toggleCatalogLinks: ->
+    Header.setCatalogLinks @checked
+    $.set 'Header catalog links', @checked
 
   setBarVisibility: (hide) ->
     (if hide then $.addClass else $.rmClass) Header.headerBar, 'autohide'
@@ -79,7 +83,7 @@ Header =
     else
       'The header bar will remain visible.'
     new Notification 'info', message, 2
-    $.set 'autohideHeaderBar', hide
+    $.set 'Header auto-hide', hide
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g
