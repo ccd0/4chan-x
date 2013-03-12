@@ -4,9 +4,9 @@ Header =
       id:        'header'
       innerHTML: """
         <div id=header-bar class=dialog>
-          <span class=brackets-wrap><a class=menu-button href=javascript:;><span></span></a></span>
+          <span class='menu-button brackets-wrap'><a href=javascript:;><i></i></a></span>
           <span class=brackets-wrap hidden>top secret</span>
-          <span class=brackets-wrap id=board-list hidden>next-gen board-list</span>
+          <span id=board-list hidden>next-gen board-list</span>
           <span class='show-board-list-button brackets-wrap' title="Toggle the board list."><a href=javascript:;>+</a></span>
           <a class=board-name href="/#{g.BOARD}/#{if g.VIEW is 'catalog' then 'catalog' else ''}">
             <span class=board-path>/#{g.BOARD}/</span> - <span class=board-title>...</span>
@@ -1318,7 +1318,7 @@ Menu =
     (post) ->
       a or= $.el 'a',
         className: 'menu-button'
-        innerHTML: '[<span></span>]'
+        innerHTML: '[<i></i>]'
         href:      'javascript:;'
       clone = a.cloneNode true
       clone.setAttribute 'data-postid', post.fullID
