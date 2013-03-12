@@ -111,7 +111,7 @@ a[href="javascript:;"] {
   border-width: 0 0 1px;
   display: -webkit-flex;
   display: flex;
-  padding: 4px;
+  padding: 3px 4px 4px;
   position: relative;
   -webkit-transition: all .1s ease-in-out;
   transition: all .1s ease-in-out;
@@ -155,10 +155,10 @@ a[href="javascript:;"] {
   content: " / ";
 }
 .brackets-wrap::before {
-  content: " [";
+  content: "\\00a0[";
 }
 .brackets-wrap::after {
-  content: "] ";
+  content: "]\\00a0";
 }
 
 /* Notifications */
