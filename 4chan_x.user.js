@@ -3738,13 +3738,9 @@
               className: 'quotelink',
               textContent: quote
             });
-          } else if (redirect = Redirect.to({
-            board: board,
-            threadID: post.thread.ID,
-            postID: ID
-          })) {
+          } else {
             a = $.el('a', {
-              href: redirect,
+              href: "/" + board + "/" + post.thread + "/res/#p" + ID,
               className: 'quotelink deadlink',
               target: '_blank',
               textContent: "" + quote + "\u00A0(Dead)"

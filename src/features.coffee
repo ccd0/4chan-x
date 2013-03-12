@@ -2409,17 +2409,17 @@ Quotify =
             href:        "/#{board}/#{post.thread}/res/#p#{ID}"
             className:   'quotelink'
             textContent: quote
-        else if redirect = Redirect.to {board: board, threadID: post.thread.ID, postID: ID}
+        else
           # Replace the .deadlink span if we can redirect.
           a = $.el 'a',
-            href:        redirect
+            href:        "/#{board}/#{post.thread}/res/#p#{ID}"
             className:   'quotelink deadlink'
             target:      '_blank'
             textContent: "#{quote}\u00A0(Dead)"
           a.setAttribute 'data-board',    board
           a.setAttribute 'data-threadid', post.thread.ID
           a.setAttribute 'data-postid',   ID
-      else if redirect = Redirect.to {board: board, threadID: 0, postID: ID}
+      else if redirect = Redirect.to {board, threadID: 0, postID: ID}
         # Replace the .deadlink span if we can redirect.
         a = $.el 'a',
           href:        redirect
