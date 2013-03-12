@@ -3070,11 +3070,10 @@ ImageExpand =
     return if g.VIEW is 'catalog' or !Conf['Image Expansion']
 
     @EAI = $.el 'a',
-      className: 'expanded-all-shortcut'
+      className: 'expand-all-shortcut'
       textContent: 'EAI'
       title: 'Expand All Images'
       href: 'javascript:;'
-    @EAI.style.opacity = '.35'
     $.on @EAI, 'click', ImageExpand.cb.toggleAll
     Header.addShortcut @EAI
 
@@ -3093,11 +3092,11 @@ ImageExpand =
       ImageExpand.toggle Get.postFromNode @
     toggleAll: ->
       $.event 'CloseMenu'
-      if ImageExpand.on = ImageExpand.EAI.style.opacity isnt '1'
-        ImageExpand.EAI.style.opacity = 1
+      if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
+        ImageExpand.EAI.className = 'contract-all-shortcut'
         func = ImageExpand.expand
       else
-        ImageExpand.EAI.style.opacity = .35
+        ImageExpand.EAI.className = 'expand-all-shortcut'
         func = ImageExpand.contract
       for ID, post of g.posts
         for post in [post].concat post.clones
