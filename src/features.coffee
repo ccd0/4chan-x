@@ -1,6 +1,6 @@
 Header =
   init: ->
-    @headerEl = $.el 'div',
+    headerEl = $.el 'div',
       id:        'header'
       innerHTML: """
         <div id=header-bar class=dialog>
@@ -17,14 +17,14 @@ Header =
         <div id=notifications></div>
       """.replace />\s+</g, '><' # get rid of spaces between elements
 
-    headerBar = $ '#header-bar', @headerEl
-    if $.get 'autohideHeaderBar', false
-      $.addClass headerBar, 'autohide'
+    @headerBar = $ '#header-bar', headerEl
+    Header.setBarVisibility $.get 'autohideHeaderBar', false
+    $.sync 'autohideHeaderBar', Header.setBarVisibility
 
     @menu = new UI.Menu 'header'
-    $.on $('.menu-button',            headerBar), 'click', @menuToggle
-    $.on $('.show-board-list-button', headerBar), 'click', @toggleBoardList
-    $.on $('#toggle-header-bar',      headerBar), 'click', @toggleBar
+    $.on $('.menu-button',            @headerBar), 'click', @menuToggle
+    $.on $('.show-board-list-button', @headerBar), 'click', @toggleBoardList
+    $.on $('#toggle-header-bar',      @headerBar), 'click', @toggleBar
 
     catalogToggler = $.el 'label',
       innerHTML: "<input type=checkbox #{if g.VIEW is 'catalog' then 'checked' else ''}> Use catalog board links"
@@ -36,15 +36,15 @@ Header =
 
     $.asap (-> d.body), ->
       if Main.isThisPageLegit()
-        $.prepend d.body, Header.headerEl
+        $.prepend d.body, headerEl
     $.asap (-> $.id 'boardNavDesktop'), @setBoardList
 
   setBoardList: ->
     if nav = $.id 'boardNavDesktop'
       if a = $ "a[href*='/#{g.BOARD}/']", nav
         a.className = 'current'
-        $('.board-title', Header.headerEl).textContent = a.title
-      $.add $('.board-list', Header.headerEl), [nav.childNodes...]
+        $('.board-title', Header.headerBar).textContent = a.title
+      $.add $('.board-list', Header.headerBar), [nav.childNodes...]
 
   toggleBoardList: ->
     node = @firstElementChild.firstChild
@@ -56,26 +56,30 @@ Header =
       $.rmClass  @, 'hide-board-list-button'
       $.addClass @, 'show-board-list-button'
       node.data = node.data.replace '-', '+'
-    {headerEl} = Header
-    $('.board-name', headerEl).hidden =  showBoardList
-    $('.board-list', headerEl).hidden = !showBoardList
+    {headerBar} = Header
+    $('.board-name', headerBar).hidden =  showBoardList
+    $('.board-list', headerBar).hidden = !showBoardList
 
   toggleCatalogLinks: ->
     useCatalog = @checked
-    root = $ '.board-list', Header.headerEl
+    root = $ '.board-list', Header.headerBar
     as = $$ 'a[href*="boards.4chan.org"]', root
-    as.push $ '.board-name', Header.headerEl
+    as.push $ '.board-name', Header.headerBar
     for a in as
       a.pathname = "/#{a.pathname.split('/')[1]}/#{if useCatalog then 'catalog' else ''}"
     return
 
+  setBarVisibility: (hide) ->
+    (if hide then $.addClass else $.rmClass) Header.headerBar, 'autohide'
   toggleBar: ->
-    message = if isAutohiding = $.id('header-bar').classList.toggle 'autohide'
+    hide = !$.hasClass Header.headerBar, 'autohide'
+    Header.setBarVisibility hide
+    message = if hide
       'The header bar will automatically hide itself.'
     else
       'The header bar will remain visible.'
     new Notification 'info', message, 2
-    $.set 'autohideHeaderBar', isAutohiding
+    $.set 'autohideHeaderBar', hide
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g
@@ -1698,7 +1702,7 @@ Keybinds =
       location.href = url
 
   hl: (delta, thread) ->
-    headRect  = $.id('header-bar').getBoundingClientRect()
+    headRect  = Header.headerBar.getBoundingClientRect()
     topMargin = headRect.top + headRect.height
     if postEl = $ '.reply.highlight', thread
       $.rmClass postEl, 'highlight'
@@ -1758,7 +1762,7 @@ Nav =
     Nav.scroll +1
 
   getThread: (full) ->
-    headRect  = $.id('header-bar').getBoundingClientRect()
+    headRect  = Header.headerBar.getBoundingClientRect()
     topMargin = headRect.top + headRect.height
     threads = $$ '.thread:not([hidden])'
     for thread, i in threads
@@ -3059,7 +3063,7 @@ ImageExpand =
       # Scroll back to the thumbnail when contracting the image
       # to avoid being left miles away from the relevant post.
       postRect = post.nodes.root.getBoundingClientRect()
-      headRect = $.id('header-bar').getBoundingClientRect()
+      headRect = Header.headerBar.getBoundingClientRect()
       top  = postRect.top - headRect.top - headRect.height - 2
       root = if $.engine is 'webkit'
         d.body

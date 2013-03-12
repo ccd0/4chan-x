@@ -601,7 +601,7 @@ QR =
 
       $.on imgContainer, 'click',   @reload.bind @
       $.on input,        'keydown', @keydown.bind @
-      $.sync 'captchas', @sync.bind @
+      $.sync 'captchas', @sync
       @sync $.get 'captchas', []
       # start with an uncached captcha
       @reload()
@@ -609,7 +609,7 @@ QR =
       $.addClass QR.nodes.el, 'has-captcha'
       $.after QR.nodes.com.parentNode, [imgContainer, input]
     sync: (@captchas) ->
-      @count()
+      QR.captcha.count()
     getOne: ->
       @clear()
       if captcha = @captchas.shift()

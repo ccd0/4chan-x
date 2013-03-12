@@ -1014,19 +1014,18 @@
 
   Header = {
     init: function() {
-      var catalogToggler, headerBar;
-      this.headerEl = $.el('div', {
+      var catalogToggler, headerEl;
+      headerEl = $.el('div', {
         id: 'header',
         innerHTML: ("<div id=header-bar class=dialog>\n  <span class=brackets-wrap><a class=menu-button href=javascript:;><span></span></a></span>\n  <span class=brackets-wrap hidden>top secret</span>\n  <span class=brackets-wrap id=board-list hidden>next-gen board-list</span>\n  <span class='show-board-list-button brackets-wrap' title=\"Toggle the board list.\"><a href=javascript:;>+</a></span>\n  <a class=board-name href=\"/" + g.BOARD + "/" + (g.VIEW === 'catalog' ? 'catalog' : '') + "\">\n    <span class=board-path>/" + g.BOARD + "/</span> - <span class=board-title>...</span>\n  </a>\n  <span class=board-list hidden></span>\n  <div id=toggle-header-bar title=\"Toggle the header auto-hiding.\"></div>\n</div>\n<div id=notifications></div>").replace(/>\s+</g, '><')
       });
-      headerBar = $('#header-bar', this.headerEl);
-      if ($.get('autohideHeaderBar', false)) {
-        $.addClass(headerBar, 'autohide');
-      }
+      this.headerBar = $('#header-bar', headerEl);
+      Header.setBarVisibility($.get('autohideHeaderBar', false));
+      $.sync('autohideHeaderBar', Header.setBarVisibility);
       this.menu = new UI.Menu('header');
-      $.on($('.menu-button', headerBar), 'click', this.menuToggle);
-      $.on($('.show-board-list-button', headerBar), 'click', this.toggleBoardList);
-      $.on($('#toggle-header-bar', headerBar), 'click', this.toggleBar);
+      $.on($('.menu-button', this.headerBar), 'click', this.menuToggle);
+      $.on($('.show-board-list-button', this.headerBar), 'click', this.toggleBoardList);
+      $.on($('#toggle-header-bar', this.headerBar), 'click', this.toggleBar);
       catalogToggler = $.el('label', {
         innerHTML: "<input type=checkbox " + (g.VIEW === 'catalog' ? 'checked' : '') + "> Use catalog board links"
       });
@@ -1040,7 +1039,7 @@
         return d.body;
       }), function() {
         if (Main.isThisPageLegit()) {
-          return $.prepend(d.body, Header.headerEl);
+          return $.prepend(d.body, headerEl);
         }
       });
       return $.asap((function() {
@@ -1052,13 +1051,13 @@
       if (nav = $.id('boardNavDesktop')) {
         if (a = $("a[href*='/" + g.BOARD + "/']", nav)) {
           a.className = 'current';
-          $('.board-title', Header.headerEl).textContent = a.title;
+          $('.board-title', Header.headerBar).textContent = a.title;
         }
-        return $.add($('.board-list', Header.headerEl), __slice.call(nav.childNodes));
+        return $.add($('.board-list', Header.headerBar), __slice.call(nav.childNodes));
       }
     },
     toggleBoardList: function() {
-      var headerEl, node, showBoardList;
+      var headerBar, node, showBoardList;
       node = this.firstElementChild.firstChild;
       if (showBoardList = $.hasClass(this, 'show-board-list-button')) {
         $.rmClass(this, 'show-board-list-button');
@@ -1069,26 +1068,31 @@
         $.addClass(this, 'show-board-list-button');
         node.data = node.data.replace('-', '+');
       }
-      headerEl = Header.headerEl;
-      $('.board-name', headerEl).hidden = showBoardList;
-      return $('.board-list', headerEl).hidden = !showBoardList;
+      headerBar = Header.headerBar;
+      $('.board-name', headerBar).hidden = showBoardList;
+      return $('.board-list', headerBar).hidden = !showBoardList;
     },
     toggleCatalogLinks: function() {
       var a, as, root, useCatalog, _i, _len;
       useCatalog = this.checked;
-      root = $('.board-list', Header.headerEl);
+      root = $('.board-list', Header.headerBar);
       as = $$('a[href*="boards.4chan.org"]', root);
-      as.push($('.board-name', Header.headerEl));
+      as.push($('.board-name', Header.headerBar));
       for (_i = 0, _len = as.length; _i < _len; _i++) {
         a = as[_i];
         a.pathname = "/" + (a.pathname.split('/')[1]) + "/" + (useCatalog ? 'catalog' : '');
       }
     },
+    setBarVisibility: function(hide) {
+      return (hide ? $.addClass : $.rmClass)(Header.headerBar, 'autohide');
+    },
     toggleBar: function() {
-      var isAutohiding, message;
-      message = (isAutohiding = $.id('header-bar').classList.toggle('autohide')) ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
+      var hide, message;
+      hide = !$.hasClass(Header.headerBar, 'autohide');
+      Header.setBarVisibility(hide);
+      message = hide ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
       new Notification('info', message, 2);
-      return $.set('autohideHeaderBar', isAutohiding);
+      return $.set('autohideHeaderBar', hide);
     },
     menuToggle: function(e) {
       return Header.menu.toggle(e, this, g);
@@ -3019,7 +3023,7 @@
     },
     hl: function(delta, thread) {
       var headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
-      headRect = $.id('header-bar').getBoundingClientRect();
+      headRect = Header.headerBar.getBoundingClientRect();
       topMargin = headRect.top + headRect.height;
       if (postEl = $('.reply.highlight', thread)) {
         $.rmClass(postEl, 'highlight');
@@ -3097,7 +3101,7 @@
     },
     getThread: function(full) {
       var headRect, i, rect, thread, threads, topMargin, _i, _len;
-      headRect = $.id('header-bar').getBoundingClientRect();
+      headRect = Header.headerBar.getBoundingClientRect();
       topMargin = headRect.top + headRect.height;
       threads = $$('.thread:not([hidden])');
       for (i = _i = 0, _len = threads.length; _i < _len; i = ++_i) {
@@ -4587,7 +4591,7 @@
       rect = thumb.parentNode.getBoundingClientRect();
       if (rect.bottom > 0) {
         postRect = post.nodes.root.getBoundingClientRect();
-        headRect = $.id('header-bar').getBoundingClientRect();
+        headRect = Header.headerBar.getBoundingClientRect();
         top = postRect.top - headRect.top - headRect.height - 2;
         root = $.engine === 'webkit' ? d.body : doc;
         if (rect.top < 0) {
@@ -6610,7 +6614,7 @@
         }
         $.on(imgContainer, 'click', this.reload.bind(this));
         $.on(input, 'keydown', this.keydown.bind(this));
-        $.sync('captchas', this.sync.bind(this));
+        $.sync('captchas', this.sync);
         this.sync($.get('captchas', []));
         this.reload();
         $.addClass(QR.nodes.el, 'has-captcha');
@@ -6618,7 +6622,7 @@
       },
       sync: function(captchas) {
         this.captchas = captchas;
-        return this.count();
+        return QR.captcha.count();
       },
       getOne: function() {
         var captcha, challenge, response;
