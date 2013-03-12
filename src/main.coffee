@@ -300,15 +300,15 @@ Main =
         return
 
     initFeature = (name, module) ->
-      c.time "#{name} initialization"
+      # c.time "#{name} initialization"
       try
         module.init()
       catch err
         Main.handleErrors
           message: "\"#{name}\" initialization crashed."
           error: err
-      finally
-        c.timeEnd "#{name} initialization"
+      # finally
+      #   c.timeEnd "#{name} initialization"
 
     # c.time 'All initializations'
     initFeature 'Polyfill',                 Polyfill

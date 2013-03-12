@@ -126,8 +126,8 @@ a[href="javascript:;"] {
   margin-bottom: -1em;
   -webkit-transform: translateY(-100%);
   transform: translateY(-100%);
-  -webkit-transition: all 2s 2s ease-in-out;
-  transition: all 2s 2s ease-in-out;
+  -webkit-transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
+  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
 }
 #toggle-header-bar {
   cursor: n-resize;
