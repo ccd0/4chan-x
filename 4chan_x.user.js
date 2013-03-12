@@ -1109,9 +1109,6 @@
             } else if (m = t.match(/-text:"(.+)"$/)) {
               a.textContent = m[1];
             }
-            if (board === 'v') {
-              $.log(t, t.match(/-text:"(.+)"$/));
-            }
             return a;
           }
         }

@@ -86,8 +86,6 @@ Header =
             a.textContent = "/#{board}/ - #{a.title}"
           else if m = t.match /-text:"(.+)"$/
             a.textContent = m[1]
-          if board is 'v'
-            $.log t, t.match /-text:"(.+)"$/
           return a
       $.tn t
     $.add list, nodes
