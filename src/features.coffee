@@ -3094,9 +3094,11 @@ ImageExpand =
       $.event 'CloseMenu'
       if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
         ImageExpand.EAI.className = 'contract-all-shortcut'
+        ImageExpand.EAI.title     = 'Contract All Images'
         func = ImageExpand.expand
       else
         ImageExpand.EAI.className = 'expand-all-shortcut'
+        ImageExpand.EAI.title     = 'Expand All Images'
         func = ImageExpand.contract
       for ID, post of g.posts
         for post in [post].concat post.clones
