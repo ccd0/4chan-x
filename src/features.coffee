@@ -1626,7 +1626,7 @@ Keybinds =
       when Conf['Previous reply']
         Keybinds.hl -1, threadRoot
       when Conf['Hide']
-        ThreadHiding.toggle thread
+        ThreadHiding.toggle thread if g.VIEW is 'index'
       else
         return
     e.preventDefault()

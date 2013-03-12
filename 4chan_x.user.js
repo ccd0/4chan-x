@@ -2928,7 +2928,9 @@
           Keybinds.hl(-1, threadRoot);
           break;
         case Conf['Hide']:
-          ThreadHiding.toggle(thread);
+          if (g.VIEW === 'index') {
+            ThreadHiding.toggle(thread);
+          }
           break;
         default:
           return;
