@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, CustomCSS, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, CustomCSS, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -192,6 +192,8 @@
   }
 
   Conf = {};
+
+  c = console;
 
   d = document;
 
@@ -640,7 +642,6 @@
     MINUTE: 1000 * 60,
     HOUR: 1000 * 60 * 60,
     DAY: 1000 * 60 * 60 * 24,
-    log: console.log.bind(console),
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     id: function(id) {
       return d.getElementById(id);
@@ -1426,7 +1427,7 @@
           }
         } catch (err) {
           output.textContent = 'Import failed due to an error.';
-          return $.log(err.stack);
+          return c.log(err.stack);
         }
       };
       return reader.readAsText(file);
@@ -6507,7 +6508,7 @@
         }
         img = $.el('img');
         img.onload = function() {
-          var applyBlob, c, data, height, i, l, s, ui8a, width, _i;
+          var applyBlob, cv, data, height, i, l, s, ui8a, width, _i;
           s = 90 * 2;
           height = img.height, width = img.width;
           if (height < s || width < s) {
@@ -6524,12 +6525,12 @@
             height = s / width * height;
             width = s;
           }
-          c = $.el('canvas');
-          c.height = img.height = height;
-          c.width = img.width = width;
-          c.getContext('2d').drawImage(img, 0, 0, width, height);
+          cv = $.el('canvas');
+          cv.height = img.height = height;
+          cv.width = img.width = width;
+          cv.getContext('2d').drawImage(img, 0, 0, width, height);
           if (!window.URL) {
-            _this.nodes.el.style.backgroundImage = "url(" + (c.toDataURL()) + ")";
+            _this.nodes.el.style.backgroundImage = "url(" + (cv.toDataURL()) + ")";
             delete _this.URL;
             return;
           }
@@ -6538,11 +6539,11 @@
             _this.URL = URL.createObjectURL(blob);
             return _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
           };
-          if (c.toBlob) {
-            c.toBlob(applyBlob);
+          if (cv.toBlob) {
+            cv.toBlob(applyBlob);
             return;
           }
-          data = atob(c.toDataURL().split(',')[1]);
+          data = atob(cv.toDataURL().split(',')[1]);
           l = data.length;
           ui8a = new Uint8Array(l);
           for (i = _i = 0; 0 <= l ? _i < l : _i > l; i = 0 <= l ? ++_i : --_i) {
@@ -7489,6 +7490,7 @@
           return;
       }
       initFeature = function(name, module) {
+        c.time("" + name + " initialization");
         try {
           return module.init();
         } catch (err) {
@@ -7497,7 +7499,7 @@
             error: err
           });
         } finally {
-
+          c.timeEnd("" + name + " initialization");
         }
       };
       initFeature('Polyfill', Polyfill);
@@ -7715,7 +7717,7 @@
     parseError: function(data) {
       var error, message;
       message = data.message, error = data.error;
-      $.log(message, error.stack);
+      c.log(message, error.stack);
       message = $.el('div', {
         textContent: message
       });

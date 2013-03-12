@@ -492,22 +492,22 @@ QR =
         else
           height = s / width  * height
           width  = s
-        c = $.el 'canvas'
-        c.height = img.height = height
-        c.width  = img.width  = width
-        c.getContext('2d').drawImage img, 0, 0, width, height
+        cv = $.el 'canvas'
+        cv.height = img.height = height
+        cv.width  = img.width  = width
+        cv.getContext('2d').drawImage img, 0, 0, width, height
         unless window.URL
-          @nodes.el.style.backgroundImage = "url(#{c.toDataURL()})"
+          @nodes.el.style.backgroundImage = "url(#{cv.toDataURL()})"
           delete @URL
           return
         URL.revokeObjectURL fileURL
         applyBlob = (blob) =>
           @URL = URL.createObjectURL blob
           @nodes.el.style.backgroundImage = "url(#{@URL})"
-        if c.toBlob
-          c.toBlob applyBlob
+        if cv.toBlob
+          cv.toBlob applyBlob
           return
-        data = atob c.toDataURL().split(',')[1]
+        data = atob cv.toDataURL().split(',')[1]
 
         # DataUrl to Binary code from Aeosynth's 4chan X repo
         l = data.length

@@ -3,6 +3,7 @@
 return unless /^(boards|images|sys)\.4chan\.org$/.test location.hostname
 
 Conf = {}
+c    = console
 d    = document
 doc  = d.documentElement
 g =

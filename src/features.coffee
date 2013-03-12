@@ -342,7 +342,7 @@ Settings =
           window.location.reload()
       catch err
         output.textContent = 'Import failed due to an error.'
-        $.log err.stack
+        c.log err.stack
     reader.readAsText file
   loadSettings: (data) ->
     version = data.version.split '.'
