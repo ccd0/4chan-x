@@ -5,7 +5,7 @@ Header =
       innerHTML: """
         <div id=header-bar class=dialog>
           <span class='menu-button brackets-wrap'><a href=javascript:;><i></i></a></span>
-          <span class=brackets-wrap hidden>top secret</span>
+          <span id=shortcuts class=brackets-wrap></span>
           <span id=board-list>
             <span id=custom-board-list></span>
             <span id=full-board-list hidden></span>
@@ -30,7 +30,7 @@ Header =
     $.event 'AddMenuEntry',
       type: 'header'
       el: catalogToggler
-      order: 105
+      order: 50
 
     $.asap (-> d.body), ->
       return unless Main.isThisPageLegit()
@@ -117,6 +117,12 @@ Header =
       'The header bar will remain visible.'
     new Notification 'info', message, 2
     $.set 'Header auto-hide', hide
+
+  addShortcut: (el) ->
+    shortcut = $.el 'span',
+      className: 'shortcut'
+    $.add shortcut, el
+    $.prepend $('#shortcuts', Header.bar), shortcut
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g
@@ -1739,9 +1745,7 @@ Keybinds =
 
   img: (thread, all) ->
     if all
-      input = ImageExpand.expandAllInput
-      input.checked = !input.checked
-      ImageExpand.cb.all.call input
+      ImageExpand.cb.toggleAll()
     else
       post = Get.postFromNode $('.post.highlight', thread) or $ '.op', thread
       ImageExpand.toggle post
@@ -3065,6 +3069,15 @@ ImageExpand =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Image Expansion']
 
+    @EAI = $.el 'a',
+      className: 'expanded-all-shortcut'
+      textContent: 'EAI'
+      title: 'Expand All Images'
+      href: 'javascript:;'
+    @EAI.style.opacity = '.35'
+    $.on @EAI, 'click', ImageExpand.cb.toggleAll
+    Header.addShortcut @EAI
+
     Post::callbacks.push
       name: 'Image Expansion'
       cb:   @node
@@ -3078,12 +3091,14 @@ ImageExpand =
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       e.preventDefault()
       ImageExpand.toggle Get.postFromNode @
-    all: ->
+    toggleAll: ->
       $.event 'CloseMenu'
-      func = if ImageExpand.on = @checked
-        ImageExpand.expand
+      if ImageExpand.on = ImageExpand.EAI.style.opacity isnt '1'
+        ImageExpand.EAI.style.opacity = 1
+        func = ImageExpand.expand
       else
-        ImageExpand.contract
+        ImageExpand.EAI.style.opacity = .35
+        func = ImageExpand.contract
       for ID, post of g.posts
         for post in [post].concat post.clones
           {file} = post
@@ -3203,26 +3218,21 @@ ImageExpand =
 
       {createSubEntry} = ImageExpand.menu
       subEntries = []
-      subEntries.push createSubEntry 'Expand all'
       for key, conf of Config.imageExpansion
         subEntries.push createSubEntry key, conf
 
       $.event 'AddMenuEntry',
         type: 'header'
         el: el
-        order: 20
+        order: 80
         subEntries: subEntries
 
     createSubEntry: (type, config) ->
       label = $.el 'label',
         innerHTML: "<input type=checkbox name='#{type}'> #{type}"
       input = label.firstElementChild
-      switch type
-        when 'Expand all'
-          $.on input, 'change', ImageExpand.cb.all
-          ImageExpand.expandAllInput = input
-        when 'Fit width', 'Fit height'
-          $.on input, 'change', ImageExpand.cb.setFitness
+      if type in ['Fit width', 'Fit height']
+        $.on input, 'change', ImageExpand.cb.setFitness
       if config
         label.title   = config[1]
         input.checked = Conf[type]

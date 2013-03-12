@@ -18,19 +18,17 @@ QR =
     QR.postingIsEnabled = !!$.id 'postForm'
     return unless QR.postingIsEnabled
 
-    link = $.el 'a',
+    sc = $.el 'a',
       className: 'qr-shortcut'
-      textContent: 'Quick Reply'
+      textContent: 'QR'
+      title: 'Quick Reply'
       href: 'javascript:;'
-    $.on link, 'click', ->
+    $.on sc, 'click', ->
       $.event 'CloseMenu'
       QR.open()
       QR.resetThreadSelector()
       QR.nodes.com.focus()
-    $.event 'AddMenuEntry',
-      type: 'header'
-      el: link
-      order: 10
+    Header.addShortcut sc
 
     if $.engine is 'webkit'
       $.on d, 'paste',            QR.paste

@@ -148,6 +148,12 @@ a[href="javascript:;"] {
   text-decoration: none;
   padding: 1px;
 }
+#shortcuts:empty {
+  display: none;
+}
+.shortcut:not(:last-child)::after {
+  content: " / ";
+}
 .brackets-wrap::before {
   content: " [";
 }
