@@ -1,30 +1,37 @@
 Header =
   init: ->
     headerEl = $.el 'div',
-      id:        'header'
+      id: 'header'
       innerHTML: """
         <div id=header-bar class=dialog>
           <span class='menu-button brackets-wrap'><a href=javascript:;><i></i></a></span>
           <span class=brackets-wrap hidden>top secret</span>
-          <span id=board-list hidden>next-gen board-list</span>
+
+          <span id=board-list>
+            <span id=custom-board-list></span>
+            <span id=full-board-list hidden></span>
+          </span>
+
+          <!--
           <span class='show-board-list-button brackets-wrap' title="Toggle the board list."><a href=javascript:;>+</a></span>
           <a class=board-name href="/#{g.BOARD}/">
             <span class=board-path>/#{g.BOARD}/</span> - <span class=board-title>...</span>
           </a>
           <span class=board-list hidden></span>
+          -->
+
           <div id=toggle-header-bar title="Toggle the header auto-hiding."></div>
         </div>
         <div id=notifications></div>
       """.replace />\s+</g, '><' # get rid of spaces between elements
 
     @headerBar = $ '#header-bar', headerEl
-    Header.setBarVisibility Conf['Header auto-hide']
-    $.sync 'Header auto-hide', Header.setBarVisibility
+    @setBarVisibility Conf['Header auto-hide']
+    $.sync 'Header auto-hide', @setBarVisibility
 
     @menu = new UI.Menu 'header'
-    $.on $('.menu-button',            @headerBar), 'click', @menuToggle
-    $.on $('.show-board-list-button', @headerBar), 'click', @toggleBoardList
-    $.on $('#toggle-header-bar',      @headerBar), 'click', @toggleBar
+    $.on $('.menu-button',       @headerBar), 'click', @menuToggle
+    $.on $('#toggle-header-bar', @headerBar), 'click', @toggleBarVisibility
 
     catalogToggler = $.el 'label',
       innerHTML: "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}> Use catalog board links"
@@ -36,38 +43,75 @@ Header =
       order: 105
 
     $.asap (-> d.body), ->
-      if Main.isThisPageLegit()
-        $.prepend d.body, headerEl
-    $.asap (-> $.id 'boardNavDesktop'), @setBoardList
+      return unless Main.isThisPageLegit()
+      $.asap (-> $.id 'boardNavDesktop'), Header.setBoardList
+      $.prepend d.body, headerEl
 
   setBoardList: ->
-    if nav = $.id 'boardNavDesktop'
-      if a = $ "a[href*='/#{g.BOARD}/']", nav
-        a.className = 'current'
-        $('.board-title', Header.headerBar).textContent = a.title
-      $.add $('.board-list', Header.headerBar), [nav.childNodes...]
-      Header.setCatalogLinks Conf['Header catalog links']
+    nav = $.id 'boardNavDesktop'
+    if a = $ "a[href*='/#{g.BOARD}/']", nav
+      a.className = 'current'
+    fullBoardList = $ '#full-board-list', Header.headerBar
+    $.add fullBoardList, [nav.childNodes...]
+
+    if Conf['Custom Board Navigation']
+      Header.generateBoardList Conf['boardnav']
+      $.sync 'boardnav', Header.generateBoardList
+      btn = $.el 'span',
+        className: 'hide-board-list-button brackets-wrap'
+        innerHTML: '<a href=javascript:;> - </a>'
+      $.on btn, 'click', Header.toggleBoardList
+      $.prepend fullBoardList, btn
+    else
+      $.rm $ '#custom-board-list', Header.headerBar
+      fullBoardList.hidden = false
+
+    Header.setCatalogLinks Conf['Header catalog links']
+
+  generateBoardList: (text) ->
+    as = $$('#full-board-list a', Header.headerBar)[0...-2] # ignore the Settings and Home links
+    nodes = text.match(/[\w@]+(-(all|title|full|text:"[^"]+"))?|[^\w@]+/g).map (t) ->
+      if /^[^\w@]/.test t
+        return $.tn t
+      if t is 'toggle-all'
+        a = $.el 'a',
+          className: 'show-board-list-button'
+          textContent: '+'
+          href: 'javascript:;'
+        $.on a, 'click', Header.toggleBoardList
+        return a
+      board = if /^current/.test t
+        g.BOARD.ID
+      else
+        t.match(/^[^-]+/)[0]
+      for a in as
+        if a.textContent is board
+          a = a.cloneNode true
+          if /-title$/.test t
+            a.textContent = a.title
+          else if /-full$/.test t
+            a.textContent = "/#{board}/ - #{a.title}"
+          else if m = t.match /-text:"(.+)"$/
+            a.textContent = m[1]
+          if board is 'v'
+            $.log t, t.match /-text:"(.+)"$/
+          return a
+      $.tn t
+    list = $ '#custom-board-list', Header.headerBar
+    list.innerHTML = null
+    $.add list, nodes
 
   toggleBoardList: ->
-    node = @firstElementChild.firstChild
-    if showBoardList = $.hasClass @, 'show-board-list-button'
-      $.rmClass  @, 'show-board-list-button'
-      $.addClass @, 'hide-board-list-button'
-      node.data = node.data.replace '+', '-'
-    else
-      $.rmClass  @, 'hide-board-list-button'
-      $.addClass @, 'show-board-list-button'
-      node.data = node.data.replace '-', '+'
+    showBoardList = $.hasClass @, 'show-board-list-button'
     {headerBar} = Header
-    $('.board-name', headerBar).hidden =  showBoardList
-    $('.board-list', headerBar).hidden = !showBoardList
+    $('#custom-board-list', headerBar).hidden =  showBoardList
+    $('#full-board-list',   headerBar).hidden = !showBoardList
 
   setCatalogLinks: (useCatalog) ->
-    root = $ '.board-list', Header.headerBar
-    as = $$ 'a[href*="boards.4chan.org"]', root
-    as.push $ '.board-name', Header.headerBar
+    as = $$ '#board-list a[href*="boards.4chan.org"]', Header.headerBar
+    str = if useCatalog then 'catalog' else ''
     for a in as
-      a.pathname = "/#{a.pathname.split('/')[1]}/#{if useCatalog then 'catalog' else ''}"
+      a.pathname = "/#{a.pathname.split('/')[1]}/#{str}"
     return
   toggleCatalogLinks: ->
     Header.setCatalogLinks @checked
@@ -75,7 +119,7 @@ Header =
 
   setBarVisibility: (hide) ->
     (if hide then $.addClass else $.rmClass) Header.headerBar, 'autohide'
-  toggleBar: ->
+  toggleBarVisibility: ->
     hide = !$.hasClass Header.headerBar, 'autohide'
     Header.setBarVisibility hide
     message = if hide
@@ -467,6 +511,17 @@ Settings =
   rice: (section) ->
     section.innerHTML = """
       <fieldset>
+        <legend>Custom Board Navigation <span class=warning #{if Conf['Custom Board Navigation'] then 'hidden' else ''}>is disabled.</span></legend>
+        <div><input name=boardnav class=field></div>
+        <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>
+        <div>Board link: <code>board</code></div>
+        <div>Title link: <code>board-title</code></div>
+        <div>Full text link: <code>board-full</code></div>
+        <div>Custom text link: <code>board-text:"VIP Board"</code></div>
+        <div>Full board list toggle: <code>toggle-all</code></div>
+      </fieldset>
+
+      <fieldset>
         <legend>Time Formatting <span class=warning #{if Conf['Time Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
         <div><input name=time class=field>: <span class=time-preview></span></div>
         <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>
@@ -486,7 +541,7 @@ Settings =
       <fieldset>
         <legend>File Info Formatting <span class=warning #{if Conf['File Info Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
         <div><input name=fileInfo class=field>: <span class='fileText file-info-preview'></span></div>
-        <div>divnk: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>
+        <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>
         <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>
         <div>Spoiler indicator: <code>%p</code></div>
         <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>
@@ -510,7 +565,7 @@ Settings =
         <textarea name=usercss class=field></textarea>
       </fieldset>
     """
-    for name in ['time', 'backlink', 'fileInfo', 'favicon', 'usercss']
+    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
       input = $ "[name=#{name}]", section
       input.value = $.get name, Conf[name]
       event = if name in ['favicon', 'usercss']
@@ -522,6 +577,8 @@ Settings =
         $.on input, event, Settings[name]
         Settings[name].call input
     $.on $.id('apply-css'), 'click', Settings.usercss
+  boardnav: ->
+    Header.generateBoardList @value
   time: ->
     funk = Time.createFunc @value
     @nextElementSibling.textContent = funk Time, new Date()

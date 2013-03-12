@@ -2,6 +2,7 @@ Config =
   main:
     'Miscellaneous':
       'Enable 4chan\'s Extension':    [false, 'Compatibility between <%= meta.name %> and 4chan\'s inline extension is NOT guaranteed.']
+      'Custom Board Navigation':      [true,  'Disable this to always display the full board list.']
       '404 Redirect':                 [true,  'Redirect dead threads and images.']
       'Keybinds':                     [true,  'Bind actions to keyboard shortcuts.']
       'Time Formatting':              [true,  'Localize and format timestamps arbitrarily.']
@@ -128,6 +129,7 @@ Config =
   ].join '\n'
   'Header auto-hide': false
   'Header catalog links': false
+  boardnav: '[current-title / toggle-all]'
   time: '%m/%d/%y(%a)%H:%M:%S'
   backlink: '>>%id'
   fileInfo: '%l (%p%s, %r)'

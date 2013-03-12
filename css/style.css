@@ -109,10 +109,17 @@ a[href="javascript:;"] {
 }
 #header-bar {
   border-width: 0 0 1px;
+  display: -webkit-flex;
+  display: flex;
   padding: 4px;
   position: relative;
   -webkit-transition: all .1s ease-in-out;
   transition: all .1s ease-in-out;
+}
+#board-list {
+  -webkit-flex: 1;
+  flex: 1;
+  text-align: center;
 }
 #header-bar.autohide:not(:hover) {
   box-shadow: none;
@@ -280,6 +287,9 @@ a[href="javascript:;"] {
 }
 .section-sauce textarea {
   height: 350px;
+}
+.section-rice .field[name="boardnav"] {
+  width: 100%;
 }
 .section-rice textarea {
   height: 150px;
