@@ -272,7 +272,7 @@ UI =
       className: 'reply dialog'
       innerHTML: html
       id:        id
-    el.style.cssText = $.get id + ".cords", position
+    el.style.cssText = $.get "#{id}.coords", position
     if move = $ '.move',  el
       move.addEventListener 'mousedown', UI.dragstart, false
     el
@@ -305,7 +305,7 @@ UI =
     style.right  = if left is null then '0px' else null
     style.bottom = if top  is null then '0px' else null
   dragend: ->
-    $.set UI.el.id + ".position", UI.el.style.cssText
+    $.set "#{UI.el.id}.coords", UI.el.style.cssText
     d.removeEventListener 'mousemove', UI.drag,    false
     d.removeEventListener 'mouseup',   UI.dragend, false
     delete UI.el
