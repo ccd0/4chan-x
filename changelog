@@ -51,7 +51,7 @@ beta
     Recursive Hiding will be automatically applied when manually hiding a post.
 
   Added touch and multi-touch support for dragging windows.
-  Added [math] tags keybind.
+  Added [eqn] and [math] tags keybind.
   Fix Chrome's install warning saying that 4chan X would execute on all domains.
   Fix Quote Backlinks not affecting inlined quotes.
   Fix Quote Highlighting not affecting inlined quotes.

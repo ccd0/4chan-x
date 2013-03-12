@@ -139,6 +139,7 @@ Config =
     'Close':              ['Esc',     'Close Settings, Notifications or QR.']
     'Spoiler tags':       ['Ctrl+s',  'Insert spoiler tags.']
     'Code tags':          ['Alt+c',   'Insert code tags.']
+    'Eqn tags':           ['Alt+e',   'Insert egn tags.']
     'Math tags':          ['Alt+m',   'Insert math tags.']
     'Submit QR':          ['Alt+s',   'Submit post.']
     # Thread related

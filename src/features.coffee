@@ -1581,6 +1581,9 @@ Keybinds =
       when Conf['Code tags']
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'code', target
+      when Conf['Eqn tags']
+        return if target.nodeName isnt 'TEXTAREA'
+        Keybinds.tags 'eqn', target
       when Conf['Math tags']
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'math', target
