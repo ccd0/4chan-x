@@ -15,13 +15,13 @@ Header =
         <div id=notifications></div>
       """.replace />\s+</g, '><' # get rid of spaces between elements
 
-    @headerBar = $ '#header-bar', headerEl
+    @bar = $ '#header-bar', headerEl
     @setBarVisibility Conf['Header auto-hide']
     $.sync 'Header auto-hide', @setBarVisibility
 
     @menu = new UI.Menu 'header'
-    $.on $('.menu-button',       @headerBar), 'click', @menuToggle
-    $.on $('#toggle-header-bar', @headerBar), 'click', @toggleBarVisibility
+    $.on $('.menu-button',       @bar), 'click', @menuToggle
+    $.on $('#toggle-header-bar', @bar), 'click', @toggleBarVisibility
 
     catalogToggler = $.el 'label',
       innerHTML: "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}> Use catalog board links"
@@ -41,7 +41,7 @@ Header =
     nav = $.id 'boardNavDesktop'
     if a = $ "a[href*='/#{g.BOARD}/']", nav
       a.className = 'current'
-    fullBoardList = $ '#full-board-list', Header.headerBar
+    fullBoardList = $ '#full-board-list', Header.bar
     $.add fullBoardList, [nav.childNodes...]
 
     if Conf['Custom Board Navigation']
@@ -53,13 +53,13 @@ Header =
       $.on btn, 'click', Header.toggleBoardList
       $.prepend fullBoardList, btn
     else
-      $.rm $ '#custom-board-list', Header.headerBar
+      $.rm $ '#custom-board-list', Header.bar
       fullBoardList.hidden = false
 
     Header.setCatalogLinks Conf['Header catalog links']
 
   generateBoardList: (text) ->
-    as = $$('#full-board-list a', Header.headerBar)[0...-2] # ignore the Settings and Home links
+    as = $$('#full-board-list a', Header.bar)[0...-2] # ignore the Settings and Home links
     nodes = text.match(/[\w@]+(-(all|title|full|text:"[^"]+"))?|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
@@ -87,18 +87,18 @@ Header =
             $.log t, t.match /-text:"(.+)"$/
           return a
       $.tn t
-    list = $ '#custom-board-list', Header.headerBar
+    list = $ '#custom-board-list', Header.bar
     list.innerHTML = null
     $.add list, nodes
 
   toggleBoardList: ->
     showBoardList = $.hasClass @, 'show-board-list-button'
-    {headerBar} = Header
-    $('#custom-board-list', headerBar).hidden =  showBoardList
-    $('#full-board-list',   headerBar).hidden = !showBoardList
+    {bar} = Header
+    $('#custom-board-list', bar).hidden =  showBoardList
+    $('#full-board-list',   bar).hidden = !showBoardList
 
   setCatalogLinks: (useCatalog) ->
-    as = $$ '#board-list a[href*="boards.4chan.org"]', Header.headerBar
+    as = $$ '#board-list a[href*="boards.4chan.org"]', Header.bar
     str = if useCatalog then 'catalog' else ''
     for a in as
       a.pathname = "/#{a.pathname.split('/')[1]}/#{str}"
@@ -108,9 +108,9 @@ Header =
     $.set 'Header catalog links', @checked
 
   setBarVisibility: (hide) ->
-    (if hide then $.addClass else $.rmClass) Header.headerBar, 'autohide'
+    (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
   toggleBarVisibility: ->
-    hide = !$.hasClass Header.headerBar, 'autohide'
+    hide = !$.hasClass Header.bar, 'autohide'
     Header.setBarVisibility hide
     message = if hide
       'The header bar will automatically hide itself.'
@@ -1756,7 +1756,7 @@ Keybinds =
       location.href = url
 
   hl: (delta, thread) ->
-    headRect  = Header.headerBar.getBoundingClientRect()
+    headRect  = Header.bar.getBoundingClientRect()
     topMargin = headRect.top + headRect.height
     if postEl = $ '.reply.highlight', thread
       $.rmClass postEl, 'highlight'
@@ -1816,7 +1816,7 @@ Nav =
     Nav.scroll +1
 
   getThread: (full) ->
-    headRect  = Header.headerBar.getBoundingClientRect()
+    headRect  = Header.bar.getBoundingClientRect()
     topMargin = headRect.top + headRect.height
     threads = $$ '.thread:not([hidden])'
     for thread, i in threads
@@ -3117,7 +3117,7 @@ ImageExpand =
       # Scroll back to the thumbnail when contracting the image
       # to avoid being left miles away from the relevant post.
       postRect = post.nodes.root.getBoundingClientRect()
-      headRect = Header.headerBar.getBoundingClientRect()
+      headRect = Header.bar.getBoundingClientRect()
       top  = postRect.top - headRect.top - headRect.height - 2
       root = if $.engine is 'webkit'
         d.body

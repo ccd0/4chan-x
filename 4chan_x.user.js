@@ -1024,12 +1024,12 @@
         id: 'header',
         innerHTML: "<div id=header-bar class=dialog>\n  <span class='menu-button brackets-wrap'><a href=javascript:;><i></i></a></span>\n  <span class=brackets-wrap hidden>top secret</span>\n  <span id=board-list>\n    <span id=custom-board-list></span>\n    <span id=full-board-list hidden></span>\n  </span>\n  <div id=toggle-header-bar title=\"Toggle the header auto-hiding.\"></div>\n</div>\n<div id=notifications></div>".replace(/>\s+</g, '><')
       });
-      this.headerBar = $('#header-bar', headerEl);
+      this.bar = $('#header-bar', headerEl);
       this.setBarVisibility(Conf['Header auto-hide']);
       $.sync('Header auto-hide', this.setBarVisibility);
       this.menu = new UI.Menu('header');
-      $.on($('.menu-button', this.headerBar), 'click', this.menuToggle);
-      $.on($('#toggle-header-bar', this.headerBar), 'click', this.toggleBarVisibility);
+      $.on($('.menu-button', this.bar), 'click', this.menuToggle);
+      $.on($('#toggle-header-bar', this.bar), 'click', this.toggleBarVisibility);
       catalogToggler = $.el('label', {
         innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + "> Use catalog board links"
       });
@@ -1058,7 +1058,7 @@
       if (a = $("a[href*='/" + g.BOARD + "/']", nav)) {
         a.className = 'current';
       }
-      fullBoardList = $('#full-board-list', Header.headerBar);
+      fullBoardList = $('#full-board-list', Header.bar);
       $.add(fullBoardList, __slice.call(nav.childNodes));
       if (Conf['Custom Board Navigation']) {
         Header.generateBoardList(Conf['boardnav']);
@@ -1070,14 +1070,14 @@
         $.on(btn, 'click', Header.toggleBoardList);
         $.prepend(fullBoardList, btn);
       } else {
-        $.rm($('#custom-board-list', Header.headerBar));
+        $.rm($('#custom-board-list', Header.bar));
         fullBoardList.hidden = false;
       }
       return Header.setCatalogLinks(Conf['Header catalog links']);
     },
     generateBoardList: function(text) {
       var as, list, nodes;
-      as = $$('#full-board-list a', Header.headerBar).slice(0, -2);
+      as = $$('#full-board-list a', Header.bar).slice(0, -2);
       nodes = text.match(/[\w@]+(-(all|title|full|text:"[^"]+"))?|[^\w@]+/g).map(function(t) {
         var a, board, m, _i, _len;
         if (/^[^\w@]/.test(t)) {
@@ -1112,20 +1112,20 @@
         }
         return $.tn(t);
       });
-      list = $('#custom-board-list', Header.headerBar);
+      list = $('#custom-board-list', Header.bar);
       list.innerHTML = null;
       return $.add(list, nodes);
     },
     toggleBoardList: function() {
-      var headerBar, showBoardList;
+      var bar, showBoardList;
       showBoardList = $.hasClass(this, 'show-board-list-button');
-      headerBar = Header.headerBar;
-      $('#custom-board-list', headerBar).hidden = showBoardList;
-      return $('#full-board-list', headerBar).hidden = !showBoardList;
+      bar = Header.bar;
+      $('#custom-board-list', bar).hidden = showBoardList;
+      return $('#full-board-list', bar).hidden = !showBoardList;
     },
     setCatalogLinks: function(useCatalog) {
       var a, as, str, _i, _len;
-      as = $$('#board-list a[href*="boards.4chan.org"]', Header.headerBar);
+      as = $$('#board-list a[href*="boards.4chan.org"]', Header.bar);
       str = useCatalog ? 'catalog' : '';
       for (_i = 0, _len = as.length; _i < _len; _i++) {
         a = as[_i];
@@ -1137,11 +1137,11 @@
       return $.set('Header catalog links', this.checked);
     },
     setBarVisibility: function(hide) {
-      return (hide ? $.addClass : $.rmClass)(Header.headerBar, 'autohide');
+      return (hide ? $.addClass : $.rmClass)(Header.bar, 'autohide');
     },
     toggleBarVisibility: function() {
       var hide, message;
-      hide = !$.hasClass(Header.headerBar, 'autohide');
+      hide = !$.hasClass(Header.bar, 'autohide');
       Header.setBarVisibility(hide);
       message = hide ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
       new Notification('info', message, 2);
@@ -3087,7 +3087,7 @@
     },
     hl: function(delta, thread) {
       var headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
-      headRect = Header.headerBar.getBoundingClientRect();
+      headRect = Header.bar.getBoundingClientRect();
       topMargin = headRect.top + headRect.height;
       if (postEl = $('.reply.highlight', thread)) {
         $.rmClass(postEl, 'highlight');
@@ -3165,7 +3165,7 @@
     },
     getThread: function(full) {
       var headRect, i, rect, thread, threads, topMargin, _i, _len;
-      headRect = Header.headerBar.getBoundingClientRect();
+      headRect = Header.bar.getBoundingClientRect();
       topMargin = headRect.top + headRect.height;
       threads = $$('.thread:not([hidden])');
       for (i = _i = 0, _len = threads.length; _i < _len; i = ++_i) {
@@ -4651,7 +4651,7 @@
       rect = thumb.parentNode.getBoundingClientRect();
       if (rect.bottom > 0) {
         postRect = post.nodes.root.getBoundingClientRect();
-        headRect = Header.headerBar.getBoundingClientRect();
+        headRect = Header.bar.getBoundingClientRect();
         top = postRect.top - headRect.top - headRect.height - 2;
         root = $.engine === 'webkit' ? d.body : doc;
         if (rect.top < 0) {
