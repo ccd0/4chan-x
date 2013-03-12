@@ -10,9 +10,9 @@ Keybinds =
     keys  = {}
     
     # QR & Options
-    keys[_conf.openQR] = (thread) ->
+    keys[_conf.openQR] = (thread, target, nodeName) ->
       Keybinds.qr thread, true
-    keys[_conf.openEmptyQR] = (thread) ->
+    keys[_conf.openEmptyQR] = (thread, target, nodeName) ->
       Keybinds.qr thread
     keys[_conf.openOptions] = ->
       Options.dialog() unless $.id 'overlay'
@@ -23,23 +23,23 @@ Keybinds =
         QR.close()
     keys[_conf.submit] = ->
       QR.submit() if QR.el and !QR.status()
-    keys[_conf.hideQR] = ->
+    keys[_conf.hideQR] = (thread, target, nodeName) ->
       if QR.el
         return QR.el.hidden = false if QR.el.hidden
         QR.autohide.click()
       else QR.open()
     keys[_conf.toggleCatalog] = ->
       CatalogLinks.toggle()
-    keys[_conf.spoiler] = ->
+    keys[_conf.spoiler] = (thread, target, nodeName) ->
       return unless ($ '[name=spoiler]') and nodeName is 'textarea'
       Keybinds.tags 'spoiler', target
-    keys[_conf.math] = ->
+    keys[_conf.math] = (thread, target, nodeName) ->
       return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and nodeName is 'textarea'
       Keybinds.tags 'math', target
-    keys[_conf.eqn] = ->
+    keys[_conf.eqn] = (thread, target, nodeName) ->
       return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and nodeName is 'textarea'
       Keybinds.tags 'eqn', target
-    keys[_conf.code] = ->
+    keys[_conf.code] = (thread, target, nodeName) ->
       return unless g.BOARD is Main.hasCodeTags and nodeName is 'textarea'
       Keybinds.tags 'code', target
     keys[_conf.sageru] = ->
@@ -47,7 +47,7 @@ Keybinds =
       QR.selected.email = "sage"
 
     # Thread related
-    keys[_conf.watch] = (thread) ->
+    keys[_conf.watch] = (thread, target, nodeName) ->
       Watcher.toggle thread
     keys[_conf.update] = ->
       Updater.update()
@@ -56,9 +56,9 @@ Keybinds =
       Unread.update true
 
     # Images
-    keys[_conf.expandImage] = (thread) ->
+    keys[_conf.expandImage] = (thread, target, nodeName) ->
       Keybinds.img thread
-    keys[_conf.expandAllImages] = (thread) ->
+    keys[_conf.expandAllImages] = (thread, target, nodeName) ->
       Keybinds.img thread, true
 
     # Board Navigation
@@ -78,19 +78,19 @@ Keybinds =
     keys[_conf.previousThread] = ->
       return if g.REPLY
       Nav.scroll -1
-    keys[_conf.expandThread] = (thread) ->
+    keys[_conf.expandThread] = (thread, target, nodeName) ->
       ExpandThread.toggle thread
-    keys[_conf.openThread] = (thread) ->
+    keys[_conf.openThread] = (thread, target, nodeName) ->
       Keybinds.open thread
-    keys[_conf.openThreadTab] = (thread) ->
+    keys[_conf.openThreadTab] = (thread, target, nodeName) ->
       Keybinds.open thread, true
 
     # Reply Navigation
-    keys[_conf.nextReply] = (thread) ->
+    keys[_conf.nextReply] = (thread, target, nodeName) ->
       Keybinds.hl +1, thread
-    keys[_conf.previousReply] = (thread) ->
+    keys[_conf.previousReply] = (thread, target, nodeName) ->
       Keybinds.hl -1, thread
-    keys[_conf.hide] = (thread) ->
+    keys[_conf.hide] = (thread, target, nodeName) ->
       ThreadHiding.toggle thread if /\bthread\b/.test thread.className
     return keys
 
@@ -103,7 +103,7 @@ Keybinds =
     thread = Nav.getThread()
 
     return unless bind = Keybinds.bindings[key]
-    bind(thread)
+    bind(thread, target, nodeName)
 
     e.preventDefault()
 
