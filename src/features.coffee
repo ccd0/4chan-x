@@ -1,41 +1,30 @@
 Header =
   init: ->
-    @menu = new UI.Menu 'header'
-
     @headerEl = $.el 'div',
       id:        'header'
-      innerHTML: '<div id=header-bar class=dialog></div><div id=notifications></div>'
+      innerHTML: """
+        <div id=header-bar class=dialog>
+          <span class=brackets-wrap><a class=menu-button href=javascript:;><span></span></a></span>
+          <span class=brackets-wrap hidden>top secret</span>
+          <span class=brackets-wrap id=board-list hidden>next-gen board-list</span>
+          <span class='show-board-list-button brackets-wrap' title="Toggle the board list."><a href=javascript:;>+</a></span>
+          <a class=board-name href="/#{g.BOARD}/#{if g.VIEW is 'catalog' then 'catalog' else ''}">
+            <span class=board-path>/#{g.BOARD}/</span> - <span class=board-title>...</span>
+          </a>
+          <span class=board-list hidden></span>
+          <div id=toggle-header-bar title="Toggle the header auto-hiding."></div>
+        </div>
+        <div id=notifications></div>
+      """.replace />\s+</g, '><' # get rid of spaces between elements
 
-    headerBar = $('#header-bar', @headerEl)
+    headerBar = $ '#header-bar', @headerEl
     if $.get 'autohideHeaderBar', false
       $.addClass headerBar, 'autohide'
 
-    menuButton = $.el 'a',
-      className: 'menu-button'
-      innerHTML: '[<span></span>]'
-      href:      'javascript:;'
-    $.on menuButton, 'click', @menuToggle
-
-    boardListButton = $.el 'span',
-      className: 'show-board-list-button'
-      innerHTML: '[<a href=javascript:;>+</a>]'
-      title:     'Toggle the board list.'
-    $.on boardListButton, 'click', @toggleBoardList
-
-    boardTitle = $.el 'a',
-      className: 'board-name'
-      innerHTML: "<span class=board-path>/#{g.BOARD}/</span> - <span class=board-title>...</span>"
-      href:      "/#{g.BOARD}/#{if g.VIEW is 'catalog' then 'catalog' else ''}"
-    boardList = $.el 'span',
-      className: 'board-list'
-      hidden:    true
-
-    toggleBar = $.el 'div',
-      id: 'toggle-header-bar'
-      title: 'Toggle the header auto-hiding.'
-    $.on toggleBar, 'click', @toggleBar
-
-    $.prepend headerBar, [menuButton, boardListButton, $.tn(' '), boardTitle, boardList, toggleBar]
+    @menu = new UI.Menu 'header'
+    $.on $('.menu-button',            headerBar), 'click', @menuToggle
+    $.on $('.show-board-list-button', headerBar), 'click', @toggleBoardList
+    $.on $('#toggle-header-bar',      headerBar), 'click', @toggleBar
 
     catalogToggler = $.el 'label',
       innerHTML: "<input type=checkbox #{if g.VIEW is 'catalog' then 'checked' else ''}> Use catalog board links"
@@ -60,10 +49,12 @@ Header =
   toggleBoardList: ->
     node = @firstElementChild.firstChild
     if showBoardList = $.hasClass @, 'show-board-list-button'
-      @className = 'hide-board-list-button'
+      $.rmClass  @, 'show-board-list-button'
+      $.addClass @, 'hide-board-list-button'
       node.data = node.data.replace '+', '-'
     else
-      @className = 'show-board-list-button'
+      $.rmClass  @, 'hide-board-list-button'
+      $.addClass @, 'show-board-list-button'
       node.data = node.data.replace '-', '+'
     {headerEl} = Header
     $('.board-name', headerEl).hidden =  showBoardList

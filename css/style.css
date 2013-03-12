@@ -137,9 +137,11 @@ a[href="javascript:;"] {
   text-decoration: none;
   padding: 1px;
 }
-#header-bar > .menu-button {
-  float: right;
-  padding: 0;
+.brackets-wrap::before {
+  content: " [";
+}
+.brackets-wrap::after {
+  content: "] ";
 }
 
 /* Notifications */

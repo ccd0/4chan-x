@@ -45,6 +45,7 @@
 }
 :root.yotsuba .entry {
   border-bottom: 1px solid #D9BFB7;
+  font-size: 10pt;
 }
 :root.yotsuba .focused.entry {
   background: rgba(255, 255, 255, .33);
