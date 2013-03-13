@@ -34,7 +34,7 @@ Thread Updater changes:
  - Added a setting to always auto-scroll to the bottom instead of the first new post.
 
 Unread posts changes:
- - Added a line to distinguish read post from unread ones.
+ - Added a line to distinguish read posts from unread ones.
  - Read posts won't be marked as unread after reloading a thread.
  - The page will scroll to the last read post after reloading a thread.
  - Visible posts will not be taken into account towards the unread count.

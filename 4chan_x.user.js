@@ -92,6 +92,7 @@
         'Thread Updater': [true, 'Fetch and insert new replies. Has more options in its own dialog.'],
         'Unread Count': [true, 'Show the unread posts count in the tab title.'],
         'Unread Tab Icon': [true, 'Show a different favicon when there are unread posts.'],
+        'Unread Line': [true, 'Show a line to distinguish read posts from unread ones.'],
         'Thread Excerpt': [true, 'Show an excerpt of the thread in the tab title.'],
         'Thread Stats': [true, 'Display reply and image count.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
@@ -5243,14 +5244,16 @@
         }
       }
       Unread.addPosts(posts);
-      if (Unread.hr.parentNode) {
-        Unread.hr.scrollIntoView(false);
-      } else if (posts.length && !Unread.posts.length) {
+      if (Unread.posts.length) {
+        $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView(false);
+      } else if (posts.length) {
         posts[posts.length - 1].nodes.root.scrollIntoView();
       }
       $.on(d, 'ThreadUpdate', Unread.onUpdate);
       $.on(d, 'scroll visibilitychange', Unread.read);
-      return $.on(d, 'visibilitychange', Unread.setLine);
+      if (Conf['Unread Line']) {
+        return $.on(d, 'visibilitychange', Unread.setLine);
+      }
     },
     addPosts: function(newPosts) {
       var ID, post, youInThisThread, yourPosts, _i, _len, _ref;
@@ -5269,7 +5272,9 @@
           Unread.addPostQuotingYou(post, yourPosts);
         }
       }
-      Unread.setLine((_ref = Unread.posts[0], __indexOf.call(newPosts, _ref) >= 0));
+      if (Conf['Unread Line']) {
+        Unread.setLine((_ref = Unread.posts[0], __indexOf.call(newPosts, _ref) >= 0));
+      }
       Unread.read();
       return Unread.update();
     },

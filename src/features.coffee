@@ -3524,14 +3524,15 @@ Unread =
     for ID, post of @posts
       posts.push post if post.isReply
     Unread.addPosts posts
-    if Unread.hr.parentNode
-      Unread.hr.scrollIntoView false
-    else if posts.length and !Unread.posts.length
+    if Unread.posts.length
+      # Scroll to before the first unread post.
+      $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView false
+    else if posts.length
       # Scroll to the last read post.
       posts[posts.length - 1].nodes.root.scrollIntoView()
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
-    $.on d, 'visibilitychange',        Unread.setLine
+    $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
 
   addPosts: (newPosts) ->
     if Conf['Quick Reply']
@@ -3543,8 +3544,9 @@ Unread =
         continue
       Unread.posts.push post
       Unread.addPostQuotingYou post, yourPosts if yourPosts
-    # Force line on visible threads if there were no unread posts previously.
-    Unread.setLine Unread.posts[0] in newPosts
+    if Conf['Unread Line']
+      # Force line on visible threads if there were no unread posts previously.
+      Unread.setLine Unread.posts[0] in newPosts
     Unread.read()
     Unread.update()
 
