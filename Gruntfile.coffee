@@ -4,7 +4,7 @@ module.exports = (grunt) ->
   
   meta = 
     name: pkg.name.replace(/-/g, " ")
-    repo: 'https://github.com/zixaphir/appchan-x/'
+    repo: 'https://github.com/seaweedchan/4chan-x/'
     files:
       metajs:   '4chan_x.meta.js',
       userjs:   '4chan_x.user.js',
