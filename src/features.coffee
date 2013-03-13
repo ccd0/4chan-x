@@ -212,7 +212,7 @@ Settings =
           <div class=sections-list></div>
           <div class=credits>
             <a href='<%= meta.page %>' target=_blank><%= meta.name %></a> |
-            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md##{g.VERSION}' target=_blank>#{g.VERSION}</a> |
+            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md##{g.VERSION.replace(/\./g, '')}' target=_blank>#{g.VERSION}</a> |
             <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |
             <a href=javascript:; class=close title=Close>×</a>
           </div>
