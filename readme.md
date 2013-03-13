@@ -1,8 +1,8 @@
-# Get Appchan X [HERE](http://zixaphir.github.com/appchan-x/).
+# Get 4chan X [HERE](http://seaweedchan.github.com/4chan-x/).
 
 ## Reporting bugs
 
-1. Make sure your **browser** & **Appchan X** are up to date.
+1. Make sure your **browser** & **4chan X** are up to date.
 2. Please include as much information as possible, including your internet browser
 3. Disable your other extensions & scripts.
 4. If your issue persists:
@@ -18,11 +18,11 @@ Open your console with:
 
 ### Get started
 
-- Clone Appchan X.
+- Clone 4chan X.
 - `cd` into it.
 - Install [node.js](http://nodejs.org/).
 - Install [Grunt's CLI](http://gruntjs.com/) with `npm install -g grunt-cli`.
-- Install Appchan X dependencies with `npm install`.
+- Install 4chan X dependencies with `npm install`.
 
 ### Build
 
