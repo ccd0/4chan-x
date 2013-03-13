@@ -5748,11 +5748,10 @@
       _ref = ThreadUpdater.thread.posts;
       for (ID in _ref) {
         post = _ref[ID];
-        if (post.isDead) {
-          continue;
-        }
         ID = +ID;
-        if (__indexOf.call(index, ID) < 0) {
+        if (post.isDead && __indexOf.call(index, ID) >= 0) {
+          post.resurrect();
+        } else if (__indexOf.call(index, ID) < 0) {
           post.kill();
           deletedPosts.push(post);
         } else if (post.file && !post.file.isDead && __indexOf.call(files, ID) < 0) {
@@ -7342,6 +7341,28 @@
         }
         $.add(quotelink, $.tn('\u00A0(Dead)'));
         $.addClass(quotelink, 'deadlink');
+      }
+    };
+
+    Post.prototype.resurrect = function() {
+      var clone, strong, _i, _len, _ref, _results;
+      delete this.isDead;
+      delete this.timeOfDeath;
+      $.rmClass(this.nodes.root, 'deleted-post');
+      strong = $('strong.warning', this.nodes.info);
+      if (this.file && this.file.isDead) {
+        strong.textContent = '[File deleted]';
+      } else {
+        $.rm(strong);
+      }
+      if (this.isClone) {
+        _ref = this.clones;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          clone = _ref[_i];
+          _results.push(clone.resurrect());
+        }
+        return _results;
       }
     };
 
