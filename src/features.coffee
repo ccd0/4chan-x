@@ -34,7 +34,9 @@ Header =
 
     $.asap (-> d.body), ->
       return unless Main.isThisPageLegit()
-      $.asap (-> $.id 'boardNavDesktop'), Header.setBoardList
+      # Wait for #boardNavMobile instead of #boardNavDesktop,
+      # it might be incomplete otherwise.
+      $.asap (-> $.id 'boardNavMobile'), Header.setBoardList
       $.prepend d.body, headerEl
 
   setBoardList: ->

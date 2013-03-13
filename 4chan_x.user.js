@@ -1048,7 +1048,7 @@
           return;
         }
         $.asap((function() {
-          return $.id('boardNavDesktop');
+          return $.id('boardNavMobile');
         }), Header.setBoardList);
         return $.prepend(d.body, headerEl);
       });
