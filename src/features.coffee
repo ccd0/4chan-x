@@ -453,6 +453,7 @@ Settings =
         name: name
         className: 'field'
         value: $.get name, Conf[name]
+        spellcheck: false
       $.on ta, 'change', $.cb.value
       $.add div, ta
       return
@@ -499,7 +500,7 @@ Settings =
         <li><code>%MD5</code>: MD5 hash.</li>
         <li><code>%board</code>: Current board.</li>
       </ul>
-      <textarea name=sauces class=field></textarea>
+      <textarea name=sauces class=field spellcheck=false></textarea>
     """
     sauce = $ 'textarea', section
     sauce.value = $.get 'sauces', Conf['sauces']
@@ -509,7 +510,7 @@ Settings =
     section.innerHTML = """
       <fieldset>
         <legend>Custom Board Navigation <span class=warning #{if Conf['Custom Board Navigation'] then 'hidden' else ''}>is disabled.</span></legend>
-        <div><input name=boardnav class=field></div>
+        <div><input name=boardnav class=field spellcheck=false></div>
         <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>
         <div>Board link: <code>board</code></div>
         <div>Title link: <code>board-title</code></div>
@@ -520,7 +521,7 @@ Settings =
 
       <fieldset>
         <legend>Time Formatting <span class=warning #{if Conf['Time Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
-        <div><input name=time class=field>: <span class=time-preview></span></div>
+        <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>
         <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>
         <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>
         <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>
@@ -532,12 +533,12 @@ Settings =
 
       <fieldset>
         <legend>Quote Backlinks formatting <span class=warning #{if Conf['Quote Backlinks'] then 'hidden' else ''}>is disabled.</span></legend>
-        <div><input name=backlink class=field>: <span class=backlink-preview></span></div>
+        <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>
       </fieldset>
 
       <fieldset>
         <legend>File Info Formatting <span class=warning #{if Conf['File Info Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
-        <div><input name=fileInfo class=field>: <span class='fileText file-info-preview'></span></div>
+        <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>
         <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>
         <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>
         <div>Spoiler indicator: <code>%p</code></div>
@@ -559,7 +560,7 @@ Settings =
       <fieldset>
         <legend>Custom CSS <span class=warning #{if Conf['Custom CSS'] then 'hidden' else ''}>is disabled.</span></legend>
         <button id=apply-css>Apply CSS</button>
-        <textarea name=usercss class=field></textarea>
+        <textarea name=usercss class=field spellcheck=false></textarea>
       </fieldset>
     """
     for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
@@ -620,6 +621,7 @@ Settings =
       input = $ 'input', tr
       input.name  = key
       input.value = $.get key, Conf[key]
+      input.spellcheck = false
       $.on input, 'keydown', Settings.keybind
       $.add tbody, tr
     return
