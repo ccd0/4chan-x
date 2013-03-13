@@ -67,18 +67,15 @@ a[href="javascript:;"] {
   z-index: 999;
 }
 #notifications {
-  z-index: 80;
-}
-#qp, #ihover {
   z-index: 70;
 }
-#menu {
+#qp, #ihover {
   z-index: 60;
 }
-#navlinks, #updater, #thread-stats {
+#menu {
   z-index: 50;
 }
-#header:hover {
+#navlinks, #updater, #thread-stats {
   z-index: 40;
 }
 #qr {
