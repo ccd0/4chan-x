@@ -150,6 +150,7 @@
     favicon: 'ferongr',
     usercss: '',
     hotkeys: {
+      'Toggle board list': ['Ctrl+b', 'Toggle the full board list.'],
       'Open empty QR': ['q', 'Open QR without post number inserted.'],
       'Open QR': ['Shift+q', 'Open QR with post number inserted.'],
       'Open settings': ['Alt+o', 'Open Settings.'],
@@ -160,7 +161,7 @@
       'Math tags': ['Alt+m', 'Insert math tags.'],
       'Submit QR': ['Alt+s', 'Submit post.'],
       'Watch': ['w', 'Watch thread.'],
-      'Update': ['r', 'Update the thread now.'],
+      'Update': ['r', 'Update the thread.'],
       'Expand image': ['Shift+e', 'Expand selected image.'],
       'Expand images': ['e', 'Expand all images.'],
       'Front page': ['0', 'Jump to page 0.'],
@@ -2881,7 +2882,7 @@
       });
     },
     keydown: function(e) {
-      var form, key, notification, notifications, target, thread, threadRoot, _i, _len, _ref;
+      var el, form, key, notification, notifications, target, thread, threadRoot, _i, _len, _ref;
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
@@ -2894,6 +2895,11 @@
       threadRoot = Nav.getThread();
       thread = Get.postFromNode($('.op', threadRoot)).thread;
       switch (key) {
+        case Conf['Toggle board list']:
+          if (Conf['Custom Board Navigation'] && (el = $('span:not([hidden]) > .show-board-list-button, span:not([hidden]) > .hide-board-list-button', Header.bar))) {
+            Header.toggleBoardList.call(el);
+          }
+          break;
         case Conf['Open empty QR']:
           Keybinds.qr(threadRoot);
           break;
@@ -5490,7 +5496,7 @@
         html += "<div><label title='" + conf[1] + "'><input name='" + name + "' type=checkbox " + checked + "> " + name + "</label></div>";
       }
       checked = Conf['Auto Update'] ? 'checked' : '';
-      html = "<div class=move><span id=update-status></span> <span id=update-timer></span></div>\n" + html + "\n<div><label title='Controls whether *this* thread automatically updates or not'><input type=checkbox name='Auto Update This' " + checked + "> Auto Update This</label></div>\n<div><label><input type=number name=Interval class=field min=5 value=" + Conf['Interval'] + "> Refresh rate (s)</label></div>\n<div><input value='Update Now' type=button name='Update Now'></div>";
+      html = "<div class=move><span id=update-status></span> <span id=update-timer></span></div>\n" + html + "\n<div><label title='Controls whether *this* thread automatically updates or not'><input type=checkbox name='Auto Update This' " + checked + "> Auto Update This</label></div>\n<div><label><input type=number name=Interval class=field min=5 value=" + Conf['Interval'] + "> Refresh rate (s)</label></div>\n<div><input value='Update' type=button name='Update'></div>";
       this.dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.timer = $('#update-timer', this.dialog);
       this.status = $('#update-status', this.dialog);
@@ -5525,7 +5531,7 @@
             $.on(input, 'change', ThreadUpdater.cb.interval);
             ThreadUpdater.cb.interval.call(input);
             break;
-          case 'Update Now':
+          case 'Update':
             $.on(input, 'click', ThreadUpdater.update);
         }
       }

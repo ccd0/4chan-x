@@ -137,7 +137,8 @@ Config =
   favicon: 'ferongr'
   usercss: ''
   hotkeys:
-    # QR & Options
+    # Header, QR & Options
+    'Toggle board list':  ['Ctrl+b', 'Toggle the full board list.']
     'Open empty QR':      ['q',       'Open QR without post number inserted.']
     'Open QR':            ['Shift+q', 'Open QR with post number inserted.']
     'Open settings':      ['Alt+o',   'Open Settings.']
@@ -149,7 +150,7 @@ Config =
     'Submit QR':          ['Alt+s',   'Submit post.']
     # Thread related
     'Watch':              ['w',       'Watch thread.']
-    'Update':             ['r',       'Update the thread now.']
+    'Update':             ['r',       'Update the thread.']
     # Images
     'Expand image':       ['Shift+e', 'Expand selected image.']
     'Expand images':      ['e',       'Expand all images.']

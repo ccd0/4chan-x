@@ -1619,6 +1619,9 @@ Keybinds =
     thread = Get.postFromNode($('.op', threadRoot)).thread
     switch key
       # QR & Options
+      when Conf['Toggle board list']
+        if Conf['Custom Board Navigation'] and el = $ 'span:not([hidden]) > .show-board-list-button, span:not([hidden]) > .hide-board-list-button', Header.bar
+          Header.toggleBoardList.call el
       when Conf['Open empty QR']
         Keybinds.qr threadRoot
       when Conf['Open QR']
@@ -3727,7 +3730,7 @@ ThreadUpdater =
       #{html}
       <div><label title='Controls whether *this* thread automatically updates or not'><input type=checkbox name='Auto Update This' #{checked}> Auto Update This</label></div>
       <div><label><input type=number name=Interval class=field min=5 value=#{Conf['Interval']}> Refresh rate (s)</label></div>
-      <div><input value='Update Now' type=button name='Update Now'></div>
+      <div><input value='Update' type=button name='Update'></div>
       """
 
     @dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
@@ -3758,7 +3761,7 @@ ThreadUpdater =
         when 'Interval'
           $.on input, 'change', ThreadUpdater.cb.interval
           ThreadUpdater.cb.interval.call input
-        when 'Update Now'
+        when 'Update'
           $.on input, 'click', ThreadUpdater.update
 
     $.on window, 'online offline',   ThreadUpdater.cb.online
