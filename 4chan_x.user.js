@@ -140,7 +140,7 @@
       filesize: [''].join('\n'),
       MD5: [''].join('\n')
     },
-    sauces: ['http://iqdb.org/?url=%turl', 'http://www.google.com/searchbyimage?image_url=%turl', '#http://tineye.com/search?url=%turl', '#http://saucenao.com/search.php?db=999&url=%turl', '#http://3d.iqdb.org/?url=%turl', '#http://regex.info/exif.cgi?imgurl=%url', '# uploaders:', '#http://imgur.com/upload?url=%url;text:Upload to imgur', '#http://omploader.org/upload?url1=%url;text:Upload to omploader', '# "View Same" in archives:', '#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz', '#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/', '#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/'].join('\n'),
+    sauces: ['http://iqdb.org/?url=%TURL', 'https://www.google.com/searchbyimage?image_url=%TURL', '#//tineye.com/search?url=%TURL', '#http://saucenao.com/search.php?url=%TURL', '#http://3d.iqdb.org/?url=%TURL', '#http://regex.info/exif.cgi?imgurl=%URL', '# uploaders:', '#http://imgur.com/upload?url=%URL;text:Upload to imgur', '#http://ompldr.org/upload?url1=%URL;text:Upload to ompldr', '# "View Same" in archives:', '#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz', '#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/', '#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/'].join('\n'),
     'Header auto-hide': false,
     'Header catalog links': false,
     boardnav: '[current-title / toggle-all]',
@@ -1487,9 +1487,9 @@
         data.Conf.sauces = data.Conf.sauces.replace(/\$\d/g, function(c) {
           switch (c) {
             case '$1':
-              return '%turl';
+              return '%TURL';
             case '$2':
-              return '%url';
+              return '%URL';
             case '$3':
               return '%MD5';
             case '$4':
@@ -1554,7 +1554,7 @@
     },
     sauce: function(section) {
       var sauce;
-      section.innerHTML = "<div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Sauce</code> is disabled.</div>\n<div>Lines starting with a <code>#</code> will be ignored.</div>\n<div>You can specify a display text by appending <code>;text:[text]</code> to the url.</div>\n<ul>These parameters will be replaced by their corresponding values:\n  <li><code>%turl</code>: Thumbnail url.</li>\n  <li><code>%url</code>: Full image url.</li>\n  <li><code>%MD5</code>: MD5 hash.</li>\n  <li><code>%board</code>: Current board.</li>\n</ul>\n<textarea name=sauces class=field></textarea>";
+      section.innerHTML = "<div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Sauce</code> is disabled.</div>\n<div>Lines starting with a <code>#</code> will be ignored.</div>\n<div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div>\n<ul>These parameters will be replaced by their corresponding values:\n  <li><code>%TURL</code>: Thumbnail URL.</li>\n  <li><code>%URL</code>: Full image URL.</li>\n  <li><code>%MD5</code>: MD5 hash.</li>\n  <li><code>%board</code>: Current board.</li>\n</ul>\n<textarea name=sauces class=field></textarea>";
       sauce = $('textarea', section);
       sauce.value = $.get('sauces', Conf['sauces']);
       return $.on(sauce, 'change', $.cb.value);
@@ -4556,11 +4556,11 @@
     },
     createSauceLink: function(link) {
       var m, text;
-      link = link.replace(/%(t?url|MD5|board)/g, function(parameter) {
+      link = link.replace(/%(T?URL|MD5|board)/g, function(parameter) {
         switch (parameter) {
-          case '%turl':
+          case '%TURL':
             return "' + post.file.thumbURL + '";
-          case '%url':
+          case '%URL':
             return "' + post.file.URL + '";
           case '%MD5':
             return "' + encodeURIComponent(post.file.MD5) + '";

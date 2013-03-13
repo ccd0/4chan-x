@@ -401,9 +401,9 @@ Settings =
       data.Conf.sauces = data.Conf.sauces.replace /\$\d/g, (c) ->
         switch c
           when '$1'
-            '%turl'
+            '%TURL'
           when '$2'
-            '%url'
+            '%URL'
           when '$3'
             '%MD5'
           when '$4'
@@ -492,10 +492,10 @@ Settings =
     section.innerHTML = """
       <div class=warning #{if Conf['Sauce'] then 'hidden' else ''}><code>Sauce</code> is disabled.</div>
       <div>Lines starting with a <code>#</code> will be ignored.</div>
-      <div>You can specify a display text by appending <code>;text:[text]</code> to the url.</div>
+      <div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div>
       <ul>These parameters will be replaced by their corresponding values:
-        <li><code>%turl</code>: Thumbnail url.</li>
-        <li><code>%url</code>: Full image url.</li>
+        <li><code>%TURL</code>: Thumbnail URL.</li>
+        <li><code>%URL</code>: Full image URL.</li>
         <li><code>%MD5</code>: MD5 hash.</li>
         <li><code>%board</code>: Current board.</li>
       </ul>
@@ -3043,11 +3043,11 @@ Sauce =
       name: 'Sauce'
       cb:   @node
   createSauceLink: (link) ->
-    link = link.replace /%(t?url|MD5|board)/g, (parameter) ->
+    link = link.replace /%(T?URL|MD5|board)/g, (parameter) ->
       switch parameter
-        when '%turl'
+        when '%TURL'
           "' + post.file.thumbURL + '"
-        when '%url'
+        when '%URL'
           "' + post.file.URL + '"
         when '%MD5'
           "' + encodeURIComponent(post.file.MD5) + '"
