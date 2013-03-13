@@ -1,4 +1,6 @@
 master
+seaweedchan:
+  -Prettier error messages
 
 1.0.0
 -Initial release

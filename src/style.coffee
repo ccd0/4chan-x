@@ -57,8 +57,21 @@ label, .favicon {
 a[href="javascript:;"] {
   text-decoration: none;
 }
-.warning {
-  color: red;
+.warning:not(:empty) {
+  color: rgb(185, 74, 72);
+  background: rgb(242, 222, 222);
+  border: 1px solid rgba(238, 50, 50,0.3);
+  padding: 3px;
+  text-align: center;
+}
+
+#options .warning {
+  width: 98%;
+  border-radius: 4px;
+}
+
+.warning>code {
+  border: 1px solid #E5D3D3;
 }
 
 .hide_thread_button:not(.hidden_thread) {
@@ -417,7 +430,7 @@ body.unscroll {
 #options code {
   background: hsla(0, 0%, 100%, .5);
   color: #000;
-  padding: 0 1px;
+  padding: 0 2px;
 }
 #options label {
   text-decoration: underline;
