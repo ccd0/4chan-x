@@ -91,7 +91,16 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', ['concat:coffee', 'coffee:script', 'concat:script', 'concat:metadata', 'clean']);
   grunt.registerTask('release', ['default', 'exec:commit', 'exec:push']);
-  grunt.registerTask('patch',   ['bump']);
-  grunt.registerTask('upgrade', ['bump:minor']);
+  grunt.registerTask('patch',   ['bump',       'updcl:3']);
+  grunt.registerTask('minor',   ['bump:minor', 'updcl:2']);
+  grunt.registerTask('major',   ['bump:major', 'updcl:1']);
+  grunt.registerTask('updcl', 'Update the changelog', function(i) {
+    // Update the `pkg` object with the new version.
+    pkg = grunt.file.readJSON('package.json');
+    // i is the number of #s for markdown.
+    var version = new Array(+i + 1).join('#') + ' ' + pkg.version;
+    grunt.file.write('CHANGELOG.md', version + '\n' + grunt.file.read('CHANGELOG.md'));
+    grunt.log.ok('Changelog updated for v' + pkg.version + '.');
+  });
 
 };
