@@ -197,9 +197,15 @@ class Post
       strong.textContent = '[File deleted]'
     else
       $.rm strong
+
     return if @isClone
-      for clone in @clones
-        clone.resurrect()
+    for clone in @clones
+      clone.resurrect()
+
+    for quotelink in Get.allQuotelinksLinkingTo @
+      if $.hasClass quotelink, 'deadlink'
+        quotelink.textContent = quotelink.textContent.replace '\u00A0(Dead)', ''
+        $.rmClass quotelink, 'deadlink'
     return
   addClone: (context) ->
     new Clone @, context

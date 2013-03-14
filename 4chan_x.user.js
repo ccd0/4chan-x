@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-03-14
+/* 4chan X Beta - Version 3.0.0 - 2013-03-15
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -7357,7 +7357,7 @@
     };
 
     Post.prototype.resurrect = function() {
-      var clone, strong, _i, _len, _ref, _results;
+      var clone, quotelink, strong, _i, _j, _len, _len1, _ref, _ref1;
       delete this.isDead;
       delete this.timeOfDeath;
       $.rmClass(this.nodes.root, 'deleted-post');
@@ -7368,13 +7368,20 @@
         $.rm(strong);
       }
       if (this.isClone) {
-        _ref = this.clones;
-        _results = [];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          clone = _ref[_i];
-          _results.push(clone.resurrect());
+        return;
+      }
+      _ref = this.clones;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        clone = _ref[_i];
+        clone.resurrect();
+      }
+      _ref1 = Get.allQuotelinksLinkingTo(this);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        quotelink = _ref1[_j];
+        if ($.hasClass(quotelink, 'deadlink')) {
+          quotelink.textContent = quotelink.textContent.replace('\u00A0(Dead)', '');
+          $.rmClass(quotelink, 'deadlink');
         }
-        return _results;
       }
     };
 
