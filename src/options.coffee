@@ -182,6 +182,15 @@ Options =
         <option value=Original>Original</option>
       </select>
     </ul>
+    <ul>
+      <div class=warning><code>Emoji</code> is disabled.</div>
+      Sage Emoji<br>
+     <span></span>
+      <select name=sageEmoji>
+        <option value=appchan>Appchan</option>
+        <option value=4chanSS>4chan SS</option>
+      </select>
+    </ul>
     <span></span>
   </div>
   <input type=radio name=tab hidden id=keybinds_tab>
@@ -305,6 +314,12 @@ Options =
     $.on favicon, 'change', $.cb.value
     $.on favicon, 'change', Options.favicon
 
+    # Sage Emoji
+    sageEmoji = $ 'select[name=sageEmoji]', dialog
+    sageEmoji.value = $.get 'sageEmoji', Conf['sageEmoji']
+    $.on sageEmoji, 'change', $.cb.value
+    $.on sageEmoji, 'change', Options.sageEmoji
+
     # Updater Increase
     (updateIncrease =  $ '[name=updateIncrease]', dialog).value  = $.get 'updateIncrease',  Conf['updateIncrease']
     (updateIncreaseB = $ '[name=updateIncreaseB]', dialog).value = $.get 'updateIncreaseB', Conf['updateIncreaseB']
@@ -345,6 +360,7 @@ Options =
     Options.time.call     time
     Options.fileInfo.call fileInfo
     Options.favicon.call  favicon
+    Options.sageEmoji.call sageEmoji
 
   indicators: (dialog) ->
     indicators = {}

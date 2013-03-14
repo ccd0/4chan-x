@@ -36,6 +36,25 @@ Style =
 
       Style.cleanup()
 
+  emoji: (position) ->
+    _conf = Conf
+    css = []
+
+    for key, category of Emoji
+      if _conf['Emoji']
+        for icon in category
+          name = icon[0]
+          css[css.length] = """
+a.useremail[href*='#{name}']:last-of-type::before,
+a.useremail[href*='#{name.toLowerCase()}']:last-of-type::before,
+a.useremail[href*='#{name.toUpperCase()}']:last-of-type::before {
+content: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA#{icon[1]}');
+vertical-align: top;
+margin-right: 5px;
+}\n
+"""
+    css.join ""
+
   addStyle: ->
     agent = Style.agent
     Style.css = $.addStyle """

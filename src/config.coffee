@@ -67,6 +67,10 @@ Config =
         false
         'Add your own CSS to 4chan.'
       ]
+      'Emoji': [
+        false
+        'Adds icons next to names for different emails'
+      ]
 
     Linkification:
       'Linkify': [
@@ -413,6 +417,7 @@ http://www.google.com/searchbyimage?image_url=$1
   backlink:         '>>%id'
   fileInfo:         '%l (%p%s, %r)'
   favicon:          'ferongr'
+  sageEmoji:        'appchan'
   updateIncrease:   '5,10,15,20,30,60,90,120,240,300'
   updateIncreaseB:  '5,10,15,20,30,60,90,120,240,300'
 
