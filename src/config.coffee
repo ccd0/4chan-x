@@ -418,6 +418,7 @@ http://www.google.com/searchbyimage?image_url=$1
   fileInfo:         '%L (%p%s, %r)'
   favicon:          'ferongr'
   sageEmoji:        'appchan'
+  emojiPos:         'before'
   updateIncrease:   '5,10,15,20,30,60,90,120,240,300'
   updateIncreaseB:  '5,10,15,20,30,60,90,120,240,300'
 

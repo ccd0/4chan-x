@@ -77,12 +77,49 @@ Options =
   </div>
   <input type=radio name=tab hidden id=rice_tab>
   <div class=rice_tab>
-    <ul>
+  <div class=warning style="margin-top: 20px; width: 35%"><code>Emoji</code> is disabled.</div>
+  <ul style="display: inline-block; margin-right: 20px;">
+      Emoji Position<br>
+     <span></span>
+      <select name=emojiPos>
+        <option value=before>Before</option>
+        <option value=after>After</option>
+      </select>
+    </ul>
+    <ul style="display: inline-block; margin-right: 20px;">
+      Sage Emoji<br>
+     <span></span>
+      <select name=sageEmoji>
+        <option value=appchan>Appchan</option>
+        <option value=4chanSS>4chan SS</option>
+      </select>
+      </ul>
+    <ul style="display: inline-block;">
+      <div class=warning><code>Unread Favicon</code> is disabled.</div>
+      Unread favicons<br>
+     <span></span>
+      <select name=favicon>
+        <option value=ferongr>ferongr</option>
+        <option value=xat->xat-</option>
+        <option value=Mayhem>Mayhem</option>
+        <option value=4chanJS>4chanJS</option>
+        <option value=Original>Original</option>
+      </select>
+    </ul>
+    <span></span>
+    <ul style="margin-top:0px;">
       Archiver
       <li>
         Select an Archiver for this board:
         <select name=archiver></select>
       </li>
+    </ul>
+    <ul>
+      <li>Amounts for Optional Increase</li>
+      <li>Visible tab</li>
+      <li><input name=updateIncrease class=field></li>
+      <li>Background tab</li>
+      <li><input name=updateIncreaseB class=field></li>
     </ul>
     <div class=warning><code>Quote Backlinks</code> are disabled.</div>
     <ul>
@@ -111,6 +148,46 @@ Options =
       <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>
       <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>
     </ul>
+    <div class=warning><code>Per Board Persona</code> is disabled.</div>
+      <div id=persona>
+        Per Board Persona<br>
+        <select name=personaboards></select>
+        <ul>
+          <li>
+            <div class=option>
+              Name:
+            </div>
+          </li>
+          <li>
+            <div class=option>
+              <input name=name>
+            </div>
+          </li>
+          <li>
+            <div class=option>
+              Email:
+            </div>
+          </li>
+          <li>
+            <div class=option>
+              <input name=email>
+            </div>
+          </li>
+          <li>
+            <div class=option>
+              Subject:
+            </div>
+          </li>
+          <li>
+            <div class=option>
+              <input name=sub>
+            </div>
+          </li>
+          <li>
+            <button></button>
+          </li>
+        </ul>
+      </div>
     <ul>
       Specify size of video embeds<br>
       Height: <input name=embedHeight type=number />px
@@ -118,80 +195,12 @@ Options =
       Width:  <input name=embedWidth  type=number />px
       <button name=resetSize>Reset</button>
     </ul>
-    <ul>
-      <li>Amounts for Optional Increase</li>
-      <li>Visible tab</li>
-      <li><input name=updateIncrease class=field></li>
-      <li>Background tab</li>
-      <li><input name=updateIncreaseB class=field></li>
-    </ul>
     <div class=warning><code>Custom Navigation</code> is disabled.</div>
     <div id=customNavigation>
     </div>
-    <div class=warning><code>Per Board Persona</code> is disabled.</div>
-    <div id=persona>
-      <select name=personaboards></select>
-      <ul>
-        <li>
-          <div class=option>
-            Name:
-          </div>
-        </li>
-        <li>
-          <div class=option>
-            <input name=name>
-          </div>
-        </li>
-        <li>
-          <div class=option>
-            Email:
-          </div>
-        </li>
-        <li>
-          <div class=option>
-            <input name=email>
-          </div>
-        </li>
-        <li>
-          <div class=option>
-            Subject:
-          </div>
-        </li>
-        <li>
-          <div class=option>
-            <input name=sub>
-          </div>
-        </li>
-        <li>
-          <button></button>
-        </li>
-      </ul>
-    </div>
-    <div class=warning><code>Custom CSS</code> is disabled.</div>
+    <div class=warning><code>Custom CSS</code> is disabled.</div><br>
     Remove Comment blocks to use! ( "/*" and "*/" around CSS blocks )
     <textarea name=customCSS id=customCSS class=field></textarea>
-    <ul>
-      <div class=warning><code>Unread Favicon</code> is disabled.</div>
-      Unread favicons<br>
-     <span></span>
-      <select name=favicon>
-        <option value=ferongr>ferongr</option>
-        <option value=xat->xat-</option>
-        <option value=Mayhem>Mayhem</option>
-        <option value=4chanJS>4chanJS</option>
-        <option value=Original>Original</option>
-      </select>
-    </ul>
-    <ul>
-      <div class=warning><code>Emoji</code> is disabled.</div>
-      Sage Emoji<br>
-     <span></span>
-      <select name=sageEmoji>
-        <option value=appchan>Appchan</option>
-        <option value=4chanSS>4chan SS</option>
-      </select>
-    </ul>
-    <span></span>
   </div>
   <input type=radio name=tab hidden id=keybinds_tab>
   <div class=keybinds_tab>
@@ -319,6 +328,12 @@ Options =
     sageEmoji.value = $.get 'sageEmoji', Conf['sageEmoji']
     $.on sageEmoji, 'change', $.cb.value
     $.on sageEmoji, 'change', Options.sageEmoji
+
+    # Emoji Position
+    emojiPos = $ 'select[name=emojiPos]', dialog
+    emojiPos.value = $.get 'emojiPos', Conf['emojiPos']
+    $.on emojiPos, 'change', $.cb.value
+    $.on emojiPos, 'change', Options.emojiPos
 
     # Updater Increase
     (updateIncrease =  $ '[name=updateIncrease]', dialog).value  = $.get 'updateIncrease',  Conf['updateIncrease']

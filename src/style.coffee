@@ -37,17 +37,19 @@ Style =
       Style.cleanup()
 
   emoji: (position) ->
+    _conf = Conf
     css = []
+    margin = "margin-#{if position is "before" then "right" else "left"}: 5px;"
 
     for icon in Emoji.icons
       name = icon[0]
       css[css.length] = """
-a.useremail[href*='#{name}']:last-of-type::before,
-a.useremail[href*='#{name.toLowerCase()}']:last-of-type::before,
-a.useremail[href*='#{name.toUpperCase()}']:last-of-type::before {
+a.useremail[href*='#{name}']:last-of-type::#{position},
+a.useremail[href*='#{name.toLowerCase()}']:last-of-type::#{position},
+a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
 content: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA#{icon[1]}');
 vertical-align: top;
-margin-right: 5px;
+#{margin}
 }\n
 """
     css.join ""
@@ -412,7 +414,7 @@ body.unscroll {
   width: 100%;
   height: 100%;
   text-align: center;
-  background: rgba(0,0,0,.5);
+  background: none repeat scroll 0% 0% rgba(25, 25, 25, 0.6);
   z-index: 1;
 }
 #overlay::after {
@@ -433,6 +435,9 @@ body.unscroll {
   max-width: 100%;
   height: 500px;
   max-height: 100%;
+  background: rgb(255,255,255);
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4); 
+  border-radius: 4px;
 }
 #credits {
   float: right;
@@ -448,11 +453,11 @@ body.unscroll {
   color: #000;
   padding: 0 2px;
 }
-#options label {
-  text-decoration: underline;
-}
 #selected_tab {
   font-weight: 700;
+}
+.rice_tab, .main_tab {
+  margin-top: -15px;
 }
 #content {
   overflow: auto;
@@ -573,5 +578,5 @@ div.opContainer {
   border-left: 1px solid black;
 }
 #{if Conf["Custom CSS"] then Conf["customCSS"] else ""}
-#{if Conf['Emoji'] then Style.emoji() else ''} 
+#{if Conf['Emoji'] then Style.emoji Conf['emojiPos'] else ''} 
 #{if Conf['Quick Reply'] and Conf['Hide Original Post Form'] then '#postForm { display: none; }' else ''}"""

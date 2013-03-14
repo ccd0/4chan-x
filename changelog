@@ -1,5 +1,11 @@
 master
 
+1.0.2:
+seaweedchan:
+	-New Rice option: Emoji Position
+	-New layout for Rice tab
+	-No more Yotsuba / Yotsuba B in options	
+
 1.0.1:
 -New option: Emoji
 -New Rice option: Sage Emoji
