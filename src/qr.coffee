@@ -983,9 +983,14 @@ QR =
       isReply: !!threadID
 
     if threadID is postID # new thread
-      $.open "/#{g.BOARD}/res/#{threadID}"
+      URL = "/#{g.BOARD}/res/#{threadID}"
     else if g.VIEW is 'index' and !QR.cooldown.auto # posting from the index
-      $.open "/#{g.BOARD}/res/#{threadID}#p#{postID}"
+      URL = "/#{g.BOARD}/res/#{threadID}#p#{postID}"
+    if URL
+      if Conf['Open Post in New Tab']
+        $.open "/#{g.BOARD}/res/#{threadID}"
+      else
+        window.location = "/#{g.BOARD}/res/#{threadID}"
 
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()

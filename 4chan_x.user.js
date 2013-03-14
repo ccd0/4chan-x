@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-03-13
+/* 4chan X Beta - Version 3.0.0 - 2013-03-14
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -103,6 +103,7 @@
         'Quick Reply': [true, 'All-in-one form to reply, create threads, automate dumping and more.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
         'Auto-Hide QR': [false, 'Automatically hide the quick reply when posting.'],
+        'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
         'Hide Original Post Form': [true, 'Hide the normal post form.']
@@ -1111,6 +1112,8 @@
               a.textContent = "/" + board + "/ - " + a.title;
             } else if (m = t.match(/-text:"(.+)"$/)) {
               a.textContent = m[1];
+            } else if (board === '@') {
+              $.addClass(a, 'navSmall');
             }
             return a;
           }
@@ -7003,7 +7006,7 @@
       return QR.status();
     },
     response: function() {
-      var ban, board, err, h1, persona, post, postID, req, threadID, tmpDoc, _, _base, _ref, _ref1;
+      var URL, ban, board, err, h1, persona, post, postID, req, threadID, tmpDoc, _, _base, _ref, _ref1;
       req = QR.req;
       delete QR.req;
       post = QR.posts[0];
@@ -7068,9 +7071,16 @@
         isReply: !!threadID
       });
       if (threadID === postID) {
-        $.open("/" + g.BOARD + "/res/" + threadID);
+        URL = "/" + g.BOARD + "/res/" + threadID;
       } else if (g.VIEW === 'index' && !QR.cooldown.auto) {
-        $.open("/" + g.BOARD + "/res/" + threadID + "#p" + postID);
+        URL = "/" + g.BOARD + "/res/" + threadID + "#p" + postID;
+      }
+      if (URL) {
+        if (Conf['Open Post in New Tab']) {
+          $.open("/" + g.BOARD + "/res/" + threadID);
+        } else {
+          window.location = "/" + g.BOARD + "/res/" + threadID;
+        }
       }
       if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
         QR.close();

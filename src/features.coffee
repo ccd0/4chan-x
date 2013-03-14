@@ -88,6 +88,8 @@ Header =
             a.textContent = "/#{board}/ - #{a.title}"
           else if m = t.match /-text:"(.+)"$/
             a.textContent = m[1]
+          else if board is '@'
+            $.addClass a, 'navSmall'
           return a
       $.tn t
     $.add list, nodes

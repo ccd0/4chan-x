@@ -47,6 +47,7 @@ Config =
       'Quick Reply':                  [true,  'All-in-one form to reply, create threads, automate dumping and more.']
       'Persistent QR':                [false, 'The Quick reply won\'t disappear after posting.']
       'Auto-Hide QR':                 [false, 'Automatically hide the quick reply when posting.']
+      'Open Post in New Tab':         [true,  'Open new threads or replies to a thread from the index in a new tab.']
       'Remember Subject':             [false, 'Remember the subject field, instead of resetting after posting.']
       'Remember Spoiler':             [false, 'Remember the spoiler state, instead of resetting after posting.']
       'Hide Original Post Form':      [true,  'Hide the normal post form.']
