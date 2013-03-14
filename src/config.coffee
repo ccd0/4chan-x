@@ -36,7 +36,7 @@ Config =
         'View all replies'
       ]
       'Index Navigation': [
-        true
+        false
         'Navigate to previous / next thread'
       ]
       'Reply Navigation': [
@@ -172,7 +172,7 @@ Config =
         'Add post and image deletion links to the menu.'
       ]
       'Download Link': [
-        true
+        false
         'Add a download with original filename link to the menu. Chrome-only currently.'
       ]
       'Archive Link': [
@@ -226,7 +226,7 @@ Config =
         'Merges the updater and thread stats into one container.'
       ]
       'Thread Watcher': [
-        true
+        false
         'Bookmark threads'
       ]
       'Auto Watch': [
@@ -264,7 +264,7 @@ Config =
         'Prevent "flood detected" errors.'
       ]
       'Persistent QR': [
-        true
+        false
         'The Quick reply won\'t disappear after posting.'
       ]
       'Auto Hide QR': [
@@ -322,7 +322,7 @@ Config =
         'Show quoted post inline on quote click'
       ]
       'Quote Hash Navigation': [
-         true
+         false
          'Show a "#" to jump around the thread as if Quote Inline were disabled.'
       ]
       'Quote Preview': [
@@ -415,7 +415,7 @@ http://www.google.com/searchbyimage?image_url=$1
 
   time:             '%m/%d/%y(%a)%H:%M'
   backlink:         '>>%id'
-  fileInfo:         '%l (%p%s, %r)'
+  fileInfo:         '%L (%p%s, %r)'
   favicon:          'ferongr'
   sageEmoji:        'appchan'
   updateIncrease:   '5,10,15,20,30,60,90,120,240,300'
