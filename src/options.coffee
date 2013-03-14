@@ -636,3 +636,6 @@ Options =
     Favicon.switch()
     Unread.update true
     @previousElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
+
+  sageEmoji: ->
+    @previousElementSibling.innerHTML = "<img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA#{Emoji.icons.sage}>"

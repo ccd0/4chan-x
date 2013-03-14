@@ -37,14 +37,11 @@ Style =
       Style.cleanup()
 
   emoji: (position) ->
-    _conf = Conf
     css = []
 
-    for key, category of Emoji
-      if _conf['Emoji']
-        for icon in category
-          name = icon[0]
-          css[css.length] = """
+    for icon in Emoji.icons
+      name = icon[0]
+      css[css.length] = """
 a.useremail[href*='#{name}']:last-of-type::before,
 a.useremail[href*='#{name.toLowerCase()}']:last-of-type::before,
 a.useremail[href*='#{name.toUpperCase()}']:last-of-type::before {
@@ -576,4 +573,5 @@ div.opContainer {
   border-left: 1px solid black;
 }
 #{if Conf["Custom CSS"] then Conf["customCSS"] else ""}
+#{if Conf['Emoji'] then Style.emoji() else ''} 
 #{if Conf['Quick Reply'] and Conf['Hide Original Post Form'] then '#postForm { display: none; }' else ''}"""
