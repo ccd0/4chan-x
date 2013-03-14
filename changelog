@@ -1,4 +1,8 @@
 master
+
+1.0.1:
+-New option: Emoji
+-New Rice option: Sage Emoji
 seaweedchan:
   -Prettier error messages
 
