@@ -98,6 +98,8 @@ Main =
   features: ->
     _conf = Conf
 
+    Emoji.init()
+
     Style.init()
 
     if _conf['Filter']
@@ -194,9 +196,6 @@ Main =
 
     if _conf['Replace GIF'] or _conf['Replace PNG'] or _conf['Replace JPG']
       ImageReplace.init()
-
-    if _conf['Emoji']
-      Emoji.init()
 
     $.ready Main.featuresReady
 
