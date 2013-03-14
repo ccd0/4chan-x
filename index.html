@@ -4,7 +4,7 @@
     <meta charset=UTF-8>
     <title>4chan X</title>
     <meta name=description>
-    <link rel='shortcut icon' href=favicon.gif>
+    <link rel='shortcut icon' href=favicon.png>
     <script>
 (function(){
   var d = document;
@@ -39,18 +39,18 @@
   font-weight: normal;
   font-style: normal;
 }
-::-moz-selection{background:rgba(195,0,255,.2)}
-::selection{background:rgba(195,0,255,.2)}
+::-moz-selection{background:#C65385; color: white;}
+::selection{background:#C65385; color: white;}
 body {
   color: #373737;
-  background: #F0F0F0;
+  background: #FFF6EA;
   font-family: sans-serif;
   margin: 0;
   overflow-y: scroll;
   padding: 0;
 }
 a {
-  color: #90C;
+  color: #538DB5;
   outline: none;
   text-decoration: none;
   -webkit-transition: color .3s ease-in-out;
@@ -59,7 +59,7 @@ a {
   transition: color .3s ease-in-out;
 }
 a:hover {
-  color: #C0F;
+  color: #CE618E;
 }
 a:focus {
   text-decoration: underline;
@@ -68,17 +68,17 @@ head, title {
   display: block;
 }
 title {
-  color: #9016B6;
+  color: #8E3B5E;
   cursor: default;
-  background: #7E149F;
-  background: -webkit-linear-gradient(#76139A, #8714A3);
-  background: -moz-linear-gradient(#76139A, #8714A3);
-  background: -o-linear-gradient(#76139A, #8714A3);
-  background: linear-gradient(#76139A, #8714A3);
+  background: #7C334F;
+  background: -webkit-linear-gradient(#7C334F, #6B2C45);
+  background: -moz-linear-gradient(#7C334F, #6B2C45);
+  background: -o-linear-gradient(#7C334F, #6B2C45);
+  background: linear-gradient(#7C334F, #6B2C45);
   font: 700 210px BebasNeueRegular, sans-serif;
   letter-spacing: 10px;
   text-align: center;
-  text-shadow: 0 1px 0 #7B139A, 0 2px 0 #7D139A, 0 3px 0 #7C1396, 0 4px 0 #7E1396, 0 5px 0 #7C1291, 0 6px 0 #7C1291, 0 7px 0 #78118D, 0 8px 0 #78118D, 0 9px 0 #741188, 0 10px 0 #741188, 0 22px 40px #506, 0 4px 10px #506;
+  text-shadow: 0 1px 0 #6B2C45, 0 2px 0 #6B2C45, 0 3px 0 #6B2C45, 0 4px 0 #6B2C45, 0 5px 0 #6B2C45, 0 6px 0 #6B2C45, 0 7px 0 #6B2C45, 0 8px 0 #6B2C45, 0 9px 0 #6B2C45, 0 10px 0 #6B2C45, 0 22px 40px #56243A, 0 4px 10px #56243A;
 }
 title, nav {
   -webkit-user-select: none;
@@ -88,9 +88,11 @@ title, nav {
   white-space: nowrap;
 }
 nav {
-  background: #270033;
-  box-shadow: 0 0px 10px #270033;
+  background: #5A7B92;
+  box-shadow: 0 0px 4px #000;
   text-align: center;
+  border-top: 1px solid #8BB2DA;
+  border-bottom: 1px solid #8BB2DA;
 }
 nav > div {
   width: 700px;
@@ -108,7 +110,7 @@ nav a {
   display: inline-block;
   font: 1.5em BebasNeueRegular, sans-serif;
   padding: 10px 0;
-  text-shadow: 0 1px 1px #000, 0 2px 1px #000;
+  text-shadow: 0 1px 1px #111, 0 2px 1px #111;
   vertical-align: text-top;
   width: 115px;
 }
@@ -118,10 +120,10 @@ nav a {
   }
 }
 nav a:hover {
-  color: #D0F;
+  color: #CE618E;
 }
 .on {
-  color: #A0F;
+  color: #76AFD6;
 }
 section {
   display: none;
@@ -138,7 +140,7 @@ h1 {
 }
 h1 > a {
   font: 700 52px BebasNeueRegular, sans-serif;
-  text-shadow: 0 1px 1px #FFF, 0 2px 1px #FFF, 0 3px 1px #FFF;
+  text-shadow: 0 1px 1px #666, 0 2px 1px #666;
 }
 h5 {
   text-align: center;
@@ -188,7 +190,7 @@ code {
         <a href=#install>Installation</a>
         <a href=#features>Features</a>
         <a href=#bonus>Links &amp; Tips</a>
-        <a href=https://raw.github.com/seaweedchan/4chanX/master/changelog>Changelog</a>
+        <a href=https://raw.github.com/seaweedchan/4chan-x/4chanX/changelog>Changelog</a>
         <a href=#bug-report>Bug Reports</a>
       </div></div>
     </nav>
@@ -196,8 +198,8 @@ code {
       <center><p class='authors'>A joint project of Zixaphir and Seaweed.</p></center>
       <p>The latest stable releases of <b class=chrome>Chrome</b>, <b class=firefox>Firefox</b>, <b class=opera>Opera</b> and <b class=opera>Opera Mobile</b> are supported.</p>
 
-      <h1><a class=install href="https://github.com/seaweedchan/4chan-x/stable/4chanX/4chan_x.user.js">Install 4chan X</a></h1>
-      <center><p>Or you can help test future releases with the <a href="https://github.com/seaweedchan/4chan-x/stable/4chanX/4chan_x.user.js">master branch</a>.</p></center>
+      <h1><a class=install href="https://raw.github.com/seaweedchan/4chan-x/stable/4chan_x.user.js">Install 4chan X</a></h1>
+      <center><p>Or you can help test future releases with the <a href="https://github.com/seaweedchan/4chan-x/raw/4chanX/4chan_x.user.js">master branch</a>.</p></center>
 
       <b class=chrome>Chrome</b>:
       <ol>
@@ -242,7 +244,110 @@ code {
       </ol>
     </section>
     <section data-id=features>
-    <b>This section needs some rework.</b>
+          <ul>
+      <ul>
+        <li>Enhancing
+          <ul>
+            <li>Toggleable Catalog Links</li>
+            <li>External Catalog Support</li>
+            <li>Archive Redirection for 404'd Threads</li>
+            <li>Customizable Keybinds</li>
+            <li>Time Localization + Custom Formatting</li>
+            <li>Custom Formatting for File Information</li>
+            <li>Comment &amp; Thread Expansion</li>
+            <li>Index &amp; Reply Navigation</li>
+            <li>Styles and Theming</li>
+            <li>Custom Navigation</li>
+            <li>Ban Checking</li>
+            <li>Custom CSS</li>
+          </ul>
+        </li>
+        <li>Linkification
+          <ul>
+            <li>Clickable Links</li>
+            <li>Video/Audio Link Embedding &amp; Titles</li>
+          </ul>
+        </li>
+        <li>Filtering
+          <ul>
+            <li>Anonymizer</li>
+            <li>Regular Expressions Based Filter</li>
+            <li>Thread &amp; Reply Hiding</li>
+            <li>Optional Stubs</li>
+          </ul>
+        </li>
+        <li>Imaging
+          <ul>
+            <li>Image Expansion</li>
+            <li>Image Fit: Full, Width, Height or Screen</li>
+            <li>Image Reload on Loading Error</li>
+            <li>Image Hover</li>
+            <li>Customizable Sauce Links</li>
+            <li>Reveal Spoilers</li>
+            <li>Image Prefetching</li>
+            <li>Remove Posts Without Images</li>
+            <li>Higher Quality Thumbnails</li>
+          </ul>
+        </li>
+        <li>Menu
+          <ul>
+            <li>Drop-down Menu</li>
+            <li>Report Link</li>
+            <li>Delete Link</li>
+            <li>Download Link</li>
+            <li>Archive Link</li>
+            <li>Embed Link</li>
+            <li>Thread &amp; Reply Hiding Link</li>
+          </ul>
+        </li>
+        <li>Monitoring
+          <ul>
+            <li>Fully Customizable Thread Updater</li>
+            <li>Scrolling onto New Posts</li>
+            <li>Unread Count with Favicon Indicator</li>
+            <li>Post In Title</li>
+            <li>Thread Stats</li>
+            <li>Merged Updater &amp; Stats</li>
+            <li>Thread Watcher</li>
+            <li>Auto Watch on Thread Creation &amp; Reply</li>
+            <li>Color User IDs</li>
+            <li>Marked Own Posts</li>
+            <li>Remove &amp; Indicate Spoilers</li>
+          </ul>
+        </li>
+        <li>Posting
+          <ul>
+            <li>Quick Reply</li>
+            <li>Image and Text Dumping</li>
+            <li>Multiple File Selection, Drag and Drop Files and Thumbnails</li>
+            <li>Thread Creation with Auto-Noko</li>
+            <li>Detect and Prevent Upload Failures</li>
+            <li>Automatic Quote from Text Selection</li>
+            <li>Auto-Hide</li>
+            <li>Cooldown</li>
+            <li>Auto-Posting</li>
+            <li>Captcha Caching with Shift + Enter</li>
+            <li>Captcha Reloading on Backspace</li>
+            <li>Persistent QR</li>
+            <li>Remember QR Size, Name, E-Mail, Subject, Image Spoiler, and Sage</li>
+            <li>Per Board Personas</li>
+            <li>Markdown</li>
+          </ul>
+        </li>
+        <li>Quoting
+          <ul>
+            <li>Quote Backlinks &amp; Custom Formatting</li>
+            <li>Quote Inline</li>
+            <li>Quote Hash Navigation</li>
+            <li>Quote Preview</li>
+            <li>Quote Highlighting</li>
+            <li>Resurrect Dead Quotes from Archives</li>
+            <li>Indicate OP Quotes</li>
+            <li>Indicate Cross-thread Quotes</li>
+            <li>Forward Hiding</li>
+          </ul>
+        </li>
+      </ul>
     </section>
     <section data-id=bug-report>
       <p>Before making one,</p>
@@ -262,11 +367,6 @@ code {
       <b>Known issues:</b>
       <ul>
         <li>Clearing your 4chan cookies will erase your settings!</li>
-      </ul>
-
-      <b class=chrome>Chrome</b>:
-      <ul>
-        <li>4chan X only runs on 4chan! Chrome will say that it runs on all domains due to its match patterns.</li>
       </ul>
 
       <b class=firefox>Firefox</b>:
