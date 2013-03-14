@@ -95,10 +95,12 @@ Header =
     $.add list, nodes
 
   toggleBoardList: ->
-    showBoardList = $.hasClass @, 'show-board-list-button'
-    {bar} = Header
-    $('#custom-board-list', bar).hidden =  showBoardList
-    $('#full-board-list',   bar).hidden = !showBoardList
+    {bar}  = Header
+    custom = $ '#custom-board-list', bar
+    full   = $ '#full-board-list',   bar
+    showBoardList = !full.hidden
+    custom.hidden = !showBoardList
+    full.hidden   =  showBoardList
 
   setCatalogLinks: (useCatalog) ->
     as = $$ '#board-list a[href*="boards.4chan.org"]', Header.bar
@@ -1624,8 +1626,8 @@ Keybinds =
     switch key
       # QR & Options
       when Conf['Toggle board list']
-        if Conf['Custom Board Navigation'] and el = $ 'span:not([hidden]) > .show-board-list-button, span:not([hidden]) > .hide-board-list-button', Header.bar
-          Header.toggleBoardList.call el
+        if Conf['Custom Board Navigation']
+          Header.toggleBoardList()
       when Conf['Open empty QR']
         Keybinds.qr threadRoot
       when Conf['Open QR']

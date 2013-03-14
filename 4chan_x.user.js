@@ -1123,11 +1123,13 @@
       return $.add(list, nodes);
     },
     toggleBoardList: function() {
-      var bar, showBoardList;
-      showBoardList = $.hasClass(this, 'show-board-list-button');
+      var bar, custom, full, showBoardList;
       bar = Header.bar;
-      $('#custom-board-list', bar).hidden = showBoardList;
-      return $('#full-board-list', bar).hidden = !showBoardList;
+      custom = $('#custom-board-list', bar);
+      full = $('#full-board-list', bar);
+      showBoardList = !full.hidden;
+      custom.hidden = !showBoardList;
+      return full.hidden = showBoardList;
     },
     setCatalogLinks: function(useCatalog) {
       var a, as, str, _i, _len;
@@ -2887,7 +2889,7 @@
       });
     },
     keydown: function(e) {
-      var el, form, key, notification, notifications, target, thread, threadRoot, _i, _len, _ref;
+      var form, key, notification, notifications, target, thread, threadRoot, _i, _len, _ref;
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
@@ -2901,8 +2903,8 @@
       thread = Get.postFromNode($('.op', threadRoot)).thread;
       switch (key) {
         case Conf['Toggle board list']:
-          if (Conf['Custom Board Navigation'] && (el = $('span:not([hidden]) > .show-board-list-button, span:not([hidden]) > .hide-board-list-button', Header.bar))) {
-            Header.toggleBoardList.call(el);
+          if (Conf['Custom Board Navigation']) {
+            Header.toggleBoardList();
           }
           break;
         case Conf['Open empty QR']:
