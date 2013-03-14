@@ -50,7 +50,7 @@ module.exports = function(grunt) {
             'git checkout ' + pkg.meta.mainBranch,
             'git commit -am "Release ' + release + '."',
             'git tag -a ' + pkg.version + ' -m "' + release + '."',
-            'git tag -af stable -m "' + release + '."'
+            'git tag -af stable-v3 -m "' + release + '."'
           ].join(' && ');
         },
         stdout: true
