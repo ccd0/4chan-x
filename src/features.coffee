@@ -3270,7 +3270,7 @@ RevealSpoilers =
 
 AutoGIF =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Auto-GIF'] or ['gif', 'wsg'].contains g.BOARD.ID
+    return if g.VIEW is 'catalog' or !Conf['Auto-GIF']
 
     Post::callbacks.push
       name: 'Auto-GIF'

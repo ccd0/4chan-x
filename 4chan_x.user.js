@@ -4908,7 +4908,7 @@
 
   AutoGIF = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Auto-GIF'] || ['gif', 'wsg'].contains(g.BOARD.ID)) {
+      if (g.VIEW === 'catalog' || !Conf['Auto-GIF']) {
         return;
       }
       return Post.prototype.callbacks.push({
