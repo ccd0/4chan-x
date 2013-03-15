@@ -1621,7 +1621,7 @@
         input.value = $.get(name, Conf[name]);
         event = ['favicon', 'usercss'].contains(name) ? 'change' : 'input';
         $.on(input, event, $.cb.value);
-        if (!['usercss'].contains(name)) {
+        if ('usercss' !== name) {
           $.on(input, event, Settings[name]);
           Settings[name].call(input);
         }

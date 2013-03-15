@@ -575,7 +575,7 @@ Settings =
       else
         'input'
       $.on input, event, $.cb.value
-      unless ['usercss'].contains name
+      unless 'usercss' is name
         $.on input, event, Settings[name]
         Settings[name].call input
     $.on $.id('apply-css'), 'click', Settings.usercss
