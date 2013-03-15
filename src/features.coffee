@@ -3815,7 +3815,7 @@ ThreadUpdater =
       else
         clearTimeout ThreadUpdater.timeoutID
     interval: ->
-      val = Math.max 5, parseInt @value, 10
+      val = parseInt @value, 10
       ThreadUpdater.interval = @value = val
       $.cb.value.call @
     load: ->
@@ -3857,7 +3857,11 @@ ThreadUpdater =
     unless d.hidden
       # Lower the max refresh rate limit on visible tabs.
       j = Math.min j, 7
-    ThreadUpdater.seconds = Math.max i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
+    ThreadUpdater.seconds = 
+      if Conf['Optional Increase']
+        Math.max i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
+      else
+        i
 
   set: (name, text, klass) ->
     el = ThreadUpdater[name]

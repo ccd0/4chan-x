@@ -183,7 +183,8 @@
         'Auto Scroll': [false, 'Scroll updated posts into view. Only enabled at bottom of page.'],
         'Bottom Scroll': [false, 'Always scroll to the bottom, not the first new post. Useful for event threads.'],
         'Scroll BG': [false, 'Auto-scroll background tabs.'],
-        'Auto Update': [true, 'Automatically fetch new posts.']
+        'Auto Update': [true, 'Automatically fetch new posts.'],
+        'Optional Increase': [false, 'Increase the intervals between updates on threads without new posts.']
       },
       'Interval': 30
     }
@@ -5648,7 +5649,7 @@
       },
       interval: function() {
         var val;
-        val = Math.max(5, parseInt(this.value, 10));
+        val = parseInt(this.value, 10);
         ThreadUpdater.interval = this.value = val;
         return $.cb.value.call(this);
       },
@@ -5695,7 +5696,7 @@
       if (!d.hidden) {
         j = Math.min(j, 7);
       }
-      return ThreadUpdater.seconds = Math.max(i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]);
+      return ThreadUpdater.seconds = Conf['Optional Increase'] ? Math.max(i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]) : i;
     },
     set: function(name, text, klass) {
       var el, node;

@@ -465,4 +465,8 @@ http://www.google.com/searchbyimage?image_url=%turl
         true
         'Automatically fetch new posts.'
       ]
+      'Optional Increase': [
+        false
+        'Increase the intervals between updates on threads without new posts.'
+      ]
     'Interval': 30
