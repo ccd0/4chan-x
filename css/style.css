@@ -81,10 +81,10 @@ a[href="javascript:;"] {
 #qr {
   z-index: 30;
 }
-#header {
+#watcher {
   z-index: 20;
 }
-#watcher {
+#header {
   z-index: 10;
 }
 
