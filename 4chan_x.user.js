@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-03-12
+/* 4chan X Beta - Version 3.0.0 - 2013-03-15
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, CustomCSS, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, CustomCSS, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
@@ -53,6 +53,7 @@
     main: {
       'Miscellaneous': {
         'Enable 4chan\'s Extension': [false, 'Compatibility between 4chan X Beta and 4chan\'s inline extension is NOT guaranteed.'],
+        'Custom Board Navigation': [true, 'Disable this to always display the full board list.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps arbitrarily.'],
@@ -91,6 +92,7 @@
         'Thread Updater': [true, 'Fetch and insert new replies. Has more options in its own dialog.'],
         'Unread Count': [true, 'Show the unread posts count in the tab title.'],
         'Unread Tab Icon': [true, 'Show a different favicon when there are unread posts.'],
+        'Unread Line': [true, 'Show a line to distinguish read posts from unread ones.'],
         'Thread Excerpt': [true, 'Show an excerpt of the thread in the tab title.'],
         'Thread Stats': [true, 'Display reply and image count.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
@@ -101,6 +103,7 @@
         'Quick Reply': [true, 'All-in-one form to reply, create threads, automate dumping and more.'],
         'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [false, 'Automatically hide the quick reply when posting.'],
+        'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
         'Hide Original Post Form': [true, 'Hide the normal post form.']
@@ -139,18 +142,23 @@
       MD5: ''
     },
     sauces: "http://iqdb.org/?url=%turl\nhttp://www.google.com/searchbyimage?image_url=%turl\n#http://tineye.com/search?url=%turl\n#http://saucenao.com/search.php?db=999&url=%turl\n#http://3d.iqdb.org/?url=%turl\n#http://regex.info/exif.cgi?imgurl=%url\n# uploaders:\n#http://imgur.com/upload?url=%url;text:Upload to imgur\n#http://omploader.org/upload?url1=%url;text:Upload to omploader\n# \"View Same\" in archives:\n#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz\n#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/\n#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/",
+    'Header auto-hide': false,
+    'Header catalog links': false,
+    boardnav: '[current-title / toggle-all]',
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
     fileInfo: '%l (%p%s, %r)',
     favicon: 'ferongr',
     usercss: '',
     hotkeys: {
+      'Toggle board list': ['Ctrl+b', 'Toggle the full board list.'],
       'Open empty QR': ['q', 'Open QR without post number inserted.'],
       'Open QR': ['Shift+q', 'Open QR with post number inserted.'],
       'Open settings': ['Alt+o', 'Open Settings.'],
       'Close': ['Esc', 'Close Settings, Notifications or QR.'],
       'Spoiler tags': ['Ctrl+s', 'Insert spoiler tags.'],
       'Code tags': ['Alt+c', 'Insert code tags.'],
+      'Eqn tags': ['Alt+e', 'Insert eqn tags.'],
       'Math tags': ['Alt+m', 'Insert math tags.'],
       'Submit QR': ['Alt+s', 'Submit post.'],
       'Watch': ['w', 'Watch thread.'],
@@ -187,6 +195,8 @@
   }
 
   Conf = {};
+
+  c = console;
 
   d = document;
 
@@ -635,7 +645,6 @@
     MINUTE: 1000 * 60,
     HOUR: 1000 * 60 * 60,
     DAY: 1000 * 60 * 60 * 24,
-    log: console.log.bind(console),
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     id: function(id) {
       return d.getElementById(id);
@@ -1017,82 +1026,142 @@
       var catalogToggler, headerEl;
       headerEl = $.el('div', {
         id: 'header',
-        innerHTML: ("<div id=header-bar class=dialog>\n  <span class=brackets-wrap><a class=menu-button href=javascript:;><span></span></a></span>\n  <span class=brackets-wrap hidden>top secret</span>\n  <span class=brackets-wrap id=board-list hidden>next-gen board-list</span>\n  <span class='show-board-list-button brackets-wrap' title=\"Toggle the board list.\"><a href=javascript:;>+</a></span>\n  <a class=board-name href=\"/" + g.BOARD + "/" + (g.VIEW === 'catalog' ? 'catalog' : '') + "\">\n    <span class=board-path>/" + g.BOARD + "/</span> - <span class=board-title>...</span>\n  </a>\n  <span class=board-list hidden></span>\n  <div id=toggle-header-bar title=\"Toggle the header auto-hiding.\"></div>\n</div>\n<div id=notifications></div>").replace(/>\s+</g, '><')
+        innerHTML: "<div id=header-bar class=dialog>\n  <span class='menu-button brackets-wrap'><a href=javascript:;><i></i></a></span>\n  <span id=shortcuts class=brackets-wrap></span>\n  <span id=board-list>\n    <span id=custom-board-list></span>\n    <span id=full-board-list hidden></span>\n  </span>\n  <div id=toggle-header-bar title=\"Toggle the header auto-hiding.\"></div>\n</div>\n<div id=notifications></div>".replace(/>\s+</g, '><')
       });
-      this.headerBar = $('#header-bar', headerEl);
-      Header.setBarVisibility($.get('autohideHeaderBar', false));
-      $.sync('autohideHeaderBar', Header.setBarVisibility);
+      this.bar = $('#header-bar', headerEl);
+      this.setBarVisibility(Conf['Header auto-hide']);
+      $.sync('Header auto-hide', this.setBarVisibility);
       this.menu = new UI.Menu('header');
-      $.on($('.menu-button', this.headerBar), 'click', this.menuToggle);
-      $.on($('.show-board-list-button', this.headerBar), 'click', this.toggleBoardList);
-      $.on($('#toggle-header-bar', this.headerBar), 'click', this.toggleBar);
+      $.on($('.menu-button', this.bar), 'click', this.menuToggle);
+      $.on($('#toggle-header-bar', this.bar), 'click', this.toggleBarVisibility);
       catalogToggler = $.el('label', {
-        innerHTML: "<input type=checkbox " + (g.VIEW === 'catalog' ? 'checked' : '') + "> Use catalog board links"
+        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + "> Use catalog board links"
       });
       $.on(catalogToggler.firstElementChild, 'change', this.toggleCatalogLinks);
+      $.sync('Header catalog links', this.setCatalogLinks);
       $.event('AddMenuEntry', {
         type: 'header',
         el: catalogToggler,
-        order: 105
-      });
-      $.asap((function() {
-        return d.body;
-      }), function() {
-        if (Main.isThisPageLegit()) {
-          return $.prepend(d.body, headerEl);
-        }
+        order: 50
       });
       return $.asap((function() {
-        return $.id('boardNavDesktop');
-      }), this.setBoardList);
+        return d.body;
+      }), function() {
+        if (!Main.isThisPageLegit()) {
+          return;
+        }
+        $.asap((function() {
+          return $.id('boardNavMobile');
+        }), Header.setBoardList);
+        return $.prepend(d.body, headerEl);
+      });
     },
     setBoardList: function() {
-      var a, nav;
-      if (nav = $.id('boardNavDesktop')) {
-        if (a = $("a[href*='/" + g.BOARD + "/']", nav)) {
-          a.className = 'current';
-          $('.board-title', Header.headerBar).textContent = a.title;
-        }
-        return $.add($('.board-list', Header.headerBar), __slice.call(nav.childNodes));
+      var a, btn, fullBoardList, nav;
+      nav = $.id('boardNavDesktop');
+      if (a = $("a[href*='/" + g.BOARD + "/']", nav)) {
+        a.className = 'current';
       }
+      fullBoardList = $('#full-board-list', Header.bar);
+      $.add(fullBoardList, __slice.call(nav.childNodes));
+      if (Conf['Custom Board Navigation']) {
+        Header.generateBoardList(Conf['boardnav']);
+        $.sync('boardnav', Header.generateBoardList);
+        btn = $.el('span', {
+          className: 'hide-board-list-button brackets-wrap',
+          innerHTML: '<a href=javascript:;> - </a>'
+        });
+        $.on(btn, 'click', Header.toggleBoardList);
+        $.prepend(fullBoardList, btn);
+      } else {
+        $.rm($('#custom-board-list', Header.bar));
+        fullBoardList.hidden = false;
+      }
+      return Header.setCatalogLinks(Conf['Header catalog links']);
+    },
+    generateBoardList: function(text) {
+      var as, list, nodes;
+      list = $('#custom-board-list', Header.bar);
+      list.innerHTML = null;
+      if (!text) {
+        return;
+      }
+      as = $$('#full-board-list a', Header.bar).slice(0, -2);
+      nodes = text.match(/[\w@]+(-(all|title|full|text:"[^"]+"))?|[^\w@]+/g).map(function(t) {
+        var a, board, m, _i, _len;
+        if (/^[^\w@]/.test(t)) {
+          return $.tn(t);
+        }
+        if (t === 'toggle-all') {
+          a = $.el('a', {
+            className: 'show-board-list-button',
+            textContent: '+',
+            href: 'javascript:;'
+          });
+          $.on(a, 'click', Header.toggleBoardList);
+          return a;
+        }
+        board = /^current/.test(t) ? g.BOARD.ID : t.match(/^[^-]+/)[0];
+        for (_i = 0, _len = as.length; _i < _len; _i++) {
+          a = as[_i];
+          if (a.textContent === board) {
+            a = a.cloneNode(true);
+            if (/-title$/.test(t)) {
+              a.textContent = a.title;
+            } else if (/-full$/.test(t)) {
+              a.textContent = "/" + board + "/ - " + a.title;
+            } else if (m = t.match(/-text:"(.+)"$/)) {
+              a.textContent = m[1];
+            } else if (board === '@') {
+              $.addClass(a, 'navSmall');
+            }
+            return a;
+          }
+        }
+        return $.tn(t);
+      });
+      return $.add(list, nodes);
     },
     toggleBoardList: function() {
-      var headerBar, node, showBoardList;
-      node = this.firstElementChild.firstChild;
-      if (showBoardList = $.hasClass(this, 'show-board-list-button')) {
-        $.rmClass(this, 'show-board-list-button');
-        $.addClass(this, 'hide-board-list-button');
-        node.data = node.data.replace('+', '-');
-      } else {
-        $.rmClass(this, 'hide-board-list-button');
-        $.addClass(this, 'show-board-list-button');
-        node.data = node.data.replace('-', '+');
-      }
-      headerBar = Header.headerBar;
-      $('.board-name', headerBar).hidden = showBoardList;
-      return $('.board-list', headerBar).hidden = !showBoardList;
+      var bar, custom, full, showBoardList;
+      bar = Header.bar;
+      custom = $('#custom-board-list', bar);
+      full = $('#full-board-list', bar);
+      showBoardList = !full.hidden;
+      custom.hidden = !showBoardList;
+      return full.hidden = showBoardList;
     },
-    toggleCatalogLinks: function() {
-      var a, as, root, useCatalog, _i, _len;
-      useCatalog = this.checked;
-      root = $('.board-list', Header.headerBar);
-      as = $$('a[href*="boards.4chan.org"]', root);
-      as.push($('.board-name', Header.headerBar));
+    setCatalogLinks: function(useCatalog) {
+      var a, as, str, _i, _len;
+      as = $$('#board-list a[href*="boards.4chan.org"]', Header.bar);
+      str = useCatalog ? 'catalog' : '';
       for (_i = 0, _len = as.length; _i < _len; _i++) {
         a = as[_i];
-        a.pathname = "/" + (a.pathname.split('/')[1]) + "/" + (useCatalog ? 'catalog' : '');
+        a.pathname = "/" + (a.pathname.split('/')[1]) + "/" + str;
       }
     },
-    setBarVisibility: function(hide) {
-      return (hide ? $.addClass : $.rmClass)(Header.headerBar, 'autohide');
+    toggleCatalogLinks: function() {
+      Header.setCatalogLinks(this.checked);
+      return $.set('Header catalog links', this.checked);
     },
-    toggleBar: function() {
+    setBarVisibility: function(hide) {
+      return (hide ? $.addClass : $.rmClass)(Header.bar, 'autohide');
+    },
+    toggleBarVisibility: function() {
       var hide, message;
-      hide = !$.hasClass(Header.headerBar, 'autohide');
+      hide = !$.hasClass(Header.bar, 'autohide');
       Header.setBarVisibility(hide);
       message = hide ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
       new Notification('info', message, 2);
-      return $.set('autohideHeaderBar', hide);
+      return $.set('Header auto-hide', hide);
+    },
+    addShortcut: function(el) {
+      var shortcut;
+      shortcut = $.el('span', {
+        className: 'shortcut'
+      });
+      $.add(shortcut, el);
+      return $.prepend($('#shortcuts', Header.bar), shortcut);
     },
     menuToggle: function(e) {
       return Header.menu.toggle(e, this, g);
@@ -1206,7 +1275,7 @@
         return;
       }
       $.event('CloseMenu');
-      html = "<div id=fourchanx-settings class=dialog>\n  <nav>\n    <div class=sections-list></div>\n    <div class=credits>\n      <a href='http://mayhemydg.github.com/4chan-x/' target=_blank>4chan X Beta</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/changelog' target=_blank>" + g.VERSION + "</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |\n      <a href=javascript:; class=close title=Close>×</a>\n    </div>\n  </nav>\n  <hr>\n  <div class=section-container><section></section></div>\n</div>";
+      html = "<div id=fourchanx-settings class=dialog>\n  <nav>\n    <div class=sections-list></div>\n    <div class=credits>\n      <a href='http://mayhemydg.github.com/4chan-x/' target=_blank>4chan X Beta</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/CHANGELOG.md#" + (g.VERSION.replace(/\./g, '')) + "' target=_blank>" + g.VERSION + "</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |\n      <a href=javascript:; class=close title=Close>×</a>\n    </div>\n  </nav>\n  <hr>\n  <div class=section-container><section></section></div>\n</div>";
       Settings.dialog = overlay = $.el('div', {
         id: 'overlay',
         innerHTML: html
@@ -1365,7 +1434,7 @@
           }
         } catch (err) {
           output.textContent = 'Import failed due to an error.';
-          return $.log(err.stack);
+          return c.log(err.stack);
         }
       };
       return reader.readAsText(file);
@@ -1423,9 +1492,9 @@
         data.Conf.sauces = data.Conf.sauces.replace(/\$\d/g, function(c) {
           switch (c) {
             case '$1':
-              return '%turl';
+              return '%TURL';
             case '$2':
-              return '%url';
+              return '%URL';
             case '$3':
               return '%MD5';
             case '$4':
@@ -1480,7 +1549,8 @@
         ta = $.el('textarea', {
           name: name,
           className: 'field',
-          value: $.get(name, Conf[name])
+          value: $.get(name, Conf[name]),
+          spellcheck: false
         });
         $.on(ta, 'change', $.cb.value);
         $.add(div, ta);
@@ -1490,15 +1560,15 @@
     },
     sauce: function(section) {
       var sauce;
-      section.innerHTML = "<div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Sauce</code> is disabled.</div>\n<div>Lines starting with a <code>#</code> will be ignored.</div>\n<div>You can specify a display text by appending <code>;text:[text]</code> to the url.</div>\n<ul>These parameters will be replaced by their corresponding values:\n  <li><code>%turl</code>: Thumbnail url.</li>\n  <li><code>%url</code>: Full image url.</li>\n  <li><code>%MD5</code>: MD5 hash.</li>\n  <li><code>%board</code>: Current board.</li>\n</ul>\n<textarea name=sauces class=field></textarea>";
+      section.innerHTML = "<div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Sauce</code> is disabled.</div>\n<div>Lines starting with a <code>#</code> will be ignored.</div>\n<div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div>\n<ul>These parameters will be replaced by their corresponding values:\n  <li><code>%TURL</code>: Thumbnail URL.</li>\n  <li><code>%URL</code>: Full image URL.</li>\n  <li><code>%MD5</code>: MD5 hash.</li>\n  <li><code>%board</code>: Current board.</li>\n</ul>\n<textarea name=sauces class=field spellcheck=false></textarea>";
       sauce = $('textarea', section);
       sauce.value = $.get('sauces', Conf['sauces']);
       return $.on(sauce, 'change', $.cb.value);
     },
     rice: function(section) {
       var event, input, name, _i, _len, _ref;
-      section.innerHTML = "<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field>: <span class='fileText file-info-preview'></span></div>\n  <div>divnk: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Tab Icon <span class=warning " + (Conf['Unread Tab Icon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend>Custom CSS <span class=warning " + (Conf['Custom CSS'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field></textarea>\n</fieldset>";
-      _ref = ['time', 'backlink', 'fileInfo', 'favicon', 'usercss'];
+      section.innerHTML = "<fieldset>\n  <legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Tab Icon <span class=warning " + (Conf['Unread Tab Icon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend>Custom CSS <span class=warning " + (Conf['Custom CSS'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false></textarea>\n</fieldset>";
+      _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         name = _ref[_i];
         input = $("[name=" + name + "]", section);
@@ -1511,6 +1581,9 @@
         }
       }
       return $.on($.id('apply-css'), 'click', Settings.usercss);
+    },
+    boardnav: function() {
+      return Header.generateBoardList(this.value);
     },
     time: function() {
       var funk;
@@ -1553,7 +1626,7 @@
     },
     keybinds: function(section) {
       var arr, input, key, tbody, tr, _ref;
-      section.innerHTML = "<div class=warning " + (Conf['Keybinds'] ? 'hidden' : '') + "><code>Keybinds</code> are disabled.</div>\n<div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div>\n<div>Press <kbd>Return</kbd> to disable a keybind.</div>\n<table><tbody>\n  <tr><th>Actions</th><th>Keybinds</th></tr>\n</tbody></table>";
+      section.innerHTML = "<div class=warning " + (Conf['Keybinds'] ? 'hidden' : '') + "><code>Keybinds</code> are disabled.</div>\n<div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div>\n<div>Press <kbd>Backspace</kbd> to disable a keybind.</div>\n<table><tbody>\n  <tr><th>Actions</th><th>Keybinds</th></tr>\n</tbody></table>";
       tbody = $('tbody', section);
       _ref = Config.hotkeys;
       for (key in _ref) {
@@ -1564,6 +1637,7 @@
         input = $('input', tr);
         input.name = key;
         input.value = $.get(key, Conf[key]);
+        input.spellcheck = false;
         $.on(input, 'keydown', Settings.keybind);
         $.add(tbody, tr);
       }
@@ -2504,7 +2578,7 @@
         var clone;
         a || (a = $.el('a', {
           className: 'menu-button',
-          innerHTML: '[<span></span>]',
+          innerHTML: '[<i></i>]',
           href: 'javascript:;'
         }));
         clone = a.cloneNode(true);
@@ -2828,6 +2902,11 @@
       threadRoot = Nav.getThread();
       thread = Get.postFromNode($('.op', threadRoot)).thread;
       switch (key) {
+        case Conf['Toggle board list']:
+          if (Conf['Custom Board Navigation']) {
+            Header.toggleBoardList();
+          }
+          break;
         case Conf['Open empty QR']:
           Keybinds.qr(threadRoot);
           break;
@@ -2860,6 +2939,12 @@
             return;
           }
           Keybinds.tags('code', target);
+          break;
+        case Conf['Eqn tags']:
+          if (target.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          Keybinds.tags('eqn', target);
           break;
         case Conf['Math tags']:
           if (target.nodeName !== 'TEXTAREA') {
@@ -2928,7 +3013,9 @@
           Keybinds.hl(-1, threadRoot);
           break;
         case Conf['Hide']:
-          ThreadHiding.toggle(thread);
+          if (g.VIEW === 'index') {
+            ThreadHiding.toggle(thread);
+          }
           break;
         default:
           return;
@@ -2999,11 +3086,9 @@
       return $.event('input', null, ta);
     },
     img: function(thread, all) {
-      var input, post;
+      var post;
       if (all) {
-        input = ImageExpand.expandAllInput;
-        input.checked = !input.checked;
-        return ImageExpand.cb.all.call(input);
+        return ImageExpand.cb.toggleAll();
       } else {
         post = Get.postFromNode($('.post.highlight', thread) || $('.op', thread));
         return ImageExpand.toggle(post);
@@ -3023,7 +3108,7 @@
     },
     hl: function(delta, thread) {
       var headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
-      headRect = Header.headerBar.getBoundingClientRect();
+      headRect = Header.bar.getBoundingClientRect();
       topMargin = headRect.top + headRect.height;
       if (postEl = $('.reply.highlight', thread)) {
         $.rmClass(postEl, 'highlight');
@@ -3101,7 +3186,7 @@
     },
     getThread: function(full) {
       var headRect, i, rect, thread, threads, topMargin, _i, _len;
-      headRect = Header.headerBar.getBoundingClientRect();
+      headRect = Header.bar.getBoundingClientRect();
       topMargin = headRect.top + headRect.height;
       threads = $$('.thread:not([hidden])');
       for (i = _i = 0, _len = threads.length; _i < _len; i = ++_i) {
@@ -4478,11 +4563,11 @@
     },
     createSauceLink: function(link) {
       var m, text;
-      link = link.replace(/%(t?url|MD5|board)/g, function(parameter) {
+      link = link.replace(/%(T?URL|MD5|board)/g, function(parameter) {
         switch (parameter) {
-          case '%turl':
+          case '%TURL':
             return "' + post.file.thumbURL + '";
-          case '%url':
+          case '%URL':
             return "' + post.file.URL + '";
           case '%MD5':
             return "' + encodeURIComponent(post.file.MD5) + '";
@@ -4516,6 +4601,14 @@
       if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
         return;
       }
+      this.EAI = $.el('a', {
+        className: 'expand-all-shortcut',
+        textContent: 'EAI',
+        title: 'Expand All Images',
+        href: 'javascript:;'
+      });
+      $.on(this.EAI, 'click', ImageExpand.cb.toggleAll);
+      Header.addShortcut(this.EAI);
       return Post.prototype.callbacks.push({
         name: 'Image Expansion',
         cb: this.node
@@ -4538,10 +4631,18 @@
         e.preventDefault();
         return ImageExpand.toggle(Get.postFromNode(this));
       },
-      all: function() {
+      toggleAll: function() {
         var ID, file, func, post, _i, _len, _ref, _ref1;
         $.event('CloseMenu');
-        func = (ImageExpand.on = this.checked) ? ImageExpand.expand : ImageExpand.contract;
+        if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
+          ImageExpand.EAI.className = 'contract-all-shortcut';
+          ImageExpand.EAI.title = 'Contract All Images';
+          func = ImageExpand.expand;
+        } else {
+          ImageExpand.EAI.className = 'expand-all-shortcut';
+          ImageExpand.EAI.title = 'Expand All Images';
+          func = ImageExpand.contract;
+        }
         _ref = g.posts;
         for (ID in _ref) {
           post = _ref[ID];
@@ -4587,7 +4688,7 @@
       rect = thumb.parentNode.getBoundingClientRect();
       if (rect.bottom > 0) {
         postRect = post.nodes.root.getBoundingClientRect();
-        headRect = Header.headerBar.getBoundingClientRect();
+        headRect = Header.bar.getBoundingClientRect();
         top = postRect.top - headRect.top - headRect.height - 2;
         root = $.engine === 'webkit' ? d.body : doc;
         if (rect.top < 0) {
@@ -4701,7 +4802,6 @@
         });
         createSubEntry = ImageExpand.menu.createSubEntry;
         subEntries = [];
-        subEntries.push(createSubEntry('Expand all'));
         _ref = Config.imageExpansion;
         for (key in _ref) {
           conf = _ref[key];
@@ -4710,7 +4810,7 @@
         return $.event('AddMenuEntry', {
           type: 'header',
           el: el,
-          order: 20,
+          order: 80,
           subEntries: subEntries
         });
       },
@@ -4720,14 +4820,8 @@
           innerHTML: "<input type=checkbox name='" + type + "'> " + type
         });
         input = label.firstElementChild;
-        switch (type) {
-          case 'Expand all':
-            $.on(input, 'change', ImageExpand.cb.all);
-            ImageExpand.expandAllInput = input;
-            break;
-          case 'Fit width':
-          case 'Fit height':
-            $.on(input, 'change', ImageExpand.cb.setFitness);
+        if (type === 'Fit width' || type === 'Fit height') {
+          $.on(input, 'change', ImageExpand.cb.setFitness);
         }
         if (config) {
           label.title = config[1];
@@ -5163,14 +5257,16 @@
         }
       }
       Unread.addPosts(posts);
-      if (Unread.hr.parentNode) {
-        Unread.hr.scrollIntoView(false);
-      } else if (posts.length && !Unread.posts.length) {
+      if (Unread.posts.length) {
+        $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView(false);
+      } else if (posts.length) {
         posts[posts.length - 1].nodes.root.scrollIntoView();
       }
       $.on(d, 'ThreadUpdate', Unread.onUpdate);
       $.on(d, 'scroll visibilitychange', Unread.read);
-      return $.on(d, 'visibilitychange', Unread.setLine);
+      if (Conf['Unread Line']) {
+        return $.on(d, 'visibilitychange', Unread.setLine);
+      }
     },
     addPosts: function(newPosts) {
       var ID, post, youInThisThread, yourPosts, _i, _len, _ref;
@@ -5189,7 +5285,9 @@
           Unread.addPostQuotingYou(post, yourPosts);
         }
       }
-      Unread.setLine((_ref = Unread.posts[0], __indexOf.call(newPosts, _ref) >= 0));
+      if (Conf['Unread Line']) {
+        Unread.setLine((_ref = Unread.posts[0], __indexOf.call(newPosts, _ref) >= 0));
+      }
       Unread.read();
       return Unread.update();
     },
@@ -5405,7 +5503,7 @@
         html += "<div><label title='" + conf[1] + "'><input name='" + name + "' type=checkbox " + checked + "> " + name + "</label></div>";
       }
       checked = Conf['Auto Update'] ? 'checked' : '';
-      html = "<div class=move><span id=update-status></span> <span id=update-timer></span></div>\n" + html + "\n<div><label title='Controls whether *this* thread automatically updates or not'><input type=checkbox name='Auto Update This' " + checked + "> Auto Update This</label></div>\n<div><label><input type=number name=Interval class=field min=5 value=" + Conf['Interval'] + "> Refresh rate (s)</label></div>\n<div><input value='Update Now' type=button name='Update Now'></div>";
+      html = "<div class=move><span id=update-status></span> <span id=update-timer></span></div>\n" + html + "\n<div><label title='Controls whether *this* thread automatically updates or not'><input type=checkbox name='Auto Update This' " + checked + "> Auto Update This</label></div>\n<div><label><input type=number name=Interval class=field min=5 value=" + Conf['Interval'] + "> Refresh rate (s)</label></div>\n<div><input value='Update' type=button name='Update'></div>";
       this.dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.timer = $('#update-timer', this.dialog);
       this.status = $('#update-status', this.dialog);
@@ -5440,7 +5538,7 @@
             $.on(input, 'change', ThreadUpdater.cb.interval);
             ThreadUpdater.cb.interval.call(input);
             break;
-          case 'Update Now':
+          case 'Update':
             $.on(input, 'click', ThreadUpdater.update);
         }
       }
@@ -5655,11 +5753,10 @@
       _ref = ThreadUpdater.thread.posts;
       for (ID in _ref) {
         post = _ref[ID];
-        if (post.isDead) {
-          continue;
-        }
         ID = +ID;
-        if (__indexOf.call(index, ID) < 0) {
+        if (post.isDead && __indexOf.call(index, ID) >= 0) {
+          post.resurrect();
+        } else if (__indexOf.call(index, ID) < 0) {
           post.kill();
           deletedPosts.push(post);
         } else if (post.file && !post.file.isDead && __indexOf.call(files, ID) < 0) {
@@ -5842,7 +5939,7 @@
       });
     },
     initReady: function() {
-      var link;
+      var sc;
       QR.postingIsEnabled = !!$.id('postForm');
       if (!QR.postingIsEnabled) {
         return;
@@ -5850,22 +5947,19 @@
       if (Conf['Hide Original Post Form']) {
         $.addClass(doc, 'hide-original-post-form');
       }
-      link = $.el('a', {
+      sc = $.el('a', {
         className: 'qr-shortcut',
-        textContent: 'Quick Reply',
+        textContent: 'QR',
+        title: 'Quick Reply',
         href: 'javascript:;'
       });
-      $.on(link, 'click', function() {
+      $.on(sc, 'click', function() {
         $.event('CloseMenu');
         QR.open();
         QR.resetThreadSelector();
         return QR.nodes.com.focus();
       });
-      $.event('AddMenuEntry', {
-        type: 'header',
-        el: link,
-        order: 10
-      });
+      Header.addShortcut(sc);
       if ($.engine === 'webkit') {
         $.on(d, 'paste', QR.paste);
       }
@@ -5888,7 +5982,7 @@
     },
     persist: function() {
       QR.open();
-      if (Conf['Auto Hide QR']) {
+      if (Conf['Auto-Hide QR']) {
         return QR.hide();
       }
     },
@@ -6432,7 +6526,7 @@
         }
         img = $.el('img');
         img.onload = function() {
-          var applyBlob, c, data, height, i, l, s, ui8a, width, _i;
+          var applyBlob, cv, data, height, i, l, s, ui8a, width, _i;
           s = 90 * 2;
           height = img.height, width = img.width;
           if (height < s || width < s) {
@@ -6449,12 +6543,12 @@
             height = s / width * height;
             width = s;
           }
-          c = $.el('canvas');
-          c.height = img.height = height;
-          c.width = img.width = width;
-          c.getContext('2d').drawImage(img, 0, 0, width, height);
+          cv = $.el('canvas');
+          cv.height = img.height = height;
+          cv.width = img.width = width;
+          cv.getContext('2d').drawImage(img, 0, 0, width, height);
           if (!window.URL) {
-            _this.nodes.el.style.backgroundImage = "url(" + (c.toDataURL()) + ")";
+            _this.nodes.el.style.backgroundImage = "url(" + (cv.toDataURL()) + ")";
             delete _this.URL;
             return;
           }
@@ -6463,11 +6557,11 @@
             _this.URL = URL.createObjectURL(blob);
             return _this.nodes.el.style.backgroundImage = "url(" + _this.URL + ")";
           };
-          if (c.toBlob) {
-            c.toBlob(applyBlob);
+          if (cv.toBlob) {
+            cv.toBlob(applyBlob);
             return;
           }
-          data = atob(c.toDataURL().split(',')[1]);
+          data = atob(cv.toDataURL().split(',')[1]);
           l = data.length;
           ui8a = new Uint8Array(l);
           for (i = _i = 0; 0 <= l ? _i < l : _i > l; i = 0 <= l ? ++_i : --_i) {
@@ -6861,7 +6955,7 @@
       }
       QR.cleanNotifications();
       QR.cooldown.auto = QR.posts.length > 1;
-      if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
+      if (Conf['Auto-Hide QR'] && !QR.cooldown.auto) {
         QR.hide();
       }
       if (!QR.cooldown.auto && $.x('ancestor::div[@id="qr"]', d.activeElement)) {
@@ -6914,7 +7008,7 @@
       return QR.status();
     },
     response: function() {
-      var ban, board, err, h1, persona, post, postID, req, threadID, tmpDoc, _, _base, _ref, _ref1;
+      var URL, ban, board, err, h1, persona, post, postID, req, threadID, tmpDoc, _, _base, _ref, _ref1;
       req = QR.req;
       delete QR.req;
       post = QR.posts[0];
@@ -6979,9 +7073,16 @@
         isReply: !!threadID
       });
       if (threadID === postID) {
-        $.open("/" + g.BOARD + "/res/" + threadID);
+        URL = "/" + g.BOARD + "/res/" + threadID;
       } else if (g.VIEW === 'index' && !QR.cooldown.auto) {
-        $.open("/" + g.BOARD + "/res/" + threadID + "#p" + postID);
+        URL = "/" + g.BOARD + "/res/" + threadID + "#p" + postID;
+      }
+      if (URL) {
+        if (Conf['Open Post in New Tab']) {
+          $.open("/" + g.BOARD + "/res/" + threadID);
+        } else {
+          window.location = "/" + g.BOARD + "/res/" + threadID;
+        }
       }
       if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
         QR.close();
@@ -7255,6 +7356,35 @@
       }
     };
 
+    Post.prototype.resurrect = function() {
+      var clone, quotelink, strong, _i, _j, _len, _len1, _ref, _ref1;
+      delete this.isDead;
+      delete this.timeOfDeath;
+      $.rmClass(this.nodes.root, 'deleted-post');
+      strong = $('strong.warning', this.nodes.info);
+      if (this.file && this.file.isDead) {
+        strong.textContent = '[File deleted]';
+      } else {
+        $.rm(strong);
+      }
+      if (this.isClone) {
+        return;
+      }
+      _ref = this.clones;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        clone = _ref[_i];
+        clone.resurrect();
+      }
+      _ref1 = Get.allQuotelinksLinkingTo(this);
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        quotelink = _ref1[_j];
+        if ($.hasClass(quotelink, 'deadlink')) {
+          quotelink.textContent = quotelink.textContent.replace('\u00A0(Dead)', '');
+          $.rmClass(quotelink, 'deadlink');
+        }
+      }
+    };
+
     Post.prototype.addClone = function(context) {
       return new Clone(this, context);
     };
@@ -7426,8 +7556,6 @@
             message: "\"" + name + "\" initialization crashed.",
             error: err
           });
-        } finally {
-
         }
       };
       initFeature('Polyfill', Polyfill);
@@ -7645,7 +7773,7 @@
     parseError: function(data) {
       var error, message;
       message = data.message, error = data.error;
-      $.log(message, error.stack);
+      c.log(message, error.stack);
       message = $.el('div', {
         textContent: message
       });
@@ -7660,7 +7788,7 @@
       }
       return Main.thisPageIsLegit;
     },
-    css: "/* General */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.field {\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\n-webkit-transition: color .25s, border-color .25s, -webkit-flex .25s;\ntransition: color .25s, border-color .25s, flex .25s;\n}\n.field::-moz-placeholder,\n.field:hover::-moz-placeholder {\ncolor: #AAA !important;\n}\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.field[disabled] {\nbackground-color: #F2F2F2;\ncolor: #888;\n}\n.move {\ncursor: move;\n}\nlabel, .favicon {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\n}\n.post {\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#overlay,\n#qp, #ihover,\n#updater, #thread-stats,\n#navlinks, #header,\n#qr, #watcher {\nposition: fixed;\n}\n#overlay {\nz-index: 999;\n}\n#notifications {\nz-index: 80;\n}\n#qp, #ihover {\nz-index: 70;\n}\n#menu {\nz-index: 60;\n}\n#navlinks, #updater, #thread-stats {\nz-index: 50;\n}\n#header:hover {\nz-index: 40;\n}\n#qr {\nz-index: 30;\n}\n#header {\nz-index: 20;\n}\n#watcher {\nz-index: 10;\n}\n\n/* Header */\n.fourchan-x body {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmargin-top: 2em;\n}\n.fourchan-x #boardNavDesktop,\n.fourchan-x #navtopright,\n.fourchan-x #boardNavDesktopFoot {\ndisplay: none !important;\n}\n#header {\ntop: 0;\nright: 0;\nleft: 0;\n}\n#header-bar {\nborder-width: 0 0 1px;\npadding: 4px;\nposition: relative;\n-webkit-transition: all .1s ease-in-out;\ntransition: all .1s ease-in-out;\n}\n#header-bar.autohide:not(:hover) {\nbox-shadow: none;\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\n-webkit-transition: all 2s 2s ease-in-out;\ntransition: all 2s 2s ease-in-out;\n}\n#toggle-header-bar {\ncursor: n-resize;\nleft: 0;\nright: 0;\nbottom: -8px;\nheight: 10px;\nposition: absolute;\n}\n#header-bar.autohide:not(:hover) #toggle-header-bar, #toggle-header-bar:hover {\nbottom: -16px;\nheight: 18px;\n}\n#header-bar.autohide #toggle-header-bar {\ncursor: s-resize;\n}\n#header-bar a:not(.entry) {\ntext-decoration: none;\npadding: 1px;\n}\n.brackets-wrap::before {\ncontent: \" [\";\n}\n.brackets-wrap::after {\ncontent: \"] \";\n}\n\n/* Notifications */\n#notifications {\nheight: 0;\ntext-align: center;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\n-webkit-transition: all .25s ease-in-out;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 38%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 38%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 38%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 38%, .9);\n}\n.notification a {\ncolor: white;\n}\n.notification > .close {\npadding: 6px;\ntop: 0;\nright: 0;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 6px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* Settings */\n#overlay {\nbackground-color: rgba(0, 0, 0, .5);\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-align-items: center;\nalign-items: center;\n-webkit-justify-content: center;\njustify-content: center;\nposition: fixed;\ntop: 0;\nleft: 0;\nheight: 100%;\nwidth: 100%;\n}\n#fourchanx-settings {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nbox-shadow: 0 0 15px rgba(0, 0, 0, .15);\nheight: 600px;\nmin-height: 0;\nmax-height: 100%;\nwidth: 900px;\nmin-width: 0;\nmax-width: 100%;\npadding: 3px;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\n}\n#fourchanx-settings > nav {\ndisplay: -webkit-flex;\ndisplay: flex;\npadding: 2px 2px 0;\n}\n#fourchanx-settings > nav a {\ntext-decoration: underline;\n}\n#fourchanx-settings > nav a.close {\ntext-decoration: none;\npadding: 2px;\n}\n.sections-list {\n-webkit-flex: 1;\nflex: 1;\n}\n.section-container {\n-webkit-flex: 1;\nflex: 1;\nposition: relative;\n}\n.section-container > section {\nposition: absolute;\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\noverflow: auto;\n}\n.section-sauce ul,\n.section-rice ul {\nlist-style: none;\nmargin: 0;\npadding: 8px;\n}\n.section-sauce li,\n.section-rice li {\npadding-left: 4px;\n}\n.section-main label {\ntext-decoration: underline;\n}\n.section-filter ul {\npadding: 0;\n}\n.section-filter li {\nmargin: 10px 40px;\n}\n.section-filter textarea {\nheight: 500px;\n}\n.section-sauce textarea {\nheight: 350px;\n}\n.section-rice textarea {\nheight: 150px;\n}\n#fourchanx-settings fieldset {\nborder: 1px solid;\nborder-radius: 3px;\n}\n#fourchanx-settings legend {\nfont-weight: 700;\n}\n#fourchanx-settings textarea {\nfont-family: monospace;\nmin-width: 100%;\nmax-width: 100%;\n}\n#fourchanx-settings code {\ncolor: #000;\nbackground-color: #FFF;\npadding: 0 2px;\n}\n.unscroll {\noverflow: hidden;\n}\n\n/* Unread */\n#unread-line {\nmargin: 0;\n}\n\n/* Thread Updater */\n#updater:not(:hover) {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n#updater > .move {\npadding: 0 3px;\n}\n#updater > div:last-child {\ntext-align: center;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n.new {\ncolor: limegreen;\n}\n\n/* Thread Watcher */\n#watcher {\npadding-bottom: 3px;\nposition: absolute;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#watcher:not(:hover) {\nmax-height: 220px;\n}\n#watcher > .move {\npadding-top: 3px;\n}\n#watcher > div {\nmax-width: 200px;\noverflow: hidden;\npadding-left: 3px;\npadding-right: 3px;\ntext-overflow: ellipsis;\n}\n#watcher a {\ntext-decoration: none;\n}\n\n/* Thread Stats */\n#thread-stats {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n\n/* Quote */\n.deadlink {\ntext-decoration: none !important;\n}\n.backlink.deadlink:not(.forwardlink), .quotelink.deadlink:not(.forwardlink) {\ntext-decoration: underline !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp > .opContainer::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 2px 2px 5px;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\n}\n.qphl {\noutline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* File */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.expanded-image > .post > .file > .fileThumb > img[data-md5],\n:not(.expanded-image) > .post > .file > .fileThumb > .full-image {\ndisplay: none;\n}\n.expanding {\nopacity: .5;\n}\n.expanded-image > .op > .file::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n:root.fit-width .full-image {\nmax-width: 100%;\n}\n:root.gecko.fit-width .full-image,\n:root.presto.fit-width .full-image {\nwidth: 100%;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n\n/* Index/Reply Navigation */\n#navlinks {\nfont-size: 16px;\ntop: 25px;\nright: 10px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n.stub input {\ndisplay: inline-block;\n}\n\n/* QR */\n.hide-original-post-form #postForm,\n.hide-original-post-form .postingMode,\n#qr.autohide:not(:hover) > form {\ndisplay: none;\n}\n#qr select, #dump-button, .remove, .captcha-img {\ncursor: pointer;\n}\n#qr > div {\nmin-width: 300px;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-align-items: center;\nalign-items: center;\n}\n#qr .move {\n-webkit-align-self: stretch;\nalign-self: stretch;\n-webkit-flex: 1;\nflex: 1;\n}\n#qr select {\nmargin: 0;\n-webkit-appearance: none;\n-moz-appearance: none;\nappearance: none;\nborder: none;\nbackground: none;\n}\n.presto #qr select {\nheight: 1em;\n}\n#qr .close {\npadding: 0 3px;\n}\n#qr > form {\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\n}\n.persona {\ndisplay: -webkit-flex;\ndisplay: flex;\n}\n.persona .field {\n-webkit-flex: 1;\nflex: 1;\n}\n.persona .field:hover,\n.persona .field:focus {\n-webkit-flex: 4;\nflex: 4;\n}\n#dump-button {\nbackground: -webkit-linear-gradient(#EEE, #CCC);\nbackground: linear-gradient(#EEE, #CCC);\nborder: 1px solid #CCC;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\nwidth: 30px;\n}\n#dump-button:hover, #dump-button:focus {\nbackground: -webkit-linear-gradient(#FFF, #DDD);\nbackground: linear-gradient(#FFF, #DDD);\n}\n#dump-button:active, .dump #dump-button:not(:hover):not(:focus) {\nbackground: -webkit-linear-gradient(#CCC, #DDD);\nbackground: linear-gradient(#CCC, #DDD);\n}\n.gecko #dump-button {\npadding: 0;\n}\n#qr:not(.dump) #dump-list-container {\ndisplay: none;\n}\n#dump-list-container {\nheight: 100px;\nposition: relative;\n-webkit-user-select: none;\n-moz-user-select: none;\n-o-user-select: none;\nuser-select: none;\n}\n#dump-list {\ncounter-reset: qrpreviews;\ntop: 0; right: 0; bottom: 0; left: 0;\noverflow: hidden;\nposition: absolute;\nwhite-space: nowrap;\n}\n#dump-list:hover {\nbottom: -12px;\noverflow-x: auto;\nz-index: 1;\n}\n#dump-list::-webkit-scrollbar {\nheight: 12px;\n}\n#dump-list::-webkit-scrollbar-thumb {\nborder: 1px solid;\n}\n.qr-preview {\nbackground-position: 50% 20%;\nbackground-size: cover;\nborder: 1px solid #808080;\ncolor: #FFF !important;\nfont-size: 12px;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncursor: move;\ndisplay: inline-block;\nheight: 92px; width: 92px;\nmargin: 4px; padding: 2px;\nopacity: .6;\noutline: none;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-webkit-transition: opacity .25s ease-in-out;\ntransition: opacity .25s ease-in-out;\nvertical-align: top;\nwhite-space: pre;\n}\n.qr-preview:hover, .qr-preview:focus {\nopacity: .9;\ncolor: #FFF !important;\n}\n.qr-preview#selected {\nopacity: 1;\n}\n.qr-preview::before {\ncounter-increment: qrpreviews;\ncontent: counter(qrpreviews);\nfont-weight: 700;\ntext-shadow: 0 0 3px #000, 0 0 5px #000;\nposition: absolute;\ntop: 3px; right: 3px;\n}\n.qr-preview.drag {\nborder-color: red;\nborder-style: dashed;\n}\n.qr-preview.over {\nborder-color: #FFF;\nborder-style: dashed;\n}\n.remove {\ncolor: #E00 !important;\nfont-weight: 700;\npadding: 3px;\n}\n.remove:hover::after {\ncontent: ' Remove';\n}\n.qr-preview > label {\nbackground: rgba(0, 0, 0, .5);\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.qr-preview > label > input {\nmargin: 1px 0;\nvertical-align: bottom;\n}\n#add-post {\ndisplay: inline-block;\nfont-size: 30px;\nheight: 30px;\nwidth: 30px;\nline-height: 1;\ntext-align: center;\nposition: absolute;\nright: 0; bottom: 0;\nz-index: 1;\n}\n#qr textarea {\nmin-height: 160px;\nmin-width: 100%;\ndisplay: block;\n}\n#qr.has-captcha textarea {\nmin-height: 120px;\n}\n.textarea {\nposition: relative;\n}\n#char-count {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nposition: absolute;\nbottom: 1px;\nright: 1px;\npointer-events: none;\n}\n#char-count.warning {\ncolor: red;\n}\n.captcha-img {\nbackground: #FFF;\noutline: 1px solid #CCC;\noutline-offset: -1px;\n}\n.captcha-img > img {\ndisplay: block;\nheight: 57px;\nwidth: 300px;\n}\n#file-n-submit > input {\nmargin: 0;\n}\n#file-n-submit.has-file #qr-no-file {\nvisibility: hidden;\n}\n#file-n-submit:not(.has-file) #qr-filename,\n#file-n-submit:not(.has-file) #qr-file-spoiler,\n#file-n-submit:not(.has-file) #qr-filerm {\ndisplay: none;\n}\n#file-n-submit {\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: row;\nflex-direction: row;\n-webkit-align-items: center;\nalign-items: center;\n}\n#qr-no-file, #qr-filename-container {\n-webkit-flex: 1;\nflex: 1;\n}\n#qr-filename-container {\ncursor: default;\nposition: relative;\nmargin-left: 2px;\n}\n#qr-filename {\nposition: absolute;\ntop: 0; right: 0; bottom: 0; left: 0;\ntext-overflow: ellipsis;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#qr-filerm {\npadding: 0 2px;\n}\n#file-n-submit > #qr-file-spoiler {\nmargin: 0 2px;\n}\n#qr input[type='file'] {\nposition: absolute;\nvisibility: hidden;\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\nposition: relative;\n}\n.menu-button > span {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\nmargin: 2px 0;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\noutline: none;\n}\n.entry {\ncursor: pointer;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n/* XXX firefox fix */\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\n}\n.entry.has-submenu {\npadding-right: 20px;\n}\n.has-submenu::after {\ncontent: '';\nborder-left:   6px solid;\nborder-top:    4px solid transparent;\nborder-bottom: 4px solid transparent;\ndisplay: inline-block;\nmargin: 4px;\nposition: absolute;\nright: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\ndisplay: none;\n}\n.submenu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\nmargin: -1px 0;\n}\n.entry input {\nmargin: 0;\n}\n\n/* General */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.yotsuba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.yotsuba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba #menu {\ncolor: #800000;\n}\n:root.yotsuba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 10pt;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.yotsuba-b #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.yotsuba-b .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba-b #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b #menu {\ncolor: #000;\n}\n:root.yotsuba-b .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 10pt;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.futaba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.futaba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.futaba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba #menu {\ncolor: #800000;\n}\n:root.futaba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 12pt;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.burichan #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.burichan .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.burichan #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan #menu {\ncolor: #000000;\n}\n:root.burichan .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 12pt;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .field:focus {\nborder-color: #000;\n}\n\n/* Header */\n:root.tomorrow #header-bar {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a {\ncolor: #81A2BE;\n}\n\n/* Settings */\n:root.tomorrow #fourchanx-settings fieldset {\nborder-color: #111;\n}\n\n/* Quote */\n:root.tomorrow .backlink.deadlink {\ncolor: #81A2BE !important;\n}\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n.tomorrow #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow #qr select {\ncolor: #C5C8C6;\n}\n:root.tomorrow #qr option {\ncolor: #000;\n}\n:root.tomorrow .qr-preview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n\n/* Menu */\n:root.tomorrow #menu {\ncolor: #C5C8C6;\n}\n:root.tomorrow .entry {\nborder-bottom: 1px solid #111;\nfont-size: 10pt;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* General */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a {\ncolor: #FF6600;\n}\n\n/* Settings */\n:root.photon #fourchanx-settings fieldset {\nborder-color: #CCC;\n}\n\n/* Quote */\n:root.photon .backlink.deadlink {\ncolor: #F60 !important;\n}\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.photon #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon #menu {\ncolor: #333;\n}\n:root.photon .entry {\nborder-bottom: 1px solid #CCC;\nfont-size: 10pt;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
+    css: "/* General */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.field {\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\n-webkit-transition: color .25s, border-color .25s, -webkit-flex .25s;\ntransition: color .25s, border-color .25s, flex .25s;\n}\n.field::-moz-placeholder,\n.field:hover::-moz-placeholder {\ncolor: #AAA !important;\n}\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.field[disabled] {\nbackground-color: #F2F2F2;\ncolor: #888;\n}\n.move {\ncursor: move;\n}\nlabel, .favicon {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\n}\n.post {\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#overlay,\n#qp, #ihover,\n#updater, #thread-stats,\n#navlinks, #header,\n#qr, #watcher {\nposition: fixed;\n}\n#overlay {\nz-index: 999;\n}\n#notifications {\nz-index: 70;\n}\n#qp, #ihover {\nz-index: 60;\n}\n#menu {\nz-index: 50;\n}\n#navlinks, #updater, #thread-stats {\nz-index: 40;\n}\n#qr {\nz-index: 30;\n}\n#watcher {\nz-index: 20;\n}\n#header {\nz-index: 10;\n}\n\n/* Header */\n.fourchan-x body {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmargin-top: 2em;\n}\n.fourchan-x #boardNavDesktop,\n.fourchan-x #navtopright,\n.fourchan-x #boardNavDesktopFoot {\ndisplay: none !important;\n}\n#header {\ntop: 0;\nright: 0;\nleft: 0;\n}\n#header-bar {\nborder-width: 0 0 1px;\ndisplay: -webkit-flex;\ndisplay: flex;\npadding: 3px 4px 4px;\nposition: relative;\n-webkit-transition: all .1s ease-in-out;\ntransition: all .1s ease-in-out;\n}\n#board-list {\n-webkit-flex: 1;\nflex: 1;\ntext-align: center;\n}\n#header-bar.autohide:not(:hover) {\nbox-shadow: none;\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\n-webkit-transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\ntransition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n#toggle-header-bar {\ncursor: n-resize;\nleft: 0;\nright: 0;\nbottom: -8px;\nheight: 10px;\nposition: absolute;\n}\n#header-bar.autohide:not(:hover) #toggle-header-bar, #toggle-header-bar:hover {\nbottom: -16px;\nheight: 18px;\n}\n#header-bar.autohide #toggle-header-bar {\ncursor: s-resize;\n}\n#header-bar a:not(.entry) {\ntext-decoration: none;\npadding: 1px;\n}\n#shortcuts:empty {\ndisplay: none;\n}\n.shortcut:not(:last-child)::after {\ncontent: \" / \";\n}\n.brackets-wrap::before {\ncontent: \"\\00a0[\";\n}\n.brackets-wrap::after {\ncontent: \"]\\00a0\";\n}\n.expand-all-shortcut {\nopacity: .35;\n}\n\n/* Notifications */\n#notifications {\nheight: 0;\ntext-align: center;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\n-webkit-transition: all .25s ease-in-out;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 38%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 38%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 38%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 38%, .9);\n}\n.notification a {\ncolor: white;\n}\n.notification > .close {\npadding: 6px;\ntop: 0;\nright: 0;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 6px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* Settings */\n#overlay {\nbackground-color: rgba(0, 0, 0, .5);\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-align-items: center;\nalign-items: center;\n-webkit-justify-content: center;\njustify-content: center;\nposition: fixed;\ntop: 0;\nleft: 0;\nheight: 100%;\nwidth: 100%;\n}\n#fourchanx-settings {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nbox-shadow: 0 0 15px rgba(0, 0, 0, .15);\nheight: 600px;\nmin-height: 0;\nmax-height: 100%;\nwidth: 900px;\nmin-width: 0;\nmax-width: 100%;\npadding: 3px;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\n}\n#fourchanx-settings > nav {\ndisplay: -webkit-flex;\ndisplay: flex;\npadding: 2px 2px 0;\n}\n#fourchanx-settings > nav a {\ntext-decoration: underline;\n}\n#fourchanx-settings > nav a.close {\ntext-decoration: none;\npadding: 2px;\n}\n.sections-list {\n-webkit-flex: 1;\nflex: 1;\n}\n.section-container {\n-webkit-flex: 1;\nflex: 1;\nposition: relative;\n}\n.section-container > section {\nposition: absolute;\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\noverflow: auto;\n}\n.section-sauce ul,\n.section-rice ul {\nlist-style: none;\nmargin: 0;\npadding: 8px;\n}\n.section-sauce li,\n.section-rice li {\npadding-left: 4px;\n}\n.section-main label {\ntext-decoration: underline;\n}\n.section-filter ul {\npadding: 0;\n}\n.section-filter li {\nmargin: 10px 40px;\n}\n.section-filter textarea {\nheight: 500px;\n}\n.section-sauce textarea {\nheight: 350px;\n}\n.section-rice .field[name=\"boardnav\"] {\nwidth: 100%;\n}\n.section-rice textarea {\nheight: 150px;\n}\n#fourchanx-settings fieldset {\nborder: 1px solid;\nborder-radius: 3px;\n}\n#fourchanx-settings legend {\nfont-weight: 700;\n}\n#fourchanx-settings textarea {\nfont-family: monospace;\nmin-width: 100%;\nmax-width: 100%;\n}\n#fourchanx-settings code {\ncolor: #000;\nbackground-color: #FFF;\npadding: 0 2px;\n}\n.unscroll {\noverflow: hidden;\n}\n\n/* Unread */\n#unread-line {\nmargin: 0;\n}\n\n/* Thread Updater */\n#updater:not(:hover) {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n#updater > .move {\npadding: 0 3px;\n}\n#updater > div:last-child {\ntext-align: center;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n.new {\ncolor: limegreen;\n}\n\n/* Thread Watcher */\n#watcher {\npadding-bottom: 3px;\nposition: absolute;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#watcher:not(:hover) {\nmax-height: 220px;\n}\n#watcher > .move {\npadding-top: 3px;\n}\n#watcher > div {\nmax-width: 200px;\noverflow: hidden;\npadding-left: 3px;\npadding-right: 3px;\ntext-overflow: ellipsis;\n}\n#watcher a {\ntext-decoration: none;\n}\n\n/* Thread Stats */\n#thread-stats {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n\n/* Quote */\n.deadlink {\ntext-decoration: none !important;\n}\n.backlink.deadlink:not(.forwardlink), .quotelink.deadlink:not(.forwardlink) {\ntext-decoration: underline !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp > .opContainer::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 2px 2px 5px;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\n}\n.qphl {\noutline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* File */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.expanded-image > .post > .file > .fileThumb > img[data-md5],\n:not(.expanded-image) > .post > .file > .fileThumb > .full-image {\ndisplay: none;\n}\n.expanding {\nopacity: .5;\n}\n.expanded-image > .op > .file::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n:root.fit-width .full-image {\nmax-width: 100%;\n}\n:root.gecko.fit-width .full-image,\n:root.presto.fit-width .full-image {\nwidth: 100%;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n\n/* Index/Reply Navigation */\n#navlinks {\nfont-size: 16px;\ntop: 25px;\nright: 10px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n.stub input {\ndisplay: inline-block;\n}\n\n/* QR */\n.hide-original-post-form #postForm,\n.hide-original-post-form .postingMode,\n#qr.autohide:not(:hover) > form {\ndisplay: none;\n}\n#qr select, #dump-button, .remove, .captcha-img {\ncursor: pointer;\n}\n#qr > div {\nmin-width: 300px;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-align-items: center;\nalign-items: center;\n}\n#qr .move {\n-webkit-align-self: stretch;\nalign-self: stretch;\n-webkit-flex: 1;\nflex: 1;\n}\n#qr select {\nmargin: 0;\n-webkit-appearance: none;\n-moz-appearance: none;\nappearance: none;\nborder: none;\nbackground: none;\n}\n.presto #qr select {\nheight: 1em;\n}\n#qr .close {\npadding: 0 3px;\n}\n#qr > form {\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\n}\n.persona {\ndisplay: -webkit-flex;\ndisplay: flex;\n}\n.persona .field {\n-webkit-flex: 1;\nflex: 1;\n}\n.persona .field:hover,\n.persona .field:focus {\n-webkit-flex: 4;\nflex: 4;\n}\n#dump-button {\nbackground: -webkit-linear-gradient(#EEE, #CCC);\nbackground: linear-gradient(#EEE, #CCC);\nborder: 1px solid #CCC;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\nwidth: 30px;\n}\n#dump-button:hover, #dump-button:focus {\nbackground: -webkit-linear-gradient(#FFF, #DDD);\nbackground: linear-gradient(#FFF, #DDD);\n}\n#dump-button:active, .dump #dump-button:not(:hover):not(:focus) {\nbackground: -webkit-linear-gradient(#CCC, #DDD);\nbackground: linear-gradient(#CCC, #DDD);\n}\n.gecko #dump-button {\npadding: 0;\n}\n#qr:not(.dump) #dump-list-container {\ndisplay: none;\n}\n#dump-list-container {\nheight: 100px;\nposition: relative;\n-webkit-user-select: none;\n-moz-user-select: none;\n-o-user-select: none;\nuser-select: none;\n}\n#dump-list {\ncounter-reset: qrpreviews;\ntop: 0; right: 0; bottom: 0; left: 0;\noverflow: hidden;\nposition: absolute;\nwhite-space: nowrap;\n}\n#dump-list:hover {\nbottom: -12px;\noverflow-x: auto;\nz-index: 1;\n}\n#dump-list::-webkit-scrollbar {\nheight: 12px;\n}\n#dump-list::-webkit-scrollbar-thumb {\nborder: 1px solid;\n}\n.qr-preview {\nbackground-position: 50% 20%;\nbackground-size: cover;\nborder: 1px solid #808080;\ncolor: #FFF !important;\nfont-size: 12px;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncursor: move;\ndisplay: inline-block;\nheight: 92px; width: 92px;\nmargin: 4px; padding: 2px;\nopacity: .6;\noutline: none;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-webkit-transition: opacity .25s ease-in-out;\ntransition: opacity .25s ease-in-out;\nvertical-align: top;\nwhite-space: pre;\n}\n.qr-preview:hover, .qr-preview:focus {\nopacity: .9;\ncolor: #FFF !important;\n}\n.qr-preview#selected {\nopacity: 1;\n}\n.qr-preview::before {\ncounter-increment: qrpreviews;\ncontent: counter(qrpreviews);\nfont-weight: 700;\ntext-shadow: 0 0 3px #000, 0 0 5px #000;\nposition: absolute;\ntop: 3px; right: 3px;\n}\n.qr-preview.drag {\nborder-color: red;\nborder-style: dashed;\n}\n.qr-preview.over {\nborder-color: #FFF;\nborder-style: dashed;\n}\n.remove {\ncolor: #E00 !important;\nfont-weight: 700;\npadding: 3px;\n}\n.remove:hover::after {\ncontent: ' Remove';\n}\n.qr-preview > label {\nbackground: rgba(0, 0, 0, .5);\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.qr-preview > label > input {\nmargin: 1px 0;\nvertical-align: bottom;\n}\n#add-post {\ndisplay: inline-block;\nfont-size: 30px;\nheight: 30px;\nwidth: 30px;\nline-height: 1;\ntext-align: center;\nposition: absolute;\nright: 0; bottom: 0;\nz-index: 1;\n}\n#qr textarea {\nmin-height: 160px;\nmin-width: 100%;\ndisplay: block;\n}\n#qr.has-captcha textarea {\nmin-height: 120px;\n}\n.textarea {\nposition: relative;\n}\n#char-count {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nposition: absolute;\nbottom: 1px;\nright: 1px;\npointer-events: none;\n}\n#char-count.warning {\ncolor: red;\n}\n.captcha-img {\nbackground: #FFF;\noutline: 1px solid #CCC;\noutline-offset: -1px;\n}\n.captcha-img > img {\ndisplay: block;\nheight: 57px;\nwidth: 300px;\n}\n#file-n-submit > input {\nmargin: 0;\n}\n#file-n-submit.has-file #qr-no-file {\nvisibility: hidden;\n}\n#file-n-submit:not(.has-file) #qr-filename,\n#file-n-submit:not(.has-file) #qr-file-spoiler,\n#file-n-submit:not(.has-file) #qr-filerm {\ndisplay: none;\n}\n#file-n-submit {\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: row;\nflex-direction: row;\n-webkit-align-items: center;\nalign-items: center;\n}\n#qr-no-file, #qr-filename-container {\n-webkit-flex: 1;\nflex: 1;\n}\n#qr-filename-container {\ncursor: default;\nposition: relative;\nmargin-left: 2px;\n}\n#qr-filename {\nposition: absolute;\ntop: 0; right: 0; bottom: 0; left: 0;\ntext-overflow: ellipsis;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#qr-filerm {\npadding: 0 2px;\n}\n#file-n-submit > #qr-file-spoiler {\nmargin: 0 2px;\n}\n#qr input[type='file'] {\nposition: absolute;\nvisibility: hidden;\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\nposition: relative;\n}\n.menu-button i {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\nmargin: 2px 0;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\noutline: none;\n}\n.entry {\ncursor: pointer;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.entry.has-submenu {\npadding-right: 20px;\n}\n.has-submenu::after {\ncontent: '';\nborder-left:   6px solid;\nborder-top:    4px solid transparent;\nborder-bottom: 4px solid transparent;\ndisplay: inline-block;\nmargin: 4px;\nposition: absolute;\nright: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\ndisplay: none;\n}\n.submenu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\nmargin: -1px 0;\n}\n.entry input {\nmargin: 0;\n}\n\n/* General */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.yotsuba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.yotsuba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba #menu {\ncolor: #800000;\n}\n:root.yotsuba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 10pt;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.yotsuba-b #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.yotsuba-b .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba-b #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b #menu {\ncolor: #000;\n}\n:root.yotsuba-b .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 10pt;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.futaba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.futaba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.futaba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba #menu {\ncolor: #800000;\n}\n:root.futaba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 12pt;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.burichan #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.burichan .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.burichan #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan #menu {\ncolor: #000000;\n}\n:root.burichan .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 12pt;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .field:focus {\nborder-color: #000;\n}\n\n/* Header */\n:root.tomorrow #header-bar {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a {\ncolor: #81A2BE;\n}\n\n/* Settings */\n:root.tomorrow #fourchanx-settings fieldset {\nborder-color: #111;\n}\n\n/* Quote */\n:root.tomorrow .backlink.deadlink {\ncolor: #81A2BE !important;\n}\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n.tomorrow #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow #qr select {\ncolor: #C5C8C6;\n}\n:root.tomorrow #qr option {\ncolor: #000;\n}\n:root.tomorrow .qr-preview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n\n/* Menu */\n:root.tomorrow #menu {\ncolor: #C5C8C6;\n}\n:root.tomorrow .entry {\nborder-bottom: 1px solid #111;\nfont-size: 10pt;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* General */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a {\ncolor: #FF6600;\n}\n\n/* Settings */\n:root.photon #fourchanx-settings fieldset {\nborder-color: #CCC;\n}\n\n/* Quote */\n:root.photon .backlink.deadlink {\ncolor: #F60 !important;\n}\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.photon #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon #menu {\ncolor: #333;\n}\n:root.photon .entry {\nborder-bottom: 1px solid #CCC;\nfont-size: 10pt;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
   };
 
   Main.init();

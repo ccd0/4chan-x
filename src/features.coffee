@@ -1,85 +1,134 @@
 Header =
   init: ->
     headerEl = $.el 'div',
-      id:        'header'
+      id: 'header'
       innerHTML: """
         <div id=header-bar class=dialog>
-          <span class=brackets-wrap><a class=menu-button href=javascript:;><span></span></a></span>
-          <span class=brackets-wrap hidden>top secret</span>
-          <span class=brackets-wrap id=board-list hidden>next-gen board-list</span>
-          <span class='show-board-list-button brackets-wrap' title="Toggle the board list."><a href=javascript:;>+</a></span>
-          <a class=board-name href="/#{g.BOARD}/#{if g.VIEW is 'catalog' then 'catalog' else ''}">
-            <span class=board-path>/#{g.BOARD}/</span> - <span class=board-title>...</span>
-          </a>
-          <span class=board-list hidden></span>
+          <span class='menu-button brackets-wrap'><a href=javascript:;><i></i></a></span>
+          <span id=shortcuts class=brackets-wrap></span>
+          <span id=board-list>
+            <span id=custom-board-list></span>
+            <span id=full-board-list hidden></span>
+          </span>
           <div id=toggle-header-bar title="Toggle the header auto-hiding."></div>
         </div>
         <div id=notifications></div>
       """.replace />\s+</g, '><' # get rid of spaces between elements
 
-    @headerBar = $ '#header-bar', headerEl
-    Header.setBarVisibility $.get 'autohideHeaderBar', false
-    $.sync 'autohideHeaderBar', Header.setBarVisibility
+    @bar = $ '#header-bar', headerEl
+    @setBarVisibility Conf['Header auto-hide']
+    $.sync 'Header auto-hide', @setBarVisibility
 
     @menu = new UI.Menu 'header'
-    $.on $('.menu-button',            @headerBar), 'click', @menuToggle
-    $.on $('.show-board-list-button', @headerBar), 'click', @toggleBoardList
-    $.on $('#toggle-header-bar',      @headerBar), 'click', @toggleBar
+    $.on $('.menu-button',       @bar), 'click', @menuToggle
+    $.on $('#toggle-header-bar', @bar), 'click', @toggleBarVisibility
 
     catalogToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{if g.VIEW is 'catalog' then 'checked' else ''}> Use catalog board links"
+      innerHTML: "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}> Use catalog board links"
     $.on catalogToggler.firstElementChild, 'change', @toggleCatalogLinks
+    $.sync 'Header catalog links', @setCatalogLinks
     $.event 'AddMenuEntry',
       type: 'header'
       el: catalogToggler
-      order: 105
+      order: 50
 
     $.asap (-> d.body), ->
-      if Main.isThisPageLegit()
-        $.prepend d.body, headerEl
-    $.asap (-> $.id 'boardNavDesktop'), @setBoardList
+      return unless Main.isThisPageLegit()
+      # Wait for #boardNavMobile instead of #boardNavDesktop,
+      # it might be incomplete otherwise.
+      $.asap (-> $.id 'boardNavMobile'), Header.setBoardList
+      $.prepend d.body, headerEl
 
   setBoardList: ->
-    if nav = $.id 'boardNavDesktop'
-      if a = $ "a[href*='/#{g.BOARD}/']", nav
-        a.className = 'current'
-        $('.board-title', Header.headerBar).textContent = a.title
-      $.add $('.board-list', Header.headerBar), [nav.childNodes...]
+    nav = $.id 'boardNavDesktop'
+    if a = $ "a[href*='/#{g.BOARD}/']", nav
+      a.className = 'current'
+    fullBoardList = $ '#full-board-list', Header.bar
+    $.add fullBoardList, [nav.childNodes...]
+
+    if Conf['Custom Board Navigation']
+      Header.generateBoardList Conf['boardnav']
+      $.sync 'boardnav', Header.generateBoardList
+      btn = $.el 'span',
+        className: 'hide-board-list-button brackets-wrap'
+        innerHTML: '<a href=javascript:;> - </a>'
+      $.on btn, 'click', Header.toggleBoardList
+      $.prepend fullBoardList, btn
+    else
+      $.rm $ '#custom-board-list', Header.bar
+      fullBoardList.hidden = false
+
+    Header.setCatalogLinks Conf['Header catalog links']
+
+  generateBoardList: (text) ->
+    list = $ '#custom-board-list', Header.bar
+    list.innerHTML = null
+    return unless text
+    as = $$('#full-board-list a', Header.bar)[0...-2] # ignore the Settings and Home links
+    nodes = text.match(/[\w@]+(-(all|title|full|text:"[^"]+"))?|[^\w@]+/g).map (t) ->
+      if /^[^\w@]/.test t
+        return $.tn t
+      if t is 'toggle-all'
+        a = $.el 'a',
+          className: 'show-board-list-button'
+          textContent: '+'
+          href: 'javascript:;'
+        $.on a, 'click', Header.toggleBoardList
+        return a
+      board = if /^current/.test t
+        g.BOARD.ID
+      else
+        t.match(/^[^-]+/)[0]
+      for a in as
+        if a.textContent is board
+          a = a.cloneNode true
+          if /-title$/.test t
+            a.textContent = a.title
+          else if /-full$/.test t
+            a.textContent = "/#{board}/ - #{a.title}"
+          else if m = t.match /-text:"(.+)"$/
+            a.textContent = m[1]
+          else if board is '@'
+            $.addClass a, 'navSmall'
+          return a
+      $.tn t
+    $.add list, nodes
 
   toggleBoardList: ->
-    node = @firstElementChild.firstChild
-    if showBoardList = $.hasClass @, 'show-board-list-button'
-      $.rmClass  @, 'show-board-list-button'
-      $.addClass @, 'hide-board-list-button'
-      node.data = node.data.replace '+', '-'
-    else
-      $.rmClass  @, 'hide-board-list-button'
-      $.addClass @, 'show-board-list-button'
-      node.data = node.data.replace '-', '+'
-    {headerBar} = Header
-    $('.board-name', headerBar).hidden =  showBoardList
-    $('.board-list', headerBar).hidden = !showBoardList
+    {bar}  = Header
+    custom = $ '#custom-board-list', bar
+    full   = $ '#full-board-list',   bar
+    showBoardList = !full.hidden
+    custom.hidden = !showBoardList
+    full.hidden   =  showBoardList
 
-  toggleCatalogLinks: ->
-    useCatalog = @checked
-    root = $ '.board-list', Header.headerBar
-    as = $$ 'a[href*="boards.4chan.org"]', root
-    as.push $ '.board-name', Header.headerBar
+  setCatalogLinks: (useCatalog) ->
+    as = $$ '#board-list a[href*="boards.4chan.org"]', Header.bar
+    str = if useCatalog then 'catalog' else ''
     for a in as
-      a.pathname = "/#{a.pathname.split('/')[1]}/#{if useCatalog then 'catalog' else ''}"
+      a.pathname = "/#{a.pathname.split('/')[1]}/#{str}"
     return
+  toggleCatalogLinks: ->
+    Header.setCatalogLinks @checked
+    $.set 'Header catalog links', @checked
 
   setBarVisibility: (hide) ->
-    (if hide then $.addClass else $.rmClass) Header.headerBar, 'autohide'
-  toggleBar: ->
-    hide = !$.hasClass Header.headerBar, 'autohide'
+    (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
+  toggleBarVisibility: ->
+    hide = !$.hasClass Header.bar, 'autohide'
     Header.setBarVisibility hide
     message = if hide
       'The header bar will automatically hide itself.'
     else
       'The header bar will remain visible.'
     new Notification 'info', message, 2
-    $.set 'autohideHeaderBar', hide
+    $.set 'Header auto-hide', hide
+
+  addShortcut: (el) ->
+    shortcut = $.el 'span',
+      className: 'shortcut'
+    $.add shortcut, el
+    $.prepend $('#shortcuts', Header.bar), shortcut
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g
@@ -169,7 +218,7 @@ Settings =
           <div class=sections-list></div>
           <div class=credits>
             <a href='<%= meta.page %>' target=_blank><%= meta.name %></a> |
-            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/changelog' target=_blank>#{g.VERSION}</a> |
+            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md##{g.VERSION.replace(/\./g, '')}' target=_blank>#{g.VERSION}</a> |
             <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |
             <a href=javascript:; class=close title=Close>×</a>
           </div>
@@ -299,7 +348,7 @@ Settings =
           window.location.reload()
       catch err
         output.textContent = 'Import failed due to an error.'
-        $.log err.stack
+        c.log err.stack
     reader.readAsText file
   loadSettings: (data) ->
     version = data.version.split '.'
@@ -356,9 +405,9 @@ Settings =
       data.Conf.sauces = data.Conf.sauces.replace /\$\d/g, (c) ->
         switch c
           when '$1'
-            '%turl'
+            '%TURL'
           when '$2'
-            '%url'
+            '%URL'
           when '$3'
             '%MD5'
           when '$4'
@@ -408,6 +457,7 @@ Settings =
         name: name
         className: 'field'
         value: $.get name, Conf[name]
+        spellcheck: false
       $.on ta, 'change', $.cb.value
       $.add div, ta
       return
@@ -447,14 +497,14 @@ Settings =
     section.innerHTML = """
       <div class=warning #{if Conf['Sauce'] then 'hidden' else ''}><code>Sauce</code> is disabled.</div>
       <div>Lines starting with a <code>#</code> will be ignored.</div>
-      <div>You can specify a display text by appending <code>;text:[text]</code> to the url.</div>
+      <div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div>
       <ul>These parameters will be replaced by their corresponding values:
-        <li><code>%turl</code>: Thumbnail url.</li>
-        <li><code>%url</code>: Full image url.</li>
+        <li><code>%TURL</code>: Thumbnail URL.</li>
+        <li><code>%URL</code>: Full image URL.</li>
         <li><code>%MD5</code>: MD5 hash.</li>
         <li><code>%board</code>: Current board.</li>
       </ul>
-      <textarea name=sauces class=field></textarea>
+      <textarea name=sauces class=field spellcheck=false></textarea>
     """
     sauce = $ 'textarea', section
     sauce.value = $.get 'sauces', Conf['sauces']
@@ -463,8 +513,19 @@ Settings =
   rice: (section) ->
     section.innerHTML = """
       <fieldset>
+        <legend>Custom Board Navigation <span class=warning #{if Conf['Custom Board Navigation'] then 'hidden' else ''}>is disabled.</span></legend>
+        <div><input name=boardnav class=field spellcheck=false></div>
+        <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>
+        <div>Board link: <code>board</code></div>
+        <div>Title link: <code>board-title</code></div>
+        <div>Full text link: <code>board-full</code></div>
+        <div>Custom text link: <code>board-text:"VIP Board"</code></div>
+        <div>Full board list toggle: <code>toggle-all</code></div>
+      </fieldset>
+
+      <fieldset>
         <legend>Time Formatting <span class=warning #{if Conf['Time Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
-        <div><input name=time class=field>: <span class=time-preview></span></div>
+        <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>
         <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>
         <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>
         <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>
@@ -476,13 +537,13 @@ Settings =
 
       <fieldset>
         <legend>Quote Backlinks formatting <span class=warning #{if Conf['Quote Backlinks'] then 'hidden' else ''}>is disabled.</span></legend>
-        <div><input name=backlink class=field>: <span class=backlink-preview></span></div>
+        <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>
       </fieldset>
 
       <fieldset>
         <legend>File Info Formatting <span class=warning #{if Conf['File Info Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
-        <div><input name=fileInfo class=field>: <span class='fileText file-info-preview'></span></div>
-        <div>divnk: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>
+        <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>
+        <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>
         <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>
         <div>Spoiler indicator: <code>%p</code></div>
         <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>
@@ -503,10 +564,10 @@ Settings =
       <fieldset>
         <legend>Custom CSS <span class=warning #{if Conf['Custom CSS'] then 'hidden' else ''}>is disabled.</span></legend>
         <button id=apply-css>Apply CSS</button>
-        <textarea name=usercss class=field></textarea>
+        <textarea name=usercss class=field spellcheck=false></textarea>
       </fieldset>
     """
-    for name in ['time', 'backlink', 'fileInfo', 'favicon', 'usercss']
+    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
       input = $ "[name=#{name}]", section
       input.value = $.get name, Conf[name]
       event = if name in ['favicon', 'usercss']
@@ -518,6 +579,8 @@ Settings =
         $.on input, event, Settings[name]
         Settings[name].call input
     $.on $.id('apply-css'), 'click', Settings.usercss
+  boardnav: ->
+    Header.generateBoardList @value
   time: ->
     funk = Time.createFunc @value
     @nextElementSibling.textContent = funk Time, new Date()
@@ -550,7 +613,7 @@ Settings =
     section.innerHTML = """
       <div class=warning #{if Conf['Keybinds'] then 'hidden' else ''}><code>Keybinds</code> are disabled.</div>
       <div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div>
-      <div>Press <kbd>Return</kbd> to disable a keybind.</div>
+      <div>Press <kbd>Backspace</kbd> to disable a keybind.</div>
       <table><tbody>
         <tr><th>Actions</th><th>Keybinds</th></tr>
       </tbody></table>
@@ -562,6 +625,7 @@ Settings =
       input = $ 'input', tr
       input.name  = key
       input.value = $.get key, Conf[key]
+      input.spellcheck = false
       $.on input, 'keydown', Settings.keybind
       $.add tbody, tr
     return
@@ -1318,7 +1382,7 @@ Menu =
     (post) ->
       a or= $.el 'a',
         className: 'menu-button'
-        innerHTML: '[<span></span>]'
+        innerHTML: '[<i></i>]'
         href:      'javascript:;'
       clone = a.cloneNode true
       clone.setAttribute 'data-postid', post.fullID
@@ -1561,6 +1625,9 @@ Keybinds =
     thread = Get.postFromNode($('.op', threadRoot)).thread
     switch key
       # QR & Options
+      when Conf['Toggle board list']
+        if Conf['Custom Board Navigation']
+          Header.toggleBoardList()
       when Conf['Open empty QR']
         Keybinds.qr threadRoot
       when Conf['Open QR']
@@ -1581,6 +1648,9 @@ Keybinds =
       when Conf['Code tags']
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'code', target
+      when Conf['Eqn tags']
+        return if target.nodeName isnt 'TEXTAREA'
+        Keybinds.tags 'eqn', target
       when Conf['Math tags']
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'math', target
@@ -1626,7 +1696,7 @@ Keybinds =
       when Conf['Previous reply']
         Keybinds.hl -1, threadRoot
       when Conf['Hide']
-        ThreadHiding.toggle thread
+        ThreadHiding.toggle thread if g.VIEW is 'index'
       else
         return
     e.preventDefault()
@@ -1686,9 +1756,7 @@ Keybinds =
 
   img: (thread, all) ->
     if all
-      input = ImageExpand.expandAllInput
-      input.checked = !input.checked
-      ImageExpand.cb.all.call input
+      ImageExpand.cb.toggleAll()
     else
       post = Get.postFromNode $('.post.highlight', thread) or $ '.op', thread
       ImageExpand.toggle post
@@ -1702,7 +1770,7 @@ Keybinds =
       location.href = url
 
   hl: (delta, thread) ->
-    headRect  = Header.headerBar.getBoundingClientRect()
+    headRect  = Header.bar.getBoundingClientRect()
     topMargin = headRect.top + headRect.height
     if postEl = $ '.reply.highlight', thread
       $.rmClass postEl, 'highlight'
@@ -1762,7 +1830,7 @@ Nav =
     Nav.scroll +1
 
   getThread: (full) ->
-    headRect  = Header.headerBar.getBoundingClientRect()
+    headRect  = Header.bar.getBoundingClientRect()
     topMargin = headRect.top + headRect.height
     threads = $$ '.thread:not([hidden])'
     for thread, i in threads
@@ -2981,11 +3049,11 @@ Sauce =
       name: 'Sauce'
       cb:   @node
   createSauceLink: (link) ->
-    link = link.replace /%(t?url|MD5|board)/g, (parameter) ->
+    link = link.replace /%(T?URL|MD5|board)/g, (parameter) ->
       switch parameter
-        when '%turl'
+        when '%TURL'
           "' + post.file.thumbURL + '"
-        when '%url'
+        when '%URL'
           "' + post.file.URL + '"
         when '%MD5'
           "' + encodeURIComponent(post.file.MD5) + '"
@@ -3012,6 +3080,14 @@ ImageExpand =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Image Expansion']
 
+    @EAI = $.el 'a',
+      className: 'expand-all-shortcut'
+      textContent: 'EAI'
+      title: 'Expand All Images'
+      href: 'javascript:;'
+    $.on @EAI, 'click', ImageExpand.cb.toggleAll
+    Header.addShortcut @EAI
+
     Post::callbacks.push
       name: 'Image Expansion'
       cb:   @node
@@ -3025,12 +3101,16 @@ ImageExpand =
       return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
       e.preventDefault()
       ImageExpand.toggle Get.postFromNode @
-    all: ->
+    toggleAll: ->
       $.event 'CloseMenu'
-      func = if ImageExpand.on = @checked
-        ImageExpand.expand
+      if ImageExpand.on = $.hasClass ImageExpand.EAI, 'expand-all-shortcut'
+        ImageExpand.EAI.className = 'contract-all-shortcut'
+        ImageExpand.EAI.title     = 'Contract All Images'
+        func = ImageExpand.expand
       else
-        ImageExpand.contract
+        ImageExpand.EAI.className = 'expand-all-shortcut'
+        ImageExpand.EAI.title     = 'Expand All Images'
+        func = ImageExpand.contract
       for ID, post of g.posts
         for post in [post].concat post.clones
           {file} = post
@@ -3063,7 +3143,7 @@ ImageExpand =
       # Scroll back to the thumbnail when contracting the image
       # to avoid being left miles away from the relevant post.
       postRect = post.nodes.root.getBoundingClientRect()
-      headRect = Header.headerBar.getBoundingClientRect()
+      headRect = Header.bar.getBoundingClientRect()
       top  = postRect.top - headRect.top - headRect.height - 2
       root = if $.engine is 'webkit'
         d.body
@@ -3150,26 +3230,21 @@ ImageExpand =
 
       {createSubEntry} = ImageExpand.menu
       subEntries = []
-      subEntries.push createSubEntry 'Expand all'
       for key, conf of Config.imageExpansion
         subEntries.push createSubEntry key, conf
 
       $.event 'AddMenuEntry',
         type: 'header'
         el: el
-        order: 20
+        order: 80
         subEntries: subEntries
 
     createSubEntry: (type, config) ->
       label = $.el 'label',
         innerHTML: "<input type=checkbox name='#{type}'> #{type}"
       input = label.firstElementChild
-      switch type
-        when 'Expand all'
-          $.on input, 'change', ImageExpand.cb.all
-          ImageExpand.expandAllInput = input
-        when 'Fit width', 'Fit height'
-          $.on input, 'change', ImageExpand.cb.setFitness
+      if type in ['Fit width', 'Fit height']
+        $.on input, 'change', ImageExpand.cb.setFitness
       if config
         label.title   = config[1]
         input.checked = Conf[type]
@@ -3458,14 +3533,15 @@ Unread =
     for ID, post of @posts
       posts.push post if post.isReply
     Unread.addPosts posts
-    if Unread.hr.parentNode
-      Unread.hr.scrollIntoView false
-    else if posts.length and !Unread.posts.length
+    if Unread.posts.length
+      # Scroll to before the first unread post.
+      $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView false
+    else if posts.length
       # Scroll to the last read post.
       posts[posts.length - 1].nodes.root.scrollIntoView()
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
-    $.on d, 'visibilitychange',        Unread.setLine
+    $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
 
   addPosts: (newPosts) ->
     if Conf['Quick Reply']
@@ -3477,8 +3553,9 @@ Unread =
         continue
       Unread.posts.push post
       Unread.addPostQuotingYou post, yourPosts if yourPosts
-    # Force line on visible threads if there were no unread posts previously.
-    Unread.setLine Unread.posts[0] in newPosts
+    if Conf['Unread Line']
+      # Force line on visible threads if there were no unread posts previously.
+      Unread.setLine Unread.posts[0] in newPosts
     Unread.read()
     Unread.update()
 
@@ -3659,7 +3736,7 @@ ThreadUpdater =
       #{html}
       <div><label title='Controls whether *this* thread automatically updates or not'><input type=checkbox name='Auto Update This' #{checked}> Auto Update This</label></div>
       <div><label><input type=number name=Interval class=field min=5 value=#{Conf['Interval']}> Refresh rate (s)</label></div>
-      <div><input value='Update Now' type=button name='Update Now'></div>
+      <div><input value='Update' type=button name='Update'></div>
       """
 
     @dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
@@ -3690,7 +3767,7 @@ ThreadUpdater =
         when 'Interval'
           $.on input, 'change', ThreadUpdater.cb.interval
           ThreadUpdater.cb.interval.call input
-        when 'Update Now'
+        when 'Update'
           $.on input, 'click', ThreadUpdater.update
 
     $.on window, 'online offline',   ThreadUpdater.cb.online
@@ -3868,9 +3945,13 @@ ThreadUpdater =
     deletedFiles = []
     # Check for deleted posts/files.
     for ID, post of ThreadUpdater.thread.posts
-      continue if post.isDead
+      # XXX tmp fix for 4chan's racing condition
+      # giving us false-positive dead posts.
+      # continue if post.isDead
       ID = +ID
-      unless ID in index
+      if post.isDead and ID in index
+        post.resurrect()
+      else unless ID in index
         post.kill()
         deletedPosts.push post
       else if post.file and !post.file.isDead and ID not in files

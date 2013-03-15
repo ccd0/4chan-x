@@ -67,27 +67,24 @@ a[href="javascript:;"] {
   z-index: 999;
 }
 #notifications {
-  z-index: 80;
-}
-#qp, #ihover {
   z-index: 70;
 }
-#menu {
+#qp, #ihover {
   z-index: 60;
 }
-#navlinks, #updater, #thread-stats {
+#menu {
   z-index: 50;
 }
-#header:hover {
+#navlinks, #updater, #thread-stats {
   z-index: 40;
 }
 #qr {
   z-index: 30;
 }
-#header {
+#watcher {
   z-index: 20;
 }
-#watcher {
+#header {
   z-index: 10;
 }
 
@@ -109,18 +106,25 @@ a[href="javascript:;"] {
 }
 #header-bar {
   border-width: 0 0 1px;
-  padding: 4px;
+  display: -webkit-flex;
+  display: flex;
+  padding: 3px 4px 4px;
   position: relative;
   -webkit-transition: all .1s ease-in-out;
   transition: all .1s ease-in-out;
+}
+#board-list {
+  -webkit-flex: 1;
+  flex: 1;
+  text-align: center;
 }
 #header-bar.autohide:not(:hover) {
   box-shadow: none;
   margin-bottom: -1em;
   -webkit-transform: translateY(-100%);
   transform: translateY(-100%);
-  -webkit-transition: all 2s 2s ease-in-out;
-  transition: all 2s 2s ease-in-out;
+  -webkit-transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
+  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
 }
 #toggle-header-bar {
   cursor: n-resize;
@@ -141,11 +145,20 @@ a[href="javascript:;"] {
   text-decoration: none;
   padding: 1px;
 }
+#shortcuts:empty {
+  display: none;
+}
+.shortcut:not(:last-child)::after {
+  content: " / ";
+}
 .brackets-wrap::before {
-  content: " [";
+  content: "\\00a0[";
 }
 .brackets-wrap::after {
-  content: "] ";
+  content: "]\\00a0";
+}
+.expand-all-shortcut {
+  opacity: .35;
 }
 
 /* Notifications */
@@ -280,6 +293,9 @@ a[href="javascript:;"] {
 }
 .section-sauce textarea {
   height: 350px;
+}
+.section-rice .field[name="boardnav"] {
+  width: 100%;
 }
 .section-rice textarea {
   height: 150px;
@@ -736,7 +752,7 @@ a[href="javascript:;"] {
   display: inline-block;
   position: relative;
 }
-.menu-button > span {
+.menu-button i {
   border-top:   6px solid;
   border-right: 4px solid transparent;
   border-left:  4px solid transparent;
@@ -761,11 +777,6 @@ a[href="javascript:;"] {
   position: relative;
   text-decoration: none;
   white-space: nowrap;
-  /* XXX firefox fix */
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
 }
 .entry.has-submenu {
   padding-right: 20px;

@@ -18,19 +18,17 @@ QR =
     if Conf['Hide Original Post Form']
       $.addClass doc, 'hide-original-post-form'
 
-    link = $.el 'a',
+    sc = $.el 'a',
       className: 'qr-shortcut'
-      textContent: 'Quick Reply'
+      textContent: 'QR'
+      title: 'Quick Reply'
       href: 'javascript:;'
-    $.on link, 'click', ->
+    $.on sc, 'click', ->
       $.event 'CloseMenu'
       QR.open()
       QR.resetThreadSelector()
       QR.nodes.com.focus()
-    $.event 'AddMenuEntry',
-      type: 'header'
-      el: link
-      order: 10
+    Header.addShortcut sc
 
     if $.engine is 'webkit'
       $.on d, 'paste',            QR.paste
@@ -50,7 +48,7 @@ QR =
 
   persist: ->
     QR.open()
-    QR.hide() if Conf['Auto Hide QR']
+    QR.hide() if Conf['Auto-Hide QR']
   open: ->
     if QR.nodes
       QR.nodes.el.hidden = false
@@ -494,22 +492,22 @@ QR =
         else
           height = s / width  * height
           width  = s
-        c = $.el 'canvas'
-        c.height = img.height = height
-        c.width  = img.width  = width
-        c.getContext('2d').drawImage img, 0, 0, width, height
+        cv = $.el 'canvas'
+        cv.height = img.height = height
+        cv.width  = img.width  = width
+        cv.getContext('2d').drawImage img, 0, 0, width, height
         unless window.URL
-          @nodes.el.style.backgroundImage = "url(#{c.toDataURL()})"
+          @nodes.el.style.backgroundImage = "url(#{cv.toDataURL()})"
           delete @URL
           return
         URL.revokeObjectURL fileURL
         applyBlob = (blob) =>
           @URL = URL.createObjectURL blob
           @nodes.el.style.backgroundImage = "url(#{@URL})"
-        if c.toBlob
-          c.toBlob applyBlob
+        if cv.toBlob
+          cv.toBlob applyBlob
           return
-        data = atob c.toDataURL().split(',')[1]
+        data = atob cv.toDataURL().split(',')[1]
 
         # DataUrl to Binary code from Aeosynth's 4chan X repo
         l = data.length
@@ -848,7 +846,7 @@ QR =
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.posts.length > 1
-    if Conf['Auto Hide QR'] and !QR.cooldown.auto
+    if Conf['Auto-Hide QR'] and !QR.cooldown.auto
       QR.hide()
     if !QR.cooldown.auto and $.x 'ancestor::div[@id="qr"]', d.activeElement
       # Unfocus the focused element if it is one within the QR and we're not auto-posting.
@@ -985,9 +983,14 @@ QR =
       isReply: !!threadID
 
     if threadID is postID # new thread
-      $.open "/#{g.BOARD}/res/#{threadID}"
+      URL = "/#{g.BOARD}/res/#{threadID}"
     else if g.VIEW is 'index' and !QR.cooldown.auto # posting from the index
-      $.open "/#{g.BOARD}/res/#{threadID}#p#{postID}"
+      URL = "/#{g.BOARD}/res/#{threadID}#p#{postID}"
+    if URL
+      if Conf['Open Post in New Tab']
+        $.open "/#{g.BOARD}/res/#{threadID}"
+      else
+        window.location = "/#{g.BOARD}/res/#{threadID}"
 
     unless Conf['Persistent QR'] or QR.cooldown.auto
       QR.close()

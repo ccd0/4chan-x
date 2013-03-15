@@ -30,8 +30,7 @@ Open your console with:
 
 ### Release
 
-- To patch, run `grunt patch` (`0.0.x` version bump).
-- To upgrade, run `grunt upgrade` (`0.x.0` version bump).
+- Update the version with `grunt patch`, `grunt minor` or `grunt major`.
 - Release with `grunt release`.
 
 Note: this is only used to release new 4chan X versions, and is **not** needed or wanted in pull requests.

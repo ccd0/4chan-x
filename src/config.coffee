@@ -5,6 +5,10 @@ Config =
         false
         'Compatibility between <%= meta.name %> and 4chan\'s inline extension is NOT guaranteed.'
       ]
+      'Custom Board Navigation': [
+        true
+        'Disable this to always display the full board list.'
+      ]
       '404 Redirect': [
         true
         'Redirect dead threads and images.'
@@ -133,6 +137,10 @@ Config =
         true
         'Show a different favicon when there are unread posts.'
       ]
+      'Unread Line': [
+        true
+        'Show a line to distinguish read posts from unread ones.'
+      ]
       'Thread Excerpt': [
         true
         'Show an excerpt of the thread in the tab title.'
@@ -166,6 +174,10 @@ Config =
       'Auto Hide QR': [
         false
         'Automatically hide the quick reply when posting.'
+      ]
+      'Open Post in New Tab': [
+        true
+        'Open new threads or replies to a thread from the index in a new tab.'
       ]
       'Remember Subject': [
         false
@@ -304,6 +316,12 @@ http://www.google.com/searchbyimage?image_url=%turl
 #//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/
 """
 
+  'Header auto-hide': false
+
+  'Header catalog links': false
+
+  boardnav: '[current-title / toggle-all]'
+
   time: '%m/%d/%y(%a)%H:%M:%S'
 
   backlink: '>>%id'
@@ -316,6 +334,10 @@ http://www.google.com/searchbyimage?image_url=%turl
 
   hotkeys:
     # QR & Options
+    'Toggle board list': [
+      'Ctrl+b'
+      'Toggle the full board list.'
+    ]
     'Open empty QR': [
       'q'
       'Open QR without post number inserted.'
@@ -339,6 +361,10 @@ http://www.google.com/searchbyimage?image_url=%turl
     'Code tags': [
       'Alt+c'
       'Insert code tags.'
+    ]
+    'Eqn tags':  [
+      'Alt+e'
+      'Insert eqn tags.'
     ]
     'Math tags': [
       'Alt+m'

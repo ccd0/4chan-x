@@ -185,6 +185,28 @@ class Post
       $.add quotelink, $.tn '\u00A0(Dead)'
       $.addClass quotelink, 'deadlink'
     return
+  # XXX tmp fix for 4chan's racing condition
+  # giving us false-positive dead posts.
+  resurrect: ->
+    delete @isDead
+    delete @timeOfDeath
+    $.rmClass @nodes.root, 'deleted-post'
+    strong = $ 'strong.warning', @nodes.info
+    # no false-positive files
+    if @file and @file.isDead
+      strong.textContent = '[File deleted]'
+    else
+      $.rm strong
+
+    return if @isClone
+    for clone in @clones
+      clone.resurrect()
+
+    for quotelink in Get.allQuotelinksLinkingTo @
+      if $.hasClass quotelink, 'deadlink'
+        quotelink.textContent = quotelink.textContent.replace '\u00A0(Dead)', ''
+        $.rmClass quotelink, 'deadlink'
+    return
   addClone: (context) ->
     new Clone @, context
   rmClone: (index) ->
@@ -303,17 +325,17 @@ Main =
         return
 
     initFeature = (name, module) ->
-      # console.time "#{name} initialization"
+      # c.time "#{name} initialization"
       try
         module.init()
       catch err
         Main.handleErrors
           message: "\"#{name}\" initialization crashed."
           error: err
-      finally
-        # console.timeEnd "#{name} initialization"
+      # finally
+      #   c.timeEnd "#{name} initialization"
 
-    # console.time 'All initializations'
+    # c.time 'All initializations'
     initFeature 'Polyfill',                 Polyfill
     initFeature 'Header',                   Header
     initFeature 'Settings',                 Settings
@@ -360,7 +382,7 @@ Main =
     initFeature 'Thread Watcher',           ThreadWatcher
     initFeature 'Index Navigation',         Nav
     initFeature 'Keybinds',                 Keybinds
-    # console.timeEnd 'All initializations'
+    # c.timeEnd 'All initializations'
 
     $.on d, 'AddCallback',   Main.addCallback
     $.on d, '4chanMainInit', Main.initStyle
@@ -443,7 +465,7 @@ Main =
     # get the nodes' length only once
     len = nodes.length
     for callback in klass::callbacks
-      # console.profile callback.name
+      # c.profile callback.name
       for i in [0...len]
         node = nodes[i]
         try
@@ -454,7 +476,7 @@ Main =
           errors.push
             message: "\"#{callback.name}\" crashed on #{klass.name} No.#{node} (/#{node.board}/)."
             error: err
-      # console.profileEnd callback.name
+      # c.profileEnd callback.name
     Main.handleErrors errors if errors
 
   addCallback: (e) ->
@@ -494,7 +516,7 @@ Main =
 
   parseError: (data) ->
     {message, error} = data
-    $.log message, error.stack
+    c.log message, error.stack
     message = $.el 'div',
       textContent: message
     error = $.el 'div',
