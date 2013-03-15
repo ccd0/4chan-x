@@ -5804,7 +5804,7 @@
         } else if (!index.contains(ID)) {
           post.kill();
           deletedPosts.push(post);
-        } else if (post.file && !post.file.isDead && files.contains(ID)) {
+        } else if (post.file && !post.file.isDead && !files.contains(ID)) {
           post.kill(true);
           deletedFiles.push(post);
         }

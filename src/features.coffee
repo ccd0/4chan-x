@@ -3954,7 +3954,7 @@ ThreadUpdater =
       else unless index.contains ID
         post.kill()
         deletedPosts.push post
-      else if post.file and !post.file.isDead and files.contains ID
+      else if post.file and !post.file.isDead and not files.contains ID
         post.kill true
         deletedFiles.push post
 
