@@ -329,7 +329,7 @@ QR =
         QR.selected.pasteText file
       else if file.size > max
         QR.error "File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
-      else unless file.type in QR.mimeTypes
+      else unless QR.mimeTypes.contains file.type
         QR.error 'Unsupported file type.'
       else
         QR.selected.setFile file
@@ -342,7 +342,7 @@ QR =
         post.pasteText file
       else if file.size > max
         QR.error "#{file.name}: File too large (file: #{$.bytesToString file.size}, max: #{$.bytesToString max})."
-      else unless file.type in QR.mimeTypes
+      else unless QR.mimeTypes.contains file.type
         QR.error "#{file.name}: Unsupported file type."
       else
         if (post = QR.posts[QR.posts.length - 1]).file
@@ -823,7 +823,7 @@ QR =
     # prevent errors
     if threadID is 'new'
       threadID = null
-      if g.BOARD.ID in ['vg', 'q'] and !post.sub
+      if ['vg', 'q'].contains(g.BOARD.ID) and !post.sub
         err = 'New threads require a subject.'
       else unless post.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
         err = 'No file selected.'

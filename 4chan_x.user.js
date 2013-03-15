@@ -45,7 +45,6 @@
 (function() {
   var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, CustomCSS, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -1620,9 +1619,9 @@
         name = _ref[_i];
         input = $("[name=" + name + "]", section);
         input.value = $.get(name, Conf[name]);
-        event = name === 'favicon' || name === 'usercss' ? 'change' : 'input';
+        event = ['favicon', 'usercss'].contains(name) ? 'change' : 'input';
         $.on(input, event, $.cb.value);
-        if (name !== 'usercss') {
+        if (!['usercss'].contains(name)) {
           $.on(input, event, Settings[name]);
           Settings[name].call(input);
         }
@@ -1785,7 +1784,7 @@
   Filter = {
     filters: {},
     init: function() {
-      var boards, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      var boards, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4;
       if (g.VIEW === 'catalog' || !Conf['Filter']) {
         return;
       }
@@ -1802,10 +1801,10 @@
           }
           filter = filter.replace(regexp[0], '');
           boards = ((_ref1 = filter.match(/boards:([^;]+)/)) != null ? _ref1[1].toLowerCase() : void 0) || 'global';
-          if (boards !== 'global' && !(_ref2 = g.BOARD.ID, __indexOf.call(boards.split(','), _ref2) >= 0)) {
+          if (boards !== 'global' && !(boards.split(',')).contains(g.BOARD.ID)) {
             continue;
           }
-          if (key === 'uniqueID' || key === 'MD5') {
+          if (['uniqueID', 'MD5'].contains(key)) {
             regexp = regexp[1];
           } else {
             try {
@@ -1815,10 +1814,10 @@
               continue;
             }
           }
-          op = ((_ref3 = filter.match(/[^t]op:(yes|no|only)/)) != null ? _ref3[1] : void 0) || 'yes';
+          op = ((_ref2 = filter.match(/[^t]op:(yes|no|only)/)) != null ? _ref2[1] : void 0) || 'yes';
           stub = (function() {
-            var _ref4;
-            switch ((_ref4 = filter.match(/stub:(yes|no)/)) != null ? _ref4[1] : void 0) {
+            var _ref3;
+            switch ((_ref3 = filter.match(/stub:(yes|no)/)) != null ? _ref3[1] : void 0) {
               case 'yes':
                 return true;
               case 'no':
@@ -1828,8 +1827,8 @@
             }
           })();
           if (hl = /highlight/.test(filter)) {
-            hl = ((_ref4 = filter.match(/highlight:(\w+)/)) != null ? _ref4[1] : void 0) || 'filter-highlight';
-            top = ((_ref5 = filter.match(/top:(yes|no)/)) != null ? _ref5[1] : void 0) || 'yes';
+            hl = ((_ref3 = filter.match(/highlight:(\w+)/)) != null ? _ref3[1] : void 0) || 'filter-highlight';
+            top = ((_ref4 = filter.match(/top:(yes|no)/)) != null ? _ref4[1] : void 0) || 'yes';
             top = top === 'yes';
           }
           this.filters[key].push(this.createFilter(regexp, op, stub, hl, top));
@@ -2026,7 +2025,7 @@
         var re, save, section, select, ta, tl, type, value;
         type = this.dataset.type;
         value = Filter[type](Filter.menu.post);
-        re = type === 'uniqueID' || type === 'MD5' ? value : value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
+        re = ['uniqueID', 'MD5'].contains(type) ? value : value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
           if (c === '\n') {
             return '\\n';
           } else if (c === '\\') {
@@ -2035,7 +2034,7 @@
             return "\\" + c;
           }
         });
-        re = type === 'uniqueID' || type === 'MD5' ? "/" + re + "/" : "/^" + re + "$/";
+        re = ['uniqueID', 'MD5'].contains(type) ? "/" + re + "/" : "/^" + re + "$/";
         if (!Filter.menu.post.isReply) {
           re += ';op:yes';
         }
@@ -2565,7 +2564,7 @@
       _ref = g.posts;
       for (ID in _ref) {
         post = _ref[ID];
-        if (__indexOf.call(post.quotes, fullID) >= 0) {
+        if (post.quotes.contains(fullID)) {
           recursive.apply(null, [post].concat(__slice.call(args)));
         }
       }
@@ -2720,8 +2719,8 @@
         el: div,
         order: 40,
         open: function(post) {
-          var node, seconds, thread, _ref;
-          if (post.isDead || !((thread = QR.yourPosts.threads[post.thread]) && (_ref = post.ID, __indexOf.call(thread, _ref) >= 0))) {
+          var node, seconds, thread;
+          if (post.isDead || !((thread = QR.yourPosts.threads[post.thread]) && thread.contains(post.ID))) {
             return false;
           }
           DeleteLink.post = post;
@@ -2936,12 +2935,12 @@
       });
     },
     keydown: function(e) {
-      var form, key, notification, notifications, target, thread, threadRoot, _i, _len, _ref;
+      var form, key, notification, notifications, target, thread, threadRoot, _i, _len;
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
       target = e.target;
-      if ((_ref = target.nodeName) === 'INPUT' || _ref === 'TEXTAREA') {
+      if (['INPUT', 'TEXTAREA'].contains(target.nodeName)) {
         if (!/(Esc|Alt|Ctrl|Meta)/.test(key)) {
           return;
         }
@@ -3596,36 +3595,36 @@
       };
     },
     allQuotelinksLinkingTo: function(post) {
-      var ID, quote, quotedPost, quotelinks, quoterPost, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+      var ID, quote, quotedPost, quotelinks, quoterPost, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
       quotelinks = [];
       _ref = g.posts;
       for (ID in _ref) {
         quoterPost = _ref[ID];
-        if (_ref1 = post.fullID, __indexOf.call(quoterPost.quotes, _ref1) >= 0) {
-          _ref2 = [quoterPost].concat(quoterPost.clones);
-          for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-            quoterPost = _ref2[_i];
+        if (quoterPost.quotes.contains(post.fullID)) {
+          _ref1 = [quoterPost].concat(quoterPost.clones);
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            quoterPost = _ref1[_i];
             quotelinks.push.apply(quotelinks, quoterPost.nodes.quotelinks);
           }
         }
       }
       if (Conf['Quote Backlinks']) {
-        _ref3 = post.quotes;
-        for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
-          quote = _ref3[_j];
+        _ref2 = post.quotes;
+        for (_j = 0, _len1 = _ref2.length; _j < _len1; _j++) {
+          quote = _ref2[_j];
           if (!(quotedPost = g.posts[quote])) {
             continue;
           }
-          _ref4 = [quotedPost].concat(quotedPost.clones);
-          for (_k = 0, _len2 = _ref4.length; _k < _len2; _k++) {
-            quotedPost = _ref4[_k];
+          _ref3 = [quotedPost].concat(quotedPost.clones);
+          for (_k = 0, _len2 = _ref3.length; _k < _len2; _k++) {
+            quotedPost = _ref3[_k];
             quotelinks.push.apply(quotelinks, __slice.call(quotedPost.nodes.backlinks));
           }
         }
       }
       return quotelinks.filter(function(quotelink) {
-        var board, postID, _ref5;
-        _ref5 = Get.postDataFromLink(quotelink), board = _ref5.board, postID = _ref5.postID;
+        var board, postID, _ref4;
+        _ref4 = Get.postDataFromLink(quotelink), board = _ref4.board, postID = _ref4.postID;
         return board === post.board.ID && postID === post.ID;
       });
     },
@@ -3666,7 +3665,7 @@
         return;
       }
       status = req.status;
-      if (status !== 200 && status !== 304) {
+      if (![200, 304].contains(status)) {
         if (url = Redirect.post(board, postID)) {
           $.cache(url, function() {
             return Get.archivedPost(this, board, postID, root, context);
@@ -3898,7 +3897,7 @@
             a.setAttribute('data-postid', ID);
           }
         }
-        if (__indexOf.call(this.quotes, quoteID) < 0) {
+        if (!this.quotes.contains(quoteID)) {
           this.quotes.push(quoteID);
         }
         if (!a) {
@@ -4193,7 +4192,7 @@
       for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
         quotelink = quotelinks[_i];
         _ref = Get.postDataFromLink(quotelink), threadID = _ref.threadID, postID = _ref.postID;
-        if ((thread = QR.yourPosts.threads[threadID]) && __indexOf.call(thread, postID) >= 0) {
+        if ((thread = QR.yourPosts.threads[threadID]) && thread.contains(postID)) {
           $.add(quotelink, $.tn(QuoteYou.text));
         }
       }
@@ -4212,7 +4211,7 @@
       });
     },
     node: function() {
-      var board, op, postID, quotelink, quotelinks, quotes, _i, _j, _len, _len1, _ref, _ref1;
+      var board, op, postID, quotelink, quotelinks, quotes, _i, _j, _len, _len1, _ref;
       if (this.isClone && this.thread === this.context.thread) {
         return;
       }
@@ -4220,19 +4219,19 @@
         return;
       }
       quotelinks = this.nodes.quotelinks;
-      if (this.isClone && (_ref = this.thread.fullID, __indexOf.call(quotes, _ref) >= 0)) {
+      if (this.isClone && quotes.contains(this.thread.fullID)) {
         for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
           quotelink = quotelinks[_i];
           quotelink.textContent = quotelink.textContent.replace(QuoteOP.text, '');
         }
       }
       op = (this.isClone ? this.context : this).thread.fullID;
-      if (__indexOf.call(quotes, op) < 0) {
+      if (!quotes.contains(op)) {
         return;
       }
       for (_j = 0, _len1 = quotelinks.length; _j < _len1; _j++) {
         quotelink = quotelinks[_j];
-        _ref1 = Get.postDataFromLink(quotelink), board = _ref1.board, postID = _ref1.postID;
+        _ref = Get.postDataFromLink(quotelink), board = _ref.board, postID = _ref.postID;
         if (("" + board + "." + postID) === op) {
           $.add(quotelink, $.tn(QuoteOP.text));
         }
@@ -4867,7 +4866,7 @@
           innerHTML: "<input type=checkbox name='" + type + "'> " + type
         });
         input = label.firstElementChild;
-        if (type === 'Fit width' || type === 'Fit height') {
+        if (['Fit width', 'Fit height'].contains(type)) {
           $.on(input, 'change', ImageExpand.cb.setFitness);
         }
         if (config) {
@@ -4909,8 +4908,7 @@
 
   AutoGIF = {
     init: function() {
-      var _ref;
-      if (g.VIEW === 'catalog' || !Conf['Auto-GIF'] || ((_ref = g.BOARD.ID) === 'gif' || _ref === 'wsg')) {
+      if (g.VIEW === 'catalog' || !Conf['Auto-GIF'] || ['gif', 'wsg'].contains(g.BOARD.ID)) {
         return;
       }
       return Post.prototype.callbacks.push({
@@ -5071,7 +5069,7 @@
     parse: function(req, a, post) {
       var clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _len, _len1, _ref;
       status = req.status;
-      if (status !== 200 && status !== 304) {
+      if (![200, 304].contains(status)) {
         a.textContent = "Error " + req.statusText + " (" + status + ")";
         return;
       }
@@ -5220,7 +5218,7 @@
         return;
       }
       status = req.status;
-      if (status !== 200 && status !== 304) {
+      if ([200, 304].contains(status)) {
         a.textContent = "Error " + req.statusText + " (" + status + ")";
         $.off(a, 'click', ExpandThread.cb.toggle);
         return;
@@ -5316,7 +5314,7 @@
       }
     },
     addPosts: function(newPosts) {
-      var ID, post, youInThisThread, yourPosts, _i, _len, _ref;
+      var ID, post, youInThisThread, yourPosts, _i, _len;
       if (Conf['Quick Reply']) {
         yourPosts = QR.yourPosts;
         youInThisThread = yourPosts.threads[Unread.thread];
@@ -5324,7 +5322,7 @@
       for (_i = 0, _len = newPosts.length; _i < _len; _i++) {
         post = newPosts[_i];
         ID = post.ID;
-        if (ID <= Unread.lastReadPost || post.isHidden || youInThisThread && __indexOf.call(youInThisThread, ID) >= 0) {
+        if (ID <= Unread.lastReadPost || post.isHidden || youInThisThread && youInThisThread.contains(ID)) {
           continue;
         }
         Unread.posts.push(post);
@@ -5333,7 +5331,7 @@
         }
       }
       if (Conf['Unread Line']) {
-        Unread.setLine((_ref = Unread.posts[0], __indexOf.call(newPosts, _ref) >= 0));
+        Unread.setLine(newPosts.contains(Unread.posts[0]));
       }
       Unread.read();
       return Unread.update();
@@ -5350,7 +5348,7 @@
         _ref2 = yourPosts.threads;
         for (thread in _ref2) {
           postIDs = _ref2[thread];
-          if (__indexOf.call(postIDs, +quoteID) >= 0) {
+          if (postIDs.contains(+quoteID)) {
             Unread.postsQuotingYou.push(post);
             return;
           }
@@ -5801,12 +5799,12 @@
       for (ID in _ref) {
         post = _ref[ID];
         ID = +ID;
-        if (post.isDead && __indexOf.call(index, ID) >= 0) {
+        if (post.isDead && index.contains(ID)) {
           post.resurrect();
-        } else if (__indexOf.call(index, ID) < 0) {
+        } else if (!index.contains(ID)) {
           post.kill();
           deletedPosts.push(post);
-        } else if (post.file && !post.file.isDead && __indexOf.call(files, ID) < 0) {
+        } else if (post.file && !post.file.isDead && files.contains(ID)) {
           post.kill(true);
           deletedFiles.push(post);
         }
@@ -6349,7 +6347,7 @@
       return QR.nodes.fileInput.click();
     },
     fileInput: function(files) {
-      var file, length, max, post, _i, _len, _ref, _ref1;
+      var file, length, max, post, _i, _len;
       if (this instanceof Element) {
         files = __slice.call(this.files);
         QR.nodes.fileInput.value = null;
@@ -6366,7 +6364,7 @@
           QR.selected.pasteText(file);
         } else if (file.size > max) {
           QR.error("File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
-        } else if (_ref = file.type, __indexOf.call(QR.mimeTypes, _ref) < 0) {
+        } else if (!QR.mimeTypes.contains(file.type)) {
           QR.error('Unsupported file type.');
         } else {
           QR.selected.setFile(file);
@@ -6382,7 +6380,7 @@
           post.pasteText(file);
         } else if (file.size > max) {
           QR.error("" + file.name + ": File too large (file: " + ($.bytesToString(file.size)) + ", max: " + ($.bytesToString(max)) + ").");
-        } else if (_ref1 = file.type, __indexOf.call(QR.mimeTypes, _ref1) < 0) {
+        } else if (!QR.mimeTypes.contains(file.type)) {
           QR.error("" + file.name + ": Unsupported file type.");
         } else {
           if ((post = QR.posts[QR.posts.length - 1]).file) {
@@ -6957,7 +6955,7 @@
       return $.event('QRDialogCreation', null, dialog);
     },
     submit: function(e) {
-      var callbacks, challenge, err, filetag, m, opts, post, postData, response, textOnly, threadID, _ref, _ref1;
+      var callbacks, challenge, err, filetag, m, opts, post, postData, response, textOnly, threadID, _ref;
       if (e != null) {
         e.preventDefault();
       }
@@ -6978,7 +6976,7 @@
       threadID = QR.nodes.thread.value;
       if (threadID === 'new') {
         threadID = null;
-        if (((_ref = g.BOARD.ID) === 'vg' || _ref === 'q') && !post.sub) {
+        if (['vg', 'q'].contains(g.BOARD.ID) && !post.sub) {
           err = 'New threads require a subject.';
         } else if (!(post.file || (textOnly = !!$('input[name=textonly]', $.id('postForm'))))) {
           err = 'No file selected.';
@@ -6989,7 +6987,7 @@
         err = 'No file selected.';
       }
       if (QR.captcha.isEnabled && !err) {
-        _ref1 = QR.captcha.getOne(), challenge = _ref1.challenge, response = _ref1.response;
+        _ref = QR.captcha.getOne(), challenge = _ref.challenge, response = _ref.response;
         if (!response) {
           err = 'No valid captcha.';
         }

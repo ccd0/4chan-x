@@ -570,12 +570,12 @@ Settings =
     for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
       input = $ "[name=#{name}]", section
       input.value = $.get name, Conf[name]
-      event = if name in ['favicon', 'usercss']
+      event = if ['favicon', 'usercss'].contains name
         'change'
       else
         'input'
       $.on input, event, $.cb.value
-      unless name in ['usercss']
+      unless ['usercss'].contains name
         $.on input, event, Settings[name]
         Settings[name].call input
     $.on $.id('apply-css'), 'click', Settings.usercss
@@ -713,10 +713,10 @@ Filter =
         # and it's not specifically applicable to the current board.
         # Defaults to global.
         boards = filter.match(/boards:([^;]+)/)?[1].toLowerCase() or 'global'
-        if boards isnt 'global' and not (g.BOARD.ID in boards.split ',')
+        if boards isnt 'global' and not (boards.split ',').contains g.BOARD.ID
           continue
 
-        if key in ['uniqueID', 'MD5']
+        if ['uniqueID', 'MD5'].contains key
           # MD5 filter will use strings instead of regular expressions.
           regexp = regexp[1]
         else
@@ -915,7 +915,7 @@ Filter =
       {type} = @dataset
       # Convert value -> regexp, unless type is MD5
       value = Filter[type] Filter.menu.post
-      re = if type in ['uniqueID', 'MD5'] then value else value.replace ///
+      re = if ['uniqueID', 'MD5'].contains type then value else value.replace ///
         /
         | \\
         | \^
@@ -941,7 +941,7 @@ Filter =
             "\\#{c}"
 
       re =
-        if type in ['uniqueID', 'MD5']
+        if ['uniqueID', 'MD5'].contains type
           "/#{re}/"
         else
           "/^#{re}$/"
@@ -1341,7 +1341,7 @@ Recursive =
   apply: (recursive, post, args...) ->
     {fullID} = post
     for ID, post of g.posts
-      if fullID in post.quotes
+      if post.quotes.contains fullID
         recursive post, args...
     return
 
@@ -1454,7 +1454,7 @@ DeleteLink =
       el: div
       order: 40
       open: (post) ->
-        return false if post.isDead or !((thread = QR.yourPosts.threads[post.thread]) and post.ID in thread)
+        return false if post.isDead or !((thread = QR.yourPosts.threads[post.thread]) and thread.contains post.ID)
         DeleteLink.post = post
         DeleteLink.cooldown.start post
         node = div.firstChild
@@ -1618,7 +1618,7 @@ Keybinds =
   keydown: (e) ->
     return unless key = Keybinds.keyCode e
     {target} = e
-    if target.nodeName in ['INPUT', 'TEXTAREA']
+    if ['INPUT', 'TEXTAREA'].contains target.nodeName
       return unless /(Esc|Alt|Ctrl|Meta)/.test key
 
     threadRoot = Nav.getThread()
@@ -2234,7 +2234,7 @@ Get =
     #   if it did quote this post,
     #   get all their backlinks.
     for ID, quoterPost of g.posts
-      if post.fullID in quoterPost.quotes
+      if quoterPost.quotes.contains post.fullID
         for quoterPost in [quoterPost].concat quoterPost.clones
           quotelinks.push.apply quotelinks, quoterPost.nodes.quotelinks
     # Second:
@@ -2285,7 +2285,7 @@ Get =
       return
 
     {status} = req
-    if status not in [200, 304]
+    unless [200, 304].contains status
       # The thread can die by the time we check a quote.
       if url = Redirect.post board, postID
         $.cache url, ->
@@ -2500,7 +2500,7 @@ Quotify =
           a.setAttribute 'data-board',  board
           a.setAttribute 'data-postid', ID
 
-      unless quoteID in @quotes
+      unless @quotes.contains quoteID
         @quotes.push quoteID
 
       unless a
@@ -2732,7 +2732,7 @@ QuoteYou =
 
     for quotelink in quotelinks
       {threadID, postID} = Get.postDataFromLink quotelink
-      if (thread = QR.yourPosts.threads[threadID]) and postID in thread
+      if (thread = QR.yourPosts.threads[threadID]) and thread.contains postID
         $.add quotelink, $.tn QuoteYou.text
     return
 
@@ -2753,13 +2753,13 @@ QuoteOP =
     {quotelinks} = @nodes
 
     # rm (OP) from cross-thread quotes.
-    if @isClone and @thread.fullID in quotes
+    if @isClone and quotes.contains @thread.fullID
       for quotelink in quotelinks
         quotelink.textContent = quotelink.textContent.replace QuoteOP.text, ''
 
     op = (if @isClone then @context else @).thread.fullID
     # add (OP) to quotes quoting this context's OP.
-    return unless op in quotes
+    return unless quotes.contains op
     for quotelink in quotelinks
       {board, postID} = Get.postDataFromLink quotelink
       if "#{board}.#{postID}" is op
@@ -3243,7 +3243,7 @@ ImageExpand =
       label = $.el 'label',
         innerHTML: "<input type=checkbox name='#{type}'> #{type}"
       input = label.firstElementChild
-      if type in ['Fit width', 'Fit height']
+      if ['Fit width', 'Fit height'].contains type
         $.on input, 'change', ImageExpand.cb.setFitness
       if config
         label.title   = config[1]
@@ -3270,7 +3270,7 @@ RevealSpoilers =
 
 AutoGIF =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Auto-GIF'] or g.BOARD.ID in ['gif', 'wsg']
+    return if g.VIEW is 'catalog' or !Conf['Auto-GIF'] or ['gif', 'wsg'].contains g.BOARD.ID
 
     Post::callbacks.push
       name: 'Auto-GIF'
@@ -3368,7 +3368,7 @@ ExpandComment =
     post.nodes.comment = post.nodes.shortComment
   parse: (req, a, post) ->
     {status} = req
-    if status not in [200, 304]
+    unless [200, 304].contains status
       a.textContent = "Error #{req.statusText} (#{status})"
       return
 
@@ -3468,7 +3468,7 @@ ExpandThread =
   parse: (req, thread, a) ->
     return if a.textContent[0] is '+'
     {status} = req
-    if status not in [200, 304]
+    if [200, 304].contains status
       a.textContent = "Error #{req.statusText} (#{status})"
       $.off a, 'click', ExpandThread.cb.toggle
       return
@@ -3549,13 +3549,13 @@ Unread =
       youInThisThread = yourPosts.threads[Unread.thread]
     for post in newPosts
       {ID} = post
-      if ID <= Unread.lastReadPost or post.isHidden or youInThisThread and ID in youInThisThread
+      if ID <= Unread.lastReadPost or post.isHidden or youInThisThread and youInThisThread.contains ID
         continue
       Unread.posts.push post
       Unread.addPostQuotingYou post, yourPosts if yourPosts
     if Conf['Unread Line']
       # Force line on visible threads if there were no unread posts previously.
-      Unread.setLine Unread.posts[0] in newPosts
+      Unread.setLine newPosts.contains Unread.posts[0]
     Unread.read()
     Unread.update()
 
@@ -3564,7 +3564,7 @@ Unread =
       [board, quoteID] = quote.split '.'
       continue unless board is Unread.thread.board.ID
       for thread, postIDs of yourPosts.threads
-        if +quoteID in postIDs
+        if postIDs.contains +quoteID
           Unread.postsQuotingYou.push post
           return
 
@@ -3949,12 +3949,12 @@ ThreadUpdater =
       # giving us false-positive dead posts.
       # continue if post.isDead
       ID = +ID
-      if post.isDead and ID in index
+      if post.isDead and index.contains ID
         post.resurrect()
-      else unless ID in index
+      else unless index.contains ID
         post.kill()
         deletedPosts.push post
-      else if post.file and !post.file.isDead and ID not in files
+      else if post.file and !post.file.isDead and files.contains ID
         post.kill true
         deletedFiles.push post
 
