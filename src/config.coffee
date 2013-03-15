@@ -423,6 +423,12 @@ http://www.google.com/searchbyimage?image_url=$1
   updateIncreaseB:  '5,10,15,20,30,60,90,120,240,300'
 
   customCSS: """
+/* Block Ads */
+/*
+div.center {
+  display: none;
+}
+*/
 /* Tripcode Italics: */
 /*
 span.postertrip {

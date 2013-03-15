@@ -1,4 +1,6 @@
 master
+seaweedchan:
+	-Add ad-blocking CSS into Custom CSS examples
 
 1.0.2:
 seaweedchan:
@@ -15,7 +17,7 @@ seaweedchan:
 1.0.0
 -Initial release
 zixaphir:
-  -Fix unread post count for filtered posts
-  -Fix issues when switching from ihavenoface's fork
-  -Fix backlinks not receiving filtered class
-  -Fix QR position not saving on refresh
+	-Fix unread post count for filtered posts
+	-Fix issues when switching from ihavenoface's fork
+	-Fix backlinks not receiving filtered class
+	-Fix QR position not saving on refresh
