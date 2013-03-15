@@ -640,11 +640,58 @@
     }
   };
 
+  $.extend(Array.prototype, {
+    add: function(object, position) {
+      var keep;
+      keep = this.slice(position);
+      this.length = position;
+      this.push(object);
+      return this.pushArrays(keep);
+    },
+    contains: function(object) {
+      return this.indexOf(object) > -1;
+    },
+    indexOf: function(object) {
+      var i;
+      i = this.length;
+      while (i--) {
+        if (this[i] === object) {
+          break;
+        }
+      }
+      return i;
+    },
+    pushArrays: function() {
+      var arg, args, _i, _len;
+      args = arguments;
+      for (_i = 0, _len = args.length; _i < _len; _i++) {
+        arg = args[_i];
+        this.push.apply(this, arg);
+      }
+      return this;
+    },
+    remove: function(object) {
+      var index;
+      if ((index = this.indexOf(object)) > -1) {
+        return this.splice(index, 1);
+      } else {
+        return false;
+      }
+    }
+  });
+
+  $.extend(String.prototype, {
+    capitalize: function() {
+      return this.charAt(0).toUpperCase() + this.slice(1);
+    },
+    contains: function(string) {
+      return this.indexOf(string) > -1;
+    }
+  });
+
+  $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)));
+
   $.extend($, {
-    SECOND: 1000,
-    MINUTE: 1000 * 60,
-    HOUR: 1000 * 60 * 60,
-    DAY: 1000 * 60 * 60 * 24,
     engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
     id: function(id) {
       return d.getElementById(id);

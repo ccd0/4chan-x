@@ -3,6 +3,7 @@
 # not chainable
 $ = (selector, root=d.body) ->
   root.querySelector selector
+
 $$ = (selector, root=d.body) ->
   [root.querySelectorAll(selector)...]
 
@@ -11,11 +12,45 @@ $.extend = (object, properties) ->
     object[key] = val
   return
 
+# Various prototypes I've wanted or needed to add.
+$.extend Array::,
+  add: (object, position) ->
+    keep = @slice position
+    @length = position
+    @push object
+    @pushArrays keep
+
+  contains: (object) ->
+    @indexOf(object) > -1
+
+  indexOf: (object) ->
+    i = @length
+    while i--
+      break if @[i] is object
+    return i
+
+  pushArrays: ->
+    args = arguments
+    for arg in args
+      @push.apply @, arg
+    return @
+
+  remove: (object) ->
+    if (index = @indexOf object) > -1
+      @splice index, 1
+    else
+      false
+
+$.extend String::,
+  capitalize: ->
+    @charAt(0).toUpperCase() + @slice(1);
+
+  contains: (string) ->
+    @indexOf(string) > -1
+
+$.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)))
+
 $.extend $,
-  SECOND: 1000
-  MINUTE: 1000 * 60
-  HOUR  : 1000 * 60 * 60
-  DAY   : 1000 * 60 * 60 * 24
   engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
   id: (id) ->
     d.getElementById id
