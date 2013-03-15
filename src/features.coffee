@@ -3268,26 +3268,27 @@ RevealSpoilers =
     thumb.removeAttribute 'style'
     thumb.src = @file.thumbURL
 
-AutoGIF =
+ImageReplace =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Auto-GIF']
+    return if g.VIEW is 'catalog'
 
     Post::callbacks.push
-      name: 'Auto-GIF'
+      name: 'Image Replace'
       cb:   @node
+
   node: ->
     return if @isClone or @isHidden or @thread.isHidden or !@file?.isImage
     {thumb, URL} = @file
-    return unless /gif$/.test(URL) and !/spoiler/.test thumb.src
+    return unless Conf["Replace #{if (type = (URL.match /\w{3}$/)[0].toUpperCase()) is 'PEG' then 'JPG' else type}"] and !/spoiler/.test thumb.src
     if @file.isSpoiler
       # Revealed spoilers do not have height/width set, this fixes auto-gifs dimensions.
       {style} = thumb
       style.maxHeight = style.maxWidth = if @isReply then '125px' else '250px'
-    gif = $.el 'img'
-    $.on gif, 'load', ->
+    img = $.el 'img'
+    $.on img, 'load', ->
       # Replace the thumbnail once the GIF has finished loading.
       thumb.src = URL
-    gif.src = URL
+    img.src = URL
 
 ImageHover =
   init: ->

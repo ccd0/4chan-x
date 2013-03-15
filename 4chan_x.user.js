@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, AutoGIF, Board, Build, Clone, Conf, Config, CustomCSS, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, Board, Build, Clone, Conf, Config, CustomCSS, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, ImageReplace, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -74,11 +74,13 @@
         'Stubs': [true, 'Make stubs of hidden threads / replies.']
       },
       'Images': {
-        'Auto-GIF': [false, 'Animate GIF thumbnails.'],
         'Image Expansion': [true, 'Expand images.'],
         'Image Hover': [false, 'Show full image on mouseover.'],
         'Sauce': [true, 'Add sauce links to images.'],
-        'Reveal Spoilers': [false, 'Reveal spoiler thumbnails.']
+        'Reveal Spoilers': [false, 'Reveal spoiler thumbnails.'],
+        'Replace GIF': [false, 'Replace thumbnail of gifs with its actual image.'],
+        'Replace PNG': [false, 'Replace pngs.'],
+        'Replace JPG': [false, 'Replace jpgs.']
       },
       'Menu': {
         'Menu': [true, 'Add a drop-down menu in posts.'],
@@ -4907,34 +4909,34 @@
     }
   };
 
-  AutoGIF = {
+  ImageReplace = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Auto-GIF']) {
+      if (g.VIEW === 'catalog') {
         return;
       }
       return Post.prototype.callbacks.push({
-        name: 'Auto-GIF',
+        name: 'Image Replace',
         cb: this.node
       });
     },
     node: function() {
-      var URL, gif, style, thumb, _ref, _ref1;
+      var URL, img, style, thumb, type, _ref, _ref1;
       if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
       _ref1 = this.file, thumb = _ref1.thumb, URL = _ref1.URL;
-      if (!(/gif$/.test(URL) && !/spoiler/.test(thumb.src))) {
+      if (!(Conf["Replace " + ((type = (URL.match(/\w{3}$/))[0].toUpperCase()) === 'PEG' ? 'JPG' : type)] && !/spoiler/.test(thumb.src))) {
         return;
       }
       if (this.file.isSpoiler) {
         style = thumb.style;
         style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
       }
-      gif = $.el('img');
-      $.on(gif, 'load', function() {
+      img = $.el('img');
+      $.on(img, 'load', function() {
         return thumb.src = URL;
       });
-      return gif.src = URL;
+      return img.src = URL;
     }
   };
 
@@ -7638,7 +7640,7 @@
       initFeature('Image Expansion', ImageExpand);
       initFeature('Image Expansion (Menu)', ImageExpand.menu);
       initFeature('Reveal Spoilers', RevealSpoilers);
-      initFeature('Auto-GIF', AutoGIF);
+      initFeature('Image Replace', ImageReplace);
       initFeature('Image Hover', ImageHover);
       initFeature('Comment Expansion', ExpandComment);
       initFeature('Thread Expansion', ExpandThread);

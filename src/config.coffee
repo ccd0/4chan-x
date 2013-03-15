@@ -81,10 +81,6 @@ Config =
       ]
 
     'Images':
-      'Auto-GIF': [
-        false
-        'Animate GIF thumbnails.'
-      ]
       'Image Expansion': [
         true
         'Expand images.'
@@ -100,6 +96,18 @@ Config =
       'Reveal Spoilers': [
         false
         'Reveal spoiler thumbnails.'
+      ]
+      'Replace GIF': [
+        false
+        'Replace thumbnail of gifs with its actual image.'
+      ]
+      'Replace PNG': [
+        false
+        'Replace pngs.'
+      ]
+      'Replace JPG': [
+        false
+        'Replace jpgs.'
       ]
 
     'Menu':
