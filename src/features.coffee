@@ -3054,13 +3054,13 @@ Sauce =
       name: 'Sauce'
       cb:   @node
   createSauceLink: (link) ->
-    link = link.replace /%(T?URL|MD5|board)/g, (parameter) ->
+    link = link.replace /%(T?URL|MD5|board)/ig, (parameter) ->
       switch parameter
-        when '%TURL'
+        when '%TURL', '%turl'
           "' + post.file.thumbURL + '"
-        when '%URL'
+        when '%URL', '%url'
           "' + post.file.URL + '"
-        when '%MD5'
+        when '%MD5', '%md5'
           "' + encodeURIComponent(post.file.MD5) + '"
         when '%board'
           "' + post.board + '"

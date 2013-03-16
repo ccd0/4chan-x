@@ -4652,13 +4652,16 @@
     },
     createSauceLink: function(link) {
       var m, text;
-      link = link.replace(/%(T?URL|MD5|board)/g, function(parameter) {
+      link = link.replace(/%(T?URL|MD5|board)/ig, function(parameter) {
         switch (parameter) {
           case '%TURL':
+          case '%turl':
             return "' + post.file.thumbURL + '";
           case '%URL':
+          case '%url':
             return "' + post.file.URL + '";
           case '%MD5':
+          case '%md5':
             return "' + encodeURIComponent(post.file.MD5) + '";
           case '%board':
             return "' + post.board + '";
