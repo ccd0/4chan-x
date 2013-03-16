@@ -1,7 +1,7 @@
 Header =
   init: ->
-    @bar = $.el 'div'
-    @bar.styleText = "position: fixed; top: 0; left: 0; right: 0; height: 0;"
+    @bar = $.el 'div',
+      id: 'notifications'
     @shortcuts = $.el 'span',
       id: 'shortcuts'
     $.asap (-> d.body), ->

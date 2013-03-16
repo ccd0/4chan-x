@@ -156,6 +156,10 @@ a[href="javascript:;"] {
 #notifications {
   height: 0;
   text-align: center;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
 }
 .notification {
   color: #FFF;

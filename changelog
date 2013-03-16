@@ -1,4 +1,13 @@
 master
+- Zixaphir
+  Removed "Mayhem"chan X v3 Header.
+  Anything that was previously in the header has been moved back to it's 4chan X pre-v3 position, but with v3 "enhancements".
+  Added Linkification, Embedding, and Title Link.
+  Added External Catalog Links.
+  Removed Updater Limitier.
+  Added Thumbnail Replacement for PNG, GIF, and JP(E)Gs.
+  GIF thumbnail replacement, unlike Auto-GIF, actually works in /gif/ and /wsg/.
+  Various little performance and readability tweaks.
 
 2.39.0
 - Queue
