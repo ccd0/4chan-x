@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-03-15
+/* 4chan X Beta - Version 3.0.0 - 2013-03-16
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -7821,7 +7821,7 @@
 
   Main = {
     init: function() {
-      var flatten, initFeature, key, pathname, val;
+      var flatten, initFeature, initFeatures, key, pathname, val;
       $.asap((function() {
         return d.documentElement;
       }), function() {
@@ -7886,53 +7886,64 @@
           });
         }
       };
-      initFeature('Polyfill', Polyfill);
-      initFeature('Header', Header);
-      initFeature('Settings', Settings);
-      initFeature('Fourchan thingies', Fourchan);
-      initFeature('Custom CSS', CustomCSS);
-      initFeature('Linkify', Linkify);
-      initFeature('Resurrect Quotes', Quotify);
-      initFeature('Filter', Filter);
-      initFeature('Thread Hiding', ThreadHiding);
-      initFeature('Reply Hiding', ReplyHiding);
-      initFeature('Recursive', Recursive);
-      initFeature('Strike-through Quotes', QuoteStrikeThrough);
-      initFeature('Quick Reply', QR);
-      initFeature('Menu', Menu);
-      initFeature('Report Link', ReportLink);
-      initFeature('Thread Hiding (Menu)', ThreadHiding.menu);
-      initFeature('Reply Hiding (Menu)', ReplyHiding.menu);
-      initFeature('Delete Link', DeleteLink);
-      initFeature('Filter (Menu)', Filter.menu);
-      initFeature('Download Link', DownloadLink);
-      initFeature('Archive Link', ArchiveLink);
-      initFeature('Quote Inlining', QuoteInline);
-      initFeature('Quote Previewing', QuotePreview);
-      initFeature('Quote Backlinks', QuoteBacklink);
-      initFeature('Mark Quotes of You', QuoteYou);
-      initFeature('Mark OP Quotes', QuoteOP);
-      initFeature('Mark Cross-thread Quotes', QuoteCT);
-      initFeature('Anonymize', Anonymize);
-      initFeature('Time Formatting', Time);
-      initFeature('Relative Post Dates', RelativeDates);
-      initFeature('File Info Formatting', FileInfo);
-      initFeature('Sauce', Sauce);
-      initFeature('Image Expansion', ImageExpand);
-      initFeature('Image Expansion (Menu)', ImageExpand.menu);
-      initFeature('Reveal Spoilers', RevealSpoilers);
-      initFeature('Image Replace', ImageReplace);
-      initFeature('Image Hover', ImageHover);
-      initFeature('Comment Expansion', ExpandComment);
-      initFeature('Thread Expansion', ExpandThread);
-      initFeature('Thread Excerpt', ThreadExcerpt);
-      initFeature('Favicon', Favicon);
-      initFeature('Unread', Unread);
-      initFeature('Thread Stats', ThreadStats);
-      initFeature('Thread Updater', ThreadUpdater);
-      initFeature('Thread Watcher', ThreadWatcher);
-      initFeature('Index Navigation', Nav);
-      initFeature('Keybinds', Keybinds);
+      initFeatures = function(features) {
+        var feature, _results;
+        _results = [];
+        for (key in features) {
+          feature = features[key];
+          _results.push(initFeature(key, feature));
+        }
+        return _results;
+      };
+      initFeatures({
+        'Polyfill': Polyfill,
+        'Header': Header,
+        'Settings': Settings,
+        'Fourchan thingies': Fourchan,
+        'Custom CSS': CustomCSS,
+        'Linkify': Linkify,
+        'Resurrect Quotes': Quotify,
+        'Filter': Filter,
+        'Thread Hiding': ThreadHiding,
+        'Reply Hiding': ReplyHiding,
+        'Recursive': Recursive,
+        'Strike-through Quotes': QuoteStrikeThrough,
+        'Quick Reply': QR,
+        'Menu': Menu,
+        'Report Link': ReportLink,
+        'Thread Hiding (Menu)': ThreadHiding.menu,
+        'Reply Hiding (Menu)': ReplyHiding.menu,
+        'Delete Link': DeleteLink,
+        'Filter (Menu)': Filter.menu,
+        'Download Link': DownloadLink,
+        'Archive Link': ArchiveLink,
+        'Quote Inlining': QuoteInline,
+        'Quote Previewing': QuotePreview,
+        'Quote Backlinks': QuoteBacklink,
+        'Mark Quotes of You': QuoteYou,
+        'Mark OP Quotes': QuoteOP,
+        'Mark Cross-thread Quotes': QuoteCT,
+        'Anonymize': Anonymize,
+        'Time Formatting': Time,
+        'Relative Post Dates': RelativeDates,
+        'File Info Formatting': FileInfo,
+        'Sauce': Sauce,
+        'Image Expansion': ImageExpand,
+        'Image Expansion (Menu)': ImageExpand.menu,
+        'Reveal Spoilers': RevealSpoilers,
+        'Image Replace': ImageReplace,
+        'Image Hover': ImageHover,
+        'Comment Expansion': ExpandComment,
+        'Thread Expansion': ExpandThread,
+        'Thread Excerpt': ThreadExcerpt,
+        'Favicon': Favicon,
+        'Unread': Unread,
+        'Thread Stats': ThreadStats,
+        'Thread Updater': ThreadUpdater,
+        'Thread Watcher': ThreadWatcher,
+        'Index Navigation': Nav,
+        'Keybinds': Keybinds
+      });
       $.on(d, 'AddCallback', Main.addCallback);
       $.on(d, '4chanMainInit', Main.initStyle);
       return $.ready(Main.initReady);
