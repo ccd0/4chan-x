@@ -838,6 +838,9 @@
     rmClass: function(el, className) {
       return el.classList.remove(className);
     },
+    toggleClass: function(el, className) {
+      return el.classList.toggle(className);
+    },
     hasClass: function(el, className) {
       return el.classList.contains(className);
     },
@@ -5995,6 +5998,9 @@
     init: function() {
       if (g.VIEW === 'catalog' || !Conf['Linkify']) {
         return;
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
       }
       return Post.prototype.callbacks.push({
         name: 'Linkify',

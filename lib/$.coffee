@@ -138,6 +138,8 @@ $.extend $,
     el.classList.add className
   rmClass: (el, className) ->
     el.classList.remove className
+  toggleClass: (el, className) ->
+    el.classList.toggle className
   hasClass: (el, className) ->
     el.classList.contains className
   rm: (el) ->

@@ -4111,6 +4111,9 @@ Linkify =
   init: ->
     return if g.VIEW is 'catalog' or not Conf['Linkify']
 
+    if Conf['Comment Expansion']
+      ExpandComment.callbacks.push @node
+
     Post::callbacks.push
       name: 'Linkify'
       cb:   @node
