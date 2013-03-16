@@ -3479,7 +3479,7 @@ ExpandThread =
   parse: (req, thread, a) ->
     return if a.textContent[0] is '+'
     {status} = req
-    if [200, 304].contains status
+    unless [200, 304].contains status
       a.textContent = "Error #{req.statusText} (#{status})"
       $.off a, 'click', ExpandThread.cb.toggle
       return

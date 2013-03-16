@@ -5239,7 +5239,7 @@
         return;
       }
       status = req.status;
-      if ([200, 304].contains(status)) {
+      if (![200, 304].contains(status)) {
         a.textContent = "Error " + req.statusText + " (" + status + ")";
         $.off(a, 'click', ExpandThread.cb.toggle);
         return;
