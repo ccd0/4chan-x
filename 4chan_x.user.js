@@ -6015,7 +6015,7 @@
         _ref = $$('.embedder', this.nodes.comment);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           embedder = _ref[_i];
-          $.on(embedder, Linkify.toggle);
+          $.on(embedder, "click", Linkify.toggle);
         }
         return;
       }

@@ -4140,7 +4140,7 @@ Linkify =
   node: ->
     if @isClone and Conf['Embedding']
       for embedder in $$ '.embedder', @nodes.comment
-        $.on embedder, Linkify.toggle
+        $.on embedder, "click", Linkify.toggle
       return
     snapshot = $.X './/text()', @nodes.comment
     cypher = Linkify.cypher
