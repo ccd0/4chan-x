@@ -19,15 +19,19 @@ QR =
       $.addClass doc, 'hide-original-post-form'
 
     sc = $.el 'a',
-      className: 'qr-shortcut'
+      className: "qr-shortcut #{unless Conf['Persistent QR'] then 'disabled' else ''}"
       textContent: 'QR'
       title: 'Quick Reply'
       href: 'javascript:;'
     $.on sc, 'click', ->
-      $.event 'CloseMenu'
-      QR.open()
-      QR.resetThreadSelector()
-      QR.nodes.com.focus()
+      if !QR.nodes or QR.nodes.el.hidden
+        QR.open()
+        QR.nodes.com.focus()
+        QR.resetThreadSelector()
+      else
+        QR.close()
+      $.toggleClass @, 'disabled'
+      
     Header.addShortcut sc
 
     if $.engine is 'webkit'

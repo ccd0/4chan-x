@@ -122,7 +122,9 @@ CatalogLinks =
     el = $.el 'a',
       id:           'toggleCatalog'
       href:         'javascript:;'
-      textContent:  'Catalog Off'
+      className:    if Conf['Header catalog links'] then 'disabled' else ''
+      textContent:  'Catalog'
+      title:        "Turn catalog links #{if Conf['Header catalog links'] then 'off' else 'on'}."
     $.on el, 'click', @toggle
 
     Header.addShortcut el
@@ -133,13 +135,11 @@ CatalogLinks =
       # it might be incomplete otherwise.
       $.asap (-> $.id 'boardNavMobile'), ->
         # Set links on load.
-        CatalogLinks.toggle.call el, true
+        CatalogLinks.toggle.call el
 
-  toggle: (onLoad) ->
-    if onLoad is true
-      useCatalog = $.get 'CatalogIsToggled', g.VIEW is 'catalog'
-    else
-      $.set 'CatalogIsToggled', useCatalog = @textContent is 'Catalog Off'
+  toggle: ->
+    $.set 'Header catalog links', useCatalog = @className is 'disabled'
+    $.toggleClass @, 'disabled'
     for a in $$ 'a', $.id('boardNavDesktop')
       board = a.pathname.split('/')[1]
       continue if ['f', 'status', '4chan'].contains(board) or !board
@@ -151,7 +151,6 @@ CatalogLinks =
       else
         a.pathname = "/#{board}/#{if useCatalog then 'catalog' else ''}"
       a.title = if useCatalog then "#{a.title} - Catalog" else a.title.replace(/\ -\ Catalog$/, '')
-    @textContent = "Catalog #{if useCatalog then 'On' else 'Off'}"
     @title       = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
 
   external: (board) ->
