@@ -341,6 +341,7 @@ Main =
     initFeature 'Settings',                 Settings
     initFeature 'Fourchan thingies',        Fourchan
     initFeature 'Custom CSS',               CustomCSS
+    initFeature 'Linkify',                  Linkify
     initFeature 'Resurrect Quotes',         Quotify
     initFeature 'Filter',                   Filter
     initFeature 'Thread Hiding',            ThreadHiding

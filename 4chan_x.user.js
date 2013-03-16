@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Board, Build, Clone, Conf, Config, CustomCSS, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, ImageReplace, Keybinds, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, Board, Build, Clone, Conf, Config, CustomCSS, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -63,6 +63,11 @@
         'Index Navigation': [false, 'Navigate to previous / next thread.'],
         'Custom CSS': [false, 'Apply custom CSS to 4chan.'],
         'Check for Updates': [true, 'Check for updated versions of 4chan X Beta.']
+      },
+      'Linkification': {
+        'Linkify': [true, 'Convert text into links where applicable.'],
+        'Embedding': [true, 'Embed supported services.'],
+        'Link Title': [true, 'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud']
       },
       'Filtering': {
         'Anonymize': [false, 'Turn everyone Anonymous.'],
@@ -820,10 +825,12 @@
       return style;
     },
     x: function(path, root) {
-      if (root == null) {
-        root = d.body;
-      }
+      root || (root = d.body);
       return d.evaluate(path, root, null, 8, null).singleNodeValue;
+    },
+    X: function(path, root) {
+      root || (root = d.body);
+      return d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
     },
     addClass: function(el, className) {
       return el.classList.add(className);
@@ -840,12 +847,15 @@
     tn: function(s) {
       return d.createTextNode(s);
     },
+    frag: function() {
+      return d.createDocumentFragment();
+    },
     nodes: function(nodes) {
       var frag, node, _i, _len;
       if (!(nodes instanceof Array)) {
         return nodes;
       }
-      frag = d.createDocumentFragment();
+      frag = $.frag();
       for (_i = 0, _len = nodes.length; _i < _len; _i++) {
         node = nodes[_i];
         frag.appendChild(node);
@@ -5973,6 +5983,262 @@
     }
   };
 
+  Linkify = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Linkify']) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Linkify',
+        cb: this.node
+      });
+    },
+    regString: /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]+|[-a-z0-9]+\.[a-z]|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|[a-z]{3,}:[a-z0-9?]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi,
+    cypher: $.el('div'),
+    node: function() {
+      var a, child, cypher, cypherText, data, embedder, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results;
+      if (this.isClone && Conf['Embedding']) {
+        _ref = $$('.embedder', this.nodes.comment);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          embedder = _ref[_i];
+          $.on(embedder, Linkify.toggle);
+        }
+        return;
+      }
+      snapshot = $.X('.//text()', this.nodes.comment);
+      cypher = Linkify.cypher;
+      i = -1;
+      len = snapshot.snapshotLength;
+      _results = [];
+      while (++i < len) {
+        nodes = $.frag();
+        node = snapshot.snapshotItem(i);
+        data = node.data;
+        if (!(node.parentNode && Linkify.regString.test(data))) {
+          continue;
+        }
+        Linkify.regString.lastIndex = 0;
+        cypherText = [];
+        if (next = node.nextSibling) {
+          cypher.textContent = node.textContent;
+          cypherText[0] = cypher.innerHTML;
+          while ((next.nodeName.toLowerCase() === 'wbr' || next.nodeName.toLowerCase() === 's') && (lookahead = next.nextSibling) && ((name = lookahead.nodeName) === "#text" || name.toLowerCase() === 'br')) {
+            cypher.textContent = lookahead.textContent;
+            cypherText.push((spoiler = next.innerHTML) ? "<s>" + (spoiler.replace(/</g, ' <')) + "</s>" : '<wbr>');
+            cypherText.push(cypher.innerHTML);
+            $.rm(next);
+            next = lookahead.nextSibling;
+            if (lookahead.nodeName === "#text") {
+              $.rm(lookahead);
+            }
+            if (!next) {
+              break;
+            }
+          }
+        }
+        if (cypherText.length) {
+          data = cypherText.join('');
+        }
+        links = data.match(Linkify.regString);
+        for (_j = 0, _len1 = links.length; _j < _len1; _j++) {
+          link = links[_j];
+          index = data.indexOf(link);
+          if (text = data.slice(0, index)) {
+            cypher.innerHTML = text;
+            _ref1 = __slice.call(cypher.childNodes);
+            for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+              child = _ref1[_k];
+              $.add(nodes, child);
+            }
+          }
+          cypher.innerHTML = (link.indexOf(':') < 0 ? (link.indexOf('@') > 0 ? 'mailto:' + link : 'http://' + link) : link).replace(/<(wbr|s|\/s)>/g, '');
+          a = $.el('a', {
+            innerHTML: link,
+            className: 'linkify',
+            rel: 'nofollow noreferrer',
+            target: '_blank',
+            href: cypher.textContent
+          });
+          $.add(nodes, Linkify.embedder(a));
+          data = data.slice(index + link.length);
+        }
+        if (data) {
+          cypher.innerHTML = data;
+          _ref2 = __slice.call(cypher.childNodes);
+          for (_l = 0, _len3 = _ref2.length; _l < _len3; _l++) {
+            child = _ref2[_l];
+            $.add(nodes, child);
+          }
+        }
+        _results.push($.replace(node, nodes));
+      }
+      return _results;
+    },
+    toggle: function() {
+      var el, embed, style, type, url;
+      embed = this.previousElementSibling;
+      if (this.className.contains("embedded")) {
+        el = $.el('a', {
+          rel: 'nofollow noreferrer',
+          target: 'blank',
+          className: 'linkify',
+          href: url = this.getAttribute("data-originalURL"),
+          textContent: this.getAttribute("data-title") || url
+        });
+        this.textContent = '(embed)';
+      } else {
+        el = (type = Linkify.types[this.getAttribute("data-service")]).el.call(this);
+        el.style.cssText = (style = type.style) ? style : "border: 0; width: " + ($.get('embedWidth', Config['embedWidth'])) + "px; height: " + ($.get('embedHeight', Config['embedHeight'])) + "px";
+        this.textContent = '(unembed)';
+      }
+      $.replace(embed, el);
+      return $.toggleClass(this, 'embedded');
+    },
+    types: {
+      YouTube: {
+        regExp: /.*(?:youtu.be\/|youtube.*v=|youtube.*\/embed\/|youtube.*\/v\/|youtube.*videos\/)([^#\&\?]*).*/,
+        el: function() {
+          return $.el('iframe', {
+            src: "//www.youtube.com/embed/" + this.name
+          });
+        },
+        title: {
+          api: function() {
+            return "https://gdata.youtube.com/feeds/api/videos/" + this.name + "?alt=json&fields=title/text(),yt:noembed,app:control/yt:state/@reasonCode";
+          },
+          text: function() {
+            return JSON.parse(this.responseText).entry.title.$t;
+          }
+        }
+      },
+      Vocaroo: {
+        regExp: /.*(?:vocaroo.com\/)([^#\&\?]*).*/,
+        style: 'border: 0; width: 150px; height: 45px;',
+        el: function() {
+          return $.el('object', {
+            innerHTML: "<embed src='http://vocaroo.com/player.swf?playMediaID=" + (this.name.replace(/^i\//, '')) + "&autoplay=0' width='150' height='45' pluginspage='http://get.adobe.com/flashplayer/' type='application/x-shockwave-flash'></embed>"
+          });
+        }
+      },
+      Vimeo: {
+        regExp: /.*(?:vimeo.com\/)([^#\&\?]*).*/,
+        el: function() {
+          return $.el('iframe', {
+            src: "//player.vimeo.com/video/" + this.name
+          });
+        },
+        title: {
+          api: function() {
+            return "https://vimeo.com/api/oembed.json?url=http://vimeo.com/" + this.name;
+          },
+          text: function() {
+            return JSON.parse(this.responseText).title;
+          }
+        }
+      },
+      LiveLeak: {
+        regExp: /.*(?:liveleak.com\/view.+i=)([0-9a-z_]+)/,
+        el: function() {
+          return $.el('iframe', {
+            src: "http://www.liveleak.com/e/" + this.name + "?autostart=true"
+          });
+        }
+      },
+      audio: {
+        regExp: /(.*\.(mp3|ogg|wav))$/,
+        el: function() {
+          return $.el('audio', {
+            controls: 'controls',
+            preload: 'auto',
+            src: this.name
+          });
+        }
+      },
+      SoundCloud: {
+        regExp: /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/,
+        el: function() {
+          var div;
+          div = $.el('div', {
+            className: "soundcloud",
+            name: "soundcloud"
+          });
+          return $.ajax("//soundcloud.com/oembed?show_artwork=false&&maxwidth=500px&show_comments=false&format=json&url=" + (this.getAttribute('data-originalURL')) + "&color=" + (Style.colorToHex(Themes[Conf['theme']]['Background Color'])), {
+            div: div,
+            onloadend: function() {
+              return this.div.innerHTML = JSON.parse(this.responseText).html;
+            }
+          }, false);
+        }
+      },
+      pastebin: {
+        regExp: /.*(?:pastebin.com\/)([^#\&\?]*).*/,
+        el: function() {
+          var div;
+          return div = $.el('iframe', {
+            src: "http://pastebin.com/embed_iframe.php?i=" + this.name
+          });
+        }
+      }
+    },
+    embedder: function(a) {
+      var callbacks, embed, key, match, service, title, titles, type, _ref;
+      if (!Conf['Embedding']) {
+        return [a];
+      }
+      callbacks = function() {
+        var title;
+        return a.textContent = (function() {
+          switch (this.status) {
+            case 200:
+            case 304:
+              title = "[" + (embed.getAttribute('data-service')) + "] " + (service.text.call(this));
+              embed.setAttribute('data-title', title);
+              titles[embed.name] = [title, Date.now()];
+              $.set('CachedTitles', titles);
+              return title;
+            case 404:
+              return "[" + key + "] Not Found";
+            case 403:
+              return "[" + key + "] Forbidden or Private";
+            default:
+              return "[" + key + "] " + this.status + "'d";
+          }
+        }).call(this);
+      };
+      _ref = Linkify.types;
+      for (key in _ref) {
+        type = _ref[key];
+        if (!(match = a.href.match(type.regExp))) {
+          continue;
+        }
+        embed = $.el('a', {
+          name: (a.name = match[1]),
+          className: 'embedder',
+          href: 'javascript:;',
+          textContent: '(embed)'
+        });
+        embed.setAttribute('data-service', key);
+        embed.setAttribute('data-originalURL', a.href);
+        $.on(embed, 'click', Linkify.toggle);
+        if (Conf['Link Title'] && (service = type.title)) {
+          titles = $.get('CachedTitles', {});
+          if (title = titles[match[1]]) {
+            a.textContent = title[0];
+            embed.setAttribute('data-title', title[0]);
+          } else {
+            try {
+              $.cache(service.api.call(a), callbacks);
+            } catch (err) {
+              a.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
+            }
+          }
+        }
+        return [a, $.tn(' '), embed];
+      }
+      return [a];
+    }
+  };
+
   QR = {
     init: function() {
       if (g.VIEW === 'catalog' || !Conf['Quick Reply']) {
@@ -7611,6 +7877,7 @@
       initFeature('Settings', Settings);
       initFeature('Fourchan thingies', Fourchan);
       initFeature('Custom CSS', CustomCSS);
+      initFeature('Linkify', Linkify);
       initFeature('Resurrect Quotes', Quotify);
       initFeature('Filter', Filter);
       initFeature('Thread Hiding', ThreadHiding);

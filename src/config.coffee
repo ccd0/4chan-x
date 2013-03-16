@@ -50,6 +50,20 @@ Config =
         'Check for updated versions of <%= meta.name %>.'
       ]
 
+    'Linkification':
+      'Linkify': [
+        true
+        'Convert text into links where applicable.'
+      ]
+      'Embedding': [
+        true
+        'Embed supported services.'
+      ]
+      'Link Title': [
+        true
+        'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud'
+      ]
+
     'Filtering':
       'Anonymize': [
         false

@@ -127,9 +127,13 @@ $.extend $,
     $.asap (-> d.head), ->
       $.add d.head, style
     style
-  x: (path, root=d.body) ->
+  x: (path, root) ->
+    root or= d.body
     # XPathResult.ANY_UNORDERED_NODE_TYPE === 8
     d.evaluate(path, root, null, 8, null).singleNodeValue
+  X: (path, root) ->
+    root or= d.body
+    d.evaluate path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null
   addClass: (el, className) ->
     el.classList.add className
   rmClass: (el, className) ->
@@ -140,10 +144,12 @@ $.extend $,
     el.parentNode.removeChild el
   tn: (s) ->
     d.createTextNode s
+  frag: ->
+    d.createDocumentFragment()
   nodes: (nodes) ->
     unless nodes instanceof Array
       return nodes
-    frag = d.createDocumentFragment()
+    frag = $.frag()
     for node in nodes
       frag.appendChild node
     frag
