@@ -324,20 +324,17 @@ Main =
             location.href = url if url
         return
 
-    initFeature = (name, module) ->
-      # c.time "#{name} initialization"
-      try
-        module.init()
-      catch err
-        Main.handleErrors
-          message: "\"#{name}\" initialization crashed."
-          error: err
-      # finally
-      #   c.timeEnd "#{name} initialization"
-
     initFeatures = (features) ->
-      for key, feature of features
-        initFeature key, feature
+      for name, module of features
+        # c.time "#{name} initialization"
+        try
+          module.init()
+        catch err
+          Main.handleErrors
+            message: "\"#{name}\" initialization crashed."
+            error: err
+        # finally
+        #   c.timeEnd "#{name} initialization"
 
     # c.time 'All initializations'
     initFeatures

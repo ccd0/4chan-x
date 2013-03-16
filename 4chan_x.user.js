@@ -7821,7 +7821,7 @@
 
   Main = {
     init: function() {
-      var flatten, initFeature, initFeatures, key, pathname, val;
+      var flatten, initFeatures, key, pathname, val;
       $.asap((function() {
         return d.documentElement;
       }), function() {
@@ -7876,22 +7876,19 @@
           });
           return;
       }
-      initFeature = function(name, module) {
-        try {
-          return module.init();
-        } catch (err) {
-          return Main.handleErrors({
-            message: "\"" + name + "\" initialization crashed.",
-            error: err
-          });
-        }
-      };
       initFeatures = function(features) {
-        var feature, _results;
+        var module, name, _results;
         _results = [];
-        for (key in features) {
-          feature = features[key];
-          _results.push(initFeature(key, feature));
+        for (name in features) {
+          module = features[name];
+          try {
+            _results.push(module.init());
+          } catch (err) {
+            _results.push(Main.handleErrors({
+              message: "\"" + name + "\" initialization crashed.",
+              error: err
+            }));
+          }
         }
         return _results;
       };
