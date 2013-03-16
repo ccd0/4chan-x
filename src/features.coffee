@@ -2447,6 +2447,9 @@ Quotify =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Resurrect Quotes']
 
+    if Conf['Comment Expansion']
+      ExpandComment.callbacks.push @node
+
     Post::callbacks.push
       name: 'Resurrect Quotes'
       cb:   @node
@@ -2515,6 +2518,9 @@ Quotify =
 QuoteInline =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Quote Inlining']
+
+    if Conf['Comment Expansion']
+      ExpandComment.callbacks.push @node
 
     Post::callbacks.push
       name: 'Quote Inlining'
@@ -2596,6 +2602,9 @@ QuoteInline =
 QuotePreview =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Quote Previewing']
+
+    if Conf['Comment Expansion']
+      ExpandComment.callbacks.push @node
 
     Post::callbacks.push
       name: 'Quote Previewing'
@@ -2740,6 +2749,9 @@ QuoteOP =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Mark OP Quotes']
 
+    if Conf['Comment Expansion']
+      ExpandComment.callbacks.push @node
+
     # \u00A0 is nbsp
     @text = '\u00A0(OP)'
     Post::callbacks.push
@@ -2769,6 +2781,9 @@ QuoteOP =
 QuoteCT =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Mark Cross-thread Quotes']
+
+    if Conf['Comment Expansion']
+      ExpandComment.callbacks.push @node
 
     # \u00A0 is nbsp
     @text = '\u00A0(Cross-thread)'
@@ -3343,12 +3358,18 @@ ExpandComment =
   init: ->
     return if g.VIEW isnt 'index' or !Conf['Comment Expansion']
 
+    if g.BOARD.ID is 'g'
+      @callbacks.push Fourchan.code
+    if g.BOARD.ID is 'sci'
+      @callbacks.push Fourchan.math
+
     Post::callbacks.push
       name: 'Comment Expansion'
       cb:   @node
   node: ->
     if a = $ '.abbr > a', @nodes.comment
       $.on a, 'click', ExpandComment.cb
+  callbacks: []
   cb: (e) ->
     e.preventDefault()
     post = Get.postFromNode @
@@ -3395,20 +3416,9 @@ ExpandComment =
     post.nodes.comment = post.nodes.longComment = clone
     post.parseComment()
     post.parseQuotes()
-    if Conf['Resurrect Quotes']
-      Quotify.node.call      post
-    if Conf['Quote Previewing']
-      QuotePreview.node.call post
-    if Conf['Quote Inlining']
-      QuoteInline.node.call  post
-    if Conf['Mark OP Quotes']
-      QuoteOP.node.call      post
-    if Conf['Mark Cross-thread Quotes']
-      QuoteCT.node.call      post
-    if g.BOARD.ID is 'g'
-      Fourchan.code.call     post
-    if g.BOARD.ID is 'sci'
-      Fourchan.math.call     post
+
+    for callback in ExpandComment.callbacks
+      callback.call post
 
 ExpandThread =
   init: ->

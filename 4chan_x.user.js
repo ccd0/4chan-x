@@ -3852,6 +3852,9 @@
       if (g.VIEW === 'catalog' || !Conf['Resurrect Quotes']) {
         return;
       }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
       return Post.prototype.callbacks.push({
         name: 'Resurrect Quotes',
         cb: this.node
@@ -3929,6 +3932,9 @@
     init: function() {
       if (g.VIEW === 'catalog' || !Conf['Quote Inlining']) {
         return;
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
       }
       return Post.prototype.callbacks.push({
         name: 'Quote Inlining',
@@ -4021,6 +4027,9 @@
     init: function() {
       if (g.VIEW === 'catalog' || !Conf['Quote Previewing']) {
         return;
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
       }
       return Post.prototype.callbacks.push({
         name: 'Quote Previewing',
@@ -4217,6 +4226,9 @@
       if (g.VIEW === 'catalog' || !Conf['Mark OP Quotes']) {
         return;
       }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
       this.text = '\u00A0(OP)';
       return Post.prototype.callbacks.push({
         name: 'Mark OP Quotes',
@@ -4256,6 +4268,9 @@
     init: function() {
       if (g.VIEW === 'catalog' || !Conf['Mark Cross-thread Quotes']) {
         return;
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
       }
       this.text = '\u00A0(Cross-thread)';
       return Post.prototype.callbacks.push({
@@ -5037,6 +5052,12 @@
       if (g.VIEW !== 'index' || !Conf['Comment Expansion']) {
         return;
       }
+      if (g.BOARD.ID === 'g') {
+        this.callbacks.push(Fourchan.code);
+      }
+      if (g.BOARD.ID === 'sci') {
+        this.callbacks.push(Fourchan.math);
+      }
       return Post.prototype.callbacks.push({
         name: 'Comment Expansion',
         cb: this.node
@@ -5048,6 +5069,7 @@
         return $.on(a, 'click', ExpandComment.cb);
       }
     },
+    callbacks: [],
     cb: function(e) {
       var post;
       e.preventDefault();
@@ -5080,7 +5102,7 @@
       return post.nodes.comment = post.nodes.shortComment;
     },
     parse: function(req, a, post) {
-      var clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _len, _len1, _ref;
+      var callback, clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _results;
       status = req.status;
       if (![200, 304].contains(status)) {
         a.textContent = "Error " + req.statusText + " (" + status + ")";
@@ -5117,27 +5139,13 @@
       post.nodes.comment = post.nodes.longComment = clone;
       post.parseComment();
       post.parseQuotes();
-      if (Conf['Resurrect Quotes']) {
-        Quotify.node.call(post);
+      _ref1 = ExpandComment.callbacks;
+      _results = [];
+      for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+        callback = _ref1[_k];
+        _results.push(callback.call(post));
       }
-      if (Conf['Quote Previewing']) {
-        QuotePreview.node.call(post);
-      }
-      if (Conf['Quote Inlining']) {
-        QuoteInline.node.call(post);
-      }
-      if (Conf['Mark OP Quotes']) {
-        QuoteOP.node.call(post);
-      }
-      if (Conf['Mark Cross-thread Quotes']) {
-        QuoteCT.node.call(post);
-      }
-      if (g.BOARD.ID === 'g') {
-        Fourchan.code.call(post);
-      }
-      if (g.BOARD.ID === 'sci') {
-        return Fourchan.math.call(post);
-      }
+      return _results;
     }
   };
 
