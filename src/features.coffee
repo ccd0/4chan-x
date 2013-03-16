@@ -1,50 +1,28 @@
 Header =
   init: ->
-    headerEl = $.el 'div',
-      id: 'header'
-      innerHTML: """
-        <div id=header-bar class=dialog>
-          <span class='menu-button brackets-wrap'><a href=javascript:;><i></i></a></span>
-          <span id=shortcuts class=brackets-wrap></span>
-          <span id=board-list>
-            <span id=custom-board-list></span>
-            <span id=full-board-list hidden></span>
-          </span>
-          <div id=toggle-header-bar title="Toggle the header auto-hiding."></div>
-        </div>
-        <div id=notifications></div>
-      """.replace />\s+</g, '><' # get rid of spaces between elements
-
-    @bar = $ '#header-bar', headerEl
-    @setBarVisibility Conf['Header auto-hide']
-    $.sync 'Header auto-hide', @setBarVisibility
-
-    @menu = new UI.Menu 'header'
-    $.on $('.menu-button',       @bar), 'click', @menuToggle
-    $.on $('#toggle-header-bar', @bar), 'click', @toggleBarVisibility
-
-    catalogToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}> Use catalog board links"
-    $.on catalogToggler.firstElementChild, 'change', @toggleCatalogLinks
-    $.sync 'Header catalog links', @setCatalogLinks
-    $.event 'AddMenuEntry',
-      type: 'header'
-      el: catalogToggler
-      order: 50
-
+    @bar = $.el 'div'
+    @bar.styleText = "position: fixed; top: 0; left: 0; right: 0; height: 0;"
+    @shortcuts = $.el 'span',
+      id: 'shortcuts'
     $.asap (-> d.body), ->
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
       # it might be incomplete otherwise.
       $.asap (-> $.id 'boardNavMobile'), Header.setBoardList
-      $.prepend d.body, headerEl
 
   setBoardList: ->
-    nav = $.id 'boardNavDesktop'
+    
+    Header.nav = nav = $.id 'boardNavDesktop'
     if a = $ "a[href*='/#{g.BOARD}/']", nav
       a.className = 'current'
-    fullBoardList = $ '#full-board-list', Header.bar
+    fullBoardList = $.el 'span',
+      id:     'full-board-list'
+      hidden: true
+    customBoardList = $.el 'span',
+      id:     'custom-board-list'
     $.add fullBoardList, [nav.childNodes...]
+    $.add nav, [customBoardList, fullBoardList, Header.shortcuts, $ '#navtopright', fullBoardList]
+    $.add d.body, Header.bar
 
     if Conf['Custom Board Navigation']
       Header.generateBoardList Conf['boardnav']
@@ -55,16 +33,14 @@ Header =
       $.on btn, 'click', Header.toggleBoardList
       $.prepend fullBoardList, btn
     else
-      $.rm $ '#custom-board-list', Header.bar
+      $.rm $ '#custom-board-list', nav
       fullBoardList.hidden = false
 
-    Header.setCatalogLinks Conf['Header catalog links']
-
   generateBoardList: (text) ->
-    list = $ '#custom-board-list', Header.bar
+    list = $ '#custom-board-list', Header.nav
     list.innerHTML = null
     return unless text
-    as = $$('#full-board-list a', Header.bar)[0...-2] # ignore the Settings and Home links
+    as = $$('#full-board-list a', Header.nav)
     nodes = text.match(/[\w@]+(-(all|title|full|text:"[^"]+"))?|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
@@ -95,43 +71,18 @@ Header =
     $.add list, nodes
 
   toggleBoardList: ->
-    {bar}  = Header
-    custom = $ '#custom-board-list', bar
-    full   = $ '#full-board-list',   bar
+    {nav}  = Header
+    custom = $ '#custom-board-list', nav
+    full   = $ '#full-board-list',   nav
     showBoardList = !full.hidden
     custom.hidden = !showBoardList
     full.hidden   =  showBoardList
 
-  setCatalogLinks: (useCatalog) ->
-    as = $$ '#board-list a[href*="boards.4chan.org"]', Header.bar
-    str = if useCatalog then 'catalog' else ''
-    for a in as
-      a.pathname = "/#{a.pathname.split('/')[1]}/#{str}"
-    return
-  toggleCatalogLinks: ->
-    Header.setCatalogLinks @checked
-    $.set 'Header catalog links', @checked
-
-  setBarVisibility: (hide) ->
-    (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
-  toggleBarVisibility: ->
-    hide = !$.hasClass Header.bar, 'autohide'
-    Header.setBarVisibility hide
-    message = if hide
-      'The header bar will automatically hide itself.'
-    else
-      'The header bar will remain visible.'
-    new Notification 'info', message, 2
-    $.set 'Header auto-hide', hide
-
   addShortcut: (el) ->
     shortcut = $.el 'span',
       className: 'shortcut'
-    $.add shortcut, el
-    $.prepend $('#shortcuts', Header.bar), shortcut
-
-  menuToggle: (e) ->
-    Header.menu.toggle e, @, g
+    $.add shortcut, [$.tn(' ['), el, $.tn(']')]
+    $.add Header.shortcuts, shortcut
 
 class Notification
   constructor: (type, content, @timeout) ->
@@ -165,6 +116,54 @@ class Notification
   close = ->
     $.rm @el if @el.parentNode
 
+CatalogLinks =
+  init: ->
+    return unless Conf['Catalog Links']
+    el = $.el 'a',
+      id:           'toggleCatalog'
+      href:         'javascript:;'
+      textContent:  'Catalog Off'
+    $.on el, 'click', @toggle
+
+    Header.addShortcut el
+
+    $.asap (-> d.body), ->
+      return unless Main.isThisPageLegit()
+      # Wait for #boardNavMobile instead of #boardNavDesktop,
+      # it might be incomplete otherwise.
+      $.asap (-> $.id 'boardNavMobile'), ->
+        # Set links on load.
+        CatalogLinks.toggle.call el, true
+
+  toggle: (onLoad) ->
+    if onLoad is true
+      useCatalog = $.get 'CatalogIsToggled', g.VIEW is 'catalog'
+    else
+      $.set 'CatalogIsToggled', useCatalog = @textContent is 'Catalog Off'
+    for a in $$ 'a', $.id('boardNavDesktop')
+      board = a.pathname.split('/')[1]
+      continue if ['f', 'status', '4chan'].contains(board) or !board
+      if Conf['External Catalog']
+        a.href = if useCatalog
+          CatalogLinks.external(board)
+        else
+          "//boards.4chan.org/#{board}/"
+      else
+        a.pathname = "/#{board}/#{if useCatalog then 'catalog' else ''}"
+      a.title = if useCatalog then "#{a.title} - Catalog" else a.title.replace(/\ -\ Catalog$/, '')
+    @textContent = "Catalog #{if useCatalog then 'On' else 'Off'}"
+    @title       = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
+
+  external: (board) ->
+    return (
+      if ['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'].contains board
+        "http://catalog.neet.tv/#{board}"
+      else if ['d', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'].contains board
+        "http://4index.gropes.us/#{board}"
+      else
+        "//boards.4chan.org/#{board}/catalog"
+    )
+
 Settings =
   init: ->
     # 4chan X settings link
@@ -173,22 +172,13 @@ Settings =
       textContent: '<%= meta.name %> Settings'
       href:        'javascript:;'
     $.on link, 'click', Settings.open
-    $.event 'AddMenuEntry',
-      type: 'header'
-      el: link
-      order: 111
 
-    # 4chan settings link
-    link = $.el 'a',
-      className:   'fourchan-settings-link'
-      textContent: '4chan Settings'
-      href:        'javascript:;'
-    $.on link, 'click', -> $.id('settingsWindowLink').click()
-    $.event 'AddMenuEntry',
-      type: 'header'
-      el: link
-      order: 110
-      open: -> Conf['Enable 4chan\'s Extension']
+    $.asap (-> d.body), ->
+      return unless Main.isThisPageLegit()
+      # Wait for #boardNavMobile instead of #boardNavDesktop,
+      # it might be incomplete otherwise.
+      $.asap (-> $.id 'boardNavMobile'), ->
+        $.prepend $.id('navtopright'), [$.tn(' ['), link, $.tn('] ')]
 
     unless $.get 'previousversion'
       $.set 'previousversion', g.VERSION
@@ -680,7 +670,7 @@ Fourchan =
 
 CustomCSS =
   init: ->
-    return if !Conf['Custom CSS']
+    return unless Conf['Custom CSS']
     @addStyle()
   addStyle: ->
     @style = $.addStyle Conf['usercss']
@@ -3095,13 +3085,37 @@ ImageExpand =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Image Expansion']
 
-    @EAI = $.el 'a',
-      className: 'expand-all-shortcut'
-      textContent: 'EAI'
-      title: 'Expand All Images'
-      href: 'javascript:;'
+    wrapper = $.el 'div',
+      id: 'imgControls'
+      innerHTML: """
+        <a class='expand-all-shortcut' title='Expand All Images' href='javascript:;'>Expand All Images</a>
+        <a class='menu-button' href='javascript:;'>[<i></i>]</a>
+      """
+    @EAI = wrapper.firstElementChild
     $.on @EAI, 'click', ImageExpand.cb.toggleAll
-    Header.addShortcut @EAI
+
+    @menu = new UI.Menu 'imageexpand'
+    $.on $('.menu-button', wrapper), 'click', @menuToggle
+
+    for type, config of Config.imageExpansion
+      label = $.el 'label',
+        innerHTML: "<input type=checkbox name='#{type}'> #{type}"
+      input = label.firstElementChild
+      if ['Fit width', 'Fit height'].contains type
+        $.on input, 'change', ImageExpand.cb.setFitness
+
+      if config
+        label.title   = config[1]
+        input.checked = Conf[type]
+        $.event 'change', null, input
+        $.on input, 'change', $.cb.checked
+
+      $.event 'AddMenuEntry',
+        type: 'imageexpand'
+        el:   label
+
+    $.asap (-> $.id 'delform'), ->
+      $.prepend $.id('delform'), wrapper
 
     Post::callbacks.push
       name: 'Image Expansion'
@@ -3235,40 +3249,11 @@ ImageExpand =
         clearTimeout timeoutID
         post.kill true
 
-  menu:
-    init: ->
-      return if g.VIEW is 'catalog' or !Conf['Image Expansion']
-
-      el = $.el 'span',
-        textContent: 'Image Expansion'
-        className: 'image-expansion-link'
-
-      {createSubEntry} = ImageExpand.menu
-      subEntries = []
-      for key, conf of Config.imageExpansion
-        subEntries.push createSubEntry key, conf
-
-      $.event 'AddMenuEntry',
-        type: 'header'
-        el: el
-        order: 80
-        subEntries: subEntries
-
-    createSubEntry: (type, config) ->
-      label = $.el 'label',
-        innerHTML: "<input type=checkbox name='#{type}'> #{type}"
-      input = label.firstElementChild
-      if ['Fit width', 'Fit height'].contains type
-        $.on input, 'change', ImageExpand.cb.setFitness
-      if config
-        label.title   = config[1]
-        input.checked = Conf[type]
-        $.event 'change', null, input
-        $.on input, 'change', $.cb.checked
-      el: label
-
   resize: ->
     ImageExpand.style.textContent = ":root.fit-height .full-image {max-height:#{doc.clientHeight}px}"
+
+  menuToggle: (e) ->
+    ImageExpand.menu.toggle e, @, g
 
 RevealSpoilers =
   init: ->

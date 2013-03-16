@@ -340,6 +340,7 @@ Main =
     initFeatures
       'Polyfill':                 Polyfill
       'Header':                   Header
+      'Catalog Links':            CatalogLinks
       'Settings':                 Settings
       'Fourchan thingies':        Fourchan
       'Custom CSS':               CustomCSS
@@ -371,7 +372,6 @@ Main =
       'File Info Formatting':     FileInfo
       'Sauce':                    Sauce
       'Image Expansion':          ImageExpand
-      'Image Expansion (Menu)':   ImageExpand.menu
       'Reveal Spoilers':          RevealSpoilers
       'Image Replace':            ImageReplace
       'Image Hover':              ImageHover
@@ -519,6 +519,7 @@ Main =
 
   parseError: (data) ->
     {message, error} = data
+    c.log message, error
     c.log message, error.stack
     message = $.el 'div',
       textContent: message

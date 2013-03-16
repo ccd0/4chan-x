@@ -1,6 +1,14 @@
 Config =
   main:
     'Miscellaneous':
+      'Catalog Links': [
+        true
+        'Turn Navigation links into links to each board\'s catalog.'
+      ]
+      'External Catalog': [
+        false
+        'Link to external catalog instead of the internal one.'
+      ]
       'Enable 4chan\'s Extension': [
         false
         'Compatibility between <%= meta.name %> and 4chan\'s inline extension is NOT guaranteed.'

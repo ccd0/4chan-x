@@ -92,12 +92,6 @@ a[href="javascript:;"] {
 .fourchan-x body {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  margin-top: 2em;
-}
-.fourchan-x #boardNavDesktop,
-.fourchan-x #navtopright,
-.fourchan-x #boardNavDesktopFoot {
-  display: none !important;
 }
 #header {
   top: 0;
@@ -147,9 +141,6 @@ a[href="javascript:;"] {
 }
 #shortcuts:empty {
   display: none;
-}
-.shortcut:not(:last-child)::after {
-  content: " / ";
 }
 .brackets-wrap::before {
   content: "\\00a0[";
