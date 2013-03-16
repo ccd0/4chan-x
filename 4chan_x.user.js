@@ -7875,20 +7875,18 @@
           return;
       }
       initFeatures = function(features) {
-        var module, name, _results;
-        _results = [];
+        var module, name;
         for (name in features) {
           module = features[name];
           try {
-            _results.push(module.init());
+            module.init();
           } catch (err) {
-            _results.push(Main.handleErrors({
+            Main.handleErrors({
               message: "\"" + name + "\" initialization crashed.",
               error: err
-            }));
+            });
           }
         }
-        return _results;
       };
       initFeatures({
         'Polyfill': Polyfill,

@@ -335,6 +335,7 @@ Main =
             error: err
         # finally
         #   c.timeEnd "#{name} initialization"
+      return
 
     # c.time 'All initializations'
     initFeatures
