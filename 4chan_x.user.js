@@ -152,7 +152,7 @@
     sauces: "http://iqdb.org/?url=%turl\nhttp://www.google.com/searchbyimage?image_url=%turl\n#http://tineye.com/search?url=%turl\n#http://saucenao.com/search.php?db=999&url=%turl\n#http://3d.iqdb.org/?url=%turl\n#http://regex.info/exif.cgi?imgurl=%url\n# uploaders:\n#http://imgur.com/upload?url=%url;text:Upload to imgur\n#http://omploader.org/upload?url1=%url;text:Upload to omploader\n# \"View Same\" in archives:\n#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz\n#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/\n#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/",
     'Header auto-hide': false,
     'Header catalog links': false,
-    boardnav: '[current-title / toggle-all]',
+    boardnav: '[ toggle-all ] [current-title]',
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
     fileInfo: '%l (%p%s, %r)',

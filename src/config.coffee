@@ -350,7 +350,7 @@ http://www.google.com/searchbyimage?image_url=%turl
 
   'Header catalog links': false
 
-  boardnav: '[current-title / toggle-all]'
+  boardnav: '[ toggle-all ] [current-title]'
 
   time: '%m/%d/%y(%a)%H:%M:%S'
 
