@@ -65,6 +65,8 @@ class Post
     if date           = $ '.dateTime',    info
       @nodes.date     = date
       @info.date      = new Date date.dataset.utc * 1000
+    if Conf['Quick Reply']
+      @info.yours     = !!QR.yourPosts.threads[@thread.ID]?.contains(@ID)
 
     @parseComment()
     @parseQuotes()
