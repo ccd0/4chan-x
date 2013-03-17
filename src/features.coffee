@@ -3737,6 +3737,7 @@ ThreadUpdater =
     @dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
     @timer  = $ '#update-timer',  @dialog
     @status = $ '#update-status', @dialog
+    @checkPostCount = 0
 
     Thread::callbacks.push
       name: 'Thread Updater'
@@ -3793,6 +3794,12 @@ ThreadUpdater =
       return unless Conf['Auto Update This'] and e.detail.threadID is ThreadUpdater.thread.ID
       ThreadUpdater.outdateCount = 0
       setTimeout ThreadUpdater.update, 1000 if ThreadUpdater.seconds > 2
+    checkpost: ->
+      unless g.DEAD or ThreadUpdater.foundPost or ThreadUpdater.checkPostCount >= 10
+        return setTimeout ThreadUpdater.update, ++ThreadUpdater.checkPostCount * 500
+      ThreadUpdater.checkPostCount = 0
+      delete ThreadUpdater.foundPost
+      delete ThreadUpdater.postID
     visibility: ->
       return if d.hidden
       # Reset the counter when we focus this tab.
@@ -3839,11 +3846,15 @@ ThreadUpdater =
           This saves bandwidth for both the user and the servers and avoid unnecessary computation.
           ###
           # XXX 304 -> 0 in Opera
-          [text, klass] = if req.status in [0, 304]
+          [text, klass] = if [0, 304].contains req.status
             [null, null]
           else
             ["#{req.statusText} (#{req.status})", 'warning']
           ThreadUpdater.set 'status', text, klass
+
+      if ThreadUpdater.postID
+        ThreadUpdater.cb.checkpost @status
+
       delete ThreadUpdater.req
 
   getInterval: ->
@@ -3956,6 +3967,9 @@ ThreadUpdater =
       else if post.file and !post.file.isDead and not files.contains ID
         post.kill true
         deletedFiles.push post
+      if ThreadUpdater.postID
+        if ID is ThreadUpdater.postID
+          ThreadUpdater.foundPost = true
 
     unless count
       ThreadUpdater.set 'status', null, null

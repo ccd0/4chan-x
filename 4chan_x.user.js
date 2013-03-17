@@ -5575,6 +5575,7 @@
       this.dialog = UI.dialog('updater', 'bottom: 0; right: 0;', html);
       this.timer = $('#update-timer', this.dialog);
       this.status = $('#update-status', this.dialog);
+      this.checkPostCount = 0;
       return Thread.prototype.callbacks.push({
         name: 'Thread Updater',
         cb: this.node
@@ -5646,6 +5647,14 @@
           return setTimeout(ThreadUpdater.update, 1000);
         }
       },
+      checkpost: function() {
+        if (!(g.DEAD || ThreadUpdater.foundPost || ThreadUpdater.checkPostCount >= 10)) {
+          return setTimeout(ThreadUpdater.update, ++ThreadUpdater.checkPostCount * 500);
+        }
+        ThreadUpdater.checkPostCount = 0;
+        delete ThreadUpdater.foundPost;
+        return delete ThreadUpdater.postID;
+      },
       visibility: function() {
         if (d.hidden) {
           return;
@@ -5676,7 +5685,7 @@
         return $.cb.value.call(this);
       },
       load: function() {
-        var klass, req, text, _ref, _ref1;
+        var klass, req, text, _ref;
         req = ThreadUpdater.req;
         switch (req.status) {
           case 200:
@@ -5705,8 +5714,11 @@
             This saves bandwidth for both the user and the servers and avoid unnecessary computation.
             */
 
-            _ref1 = (_ref = req.status) === 0 || _ref === 304 ? [null, null] : ["" + req.statusText + " (" + req.status + ")", 'warning'], text = _ref1[0], klass = _ref1[1];
+            _ref = [0, 304].contains(req.status) ? [null, null] : ["" + req.statusText + " (" + req.status + ")", 'warning'], text = _ref[0], klass = _ref[1];
             ThreadUpdater.set('status', text, klass);
+        }
+        if (ThreadUpdater.postID) {
+          ThreadUpdater.cb.checkpost(this.status);
         }
         return delete ThreadUpdater.req;
       }
@@ -5830,6 +5842,11 @@
         } else if (post.file && !post.file.isDead && !files.contains(ID)) {
           post.kill(true);
           deletedFiles.push(post);
+        }
+        if (ThreadUpdater.postID) {
+          if (ID === ThreadUpdater.postID) {
+            ThreadUpdater.foundPost = true;
+          }
         }
       }
       if (!count) {
@@ -7391,6 +7408,7 @@
       threadID = +threadID || postID;
       ((_base = QR.yourPosts.threads)[threadID] || (_base[threadID] = [])).push(postID);
       $.set("yourPosts." + g.BOARD, QR.yourPosts);
+      ThreadUpdater.postID = postID;
       $.event('QRPostSuccessful', {
         board: g.BOARD,
         threadID: threadID,

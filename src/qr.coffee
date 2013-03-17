@@ -968,6 +968,8 @@ QR =
 
     (QR.yourPosts.threads[threadID] or= []).push postID
     $.set "yourPosts.#{g.BOARD}", QR.yourPosts
+    
+    ThreadUpdater.postID = postID
 
     # Post/upload confirmed as successful.
     $.event 'QRPostSuccessful', {
