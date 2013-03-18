@@ -204,7 +204,7 @@
 
   g = {
     VERSION: '3.0.0',
-    NAMESPACE: "4chan X Beta.",
+    NAMESPACE: '4chan X Beta.',
     boards: {},
     threads: {},
     posts: {}
@@ -212,8 +212,10 @@
 
   UI = (function() {
     var Menu, dialog, drag, dragend, dragstart, hover, hoverend, hoverstart, touchend, touchmove;
+
     dialog = function(id, position, html) {
       var el, move;
+
       el = d.createElement('div');
       el.className = 'dialog';
       el.innerHTML = html;
@@ -240,6 +242,7 @@
 
       Menu.prototype.makeMenu = function() {
         var menu;
+
         menu = $.el('div', {
           className: 'dialog',
           id: 'menu',
@@ -254,6 +257,7 @@
 
       Menu.prototype.toggle = function(e, button, data) {
         var previousButton;
+
         e.preventDefault();
         e.stopPropagation();
         if (currentMenu) {
@@ -271,6 +275,7 @@
 
       Menu.prototype.open = function(button, data) {
         var bLeft, bRect, bTop, bottom, cHeight, cWidth, entry, left, mRect, menu, prevEntry, right, style, top, _i, _len, _ref, _ref1, _ref2;
+
         menu = this.makeMenu();
         currentMenu = menu;
         lastToggledButton = button;
@@ -305,6 +310,7 @@
 
       Menu.prototype.insertEntry = function(entry, parent, data) {
         var subEntry, submenu, _i, _len, _ref;
+
         if (typeof entry.open === 'function') {
           if (!entry.open(data)) {
             return;
@@ -338,6 +344,7 @@
 
       Menu.prototype.findNextEntry = function(entry, direction) {
         var entries;
+
         entries = __slice.call(entry.parentNode.children);
         entries.sort(function(first, second) {
           return +(first.style.order || first.style.webkitOrder) - +(second.style.order || second.style.webkitOrder);
@@ -347,6 +354,7 @@
 
       Menu.prototype.keybinds = function(e) {
         var entry, next, nextPrev, subEntry, submenu;
+
         entry = $('.focused', currentMenu);
         while (subEntry = $('.focused', entry)) {
           entry = subEntry;
@@ -392,6 +400,7 @@
 
       Menu.prototype.focus = function(entry) {
         var bottom, cHeight, cWidth, eRect, focused, left, right, sRect, style, submenu, top, _i, _len, _ref;
+
         while (focused = $.x('parent::*/child::*[contains(@class,"focused")]', entry)) {
           $.rmClass(focused, 'focused');
         }
@@ -431,6 +440,7 @@
 
       Menu.prototype.addEntry = function(e) {
         var entry;
+
         entry = e.detail;
         if (entry.type !== this.type) {
           return;
@@ -441,6 +451,7 @@
 
       Menu.prototype.parseEntry = function(entry) {
         var el, style, subEntries, subEntry, _i, _len;
+
         el = entry.el, subEntries = entry.subEntries;
         $.addClass(el, 'entry');
         $.on(el, 'focus mouseover', (function(e) {
@@ -464,6 +475,7 @@
     })();
     dragstart = function(e) {
       var el, isTouching, o, rect, screenHeight, screenWidth;
+
       if (e.type === 'mousedown' && e.button !== 0) {
         return;
       }
@@ -502,6 +514,7 @@
     };
     touchmove = function(e) {
       var touch, _i, _len, _ref;
+
       _ref = e.changedTouches;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         touch = _ref[_i];
@@ -513,6 +526,7 @@
     };
     drag = function(e) {
       var bottom, clientX, clientY, left, right, style, top;
+
       clientX = e.clientX, clientY = e.clientY;
       left = clientX - this.dx;
       left = left < 10 ? 0 : this.width - left < 10 ? null : left / this.screenWidth * 100 + '%';
@@ -528,6 +542,7 @@
     };
     touchend = function(e) {
       var touch, _i, _len, _ref;
+
       _ref = e.changedTouches;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         touch = _ref[_i];
@@ -550,6 +565,7 @@
     };
     hoverstart = function(_arg) {
       var asap, asapTest, cb, el, endEvents, event, latestEvent, o, root, _i, _len, _ref;
+
       root = _arg.root, el = _arg.el, latestEvent = _arg.latestEvent, endEvents = _arg.endEvents, asapTest = _arg.asapTest, cb = _arg.cb;
       o = {
         root: root,
@@ -580,6 +596,7 @@
     };
     hover = function(e) {
       var clientX, clientY, height, left, right, style, top;
+
       this.latestEvent = e;
       height = this.el.offsetHeight;
       clientX = e.clientX, clientY = e.clientY;
@@ -599,6 +616,7 @@
     };
     hoverend = function() {
       var event, _i, _len, _ref;
+
       this.el.parentNode.removeChild(this.el);
       _ref = this.endEvents;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -634,6 +652,7 @@
 
   $.extend = function(object, properties) {
     var key, val;
+
     for (key in properties) {
       val = properties[key];
       object[key] = val;
@@ -651,6 +670,7 @@
     },
     ready: function(fc) {
       var cb, _ref;
+
       if ((_ref = d.readyState) === 'interactive' || _ref === 'complete') {
         $.queueTask(fc);
         return;
@@ -671,6 +691,7 @@
     },
     formData: function(form) {
       var fd, key, val;
+
       if (form instanceof HTMLFormElement) {
         return new FormData(form);
       }
@@ -690,6 +711,7 @@
     },
     ajax: function(url, callbacks, opts) {
       var form, headers, key, r, type, upCallbacks, val;
+
       if (opts == null) {
         opts = {};
       }
@@ -709,9 +731,11 @@
     },
     cache: (function() {
       var reqs;
+
       reqs = {};
       return function(url, cb) {
         var req;
+
         if (req = reqs[url]) {
           if (req.readyState === 4) {
             cb.call(req);
@@ -723,6 +747,7 @@
         req = $.ajax(url, {
           onload: function() {
             var _i, _len, _ref;
+
             _ref = this.callbacks;
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               cb = _ref[_i];
@@ -760,6 +785,7 @@
     },
     addStyle: function(css) {
       var style;
+
       style = $.el('style', {
         textContent: css
       });
@@ -793,6 +819,7 @@
     },
     nodes: function(nodes) {
       var frag, node, _i, _len;
+
       if (!(nodes instanceof Array)) {
         return nodes;
       }
@@ -820,6 +847,7 @@
     },
     el: function(tag, properties) {
       var el;
+
       el = d.createElement(tag);
       if (properties) {
         $.extend(el, properties);
@@ -828,6 +856,7 @@
     },
     on: function(el, events, handler) {
       var event, _i, _len, _ref;
+
       _ref = events.split(' ');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         event = _ref[_i];
@@ -836,6 +865,7 @@
     },
     off: function(el, events, handler) {
       var event, _i, _len, _ref;
+
       _ref = events.split(' ');
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         event = _ref[_i];
@@ -855,6 +885,7 @@
       if (typeof GM_openInTab !== "undefined" && GM_openInTab !== null) {
         return function(URL) {
           var a;
+
           a = $.el('a', {
             href: URL
           });
@@ -868,6 +899,7 @@
     })(),
     debounce: function(wait, fn) {
       var args, exec, that, timeout;
+
       timeout = null;
       that = null;
       args = null;
@@ -888,9 +920,11 @@
     },
     queueTask: (function() {
       var execTask, taskChannel, taskQueue;
+
       taskQueue = [];
       execTask = function() {
         var args, func, task;
+
         task = taskQueue.shift();
         func = task[0];
         args = Array.prototype.slice.call(task, 1);
@@ -912,6 +946,7 @@
     })(),
     globalEval: function(code) {
       var script;
+
       script = $.el('script', {
         textContent: code
       });
@@ -920,12 +955,14 @@
     },
     unsafeWindow: window.opera ? window : typeof unsafeWindow !== "undefined" && unsafeWindow !== null ? unsafeWindow : (function() {
       var p;
+
       p = d.createElement('p');
       p.setAttribute('onclick', 'return window');
       return p.onclick();
     })(),
     bytesToString: function(size) {
       var unit;
+
       unit = 0;
       while (size >= 1024) {
         size /= 1024;
@@ -942,6 +979,7 @@
     };
     $.get = function(name, defaultValue) {
       var value;
+
       if (value = GM_getValue(g.NAMESPACE + name)) {
         return JSON.parse(value);
       } else {
@@ -957,12 +995,14 @@
   } else if (window.opera) {
     (function() {
       var scriptStorage;
+
       scriptStorage = opera.scriptStorage;
       $["delete"] = function(name) {
         return delete scriptStorage[g.NAMESPACE + name];
       };
       $.get = function(name, defaultValue) {
         var value;
+
         if (value = scriptStorage[g.NAMESPACE + name]) {
           return JSON.parse(value);
         } else {
@@ -982,6 +1022,7 @@
     };
     $.get = function(name, defaultValue) {
       var value;
+
       if (value = localStorage.getItem(g.NAMESPACE + name)) {
         return JSON.parse(value);
       } else {
@@ -999,6 +1040,7 @@
     },
     visibility: function() {
       var event, prefix, property;
+
       if ('visibilityState' in document) {
         return;
       }
@@ -1024,6 +1066,7 @@
   Header = {
     init: function() {
       var catalogToggler, headerEl;
+
       headerEl = $.el('div', {
         id: 'header',
         innerHTML: "<div id=header-bar class=dialog>\n  <span class='menu-button brackets-wrap'><a href=javascript:;><i></i></a></span>\n  <span id=shortcuts class=brackets-wrap></span>\n  <span id=board-list>\n    <span id=custom-board-list></span>\n    <span id=full-board-list hidden></span>\n  </span>\n  <div id=toggle-header-bar title=\"Toggle the header auto-hiding.\"></div>\n</div>\n<div id=notifications></div>".replace(/>\s+</g, '><')
@@ -1058,6 +1101,7 @@
     },
     setBoardList: function() {
       var a, btn, fullBoardList, nav;
+
       nav = $.id('boardNavDesktop');
       if (a = $("a[href*='/" + g.BOARD + "/']", nav)) {
         a.className = 'current';
@@ -1081,6 +1125,7 @@
     },
     generateBoardList: function(text) {
       var as, list, nodes;
+
       list = $('#custom-board-list', Header.bar);
       list.innerHTML = null;
       if (!text) {
@@ -1089,6 +1134,7 @@
       as = $$('#full-board-list a', Header.bar).slice(0, -2);
       nodes = text.match(/[\w@]+(-(all|title|full|text:"[^"]+"))?|[^\w@]+/g).map(function(t) {
         var a, board, m, _i, _len;
+
         if (/^[^\w@]/.test(t)) {
           return $.tn(t);
         }
@@ -1124,6 +1170,7 @@
     },
     toggleBoardList: function() {
       var bar, custom, full, showBoardList;
+
       bar = Header.bar;
       custom = $('#custom-board-list', bar);
       full = $('#full-board-list', bar);
@@ -1133,6 +1180,7 @@
     },
     setCatalogLinks: function(useCatalog) {
       var a, as, str, _i, _len;
+
       as = $$('#board-list a[href*="boards.4chan.org"]', Header.bar);
       str = useCatalog ? 'catalog' : '';
       for (_i = 0, _len = as.length; _i < _len; _i++) {
@@ -1149,6 +1197,7 @@
     },
     toggleBarVisibility: function() {
       var hide, message;
+
       hide = !$.hasClass(Header.bar, 'autohide');
       Header.setBarVisibility(hide);
       message = hide ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
@@ -1157,6 +1206,7 @@
     },
     addShortcut: function(el) {
       var shortcut;
+
       shortcut = $.el('span', {
         className: 'shortcut'
       });
@@ -1219,6 +1269,7 @@
   Settings = {
     init: function() {
       var link, settings;
+
       link = $.el('a', {
         className: 'settings-link',
         textContent: '4chan X Beta Settings',
@@ -1271,6 +1322,7 @@
     },
     open: function(openSection) {
       var html, link, links, overlay, section, sectionToOpen, _i, _len, _ref;
+
       if (Settings.dialog) {
         return;
       }
@@ -1322,6 +1374,7 @@
     sections: [],
     addSection: function(title, open) {
       var _ref;
+
       if (typeof title !== 'string') {
         _ref = title.detail, title = _ref.title, open = _ref.open;
       }
@@ -1332,6 +1385,7 @@
     },
     openSection: function() {
       var section;
+
       section = $('section', Settings.dialog);
       section.innerHTML = null;
       section.className = "section-" + (this.title.toLowerCase().replace(/\s+/g, '-'));
@@ -1340,6 +1394,7 @@
     },
     main: function(section) {
       var ID, arr, checked, description, div, fs, hiddenNum, key, obj, post, thread, _ref, _ref1, _ref2;
+
       section.innerHTML = "<div class=imp-exp>\n  <button class=export>Export Settings</button>\n  <button class=import>Import Settings</button>\n  <input type=file style='visibility:hidden'>\n</div>\n<p class=imp-exp-result></p>";
       $.on($('.export', section), 'click', Settings["export"]);
       $.on($('.import', section), 'click', Settings["import"]);
@@ -1388,6 +1443,7 @@
     },
     "export": function() {
       var a, data, now, output;
+
       now = Date.now();
       data = {
         version: g.VERSION,
@@ -1415,6 +1471,7 @@
     },
     onImport: function() {
       var file, output, reader;
+
       if (!(file = this.files[0])) {
         return;
       }
@@ -1425,14 +1482,16 @@
       }
       reader = new FileReader();
       reader.onload = function(e) {
-        var data;
+        var data, err;
+
         try {
           data = JSON.parse(decodeURIComponent(escape(e.target.result)));
           Settings.loadSettings(data);
           if (confirm('Import successful. Refresh now?')) {
             return window.location.reload();
           }
-        } catch (err) {
+        } catch (_error) {
+          err = _error;
           output.textContent = 'Import failed due to an error.';
           return c.log(err.stack);
         }
@@ -1441,6 +1500,7 @@
     },
     loadSettings: function(data) {
       var key, val, version, _ref, _ref1;
+
       version = data.version.split('.');
       if (version[0] === '2') {
         data = Settings.convertSettings(data, {
@@ -1525,6 +1585,7 @@
     },
     convertSettings: function(data, map) {
       var newKey, prevKey;
+
       for (prevKey in map) {
         newKey = map[prevKey];
         if (newKey) {
@@ -1536,6 +1597,7 @@
     },
     filter: function(section) {
       var select;
+
       section.innerHTML = "<select name=filter>\n  <option value=guide>Guide</option>\n  <option value=name>Name</option>\n  <option value=uniqueID>Unique ID</option>\n  <option value=tripcode>Tripcode</option>\n  <option value=capcode>Capcode</option>\n  <option value=email>E-mail</option>\n  <option value=subject>Subject</option>\n  <option value=comment>Comment</option>\n  <option value=flag>Flag</option>\n  <option value=filename>Filename</option>\n  <option value=dimensions>Image dimensions</option>\n  <option value=filesize>Filesize</option>\n  <option value=MD5>Image MD5</option>\n</select>\n<div></div>";
       select = $('select', section);
       $.on(select, 'change', Settings.selectFilter);
@@ -1543,6 +1605,7 @@
     },
     selectFilter: function() {
       var div, name, ta;
+
       div = this.nextElementSibling;
       if ((name = this.value) !== 'guide') {
         div.innerHTML = null;
@@ -1560,6 +1623,7 @@
     },
     sauce: function(section) {
       var sauce;
+
       section.innerHTML = "<div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Sauce</code> is disabled.</div>\n<div>Lines starting with a <code>#</code> will be ignored.</div>\n<div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div>\n<ul>These parameters will be replaced by their corresponding values:\n  <li><code>%TURL</code>: Thumbnail URL.</li>\n  <li><code>%URL</code>: Full image URL.</li>\n  <li><code>%MD5</code>: MD5 hash.</li>\n  <li><code>%board</code>: Current board.</li>\n</ul>\n<textarea name=sauces class=field spellcheck=false></textarea>";
       sauce = $('textarea', section);
       sauce.value = $.get('sauces', Conf['sauces']);
@@ -1567,6 +1631,7 @@
     },
     rice: function(section) {
       var event, input, name, _i, _len, _ref;
+
       section.innerHTML = "<fieldset>\n  <legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Tab Icon <span class=warning " + (Conf['Unread Tab Icon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend>Custom CSS <span class=warning " + (Conf['Custom CSS'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false></textarea>\n</fieldset>";
       _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -1587,6 +1652,7 @@
     },
     time: function() {
       var funk;
+
       funk = Time.createFunc(this.value);
       return this.nextElementSibling.textContent = funk(Time, new Date());
     },
@@ -1595,6 +1661,7 @@
     },
     fileInfo: function() {
       var data, funk;
+
       data = {
         isReply: true,
         file: {
@@ -1626,6 +1693,7 @@
     },
     keybinds: function(section) {
       var arr, input, key, tbody, tr, _ref;
+
       section.innerHTML = "<div class=warning " + (Conf['Keybinds'] ? 'hidden' : '') + "><code>Keybinds</code> are disabled.</div>\n<div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div>\n<div>Press <kbd>Backspace</kbd> to disable a keybind.</div>\n<table><tbody>\n  <tr><th>Actions</th><th>Keybinds</th></tr>\n</tbody></table>";
       tbody = $('tbody', section);
       _ref = Config.hotkeys;
@@ -1644,6 +1712,7 @@
     },
     keybind: function(e) {
       var key;
+
       if (e.keyCode === 9) {
         return;
       }
@@ -1660,6 +1729,7 @@
   Fourchan = {
     init: function() {
       var board;
+
       if (g.VIEW === 'catalog') {
         return;
       }
@@ -1679,6 +1749,7 @@
     },
     code: function() {
       var pre, _i, _len, _ref;
+
       if (this.isClone) {
         return;
       }
@@ -1690,6 +1761,7 @@
     },
     math: function() {
       var jsMath;
+
       if (this.isClone || !$('.math', this.nodes.comment)) {
         return;
       }
@@ -1738,7 +1810,8 @@
   Filter = {
     filters: {},
     init: function() {
-      var boards, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+      var boards, err, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+
       if (g.VIEW === 'catalog' || !Conf['Filter']) {
         return;
       }
@@ -1763,7 +1836,8 @@
           } else {
             try {
               regexp = RegExp(regexp[1], regexp[2]);
-            } catch (err) {
+            } catch (_error) {
+              err = _error;
               new Notification('warning', err.message, 60);
               continue;
             }
@@ -1771,6 +1845,7 @@
           op = ((_ref3 = filter.match(/[^t]op:(yes|no|only)/)) != null ? _ref3[1] : void 0) || 'yes';
           stub = (function() {
             var _ref4;
+
             switch ((_ref4 = filter.match(/stub:(yes|no)/)) != null ? _ref4[1] : void 0) {
               case 'yes':
                 return true;
@@ -1801,6 +1876,7 @@
     },
     createFilter: function(regexp, op, stub, hl, top) {
       var settings, test;
+
       test = typeof regexp === 'string' ? function(value) {
         return regexp === value;
       } : function(value) {
@@ -1824,6 +1900,7 @@
     },
     node: function() {
       var filter, firstThread, key, result, thisThread, value, _i, _len, _ref;
+
       if (this.isClone) {
         return;
       }
@@ -1935,6 +2012,7 @@
     menu: {
       init: function() {
         var div, entry, type, _i, _len, _ref;
+
         if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Filter']) {
           return;
         }
@@ -1960,6 +2038,7 @@
       },
       createSubEntry: function(text, type) {
         var el;
+
         el = $.el('a', {
           href: 'javascript:;',
           textContent: text
@@ -1970,6 +2049,7 @@
           el: el,
           open: function(post) {
             var value;
+
             value = Filter[type](post);
             return value !== false;
           }
@@ -1977,6 +2057,7 @@
       },
       makeFilter: function() {
         var re, save, section, select, ta, tl, type, value;
+
         type = this.dataset.type;
         value = Filter[type](Filter.menu.post);
         re = type === 'uniqueID' || type === 'MD5' ? value : value.replace(/\/|\\|\^|\$|\n|\.|\(|\)|\{|\}|\[|\]|\?|\*|\+|\|/g, function(c) {
@@ -2023,6 +2104,7 @@
     },
     node: function() {
       var data;
+
       if (data = ThreadHiding.hiddenThreads.threads[this]) {
         ThreadHiding.hide(this, data.makeStub);
       }
@@ -2038,6 +2120,7 @@
     },
     syncFromCatalog: function() {
       var hiddenThreadsOnCatalog, threadID, threads;
+
       hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
       threads = ThreadHiding.hiddenThreads.threads;
       for (threadID in hiddenThreadsOnCatalog) {
@@ -2061,6 +2144,7 @@
     menu: {
       init: function() {
         var apply, div, makeStub;
+
         if (g.VIEW !== 'index' || !Conf['Menu'] || !Conf['Thread Hiding']) {
           return;
         }
@@ -2082,6 +2166,7 @@
           order: 20,
           open: function(_arg) {
             var isReply, thread;
+
             thread = _arg.thread, isReply = _arg.isReply;
             if (isReply || thread.isHidden) {
               return false;
@@ -2100,6 +2185,7 @@
       },
       hide: function() {
         var makeStub, thread;
+
         makeStub = $('input', this.parentNode).checked;
         thread = ThreadHiding.menu.thread;
         ThreadHiding.hide(thread, makeStub);
@@ -2109,6 +2195,7 @@
     },
     makeButton: function(thread, type) {
       var a;
+
       a = $.el('a', {
         className: "" + type + "-thread-button",
         innerHTML: "<span>[&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;]</span>",
@@ -2120,6 +2207,7 @@
     },
     saveHiddenState: function(thread, makeStub) {
       var hiddenThreads, hiddenThreadsCatalog;
+
       hiddenThreads = ThreadHiding.getHiddenThreads();
       hiddenThreadsCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
       if (thread.isHidden) {
@@ -2147,6 +2235,7 @@
     },
     hide: function(thread, makeStub) {
       var OP, a, numReplies, opInfo, span, threadRoot;
+
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
       }
@@ -2180,6 +2269,7 @@
     },
     show: function(thread) {
       var threadRoot;
+
       if (thread.stub) {
         $.rm(thread.stub);
         delete thread.stub;
@@ -2203,6 +2293,7 @@
     },
     node: function() {
       var data, thread;
+
       if (!this.isReply || this.isClone) {
         return;
       }
@@ -2229,6 +2320,7 @@
     menu: {
       init: function() {
         var apply, div, makeStub, replies, thisPost;
+
         if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Reply Hiding']) {
           return;
         }
@@ -2294,6 +2386,7 @@
           order: 20,
           open: function(post) {
             var data, thread;
+
             if (!post.isReply || post.isClone) {
               return false;
             }
@@ -2319,6 +2412,7 @@
       },
       hide: function() {
         var makeStub, parent, post, replies, thisPost;
+
         parent = this.parentNode;
         thisPost = $('input[name=thisPost]', parent).checked;
         replies = $('input[name=replies]', parent).checked;
@@ -2337,6 +2431,7 @@
       },
       show: function() {
         var data, parent, post, replies, thisPost, thread;
+
         parent = this.parentNode;
         thisPost = $('input[name=thisPost]', parent).checked;
         replies = $('input[name=replies]', parent).checked;
@@ -2359,6 +2454,7 @@
     },
     makeButton: function(post, type) {
       var a;
+
       a = $.el('a', {
         className: "" + type + "-reply-button",
         innerHTML: "<span>[&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;]</span>",
@@ -2369,6 +2465,7 @@
     },
     saveHiddenState: function(post, isHiding, thisPost, makeStub, hideRecursively) {
       var hiddenPosts, thread;
+
       hiddenPosts = ReplyHiding.getHiddenPosts();
       if (isHiding) {
         if (!(thread = hiddenPosts.threads[post.thread])) {
@@ -2390,6 +2487,7 @@
     },
     toggle: function() {
       var post;
+
       post = Get.postFromNode(this);
       if (post.isHidden) {
         ReplyHiding.show(post);
@@ -2400,6 +2498,7 @@
     },
     hide: function(post, makeStub, hideRecursively) {
       var a, postInfo, quotelink, _i, _len, _ref;
+
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
       }
@@ -2437,6 +2536,7 @@
     },
     show: function(post, showRecursively) {
       var quotelink, _i, _len, _ref;
+
       if (showRecursively == null) {
         showRecursively = Conf['Recursive Hiding'];
       }
@@ -2472,6 +2572,7 @@
     },
     node: function() {
       var i, obj, quote, recursive, _i, _j, _len, _len1, _ref, _ref1;
+
       if (this.isClone) {
         return;
       }
@@ -2489,6 +2590,7 @@
     },
     add: function() {
       var args, obj, post, recursive, _base, _name;
+
       recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
       obj = (_base = Recursive.recursives)[_name = post.fullID] || (_base[_name] = {
         recursives: [],
@@ -2499,6 +2601,7 @@
     },
     rm: function(recursive, post) {
       var i, obj, rec, _i, _len, _ref;
+
       if (!(obj = Recursive.recursives[post.fullID])) {
         return;
       }
@@ -2513,6 +2616,7 @@
     },
     apply: function() {
       var ID, args, fullID, post, recursive, _ref;
+
       recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
       fullID = post.fullID;
       _ref = g.posts;
@@ -2537,6 +2641,7 @@
     },
     node: function() {
       var board, postID, quotelink, _i, _len, _ref, _ref1, _ref2;
+
       if (this.isClone) {
         return;
       }
@@ -2564,6 +2669,7 @@
     },
     node: function() {
       var button;
+
       button = Menu.makeButton(this);
       if (this.isClone) {
         $.replace($('.menu-button', this.nodes.info), button);
@@ -2573,9 +2679,11 @@
     },
     makeButton: (function() {
       var a;
+
       a = null;
       return function(post) {
         var clone;
+
         a || (a = $.el('a', {
           className: 'menu-button',
           innerHTML: '[<i></i>]',
@@ -2592,6 +2700,7 @@
     })(),
     toggle: function(e) {
       var post;
+
       post = this.dataset.clone ? Get.postFromNode(this) : g.posts[this.dataset.postid];
       return Menu.menu.toggle(e, this, post);
     }
@@ -2600,6 +2709,7 @@
   ReportLink = {
     init: function() {
       var a;
+
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Report Link']) {
         return;
       }
@@ -2621,6 +2731,7 @@
     },
     report: function() {
       var id, post, set, url;
+
       post = ReportLink.post;
       url = "//sys.4chan.org/" + post.board + "/imgboard.php?mode=report&no=" + post;
       id = Date.now();
@@ -2632,6 +2743,7 @@
   DeleteLink = {
     init: function() {
       var div, fileEl, fileEntry, postEl, postEntry;
+
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Delete Link'] || !Conf['Quick Reply']) {
         return;
       }
@@ -2659,6 +2771,7 @@
         el: fileEl,
         open: function(_arg) {
           var file;
+
           file = _arg.file;
           if (!file || file.isDead) {
             return false;
@@ -2674,6 +2787,7 @@
         order: 40,
         open: function(post) {
           var node, seconds, thread, _ref;
+
           if (post.isDead || !((thread = QR.yourPosts.threads[post.thread]) && (_ref = post.ID, __indexOf.call(thread, _ref) >= 0))) {
             return false;
           }
@@ -2694,6 +2808,7 @@
     },
     "delete": function() {
       var form, link, m, post, pwd;
+
       post = DeleteLink.post;
       if (DeleteLink.cooldown[post.fullID]) {
         return;
@@ -2721,6 +2836,7 @@
     },
     load: function(link, html) {
       var msg, s, tmpDoc;
+
       tmpDoc = d.implementation.createHTMLDocument('');
       tmpDoc.documentElement.innerHTML = html;
       if (tmpDoc.title === '4chan - Banned') {
@@ -2740,6 +2856,7 @@
     cooldown: {
       start: function(post) {
         var length, seconds;
+
         if (post.fullID in DeleteLink.cooldown) {
           return;
         }
@@ -2749,6 +2866,7 @@
       },
       count: function(fullID, seconds, length) {
         var el;
+
         if (!((0 <= seconds && seconds <= length))) {
           return;
         }
@@ -2773,6 +2891,7 @@
   DownloadLink = {
     init: function() {
       var a;
+
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Download Link']) {
         return;
       }
@@ -2789,6 +2908,7 @@
         order: 70,
         open: function(_arg) {
           var file;
+
           file = _arg.file;
           if (!file) {
             return false;
@@ -2804,6 +2924,7 @@
   ArchiveLink = {
     init: function() {
       var div, entry, type, _i, _len, _ref;
+
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Archive Link']) {
         return;
       }
@@ -2816,6 +2937,7 @@
         order: 90,
         open: function(_arg) {
           var board, postID, redirect, threadID;
+
           postID = _arg.ID, threadID = _arg.thread, board = _arg.board;
           redirect = Redirect.to({
             postID: postID,
@@ -2835,6 +2957,7 @@
     },
     createSubEntry: function(text, type) {
       var el, open;
+
       el = $.el('a', {
         textContent: text,
         target: '_blank'
@@ -2842,6 +2965,7 @@
       if (type === 'post') {
         open = function(_arg) {
           var board, postID, threadID;
+
           postID = _arg.ID, threadID = _arg.thread, board = _arg.board;
           el.href = Redirect.to({
             postID: postID,
@@ -2853,6 +2977,7 @@
       } else {
         open = function(post) {
           var value;
+
           value = Filter[type](post);
           if (!value) {
             return false;
@@ -2880,6 +3005,7 @@
       }
       return $.on(d, '4chanXInitFinished', function() {
         var node, _i, _len, _ref;
+
         $.on(d, 'keydown', Keybinds.keydown);
         _ref = $$('[accesskey]');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2890,6 +3016,7 @@
     },
     keydown: function(e) {
       var form, key, notification, notifications, target, thread, threadRoot, _i, _len, _ref;
+
       if (!(key = Keybinds.keyCode(e))) {
         return;
       }
@@ -3025,6 +3152,7 @@
     },
     keyCode: function(e) {
       var kc, key;
+
       key = (function() {
         switch (kc = e.keyCode) {
           case 8:
@@ -3077,6 +3205,7 @@
     },
     tags: function(tag, ta) {
       var range, selEnd, selStart, value;
+
       value = ta.value;
       selStart = ta.selectionStart;
       selEnd = ta.selectionEnd;
@@ -3087,6 +3216,7 @@
     },
     img: function(thread, all) {
       var post;
+
       if (all) {
         return ImageExpand.cb.toggleAll();
       } else {
@@ -3096,6 +3226,7 @@
     },
     open: function(thread, tab) {
       var url;
+
       if (g.VIEW !== 'index') {
         return;
       }
@@ -3108,6 +3239,7 @@
     },
     hl: function(delta, thread) {
       var headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
+
       headRect = Header.bar.getBoundingClientRect();
       topMargin = headRect.top + headRect.height;
       if (postEl = $('.reply.highlight', thread)) {
@@ -3157,6 +3289,7 @@
   Nav = {
     init: function() {
       var next, prev, span;
+
       if (g.VIEW !== 'index' || !Conf['Index Navigation']) {
         return;
       }
@@ -3186,6 +3319,7 @@
     },
     getThread: function(full) {
       var headRect, i, rect, thread, threads, topMargin, _i, _len;
+
       headRect = Header.bar.getBoundingClientRect();
       topMargin = headRect.top + headRect.height;
       threads = $$('.thread:not([hidden])');
@@ -3204,6 +3338,7 @@
     },
     scroll: function(delta) {
       var i, rect, thread, threads, top, topMargin, _ref, _ref1;
+
       _ref = Nav.getThread(true), threads = _ref[0], thread = _ref[1], i = _ref[2], rect = _ref[3], topMargin = _ref[4];
       top = rect.top - topMargin;
       if (!((delta === -1 && Math.ceil(top) < 0) || (delta === +1 && top > 1))) {
@@ -3270,6 +3405,7 @@
     },
     to: function(data) {
       var board, url;
+
       board = data.board;
       switch ("" + board) {
         case 'a':
@@ -3327,6 +3463,7 @@
     },
     path: function(base, archiver, data) {
       var board, path, postID, threadID, type, value;
+
       if (data.isSearch) {
         board = data.board, type = data.type, value = data.value;
         type = type === 'name' ? 'username' : type === 'MD5' ? 'image' : type;
@@ -3358,6 +3495,7 @@
     spoilerRange: {},
     shortFilename: function(filename, isReply) {
       var threshold;
+
       threshold = isReply ? 30 : 40;
       if (filename.length - 4 > threshold) {
         return "" + filename.slice(0, threshold - 5) + "(...)." + filename.slice(-3);
@@ -3367,6 +3505,7 @@
     },
     postFromObject: function(data, board) {
       var o;
+
       o = {
         postID: data.no,
         threadID: data.resto || data.no,
@@ -3410,6 +3549,7 @@
       */
 
       var a, board, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+
       postID = o.postID, threadID = o.threadID, board = o.board, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
       isOP = postID === threadID;
       staticPath = '//static.4chan.org';
@@ -3507,12 +3647,14 @@
   Get = {
     threadExcerpt: function(thread) {
       var OP, excerpt, _ref;
+
       OP = thread.OP;
       excerpt = ((_ref = OP.info.subject) != null ? _ref.trim() : void 0) || OP.info.comment.replace(/\n+/g, ' // ') || Conf['Anonymize'] && 'Anonymous' || $('.nameBlock', OP.nodes.info).textContent.trim();
       return "/" + thread.board + "/ - " + excerpt;
     },
     postFromRoot: function(root) {
       var board, index, link, post, postID;
+
       link = $('a[title="Highlight this post"]', root);
       board = link.pathname.split('/')[1];
       postID = link.hash.slice(2);
@@ -3532,6 +3674,7 @@
     },
     postDataFromLink: function(link) {
       var board, path, postID, threadID;
+
       if (link.hostname === 'boards.4chan.org') {
         path = link.pathname.split('/');
         board = path[1];
@@ -3550,6 +3693,7 @@
     },
     allQuotelinksLinkingTo: function(post) {
       var ID, quote, quotedPost, quotelinks, quoterPost, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3, _ref4;
+
       quotelinks = [];
       _ref = g.posts;
       for (ID in _ref) {
@@ -3578,12 +3722,14 @@
       }
       return quotelinks.filter(function(quotelink) {
         var board, postID, _ref5;
+
         _ref5 = Get.postDataFromLink(quotelink), board = _ref5.board, postID = _ref5.postID;
         return board === post.board.ID && postID === post.ID;
       });
     },
     postClone: function(board, threadID, postID, root, context) {
       var post, url;
+
       if (post = g.posts["" + board + "." + postID]) {
         Get.insert(post, root, context);
         return;
@@ -3601,6 +3747,7 @@
     },
     insert: function(post, root, context) {
       var clone, nodes;
+
       if (!root.parentNode) {
         return;
       }
@@ -3614,6 +3761,7 @@
     },
     fetchedPost: function(req, board, threadID, postID, root, context) {
       var post, posts, status, thread, url, _i, _len;
+
       if (post = g.posts["" + board + "." + postID]) {
         Get.insert(post, root, context);
         return;
@@ -3657,6 +3805,7 @@
     },
     archivedPost: function(req, board, postID, root, context) {
       var bq, comment, data, o, post, thread, threadID, _ref;
+
       if (post = g.posts["" + board + "." + postID]) {
         Get.insert(post, root, context);
         return;
@@ -3751,6 +3900,7 @@
   Misc = {
     clearThreads: function(key) {
       var data;
+
       if (!(data = $.get(key))) {
         return;
       }
@@ -3764,6 +3914,7 @@
       return $.ajax("//api.4chan.org/" + g.BOARD + "/catalog.json", {
         onload: function() {
           var obj, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+
           threads = {};
           _ref = JSON.parse(this.response);
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3800,6 +3951,7 @@
     },
     node: function() {
       var ID, a, board, deadlink, m, post, quote, quoteID, redirect, _i, _len, _ref, _ref1;
+
       if (this.isClone) {
         return;
       }
@@ -3878,6 +4030,7 @@
     },
     node: function() {
       var link, _i, _j, _len, _len1, _ref, _ref1;
+
       _ref = this.nodes.quotelinks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
@@ -3891,6 +4044,7 @@
     },
     toggle: function(e) {
       var board, context, postID, threadID, _ref;
+
       if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
         return;
       }
@@ -3916,6 +4070,7 @@
     },
     add: function(quotelink, board, threadID, postID, context) {
       var i, inline, isBacklink, post;
+
       isBacklink = $.hasClass(quotelink, 'backlink');
       inline = $.el('div', {
         id: "i" + postID,
@@ -3937,6 +4092,7 @@
     },
     rm: function(quotelink, board, threadID, postID, context) {
       var el, inlined, isBacklink, post, root, _ref;
+
       isBacklink = $.hasClass(quotelink, 'backlink');
       root = QuoteInline.findRoot(quotelink, isBacklink);
       root = $.x("following-sibling::div[@id='i" + postID + "'][1]", root);
@@ -3970,6 +4126,7 @@
     },
     node: function() {
       var link, _i, _j, _len, _len1, _ref, _ref1;
+
       _ref = this.nodes.quotelinks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
@@ -3983,6 +4140,7 @@
     },
     mouseover: function(e) {
       var board, clone, origin, post, postID, posts, qp, quote, quoterID, threadID, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+
       if ($.hasClass(this, 'inlined')) {
         return;
       }
@@ -4033,6 +4191,7 @@
     },
     mouseout: function() {
       var clone, post, root, _i, _len, _ref;
+
       if (!(root = this.el.firstElementChild)) {
         return;
       }
@@ -4053,6 +4212,7 @@
   QuoteBacklink = {
     init: function() {
       var format;
+
       if (g.VIEW === 'catalog' || !Conf['Quote Backlinks']) {
         return;
       }
@@ -4070,6 +4230,7 @@
     },
     firstNode: function() {
       var a, clone, container, containers, link, post, quote, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+
       if (this.isClone || !this.quotes.length) {
         return;
       }
@@ -4104,6 +4265,7 @@
     },
     secondNode: function() {
       var container;
+
       if (this.isClone && (this.origin.isReply || Conf['OP Backlinks'])) {
         this.nodes.backlinkContainer = $('.container', this.nodes.info);
         return;
@@ -4117,6 +4279,7 @@
     },
     getContainer: function(id) {
       var _base;
+
       return (_base = this.containers)[id] || (_base[id] = $.el('span', {
         className: 'container'
       }));
@@ -4136,6 +4299,7 @@
     },
     node: function() {
       var postID, quotelink, quotelinks, quotes, thread, threadID, _i, _len, _ref;
+
       if (this.isClone) {
         return;
       }
@@ -4166,6 +4330,7 @@
     },
     node: function() {
       var board, op, postID, quotelink, quotelinks, quotes, _i, _j, _len, _len1, _ref, _ref1;
+
       if (this.isClone && this.thread === this.context.thread) {
         return;
       }
@@ -4206,6 +4371,7 @@
     },
     node: function() {
       var board, data, quotelink, quotelinks, quotes, thread, _i, _len, _ref;
+
       if (this.isClone && this.thread === this.context.thread) {
         return;
       }
@@ -4242,6 +4408,7 @@
     },
     node: function() {
       var email, name, tripcode, _ref;
+
       if (this.info.capcode || this.isClone) {
         return;
       }
@@ -4283,6 +4450,7 @@
     },
     createFunc: function(format) {
       var code;
+
       code = format.replace(/%([A-Za-z])/g, function(s, c) {
         if (c in Time.formatters) {
           return "' + Time.formatters." + c + ".call(date) + '";
@@ -4376,6 +4544,7 @@
     },
     node: function() {
       var dateEl;
+
       if (this.isClone) {
         return;
       }
@@ -4385,6 +4554,7 @@
     },
     relative: function(diff, now, date) {
       var days, months, number, rounded, unit, years;
+
       unit = (number = diff / $.DAY) >= 1 ? (years = now.getYear() - date.getYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = (months + 12) % 12) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
       rounded = Math.round(number);
       if (rounded !== 1) {
@@ -4395,6 +4565,7 @@
     stale: [],
     flush: function() {
       var now, update, _i, _len, _ref;
+
       if (d.hidden) {
         return;
       }
@@ -4410,13 +4581,16 @@
     },
     setUpdate: function(post) {
       var markStale, setOwnTimeout, update;
+
       setOwnTimeout = function(diff) {
         var delay;
+
         delay = diff < $.MINUTE ? $.SECOND - (diff + $.SECOND / 2) % $.SECOND : diff < $.HOUR ? $.MINUTE - (diff + $.MINUTE / 2) % $.MINUTE : diff < $.DAY ? $.HOUR - (diff + $.HOUR / 2) % $.HOUR : $.DAY - (diff + $.DAY / 2) % $.DAY;
         return setTimeout(markStale, delay);
       };
       update = function(now) {
         var date, diff, relative, singlePost, _i, _len, _ref;
+
         date = post.info.date;
         diff = now - date;
         relative = RelativeDates.relative(diff, now, date);
@@ -4453,6 +4627,7 @@
     },
     createFunc: function(format) {
       var code;
+
       code = format.replace(/%(.)/g, function(s, c) {
         if (c in FileInfo.formatters) {
           return "' + FileInfo.formatters." + c + ".call(post) + '";
@@ -4464,6 +4639,7 @@
     },
     convertUnit: function(size, unit) {
       var i;
+
       if (unit === 'B') {
         return "" + (size.toFixed()) + " Bytes";
       }
@@ -4494,6 +4670,7 @@
       },
       n: function() {
         var fullname, shortname;
+
         fullname = this.file.name;
         shortname = Build.shortFilename(this.file.name, this.isReply);
         if (fullname === shortname) {
@@ -4537,6 +4714,7 @@
   Sauce = {
     init: function() {
       var link, links, _i, _len, _ref;
+
       if (g.VIEW === 'catalog' || !Conf['Sauce']) {
         return;
       }
@@ -4563,6 +4741,7 @@
     },
     createSauceLink: function(link) {
       var m, text;
+
       link = link.replace(/%(T?URL|MD5|board)/g, function(parameter) {
         switch (parameter) {
           case '%TURL':
@@ -4583,6 +4762,7 @@
     },
     node: function() {
       var link, nodes, _i, _len, _ref;
+
       if (this.isClone || !this.file) {
         return;
       }
@@ -4633,6 +4813,7 @@
       },
       toggleAll: function() {
         var ID, file, func, post, _i, _len, _ref, _ref1;
+
         $.event('CloseMenu');
         if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
           ImageExpand.EAI.className = 'contract-all-shortcut';
@@ -4662,6 +4843,7 @@
       },
       setFitness: function() {
         var checked;
+
         checked = this.checked;
         (checked ? $.addClass : $.rmClass)(doc, this.name.toLowerCase().replace(/\s+/g, '-'));
         if (this.name !== 'Fit height') {
@@ -4680,6 +4862,7 @@
     },
     toggle: function(post) {
       var headRect, postRect, rect, root, thumb, top;
+
       thumb = post.file.thumb;
       if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
         ImageExpand.expand(post);
@@ -4707,6 +4890,7 @@
     },
     expand: function(post, src) {
       var img, thumb;
+
       thumb = post.file.thumb;
       if (post.isHidden || post.file.isExpanded || $.hasClass(thumb, 'expanding')) {
         return;
@@ -4734,6 +4918,7 @@
     },
     completeExpand: function(post) {
       var rect, root, thumb;
+
       thumb = post.file.thumb;
       if (!$.hasClass(thumb, 'expanding')) {
         return;
@@ -4749,6 +4934,7 @@
     },
     error: function() {
       var URL, post, src, timeoutID;
+
       post = Get.postFromNode(this);
       $.rm(this);
       delete post.file.fullImage;
@@ -4770,6 +4956,7 @@
       return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
         onload: function() {
           var postObj, _i, _len, _ref;
+
           if (this.status !== 200) {
             return;
           }
@@ -4793,6 +4980,7 @@
     menu: {
       init: function() {
         var conf, createSubEntry, el, key, subEntries, _ref;
+
         if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
           return;
         }
@@ -4816,6 +5004,7 @@
       },
       createSubEntry: function(type, config) {
         var input, label;
+
         label = $.el('label', {
           innerHTML: "<input type=checkbox name='" + type + "'> " + type
         });
@@ -4851,6 +5040,7 @@
     },
     node: function() {
       var thumb, _ref;
+
       if (this.isClone || !((_ref = this.file) != null ? _ref.isSpoiler : void 0)) {
         return;
       }
@@ -4863,6 +5053,7 @@
   AutoGIF = {
     init: function() {
       var _ref;
+
       if (g.VIEW === 'catalog' || !Conf['Auto-GIF'] || ((_ref = g.BOARD.ID) === 'gif' || _ref === 'wsg')) {
         return;
       }
@@ -4873,6 +5064,7 @@
     },
     node: function() {
       var URL, gif, style, thumb, _ref, _ref1;
+
       if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
@@ -4904,6 +5096,7 @@
     },
     node: function() {
       var _ref;
+
       if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
@@ -4911,6 +5104,7 @@
     },
     mouseover: function(e) {
       var el, post;
+
       post = Get.postFromNode(this);
       el = $.el('img', {
         id: 'ihover',
@@ -4932,6 +5126,7 @@
     error: function() {
       var URL, post, src, timeoutID,
         _this = this;
+
       if (!doc.contains(this)) {
         return;
       }
@@ -4952,6 +5147,7 @@
       return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
         onload: function() {
           var postObj, _i, _len, _ref;
+
           if (this.status !== 200) {
             return;
           }
@@ -4986,18 +5182,21 @@
     },
     node: function() {
       var a;
+
       if (a = $('.abbr > a', this.nodes.comment)) {
         return $.on(a, 'click', ExpandComment.cb);
       }
     },
     cb: function(e) {
       var post;
+
       e.preventDefault();
       post = Get.postFromNode(this);
       return ExpandComment.expand(post);
     },
     expand: function(post) {
       var a;
+
       if (post.nodes.longComment) {
         $.replace(post.nodes.shortComment, post.nodes.longComment);
         post.nodes.comment = post.nodes.longComment;
@@ -5013,6 +5212,7 @@
     },
     contract: function(post) {
       var a;
+
       if (!post.nodes.shortComment) {
         return;
       }
@@ -5023,6 +5223,7 @@
     },
     parse: function(req, a, post) {
       var clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _len, _len1, _ref;
+
       status = req.status;
       if (status !== 200 && status !== 304) {
         a.textContent = "Error " + req.statusText + " (" + status + ")";
@@ -5095,6 +5296,7 @@
     },
     node: function() {
       var a, span;
+
       if (!(span = $('.summary', this.OP.nodes.root.parentNode))) {
         return;
       }
@@ -5108,11 +5310,13 @@
     },
     cbToggle: function() {
       var op;
+
       op = Get.postFromRoot(this.previousElementSibling);
       return ExpandThread.toggle(op.thread);
     },
     toggle: function(thread) {
       var a, inlined, num, post, replies, reply, text, threadRoot, url, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+
       threadRoot = thread.OP.nodes.root.parentNode;
       url = "//api.4chan.org/" + thread.board + "/res/" + thread + ".json";
       a = $('.summary', threadRoot);
@@ -5169,6 +5373,7 @@
     },
     parse: function(req, thread, a) {
       var link, node, nodes, post, posts, replies, reply, spoilerRange, status, _i, _len;
+
       if (a.textContent[0] === '+') {
         return;
       }
@@ -5241,6 +5446,7 @@
     },
     node: function() {
       var ID, post, posts, _ref;
+
       Unread.thread = this;
       Unread.lastReadPost = $.get("lastReadPosts." + this.board, {
         threads: {}
@@ -5270,6 +5476,7 @@
     },
     addPosts: function(newPosts) {
       var ID, post, youInThisThread, yourPosts, _i, _len, _ref;
+
       if (Conf['Quick Reply']) {
         yourPosts = QR.yourPosts;
         youInThisThread = yourPosts.threads[Unread.thread];
@@ -5293,6 +5500,7 @@
     },
     addPostQuotingYou: function(post, yourPosts) {
       var board, postIDs, quote, quoteID, thread, _i, _len, _ref, _ref1, _ref2;
+
       _ref = post.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quote = _ref[_i];
@@ -5319,6 +5527,7 @@
     },
     read: function(e) {
       var bottom, height, i, post, _i, _j, _len, _len1, _ref, _ref1;
+
       if (d.hidden || !Unread.posts.length) {
         return;
       }
@@ -5351,6 +5560,7 @@
     },
     saveLastReadPost: $.debounce($.SECOND, function() {
       var lastReadPosts;
+
       lastReadPosts = $.get("lastReadPosts." + Unread.thread.board, {
         threads: {}
       });
@@ -5359,6 +5569,7 @@
     }),
     setLine: function(force) {
       var post, root;
+
       if (!(d.hidden || force === true)) {
         return;
       }
@@ -5373,6 +5584,7 @@
     },
     update: function() {
       var count;
+
       count = Unread.posts.length;
       if (Conf['Unread Count']) {
         d.title = g.DEAD ? "(" + Unread.posts.length + ") /" + g.BOARD + "/ - 404" : "(" + Unread.posts.length + ") " + Unread.title;
@@ -5389,6 +5601,7 @@
     init: function() {
       return $.ready(function() {
         var href;
+
         Favicon.el = $('link[rel="shortcut icon"]', d.head);
         Favicon.el.type = 'image/x-icon';
         href = Favicon.el.href;
@@ -5458,6 +5671,7 @@
     },
     node: function() {
       var ID, fileCount, post, postCount, _ref;
+
       postCount = 0;
       fileCount = 0;
       _ref = this.posts;
@@ -5475,6 +5689,7 @@
     },
     onUpdate: function(e) {
       var fileCount, fileLimit, postCount, postLimit, _ref;
+
       if (e.detail[404]) {
         return;
       }
@@ -5492,6 +5707,7 @@
   ThreadUpdater = {
     init: function() {
       var checked, conf, html, name, _ref;
+
       if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
         return;
       }
@@ -5514,6 +5730,7 @@
     },
     node: function() {
       var input, _i, _len, _ref;
+
       ThreadUpdater.thread = this;
       ThreadUpdater.root = this.OP.nodes.root.parentNode;
       ThreadUpdater.lastPost = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0];
@@ -5603,12 +5820,14 @@
       },
       interval: function() {
         var val;
+
         val = Math.max(5, parseInt(this.value, 10));
         ThreadUpdater.interval = this.value = val;
         return $.cb.value.call(this);
       },
       load: function() {
         var klass, req, text, _ref, _ref1;
+
         req = ThreadUpdater.req;
         switch (req.status) {
           case 200:
@@ -5645,6 +5864,7 @@
     },
     getInterval: function() {
       var i, j;
+
       i = ThreadUpdater.interval;
       j = Math.min(ThreadUpdater.outdateCount, 10);
       if (!d.hidden) {
@@ -5654,6 +5874,7 @@
     },
     set: function(name, text, klass) {
       var el, node;
+
       el = ThreadUpdater[name];
       if (node = el.firstChild) {
         node.data = text;
@@ -5666,6 +5887,7 @@
     },
     timeout: function() {
       var n;
+
       ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
       if (!(n = --ThreadUpdater.seconds)) {
         return ThreadUpdater.update();
@@ -5678,6 +5900,7 @@
     },
     update: function() {
       var url;
+
       if (!ThreadUpdater.online) {
         return;
       }
@@ -5698,6 +5921,7 @@
     },
     updateThreadStatus: function(title, OP) {
       var icon, message, root, titleLC;
+
       titleLC = title.toLowerCase();
       if (ThreadUpdater.thread["is" + title] === !!OP[titleLC]) {
         return;
@@ -5724,6 +5948,7 @@
     },
     parse: function(postObjects) {
       var ID, OP, count, deletedFiles, deletedPosts, files, index, node, nodes, num, post, postObject, posts, scroll, _i, _len, _ref;
+
       OP = postObjects[0];
       Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
       ThreadUpdater.updateThreadStatus('Sticky', OP);
@@ -5791,6 +6016,7 @@
         }
         $.queueTask(function() {
           var length, threadID;
+
           threadID = ThreadUpdater.thread.ID;
           length = ThreadUpdater.root.children.length;
           if (Conf['Enable 4chan\'s Extension']) {
@@ -5830,6 +6056,7 @@
     },
     node: function() {
       var favicon;
+
       favicon = $.el('img', {
         className: 'favicon'
       });
@@ -5846,6 +6073,7 @@
     },
     refresh: function(watched) {
       var ID, board, div, favicon, id, link, nodes, props, thread, x, _ref, _ref1;
+
       watched || (watched = $.get('WatchedThreads', {}));
       nodes = [$('.move', ThreadWatcher.dialog)];
       for (board in watched) {
@@ -5880,11 +6108,13 @@
       },
       x: function() {
         var thread;
+
         thread = this.nextElementSibling.pathname.split('/');
         return ThreadWatcher.unwatch(thread[1], thread[3]);
       },
       post: function(e) {
         var board, postID, threadID, _ref;
+
         _ref = e.detail, board = _ref.board, postID = _ref.postID, threadID = _ref.threadID;
         if (postID === threadID) {
           if (Conf['Auto Watch']) {
@@ -5904,6 +6134,7 @@
     },
     unwatch: function(board, threadID) {
       var watched;
+
       watched = $.get('WatchedThreads', {});
       delete watched[board][threadID];
       if (!Object.keys(watched[board]).length) {
@@ -5914,6 +6145,7 @@
     },
     watch: function(thread) {
       var watched, _name;
+
       watched = $.get('WatchedThreads', {});
       watched[_name = thread.board] || (watched[_name] = {});
       watched[thread.board][thread] = {
@@ -5943,6 +6175,7 @@
     },
     initReady: function() {
       var sc;
+
       QR.postingIsEnabled = !!$.id('postForm');
       if (!QR.postingIsEnabled) {
         return;
@@ -5987,6 +6220,8 @@
       }
     },
     open: function() {
+      var err;
+
       if (QR.nodes) {
         QR.nodes.el.hidden = false;
         QR.unhide();
@@ -5994,7 +6229,8 @@
       }
       try {
         return QR.dialog();
-      } catch (err) {
+      } catch (_error) {
+        err = _error;
         delete QR.nodes;
         return Main.handleErrors({
           message: 'Quick Reply dialog creation crashed.',
@@ -6004,6 +6240,7 @@
     },
     close: function() {
       var i, _i, _len, _ref;
+
       if (QR.req) {
         QR.abort();
         return;
@@ -6051,6 +6288,7 @@
     },
     error: function(err) {
       var el;
+
       QR.open();
       if (typeof err === 'string') {
         el = $.tn(err);
@@ -6069,6 +6307,7 @@
     notifications: [],
     cleanNotifications: function() {
       var notification, _i, _len, _ref;
+
       _ref = QR.notifications;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         notification = _ref[_i];
@@ -6078,6 +6317,7 @@
     },
     status: function() {
       var disabled, status, value;
+
       if (!QR.nodes) {
         return;
       }
@@ -6094,6 +6334,7 @@
     cooldown: {
       init: function() {
         var board;
+
         board = g.BOARD.ID;
         QR.cooldown.types = {
           thread: (function() {
@@ -6127,6 +6368,7 @@
       },
       sync: function(cooldowns) {
         var id;
+
         for (id in cooldowns) {
           QR.cooldown.cooldowns[id] = cooldowns[id];
         }
@@ -6134,6 +6376,7 @@
       },
       set: function(data) {
         var cooldown, delay, hasFile, isReply, isSage, post, req, start, type, upSpd;
+
         req = data.req, post = data.post, isReply = data.isReply, delay = data.delay;
         start = req ? req.uploadEndTime : Date.now();
         if (delay) {
@@ -6170,6 +6413,7 @@
       },
       count: function() {
         var cooldown, cooldowns, elapsed, hasFile, isReply, isSage, now, post, seconds, start, type, types, upSpd, upSpdAccuracy, update, _ref;
+
         if (!Object.keys(QR.cooldown.cooldowns).length) {
           $["delete"]("" + g.BOARD + ".cooldown");
           delete QR.cooldown.isCounting;
@@ -6223,6 +6467,7 @@
     },
     quote: function(e) {
       var OP, caretPos, post, range, s, sel, selectionRoot, ta, text;
+
       if (e != null) {
         e.preventDefault();
       }
@@ -6252,6 +6497,7 @@
     },
     characterCount: function() {
       var count, counter;
+
       counter = QR.nodes.charCount;
       count = QR.nodes.com.textLength;
       counter.textContent = count;
@@ -6260,6 +6506,7 @@
     },
     drag: function(e) {
       var toggle;
+
       toggle = e.type === 'dragstart' ? $.off : $.on;
       toggle(d, 'dragover', QR.dragOver);
       return toggle(d, 'drop', QR.dropFile);
@@ -6279,6 +6526,7 @@
     },
     paste: function(e) {
       var blob, files, item, _i, _len, _ref;
+
       files = [];
       _ref = e.clipboardData.items;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -6303,6 +6551,7 @@
     },
     fileInput: function(files) {
       var file, length, max, post, _i, _len, _ref, _ref1;
+
       if (this instanceof Element) {
         files = __slice.call(this.files);
         QR.nodes.fileInput.value = null;
@@ -6355,10 +6604,10 @@
     },
     posts: [],
     post: (function() {
-
       function _Class() {
         var el, event, persona, prev, _i, _len, _ref,
           _this = this;
+
         prev = QR.posts[QR.posts.length - 1];
         persona = $.get('QR.persona', {});
         this.name = prev ? prev.name : persona.name || null;
@@ -6406,6 +6655,7 @@
 
       _Class.prototype.rm = function() {
         var index;
+
         $.rm(this.nodes.el);
         index = QR.posts.indexOf(this);
         if (QR.posts.length === 1) {
@@ -6422,6 +6672,7 @@
 
       _Class.prototype.lock = function(lock) {
         var name, _i, _len, _ref;
+
         if (lock == null) {
           lock = true;
         }
@@ -6446,6 +6697,7 @@
 
       _Class.prototype.select = function() {
         var name, rectEl, rectList, _i, _len, _ref;
+
         if (QR.selected) {
           QR.selected.nodes.el.id = null;
           QR.selected.forceSave();
@@ -6467,6 +6719,7 @@
 
       _Class.prototype.save = function(input) {
         var value, _ref;
+
         value = input.value;
         this[input.dataset.name] = value;
         if (input.nodeName !== 'TEXTAREA') {
@@ -6481,6 +6734,7 @@
 
       _Class.prototype.forceSave = function() {
         var name, _i, _len, _ref;
+
         if (this !== QR.selected) {
           return;
         }
@@ -6512,6 +6766,7 @@
       _Class.prototype.setThumbnail = function(fileURL) {
         var img, reader,
           _this = this;
+
         if (!window.URL) {
           if (!fileURL) {
             reader = new FileReader();
@@ -6527,6 +6782,7 @@
         img = $.el('img');
         img.onload = function() {
           var applyBlob, cv, data, height, i, l, s, ui8a, width, _i;
+
           s = 90 * 2;
           height = img.height, width = img.width;
           if (height < s || width < s) {
@@ -6605,9 +6861,11 @@
       _Class.prototype.pasteText = function(file) {
         var reader,
           _this = this;
+
         reader = new FileReader();
         reader.onload = function(e) {
           var text;
+
           text = e.target.result;
           if (_this.com) {
             _this.com += "\n" + text;
@@ -6645,6 +6903,7 @@
 
       _Class.prototype.drop = function() {
         var el, index, newIndex, oldIndex, post;
+
         el = $('.drag', this.parentNode);
         $.rmClass(el, 'drag');
         $.rmClass(this, 'over');
@@ -6678,6 +6937,7 @@
       },
       ready: function() {
         var MutationObserver, imgContainer, input, observer;
+
         imgContainer = $.el('div', {
           className: 'captcha-img',
           title: 'Reload',
@@ -6716,6 +6976,7 @@
       },
       getOne: function() {
         var captcha, challenge, response;
+
         this.clear();
         if (captcha = this.captchas.shift()) {
           challenge = captcha.challenge, response = captcha.response;
@@ -6740,6 +7001,7 @@
       },
       save: function() {
         var response;
+
         if (!(response = this.nodes.input.value.trim())) {
           return;
         }
@@ -6754,6 +7016,7 @@
       },
       clear: function() {
         var captcha, i, now, _i, _len, _ref;
+
         now = Date.now();
         _ref = this.captchas;
         for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -6771,6 +7034,7 @@
       },
       load: function() {
         var challenge;
+
         if (!this.nodes.challenge.firstChild) {
           return;
         }
@@ -6783,6 +7047,7 @@
       },
       count: function() {
         var count;
+
         count = this.captchas.length;
         this.nodes.input.placeholder = (function() {
           switch (count) {
@@ -6815,6 +7080,7 @@
     },
     dialog: function() {
       var dialog, mimeTypes, name, node, nodes, thread, _i, _j, _len, _len1, _ref, _ref1;
+
       dialog = UI.dialog('qr', 'top:0;right:0;', "<div>\n  <input type=checkbox id=autohide title=Auto-hide>\n  <select title='Create a new thread / Reply'>\n    <option value=new>New thread</option>\n  </select>\n  <span class=move></span>\n  <a href=javascript:; class=close title=Close>×</a>\n</div>\n<form>\n  <div class=persona>\n    <input id=dump-button type=button title='Dump list' value=+>\n    <input name=name  data-name=name  title=Name    placeholder=Name    class=field size=1>\n    <input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1>\n    <input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1>\n  </div>\n  <div id=dump-list-container>\n    <div id=dump-list></div>\n    <a id=add-post href=javascript:; title=\"Add a post\">+</a>\n  </div>\n  <div class=textarea>\n    <textarea data-name=com title=Comment placeholder=Comment class=field></textarea>\n    <span id=char-count></span>\n  </div>\n  <div id=file-n-submit>\n    <input id=qr-file-button type=button value='Choose files'>\n    <span id=qr-filename-container>\n      <span id=qr-no-file>No selected file</span>\n      <span id=qr-filename></span>\n    </span>\n    <a id=qr-filerm href=javascript:; title='Remove file' tabindex=-1>×</a>\n    <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=-1>\n    <input type=submit>\n  </div>\n  <input type=file multiple>\n</form>".replace(/>\s+</g, '><'));
       QR.nodes = nodes = {
         el: dialog,
@@ -6911,6 +7177,7 @@
     },
     submit: function(e) {
       var callbacks, challenge, err, filetag, m, opts, post, postData, response, textOnly, threadID, _ref, _ref1;
+
       if (e != null) {
         e.preventDefault();
       }
@@ -7009,6 +7276,7 @@
     },
     response: function() {
       var URL, ban, board, err, h1, persona, post, postID, req, threadID, tmpDoc, _, _base, _ref, _ref1;
+
       req = QR.req;
       delete QR.req;
       post = QR.posts[0];
@@ -7109,6 +7377,7 @@
     },
     ready: function() {
       var field, form;
+
       form = $('form');
       field = $.id('recaptcha_response_field');
       $.on(field, 'keydown', function(e) {
@@ -7118,6 +7387,7 @@
       });
       return $.on(form, 'submit', function(e) {
         var response;
+
         e.preventDefault();
         response = field.value.trim();
         if (!/\s/.test(response)) {
@@ -7129,7 +7399,6 @@
   };
 
   Board = (function() {
-
     Board.prototype.toString = function() {
       return this.ID;
     };
@@ -7146,7 +7415,6 @@
   })();
 
   Thread = (function() {
-
     Thread.prototype.callbacks = [];
 
     Thread.prototype.toString = function() {
@@ -7171,7 +7439,6 @@
   })();
 
   Post = (function() {
-
     Post.prototype.callbacks = [];
 
     Post.prototype.toString = function() {
@@ -7180,6 +7447,7 @@
 
     function Post(root, thread, board, that) {
       var alt, anchor, capcode, date, email, file, fileInfo, flag, info, name, post, size, subject, thumb, tripcode, uniqueID, unit;
+
       this.thread = thread;
       this.board = board;
       if (that == null) {
@@ -7271,6 +7539,7 @@
 
     Post.prototype.parseComment = function() {
       var bq, data, i, node, nodes, text, _i, _j, _len, _ref, _ref1;
+
       bq = this.nodes.comment.cloneNode(true);
       _ref = $$('.abbr, .capcodeReplies, .exif, b', bq);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -7287,6 +7556,7 @@
 
     Post.prototype.parseQuotes = function() {
       var hash, pathname, quotelink, quotes, _i, _len, _ref;
+
       quotes = {};
       _ref = $$('.quotelink', this.nodes.comment);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -7316,6 +7586,7 @@
 
     Post.prototype.kill = function(file, now) {
       var clone, quotelink, strong, _i, _j, _len, _len1, _ref, _ref1;
+
       now || (now = new Date());
       if (file) {
         this.file.isDead = true;
@@ -7358,6 +7629,7 @@
 
     Post.prototype.resurrect = function() {
       var clone, quotelink, strong, _i, _j, _len, _len1, _ref, _ref1;
+
       delete this.isDead;
       delete this.timeOfDeath;
       $.rmClass(this.nodes.root, 'deleted-post');
@@ -7391,6 +7663,7 @@
 
     Post.prototype.rmClone = function(index) {
       var clone, _i, _len, _ref;
+
       this.clones.splice(index, 1);
       _ref = this.clones.slice(index);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -7404,11 +7677,11 @@
   })();
 
   Clone = (function(_super) {
-
     __extends(Clone, _super);
 
     function Clone(origin, context) {
       var file, index, info, inline, inlined, key, nodes, post, root, val, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _ref3;
+
       this.origin = origin;
       this.context = context;
       _ref = ['ID', 'fullID', 'board', 'thread', 'info', 'quotes', 'isReply'];
@@ -7494,8 +7767,10 @@
   Main = {
     init: function() {
       var flatten, initFeature, key, pathname, val;
+
       flatten = function(parent, obj) {
         var key, val;
+
         if (obj instanceof Array) {
           Conf[parent] = obj[0];
         } else if (typeof obj === 'object') {
@@ -7534,6 +7809,7 @@
         case 'images.4chan.org':
           $.ready(function() {
             var url;
+
             if (Conf['404 Redirect'] && d.title === '4chan - 404 Not Found') {
               url = Redirect.image(pathname[1], pathname[3]);
               if (url) {
@@ -7544,9 +7820,12 @@
           return;
       }
       initFeature = function(name, module) {
+        var err;
+
         try {
           return module.init();
-        } catch (err) {
+        } catch (_error) {
+          err = _error;
           return Main.handleErrors({
             message: "\"" + name + "\" initialization crashed.",
             error: err
@@ -7605,6 +7884,7 @@
     },
     initStyle: function() {
       var MutationObserver, mainStyleSheet, observer, setStyle, style, styleSheets, _ref;
+
       if (!Main.isThisPageLegit()) {
         return;
       }
@@ -7623,6 +7903,7 @@
       styleSheets = $$('link[rel="alternate stylesheet"]', d.head);
       setStyle = function() {
         var styleSheet, _i, _len;
+
         $.rmClass(doc, style);
         for (_i = 0, _len = styleSheets.length; _i < _len; _i++) {
           styleSheet = styleSheets[_i];
@@ -7648,7 +7929,8 @@
       }
     },
     initReady: function() {
-      var board, boardChild, errors, href, posts, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1;
+      var board, boardChild, err, errors, href, posts, thread, threadChild, threads, _i, _j, _len, _len1, _ref, _ref1;
+
       if (d.title === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           href = Redirect.to({
@@ -7682,7 +7964,8 @@
             }
             try {
               posts.push(new Post(threadChild, thread, g.BOARD));
-            } catch (err) {
+            } catch (_error) {
+              err = _error;
               if (!errors) {
                 errors = [];
               }
@@ -7702,7 +7985,8 @@
       return $.event('4chanXInitFinished');
     },
     callbackNodes: function(klass, nodes) {
-      var callback, errors, i, len, node, _i, _j, _len, _ref;
+      var callback, err, errors, i, len, node, _i, _j, _len, _ref;
+
       len = nodes.length;
       _ref = klass.prototype.callbacks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -7711,7 +7995,8 @@
           node = nodes[i];
           try {
             callback.cb.call(node);
-          } catch (err) {
+          } catch (_error) {
+            err = _error;
             if (!errors) {
               errors = [];
             }
@@ -7728,6 +8013,7 @@
     },
     addCallback: function(e) {
       var Klass, obj;
+
       obj = e.detail;
       Klass = obj.type === 'Post' ? Post : Thread;
       obj.callback.isAddon = true;
@@ -7735,6 +8021,7 @@
     },
     handleErrors: function(errors) {
       var div, error, logs, _i, _len;
+
       if (!('length' in errors)) {
         error = errors;
       } else if (errors.length === 1) {
@@ -7767,6 +8054,7 @@
     },
     parseError: function(data) {
       var error, message;
+
       message = data.message, error = data.error;
       c.log(message, error.stack);
       message = $.el('div', {
