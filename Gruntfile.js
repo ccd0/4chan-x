@@ -21,19 +21,37 @@ module.exports = function(grunt) {
         ],
         dest: 'tmp/script.coffee'
       },
-      script: {
+      manifest: {
+        options: { process: { data: pkg } },
+        src: 'src/manifest.json',
+        dest: 'builds/crx/manifest.json'
+      },
+      crx: {
+        options: { process: { data: pkg } },
+        src: [
+          'src/banner.js',
+          'tmp/script.js'
+        ],
+        dest: 'builds/crx/script.js'
+      },
+      metadata: {
+        options: { process: { data: pkg } },
+        src: 'src/metadata.js',
+        dest: 'builds/<%= pkg.name %>.meta.js'
+      },
+      userscript: {
         options: { process: { data: pkg } },
         src: [
           'src/metadata.js',
           'src/banner.js',
           'tmp/script.js'
         ],
-        dest: '<%= pkg.meta.files.userjs %>'
+        dest: 'builds/<%= pkg.name %>.user.js'
       },
-      metadata: {
-        options: { process: { data: pkg } },
-        src: 'src/metadata.js',
-        dest: '<%= pkg.meta.files.metajs %>'
+      userjs: {
+        // Lazily copy the userscript
+        src: 'builds/<%= pkg.name %>.user.js',
+        dest: 'builds/<%= pkg.name %>.js'
       }
     },
     coffee: {
@@ -89,7 +107,16 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-exec');
 
-  grunt.registerTask('default', ['concat:coffee', 'coffee:script', 'concat:script', 'concat:metadata', 'clean']);
+  grunt.registerTask('default', [
+    'concat:coffee',
+    'coffee:script',
+    'concat:manifest',
+    'concat:crx',
+    'concat:userscript',
+    'concat:userjs',
+    'concat:metadata',
+    'clean'
+  ]);
   grunt.registerTask('release', ['default', 'exec:commit', 'exec:push']);
   grunt.registerTask('patch',   ['bump',       'updcl:3']);
   grunt.registerTask('minor',   ['bump:minor', 'updcl:2']);

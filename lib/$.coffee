@@ -189,7 +189,7 @@ $.extend $,
   unsafeWindow:
     if window.opera # Opera
       window
-    else if unsafeWindow isnt window # Firefox
+    else if unsafeWindow? # Firefox
       unsafeWindow
     else # Chrome
       do ->

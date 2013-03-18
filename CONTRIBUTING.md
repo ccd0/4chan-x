@@ -38,7 +38,5 @@ Note: this is only used to release new 4chan X versions, and is **not** needed o
 ### Contribute
 
 - Edit the CoffeeScript sources.
-- Build the JavaScript.
 - If the edits affect regular users, edit the changelog.
-- Fork the repository.
 - Open a pull request.
