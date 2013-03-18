@@ -8,7 +8,7 @@ d    = document
 doc  = d.documentElement
 g =
   VERSION:   '<%= version %>'
-  NAMESPACE: "<%= meta.name %>."
+  NAMESPACE: '<%= meta.name %>.'
   boards:  {}
   threads: {}
   posts:   {}
