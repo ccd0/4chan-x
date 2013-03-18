@@ -1,0 +1,14 @@
+{
+  "name": "<%= meta.name %>",
+  "version": "<%= version %>",
+  "manifest_version": 2,
+  "description": "<%= description %>",
+  "content_scripts": [{
+    "js": ["script.js"],
+    "matches": <%= JSON.stringify(meta.matches) %>,
+    "run_at": "document_start"
+  }],
+  "homepage_url": "<%= meta.page %>",
+  "incognito": "spanning",
+  "minimum_chrome_version": "25"
+}

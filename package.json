@@ -7,16 +7,18 @@
     "repo": "https://github.com/MayhemYDG/4chan-x/",
     "page": "http://mayhemydg.github.com/4chan-x/",
     "mainBranch": "v3",
-    "files": {
-      "metajs": "4chan_x.meta.js",
-      "userjs": "4chan_x.user.js"
-    }
+    "matches": [
+      "*://api.4chan.org/*",
+      "*://boards.4chan.org/*",
+      "*://images.4chan.org/*",
+      "*://sys.4chan.org/*"
+    ]
   },
   "devDependencies": {
     "grunt": "~0.4.0",
     "grunt-bump": "~0.0.0",
     "grunt-contrib-clean": "~0.4.0",
-    "grunt-contrib-coffee": "~0.6.0",
+    "grunt-contrib-coffee": "~0.6.2",
     "grunt-contrib-concat": "~0.1.0",
     "grunt-contrib-watch": "~0.3.0",
     "grunt-exec": "~0.4.0"
