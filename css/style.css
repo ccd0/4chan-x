@@ -347,7 +347,6 @@ a[href="javascript:;"] {
 /* Thread Watcher */
 #watcher {
   padding-bottom: 3px;
-  position: absolute;
   overflow: hidden;
   white-space: nowrap;
 }

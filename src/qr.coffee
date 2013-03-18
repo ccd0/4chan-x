@@ -5,19 +5,6 @@ QR =
     Misc.clearThreads "yourPosts.#{g.BOARD}"
     @syncYourPosts()
 
-    $.on d, '4chanXInitFinished', @initReady
-
-    Post::callbacks.push
-      name: 'Quick Reply'
-      cb:   @node
-
-  initReady: ->
-    QR.postingIsEnabled = !!$.id 'postForm'
-    return unless QR.postingIsEnabled
-
-    if Conf['Hide Original Post Form']
-      $.addClass doc, 'hide-original-post-form'
-
     sc = $.el 'a',
       className: "qr-shortcut #{unless Conf['Persistent QR'] then 'disabled' else ''}"
       textContent: 'QR'
@@ -31,8 +18,25 @@ QR =
       else
         QR.close()
       $.toggleClass @, 'disabled'
-      
+
     Header.addShortcut sc
+
+    $.asap (-> doc), ->
+      if Conf['Hide Original Post Form']
+        $.addClass doc, 'hide-original-post-form'
+
+    $.on d, '4chanXInitFinished', @initReady
+
+    Post::callbacks.push
+      name: 'Quick Reply'
+      cb:   @node
+
+  initReady: ->
+    QR.postingIsEnabled = !!$.id 'postForm'
+    return unless QR.postingIsEnabled
+
+    if Conf['Hide Original Post Form']
+      $.addClass doc, 'hide-original-post-form'
 
     if $.engine is 'webkit'
       $.on d, 'paste',            QR.paste
