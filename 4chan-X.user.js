@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-03-18
+/* 4chan X Beta - Version 3.0.0 - 2013-03-19
  * http://mayhemydg.github.com/4chan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -6535,13 +6535,13 @@
         return $.toggleClass(this, 'disabled');
       });
       Header.addShortcut(sc);
-      $.asap((function() {
-        return doc;
-      }), function() {
-        if (Conf['Hide Original Post Form']) {
+      if (Conf['Hide Original Post Form']) {
+        $.asap((function() {
+          return doc;
+        }), function() {
           return $.addClass(doc, 'hide-original-post-form');
-        }
-      });
+        });
+      }
       $.on(d, '4chanXInitFinished', this.initReady);
       return Post.prototype.callbacks.push({
         name: 'Quick Reply',
@@ -6552,9 +6552,6 @@
       QR.postingIsEnabled = !!$.id('postForm');
       if (!QR.postingIsEnabled) {
         return;
-      }
-      if (Conf['Hide Original Post Form']) {
-        $.addClass(doc, 'hide-original-post-form');
       }
       if ($.engine === 'webkit') {
         $.on(d, 'paste', QR.paste);

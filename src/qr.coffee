@@ -21,8 +21,8 @@ QR =
 
     Header.addShortcut sc
 
-    $.asap (-> doc), ->
-      if Conf['Hide Original Post Form']
+    if Conf['Hide Original Post Form']
+      $.asap (-> doc), ->
         $.addClass doc, 'hide-original-post-form'
 
     $.on d, '4chanXInitFinished', @initReady
@@ -34,9 +34,6 @@ QR =
   initReady: ->
     QR.postingIsEnabled = !!$.id 'postForm'
     return unless QR.postingIsEnabled
-
-    if Conf['Hide Original Post Form']
-      $.addClass doc, 'hide-original-post-form'
 
     if $.engine is 'webkit'
       $.on d, 'paste',            QR.paste
