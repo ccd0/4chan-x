@@ -3,12 +3,13 @@ Polyfill =
     Polyfill.visibility()
   visibility: ->
     # page visibility API
-    return if 'visibilityState' of document
-    return unless prefix = (
-      if 'webkitVisibilityState' of document
-        'webkit'
-      else if 'mozVisibilityState' of document
-        'moz'
+    return if 'visibilityState' of document or not (
+      prefix = (
+        if 'webkitVisibilityState' of document
+          'webkit'
+        else if 'mozVisibilityState' of document
+          'moz'
+      )
     )
 
     property = prefix + 'VisibilityState'

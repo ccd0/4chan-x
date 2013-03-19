@@ -1109,10 +1109,7 @@
     visibility: function() {
       var event, prefix, property;
 
-      if ('visibilityState' in document) {
-        return;
-      }
-      if (!(prefix = ('webkitVisibilityState' in document ? 'webkit' : 'mozVisibilityState' in document ? 'moz' : void 0))) {
+      if ('visibilityState' in document || !(prefix = ('webkitVisibilityState' in document ? 'webkit' : 'mozVisibilityState' in document ? 'moz' : void 0))) {
         return;
       }
       property = prefix + 'VisibilityState';
