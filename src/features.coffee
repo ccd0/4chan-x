@@ -118,6 +118,7 @@ class Notification
 
 CatalogLinks =
   init: ->
+    $.ready @ready
     return unless Conf['Catalog Links']
     el = $.el 'a',
       id:           'toggleCatalog'
@@ -162,6 +163,12 @@ CatalogLinks =
       else
         "//boards.4chan.org/#{board}/catalog"
     )
+
+  ready: ->
+    if catalogLink = ($('.pages.cataloglink a', d.body) or $ '[href=".././catalog"]', d.body)
+      if !g.VIEW is thread
+        $.add d.body, catalogLink
+      catalogLink.id = 'catalog'
 
 Settings =
   init: ->

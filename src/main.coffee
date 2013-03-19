@@ -391,41 +391,7 @@ Main =
     # c.timeEnd 'All initializations'
 
     $.on d, 'AddCallback',   Main.addCallback
-    $.on d, '4chanMainInit', Main.initStyle
     $.ready Main.initReady
-
-  initStyle: ->
-    return unless Main.isThisPageLegit()
-    # disable the mobile layout
-    $('link[href*=mobile]', d.head)?.disabled = true
-    $.addClass doc, $.engine
-    $.addClass doc, 'fourchan-x'
-    $.addStyle Main.css
-
-    if g.VIEW is 'catalog'
-      $.addClass doc, $.id('base-css').href.match(/catalog_(\w+)/)[1].replace('_new', '').replace /_+/g, '-'
-      return
-
-    style          = 'yotsuba-b'
-    mainStyleSheet = $ 'link[title=switch]', d.head
-    styleSheets    = $$ 'link[rel="alternate stylesheet"]', d.head
-    setStyle = ->
-      $.rmClass doc, style
-      for styleSheet in styleSheets
-        if styleSheet.href is mainStyleSheet.href
-          style = styleSheet.title.toLowerCase().replace('new', '').trim().replace /\s+/g, '-'
-          break
-      $.addClass doc, style
-    setStyle()
-    return unless mainStyleSheet
-    if MutationObserver = window.MutationObserver or window.WebKitMutationObserver or window.OMutationObserver
-      observer = new MutationObserver setStyle
-      observer.observe mainStyleSheet,
-        attributes: true
-        attributeFilter: ['href']
-    else
-      # XXX this doesn't seem to work?
-      $.on mainStyleSheet, 'DOMAttrModified', setStyle
 
   initReady: ->
     if d.title is '4chan - 404 Not Found'
@@ -536,14 +502,5 @@ Main =
       Main.thisPageIsLegit = !$('link[href*="favicon-status.ico"]', d.head) and d.title isnt '4chan - Temporarily Offline'
     Main.thisPageIsLegit
 
-  css: """
-  <%= grunt.file.read('css/style.css') %>
-  <%= grunt.file.read('css/yotsuba.css') %>
-  <%= grunt.file.read('css/yotsuba-b.css') %>
-  <%= grunt.file.read('css/futaba.css') %>
-  <%= grunt.file.read('css/burichan.css') %>
-  <%= grunt.file.read('css/tomorrow.css') %>
-  <%= grunt.file.read('css/photon.css') %>
-  """
 
 Main.init()

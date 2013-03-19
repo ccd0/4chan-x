@@ -1,12 +1,12 @@
 {
-  "name": "4chan-X",
-  "version": "3.0.0",
-  "description": "Cross-browser userscript for maximum lurking on 4chan.",
+  "name": "appchan-x",
+  "version": "2.0.0",
+  "description": "The most comprehensive 4chan userscript.",
   "meta": {
-    "name": "4chan X Beta",
-    "repo": "https://github.com/MayhemYDG/4chan-x/",
-    "page": "http://mayhemydg.github.com/4chan-x/",
-    "mainBranch": "v3",
+    "name": "appchan-x",
+    "repo": "https://github.com/zixaphir/appchan-x/",
+    "page": "http://zixaphir.github.com/appchan-x/",
+    "mainBranch": "Av2",
     "matches": [
       "*://api.4chan.org/*",
       "*://boards.4chan.org/*",
@@ -25,10 +25,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/MayhemYDG/4chan-x.git"
+    "url": "git://github.com/zixaphir/appchan-x.git"
   },
-  "author": "Nicolas Stepien <stepien.nicolas@gmail.com>",
+  "author": "Zixaphir <zixaphirmoxphar@gmail.com>",
   "contributors": [
+    "Nicolas Stepien <stepien.nicolas@gmail.com>",
     "James Campos <james.r.campos@gmail.com>"
   ],
   "license": "MIT",
