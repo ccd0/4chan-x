@@ -4,12 +4,12 @@ Polyfill =
   visibility: ->
     # page visibility API
     return if 'visibilityState' of document
-    if 'webkitVisibilityState' of document
-      prefix = 'webkit'
-    else if 'mozVisibilityState' of document
-      prefix = 'moz'
-    else
-      return
+    return unless prefix = (
+      if 'webkitVisibilityState' of document
+        'webkit'
+      else if 'mozVisibilityState' of document
+        'moz'
+    )
 
     property = prefix + 'VisibilityState'
     event    = prefix + 'visibilitychange'

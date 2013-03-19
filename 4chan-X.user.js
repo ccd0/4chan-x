@@ -1112,11 +1112,7 @@
       if ('visibilityState' in document) {
         return;
       }
-      if ('webkitVisibilityState' in document) {
-        prefix = 'webkit';
-      } else if ('mozVisibilityState' in document) {
-        prefix = 'moz';
-      } else {
+      if (!(prefix = ('webkitVisibilityState' in document ? 'webkit' : 'mozVisibilityState' in document ? 'moz' : void 0))) {
         return;
       }
       property = prefix + 'VisibilityState';
