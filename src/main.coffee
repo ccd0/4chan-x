@@ -342,6 +342,11 @@ Main =
     # c.time 'All initializations'
     initFeatures
       'Polyfill':                 Polyfill
+      'Emoji':                    Emoji
+      'Style':                    Style
+      'Rice':                     Rice
+      'Banner':                   Banner
+      'Announcements':            GlobalMessage
       'Header':                   Header
       'Catalog Links':            CatalogLinks
       'Settings':                 Settings
@@ -402,10 +407,6 @@ Main =
           postID: location.hash
         location.href = href or "/#{g.BOARD}/"
       return
-
-    unless $.hasClass doc, 'fourchan-x'
-      # Something might have gone wrong!
-      Main.initStyle()
 
     if board = $ '.board'
       threads = []

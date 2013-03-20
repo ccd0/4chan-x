@@ -1,0 +1,396 @@
+
+.hide_thread_button span > span,
+.hide_reply_button span > span {
+  background-color: #{theme["Links"]};
+}
+#mascot_hide label {
+  border-bottom: 1px solid #{theme["Reply Border"]};
+}
+#content .thumb {
+  box-shadow: 0 0 5px #{theme["Reply Border"]};
+}
+.mascotname,
+.mascotoptions {
+  background: #{theme["Dialog Background"]};
+  border: 1px solid #{theme["Buttons Border"]};
+}
+.opContainer.filter_highlight {
+  box-shadow: inset 5px 0 #{theme["Backlinked Reply Outline"]};
+}
+.filter_highlight > .reply {
+  box-shadow: -5px 0 #{theme["Backlinked Reply Outline"]};
+}
+::#{agent}selection {
+  background: #{theme["Text"]};
+  color: #{backgroundC};
+}
+hr {
+  border-bottom: 1px solid #{theme["Reply Border"]};
+}
+a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] > table > tbody > tr > td {
+  background: #{backgroundC} !important;
+  border: 1px solid #{theme["Reply Border"]} !important;
+}
+#fs_status {
+  background: #{theme["Dialog Background"]} !important;
+}
+#fs_data tr[style="background-color: #EA8;"] {
+  background: #{theme["Reply Background"]} !important;
+}
+#fs_data,
+#fs_data * {
+  border-color: #{theme["Reply Border"]} !important;
+}
+html {
+  background: #{backgroundC or ''};
+  background-image: #{theme["Background Image"] or ''};
+  background-repeat: #{theme["Background Repeat"] or ''};
+  background-attachment: #{theme["Background Attachment"] or ''};
+  background-position: #{theme["Background Position"] or ''};
+}
+#optionsContent,
+#exlinks-options-content,
+#mascotcontent,
+#themecontent {
+  background: #{backgroundC};
+  border: 1px solid #{theme["Reply Border"]};
+  padding: 5px;
+}
+#selected_tab {
+  background: #{backgroundC};
+  border-color: #{theme["Reply Border"]};
+  border-style: solid;
+}
+.captchaimg img {
+  #{Style.filter theme["Text"], theme["Input Background"]}
+}
+#boardTitle,
+#prefetch,
+#showQR,
+#{unless _conf["Post Form Decorations"] then '#spoilerLabel,' else ''}
+#stats,
+#updater:not(:hover) .move {
+  text-shadow:
+     1px  1px 0 #{backgroundC},
+    -1px -1px 0 #{backgroundC},
+     1px -1px 0 #{backgroundC},
+    -1px  1px 0 #{backgroundC},
+     0    1px 0 #{backgroundC},
+     0   -1px 0 #{backgroundC},
+     1px  0   0 #{backgroundC},
+    -1px  0   0 #{backgroundC}
+    #{if _conf["Sidebar Glow"] then ", 0 2px 5px #{theme['Text']};" else ";"}
+}
+/* Fixes text spoilers */
+#{if _conf['Remove Spoilers'] and _conf['Indicate Spoilers'] then "
+.spoiler::before,
+s::before {
+  content: '[spoiler]';
+}
+.spoiler::after,
+s::after {
+  content: '[/spoiler]';
+}
+" else unless _conf['Remove Spoilers'] then "
+.spoiler:not(:hover) *,
+s:not(:hover) * {
+  color: rgb(0,0,0) !important;
+  text-shadow: none !important;
+}
+.spoiler:not(:hover),
+s:not(:hover) {
+  background-color: rgb(0,0,0);
+  color: rgb(0,0,0) !important;
+  text-shadow: none !important;
+}" else ""}
+#exlinks-options,
+#options,
+#qrtab,
+#{if _conf["Post Form Decorations"] then "#qr," else ""}
+#updater:hover,
+input[type="submit"],
+input[value="Report"],
+span[style="left: 5px; position: absolute;"] a {
+  background: #{theme["Buttons Background"]};
+  border: 1px solid #{theme["Buttons Border"]};
+}
+.enabled .mascotcontainer {
+  background: #{theme["Buttons Background"]};
+  border-color: #{theme["Buttons Border"]};
+}
+#dump,
+#file,
+#options input,
+.captchaimg,
+.dump #dump:not(:hover):not(:focus),
+.selectrice,
+button,
+input,
+textarea {
+  background: #{theme["Input Background"]};
+  border: 1px solid #{theme["Input Border"]};
+  color: #{theme["Inputs"]};
+}
+#dump:hover,
+#file:hover,
+#options .selectrice li:nth-of-type(2n+1):hover,
+.selectrice:hover,
+.selectrice li:hover,
+input:hover,
+textarea:hover {
+  background: #{theme["Hovered Input Background"]};
+  border-color: #{theme["Hovered Input Border"]};
+  color: #{theme["Inputs"]};
+}
+#dump:active,
+#dump:focus,
+.selectrice:focus,
+.selectrice li:focus,
+input:focus,
+textarea:focus,
+textarea.field:focus {
+  background: #{theme["Focused Input Background"]};
+  border-color: #{theme["Focused Input Border"]};
+  color: #{theme["Inputs"]};
+}
+#mouseover,
+#post-preview,
+#qp .post,
+#xupdater,
+.reply.post {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #{theme["Reply Border"]};
+  background: #{theme["Reply Background"]};
+}
+.thread > .replyContainer > .reply.post {
+  border-width: #{if _conf['Post Spacing'] is "0" then "1px 1px 0 1px" else '1px'};
+}
+.exblock.reply,
+.reply.post.highlight,
+.reply.post:target {
+  background: #{theme["Highlighted Reply Background"]};
+  border: 1px solid #{theme["Highlighted Reply Border"]};
+}
+#boardNavDesktop,
+.pagelist {
+  background: #{theme["Navigation Background"]};
+  border-style: solid;
+  border-color: #{theme["Navigation Border"]};
+}
+.thread {
+  background: #{theme["Thread Wrapper Background"]};
+  border: 1px solid #{theme["Thread Wrapper Border"]};
+}
+#boardNavDesktopFoot,
+#mascotConf,
+#mascot_hide,
+#menu,
+#selectrice,
+#themeConf,
+#watcher,
+#watcher:hover,
+.subMenu,
+a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
+  background: #{theme["Dialog Background"]};
+  border: 1px solid #{theme["Dialog Border"]};
+}
+.deleteform::before,
+.deleteform,
+#qr .warning {
+  background: #{theme["Input Background"]};
+  border-color: #{theme["Input Border"]};
+}
+.disabledwarning,
+.warning {
+  color: #{theme["Warnings"]};
+}
+#navlinks a:first-of-type {
+  border-bottom: 11px solid rgb(#{if Style.lightTheme then "130,130,130" else "152,152,152"});
+}
+#navlinks a:last-of-type {
+  border-top: 11px solid rgb(#{if Style.lightTheme then "130,130,130" else "152,152,152"});
+}
+#charCount {
+  color: #{(if Style.lightTheme then "rgba(0,0,0,0.7)" else "rgba(255,255,255,0.7)")};
+}
+.postNum a {
+  color: #{theme["Post Numbers"]};
+}
+.subject {
+  color: #{theme["Subjects"]} !important;
+}
+.dateTime,
+.post-ago {
+  color: #{theme["Timestamps"]} !important;
+}
+#fs_status a,
+#imgControls label::after,
+#updater #count:not(.new)::after,
+#showQR,
+#updater,
+.abbr,
+.boxbar,
+.boxcontent,
+.deleteform::before,
+.pages strong,
+.pln,
+.reply,
+.reply.highlight,
+.summary,
+body,
+button,
+span[style="left: 5px; position: absolute;"] a,
+input,
+textarea {
+  color: #{theme["Text"]};
+}
+#exlinks-options-content > table,
+#options ul,
+.selectrice ul {
+  border-bottom: 1px solid #{theme["Reply Border"]};
+  box-shadow: inset #{theme["Shadow Color"]} 0 0 5px;
+}
+.quote + .spoiler:hover,
+.quote {
+  color: #{theme["Greentext"]};
+}
+.forwardlink {
+  text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
+  border-bottom: 1px dashed #{theme["Backlinks"]};
+}
+.container::before {
+  color: #{theme["Timestamps"]};
+}
+#menu,
+#post-preview,
+#qp .opContainer,
+#qp .replyContainer,
+.subMenu {
+  box-shadow: #{if _conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else ""};
+}
+.rice {
+  background: #{theme["Checkbox Background"]};
+  border: 1px solid #{theme["Checkbox Border"]};
+}
+.selectrice::before {
+  border-left: 1px solid #{theme["Input Border"]};
+}
+.selectrice::after {
+  border-top: .45em solid #{theme["Inputs"]};
+}
+#updater input,
+.bd {
+  background: #{theme["Buttons Background"]};
+  border: 1px solid #{theme["Buttons Border"]};
+}
+.pages a,
+#boardNavDesktop a {
+  color: #{theme["Navigation Links"]};
+}
+input[type=checkbox]:checked + .rice {
+  background: #{theme["Checkbox Checked Background"]};
+  background-image: url(#{
+Icons.header.png + (
+  if Style.lightTheme
+    "AkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg=="
+  else
+    "AkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg=="
+  )
+});
+}
+#addReply,
+#dump,
+.button,
+.entry,
+.replylink,
+a {
+  color: #{theme["Links"]};
+}
+.backlink {
+  color: #{theme["Backlinks"]};
+}
+.qiQuote,
+.quotelink {
+  color: #{theme["Quotelinks"]};
+}
+#addReply:hover,
+#dump:hover,
+.entry:hover,
+.sideArrows a:hover,
+.replylink:hover,
+.qiQuote:hover,
+.quotelink:hover,
+a .name:hover,
+a .postertrip:hover,
+a:hover {
+  color: #{theme["Hovered Links"]};
+}
+#boardNavDesktop a:hover,
+#boardTitle a:hover {
+  color: #{theme["Hovered Navigation Links"]};
+}
+#boardTitle {
+  color: #{theme["Board Title"]};
+}
+.name,
+.post-author {
+  color: #{theme["Names"]} !important;
+}
+.post-tripcode,
+.postertrip,
+.trip {
+  color: #{theme["Tripcodes"]} !important;
+}
+a .postertrip,
+a .name {
+  color: #{theme["Emails"]};
+}
+.post.reply.qphl,
+.post.op.qphl {
+  border-color: #{theme["Backlinked Reply Outline"]};
+  background: #{theme["Highlighted Reply Background"]};
+}
+.inline .post {
+  box-shadow: #{if _conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else  ""};
+}
+.placeholder,
+#qr input::#{agent}placeholder,
+#qr textarea::#{agent}placeholder {
+  color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
+}
+#qr input:#{agent}placeholder,
+#qr textarea:#{agent}placeholder,
+.placeholder {
+  color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
+}
+#options ul,
+.boxcontent dd,
+.selectrice ul {
+  border-color: #{if Style.lightTheme then "rgba(0,0,0,0.1)" else "rgba(255,255,255,0.1)"};
+}
+#options li,
+.selectrice li:not(:first-of-type) {
+  border-top: 1px solid #{if Style.lightTheme then "rgba(0,0,0,0.05)" else "rgba(255,255,255,0.025)"};
+}
+#navtopright .exlinksOptionsLink::after,
+#appchanOptions,
+.navLinks > a:first-of-type::after,
+#watcher::after,
+#globalMessage::after,
+#boardNavDesktopFoot::after,
+a[style="cursor: pointer; float: right;"]::after,
+#imgControls label:first-of-type::after,
+#catalog::after,
+#fappeTyme {
+  background-image: url('#{icons}');
+#{unless Style.lightTheme then "
+filter: url(\"
+data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='
+-1 0 0 0 1
+ 0 -1 0 0 1
+ 0 0 -1 0 1
+ 0 0 0 1 0' /></filter></svg>#filters
+\");" else ""}
+}
+#{theme["Custom CSS"]}

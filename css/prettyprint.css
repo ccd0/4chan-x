@@ -1,0 +1,57 @@
+(if Style.lightTheme then """
+.prettyprint {
+  background-color: #e7e7e7;
+  border: 1px solid #dcdcdc;
+}
+.com {
+  color: #dd0000;
+}
+.str,
+.atv {
+  color: #7fa61b;
+}
+.pun {
+  color: #61663a;
+}
+.tag {
+  color: #117743;
+}
+.kwd {
+  color: #5a6F9e;
+}
+.typ,
+.atn {
+  color: #9474bd;
+}
+.lit {
+  color: #368c72;
+}\n
+""" else """
+.prettyprint {
+  background-color: rgba(0,0,0,.1);
+  border: 1px solid rgba(0,0,0,0.5);
+}
+.tag {
+  color: #96562c;
+}
+.pun {
+  color: #5b6f2a;
+}
+.com {
+  color: #a34443;
+}
+.str,
+.atv {
+  color: #8ba446;
+}
+.kwd {
+  color: #987d3e;
+}
+.typ,
+.atn {
+  color: #897399;
+}
+.lit {
+  color: #558773;
+}\n
+"""

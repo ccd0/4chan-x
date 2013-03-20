@@ -1,0 +1,9 @@
+/* Updater + Stats */
+#updater,
+#stats {
+  #{align}: 2px !important;
+  #{Style.sidebarLocation[1]}: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  #{if _conf["Updater Position"] is 'top' then "top: 1.6em !important" else "bottom: 0 !important"};
+}

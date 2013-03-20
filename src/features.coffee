@@ -166,7 +166,7 @@ CatalogLinks =
 
   ready: ->
     if catalogLink = ($('.pages.cataloglink a', d.body) or $ '[href=".././catalog"]', d.body)
-      if !g.VIEW is thread
+      if !g.VIEW is 'thread'
         $.add d.body, catalogLink
       catalogLink.id = 'catalog'
 

@@ -1,0 +1,95 @@
+
+#navtopright .exlinksOptionsLink::after,
+#appchanOptions,
+body > div.navLinks > a:first-of-type::after,
+#{if Conf['Slideout Watcher'] then '#watcher::after,' else ''}
+#{if Conf['Announcements'] is 'slideout' then '#globalMessage::after,' else ''}
+#boardNavDesktopFoot::after,
+body > a[style="cursor: pointer; float: right;"]::after,
+#imgControls label:first-of-type::after,
+#catalog::after,
+#fappeTyme {
+  z-index: 18;
+  position: fixed;
+  display: block;
+  width: 15px;
+  height: 15px;
+  content: "";
+  overflow: hidden;
+  opacity: #{if Conf['Invisible Icons'] then 0 else 0.5};
+}
+#navtopright .exlinksOptionsLink,
+body > div.navLinks > a:first-of-type,
+#{if Conf['Slideout Watcher'] then '#watcher,' else ''}
+#{if Conf['Announcements'] is 'slideout' then '#globalMessage,' else ''}
+#boardNavDesktopFoot,
+body > a[style="cursor: pointer; float: right;"],
+#catalog {
+  z-index: 16;
+}
+#navtopright .exlinksOptionsLink:hover,
+body > div.navLinks > a:first-of-type:hover,
+#{if Conf['Slideout Watcher'] then '#watcher:hover,' else ''}
+#{if Conf['Announcements'] is 'slideout' then '#globalMessage:hover,' else ''}
+#boardNavDesktopFoot:hover,
+body > a[style="cursor: pointer; float: right;"]:hover,
+#catalog:hover {
+  z-index: 17;
+}
+#imgControls {
+  z-index: 19;
+}
+#imgControls {
+  position: fixed;
+}
+#appchanOptions {
+  visibility: visible;
+  background-position: 0 0;
+}
+body > div.navLinks > a:first-of-type::after {
+  cursor: pointer;
+  background-position: 0 -15px;
+}
+#watcher::after {
+  background-position: 0 -30px;
+}
+#globalMessage::after {
+  background-position: 0 -45px;
+}
+#boardNavDesktopFoot::after {
+  background-position: 0 -60px;
+}
+body > a[style="cursor: pointer; float: right;"]::after {
+  visibility: visible;
+  cursor: pointer;
+  background-position: 0 -75px;
+}
+#imgControls label:first-of-type::after {
+  position: static;
+  background-position: 0 -90px;
+}
+#navtopright .exlinksOptionsLink::after {
+  background-position: 0 -105px;
+}
+#catalog::after {
+  visibility: visible;
+  background-position: 0 -120px;
+}
+#fappeTyme {
+  background-position: 0 -135px;
+}
+#boardNavDesktopFoot:hover::after,
+#globalMessage:hover::after,
+#imgControls label:hover:first-of-type::after,
+#navlinks a:hover,
+#appchanOptions:hover,
+#navtopright .exlinksOptionsLink:hover::after,
+#qr #qrtab,
+#watcher:hover::after,
+.thumbnail#selected,
+body > a[style="cursor: pointer; float: right;"]:hover::after,
+div.navLinks > a:first-of-type:hover::after,
+#catalog:hover::after,
+#fappeTyme:hover {
+  opacity: 1;
+}

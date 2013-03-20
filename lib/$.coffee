@@ -121,8 +121,9 @@ $.extend $,
       cb()
     else
       setTimeout $.asap, 25, test, cb
-  addStyle: (css) ->
+  addStyle: (css, id) ->
     style = $.el 'style',
+      id: id
       textContent: css
     $.asap (-> d.head), ->
       $.add d.head, style

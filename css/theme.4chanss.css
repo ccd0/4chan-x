@@ -1,0 +1,30 @@
+.board {
+  padding: 1px 2px;
+}
+.rice {
+  box-shadow:rgba(""" + mainColor.shiftRGB(32) + """,.3) 0 1px;
+}
+input[type=password]:hover,
+input[type=text]:not([disabled]):hover,
+input#fs_search:hover,
+input.field:hover,
+.webkit select:hover,
+textarea:hover,
+#options input:not([type=checkbox]):hover {
+  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
+}
+input[type=password]:focus,
+input[type=text]:focus,
+input#fs_search:focus,
+input.field:focus,
+.webkit select:focus,
+textarea:focus,
+#options input:focus {
+  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
+}
+button,
+input,
+textarea,
+.rice {
+  transition:background .2s,box-shadow .2s;
+}
