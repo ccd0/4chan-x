@@ -28,8 +28,8 @@ Header =
       Header.generateBoardList Conf['boardnav']
       $.sync 'boardnav', Header.generateBoardList
       btn = $.el 'span',
-        className: 'hide-board-list-button brackets-wrap'
-        innerHTML: '<a href=javascript:;> - </a>'
+        className: 'hide-board-list-button'
+        innerHTML: '[<a href=javascript:;> - </a>]\u00A0'
       $.on btn, 'click', Header.toggleBoardList
       $.prepend fullBoardList, btn
     else
