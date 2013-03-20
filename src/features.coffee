@@ -174,8 +174,8 @@ Settings =
   init: ->
     # 4chan X settings link
     link = $.el 'a',
+      id:          'appchanOptions'
       className:   'settings-link'
-      textContent: '<%= meta.name %> Settings'
       href:        'javascript:;'
     $.on link, 'click', Settings.open
 
@@ -209,7 +209,7 @@ Settings =
     $.event 'CloseMenu'
 
     html = """
-      <div id=fourchanx-settings class=dialog>
+      <div id=appchanx-settings class=dialog>
         <nav>
           <div class=sections-list></div>
           <div class=credits>
@@ -1126,7 +1126,7 @@ ReplyHiding =
           Recursive.apply ReplyHiding.hide, @, data.makeStub, true
           Recursive.add ReplyHiding.hide, @, data.makeStub, true
     return unless Conf['Hiding Buttons']
-    $.replace $('.sideArrows', @nodes.root), ReplyHiding.makeButton @, 'hide'
+    $.add $('.postInfo', @nodes.post), ReplyHiding.makeButton @, 'hide'
 
   getHiddenPosts: ->
     ReplyHiding.hiddenPosts = $.get "hiddenPosts.#{g.BOARD}", threads: {}
@@ -1378,7 +1378,7 @@ Menu =
     (post) ->
       a or= $.el 'a',
         className: 'menu-button'
-        innerHTML: '[<i></i>]'
+        innerHTML: '[<span class=dropmarker></span>]'
         href:      'javascript:;'
       clone = a.cloneNode true
       clone.setAttribute 'data-postid', post.fullID

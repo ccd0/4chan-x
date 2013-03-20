@@ -680,11 +680,8 @@ QR =
 
   dialog: ->
     dialog = UI.dialog 'qr', 'top:0;right:0;', """
-    <div>
+    <div id=qrtab>
       <input type=checkbox id=autohide title=Auto-hide>
-      <select title='Create a new thread / Reply'>
-        <option value=new>New thread</option>
-      </select>
       <span class=move></span>
       <a href=javascript:; class=close title=Close>×</a>
     </div>
@@ -695,13 +692,13 @@ QR =
         <input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1>
         <input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1>
       </div>
-      <div id=dump-list-container>
-        <div id=dump-list></div>
-        <a id=add-post href=javascript:; title="Add a post">+</a>
-      </div>
       <div class=textarea>
         <textarea data-name=com title=Comment placeholder=Comment class=field></textarea>
         <span id=char-count></span>
+      </div>
+      <div id=dump-list-container>
+        <div id=dump-list></div>
+        <a id=add-post href=javascript:; title="Add a post">+</a>
       </div>
       <div id=file-n-submit>
         <input id=qr-file-button type=button value='Choose files'>
@@ -715,6 +712,9 @@ QR =
       </div>
       <input type=file multiple>
     </form>
+    <select title='Create a new thread / Reply'>
+      <option value=new>New thread</option>
+    </select>
     """.replace />\s+</g, '><' # get rid of spaces between elements
 
     QR.nodes = nodes =

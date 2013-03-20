@@ -579,7 +579,7 @@ Rice =
     return
 
   node: ->
-    Rice.checkbox $ '.postInfo input', @el
+    Rice.checkbox $ '.postInfo input', @nodes.post
 
   checkbox: (input) ->
     return if $.hasClass input, 'riced'

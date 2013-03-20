@@ -48,7 +48,7 @@ html {
   background-attachment: #{theme["Background Attachment"] or ''};
   background-position: #{theme["Background Position"] or ''};
 }
-#optionsContent,
+#appchanx-settingsContent,
 #exlinks-options-content,
 #mascotcontent,
 #themecontent {
@@ -104,7 +104,7 @@ s:not(:hover) {
   text-shadow: none !important;
 }" else ""}
 #exlinks-options,
-#options,
+#appchanx-settings,
 #qrtab,
 #{if _conf["Post Form Decorations"] then "#qr," else ""}
 #updater:hover,
@@ -120,7 +120,7 @@ span[style="left: 5px; position: absolute;"] a {
 }
 #dump,
 #file,
-#options input,
+#appchanx-settings input,
 .captchaimg,
 .dump #dump:not(:hover):not(:focus),
 .selectrice,
@@ -133,7 +133,7 @@ textarea {
 }
 #dump:hover,
 #file:hover,
-#options .selectrice li:nth-of-type(2n+1):hover,
+#appchanx-settings .selectrice li:nth-of-type(2n+1):hover,
 .selectrice:hover,
 .selectrice li:hover,
 input:hover,
@@ -190,7 +190,7 @@ textarea.field:focus {
 #themeConf,
 #watcher,
 #watcher:hover,
-.subMenu,
+.submenu,
 a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
   background: #{theme["Dialog Background"]};
   border: 1px solid #{theme["Dialog Border"]};
@@ -246,7 +246,7 @@ textarea {
   color: #{theme["Text"]};
 }
 #exlinks-options-content > table,
-#options ul,
+#appchanx-settings ul,
 .selectrice ul {
   border-bottom: 1px solid #{theme["Reply Border"]};
   box-shadow: inset #{theme["Shadow Color"]} 0 0 5px;
@@ -266,7 +266,7 @@ textarea {
 #post-preview,
 #qp .opContainer,
 #qp .replyContainer,
-.subMenu {
+.submenu {
   box-shadow: #{if _conf['Quote Shadows'] then "5px 5px 5px #{theme['Shadow Color']}" else ""};
 }
 .rice {
@@ -364,12 +364,12 @@ a .name {
 .placeholder {
   color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
 }
-#options ul,
+#appchanx-settings ul,
 .boxcontent dd,
 .selectrice ul {
   border-color: #{if Style.lightTheme then "rgba(0,0,0,0.1)" else "rgba(255,255,255,0.1)"};
 }
-#options li,
+#appchanx-settings li,
 .selectrice li:not(:first-of-type) {
   border-top: 1px solid #{if Style.lightTheme then "rgba(0,0,0,0.05)" else "rgba(255,255,255,0.025)"};
 }

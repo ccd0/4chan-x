@@ -732,16 +732,16 @@ Themes =
 .thread {
   padding:10px;
 }
-#options.reply.dialog,
-#options .dialog {
+#appchanx-settings.reply.dialog,
+#appchanx-settings .dialog {
   background-color:#FFF;
   color:#000;
   border:2px solid #CCC;
 }
-#options ul {
+#appchanx-settings ul {
   border-bottom:1px solid #DBD8D2;
 }
-#options ul:last-of-type{
+#appchanx-settings ul:last-of-type{
   border:none;
 }
 #qp div.post{
@@ -1076,7 +1076,7 @@ div.post:hover .name {
     'Warnings'                    : 'rgb(187,187,187)'
     'Shadow Color'                : 'rgba(0,0,0,.1)'
     'Custom CSS'                  : """
-#options {
+#appchanx-settings {
   background-color: rgba(16,16,16,1) !important;
 }
 #delform blockquote {
@@ -1659,7 +1659,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not([type=checkbox]):hover {
+#appchanx-settings input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1668,7 +1668,7 @@ input#fs_search:focus,
 input.field:focus,
 .webkit select:focus,
 textarea:focus,
-#options input:focus {
+#appchanx-settings input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
@@ -1743,7 +1743,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not([type=checkbox]):hover {
+#appchanx-settings input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1752,7 +1752,7 @@ input#fs_search:focus,
 input.field:focus,
 .webkit select:focus,
 textarea:focus,
-#options input:focus {
+#appchanx-settings input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
@@ -1835,7 +1835,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not([type=checkbox]):hover {
+#appchanx-settings input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1844,7 +1844,7 @@ input#fs_search:focus,
 input.field:focus,
 .webkit select:focus,
 textarea:focus,
-#options input:focus {
+#appchanx-settings input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
@@ -1913,7 +1913,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not([type=checkbox]):hover {
+#appchanx-settings input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1922,7 +1922,7 @@ input#fs_search:focus,
 input.field:focus,
 .webkit select:focus,
 textarea:focus,
-#options input:focus {
+#appchanx-settings input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
@@ -1988,7 +1988,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not([type=checkbox]):hover {
+#appchanx-settings input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -1997,7 +1997,7 @@ input#fs_search:focus,
 input.field:focus,
 .webkit select:focus,
 textarea:focus,
-#options input:focus {
+#appchanx-settings input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
@@ -2077,7 +2077,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not([type=checkbox]):hover {
+#appchanx-settings input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -2086,7 +2086,7 @@ input#fs_search:focus,
 input.field:focus,
 .webkit select:focus,
 textarea:focus,
-#options input:focus {
+#appchanx-settings input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
@@ -2166,7 +2166,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not([type=checkbox]):hover {
+#appchanx-settings input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -2175,7 +2175,7 @@ input#fs_search:focus,
 input.field:focus,
 .webkit select:focus,
 textarea:focus,
-#options input:focus {
+#appchanx-settings input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
@@ -2248,7 +2248,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not([type=checkbox]):hover {
+#appchanx-settings input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -2257,7 +2257,7 @@ input#fs_search:focus,
 input.field:focus,
 .webkit select:focus,
 textarea:focus,
-#options input:focus {
+#appchanx-settings input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
@@ -2323,7 +2323,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not([type=checkbox]):hover {
+#appchanx-settings input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -2332,7 +2332,7 @@ input#fs_search:focus,
 input.field:focus,
 .webkit select:focus,
 textarea:focus,
-#options input:focus {
+#appchanx-settings input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
@@ -2405,7 +2405,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not([type=checkbox]):hover {
+#appchanx-settings input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 .reply.post,
@@ -2418,7 +2418,7 @@ input#fs_search:focus,
 input.field:focus,
 .webkit select:focus,
 textarea:focus,
-#options input:focus {
+#appchanx-settings input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 a {
@@ -2507,7 +2507,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not([type=checkbox]):hover {
+#appchanx-settings input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -2516,7 +2516,7 @@ input#fs_search:focus,
 input.field:focus,
 .webkit select:focus,
 textarea:focus,
-#options input:focus {
+#appchanx-settings input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
@@ -2607,7 +2607,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not([type=checkbox]):hover {
+#appchanx-settings input:not([type=checkbox]):hover {
   box-shadow: inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -2616,7 +2616,7 @@ input#fs_search:focus,
 input.field:focus,
 .webkit select:focus,
 textarea:focus,
-#options input:focus {
+#appchanx-settings input:focus {
   box-shadow: inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,
@@ -2684,7 +2684,7 @@ input#fs_search:hover,
 input.field:hover,
 .webkit select:hover,
 textarea:hover,
-#options input:not([type=checkbox]):hover {
+#appchanx-settings input:not([type=checkbox]):hover {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 input[type=password]:focus,
@@ -2693,7 +2693,7 @@ input#fs_search:focus,
 input.field:focus,
 .webkit select:focus,
 textarea:focus,
-#options input:focus {
+#appchanx-settings input:focus {
   box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;
 }
 button,

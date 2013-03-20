@@ -63,7 +63,8 @@ a {
   text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
   outline: none;
 }
-body, html {
+body,
+html {
   min-height: 100%;
   #{Style.sizing}: border-box;
 }
@@ -109,6 +110,9 @@ hr {
 }
 .center {
   text-align: center;
+}
+.disabled {
+  opacity: 0.5;
 }
 /* Symbols */
 .dropmarker {
@@ -650,6 +654,18 @@ hide: "
   clear: both;
 }
 /* Posts */
+.expanding {
+  opacity: .5;
+}
+.fileText:hover .fntrunc,
+.fileText:not(:hover) .fnfull,
+.expanded-image > .post > .file > .fileThumb > img[data-md5],
+.post > .file > .fileThumb > .full-image {
+  display: none;
+}
+.expanded-image > .post > .file > .fileThumb > .full-image {
+  display: block;
+}
 .summary {
   margin-bottom: #{Style.replyMargin}px;
 }
@@ -659,21 +675,24 @@ hide: "
 .replyContainer:last-of-type .post {
   margin-bottom: 0;
 }
-.menu_button,
-.hide_thread_button,
-.hide_reply_button {
+.menu-button {
+  position: relative;
+}
+.menu-button,
+.hide-thread-button,
+.hide-reply-button {
   float: right;
   margin: 0 3px;
   opacity: 0;
   #{agent}transition: opacity .3s ease-out 0s;
 }
-.post:hover .hide_reply_button,
-.post:hover .menu_button,
-.post:hover .hide_thread_button,
-.hidden_thread .hide_thread_button,
-.hidden_thread .menu_button,
-.inline .hide_reply_button,
-.inline .menu_button {
+.post:hover .hide-reply-button,
+.post:hover .menu-button,
+.post:hover .hide-thread-button,
+.hidden_thread .hide-thread-button,
+.hidden_thread .menu-button,
+.inline .hide-reply-button,
+.inline .menu-button {
   opacity: 1;
 }
 .hidden_thread {
@@ -765,8 +784,7 @@ else ""
 }
 /* Quotes */
 .inlined {
-  font-style: italic;
-  #{if _conf["Bolds"] then 'font-weight: 800;' else ''}
+  opacity: .5;
 }
 .quotelink {
   text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
@@ -876,7 +894,7 @@ else ""
 .entry:last-child {
   border-bottom: 0;
 }
-.hasSubMenu::after {
+.has-submenu::after {
   content: "";
   border-#{position}: .5em solid;
   border-top: .3em solid transparent;
@@ -886,13 +904,13 @@ else ""
   position: absolute;
   right: 3px;
 }
-.subMenu {
+.submenu {
   display: none;
   position: absolute;
   #{position}: 100%;
   top: -1px;
 }
-.focused .subMenu {
+.focused .submenu {
   display: block;
 }
 /* Stubs */
@@ -1333,7 +1351,7 @@ a:only-of-type > .remove {
   bottom: 0;
   background: rgba(0,0,0,.5);
 }
-#options {
+#appchanx-settings {
   width: auto;
   left: 15%;
   right: 15%;
@@ -1343,7 +1361,7 @@ a:only-of-type > .remove {
   padding: .3em;
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
-#options h3,
+#appchanx-settings h3,
 .keybinds_tab,
 .mascots_tab,
 .main_tab,
@@ -1355,14 +1373,14 @@ a:only-of-type > .remove {
 .style_tab ul {
   text-align: left;
 }
-#options ul {
+#appchanx-settings ul {
   padding: 0;
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
-#options .selectrice ul {
+#appchanx-settings .selectrice ul {
   border-radius: 0;
 }
-#optionsContent {
+.section-container {
   overflow: auto;
   position: absolute;
   top: 1.7em;
@@ -1371,14 +1389,15 @@ a:only-of-type > .remove {
   left: 5px;
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
-#optionsbar {
+.sections-list {
   padding: 0 3px;
+  float: left;
 }
-#optionsbar label {
+.sections-list label {
   cursor: pointer;
   #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}
 }
-.tabs label {
+.sections-list label {
   position: relative;
   padding: 0 4px;
   z-index: 1;
@@ -1388,13 +1407,10 @@ a:only-of-type > .remove {
   border-color: transparent;
   border-style: solid;
 }
-#credits {
+.credits {
   float: right;
 }
-#optionsContent > input:not(:checked) + div {
-  display: none;
-}
-#options h3 {
+#appchanx-settings h3 {
   margin: 0;
 }
 .main_tab li,
@@ -1404,7 +1420,7 @@ a:only-of-type > .remove {
   padding: 0 5px 0 7px;
   list-style-type: none;
 }
-#options tr:nth-of-type(2n+1),
+#appchanx-settings tr:nth-of-type(2n+1),
 .main_tab li:nth-of-type(2n+1),
 .rice_tab li:nth-of-type(2n+1),
 .style_tab li:nth-of-type(2n+1),
@@ -1415,7 +1431,7 @@ a:only-of-type > .remove {
 article li {
   margin: 10px 0 10px 2em;
 }
-#options .option {
+#appchanx-settings .option {
   width: 50%;
   display: inline-block;
   vertical-align: bottom;
@@ -1426,8 +1442,8 @@ article li {
 .rice + .optionlabel {
   padding-left: 0;
 }
-#options .style_tab ul,
-#options .main_tab ul {
+#appchanx-settings .style_tab ul,
+#appchanx-settings .main_tab ul {
   vertical-align: top;
   #{if _conf["Single Column Mode"] then "margin: 0 auto 6px;" else "margin: 0 3px 6px;\n display: inline-block;"}
 }
@@ -1468,7 +1484,7 @@ article li {
 .style_tab .suboptions {
   bottom: 0;
 }
-#optionsContent textarea {
+#appchanx-settingsContent textarea {
   font-family: monospace;
   min-height: 350px;
   resize: vertical;
@@ -1729,7 +1745,7 @@ opacity: 0;
   float: right;
   position: relative;
 }
-#optionsmenu {
+#optionssmenu {
   top: 100% !important;
   left: 0 !important;
 }
