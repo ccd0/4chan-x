@@ -3,7 +3,8 @@
   "version": "2.0.0",
   "description": "The most comprehensive 4chan userscript.",
   "meta": {
-    "name": "appchan-x",
+    "name": "appchan x",
+    "namespace": "zixaphir",
     "repo": "https://github.com/zixaphir/appchan-x/",
     "page": "http://zixaphir.github.com/appchan-x/",
     "mainBranch": "Av2",

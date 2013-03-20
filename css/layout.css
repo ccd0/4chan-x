@@ -498,7 +498,6 @@ else "
   border-style: solid;
   font-size: 0;
   color: transparent;
-  max-height: 1.6em;
 }
 .deleteform:hover {
   width: auto;

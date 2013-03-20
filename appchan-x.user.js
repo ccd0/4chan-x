@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         appchan-x
+// @name         appchan x
 // @version      2.0.0
-// @namespace    appchan-x
+// @namespace    zixaphir
 // @description  Cross-browser userscript for maximum lurking on 4chan.
 // @copyright    2009-2011 James Campos <james.r.campos@gmail.com>
 // @copyright    2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
@@ -20,7 +20,7 @@
 // @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
 // ==/UserScript==
 
-/* appchan-x - Version 2.0.0 - 2013-03-19
+/* appchan x - Version 2.0.0 - 2013-03-20
  * http://zixaphir.github.com/appchan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -53,7 +53,7 @@
       'Miscellaneous': {
         'Catalog Links': [true, 'Turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
-        'Enable 4chan\'s Extension': [false, 'Compatibility between appchan-x and 4chan\'s inline extension is NOT guaranteed.'],
+        'Enable 4chan\'s Extension': [false, 'Compatibility between appchan x and 4chan\'s inline extension is NOT guaranteed.'],
         'Custom Board Navigation': [true, 'Disable this to always display the full board list.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
@@ -64,7 +64,7 @@
         'Thread Expansion': [true, 'Can expand threads to view all replies.'],
         'Index Navigation': [false, 'Navigate to previous / next thread.'],
         'Custom CSS': [false, 'Apply custom CSS to 4chan.'],
-        'Check for Updates': [true, 'Check for updated versions of appchan-x.']
+        'Check for Updates': [true, 'Check for updated versions of appchan x.']
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
@@ -312,7 +312,7 @@
 
   g = {
     VERSION: '2.0.0',
-    NAMESPACE: 'appchan-x.',
+    NAMESPACE: 'appchan x.'.replace(' ', '_'),
     TYPE: 'sfw',
     boards: {},
     threads: {},
@@ -3511,7 +3511,7 @@
         "under post form": "  position: fixed;  " + Style.sidebarLocation[0] + ": 2px;  bottom: 140px;  width: " + width + "px;",
         "at top": "  margin: 12px 0;",
         "hide": "  display: none;"
-      }[_conf["Board Title"]] + "\n}\n.boardTitle a {\n  font-size: " + (parseInt(_conf["Font Size"], 10) + 10) + "px;\n}\n.boardSubtitle,\n.boardSubtitle a {\n  font-size: " + (parseInt(_conf["Font Size"], 10) - 1) + "px;\n}\n/* Dialogs */\n.move {\n  cursor: pointer;\n}\n#ihover {\n  position: fixed;\n  max-height: 97%;\n  max-width: 75%;\n  padding: 10px;\n  z-index: 22;\n}\n#qp {\n  position: fixed;\n  z-index: 22;\n}\n#qp .postMessage::after {\n  clear: both;\n  display: block;\n  content: \"\";\n}\n#qp .fullSize {\n  max-height: 300px;\n  max-width: 500px;\n}\n#menu {\n  position: absolute;\n  outline: none;\n  z-index: 22;\n}\n/* Updater */\n#updater {\n  position: fixed;\n  z-index: 10;\n  padding: 0 1px 1px;\n  border: 1px solid transparent;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n#updater input {\n  text-align: right;\n}\n#updater .rice {\n  float: left;\n}\n#updater .field {\n  width: 50px;\n}\n/* Stats */\n#stats {\n  position: fixed;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n/* Image Expansion */\n#imgControls .rice {\n  display: none;\n}\n#imgControls {\n  width: 15px;\n  overflow-x: hidden;\n  overflow-y: visible;\n}\n#imgContainer {\n  float: " + Style.sidebarLocation[0] + ";\n}\n#imgContainer,\n#imgControls:hover {\n  width: 110px;\n}\n#imgControls label {\n  float: " + Style.sidebarLocation[0] + ";\n}\n#imgControls .selectrice {\n  float: " + Style.sidebarLocation[1] + ";\n  width: 90px;\n}\n.fitwidth .fullSize {\n  max-width: 100%;\n  width: 100%;\n}\n\n" + (_conf['Images Overlap Post Form'] ? ".fullSize {  position: relative;  z-index: 22;}" : "") + "\n/* Prefetcher */\n#prefetch {\n  z-index: 9;\n  position: fixed;\n}\n/* Delete Buttons */\n" + (_conf['Hide Delete UI'] ? ".deleteform,.post .rice {  display: none;}.postInfo {  padding: 0 0 0 3px;}" : ".deleteform {  position: fixed;  z-index: 18;  width: 0;  bottom: 0;  right: 0;  border-width: 1px 0 0 1px;  border-style: solid;  font-size: 0;  color: transparent;  max-height: 1.6em;}.deleteform:hover {  width: auto;}.deleteform::before {  z-index: 18;  border-width: 1px 0 0 1px;  border-style: solid;  content: 'X';  display: block;  position: fixed;  bottom: 0;  right: 0;  font-size: " + _conf['Font Size'] + "px;  " + Style.sizing + ": border-box;  height: 1.6em;  width: 1.4em;  text-align: center;}.deleteform:hover::before {  display: none;}.deleteform input {  margin: 0 1px 0 0;}") + "\n/* Slideout Navigation */\n#boardNavDesktopFoot {\n  position: fixed;\n  width: " + width + "px;\n  " + Style.sidebarLocation[0] + ": 2px;\n  text-align: center;\n  font-size: 0;\n  color: transparent;\n  overflow: hidden;\n  " + Style.sizing + ": border-box;\n}\n#boardNavDesktopFoot a,\n#boardNavDesktopFoot a::after,\n#boardNavDesktopFoot a::before {\n  font-size: " + _conf['Font Size'] + "px;\n}\n#boardNavDesktopFoot:hover {\n  overflow-y: auto;\n  padding: 2px;\n}\n#boardNavDesktopFoot:not(:hover) {\n  border-color: transparent;\n  background-color: transparent;\n  height: 0;\n  overflow: hidden;\n  padding: 0;\n  border: 0 none;\n}\n" + {
+      }[_conf["Board Title"]] + "\n}\n.boardTitle a {\n  font-size: " + (parseInt(_conf["Font Size"], 10) + 10) + "px;\n}\n.boardSubtitle,\n.boardSubtitle a {\n  font-size: " + (parseInt(_conf["Font Size"], 10) - 1) + "px;\n}\n/* Dialogs */\n.move {\n  cursor: pointer;\n}\n#ihover {\n  position: fixed;\n  max-height: 97%;\n  max-width: 75%;\n  padding: 10px;\n  z-index: 22;\n}\n#qp {\n  position: fixed;\n  z-index: 22;\n}\n#qp .postMessage::after {\n  clear: both;\n  display: block;\n  content: \"\";\n}\n#qp .fullSize {\n  max-height: 300px;\n  max-width: 500px;\n}\n#menu {\n  position: absolute;\n  outline: none;\n  z-index: 22;\n}\n/* Updater */\n#updater {\n  position: fixed;\n  z-index: 10;\n  padding: 0 1px 1px;\n  border: 1px solid transparent;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n#updater input {\n  text-align: right;\n}\n#updater .rice {\n  float: left;\n}\n#updater .field {\n  width: 50px;\n}\n/* Stats */\n#stats {\n  position: fixed;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n/* Image Expansion */\n#imgControls .rice {\n  display: none;\n}\n#imgControls {\n  width: 15px;\n  overflow-x: hidden;\n  overflow-y: visible;\n}\n#imgContainer {\n  float: " + Style.sidebarLocation[0] + ";\n}\n#imgContainer,\n#imgControls:hover {\n  width: 110px;\n}\n#imgControls label {\n  float: " + Style.sidebarLocation[0] + ";\n}\n#imgControls .selectrice {\n  float: " + Style.sidebarLocation[1] + ";\n  width: 90px;\n}\n.fitwidth .fullSize {\n  max-width: 100%;\n  width: 100%;\n}\n\n" + (_conf['Images Overlap Post Form'] ? ".fullSize {  position: relative;  z-index: 22;}" : "") + "\n/* Prefetcher */\n#prefetch {\n  z-index: 9;\n  position: fixed;\n}\n/* Delete Buttons */\n" + (_conf['Hide Delete UI'] ? ".deleteform,.post .rice {  display: none;}.postInfo {  padding: 0 0 0 3px;}" : ".deleteform {  position: fixed;  z-index: 18;  width: 0;  bottom: 0;  right: 0;  border-width: 1px 0 0 1px;  border-style: solid;  font-size: 0;  color: transparent;}.deleteform:hover {  width: auto;}.deleteform::before {  z-index: 18;  border-width: 1px 0 0 1px;  border-style: solid;  content: 'X';  display: block;  position: fixed;  bottom: 0;  right: 0;  font-size: " + _conf['Font Size'] + "px;  " + Style.sizing + ": border-box;  height: 1.6em;  width: 1.4em;  text-align: center;}.deleteform:hover::before {  display: none;}.deleteform input {  margin: 0 1px 0 0;}") + "\n/* Slideout Navigation */\n#boardNavDesktopFoot {\n  position: fixed;\n  width: " + width + "px;\n  " + Style.sidebarLocation[0] + ": 2px;\n  text-align: center;\n  font-size: 0;\n  color: transparent;\n  overflow: hidden;\n  " + Style.sizing + ": border-box;\n}\n#boardNavDesktopFoot a,\n#boardNavDesktopFoot a::after,\n#boardNavDesktopFoot a::before {\n  font-size: " + _conf['Font Size'] + "px;\n}\n#boardNavDesktopFoot:hover {\n  overflow-y: auto;\n  padding: 2px;\n}\n#boardNavDesktopFoot:not(:hover) {\n  border-color: transparent;\n  background-color: transparent;\n  height: 0;\n  overflow: hidden;\n  padding: 0;\n  border: 0 none;\n}\n" + {
         compact: "#boardNavDesktopFoot {  word-spacing: 1px;}",
         list: "#boardNavDesktopFoot a {  display: block;}#boardNavDesktopFoot:hover {  max-height: 400px;}#boardNavDesktopFoot a::after {  content: ' - ' attr(title);}#boardNavDesktopFoot a[href*='//boards.4chan.org/']::after,#boardNavDesktopFoot a[href*='//rs.4chan.org/']::after {  content: '/ - ' attr(title);}#boardNavDesktopFoot a[href*='//boards.4chan.org/']::before,#boardNavDesktopFoot a[href*='//rs.4chan.org/']::before {  content: '/';}",
         hide: "#boardNavDesktopFoot {  display: none;}"
@@ -5154,7 +5154,7 @@
         return;
       }
       $.event('CloseMenu');
-      html = "<div id=appchanx-settings class=dialog>\n  <nav>\n    <div class=sections-list></div>\n    <div class=credits>\n      <a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan-x</a> |\n      <a href='https://github.com/zixaphir/appchan-x/blob/Av2/CHANGELOG.md#" + (g.VERSION.replace(/\./g, '')) + "' target=_blank>" + g.VERSION + "</a> |\n      <a href='https://github.com/zixaphir/appchan-x/blob/Av2/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |\n      <a href=javascript:; class=close title=Close>×</a>\n    </div>\n  </nav>\n  <hr>\n  <div class=section-container><section></section></div>\n</div>";
+      html = "<div id=appchanx-settings class=dialog>\n  <nav>\n    <div class=sections-list></div>\n    <div class=credits>\n      <a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a> |\n      <a href='https://github.com/zixaphir/appchan-x/blob/Av2/CHANGELOG.md#" + (g.VERSION.replace(/\./g, '')) + "' target=_blank>" + g.VERSION + "</a> |\n      <a href='https://github.com/zixaphir/appchan-x/blob/Av2/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |\n      <a href=javascript:; class=close title=Close>×</a>\n    </div>\n  </nav>\n  <hr>\n  <div class=section-container><section></section></div>\n</div>";
       Settings.dialog = overlay = $.el('div', {
         id: 'overlay',
         innerHTML: html
@@ -5281,7 +5281,7 @@
       a = $.el('a', {
         className: 'warning',
         textContent: 'Save me!',
-        download: "appchan-x v" + g.VERSION + "-" + now + ".json",
+        download: "appchan x v" + g.VERSION + "-" + now + ".json",
         href: "data:application/json;base64," + (btoa(unescape(encodeURIComponent(JSON.stringify(data))))),
         target: '_blank'
       });

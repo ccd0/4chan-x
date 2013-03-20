@@ -11,7 +11,7 @@ d    = document
 doc  = null
 g =
   VERSION:   '<%= version %>'
-  NAMESPACE: '<%= meta.name %>.'
+  NAMESPACE: '<%= meta.name %>.'.replace ' ', '_'
   TYPE:      'sfw'
   boards:    {}
   threads:   {}
