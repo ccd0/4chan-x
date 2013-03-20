@@ -81,11 +81,14 @@ a[href="javascript:;"] {
 #qr {
   z-index: 30;
 }
-#watcher {
+#watcher:hover {
   z-index: 20;
 }
 #header {
   z-index: 10;
+}
+#watcher {
+  z-index: 5;
 }
 
 /* Header */
