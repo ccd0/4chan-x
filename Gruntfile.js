@@ -95,6 +95,18 @@ module.exports = function(grunt) {
         tasks: 'default'
       }
     },
+    compress: {
+      crx: {
+        options: {
+          archive: 'builds/4chan-X.zip',
+          level: 9,
+          pretty: true
+        },
+        expand: true,
+        cwd: 'builds/crx/',
+        src: '**'
+      }
+    },
     clean: {
       tmp: 'tmp'
     }
@@ -103,6 +115,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-bump');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-coffee');
+  grunt.loadNpmTasks('grunt-contrib-compress');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-exec');
@@ -117,7 +130,7 @@ module.exports = function(grunt) {
     'concat:metadata',
     'clean'
   ]);
-  grunt.registerTask('release', ['default', 'exec:commit', 'exec:push']);
+  grunt.registerTask('release', ['default', 'exec:commit', 'exec:push', 'compress:crx']);
   grunt.registerTask('patch',   ['bump',       'updcl:3']);
   grunt.registerTask('minor',   ['bump:minor', 'updcl:2']);
   grunt.registerTask('major',   ['bump:major', 'updcl:1']);
