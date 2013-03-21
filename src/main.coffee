@@ -315,6 +315,20 @@ Main =
     if g.VIEW is 'thread'
       g.THREAD = +pathname[3]
 
+    # Check if the current board we're on is SFW or not, so we can handle options that need to know that.
+    if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains g.BOARD
+      g.TYPE = 'nsfw'
+
+    if Conf["NSFW/SFW Mascots"]
+      g.MASCOTSTRING = "Enabled Mascots #{g.TYPE}"
+    else
+      g.MASCOTSTRING = "Enabled Mascots"
+
+    Conf["Enabled Mascots"] =       $.get "Enabled Mascots",      []
+    Conf["Enabled Mascots sfw"] =   $.get "Enabled Mascots sfw",  []
+    Conf["Enabled Mascots nsfw"] =  $.get "Enabled Mascots nsfw", []
+    Conf["Deleted Mascots"] =       $.get "Deleted Mascots",      []
+
     switch location.hostname
       when 'sys.4chan.org'
         Report.init()

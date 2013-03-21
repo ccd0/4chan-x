@@ -3322,6 +3322,9 @@
         'presto': '-o-'
       }[$.engine];
       this.sizing = "" + ($.engine === 'gecko' ? this.agent : '') + "box-sizing";
+      $.asap((function() {
+        return d.body;
+      }), MascotTools.init);
       $.ready(function() {
         if (!$.id('navtopright')) {
           return;
@@ -3683,7 +3686,7 @@
   Banner = {
     init: function() {
       return $.asap((function() {
-        return doc;
+        return d.body;
       }), function() {
         return $.asap((function() {
           return $('.abovePostForm');
@@ -3741,7 +3744,7 @@
   GlobalMessage = {
     init: function() {
       return $.asap((function() {
-        return doc;
+        return d.body;
       }), function() {
         return $.asap((function() {
           return $.id('delform');
@@ -4247,7 +4250,7 @@
           Conf[g.MASCOTSTRING].remove(Conf["mascot"]);
           return this.init();
         }
-        this.addMascot(mascot);
+        MascotTools.addMascot(mascot);
       }
       if (Conf["Sidebar Location"] === 'left') {
         if (Conf["Mascot Location"] === "sidebar") {
@@ -11923,6 +11926,18 @@
       if (g.VIEW === 'thread') {
         g.THREAD = +pathname[3];
       }
+      if (['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains(g.BOARD)) {
+        g.TYPE = 'nsfw';
+      }
+      if (Conf["NSFW/SFW Mascots"]) {
+        g.MASCOTSTRING = "Enabled Mascots " + g.TYPE;
+      } else {
+        g.MASCOTSTRING = "Enabled Mascots";
+      }
+      Conf["Enabled Mascots"] = $.get("Enabled Mascots", []);
+      Conf["Enabled Mascots sfw"] = $.get("Enabled Mascots sfw", []);
+      Conf["Enabled Mascots nsfw"] = $.get("Enabled Mascots nsfw", []);
+      Conf["Deleted Mascots"] = $.get("Deleted Mascots", []);
       switch (location.hostname) {
         case 'sys.4chan.org':
           Report.init();

@@ -8,6 +8,8 @@ Style =
 
     @sizing = "#{if $.engine is 'gecko' then @agent else ''}box-sizing"
 
+    $.asap (-> d.body), MascotTools.init
+
     $.ready ->
       return unless $.id 'navtopright'
       Style.padding.nav = $ "#boardNavDesktop", d.body
@@ -453,11 +455,11 @@ vertical-align: top;
       ['CrunchBang', 'BYAAAAQCAQAAAC45EetAAAA8ElEQVR4XnWOsUpCYQBGz1TIHYu2Qix6g0DEtSeQu/UIISJtUS8gJq61F1wcdMohcBDxKUR8hsz1xA/y44/cs3znbB+RJ0Skl3pSkeFQbUs79VAPzrwPFRmN1Ja0Ug/16I93+1oi4lKte+zMXv32WuoAm43lXMrqzbFncgWw21lORf4+/PREKpAhYqZuPXZ+T/3yXbZEajV1JavUQ104sRcq0myqc5mnHurWqc/7yhExVwuPncl+C4Bu13L60ueAwcByOtLhgAIRCzU38fRGTmSxUBvSSD3Ui1NvQkXWa7Uq1dRD9R17HiqyRUSy1NP6B7e1Yu2GtlUKAAAAAElFTkSuQmCC']
       ['Yuno',       'BgAAAAPCAYAAAD+pA/bAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAABDtJREFUOE+FlHtMm1UYxrtsi8aEgCb+oTFmZur+WNS5RaPERU10C2qGaBgb6hgwLwMmHTIKlIKlQIHSQrmU24BSSmnpBVooUmihtEC5yKWDjVu5uOkcEca4lG5E93j6EQmELX7Jky/fOed9fu973vMdGu0xT3Cgz57yXMZLDdXcy821PFWLKmuA6HqLMqtLX5POl4iYb2ukWW8IOOFe/qfe3/M4n0eOjwyZD8//bldODOk37N1yDJgl+LVdjEGLFKO9KkzZm8hbje7mIrTXZ7sMtTydrJh15H8hHW11XvN/jGS7VudcD5w34ZZzeQYb67fwYO03LN4exo1+LWzNxbA05O5QuzbHqRYn+++CHDx4YK9WLfaedfQzV5em54g5Zbi8OIml+VFMDLWQ7GXoaSmFWZsDZVGCO2u0EbkhHTrhFqi9PmelSsQ8tAtSVch60dpUeGe4kxgZxegzVkBzlQ2NKBG2+iJIMqMok9r8OLRIMqApToSqmAWTmk9B2+o2YW79oshU7ABcuvAFrVGWXkVKpBYoSaBSxIS2mINpiwbjZiUMZRloVfJQyaXDKObBpimBScpHFe8KmmXpaKhK3arGrBVuVBclHN2CiPNin1OVs1tVJYlQlyZBxA6DviQVo6ZaOKd7sTplw53BVugruBBzfsRslw7rZPxaczWutSpQV/gzJPxo1JexyfaxKBBpuiEx+tw+CpKdEvGWTprGlhcwqbIzL5/DYKMYndpK3L1hxf3ZfkrzwybUZjPhnOqmvlcmutFF1jis9QSShOrcWNSXJ1MA0ou/NZWc8Ddfe4VGO3bk0JON1dyMMlK+gmxNrZCFhZF2Kng7YNO0awt4b7wLNp2EqtAsF6ImP56SG0B6siovTYpIjg15gapCVhAfJRUyIBFEo6k8AyuTtkcC/qvG/XbDexulWJvqgYH0o0nKhVHFJ40XwFQnWM5OCX+XMg86c3KvVMSMapCmPpSTIygTxGKZZOcOXhrr3Mp4uzkFuG6B3ajE3TELDDU8qEmsmvRATxquKkxAnSTFjwKEfv3JU9JC5unG6rQ1bTkbQ4Yq/DVgxOqwBWt2K9Yne3ZCZvrgHO2k5paHzOhSiVCZSkdNTgzy40JRlPgDhDHBCxUZdCs91G8fLeK87zOl6XSOICZYXMGNhDqX9fDP/mbK2DXVi/szm03eLpejl5pzOfqwOt4JBT8OeYwQt/4R/BR0OzXiLCM5LOCji/4nXt46rpywgG+zor5RxgSdupBzJdglSY+5ZZbl3XNY6mbn7W0Lcx06zBg1WBjtcC6OmG+OmRTrFrnIUZESZeVeCpwh8TpiPsQ47/tloM97T+/6m8mg55mT3tStyL54mhlwwtszNvjzD8/6HH8i7PvvPPRioZdRWuDBZUR6pEWG7I8P9Xs1Jsj36MfvvO5J/+rTw58dP7afJPfBgeef3XGz/gskFVpJc4HwGwAAAABJRU5ErkJggg==']
     ]
-  
+
 
 Banner =
   init: ->
-    $.asap (-> doc), ->
+    $.asap (-> d.body), ->
       $.asap (-> $ '.abovePostForm'), Banner.ready
 
   ready: ->
@@ -504,7 +506,7 @@ Banner =
 
 GlobalMessage =
   init: ->
-    $.asap (-> doc), ->
+    $.asap (-> d.body), ->
       $.asap (-> $.id 'delform'), GlobalMessage.ready
 
   ready: ->
@@ -517,7 +519,7 @@ Rice =
   init: ->
     $.ready ->
       Rice.nodes d.body
-    
+
     Post::callbacks.push
       name: 'Rice Checkboxes'
       cb:   @node
@@ -602,11 +604,11 @@ Rice =
     $.after input, div
 
 ###
-  JSColor 
+  JSColor
   http://github.com/hotchpotch/jscolor/tree/master
 
   JSColor is color library for JavaScript.
-  JSColor code is porting from AS3 Color library ColorSB < http://sketchbook.libspark.org/trac/wiki/ColorSB >.  
+  JSColor code is porting from AS3 Color library ColorSB < http://sketchbook.libspark.org/trac/wiki/ColorSB >.
 ###
 
 JSColor =
@@ -643,7 +645,7 @@ JSColor =
     # Read Only
     @hsv = [0, 0, 1] # 0-6, 0-1, 0-1
     @rgb = [1, 1, 1] # 0-1, 0-1, 0-1
-    
+
     # Writable.
     # Value holder / Where to reflect current color
     @valueElement = @styleElement = target
@@ -1004,7 +1006,7 @@ MascotTools =
         Conf[g.MASCOTSTRING].remove Conf["mascot"]
         return @init()
 
-      @addMascot mascot
+      MascotTools.addMascot mascot
 
     if Conf["Sidebar Location"] is 'left'
       if Conf["Mascot Location"] is "sidebar"
