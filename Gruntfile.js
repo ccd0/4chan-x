@@ -47,11 +47,19 @@ module.exports = function(grunt) {
           'tmp/script.js'
         ],
         dest: 'builds/<%= pkg.name %>.user.js'
-      },
+      }
+    },
+    copy: {
       userjs: {
         // Lazily copy the userscript
         src: 'builds/<%= pkg.name %>.user.js',
         dest: 'builds/<%= pkg.name %>.js'
+      },
+      crx: {
+        src: 'img/*.png',
+        dest: 'builds/crx/',
+        expand: true,
+        flatten: true
       }
     },
     coffee: {
@@ -117,6 +125,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-coffee');
   grunt.loadNpmTasks('grunt-contrib-compress');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-exec');
 
@@ -125,9 +134,10 @@ module.exports = function(grunt) {
     'coffee:script',
     'concat:manifest',
     'concat:crx',
+    'copy:crx',
     'concat:userscript',
-    'concat:userjs',
     'concat:metadata',
+    'copy:userjs',
     'clean'
   ]);
   grunt.registerTask('release', ['default', 'exec:commit', 'exec:push', 'compress:crx']);
