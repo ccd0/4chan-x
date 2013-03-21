@@ -330,7 +330,7 @@ Main =
       for name, module of features
         # c.time "#{name} initialization"
         try
-          module.init()
+          do module.init
         catch err
           Main.handleErrors
             message: "\"#{name}\" initialization crashed."
