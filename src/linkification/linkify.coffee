@@ -179,6 +179,7 @@ Linkify =
 
     SoundCloud:
       regExp:  /.*(?:soundcloud.com\/|snd.sc\/)([^#\&\?]*).*/
+      style: 'height: auto; width: 500px; display: inline-block;'
       el: ->
         div = $.el 'div',
           className: "soundcloud"
@@ -189,6 +190,7 @@ Linkify =
           onloadend: ->
             @div.innerHTML = JSON.parse(@responseText).html
           false)
+        div
 
     pastebin:
       regExp:  /.*(?:pastebin.com\/)([^#\&\?]*).*/

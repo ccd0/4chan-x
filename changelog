@@ -5,6 +5,7 @@ seaweedchan:
 	-Add ad-blocking CSS into Custom CSS examples
 Zixaphir:
 	-Fix ctrl+s bringing up save dialog
+	-Fix issues with soundcloud embedding
 
 1.0.2:
 seaweedchan:
