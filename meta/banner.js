@@ -1,5 +1,5 @@
 /*
- * <%= meta.name %> - Version <%= pkg.version %> - <%= grunt.template.today('yyyy-mm-dd') %>
+ * <%= meta.name %> - Version <%= version %> - <%= grunt.template.today('yyyy-mm-dd') %>
  *
  * Licensed under the MIT license.
  * <%= meta.repo %>blob/master/LICENSE

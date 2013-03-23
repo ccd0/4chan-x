@@ -417,6 +417,6 @@ Main =
       else
         return
     $.globalEval "#{code}".replace '_id_', bq.id
-  namespace: '<%= pkg.name.replace(/-/g, '_') %>.'
-  version:   '<%= pkg.version %>'
+  namespace: '<%= name.replace(/-/g, '_') %>.'
+  version:   '<%= version %>'
   callbacks: []

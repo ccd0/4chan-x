@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name                <%= meta.name %>
+// @name                <%= name %>
 // @namespace           aeosynth
-// @version             <%= pkg.version %>
+// @version             <%= version %>
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           <%= grunt.template.today('yyyy') %> Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           <%= grunt.template.today('yyyy') %> Jordan Bates <saudrapsmann@gmail.com>

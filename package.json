@@ -1,23 +1,38 @@
 {
-  "name": "4chan-x",
+  "name": "4chan X",
   "version": "1.0.3",
-  "author": "Zixaphir<zixaphirmoxphar@gmail.com>",
   "description": "The most comprehensive 4chan userscript",
+  "meta": {
+    "name": "4chan X",
+    "repo": "https://github.com/seaweedchan/4chan-x/",
+    "page": "http://seaweedchan.github.com/4chan-x/",
+    "mainBranch": "4chanX",
+    "files": {
+      "metajs": "4chan_x.meta.js",
+      "userjs": "4chan_x.user.js"
+    }
+  },
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "grunt-bump": "~0.0.0",
+    "grunt-contrib-clean": "~0.4.0",
+    "grunt-contrib-coffee": "~0.6.0",
+    "grunt-contrib-concat": "~0.1.0",
+    "grunt-contrib-watch": "~0.3.0",
+    "grunt-exec": "~0.4.0"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zixaphir/appchan-x.git"
+    "url": "https://github.com/seaweedchan/4chan-x.git"
   },
-  "dependencies": {
-    "grunt": "0.4.x",
-    "grunt-bump": "0.0.x",
-    "grunt-contrib-concat": "0.1.x",
-    "grunt-contrib-clean": "0.4.x",
-    "grunt-contrib-coffee": "0.4.x",
-    "grunt-contrib-uglify": "0.1.x",
-    "grunt-exec": "0.4.x",
-    "grunt-image-embed": "0.0.x"
-  },
+  "author": "seaweedchan <jtbates@asu.edu>",
+  "contributors": [
+    "Zixaphir<zixaphirmoxphar@gmail.com>",
+    "Nicolas Stepien <stepien.nicolas@gmail.com>",
+    "James Campos <james.r.campos@gmail.com>"
+  ],
   "license": "MIT",
+  "readmeFilename": "README.md",
   "engines": {
     "node": ">=0.8"
   }

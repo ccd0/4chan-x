@@ -1,30 +1,15 @@
 module.exports = (grunt) ->
-  
-  pkg = grunt.file.readJSON('package.json')
-  
-  meta = 
-    name: pkg.name.replace(/-/g, " ")
-    repo: 'https://github.com/seaweedchan/4chan-x/'
-    files:
-      metajs:   '4chan_x.meta.js',
-      userjs:   '4chan_x.user.js',
-      latestjs: 'latest.js'
-      
-  template = (filename) ->
-    processed = grunt.template.process grunt.file.read(filename), data: {
-      pkg
-      meta
-    }
-    grunt.file.write nFilename = "tmp/#{filename}", processed
-    nFilename
+
+  pkg = grunt.file.readJSON 'package.json'
 
   # Project configuration.
   grunt.initConfig
     pkg: pkg
-    meta: meta
-
     concat:
       coffee:
+        options:
+          process:
+            data: pkg
         src: [
           'src/config.coffee'
           'src/library.coffee'
@@ -37,99 +22,104 @@ module.exports = (grunt) ->
           'src/monitoring/*.coffee'
           'src/posting/*.coffee'
           'src/quoting/*.coffee'
-          'src/style.coffee'
+          'src/theming/*.coffee'
           'src/get.coffee'
           'src/build.coffee'
-          template 'src/main.coffee'
+          'src/main.coffee'
           'src/exec.coffee'
         ]
         dest: 'tmp/script.coffee'
 
-      js:
+      script:
+        options:
+          process:
+            data: pkg
         src: [
-          template 'meta/data.js'
-          template 'meta/banner.js'
+          'meta/data.js'
+          'meta/banner.js'
           'tmp/script.js'
         ]
-        dest: '<%= meta.files.userjs %>'
+        dest: '<%= pkg.meta.files.userjs %>'
 
-      meta:
-        src:  [template 'meta/data.js']
-        dest: '<%= meta.files.metajs %>'
+      metadata:
+        options:
+          process:
+            data: pkg
+        src:  'meta/data.js',
+        dest: '<%= pkg.meta.files.metajs %>'
 
-      latest: 
-        src:  [template 'meta/latest.js']
-        dest: '<%= meta.files.latestjs %>'
+      latest:
+        options:
+          process:
+            data: pkg
+        src:  'meta/latest.js',
+        dest: 'latest.js'
 
     coffee:
-      all:
+      script:
         src:  'tmp/script.coffee'
-        dest: 'tmp/build.js'
-      notugly:
-        src:  'tmp/script.coffee'
-        dest: 'tmp/script.js'
-
-    uglify:
-      options:
-        compress: false
-      files:
-        src:  ['tmp/build.js']
         dest: 'tmp/script.js'
 
     exec:
       commit:
-        command: (grunt) ->
-          name    = grunt.config(['pkg', 'name']).replace /-/g, ' '
-          version = grunt.config ['pkg', 'version']
+        command: ->
+          release = "#{pkg.meta.name} v#{pkg.version}"
           return [
             'git checkout master'
-            'git commit -am "Release ' + name + ' v' + version + '."'
-            'git tag -a ' + version + ' -m "' + version + '"'
-            'git tag -af stable -m "' + version + '"'
-          ].join ' && '
+            'git commit -am "Release ' + release + '."'
+            'git tag -a ' + pkg.version + ' -m "' + release + '."'
+            'git tag -af stable -m "' + release + '."'
+          ].join(' && ')
         stdout: true
+
       push:
-        command: 'git push && git push --tags',
-        stdout:  true
+        command: 'git push origin --all && git push origin --tags'
+        stdout: true
 
     watch:
-      files: [
-        'grunt.js'
-        'src/**/*.coffee'
-        'meta/**/*.js'
-        'img/*'
-      ]
-      tasks: 'default'
+      all:
+        options:
+          interrupt: true
+        files: [
+          'Gruntfile.js'
+          'package.json'
+          'lib/**/*.coffee'
+          'src/**/*.coffee'
+          'src/**/*.js'
+          'css/**/*.css'
+          'img/*'
+        ]
+        tasks: 'default'
 
     clean:
-      tmp: ['tmp']
+      tmp: 'tmp'
 
   grunt.loadNpmTasks 'grunt-bump'
-  grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
-  grunt.loadNpmTasks 'grunt-contrib-uglify'
+  grunt.loadNpmTasks 'grunt-contrib-concat'
+  grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-exec'
 
   grunt.registerTask 'default', [
     'concat:coffee'
-    'coffee:all'
-    'uglify'
-    'concat:js'
+    'coffee:script'
+    'concat:script'
+    'concat:metadata'
     'clean'
   ]
-  grunt.registerTask 'notugly', [
-    'concat:coffee'
-    'coffee:notugly'
-    'concat:js'
-    'clean'
-  ]
+
   grunt.registerTask 'release', [
-    'concat:meta'
-    'concat:latest'
     'default'
+    'concat:latest'
     'exec:commit'
     'exec:push'
   ]
-  grunt.registerTask 'patch',   ['bump']
-  grunt.registerTask 'upgrade', ['bump:minor']
+
+  grunt.registerTask 'patch',   [
+    'bump'
+  ]
+
+  grunt.registerTask 'upgrade', [
+    'bump:minor'
+  ]

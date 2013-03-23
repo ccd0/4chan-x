@@ -1,1 +1,1 @@
-postMessage({version:'<%= pkg.version %>'},'*')
+postMessage({version:'<%= version %>'},'*')
