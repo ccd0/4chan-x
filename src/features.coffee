@@ -322,7 +322,7 @@ Settings =
       className: 'warning'
       textContent: 'Save me!'
       download: "<%= meta.name %> v#{g.VERSION}-#{now}.json"
-      href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data}"
+      href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
       target: '_blank'
     if $.engine isnt 'gecko'
       a.click()
