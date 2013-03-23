@@ -462,7 +462,7 @@ Settings =
       $.add div, ta
       return
     div.innerHTML = """
-      <div class=warning #{if Conf['Sauce'] then 'hidden' else ''}><code>Filter</code> is disabled.</div>
+      <div class=warning #{if Conf['Filter'] then 'hidden' else ''}><code>Filter</code> is disabled.</div>
       <p>
         Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
         Lines starting with a <code>#</code> will be ignored.<br>
