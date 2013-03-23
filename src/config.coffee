@@ -23,8 +23,8 @@ Config =
       'Stubs':                        [true,  'Show stubs of hidden threads / replies.']
     'Images':
       'Auto-GIF':                     [false, 'Animate GIF thumbnails (disabled on /gif/, /wsg/).']
-      'Image Expansion':              [true,  'Expand images.']
-      'Image Hover':                  [false, 'Expand image on mouseover.']
+      'Image Expansion':              [true,  'Expand images inline.']
+      'Image Hover':                  [false, 'Show a floating expanded image on hover.']
       'Sauce':                        [true,  'Add sauce links to images.']
       'Reveal Spoilers':              [false, 'Reveal spoiler thumbnails.']
     'Menu':
