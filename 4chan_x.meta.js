@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name                4chan X
+// @name                4chan x
 // @namespace           aeosynth
 // @version             1.0.3
 // @description         Cross-browser userscript for maximum lurking on 4chan.

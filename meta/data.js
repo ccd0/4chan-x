@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name                <%= name %>
+// @name                <%= meta.name %>
 // @namespace           aeosynth
 // @version             <%= version %>
 // @description         Cross-browser userscript for maximum lurking on 4chan.

@@ -22,7 +22,7 @@ module.exports = (grunt) ->
           'src/monitoring/*.coffee'
           'src/posting/*.coffee'
           'src/quoting/*.coffee'
-          'src/theming/*.coffee'
+          'src/style.coffee'
           'src/get.coffee'
           'src/build.coffee'
           'src/main.coffee'

@@ -1,9 +1,9 @@
 {
-  "name": "4chan X",
+  "name": "4chan-x",
   "version": "1.0.3",
   "description": "The most comprehensive 4chan userscript",
   "meta": {
-    "name": "4chan X",
+    "name": "4chan x",
     "repo": "https://github.com/seaweedchan/4chan-x/",
     "page": "http://seaweedchan.github.com/4chan-x/",
     "mainBranch": "4chanX",
