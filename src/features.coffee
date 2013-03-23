@@ -2430,10 +2430,10 @@ Misc = # super semantic
 
     return if data.lastChecked > Date.now() - 12 * $.HOUR
 
-    $.ajax "//api.4chan.org/#{g.BOARD}/catalog.json", onload: ->
+    $.ajax "//api.4chan.org/#{g.BOARD}/threads.json", onload: ->
       threads = {}
-      for obj in JSON.parse @response
-        for thread in obj.threads
+      for page in JSON.parse @response
+        for thread in page.threads
           if thread.no of data.threads
             threads[thread.no] = data.threads[thread.no]
       unless Object.keys(threads).length
