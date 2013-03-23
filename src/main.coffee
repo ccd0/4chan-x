@@ -523,7 +523,8 @@ Main =
   isThisPageLegit: ->
     # 404 error page or similar.
     unless 'thisPageIsLegit' of Main
-      Main.thisPageIsLegit = !$('link[href*="favicon-status.ico"]', d.head) and d.title isnt '4chan - Temporarily Offline'
+      Main.thisPageIsLegit = !$('link[href*="favicon-status.ico"]', d.head) and
+        d.title not in ['4chan - Temporarily Offline', '4chan - Error']
     Main.thisPageIsLegit
 
   css: """
