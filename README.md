@@ -4,5 +4,5 @@ Get it [here](http://mayhemydg.github.com/4chan-x/).
 
 ***
 
-### [MIT License](/4chan-x/blob/master/LICENSE)
-### [Contribute](/4chan-x/blob/master/CONTRIBUTING.md)
+### [MIT License](/LICENSE)
+### [Contribute](/CONTRIBUTING.md)
