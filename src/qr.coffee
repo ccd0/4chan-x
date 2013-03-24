@@ -964,6 +964,7 @@ QR =
     [_, threadID, postID] = h1.nextSibling.textContent.match /thread:(\d+),no:(\d+)/
     postID   = +postID
     threadID = +threadID or postID
+    isReply  = threadID isnt postID
 
     (QR.yourPosts.threads[threadID] or= []).push postID
     $.set "yourPosts.#{g.BOARD}", QR.yourPosts
@@ -976,14 +977,11 @@ QR =
     }, QR.nodes.el
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
-    QR.cooldown.auto = QR.posts.length > 1
+    QR.cooldown.auto = QR.posts.length > 1 and isReply
 
     post.rm()
 
-    QR.cooldown.set
-      req:     req
-      post:    post
-      isReply: !!threadID
+    QR.cooldown.set {req, post, isReply}
 
     if threadID is postID # new thread
       URL = "/#{g.BOARD}/res/#{threadID}"
