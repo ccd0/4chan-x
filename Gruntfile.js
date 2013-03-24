@@ -116,6 +116,7 @@ module.exports = function(grunt) {
       }
     },
     clean: {
+      builds: 'builds',
       tmp: 'tmp'
     }
   });
@@ -138,7 +139,7 @@ module.exports = function(grunt) {
     'concat:userscript',
     'concat:metadata',
     'copy:userjs',
-    'clean'
+    'clean:tmp'
   ]);
   grunt.registerTask('release', ['default', 'exec:commit', 'exec:push', 'compress:crx']);
   grunt.registerTask('patch',   ['bump',       'updcl:3']);
