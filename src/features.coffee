@@ -65,7 +65,7 @@ Header =
     list.innerHTML = null
     return unless text
     as = $$('#full-board-list a', Header.bar)[0...-2] # ignore the Settings and Home links
-    nodes = text.match(/[\w@]+(-(all|title|full|text:"[^"]+"))?|[^\w@]+/g).map (t) ->
+    nodes = text.match(/[\w@]+(-(all|title|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
       if t is 'toggle-all'
@@ -82,12 +82,19 @@ Header =
       for a in as
         if a.textContent is board
           a = a.cloneNode true
-          if /-title$/.test t
+          if /-title/.test t
             a.textContent = a.title
-          else if /-full$/.test t
+          else if /-full/.test t
             a.textContent = "/#{board}/ - #{a.title}"
-          else if m = t.match /-text:"(.+)"$/
-            a.textContent = m[1]
+          else if /-(index|catalog|text)/.test t
+            c.log t, t.match /-(index|catalog)/
+            if m = t.match /-(index|catalog)/
+              c.log m
+              a.setAttribute 'data-only', m[1]
+              a.href = "//boards.4chan.org/#{board}/"
+              a.href += 'catalog' if m[1] is 'catalog'
+            if m = t.match /-text:"(.+)"/
+              a.textContent = m[1]
           else if board is '@'
             $.addClass a, 'navSmall'
           return a
@@ -106,6 +113,7 @@ Header =
     as = $$ '#board-list a[href*="boards.4chan.org"]', Header.bar
     str = if useCatalog then 'catalog' else ''
     for a in as
+      continue if a.dataset.only
       a.pathname = "/#{a.pathname.split('/')[1]}/#{str}"
     return
   toggleCatalogLinks: ->
@@ -520,6 +528,9 @@ Settings =
         <div>Title link: <code>board-title</code></div>
         <div>Full text link: <code>board-full</code></div>
         <div>Custom text link: <code>board-text:"VIP Board"</code></div>
+        <div>Index-only link: <code>board-index</code></div>
+        <div>Catalog-only link: <code>board-catalog</code></div>
+        <div>Combinations are possible: <code>board-index-text:"VIP Index"</code></div>
         <div>Full board list toggle: <code>toggle-all</code></div>
       </fieldset>
 
