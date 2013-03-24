@@ -66,7 +66,7 @@ Config =
   imageExpansion:
     'Fit width':        [true,  '']
     'Fit height':       [false, '']
-    'Expand spoilers':  [true,  'Expand all images along with spoilers.']
+    'Expand spoilers':  [false, 'Expand all images along with spoilers.']
     'Expand from here': [true,  'Expand all images only from current position to thread end.']
   filter:
     name: [
