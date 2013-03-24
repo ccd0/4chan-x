@@ -602,7 +602,12 @@ Settings =
   favicon: ->
     Favicon.switch()
     Unread.update() if g.VIEW is 'thread' and Conf['Unread Tab Icon']
-    @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
+    @nextElementSibling.innerHTML = """
+      <img src=#{Favicon.default}>
+      <img src=#{Favicon.unreadSFW}>
+      <img src=#{Favicon.unreadNSFW}>
+      <img src=#{Favicon.unreadDead}>
+      """
   usercss: ->
     if Conf['Custom CSS']
       CustomCSS.update()
