@@ -94,11 +94,10 @@ module.exports = function(grunt) {
         files: [
           'Gruntfile.js',
           'package.json',
-          'lib/**/*.coffee',
-          'src/**/*.coffee',
-          'src/**/*.js',
-          'css/**/*.css',
-          'img/*'
+          'lib/**/*',
+          'src/**/*',
+          'css/**/*',
+          'img/**/*'
         ],
         tasks: 'default'
       }

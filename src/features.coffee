@@ -87,9 +87,7 @@ Header =
           else if /-full/.test t
             a.textContent = "/#{board}/ - #{a.title}"
           else if /-(index|catalog|text)/.test t
-            c.log t, t.match /-(index|catalog)/
             if m = t.match /-(index|catalog)/
-              c.log m
               a.setAttribute 'data-only', m[1]
               a.href = "//boards.4chan.org/#{board}/"
               a.href += 'catalog' if m[1] is 'catalog'
