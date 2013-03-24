@@ -443,6 +443,9 @@ a[href="javascript:;"] {
 .expanding {
   opacity: .5;
 }
+.expanded-image {
+  clear: both;
+}
 .expanded-image > .op > .file::after {
   content: '';
   clear: both;
