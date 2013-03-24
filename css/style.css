@@ -60,7 +60,7 @@ a[href="javascript:;"] {
 #qp, #ihover,
 #updater, #thread-stats,
 #navlinks, #header,
-#qr, #watcher {
+#qr {
   position: fixed;
 }
 #overlay {
