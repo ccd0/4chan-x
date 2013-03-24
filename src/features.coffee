@@ -3199,7 +3199,10 @@ ImageExpand =
     post = Get.postFromNode @
     $.rm @
     delete post.file.fullImage
-    unless $.hasClass post.file.thumb, 'expanding'
+    # Images can error:
+    #  - before the image started loading.
+    #  - after the image started loading.
+    unless $.hasClass(post.file.thumb, 'expanding') or $.hasClass post.nodes.root, 'expanded-image'
       # Don't try to re-expend if it was already contracted.
       return
     ImageExpand.contract post
