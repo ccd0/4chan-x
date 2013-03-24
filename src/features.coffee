@@ -53,7 +53,7 @@ Header =
         className: 'hide-board-list-button brackets-wrap'
         innerHTML: '<a href=javascript:;> - </a>'
       $.on btn, 'click', Header.toggleBoardList
-      $.prepend fullBoardList, btn
+      $.add fullBoardList, btn
     else
       $.rm $ '#custom-board-list', Header.bar
       fullBoardList.hidden = false
