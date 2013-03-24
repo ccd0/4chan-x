@@ -975,7 +975,7 @@ Filter =
 
 ThreadHiding =
   init: ->
-    return if g.VIEW isnt 'index' or !Conf['Thread Hiding']
+    return if g.VIEW isnt 'index' or !Conf['Thread Hiding'] and !Conf['Thread Hiding Link']
 
     Misc.clearThreads "hiddenThreads.#{g.BOARD}"
     @getHiddenThreads()
@@ -987,7 +987,7 @@ ThreadHiding =
   node: ->
     if data = ThreadHiding.hiddenThreads.threads[@]
       ThreadHiding.hide @, data.makeStub
-    return unless Conf['Hiding Buttons']
+    return unless Conf['Thread Hiding']
     $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
 
   getHiddenThreads: ->
@@ -1015,7 +1015,7 @@ ThreadHiding =
 
   menu:
     init: ->
-      return if g.VIEW isnt 'index' or !Conf['Menu'] or !Conf['Thread Hiding']
+      return if g.VIEW isnt 'index' or !Conf['Menu'] or !Conf['Thread Hiding Link']
 
       div = $.el 'div',
         className: 'hide-thread-link'
@@ -1117,7 +1117,7 @@ ThreadHiding =
 
 ReplyHiding =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Reply Hiding']
+    return if g.VIEW is 'catalog' or !Conf['Reply Hiding'] and !Conf['Reply Hiding Link']
 
     Misc.clearThreads "hiddenPosts.#{g.BOARD}"
     @getHiddenPosts()
@@ -1134,7 +1134,7 @@ ReplyHiding =
         else
           Recursive.apply ReplyHiding.hide, @, data.makeStub, true
           Recursive.add ReplyHiding.hide, @, data.makeStub, true
-    return unless Conf['Hiding Buttons']
+    return unless Conf['Reply Hiding']
     $.replace $('.sideArrows', @nodes.root), ReplyHiding.makeButton @, 'hide'
 
   getHiddenPosts: ->
@@ -1142,7 +1142,7 @@ ReplyHiding =
 
   menu:
     init: ->
-      return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Reply Hiding']
+      return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Reply Hiding Link']
 
       # Hide
       div = $.el 'div',
@@ -1352,7 +1352,7 @@ Recursive =
 
 QuoteStrikeThrough =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Reply Hiding'] and !Conf['Filter']
+    return if g.VIEW is 'catalog' or !Conf['Reply Hiding'] and !Conf['Reply Hiding Link'] and !Conf['Filter']
 
     Post::callbacks.push
       name: 'Strike-through Quotes'

@@ -17,9 +17,8 @@ Config =
       'Anonymize':                    [false, 'Make everyone Anonymous.']
       'Filter':                       [true,  'Self-moderation placebo.']
       'Recursive Hiding':             [true,  'Hide replies of hidden posts, recursively.']
-      'Thread Hiding':                [true,  'Hide entire threads.']
-      'Reply Hiding':                 [true,  'Hide single replies.']
-      'Hiding Buttons':               [true,  'Add buttons to hide threads / replies, in addition to menu links.']
+      'Thread Hiding':                [true,  'Add buttons to hide entire threads.']
+      'Reply Hiding':                 [true,  'Add buttons to hide single replies.']
       'Stubs':                        [true,  'Show stubs of hidden threads / replies.']
     'Images':
       'Auto-GIF':                     [false, 'Animate GIF thumbnails (disabled on /gif/, /wsg/).']
@@ -30,6 +29,8 @@ Config =
     'Menu':
       'Menu':                         [true,  'Add a drop-down menu to posts.']
       'Report Link':                  [true,  'Add a report link to the menu.']
+      'Thread Hiding Link':           [true,  'Add a link to hide entire threads.']
+      'Reply Hiding Link':            [true,  'Add a link to hide single replies.']
       'Delete Link':                  [true,  'Add post and image deletion links to the menu.']
       'Download Link':                [true,  'Add a download with original filename link to the menu. Chrome-only currently.']
       'Archive Link':                 [true,  'Add an archive link to the menu.']
