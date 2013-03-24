@@ -872,12 +872,14 @@ QR =
     callbacks =
       onload: QR.response
       onerror: ->
+        # Connection error, or
+        # www.4chan.org/banned
         delete QR.req
         post.unlock()
         QR.cooldown.auto = false
         QR.status()
-        # Connection error.
-        QR.error 'Network error.'
+        QR.error $.el 'span',
+          innerHTML: 'Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.'
     opts =
       form: $.formData postData
       upCallbacks:
