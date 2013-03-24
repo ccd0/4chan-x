@@ -481,6 +481,7 @@ QR =
         # so we generate thumbnails `s` times bigger then expected
         # to avoid crappy resized quality.
         s = 90*2
+        s *= 3 if @file.type is 'image/gif' # let them animate
         {height, width} = img
         if height < s or width < s
           @URL = fileURL if window.URL
