@@ -5,7 +5,7 @@
   "meta": {
     "name": "4chan X Beta",
     "repo": "https://github.com/MayhemYDG/4chan-x/",
-    "page": "http://mayhemydg.github.com/4chan-x/",
+    "page": "https://4chan-x.just-believe.in/",
     "mainBranch": "v3",
     "matches": [
       "*://api.4chan.org/*",

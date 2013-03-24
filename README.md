@@ -1,6 +1,6 @@
 # 4chan X
 
-Get it [here](http://mayhemydg.github.com/4chan-x/).
+Get it [here](https://4chan-x.just-believe.in/).
 
 ***
 
