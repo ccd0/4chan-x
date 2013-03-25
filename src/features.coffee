@@ -3527,7 +3527,10 @@ ThreadExcerpt =
       name: 'Thread Excerpt'
       cb:   @node
   node: ->
-    d.title = Get.threadExcerpt @
+    d.title = if (excerpt = Get.threadExcerpt @).length > 50
+      "#{excerpt[...47]}..."
+    else
+      excerpt
 
 Unread =
   init: ->
