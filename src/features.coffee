@@ -16,6 +16,7 @@ Header =
       """.replace />\s+</g, '><' # get rid of spaces between elements
 
     @bar = $ '#header-bar', headerEl
+    @toggle = $ '#toggle-header-bar', @bar
     @setBarVisibility Conf['Header auto-hide']
     $.sync 'Header auto-hide', @setBarVisibility
 
@@ -3157,7 +3158,7 @@ ImageExpand =
       # Scroll back to the thumbnail when contracting the image
       # to avoid being left miles away from the relevant post.
       postRect = post.nodes.root.getBoundingClientRect()
-      headRect = Header.bar.getBoundingClientRect()
+      headRect = Header.toggle.getBoundingClientRect()
       top  = postRect.top - headRect.top - headRect.height - 2
       root = if $.engine is 'webkit'
         d.body
