@@ -11,7 +11,6 @@ Config =
       'Comment Expansion':            [true,  'Add buttons to expand too long comments.']
       'Thread Expansion':             [true,  'Add buttons to expand threads.']
       'Index Navigation':             [false, 'Add buttons to navigate between threads.']
-      'Custom CSS':                   [false, 'Apply custom CSS to 4chan.']
       'Check for Updates':            [true,  'Check for updated versions of <%= meta.name %>.']
     'Filtering':
       'Anonymize':                    [false, 'Make everyone Anonymous.']
@@ -130,6 +129,7 @@ Config =
     '#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/'
     '#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/'
   ].join '\n'
+  'Custom CSS': false
   'Header auto-hide': false
   'Header catalog links': false
   boardnav: '[current-title / toggle-all]'

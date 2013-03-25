@@ -301,7 +301,7 @@ Settings =
         description = arr[1]
         div = $.el 'div',
           innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
-        $.on $('input', div), 'click', $.cb.checked
+        $.on $('input', div), 'change', $.cb.checked
         $.add fs, div
       $.add section, fs
 
@@ -572,9 +572,9 @@ Settings =
       </fieldset>
 
       <fieldset>
-        <legend>Custom CSS <span class=warning #{if Conf['Custom CSS'] then 'hidden' else ''}>is disabled.</span></legend>
+        <legend><input type=checkbox name='Custom CSS' #{if Conf['Custom CSS'] then 'checked' else ''}> Custom CSS</legend>
         <button id=apply-css>Apply CSS</button>
-        <textarea name=usercss class=field spellcheck=false></textarea>
+        <textarea name=usercss class=field spellcheck=false #{if Conf['Custom CSS'] then '' else 'disabled'}></textarea>
       </fieldset>
     """
     for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
@@ -588,6 +588,7 @@ Settings =
       unless name in ['usercss']
         $.on input, event, Settings[name]
         Settings[name].call input
+    $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
     $.on $.id('apply-css'), 'click', Settings.usercss
   boardnav: ->
     Header.generateBoardList @value
@@ -618,11 +619,14 @@ Settings =
       <img src=#{Favicon.unreadNSFW}>
       <img src=#{Favicon.unreadDead}>
       """
-  usercss: ->
-    if Conf['Custom CSS']
-      CustomCSS.update()
-    else
+  togglecss: ->
+    if $('textarea', @parentNode.parentNode).disabled = !@checked
       CustomCSS.rmStyle()
+    else
+      CustomCSS.addStyle()
+    $.cb.checked.call @
+  usercss: ->
+    CustomCSS.update()
 
   keybinds: (section) ->
     section.innerHTML = """
