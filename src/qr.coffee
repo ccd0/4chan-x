@@ -700,14 +700,14 @@ QR =
         <span id=char-count></span>
       </div>
       <div id=file-n-submit>
+        <input type=submit>
         <input id=qr-file-button type=button value='Choose files'>
         <span id=qr-filename-container>
           <span id=qr-no-file>No selected file</span>
           <span id=qr-filename></span>
         </span>
-        <a id=qr-filerm href=javascript:; title='Remove file' tabindex=-1>×</a>
-        <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=-1>
-        <input type=submit>
+        <a id=qr-filerm href=javascript:; title='Remove file'>×</a>
+        <input type=checkbox id=qr-file-spoiler title='Spoiler image'>
       </div>
       <input type=file multiple>
     </form>

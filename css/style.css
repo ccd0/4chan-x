@@ -748,6 +748,10 @@ a[href="javascript:;"] {
 #file-n-submit > #qr-file-spoiler {
   margin: 0 2px;
 }
+#file-n-submit input[type='submit'] {
+  -webkit-order: 1;
+  order: 1;
+}
 #qr input[type='file'] {
   position: absolute;
   visibility: hidden;
