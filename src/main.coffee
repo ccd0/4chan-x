@@ -497,7 +497,7 @@ Main =
       return
 
     div = $.el 'div',
-      innerHTML: "#{errors.length} errors occured. [<a href=javascript:;>show</a>]"
+      innerHTML: "#{errors.length} errors occurred. [<a href=javascript:;>show</a>]"
     $.on div.lastElementChild, 'click', ->
       if @textContent is 'show'
         @textContent = 'hide'
