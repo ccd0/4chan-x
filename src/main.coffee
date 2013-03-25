@@ -477,7 +477,9 @@ Main =
     Main.handleErrors errors if errors
 
   addCallback: (e) ->
-    obj   = e.detail
+    obj = e.detail
+    unless typeof obj.callback.name is 'string'
+      throw new Error "Invalid callback name: #{obj.callback.name}"
     Klass = if obj.type is 'Post'
       Post
     else
