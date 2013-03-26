@@ -4027,7 +4027,7 @@ ThreadUpdater =
       $.queueTask ->
         # Enable 4chan features.
         threadID = ThreadUpdater.thread.ID
-        {length} = ThreadUpdater.root.children
+        {length} = $$ '.thread > .postContainer', ThreadUpdater.root
         if Conf['Enable 4chan\'s Extension']
           $.globalEval "Parser.parseThread(#{threadID}, #{-count})"
         else
