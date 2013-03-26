@@ -577,6 +577,12 @@ QR =
       return unless @isEnabled = !!$.id 'captchaFormPart'
       $.asap (-> $.id 'recaptcha_challenge_field_holder'), @ready.bind @
     ready: ->
+      setLifetime = (e) => @lifetime = e.detail
+      $.on  window, 'captcha:timeout', setLifetime
+      $.globalEval 'window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))'
+      $.off window, 'captcha:timeout', setLifetime
+      c.log @lifetime
+
       imgContainer = $.el 'div',
         className: 'captcha-img'
         title: 'Reload'
@@ -644,7 +650,7 @@ QR =
     load: ->
       return unless @nodes.challenge.firstChild
       # -1 minute to give upload some time.
-      @timeout  = Date.now() + $.unsafeWindow.RecaptchaState.timeout * $.SECOND - $.MINUTE
+      @timeout  = Date.now() + @lifetime * $.SECOND - $.MINUTE
       challenge = @nodes.challenge.firstChild.value
       @nodes.img.alt = challenge
       @nodes.img.src = "//www.google.com/recaptcha/api/image?c=#{challenge}"
@@ -662,7 +668,7 @@ QR =
       @nodes.input.alt = count # For XTRM RICE.
     reload: (focus) ->
       # the 't' argument prevents the input from being focused
-      $.unsafeWindow.Recaptcha.reload 't'
+      $.globalEval 'Recaptcha.reload("t")'
       # Focus if we meant to.
       @nodes.input.focus() if focus
     keydown: (e) ->

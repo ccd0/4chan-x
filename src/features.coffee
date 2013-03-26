@@ -665,33 +665,40 @@ Fourchan =
 
     board = g.BOARD.ID
     if board is 'g'
+      $.globalEval """
+        window.addEventListener('prettyprint', function(e) {
+          var pre = e.detail;
+          pre.innerHTML = prettyPrintOne(pre.innerHTML);
+        }, false);
+      """
       Post::callbacks.push
         name: 'Parse /g/ code'
         cb:   @code
     if board is 'sci'
+      # https://github.com/MayhemYDG/4chan-x/issues/645#issuecomment-13704562
+      $.globalEval """
+        window.addEventListener('jsmath', function(e) {
+          if (jsMath.loaded) {
+            // process one post
+            jsMath.ProcessBeforeShowing(e.detail);
+          } else {
+            // load jsMath and process whole document
+            jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);
+            jsMath.Autoload.LoadJsMath();
+          }
+        }, false);
+      """
       Post::callbacks.push
         name: 'Parse /sci/ math'
         cb:   @math
   code: ->
     return if @isClone
     for pre in $$ '.prettyprint', @nodes.comment
-      pre.innerHTML = $.unsafeWindow.prettyPrintOne pre.innerHTML
+      $.event 'prettyprint', pre, window
     return
   math: ->
     return if @isClone or !$ '.math', @nodes.comment
-    # https://github.com/MayhemYDG/4chan-x/issues/645#issuecomment-13704562
-    {jsMath} = $.unsafeWindow
-    if jsMath
-      if jsMath.loaded
-        # process one post
-        jsMath.ProcessBeforeShowing @nodes.post
-      else
-        # load jsMath and process whole document
-        # Yes this requires to be globalEval'd, don't ask me why.
-        $.globalEval """
-          jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);
-          jsMath.Autoload.LoadJsMath();
-          """
+    $.event 'jsmath', @nodes.post, window
   parseThread: (threadID, offset, limit) ->
     # Fix /sci/
     # Fix /g/
@@ -3523,7 +3530,7 @@ ExpandThread =
 
     # Enable 4chan features.
     if Conf['Enable 4chan\'s Extension']
-      $.unsafeWindow.Parser.parseThread thread.ID, 1, nodes.length
+      $.globalEval "Parser.parseThread(#{thread.ID}, 1, #{nodes.length})"
     else
       Fourchan.parseThread thread.ID, 1, nodes.length
 
@@ -4022,7 +4029,7 @@ ThreadUpdater =
         threadID = ThreadUpdater.thread.ID
         {length} = ThreadUpdater.root.children
         if Conf['Enable 4chan\'s Extension']
-          $.unsafeWindow.Parser.parseThread threadID, -count
+          $.globalEval "Parser.parseThread(#{threadID}, #{-count})"
         else
           Fourchan.parseThread threadID, length - count, length
 

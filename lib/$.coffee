@@ -183,25 +183,8 @@ $.extend $,
   globalEval: (code) ->
     script = $.el 'script',
       textContent: code
-    $.add d.head, script
+    $.add (d.head or doc), script
     $.rm script
-  # http://mths.be/unsafewindow
-  unsafeWindow:
-    if window.opera # Opera
-      window
-    else if unsafeWindow? # Firefox
-      unsafeWindow
-    else # Chrome
-      do ->
-        uw = null
-        captureUW = (e) -> uw = e.detail
-        window.addEventListener 'unsafe', captureUW, false
-        s = d.createElement 'script'
-        s.textContent = 'window.dispatchEvent(new CustomEvent("unsafe", {detail: window}))'
-        (d.head or doc).appendChild s
-        s.parentNode.removeChild s
-        window.removeEventListener 'unsafe', captureUW, false
-        uw
   bytesToString: (size) ->
     unit = 0 # Bytes
     while size >= 1024
