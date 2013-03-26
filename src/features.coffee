@@ -3555,6 +3555,7 @@ Unread =
     Unread.lastReadPost    = $.get("lastReadPosts.#{@board}", threads: {}).threads[@] or 0
     Unread.posts           = []
     Unread.postsQuotingYou = []
+    Unread.titleEl         = $ 'title', d.head
     Unread.title           = d.title
     posts = []
     for ID, post of @posts
@@ -3638,7 +3639,7 @@ Unread =
     if Conf['Unread Count']
       # XXX Chrome bug where it doesn't always update the tab title.
       # crbug.com/124381
-      d.title.textContent = if g.DEAD
+      Unread.titleEl.textContent = if g.DEAD
         "(#{Unread.posts.length}) /#{g.BOARD}/ - 404"
       else
         "(#{Unread.posts.length}) #{Unread.title}"
