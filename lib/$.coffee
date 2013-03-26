@@ -193,9 +193,15 @@ $.extend $,
       unsafeWindow
     else # Chrome
       do ->
-        p = d.createElement 'p'
-        p.setAttribute 'onclick', 'return window'
-        p.onclick()
+        uw = null
+        captureUW = (e) -> uw = e.detail
+        window.addEventListener 'unsafe', captureUW, false
+        s = d.createElement 'script'
+        s.textContent = 'window.dispatchEvent(new CustomEvent("unsafe", {detail: window}))'
+        (d.head or doc).appendChild s
+        s.parentNode.removeChild s
+        window.removeEventListener 'unsafe', captureUW, false
+        uw
   bytesToString: (size) ->
     unit = 0 # Bytes
     while size >= 1024
