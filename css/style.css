@@ -259,6 +259,9 @@ a[href="javascript:;"] {
   -webkit-flex: 1;
   flex: 1;
 }
+.tab-selected {
+  font-weight: 700;
+}
 .section-container {
   -webkit-flex: 1;
   flex: 1;

@@ -242,17 +242,15 @@ Settings =
     links = []
     for section in Settings.sections
       link = $.el 'a',
+        className: "tab-#{section.hyphenatedTitle}"
         textContent: section.title
         href: 'javascript:;'
       $.on link, 'click', Settings.openSection.bind section
       links.push link, $.tn ' | '
       sectionToOpen = link if section.title is openSection
     links.pop()
-    if sectionToOpen
-      sectionToOpen.click()
-    else
-      links[0].click()
     $.add $('.sections-list', overlay), links
+    (if sectionToOpen then sectionToOpen else links[0]).click()
 
     $.on $('.close', overlay), 'click', Settings.close
     $.on overlay,              'click', Settings.close
@@ -272,11 +270,15 @@ Settings =
   addSection: (title, open) ->
     if typeof title isnt 'string'
       {title, open} = title.detail
-    Settings.sections.push {title, open}
+    hyphenatedTitle = title.toLowerCase().replace /\s+/g, '-'
+    Settings.sections.push {title, hyphenatedTitle, open}
   openSection: ->
+    if selected = $ '.tab-selected', Settings.dialog
+      $.rmClass selected, 'tab-selected'
+    $.addClass $(".tab-#{@hyphenatedTitle}", Settings.dialog), 'tab-selected'
     section = $ 'section', Settings.dialog
     section.innerHTML = null
-    section.className = "section-#{@title.toLowerCase().replace /\s+/g, '-'}"
+    section.className = "section-#{@hyphenatedTitle}"
     @open section, g
     section.scrollTop = 0
 
