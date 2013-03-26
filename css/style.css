@@ -136,6 +136,7 @@ a[href="javascript:;"] {
   bottom: -8px;
   height: 10px;
   position: absolute;
+  z-index: 1;
 }
 #header-bar.autohide:not(:hover) #toggle-header-bar, #toggle-header-bar:hover {
   bottom: -16px;
@@ -143,6 +144,14 @@ a[href="javascript:;"] {
 }
 #header-bar.autohide #toggle-header-bar {
   cursor: s-resize;
+}
+#toggle-header-bar:hover + hr {
+  border-width: 3px;
+  margin: 0;
+  position: absolute;
+  bottom: -4px;
+  right: 0;
+  left: 0;
 }
 #header-bar a:not(.entry) {
   text-decoration: none;
