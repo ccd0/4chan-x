@@ -3636,7 +3636,9 @@ Unread =
     count = Unread.posts.length
 
     if Conf['Unread Count']
-      d.title = if g.DEAD
+      # XXX Chrome bug where it doesn't always update the tab title.
+      # crbug.com/124381
+      d.title.textContent = if g.DEAD
         "(#{Unread.posts.length}) /#{g.BOARD}/ - 404"
       else
         "(#{Unread.posts.length}) #{Unread.title}"
