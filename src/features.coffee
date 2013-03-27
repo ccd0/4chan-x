@@ -11,7 +11,6 @@ Header =
             <span id=full-board-list hidden></span>
           </span>
           <div id=toggle-header-bar title="Toggle the header auto-hiding."></div>
-          <hr>
         </div>
         <div id=notifications></div>
       """.replace />\s+</g, '><' # get rid of spaces between elements
