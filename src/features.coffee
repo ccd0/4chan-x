@@ -3093,13 +3093,13 @@ Sauce =
     link = link.replace /%(T?URL|MD5|board)/g, (parameter) ->
       switch parameter
         when '%TURL'
-          "' + post.file.thumbURL + '"
+          "' + encodeURIComponent(post.file.thumbURL) + '"
         when '%URL'
-          "' + post.file.URL + '"
+          "' + encodeURIComponent(post.file.URL) + '"
         when '%MD5'
           "' + encodeURIComponent(post.file.MD5) + '"
         when '%board'
-          "' + post.board + '"
+          "' + encodeURIComponent(post.board) + '"
         else
           parameter
     text = if m = link.match(/;text:(.+)$/) then m[1] else link.match(/(\w+)\.\w+\//)[1]
