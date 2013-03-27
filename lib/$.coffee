@@ -16,7 +16,7 @@ $.extend $,
   MINUTE: 1000 * 60
   HOUR  : 1000 * 60 * 60
   DAY   : 1000 * 60 * 60 * 24
-  engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
+  engine: <% if (type === 'crx') { %>webkit<% } else if (type === 'userjs') { %>presto<% } else { %>gecko<% } %>
   id: (id) ->
     d.getElementById id
   ready: (fc) ->
