@@ -17,12 +17,10 @@ Header =
 
     @bar = $ '#header-bar', headerEl
     @toggle = $ '#toggle-header-bar', @bar
-    @setBarVisibility Conf['Header auto-hide']
-    $.sync 'Header auto-hide', @setBarVisibility
 
     @menu = new UI.Menu 'header'
-    $.on $('.menu-button',       @bar), 'click', @menuToggle
-    $.on $('#toggle-header-bar', @bar), 'click', @toggleBarVisibility
+    $.on $('.menu-button', @bar), 'click', @menuToggle
+    $.on @toggle, 'click', @toggleBarVisibility
 
     catalogToggler = $.el 'label',
       innerHTML: "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}> Use catalog board links"
@@ -32,6 +30,17 @@ Header =
       type: 'header'
       el: catalogToggler
       order: 50
+
+    @headerToggler = $.el 'label',
+      innerHTML: "<input type=checkbox #{if Conf['Header auto-hide'] then 'checked' else ''}> Auto-hide header"
+    $.on @headerToggler.firstElementChild, 'change', @toggleBarVisibility
+    $.event 'AddMenuEntry',
+      type: 'header'
+      el: @headerToggler
+      order: 109
+
+    @setBarVisibility Conf['Header auto-hide']
+    $.sync 'Header auto-hide', @setBarVisibility
 
     $.asap (-> d.body), ->
       return unless Main.isThisPageLegit()
@@ -120,9 +129,13 @@ Header =
     $.set 'Header catalog links', @checked
 
   setBarVisibility: (hide) ->
+    @headerToggler.firstElementChild.checked = hide
     (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
   toggleBarVisibility: ->
-    hide = !$.hasClass Header.bar, 'autohide'
+    hide = if @nodeName is 'INPUT'
+      @checked
+    else
+      !$.hasClass Header.bar, 'autohide'
     Header.setBarVisibility hide
     message = if hide
       'The header bar will automatically hide itself.'
