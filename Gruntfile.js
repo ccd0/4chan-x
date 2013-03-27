@@ -21,40 +21,38 @@ module.exports = function(grunt) {
         ],
         dest: 'tmp/script.coffee'
       },
-      manifest: {
-        options: { process: { data: pkg } },
-        src: 'src/manifest.json',
-        dest: 'builds/crx/manifest.json'
-      },
       crx: {
         options: { process: { data: pkg } },
-        src: [
-          'src/banner.js',
-          'tmp/script.js'
-        ],
-        dest: 'builds/crx/script.js'
+        files: {
+          'builds/crx/manifest.json': 'src/manifest.json',
+          'builds/crx/script.js': [
+            'src/banner.js',
+            'tmp/script.js'
+          ]
+        }
       },
-      metadata: {
-        options: { process: { data: pkg } },
-        src: 'src/metadata.js',
-        dest: 'builds/<%= pkg.name %>.meta.js'
-      },
-      userscript: {
+      userjs: {
         options: { process: { data: pkg } },
         src: [
           'src/metadata.js',
           'src/banner.js',
           'tmp/script.js'
         ],
-        dest: 'builds/<%= pkg.name %>.user.js'
+        dest: 'builds/<%= pkg.name %>.js'
+      },
+      userscript: {
+        options: { process: { data: pkg } },
+        files: {
+          'builds/<%= pkg.name %>.meta.js': 'src/metadata.js',
+          'builds/<%= pkg.name %>.user.js': [
+            'src/metadata.js',
+            'src/banner.js',
+            'tmp/script.js'
+          ]
+        }
       }
     },
     copy: {
-      userjs: {
-        // Lazily copy the userscript
-        src: 'builds/<%= pkg.name %>.user.js',
-        dest: 'builds/<%= pkg.name %>.js'
-      },
       crx: {
         src: 'img/*.png',
         dest: 'builds/crx/',
@@ -99,7 +97,7 @@ module.exports = function(grunt) {
           'css/**/*',
           'img/**/*'
         ],
-        tasks: 'default'
+        tasks: 'build'
       }
     },
     compress: {
@@ -129,18 +127,37 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-exec');
 
-  grunt.registerTask('default', [
+  grunt.registerTask('default', ['build']);
+
+  grunt.registerTask('set-build', 'Set the build type variable', function(type) {
+    pkg.type = type;
+    grunt.log.ok('pkg.type = %s', type);
+  });
+  grunt.registerTask('build', ['build-crx', 'build-userjs', 'build-userscript']);
+  grunt.registerTask('build-crx', [
+    'set-build:crx',
     'concat:coffee',
     'coffee:script',
-    'concat:manifest',
     'concat:crx',
     'copy:crx',
-    'concat:userscript',
-    'concat:metadata',
-    'copy:userjs',
     'clean:tmp'
   ]);
-  grunt.registerTask('release', ['default', 'exec:commit', 'exec:push', 'compress:crx']);
+  grunt.registerTask('build-userjs', [
+    'set-build:userjs',
+    'concat:coffee',
+    'coffee:script',
+    'concat:userjs',
+    'clean:tmp'
+  ]);
+  grunt.registerTask('build-userscript', [
+    'set-build:userscript',
+    'concat:coffee',
+    'coffee:script',
+    'concat:userscript',
+    'clean:tmp'
+  ]);
+
+  grunt.registerTask('release', ['build', 'exec:commit', 'exec:push', 'compress:crx']);
   grunt.registerTask('patch',   ['bump',       'updcl:3']);
   grunt.registerTask('minor',   ['bump:minor', 'updcl:2']);
   grunt.registerTask('major',   ['bump:major', 'updcl:1']);
