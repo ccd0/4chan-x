@@ -4080,6 +4080,7 @@ ThreadWatcher =
       $.delete 'AutoWatch'
 
   ready: ->
+    return unless Main.isThisPageLegit()
     ThreadWatcher.refresh()
     $.add d.body, ThreadWatcher.dialog
 

@@ -525,7 +525,8 @@ Main =
   isThisPageLegit: ->
     # 404 error page or similar.
     unless 'thisPageIsLegit' of Main
-      Main.thisPageIsLegit = !$('link[href*="favicon-status.ico"]', d.head) and
+      Main.thisPageIsLegit = location.hostname is 'boards.4chan.org' and
+        !$('link[href*="favicon-status.ico"]', d.head) and
         d.title not in ['4chan - Temporarily Offline', '4chan - Error']
     Main.thisPageIsLegit
 
