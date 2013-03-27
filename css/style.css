@@ -113,8 +113,8 @@ a[href="javascript:;"] {
   display: flex;
   padding: 3px 4px 4px;
   position: relative;
-  -webkit-transition: all .1s ease-in-out;
-  transition: all .1s ease-in-out;
+  -webkit-transition: all .1s .05s ease-in-out;
+  transition: all .1s .05s ease-in-out;
 }
 #board-list {
   -webkit-flex: 1;
