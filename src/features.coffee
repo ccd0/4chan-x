@@ -3494,7 +3494,7 @@ ExpandThread =
         #goddamit moot
         num = if thread.isSticky
           1
-        else switch g.BOARD
+        else switch g.BOARD.ID
           # XXX boards config
           when 'b', 'vg', 'q' then 3
           when 't' then 1
