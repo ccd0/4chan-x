@@ -20,7 +20,7 @@ Header =
 
     @menu = new UI.Menu 'header'
     $.on $('.menu-button', @bar), 'click', @menuToggle
-    $.on @toggle, 'click', @toggleBarVisibility
+    $.on @toggle, 'mousedown', @toggleBarVisibility
 
     catalogToggler = $.el 'label',
       innerHTML: "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}> Use catalog board links"
