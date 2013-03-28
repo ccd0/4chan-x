@@ -1844,7 +1844,6 @@ Keybinds =
 
   focus: (post) ->
     $.addClass post, 'highlight'
-    $('a[title="Highlight this post"]', post).focus()
 
 Nav =
   init: ->
