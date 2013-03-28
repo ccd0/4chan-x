@@ -499,7 +499,7 @@ Main =
     # After that, check for updates every day if we still haven't updated.
     now  = Date.now()
     freq = <% if (type === 'userjs') { %>6 * $.HOUR<% } else { %>7 * $.DAY<% } %>
-    if $.get('lastupdate', 0) > now - freq and $.get('lastchecked') > now - $.DAY
+    if $.get('lastupdate', 0) > now - freq or $.get('lastchecked', 0) > now - $.DAY
       return
     $.ajax '<%= meta.page %><%= meta.buildsPath %>version', onload: ->
       return unless @status is 200
