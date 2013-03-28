@@ -3554,8 +3554,8 @@ ThreadExcerpt =
       name: 'Thread Excerpt'
       cb:   @node
   node: ->
-    d.title = if (excerpt = Get.threadExcerpt @).length > 80
-      "#{excerpt[...77]}..."
+    d.title = if (excerpt = Get.threadExcerpt @).length > 50
+      "#{excerpt[...47]}..."
     else
       excerpt
 
@@ -3575,7 +3575,6 @@ Unread =
     Unread.lastReadPost    = $.get("lastReadPosts.#{@board}", threads: {}).threads[@] or 0
     Unread.posts           = []
     Unread.postsQuotingYou = []
-    Unread.titleEl         = $ 'title', d.head
     Unread.title           = d.title
     posts = []
     for ID, post of @posts
@@ -3657,17 +3656,10 @@ Unread =
     count = Unread.posts.length
 
     if Conf['Unread Count']
-      prefix = if count
-        "(#{count})"
+      d.title = if g.DEAD
+        "(#{Unread.posts.length}) /#{g.BOARD}/ - 404"
       else
-        ''
-      # XXX Chrome bug where it doesn't always update the tab title.
-      # crbug.com/16650
-      # crbug.com/124381
-      Unread.titleEl.textContent = if g.DEAD
-        "#{prefix} /#{g.BOARD}/ - 404"
-      else
-        "#{prefix} #{Unread.title}"
+        "(#{Unread.posts.length}) #{Unread.title}"
 
     return unless Conf['Unread Tab Icon']
 
