@@ -210,9 +210,10 @@ Settings =
       order: 110
       open: -> Conf['Enable 4chan\'s Extension']
 
-    unless $.get 'previousversion'
+    if (prevVersion = $.get 'previousversion', null) isnt g.VERSION
+      $.set 'lastupdate', Date.now()
       $.set 'previousversion', g.VERSION
-      $.on d, '4chanXInitFinished', Settings.open
+      $.on d, '4chanXInitFinished', Settings.open unless prevVersion
 
     Settings.addSection 'Main',     Settings.main
     Settings.addSection 'Filter',   Settings.filter

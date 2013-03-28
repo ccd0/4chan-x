@@ -457,6 +457,7 @@ Main =
       Main.callbackNodes Post, posts
 
     $.event '4chanXInitFinished'
+    Main.checkUpdate()
 
   callbackNodes: (klass, nodes) ->
     # get the nodes' length only once
@@ -480,12 +481,38 @@ Main =
     obj = e.detail
     unless typeof obj.callback.name is 'string'
       throw new Error "Invalid callback name: #{obj.callback.name}"
-    Klass = if obj.type is 'Post'
-      Post
-    else
-      Thread
+    switch obj.type
+      when 'Post'
+        Klass = Post
+      when 'Thread'
+        Klass = Thread
+      else
+        return
     obj.callback.isAddon = true
     Klass::callbacks.push obj.callback
+
+  checkUpdate: ->
+    return unless Main.isThisPageLegit()
+    # Check for updates after:
+    #  - 6 hours since the last update on Opera because it lacks auto-updating.
+    #  - 7 days since the last update on Chrome/Firefox.
+    # After that, check for updates every day if we still haven't updated.
+    now  = Date.now()
+    freq = <% if (type === 'userjs') { %>6 * $.HOUR<% } else { %>7 * $.DAY<% } %>
+    if $.get('lastupdate', 0) > now - freq and $.get('lastchecked') > now - $.DAY
+      return
+    $.ajax '<%= meta.page %><%= meta.buildsPath %>version', onload: ->
+      return unless @status is 200
+      version = @response
+      return unless /^\d\.\d+\.\d+$/.test version
+      if g.VERSION is version
+        # Don't check for updates too frequently if there wasn't one in a 'long' time.
+        $.set 'lastupdate', now
+        return
+      $.set 'lastchecked', now
+      el = $.el 'span',
+        innerHTML: "Update: <%= meta.name %> v#{version} is out, get it <a href=<%= meta.page %> target=_blank>here</a>."
+      new Notification 'info', el, 2 * $.MINUTE
 
   handleErrors: (errors) ->
     unless 'length' of errors
