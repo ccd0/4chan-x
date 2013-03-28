@@ -3679,10 +3679,12 @@ Unread =
         else
           Favicon.default
 
+    <% if (type !== 'crx') { %>
     # `favicon.href = href` doesn't work on Firefox.
     # `favicon.href = href` isn't enough on Opera.
     # Opera won't always update the favicon if the href didn't change.
     $.add d.head, Favicon.el
+    <% } %>
 
 Favicon =
   init: ->
