@@ -519,7 +519,7 @@ Main =
         $.set 'lastchecked', now
         el = $.el 'span',
           innerHTML: "Update: <%= meta.name %> v#{version} is out, get it <a href=<%= meta.page %> target=_blank>here</a>."
-        new Notification 'info', el, 2 * $.MINUTE
+        new Notification 'info', el, 120
 
   handleErrors: (errors) ->
     unless 'length' of errors

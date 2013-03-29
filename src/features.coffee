@@ -212,10 +212,17 @@ Settings =
 
     $.get 'previousversion', null, (item) ->
       return if item['previousversion'] is g.VERSION
+
+      # Avoid conflicts between sync'd newer versions
+      # and out of date extension on this device.
+      prev = item['previousversion'].match(/\d+/g).map Number
+      curr = g.VERSION.match(/\d+/g).map Number
+      return unless prev[0] >= curr[0] and prev[1] >= curr[1] and prev[2] >= curr[2]
+
       changelog = "<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md##{g.VERSION.replace(/\./g, '')}"
       el = $.el 'span',
         innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
-      new Notification 'info', el, 1 * $.MINUTE
+      new Notification 'info', el, 60
       $.set 'lastupdate', Date.now()
       $.set 'previousversion', g.VERSION
       $.on d, '4chanXInitFinished', Settings.open unless item['previousversion']
