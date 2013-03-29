@@ -27,11 +27,6 @@ $.extend $,
       $.off d, 'DOMContentLoaded', cb
       fc()
     $.on d, 'DOMContentLoaded', cb
-  sync: (key, cb) ->
-    key = "#{g.NAMESPACE}#{key}"
-    $.on window, 'storage', (e) ->
-      if e.key is key
-        cb JSON.parse e.newValue
   formData: (form) ->
     if form instanceof HTMLFormElement
       return new FormData form
@@ -200,6 +195,21 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
+  sync: do ->
+    cbs = {}
+<% if (type === 'crx') { %>
+    chrome.storage.onChanged.addListener (changes) ->
+      for key of changes
+        if cb = cbs[key]
+          cb changes[key].newValue
+      return
+    (key, cb) -> cbs[key] = cb
+<% } else { %>
+    $.on window, 'storage', (e) ->
+      if cb = cbs[e.key]
+        cb JSON.parse e.newValue
+    (key, cb) -> cbs[g.NAMESPACE + key] = cb
+<% } %>
   item: (key, val) ->
     item = {}
     item[key] = val
