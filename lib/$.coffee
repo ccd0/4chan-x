@@ -195,20 +195,20 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
+  syncing: {}
   sync: do ->
-    cbs = {}
 <% if (type === 'crx') { %>
     chrome.storage.onChanged.addListener (changes) ->
       for key of changes
-        if cb = cbs[key]
+        if cb = $.syncing[key]
           cb changes[key].newValue
       return
-    (key, cb) -> cbs[key] = cb
+    (key, cb) -> $.syncing[key] = cb
 <% } else { %>
     $.on window, 'storage', (e) ->
-      if cb = cbs[e.key]
+      if cb = $.syncing[e.key]
         cb JSON.parse e.newValue
-    (key, cb) -> cbs[g.NAMESPACE + key] = cb
+    (key, cb) -> $.syncing[g.NAMESPACE + key] = cb
 <% } %>
   item: (key, val) ->
     item = {}
@@ -259,8 +259,9 @@ do ->
   $.set = (key, val) ->
     key = g.NAMESPACE + key
     val = JSON.stringify val
-    # for `storage` events
-    localStorage.setItem key, val
+    if key of $.syncing
+      # for `storage` events
+      localStorage.setItem key, val
     scriptStorage[key] = val
 <% } else { %>
   # http://wiki.greasespot.net/Main_Page
@@ -286,7 +287,8 @@ do ->
   set: (key, val) ->
     key = g.NAMESPACE + key
     val = JSON.stringify val
-    # for `storage` events
-    localStorage.setItem key, val
+    if key of $.syncing
+      # for `storage` events
+      localStorage.setItem key, val
     GM_setValue key, val
 <% } %>
