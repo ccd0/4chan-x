@@ -3711,6 +3711,13 @@ Unread =
         "(#{Unread.posts.length}) /#{g.BOARD}/ - 404"
       else
         "(#{Unread.posts.length}) #{Unread.title}"
+      <% if (type === 'crx') { %>
+      title = d.title
+      setTimeout ->
+        d.title = ''
+        d.title = title
+      , $.SECOND
+      <% } %>
 
     return unless Conf['Unread Tab Icon']
 
