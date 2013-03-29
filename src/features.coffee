@@ -3233,20 +3233,16 @@ ImageExpand =
     unless post.file.isExpanded or $.hasClass thumb, 'expanding'
       ImageExpand.expand post
       return
-    rect = thumb.parentNode.getBoundingClientRect()
-    if rect.bottom > 0 # Should be at least partially visible.
-      # Scroll back to the thumbnail when contracting the image
-      # to avoid being left miles away from the relevant post.
-      postRect = post.nodes.root.getBoundingClientRect()
-      headRect = Header.toggle.getBoundingClientRect()
-      top  = postRect.top - headRect.top - headRect.height - 2
-      root = if $.engine is 'webkit'
-        d.body
-      else
-        doc
-      root.scrollTop += top if rect.top  < 0
-      root.scrollLeft = 0   if rect.left < 0
     ImageExpand.contract post
+    rect = post.nodes.root.getBoundingClientRect()
+    return unless rect.top <= 0 or rect.left <= 0
+    # Scroll back to the thumbnail when contracting the image
+    # to avoid being left miles away from the relevant post.
+    headRect = Header.toggle.getBoundingClientRect()
+    top  = rect.top - headRect.top - headRect.height
+    root = if $.engine is 'webkit' then d.body else doc
+    root.scrollTop += top if rect.top  < 0
+    root.scrollLeft = 0   if rect.left < 0
 
   contract: (post) ->
     $.rmClass post.nodes.root, 'expanded-image'
