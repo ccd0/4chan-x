@@ -41,28 +41,28 @@ class Post
       backlinks: info.getElementsByClassName 'backlink'
 
     @info = {}
-    if subject        = $ '.subject',     info
+    if subject        = $ '.subject',      info
       @nodes.subject  = subject
       @info.subject   = subject.textContent
-    if name           = $ '.name',        info
+    if name           = $ '.name',         info
       @nodes.name     = name
       @info.name      = name.textContent
-    if email          = $ '.useremail',   info
+    if email          = $ '.useremail',    info
       @nodes.email    = email
       @info.email     = decodeURIComponent email.href[7..]
-    if tripcode       = $ '.postertrip',  info
+    if tripcode       = $ '.postertrip',   info
       @nodes.tripcode = tripcode
       @info.tripcode  = tripcode.textContent
-    if uniqueID       = $ '.posteruid',   info
+    if uniqueID       = $ '.posteruid',    info
       @nodes.uniqueID = uniqueID
       @info.uniqueID  = uniqueID.firstElementChild.textContent
-    if capcode        = $ '.capcode',     info
+    if capcode        = $ '.capcode.hand', info
       @nodes.capcode  = capcode
-      @info.capcode   = capcode.textContent
-    if flag           = $ '.countryFlag', info
+      @info.capcode   = capcode.textContent.replace '## ', ''
+    if flag           = $ '.countryFlag',  info
       @nodes.flag     = flag
       @info.flag      = flag.title
-    if date           = $ '.dateTime',    info
+    if date           = $ '.dateTime',     info
       @nodes.date     = date
       @info.date      = new Date date.dataset.utc * 1000
     if Conf['Quick Reply']
@@ -284,9 +284,6 @@ class Clone extends Post
 
 Main =
   init: ->
-    $.asap (-> d.documentElement), ->
-      doc = d.documentElement
-
     # flatten Config into Conf
     # and get saved or default values
     flatten = (parent, obj) ->
@@ -344,7 +341,7 @@ Main =
       for name, module of features
         # c.time "#{name} initialization"
         try
-          module.init()
+          do module.init
         catch err
           Main.handleErrors
             message: "\"#{name}\" initialization crashed."
@@ -447,6 +444,7 @@ Main =
       Main.callbackNodes Post, posts
 
     $.event '4chanXInitFinished'
+    Main.checkUpdate()
 
   callbackNodes: (klass, nodes) ->
     # get the nodes' length only once
@@ -467,13 +465,41 @@ Main =
     Main.handleErrors errors if errors
 
   addCallback: (e) ->
-    obj   = e.detail
-    Klass = if obj.type is 'Post'
-      Post
-    else
-      Thread
+    obj = e.detail
+    unless typeof obj.callback.name is 'string'
+      throw new Error "Invalid callback name: #{obj.callback.name}"
+    switch obj.type
+      when 'Post'
+        Klass = Post
+      when 'Thread'
+        Klass = Thread
+      else
+        return
     obj.callback.isAddon = true
     Klass::callbacks.push obj.callback
+
+  checkUpdate: ->
+    return unless Main.isThisPageLegit()
+    # Check for updates after:
+    #  - 6 hours since the last update on Opera because it lacks auto-updating.
+    #  - 7 days since the last update on Chrome/Firefox.
+    # After that, check for updates every day if we still haven't updated.
+    now  = Date.now()
+    freq = <% if (type === 'userjs') { %>6 * $.HOUR<% } else { %>7 * $.DAY<% } %>
+    if $.get('lastupdate', 0) > now - freq or $.get('lastchecked', 0) > now - $.DAY
+      return
+    $.ajax '<%= meta.page %><%= meta.buildsPath %>version', onload: ->
+      return unless @status is 200
+      version = @response
+      return unless /^\d\.\d+\.\d+$/.test version
+      if g.VERSION is version
+        # Don't check for updates too frequently if there wasn't one in a 'long' time.
+        $.set 'lastupdate', now
+        return
+      $.set 'lastchecked', now
+      el = $.el 'span',
+        innerHTML: "Update: <%= meta.name %> v#{version} is out, get it <a href=<%= meta.page %> target=_blank>here</a>."
+      new Notification 'info', el, 2 * $.MINUTE
 
   handleErrors: (errors) ->
     unless 'length' of errors
@@ -485,7 +511,7 @@ Main =
       return
 
     div = $.el 'div',
-      innerHTML: "#{errors.length} errors occured. [<a href=javascript:;>show</a>]"
+      innerHTML: "#{errors.length} errors occurred. [<a href=javascript:;>show</a>]"
     $.on div.lastElementChild, 'click', ->
       if @textContent is 'show'
         @textContent = 'hide'
@@ -514,7 +540,9 @@ Main =
   isThisPageLegit: ->
     # 404 error page or similar.
     unless 'thisPageIsLegit' of Main
-      Main.thisPageIsLegit = !$('link[href*="favicon-status.ico"]', d.head) and d.title isnt '4chan - Temporarily Offline'
+      Main.thisPageIsLegit = location.hostname is 'boards.4chan.org' and
+        !$('link[href*="favicon-status.ico"]', d.head) and
+        d.title not in ['4chan - Temporarily Offline', '4chan - Error']
     Main.thisPageIsLegit
 
 

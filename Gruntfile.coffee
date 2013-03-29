@@ -24,31 +24,18 @@ module.exports = (grunt) ->
         ]
         dest: 'tmp/script.coffee'
 
-      manifest:
-        options:
-          process:
-            data: pkg
-        src: 'src/manifest.json',
-        dest: 'builds/crx/manifest.json'
-
-      metadata:
-        options:
-          process:
-            data: pkg
-        src:  'src/metadata.js',
-        dest: '<%= pkg.name %>.meta.js'
-
       crx:
         options:
           process:
             data: pkg
-        src: [
-          'src/banner.js'
-          'tmp/script.js'
-        ]
-        dest: 'builds/crx/script.js'
+        files:
+          'builds/crx/manifest.json': 'src/manifest.json'
+          'builds/crx/script.js': [
+            'src/banner.js'
+            'tmp/script.js'
+          ]
 
-      userscript:
+      userjs:
         options:
           process:
             data: pkg
@@ -57,12 +44,26 @@ module.exports = (grunt) ->
           'src/banner.js'
           'tmp/script.js'
         ]
-        dest: '<%= pkg.name %>.user.js'
-
-      userjs:
-        # Lazily copy the userscript
-        src:  '<%= pkg.name %>.user.js'
         dest: 'builds/<%= pkg.name %>.js'
+
+      userscript:
+        options:
+          process:
+            data: pkg
+        files:
+          '<%= pkg.name %>.meta.js': 'src/metadata.js'
+          '<%= pkg.name %>.user.js': [
+            'src/metadata.js'
+            'src/banner.js'
+            'tmp/script.js'
+          ]
+
+    copy:
+      crx:
+        src:    'img/*.png'
+        dest:   'builds/crx/'
+        expand:  true
+        flatten: true
 
     coffee:
       script:
@@ -90,35 +91,73 @@ module.exports = (grunt) ->
         options:
           interrupt: true
         files: [
-          'Gruntfile.js'
+          'Gruntfile.coffee'
           'package.json'
-          'lib/**/*.coffee'
-          'src/**/*.coffee'
-          'src/**/*.js'
-          'css/**/*.css'
-          'img/*'
+          'lib/**/*'
+          'src/**/*'
+          'css/**/*'
+          'img/**/*'
         ]
-        tasks: 'default'
+        tasks: 'build'
+
+    compress:
+      crx:
+        options:
+          archive: 'builds/4chan-X.zip'
+          level: 9
+          pretty: true
+        expand: true
+        cwd: 'builds/crx/'
+        src: '**'
 
     clean:
-      tmp: 'tmp'
+      builds: 'builds'
+      tmp:    'tmp'
 
   grunt.loadNpmTasks 'grunt-bump'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks 'grunt-contrib-compress'
   grunt.loadNpmTasks 'grunt-contrib-concat'
+  grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-exec'
 
-  grunt.registerTask 'default', [
-    'concat:coffee',
-    'coffee:script',
-    'concat:manifest',
-    'concat:crx',
-    'concat:userscript',
-    'concat:userjs',
-    'concat:metadata',
-    'clean'
+  grunt.registerTask 'default', ['build']
+
+  grunt.registerTask 'set-build', 'Set the build type variable', (type) ->
+    pkg.type = type;
+    grunt.log.ok 'pkg.type = %s', type
+
+  grunt.registerTask 'build', [
+    'build-crx'
+    'build-userjs'
+    'build-userscript'
+  ]
+
+  grunt.registerTask 'build-crx', [
+    'set-build:crx'
+    'concat:coffee'
+    'coffee:script'
+    'concat:crx'
+    'copy:crx'
+    'clean:tmp'
+  ]
+
+  grunt.registerTask 'build-userjs', [
+    'set-build:userjs'
+    'concat:coffee'
+    'coffee:script'
+    'concat:userjs'
+    'clean:tmp'
+  ]
+
+  grunt.registerTask 'build-userscript', [
+    'set-build:userscript'
+    'concat:coffee'
+    'coffee:script'
+    'concat:userscript'
+    'clean:tmp'
   ]
 
   grunt.registerTask 'release', [
@@ -141,6 +180,7 @@ module.exports = (grunt) ->
     'bump:major'
     'updcl:1'
   ]
+
   grunt.registerTask 'updcl',   'Update the changelog', (i) ->
     # Update the `pkg` object with the new version.
     pkg = grunt.file.readJSON('package.json');

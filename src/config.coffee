@@ -15,7 +15,7 @@ Config =
       ]
       'Custom Board Navigation': [
         true
-        'Disable this to always display the full board list.'
+        'Show custom links instead of the full board list.'
       ]
       '404 Redirect': [
         true
@@ -27,7 +27,7 @@ Config =
       ]
       'Time Formatting': [
         true
-        'Localize and format timestamps arbitrarily.'
+        'Localize and format timestamps.'
       ]
       'Relative Post Dates': [
         false
@@ -39,19 +39,15 @@ Config =
       ]
       'Comment Expansion': [
         true
-        'Can expand too long comments.'
+        'Add buttons to expand long comments.'
       ]
       'Thread Expansion': [
         true
-        'Can expand threads to view all replies.'
+        'Add buttons to expand threads.'
       ]
       'Index Navigation': [
         false
-        'Navigate to previous / next thread.'
-      ]
-      'Custom CSS': [
-        false
-        'Apply custom CSS to 4chan.'
+        'Add buttons to navigate between threads.'
       ]
       'Check for Updates': [
         true
@@ -75,7 +71,7 @@ Config =
     'Filtering':
       'Anonymize': [
         false
-        'Turn everyone Anonymous.'
+        'Make everyone Anonymous.'
       ]
       'Filter': [
         true
@@ -87,19 +83,19 @@ Config =
       ]
       'Thread Hiding': [
         true
-        'Hide entire threads.'
+        'Add buttons to hide entire threads.'
       ]
       'Reply Hiding': [
         true
-        'Hide single replies.'
+        'Add buttons to hide single replies.'
       ]
       'Hiding Buttons': [
         true
-        'Make buttons to hide threads / replies, in addition to menu links.'
+        'Add buttons to hide threads / replies, in addition to menu links.'
       ]
       'Stubs': [
         true
-        'Make stubs of hidden threads / replies.'
+        'Show stubs of hidden threads / replies.'
       ]
 
     'Images':
@@ -135,8 +131,16 @@ Config =
     'Menu':
       'Menu': [
         true
-        'Add a drop-down menu in posts.'
+        'Add a drop-down menu to posts.'
       ]
+      'Thread Hiding Link': [
+        true
+        'Add a link to hide entire threads.'
+      ]
+      'Reply Hiding Link': [
+        true
+        'Add a link to hide single replies.'
+      ] 
       'Report Link': [
         true
         'Add a report link to the menu.'
@@ -222,7 +226,7 @@ Config =
         'Hide the normal post form.'
       ]
 
-    'Quote links':
+    'Quote Links':
       'Quote Backlinks': [
         true
         'Add quote backlinks.'
@@ -681,20 +685,22 @@ Config =
     MD5: ''
 
   sauces: """
-http://iqdb.org/?url=%turl
-http://www.google.com/searchbyimage?image_url=%turl
-#http://tineye.com/search?url=%turl
-#http://saucenao.com/search.php?db=999&url=%turl
-#http://3d.iqdb.org/?url=%turl
-#http://regex.info/exif.cgi?imgurl=%url
+http://iqdb.org/?url=%TURL
+https://www.google.com/searchbyimage?image_url=%TURL
+#//tineye.com/search?url=%TURL
+#http://saucenao.com/search.php?url=%TURL
+#http://3d.iqdb.org/?url=%TURL
+#http://regex.info/exif.cgi?imgurl=%URL
 # uploaders:
-#http://imgur.com/upload?url=%url;text:Upload to imgur
-#http://omploader.org/upload?url1=%url;text:Upload to omploader
+#http://imgur.com/upload?url=%URL;text:Upload to imgur
+#http://ompldr.org/upload?url1=%URL;text:Upload to ompldr
 # "View Same" in archives:
 #//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz
 #//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/
 #//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/
 """
+
+  'Custom CSS': false 
 
   'Header auto-hide': false
 

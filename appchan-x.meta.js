@@ -15,7 +15,7 @@
 // @grant        GM_deleteValue
 // @grant        GM_openInTab
 // @run-at       document-start
-// @updateURL    https://github.com/zixaphir/appchan-x/raw/Av2/appchan-x.meta.js
-// @downloadURL  https://github.com/zixaphir/appchan-x/raw/Av2/appchan-x.user.js
-// @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
+// @updateURL    http://zixaphir.github.com/appchan-x/builds/appchan-x.meta.js
+// @downloadURL  http://zixaphir.github.com/appchan-x/builds/appchan-x.user.js
+// @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==

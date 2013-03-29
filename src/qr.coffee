@@ -486,6 +486,7 @@ QR =
         # so we generate thumbnails `s` times bigger then expected
         # to avoid crappy resized quality.
         s = 90*2
+        s *= 3 if @file.type is 'image/gif' # let them animate
         {height, width} = img
         if height < s or width < s
           @URL = fileURL if window.URL
@@ -581,6 +582,12 @@ QR =
       return unless @isEnabled = !!$.id 'captchaFormPart'
       $.asap (-> $.id 'recaptcha_challenge_field_holder'), @ready.bind @
     ready: ->
+      setLifetime = (e) => @lifetime = e.detail
+      $.on  window, 'captcha:timeout', setLifetime
+      $.globalEval 'window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))'
+      $.off window, 'captcha:timeout', setLifetime
+      c.log @lifetime
+
       imgContainer = $.el 'div',
         className: 'captcha-img'
         title: 'Reload'
@@ -648,7 +655,7 @@ QR =
     load: ->
       return unless @nodes.challenge.firstChild
       # -1 minute to give upload some time.
-      @timeout  = Date.now() + $.unsafeWindow.RecaptchaState.timeout * $.SECOND - $.MINUTE
+      @timeout  = Date.now() + @lifetime * $.SECOND - $.MINUTE
       challenge = @nodes.challenge.firstChild.value
       @nodes.img.alt = challenge
       @nodes.img.src = "//www.google.com/recaptcha/api/image?c=#{challenge}"
@@ -666,7 +673,7 @@ QR =
       @nodes.input.alt = count # For XTRM RICE.
     reload: (focus) ->
       # the 't' argument prevents the input from being focused
-      $.unsafeWindow.Recaptcha.reload 't'
+      $.globalEval 'Recaptcha.reload("t")'
       # Focus if we meant to.
       @nodes.input.focus() if focus
     keydown: (e) ->
@@ -701,14 +708,14 @@ QR =
         <a id=add-post href=javascript:; title="Add a post">+</a>
       </div>
       <div id=file-n-submit>
+        <input type=submit>
         <input id=qr-file-button type=button value='Choose files'>
         <span id=qr-filename-container>
           <span id=qr-no-file>No selected file</span>
           <span id=qr-filename></span>
         </span>
-        <a id=qr-filerm href=javascript:; title='Remove file' tabindex=-1>×</a>
-        <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=-1>
-        <input type=submit>
+        <a id=qr-filerm href=javascript:; title='Remove file'>×</a>
+        <input type=checkbox id=qr-file-spoiler title='Spoiler image'>
       </div>
       <input type=file multiple>
     </form>
@@ -877,12 +884,14 @@ QR =
     callbacks =
       onload: QR.response
       onerror: ->
+        # Connection error, or
+        # www.4chan.org/banned
         delete QR.req
         post.unlock()
         QR.cooldown.auto = false
         QR.status()
-        # Connection error.
-        QR.error 'Network error.'
+        QR.error $.el 'span',
+          innerHTML: 'Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.'
     opts =
       form: $.formData postData
       upCallbacks:
@@ -966,6 +975,7 @@ QR =
     [_, threadID, postID] = h1.nextSibling.textContent.match /thread:(\d+),no:(\d+)/
     postID   = +postID
     threadID = +threadID or postID
+    isReply  = threadID isnt postID
 
     (QR.yourPosts.threads[threadID] or= []).push postID
     $.set "yourPosts.#{g.BOARD}", QR.yourPosts
@@ -980,18 +990,15 @@ QR =
     }, QR.nodes.el
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
-    QR.cooldown.auto = QR.posts.length > 1
+    QR.cooldown.auto = QR.posts.length > 1 and isReply
 
     post.rm()
 
-    QR.cooldown.set
-      req:     req
-      post:    post
-      isReply: !!threadID
+    QR.cooldown.set {req, post, isReply}
 
     if threadID is postID # new thread
       URL = "/#{g.BOARD}/res/#{threadID}"
-    else if g.VIEW is 'index' and !QR.cooldown.auto # posting from the index
+    else if g.VIEW is 'index' and !QR.cooldown.auto and Conf['Open Post in New Tab'] # replying from the index
       URL = "/#{g.BOARD}/res/#{threadID}#p#{postID}"
     if URL
       if Conf['Open Post in New Tab']

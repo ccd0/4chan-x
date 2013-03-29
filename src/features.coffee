@@ -31,7 +31,7 @@ Header =
         className: 'hide-board-list-button'
         innerHTML: '[<a href=javascript:;> - </a>]\u00A0'
       $.on btn, 'click', Header.toggleBoardList
-      $.prepend fullBoardList, btn
+      $.add fullBoardList, btn
     else
       $.rm $ '#custom-board-list', nav
       fullBoardList.hidden = false
@@ -40,8 +40,8 @@ Header =
     list = $ '#custom-board-list', Header.nav
     list.innerHTML = null
     return unless text
-    as = $$('#full-board-list a', Header.nav)
-    nodes = text.match(/[\w@]+(-(all|title|full|text:"[^"]+"))?|[^\w@]+/g).map (t) ->
+    as = $$('#full-board-list a', Header.nav)[0...-2] # ignore the Settings and Home links
+    nodes = text.match(/[\w@]+(-(all|title|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
       if t is 'toggle-all'
@@ -58,12 +58,17 @@ Header =
       for a in as
         if a.textContent is board
           a = a.cloneNode true
-          if /-title$/.test t
+          if /-title/.test t
             a.textContent = a.title
-          else if /-full$/.test t
+          else if /-full/.test t
             a.textContent = "/#{board}/ - #{a.title}"
-          else if m = t.match /-text:"(.+)"$/
-            a.textContent = m[1]
+          else if /-(index|catalog|text)/.test t
+            if m = t.match /-(index|catalog)/
+              a.setAttribute 'data-only', m[1]
+              a.href = "//boards.4chan.org/#{board}/"
+              a.href += 'catalog' if m[1] is 'catalog'
+            if m = t.match /-text:"(.+)"/
+              a.textContent = m[1]
           else if board is '@'
             $.addClass a, 'navSmall'
           return a
@@ -186,9 +191,10 @@ Settings =
       $.asap (-> $.id 'boardNavMobile'), ->
         $.prepend $.id('navtopright'), [$.tn(' ['), link, $.tn('] ')]
 
-    unless $.get 'previousversion'
+    if (prevVersion = $.get 'previousversion', null) isnt g.VERSION
+      $.set 'lastupdate', Date.now()
       $.set 'previousversion', g.VERSION
-      $.on d, '4chanXInitFinished', Settings.open
+      $.on d, '4chanXInitFinished', Settings.open unless prevVersion
 
     Settings.addSection 'Main',     Settings.main
     Settings.addSection 'Filter',   Settings.filter
@@ -231,17 +237,15 @@ Settings =
     links = []
     for section in Settings.sections
       link = $.el 'a',
+        className: "tab-#{section.hyphenatedTitle}"
         textContent: section.title
         href: 'javascript:;'
       $.on link, 'click', Settings.openSection.bind section
       links.push link, $.tn ' | '
       sectionToOpen = link if section.title is openSection
     links.pop()
-    if sectionToOpen
-      sectionToOpen.click()
-    else
-      links[0].click()
     $.add $('.sections-list', overlay), links
+    (if sectionToOpen then sectionToOpen else links[0]).click()
 
     $.on $('.close', overlay), 'click', Settings.close
     $.on overlay,              'click', Settings.close
@@ -261,11 +265,15 @@ Settings =
   addSection: (title, open) ->
     if typeof title isnt 'string'
       {title, open} = title.detail
-    Settings.sections.push {title, open}
+    hyphenatedTitle = title.toLowerCase().replace /\s+/g, '-'
+    Settings.sections.push {title, hyphenatedTitle, open}
   openSection: ->
+    if selected = $ '.tab-selected', Settings.dialog
+      $.rmClass selected, 'tab-selected'
+    $.addClass $(".tab-#{@hyphenatedTitle}", Settings.dialog), 'tab-selected'
     section = $ 'section', Settings.dialog
     section.innerHTML = null
-    section.className = "section-#{@title.toLowerCase().replace /\s+/g, '-'}"
+    section.className = "section-#{@hyphenatedTitle}"
     @open section, g
     section.scrollTop = 0
 
@@ -290,7 +298,7 @@ Settings =
         description = arr[1]
         div = $.el 'div',
           innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
-        $.on $('input', div), 'click', $.cb.checked
+        $.on $('input', div), 'change', $.cb.checked
         $.add fs, div
       $.add section, fs
 
@@ -304,8 +312,7 @@ Settings =
       innerHTML: "<button>Hidden: #{hiddenNum}</button><span class=description>: Clear manually hidden threads and posts on /#{g.BOARD}/."
     $.on $('button', div), 'click', ->
       @textContent = 'Hidden: 0'
-      $.delete "hiddenThreads.#{g.BOARD}"
-      $.delete "hiddenPosts.#{g.BOARD}"
+      $.delete ["hiddenThreads.#{g.BOARD}", "hiddenPosts.#{g.BOARD}"]
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
   export: ->
     now  = Date.now()
@@ -318,7 +325,7 @@ Settings =
       className: 'warning'
       textContent: 'Save me!'
       download: "<%= meta.name %> v#{g.VERSION}-#{now}.json"
-      href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data}"
+      href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
       target: '_blank'
     if $.engine isnt 'gecko'
       a.click()
@@ -458,7 +465,7 @@ Settings =
       $.add div, ta
       return
     div.innerHTML = """
-      <div class=warning #{if Conf['Sauce'] then 'hidden' else ''}><code>Filter</code> is disabled.</div>
+      <div class=warning #{if Conf['Filter'] then 'hidden' else ''}><code>Filter</code> is disabled.</div>
       <p>
         Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
         Lines starting with a <code>#</code> will be ignored.<br>
@@ -516,6 +523,9 @@ Settings =
         <div>Title link: <code>board-title</code></div>
         <div>Full text link: <code>board-full</code></div>
         <div>Custom text link: <code>board-text:"VIP Board"</code></div>
+        <div>Index-only link: <code>board-index</code></div>
+        <div>Catalog-only link: <code>board-catalog</code></div>
+        <div>Combinations are possible: <code>board-index-text:"VIP Index"</code></div>
         <div>Full board list toggle: <code>toggle-all</code></div>
       </fieldset>
 
@@ -558,9 +568,9 @@ Settings =
       </fieldset>
 
       <fieldset>
-        <legend>Custom CSS <span class=warning #{if Conf['Custom CSS'] then 'hidden' else ''}>is disabled.</span></legend>
+        <legend><input type=checkbox name='Custom CSS' #{if Conf['Custom CSS'] then 'checked' else ''}> Custom CSS</legend>
         <button id=apply-css>Apply CSS</button>
-        <textarea name=usercss class=field spellcheck=false></textarea>
+        <textarea name=usercss class=field spellcheck=false #{if Conf['Custom CSS'] then '' else 'disabled'}></textarea>
       </fieldset>
     """
     for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
@@ -574,6 +584,7 @@ Settings =
       unless 'usercss' is name
         $.on input, event, Settings[name]
         Settings[name].call input
+    $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
     $.on $.id('apply-css'), 'click', Settings.usercss
   boardnav: ->
     Header.generateBoardList @value
@@ -598,12 +609,20 @@ Settings =
   favicon: ->
     Favicon.switch()
     Unread.update() if g.VIEW is 'thread' and Conf['Unread Tab Icon']
-    @nextElementSibling.innerHTML = "<img src=#{Favicon.unreadSFW}> <img src=#{Favicon.unreadNSFW}> <img src=#{Favicon.unreadDead}>"
-  usercss: ->
-    if Conf['Custom CSS']
-      CustomCSS.update()
-    else
+    @nextElementSibling.innerHTML = """
+      <img src=#{Favicon.default}>
+      <img src=#{Favicon.unreadSFW}>
+      <img src=#{Favicon.unreadNSFW}>
+      <img src=#{Favicon.unreadDead}>
+      """
+  togglecss: ->
+    if $('textarea', @parentNode.parentNode).disabled = !@checked
       CustomCSS.rmStyle()
+    else
+      CustomCSS.addStyle()
+    $.cb.checked.call @
+  usercss: ->
+    CustomCSS.update()
 
   keybinds: (section) ->
     section.innerHTML = """
@@ -639,33 +658,40 @@ Fourchan =
 
     board = g.BOARD.ID
     if board is 'g'
+      $.globalEval """
+        window.addEventListener('prettyprint', function(e) {
+          var pre = e.detail;
+          pre.innerHTML = prettyPrintOne(pre.innerHTML);
+        }, false);
+      """
       Post::callbacks.push
         name: 'Parse /g/ code'
         cb:   @code
     if board is 'sci'
+      # https://github.com/MayhemYDG/4chan-x/issues/645#issuecomment-13704562
+      $.globalEval """
+        window.addEventListener('jsmath', function(e) {
+          if (jsMath.loaded) {
+            // process one post
+            jsMath.ProcessBeforeShowing(e.detail);
+          } else {
+            // load jsMath and process whole document
+            jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);
+            jsMath.Autoload.LoadJsMath();
+          }
+        }, false);
+      """
       Post::callbacks.push
         name: 'Parse /sci/ math'
         cb:   @math
   code: ->
     return if @isClone
     for pre in $$ '.prettyprint', @nodes.comment
-      pre.innerHTML = $.unsafeWindow.prettyPrintOne pre.innerHTML
+      $.event 'prettyprint', pre, window
     return
   math: ->
     return if @isClone or !$ '.math', @nodes.comment
-    # https://github.com/MayhemYDG/4chan-x/issues/645#issuecomment-13704562
-    {jsMath} = $.unsafeWindow
-    if jsMath
-      if jsMath.loaded
-        # process one post
-        jsMath.ProcessBeforeShowing @nodes.post
-      else
-        # load jsMath and process whole document
-        # Yes this requires to be globalEval'd, don't ask me why.
-        $.globalEval """
-          jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);
-          jsMath.Autoload.LoadJsMath();
-          """
+    $.event 'jsmath', @nodes.post, window
   parseThread: (threadID, offset, limit) ->
     # Fix /sci/
     # Fix /g/
@@ -966,7 +992,7 @@ Filter =
 
 ThreadHiding =
   init: ->
-    return if g.VIEW isnt 'index' or !Conf['Thread Hiding']
+    return if g.VIEW isnt 'index' or !Conf['Thread Hiding'] and !Conf['Thread Hiding Link']
 
     Misc.clearThreads "hiddenThreads.#{g.BOARD}"
     @getHiddenThreads()
@@ -978,7 +1004,7 @@ ThreadHiding =
   node: ->
     if data = ThreadHiding.hiddenThreads.threads[@]
       ThreadHiding.hide @, data.makeStub
-    return unless Conf['Hiding Buttons']
+    return unless Conf['Thread Hiding']
     $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
 
   getHiddenThreads: ->
@@ -1006,7 +1032,7 @@ ThreadHiding =
 
   menu:
     init: ->
-      return if g.VIEW isnt 'index' or !Conf['Menu'] or !Conf['Thread Hiding']
+      return if g.VIEW isnt 'index' or !Conf['Menu'] or !Conf['Thread Hiding Link']
 
       div = $.el 'div',
         className: 'hide-thread-link'
@@ -1108,7 +1134,7 @@ ThreadHiding =
 
 ReplyHiding =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Reply Hiding']
+    return if g.VIEW is 'catalog' or !Conf['Reply Hiding'] and !Conf['Reply Hiding Link']
 
     Misc.clearThreads "hiddenPosts.#{g.BOARD}"
     @getHiddenPosts()
@@ -1125,7 +1151,7 @@ ReplyHiding =
         else
           Recursive.apply ReplyHiding.hide, @, data.makeStub, true
           Recursive.add ReplyHiding.hide, @, data.makeStub, true
-    return unless Conf['Hiding Buttons']
+    return unless Conf['Reply Hiding']
     $.add $('.postInfo', @nodes.post), ReplyHiding.makeButton @, 'hide'
 
   getHiddenPosts: ->
@@ -1133,7 +1159,7 @@ ReplyHiding =
 
   menu:
     init: ->
-      return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Reply Hiding']
+      return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Reply Hiding Link']
 
       # Hide
       div = $.el 'div',
@@ -1343,7 +1369,7 @@ Recursive =
 
 QuoteStrikeThrough =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Reply Hiding'] and !Conf['Filter']
+    return if g.VIEW is 'catalog' or !Conf['Reply Hiding'] and !Conf['Reply Hiding Link'] and !Conf['Filter']
 
     Post::callbacks.push
       name: 'Strike-through Quotes'
@@ -1631,7 +1657,7 @@ Keybinds =
       when Conf['Open settings']
         Settings.open()
       when Conf['Close']
-        if $.id 'settings'
+        if $.id 'fourchanx-settings'
           Settings.close()
         else if (notifications = $$ '.notification').length
           for notification in notifications
@@ -1798,7 +1824,6 @@ Keybinds =
 
   focus: (post) ->
     $.addClass post, 'highlight'
-    $('a[title="Highlight this post"]', post).focus()
 
 Nav =
   init: ->
@@ -2426,10 +2451,10 @@ Misc = # super semantic
 
     return if data.lastChecked > Date.now() - 12 * $.HOUR
 
-    $.ajax "//api.4chan.org/#{g.BOARD}/catalog.json", onload: ->
+    $.ajax "//api.4chan.org/#{g.BOARD}/threads.json", onload: ->
       threads = {}
-      for obj in JSON.parse @response
-        for thread in obj.threads
+      for page in JSON.parse @response
+        for thread in page.threads
           if thread.no of data.threads
             threads[thread.no] = data.threads[thread.no]
       unless Object.keys(threads).length
@@ -2637,7 +2662,7 @@ QuotePreview =
       # Remove the clone that's in the qp from the array.
       posts.pop()
       for post in posts
-        $.addClass post.nodes.post, 'qphl'
+        $.addClass post.nodes.root, 'qphl'
 
     quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
     clone = Get.postFromRoot qp.firstChild
@@ -2658,7 +2683,7 @@ QuotePreview =
 
     return unless Conf['Quote Highlighting']
     for post in [post].concat post.clones
-      $.rmClass post.nodes.post, 'qphl'
+      $.rmClass post.nodes.root, 'qphl'
     return
 
 QuoteBacklink =
@@ -3062,14 +3087,15 @@ Sauce =
   createSauceLink: (link) ->
     link = link.replace /%(T?URL|MD5|board)/ig, (parameter) ->
       switch parameter
-        when '%TURL', '%turl'
-          "' + post.file.thumbURL + '"
-        when '%URL', '%url'
-          "' + post.file.URL + '"
-        when '%MD5', '%md5'
+
+        when '%TURL'
+          "' + encodeURIComponent(post.file.thumbURL) + '"
+        when '%URL'
+          "' + encodeURIComponent(post.file.URL) + '"
+        when '%MD5'
           "' + encodeURIComponent(post.file.MD5) + '"
         when '%board'
-          "' + post.board + '"
+          "' + encodeURIComponent(post.board) + '"
         else
           parameter
     text = if m = link.match(/;text:(.+)$/) then m[1] else link.match(/(\w+)\.\w+\//)[1]
@@ -3178,7 +3204,7 @@ ImageExpand =
       # Scroll back to the thumbnail when contracting the image
       # to avoid being left miles away from the relevant post.
       postRect = post.nodes.root.getBoundingClientRect()
-      headRect = Header.bar.getBoundingClientRect()
+      headRect = Header.toggle.getBoundingClientRect()
       top  = postRect.top - headRect.top - headRect.height - 2
       root = if $.engine is 'webkit'
         d.body
@@ -3229,7 +3255,10 @@ ImageExpand =
     post = Get.postFromNode @
     $.rm @
     delete post.file.fullImage
-    unless $.hasClass post.file.thumb, 'expanding'
+    # Images can error:
+    #  - before the image started loading.
+    #  - after the image started loading.
+    unless $.hasClass(post.file.thumb, 'expanding') or $.hasClass post.nodes.root, 'expanded-image'
       # Don't try to re-expend if it was already contracted.
       return
     ImageExpand.contract post
@@ -3452,7 +3481,7 @@ ExpandThread =
         #goddamit moot
         num = if thread.isSticky
           1
-        else switch g.BOARD
+        else switch g.BOARD.ID
           # XXX boards config
           when 'b', 'vg', 'q' then 3
           when 't' then 1
@@ -3500,7 +3529,7 @@ ExpandThread =
 
     # Enable 4chan features.
     if Conf['Enable 4chan\'s Extension']
-      $.unsafeWindow.Parser.parseThread thread.ID, 1, nodes.length
+      $.globalEval "Parser.parseThread(#{thread.ID}, 1, #{nodes.length})"
     else
       Fourchan.parseThread thread.ID, 1, nodes.length
 
@@ -3512,7 +3541,10 @@ ThreadExcerpt =
       name: 'Thread Excerpt'
       cb:   @node
   node: ->
-    d.title = Get.threadExcerpt @
+    d.title = if (excerpt = Get.threadExcerpt @).length > 80
+      "#{excerpt[...77]}..."
+    else
+      excerpt
 
 Unread =
   init: ->
@@ -3634,10 +3666,12 @@ Unread =
         else
           Favicon.default
 
+    <% if (type !== 'crx') { %>
     # `favicon.href = href` doesn't work on Firefox.
     # `favicon.href = href` isn't enough on Opera.
     # Opera won't always update the favicon if the href didn't change.
     $.add d.head, Favicon.el
+    <% } %>
 
 Favicon =
   init: ->
@@ -4004,9 +4038,9 @@ ThreadUpdater =
       $.queueTask ->
         # Enable 4chan features.
         threadID = ThreadUpdater.thread.ID
-        {length} = ThreadUpdater.root.children
+        {length} = $$ '.thread > .postContainer', ThreadUpdater.root
         if Conf['Enable 4chan\'s Extension']
-          $.unsafeWindow.Parser.parseThread threadID, -count
+          $.globalEval "Parser.parseThread(#{threadID}, #{-count})"
         else
           Fourchan.parseThread threadID, length - count, length
 
@@ -4045,6 +4079,7 @@ ThreadWatcher =
       $.delete 'AutoWatch'
 
   ready: ->
+    return unless Main.isThisPageLegit()
     ThreadWatcher.refresh()
     $.add d.body, ThreadWatcher.dialog
 
