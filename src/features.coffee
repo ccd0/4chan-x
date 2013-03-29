@@ -129,7 +129,7 @@ Header =
     $.set 'Header catalog links', @checked
 
   setBarVisibility: (hide) ->
-    @headerToggler.firstElementChild.checked = hide
+    Header.headerToggler.firstElementChild.checked = hide
     (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
   toggleBarVisibility: ->
     hide = if @nodeName is 'INPUT'
