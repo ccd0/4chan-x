@@ -8,10 +8,11 @@ Header:
  - The Header can be automatically hidden.
 
 Extension-related changes for Chrome and Opera:
- - Installing and updating is now painless on Chrome.
+ - Installing and updating is now pain-free on Chrome.
  - Settings will persist on different subdomains and protocols (HTTP/HTTPS).
  - Settings will persist in Incognito on Chrome.
  - Clearing your cookies won't erase your settings anymore.
+ - Fixed Chrome's install warning saying that 4chan X would run on all web sites.
 
 Egocentrism:
  - `(You)` will be added to quotes linking to your posts.
