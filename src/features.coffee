@@ -212,6 +212,10 @@ Settings =
 
     $.get 'previousversion', null, (item) ->
       return if item['previousversion'] is g.VERSION
+      changelog = "<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md##{g.VERSION.replace(/\./g, '')}"
+      el = $.el 'span',
+        innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
+      new Notification 'info', span, 1 * $.MINUTE
       $.set 'lastupdate', Date.now()
       $.set 'previousversion', g.VERSION
       $.on d, '4chanXInitFinished', Settings.open unless item['previousversion']
