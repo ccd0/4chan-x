@@ -387,8 +387,6 @@ QR =
         $.on el, event.toLowerCase(), @[event]
 
       QR.posts.push @
-      # set values, or null, to avoid 'undefined' values in inputs
-      @com = null
       @spoiler = if prev and Conf['Remember Spoiler']
         prev.spoiler
       else
@@ -399,15 +397,14 @@ QR =
         @name = if prev
           prev.name
         else
-          persona.name or null
+          persona.name
         @email = if prev and !/^sage$/.test prev.email
           prev.email
         else
-          persona.email or null
-        @sub = if Conf['Remember Subject']
-          if prev then prev.sub else persona.sub
-        else
-          null
+          persona.email
+        if Conf['Remember Subject']
+          @sub = if prev then prev.sub else persona.sub
+        @select() if QR.selected is @ # load persona
         @unlock()
     rm: ->
       $.rm @nodes.el
@@ -444,7 +441,7 @@ QR =
       @nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
       # Load this post's values.
       for name in ['name', 'email', 'sub', 'com']
-        QR.nodes[name].value = @[name]
+        QR.nodes[name].value = @[name] or null
       @showFileData()
       QR.characterCount()
     save: (input) ->
