@@ -217,7 +217,7 @@ Settings =
       # and out of date extension on this device.
       prev = item['previousversion'].match(/\d+/g).map Number
       curr = g.VERSION.match(/\d+/g).map Number
-      return unless prev[0] >= curr[0] and prev[1] >= curr[1] and prev[2] >= curr[2]
+      return unless prev[0] <= curr[0] and prev[1] <= curr[1] and prev[2] <= curr[2]
 
       changelog = "<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md##{g.VERSION.replace(/\./g, '')}"
       el = $.el 'span',
