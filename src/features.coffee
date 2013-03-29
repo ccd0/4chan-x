@@ -3712,6 +3712,8 @@ Unread =
       else
         "(#{Unread.posts.length}) #{Unread.title}"
       <% if (type === 'crx') { %>
+      # XXX Chrome bug where it doesn't always update the tab title.
+      # crbug.com/124381
       title = d.title
       setTimeout ->
         d.title = ''
