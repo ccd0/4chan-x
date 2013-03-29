@@ -331,8 +331,7 @@ Settings =
       innerHTML: "<button>Hidden: #{hiddenNum}</button><span class=description>: Clear manually hidden threads and posts on /#{g.BOARD}/."
     $.on $('button', div), 'click', ->
       @textContent = 'Hidden: 0'
-      $.delete "hiddenThreads.#{g.BOARD}"
-      $.delete "hiddenPosts.#{g.BOARD}"
+      $.delete ["hiddenThreads.#{g.BOARD}", "hiddenPosts.#{g.BOARD}"]
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
   export: ->
     now  = Date.now()

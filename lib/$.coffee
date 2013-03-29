@@ -202,8 +202,8 @@ $.extend $,
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
 
 <% if (type === 'crx') { %>
-  delete: (key) ->
-    localStorage.removeItem g.NAMESPACE + key
+  delete: (keys) ->
+    chrome.storage.sync.remove keys
   get: (key, defaultVal) ->
     if val = localStorage.getItem g.NAMESPACE + key
       JSON.parse val
@@ -221,10 +221,14 @@ do ->
   # To access the storage object later, keep a reference
   # to the object.
   {scriptStorage} = opera
-  $.delete = (key) ->
-    key = g.NAMESPACE + key
-    localStorage.removeItem key
-    delete scriptStorage[key]
+  $.delete = (keys) ->
+    unless keys instanceof Array
+      keys = [keys]
+    for key in keys
+      key = g.NAMESPACE + key
+      localStorage.removeItem key
+      delete scriptStorage[key]
+    return
   $.get = (key, defaultVal) ->
     if val = scriptStorage[g.NAMESPACE + key]
       JSON.parse val
@@ -238,9 +242,13 @@ do ->
     scriptStorage[key] = val
 <% } else { %>
   delete: (key) ->
-    key = g.NAMESPACE + key
-    localStorage.removeItem key
-    GM_deleteValue key
+    unless keys instanceof Array
+      keys = [keys]
+    for key in keys
+      key = g.NAMESPACE + key
+      localStorage.removeItem key
+      GM_deleteValue key
+    return
   get: (key, defaultVal) ->
     if val = GM_getValue g.NAMESPACE + key
       JSON.parse val
