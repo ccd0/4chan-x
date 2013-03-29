@@ -60,7 +60,7 @@ a[href="javascript:;"] {
 #qp, #ihover,
 #updater, #thread-stats,
 #navlinks, #header,
-#qr, #watcher {
+#qr {
   position: fixed;
 }
 #overlay {
@@ -81,11 +81,14 @@ a[href="javascript:;"] {
 #qr {
   z-index: 30;
 }
-#watcher {
+#watcher:hover {
   z-index: 20;
 }
 #header {
   z-index: 10;
+}
+#watcher {
+  z-index: 5;
 }
 
 /* Header */
@@ -104,8 +107,8 @@ a[href="javascript:;"] {
   display: flex;
   padding: 3px 4px 4px;
   position: relative;
-  -webkit-transition: all .1s ease-in-out;
-  transition: all .1s ease-in-out;
+  -webkit-transition: all .1s .05s ease-in-out;
+  transition: all .1s .05s ease-in-out;
 }
 #board-list {
   -webkit-flex: 1;
@@ -251,6 +254,9 @@ a[href="javascript:;"] {
 .sections-list {
   -webkit-flex: 1;
   flex: 1;
+}
+.tab-selected {
+  font-weight: 700;
 }
 .section-container {
   -webkit-flex: 1;
@@ -421,7 +427,7 @@ a[href="javascript:;"] {
   max-height: 300px;
   max-width: 500px;
 }
-.qphl {
+.qphl > .post {
   outline: 2px solid rgba(216, 94, 49, .7);
 }
 
@@ -434,6 +440,9 @@ a[href="javascript:;"] {
 }
 .expanding {
   opacity: .5;
+}
+.expanded-image {
+  clear: both;
 }
 .expanded-image > .op > .file::after {
   content: '';
@@ -735,6 +744,11 @@ a[href="javascript:;"] {
 }
 #file-n-submit > #qr-file-spoiler {
   margin: 0 2px;
+}
+#file-n-submit input[type='submit'] {
+  min-width: 40px;
+  -webkit-order: 1;
+  order: 1;
 }
 #qr input[type='file'] {
   position: absolute;

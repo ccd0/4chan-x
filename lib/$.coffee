@@ -51,7 +51,7 @@ $.extend String::,
 $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)))
 
 $.extend $,
-  engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase()
+  engine: '<% if (type === 'crx') { %>webkit<% } else if (type === 'userjs') { %>presto<% } else { %>gecko<% } %>'
   id: (id) ->
     d.getElementById id
   ready: (fc) ->
@@ -226,19 +226,8 @@ $.extend $,
   globalEval: (code) ->
     script = $.el 'script',
       textContent: code
-    $.add d.head, script
+    $.add (d.head or doc), script
     $.rm script
-  # http://mths.be/unsafewindow
-  unsafeWindow:
-    if window.opera # Opera
-      window
-    else if unsafeWindow? # Firefox
-      unsafeWindow
-    else # Chrome
-      do ->
-        p = d.createElement 'p'
-        p.setAttribute 'onclick', 'return window'
-        p.onclick()
   bytesToString: (size) ->
     unit = 0 # Bytes
     while size >= 1024
@@ -255,11 +244,30 @@ $.extend $,
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
 
-if GM_deleteValue?
+<% if (type === 'crx') { %>
+  delete: (name) ->
+    localStorage.removeItem g.NAMESPACE + name
+  get: (name, defaultValue) ->
+    if value = localStorage.getItem g.NAMESPACE + name
+      JSON.parse value
+    else
+      defaultValue
+  set: (name, value) ->
+    localStorage.setItem g.NAMESPACE + name, JSON.stringify value
+<% } else if (type === 'userjs') { %>
+do ->
+  # http://www.opera.com/docs/userjs/specs/#scriptstorage
+  # http://www.opera.com/docs/userjs/using/#securepages
+  # The scriptStorage object is available only during
+  # the main User JavaScript thread, being therefore
+  # accessible only in the main body of the user script.
+  # To access the storage object later, keep a reference
+  # to the object.
+  {scriptStorage} = opera
   $.delete = (name) ->
-    GM_deleteValue g.NAMESPACE + name
+    delete scriptStorage[g.NAMESPACE + name]
   $.get = (name, defaultValue) ->
-    if value = GM_getValue g.NAMESPACE + name
+    if value = scriptStorage[g.NAMESPACE + name]
       JSON.parse value
     else
       defaultValue
@@ -268,37 +276,19 @@ if GM_deleteValue?
     value = JSON.stringify value
     # for `storage` events
     localStorage.setItem name, value
-    GM_setValue name, value
-else if window.opera
-  do ->
-    # http://www.opera.com/docs/userjs/specs/#scriptstorage
-    # http://www.opera.com/docs/userjs/using/#securepages
-    # >The scriptStorage object is available only during
-    # the main User JavaScript thread, being therefore
-    # accessible only in the main body of the user script.
-    # To access the storage object later, keep a reference
-    # to the object.
-    {scriptStorage} = opera
-    $.delete = (name) ->
-      delete scriptStorage[g.NAMESPACE + name]
-    $.get = (name, defaultValue) ->
-      if value = scriptStorage[g.NAMESPACE + name]
-        JSON.parse value
-      else
-        defaultValue
-    $.set = (name, value) ->
-      name  = g.NAMESPACE + name
-      value = JSON.stringify value
-      # for `storage` events
-      localStorage.setItem name, value
-      scriptStorage[name] = value
-else
-  $.delete = (name) ->
-    localStorage.removeItem g.NAMESPACE + name
-  $.get = (name, defaultValue) ->
-    if value = localStorage.getItem g.NAMESPACE + name
+    scriptStorage[name] = value
+<% } else { %>
+  delete: (name) ->
+    GM_deleteValue g.NAMESPACE + name
+  get: (name, defaultValue) ->
+    if value = GM_getValue g.NAMESPACE + name
       JSON.parse value
     else
       defaultValue
-  $.set = (name, value) ->
-    localStorage.setItem g.NAMESPACE + name, JSON.stringify value
+  set: (name, value) ->
+    name  = g.NAMESPACE + name
+    value = JSON.stringify value
+    # for `storage` events
+    localStorage.setItem name, value
+    GM_setValue name, value
+<% } %>

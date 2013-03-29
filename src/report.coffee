@@ -6,7 +6,7 @@ Report =
     form  = $ 'form'
     field = $.id 'recaptcha_response_field'
     $.on field, 'keydown', (e) ->
-      $.unsafeWindow.Recaptcha.reload 't' if e.keyCode is 8 and not field.value
+      $.globalEval 'Recaptcha.reload("t")' if e.keyCode is 8 and not field.value
     $.on form, 'submit', (e) ->
       e.preventDefault()
       response = field.value.trim()

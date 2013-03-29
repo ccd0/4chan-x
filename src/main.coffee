@@ -41,28 +41,28 @@ class Post
       backlinks: info.getElementsByClassName 'backlink'
 
     @info = {}
-    if subject        = $ '.subject',     info
+    if subject        = $ '.subject',      info
       @nodes.subject  = subject
       @info.subject   = subject.textContent
-    if name           = $ '.name',        info
+    if name           = $ '.name',         info
       @nodes.name     = name
       @info.name      = name.textContent
-    if email          = $ '.useremail',   info
+    if email          = $ '.useremail',    info
       @nodes.email    = email
       @info.email     = decodeURIComponent email.href[7..]
-    if tripcode       = $ '.postertrip',  info
+    if tripcode       = $ '.postertrip',   info
       @nodes.tripcode = tripcode
       @info.tripcode  = tripcode.textContent
-    if uniqueID       = $ '.posteruid',   info
+    if uniqueID       = $ '.posteruid',    info
       @nodes.uniqueID = uniqueID
       @info.uniqueID  = uniqueID.firstElementChild.textContent
-    if capcode        = $ '.capcode',     info
+    if capcode        = $ '.capcode.hand', info
       @nodes.capcode  = capcode
-      @info.capcode   = capcode.textContent
-    if flag           = $ '.countryFlag', info
+      @info.capcode   = capcode.textContent.replace '## ', ''
+    if flag           = $ '.countryFlag',  info
       @nodes.flag     = flag
       @info.flag      = flag.title
-    if date           = $ '.dateTime',    info
+    if date           = $ '.dateTime',     info
       @nodes.date     = date
       @info.date      = new Date date.dataset.utc * 1000
     if Conf['Quick Reply']
@@ -284,9 +284,6 @@ class Clone extends Post
 
 Main =
   init: ->
-    $.asap (-> d.documentElement), ->
-      doc = d.documentElement
-
     # flatten Config into Conf
     # and get saved or default values
     flatten = (parent, obj) ->
@@ -486,7 +483,9 @@ Main =
     Main.handleErrors errors if errors
 
   addCallback: (e) ->
-    obj   = e.detail
+    obj = e.detail
+    unless typeof obj.callback.name is 'string'
+      throw new Error "Invalid callback name: #{obj.callback.name}"
     Klass = if obj.type is 'Post'
       Post
     else
@@ -504,7 +503,7 @@ Main =
       return
 
     div = $.el 'div',
-      innerHTML: "#{errors.length} errors occured. [<a href=javascript:;>show</a>]"
+      innerHTML: "#{errors.length} errors occurred. [<a href=javascript:;>show</a>]"
     $.on div.lastElementChild, 'click', ->
       if @textContent is 'show'
         @textContent = 'hide'
@@ -533,7 +532,9 @@ Main =
   isThisPageLegit: ->
     # 404 error page or similar.
     unless 'thisPageIsLegit' of Main
-      Main.thisPageIsLegit = !$('link[href*="favicon-status.ico"]', d.head) and d.title isnt '4chan - Temporarily Offline'
+      Main.thisPageIsLegit = location.hostname is 'boards.4chan.org' and
+        !$('link[href*="favicon-status.ico"]', d.head) and
+        d.title not in ['4chan - Temporarily Offline', '4chan - Error']
     Main.thisPageIsLegit
 
   css: """

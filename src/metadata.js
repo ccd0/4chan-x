@@ -16,7 +16,7 @@
 // @grant        GM_deleteValue
 // @grant        GM_openInTab
 // @run-at       document-start
-// @updateURL    <%= meta.repo %>raw/<%= meta.mainBranch %>/<%= name %>.meta.js
-// @downloadURL  <%= meta.repo %>raw/<%= meta.mainBranch %>/<%= name %>.user.js
-// @icon         data:image/gif;base64,<%= grunt.file.read('img/icon.gif', {encoding: 'base64'}) %>
+// @updateURL    <%= meta.page %>builds/<%= name %>.meta.js
+// @downloadURL  <%= meta.page %>builds/<%= name %>.user.js
+// @icon         data:image/png;base64,<%= grunt.file.read('img/icon48.png', {encoding: 'base64'}) %>
 // ==/UserScript==

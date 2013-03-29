@@ -5,7 +5,7 @@
   "meta": {
     "name": "4chan X Beta",
     "repo": "https://github.com/MayhemYDG/4chan-x/",
-    "page": "http://mayhemydg.github.com/4chan-x/",
+    "page": "https://4chan-x.just-believe.in/",
     "mainBranch": "v3",
     "matches": [
       "*://api.4chan.org/*",
@@ -15,12 +15,14 @@
     ]
   },
   "devDependencies": {
-    "grunt": "~0.4.0",
+    "grunt": "~0.4.1",
     "grunt-bump": "~0.0.0",
     "grunt-contrib-clean": "~0.4.0",
-    "grunt-contrib-coffee": "~0.6.2",
-    "grunt-contrib-concat": "~0.1.0",
-    "grunt-contrib-watch": "~0.3.0",
+    "grunt-contrib-coffee": "~0.6.4",
+    "grunt-contrib-compress": "~0.4.5",
+    "grunt-contrib-concat": "~0.1.3",
+    "grunt-contrib-copy": "~0.4.0",
+    "grunt-contrib-watch": "~0.3.1",
     "grunt-exec": "~0.4.0"
   },
   "repository": {
