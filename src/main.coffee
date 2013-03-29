@@ -495,7 +495,7 @@ Main =
     Klass::callbacks.push obj.callback
 
   checkUpdate: ->
-    return unless Main.isThisPageLegit()
+    return unless Conf['Check for Updates'] and Main.isThisPageLegit()
     # Check for updates after:
     #  - 6 hours since the last update on Opera because it lacks auto-updating.
     #  - 7 days since the last update on Chrome/Firefox.

@@ -11,7 +11,7 @@ Config =
       'Comment Expansion':            [true,  'Add buttons to expand too long comments.']
       'Thread Expansion':             [true,  'Add buttons to expand threads.']
       'Index Navigation':             [false, 'Add buttons to navigate between threads.']
-      'Check for Updates':            [true,  'Check for updated versions of <%= meta.name %>.']
+      'Check for Updates':            [true,  'Notify when updated versions of <%= meta.name %> are available.']
     'Filtering':
       'Anonymize':                    [false, 'Make everyone Anonymous.']
       'Filter':                       [true,  'Self-moderation placebo.']
