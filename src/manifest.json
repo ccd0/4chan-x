@@ -14,6 +14,5 @@
     "run_at": "document_start"
   }],
   "homepage_url": "<%= meta.page %>",
-  "incognito": "spanning",
   "minimum_chrome_version": "25"
 }

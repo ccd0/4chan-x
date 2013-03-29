@@ -202,15 +202,15 @@ $.extend $,
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
 
 <% if (type === 'crx') { %>
-  delete: (name) ->
-    localStorage.removeItem g.NAMESPACE + name
-  get: (name, defaultValue) ->
-    if value = localStorage.getItem g.NAMESPACE + name
-      JSON.parse value
+  delete: (key) ->
+    localStorage.removeItem g.NAMESPACE + key
+  get: (key, defaultVal) ->
+    if val = localStorage.getItem g.NAMESPACE + key
+      JSON.parse val
     else
-      defaultValue
-  set: (name, value) ->
-    localStorage.setItem g.NAMESPACE + name, JSON.stringify value
+      defaultVal
+  set: (key, val) ->
+    localStorage.setItem g.NAMESPACE + key, JSON.stringify val
 <% } else if (type === 'userjs') { %>
 do ->
   # http://www.opera.com/docs/userjs/specs/#scriptstorage
@@ -221,31 +221,35 @@ do ->
   # To access the storage object later, keep a reference
   # to the object.
   {scriptStorage} = opera
-  $.delete = (name) ->
-    delete scriptStorage[g.NAMESPACE + name]
-  $.get = (name, defaultValue) ->
-    if value = scriptStorage[g.NAMESPACE + name]
-      JSON.parse value
+  $.delete = (key) ->
+    key = g.NAMESPACE + key
+    localStorage.removeItem key
+    delete scriptStorage[key]
+  $.get = (key, defaultVal) ->
+    if val = scriptStorage[g.NAMESPACE + key]
+      JSON.parse val
     else
-      defaultValue
-  $.set = (name, value) ->
-    name  = g.NAMESPACE + name
-    value = JSON.stringify value
+      defaultVal
+  $.set = (key, val) ->
+    key = g.NAMESPACE + key
+    val = JSON.stringify val
     # for `storage` events
-    localStorage.setItem name, value
-    scriptStorage[name] = value
+    localStorage.setItem key, val
+    scriptStorage[key] = val
 <% } else { %>
-  delete: (name) ->
-    GM_deleteValue g.NAMESPACE + name
-  get: (name, defaultValue) ->
-    if value = GM_getValue g.NAMESPACE + name
-      JSON.parse value
+  delete: (key) ->
+    key = g.NAMESPACE + key
+    localStorage.removeItem key
+    GM_deleteValue key
+  get: (key, defaultVal) ->
+    if val = GM_getValue g.NAMESPACE + key
+      JSON.parse val
     else
-      defaultValue
-  set: (name, value) ->
-    name  = g.NAMESPACE + name
-    value = JSON.stringify value
+      defaultVal
+  set: (key, val) ->
+    key = g.NAMESPACE + key
+    val = JSON.stringify val
     # for `storage` events
-    localStorage.setItem name, value
-    GM_setValue name, value
+    localStorage.setItem key, val
+    GM_setValue key, val
 <% } %>
