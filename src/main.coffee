@@ -281,21 +281,24 @@ class Clone extends Post
 
 
 Main =
-  init: ->
-    # flatten Config into Conf
-    # and get saved or default values
-    flatten = (parent, obj) ->
-      if obj instanceof Array
-        Conf[parent] = obj[0]
-      else if typeof obj is 'object'
-        for key, val of obj
-          flatten key, val
-      else # string or number
-        Conf[parent] = obj
+  init: (items) ->
+    unless items
+      # flatten Config into Conf
+      # and get saved or default values
+      flatten = (parent, obj) ->
+        if obj instanceof Array
+          Conf[parent] = obj[0]
+        else if typeof obj is 'object'
+          for key, val of obj
+            flatten key, val
+        else # string or number
+          Conf[parent] = obj
+        return
+      flatten null, Config
+      $.get Conf, Main.init
       return
-    flatten null, Config
-    for key, val of Conf
-      Conf[key] = $.get key, val
+
+    Conf = items
 
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
@@ -499,20 +502,24 @@ Main =
     # After that, check for updates every day if we still haven't updated.
     now  = Date.now()
     freq = <% if (type === 'userjs') { %>6 * $.HOUR<% } else { %>7 * $.DAY<% } %>
-    if $.get('lastupdate', 0) > now - freq or $.get('lastchecked', 0) > now - $.DAY
-      return
-    $.ajax '<%= meta.page %><%= meta.buildsPath %>version', onload: ->
-      return unless @status is 200
-      version = @response
-      return unless /^\d\.\d+\.\d+$/.test version
-      if g.VERSION is version
-        # Don't check for updates too frequently if there wasn't one in a 'long' time.
-        $.set 'lastupdate', now
+    items =
+      lastupdate:  0
+      lastchecked: 0
+    $.get items, (items) ->
+      if items.lastupdate > now - freq or items.lastchecked > now - $.DAY
         return
-      $.set 'lastchecked', now
-      el = $.el 'span',
-        innerHTML: "Update: <%= meta.name %> v#{version} is out, get it <a href=<%= meta.page %> target=_blank>here</a>."
-      new Notification 'info', el, 2 * $.MINUTE
+      $.ajax '<%= meta.page %><%= meta.buildsPath %>version', onload: ->
+        return unless @status is 200
+        version = @response
+        return unless /^\d\.\d+\.\d+$/.test version
+        if g.VERSION is version
+          # Don't check for updates too frequently if there wasn't one in a 'long' time.
+          $.set 'lastupdate', now
+          return
+        $.set 'lastchecked', now
+        el = $.el 'span',
+          innerHTML: "Update: <%= meta.name %> v#{version} is out, get it <a href=<%= meta.page %> target=_blank>here</a>."
+        new Notification 'info', el, 2 * $.MINUTE
 
   handleErrors: (errors) ->
     unless 'length' of errors

@@ -210,10 +210,11 @@ Settings =
       order: 110
       open: -> Conf['Enable 4chan\'s Extension']
 
-    if (prevVersion = $.get 'previousversion', null) isnt g.VERSION
+    $.get 'previousversion', null, (item) ->
+      return if item['previousversion'] is g.VERSION
       $.set 'lastupdate', Date.now()
       $.set 'previousversion', g.VERSION
-      $.on d, '4chanXInitFinished', Settings.open unless prevVersion
+      $.on d, '4chanXInitFinished', Settings.open unless item['previousversion']
 
     Settings.addSection 'Main',     Settings.main
     Settings.addSection 'Filter',   Settings.filter
@@ -309,37 +310,54 @@ Settings =
     $.on $('.import', section), 'click',  Settings.import
     $.on $('input',   section), 'change', Settings.onImport
 
+    items  = {}
+    inputs = {}
     for key, obj of Config.main
       fs = $.el 'fieldset',
         innerHTML: "<legend>#{key}</legend>"
       for key, arr of obj
-        checked = if $.get(key, Conf[key]) then 'checked' else ''
         description = arr[1]
         div = $.el 'div',
-          innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
-        $.on $('input', div), 'change', $.cb.checked
+          innerHTML: "<label><input type=checkbox name=\"#{key}\">#{key}</label><span class=description>: #{description}</span>"
+        input = $ 'input', div
+        $.on input, 'change', $.cb.checked
+        items[key]  = Conf[key]
+        inputs[key] = input
         $.add fs, div
       $.add section, fs
 
-    hiddenNum = 0
-    for ID, thread of ThreadHiding.getHiddenThreads().threads
-      hiddenNum++
-    for ID, thread of ReplyHiding.getHiddenPosts().threads
-      for ID, post of thread
-        hiddenNum++
+    $.get items, (items) ->
+      for key, val of items
+        inputs[key].checked = val
+      return
+
     div = $.el 'div',
-      innerHTML: "<button>Hidden: #{hiddenNum}</button><span class=description>: Clear manually hidden threads and posts on /#{g.BOARD}/."
-    $.on $('button', div), 'click', ->
+      innerHTML: "<button></button><span class=description>: Clear manually hidden threads and posts on /#{g.BOARD}/."
+    button = $ 'button', div
+    hiddenNum = 0
+    ThreadHiding.getHiddenThreads (hiddenThreads) ->
+      for ID, thread of hiddenThreads.threads
+        hiddenNum++
+      button.textContent = "Hidden: #{hiddenNum}"
+    ReplyHiding.getHiddenPosts (hiddenPosts) ->
+      for ID, thread of hiddenPosts.threads
+        for ID, post of thread
+          hiddenNum++
+      button.textContent = "Hidden: #{hiddenNum}"
+    $.on button, 'click', ->
       @textContent = 'Hidden: 0'
       $.delete ["hiddenThreads.#{g.BOARD}", "hiddenPosts.#{g.BOARD}"]
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
-  export: ->
-    now  = Date.now()
-    data =
-      version: g.VERSION
-      date: now
-      Conf: Conf
-      WatchedThreads: $.get('WatchedThreads', {})
+  export: (now, data) ->
+    unless typeof now is 'number'
+      now  = Date.now()
+      data =
+        version: g.VERSION
+        date: now
+        Conf: Conf
+      $.get 'WatchedThreads', {}, (item) ->
+        data.WatchedThreads = item.WatchedThreads
+        Settings.export now, data
     a = $.el 'a',
       className: 'warning'
       textContent: 'Save me!'
@@ -478,8 +496,9 @@ Settings =
       ta = $.el 'textarea',
         name: name
         className: 'field'
-        value: $.get name, Conf[name]
         spellcheck: false
+      $.get name, Conf[name], (item) ->
+        ta.value = item[name]
       $.on ta, 'change', $.cb.value
       $.add div, ta
       return
@@ -529,7 +548,8 @@ Settings =
       <textarea name=sauces class=field spellcheck=false></textarea>
     """
     sauce = $ 'textarea', section
-    sauce.value = $.get 'sauces', Conf['sauces']
+    $.get 'sauces', Conf['sauces'], (item) ->
+      sauce.value = item['sauces']
     $.on sauce, 'change', $.cb.value
 
   rice: (section) ->
@@ -592,17 +612,25 @@ Settings =
         <textarea name=usercss class=field spellcheck=false #{if Conf['Custom CSS'] then '' else 'disabled'}></textarea>
       </fieldset>
     """
+    items = {}
+    inputs = {}
     for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
       input = $ "[name=#{name}]", section
-      input.value = $.get name, Conf[name]
+      items[name]  = Conf[name]
+      inputs[name] = input
       event = if name in ['favicon', 'usercss']
         'change'
       else
         'input'
       $.on input, event, $.cb.value
-      unless name in ['usercss']
-        $.on input, event, Settings[name]
-        Settings[name].call input
+    $.get items, (items) ->
+      for key, val of items
+        input = inputs[key]
+        input.value = val
+        unless key in ['usercss']
+          $.on input, event, Settings[key]
+          Settings[key].call input
+      return
     $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
     $.on $.id('apply-css'), 'click', Settings.usercss
   boardnav: ->
@@ -652,17 +680,23 @@ Settings =
         <tr><th>Actions</th><th>Keybinds</th></tr>
       </tbody></table>
     """
-    tbody = $ 'tbody', section
+    tbody  = $ 'tbody', section
+    items  = {}
+    inputs = {}
     for key, arr of Config.hotkeys
       tr = $.el 'tr',
         innerHTML: "<td>#{arr[1]}</td><td><input class=field></td>"
       input = $ 'input', tr
-      input.name  = key
-      input.value = $.get key, Conf[key]
+      input.name = key
       input.spellcheck = false
+      items[key]  = Conf[key]
+      inputs[key] = input
       $.on input, 'keydown', Settings.keybind
       $.add tbody, tr
-    return
+    $.get items, (items) ->
+      for key, val of items
+        inputs[key].value = val
+      return
   keybind: (e) ->
     return if e.keyCode is 9 # tab
     e.preventDefault()
@@ -990,13 +1024,14 @@ Filter =
         re += ';op:yes'
 
       # Add a new line before the regexp unless the text is empty.
-      save = $.get type, ''
-      save =
-        if save
-          "#{save}\n#{re}"
-        else
-          re
-      $.set type, save
+      $.get type, '', (item) ->
+        save = item[type]
+        save =
+          if save
+            "#{save}\n#{re}"
+          else
+            re
+        $.set type, save
 
       # Open the settings and display & focus the relevant filter textarea.
       Settings.open 'Filter'
@@ -1026,8 +1061,10 @@ ThreadHiding =
     return unless Conf['Thread Hiding']
     $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
 
-  getHiddenThreads: ->
-    ThreadHiding.hiddenThreads = $.get "hiddenThreads.#{g.BOARD}", threads: {}
+  getHiddenThreads: (cb) ->
+    $.get "hiddenThreads.#{g.BOARD}", threads: {}, (item) ->
+      ThreadHiding.hiddenThreads = item["hiddenThreads.#{g.BOARD}"]
+      cb ThreadHiding.hiddenThreads if cb
 
   syncFromCatalog: ->
     # Sync hidden threads from the catalog into the index.
@@ -1093,16 +1130,16 @@ ThreadHiding =
 
   saveHiddenState: (thread, makeStub) ->
     # Get fresh hidden threads.
-    hiddenThreads        = ThreadHiding.getHiddenThreads()
-    hiddenThreadsCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
-    if thread.isHidden
-      hiddenThreads.threads[thread] = {makeStub}
-      hiddenThreadsCatalog[thread]  = true
-    else
-      delete hiddenThreads.threads[thread]
-      delete hiddenThreadsCatalog[thread]
-    $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
-    localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify hiddenThreadsCatalog
+    ThreadHiding.getHiddenThreads (hiddenThreads) ->
+      hiddenThreadsCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
+      if thread.isHidden
+        hiddenThreads.threads[thread] = {makeStub}
+        hiddenThreadsCatalog[thread]  = true
+      else
+        delete hiddenThreads.threads[thread]
+        delete hiddenThreadsCatalog[thread]
+      $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
+      localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify hiddenThreadsCatalog
 
   toggle: (thread) ->
     unless thread instanceof Thread
@@ -1173,8 +1210,10 @@ ReplyHiding =
     return unless Conf['Reply Hiding']
     $.replace $('.sideArrows', @nodes.root), ReplyHiding.makeButton @, 'hide'
 
-  getHiddenPosts: ->
-    ReplyHiding.hiddenPosts = $.get "hiddenPosts.#{g.BOARD}", threads: {}
+  getHiddenPosts: (cb) ->
+    $.get "hiddenPosts.#{g.BOARD}", threads: {}, (item) ->
+      ReplyHiding.hiddenPosts = item["hiddenPosts.#{g.BOARD}"]
+      cb ReplyHiding.hiddenPosts if cb
 
   menu:
     init: ->
@@ -1230,7 +1269,7 @@ ReplyHiding =
         open: (post) ->
           if !post.isReply or post.isClone
             return false
-          thread = ReplyHiding.getHiddenPosts().threads[post.thread]
+          thread = ReplyHiding.hiddenPosts.threads[post.thread]
           unless post.isHidden or data = thread?[post]
             return false
           ReplyHiding.menu.post = post
@@ -1258,7 +1297,7 @@ ReplyHiding =
       thisPost = $('input[name=thisPost]', parent).checked
       replies  = $('input[name=replies]',  parent).checked
       {post}   = ReplyHiding.menu
-      thread   = ReplyHiding.getHiddenPosts().threads[post.thread]
+      thread   = ReplyHiding.hiddenPosts.threads[post.thread]
       data     = thread?[post]
       if thisPost
         ReplyHiding.show post, replies
@@ -1281,20 +1320,20 @@ ReplyHiding =
 
   saveHiddenState: (post, isHiding, thisPost, makeStub, hideRecursively) ->
     # Get fresh hidden posts.
-    hiddenPosts = ReplyHiding.getHiddenPosts()
-    if isHiding
-      unless thread = hiddenPosts.threads[post.thread]
-        thread = hiddenPosts.threads[post.thread] = {}
-      thread[post] =
-        thisPost: thisPost isnt false # undefined -> true
-        makeStub: makeStub
-        hideRecursively: hideRecursively
-    else
-      thread = hiddenPosts.threads[post.thread]
-      delete thread[post]
-      unless Object.keys(thread).length
-        delete hiddenPosts.threads[post.thread]
-    $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
+    ReplyHiding.getHiddenPosts (hiddenPosts) ->
+      if isHiding
+        unless thread = hiddenPosts.threads[post.thread]
+          thread = hiddenPosts.threads[post.thread] = {}
+        thread[post] =
+          thisPost: thisPost isnt false # undefined -> true
+          makeStub: makeStub
+          hideRecursively: hideRecursively
+      else
+        thread = hiddenPosts.threads[post.thread]
+        delete thread[post]
+        unless Object.keys(thread).length
+          delete hiddenPosts.threads[post.thread]
+      $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
 
   toggle: ->
     post = Get.postFromNode @
@@ -2461,8 +2500,13 @@ Get =
     Get.insert post, root, context
 
 Misc = # super semantic
-  clearThreads: (key) ->
-    return unless data = $.get key
+  clearThreads: (key, data) ->
+    unless data
+      $.get key, null, (item) ->
+        data = item[key]
+        return unless data
+        Misc.clearThreads key, data
+      return
 
     unless Object.keys(data.threads).length
       $.delete key
@@ -3571,20 +3615,21 @@ Unread =
 
   node: ->
     Unread.thread          = @
-    Unread.lastReadPost    = $.get("lastReadPosts.#{@board}", threads: {}).threads[@] or 0
     Unread.posts           = []
     Unread.postsQuotingYou = []
     Unread.title           = d.title
     posts = []
     for ID, post of @posts
       posts.push post if post.isReply
-    Unread.addPosts posts
-    if Unread.posts.length
-      # Scroll to before the first unread post.
-      $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView false
-    else if posts.length
-      # Scroll to the last read post.
-      posts[posts.length - 1].nodes.root.scrollIntoView()
+    $.get "lastReadPosts.#{@board}", threads: {}, (item) =>
+      Unread.lastReadPost = item["lastReadPosts.#{@board}"].threads[@] or 0
+      Unread.addPosts posts
+      if Unread.posts.length
+        # Scroll to before the first unread post.
+        $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView false
+      else if posts.length
+        # Scroll to the last read post.
+        posts[posts.length - 1].nodes.root.scrollIntoView()
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
@@ -3636,11 +3681,11 @@ Unread =
     Unread.postsQuotingYou = Unread.postsQuotingYou[i..]
     Unread.update() if e
 
-  saveLastReadPost: $.debounce($.SECOND, ->
-    lastReadPosts = $.get "lastReadPosts.#{Unread.thread.board}", threads: {}
-    lastReadPosts.threads[Unread.thread] = Unread.lastReadPost
-    $.set "lastReadPosts.#{Unread.thread.board}", lastReadPosts
-  )
+  saveLastReadPost: $.debounce $.SECOND, ->
+    $.get "lastReadPosts.#{Unread.thread.board}", threads: {}, (item) ->
+      lastReadPosts = item["lastReadPosts.#{Unread.thread.board}"]
+      lastReadPosts.threads[Unread.thread] = Unread.lastReadPost
+      $.set "lastReadPosts.#{Unread.thread.board}", lastReadPosts
 
   setLine: (force) ->
     return unless d.hidden or force is true
@@ -4068,7 +4113,9 @@ ThreadWatcher =
       className: 'favicon'
     $.on favicon, 'click', ThreadWatcher.cb.toggle
     $.before $('input', @OP.nodes.post), favicon
-    if g.VIEW is 'thread' and @ID is $.get 'AutoWatch', 0
+    return if g.VIEW isnt 'thread'
+    $.get 'AutoWatch', 0, (item) =>
+      return if item['AutoWatch'] isnt @ID
       ThreadWatcher.watch @
       $.delete 'AutoWatch'
 
@@ -4078,7 +4125,10 @@ ThreadWatcher =
     $.add d.body, ThreadWatcher.dialog
 
   refresh: (watched) ->
-    watched or= $.get 'WatchedThreads', {}
+    unless watched
+      $.get 'WatchedThreads', {}, (item) ->
+        ThreadWatcher.refresh item['WatchedThreads']
+      return
     nodes = [$('.move', ThreadWatcher.dialog)]
     for board of watched
       for id, props of watched[board]
@@ -4126,17 +4176,19 @@ ThreadWatcher =
       ThreadWatcher.unwatch thread.board, thread.ID
 
   unwatch: (board, threadID) ->
-    watched = $.get 'WatchedThreads', {}
-    delete watched[board][threadID]
-    delete watched[board] unless Object.keys(watched[board]).length
-    ThreadWatcher.refresh watched
-    $.set 'WatchedThreads', watched
+    $.get 'WatchedThreads', {}, (item) ->
+      watched = item['WatchedThreads']
+      delete watched[board][threadID]
+      delete watched[board] unless Object.keys(watched[board]).length
+      ThreadWatcher.refresh watched
+      $.set 'WatchedThreads', watched
 
   watch: (thread) ->
-    watched = $.get 'WatchedThreads', {}
-    watched[thread.board] or= {}
-    watched[thread.board][thread] =
-      href: "/#{thread.board}/res/#{thread}"
-      textContent: Get.threadExcerpt thread
-    ThreadWatcher.refresh watched
-    $.set 'WatchedThreads', watched
+    $.get 'WatchedThreads', {}, (item) ->
+      watched = item['WatchedThreads']
+      watched[thread.board] or= {}
+      watched[thread.board][thread] =
+        href: "/#{thread.board}/res/#{thread}"
+        textContent: Get.threadExcerpt thread
+      ThreadWatcher.refresh watched
+      $.set 'WatchedThreads', watched

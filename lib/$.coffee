@@ -200,15 +200,21 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
-
+  item: (key, val) ->
+    item = {}
+    item[key] = val
+    item
 <% if (type === 'crx') { %>
+  # https://developer.chrome.com/extensions/storage.html
   delete: (keys) ->
     chrome.storage.sync.remove keys
-  get: (key, defaultVal) ->
-    if val = localStorage.getItem g.NAMESPACE + key
-      JSON.parse val
+  get: (key, val, cb) ->
+    if arguments.length is 2
+      items = key
+      cb = val
     else
-      defaultVal
+      items = $.item key, val
+    chrome.storage.sync.get items, cb
   set: (key, val) ->
     item = {}
     item[key] = val
@@ -231,11 +237,17 @@ do ->
       localStorage.removeItem key
       delete scriptStorage[key]
     return
-  $.get = (key, defaultVal) ->
-    if val = scriptStorage[g.NAMESPACE + key]
-      JSON.parse val
+  $.get = (key, val, cb) ->
+    if arguments.length is 2
+      items = key
+      cb = val
     else
-      defaultVal
+      items = $.item key, val
+    $.queueTask ->
+      for key of items
+        if val = scriptStorage[g.NAMESPACE + key]
+          items[key] = JSON.parse val
+      cb items
   $.set = (key, val) ->
     key = g.NAMESPACE + key
     val = JSON.stringify val
@@ -243,6 +255,7 @@ do ->
     localStorage.setItem key, val
     scriptStorage[key] = val
 <% } else { %>
+  # http://wiki.greasespot.net/Main_Page
   delete: (key) ->
     unless keys instanceof Array
       keys = [keys]
@@ -251,11 +264,17 @@ do ->
       localStorage.removeItem key
       GM_deleteValue key
     return
-  get: (key, defaultVal) ->
-    if val = GM_getValue g.NAMESPACE + key
-      JSON.parse val
+  get: (key, val, cb) ->
+    if arguments.length is 2
+      items = key
+      cb = val
     else
-      defaultVal
+      items = $.item key, val
+    $.queueTask ->
+      for key of items
+        if val = GM_getValue g.NAMESPACE + key
+          items[key] = JSON.parse val
+      cb items
   set: (key, val) ->
     key = g.NAMESPACE + key
     val = JSON.stringify val

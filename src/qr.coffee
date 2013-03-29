@@ -92,7 +92,8 @@ QR =
     if yourPosts
       QR.yourPosts = yourPosts
       return
-    QR.yourPosts = $.get "yourPosts.#{g.BOARD}", threads: {}
+    $.get "yourPosts.#{g.BOARD}", threads: {}, (item) ->
+      QR.syncYourPosts item["yourPosts.#{g.BOARD}"]
     $.sync "yourPosts.#{g.BOARD}", QR.syncYourPosts
 
   error: (err) ->
@@ -145,10 +146,11 @@ QR =
         sage: if board is 'q' then 600 else 60
         file: if board is 'q' then 300 else 30
         post: if board is 'q' then 60  else 30
-      QR.cooldown.cooldowns = $.get "cooldown.#{board}", {}
       QR.cooldown.upSpd = 0
       QR.cooldown.upSpdAccuracy = .5
-      QR.cooldown.start()
+      $.get "cooldown.#{board}", {}, (item) ->
+        QR.cooldown.cooldowns = item["cooldown.#{board}"]
+        QR.cooldown.start()
       $.sync "cooldown.#{board}", QR.cooldown.sync
     start: ->
       return if QR.cooldown.isCounting
@@ -358,15 +360,6 @@ QR =
   posts: []
   post: class
     constructor: ->
-      # set values, or null, to avoid 'undefined' values in inputs
-      prev     = QR.posts[QR.posts.length - 1]
-      persona  = $.get 'QR.persona', {}
-      @name    = if prev then prev.name else persona.name or null
-      @email   = if prev and !/^sage$/.test prev.email then prev.email   else persona.email or null
-      @sub     = if prev and Conf['Remember Subject']  then prev.sub     else if Conf['Remember Subject'] then persona.sub else null
-      @spoiler = if prev and Conf['Remember Spoiler']  then prev.spoiler else false
-      @com = null
-
       el = $.el 'a',
         className: 'qr-preview'
         draggable: true
@@ -393,8 +386,29 @@ QR =
       for event in ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop']
         $.on el, event.toLowerCase(), @[event]
 
-      @unlock()
       QR.posts.push @
+      # set values, or null, to avoid 'undefined' values in inputs
+      @com = null
+      @spoiler = if prev and Conf['Remember Spoiler']
+        prev.spoiler
+      else
+        false
+      prev = QR.posts[QR.posts.length - 1]
+      $.get 'QR.persona', {}, (item) =>
+        persona = item['QR.persona']
+        @name = if prev
+          prev.name
+        else
+          persona.name or null
+        @email = if prev and !/^sage$/.test prev.email
+          prev.email
+        else
+          persona.email or null
+        @sub = if Conf['Remember Subject']
+          if prev then prev.sub else persona.sub
+        else
+          null
+        @unlock()
     rm: ->
       $.rm @nodes.el
       index = QR.posts.indexOf @
@@ -606,8 +620,9 @@ QR =
 
       $.on imgContainer, 'click',   @reload.bind @
       $.on input,        'keydown', @keydown.bind @
+      $.get 'captchas', [], (item) =>
+        @sync item['captchas']
       $.sync 'captchas', @sync
-      @sync $.get 'captchas', []
       # start with an uncached captcha
       @reload()
 
@@ -960,12 +975,13 @@ QR =
     QR.cleanNotifications()
     QR.notifications.push new Notification 'success', h1.textContent, 5
 
-    persona = $.get 'QR.persona', {}
-    persona =
-      name:  post.name
-      email: if /^sage$/.test post.email then persona.email else post.email
-      sub:   if Conf['Remember Subject'] then post.sub      else null
-    $.set 'QR.persona', persona
+    $.get 'QR.persona', {}, (item) ->
+      persona = item['QR.persona']
+      persona =
+        name:  post.name
+        email: if /^sage$/.test post.email then persona.email else post.email
+        sub:   if Conf['Remember Subject'] then post.sub      else null
+      $.set 'QR.persona', persona
 
     [_, threadID, postID] = h1.nextSibling.textContent.match /thread:(\d+),no:(\d+)/
     postID   = +postID
