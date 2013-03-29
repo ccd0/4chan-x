@@ -216,9 +216,7 @@ $.extend $,
       items = $.item key, val
     chrome.storage.sync.get items, cb
   set: (key, val) ->
-    item = {}
-    item[key] = val
-    chrome.storage.sync.set item
+    chrome.storage.sync.set $.item key, val
 <% } else if (type === 'userjs') { %>
 do ->
   # http://www.opera.com/docs/userjs/specs/#scriptstorage
