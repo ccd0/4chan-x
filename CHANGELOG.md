@@ -7,6 +7,12 @@ Header:
  - The board list can be customized.
  - The Header can be automatically hidden.
 
+Extension-related changes for Chrome and Opera:
+ - Installing and updating is now painless on Chrome.
+ - Settings will persist on different subdomains and protocols (HTTP/HTTPS).
+ - Settings will persist in Incognito on Chrome.
+ - Clearing your cookies won't erase your settings anymore.
+
 Egocentrism:
  - `(You)` will be added to quotes linking to your posts.
  - The Unread tab icon will indicate new unread posts quoting you with an exclamation mark.
