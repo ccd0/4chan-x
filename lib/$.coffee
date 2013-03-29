@@ -210,7 +210,9 @@ $.extend $,
     else
       defaultVal
   set: (key, val) ->
-    localStorage.setItem g.NAMESPACE + key, JSON.stringify val
+    item = {}
+    item[key] = val
+    chrome.storage.sync.set item
 <% } else if (type === 'userjs') { %>
 do ->
   # http://www.opera.com/docs/userjs/specs/#scriptstorage
