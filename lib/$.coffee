@@ -205,10 +205,10 @@ $.extend $,
       return
     (key, cb) -> $.syncing[key] = cb
 <% } else { %>
-    window.addEventListener 'storage', ((e) ->
+    window.addEventListener 'storage', (e) ->
       if cb = $.syncing[e.key]
         cb JSON.parse e.newValue
-    ), false
+    , false
     (key, cb) -> $.syncing[g.NAMESPACE + key] = cb
 <% } %>
   item: (key, val) ->
