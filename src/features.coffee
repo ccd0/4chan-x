@@ -1049,7 +1049,6 @@ ThreadHiding =
     return if g.VIEW isnt 'index' or !Conf['Thread Hiding'] and !Conf['Thread Hiding Link']
 
     Misc.clearThreads "hiddenThreads.#{g.BOARD}"
-    @getHiddenThreads()
     @syncFromCatalog()
     Thread::callbacks.push
       name: 'Thread Hiding'
@@ -1068,23 +1067,24 @@ ThreadHiding =
 
   syncFromCatalog: ->
     # Sync hidden threads from the catalog into the index.
-    hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
-    {threads} = ThreadHiding.hiddenThreads
+    ThreadHiding.getHiddenThreads (hiddenThreads) ->
+      {threads} = hiddenThreads
+      hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
 
-    # Add threads that were hidden in the catalog.
-    for threadID of hiddenThreadsOnCatalog
-      continue if threadID of threads
-      threads[threadID] = {}
+      # Add threads that were hidden in the catalog.
+      for threadID of hiddenThreadsOnCatalog
+        continue if threadID of threads
+        threads[threadID] = {}
 
-    # Remove threads that were un-hidden in the catalog.
-    for threadID of threads
-      continue if threadID of threads
-      delete threads[threadID]
+      # Remove threads that were un-hidden in the catalog.
+      for threadID of threads
+        continue if threadID of threads
+        delete threads[threadID]
 
-    if Object.keys(threads).length
-      $.set "hiddenThreads.#{g.BOARD}", ThreadHiding.hiddenThreads
-    else
-      $.delete "hiddenThreads.#{g.BOARD}"
+      if Object.keys(threads).length
+        $.set "hiddenThreads.#{g.BOARD}", ThreadHiding.hiddenThreads
+      else
+        $.delete "hiddenThreads.#{g.BOARD}"
 
   menu:
     init: ->
