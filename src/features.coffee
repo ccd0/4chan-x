@@ -184,9 +184,10 @@ Settings =
       $.asap (-> $.id 'boardNavMobile'), ->
         $.prepend $.id('navtopright'), [$.tn(' ['), link, $.tn('] ')]
 
-    unless $.get 'previousversion'
+    if (prevVersion = $.get 'previousversion', null) isnt g.VERSION
+      $.set 'lastupdate', Date.now()
       $.set 'previousversion', g.VERSION
-      $.on d, '4chanXInitFinished', Settings.open
+      $.on d, '4chanXInitFinished', Settings.open unless prevVersion
 
     Settings.addSection 'Main',     Settings.main
     Settings.addSection 'Filter',   Settings.filter
@@ -304,8 +305,7 @@ Settings =
       innerHTML: "<button>Hidden: #{hiddenNum}</button><span class=description>: Clear manually hidden threads and posts on /#{g.BOARD}/."
     $.on $('button', div), 'click', ->
       @textContent = 'Hidden: 0'
-      $.delete "hiddenThreads.#{g.BOARD}"
-      $.delete "hiddenPosts.#{g.BOARD}"
+      $.delete ["hiddenThreads.#{g.BOARD}", "hiddenPosts.#{g.BOARD}"]
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
   export: ->
     now  = Date.now()
@@ -3555,7 +3555,6 @@ Unread =
     Unread.lastReadPost    = $.get("lastReadPosts.#{@board}", threads: {}).threads[@] or 0
     Unread.posts           = []
     Unread.postsQuotingYou = []
-    Unread.titleEl         = $ 'title', d.head
     Unread.title           = d.title
     posts = []
     for ID, post of @posts
@@ -3637,17 +3636,10 @@ Unread =
     count = Unread.posts.length
 
     if Conf['Unread Count']
-      prefix = if count
-        "(#{count})"
+      d.title = if g.DEAD
+        "(#{Unread.posts.length}) /#{g.BOARD}/ - 404"
       else
-        ''
-      # XXX Chrome bug where it doesn't always update the tab title.
-      # crbug.com/16650
-      # crbug.com/124381
-      Unread.titleEl.textContent = if g.DEAD
-        "#{prefix} /#{g.BOARD}/ - 404"
-      else
-        "#{prefix} #{Unread.title}"
+        "(#{Unread.posts.length}) #{Unread.title}"
 
     return unless Conf['Unread Tab Icon']
 
@@ -3667,10 +3659,12 @@ Unread =
         else
           Favicon.default
 
+    <% if (type !== 'crx') { %>
     # `favicon.href = href` doesn't work on Firefox.
     # `favicon.href = href` isn't enough on Opera.
     # Opera won't always update the favicon if the href didn't change.
     $.add d.head, Favicon.el
+    <% } %>
 
 Favicon =
   init: ->

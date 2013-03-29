@@ -50,8 +50,8 @@ module.exports = (grunt) ->
           process:
             data: pkg
         files:
-          'builds/<%= pkg.name %>.meta.js': 'src/metadata.js'
-          'builds/<%= pkg.name %>.user.js': [
+          '<%= pkg.name %>.meta.js': 'src/metadata.js'
+          '<%= pkg.name %>.user.js': [
             'src/metadata.js'
             'src/banner.js'
             'tmp/script.js'

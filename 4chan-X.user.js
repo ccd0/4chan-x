@@ -15,13 +15,13 @@
 // @grant        GM_deleteValue
 // @grant        GM_openInTab
 // @run-at       document-start
-// @updateURL    https://github.com/MayhemYDG/4chan-x/raw/v3/4chan-X.meta.js
-// @downloadURL  https://github.com/MayhemYDG/4chan-x/raw/v3/4chan-X.user.js
-// @icon         data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAIALAAAAAAQABAAAAIxlI+pq+D9DAgUoFkPDlbs7lGiI2bSVnKglnJMOL6omczxVZK3dH/41AG6Lh7i6qUoAAA7
+// @updateURL    https://4chan-x.just-believe.in/builds/4chan-X.meta.js
+// @downloadURL  https://4chan-x.just-believe.in/builds/4chan-X.user.js
+// @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-03-20
- * http://mayhemydg.github.com/4chan-x/
+/* 4chan X Beta - Version 3.0.0 - 2013-03-28
+ * https://4chan-x.just-believe.in/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
@@ -54,16 +54,15 @@
         'Catalog Links': [true, 'Turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
         'Enable 4chan\'s Extension': [false, 'Compatibility between 4chan X Beta and 4chan\'s inline extension is NOT guaranteed.'],
-        'Custom Board Navigation': [true, 'Disable this to always display the full board list.'],
+        'Custom Board Navigation': [true, 'Show custom links instead of the full board list.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
-        'Time Formatting': [true, 'Localize and format timestamps arbitrarily.'],
+        'Time Formatting': [true, 'Localize and format timestamps.'],
         'Relative Post Dates': [false, 'Display dates like "3 minutes ago". Tooltip shows the timestamp.'],
         'File Info Formatting': [true, 'Reformat the file information.'],
-        'Comment Expansion': [true, 'Can expand too long comments.'],
-        'Thread Expansion': [true, 'Can expand threads to view all replies.'],
-        'Index Navigation': [false, 'Navigate to previous / next thread.'],
-        'Custom CSS': [false, 'Apply custom CSS to 4chan.'],
+        'Comment Expansion': [true, 'Add buttons to expand long comments.'],
+        'Thread Expansion': [true, 'Add buttons to expand threads.'],
+        'Index Navigation': [false, 'Add buttons to navigate between threads.'],
         'Check for Updates': [true, 'Check for updated versions of 4chan X Beta.']
       },
       'Linkification': {
@@ -72,13 +71,13 @@
         'Link Title': [true, 'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud']
       },
       'Filtering': {
-        'Anonymize': [false, 'Turn everyone Anonymous.'],
+        'Anonymize': [false, 'Make everyone Anonymous.'],
         'Filter': [true, 'Self-moderation placebo.'],
         'Recursive Hiding': [true, 'Hide replies of hidden posts, recursively.'],
-        'Thread Hiding': [true, 'Hide entire threads.'],
-        'Reply Hiding': [true, 'Hide single replies.'],
-        'Hiding Buttons': [true, 'Make buttons to hide threads / replies, in addition to menu links.'],
-        'Stubs': [true, 'Make stubs of hidden threads / replies.']
+        'Thread Hiding': [true, 'Add buttons to hide entire threads.'],
+        'Reply Hiding': [true, 'Add buttons to hide single replies.'],
+        'Hiding Buttons': [true, 'Add buttons to hide threads / replies, in addition to menu links.'],
+        'Stubs': [true, 'Show stubs of hidden threads / replies.']
       },
       'Images': {
         'Image Expansion': [true, 'Expand images.'],
@@ -90,7 +89,9 @@
         'Replace JPG': [false, 'Replace jpgs.']
       },
       'Menu': {
-        'Menu': [true, 'Add a drop-down menu in posts.'],
+        'Menu': [true, 'Add a drop-down menu to posts.'],
+        'Thread Hiding Link': [true, 'Add a link to hide entire threads.'],
+        'Reply Hiding Link': [true, 'Add a link to hide single replies.'],
         'Report Link': [true, 'Add a report link to the menu.'],
         'Delete Link': [true, 'Add post and image deletion links to the menu.'],
         'Download Link': [true, 'Add a download with original filename link to the menu. Chrome-only currently.'],
@@ -116,7 +117,7 @@
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
         'Hide Original Post Form': [true, 'Hide the normal post form.']
       },
-      'Quote links': {
+      'Quote Links': {
         'Quote Backlinks': [true, 'Add quote backlinks.'],
         'OP Backlinks': [false, 'Add backlinks to the OP.'],
         'Quote Inlining': [true, 'Inline quoted post on click.'],
@@ -149,7 +150,8 @@
       filesize: '',
       MD5: ''
     },
-    sauces: "http://iqdb.org/?url=%turl\nhttp://www.google.com/searchbyimage?image_url=%turl\n#http://tineye.com/search?url=%turl\n#http://saucenao.com/search.php?db=999&url=%turl\n#http://3d.iqdb.org/?url=%turl\n#http://regex.info/exif.cgi?imgurl=%url\n# uploaders:\n#http://imgur.com/upload?url=%url;text:Upload to imgur\n#http://omploader.org/upload?url1=%url;text:Upload to omploader\n# \"View Same\" in archives:\n#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz\n#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/\n#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/",
+    sauces: "http://iqdb.org/?url=%TURL\nhttps://www.google.com/searchbyimage?image_url=%TURL\n#//tineye.com/search?url=%TURL\n#http://saucenao.com/search.php?url=%TURL\n#http://3d.iqdb.org/?url=%TURL\n#http://regex.info/exif.cgi?imgurl=%URL\n# uploaders:\n#http://imgur.com/upload?url=%URL;text:Upload to imgur\n#http://ompldr.org/upload?url1=%URL;text:Upload to ompldr\n# \"View Same\" in archives:\n#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz\n#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/\n#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/",
+    'Custom CSS': false,
     'Header auto-hide': false,
     'Header catalog links': false,
     boardnav: '[ toggle-all ] [current-title]',
@@ -199,17 +201,13 @@
     }
   };
 
-  if (!/^(boards|images|sys)\.4chan\.org$/.test(location.hostname)) {
-    return;
-  }
-
   Conf = {};
 
   c = console;
 
   d = document;
 
-  doc = null;
+  doc = d.documentElement;
 
   g = {
     VERSION: '3.0.0',
@@ -724,7 +722,7 @@
   $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)));
 
   $.extend($, {
-    engine: /WebKit|Presto|Gecko/.exec(navigator.userAgent)[0].toLowerCase(),
+    engine: 'gecko',
     id: function(id) {
       return d.getElementById(id);
     },
@@ -1018,16 +1016,9 @@
       script = $.el('script', {
         textContent: code
       });
-      $.add(d.head, script);
+      $.add(d.head || doc, script);
       return $.rm(script);
     },
-    unsafeWindow: window.opera ? window : typeof unsafeWindow !== "undefined" && unsafeWindow !== null ? unsafeWindow : (function() {
-      var p;
-
-      p = d.createElement('p');
-      p.setAttribute('onclick', 'return window');
-      return p.onclick();
-    })(),
     bytesToString: function(size) {
       var unit;
 
@@ -1038,69 +1029,36 @@
       }
       size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
       return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
+    },
+    "delete": function(key) {
+      var keys, _i, _len;
+
+      if (!(keys instanceof Array)) {
+        keys = [keys];
+      }
+      for (_i = 0, _len = keys.length; _i < _len; _i++) {
+        key = keys[_i];
+        key = g.NAMESPACE + key;
+        localStorage.removeItem(key);
+        GM_deleteValue(key);
+      }
+    },
+    get: function(key, defaultVal) {
+      var val;
+
+      if (val = GM_getValue(g.NAMESPACE + key)) {
+        return JSON.parse(val);
+      } else {
+        return defaultVal;
+      }
+    },
+    set: function(key, val) {
+      key = g.NAMESPACE + key;
+      val = JSON.stringify(val);
+      localStorage.setItem(key, val);
+      return GM_setValue(key, val);
     }
   });
-
-  if (typeof GM_deleteValue !== "undefined" && GM_deleteValue !== null) {
-    $["delete"] = function(name) {
-      return GM_deleteValue(g.NAMESPACE + name);
-    };
-    $.get = function(name, defaultValue) {
-      var value;
-
-      if (value = GM_getValue(g.NAMESPACE + name)) {
-        return JSON.parse(value);
-      } else {
-        return defaultValue;
-      }
-    };
-    $.set = function(name, value) {
-      name = g.NAMESPACE + name;
-      value = JSON.stringify(value);
-      localStorage.setItem(name, value);
-      return GM_setValue(name, value);
-    };
-  } else if (window.opera) {
-    (function() {
-      var scriptStorage;
-
-      scriptStorage = opera.scriptStorage;
-      $["delete"] = function(name) {
-        return delete scriptStorage[g.NAMESPACE + name];
-      };
-      $.get = function(name, defaultValue) {
-        var value;
-
-        if (value = scriptStorage[g.NAMESPACE + name]) {
-          return JSON.parse(value);
-        } else {
-          return defaultValue;
-        }
-      };
-      return $.set = function(name, value) {
-        name = g.NAMESPACE + name;
-        value = JSON.stringify(value);
-        localStorage.setItem(name, value);
-        return scriptStorage[name] = value;
-      };
-    })();
-  } else {
-    $["delete"] = function(name) {
-      return localStorage.removeItem(g.NAMESPACE + name);
-    };
-    $.get = function(name, defaultValue) {
-      var value;
-
-      if (value = localStorage.getItem(g.NAMESPACE + name)) {
-        return JSON.parse(value);
-      } else {
-        return defaultValue;
-      }
-    };
-    $.set = function(name, value) {
-      return localStorage.setItem(g.NAMESPACE + name, JSON.stringify(value));
-    };
-  }
 
   Polyfill = {
     init: function() {
@@ -1168,7 +1126,7 @@
           innerHTML: '<a href=javascript:;> - </a>'
         });
         $.on(btn, 'click', Header.toggleBoardList);
-        return $.prepend(fullBoardList, btn);
+        return $.add(fullBoardList, btn);
       } else {
         $.rm($('#custom-board-list', nav));
         return fullBoardList.hidden = false;
@@ -1182,8 +1140,8 @@
       if (!text) {
         return;
       }
-      as = $$('#full-board-list a', Header.nav);
-      nodes = text.match(/[\w@]+(-(all|title|full|text:"[^"]+"))?|[^\w@]+/g).map(function(t) {
+      as = $$('#full-board-list a', Header.nav).slice(0, -2);
+      nodes = text.match(/[\w@]+(-(all|title|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map(function(t) {
         var a, board, m, _i, _len;
 
         if (/^[^\w@]/.test(t)) {
@@ -1203,12 +1161,21 @@
           a = as[_i];
           if (a.textContent === board) {
             a = a.cloneNode(true);
-            if (/-title$/.test(t)) {
+            if (/-title/.test(t)) {
               a.textContent = a.title;
-            } else if (/-full$/.test(t)) {
+            } else if (/-full/.test(t)) {
               a.textContent = "/" + board + "/ - " + a.title;
-            } else if (m = t.match(/-text:"(.+)"$/)) {
-              a.textContent = m[1];
+            } else if (/-(index|catalog|text)/.test(t)) {
+              if (m = t.match(/-(index|catalog)/)) {
+                a.setAttribute('data-only', m[1]);
+                a.href = "//boards.4chan.org/" + board + "/";
+                if (m[1] === 'catalog') {
+                  a.href += 'catalog';
+                }
+              }
+              if (m = t.match(/-text:"(.+)"/)) {
+                a.textContent = m[1];
+              }
             } else if (board === '@') {
               $.addClass(a, 'navSmall');
             }
@@ -1345,7 +1312,7 @@
 
   Settings = {
     init: function() {
-      var link, settings;
+      var link, prevVersion, settings;
 
       link = $.el('a', {
         className: 'settings-link',
@@ -1365,9 +1332,12 @@
           return $.prepend($.id('navtopright'), [$.tn(' ['), link, $.tn('] ')]);
         });
       });
-      if (!$.get('previousversion')) {
+      if ((prevVersion = $.get('previousversion', null)) !== g.VERSION) {
+        $.set('lastupdate', Date.now());
         $.set('previousversion', g.VERSION);
-        $.on(d, '4chanXInitFinished', Settings.open);
+        if (!prevVersion) {
+          $.on(d, '4chanXInitFinished', Settings.open);
+        }
       }
       Settings.addSection('Main', Settings.main);
       Settings.addSection('Filter', Settings.filter);
@@ -1395,7 +1365,7 @@
         return;
       }
       $.event('CloseMenu');
-      html = "<div id=fourchanx-settings class=dialog>\n  <nav>\n    <div class=sections-list></div>\n    <div class=credits>\n      <a href='http://mayhemydg.github.com/4chan-x/' target=_blank>4chan X Beta</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/CHANGELOG.md#" + (g.VERSION.replace(/\./g, '')) + "' target=_blank>" + g.VERSION + "</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |\n      <a href=javascript:; class=close title=Close>×</a>\n    </div>\n  </nav>\n  <hr>\n  <div class=section-container><section></section></div>\n</div>";
+      html = "<div id=fourchanx-settings class=dialog>\n  <nav>\n    <div class=sections-list></div>\n    <div class=credits>\n      <a href='https://4chan-x.just-believe.in/' target=_blank>4chan X Beta</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/CHANGELOG.md#" + (g.VERSION.replace(/\./g, '')) + "' target=_blank>" + g.VERSION + "</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |\n      <a href=javascript:; class=close title=Close>×</a>\n    </div>\n  </nav>\n  <hr>\n  <div class=section-container><section></section></div>\n</div>";
       Settings.dialog = overlay = $.el('div', {
         id: 'overlay',
         innerHTML: html
@@ -1405,6 +1375,7 @@
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         section = _ref[_i];
         link = $.el('a', {
+          className: "tab-" + section.hyphenatedTitle,
           textContent: section.title,
           href: 'javascript:;'
         });
@@ -1415,12 +1386,8 @@
         }
       }
       links.pop();
-      if (sectionToOpen) {
-        sectionToOpen.click();
-      } else {
-        links[0].click();
-      }
       $.add($('.sections-list', overlay), links);
+      (sectionToOpen ? sectionToOpen : links[0]).click();
       $.on($('.close', overlay), 'click', Settings.close);
       $.on(overlay, 'click', Settings.close);
       $.on(overlay.firstElementChild, 'click', function(e) {
@@ -1441,22 +1408,28 @@
     },
     sections: [],
     addSection: function(title, open) {
-      var _ref;
+      var hyphenatedTitle, _ref;
 
       if (typeof title !== 'string') {
         _ref = title.detail, title = _ref.title, open = _ref.open;
       }
+      hyphenatedTitle = title.toLowerCase().replace(/\s+/g, '-');
       return Settings.sections.push({
         title: title,
+        hyphenatedTitle: hyphenatedTitle,
         open: open
       });
     },
     openSection: function() {
-      var section;
+      var section, selected;
 
+      if (selected = $('.tab-selected', Settings.dialog)) {
+        $.rmClass(selected, 'tab-selected');
+      }
+      $.addClass($(".tab-" + this.hyphenatedTitle, Settings.dialog), 'tab-selected');
       section = $('section', Settings.dialog);
       section.innerHTML = null;
-      section.className = "section-" + (this.title.toLowerCase().replace(/\s+/g, '-'));
+      section.className = "section-" + this.hyphenatedTitle;
       this.open(section, g);
       return section.scrollTop = 0;
     },
@@ -1480,7 +1453,7 @@
           div = $.el('div', {
             innerHTML: "<label><input type=checkbox name=\"" + key + "\" " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
           });
-          $.on($('input', div), 'click', $.cb.checked);
+          $.on($('input', div), 'change', $.cb.checked);
           $.add(fs, div);
         }
         $.add(section, fs);
@@ -1504,8 +1477,7 @@
       });
       $.on($('button', div), 'click', function() {
         this.textContent = 'Hidden: 0';
-        $["delete"]("hiddenThreads." + g.BOARD);
-        return $["delete"]("hiddenPosts." + g.BOARD);
+        return $["delete"](["hiddenThreads." + g.BOARD, "hiddenPosts." + g.BOARD]);
       });
       return $.after($('input[name="Stubs"]', section).parentNode.parentNode, div);
     },
@@ -1523,7 +1495,7 @@
         className: 'warning',
         textContent: 'Save me!',
         download: "4chan X Beta v" + g.VERSION + "-" + now + ".json",
-        href: "data:application/json;base64," + (btoa(unescape(encodeURIComponent(JSON.stringify(data))))),
+        href: "data:application/json;base64," + (btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))))),
         target: '_blank'
       });
       if ($.engine !== 'gecko') {
@@ -1687,7 +1659,7 @@
         $.add(div, ta);
         return;
       }
-      return div.innerHTML = "<div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Filter</code> is disabled.</div>\n<p>\n  Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>\n  Lines starting with a <code>#</code> will be ignored.<br>\n  For example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.<br>\n  MD5 filtering uses exact string matching, not regular expressions.\n</p>\n<ul>You can use these settings with each regular expression, separate them with semicolons:\n  <li>\n    Per boards, separate them with commas. It is global if not specified.<br>\n    For example: <code>boards:a,jp;</code>.\n  </li>\n  <li>\n    Filter OPs only along with their threads (`only`), replies only (`no`), or both (`yes`, this is default).<br>\n    For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.\n  </li>\n  <li>\n    Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>\n    For example: <code>stub:yes;</code> or <code>stub:no;</code>.\n  </li>\n  <li>\n    Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>\n    For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.\n  </li>\n  <li>\n    Highlighted OPs will have their threads put on top of board pages by default.<br>\n    For example: <code>top:yes;</code> or <code>top:no;</code>.\n  </li>\n</ul>";
+      return div.innerHTML = "<div class=warning " + (Conf['Filter'] ? 'hidden' : '') + "><code>Filter</code> is disabled.</div>\n<p>\n  Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>\n  Lines starting with a <code>#</code> will be ignored.<br>\n  For example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.<br>\n  MD5 filtering uses exact string matching, not regular expressions.\n</p>\n<ul>You can use these settings with each regular expression, separate them with semicolons:\n  <li>\n    Per boards, separate them with commas. It is global if not specified.<br>\n    For example: <code>boards:a,jp;</code>.\n  </li>\n  <li>\n    Filter OPs only along with their threads (`only`), replies only (`no`), or both (`yes`, this is default).<br>\n    For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.\n  </li>\n  <li>\n    Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>\n    For example: <code>stub:yes;</code> or <code>stub:no;</code>.\n  </li>\n  <li>\n    Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>\n    For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.\n  </li>\n  <li>\n    Highlighted OPs will have their threads put on top of board pages by default.<br>\n    For example: <code>top:yes;</code> or <code>top:no;</code>.\n  </li>\n</ul>";
     },
     sauce: function(section) {
       var sauce;
@@ -1700,7 +1672,7 @@
     rice: function(section) {
       var event, input, name, _i, _len, _ref;
 
-      section.innerHTML = "<fieldset>\n  <legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Tab Icon <span class=warning " + (Conf['Unread Tab Icon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend>Custom CSS <span class=warning " + (Conf['Custom CSS'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false></textarea>\n</fieldset>";
+      section.innerHTML = "<fieldset>\n  <legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Index-only link: <code>board-index</code></div>\n  <div>Catalog-only link: <code>board-catalog</code></div>\n  <div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Tab Icon <span class=warning " + (Conf['Unread Tab Icon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea>\n</fieldset>";
       _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         name = _ref[_i];
@@ -1713,6 +1685,7 @@
           Settings[name].call(input);
         }
       }
+      $.on($('input[name="Custom CSS"]', section), 'change', Settings.togglecss);
       return $.on($.id('apply-css'), 'click', Settings.usercss);
     },
     boardnav: function() {
@@ -1750,14 +1723,18 @@
       if (g.VIEW === 'thread' && Conf['Unread Tab Icon']) {
         Unread.update();
       }
-      return this.nextElementSibling.innerHTML = "<img src=" + Favicon.unreadSFW + "> <img src=" + Favicon.unreadNSFW + "> <img src=" + Favicon.unreadDead + ">";
+      return this.nextElementSibling.innerHTML = "<img src=" + Favicon["default"] + ">\n<img src=" + Favicon.unreadSFW + ">\n<img src=" + Favicon.unreadNSFW + ">\n<img src=" + Favicon.unreadDead + ">";
+    },
+    togglecss: function() {
+      if ($('textarea', this.parentNode.parentNode).disabled = !this.checked) {
+        CustomCSS.rmStyle();
+      } else {
+        CustomCSS.addStyle();
+      }
+      return $.cb.checked.call(this);
     },
     usercss: function() {
-      if (Conf['Custom CSS']) {
-        return CustomCSS.update();
-      } else {
-        return CustomCSS.rmStyle();
-      }
+      return CustomCSS.update();
     },
     keybinds: function(section) {
       var arr, input, key, tbody, tr, _ref;
@@ -1803,12 +1780,14 @@
       }
       board = g.BOARD.ID;
       if (board === 'g') {
+        $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML);\n}, false);");
         Post.prototype.callbacks.push({
           name: 'Parse /g/ code',
           cb: this.code
         });
       }
       if (board === 'sci') {
+        $.globalEval("window.addEventListener('jsmath', function(e) {\n  if (jsMath.loaded) {\n    // process one post\n    jsMath.ProcessBeforeShowing(e.detail);\n  } else {\n    // load jsMath and process whole document\n    jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);\n    jsMath.Autoload.LoadJsMath();\n  }\n}, false);");
         return Post.prototype.callbacks.push({
           name: 'Parse /sci/ math',
           cb: this.math
@@ -1824,23 +1803,14 @@
       _ref = $$('.prettyprint', this.nodes.comment);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         pre = _ref[_i];
-        pre.innerHTML = $.unsafeWindow.prettyPrintOne(pre.innerHTML);
+        $.event('prettyprint', pre, window);
       }
     },
     math: function() {
-      var jsMath;
-
       if (this.isClone || !$('.math', this.nodes.comment)) {
         return;
       }
-      jsMath = $.unsafeWindow.jsMath;
-      if (jsMath) {
-        if (jsMath.loaded) {
-          return jsMath.ProcessBeforeShowing(this.nodes.post);
-        } else {
-          return $.globalEval("jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);\njsMath.Autoload.LoadJsMath();");
-        }
-      }
+      return $.event('jsmath', this.nodes.post, window);
     },
     parseThread: function(threadID, offset, limit) {
       return $.event('4chanParsingDone', {
@@ -2159,7 +2129,7 @@
 
   ThreadHiding = {
     init: function() {
-      if (g.VIEW !== 'index' || !Conf['Thread Hiding']) {
+      if (g.VIEW !== 'index' || !Conf['Thread Hiding'] && !Conf['Thread Hiding Link']) {
         return;
       }
       Misc.clearThreads("hiddenThreads." + g.BOARD);
@@ -2176,7 +2146,7 @@
       if (data = ThreadHiding.hiddenThreads.threads[this]) {
         ThreadHiding.hide(this, data.makeStub);
       }
-      if (!Conf['Hiding Buttons']) {
+      if (!Conf['Thread Hiding']) {
         return;
       }
       return $.prepend(this.OP.nodes.root, ThreadHiding.makeButton(this, 'hide'));
@@ -2213,7 +2183,7 @@
       init: function() {
         var apply, div, makeStub;
 
-        if (g.VIEW !== 'index' || !Conf['Menu'] || !Conf['Thread Hiding']) {
+        if (g.VIEW !== 'index' || !Conf['Menu'] || !Conf['Thread Hiding Link']) {
           return;
         }
         div = $.el('div', {
@@ -2349,7 +2319,7 @@
 
   ReplyHiding = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Reply Hiding']) {
+      if (g.VIEW === 'catalog' || !Conf['Reply Hiding'] && !Conf['Reply Hiding Link']) {
         return;
       }
       Misc.clearThreads("hiddenPosts." + g.BOARD);
@@ -2375,7 +2345,7 @@
           }
         }
       }
-      if (!Conf['Hiding Buttons']) {
+      if (!Conf['Reply Hiding']) {
         return;
       }
       return $.replace($('.sideArrows', this.nodes.root), ReplyHiding.makeButton(this, 'hide'));
@@ -2389,7 +2359,7 @@
       init: function() {
         var apply, div, makeStub, replies, thisPost;
 
-        if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Reply Hiding']) {
+        if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Reply Hiding Link']) {
           return;
         }
         div = $.el('div', {
@@ -2699,7 +2669,7 @@
 
   QuoteStrikeThrough = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Reply Hiding'] && !Conf['Filter']) {
+      if (g.VIEW === 'catalog' || !Conf['Reply Hiding'] && !Conf['Reply Hiding Link'] && !Conf['Filter']) {
         return;
       }
       return Post.prototype.callbacks.push({
@@ -3112,7 +3082,7 @@
           Settings.open();
           break;
         case Conf['Close']:
-          if ($.id('settings')) {
+          if ($.id('fourchanx-settings')) {
             Settings.close();
           } else if ((notifications = $$('.notification')).length) {
             for (_i = 0, _len = notifications.length; _i < _len; _i++) {
@@ -3349,8 +3319,7 @@
       }
     },
     focus: function(post) {
-      $.addClass(post, 'highlight');
-      return $('a[title="Highlight this post"]', post).focus();
+      return $.addClass(post, 'highlight');
     }
   };
 
@@ -3979,15 +3948,15 @@
       if (data.lastChecked > Date.now() - 12 * $.HOUR) {
         return;
       }
-      return $.ajax("//api.4chan.org/" + g.BOARD + "/catalog.json", {
+      return $.ajax("//api.4chan.org/" + g.BOARD + "/threads.json", {
         onload: function() {
-          var obj, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+          var page, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
 
           threads = {};
           _ref = JSON.parse(this.response);
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            obj = _ref[_i];
-            _ref1 = obj.threads;
+            page = _ref[_i];
+            _ref1 = page.threads;
             for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
               thread = _ref1[_j];
               if (thread.no in data.threads) {
@@ -4246,7 +4215,7 @@
         posts.pop();
         for (_i = 0, _len = posts.length; _i < _len; _i++) {
           post = posts[_i];
-          $.addClass(post.nodes.post, 'qphl');
+          $.addClass(post.nodes.root, 'qphl');
         }
       }
       quoterID = $.x('ancestor::*[@id][1]', this).id.match(/\d+$/)[0];
@@ -4281,7 +4250,7 @@
       _ref = [post].concat(post.clones);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         post = _ref[_i];
-        $.rmClass(post.nodes.post, 'qphl');
+        $.rmClass(post.nodes.root, 'qphl');
       }
     }
   };
@@ -4828,16 +4797,13 @@
       link = link.replace(/%(T?URL|MD5|board)/ig, function(parameter) {
         switch (parameter) {
           case '%TURL':
-          case '%turl':
-            return "' + post.file.thumbURL + '";
+            return "' + encodeURIComponent(post.file.thumbURL) + '";
           case '%URL':
-          case '%url':
-            return "' + post.file.URL + '";
+            return "' + encodeURIComponent(post.file.URL) + '";
           case '%MD5':
-          case '%md5':
             return "' + encodeURIComponent(post.file.MD5) + '";
           case '%board':
-            return "' + post.board + '";
+            return "' + encodeURIComponent(post.board) + '";
           default:
             return parameter;
         }
@@ -4985,7 +4951,7 @@
       rect = thumb.parentNode.getBoundingClientRect();
       if (rect.bottom > 0) {
         postRect = post.nodes.root.getBoundingClientRect();
-        headRect = Header.bar.getBoundingClientRect();
+        headRect = Header.toggle.getBoundingClientRect();
         top = postRect.top - headRect.top - headRect.height - 2;
         root = $.engine === 'webkit' ? d.body : doc;
         if (rect.top < 0) {
@@ -5052,7 +5018,7 @@
       post = Get.postFromNode(this);
       $.rm(this);
       delete post.file.fullImage;
-      if (!$.hasClass(post.file.thumb, 'expanding')) {
+      if (!($.hasClass(post.file.thumb, 'expanding') || $.hasClass(post.nodes.root, 'expanded-image'))) {
         return;
       }
       ImageExpand.contract(post);
@@ -5404,7 +5370,7 @@
             if (thread.isSticky) {
               return 1;
             } else {
-              switch (g.BOARD) {
+              switch (g.BOARD.ID) {
                 case 'b':
                 case 'vg':
                 case 'q':
@@ -5470,7 +5436,7 @@
       Main.callbackNodes(Post, posts);
       $.after(a, nodes);
       if (Conf['Enable 4chan\'s Extension']) {
-        return $.unsafeWindow.Parser.parseThread(thread.ID, 1, nodes.length);
+        return $.globalEval("Parser.parseThread(" + thread.ID + ", 1, " + nodes.length + ")");
       } else {
         return Fourchan.parseThread(thread.ID, 1, nodes.length);
       }
@@ -5488,7 +5454,9 @@
       });
     },
     node: function() {
-      return d.title = Get.threadExcerpt(this);
+      var excerpt;
+
+      return d.title = (excerpt = Get.threadExcerpt(this)).length > 80 ? "" + excerpt.slice(0, 77) + "..." : excerpt;
     }
   };
 
@@ -5676,35 +5644,35 @@
       switch (Conf['favicon']) {
         case 'ferongr':
           Favicon.unreadDead = 'data:image/gif;base64,R0lGODlhEAAQAOMHAOgLAnMFAL8AAOgLAukMA/+AgP+rq////////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==';
-          Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABEklEQVQ4y6VSu07DQBCcXftQhFNQpEC0UEQpLfEXNFTQ8g0WFY0lyuRPUqRJT8kf5BucCFFhiiAyFNZad+aOFJy0utXN7HMO+OcRc5pCaf55e5AYOcbJDZjvDwFxmCTJaQpl5UDWNblcknXNyoF+taMcI2zHGbfjLCD4wYZHg1/Q2ZA0TG48wyU2HwA8nmi/qGN434lvQwVWI2GpYKngaiRM6ppKUCpoB8CrvecpqXwpm0I5a4MRzqKVK4dfMtn7dDLpO7gSMOjAKi+eauwe7qOjFe9vvd96HapP2i2ek7u5zQWn0tnU+6PBDjYf31g74OYLgAsTrPfEJ7vOL1WQ3IF/+9hdBl4reCF/yGhBMRlT2A8kHPXzaYhj2AAAAABJRU5ErkJggg==';
+          Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAS1BMVEUAAAAAAAAAAAAJAAASAAAZAQAaAQAiAQAkAQAoFBQyAgAzAgA1AgA4AABBAgBXAwBzBQCEBgGvCAG/AADoCwLpDAP/gID/q6v///9zILr8AAAAA3RSTlMAx9dmesIgAAAAc0lEQVQY02WPgQ6DIBBDmTqnbE70Cvb/v3TAnW5OSKB9ybXg3HUBOAmEEH4FQtrSn4gxi+xjVC9SVOEiSvbZI8zSV+/Xo7icnryZ15GObMxvtWUkB/VJW57kHU7fUcHStm8FkncGE/mwP6CGzq/eauHwvT7sWQt3gZLW+AAAAABJRU5ErkJggg==';
           Favicon.unreadSFW = 'data:image/gif;base64,R0lGODlhEAAQAOMHAADX8QBwfgC2zADX8QDY8nnl8qLp8v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==';
-          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABIUlEQVQ4y6WTv0rDUBTGf7d0aREUNwcHK1UEoQgFwQdwEZw617FrQB2yZHXqA3TNIyh0KN19hJQM2Tq4KEmhHY9Dktub9F47+MEll/N9554/H4F/QulblIq+Xx0qq9qiaWpiMq4K6484NVEqeIH4y0zCr0z8ZSZ4gVSq7dUUAhaZsKgJjOSSN5MburX7R0hiAN5Wu+PrWBLn2skYolSUdT6A0fN2mft4LTJPHeFU6PXzE07FbazrgV5fSgCfZbjptMq0MkqFu46pPLJX9oJdm4r48Xl328FZV6odFJX91xeGP/bJvg+Mopu17rBhtcqGhwGq1Ua12nB5jX0HSQyz99znOuYfyGad/0CdC5w7qHxNbvAk3NwKJ6d/2Fgm2Wx0cL8YR/0BY2szrwAAAABJRU5ErkJggg==';
+          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAASFBMVEUAAAAAAAAAAAAACAkAERMAGBsAGR0AISUALzQALzUAMTcANjwAP0cAVF8AcH4AeokAorYAtswA1/EA2PISIyV55fKi6fL////l+pZqAAAAA3RSTlMAx9dmesIgAAAAcklEQVQY02VPARLCIAxjsjnUWdcg6/9/ukIr00nvIMldEhrC/wHwA0BE3wBUtnICOStQnrNx5oqqzmzKx9vDPH1Nae3F9U4ig3OzjCIX51treYvMxou13EQmBPtHE14xLiawjgoPtfgOaKHP+9VrEXA8O1v7CmSPE3u0AAAAAElFTkSuQmCC';
           Favicon.unreadNSFW = 'data:image/gif;base64,R0lGODlhEAAQAOMHAFT+ACh5AEncAFT+AFX/Acz/su7/5v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==';
-          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABIUlEQVQ4y6VSPWvCUBQ9L2Qp0iLWLSB1Mkh3oYs/oUscxNGhvyF1rtD/0bGD5Be4dXGra6CLHTvYZKrkdAg3773kpQ698OBy7rlf71zgn6bEiQpQ/FdP46a5OL4E9iubWC/SyokKMIzBHRN+8ZM7Jgxj0Ox2liOEGRVnVBbBTJa4mezJaMMlkKVlwWfcN/YXLEuJ4RLYr8rGyrUfANw+6Y86F6/WMF99gukW7E3KN902441Cdbw3AcUAvAnut0llShkVYNK36nWdncMYDZkEvwmDaoLLkZ7QOqSXdYIHBM7Vjt1D5f986wk9l1QuG8wBv6PgdxSuxhq3CmQp8f7I6h5MO2yAU06cciL/aPl92dt1yoMFeH0HXgR/yChJLhnbYr91gPOcGoNvnQAAAABJRU5ErkJggg==';
+          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAS1BMVEUAAAAAAAAAAAADCgAGEgAIGgAJGwALJAANJwASNwASOAATOgAVQQAWRAAeWwAgKBsoeQAwkQA/wABJ3ABU/gBV/wHM/7Lu/+b////r+K2AAAAAA3RSTlMAx9dmesIgAAAAc0lEQVQY02WPgQ6DIBBDmTonbk70Cvb/v3TAnW5OSKB9ybXg3HUBOAmEEH4FQtrSn4gxi+xjVC9SVOEiSvbZI8zSV+/Xo7icnryZ15GObMxvtWUmB/VJW0byDqfvqGBp20mB5J3Bi3zYH1BD38/eauHwvT7sEAt1Fb320QAAAABJRU5ErkJggg==';
           break;
         case 'xat-':
           Favicon.unreadDead = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA2ElEQVQ4y61TQQrCMBDMQ8WDIEV6LbT2A4og2Hq0veo7fIAH04dY9N4xmyYlpGmI2MCQTWYy3Wy2DAD7B2wWAzWgcTgVeZKlZRxHNYFi2jM18oBh0IcKtC6ixf22WT4IFLs0owxswXu9egm0Ls6bwfCFfNsJYJKfqoEkd3vgUgFVLWObtzNgVKyruC+ljSzr5OEnBzjvjcQecaQhbZgBb4CmGQw+PoMkTUtdbd8VSEPakcGxPOcsoIgUKy0LecY29BmdBrqRfjIwZ93KLs5loHvBnL3cLH/jF+C/+z5dgUysAAAAAElFTkSuQmCC';
-          Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABa0lEQVQ4y8WTv0vDUBDHv6/EoaQ/AsZYHJ06SpUiCP0L/AcsToXSoUPFQdo6iyIIVicpdPJfcIkIrXSwguA/4FpK0yHUhiKkOYfkhTR5Ogne8g7e3efuvvce8N/GAj5x5/K6dToeDTPzT1MGgHhSsbTMxujkqHYWzuUAotBNq3L4rMViCQAYO86sdndfoGhlttRBOGBaLpkAWKrdSYuSAUASJXNLrq2nQ2P6szLvEGoAAHR+AaiqG2IYYI26UD/eAarVSmfPmW/t29JmclVLQ1UZ8nk3bPCKbrFIx7q+mNDiK7ud6+n6E5YA4h0xf4B6t8veDEMCICmKssNDfEA8oViGac1S7Y7ijzAYuJDJBC/Doc+1bXslUuzq5rbpiUnk6kHUbDjUbBAAygLETZblsahhP5kDpuWS6a2SdgOAoOC/avAg2R+emzsAILPIRqMAFsD3Y/F3DngEYHmvhQlA4bdAP9z1vbPwZ7/xG/NNlMkOsFNNAAAAAElFTkSuQmCC';
+          Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAdVBMVEUAAAAAAACKkJGNkpN0d3d0eHdra2dGRkORZ1wAAACmaV6naV4PDw8LCwsLCwvyZWLyZWIeExEyFBTAWlr/eHj/enkAAAAKAAAoAAA4AAA4GhpMAACRAAD/AAD/enn/h4j/m5z/nJ3/0dL/0tL/0tP/09P///9VK8WFAAAAFnRSTlMAPnp6kpKdtcHEzc3p6u7v8PT7/v7++jx7+QAAAIFJREFUGNONj90OgjAMhStKmU5k/h1UmAzUvv8jSrYBIeGC9qLtl/a0JVphAJKUOU36xNfWWiitlU9GUphZbXF/hxg10Li2QdQgPhQ3133c9XLOJvD9uZfI0YOdiiMiJw+2CKIPkZzGtcbgKYIJaI26LAfQOzOqoYNA4Z49Nguv/gEEhw2/C5BUZgAAAABJRU5ErkJggg==';
           Favicon.unreadSFW = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA30lEQVQ4y2P4//8/AyWYgSoGQMF/GJ7Y11VVUVoyKTM9ey4Ig9ggMWQ1YA1IBvzXm34YjkH8mPyJB+Nqlp8FYRAbmxoMF6ArSNrw6T0Qf8Amh9cFMEWVR/7/A+L/uORxhgEIt5/+/3/2lf//5wAxiI0uj+4CBlBgxVUvOwtydgXQZpDmi2/+/7/0GmIQSAwkB1IDUkuUAZeABlx+g2zAZ9wGlAOjChba+LwAUgNSi2HA5Am9VciBhSsQQWyoWgZiovEDsdGI1QBYQiLJAGQalpSxyWEzAJYWkGm8clTJjQCZ1hkoVG0CygAAAABJRU5ErkJggg==';
-          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABjklEQVQ4y8VTv0tCURT+rtkPU997w8sfFA1NLUWEtlROjQ3O0dQSEvLEIJJmkRoiIXBz6g9oaTECK4ckAwmCIFrzx3Monw9Nnt4G3xN9PpuCznLPPfc7H+d+5xzgv430+FRz4qcnR4VC2fVVrVsBgGUsstvtKArhg6g+VyOgi4n77stzYB3bQvzOZHfYAKAtlWsXccGnxwAgfRXoATuX1U8AJOlnWKNkADAZJWvm5O2sk7ez+riKpUM1AIDYIwVv6QDEOhDxEkP9zNotsLuXlPnVJbN3c87B21neArLiAggFsiVg6zxNU2fhVqta+fYszN9e36TQRzCsRZpK6cQhEd+ezADMHMd5NEyXgGEsslQTa0k/w2lfyBY7JJU68PHy0CVWFGV0gGBm2l08DglBTcyIlyCSoRQAia0RjDtne4tTBgiCof2ovhOlilRVXXZk0taNy7I8NUBgZEru6l11lznPBkxjEwMYkz6gDgkAwCpm8lYxkwcA6TWHdrOBdrPx625Qo5noiWXU0/dn2/gDsiiJvxnPWcEAAAAASUVORK5CYII=';
+          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAdVBMVEUAAAAAAACRjoqTkI13dXR4dXRpZ2tFQ0Zcb5EAAABee6ZefKcPDw8LCwsLCwtisPJisPIRFh4UJDJalMB4xP95xP8AAAABBQcHFx4KISoNLToaKzgaVW4ul8N5xP+Hy/+b1P+c1P/R7P/S6//S7P/T7P////9P0rk0AAAAFnRSTlMAPnp6kpKdtcHEzc3p6u7v8PT7/v7++jx7+QAAAIFJREFUGNONj90OgjAMhStKmU5k/h1UmAzUvv8jSrYBIeGC9qLtl/a0JVphAJKUOU36xNfWWiitlU9GUphZbXF/hxg10Li2QdQgPhQ3133c9XLOJvD9uUrk6MFOxRGRkwdbBNGHSE7jWmPwFMEEtEZdlgPonRmvoYNA4Z49Nguv/gEE3A2/sQ7iRgAAAABJRU5ErkJggg==';
           Favicon.unreadNSFW = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA4ElEQVQ4y2P4//8/AyWYgSoGQMF/GJ7YNbGqrKRiUnp21lwQBrFBYshqwBqQDPifdsYYjkH8mInxB+OWx58FYRAbmxoMF6ArKPmU9B6IP2CTw+sCmKKe/5X/gPg/LnmcYQDCs/63/1/9fzYQzwGz0eXRXcAACqy4ZfFnQc7u+V/xD6T55v+LQHwJbBBIDCQHUgNSS5QBt4Cab/2/jDDgMx4DykrKJ8FCG58XQGpAajEMmNw7uQo5sHAFIogNVctATDR+IDYasRoAS0gkGYBMw5IyNjlsBsDSAjKNV44quREAx58Mr9vt5wQAAAAASUVORK5CYII=';
-          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABi0lEQVQ4y8WTzysEYRjHP7M/MI3dGVp2RXJwohysOIhyEGdnpRxWkTaRLGeU1mFzcyAl/4Gbg7QHisIdJSy7CsO0B7tel5mJ2eGkPJf3eZ/3+3zf5yf8t0hfdGEpqZXUwm02E3nJ6wqAKgeN+tq6+/hsfNHpaxGI2HHUflnvOGE4NXLgqaUS4CPL23Z8q9eJAaRvETgBM/roMyAlgxuqmzOAx83ZkkggrEYCYdVpN7HixxoArItlqggBEk/kiEkJ1/p5rdvYxHhj61SL6N+MykNLA+URGqQ2OgnTgM4Tob6AuDnPFP3+8nx3V8/e1cXlDoDv9xZJdpC7c/tS5iTnA3yapnVYGJtAlQOGkTPeksENzUrhjCMzhUeuD+9s4kKh4C/5bW11bd4spogdRwUgkiLxkRQJAQitqUJYoihKtiSCyenJRWcn7l8fdCvAskq7XBiGUVNC4CbZ3eKFqbY3D1bjl70lGI/TYA4JAHJaOZXTyinAzaHOe77Ie774624It5n4YkubZ++fbeMnwHeVVSmTml8AAAAASUVORK5CYII=';
+          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAdVBMVEUAAAAAAACRipGTjZN2dHd2dHhna2pDRkVckV8AAABepl9ep18PDw8LCwsLCwt08mJ08mIRHhEYMhRpwFqM/3iM/3kAAAAECAIQIAgWLAseOBoePA86dB1mzDOM/3ma/4er/5ur/5zZ/9HZ/9La/9La/9P///85Jx7jAAAAFnRSTlMAPnp6kpKdtcHEzc3p6u7v8PT7/v7++jx7+QAAAIFJREFUGNONj90OgjAMhStKmU5k/h1UmAzUvv8jSrYBIeGC9qLtl/a0JVphAJKUOU36xNfWWiitlU9GUphZbXF/hxg10Li2QdQgPhQ3133c9XLOJvD9uZfI0YOdiiMiJw+2CKIPkZzGtcbgKYIJaI26LAfQOzOqoYNA4Z49Nguv/gEEhw2/C5BUZgAAAABJRU5ErkJggg==';
           break;
         case 'Mayhem':
           Favicon.unreadDead = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABIUlEQVQ4jZ2ScWuDMBDFgw4pIkU0WsoQkWAYIkXZH4N9/+/V3dmfXSrKYIFHwt17j8vdGWNMIkgFuaDgzgQnwRs4EQs5KdolUQtagRN0givEDBTEOjgtGs0Zq8F7cKqqusVxrMQLaDUWcjBSrXkn8gs51tpJSWLk9b3HUa0aNIL5gPBR1/V4kJvR7lTwl8GmAm1Gf9+c3S+89qBHa8502AsmSrtBaEBPbIbj0ah2madlNAPEccdgJDfAtWifBjqWKShRBT6KoiH8QlEUn/qt0CCjnNdmPUwmFWzj9Oe6LpKuZXcwqq88z78Pch3aZU3dPwwc2sWlfZKCW5tWluV8kGvXClLm6dYN4/aUqfCbnEOzNDGhGZbNargvxCzvMGfRJD8UaDVvgkzo6QAAAABJRU5ErkJggg==';
           Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABj0lEQVQ4y42TQUorQRCGv+oekpj43pOhOyIiKoHBxTMkuAnEtWcwx/AY3sUbBIRcwCw8gCfIMkaTOOUiNdgGRRuKoav+v2qq/i4BakBmXweUwDoxLF5ZhVkC64rYBHYMUAIvwKuBMEwdaFiCNbAAngEC0NHkxBi73vsOsG92HGPsphigY1wOzfNhqhpC6AEd730RQuh9hQEOAY6A/jeAs3a7/f+bWB84ckCpqg+I8Osjgqo+AKUDViJS8LkGMcY+sJrNZssYY387LiIFsBLgL9AC/pgaArzZlF+sZgO4BG7sfgvcA3MxUtOStBIpX7cS3Klqd9OBTIEr4DlLOsuAmqpODXQOiHMuy/O8FkLoJth/6Uh2gQPg87Q3k+7leX6hqnpmPvM/GWfXWeWGqj5+oUS9LMs6wF7iHAwGJ9ZW5uxpup+UGwEtEVoijEYjKl66PJujmvIW3vsFwBiYqzJXZTweY5wSU6Bd7UP1KoECODUrJpOJAtPhcKjAtXGaYptWs57qWyv9Zn/it1a5knj5Dm3v4q8APeACAAAAAElFTkSuQmCC';
           Favicon.unreadSFW = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABCElEQVQ4jZ2S4crCMAxF+0OGDJEPKYrIGKOsiJSx/fJRfSAfTJNyKqXfiuDg0C25N2RJjTGmEVrhTzhw7oStsIEtsVzT4o2Jo9ALThiEM8IdHIgNaHo8mjNWg6/ske8bohPo+63QOLzmooHp8fyAICBSQkVz0QKdsFQEV6WSW/D+7+BbgbIDHcb4Kp61XyjyI16zZ8JemGltQtDBSGxB4/GoN+7TpkkjDCsFArm0IYv3U0BbnYtf8BCy+JytsE0X6VyuKhPPK/GAJ14kvZZDZVV3pZIb8MZr6n4o4PDGKn0S5SdDmyq5PnXQsk+Xbhinp03FFzmHJw6xYRiWm9VxnohZ3vOcxdO8ARmXRvbWdtzQAAAAAElFTkSuQmCC';
-          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABlklEQVQ4y4WTTWobQRCFv2qNRiP5J1mJLAzBJMiCYBubLATy0uQM1jYrb30M38CHyA20EngZPAhhCEaXMIkjWUjzvKkWzWzcUPRM13vVXfWqDMiBzPcAVMA6MdwfLWJWwDoSO0DbARWwBF4dhGNaQOEB1sAC+J/54Z6kuYMxs2/AiwfCMTuSHhPMV6DKgJak+endffQh6dHMjv1FAG1JsxpmbmYHAQhmdj69vtg6T+/ukTQDmkCzTp5eX2Bm50AIQCXpIQW8t/yCB6AyoAt8kPSUgjyFRZpCzd8DnjMvVMPMjlwNAzY1FYKZ/QRu/P8W+AcszUkdYMctSvlaU+GXpBO/vQR+RBlJmiWXVCYpWOyDfr9/kmD3U1LwarcllbGYkmZmdubfZfHpc1qCyAnBgxR1qXy13Gh0dreHg8Hg0NPKgkcL70n38fslIS8IecFoNIqvCOnwbJskWYso5d8/v6lWS6rVkvF4jHMqXIEu8EWSgDPfe8ChW28ymQgoh8OhgCvndMwnLfecWrWR3vhLGrVRjhKv3gDhOKP2kgPZ3gAAAABJRU5ErkJggg==';
+          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAkFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBQcHFx4KISoNLToaVW4oKCgul8M4ODg7OztMTEyRkZHBwcH///9dzWZ0AAAAI3RSTlMEBggKDA4QEhQWFxkbHR8hIyUmKCosLjAxN1hbYc7P0dLc3mzWzBUAAAC+SURBVBjTNY3pcsIwEIM3ePERx/bG5IIe0NIrhVbv/3Y4Ydj9Ic030ogqpY3mDdGGi1EVsYuSvGE2Pkl0TFYAdLGuY1eMWGowzzN6kX41DYVpNbvdKlO4Jx5gSbi2VO+Vcq2jrc/jNLQhtM+n05PfkrKxG/oFHIEXqwqQsVRy7n+AtwLYL3sYR3wA755Jp3Vvv8cn8Js0GXmA7/P5TwzpiLn8MOALuEZNygkm5JTy/+vl4BRVbJvQ1NbWRSxXN64PGOBlhG0qAAAAAElFTkSuQmCC';
           Favicon.unreadNSFW = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABCklEQVQ4jZ2S0WrDMAxF/TBCCKWMYhZKCSGYmFJMSNjD/mhf239qJXNcjBdTWODgRLpXKJKNMaYROuFTOHEehFb4gJZYrunwxsSXMApOmIQzwgOciE1oRjyaM1aDj+yR7xuiHvT9VmgcXnPRwO/9+wWCgEgJFc1FCwzCVhFclUpuw/u3g3cFyg50GPOjePZ+ocjPeM2RCXthpbUFwQAzsQ2Nx6PeuE+bJo0w7BQI5NKGLN5XAW11LX7BQ8jia7bCLl2kc7mqTLzuxAOeeJH0Wk6VVf0oldyEN15T948CDm+sMiZRfjK0pZIbUwcd+3TphnF62lR8kXN44hAbhmG5WQNnT8zynucsnuYJhFpBfkMzqD4AAAAASUVORK5CYII=';
-          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABlklEQVQ4y4WTv04bQRDGf7N3/nMmCSIFVRoLZCxFQQJTWHKP8gi4paHOY/AIvANv4ModBXCFRRO5zAskSnL8se+jmbVW13il0d7tfN/sznwzBrSB3PcA1MAqMdwfLWJegVUk9oDCATXwDLw4CMd0gK4HWAEV8D/3w4+Slg7GzL4C/zwQjtmR9JRgDoE6BzqSllcPZ9GHpCcz++YvAigkLRqYpZl9CUAws9Ob0f3GefVwhqQF0AJaTfLN6B4zOwVCAGpJjylg2/ILHoHagH1gV9LPFOQpVGkKDf8A+J17oTIzO3I1DFg3VAhmdgn88P9r4C/wbE7qATtuUcqXhgq3ko799hI4jzKSNEtbUpmkYLEPhsPhcYL9lJKCV7uQVMZiSlqY2Yl/l3v9Ii1B5ITgQbpNqXx13Gh/yDaH4/G472nlwaOFbdIdfv9Mq8hoFRnT6TS+IqTDs2mSZFVRyl93f3ir1rxVa2azGc6pcQX2gQNJAk58HwB9t8F8PhdQTiYTARfO6ZlPWttz6jRGeu0vyRqjHCV+fQf4OaM8g/XFLAAAAABJRU5ErkJggg==';
+          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAkFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAIQIAgWLAsePA8oKCg4ODg6dB07OztMTExmzDORkZHBwcH///92I3mvAAAAI3RSTlMEBggKDA4QEhQWFxkbHR8hIyUmKCosLjAxN1hbYc7P0dLc3mzWzBUAAAC+SURBVBjTNY3pcsIwEIM3ePERx/bG5IIe0NIT0ur93w4nDLs/pPlGGlGltNG8IdpwMaoidlGSN8zGJ4mOyQqALtZ17IoRSw3meUYv0q+moTCtZrdbZQr3xAMsCdeW6r1SrnW09XmchjaE9vl0evJbUjZ2Q7+AI/BiVQEylkrO/TfwVgD7ZQ/jiA/g3TPptO7t9/gEfpImIw/wez7/iSEdMZcfBnwB16hJOcGEnFL+f70cnKKKbROa2tq6iOXqBuMXGTe4CAUbAAAAAElFTkSuQmCC';
           break;
         case 'Original':
           Favicon.unreadDead = 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
-          Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAsUlEQVQ4y6VTPQ6DIQh9NG5degyPQOJJetZOTj1R5/ctYggVbVISEoTHPwJ/kphAklMpIitwihmGyR54wghJiggYyiI5s2wxJ8AoN01wWzmfiBbUMsT+4hxO9gnyFLP23qmqVFX23vOCswCq6oO/TV+is613yBL1gx7ZkZCDfVcAWN271sqt8yqAhre1WX5d3RPAfXHhZfU5ViN+Afi4w8pnEEr0ttYaAeRrNKfNZ/qyXeAkApbmVGieAAAAAElFTkSuQmCC';
+          Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAAKAAAoAAAoKCg4AAA4ODg7OztMAACRAADBwcH/AAD///+WCcPSAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQmAUAxEb4Isk0rwp3EPR3ECcRQrh7C3/nAasPwzmCgYuPBy5AH/NALSImqAK+H1oJRqyJVHNAnZqDITVhj7/PrAciJ9il0BHs/jjU+fnB9sQ0IxX6OBO6Xr0xKAxANLZzUanCWzZQAAAABJRU5ErkJggg==';
           Favicon.unreadSFW = 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAC6Xw////////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
-          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA3UlEQVQ4y6VTMQ6DMAw8U9RWVQe2bp0zdepgCbH1M7yI90QMXTox5R9dEAPuQqIoxKVST0KKzueL8QHwJ8gfREQCSUQ5sapZCuGJhVuaUkSEiHDrekTuWHjyzapGEwxtAz+IViMiKnLNW7h1fZgg+37pHrbqQRQjvdVaK8wszCzWWlHH0wyYOTZ/er5Mm328uRQiVCuDdJnxkogIh8s1dBtjjHMOAFBoMabYnc7h7JwL5uWv0VX3B4r9ccUXKTG0Tdbg7V6YpxHzNOrbj/LNfgd1XQsAPUbf9OVnWtU+UtzonSagmcwAAAAASUVORK5CYII=';
+          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAABBQcHFx4KISoNLToaVW4oKCgul8M4ODg7OzvBwcH///8uS/CdAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQ2AUAhEbwKWoftRGvdwBEewchM7d9BFbE6pbP4Mgj+R5MjjwgP+qQSkRtQAV8K3lVI2Q648oknIRpWZsMI4988HjgvpU+wO8HgeHzR9cjZYhoRiPkcDd0rXpyUAiRd5YjKC7MvNRgAAAABJRU5ErkJggg==';
           Favicon.unreadNSFW = 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
-          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA30lEQVQ4y6VTMQ6CQBCcBTSaWBBfYGFBD8UmfMCX8Ch+c5UW0N8DfIGNBSFrw10ux62YOAnJZXZ2btkB4E+QO4iIeJKIUmJVsxT8Ewq3NIWICBGhG2oE7lh4cs2qRhP0zQg3iFYjIspSzVvohtpPkHy/eA9bdS8KEd9qjBFmFmYWY4yo42kGzBya3x1fxM0u3lQKAcqVQbzMcElEhPJy8N1VVVXWWgBApsUYY3/K/dla682LX6O73s7YHfMVn8VE34xJg+fjhek9Y3rP+vaDfJPfQdu2AkCP0TV9+ZlWtQ9lu+fiaucJAgAAAABJRU5ErkJggg==';
+          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAAECAIQIAgWLAsePA8oKCg4ODg6dB07OztmzDPBwcH///+rsf3XAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQ2AUAhEbwKWofRL4x6O4AhuopWb2P4F7E5prP4MgiaSHHlceMA/jYC0iBrgSnjdKaUacuURTUI2qsyEFcaxvD6wnkifYleAx/N449Mn5wfbkFDM52jgTun6tAQg8QAEvjQg42KY2AAAAABJRU5ErkJggg==';
       }
       if (Favicon.SFW) {
         Favicon.unread = Favicon.unreadSFW;
@@ -6097,9 +6065,9 @@
           var length, threadID;
 
           threadID = ThreadUpdater.thread.ID;
-          length = ThreadUpdater.root.children.length;
+          length = $$('.thread > .postContainer', ThreadUpdater.root).length;
           if (Conf['Enable 4chan\'s Extension']) {
-            return $.unsafeWindow.Parser.parseThread(threadID, -count);
+            return $.globalEval("Parser.parseThread(" + threadID + ", " + (-count) + ")");
           } else {
             return Fourchan.parseThread(threadID, length - count, length);
           }
@@ -6147,6 +6115,9 @@
       }
     },
     ready: function() {
+      if (!Main.isThisPageLegit()) {
+        return;
+      }
       ThreadWatcher.refresh();
       return $.add(d.body, ThreadWatcher.dialog);
     },
@@ -7137,6 +7108,9 @@
           var applyBlob, cv, data, height, i, l, s, ui8a, width, _i;
 
           s = 90 * 2;
+          if (_this.file.type === 'image/gif') {
+            s *= 3;
+          }
           height = img.height, width = img.width;
           if (height < s || width < s) {
             if (window.URL) {
@@ -7289,8 +7263,16 @@
         }), this.ready.bind(this));
       },
       ready: function() {
-        var MutationObserver, imgContainer, input, observer;
+        var MutationObserver, imgContainer, input, observer, setLifetime,
+          _this = this;
 
+        setLifetime = function(e) {
+          return _this.lifetime = e.detail;
+        };
+        $.on(window, 'captcha:timeout', setLifetime);
+        $.globalEval('window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))');
+        $.off(window, 'captcha:timeout', setLifetime);
+        c.log(this.lifetime);
         imgContainer = $.el('div', {
           className: 'captcha-img',
           title: 'Reload',
@@ -7391,7 +7373,7 @@
         if (!this.nodes.challenge.firstChild) {
           return;
         }
-        this.timeout = Date.now() + $.unsafeWindow.RecaptchaState.timeout * $.SECOND - $.MINUTE;
+        this.timeout = Date.now() + this.lifetime * $.SECOND - $.MINUTE;
         challenge = this.nodes.challenge.firstChild.value;
         this.nodes.img.alt = challenge;
         this.nodes.img.src = "//www.google.com/recaptcha/api/image?c=" + challenge;
@@ -7415,7 +7397,7 @@
         return this.nodes.input.alt = count;
       },
       reload: function(focus) {
-        $.unsafeWindow.Recaptcha.reload('t');
+        $.globalEval('Recaptcha.reload("t")');
         if (focus) {
           return this.nodes.input.focus();
         }
@@ -7434,7 +7416,7 @@
     dialog: function() {
       var dialog, mimeTypes, name, node, nodes, thread, _i, _j, _len, _len1, _ref, _ref1;
 
-      dialog = UI.dialog('qr', 'top:0;right:0;', "<div>\n  <input type=checkbox id=autohide title=Auto-hide>\n  <select title='Create a new thread / Reply'>\n    <option value=new>New thread</option>\n  </select>\n  <span class=move></span>\n  <a href=javascript:; class=close title=Close>×</a>\n</div>\n<form>\n  <div class=persona>\n    <input id=dump-button type=button title='Dump list' value=+>\n    <input name=name  data-name=name  title=Name    placeholder=Name    class=field size=1>\n    <input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1>\n    <input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1>\n  </div>\n  <div id=dump-list-container>\n    <div id=dump-list></div>\n    <a id=add-post href=javascript:; title=\"Add a post\">+</a>\n  </div>\n  <div class=textarea>\n    <textarea data-name=com title=Comment placeholder=Comment class=field></textarea>\n    <span id=char-count></span>\n  </div>\n  <div id=file-n-submit>\n    <input id=qr-file-button type=button value='Choose files'>\n    <span id=qr-filename-container>\n      <span id=qr-no-file>No selected file</span>\n      <span id=qr-filename></span>\n    </span>\n    <a id=qr-filerm href=javascript:; title='Remove file' tabindex=-1>×</a>\n    <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=-1>\n    <input type=submit>\n  </div>\n  <input type=file multiple>\n</form>".replace(/>\s+</g, '><'));
+      dialog = UI.dialog('qr', 'top:0;right:0;', "<div>\n  <input type=checkbox id=autohide title=Auto-hide>\n  <select title='Create a new thread / Reply'>\n    <option value=new>New thread</option>\n  </select>\n  <span class=move></span>\n  <a href=javascript:; class=close title=Close>×</a>\n</div>\n<form>\n  <div class=persona>\n    <input id=dump-button type=button title='Dump list' value=+>\n    <input name=name  data-name=name  title=Name    placeholder=Name    class=field size=1>\n    <input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1>\n    <input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1>\n  </div>\n  <div id=dump-list-container>\n    <div id=dump-list></div>\n    <a id=add-post href=javascript:; title=\"Add a post\">+</a>\n  </div>\n  <div class=textarea>\n    <textarea data-name=com title=Comment placeholder=Comment class=field></textarea>\n    <span id=char-count></span>\n  </div>\n  <div id=file-n-submit>\n    <input type=submit>\n    <input id=qr-file-button type=button value='Choose files'>\n    <span id=qr-filename-container>\n      <span id=qr-no-file>No selected file</span>\n      <span id=qr-filename></span>\n    </span>\n    <a id=qr-filerm href=javascript:; title='Remove file'>×</a>\n    <input type=checkbox id=qr-file-spoiler title='Spoiler image'>\n  </div>\n  <input type=file multiple>\n</form>".replace(/>\s+</g, '><'));
       QR.nodes = nodes = {
         el: dialog,
         move: $('.move', dialog),
@@ -7604,7 +7586,9 @@
           post.unlock();
           QR.cooldown.auto = false;
           QR.status();
-          return QR.error('Network error.');
+          return QR.error($.el('span', {
+            innerHTML: 'Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.'
+          }));
         }
       };
       opts = {
@@ -7628,7 +7612,7 @@
       return QR.status();
     },
     response: function() {
-      var URL, ban, board, err, h1, persona, post, postID, req, threadID, tmpDoc, _, _base, _ref, _ref1;
+      var URL, ban, board, err, h1, isReply, persona, post, postID, req, threadID, tmpDoc, _, _base, _ref, _ref1;
 
       req = QR.req;
       delete QR.req;
@@ -7679,6 +7663,7 @@
       _ref1 = h1.nextSibling.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
       postID = +postID;
       threadID = +threadID || postID;
+      isReply = threadID !== postID;
       ((_base = QR.yourPosts.threads)[threadID] || (_base[threadID] = [])).push(postID);
       $.set("yourPosts." + g.BOARD, QR.yourPosts);
       ThreadUpdater.postID = postID;
@@ -7687,16 +7672,16 @@
         threadID: threadID,
         postID: postID
       }, QR.nodes.el);
-      QR.cooldown.auto = QR.posts.length > 1;
+      QR.cooldown.auto = QR.posts.length > 1 && isReply;
       post.rm();
       QR.cooldown.set({
         req: req,
         post: post,
-        isReply: !!threadID
+        isReply: isReply
       });
       if (threadID === postID) {
         URL = "/" + g.BOARD + "/res/" + threadID;
-      } else if (g.VIEW === 'index' && !QR.cooldown.auto) {
+      } else if (g.VIEW === 'index' && !QR.cooldown.auto && Conf['Open Post in New Tab']) {
         URL = "/" + g.BOARD + "/res/" + threadID + "#p" + postID;
       }
       if (URL) {
@@ -7736,7 +7721,7 @@
       field = $.id('recaptcha_response_field');
       $.on(field, 'keydown', function(e) {
         if (e.keyCode === 8 && !field.value) {
-          return $.unsafeWindow.Recaptcha.reload('t');
+          return $.globalEval('Recaptcha.reload("t")');
         }
       });
       return $.on(form, 'submit', function(e) {
@@ -7840,9 +7825,9 @@
         this.nodes.uniqueID = uniqueID;
         this.info.uniqueID = uniqueID.firstElementChild.textContent;
       }
-      if (capcode = $('.capcode', info)) {
+      if (capcode = $('.capcode.hand', info)) {
         this.nodes.capcode = capcode;
-        this.info.capcode = capcode.textContent;
+        this.info.capcode = capcode.textContent.replace('## ', '');
       }
       if (flag = $('.countryFlag', info)) {
         this.nodes.flag = flag;
@@ -8125,11 +8110,6 @@
     init: function() {
       var flatten, initFeatures, key, pathname, val;
 
-      $.asap((function() {
-        return d.documentElement;
-      }), function() {
-        return doc = d.documentElement;
-      });
       flatten = function(parent, obj) {
         var key, val;
 
@@ -8350,7 +8330,8 @@
         Main.callbackNodes(Thread, threads);
         Main.callbackNodes(Post, posts);
       }
-      return $.event('4chanXInitFinished');
+      $.event('4chanXInitFinished');
+      return Main.checkUpdate();
     },
     callbackNodes: function(klass, nodes) {
       var callback, err, errors, i, len, node, _i, _j, _len, _ref;
@@ -8383,9 +8364,55 @@
       var Klass, obj;
 
       obj = e.detail;
-      Klass = obj.type === 'Post' ? Post : Thread;
+      if (typeof obj.callback.name !== 'string') {
+        throw new Error("Invalid callback name: " + obj.callback.name);
+      }
+      switch (obj.type) {
+        case 'Post':
+          Klass = Post;
+          break;
+        case 'Thread':
+          Klass = Thread;
+          break;
+        default:
+          return;
+      }
       obj.callback.isAddon = true;
       return Klass.prototype.callbacks.push(obj.callback);
+    },
+    checkUpdate: function() {
+      var freq, now;
+
+      if (!Main.isThisPageLegit()) {
+        return;
+      }
+      now = Date.now();
+      freq = 7 * $.DAY;
+      if ($.get('lastupdate', 0) > now - freq || $.get('lastchecked', 0) > now - $.DAY) {
+        return;
+      }
+      return $.ajax('https://4chan-x.just-believe.in/builds/version', {
+        onload: function() {
+          var el, version;
+
+          if (this.status !== 200) {
+            return;
+          }
+          version = this.response;
+          if (!/^\d\.\d+\.\d+$/.test(version)) {
+            return;
+          }
+          if (g.VERSION === version) {
+            $.set('lastupdate', now);
+            return;
+          }
+          $.set('lastchecked', now);
+          el = $.el('span', {
+            innerHTML: "Update: 4chan X Beta v" + version + " is out, get it <a href=https://4chan-x.just-believe.in/ target=_blank>here</a>."
+          });
+          return new Notification('info', el, 2 * $.MINUTE);
+        }
+      });
     },
     handleErrors: function(errors) {
       var div, error, logs, _i, _len;
@@ -8400,7 +8427,7 @@
         return;
       }
       div = $.el('div', {
-        innerHTML: "" + errors.length + " errors occured. [<a href=javascript:;>show</a>]"
+        innerHTML: "" + errors.length + " errors occurred. [<a href=javascript:;>show</a>]"
       });
       $.on(div.lastElementChild, 'click', function() {
         if (this.textContent === 'show') {
@@ -8435,12 +8462,14 @@
       return [message, error];
     },
     isThisPageLegit: function() {
+      var _ref;
+
       if (!('thisPageIsLegit' in Main)) {
-        Main.thisPageIsLegit = !$('link[href*="favicon-status.ico"]', d.head) && d.title !== '4chan - Temporarily Offline';
+        Main.thisPageIsLegit = location.hostname === 'boards.4chan.org' && !$('link[href*="favicon-status.ico"]', d.head) && ((_ref = d.title) !== '4chan - Temporarily Offline' && _ref !== '4chan - Error');
       }
       return Main.thisPageIsLegit;
     },
-    css: "/* General */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.field {\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\n-webkit-transition: color .25s, border-color .25s, -webkit-flex .25s;\ntransition: color .25s, border-color .25s, flex .25s;\n}\n.field::-moz-placeholder,\n.field:hover::-moz-placeholder {\ncolor: #AAA !important;\n}\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.field[disabled] {\nbackground-color: #F2F2F2;\ncolor: #888;\n}\n.move {\ncursor: move;\n}\nlabel, .favicon {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\n}\n.post {\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#overlay,\n#qp, #ihover,\n#updater, #thread-stats,\n#navlinks, #header,\n#qr, #watcher {\nposition: fixed;\n}\n#overlay {\nz-index: 999;\n}\n#notifications {\nz-index: 70;\n}\n#qp, #ihover {\nz-index: 60;\n}\n#menu {\nz-index: 50;\n}\n#navlinks, #updater, #thread-stats {\nz-index: 40;\n}\n#qr {\nz-index: 30;\n}\n#watcher {\nz-index: 20;\n}\n#header {\nz-index: 10;\n}\n\n/* Header */\n.fourchan-x body {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\n}\n#header {\ntop: 0;\nright: 0;\nleft: 0;\n}\n#header-bar {\nborder-width: 0 0 1px;\ndisplay: -webkit-flex;\ndisplay: flex;\npadding: 3px 4px 4px;\nposition: relative;\n-webkit-transition: all .1s ease-in-out;\ntransition: all .1s ease-in-out;\n}\n#board-list {\n-webkit-flex: 1;\nflex: 1;\ntext-align: center;\n}\n#header-bar.autohide:not(:hover) {\nbox-shadow: none;\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\n-webkit-transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\ntransition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n#toggle-header-bar {\ncursor: n-resize;\nleft: 0;\nright: 0;\nbottom: -8px;\nheight: 10px;\nposition: absolute;\n}\n#header-bar.autohide:not(:hover) #toggle-header-bar, #toggle-header-bar:hover {\nbottom: -16px;\nheight: 18px;\n}\n#header-bar.autohide #toggle-header-bar {\ncursor: s-resize;\n}\n#header-bar a:not(.entry) {\ntext-decoration: none;\npadding: 1px;\n}\n#shortcuts:empty {\ndisplay: none;\n}\n.brackets-wrap::before {\ncontent: \"\\00a0[\";\n}\n.brackets-wrap::after {\ncontent: \"]\\00a0\";\n}\n.disabled,\n.expand-all-shortcut {\nopacity: .45;\n}\n\n/* Notifications */\n#notifications {\nheight: 0;\ntext-align: center;\nposition: fixed;\ntop: 0;\nright: 0;\nleft: 0;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\n-webkit-transition: all .25s ease-in-out;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 38%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 38%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 38%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 38%, .9);\n}\n.notification a {\ncolor: white;\n}\n.notification > .close {\npadding: 6px;\ntop: 0;\nright: 0;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 6px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* Settings */\n#overlay {\nbackground-color: rgba(0, 0, 0, .5);\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-align-items: center;\nalign-items: center;\n-webkit-justify-content: center;\njustify-content: center;\nposition: fixed;\ntop: 0;\nleft: 0;\nheight: 100%;\nwidth: 100%;\n}\n#fourchanx-settings {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nbox-shadow: 0 0 15px rgba(0, 0, 0, .15);\nheight: 600px;\nmin-height: 0;\nmax-height: 100%;\nwidth: 900px;\nmin-width: 0;\nmax-width: 100%;\npadding: 3px;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\n}\n#fourchanx-settings > nav {\ndisplay: -webkit-flex;\ndisplay: flex;\npadding: 2px 2px 0;\n}\n#fourchanx-settings > nav a {\ntext-decoration: underline;\n}\n#fourchanx-settings > nav a.close {\ntext-decoration: none;\npadding: 2px;\n}\n.sections-list {\n-webkit-flex: 1;\nflex: 1;\n}\n.section-container {\n-webkit-flex: 1;\nflex: 1;\nposition: relative;\n}\n.section-container > section {\nposition: absolute;\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\noverflow: auto;\n}\n.section-sauce ul,\n.section-rice ul {\nlist-style: none;\nmargin: 0;\npadding: 8px;\n}\n.section-sauce li,\n.section-rice li {\npadding-left: 4px;\n}\n.section-main label {\ntext-decoration: underline;\n}\n.section-filter ul {\npadding: 0;\n}\n.section-filter li {\nmargin: 10px 40px;\n}\n.section-filter textarea {\nheight: 500px;\n}\n.section-sauce textarea {\nheight: 350px;\n}\n.section-rice .field[name=\"boardnav\"] {\nwidth: 100%;\n}\n.section-rice textarea {\nheight: 150px;\n}\n#fourchanx-settings fieldset {\nborder: 1px solid;\nborder-radius: 3px;\n}\n#fourchanx-settings legend {\nfont-weight: 700;\n}\n#fourchanx-settings textarea {\nfont-family: monospace;\nmin-width: 100%;\nmax-width: 100%;\n}\n#fourchanx-settings code {\ncolor: #000;\nbackground-color: #FFF;\npadding: 0 2px;\n}\n.unscroll {\noverflow: hidden;\n}\n\n/* Unread */\n#unread-line {\nmargin: 0;\n}\n\n/* Thread Updater */\n#updater:not(:hover) {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n#updater > .move {\npadding: 0 3px;\n}\n#updater > div:last-child {\ntext-align: center;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n.new {\ncolor: limegreen;\n}\n\n/* Thread Watcher */\n#watcher {\npadding-bottom: 3px;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#watcher:not(:hover) {\nmax-height: 220px;\n}\n#watcher > .move {\npadding-top: 3px;\n}\n#watcher > div {\nmax-width: 200px;\noverflow: hidden;\npadding-left: 3px;\npadding-right: 3px;\ntext-overflow: ellipsis;\n}\n#watcher a {\ntext-decoration: none;\n}\n\n/* Thread Stats */\n#thread-stats {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n\n/* Quote */\n.deadlink {\ntext-decoration: none !important;\n}\n.backlink.deadlink:not(.forwardlink), .quotelink.deadlink:not(.forwardlink) {\ntext-decoration: underline !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp > .opContainer::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 2px 2px 5px;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\n}\n.qphl {\noutline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* File */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.expanded-image > .post > .file > .fileThumb > img[data-md5],\n:not(.expanded-image) > .post > .file > .fileThumb > .full-image {\ndisplay: none;\n}\n.expanding {\nopacity: .5;\n}\n.expanded-image > .op > .file::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n:root.fit-width .full-image {\nmax-width: 100%;\n}\n:root.gecko.fit-width .full-image,\n:root.presto.fit-width .full-image {\nwidth: 100%;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n\n/* Index/Reply Navigation */\n#navlinks {\nfont-size: 16px;\ntop: 25px;\nright: 10px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n.stub input {\ndisplay: inline-block;\n}\n\n/* QR */\n.hide-original-post-form #postForm,\n.hide-original-post-form .postingMode,\n#qr.autohide:not(:hover) > form {\ndisplay: none;\n}\n#qr select, #dump-button, .remove, .captcha-img {\ncursor: pointer;\n}\n#qr > div {\nmin-width: 300px;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-align-items: center;\nalign-items: center;\n}\n#qr .move {\n-webkit-align-self: stretch;\nalign-self: stretch;\n-webkit-flex: 1;\nflex: 1;\n}\n#qr select {\nmargin: 0;\n-webkit-appearance: none;\n-moz-appearance: none;\nappearance: none;\nborder: none;\nbackground: none;\n}\n.presto #qr select {\nheight: 1em;\n}\n#qr .close {\npadding: 0 3px;\n}\n#qr > form {\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\n}\n.persona {\ndisplay: -webkit-flex;\ndisplay: flex;\n}\n.persona .field {\n-webkit-flex: 1;\nflex: 1;\n}\n.persona .field:focus {\n-webkit-flex: 4;\nflex: 4;\n}\n#dump-button {\nbackground: -webkit-linear-gradient(#EEE, #CCC);\nbackground: linear-gradient(#EEE, #CCC);\nborder: 1px solid #CCC;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\nwidth: 30px;\n}\n#dump-button:hover, #dump-button:focus {\nbackground: -webkit-linear-gradient(#FFF, #DDD);\nbackground: linear-gradient(#FFF, #DDD);\n}\n#dump-button:active, .dump #dump-button:not(:hover):not(:focus) {\nbackground: -webkit-linear-gradient(#CCC, #DDD);\nbackground: linear-gradient(#CCC, #DDD);\n}\n.gecko #dump-button {\npadding: 0;\n}\n#qr:not(.dump) #dump-list-container {\ndisplay: none;\n}\n#dump-list-container {\nheight: 100px;\nposition: relative;\n-webkit-user-select: none;\n-moz-user-select: none;\n-o-user-select: none;\nuser-select: none;\n}\n#dump-list {\ncounter-reset: qrpreviews;\ntop: 0; right: 0; bottom: 0; left: 0;\noverflow: hidden;\nposition: absolute;\nwhite-space: nowrap;\n}\n#dump-list:hover {\nbottom: -12px;\noverflow-x: auto;\nz-index: 1;\n}\n#dump-list::-webkit-scrollbar {\nheight: 12px;\n}\n#dump-list::-webkit-scrollbar-thumb {\nborder: 1px solid;\n}\n.qr-preview {\nbackground-position: 50% 20%;\nbackground-size: cover;\nborder: 1px solid #808080;\ncolor: #FFF !important;\nfont-size: 12px;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncursor: move;\ndisplay: inline-block;\nheight: 92px; width: 92px;\nmargin: 4px; padding: 2px;\nopacity: .6;\noutline: none;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-webkit-transition: opacity .25s ease-in-out;\ntransition: opacity .25s ease-in-out;\nvertical-align: top;\nwhite-space: pre;\n}\n.qr-preview:hover, .qr-preview:focus {\nopacity: .9;\ncolor: #FFF !important;\n}\n.qr-preview#selected {\nopacity: 1;\n}\n.qr-preview::before {\ncounter-increment: qrpreviews;\ncontent: counter(qrpreviews);\nfont-weight: 700;\ntext-shadow: 0 0 3px #000, 0 0 5px #000;\nposition: absolute;\ntop: 3px; right: 3px;\n}\n.qr-preview.drag {\nborder-color: red;\nborder-style: dashed;\n}\n.qr-preview.over {\nborder-color: #FFF;\nborder-style: dashed;\n}\n.remove {\ncolor: #E00 !important;\nfont-weight: 700;\npadding: 3px;\n}\n.remove:hover::after {\ncontent: ' Remove';\n}\n.qr-preview > label {\nbackground: rgba(0, 0, 0, .5);\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.qr-preview > label > input {\nmargin: 1px 0;\nvertical-align: bottom;\n}\n#add-post {\ndisplay: inline-block;\nfont-size: 30px;\nheight: 30px;\nwidth: 30px;\nline-height: 1;\ntext-align: center;\nposition: absolute;\nright: 0; bottom: 0;\nz-index: 1;\n}\n#qr textarea {\nmin-height: 160px;\nmin-width: 100%;\ndisplay: block;\n}\n#qr.has-captcha textarea {\nmin-height: 120px;\n}\n.textarea {\nposition: relative;\n}\n#char-count {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nposition: absolute;\nbottom: 1px;\nright: 1px;\npointer-events: none;\n}\n#char-count.warning {\ncolor: red;\n}\n.captcha-img {\nbackground: #FFF;\noutline: 1px solid #CCC;\noutline-offset: -1px;\n}\n.captcha-img > img {\ndisplay: block;\nheight: 57px;\nwidth: 300px;\n}\n#file-n-submit > input {\nmargin: 0;\n}\n#file-n-submit.has-file #qr-no-file {\nvisibility: hidden;\n}\n#file-n-submit:not(.has-file) #qr-filename,\n#file-n-submit:not(.has-file) #qr-file-spoiler,\n#file-n-submit:not(.has-file) #qr-filerm {\ndisplay: none;\n}\n#file-n-submit {\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: row;\nflex-direction: row;\n-webkit-align-items: center;\nalign-items: center;\n}\n#qr-no-file, #qr-filename-container {\n-webkit-flex: 1;\nflex: 1;\n}\n#qr-filename-container {\ncursor: default;\nposition: relative;\nmargin-left: 2px;\n}\n#qr-filename {\nposition: absolute;\ntop: 0; right: 0; bottom: 0; left: 0;\ntext-overflow: ellipsis;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#qr-filerm {\npadding: 0 2px;\n}\n#file-n-submit > #qr-file-spoiler {\nmargin: 0 2px;\n}\n#qr input[type='file'] {\nposition: absolute;\nvisibility: hidden;\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\nposition: relative;\n}\n.menu-button i {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\nmargin: 2px 0;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\noutline: none;\n}\n.entry {\ncursor: pointer;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.entry.has-submenu {\npadding-right: 20px;\n}\n.has-submenu::after {\ncontent: '';\nborder-left:   6px solid;\nborder-top:    4px solid transparent;\nborder-bottom: 4px solid transparent;\ndisplay: inline-block;\nmargin: 4px;\nposition: absolute;\nright: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\ndisplay: none;\n}\n.submenu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\nmargin: -1px 0;\n}\n.entry input {\nmargin: 0;\n}\n\n/* General */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.yotsuba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.yotsuba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba #menu {\ncolor: #800000;\n}\n:root.yotsuba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 10pt;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.yotsuba-b #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.yotsuba-b .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba-b #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b #menu {\ncolor: #000;\n}\n:root.yotsuba-b .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 10pt;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.futaba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.futaba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.futaba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba #menu {\ncolor: #800000;\n}\n:root.futaba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 12pt;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.burichan #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.burichan .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.burichan #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan #menu {\ncolor: #000000;\n}\n:root.burichan .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 12pt;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .field:focus {\nborder-color: #000;\n}\n\n/* Header */\n:root.tomorrow #header-bar {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a {\ncolor: #81A2BE;\n}\n\n/* Settings */\n:root.tomorrow #fourchanx-settings fieldset {\nborder-color: #111;\n}\n\n/* Quote */\n:root.tomorrow .backlink.deadlink {\ncolor: #81A2BE !important;\n}\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n.tomorrow #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow #qr select {\ncolor: #C5C8C6;\n}\n:root.tomorrow #qr option {\ncolor: #000;\n}\n:root.tomorrow .qr-preview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n\n/* Menu */\n:root.tomorrow #menu {\ncolor: #C5C8C6;\n}\n:root.tomorrow .entry {\nborder-bottom: 1px solid #111;\nfont-size: 10pt;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* General */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a {\ncolor: #FF6600;\n}\n\n/* Settings */\n:root.photon #fourchanx-settings fieldset {\nborder-color: #CCC;\n}\n\n/* Quote */\n:root.photon .backlink.deadlink {\ncolor: #F60 !important;\n}\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.photon #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon #menu {\ncolor: #333;\n}\n:root.photon .entry {\nborder-bottom: 1px solid #CCC;\nfont-size: 10pt;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
+    css: "/* General */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.field {\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\n-webkit-transition: color .25s, border-color .25s, -webkit-flex .25s;\ntransition: color .25s, border-color .25s, flex .25s;\n}\n.field::-moz-placeholder,\n.field:hover::-moz-placeholder {\ncolor: #AAA !important;\n}\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.field[disabled] {\nbackground-color: #F2F2F2;\ncolor: #888;\n}\n.move {\ncursor: move;\n}\nlabel, .favicon {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\n}\n.post {\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#overlay,\n#qp, #ihover,\n#updater, #thread-stats,\n#navlinks, #header,\n#qr {\nposition: fixed;\n}\n#overlay {\nz-index: 999;\n}\n#notifications {\nz-index: 70;\n}\n#qp, #ihover {\nz-index: 60;\n}\n#menu {\nz-index: 50;\n}\n#navlinks, #updater, #thread-stats {\nz-index: 40;\n}\n#qr {\nz-index: 30;\n}\n#watcher:hover {\nz-index: 20;\n}\n#header {\nz-index: 10;\n}\n#watcher {\nz-index: 5;\n}\n\n/* Header */\n.fourchan-x body {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\n}\n#header {\ntop: 0;\nright: 0;\nleft: 0;\n}\n#header-bar {\nborder-width: 0 0 1px;\ndisplay: -webkit-flex;\ndisplay: flex;\npadding: 3px 4px 4px;\nposition: relative;\n-webkit-transition: all .1s .05s ease-in-out;\ntransition: all .1s .05s ease-in-out;\n}\n#board-list {\n-webkit-flex: 1;\nflex: 1;\ntext-align: center;\n}\n#header-bar.autohide:not(:hover) {\nbox-shadow: none;\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\n-webkit-transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\ntransition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n#toggle-header-bar {\ncursor: n-resize;\nleft: 0;\nright: 0;\nbottom: -8px;\nheight: 10px;\nposition: absolute;\n}\n#header-bar.autohide:not(:hover) #toggle-header-bar, #toggle-header-bar:hover {\nbottom: -16px;\nheight: 18px;\n}\n#header-bar.autohide #toggle-header-bar {\ncursor: s-resize;\n}\n#header-bar a:not(.entry) {\ntext-decoration: none;\npadding: 1px;\n}\n#shortcuts:empty {\ndisplay: none;\n}\n.brackets-wrap::before {\ncontent: \"\\00a0[\";\n}\n.brackets-wrap::after {\ncontent: \"]\\00a0\";\n}\n.disabled,\n.expand-all-shortcut {\nopacity: .45;\n}\n\n/* Notifications */\n#notifications {\nheight: 0;\ntext-align: center;\nposition: fixed;\ntop: 0;\nright: 0;\nleft: 0;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\n-webkit-transition: all .25s ease-in-out;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 38%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 38%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 38%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 38%, .9);\n}\n.notification a {\ncolor: white;\n}\n.notification > .close {\npadding: 6px;\ntop: 0;\nright: 0;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 6px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* Settings */\n#overlay {\nbackground-color: rgba(0, 0, 0, .5);\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-align-items: center;\nalign-items: center;\n-webkit-justify-content: center;\njustify-content: center;\nposition: fixed;\ntop: 0;\nleft: 0;\nheight: 100%;\nwidth: 100%;\n}\n#fourchanx-settings {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nbox-shadow: 0 0 15px rgba(0, 0, 0, .15);\nheight: 600px;\nmin-height: 0;\nmax-height: 100%;\nwidth: 900px;\nmin-width: 0;\nmax-width: 100%;\npadding: 3px;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\n}\n#fourchanx-settings > nav {\ndisplay: -webkit-flex;\ndisplay: flex;\npadding: 2px 2px 0;\n}\n#fourchanx-settings > nav a {\ntext-decoration: underline;\n}\n#fourchanx-settings > nav a.close {\ntext-decoration: none;\npadding: 2px;\n}\n.sections-list {\n-webkit-flex: 1;\nflex: 1;\n}\n.tab-selected {\nfont-weight: 700;\n}\n.section-container {\n-webkit-flex: 1;\nflex: 1;\nposition: relative;\n}\n.section-container > section {\nposition: absolute;\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\noverflow: auto;\n}\n.section-sauce ul,\n.section-rice ul {\nlist-style: none;\nmargin: 0;\npadding: 8px;\n}\n.section-sauce li,\n.section-rice li {\npadding-left: 4px;\n}\n.section-main label {\ntext-decoration: underline;\n}\n.section-filter ul {\npadding: 0;\n}\n.section-filter li {\nmargin: 10px 40px;\n}\n.section-filter textarea {\nheight: 500px;\n}\n.section-sauce textarea {\nheight: 350px;\n}\n.section-rice .field[name=\"boardnav\"] {\nwidth: 100%;\n}\n.section-rice textarea {\nheight: 150px;\n}\n#fourchanx-settings fieldset {\nborder: 1px solid;\nborder-radius: 3px;\n}\n#fourchanx-settings legend {\nfont-weight: 700;\n}\n#fourchanx-settings textarea {\nfont-family: monospace;\nmin-width: 100%;\nmax-width: 100%;\n}\n#fourchanx-settings code {\ncolor: #000;\nbackground-color: #FFF;\npadding: 0 2px;\n}\n.unscroll {\noverflow: hidden;\n}\n\n/* Unread */\n#unread-line {\nmargin: 0;\n}\n\n/* Thread Updater */\n#updater:not(:hover) {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n#updater > .move {\npadding: 0 3px;\n}\n#updater > div:last-child {\ntext-align: center;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n.new {\ncolor: limegreen;\n}\n\n/* Thread Watcher */\n#watcher {\npadding-bottom: 3px;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#watcher:not(:hover) {\nmax-height: 220px;\n}\n#watcher > .move {\npadding-top: 3px;\n}\n#watcher > div {\nmax-width: 200px;\noverflow: hidden;\npadding-left: 3px;\npadding-right: 3px;\ntext-overflow: ellipsis;\n}\n#watcher a {\ntext-decoration: none;\n}\n\n/* Thread Stats */\n#thread-stats {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n\n/* Quote */\n.deadlink {\ntext-decoration: none !important;\n}\n.backlink.deadlink:not(.forwardlink), .quotelink.deadlink:not(.forwardlink) {\ntext-decoration: underline !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp > .opContainer::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 2px 2px 5px;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\n}\n.qphl > .post {\noutline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* File */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.expanded-image > .post > .file > .fileThumb > img[data-md5],\n:not(.expanded-image) > .post > .file > .fileThumb > .full-image {\ndisplay: none;\n}\n.expanding {\nopacity: .5;\n}\n.expanded-image {\nclear: both;\n}\n.expanded-image > .op > .file::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n:root.fit-width .full-image {\nmax-width: 100%;\n}\n:root.gecko.fit-width .full-image,\n:root.presto.fit-width .full-image {\nwidth: 100%;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n\n/* Index/Reply Navigation */\n#navlinks {\nfont-size: 16px;\ntop: 25px;\nright: 10px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n.stub input {\ndisplay: inline-block;\n}\n\n/* QR */\n.hide-original-post-form #postForm,\n.hide-original-post-form .postingMode,\n#qr.autohide:not(:hover) > form {\ndisplay: none;\n}\n#qr select, #dump-button, .remove, .captcha-img {\ncursor: pointer;\n}\n#qr > div {\nmin-width: 300px;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-align-items: center;\nalign-items: center;\n}\n#qr .move {\n-webkit-align-self: stretch;\nalign-self: stretch;\n-webkit-flex: 1;\nflex: 1;\n}\n#qr select {\nmargin: 0;\n-webkit-appearance: none;\n-moz-appearance: none;\nappearance: none;\nborder: none;\nbackground: none;\n}\n.presto #qr select {\nheight: 1em;\n}\n#qr .close {\npadding: 0 3px;\n}\n#qr > form {\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\n}\n.persona {\ndisplay: -webkit-flex;\ndisplay: flex;\n}\n.persona .field {\n-webkit-flex: 1;\nflex: 1;\n}\n.persona .field:focus {\n-webkit-flex: 4;\nflex: 4;\n}\n#dump-button {\nbackground: -webkit-linear-gradient(#EEE, #CCC);\nbackground: linear-gradient(#EEE, #CCC);\nborder: 1px solid #CCC;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\nwidth: 30px;\n}\n#dump-button:hover, #dump-button:focus {\nbackground: -webkit-linear-gradient(#FFF, #DDD);\nbackground: linear-gradient(#FFF, #DDD);\n}\n#dump-button:active, .dump #dump-button:not(:hover):not(:focus) {\nbackground: -webkit-linear-gradient(#CCC, #DDD);\nbackground: linear-gradient(#CCC, #DDD);\n}\n.gecko #dump-button {\npadding: 0;\n}\n#qr:not(.dump) #dump-list-container {\ndisplay: none;\n}\n#dump-list-container {\nheight: 100px;\nposition: relative;\n-webkit-user-select: none;\n-moz-user-select: none;\n-o-user-select: none;\nuser-select: none;\n}\n#dump-list {\ncounter-reset: qrpreviews;\ntop: 0; right: 0; bottom: 0; left: 0;\noverflow: hidden;\nposition: absolute;\nwhite-space: nowrap;\n}\n#dump-list:hover {\nbottom: -12px;\noverflow-x: auto;\nz-index: 1;\n}\n#dump-list::-webkit-scrollbar {\nheight: 12px;\n}\n#dump-list::-webkit-scrollbar-thumb {\nborder: 1px solid;\n}\n.qr-preview {\nbackground-position: 50% 20%;\nbackground-size: cover;\nborder: 1px solid #808080;\ncolor: #FFF !important;\nfont-size: 12px;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncursor: move;\ndisplay: inline-block;\nheight: 92px; width: 92px;\nmargin: 4px; padding: 2px;\nopacity: .6;\noutline: none;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-webkit-transition: opacity .25s ease-in-out;\ntransition: opacity .25s ease-in-out;\nvertical-align: top;\nwhite-space: pre;\n}\n.qr-preview:hover, .qr-preview:focus {\nopacity: .9;\ncolor: #FFF !important;\n}\n.qr-preview#selected {\nopacity: 1;\n}\n.qr-preview::before {\ncounter-increment: qrpreviews;\ncontent: counter(qrpreviews);\nfont-weight: 700;\ntext-shadow: 0 0 3px #000, 0 0 5px #000;\nposition: absolute;\ntop: 3px; right: 3px;\n}\n.qr-preview.drag {\nborder-color: red;\nborder-style: dashed;\n}\n.qr-preview.over {\nborder-color: #FFF;\nborder-style: dashed;\n}\n.remove {\ncolor: #E00 !important;\nfont-weight: 700;\npadding: 3px;\n}\n.remove:hover::after {\ncontent: ' Remove';\n}\n.qr-preview > label {\nbackground: rgba(0, 0, 0, .5);\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.qr-preview > label > input {\nmargin: 1px 0;\nvertical-align: bottom;\n}\n#add-post {\ndisplay: inline-block;\nfont-size: 30px;\nheight: 30px;\nwidth: 30px;\nline-height: 1;\ntext-align: center;\nposition: absolute;\nright: 0; bottom: 0;\nz-index: 1;\n}\n#qr textarea {\nmin-height: 160px;\nmin-width: 100%;\ndisplay: block;\n}\n#qr.has-captcha textarea {\nmin-height: 120px;\n}\n.textarea {\nposition: relative;\n}\n#char-count {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nposition: absolute;\nbottom: 1px;\nright: 1px;\npointer-events: none;\n}\n#char-count.warning {\ncolor: red;\n}\n.captcha-img {\nbackground: #FFF;\noutline: 1px solid #CCC;\noutline-offset: -1px;\n}\n.captcha-img > img {\ndisplay: block;\nheight: 57px;\nwidth: 300px;\n}\n#file-n-submit > input {\nmargin: 0;\n}\n#file-n-submit.has-file #qr-no-file {\nvisibility: hidden;\n}\n#file-n-submit:not(.has-file) #qr-filename,\n#file-n-submit:not(.has-file) #qr-file-spoiler,\n#file-n-submit:not(.has-file) #qr-filerm {\ndisplay: none;\n}\n#file-n-submit {\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: row;\nflex-direction: row;\n-webkit-align-items: center;\nalign-items: center;\n}\n#qr-no-file, #qr-filename-container {\n-webkit-flex: 1;\nflex: 1;\n}\n#qr-filename-container {\ncursor: default;\nposition: relative;\nmargin-left: 2px;\n}\n#qr-filename {\nposition: absolute;\ntop: 0; right: 0; bottom: 0; left: 0;\ntext-overflow: ellipsis;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#qr-filerm {\npadding: 0 2px;\n}\n#file-n-submit > #qr-file-spoiler {\nmargin: 0 2px;\n}\n#file-n-submit input[type='submit'] {\nmin-width: 40px;\n-webkit-order: 1;\norder: 1;\n}\n#qr input[type='file'] {\nposition: absolute;\nvisibility: hidden;\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\nposition: relative;\n}\n.menu-button i {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\nmargin: 2px 0;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\noutline: none;\n}\n.entry {\ncursor: pointer;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.entry.has-submenu {\npadding-right: 20px;\n}\n.has-submenu::after {\ncontent: '';\nborder-left:   6px solid;\nborder-top:    4px solid transparent;\nborder-bottom: 4px solid transparent;\ndisplay: inline-block;\nmargin: 4px;\nposition: absolute;\nright: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\ndisplay: none;\n}\n.submenu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\nmargin: -1px 0;\n}\n.entry input {\nmargin: 0;\n}\n\n/* General */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.yotsuba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.yotsuba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba #menu {\ncolor: #800000;\n}\n:root.yotsuba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 10pt;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.yotsuba-b #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.yotsuba-b .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba-b #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b #menu {\ncolor: #000;\n}\n:root.yotsuba-b .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 10pt;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.futaba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.futaba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.futaba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba #menu {\ncolor: #800000;\n}\n:root.futaba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 12pt;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.burichan #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.burichan .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.burichan #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan #menu {\ncolor: #000000;\n}\n:root.burichan .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 12pt;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .field:focus {\nborder-color: #000;\n}\n\n/* Header */\n:root.tomorrow #header-bar {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a {\ncolor: #81A2BE;\n}\n\n/* Settings */\n:root.tomorrow #fourchanx-settings fieldset {\nborder-color: #111;\n}\n\n/* Quote */\n:root.tomorrow .backlink.deadlink {\ncolor: #81A2BE !important;\n}\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n.tomorrow #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow #qr select {\ncolor: #C5C8C6;\n}\n:root.tomorrow #qr option {\ncolor: #000;\n}\n:root.tomorrow .qr-preview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n\n/* Menu */\n:root.tomorrow #menu {\ncolor: #C5C8C6;\n}\n:root.tomorrow .entry {\nborder-bottom: 1px solid #111;\nfont-size: 10pt;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* General */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a {\ncolor: #FF6600;\n}\n\n/* Settings */\n:root.photon #fourchanx-settings fieldset {\nborder-color: #CCC;\n}\n\n/* Quote */\n:root.photon .backlink.deadlink {\ncolor: #F60 !important;\n}\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.photon #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon #menu {\ncolor: #333;\n}\n:root.photon .entry {\nborder-bottom: 1px solid #CCC;\nfont-size: 10pt;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
   };
 
   Main.init();
