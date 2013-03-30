@@ -3272,12 +3272,13 @@ ImageExpand =
     return unless $.hasClass thumb, 'expanding' # contracted before the image loaded
     prev = post.nodes.root.getBoundingClientRect()
     post.file.isExpanded = true
-    $.addClass post.nodes.root, 'expanded-image'
-    $.rmClass  post.file.thumb, 'expanding'
-    return unless prev.top + prev.height <= 0
-    root = if $.engine is 'webkit' then d.body else doc
-    curr = post.nodes.root.getBoundingClientRect()
-    root.scrollTop += curr.height - prev.height + curr.top - prev.top
+    $.queueTask ->
+      $.addClass post.nodes.root, 'expanded-image'
+      $.rmClass  post.file.thumb, 'expanding'
+      return unless prev.top + prev.height <= 0
+      root = if $.engine is 'webkit' then d.body else doc
+      curr = post.nodes.root.getBoundingClientRect()
+      root.scrollTop += curr.height - prev.height + curr.top - prev.top
 
   error: ->
     post = Get.postFromNode @
