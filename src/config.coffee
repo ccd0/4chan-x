@@ -115,8 +115,8 @@ Config =
       ''
     ].join '\n'
   sauces: [
-    'http://iqdb.org/?url=%TURL'
     'https://www.google.com/searchbyimage?image_url=%TURL'
+    'http://iqdb.org/?url=%TURL'
     '#//tineye.com/search?url=%TURL'
     '#http://saucenao.com/search.php?url=%TURL'
     '#http://3d.iqdb.org/?url=%TURL'
