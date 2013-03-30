@@ -592,7 +592,6 @@ QR =
       $.on  window, 'captcha:timeout', setLifetime
       $.globalEval 'window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))'
       $.off window, 'captcha:timeout', setLifetime
-      c.log @lifetime
 
       imgContainer = $.el 'div',
         className: 'captcha-img'
