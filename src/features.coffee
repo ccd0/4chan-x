@@ -3730,7 +3730,7 @@ Unread =
       title = d.title
       setTimeout ->
         d.title = ''
-        d.title = title
+        Unread.update()
       , $.SECOND
       <% } %>
 
