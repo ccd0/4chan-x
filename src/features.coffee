@@ -1548,20 +1548,15 @@ DeleteLink =
       open: (post) ->
         return false if post.isDead
         DeleteLink.post = post
-        DeleteLink.cooldown.start post
         node = div.firstChild
-        if seconds = DeleteLink.cooldown[post.fullID]
-          node.textContent = "Delete (#{seconds})"
-          DeleteLink.cooldown.el = node
-        else
-          node.textContent = 'Delete'
-          delete DeleteLink.cooldown.el
+        node.textContent = 'Delete'
+        DeleteLink.cooldown.start post, node
         true
       subEntries: [postEntry, fileEntry]
 
   delete: ->
     {post} = DeleteLink
-    return if DeleteLink.cooldown[post.fullID]
+    return if DeleteLink.cooldown.counting is post
 
     $.off @, 'click', DeleteLink.delete
     @textContent = "Deleting #{@textContent}..."
@@ -1601,25 +1596,29 @@ DeleteLink =
     $.on link, 'click', DeleteLink.delete
 
   cooldown:
-    start: (post) ->
-      return if post.fullID of DeleteLink.cooldown
+    start: (post, node) ->
+      unless (thread = QR.yourPosts?.threads?[post.thread]) and post.ID in thread
+        # Only start counting on our posts.
+        delete DeleteLink.cooldown.counting
+        return
+      DeleteLink.cooldown.counting = post
       length = if post.board.ID is 'q'
         600
       else
         30
       seconds = Math.ceil (length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND
-      DeleteLink.cooldown.count post.fullID, seconds, length
-    count: (fullID, seconds, length) ->
-      return unless 0 <= seconds <= length
-      setTimeout DeleteLink.cooldown.count, 1000, fullID, seconds-1, length
-      {el} = DeleteLink.cooldown
-      if seconds is 0
-        el?.textContent = 'Delete'
-        delete DeleteLink.cooldown[fullID]
-        delete DeleteLink.cooldown.el
+      DeleteLink.cooldown.count post, seconds, length, node
+    count: (post, seconds, length, node) ->
+      return if DeleteLink.cooldown.counting isnt post
+      unless 0 <= seconds <= length
+        if DeleteLink.cooldown.counting is post
+          delete DeleteLink.cooldown.counting
         return
-      el?.textContent = "Delete (#{seconds})"
-      DeleteLink.cooldown[fullID] = seconds
+      setTimeout DeleteLink.cooldown.count, 1000, post, seconds - 1, length, node
+      if seconds is 0
+        node.textContent = 'Delete'
+        return
+      node.textContent = "Delete (#{seconds})"
 
 DownloadLink =
   init: ->
