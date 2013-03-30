@@ -16,7 +16,7 @@ class Thread
     @fullID = "#{@board}.#{@ID}"
     @posts  = {}
 
-    g.threads["#{board}.#{@}"] = board.threads[@] = @
+    g.threads[@fullID] = board.threads[@] = @
 
   kill: ->
     @isDead = true
@@ -107,7 +107,7 @@ class Post
       @thread.isClosed = !!$ '.closedIcon', @nodes.info
 
     @clones = []
-    g.posts["#{board}.#{@}"] = thread.posts[@] = board.posts[@] = @
+    g.posts[@fullID] = thread.posts[@] = board.posts[@] = @
     @kill() if that.isArchived
 
   parseComment: ->
