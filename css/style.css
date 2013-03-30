@@ -551,8 +551,8 @@ a[href="javascript:;"] {
 }
 .persona .field:hover,
 .persona .field:focus {
-  -webkit-flex: 4;
-  flex: 4;
+  -webkit-flex: 3;
+  flex: 3;
 }
 #dump-button {
   background: -webkit-linear-gradient(#EEE, #CCC);
