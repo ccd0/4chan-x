@@ -1546,7 +1546,7 @@ DeleteLink =
       el: div
       order: 40
       open: (post) ->
-        return false if post.isDead or !((thread = QR.yourPosts.threads[post.thread]) and post.ID in thread)
+        return false if post.isDead
         DeleteLink.post = post
         DeleteLink.cooldown.start post
         node = div.firstChild

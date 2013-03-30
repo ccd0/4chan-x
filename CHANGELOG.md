@@ -17,7 +17,6 @@ Extension-related changes for Chrome and Opera:
 Egocentrism:
  - `(You)` will be added to quotes linking to your posts.
  - The Unread tab icon will indicate new unread posts quoting you with an exclamation mark.
- - Delete links in the post menu will only appear for your posts.
 
 Quick Reply changes:
  - Opening text files will insert their content in the comment field.
