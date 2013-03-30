@@ -3615,15 +3615,18 @@ Unread =
     Unread.hr = $.el 'hr',
       id: 'unread-line'
     Misc.clearThreads "lastReadPosts.#{g.BOARD}"
+    $.sync "lastReadPosts.#{g.BOARD}", @sync
+
+    Unread.posts = []
+    Unread.postsQuotingYou = []
+
     Thread::callbacks.push
       name: 'Unread'
       cb:   @node
 
   node: ->
-    Unread.thread          = @
-    Unread.posts           = []
-    Unread.postsQuotingYou = []
-    Unread.title           = d.title
+    Unread.thread = @
+    Unread.title  = d.title
     posts = []
     for ID, post of @posts
       posts.push post if post.isReply
@@ -3639,6 +3642,14 @@ Unread =
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
+
+  sync: (lastReadPosts) ->
+    return unless (lastReadPost = lastReadPosts?.threads?[Unread.thread]) and Unread.lastReadPost < lastReadPost
+    Unread.lastReadPost = lastReadPost
+    Unread.readArray Unread.posts
+    Unread.readArray Unread.postsQuotingYou
+    Unread.setLine()
+    Unread.update()
 
   addPosts: (newPosts) ->
     if Conf['Quick Reply']
@@ -3671,6 +3682,11 @@ Unread =
     else
       Unread.addPosts e.detail.newPosts
 
+  readArray: (arr) ->
+    for post, i in arr
+      break if post.ID > Unread.lastReadPost
+    arr.splice 0, i
+
   read: (e) ->
     return if d.hidden or !Unread.posts.length
     height = doc.clientHeight
@@ -3681,13 +3697,11 @@ Unread =
 
     Unread.lastReadPost = Unread.posts[i - 1].ID
     Unread.saveLastReadPost()
-    Unread.posts = Unread.posts[i..]
-    for post, i in Unread.postsQuotingYou
-      break if post.ID > Unread.lastReadPost
-    Unread.postsQuotingYou = Unread.postsQuotingYou[i..]
+    Unread.posts.splice 0, i
+    Unread.readArray Unread.postsQuotingYou
     Unread.update() if e
 
-  saveLastReadPost: $.debounce $.SECOND, ->
+  saveLastReadPost: $.debounce 2 * $.SECOND, ->
     $.get "lastReadPosts.#{Unread.thread.board}", threads: {}, (item) ->
       lastReadPosts = item["lastReadPosts.#{Unread.thread.board}"]
       lastReadPosts.threads[Unread.thread] = Unread.lastReadPost
