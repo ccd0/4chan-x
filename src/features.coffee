@@ -3633,7 +3633,9 @@ Unread =
     $.get "lastReadPosts.#{@board}", threads: {}, (item) =>
       Unread.lastReadPost = item["lastReadPosts.#{@board}"].threads[@] or 0
       Unread.addPosts posts
-      if Unread.posts.length
+      if (hash = location.hash.match /\d+/) and post = @posts[hash[0]]
+        post.nodes.root.scrollIntoView()
+      else if Unread.posts.length
         # Scroll to before the first unread post.
         $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView false
       else if posts.length
