@@ -3197,7 +3197,7 @@ ImageExpand =
       # Scroll back to the thumbnail when contracting the image
       # to avoid being left miles away from the relevant post.
       postRect = post.nodes.root.getBoundingClientRect()
-      headRect = Header.toggle.getBoundingClientRect()
+      headRect = Header.bar.getBoundingClientRect()
       top  = postRect.top - headRect.top - headRect.height - 2
       root = if $.engine is 'webkit'
         d.body

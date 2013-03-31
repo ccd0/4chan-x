@@ -20,7 +20,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-03-28
+/* 4chan X Beta - Version 3.0.0 - 2013-03-31
  * https://4chan-x.just-believe.in/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -4951,7 +4951,7 @@
       rect = thumb.parentNode.getBoundingClientRect();
       if (rect.bottom > 0) {
         postRect = post.nodes.root.getBoundingClientRect();
-        headRect = Header.toggle.getBoundingClientRect();
+        headRect = Header.bar.getBoundingClientRect();
         top = postRect.top - headRect.top - headRect.height - 2;
         root = $.engine === 'webkit' ? d.body : doc;
         if (rect.top < 0) {
