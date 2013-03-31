@@ -17,6 +17,7 @@ module.exports = function(grunt) {
           'src/features.coffee',
           'src/qr.coffee',
           'src/report.coffee',
+          'src/databoard.coffee',
           'src/main.coffee'
         ],
         dest: 'tmp/script.coffee'

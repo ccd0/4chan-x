@@ -2,8 +2,7 @@ QR =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Quick Reply']
 
-    Misc.clearThreads "yourPosts.#{g.BOARD}"
-    @syncYourPosts()
+    @db = new DataBoard 'yourPosts'
 
     if Conf['Hide Original Post Form']
       $.addClass doc, 'hide-original-post-form'
@@ -87,14 +86,6 @@ QR =
       QR.hide()
     else
       QR.unhide()
-
-  syncYourPosts: (yourPosts) ->
-    if yourPosts
-      QR.yourPosts = yourPosts
-      return
-    $.get "yourPosts.#{g.BOARD}", threads: {}, (item) ->
-      QR.syncYourPosts item["yourPosts.#{g.BOARD}"]
-    $.sync "yourPosts.#{g.BOARD}", QR.syncYourPosts
 
   error: (err) ->
     QR.open()
@@ -984,8 +975,11 @@ QR =
     threadID = +threadID or postID
     isReply  = threadID isnt postID
 
-    (QR.yourPosts.threads[threadID] or= []).push postID
-    $.set "yourPosts.#{g.BOARD}", QR.yourPosts
+    QR.db.set
+      boardID: g.BOARD.ID
+      threadID: threadID
+      postID: postID
+      val: true
 
     # Post/upload confirmed as successful.
     $.event 'QRPostSuccessful', {

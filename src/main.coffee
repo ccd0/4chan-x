@@ -282,22 +282,25 @@ class Clone extends Post
 
 Main =
   init: (items) ->
-    unless items
-      # flatten Config into Conf
-      # and get saved or default values
-      flatten = (parent, obj) ->
-        if obj instanceof Array
-          Conf[parent] = obj[0]
-        else if typeof obj is 'object'
-          for key, val of obj
-            flatten key, val
-        else # string or number
-          Conf[parent] = obj
-        return
-      flatten null, Config
-      $.get Conf, Main.init
+    # flatten Config into Conf
+    # and get saved or default values
+    flatten = (parent, obj) ->
+      if obj instanceof Array
+        Conf[parent] = obj[0]
+      else if typeof obj is 'object'
+        for key, val of obj
+          flatten key, val
+      else # string or number
+        Conf[parent] = obj
       return
+    flatten null, Config
+    for db in DataBoards
+      Conf[db] = boards: {}
+    $.get Conf, Main.initFeatures
 
+    $.on d, '4chanMainInit', Main.initStyle
+
+  initFeatures: (items) ->
     Conf = items
 
     pathname = location.pathname.split '/'
@@ -385,10 +388,10 @@ Main =
     # c.timeEnd 'All initializations'
 
     $.on d, 'AddCallback',   Main.addCallback
-    $.on d, '4chanMainInit', Main.initStyle
     $.ready Main.initReady
 
   initStyle: ->
+    $.off d, '4chanMainInit', Main.initStyle
     return unless Main.isThisPageLegit()
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true

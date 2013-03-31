@@ -347,18 +347,20 @@ Settings =
       innerHTML: "<button></button><span class=description>: Clear manually hidden threads and posts on /#{g.BOARD}/."
     button = $ 'button', div
     hiddenNum = 0
-    ThreadHiding.getHiddenThreads (hiddenThreads) ->
-      for ID, thread of hiddenThreads.threads
-        hiddenNum++
-      button.textContent = "Hidden: #{hiddenNum}"
-    ReplyHiding.getHiddenPosts (hiddenPosts) ->
-      for ID, thread of hiddenPosts.threads
-        for ID, post of thread
+    $.get 'hiddenThreads', boards: {}, (item) ->
+      for ID, board of item.hiddenThreads.boards
+        for ID, thread of board
           hiddenNum++
+      button.textContent = "Hidden: #{hiddenNum}"
+    $.get 'hiddenPosts', boards: {}, (item) ->
+      for ID, board of item.hiddenPosts.boards
+        for ID, thread of board
+          for ID, post of thread
+            hiddenNum++
       button.textContent = "Hidden: #{hiddenNum}"
     $.on button, 'click', ->
       @textContent = 'Hidden: 0'
-      $.delete ["hiddenThreads.#{g.BOARD}", "hiddenPosts.#{g.BOARD}"]
+      $.delete ['hiddenThreads', 'hiddenPosts']
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
   export: (now, data) ->
     unless typeof now is 'number'
@@ -367,9 +369,14 @@ Settings =
         version: g.VERSION
         date: now
         Conf: Conf
-      $.get 'WatchedThreads', {}, (item) ->
-        data.WatchedThreads = item.WatchedThreads
+      items = WatchedThreads: {}
+      for db in DataBoards
+        items[db] = boards: {}
+      $.get items (items) ->
+        for key, val in items
+          data[key] = val
         Settings.export now, data
+      return
     a = $.el 'a',
       className: 'warning'
       textContent: 'Save me!'
@@ -472,6 +479,8 @@ Settings =
           "Shift+#{s[0...-1]}#{s[-1..].toLowerCase()}"
     for key, val of data.Conf
       $.set key, val
+    for db in DataBoards
+      $.set db, data[db]
     $.set 'WatchedThreads', data.WatchedThreads
   convertSettings: (data, map) ->
     for prevKey, newKey of map
@@ -1060,43 +1069,38 @@ ThreadHiding =
   init: ->
     return if g.VIEW isnt 'index' or !Conf['Thread Hiding'] and !Conf['Thread Hiding Link']
 
-    Misc.clearThreads "hiddenThreads.#{g.BOARD}"
+    @db = new DataBoard 'hiddenThreads'
     @syncFromCatalog()
     Thread::callbacks.push
       name: 'Thread Hiding'
       cb:   @node
 
   node: ->
-    if data = ThreadHiding.hiddenThreads.threads[@]
+    if data = ThreadHiding.db.get {boardID: @board.ID, threadID: @ID}
       ThreadHiding.hide @, data.makeStub
     return unless Conf['Thread Hiding']
     $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
 
-  getHiddenThreads: (cb) ->
-    $.get "hiddenThreads.#{g.BOARD}", threads: {}, (item) ->
-      ThreadHiding.hiddenThreads = item["hiddenThreads.#{g.BOARD}"]
-      cb ThreadHiding.hiddenThreads if cb
-
   syncFromCatalog: ->
     # Sync hidden threads from the catalog into the index.
-    ThreadHiding.getHiddenThreads (hiddenThreads) ->
-      {threads} = hiddenThreads
-      hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
+    hiddenThreads = ThreadHiding.db.get
+      boardID: g.BOARD.ID
+      defaultValue: {}
+    hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
 
-      # Add threads that were hidden in the catalog.
-      for threadID of hiddenThreadsOnCatalog
-        continue if threadID of threads
-        threads[threadID] = {}
+    # Add threads that were hidden in the catalog.
+    for threadID of hiddenThreadsOnCatalog
+      unless threadID of hiddenThreads
+        hiddenThreads[threadID] = {}
 
-      # Remove threads that were un-hidden in the catalog.
-      for threadID of threads
-        continue if threadID of threads
-        delete threads[threadID]
+    # Remove threads that were un-hidden in the catalog.
+    for threadID of hiddenThreads
+      unless threadID of hiddenThreadsOnCatalog
+        delete hiddenThreads[threadID]
 
-      if Object.keys(threads).length
-        $.set "hiddenThreads.#{g.BOARD}", ThreadHiding.hiddenThreads
-      else
-        $.delete "hiddenThreads.#{g.BOARD}"
+    ThreadHiding.db.set
+      boardID: g.BOARD.ID
+      val: hiddenThreads
 
   menu:
     init: ->
@@ -1141,17 +1145,19 @@ ThreadHiding =
     a
 
   saveHiddenState: (thread, makeStub) ->
-    # Get fresh hidden threads.
-    ThreadHiding.getHiddenThreads (hiddenThreads) ->
-      hiddenThreadsCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
-      if thread.isHidden
-        hiddenThreads.threads[thread] = {makeStub}
-        hiddenThreadsCatalog[thread]  = true
-      else
-        delete hiddenThreads.threads[thread]
-        delete hiddenThreadsCatalog[thread]
-      $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
-      localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify hiddenThreadsCatalog
+    hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
+    if thread.isHidden
+      ThreadHiding.db.set
+        boardID:  thread.board.ID
+        threadID: thread.ID
+        val: {makeStub}
+      hiddenThreadsOnCatalog[thread] = true
+    else
+      ThreadHiding.db.delete
+        boardID:  thread.board.ID
+        threadID: thread.ID
+      delete hiddenThreadsOnCatalog[thread]
+    localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify hiddenThreadsOnCatalog
 
   toggle: (thread) ->
     unless thread instanceof Thread
@@ -1204,28 +1210,21 @@ ReplyHiding =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Reply Hiding'] and !Conf['Reply Hiding Link']
 
-    Misc.clearThreads "hiddenPosts.#{g.BOARD}"
-    @getHiddenPosts()
+    @db = new DataBoard 'hiddenPosts'
     Post::callbacks.push
       name: 'Reply Hiding'
       cb:   @node
 
   node: ->
     return if !@isReply or @isClone
-    if thread = ReplyHiding.hiddenPosts.threads[@thread]
-      if data = thread[@]
-        if data.thisPost
-          ReplyHiding.hide @, data.makeStub, data.hideRecursively
-        else
-          Recursive.apply ReplyHiding.hide, @, data.makeStub, true
-          Recursive.add ReplyHiding.hide, @, data.makeStub, true
+    if data = ReplyHiding.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
+      if data.thisPost
+        ReplyHiding.hide @, data.makeStub, data.hideRecursively
+      else
+        Recursive.apply ReplyHiding.hide, @, data.makeStub, true
+        Recursive.add ReplyHiding.hide, @, data.makeStub, true
     return unless Conf['Reply Hiding']
     $.replace $('.sideArrows', @nodes.root), ReplyHiding.makeButton @, 'hide'
-
-  getHiddenPosts: (cb) ->
-    $.get "hiddenPosts.#{g.BOARD}", threads: {}, (item) ->
-      ReplyHiding.hiddenPosts = item["hiddenPosts.#{g.BOARD}"]
-      cb ReplyHiding.hiddenPosts if cb
 
   menu:
     init: ->
@@ -1279,10 +1278,9 @@ ReplyHiding =
         el: div
         order: 20
         open: (post) ->
-          if !post.isReply or post.isClone
+          if !post.isReply or post.isClone or !post.isHidden
             return false
-          thread = ReplyHiding.hiddenPosts.threads[post.thread]
-          unless post.isHidden or data = thread?[post]
+          unless data = ReplyHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
             return false
           ReplyHiding.menu.post = post
           thisPost.firstChild.checked = post.isHidden
@@ -1309,8 +1307,6 @@ ReplyHiding =
       thisPost = $('input[name=thisPost]', parent).checked
       replies  = $('input[name=replies]',  parent).checked
       {post}   = ReplyHiding.menu
-      thread   = ReplyHiding.hiddenPosts.threads[post.thread]
-      data     = thread?[post]
       if thisPost
         ReplyHiding.show post, replies
       else if replies
@@ -1318,7 +1314,7 @@ ReplyHiding =
         Recursive.rm ReplyHiding.hide, post, true
       else
         return
-      if data
+      if data = ReplyHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
         ReplyHiding.saveHiddenState post, !(thisPost and replies), !thisPost, data.makeStub, !replies
       $.event 'CloseMenu'
 
@@ -1331,21 +1327,18 @@ ReplyHiding =
     a
 
   saveHiddenState: (post, isHiding, thisPost, makeStub, hideRecursively) ->
-    # Get fresh hidden posts.
-    ReplyHiding.getHiddenPosts (hiddenPosts) ->
-      if isHiding
-        unless thread = hiddenPosts.threads[post.thread]
-          thread = hiddenPosts.threads[post.thread] = {}
-        thread[post] =
-          thisPost: thisPost isnt false # undefined -> true
-          makeStub: makeStub
-          hideRecursively: hideRecursively
-      else
-        thread = hiddenPosts.threads[post.thread]
-        delete thread[post]
-        unless Object.keys(thread).length
-          delete hiddenPosts.threads[post.thread]
-      $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
+    data =
+      boardID:  post.board.ID
+      threadID: post.thread.ID
+      postID:   post.ID
+    if isHiding
+      data.val =
+        thisPost: thisPost isnt false # undefined -> true
+        makeStub: makeStub
+        hideRecursively: hideRecursively
+      ReplyHiding.db.set data
+    else
+      ReplyHiding.db.delete data
 
   toggle: ->
     post = Get.postFromNode @
@@ -1448,8 +1441,8 @@ QuoteStrikeThrough =
   node: ->
     return if @isClone
     for quotelink in @nodes.quotelinks
-      {board, postID} = Get.postDataFromLink quotelink
-      if g.posts["#{board}.#{postID}"]?.isHidden
+      {boardID, postID} = Get.postDataFromLink quotelink
+      if g.posts["#{boardID}.#{postID}"]?.isHidden
         $.addClass quotelink, 'filtered'
     return
 
@@ -1597,7 +1590,7 @@ DeleteLink =
 
   cooldown:
     start: (post, node) ->
-      unless (thread = QR.yourPosts?.threads?[post.thread]) and post.ID in thread
+      unless QR.db?.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
         # Only start counting on our posts.
         delete DeleteLink.cooldown.counting
         return
@@ -2304,15 +2297,15 @@ Get =
   postDataFromLink: (link) ->
     if link.hostname is 'boards.4chan.org'
       path     = link.pathname.split '/'
-      board    = path[1]
+      boardID  = path[1]
       threadID = path[3]
       postID   = link.hash[2..]
     else # resurrected quote
-      board    = link.dataset.board
+      boardID  = link.dataset.board
       threadID = link.dataset.threadid or 0
       postID   = link.dataset.postid
     return {
-      board:    board
+      boardID:  boardID
       threadID: +threadID
       postID:   +postID
     }
@@ -2340,8 +2333,8 @@ Get =
     # Third:
     #   Filter out irrelevant quotelinks.
     quotelinks.filter (quotelink) ->
-      {board, postID} = Get.postDataFromLink quotelink
-      board is post.board.ID and postID is post.ID
+      {boardID, postID} = Get.postDataFromLink quotelink
+      boardID is post.board.ID and postID is post.ID
   postClone: (board, threadID, postID, root, context) ->
     if post = g.posts["#{board}.#{postID}"]
       Get.insert post, root, context
@@ -2510,34 +2503,6 @@ Get =
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
 
-Misc = # super semantic
-  clearThreads: (key, data) ->
-    unless data
-      $.get key, null, (item) ->
-        data = item[key]
-        return unless data
-        Misc.clearThreads key, data
-      return
-
-    unless Object.keys(data.threads).length
-      $.delete key
-      return
-
-    return if data.lastChecked > Date.now() - 12 * $.HOUR
-
-    $.ajax "//api.4chan.org/#{g.BOARD}/threads.json", onload: ->
-      threads = {}
-      for page in JSON.parse @response
-        for thread in page.threads
-          if thread.no of data.threads
-            threads[thread.no] = data.threads[thread.no]
-      unless Object.keys(threads).length
-        $.delete key
-        return
-      data.threads     = threads
-      data.lastChecked = Date.now()
-      $.set key, data
-
 Quotify =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Resurrect Quotes']
@@ -2623,13 +2588,13 @@ QuoteInline =
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
-    {board, threadID, postID} = Get.postDataFromLink @
+    {boardID, threadID, postID} = Get.postDataFromLink @
     context = Get.contextFromLink @
     if $.hasClass @, 'inlined'
-      QuoteInline.rm @, board, threadID, postID, context
+      QuoteInline.rm @, boardID, threadID, postID, context
     else
       return if $.x "ancestor::div[@id='p#{postID}']", @
-      QuoteInline.add @, board, threadID, postID, context
+      QuoteInline.add @, boardID, threadID, postID, context
     @classList.toggle 'inlined'
 
   findRoot: (quotelink, isBacklink) ->
@@ -2637,15 +2602,15 @@ QuoteInline =
       quotelink.parentNode.parentNode
     else
       $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
-  add: (quotelink, board, threadID, postID, context) ->
+  add: (quotelink, boardID, threadID, postID, context) ->
     isBacklink = $.hasClass quotelink, 'backlink'
     inline = $.el 'div',
       id: "i#{postID}"
       className: 'inline'
     $.after QuoteInline.findRoot(quotelink, isBacklink), inline
-    Get.postClone board, threadID, postID, inline, context
+    Get.postClone boardID, threadID, postID, inline, context
 
-    return unless (post = g.posts["#{board}.#{postID}"]) and
+    return unless (post = g.posts["#{boardID}.#{postID}"]) and
       context.thread is post.thread
 
     # Hide forward post if it's a backlink of a post in this thread.
@@ -2659,7 +2624,7 @@ QuoteInline =
       Unread.posts.splice i, 1
       Unread.update()
 
-  rm: (quotelink, board, threadID, postID, context) ->
+  rm: (quotelink, boardID, threadID, postID, context) ->
     isBacklink = $.hasClass quotelink, 'backlink'
     # Select the corresponding inlined quote, and remove it.
     root = QuoteInline.findRoot quotelink, isBacklink
@@ -2670,21 +2635,21 @@ QuoteInline =
     return unless el = root.firstElementChild
 
     # Dereference clone.
-    post = g.posts["#{board}.#{postID}"]
+    post = g.posts["#{boardID}.#{postID}"]
     post.rmClone el.dataset.clone
 
     # Decrease forward count and unhide.
     if Conf['Forward Hiding'] and
       isBacklink and
-      context.thread is g.threads["#{board}.#{threadID}"] and
+      context.thread is g.threads["#{boardID}.#{threadID}"] and
       not --post.forwarded
         delete post.forwarded
         $.rmClass post.nodes.root, 'forwarded'
 
     # Repeat.
     while inlined = $ '.inlined', el
-      {board, threadID, postID} = Get.postDataFromLink inlined
-      QuoteInline.rm inlined, board, threadID, postID, context
+      {boardID, threadID, postID} = Get.postDataFromLink inlined
+      QuoteInline.rm inlined, boardID, threadID, postID, context
       $.rmClass inlined, 'inlined'
     return
 
@@ -2704,13 +2669,13 @@ QuotePreview =
   mouseover: (e) ->
     return if $.hasClass @, 'inlined'
 
-    {board, threadID, postID} = Get.postDataFromLink @
+    {boardID, threadID, postID} = Get.postDataFromLink @
 
     qp = $.el 'div',
       id: 'qp'
       className: 'dialog'
     $.add d.body, qp
-    Get.postClone board, threadID, postID, qp, Get.contextFromLink @
+    Get.postClone boardID, threadID, postID, qp, Get.contextFromLink @
 
     UI.hover
       root: @
@@ -2720,7 +2685,7 @@ QuotePreview =
       cb: QuotePreview.mouseout
       asapTest: -> qp.firstElementChild
 
-    return unless origin = g.posts["#{board}.#{postID}"]
+    return unless origin = g.posts["#{boardID}.#{postID}"]
 
     if Conf['Quote Highlighting']
       posts = [origin].concat origin.clones
@@ -2823,11 +2788,12 @@ QuoteYou =
     return if @isClone
     # Stop there if there's no quotes in that post.
     return unless (quotes = @quotes).length
+    {db} = QR
+    return unless db
     {quotelinks} = @nodes
 
     for quotelink in quotelinks
-      {threadID, postID} = Get.postDataFromLink quotelink
-      if (thread = QR.yourPosts.threads[threadID]) and postID in thread
+      if db.get Get.postDataFromLink quotelink
         $.add quotelink, $.tn QuoteYou.text
     return
 
@@ -2856,8 +2822,8 @@ QuoteOP =
     # add (OP) to quotes quoting this context's OP.
     return unless op in quotes
     for quotelink in quotelinks
-      {board, postID} = Get.postDataFromLink quotelink
-      if "#{board}.#{postID}" is op
+      {boardID, postID} = Get.postDataFromLink quotelink
+      if "#{boardID}.#{postID}" is op
         $.add quotelink, $.tn QuoteOP.text
     return
 
@@ -2879,11 +2845,11 @@ QuoteCT =
 
     {board, thread} = if @isClone then @context else @
     for quotelink in quotelinks
-      data = Get.postDataFromLink quotelink
-      continue unless data.threadID # deadlink
+      {boardID, threadID} = Get.postDataFromLink quotelink
+      continue unless threadID # deadlink
       if @isClone
         quotelink.textContent = quotelink.textContent.replace QuoteCT.text, ''
-      if data.board is @board.ID and data.threadID isnt thread.ID
+      if boardID is @board.ID and threadID isnt thread.ID
         $.add quotelink, $.tn QuoteCT.text
     return
 
@@ -3612,13 +3578,11 @@ Unread =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Tab Icon']
 
-    Unread.hr = $.el 'hr',
+    @db = new DataBoard 'lastReadPosts', @sync
+    @hr = $.el 'hr',
       id: 'unread-line'
-    Misc.clearThreads "lastReadPosts.#{g.BOARD}"
-    $.sync "lastReadPosts.#{g.BOARD}", @sync
-
-    Unread.posts = []
-    Unread.postsQuotingYou = []
+    @posts = []
+    @postsQuotingYou = []
 
     Thread::callbacks.push
       name: 'Unread'
@@ -3630,23 +3594,29 @@ Unread =
     posts = []
     for ID, post of @posts
       posts.push post if post.isReply
-    $.get "lastReadPosts.#{@board}", threads: {}, (item) =>
-      Unread.lastReadPost = item["lastReadPosts.#{@board}"].threads[@] or 0
-      Unread.addPosts posts
-      if (hash = location.hash.match /\d+/) and post = @posts[hash[0]]
-        post.nodes.root.scrollIntoView()
-      else if Unread.posts.length
-        # Scroll to before the first unread post.
-        $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView false
-      else if posts.length
-        # Scroll to the last read post.
-        posts[posts.length - 1].nodes.root.scrollIntoView()
+    Unread.lastReadPost = Unread.db.get
+      boardID: @board.ID
+      threadID: @ID
+      defaultValue: 0
+    Unread.addPosts posts
+    if (hash = location.hash.match /\d+/) and post = @posts[hash[0]]
+      post.nodes.root.scrollIntoView()
+    else if Unread.posts.length
+      # Scroll to before the first unread post.
+      $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView false
+    else if posts.length
+      # Scroll to the last read post.
+      posts[posts.length - 1].nodes.root.scrollIntoView()
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
 
-  sync: (lastReadPosts) ->
-    return unless (lastReadPost = lastReadPosts?.threads?[Unread.thread]) and Unread.lastReadPost < lastReadPost
+  sync: ->
+    lastReadPost = Unread.db.get
+      boardID: Unread.thread.board.ID
+      threadID: Unread.thread.ID
+      defaultValue: 0
+    return unless Unread.lastReadPost < lastReadPost
     Unread.lastReadPost = lastReadPost
     Unread.readArray Unread.posts
     Unread.readArray Unread.postsQuotingYou
@@ -3654,29 +3624,30 @@ Unread =
     Unread.update()
 
   addPosts: (newPosts) ->
-    if Conf['Quick Reply']
-      {yourPosts} = QR
-      youInThisThread = yourPosts.threads[Unread.thread]
     for post in newPosts
       {ID} = post
-      if ID <= Unread.lastReadPost or post.isHidden or youInThisThread and ID in youInThisThread
+      if ID <= Unread.lastReadPost or post.isHidden
         continue
+      if QR.db
+        data =
+          boardID:  post.board.ID
+          threadID: post.thread.ID
+          postID:   post.ID
+        continue if QR.db.get data
       Unread.posts.push post
-      Unread.addPostQuotingYou post, yourPosts if yourPosts
+      Unread.addPostQuotingYou post
     if Conf['Unread Line']
       # Force line on visible threads if there were no unread posts previously.
       Unread.setLine Unread.posts[0] in newPosts
     Unread.read()
     Unread.update()
 
-  addPostQuotingYou: (post, yourPosts) ->
-    for quote in post.quotes
-      [board, quoteID] = quote.split '.'
-      continue unless board is Unread.thread.board.ID
-      for thread, postIDs of yourPosts.threads
-        if +quoteID in postIDs
-          Unread.postsQuotingYou.push post
-          return
+  addPostQuotingYou: (post) ->
+    return unless QR.db
+    for quotelink in post.nodes.quotelinks
+      if QR.db.get Get.postDataFromLink quotelink
+        Unread.postsQuotingYou.push post
+    return
 
   onUpdate: (e) ->
     if e.detail[404]
@@ -3704,10 +3675,10 @@ Unread =
     Unread.update() if e
 
   saveLastReadPost: $.debounce 2 * $.SECOND, ->
-    $.get "lastReadPosts.#{Unread.thread.board}", threads: {}, (item) ->
-      lastReadPosts = item["lastReadPosts.#{Unread.thread.board}"]
-      lastReadPosts.threads[Unread.thread] = Unread.lastReadPost
-      $.set "lastReadPosts.#{Unread.thread.board}", lastReadPosts
+    Unread.db.set
+      boardID: Unread.thread.board.ID
+      threadID: Unread.thread.ID
+      val: Unread.lastReadPost
 
   setLine: (force) ->
     return unless d.hidden or force is true
