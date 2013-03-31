@@ -1,13 +1,12 @@
 UI = do ->
   dialog = (id, position, html) ->
-    el = d.createElement 'div'
-    el.className = 'dialog'
-    el.innerHTML = html
-    el.id        = id
+    el = $.el 'div',
+      className: 'dialog'
+      innerHTML: html
+      id: id
     el.style.cssText = localStorage.getItem("#{g.NAMESPACE}#{id}.position") or position
-    move = el.querySelector '.move'
-    move.addEventListener 'touchstart', dragstart, false
-    move.addEventListener 'mousedown',  dragstart, false
+    move = $ '.move', el
+    $.on move, 'touchstart mousedown', dragstart
     el
 
 
@@ -103,8 +102,7 @@ UI = do ->
       $.rm currentMenu
       currentMenu       = null
       lastToggledButton = null
-      $.off d, 'click',     @close
-      $.off d, 'CloseMenu', @close
+      $.off d, 'click, CloseMenu', @close
 
     findNextEntry: (entry, direction) ->
       entries = [entry.parentNode.children...]
@@ -156,18 +154,14 @@ UI = do ->
       eRect   = entry.getBoundingClientRect()
       cHeight = doc.clientHeight
       cWidth  = doc.clientWidth
-      if eRect.top + sRect.height < cHeight
-        top    = '0px'
-        bottom = 'auto'
+      [top, bottom] = if eRect.top + sRect.height < cHeight
+        ['0px', 'auto']
       else
-        top    = 'auto'
-        bottom = '0px'
-      if eRect.right + sRect.width < cWidth
-        left  = '100%'
-        right = 'auto'
+        ['auto', '0px']
+      [left, right] = if eRect.right + sRect.width < cWidth
+        ['100%', 'auto']
       else
-        left  = 'auto'
-        right = '100%'
+        ['auto', '100%']
       {style} = submenu
       style.top    = top
       style.bottom = bottom
@@ -201,10 +195,10 @@ UI = do ->
       return
     # prevent text selection
     e.preventDefault()
-    el = $.x 'ancestor::div[contains(@class,"dialog")][1]', @
     if isTouching = e.type is 'touchstart'
       e = e.changedTouches[e.changedTouches.length - 1]
     # distance from pointer to el edge is constant; calculate it here.
+    el = $.x 'ancestor::div[contains(@class,"dialog")][1]', @
     rect = el.getBoundingClientRect()
     screenHeight = doc.clientHeight
     screenWidth  = doc.clientWidth
@@ -223,14 +217,13 @@ UI = do ->
       o.identifier = e.identifier
       o.move = touchmove.bind o
       o.up   = touchend.bind  o
-      d.addEventListener 'touchmove',   o.move, false
-      d.addEventListener 'touchend',    o.up,   false
-      d.addEventListener 'touchcancel', o.up,   false
+      $.on d, 'touchmove', o.move
+      $.on d, 'touchend touchcancel', o.up
     else # mousedown
       o.move = drag.bind    o
       o.up   = dragend.bind o
-      d.addEventListener 'mousemove', o.move, false
-      d.addEventListener 'mouseup',   o.up,   false
+      $.on d, 'mousemove', o.move
+      $.on d, 'mouseup',   o.up
   touchmove = (e) ->
     for touch in e.changedTouches
       if touch.identifier is @identifier
@@ -240,33 +233,29 @@ UI = do ->
     {clientX, clientY} = e
 
     left = clientX - @dx
-    left =
-      if left < 10
-        0
-      else if @width - left < 10
-        null
-      else
-        left / @screenWidth * 100 + '%'
+    left = if left < 10
+      0
+    else if @width - left < 10
+      null
+    else
+      left / @screenWidth * 100 + '%'
 
     top = clientY - @dy
-    top =
-      if top < 10
-        0
-      else if @height - top < 10
-        null
-      else
-        top / @screenHeight * 100 + '%'
+    top = if top < 10
+      0
+    else if @height - top < 10
+      null
+    else
+      top / @screenHeight * 100 + '%'
 
-    right =
-      if left is null
-        0
-      else
-        null
-    bottom =
-      if top is null
-        0
-      else
-        null
+    right = if left is null
+      0
+    else
+      null
+    bottom = if top is null
+      0
+    else
+      null
 
     {style} = @
     style.left   = left
@@ -280,12 +269,11 @@ UI = do ->
         return
   dragend = ->
     if @isTouching
-      d.removeEventListener 'touchmove',   @move, false
-      d.removeEventListener 'touchend',    @up,   false
-      d.removeEventListener 'touchcancel', @up,   false
+      $.off d, 'touchmove', @move
+      $.off d, 'touchend touchcancel', @up
     else # mouseup
-      d.removeEventListener 'mousemove', @move, false
-      d.removeEventListener 'mouseup',   @up,   false
+      $.off d, 'mousemove', @move
+      $.off d, 'mouseup',   @up
     localStorage.setItem "#{g.NAMESPACE}#{@id}.position", @style.cssText
 
   hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb}) ->
@@ -294,7 +282,7 @@ UI = do ->
       el:     el
       style:  el.style
       cb:     cb
-      endEvents:    endEvents.split ' '
+      endEvents:    endEvents
       latestEvent:  latestEvent
       clientHeight: doc.clientHeight
       clientWidth:  doc.clientWidth
@@ -302,47 +290,37 @@ UI = do ->
     o.hover    = hover.bind    o
     o.hoverend = hoverend.bind o
 
-    asap = ->
-      if asapTest()
-        o.hover o.latestEvent
-      else
-        o.timeout = setTimeout asap, 25
-    asap()
+    $.asap asapTest, ->
+      o.hover o.latestEvent
 
-    for event in o.endEvents
-      root.addEventListener event,     o.hoverend, false
-    root.addEventListener 'mousemove', o.hover,    false
+    $.on root, endEvents,   o.hoverend
+    $.on root, 'mousemove', o.hover
   hover = (e) ->
     @latestEvent = e
     height = @el.offsetHeight
     {clientX, clientY} = e
 
     top = clientY - 120
-    top =
-      if @clientHeight <= height or top <= 0
-        0
-      else if top + height >= @clientHeight
-        @clientHeight - height
-      else
-        top
-
-    if clientX <= @clientWidth - 400
-      left  = clientX + 45 + 'px'
-      right = null
+    top = if @clientHeight <= height or top <= 0
+      0
+    else if top + height >= @clientHeight
+      @clientHeight - height
     else
-      left  = null
-      right = @clientWidth - clientX + 45 + 'px'
+      top
+
+    [left, right] = if clientX <= @clientWidth - 400
+      [clientX + 45 + 'px', null]
+    else
+      [null, @clientWidth - clientX + 45 + 'px']
 
     {style} = @
     style.top   = top + 'px'
     style.left  = left
     style.right = right
   hoverend = ->
-    @el.parentNode.removeChild @el
-    for event in @endEvents
-      @root.removeEventListener event,     @hoverend, false
-    @root.removeEventListener 'mousemove', @hover,    false
-    clearTimeout @timeout
+    $.rm @el
+    $.off @root, @endEvents,  @hoverend
+    $.off @root, 'mousemove', @hover
     @cb.call @ if @cb
 
 
