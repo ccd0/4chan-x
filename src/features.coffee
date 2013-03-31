@@ -3718,7 +3718,7 @@ Unread =
     else if Unread.hr.parentNode
       $.rm Unread.hr
 
-  update: ->
+  update: <% if (type === 'crx') { %>(dontrepeat) <% } %>->
     count = Unread.posts.length
 
     if Conf['Unread Count']
@@ -3729,11 +3729,13 @@ Unread =
       <% if (type === 'crx') { %>
       # XXX Chrome bug where it doesn't always update the tab title.
       # crbug.com/124381
-      title = d.title
-      setTimeout ->
-        d.title = ''
-        Unread.update()
-      , $.SECOND
+      # Call it one second later,
+      # but don't display outdated unread count.
+      unless dontrepeat
+        setTimeout ->
+          d.title = ''
+          Unread.update true
+        , $.SECOND
       <% } %>
 
     return unless Conf['Unread Tab Icon']
