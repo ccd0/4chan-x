@@ -191,8 +191,7 @@ UI = do ->
 
 
   dragstart = (e) ->
-    if e.type is 'mousedown' and e.button isnt 0 # not LMB
-      return
+    return if e.type is 'mousedown' and e.button isnt 0 # not LMB
     # prevent text selection
     e.preventDefault()
     if isTouching = e.type is 'touchstart'

@@ -131,7 +131,8 @@ Header =
   setBarVisibility: (hide) ->
     Header.headerToggler.firstElementChild.checked = hide
     (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
-  toggleBarVisibility: ->
+  toggleBarVisibility: (e) ->
+    return if e.type is 'mousedown' and e.button isnt 0 # not LMB
     hide = if @nodeName is 'INPUT'
       @checked
     else
