@@ -2788,12 +2788,10 @@ QuoteYou =
     return if @isClone
     # Stop there if there's no quotes in that post.
     return unless (quotes = @quotes).length
-    {db} = QR
-    return unless db
     {quotelinks} = @nodes
 
     for quotelink in quotelinks
-      if db.get Get.postDataFromLink quotelink
+      if QR.db.get Get.postDataFromLink quotelink
         $.add quotelink, $.tn QuoteYou.text
     return
 
