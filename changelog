@@ -1,4 +1,6 @@
 master
+- Mayhem
+  Fix importing settings containing unicode characters.
 
 2.39.1
 - Mayhem
