@@ -31,7 +31,7 @@ Quick Reply changes:
 
 Image Expansion changes:
  - The toggle and settings are now located in the Header's shortcuts and menu.
- - There is now a setting to allow expanding spoilers.
+ - Expanding spoilers along with all non-spoiler images is now optional, and disabled by default.
  - Expanding OP images won't squish replies anymore.
 
 Thread Updater changes:
