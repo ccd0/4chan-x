@@ -4080,7 +4080,7 @@ Redirect =
   image: (board, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch board
-      when 'a', 'jp', 'm', 'q', 'tg', 'vg', 'wsg'
+      when 'a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg'
         "//archive.foolz.us/#{board}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
@@ -4096,22 +4096,22 @@ Redirect =
         "//archive.nyafuu.org/#{board}/full_image/#{filename}"
   post: (board, postID) ->
     switch board
-      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
+      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg', 'dev', 'foolz'
         "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
       when 'u', 'kuku'
         "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-      when 'c', 'int', 'po'
+      when 'c', 'int', 'out', 'po'
         "//archive.thedarkcave.org/_/api/chan/post/?board=#{board}&num=#{postID}"
   to: (data) ->
     unless data.isSearch
       {threadID} = data
     {board} = data
     switch board
-      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz'
+      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg', 'dev', 'foolz'
         url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
       when 'u', 'kuku'
         url = Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
-      when 'int', 'po'
+      when 'int', 'out', 'po'
         url = Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
       when 'ck', 'lit'
         url = Redirect.path '//fuuka.warosu.org', 'fuuka', data

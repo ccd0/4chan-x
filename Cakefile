@@ -112,7 +112,7 @@ task 'upgrade', (options) ->
   exec "git commit -am 'Release #{version}.' && git tag -a #{version} -m '#{version}' && git tag -af stable -m '#{version}'"
 
 task 'build', ->
-  exec 'coffee --print script.coffee', (err, stdout, stderr) ->
+  exec 'coffee --print script.coffee', {maxBuffer: 500 * 1024}, (err, stdout, stderr) ->
     throw err if err
     fs.writeFile OUTFILE, HEADER + stdout, (err) ->
       throw err if err

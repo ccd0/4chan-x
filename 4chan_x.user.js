@@ -581,7 +581,7 @@
   Filter = {
     filters: {},
     init: function() {
-      var boards, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4;
+      var boards, err, filter, hl, key, op, regexp, stub, top, _i, _len, _ref, _ref1, _ref2, _ref3, _ref4;
       for (key in Config.filter) {
         this.filters[key] = [];
         _ref = Conf[key].split('\n');
@@ -603,7 +603,8 @@
           } else {
             try {
               regexp = RegExp(regexp[1], regexp[2]);
-            } catch (err) {
+            } catch (_error) {
+              err = _error;
               alert(err.message);
               continue;
             }
@@ -2090,7 +2091,6 @@
     },
     replies: [],
     reply: (function() {
-
       function _Class() {
         var persona, prev,
           _this = this;
@@ -3044,14 +3044,15 @@
       }
       reader = new FileReader();
       reader.onload = function(e) {
-        var data;
+        var data, err;
         try {
           data = JSON.parse(decodeURIComponent(escape(e.target.result)));
           Options.loadSettings(data);
           if (confirm('Import successful. Refresh now?')) {
             return window.location.reload();
           }
-        } catch (err) {
+        } catch (_error) {
+          err = _error;
           return output.textContent = 'Import failed due to an error.';
         }
       };
@@ -4917,11 +4918,14 @@
     image: function(board, filename) {
       switch (board) {
         case 'a':
+        case 'gd':
         case 'jp':
         case 'm':
         case 'q':
         case 'tg':
         case 'vg':
+        case 'vp':
+        case 'vr':
         case 'wsg':
           return "//archive.foolz.us/" + board + "/full_image/" + filename;
         case 'u':
@@ -4949,6 +4953,7 @@
       switch (board) {
         case 'a':
         case 'co':
+        case 'gd':
         case 'jp':
         case 'm':
         case 'q':
@@ -4957,6 +4962,8 @@
         case 'tv':
         case 'v':
         case 'vg':
+        case 'vp':
+        case 'vr':
         case 'wsg':
         case 'dev':
         case 'foolz':
@@ -4966,6 +4973,7 @@
           return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
         case 'c':
         case 'int':
+        case 'out':
         case 'po':
           return "//archive.thedarkcave.org/_/api/chan/post/?board=" + board + "&num=" + postID;
       }
@@ -4979,6 +4987,7 @@
       switch (board) {
         case 'a':
         case 'co':
+        case 'gd':
         case 'jp':
         case 'm':
         case 'q':
@@ -4987,6 +4996,8 @@
         case 'tv':
         case 'v':
         case 'vg':
+        case 'vp':
+        case 'vr':
         case 'wsg':
         case 'dev':
         case 'foolz':
@@ -4997,6 +5008,7 @@
           url = Redirect.path('//nsfw.foolz.us', 'foolfuuka', data);
           break;
         case 'int':
+        case 'out':
         case 'po':
           url = Redirect.path('//archive.thedarkcave.org', 'foolfuuka', data);
           break;
@@ -5742,7 +5754,7 @@
       return post;
     },
     node: function(nodes, notify) {
-      var callback, node, _i, _j, _len, _len1, _ref;
+      var callback, err, node, _i, _j, _len, _len1, _ref;
       _ref = Main.callbacks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         callback = _ref[_i];
@@ -5751,7 +5763,8 @@
             node = nodes[_j];
             callback(node);
           }
-        } catch (err) {
+        } catch (_error) {
+          err = _error;
           if (notify) {
             alert("4chan X (" + Main.version + ") error: " + err.message + "\nReport the bug at mayhemydg.github.com/4chan-x/#bug-report\n\nURL: " + window.location + "\n" + err.stack);
           }
