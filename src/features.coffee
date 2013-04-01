@@ -345,7 +345,7 @@ Settings =
       return
 
     div = $.el 'div',
-      innerHTML: "<button></button><span class=description>: Clear manually hidden threads and posts on /#{g.BOARD}/."
+      innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Refresh the page to apply."
     button = $ 'button', div
     hiddenNum = 0
     $.get 'hiddenThreads', boards: {}, (item) ->
