@@ -373,9 +373,9 @@ Settings =
       items = WatchedThreads: {}
       for db in DataBoards
         items[db] = boards: {}
-      $.get items (items) ->
-        for key, val in items
-          data[key] = val
+      $.get items, (items) ->
+        for key, val of items
+          data.Conf[key] = val
         Settings.export now, data
       return
     a = $.el 'a',
@@ -480,8 +480,6 @@ Settings =
           "Shift+#{s[0...-1]}#{s[-1..].toLowerCase()}"
     for key, val of data.Conf
       $.set key, val
-    for db in DataBoards
-      $.set db, data[db]
     $.set 'WatchedThreads', data.WatchedThreads
   convertSettings: (data, map) ->
     for prevKey, newKey of map
