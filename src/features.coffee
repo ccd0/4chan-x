@@ -402,7 +402,7 @@ Settings =
     reader = new FileReader()
     reader.onload = (e) ->
       try
-        data = JSON.parse decodeURIComponent escape e.target.result
+        data = JSON.parse e.target.result
         Settings.loadSettings data
         if confirm 'Import successful. Refresh now?'
           window.location.reload()
