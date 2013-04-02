@@ -836,10 +836,12 @@ QR =
         err = 'New threads require a subject.'
       else unless post.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
         err = 'No file selected.'
-    else if g.BOARD.threads[threadID].isSticky
+    else if g.BOARD.threads[threadID].isClosed
       err = 'You can\'t reply to this thread anymore.'
     else unless post.com or post.file
       err = 'No file selected.'
+    else if post.file and g.BOARD.threads[threadID].fileLimit
+      err = 'Max limit of image replies has been reached.'
 
     if QR.captcha.isEnabled and !err
       {challenge, response} = QR.captcha.getOne()

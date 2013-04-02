@@ -3794,19 +3794,20 @@ ThreadStats =
     for ID, post of @posts
       postCount++
       fileCount++ if post.file
-    ThreadStats.update postCount, fileCount
     ThreadStats.thread = @
+    ThreadStats.update postCount, fileCount
     $.on d, 'ThreadUpdate', ThreadStats.onUpdate
     $.add d.body, ThreadStats.dialog
   onUpdate: (e) ->
     return if e.detail[404]
-    {postCount, fileCount, postLimit, fileLimit} = e.detail
-    ThreadStats.update postCount, fileCount, postLimit, fileLimit
-  update: (postCount, fileCount, postLimit, fileLimit) ->
-    ThreadStats.postCountEl.textContent = postCount
-    ThreadStats.fileCountEl.textContent = fileCount
-    (if postLimit and !ThreadStats.thread.isSticky then $.addClass else $.rmClass) ThreadStats.postCountEl, 'warning'
-    (if fileLimit and !ThreadStats.thread.isSticky then $.addClass else $.rmClass) ThreadStats.fileCountEl, 'warning'
+    {postCount, fileCount} = e.detail
+    ThreadStats.update postCount, fileCount
+  update: (postCount, fileCount) ->
+    {thread, postCountEl, fileCountEl} = ThreadStats
+    postCountEl.textContent = postCount
+    fileCountEl.textContent = fileCount
+    (if thread.postLimit and !thread.isSticky then $.addClass else $.rmClass) postCountEl, 'warning'
+    (if thread.fileLimit and !thread.isSticky then $.addClass else $.rmClass) fileCountEl, 'warning'
 
 ThreadUpdater =
   init: ->
@@ -4010,6 +4011,8 @@ ThreadUpdater =
 
     ThreadUpdater.updateThreadStatus 'Sticky', OP
     ThreadUpdater.updateThreadStatus 'Closed', OP
+    ThreadUpdater.thread.postLimit = !!OP.bumplimit
+    ThreadUpdater.thread.fileLimit = !!OP.imagelimit
 
     nodes = [] # post container elements
     posts = [] # post objects
@@ -4085,8 +4088,6 @@ ThreadUpdater =
       deletedFiles: deletedFiles
       postCount: OP.replies + 1
       fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
-      postLimit: !!OP.bumplimit
-      fileLimit: !!OP.imagelimit
 
 ThreadWatcher =
   init: ->
