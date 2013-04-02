@@ -1642,8 +1642,8 @@ ArchiveLink =
       type: 'post'
       el: div
       order: 90
-      open: ({ID: postID, thread: threadID, board}) ->
-        redirect = Redirect.to {postID, threadID, board}
+      open: ({ID, thread, board}) ->
+        redirect = Redirect.to {ID, threadID: thread.ID, boardID: board.ID}
         redirect isnt "//boards.4chan.org/#{board}/"
       subEntries: []
 
@@ -1667,8 +1667,8 @@ ArchiveLink =
       target: '_blank'
 
     if type is 'post'
-      open = ({ID: postID, thread: threadID, board}) ->
-        el.href = Redirect.to {postID, threadID, board}
+      open: ({ID, thread, board}) ->
+        el.href = Redirect.to {ID, threadID: thread.ID, boardID: board.ID}
         true
     else
       open = (post) ->
@@ -1676,7 +1676,7 @@ ArchiveLink =
         # We want to parse the exact same stuff as the filter does already.
         return false unless value
         el.href = Redirect.to
-          board:    post.board
+          boardID:  post.board.ID
           type:     type
           value:    value
           isSearch: true
@@ -1934,36 +1934,36 @@ Nav =
     window.scrollBy 0, top
 
 Redirect =
-  image: (board, filename) ->
+  image: (boardID, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
-    switch "#{board}"
+    switch boardID
       when 'a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg'
-        "//archive.foolz.us/#{board}/full_image/#{filename}"
+        "//archive.foolz.us/#{boardID}/full_image/#{filename}"
       when 'u'
-        "//nsfw.foolz.us/#{board}/full_image/#{filename}"
+        "//nsfw.foolz.us/#{boardID}/full_image/#{filename}"
       when 'po'
-        "//archive.thedarkcave.org/#{board}/full_image/#{filename}"
+        "//archive.thedarkcave.org/#{boardID}/full_image/#{filename}"
       when 'ck', 'lit'
-        "//fuuka.warosu.org/#{board}/full_image/#{filename}"
+        "//fuuka.warosu.org/#{boardID}/full_image/#{filename}"
       when 'cgl', 'g', 'mu', 'w'
-        "//rbt.asia/#{board}/full_image/#{filename}"
+        "//rbt.asia/#{boardID}/full_image/#{filename}"
       when 'an', 'k', 'toy', 'x'
-        "http://archive.heinessen.com/#{board}/full_image/#{filename}"
+        "http://archive.heinessen.com/#{boardID}/full_image/#{filename}"
       when 'c'
-        "//archive.nyafuu.org/#{board}/full_image/#{filename}"
-  post: (board, postID) ->
-    switch "#{board}"
+        "//archive.nyafuu.org/#{boardID}/full_image/#{filename}"
+  post: (boardID, postID) ->
+    switch boardID
       when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'
-        "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
+        "//archive.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'u'
-        "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
+        "//nsfw.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'c', 'int', 'out', 'po'
-        "//archive.thedarkcave.org/_/api/chan/post/?board=#{board}&num=#{postID}"
+        "//archive.thedarkcave.org/_/api/chan/post/?board=#{boardID}&num=#{postID}"
     # for fuuka-based archives:
     # https://github.com/eksopl/fuuka/issues/27
   to: (data) ->
-    {board} = data
-    switch "#{board}"
+    {boardID} = data
+    switch boardID
       when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'
         url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
       when 'u'
@@ -1982,11 +1982,11 @@ Redirect =
         url = Redirect.path '//archive.nyafuu.org', 'fuuka', data
       else
         if data.threadID
-          url = "//boards.4chan.org/#{board}/"
+          url = "//boards.4chan.org/#{boardID}/"
     url or ''
   path: (base, archiver, data) ->
     if data.isSearch
-      {board, type, value} = data
+      {boardID, type, value} = data
       type =
         if type is 'name'
           'username'
@@ -1996,20 +1996,20 @@ Redirect =
           type
       value = encodeURIComponent value
       return if archiver is 'foolfuuka'
-          "#{base}/#{board}/search/#{type}/#{value}"
+          "#{base}/#{boardID}/search/#{type}/#{value}"
         else if type is 'image'
-          "#{base}/#{board}/?task=search2&search_media_hash=#{value}"
+          "#{base}/#{boardID}/?task=search2&search_media_hash=#{value}"
         else
-          "#{base}/#{board}/?task=search2&search_#{type}=#{value}"
+          "#{base}/#{boardID}/?task=search2&search_#{type}=#{value}"
 
-    {board, threadID, postID} = data
+    {boardID, threadID, postID} = data
     # keep the number only if the location.hash was sent f.e.
     postID = postID.match(/\d+/)[0] if postID and typeof postID is 'string'
     path =
       if threadID
-        "#{board}/thread/#{threadID}"
+        "#{boardID}/thread/#{threadID}"
       else
-        "#{board}/post/#{postID}"
+        "#{boardID}/post/#{postID}"
     if archiver is 'foolfuuka'
       path += '/'
     if threadID and postID
@@ -2031,12 +2031,12 @@ Build =
       "#{filename[...threshold - 5]}(...).#{filename[-3..]}"
     else
       filename
-  postFromObject: (data, board) ->
+  postFromObject: (data, boardID) ->
     o =
       # id
       postID:   data.no
       threadID: data.resto or data.no
-      board:    board
+      boardID:  boardID
       # info
       name:     data.name
       capcode:  data.capcode
@@ -2057,12 +2057,12 @@ Build =
       o.file =
         name:      data.filename + data.ext
         timestamp: "#{data.tim}#{data.ext}"
-        url:       "//images.4chan.org/#{board}/src/#{data.tim}#{data.ext}"
+        url:       "//images.4chan.org/#{boardID}/src/#{data.tim}#{data.ext}"
         height:    data.h
         width:     data.w
         MD5:       data.md5
         size:      data.fsize
-        turl:      "//thumbs.4chan.org/#{board}/thumb/#{data.tim}s.jpg"
+        turl:      "//thumbs.4chan.org/#{boardID}/thumb/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
@@ -2074,7 +2074,7 @@ Build =
     @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
     ###
     {
-      postID, threadID, board
+      postID, threadID, boardID
       name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
       isSticky, isClosed
       comment
@@ -2129,7 +2129,7 @@ Build =
 
     flag =
       if flagCode
-        " <img src='#{staticPath}/image/country/#{if board.ID is 'pol' then 'troll/' else ''}" +
+        " <img src='#{staticPath}/image/country/#{if boardID is 'pol' then 'troll/' else ''}" +
         flagCode.toLowerCase() + ".gif' alt=#{flagCode} title='#{flagName}' class=countryFlag>"
       else
         ''
@@ -2157,13 +2157,13 @@ Build =
         fileSize = "Spoiler Image, #{fileSize}"
         unless isArchived
           fileThumb = '//static.4chan.org/image/spoiler'
-          if spoilerRange = Build.spoilerRange[board]
+          if spoilerRange = Build.spoilerRange[boardID]
             # Randomize the spoiler image.
-            fileThumb += "-#{board}" + Math.floor 1 + spoilerRange * Math.random()
+            fileThumb += "-#{boardID}" + Math.floor 1 + spoilerRange * Math.random()
           fileThumb += '.png'
           file.twidth = file.theight = 100
 
-      if board.ID isnt 'f'
+      if boardID.ID isnt 'f'
         imgSrc = "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href='#{file.url}' target=_blank>" +
           "<img src='#{fileThumb}' alt='#{fileSize}' data-md5=#{file.MD5} style='height: #{file.theight}px; width: #{file.twidth}px;'></a>"
 
@@ -2228,12 +2228,12 @@ Build =
             capcodeStart + capcode + userID + flag + sticky + closed +
             "<br>#{subject}" +
           "</span><span class='dateTime postNum' data-utc=#{dateUTC}>#{date}" +
-            "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"}>No.</a>" +
+            "<a href=#{"/#{boardID}/res/#{threadID}#p#{postID}"}>No.</a>" +
             "<a href='#{
               if g.VIEW is 'thread' and g.THREAD is +threadID
                 "javascript:quote(#{postID})"
               else
-                "/#{board}/res/#{threadID}#q#{postID}"
+                "/#{boardID}/res/#{threadID}#q#{postID}"
               }'>#{postID}</a>" +
           '</span>' +
         '</div>' +
@@ -2250,12 +2250,12 @@ Build =
           ' </span> ' +
           "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> " +
           "<span class='postNum desktop'>" +
-            "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
+            "<a href=#{"/#{boardID}/res/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
             "<a href='#{
               if g.VIEW is 'thread' and g.THREAD is +threadID
                 "javascript:quote(#{postID})"
               else
-                "/#{board}/res/#{threadID}#q#{postID}"
+                "/#{boardID}/res/#{threadID}#q#{postID}"
               }' title='Quote this post'>#{postID}</a>" +
           '</span>' +
         '</div>' +
@@ -2269,7 +2269,7 @@ Build =
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
-      quote.href = "/#{board}/res/#{href}" # Fix pathnames
+      quote.href = "/#{boardID}/res/#{href}" # Fix pathnames
 
     container
 
@@ -2282,11 +2282,11 @@ Get =
       $('.nameBlock', OP.nodes.info).textContent.trim()
     "/#{thread.board}/ - #{excerpt}"
   postFromRoot: (root) ->
-    link   = $ 'a[title="Highlight this post"]', root
-    board  = link.pathname.split('/')[1]
-    postID = link.hash[2..]
-    index  = root.dataset.clone
-    post   = g.posts["#{board}.#{postID}"]
+    link    = $ 'a[title="Highlight this post"]', root
+    boardID = link.pathname.split('/')[1]
+    postID  = link.hash[2..]
+    index   = root.dataset.clone
+    post    = g.posts["#{boardID}.#{postID}"]
     if index then post.clones[index] else post
   postFromNode: (root) ->
     Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', root
@@ -2299,7 +2299,7 @@ Get =
       threadID = path[3]
       postID   = link.hash[2..]
     else # resurrected quote
-      boardID  = link.dataset.board
+      boardID  = link.dataset.boardid
       threadID = link.dataset.threadid or 0
       postID   = link.dataset.postid
     return {
@@ -2333,18 +2333,18 @@ Get =
     quotelinks.filter (quotelink) ->
       {boardID, postID} = Get.postDataFromLink quotelink
       boardID is post.board.ID and postID is post.ID
-  postClone: (board, threadID, postID, root, context) ->
-    if post = g.posts["#{board}.#{postID}"]
+  postClone: (boardID, threadID, postID, root, context) ->
+    if post = g.posts["#{boardID}.#{postID}"]
       Get.insert post, root, context
       return
 
     root.textContent = "Loading post No.#{postID}..."
     if threadID
-      $.cache "//api.4chan.org/#{board}/res/#{threadID}.json", ->
-        Get.fetchedPost @, board, threadID, postID, root, context
-    else if url = Redirect.post board, postID
+      $.cache "//api.4chan.org/#{boardID}/res/#{threadID}.json", ->
+        Get.fetchedPost @, boardID, threadID, postID, root, context
+    else if url = Redirect.post boardID, postID
       $.cache url, ->
-        Get.archivedPost @, board, postID, root, context
+        Get.archivedPost @, boardID, postID, root, context
   insert: (post, root, context) ->
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
@@ -2358,19 +2358,19 @@ Get =
 
     root.innerHTML = null
     $.add root, nodes.root
-  fetchedPost: (req, board, threadID, postID, root, context) ->
+  fetchedPost: (req, boardID, threadID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
-    if post = g.posts["#{board}.#{postID}"]
+    if post = g.posts["#{boardID}.#{postID}"]
       Get.insert post, root, context
       return
 
     {status} = req
     if status not in [200, 304]
       # The thread can die by the time we check a quote.
-      if url = Redirect.post board, postID
+      if url = Redirect.post boardID, postID
         $.cache url, ->
-          Get.archivedPost @, board, postID, root, context
+          Get.archivedPost @, boardID, postID, root, context
       else
         $.addClass root, 'warning'
         root.textContent =
@@ -2381,30 +2381,30 @@ Get =
       return
 
     posts = JSON.parse(req.response).posts
-    Build.spoilerRange[board] = posts[0].custom_spoiler
+    Build.spoilerRange[boardID] = posts[0].custom_spoiler
     for post in posts
       break if post.no is postID # we found it!
       if post.no > postID
         # The post can be deleted by the time we check a quote.
-        if url = Redirect.post board, postID
+        if url = Redirect.post boardID, postID
           $.cache url, ->
-            Get.archivedPost @, board, postID, root, context
+            Get.archivedPost @, boardID, postID, root, context
         else
           $.addClass root, 'warning'
           root.textContent = "Post No.#{postID} was not found."
         return
 
-    board = g.boards[board] or
-      new Board board
-    thread = g.threads["#{board}.#{threadID}"] or
+    board = g.boards[boardID] or
+      new Board boardID
+    thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
-    post = new Post Build.postFromObject(post, board), thread, board
+    post = new Post Build.postFromObject(post, boardID), thread, board
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
-  archivedPost: (req, board, postID, root, context) ->
+  archivedPost: (req, boardID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
-    if post = g.posts["#{board}.#{postID}"]
+    if post = g.posts["#{boardID}.#{postID}"]
       Get.insert post, root, context
       return
 
@@ -2461,7 +2461,7 @@ Get =
       # id
       postID:   "#{postID}"
       threadID: "#{threadID}"
-      board:    board
+      boardID:  boardID
       # info
       name:     data.name_processed
       capcode:  switch data.capcode
@@ -2487,14 +2487,14 @@ Get =
         width:     data.media.media_w
         MD5:       data.media.media_hash
         size:      data.media.media_size
-        turl:      data.media.thumb_link or "//thumbs.4chan.org/#{board}/thumb/#{data.media.preview_orig}"
+        turl:      data.media.thumb_link or "//thumbs.4chan.org/#{boardID}/thumb/#{data.media.preview_orig}"
         theight:   data.media.preview_h
         twidth:    data.media.preview_w
         isSpoiler: data.media.spoiler is '1'
 
-    board = g.boards[board] or
-      new Board board
-    thread = g.threads["#{board}.#{threadID}"] or
+    board = g.boards[boardID] or
+      new Board boardID
+    thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
     post = new Post Build.post(o, true), thread, board,
       isArchived: true
@@ -2518,13 +2518,13 @@ Quotify =
         continue
 
       quote = deadlink.textContent
-      continue unless ID = quote.match(/\d+$/)?[0]
-      board =
+      continue unless postID = quote.match(/\d+$/)?[0]
+      boardID =
         if m = quote.match /^>>>\/([a-z\d]+)/
           m[1]
         else
           @board.ID
-      quoteID = "#{board}.#{ID}"
+      quoteID = "#{boardID}.#{postID}"
 
       # \u00A0 is nbsp
       if post = g.posts[quoteID]
@@ -2532,31 +2532,31 @@ Quotify =
           # Don't (Dead) when quotifying in an archived post,
           # and we know the post still exists.
           a = $.el 'a',
-            href:        "/#{board}/#{post.thread}/res/#p#{ID}"
+            href:        "/#{boardID}/#{post.thread}/res/#p#{postID}"
             className:   'quotelink'
             textContent: quote
         else
           # Replace the .deadlink span if we can redirect.
           a = $.el 'a',
-            href:        "/#{board}/#{post.thread}/res/#p#{ID}"
+            href:        "/#{boardID}/#{post.thread}/res/#p#{postID}"
             className:   'quotelink deadlink'
             target:      '_blank'
             textContent: "#{quote}\u00A0(Dead)"
-          a.setAttribute 'data-board',    board
+          a.setAttribute 'data-boardid',  boardID
           a.setAttribute 'data-threadid', post.thread.ID
-          a.setAttribute 'data-postid',   ID
-      else if redirect = Redirect.to {board, threadID: 0, postID: ID}
+          a.setAttribute 'data-postid',   postID
+      else if redirect = Redirect.to {boardID, threadID: 0, postID}
         # Replace the .deadlink span if we can redirect.
         a = $.el 'a',
           href:        redirect
           className:   'deadlink'
           target:      '_blank'
           textContent: "#{quote}\u00A0(Dead)"
-        if Redirect.post board, ID
+        if Redirect.post boardID, postID
           # Make it function as a normal quote if we can fetch the post.
           $.addClass a,  'quotelink'
-          a.setAttribute 'data-board',  board
-          a.setAttribute 'data-postid', ID
+          a.setAttribute 'data-boardid', boardID
+          a.setAttribute 'data-postid',  postID
 
       unless quoteID in @quotes
         @quotes.push quoteID

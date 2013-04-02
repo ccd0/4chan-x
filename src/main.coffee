@@ -428,9 +428,9 @@ Main =
     if d.title is '4chan - 404 Not Found'
       if Conf['404 Redirect'] and g.VIEW is 'thread'
         href = Redirect.to
-          board: g.BOARD
-          threadID: g.THREAD
-          postID: location.hash
+          boardID:  g.BOARD.ID
+          threadID: g.THREAD.ID
+          postID:   location.hash
         location.href = href or "/#{g.BOARD}/"
       return
 
