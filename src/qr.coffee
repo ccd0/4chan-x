@@ -350,7 +350,7 @@ QR =
 
   posts: []
   post: class
-    constructor: ->
+    constructor: (select) ->
       el = $.el 'a',
         className: 'qr-preview'
         draggable: true
@@ -395,13 +395,13 @@ QR =
           persona.email
         if Conf['Remember Subject']
           @sub = if prev then prev.sub else persona.sub
-        @select() if QR.selected is @ # load persona
-        @unlock()
+        @select() if select # load persona
+      @unlock()
     rm: ->
       $.rm @nodes.el
       index = QR.posts.indexOf @
       if QR.posts.length is 1
-        new QR.post().select()
+        new QR.post true
       else if @ is QR.selected
         (QR.posts[index-1] or QR.posts[index+1]).select()
       QR.posts.splice index, 1
@@ -791,13 +791,13 @@ QR =
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
-    $.on nodes.addPost,    'click',  -> new QR.post().select()
+    $.on nodes.addPost,    'click',  -> new QR.post true
     $.on nodes.form,       'submit', QR.submit
     $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.fileInput
 
-    new QR.post().select()
+    new QR.post true
     # save selected post's data
     for name in ['name', 'email', 'sub', 'com']
       $.on nodes[name], 'input', -> QR.selected.save @
