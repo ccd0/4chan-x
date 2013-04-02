@@ -2572,9 +2572,7 @@ QuoteInline =
       name: 'Quote Inlining'
       cb:   @node
   node: ->
-    for link in @nodes.quotelinks
-      $.on link, 'click', QuoteInline.toggle
-    for link in @nodes.backlinks
+    for link in @nodes.quotelinks.concat [@nodes.backlinks...]
       $.on link, 'click', QuoteInline.toggle
     return
   toggle: (e) ->
@@ -2653,9 +2651,7 @@ QuotePreview =
       name: 'Quote Previewing'
       cb:   @node
   node: ->
-    for link in @nodes.quotelinks
-      $.on link, 'mouseover', QuotePreview.mouseover
-    for link in @nodes.backlinks
+    for link in @nodes.quotelinks.concat [@nodes.backlinks...]
       $.on link, 'mouseover', QuotePreview.mouseover
     return
   mouseover: (e) ->
@@ -2688,10 +2684,7 @@ QuotePreview =
 
     quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
     clone = Get.postFromRoot qp.firstChild
-    for quote in clone.nodes.quotelinks
-      if quote.hash[2..] is quoterID
-        $.addClass quote, 'forwardlink'
-    for quote in clone.nodes.backlinks
+    for quote in clone.nodes.quotelinks.concat [clone.nodes.backlinks...]
       if quote.hash[2..] is quoterID
         $.addClass quote, 'forwardlink'
     return
