@@ -370,12 +370,12 @@ Settings =
         version: g.VERSION
         date: now
         Conf: Conf
-      items = WatchedThreads: {}
+      data.Conf.WatchedThreads = {}
       for db in DataBoards
-        items[db] = boards: {}
-      $.get items, (items) ->
-        for key, val of items
-          data.Conf[key] = val
+        data.Conf[db] = boards: {}
+      # Make sure to export the most recent data.
+      $.get data.Conf, (Conf) ->
+        data.Conf = Conf
         Settings.export now, data
       return
     a = $.el 'a',
