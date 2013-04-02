@@ -2609,10 +2609,10 @@ QuoteInline =
       $.addClass post.nodes.root, 'forwarded'
       post.forwarded++ or post.forwarded = 1
 
-    # Decrease the unread count if this post is in the array of unread posts.
-    if Unread.posts and (i = Unread.posts.indexOf post) isnt -1
-      Unread.posts.splice i, 1
-      Unread.update()
+    # Decrease the unread count if this post
+    # is in the array of unread posts.
+    return unless Unread.posts
+    Unread.readSinglePost post
 
   rm: (quotelink, boardID, threadID, postID, context) ->
     isBacklink = $.hasClass quotelink, 'backlink'
@@ -3637,6 +3637,16 @@ Unread =
       Unread.update()
     else
       Unread.addPosts e.detail.newPosts
+
+  readSinglePost: (post) ->
+    return if (i = Unread.posts.indexOf post) is -1
+    Unread.posts.splice i, 1
+    if i is 0
+      Unread.lastReadPost = post.ID
+      Unread.saveLastReadPost()
+    if (i = Unread.postsQuotingYou.indexOf post) isnt -1
+      Unread.postsQuotingYou.splice i, 1
+    Unread.update()
 
   readArray: (arr) ->
     for post, i in arr
