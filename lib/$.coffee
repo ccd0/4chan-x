@@ -227,7 +227,11 @@ $.extend $,
       items = $.item key, val
     chrome.storage.sync.get items, cb
   set: (key, val) ->
-    chrome.storage.sync.set $.item key, val
+    items = if arguments.length is 2
+      $.item key, val
+    else
+      key
+    chrome.storage.sync.set items
 <% } else if (type === 'userjs') { %>
 do ->
   # http://www.opera.com/docs/userjs/specs/#scriptstorage
@@ -257,13 +261,20 @@ do ->
         if val = scriptStorage[g.NAMESPACE + key]
           items[key] = JSON.parse val
       cb items
-  $.set = (key, val) ->
-    key = g.NAMESPACE + key
-    val = JSON.stringify val
-    if key of $.syncing
-      # for `storage` events
-      localStorage.setItem key, val
-    scriptStorage[key] = val
+  $.set = do ->
+    set = (key, val) ->
+      key = g.NAMESPACE + key
+      val = JSON.stringify val
+      if key of $.syncing
+        # for `storage` events
+        localStorage.setItem key, val
+      scriptStorage[key] = val
+    (key, val) ->
+      if arguments.length is 1
+        for key, val of key
+          set key, val
+      else
+        set key, val
 <% } else { %>
   # http://wiki.greasespot.net/Main_Page
   delete: (key) ->
@@ -285,11 +296,18 @@ do ->
         if val = GM_getValue g.NAMESPACE + key
           items[key] = JSON.parse val
       cb items
-  set: (key, val) ->
-    key = g.NAMESPACE + key
-    val = JSON.stringify val
-    if key of $.syncing
-      # for `storage` events
-      localStorage.setItem key, val
-    GM_setValue key, val
+  set: do ->
+    set = (key, val) ->
+      key = g.NAMESPACE + key
+      val = JSON.stringify val
+      if key of $.syncing
+        # for `storage` events
+        localStorage.setItem key, val
+      GM_setValue key, val
+    (key, val) ->
+      if arguments.length is 1
+        for key, val of key
+          set key, val
+      else
+        set key, val
 <% } %>

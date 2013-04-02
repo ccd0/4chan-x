@@ -226,8 +226,9 @@ Settings =
         new Notification 'info', el, 60
       else
         $.on d, '4chanXInitFinished', Settings.open
-      $.set 'lastupdate', Date.now()
-      $.set 'previousversion', g.VERSION
+      $.set
+        lastupdate: Date.now()
+        previousversion: g.VERSION
 
     Settings.addSection 'Main',     Settings.main
     Settings.addSection 'Filter',   Settings.filter
@@ -477,9 +478,8 @@ Settings =
         continue unless key of data.Conf
         data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, (s) -> "#{s[0].toUpperCase()}#{s[1..]}").replace /(^|.+\+)[A-Z]$/g, (s) ->
           "Shift+#{s[0...-1]}#{s[-1..].toLowerCase()}"
-    for key, val of data.Conf
-      $.set key, val
-    $.set 'WatchedThreads', data.WatchedThreads
+      data.Conf.WatchedThreads = data.WatchedThreads
+    $.set data.Conf
   convertSettings: (data, map) ->
     for prevKey, newKey of map
       data.Conf[newKey] = data.Conf[prevKey] if newKey
