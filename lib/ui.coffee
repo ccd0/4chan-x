@@ -289,8 +289,10 @@ UI = do ->
     o.hover    = hover.bind    o
     o.hoverend = hoverend.bind o
 
-    $.asap asapTest, ->
-      o.hover o.latestEvent
+    $.asap ->
+      !el.parentNode or asapTest()
+    , ->
+      o.hover o.latestEvent if el.parentNode
 
     $.on root, endEvents,   o.hoverend
     $.on root, 'mousemove', o.hover
