@@ -314,7 +314,7 @@ Main =
         else
           'index'
     if g.VIEW is 'thread'
-      g.THREAD = +pathname[3]
+      g.THREADID = +pathname[3]
 
     switch location.hostname
       when 'sys.4chan.org'
@@ -429,8 +429,8 @@ Main =
       if Conf['404 Redirect'] and g.VIEW is 'thread'
         href = Redirect.to
           boardID:  g.BOARD.ID
-          threadID: g.THREAD.ID
-          postID:   location.hash
+          threadID: g.THREADID
+          postID:   +location.hash.match /\d+/ # post number or 0
         location.href = href or "/#{g.BOARD}/"
       return
 

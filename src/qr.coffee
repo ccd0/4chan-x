@@ -344,7 +344,7 @@ QR =
     $.addClass QR.nodes.el, 'dump'
   resetThreadSelector: ->
     if g.VIEW is 'thread'
-      QR.nodes.thread.value = g.THREAD
+      QR.nodes.thread.value = g.THREADID
     else
       QR.nodes.thread.value = 'new'
 

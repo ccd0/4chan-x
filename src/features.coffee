@@ -1643,7 +1643,7 @@ ArchiveLink =
       el: div
       order: 90
       open: ({ID, thread, board}) ->
-        redirect = Redirect.to {ID, threadID: thread.ID, boardID: board.ID}
+        redirect = Redirect.to {postID: ID, threadID: thread.ID, boardID: board.ID}
         redirect isnt "//boards.4chan.org/#{board}/"
       subEntries: []
 
@@ -1666,12 +1666,12 @@ ArchiveLink =
       textContent: text
       target: '_blank'
 
-    if type is 'post'
-      open: ({ID, thread, board}) ->
-        el.href = Redirect.to {ID, threadID: thread.ID, boardID: board.ID}
+    open = if type is 'post'
+      ({ID, thread, board}) ->
+        el.href = Redirect.to {postID: ID, threadID: thread.ID, boardID: board.ID}
         true
     else
-      open = (post) ->
+      (post) ->
         value = Filter[type] post
         # We want to parse the exact same stuff as the filter does already.
         return false unless value
@@ -1965,59 +1965,53 @@ Redirect =
     {boardID} = data
     switch boardID
       when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'
-        url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
+        Redirect.path '//archive.foolz.us', 'foolfuuka', data
       when 'u'
-        url = Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
+        Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
       when 'int', 'out', 'po'
-        url = Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
+        Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
       when 'ck', 'lit'
-        url = Redirect.path '//fuuka.warosu.org', 'fuuka', data
+        Redirect.path '//fuuka.warosu.org', 'fuuka', data
       when 'diy', 'sci'
-        url = Redirect.path '//archive.installgentoo.net', 'fuuka', data
+        Redirect.path '//archive.installgentoo.net', 'fuuka', data
       when 'cgl', 'g', 'mu', 'w'
-        url = Redirect.path '//rbt.asia', 'fuuka', data
+        Redirect.path '//rbt.asia', 'fuuka', data
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
-        url = Redirect.path 'http://archive.heinessen.com', 'fuuka', data
+        Redirect.path 'http://archive.heinessen.com', 'fuuka', data
       when 'c'
-        url = Redirect.path '//archive.nyafuu.org', 'fuuka', data
+        Redirect.path '//archive.nyafuu.org', 'fuuka', data
       else
-        if data.threadID
-          url = "//boards.4chan.org/#{boardID}/"
-    url or ''
+        if data.threadID then "//boards.4chan.org/#{boardID}/" else ''
   path: (base, archiver, data) ->
     if data.isSearch
       {boardID, type, value} = data
-      type =
-        if type is 'name'
-          'username'
-        else if type is 'MD5'
-          'image'
-        else
-          type
+      type = if type is 'name'
+        'username'
+      else if type is 'MD5'
+        'image'
+      else
+        type
       value = encodeURIComponent value
       return if archiver is 'foolfuuka'
-          "#{base}/#{boardID}/search/#{type}/#{value}"
-        else if type is 'image'
-          "#{base}/#{boardID}/?task=search2&search_media_hash=#{value}"
-        else
-          "#{base}/#{boardID}/?task=search2&search_#{type}=#{value}"
+        "#{base}/#{boardID}/search/#{type}/#{value}"
+      else if type is 'image'
+        "#{base}/#{boardID}/?task=search2&search_media_hash=#{value}"
+      else
+        "#{base}/#{boardID}/?task=search2&search_#{type}=#{value}"
 
     {boardID, threadID, postID} = data
     # keep the number only if the location.hash was sent f.e.
-    postID = postID.match(/\d+/)[0] if postID and typeof postID is 'string'
-    path =
-      if threadID
-        "#{boardID}/thread/#{threadID}"
-      else
-        "#{boardID}/post/#{postID}"
+    path = if threadID
+      "#{boardID}/thread/#{threadID}"
+    else
+      "#{boardID}/post/#{postID}"
     if archiver is 'foolfuuka'
       path += '/'
     if threadID and postID
-      path +=
-        if archiver is 'foolfuuka'
-          "##{postID}"
-        else
-          "#p#{postID}"
+      path += if archiver is 'foolfuuka'
+        "##{postID}"
+      else
+        "#p#{postID}"
     "#{base}/#{path}"
 
 Build =
@@ -2230,7 +2224,7 @@ Build =
           "</span><span class='dateTime postNum' data-utc=#{dateUTC}>#{date}" +
             "<a href=#{"/#{boardID}/res/#{threadID}#p#{postID}"}>No.</a>" +
             "<a href='#{
-              if g.VIEW is 'thread' and g.THREAD is +threadID
+              if g.VIEW is 'thread' and g.THREADID is +threadID
                 "javascript:quote(#{postID})"
               else
                 "/#{boardID}/res/#{threadID}#q#{postID}"
@@ -2252,7 +2246,7 @@ Build =
           "<span class='postNum desktop'>" +
             "<a href=#{"/#{boardID}/res/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
             "<a href='#{
-              if g.VIEW is 'thread' and g.THREAD is +threadID
+              if g.VIEW is 'thread' and g.THREADID is +threadID
                 "javascript:quote(#{postID})"
               else
                 "/#{boardID}/res/#{threadID}#q#{postID}"
