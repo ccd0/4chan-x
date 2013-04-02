@@ -369,10 +369,9 @@ Settings =
       data =
         version: g.VERSION
         date: now
-        Conf: Conf
-      data.Conf.WatchedThreads = {}
+      Conf['WatchedThreads'] = {}
       for db in DataBoards
-        data.Conf[db] = boards: {}
+        Conf[db] = boards: {}
       # Make sure to export the most recent data.
       $.get data.Conf, (Conf) ->
         data.Conf = Conf
