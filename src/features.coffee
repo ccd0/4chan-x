@@ -373,7 +373,7 @@ Settings =
       for db in DataBoards
         Conf[db] = boards: {}
       # Make sure to export the most recent data.
-      $.get data.Conf, (Conf) ->
+      $.get Conf, (Conf) ->
         data.Conf = Conf
         Settings.export now, data
       return
