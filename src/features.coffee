@@ -3710,10 +3710,11 @@ Unread =
         else
           Favicon.dead
       else
-        if Unread.postsQuotingYou.length
-          Favicon.unreadY
-        else if count
-          Favicon.unread
+        if count
+          if Unread.postsQuotingYou.length
+            Favicon.unreadY
+          else
+            Favicon.unread
         else
           Favicon.default
 
