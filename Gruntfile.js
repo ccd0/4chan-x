@@ -158,7 +158,7 @@ module.exports = function(grunt) {
     'clean:tmp'
   ]);
 
-  grunt.registerTask('release', ['build', 'exec:commit', 'exec:push', 'compress:crx']);
+  grunt.registerTask('release', ['exec:commit', 'exec:push', 'compress:crx']);
   grunt.registerTask('patch',   ['bump',       'updcl:3']);
   grunt.registerTask('minor',   ['bump:minor', 'updcl:2']);
   grunt.registerTask('major',   ['bump:major', 'updcl:1']);
