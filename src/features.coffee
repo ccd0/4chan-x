@@ -1566,12 +1566,12 @@ DeleteLink =
 
     link = @
     $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{post.board}/"), {
-        onload:  -> DeleteLink.load  link, @response
-        onerror: -> DeleteLink.error link
-      }, {
-        form: $.formData form
-      }
-  load: (link, html) ->
+      onload:  -> DeleteLink.load  link, post, @response
+      onerror: -> DeleteLink.error link
+    }, {
+      form: $.formData form
+    }
+  load: (link, post, html) ->
     tmpDoc = d.implementation.createHTMLDocument ''
     tmpDoc.documentElement.innerHTML = html
     if tmpDoc.title is '4chan - Banned' # Ban/warn check
@@ -1580,6 +1580,9 @@ DeleteLink =
       s = msg.textContent
       $.on link, 'click', DeleteLink.delete
     else
+      if tmpDoc.title is 'Updating index...'
+        # We're 100% sure.
+        (post.origin or post).kill()
       s = 'Deleted'
     link.textContent = s
   error: (link) ->
