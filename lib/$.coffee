@@ -273,6 +273,7 @@ do ->
       if arguments.length is 1
         for key, val of key
           set key, val
+        return
       else
         set key, val
 <% } else { %>
@@ -308,6 +309,7 @@ do ->
       if arguments.length is 1
         for key, val of key
           set key, val
+        return
       else
         set key, val
 <% } %>
