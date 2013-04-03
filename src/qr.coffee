@@ -377,12 +377,12 @@ QR =
       for event in ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop']
         $.on el, event.toLowerCase(), @[event]
 
+      prev = QR.posts[QR.posts.length - 1]
       QR.posts.push @
       @spoiler = if prev and Conf['Remember Spoiler']
         prev.spoiler
       else
         false
-      prev = QR.posts[QR.posts.length - 1]
       $.get 'QR.persona', {}, (item) =>
         persona = item['QR.persona']
         @name = if prev
@@ -395,7 +395,8 @@ QR =
           persona.email
         if Conf['Remember Subject']
           @sub = if prev then prev.sub else persona.sub
-        @select() if select # load persona
+        @load() if QR.selected is @ # load persona
+      @select() if select
       @unlock()
     rm: ->
       $.rm @nodes.el
@@ -430,6 +431,8 @@ QR =
       rectEl   = @nodes.el.getBoundingClientRect()
       rectList = @nodes.el.parentNode.getBoundingClientRect()
       @nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
+      @load()
+    load: ->
       # Load this post's values.
       for name in ['name', 'email', 'sub', 'com']
         QR.nodes[name].value = @[name] or null
@@ -993,7 +996,10 @@ QR =
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.posts.length > 1 and isReply
 
-    post.rm()
+    unless Conf['Persistent QR'] or QR.cooldown.auto
+      QR.close()
+    else
+      post.rm()
 
     QR.cooldown.set {req, post, isReply}
 
@@ -1006,9 +1012,6 @@ QR =
         $.open "/#{g.BOARD}/res/#{threadID}"
       else
         window.location = "/#{g.BOARD}/res/#{threadID}"
-
-    unless Conf['Persistent QR'] or QR.cooldown.auto
-      QR.close()
 
     QR.status()
 
