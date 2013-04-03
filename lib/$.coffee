@@ -220,14 +220,14 @@ $.extend $,
   delete: (keys) ->
     chrome.storage.sync.remove keys
   get: (key, val, cb) ->
-    if arguments.length is 2
+    if typeof cb is 'function'
+      items = $.item key, val
+    else
       items = key
       cb = val
-    else
-      items = $.item key, val
     chrome.storage.sync.get items, cb
   set: (key, val) ->
-    items = if arguments.length is 2
+    items = if typeof key is 'string'
       $.item key, val
     else
       key
@@ -251,11 +251,11 @@ do ->
       delete scriptStorage[key]
     return
   $.get = (key, val, cb) ->
-    if arguments.length is 2
+    if typeof cb is 'function'
+      items = $.item key, val
+    else
       items = key
       cb = val
-    else
-      items = $.item key, val
     $.queueTask ->
       for key of items
         if val = scriptStorage[g.NAMESPACE + key]
@@ -269,16 +269,16 @@ do ->
         # for `storage` events
         localStorage.setItem key, val
       scriptStorage[key] = val
-    (key, val) ->
-      if arguments.length is 1
-        for key, val of key
-          set key, val
+    (keys, val) ->
+      if typeof keys is 'string'
+        set keys, val
         return
-      else
+      for key, val of keys
         set key, val
+      return
 <% } else { %>
   # http://wiki.greasespot.net/Main_Page
-  delete: (key) ->
+  delete: (keys) ->
     unless keys instanceof Array
       keys = [keys]
     for key in keys
@@ -287,11 +287,11 @@ do ->
       GM_deleteValue key
     return
   get: (key, val, cb) ->
-    if arguments.length is 2
+    if typeof cb is 'function'
+      items = $.item key, val
+    else
       items = key
       cb = val
-    else
-      items = $.item key, val
     $.queueTask ->
       for key of items
         if val = GM_getValue g.NAMESPACE + key
@@ -305,11 +305,11 @@ do ->
         # for `storage` events
         localStorage.setItem key, val
       GM_setValue key, val
-    (key, val) ->
-      if arguments.length is 1
-        for key, val of key
-          set key, val
+    (keys, val) ->
+      if typeof keys is 'string'
+        set keys, val
         return
-      else
+      for key, val of keys
         set key, val
+      return
 <% } %>
