@@ -388,9 +388,9 @@ Settings =
       a.click()
       return
     # XXX Firefox won't let us download automatically.
-    output = @parentNode.nextElementSibling
-    output.innerHTML = null
-    $.add output, a
+    p = $ '.imp-exp-result', Settings.dialog
+    p.innerHTML = null
+    $.add p, a
   import: ->
     @nextElementSibling.click()
   onImport: ->
