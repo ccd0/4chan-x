@@ -76,5 +76,5 @@ class DataBoard
       $.set @key, @data
 
   onSync: (data) ->
-    @data = data
+    @data = data or boards: {}
     @sync?()
