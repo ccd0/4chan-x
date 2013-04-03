@@ -554,7 +554,7 @@ Main =
 
   parseError: (data) ->
     {message, error} = data
-    c.log message, error.stack
+    c.error message, error.stack
     message = $.el 'div',
       textContent: message
     error = $.el 'div',

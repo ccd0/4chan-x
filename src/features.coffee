@@ -408,7 +408,7 @@ Settings =
           window.location.reload()
       catch err
         output.textContent = 'Import failed due to an error.'
-        c.log err.stack
+        c.error err.stack
     reader.readAsText file
   loadSettings: (data) ->
     version = data.version.split '.'
