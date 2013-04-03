@@ -349,14 +349,14 @@ Main =
     initFeature 'Resurrect Quotes',         Quotify
     initFeature 'Filter',                   Filter
     initFeature 'Thread Hiding',            ThreadHiding
-    initFeature 'Reply Hiding',             ReplyHiding
+    initFeature 'Reply Hiding',             PostHiding
     initFeature 'Recursive',                Recursive
     initFeature 'Strike-through Quotes',    QuoteStrikeThrough
     initFeature 'Quick Reply',              QR
     initFeature 'Menu',                     Menu
     initFeature 'Report Link',              ReportLink
     initFeature 'Thread Hiding (Menu)',     ThreadHiding.menu
-    initFeature 'Reply Hiding (Menu)',      ReplyHiding.menu
+    initFeature 'Reply Hiding (Menu)',      PostHiding.menu
     initFeature 'Delete Link',              DeleteLink
     initFeature 'Filter (Menu)',            Filter.menu
     initFeature 'Download Link',            DownloadLink
