@@ -158,10 +158,12 @@ class Post
   kill: (file, now) ->
     now or= new Date()
     if file
+      return if @file.isDead
       @file.isDead = true
       @file.timeOfDeath = now
       $.addClass @nodes.root, 'deleted-file'
     else
+      return if @isDead
       @isDead = true
       @timeOfDeath = now
       $.addClass @nodes.root, 'deleted-post'
