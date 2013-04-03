@@ -3222,8 +3222,14 @@ ImageExpand =
   completeExpand: (post) ->
     {thumb} = post.file
     return unless $.hasClass thumb, 'expanding' # contracted before the image loaded
-    prev = post.nodes.root.getBoundingClientRect()
     post.file.isExpanded = true
+    unless post.nodes.root.parentNode
+      # Image might start/finish loading before the post is inserted.
+      # Don't scroll when it's expanded in a QP for example.
+      $.addClass post.nodes.root, 'expanded-image'
+      $.rmClass  post.file.thumb, 'expanding'
+      return
+    prev = post.nodes.root.getBoundingClientRect()
     $.queueTask ->
       $.addClass post.nodes.root, 'expanded-image'
       $.rmClass  post.file.thumb, 'expanding'
