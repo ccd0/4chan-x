@@ -102,7 +102,7 @@ UI = do ->
       $.rm currentMenu
       currentMenu       = null
       lastToggledButton = null
-      $.off d, 'click, CloseMenu', @close
+      $.off d, 'click CloseMenu', @close
 
     findNextEntry: (entry, direction) ->
       entries = [entry.parentNode.children...]
