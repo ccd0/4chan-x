@@ -362,7 +362,10 @@ Settings =
       button.textContent = "Hidden: #{hiddenNum}"
     $.on button, 'click', ->
       @textContent = 'Hidden: 0'
-      $.delete ['hiddenThreads', 'hiddenPosts']
+      $.get 'hiddenThreads', boards: {}, (item) ->
+        for boardID of item.hiddenThreads.boards
+          localStorage.removeItem "4chan-hide-t-#{boardID}"
+        $.delete ['hiddenThreads', 'hiddenPosts']
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
   export: (now, data) ->
     unless typeof now is 'number'
