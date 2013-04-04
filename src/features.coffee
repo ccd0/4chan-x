@@ -1101,13 +1101,13 @@ ThreadHiding =
 
     if (ThreadHiding.db.data.lastChecked or 0) > Date.now() - $.MINUTE
       # Was cleaned just now.
-      ThreadHiding.cleanCatalog()
+      ThreadHiding.cleanCatalog hiddenThreadsOnCatalog
 
     ThreadHiding.db.set
       boardID: g.BOARD.ID
       val: hiddenThreads
 
-  cleanCatalog: ->
+  cleanCatalog: (hiddenThreadsOnCatalog) ->
     # We need to clean hidden threads on the catalog ourselves,
     # otherwise if we don't visit the catalog regularly
     # it will pollute the localStorage and our data.
@@ -3505,36 +3505,45 @@ ExpandThread =
 
   toggle: (thread) ->
     threadRoot = thread.OP.nodes.root.parentNode
-    url = "//api.4chan.org/#{thread.board}/res/#{thread}.json"
-    a   = $ '.summary', threadRoot
+    a = $ '.summary', threadRoot
 
-    text = a.textContent
-    switch text[0]
-      when '+'
-        a.textContent = text.replace '+', '× Loading...'
-        $.cache url, -> ExpandThread.parse @, thread, a
+
+    switch thread.isExpanded
+      when false, undefined
+        thread.isExpanded = 'loading'
         for post in $$ '.thread > .postContainer', threadRoot
           ExpandComment.expand Get.postFromRoot post
+        unless a
+          thread.isExpanded = true
+          return
+        thread.isExpanded = 'loading'
+        a.textContent = a.textContent.replace '+', '× Loading...'
+        $.cache "//api.4chan.org/#{thread.board}/res/#{thread}.json", ->
+          ExpandThread.parse @, thread, a
 
-      when '×'
-        a.textContent = text.replace '× Loading...', '+'
+      when 'loading'
+        thread.isExpanded = false
+        return unless a
+        a.textContent = a.textContent.replace '× Loading...', '+'
 
-      when '-'
-        a.textContent = text.replace '-', '+'
-        #goddamit moot
-        num = if thread.isSticky
-          1
-        else switch g.BOARD.ID
-          # XXX boards config
-          when 'b', 'vg', 'q' then 3
-          when 't' then 1
-          else 5
-        replies = $$('.thread > .replyContainer', threadRoot)[...-num]
-        for reply in replies
-          if Conf['Quote Inlining']
-            # rm clones
-            inlined.click() while inlined = $ '.inlined', reply
-          $.rm reply
+      when true
+        thread.isExpanded = false
+        if a
+          a.textContent = a.textContent.replace '-', '+'
+          #goddamit moot
+          num = if thread.isSticky
+            1
+          else switch g.BOARD.ID
+            # XXX boards config
+            when 'b', 'vg', 'q' then 3
+            when 't' then 1
+            else 5
+          replies = $$('.thread > .replyContainer', threadRoot)[...-num]
+          for reply in replies
+            if Conf['Quote Inlining']
+              # rm clones
+              inlined.click() while inlined = $ '.inlined', reply
+            $.rm reply
         for post in $$ '.thread > .postContainer', threadRoot
           ExpandComment.contract Get.postFromRoot post
     return
@@ -3547,6 +3556,7 @@ ExpandThread =
       $.off a, 'click', ExpandThread.cb.toggle
       return
 
+    thread.isExpanded = true
     a.textContent = a.textContent.replace '× Loading...', '-'
 
     posts = JSON.parse(req.response).posts
