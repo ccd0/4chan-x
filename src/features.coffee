@@ -1071,7 +1071,7 @@ ThreadHiding =
     return if g.VIEW isnt 'index' or !Conf['Thread Hiding'] and !Conf['Thread Hiding Link']
 
     @db = new DataBoard 'hiddenThreads'
-    @syncFromCatalog()
+    @syncCatalog()
     Thread::callbacks.push
       name: 'Thread Hiding'
       cb:   @node
@@ -1082,7 +1082,7 @@ ThreadHiding =
     return unless Conf['Thread Hiding']
     $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
 
-  syncFromCatalog: ->
+  syncCatalog: ->
     # Sync hidden threads from the catalog into the index.
     hiddenThreads = ThreadHiding.db.get
       boardID: g.BOARD.ID
@@ -1099,9 +1099,29 @@ ThreadHiding =
       unless threadID of hiddenThreadsOnCatalog
         delete hiddenThreads[threadID]
 
+    if (ThreadHiding.db.data.lastChecked or 0) > Date.now() - $.MINUTE
+      # Was cleaned just now.
+      ThreadHiding.cleanCatalog()
+
     ThreadHiding.db.set
       boardID: g.BOARD.ID
       val: hiddenThreads
+
+  cleanCatalog: ->
+    # We need to clean hidden threads on the catalog ourselves,
+    # otherwise if we don't visit the catalog regularly
+    # it will pollute the localStorage and our data.
+    $.ajax "//api.4chan.org/#{g.BOARD}/threads.json", onload: (e) ->
+      return unless @status is 200
+      threads = {}
+      for page in JSON.parse e.target.response
+        for thread in page.threads
+          if thread.no of hiddenThreadsOnCatalog
+            threads[thread.no] = hiddenThreadsOnCatalog[thread.no]
+      if Object.keys(threads).length
+        localStorage.setItem "4chan-hide-t-#{g.BOARD}", threads
+      else
+        localStorage.removeItem "4chan-hide-t-#{g.BOARD}"
 
   menu:
     init: ->
