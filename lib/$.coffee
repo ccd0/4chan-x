@@ -63,8 +63,8 @@ $.extend $,
         return
       rm = -> delete reqs[url]
       req = $.ajax url,
-        onload: ->
-          cb.call @ for cb in @callbacks
+        onload: (e) ->
+          cb.call @, e for cb in @callbacks
           delete @callbacks
         onabort: rm
         onerror: rm

@@ -1111,10 +1111,10 @@ ThreadHiding =
     # We need to clean hidden threads on the catalog ourselves,
     # otherwise if we don't visit the catalog regularly
     # it will pollute the localStorage and our data.
-    $.ajax "//api.4chan.org/#{g.BOARD}/threads.json", onload: (e) ->
+    $.cache "//api.4chan.org/#{g.BOARD}/threads.json", ->
       return unless @status is 200
       threads = {}
-      for page in JSON.parse e.target.response
+      for page in JSON.parse @response
         for thread in page.threads
           if thread.no of hiddenThreadsOnCatalog
             threads[thread.no] = hiddenThreadsOnCatalog[thread.no]

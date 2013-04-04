@@ -64,7 +64,7 @@ class DataBoard
 
     $.set @key, @data
   ajaxClean: (boardID) ->
-    $.ajax "//api.4chan.org/#{boardID}/threads.json", onload: (e) =>
+    $.cache "//api.4chan.org/#{boardID}/threads.json", (e) =>
       if e.target.status is 404
         # Deleted board.
         @delete boardID
