@@ -26,7 +26,7 @@
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
- * http://mayhemydg.github.com/4chan-x/
+ * http://mayhemydg.github.io/4chan-x/
  * 4chan X 2.39.2
  *
  * Permission is hereby granted, free of charge, to any person
@@ -2722,9 +2722,9 @@
         className: 'reply dialog',
         innerHTML: '<div id=optionsbar>\
   <div id=credits>\
-    <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a>\
+    <a target=_blank href=http://mayhemydg.github.io/4chan-x/>4chan X</a>\
     | <a target=_blank href=https://raw.github.com/mayhemydg/4chan-x/master/changelog>' + Main.version + '</a>\
-    | <a target=_blank href=http://mayhemydg.github.com/4chan-x/#bug-report>Issues</a>\
+    | <a target=_blank href=http://mayhemydg.github.io/4chan-x/#bug-report>Issues</a>\
   </div>\
   <div>\
     <label for=main_tab>Main</label>\
@@ -5766,7 +5766,7 @@
         } catch (_error) {
           err = _error;
           if (notify) {
-            alert("4chan X (" + Main.version + ") error: " + err.message + "\nReport the bug at mayhemydg.github.com/4chan-x/#bug-report\n\nURL: " + window.location + "\n" + err.stack);
+            alert("4chan X (" + Main.version + ") error: " + err.message + "\nReport the bug at mayhemydg.github.io/4chan-x/#bug-report\n\nURL: " + window.location + "\n" + err.stack);
           }
         }
       }

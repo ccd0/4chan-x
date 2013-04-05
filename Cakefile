@@ -33,7 +33,7 @@ HEADER  = """
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
  * Copyright (c) 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
- * http://mayhemydg.github.com/4chan-x/
+ * http://mayhemydg.github.io/4chan-x/
  * 4chan X #{VERSION}
  *
  * Permission is hereby granted, free of charge, to any person

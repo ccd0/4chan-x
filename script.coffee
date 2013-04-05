@@ -2170,9 +2170,9 @@ Options =
       className: 'reply dialog'
       innerHTML: '<div id=optionsbar>
   <div id=credits>
-    <a target=_blank href=http://mayhemydg.github.com/4chan-x/>4chan X</a>
+    <a target=_blank href=http://mayhemydg.github.io/4chan-x/>4chan X</a>
     | <a target=_blank href=https://raw.github.com/mayhemydg/4chan-x/master/changelog>' + Main.version + '</a>
-    | <a target=_blank href=http://mayhemydg.github.com/4chan-x/#bug-report>Issues</a>
+    | <a target=_blank href=http://mayhemydg.github.io/4chan-x/#bug-report>Issues</a>
   </div>
   <div>
     <label for=main_tab>Main</label>
@@ -4699,7 +4699,7 @@ Main =
       try
         callback node for node in nodes
       catch err
-        alert "4chan X (#{Main.version}) error: #{err.message}\nReport the bug at mayhemydg.github.com/4chan-x/#bug-report\n\nURL: #{window.location}\n#{err.stack}" if notify
+        alert "4chan X (#{Main.version}) error: #{err.message}\nReport the bug at mayhemydg.github.io/4chan-x/#bug-report\n\nURL: #{window.location}\n#{err.stack}" if notify
     return
   observer: (mutations) ->
     nodes = []
