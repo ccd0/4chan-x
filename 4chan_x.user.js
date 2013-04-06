@@ -4933,7 +4933,9 @@
         case 'po':
           return "//archive.thedarkcave.org/" + board + "/full_image/" + filename;
         case 'ck':
+        case 'fa':
         case 'lit':
+        case 's4s':
           return "//fuuka.warosu.org/" + board + "/full_image/" + filename;
         case 'cgl':
         case 'g':
@@ -5013,7 +5015,9 @@
           url = Redirect.path('//archive.thedarkcave.org', 'foolfuuka', data);
           break;
         case 'ck':
+        case 'fa':
         case 'lit':
+        case 's4s':
           url = Redirect.path('//fuuka.warosu.org', 'fuuka', data);
           break;
         case 'diy':

@@ -4086,7 +4086,7 @@ Redirect =
         "//nsfw.foolz.us/#{board}/full_image/#{filename}"
       when 'po'
         "//archive.thedarkcave.org/#{board}/full_image/#{filename}"
-      when 'ck', 'lit'
+      when 'ck', 'fa', 'lit', 's4s'
         "//fuuka.warosu.org/#{board}/full_image/#{filename}"
       when 'cgl', 'g', 'mu', 'w'
         "//rbt.asia/#{board}/full_image/#{filename}"
@@ -4113,7 +4113,7 @@ Redirect =
         url = Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
       when 'int', 'out', 'po'
         url = Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
-      when 'ck', 'lit'
+      when 'ck', 'fa', 'lit', 's4s'
         url = Redirect.path '//fuuka.warosu.org', 'fuuka', data
       when 'diy', 'sci'
         url = Redirect.path '//archive.installgentoo.net', 'fuuka', data
