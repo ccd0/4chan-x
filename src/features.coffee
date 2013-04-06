@@ -1979,7 +1979,7 @@ Redirect =
         "//nsfw.foolz.us/#{boardID}/full_image/#{filename}"
       when 'po'
         "//archive.thedarkcave.org/#{boardID}/full_image/#{filename}"
-      when 'ck', 'lit'
+      when 'ck', 'fa', 'lit', 's4s'
         "//fuuka.warosu.org/#{boardID}/full_image/#{filename}"
       when 'cgl', 'g', 'mu', 'w'
         "//rbt.asia/#{boardID}/full_image/#{filename}"
@@ -2006,7 +2006,7 @@ Redirect =
         Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
       when 'int', 'out', 'po'
         Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
-      when 'ck', 'lit'
+      when 'ck', 'fa', 'lit', 's4s'
         Redirect.path '//fuuka.warosu.org', 'fuuka', data
       when 'diy', 'sci'
         Redirect.path '//archive.installgentoo.net', 'fuuka', data
