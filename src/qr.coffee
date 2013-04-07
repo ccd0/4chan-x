@@ -1,6 +1,6 @@
 QR =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Quick Reply']
+    return if !Conf['Quick Reply']
 
     @db = new DataBoard 'yourPosts'
 
