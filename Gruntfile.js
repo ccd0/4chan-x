@@ -158,10 +158,10 @@ module.exports = function(grunt) {
     'clean:tmp'
   ]);
 
-  grunt.registerTask('release', ['exec:commit', 'exec:push', 'compress:crx']);
-  grunt.registerTask('patch',   ['bump',       'updcl:3']);
-  grunt.registerTask('minor',   ['bump:minor', 'updcl:2']);
-  grunt.registerTask('major',   ['bump:major', 'updcl:1']);
+  grunt.registerTask('release', ['exec:commit', 'exec:push', 'build-crx', 'compress:crx']);
+  grunt.registerTask('patch',   ['bump',       'updcl:3', 'release']);
+  grunt.registerTask('minor',   ['bump:minor', 'updcl:2', 'release']);
+  grunt.registerTask('major',   ['bump:major', 'updcl:1', 'release']);
   grunt.registerTask('updcl', 'Update the changelog', function(i) {
     // Update the `pkg` object with the new version.
     pkg = grunt.file.readJSON('package.json');
