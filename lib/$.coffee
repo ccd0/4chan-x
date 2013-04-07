@@ -41,10 +41,10 @@ $.extend $,
         fd.append key, val
     fd
   ajax: (url, callbacks, opts={}) ->
-    {type, headers, upCallbacks, form} = opts
+    {type, headers, upCallbacks, form, sync} = opts
     r = new XMLHttpRequest()
     type or= form and 'post' or 'get'
-    r.open type, url, true
+    r.open type, url, if sync then false else true
     for key, val of headers
       r.setRequestHeader key, val
     $.extend r, callbacks

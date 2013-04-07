@@ -3517,7 +3517,6 @@ ExpandThread =
     threadRoot = thread.OP.nodes.root.parentNode
     a = $ '.summary', threadRoot
 
-
     switch thread.isExpanded
       when false, undefined
         thread.isExpanded = 'loading'

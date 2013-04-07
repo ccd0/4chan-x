@@ -527,7 +527,7 @@ Main =
         new Notification 'info', el, 120
 
   handleErrors: (errors) ->
-    unless 'length' of errors
+    unless errors instanceof Array
       error = errors
     else if errors.length is 1
       error = errors[0]
@@ -538,12 +538,10 @@ Main =
     div = $.el 'div',
       innerHTML: "#{errors.length} errors occurred. [<a href=javascript:;>show</a>]"
     $.on div.lastElementChild, 'click', ->
-      if @textContent is 'show'
-        @textContent = 'hide'
-        logs.hidden  = false
+      [@textContent, logs.hidden] = if @textContent is 'show'
+        ['hide', false]
       else
-        @textContent = 'show'
-        logs.hidden  = true
+        ['show', true]
 
     logs = $.el 'div',
       hidden: true
@@ -553,13 +551,29 @@ Main =
     new Notification 'error', [div, logs], 30
 
   parseError: (data) ->
-    {message, error} = data
-    c.error message, error.stack
+    Main.logError data
     message = $.el 'div',
-      textContent: message
+      textContent: data.message
     error = $.el 'div',
-      textContent: error
+      textContent: data.error
     [message, error]
+
+  errors: []
+  logError: (data) ->
+    unless Main.errors.length
+      $.on window, 'unload', Main.postErrors
+    c.error data.message, data.error.stack
+    Main.errors.push data
+
+  postErrors: ->
+    errors = Main.errors.map (d) -> d.message + ' ' + d.error.stack
+    $.ajax '<%= meta.page %>errors', {},
+      sync: true
+      form: $.formData
+        n: "<%= meta.name %> v#{g.VERSION}"
+        t: '<%= type %>'
+        ua: window.navigator.userAgent
+        e: errors.join '\n'
 
   isThisPageLegit: ->
     # 404 error page or similar.
