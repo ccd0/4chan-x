@@ -166,8 +166,8 @@ module.exports = function(grunt) {
     // Update the `pkg` object with the new version.
     pkg = grunt.file.readJSON('package.json');
     // i is the number of #s for markdown.
-    var version = new Array(+i + 1).join('#') + ' ' + pkg.version + ' *(' + grunt.template.today('yyyy-mm-dd') + ')*';
-    grunt.file.write('CHANGELOG.md', version + '\n' + grunt.file.read('CHANGELOG.md'));
+    var version = new Array(+i + 1).join('#') + ' ' + pkg.version + ' - *' + grunt.template.today('yyyy-mm-dd') + '*';
+    grunt.file.write('CHANGELOG.md', version + '\n\n' + grunt.file.read('CHANGELOG.md'));
     grunt.log.ok('Changelog updated for v' + pkg.version + '.');
   });
 
