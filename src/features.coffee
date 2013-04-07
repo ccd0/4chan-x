@@ -1598,13 +1598,12 @@ DeleteLink =
     form[post.ID] = 'delete'
 
     link = @
-    $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{post.board}/"), {
+    $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{post.board}/"),
       onload:  -> DeleteLink.load  link, post, @response
       onerror: -> DeleteLink.error link
-    }, {
+    ,
       cred: true
       form: $.formData form
-    }
   load: (link, post, html) ->
     tmpDoc = d.implementation.createHTMLDocument ''
     tmpDoc.documentElement.innerHTML = html
