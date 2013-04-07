@@ -572,7 +572,8 @@ Main =
       form: $.formData
         n: "<%= meta.name %> v#{g.VERSION}"
         t: '<%= type %>'
-        ua: window.navigator.userAgent
+        ua:  window.navigator.userAgent
+        url: window.location.href
         e: errors.join '\n'
 
   isThisPageLegit: ->
