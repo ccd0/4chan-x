@@ -2155,9 +2155,15 @@ Options =
       $.on a, 'click', Options.dialog
       setting = $.id settings
       if Conf['Disable 4chan\'s extension']
-        $.replace setting.childNodes[1], a
-        continue
-      $.prepend setting, [$.tn('['), a, $.tn('] ')]
+        $.replace setting.firstElementChild, a
+      else
+        $.prepend setting, [$.tn('['), a, $.tn('] ')]
+      notice = $.el 'a',
+        textContent: 'v2 is outdated.'
+        href: 'https://4chan-x.just-believe.in/'
+        target: '_blank'
+      notice.style.color = 'red'
+      $.prepend setting, [$.tn('['), notice, $.tn('] ')]
     unless $.get 'firstrun'
       $.set 'firstrun', true
       # Prevent race conditions

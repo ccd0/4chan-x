@@ -2690,7 +2690,7 @@
       return $.ready(Options.initReady);
     },
     initReady: function() {
-      var a, setting, settings, _i, _len, _ref;
+      var a, notice, setting, settings, _i, _len, _ref;
       _ref = ['navtopright', 'navbotright'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         settings = _ref[_i];
@@ -2702,10 +2702,17 @@
         $.on(a, 'click', Options.dialog);
         setting = $.id(settings);
         if (Conf['Disable 4chan\'s extension']) {
-          $.replace(setting.childNodes[1], a);
-          continue;
+          $.replace(setting.firstElementChild, a);
+        } else {
+          $.prepend(setting, [$.tn('['), a, $.tn('] ')]);
         }
-        $.prepend(setting, [$.tn('['), a, $.tn('] ')]);
+        notice = $.el('a', {
+          textContent: 'v2 is outdated.',
+          href: 'https://4chan-x.just-believe.in/',
+          target: '_blank'
+        });
+        notice.style.color = 'red';
+        $.prepend(setting, [$.tn('['), notice, $.tn('] ')]);
       }
       if (!$.get('firstrun')) {
         $.set('firstrun', true);
