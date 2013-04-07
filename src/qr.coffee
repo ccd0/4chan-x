@@ -895,6 +895,7 @@ QR =
         QR.error $.el 'span',
           innerHTML: 'Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.'
     opts =
+      cred: true
       form: $.formData postData
       upCallbacks:
         onload: ->

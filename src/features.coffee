@@ -1602,6 +1602,7 @@ DeleteLink =
       onload:  -> DeleteLink.load  link, post, @response
       onerror: -> DeleteLink.error link
     }, {
+      cred: true
       form: $.formData form
     }
   load: (link, post, html) ->

@@ -41,7 +41,7 @@ $.extend $,
         fd.append key, val
     fd
   ajax: (url, callbacks, opts={}) ->
-    {type, headers, upCallbacks, form, sync} = opts
+    {type, cred, headers, upCallbacks, form, sync} = opts
     r = new XMLHttpRequest()
     type or= form and 'post' or 'get'
     r.open type, url, !sync
@@ -49,7 +49,7 @@ $.extend $,
       r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
-    r.withCredentials = type is 'post'
+    r.withCredentials = cred
     r.send form
     r
   cache: do ->
