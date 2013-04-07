@@ -27,6 +27,7 @@ Quick Reply changes:
  - Closing the QR while uploading will abort the upload and won't close the QR anymore.
  - Creating threads outside of the index is now possible.
  - Selection-to-quote also applies to selected text inside the post, not just inside the comment.
+ - Added support for thread creation in the catalog.
  - Added thumbnailing support for Opera.
 
 Image Expansion changes:
