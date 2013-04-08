@@ -4,11 +4,16 @@ Header =
       id: 'notifications'
     @shortcuts = $.el 'span',
       id: 'shortcuts'
+    @hover = $.el 'div',
+      id: 'hoverUI'
     $.asap (-> d.body), ->
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
       # it might be incomplete otherwise.
       $.asap (-> $.id 'boardNavMobile'), Header.setBoardList
+
+    $.ready ->
+      $.add d.body, Header.hover
 
   setBoardList: ->
     
@@ -2679,10 +2684,12 @@ QuotePreview =
     Post::callbacks.push
       name: 'Quote Previewing'
       cb:   @node
+
   node: ->
     for link in @nodes.quotelinks.concat [@nodes.backlinks...]
       $.on link, 'mouseover', QuotePreview.mouseover
     return
+
   mouseover: (e) ->
     return if $.hasClass @, 'inlined'
 
@@ -2691,7 +2698,7 @@ QuotePreview =
     qp = $.el 'div',
       id: 'qp'
       className: 'dialog'
-    $.add d.body, qp
+    $.add Header.hover, qp
     Get.postClone boardID, threadID, postID, qp, Get.contextFromLink @
 
     UI.hover
@@ -2717,6 +2724,7 @@ QuotePreview =
       if quote.hash[2..] is quoterID
         $.addClass quote, 'forwardlink'
     return
+
   mouseout: ->
     # Stop if it only contains text.
     return unless root = @el.firstElementChild
@@ -3417,7 +3425,7 @@ ImageHover =
       id: 'ihover'
       src: post.file.URL
     el.setAttribute 'data-fullid', post.fullID
-    $.add d.body, el
+    $.add Header.hover, el
     UI.hover
       root: @
       el: el

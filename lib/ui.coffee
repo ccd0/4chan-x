@@ -9,7 +9,6 @@ UI = do ->
     $.on move, 'touchstart mousedown', dragstart
     el
 
-
   class Menu
     currentMenu       = null
     lastToggledButton = null
