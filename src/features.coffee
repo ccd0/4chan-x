@@ -36,7 +36,7 @@ Header =
         className: 'hide-board-list-button'
         innerHTML: '[<a href=javascript:;> - </a>]\u00A0'
       $.on btn, 'click', Header.toggleBoardList
-      $.add fullBoardList, btn
+      $.prepend fullBoardList, btn
     else
       $.rm $ '#custom-board-list', nav
       fullBoardList.hidden = false

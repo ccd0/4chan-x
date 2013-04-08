@@ -4890,7 +4890,7 @@
           innerHTML: '[<a href=javascript:;> - </a>]\u00A0'
         });
         $.on(btn, 'click', Header.toggleBoardList);
-        return $.add(fullBoardList, btn);
+        return $.prepend(fullBoardList, btn);
       } else {
         $.rm($('#custom-board-list', nav));
         return fullBoardList.hidden = false;
