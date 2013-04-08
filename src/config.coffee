@@ -54,7 +54,7 @@ Config =
       'Hide Original Post Form':      [true,  'Hide the normal post form.']
     'Quote Links':
       'Quote Backlinks':              [true,  'Add quote backlinks.']
-      'OP Backlinks':                 [false, 'Add backlinks to the OP.']
+      'OP Backlinks':                 [true,  'Add backlinks to the OP.']
       'Quote Inlining':               [true,  'Inline quoted post on click.']
       'Forward Hiding':               [true,  'Hide original posts of inlined backlinks.']
       'Quote Previewing':             [true,  'Show quoted post on hover.']
