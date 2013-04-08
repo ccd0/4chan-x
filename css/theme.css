@@ -68,8 +68,7 @@ html {
 #prefetch,
 #showQR,
 #{unless _conf["Post Form Decorations"] then '#spoilerLabel,' else ''}
-#stats,
-#updater:not(:hover) .move {
+#thread-stats {
   text-shadow:
      1px  1px 0 #{backgroundC},
     -1px -1px 0 #{backgroundC},
@@ -107,7 +106,7 @@ s:not(:hover) {
 #appchanx-settings,
 #qrtab,
 #{if _conf["Post Form Decorations"] then "#qr," else ""}
-#updater:hover,
+#updater,
 input[type="submit"],
 input[value="Report"],
 span[style="left: 5px; position: absolute;"] a {
@@ -134,9 +133,9 @@ textarea {
 }
 #dump:hover,
 #qr-filename-container:hover,
-#appchanx-settings .selectrice li:nth-of-type(2n+1):hover,
 .selectrice:hover,
-.selectrice li:hover,
+#selectrice li:hover,
+#selectrice li:nth-of-type(2n+1):hover,
 input:hover,
 textarea:hover {
   background: #{theme["Hovered Input Background"]};
@@ -145,8 +144,8 @@ textarea:hover {
 }
 #dump:active,
 #dump:focus,
+#selectrice li:focus,
 .selectrice:focus,
-.selectrice li:focus,
 input:focus,
 textarea:focus,
 textarea.field:focus {
@@ -251,7 +250,7 @@ textarea {
 }
 #exlinks-options-content > table,
 #appchanx-settings ul,
-.selectrice ul {
+#selectrice {
   border-bottom: 1px solid #{theme["Reply Border"]};
   box-shadow: inset #{theme["Shadow Color"]} 0 0 5px;
 }
@@ -374,7 +373,7 @@ a .name {
   border-color: #{if Style.lightTheme then "rgba(0,0,0,0.1)" else "rgba(255,255,255,0.1)"};
 }
 #appchanx-settings li,
-.selectrice li:not(:first-of-type) {
+#selectrice li:not(:first-of-type) {
   border-top: 1px solid #{if Style.lightTheme then "rgba(0,0,0,0.05)" else "rgba(255,255,255,0.025)"};
 }
 #navtopright .exlinksOptionsLink::after,

@@ -413,8 +413,8 @@ Main =
       'Thread Excerpt':           ThreadExcerpt
       'Favicon':                  Favicon
       'Unread':                   Unread
-      'Thread Stats':             ThreadStats
       'Thread Updater':           ThreadUpdater
+      'Thread Stats':             ThreadStats
       'Thread Watcher':           ThreadWatcher
       'Index Navigation':         Nav
       'Keybinds':                 Keybinds

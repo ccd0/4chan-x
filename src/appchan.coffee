@@ -531,37 +531,43 @@ Rice =
 
   selectclick: ->
     e.stopPropagation()
-    if Rice.ul
-      return Rice.remSelect()
+    unless {ul} = Rice
+      Rice.ul = ul = $.el 'ul',
+        id: "selectrice"
+      $.add d.body, ul 
+      
+    if ul.children.length > 0
+      return Rice.rmOption() 
+      
     rect = @getBoundingClientRect()
     {clientHeight} = d.documentElement
-    ul = Rice.ul = $.el 'ul',
-      id: "selectrice"
     {style} = ul
-    style.width = "#{rect.width}px"
-    if clientHeight - rect.bottom < 200
-      style.bottom = "#{clientHeight - rect.top}px"
-    else
-      style.top = "#{rect.bottom}px"
-    style.left = "#{rect.left}px"
-    input = @previousSibling
-    for option in input.options
+
+    style.cssText = "width: #{rect.width}px; left: #{rect.left}px;" + (if clientHeight - rect.bottom < 200 then "bottom: #{clientHeight - rect.top}px" else "top: #{rect.bottom}px") 
+    Rice.select = @previousSibling
+    nodes = []
+    
+    for option in Rice.select.options
       li = $.el 'li',
         textContent: option.textContent
       li.setAttribute 'data-value', option.value
+
       $.on li, 'click', (e) ->
         e.stopPropagation()
-        container = @parentElement.parentElement
-        input = container.previousSibling
+        select = Rice.select
+        container = select.nextElementSibling
         container.firstChild.textContent = @textContent
         input.value = @getAttribute 'data-value'
         ev = document.createEvent 'HTMLEvents'
         ev.initEvent "change", true, true
         $.event input, ev
         Rice.remSelect()
-      $.add ul, li
+      nodes.push li
+    $.add ul, nodes 
+
     $.on ul, 'click scroll blur', (e) ->
       e.stopPropagation()
+
     $.on d, 'click scroll blur resize', Rice.remSelect
     $.add @, ul
 

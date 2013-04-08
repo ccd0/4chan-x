@@ -1,7 +1,7 @@
 /* Updater + Stats */
 #updater,
-#stats {
-  #{align}: #{if _conf["Updater Position"] is "top" then "24" else "2"}px !important;
+#thread-stats {
+  #{align}: #{if _conf["Updater Position"] is "top" or not _conf["Hide Delete UI"] then 23 else 2}px !important; 
   #{Style.sidebarLocation[1]}: auto !important;
   top: #{if _conf["Updater Position"] == "top" then "-1px" else "auto"} !important;
   bottom: #{if _conf["Updater Position"] == "bottom" then "-2px" else "auto"} !important;

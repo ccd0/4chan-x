@@ -419,25 +419,25 @@ else "
   position: fixed;
   z-index: 10;
   padding: 0 1px 1px;
-  border: 1px solid transparent;
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
+#updater:hover {
+  z-index: 30;
+} 
 #updater:not(:hover) > div:not(.move) {
   display: none;
 }
 #updater input {
   text-align: right;
 }
-#updater .rice {
-  float: left;
-}
 #updater .field {
   width: 50px;
 }
 /* Stats */
-#stats {
+#thread-stats {
   position: fixed;
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
+  z-index: 10;
 }
 /* Image Expansion */
 #imgControls .menu-button {
@@ -573,7 +573,11 @@ hide: "
   padding: 2px;
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
-#{ if _conf['Slideout Watcher'] then "
+#watcher > div {
+  max-height: 1.3em;
+  overflow: hidden;
+} 
+#{if _conf['Slideout Watcher'] then "
 #watcher {
   width: #{width}px;
   #{Style.sidebarLocation[0]}: 2px !important;
@@ -585,7 +589,6 @@ hide: "
   text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};
 }
 #watcher > div {
-  max-height: 1.6em;
   overflow: hidden;
 }
 #watcher:hover {
@@ -600,13 +603,18 @@ hide: "
 #watcher {
   width: 200px;
 }
+#watcher:not(:hover) {
+  max-height: 200px;
+  overflow: hidden;
+} 
 "}
 /* Announcements */
 #globalMessage {
   text-align: center;
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
-#{if _conf['Announcements'] is 'slideout' then "
+#{{
+'slideout': " 
 #globalMessage {
   position: fixed;
   padding: 2px;
@@ -626,7 +634,12 @@ hide: "
   overflow: hidden;
   padding: 0;
   border: 0 none;
-}" else ""}
+}"
+'hide': "
+#globalMessage {
+  display: none !important;
+}
+"}[_conf['Announcements']] or ""}
 /* Threads */
 .thread {
   margin: #{parseInt _conf["Top Thread Padding"], 10}px 0 #{parseInt _conf["Bottom Thread Padding"], 10}px 0;
@@ -711,10 +724,26 @@ hide: "
   outline: none;
 }
 .reply.post {
-  display: inline-block;
   #{Style.sizing}: border-box;
-  #{if _conf["Fit Width Replies"] then "width: 100%;" else ""}
 }
+#{if _conf["Fit Width Replies"] then "
+.reply.post {
+  display: block;
+  overflow: hidden;
+}
+.image_expanded .reply.post {
+  width: 100%;
+}
+" else "
+.reply.post {
+  display: inline-block;
+}
+"}
+.image_expanded .reply.post {
+  display: inline-block;
+  overflow: visible;
+  clear: both;
+} 
 .post {
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
@@ -730,7 +759,7 @@ s {
   clear: right;
 }
 #{if _conf['Force Reply Break'] or _conf["OP Background"] then "
-.op.post .postMessage {
+.op.post .postMessage::after {
   display: block;
   content: ' ';
   clear: both;
@@ -747,7 +776,7 @@ s {
 }" else ""}
 /* Summary */
 #{
-if _conf["Fit Width Replies"]
+if _conf["Force Reply Break"]
   ".summary { clear: both; float: left; }"
 else ""
 }
@@ -946,13 +975,17 @@ input:checked + .rice {
   top: 0;
 }
 /* Select Dropdown */
-.selectrice ul {
+#selectrice {
   padding: 0;
+  margin: 0;
   position: fixed;
   max-height: 120px;
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 32;
+}
+#selectrice:empty {
+  display: none;
 }
 /* Post Form */
 #qr {
@@ -1372,9 +1405,6 @@ a:only-of-type > .remove {
   padding: 0;
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
-#appchanx-settings .selectrice ul {
-  border-radius: 0;
-}
 .section-container {
   overflow: auto;
   position: absolute;
@@ -1420,7 +1450,7 @@ a:only-of-type > .remove {
 .rice_tab li:nth-of-type(2n+1),
 .style_tab li:nth-of-type(2n+1),
 .keybinds_tab li:nth-of-type(2n+1),
-.selectrice li:nth-of-type(2n+1) {
+#selectrice li:nth-of-type(2n+1) {
   background-color: rgba(0, 0, 0, 0.05);
 }
 article li {

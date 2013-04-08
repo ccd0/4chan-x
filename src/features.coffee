@@ -3864,8 +3864,13 @@ Favicon =
 ThreadStats =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Stats']
-    @dialog = UI.dialog 'thread-stats', 'bottom: 0; left: 0;', """
-      <div class=move><span id=post-count>0</span> / <span id=file-count>0</span></div>
+    html = '<span id=post-count>0</span> / <span id=file-count>0</span>'
+    if Conf['Thread Updater']
+      @dialog = $.el 'span',
+        innerHTML: "[ #{html} ]"
+    else
+      @dialog = UI.dialog 'thread-stats', 'bottom: 0; left: 0;', """
+        <div class=move>#{html}</div>
       """
 
     @postCountEl = $ '#post-count', @dialog
@@ -3883,11 +3888,17 @@ ThreadStats =
     ThreadStats.thread = @
     ThreadStats.update postCount, fileCount
     $.on d, 'ThreadUpdate', ThreadStats.onUpdate
-    $.add d.body, ThreadStats.dialog
+    if Conf['Thread Updater']
+      $.asap (-> $('.move', ThreadUpdater.dialog)), ->
+        $.prepend $('.move', ThreadUpdater.dialog), ThreadStats.dialog
+    else
+      $.add d.body, ThreadStats.dialog
+
   onUpdate: (e) ->
     return if e.detail[404]
     {postCount, fileCount} = e.detail
     ThreadStats.update postCount, fileCount
+
   update: (postCount, fileCount) ->
     {thread, postCountEl, fileCountEl} = ThreadStats
     postCountEl.textContent = postCount
@@ -3911,7 +3922,7 @@ ThreadUpdater =
       <div><label title='Controls whether *this* thread automatically updates or not'><input type=checkbox name='Auto Update This' #{checked}> Auto Update This</label></div>
       <div><label><input type=number name=Interval class=field min=5 value=#{Conf['Interval']}> Refresh rate (s)</label></div>
       <div><input value='Update' type=button name='Update'></div>
-      """
+    """
 
     @dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
     @timer  = $ '#update-timer',  @dialog
