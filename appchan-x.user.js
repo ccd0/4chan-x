@@ -4847,7 +4847,10 @@
       this.shortcuts = $.el('span', {
         id: 'shortcuts'
       });
-      return $.asap((function() {
+      this.hover = $.el('div', {
+        id: 'hoverUI'
+      });
+      $.asap((function() {
         return d.body;
       }), function() {
         if (!Main.isThisPageLegit()) {
@@ -4856,6 +4859,9 @@
         return $.asap((function() {
           return $.id('boardNavMobile');
         }), Header.setBoardList);
+      });
+      return $.ready(function() {
+        return $.add(d.body, Header.hover);
       });
     },
     setBoardList: function() {
@@ -8060,7 +8066,7 @@
         id: 'qp',
         className: 'dialog'
       });
-      $.add(d.body, qp);
+      $.add(Header.hover, qp);
       Get.postClone(boardID, threadID, postID, qp, Get.contextFromLink(this));
       UI.hover({
         root: this,
@@ -9060,7 +9066,7 @@
         src: post.file.URL
       });
       el.setAttribute('data-fullid', post.fullID);
-      $.add(d.body, el);
+      $.add(Header.hover, el);
       UI.hover({
         root: this,
         el: el,
