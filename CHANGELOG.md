@@ -1,4 +1,4 @@
-- Fix Thread Hiding initialization error, you'll have to clear all hidden threads in the settings window if you keep getting this bug.
+- Fix Thread Hiding initialization error.
 
 # 3.0.0 - *2013-04-07*
 
