@@ -7935,6 +7935,7 @@
         if ($.hasClass(a, 'quotelink')) {
           this.nodes.quotelinks.push(a);
         }
+        a = null;
       }
     }
   };
