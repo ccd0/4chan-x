@@ -731,7 +731,7 @@ hide: "
   display: block;
   overflow: hidden;
 }
-.image_expanded .reply.post {
+.expanded-image .reply.post {
   width: 100%;
 }
 " else "
@@ -739,7 +739,7 @@ hide: "
   display: inline-block;
 }
 "}
-.image_expanded .reply.post {
+.expanded-image .reply.post {
   display: inline-block;
   overflow: visible;
   clear: both;
