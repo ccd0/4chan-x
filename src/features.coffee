@@ -2728,7 +2728,7 @@ QuotePreview =
       # Remove the clone that's in the qp from the array.
       posts.pop()
       for post in posts
-        $.addClass post.nodes.root, 'qphl'
+        $.addClass post.nodes.post, 'qphl'
 
     quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
     clone = Get.postFromRoot qp.firstChild
@@ -2746,7 +2746,7 @@ QuotePreview =
 
     return unless Conf['Quote Highlighting']
     for post in [post].concat post.clones
-      $.rmClass post.nodes.root, 'qphl'
+      $.rmClass post.nodes.post, 'qphl'
     return
 
 QuoteBacklink =
