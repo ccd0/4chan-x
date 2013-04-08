@@ -78,10 +78,10 @@ Header =
     nodes = text.match(/[\w@]+(-(all|title|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
-      if t is 'toggle-all'
+      if /^toggle-all/.test t
         a = $.el 'a',
           className: 'show-board-list-button'
-          textContent: '+'
+          textContent: if m = t.match /-text:"(.+)"/ then m[1] else '+'
           href: 'javascript:;'
         $.on a, 'click', Header.toggleBoardList
         return a
