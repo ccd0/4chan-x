@@ -230,7 +230,7 @@ Settings =
         curr = g.VERSION.match(/\d+/g).map Number
         return unless prev[0] <= curr[0] and prev[1] <= curr[1] and prev[2] <= curr[2]
 
-        changelog = "<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md##{g.VERSION.replace(/\./g, '')}"
+        changelog = '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
         el = $.el 'span',
           innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
         new Notification 'info', el, 30
@@ -264,7 +264,7 @@ Settings =
           <div class=sections-list></div>
           <div class=credits>
             <a href='<%= meta.page %>' target=_blank><%= meta.name %></a> |
-            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md##{g.VERSION.replace(/\./g, '')}' target=_blank>#{g.VERSION}</a> |
+            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md' target=_blank>#{g.VERSION}</a> |
             <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |
             <a href=javascript:; class=close title=Close>×</a>
           </div>
