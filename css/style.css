@@ -347,6 +347,9 @@ a[href="javascript:;"] {
 #updater:not(:hover) > div:not(.move) {
   display: none;
 }
+#updater input[type="button"] {
+  width: 100%;
+}
 .new {
   color: limegreen;
 }
