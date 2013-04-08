@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         4chan X Beta
-// @version      3.0.0
+// @name         4chan X
+// @version      3.0.1
 // @namespace    4chan-X
 // @description  Cross-browser userscript for maximum lurking on 4chan.
 // @copyright    2009-2011 James Campos <james.r.campos@gmail.com>
@@ -20,7 +20,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 
-/* 4chan X Beta - Version 3.0.0 - 2013-03-31
+/* 4chan X - Version 3.0.1 - 2013-04-08
  * https://4chan-x.just-believe.in/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Misc, Nav, Notification, Polyfill, Post, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, ReplyHiding, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -53,7 +53,7 @@
       'Miscellaneous': {
         'Catalog Links': [true, 'Turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
-        'Enable 4chan\'s Extension': [false, 'Compatibility between 4chan X Beta and 4chan\'s inline extension is NOT guaranteed.'],
+        'Enable 4chan\'s Extension': [false, 'Compatibility between 4chan X and 4chan\'s inline extension is NOT guaranteed.'],
         'Custom Board Navigation': [true, 'Show custom links instead of the full board list.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
@@ -63,7 +63,8 @@
         'Comment Expansion': [true, 'Add buttons to expand long comments.'],
         'Thread Expansion': [true, 'Add buttons to expand threads.'],
         'Index Navigation': [false, 'Add buttons to navigate between threads.'],
-        'Check for Updates': [true, 'Check for updated versions of 4chan X Beta.']
+        'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
+        'Check for Updates': [true, 'Check for updated versions of 4chan X.']
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
@@ -119,7 +120,7 @@
       },
       'Quote Links': {
         'Quote Backlinks': [true, 'Add quote backlinks.'],
-        'OP Backlinks': [false, 'Add backlinks to the OP.'],
+        'OP Backlinks': [true, 'Add backlinks to the OP.'],
         'Quote Inlining': [true, 'Inline quoted post on click.'],
         'Forward Hiding': [true, 'Hide original posts of inlined backlinks.'],
         'Quote Previewing': [true, 'Show quoted post on hover.'],
@@ -150,7 +151,7 @@
       filesize: '',
       MD5: ''
     },
-    sauces: "http://iqdb.org/?url=%TURL\nhttps://www.google.com/searchbyimage?image_url=%TURL\n#//tineye.com/search?url=%TURL\n#http://saucenao.com/search.php?url=%TURL\n#http://3d.iqdb.org/?url=%TURL\n#http://regex.info/exif.cgi?imgurl=%URL\n# uploaders:\n#http://imgur.com/upload?url=%URL;text:Upload to imgur\n#http://ompldr.org/upload?url1=%URL;text:Upload to ompldr\n# \"View Same\" in archives:\n#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz\n#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/\n#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/",
+    sauces: "https://www.google.com/searchbyimage?image_url=%TURL\nhttp://iqdb.org/?url=%TURL\n#//tineye.com/search?url=%TURL\n#http://saucenao.com/search.php?url=%TURL\n#http://3d.iqdb.org/?url=%TURL\n#http://regex.info/exif.cgi?imgurl=%URL\n# uploaders:\n#http://imgur.com/upload?url=%URL;text:Upload to imgur\n#http://ompldr.org/upload?url1=%URL;text:Upload to ompldr\n# \"View Same\" in archives:\n#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz\n#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/\n#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/",
     'Custom CSS': false,
     'Header auto-hide': false,
     'Header catalog links': false,
@@ -210,8 +211,8 @@
   doc = d.documentElement;
 
   g = {
-    VERSION: '3.0.0',
-    NAMESPACE: '4chan X Beta.',
+    VERSION: '3.0.1',
+    NAMESPACE: '4chan X.',
     boards: {},
     threads: {},
     posts: {}
@@ -223,14 +224,14 @@
     dialog = function(id, position, html) {
       var el, move;
 
-      el = d.createElement('div');
-      el.className = 'dialog';
-      el.innerHTML = html;
-      el.id = id;
+      el = $.el('div', {
+        className: 'dialog',
+        innerHTML: html,
+        id: id
+      });
       el.style.cssText = localStorage.getItem("" + g.NAMESPACE + id + ".position") || position;
-      move = el.querySelector('.move');
-      move.addEventListener('touchstart', dragstart, false);
-      move.addEventListener('mousedown', dragstart, false);
+      move = $('.move', el);
+      $.on(move, 'touchstart mousedown', dragstart);
       return el;
     };
     Menu = (function() {
@@ -345,8 +346,7 @@
         $.rm(currentMenu);
         currentMenu = null;
         lastToggledButton = null;
-        $.off(d, 'click', this.close);
-        return $.off(d, 'CloseMenu', this.close);
+        return $.off(d, 'click CloseMenu', this.close);
       };
 
       Menu.prototype.findNextEntry = function(entry, direction) {
@@ -406,7 +406,7 @@
       };
 
       Menu.prototype.focus = function(entry) {
-        var bottom, cHeight, cWidth, eRect, focused, left, right, sRect, style, submenu, top, _i, _len, _ref;
+        var bottom, cHeight, cWidth, eRect, focused, left, right, sRect, style, submenu, top, _i, _len, _ref, _ref1, _ref2;
 
         while (focused = $.x('parent::*/child::*[contains(@class,"focused")]', entry)) {
           $.rmClass(focused, 'focused');
@@ -424,20 +424,8 @@
         eRect = entry.getBoundingClientRect();
         cHeight = doc.clientHeight;
         cWidth = doc.clientWidth;
-        if (eRect.top + sRect.height < cHeight) {
-          top = '0px';
-          bottom = 'auto';
-        } else {
-          top = 'auto';
-          bottom = '0px';
-        }
-        if (eRect.right + sRect.width < cWidth) {
-          left = '100%';
-          right = 'auto';
-        } else {
-          left = 'auto';
-          right = '100%';
-        }
+        _ref1 = eRect.top + sRect.height < cHeight ? ['0px', 'auto'] : ['auto', '0px'], top = _ref1[0], bottom = _ref1[1];
+        _ref2 = eRect.right + sRect.width < cWidth ? ['100%', 'auto'] : ['auto', '100%'], left = _ref2[0], right = _ref2[1];
         style = submenu.style;
         style.top = top;
         style.bottom = bottom;
@@ -487,10 +475,10 @@
         return;
       }
       e.preventDefault();
-      el = $.x('ancestor::div[contains(@class,"dialog")][1]', this);
       if (isTouching = e.type === 'touchstart') {
         e = e.changedTouches[e.changedTouches.length - 1];
       }
+      el = $.x('ancestor::div[contains(@class,"dialog")][1]', this);
       rect = el.getBoundingClientRect();
       screenHeight = doc.clientHeight;
       screenWidth = doc.clientWidth;
@@ -509,14 +497,13 @@
         o.identifier = e.identifier;
         o.move = touchmove.bind(o);
         o.up = touchend.bind(o);
-        d.addEventListener('touchmove', o.move, false);
-        d.addEventListener('touchend', o.up, false);
-        return d.addEventListener('touchcancel', o.up, false);
+        $.on(d, 'touchmove', o.move);
+        return $.on(d, 'touchend touchcancel', o.up);
       } else {
         o.move = drag.bind(o);
         o.up = dragend.bind(o);
-        d.addEventListener('mousemove', o.move, false);
-        return d.addEventListener('mouseup', o.up, false);
+        $.on(d, 'mousemove', o.move);
+        return $.on(d, 'mouseup', o.up);
       }
     };
     touchmove = function(e) {
@@ -561,17 +548,16 @@
     };
     dragend = function() {
       if (this.isTouching) {
-        d.removeEventListener('touchmove', this.move, false);
-        d.removeEventListener('touchend', this.up, false);
-        d.removeEventListener('touchcancel', this.up, false);
+        $.off(d, 'touchmove', this.move);
+        $.off(d, 'touchend touchcancel', this.up);
       } else {
-        d.removeEventListener('mousemove', this.move, false);
-        d.removeEventListener('mouseup', this.up, false);
+        $.off(d, 'mousemove', this.move);
+        $.off(d, 'mouseup', this.up);
       }
       return localStorage.setItem("" + g.NAMESPACE + this.id + ".position", this.style.cssText);
     };
     hoverstart = function(_arg) {
-      var asap, asapTest, cb, el, endEvents, event, latestEvent, o, root, _i, _len, _ref;
+      var asapTest, cb, el, endEvents, latestEvent, o, root;
 
       root = _arg.root, el = _arg.el, latestEvent = _arg.latestEvent, endEvents = _arg.endEvents, asapTest = _arg.asapTest, cb = _arg.cb;
       o = {
@@ -579,59 +565,41 @@
         el: el,
         style: el.style,
         cb: cb,
-        endEvents: endEvents.split(' '),
+        endEvents: endEvents,
         latestEvent: latestEvent,
         clientHeight: doc.clientHeight,
         clientWidth: doc.clientWidth
       };
       o.hover = hover.bind(o);
       o.hoverend = hoverend.bind(o);
-      asap = function() {
-        if (asapTest()) {
+      $.asap(function() {
+        return !el.parentNode || asapTest();
+      }, function() {
+        if (el.parentNode) {
           return o.hover(o.latestEvent);
-        } else {
-          return o.timeout = setTimeout(asap, 25);
         }
-      };
-      asap();
-      _ref = o.endEvents;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        event = _ref[_i];
-        root.addEventListener(event, o.hoverend, false);
-      }
-      return root.addEventListener('mousemove', o.hover, false);
+      });
+      $.on(root, endEvents, o.hoverend);
+      return $.on(root, 'mousemove', o.hover);
     };
     hover = function(e) {
-      var clientX, clientY, height, left, right, style, top;
+      var clientX, clientY, height, left, right, style, top, _ref;
 
       this.latestEvent = e;
       height = this.el.offsetHeight;
       clientX = e.clientX, clientY = e.clientY;
       top = clientY - 120;
       top = this.clientHeight <= height || top <= 0 ? 0 : top + height >= this.clientHeight ? this.clientHeight - height : top;
-      if (clientX <= this.clientWidth - 400) {
-        left = clientX + 45 + 'px';
-        right = null;
-      } else {
-        left = null;
-        right = this.clientWidth - clientX + 45 + 'px';
-      }
+      _ref = clientX <= this.clientWidth - 400 ? [clientX + 45 + 'px', null] : [null, this.clientWidth - clientX + 45 + 'px'], left = _ref[0], right = _ref[1];
       style = this.style;
       style.top = top + 'px';
       style.left = left;
       return style.right = right;
     };
     hoverend = function() {
-      var event, _i, _len, _ref;
-
-      this.el.parentNode.removeChild(this.el);
-      _ref = this.endEvents;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        event = _ref[_i];
-        this.root.removeEventListener(event, this.hoverend, false);
-      }
-      this.root.removeEventListener('mousemove', this.hover, false);
-      clearTimeout(this.timeout);
+      $.rm(this.el);
+      $.off(this.root, this.endEvents, this.hoverend);
+      $.off(this.root, 'mousemove', this.hover);
       if (this.cb) {
         return this.cb.call(this);
       }
@@ -739,14 +707,6 @@
       };
       return $.on(d, 'DOMContentLoaded', cb);
     },
-    sync: function(key, cb) {
-      key = "" + g.NAMESPACE + key;
-      return $.on(window, 'storage', function(e) {
-        if (e.key === key) {
-          return cb(JSON.parse(e.newValue));
-        }
-      });
-    },
     formData: function(form) {
       var fd, key, val;
 
@@ -768,22 +728,22 @@
       return fd;
     },
     ajax: function(url, callbacks, opts) {
-      var form, headers, key, r, type, upCallbacks, val;
+      var cred, form, headers, key, r, sync, type, upCallbacks, val;
 
       if (opts == null) {
         opts = {};
       }
-      type = opts.type, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form;
+      type = opts.type, cred = opts.cred, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form, sync = opts.sync;
       r = new XMLHttpRequest();
       type || (type = form && 'post' || 'get');
-      r.open(type, url, true);
+      r.open(type, url, !sync);
       for (key in headers) {
         val = headers[key];
         r.setRequestHeader(key, val);
       }
       $.extend(r, callbacks);
       $.extend(r.upload, upCallbacks);
-      r.withCredentials = type === 'post';
+      r.withCredentials = cred;
       r.send(form);
       return r;
     },
@@ -792,7 +752,7 @@
 
       reqs = {};
       return function(url, cb) {
-        var req;
+        var req, rm;
 
         if (req = reqs[url]) {
           if (req.readyState === 4) {
@@ -802,23 +762,22 @@
           }
           return;
         }
+        rm = function() {
+          return delete reqs[url];
+        };
         req = $.ajax(url, {
-          onload: function() {
+          onload: function(e) {
             var _i, _len, _ref;
 
             _ref = this.callbacks;
             for (_i = 0, _len = _ref.length; _i < _len; _i++) {
               cb = _ref[_i];
-              cb.call(this);
+              cb.call(this, e);
             }
             return delete this.callbacks;
           },
-          onabort: function() {
-            return delete reqs[url];
-          },
-          onerror: function() {
-            return delete reqs[url];
-          }
+          onabort: rm,
+          onerror: rm
         });
         req.callbacks = [cb];
         return reqs[url] = req;
@@ -1030,8 +989,28 @@
       size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
       return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
     },
-    "delete": function(key) {
-      var keys, _i, _len;
+    syncing: {},
+    sync: (function() {
+      window.addEventListener('storage', function(e) {
+        var cb;
+
+        if (cb = $.syncing[e.key]) {
+          return cb(JSON.parse(e.newValue));
+        }
+      }, false);
+      return function(key, cb) {
+        return $.syncing[g.NAMESPACE + key] = cb;
+      };
+    })(),
+    item: function(key, val) {
+      var item;
+
+      item = {};
+      item[key] = val;
+      return item;
+    },
+    "delete": function(keys) {
+      var key, _i, _len;
 
       if (!(keys instanceof Array)) {
         keys = [keys];
@@ -1043,21 +1022,48 @@
         GM_deleteValue(key);
       }
     },
-    get: function(key, defaultVal) {
-      var val;
+    get: function(key, val, cb) {
+      var items;
 
-      if (val = GM_getValue(g.NAMESPACE + key)) {
-        return JSON.parse(val);
+      if (typeof cb === 'function') {
+        items = $.item(key, val);
       } else {
-        return defaultVal;
+        items = key;
+        cb = val;
       }
+      return $.queueTask(function() {
+        for (key in items) {
+          if (val = GM_getValue(g.NAMESPACE + key)) {
+            items[key] = JSON.parse(val);
+          }
+        }
+        return cb(items);
+      });
     },
-    set: function(key, val) {
-      key = g.NAMESPACE + key;
-      val = JSON.stringify(val);
-      localStorage.setItem(key, val);
-      return GM_setValue(key, val);
-    }
+    set: (function() {
+      var set;
+
+      set = function(key, val) {
+        key = g.NAMESPACE + key;
+        val = JSON.stringify(val);
+        if (key in $.syncing) {
+          localStorage.setItem(key, val);
+        }
+        return GM_setValue(key, val);
+      };
+      return function(keys, val) {
+        var key;
+
+        if (typeof keys === 'string') {
+          set(keys, val);
+          return;
+        }
+        for (key in keys) {
+          val = keys[key];
+          set(key, val);
+        }
+      };
+    })()
   });
 
   Polyfill = {
@@ -1147,10 +1153,10 @@
         if (/^[^\w@]/.test(t)) {
           return $.tn(t);
         }
-        if (t === 'toggle-all') {
+        if (/^toggle-all/.test(t)) {
           a = $.el('a', {
             className: 'show-board-list-button',
-            textContent: '+',
+            textContent: (t.match(/-text:"(.+)"/) || [null, '+'])[1],
             href: 'javascript:;'
           });
           $.on(a, 'click', Header.toggleBoardList);
@@ -1312,11 +1318,11 @@
 
   Settings = {
     init: function() {
-      var link, prevVersion, settings;
+      var link, settings;
 
       link = $.el('a', {
         className: 'settings-link',
-        textContent: '4chan X Beta Settings',
+        textContent: '4chan X Settings',
         href: 'javascript:;'
       });
       $.on(link, 'click', Settings.open);
@@ -1332,13 +1338,37 @@
           return $.prepend($.id('navtopright'), [$.tn(' ['), link, $.tn('] ')]);
         });
       });
-      if ((prevVersion = $.get('previousversion', null)) !== g.VERSION) {
-        $.set('lastupdate', Date.now());
-        $.set('previousversion', g.VERSION);
-        if (!prevVersion) {
+      $.get('previousversion', null, function(item) {
+        var changelog, curr, el, prev, previous;
+
+        el = $.el('span');
+        el.style.flex = 'test';
+        if (el.style.flex === 'test') {
+          el.innerHTML = "Firefox is not correctly set up and some 4chan X features will be displayed incorrectly.<br>\nFollow the instructions of the <a href='https://4chan-x.just-believe.in/' target=_blank>install guide</a> to fix it.";
+          new Notification('warning', el, 30);
+        }
+        if (previous = item['previousversion']) {
+          if (previous === g.VERSION) {
+            return;
+          }
+          prev = previous.match(/\d+/g).map(Number);
+          curr = g.VERSION.match(/\d+/g).map(Number);
+          if (!(prev[0] <= curr[0] && prev[1] <= curr[1] && prev[2] <= curr[2])) {
+            return;
+          }
+          changelog = 'https://github.com/MayhemYDG/4chan-x/blob/v3/CHANGELOG.md';
+          el = $.el('span', {
+            innerHTML: "4chan X has been updated to <a href='" + changelog + "' target=_blank>version " + g.VERSION + "</a>."
+          });
+          new Notification('info', el, 30);
+        } else {
           $.on(d, '4chanXInitFinished', Settings.open);
         }
-      }
+        return $.set({
+          lastupdate: Date.now(),
+          previousversion: g.VERSION
+        });
+      });
       Settings.addSection('Main', Settings.main);
       Settings.addSection('Filter', Settings.filter);
       Settings.addSection('Sauce', Settings.sauce);
@@ -1365,7 +1395,7 @@
         return;
       }
       $.event('CloseMenu');
-      html = "<div id=fourchanx-settings class=dialog>\n  <nav>\n    <div class=sections-list></div>\n    <div class=credits>\n      <a href='https://4chan-x.just-believe.in/' target=_blank>4chan X Beta</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/CHANGELOG.md#" + (g.VERSION.replace(/\./g, '')) + "' target=_blank>" + g.VERSION + "</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |\n      <a href=javascript:; class=close title=Close>×</a>\n    </div>\n  </nav>\n  <hr>\n  <div class=section-container><section></section></div>\n</div>";
+      html = "<div id=fourchanx-settings class=dialog>\n  <nav>\n    <div class=sections-list></div>\n    <div class=credits>\n      <a href='https://4chan-x.just-believe.in/' target=_blank>4chan X</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n      <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |\n      <a href=javascript:; class=close title=Close>×</a>\n    </div>\n  </nav>\n  <hr>\n  <div class=section-container><section></section></div>\n</div>";
       Settings.dialog = overlay = $.el('div', {
         id: 'overlay',
         innerHTML: html
@@ -1434,12 +1464,14 @@
       return section.scrollTop = 0;
     },
     main: function(section) {
-      var ID, arr, checked, description, div, fs, hiddenNum, key, obj, post, thread, _ref, _ref1, _ref2;
+      var arr, button, description, div, fs, hiddenNum, input, inputs, items, key, obj, _ref;
 
       section.innerHTML = "<div class=imp-exp>\n  <button class=export>Export Settings</button>\n  <button class=import>Import Settings</button>\n  <input type=file style='visibility:hidden'>\n</div>\n<p class=imp-exp-result></p>";
       $.on($('.export', section), 'click', Settings["export"]);
       $.on($('.import', section), 'click', Settings["import"]);
       $.on($('input', section), 'change', Settings.onImport);
+      items = {};
+      inputs = {};
       _ref = Config.main;
       for (key in _ref) {
         obj = _ref[key];
@@ -1448,53 +1480,105 @@
         });
         for (key in obj) {
           arr = obj[key];
-          checked = $.get(key, Conf[key]) ? 'checked' : '';
           description = arr[1];
           div = $.el('div', {
-            innerHTML: "<label><input type=checkbox name=\"" + key + "\" " + checked + ">" + key + "</label><span class=description>: " + description + "</span>"
+            innerHTML: "<label><input type=checkbox name=\"" + key + "\">" + key + "</label><span class=description>: " + description + "</span>"
           });
-          $.on($('input', div), 'change', $.cb.checked);
+          input = $('input', div);
+          $.on(input, 'change', $.cb.checked);
+          items[key] = Conf[key];
+          inputs[key] = input;
           $.add(fs, div);
         }
         $.add(section, fs);
       }
-      hiddenNum = 0;
-      _ref1 = ThreadHiding.getHiddenThreads().threads;
-      for (ID in _ref1) {
-        thread = _ref1[ID];
-        hiddenNum++;
-      }
-      _ref2 = ReplyHiding.getHiddenPosts().threads;
-      for (ID in _ref2) {
-        thread = _ref2[ID];
-        for (ID in thread) {
-          post = thread[ID];
-          hiddenNum++;
+      $.get(items, function(items) {
+        var val;
+
+        for (key in items) {
+          val = items[key];
+          inputs[key].checked = val;
         }
-      }
-      div = $.el('div', {
-        innerHTML: "<button>Hidden: " + hiddenNum + "</button><span class=description>: Clear manually hidden threads and posts on /" + g.BOARD + "/."
       });
-      $.on($('button', div), 'click', function() {
+      div = $.el('div', {
+        innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Refresh the page to apply."
+      });
+      button = $('button', div);
+      hiddenNum = 0;
+      $.get('hiddenThreads', {
+        boards: {}
+      }, function(item) {
+        var ID, board, thread, _ref1;
+
+        _ref1 = item.hiddenThreads.boards;
+        for (ID in _ref1) {
+          board = _ref1[ID];
+          for (ID in board) {
+            thread = board[ID];
+            hiddenNum++;
+          }
+        }
+        return button.textContent = "Hidden: " + hiddenNum;
+      });
+      $.get('hiddenPosts', {
+        boards: {}
+      }, function(item) {
+        var ID, board, post, thread, _ref1;
+
+        _ref1 = item.hiddenPosts.boards;
+        for (ID in _ref1) {
+          board = _ref1[ID];
+          for (ID in board) {
+            thread = board[ID];
+            for (ID in thread) {
+              post = thread[ID];
+              hiddenNum++;
+            }
+          }
+        }
+        return button.textContent = "Hidden: " + hiddenNum;
+      });
+      $.on(button, 'click', function() {
         this.textContent = 'Hidden: 0';
-        return $["delete"](["hiddenThreads." + g.BOARD, "hiddenPosts." + g.BOARD]);
+        return $.get('hiddenThreads', {
+          boards: {}
+        }, function(item) {
+          var boardID;
+
+          for (boardID in item.hiddenThreads.boards) {
+            localStorage.removeItem("4chan-hide-t-" + boardID);
+          }
+          return $["delete"](['hiddenThreads', 'hiddenPosts']);
+        });
       });
       return $.after($('input[name="Stubs"]', section).parentNode.parentNode, div);
     },
-    "export": function() {
-      var a, data, now, output;
+    "export": function(now, data) {
+      var a, db, p, _i, _len;
 
-      now = Date.now();
-      data = {
-        version: g.VERSION,
-        date: now,
-        Conf: Conf,
-        WatchedThreads: $.get('WatchedThreads', {})
-      };
+      if (typeof now !== 'number') {
+        now = Date.now();
+        data = {
+          version: g.VERSION,
+          date: now
+        };
+        Conf['WatchedThreads'] = {};
+        for (_i = 0, _len = DataBoards.length; _i < _len; _i++) {
+          db = DataBoards[_i];
+          Conf[db] = {
+            boards: {}
+          };
+        }
+        $.get(Conf, function(Conf) {
+          data.Conf = Conf;
+          return Settings["export"](now, data);
+        });
+        return;
+      }
       a = $.el('a', {
         className: 'warning',
         textContent: 'Save me!',
-        download: "4chan X Beta v" + g.VERSION + "-" + now + ".json",
+        download: "4chan X v" + g.VERSION + "-" + now + ".json",
         href: "data:application/json;base64," + (btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))))),
         target: '_blank'
       });
@@ -1502,9 +1586,9 @@
         a.click();
         return;
       }
-      output = this.parentNode.nextElementSibling;
-      output.innerHTML = null;
-      return $.add(output, a);
+      p = $('.imp-exp-result', Settings.dialog);
+      p.innerHTML = null;
+      return $.add(p, a);
     },
     "import": function() {
       return this.nextElementSibling.click();
@@ -1525,7 +1609,7 @@
         var data, err;
 
         try {
-          data = JSON.parse(decodeURIComponent(escape(e.target.result)));
+          data = JSON.parse(e.target.result);
           Settings.loadSettings(data);
           if (confirm('Import successful. Refresh now?')) {
             return window.location.reload();
@@ -1533,13 +1617,13 @@
         } catch (_error) {
           err = _error;
           output.textContent = 'Import failed due to an error.';
-          return c.log(err.stack);
+          return c.error(err.stack);
         }
       };
       return reader.readAsText(file);
     },
     loadSettings: function(data) {
-      var key, val, version, _ref, _ref1;
+      var key, val, version, _ref;
 
       version = data.version.split('.');
       if (version[0] === '2') {
@@ -1615,13 +1699,9 @@
             return "Shift+" + s.slice(0, -1) + (s.slice(-1).toLowerCase());
           });
         }
+        data.Conf.WatchedThreads = data.WatchedThreads;
       }
-      _ref1 = data.Conf;
-      for (key in _ref1) {
-        val = _ref1[key];
-        $.set(key, val);
-      }
-      return $.set('WatchedThreads', data.WatchedThreads);
+      return $.set(data.Conf);
     },
     convertSettings: function(data, map) {
       var newKey, prevKey;
@@ -1652,8 +1732,10 @@
         ta = $.el('textarea', {
           name: name,
           className: 'field',
-          value: $.get(name, Conf[name]),
           spellcheck: false
+        });
+        $.get(name, Conf[name], function(item) {
+          return ta.value = item[name];
         });
         $.on(ta, 'change', $.cb.value);
         $.add(div, ta);
@@ -1666,25 +1748,39 @@
 
       section.innerHTML = "<div class=warning " + (Conf['Sauce'] ? 'hidden' : '') + "><code>Sauce</code> is disabled.</div>\n<div>Lines starting with a <code>#</code> will be ignored.</div>\n<div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div>\n<ul>These parameters will be replaced by their corresponding values:\n  <li><code>%TURL</code>: Thumbnail URL.</li>\n  <li><code>%URL</code>: Full image URL.</li>\n  <li><code>%MD5</code>: MD5 hash.</li>\n  <li><code>%board</code>: Current board.</li>\n</ul>\n<textarea name=sauces class=field spellcheck=false></textarea>";
       sauce = $('textarea', section);
-      sauce.value = $.get('sauces', Conf['sauces']);
+      $.get('sauces', Conf['sauces'], function(item) {
+        return sauce.value = item['sauces'];
+      });
       return $.on(sauce, 'change', $.cb.value);
     },
     rice: function(section) {
-      var event, input, name, _i, _len, _ref;
+      var event, input, inputs, items, name, _i, _len, _ref;
 
       section.innerHTML = "<fieldset>\n  <legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Index-only link: <code>board-index</code></div>\n  <div>Catalog-only link: <code>board-catalog</code></div>\n  <div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Tab Icon <span class=warning " + (Conf['Unread Tab Icon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea>\n</fieldset>";
+      items = {};
+      inputs = {};
       _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         name = _ref[_i];
         input = $("[name=" + name + "]", section);
-        input.value = $.get(name, Conf[name]);
+        items[name] = Conf[name];
+        inputs[name] = input;
         event = ['favicon', 'usercss'].contains(name) ? 'change' : 'input';
         $.on(input, event, $.cb.value);
-        if ('usercss' !== name) {
-          $.on(input, event, Settings[name]);
-          Settings[name].call(input);
-        }
       }
+      $.get(items, function(items) {
+        var key, val;
+
+        for (key in items) {
+          val = items[key];
+          input = inputs[key];
+          input.value = val;
+          if ('usercss' !== name) {
+            $.on(input, event, Settings[key]);
+            Settings[key].call(input);
+          }
+        }
+      });
       $.on($('input[name="Custom CSS"]', section), 'change', Settings.togglecss);
       return $.on($.id('apply-css'), 'click', Settings.usercss);
     },
@@ -1737,10 +1833,12 @@
       return CustomCSS.update();
     },
     keybinds: function(section) {
-      var arr, input, key, tbody, tr, _ref;
+      var arr, input, inputs, items, key, tbody, tr, _ref;
 
       section.innerHTML = "<div class=warning " + (Conf['Keybinds'] ? 'hidden' : '') + "><code>Keybinds</code> are disabled.</div>\n<div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div>\n<div>Press <kbd>Backspace</kbd> to disable a keybind.</div>\n<table><tbody>\n  <tr><th>Actions</th><th>Keybinds</th></tr>\n</tbody></table>";
       tbody = $('tbody', section);
+      items = {};
+      inputs = {};
       _ref = Config.hotkeys;
       for (key in _ref) {
         arr = _ref[key];
@@ -1749,11 +1847,20 @@
         });
         input = $('input', tr);
         input.name = key;
-        input.value = $.get(key, Conf[key]);
         input.spellcheck = false;
+        items[key] = Conf[key];
+        inputs[key] = input;
         $.on(input, 'keydown', Settings.keybind);
         $.add(tbody, tr);
       }
+      return $.get(items, function(items) {
+        var val;
+
+        for (key in items) {
+          val = items[key];
+          inputs[key].value = val;
+        }
+      });
     },
     keybind: function(e) {
       var key;
@@ -1955,7 +2062,7 @@
           }
           if (result.hide) {
             if (this.isReply) {
-              ReplyHiding.hide(this, result.stub);
+              PostHiding.hide(this, result.stub);
             } else if (g.VIEW === 'index') {
               ThreadHiding.hide(this.thread, result.stub);
             } else {
@@ -2094,7 +2201,7 @@
         };
       },
       makeFilter: function() {
-        var re, save, section, select, ta, tl, type, value;
+        var re, section, select, ta, tl, type, value;
 
         type = this.dataset.type;
         value = Filter[type](Filter.menu.post);
@@ -2111,9 +2218,13 @@
         if (!Filter.menu.post.isReply) {
           re += ';op:yes';
         }
-        save = $.get(type, '');
-        save = save ? "" + save + "\n" + re : re;
-        $.set(type, save);
+        $.get(type, '', function(item) {
+          var save;
+
+          save = item[type];
+          save = save ? "" + save + "\n" + re : re;
+          return $.set(type, save);
+        });
         Settings.open('Filter');
         section = $('.section-container');
         select = $('select[name=filter]', section);
@@ -2132,9 +2243,8 @@
       if (g.VIEW !== 'index' || !Conf['Thread Hiding'] && !Conf['Thread Hiding Link']) {
         return;
       }
-      Misc.clearThreads("hiddenThreads." + g.BOARD);
-      this.getHiddenThreads();
-      this.syncFromCatalog();
+      this.db = new DataBoard('hiddenThreads');
+      this.syncCatalog();
       return Thread.prototype.callbacks.push({
         name: 'Thread Hiding',
         cb: this.node
@@ -2143,7 +2253,10 @@
     node: function() {
       var data;
 
-      if (data = ThreadHiding.hiddenThreads.threads[this]) {
+      if (data = ThreadHiding.db.get({
+        boardID: this.board.ID,
+        threadID: this.ID
+      })) {
         ThreadHiding.hide(this, data.makeStub);
       }
       if (!Conf['Thread Hiding']) {
@@ -2151,33 +2264,63 @@
       }
       return $.prepend(this.OP.nodes.root, ThreadHiding.makeButton(this, 'hide'));
     },
-    getHiddenThreads: function() {
-      return ThreadHiding.hiddenThreads = $.get("hiddenThreads." + g.BOARD, {
-        threads: {}
+    syncCatalog: function() {
+      var e, hiddenThreads, hiddenThreadsOnCatalog, threadID;
+
+      hiddenThreads = ThreadHiding.db.get({
+        boardID: g.BOARD.ID,
+        defaultValue: {}
+      });
+      try {
+        hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
+      } catch (_error) {
+        e = _error;
+        localStorage.setItem("4chan-hide-t-" + g.BOARD, JSON.stringify({}));
+        return ThreadHiding.syncCatalog();
+      }
+      for (threadID in hiddenThreadsOnCatalog) {
+        if (!(threadID in hiddenThreads)) {
+          hiddenThreads[threadID] = {};
+        }
+      }
+      for (threadID in hiddenThreads) {
+        if (!(threadID in hiddenThreadsOnCatalog)) {
+          delete hiddenThreads[threadID];
+        }
+      }
+      if ((ThreadHiding.db.data.lastChecked || 0) > Date.now() - $.MINUTE) {
+        ThreadHiding.cleanCatalog(hiddenThreadsOnCatalog);
+      }
+      return ThreadHiding.db.set({
+        boardID: g.BOARD.ID,
+        val: hiddenThreads
       });
     },
-    syncFromCatalog: function() {
-      var hiddenThreadsOnCatalog, threadID, threads;
+    cleanCatalog: function(hiddenThreadsOnCatalog) {
+      return $.cache("//api.4chan.org/" + g.BOARD + "/threads.json", function() {
+        var page, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
 
-      hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
-      threads = ThreadHiding.hiddenThreads.threads;
-      for (threadID in hiddenThreadsOnCatalog) {
-        if (threadID in threads) {
-          continue;
+        if (this.status !== 200) {
+          return;
         }
-        threads[threadID] = {};
-      }
-      for (threadID in threads) {
-        if (threadID in threads) {
-          continue;
+        threads = {};
+        _ref = JSON.parse(this.response);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          page = _ref[_i];
+          _ref1 = page.threads;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            thread = _ref1[_j];
+            if (thread.no in hiddenThreadsOnCatalog) {
+              threads[thread.no] = hiddenThreadsOnCatalog[thread.no];
+            }
+          }
         }
-        delete threads[threadID];
-      }
-      if (Object.keys(threads).length) {
-        return $.set("hiddenThreads." + g.BOARD, ThreadHiding.hiddenThreads);
-      } else {
-        return $["delete"]("hiddenThreads." + g.BOARD);
-      }
+        if (Object.keys(threads).length) {
+          return localStorage.setItem("4chan-hide-t-" + g.BOARD, JSON.stringify(threads));
+        } else {
+          return localStorage.removeItem("4chan-hide-t-" + g.BOARD);
+        }
+      });
     },
     menu: {
       init: function() {
@@ -2244,21 +2387,26 @@
       return a;
     },
     saveHiddenState: function(thread, makeStub) {
-      var hiddenThreads, hiddenThreadsCatalog;
+      var hiddenThreadsOnCatalog;
 
-      hiddenThreads = ThreadHiding.getHiddenThreads();
-      hiddenThreadsCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
+      hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem("4chan-hide-t-" + g.BOARD)) || {};
       if (thread.isHidden) {
-        hiddenThreads.threads[thread] = {
-          makeStub: makeStub
-        };
-        hiddenThreadsCatalog[thread] = true;
+        ThreadHiding.db.set({
+          boardID: thread.board.ID,
+          threadID: thread.ID,
+          val: {
+            makeStub: makeStub
+          }
+        });
+        hiddenThreadsOnCatalog[thread] = true;
       } else {
-        delete hiddenThreads.threads[thread];
-        delete hiddenThreadsCatalog[thread];
+        ThreadHiding.db["delete"]({
+          boardID: thread.board.ID,
+          threadID: thread.ID
+        });
+        delete hiddenThreadsOnCatalog[thread];
       }
-      $.set("hiddenThreads." + g.BOARD, hiddenThreads);
-      return localStorage.setItem("4chan-hide-t-" + g.BOARD, JSON.stringify(hiddenThreadsCatalog));
+      return localStorage.setItem("4chan-hide-t-" + g.BOARD, JSON.stringify(hiddenThreadsOnCatalog));
     },
     toggle: function(thread) {
       if (!(thread instanceof Thread)) {
@@ -2317,43 +2465,39 @@
     }
   };
 
-  ReplyHiding = {
+  PostHiding = {
     init: function() {
       if (g.VIEW === 'catalog' || !Conf['Reply Hiding'] && !Conf['Reply Hiding Link']) {
         return;
       }
-      Misc.clearThreads("hiddenPosts." + g.BOARD);
-      this.getHiddenPosts();
+      this.db = new DataBoard('hiddenPosts');
       return Post.prototype.callbacks.push({
         name: 'Reply Hiding',
         cb: this.node
       });
     },
     node: function() {
-      var data, thread;
+      var data;
 
       if (!this.isReply || this.isClone) {
         return;
       }
-      if (thread = ReplyHiding.hiddenPosts.threads[this.thread]) {
-        if (data = thread[this]) {
-          if (data.thisPost) {
-            ReplyHiding.hide(this, data.makeStub, data.hideRecursively);
-          } else {
-            Recursive.apply(ReplyHiding.hide, this, data.makeStub, true);
-            Recursive.add(ReplyHiding.hide, this, data.makeStub, true);
-          }
+      if (data = PostHiding.db.get({
+        boardID: this.board.ID,
+        threadID: this.thread.ID,
+        postID: this.ID
+      })) {
+        if (data.thisPost) {
+          PostHiding.hide(this, data.makeStub, data.hideRecursively);
+        } else {
+          Recursive.apply(PostHiding.hide, this, data.makeStub, true);
+          Recursive.add(PostHiding.hide, this, data.makeStub, true);
         }
       }
       if (!Conf['Reply Hiding']) {
         return;
       }
-      return $.replace($('.sideArrows', this.nodes.root), ReplyHiding.makeButton(this, 'hide'));
-    },
-    getHiddenPosts: function() {
-      return ReplyHiding.hiddenPosts = $.get("hiddenPosts." + g.BOARD, {
-        threads: {}
-      });
+      return $.replace($('.sideArrows', this.nodes.root), PostHiding.makeButton(this, 'hide'));
     },
     menu: {
       init: function() {
@@ -2370,7 +2514,7 @@
           textContent: 'Apply',
           href: 'javascript:;'
         });
-        $.on(apply, 'click', ReplyHiding.menu.hide);
+        $.on(apply, 'click', PostHiding.menu.hide);
         thisPost = $.el('label', {
           innerHTML: '<input type=checkbox name=thisPost checked> This post'
         });
@@ -2388,7 +2532,7 @@
             if (!post.isReply || post.isClone || post.isHidden) {
               return false;
             }
-            ReplyHiding.menu.post = post;
+            PostHiding.menu.post = post;
             return true;
           },
           subEntries: [
@@ -2411,7 +2555,7 @@
           textContent: 'Apply',
           href: 'javascript:;'
         });
-        $.on(apply, 'click', ReplyHiding.menu.show);
+        $.on(apply, 'click', PostHiding.menu.show);
         thisPost = $.el('label', {
           innerHTML: '<input type=checkbox name=thisPost> This post'
         });
@@ -2423,16 +2567,19 @@
           el: div,
           order: 20,
           open: function(post) {
-            var data, thread;
+            var data;
 
-            if (!post.isReply || post.isClone) {
+            if (!post.isReply || post.isClone || !post.isHidden) {
               return false;
             }
-            thread = ReplyHiding.getHiddenPosts().threads[post.thread];
-            if (!(post.isHidden || (data = thread != null ? thread[post] : void 0))) {
+            if (!(data = PostHiding.db.get({
+              boardID: post.board.ID,
+              threadID: post.thread.ID,
+              postID: post.ID
+            }))) {
               return false;
             }
-            ReplyHiding.menu.post = post;
+            PostHiding.menu.post = post;
             thisPost.firstChild.checked = post.isHidden;
             replies.firstChild.checked = (data != null ? data.hideRecursively : void 0) != null ? data.hideRecursively : Conf['Recursive Hiding'];
             return true;
@@ -2455,37 +2602,39 @@
         thisPost = $('input[name=thisPost]', parent).checked;
         replies = $('input[name=replies]', parent).checked;
         makeStub = $('input[name=makeStub]', parent).checked;
-        post = ReplyHiding.menu.post;
+        post = PostHiding.menu.post;
         if (thisPost) {
-          ReplyHiding.hide(post, makeStub, replies);
+          PostHiding.hide(post, makeStub, replies);
         } else if (replies) {
-          Recursive.apply(ReplyHiding.hide, post, makeStub, true);
-          Recursive.add(ReplyHiding.hide, post, makeStub, true);
+          Recursive.apply(PostHiding.hide, post, makeStub, true);
+          Recursive.add(PostHiding.hide, post, makeStub, true);
         } else {
           return;
         }
-        ReplyHiding.saveHiddenState(post, true, thisPost, makeStub, replies);
+        PostHiding.saveHiddenState(post, true, thisPost, makeStub, replies);
         return $.event('CloseMenu');
       },
       show: function() {
-        var data, parent, post, replies, thisPost, thread;
+        var data, parent, post, replies, thisPost;
 
         parent = this.parentNode;
         thisPost = $('input[name=thisPost]', parent).checked;
         replies = $('input[name=replies]', parent).checked;
-        post = ReplyHiding.menu.post;
-        thread = ReplyHiding.getHiddenPosts().threads[post.thread];
-        data = thread != null ? thread[post] : void 0;
+        post = PostHiding.menu.post;
         if (thisPost) {
-          ReplyHiding.show(post, replies);
+          PostHiding.show(post, replies);
         } else if (replies) {
-          Recursive.apply(ReplyHiding.show, post, true);
-          Recursive.rm(ReplyHiding.hide, post, true);
+          Recursive.apply(PostHiding.show, post, true);
+          Recursive.rm(PostHiding.hide, post, true);
         } else {
           return;
         }
-        if (data) {
-          ReplyHiding.saveHiddenState(post, !(thisPost && replies), !thisPost, data.makeStub, !replies);
+        if (data = PostHiding.db.get({
+          boardID: post.board.ID,
+          threadID: post.thread.ID,
+          postID: post.ID
+        })) {
+          PostHiding.saveHiddenState(post, !(thisPost && replies), !thisPost, data.makeStub, !replies);
         }
         return $.event('CloseMenu');
       }
@@ -2498,41 +2647,38 @@
         innerHTML: "<span>[&nbsp;" + (type === 'hide' ? '-' : '+') + "&nbsp;]</span>",
         href: 'javascript:;'
       });
-      $.on(a, 'click', ReplyHiding.toggle);
+      $.on(a, 'click', PostHiding.toggle);
       return a;
     },
     saveHiddenState: function(post, isHiding, thisPost, makeStub, hideRecursively) {
-      var hiddenPosts, thread;
+      var data;
 
-      hiddenPosts = ReplyHiding.getHiddenPosts();
+      data = {
+        boardID: post.board.ID,
+        threadID: post.thread.ID,
+        postID: post.ID
+      };
       if (isHiding) {
-        if (!(thread = hiddenPosts.threads[post.thread])) {
-          thread = hiddenPosts.threads[post.thread] = {};
-        }
-        thread[post] = {
+        data.val = {
           thisPost: thisPost !== false,
           makeStub: makeStub,
           hideRecursively: hideRecursively
         };
+        return PostHiding.db.set(data);
       } else {
-        thread = hiddenPosts.threads[post.thread];
-        delete thread[post];
-        if (!Object.keys(thread).length) {
-          delete hiddenPosts.threads[post.thread];
-        }
+        return PostHiding.db["delete"](data);
       }
-      return $.set("hiddenPosts." + g.BOARD, hiddenPosts);
     },
     toggle: function() {
       var post;
 
       post = Get.postFromNode(this);
       if (post.isHidden) {
-        ReplyHiding.show(post);
+        PostHiding.show(post);
       } else {
-        ReplyHiding.hide(post);
+        PostHiding.hide(post);
       }
-      return ReplyHiding.saveHiddenState(post, post.isHidden);
+      return PostHiding.saveHiddenState(post, post.isHidden);
     },
     hide: function(post, makeStub, hideRecursively) {
       var a, postInfo, quotelink, _i, _len, _ref;
@@ -2548,8 +2694,8 @@
       }
       post.isHidden = true;
       if (hideRecursively) {
-        Recursive.apply(ReplyHiding.hide, post, makeStub, true);
-        Recursive.add(ReplyHiding.hide, post, makeStub, true);
+        Recursive.apply(PostHiding.hide, post, makeStub, true);
+        Recursive.add(PostHiding.hide, post, makeStub, true);
       }
       _ref = Get.allQuotelinksLinkingTo(post);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2560,7 +2706,7 @@
         post.nodes.root.hidden = true;
         return;
       }
-      a = ReplyHiding.makeButton(post, 'show');
+      a = PostHiding.makeButton(post, 'show');
       postInfo = Conf['Anonymize'] ? 'Anonymous' : $('.nameBlock', post.nodes.info).textContent;
       $.add(a, $.tn(" " + postInfo));
       post.nodes.stub = $.el('div', {
@@ -2586,8 +2732,8 @@
       }
       post.isHidden = false;
       if (showRecursively) {
-        Recursive.apply(ReplyHiding.show, post, true);
-        Recursive.rm(ReplyHiding.hide, post);
+        Recursive.apply(PostHiding.show, post, true);
+        Recursive.rm(PostHiding.hide, post);
       }
       _ref = Get.allQuotelinksLinkingTo(post);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -2678,7 +2824,7 @@
       });
     },
     node: function() {
-      var board, postID, quotelink, _i, _len, _ref, _ref1, _ref2;
+      var boardID, postID, quotelink, _i, _len, _ref, _ref1, _ref2;
 
       if (this.isClone) {
         return;
@@ -2686,8 +2832,8 @@
       _ref = this.nodes.quotelinks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         quotelink = _ref[_i];
-        _ref1 = Get.postDataFromLink(quotelink), board = _ref1.board, postID = _ref1.postID;
-        if ((_ref2 = g.posts["" + board + "." + postID]) != null ? _ref2.isHidden : void 0) {
+        _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, postID = _ref1.postID;
+        if ((_ref2 = g.posts["" + boardID + "." + postID]) != null ? _ref2.isHidden : void 0) {
           $.addClass(quotelink, 'filtered');
         }
       }
@@ -2824,21 +2970,15 @@
         el: div,
         order: 40,
         open: function(post) {
-          var node, seconds, thread;
+          var node;
 
-          if (post.isDead || !((thread = QR.yourPosts.threads[post.thread]) && thread.contains(post.ID))) {
+          if (post.isDead) {
             return false;
           }
           DeleteLink.post = post;
-          DeleteLink.cooldown.start(post);
           node = div.firstChild;
-          if (seconds = DeleteLink.cooldown[post.fullID]) {
-            node.textContent = "Delete (" + seconds + ")";
-            DeleteLink.cooldown.el = node;
-          } else {
-            node.textContent = 'Delete';
-            delete DeleteLink.cooldown.el;
-          }
+          node.textContent = 'Delete';
+          DeleteLink.cooldown.start(post, node);
           return true;
         },
         subEntries: [postEntry, fileEntry]
@@ -2848,7 +2988,7 @@
       var form, link, m, post, pwd;
 
       post = DeleteLink.post;
-      if (DeleteLink.cooldown[post.fullID]) {
+      if (DeleteLink.cooldown.counting === post) {
         return;
       }
       $.off(this, 'click', DeleteLink["delete"]);
@@ -2863,16 +3003,17 @@
       link = this;
       return $.ajax($.id('delform').action.replace("/" + g.BOARD + "/", "/" + post.board + "/"), {
         onload: function() {
-          return DeleteLink.load(link, this.response);
+          return DeleteLink.load(link, post, this.response);
         },
         onerror: function() {
           return DeleteLink.error(link);
         }
       }, {
+        cred: true,
         form: $.formData(form)
       });
     },
-    load: function(link, html) {
+    load: function(link, post, html) {
       var msg, s, tmpDoc;
 
       tmpDoc = d.implementation.createHTMLDocument('');
@@ -2883,6 +3024,9 @@
         s = msg.textContent;
         $.on(link, 'click', DeleteLink["delete"]);
       } else {
+        if (tmpDoc.title === 'Updating index...') {
+          (post.origin || post).kill();
+        }
         s = 'Deleted';
       }
       return link.textContent = s;
@@ -2892,36 +3036,38 @@
       return $.on(link, 'click', DeleteLink["delete"]);
     },
     cooldown: {
-      start: function(post) {
-        var length, seconds;
+      start: function(post, node) {
+        var length, seconds, _ref;
 
-        if (post.fullID in DeleteLink.cooldown) {
+        if (!((_ref = QR.db) != null ? _ref.get({
+          boardID: post.board.ID,
+          threadID: post.thread.ID,
+          postID: post.ID
+        }) : void 0)) {
+          delete DeleteLink.cooldown.counting;
           return;
         }
+        DeleteLink.cooldown.counting = post;
         length = post.board.ID === 'q' ? 600 : 30;
         seconds = Math.ceil((length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND);
-        return DeleteLink.cooldown.count(post.fullID, seconds, length);
+        return DeleteLink.cooldown.count(post, seconds, length, node);
       },
-      count: function(fullID, seconds, length) {
-        var el;
-
+      count: function(post, seconds, length, node) {
+        if (DeleteLink.cooldown.counting !== post) {
+          return;
+        }
         if (!((0 <= seconds && seconds <= length))) {
-          return;
-        }
-        setTimeout(DeleteLink.cooldown.count, 1000, fullID, seconds - 1, length);
-        el = DeleteLink.cooldown.el;
-        if (seconds === 0) {
-          if (el != null) {
-            el.textContent = 'Delete';
+          if (DeleteLink.cooldown.counting === post) {
+            delete DeleteLink.cooldown.counting;
           }
-          delete DeleteLink.cooldown[fullID];
-          delete DeleteLink.cooldown.el;
           return;
         }
-        if (el != null) {
-          el.textContent = "Delete (" + seconds + ")";
+        setTimeout(DeleteLink.cooldown.count, 1000, post, seconds - 1, length, node);
+        if (seconds === 0) {
+          node.textContent = 'Delete';
+          return;
         }
-        return DeleteLink.cooldown[fullID] = seconds;
+        return node.textContent = "Delete (" + seconds + ")";
       }
     }
   };
@@ -2974,13 +3120,13 @@
         el: div,
         order: 90,
         open: function(_arg) {
-          var board, postID, redirect, threadID;
+          var ID, board, redirect, thread;
 
-          postID = _arg.ID, threadID = _arg.thread, board = _arg.board;
+          ID = _arg.ID, thread = _arg.thread, board = _arg.board;
           redirect = Redirect.to({
-            postID: postID,
-            threadID: threadID,
-            board: board
+            postID: ID,
+            threadID: thread.ID,
+            boardID: board.ID
           });
           return redirect !== ("//boards.4chan.org/" + board + "/");
         },
@@ -3000,35 +3146,31 @@
         textContent: text,
         target: '_blank'
       });
-      if (type === 'post') {
-        open = function(_arg) {
-          var board, postID, threadID;
+      open = type === 'post' ? function(_arg) {
+        var ID, board, thread;
 
-          postID = _arg.ID, threadID = _arg.thread, board = _arg.board;
-          el.href = Redirect.to({
-            postID: postID,
-            threadID: threadID,
-            board: board
-          });
-          return true;
-        };
-      } else {
-        open = function(post) {
-          var value;
+        ID = _arg.ID, thread = _arg.thread, board = _arg.board;
+        el.href = Redirect.to({
+          postID: ID,
+          threadID: thread.ID,
+          boardID: board.ID
+        });
+        return true;
+      } : function(post) {
+        var value;
 
-          value = Filter[type](post);
-          if (!value) {
-            return false;
-          }
-          el.href = Redirect.to({
-            board: post.board,
-            type: type,
-            value: value,
-            isSearch: true
-          });
-          return true;
-        };
-      }
+        value = Filter[type](post);
+        if (!value) {
+          return false;
+        }
+        el.href = Redirect.to({
+          boardID: post.board.ID,
+          type: type,
+          value: value,
+          isSearch: true
+        });
+        return true;
+      };
       return {
         el: el,
         open: open
@@ -3327,7 +3469,7 @@
     init: function() {
       var next, prev, span;
 
-      if (g.VIEW !== 'index' || !Conf['Index Navigation']) {
+      if (g.VIEW === 'index' && !Conf['Index Navigation'] || g.VIEW === 'thread' && !Conf['Reply Navigation']) {
         return;
       }
       span = $.el('span', {
@@ -3349,10 +3491,18 @@
       });
     },
     prev: function() {
-      return Nav.scroll(-1);
+      if (g.VIEW === 'thread') {
+        return window.scrollTo(0, 0);
+      } else {
+        return Nav.scroll(-1);
+      }
     },
     next: function() {
-      return Nav.scroll(+1);
+      if (g.VIEW === 'thread') {
+        return window.scrollTo(0, d.body.scrollHeight);
+      } else {
+        return Nav.scroll(+1);
+      }
     },
     getThread: function(full) {
       var headRect, i, rect, thread, threads, topMargin, _i, _len;
@@ -3387,41 +3537,47 @@
   };
 
   Redirect = {
-    image: function(board, filename) {
-      switch ("" + board) {
+    image: function(boardID, filename) {
+      switch (boardID) {
         case 'a':
+        case 'gd':
         case 'jp':
         case 'm':
         case 'q':
         case 'tg':
         case 'vg':
+        case 'vp':
+        case 'vr':
         case 'wsg':
-          return "//archive.foolz.us/" + board + "/full_image/" + filename;
+          return "//archive.foolz.us/" + boardID + "/full_image/" + filename;
         case 'u':
-          return "//nsfw.foolz.us/" + board + "/full_image/" + filename;
+          return "//nsfw.foolz.us/" + boardID + "/full_image/" + filename;
         case 'po':
-          return "//archive.thedarkcave.org/" + board + "/full_image/" + filename;
+          return "//archive.thedarkcave.org/" + boardID + "/full_image/" + filename;
         case 'ck':
+        case 'fa':
         case 'lit':
-          return "//fuuka.warosu.org/" + board + "/full_image/" + filename;
+        case 's4s':
+          return "//fuuka.warosu.org/" + boardID + "/full_image/" + filename;
         case 'cgl':
         case 'g':
         case 'mu':
         case 'w':
-          return "//rbt.asia/" + board + "/full_image/" + filename;
+          return "//rbt.asia/" + boardID + "/full_image/" + filename;
         case 'an':
         case 'k':
         case 'toy':
         case 'x':
-          return "http://archive.heinessen.com/" + board + "/full_image/" + filename;
+          return "http://archive.heinessen.com/" + boardID + "/full_image/" + filename;
         case 'c':
-          return "//archive.nyafuu.org/" + board + "/full_image/" + filename;
+          return "//archive.nyafuu.org/" + boardID + "/full_image/" + filename;
       }
     },
-    post: function(board, postID) {
-      switch ("" + board) {
+    post: function(boardID, postID) {
+      switch (boardID) {
         case 'a':
         case 'co':
+        case 'gd':
         case 'jp':
         case 'm':
         case 'q':
@@ -3430,23 +3586,27 @@
         case 'tv':
         case 'v':
         case 'vg':
+        case 'vp':
+        case 'vr':
         case 'wsg':
-          return "//archive.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
+          return "//archive.foolz.us/_/api/chan/post/?board=" + boardID + "&num=" + postID;
         case 'u':
-          return "//nsfw.foolz.us/_/api/chan/post/?board=" + board + "&num=" + postID;
+          return "//nsfw.foolz.us/_/api/chan/post/?board=" + boardID + "&num=" + postID;
         case 'c':
         case 'int':
+        case 'out':
         case 'po':
-          return "//archive.thedarkcave.org/_/api/chan/post/?board=" + board + "&num=" + postID;
+          return "//archive.thedarkcave.org/_/api/chan/post/?board=" + boardID + "&num=" + postID;
       }
     },
     to: function(data) {
-      var board, url;
+      var boardID;
 
-      board = data.board;
-      switch ("" + board) {
+      boardID = data.boardID;
+      switch (boardID) {
         case 'a':
         case 'co':
+        case 'gd':
         case 'jp':
         case 'm':
         case 'q':
@@ -3455,30 +3615,29 @@
         case 'tv':
         case 'v':
         case 'vg':
+        case 'vp':
+        case 'vr':
         case 'wsg':
-          url = Redirect.path('//archive.foolz.us', 'foolfuuka', data);
-          break;
+          return Redirect.path('//archive.foolz.us', 'foolfuuka', data);
         case 'u':
-          url = Redirect.path('//nsfw.foolz.us', 'foolfuuka', data);
-          break;
+          return Redirect.path('//nsfw.foolz.us', 'foolfuuka', data);
         case 'int':
+        case 'out':
         case 'po':
-          url = Redirect.path('//archive.thedarkcave.org', 'foolfuuka', data);
-          break;
+          return Redirect.path('//archive.thedarkcave.org', 'foolfuuka', data);
         case 'ck':
+        case 'fa':
         case 'lit':
-          url = Redirect.path('//fuuka.warosu.org', 'fuuka', data);
-          break;
+        case 's4s':
+          return Redirect.path('//fuuka.warosu.org', 'fuuka', data);
         case 'diy':
         case 'sci':
-          url = Redirect.path('//archive.installgentoo.net', 'fuuka', data);
-          break;
+          return Redirect.path('//archive.installgentoo.net', 'fuuka', data);
         case 'cgl':
         case 'g':
         case 'mu':
         case 'w':
-          url = Redirect.path('//rbt.asia', 'fuuka', data);
-          break;
+          return Redirect.path('//rbt.asia', 'fuuka', data);
         case 'an':
         case 'fit':
         case 'k':
@@ -3486,38 +3645,34 @@
         case 'r9k':
         case 'toy':
         case 'x':
-          url = Redirect.path('http://archive.heinessen.com', 'fuuka', data);
-          break;
+          return Redirect.path('http://archive.heinessen.com', 'fuuka', data);
         case 'c':
-          url = Redirect.path('//archive.nyafuu.org', 'fuuka', data);
-          break;
+          return Redirect.path('//archive.nyafuu.org', 'fuuka', data);
         default:
           if (data.threadID) {
-            url = "//boards.4chan.org/" + board + "/";
+            return "//boards.4chan.org/" + boardID + "/";
+          } else {
+            return '';
           }
       }
-      return url || '';
     },
     path: function(base, archiver, data) {
-      var board, path, postID, threadID, type, value;
+      var boardID, path, postID, threadID, type, value;
 
       if (data.isSearch) {
-        board = data.board, type = data.type, value = data.value;
+        boardID = data.boardID, type = data.type, value = data.value;
         type = type === 'name' ? 'username' : type === 'MD5' ? 'image' : type;
         value = encodeURIComponent(value);
         if (archiver === 'foolfuuka') {
-          return "" + base + "/" + board + "/search/" + type + "/" + value;
+          return "" + base + "/" + boardID + "/search/" + type + "/" + value;
         } else if (type === 'image') {
-          return "" + base + "/" + board + "/?task=search2&search_media_hash=" + value;
+          return "" + base + "/" + boardID + "/?task=search2&search_media_hash=" + value;
         } else {
-          return "" + base + "/" + board + "/?task=search2&search_" + type + "=" + value;
+          return "" + base + "/" + boardID + "/?task=search2&search_" + type + "=" + value;
         }
       }
-      board = data.board, threadID = data.threadID, postID = data.postID;
-      if (postID && typeof postID === 'string') {
-        postID = postID.match(/\d+/)[0];
-      }
-      path = threadID ? "" + board + "/thread/" + threadID : "" + board + "/post/" + postID;
+      boardID = data.boardID, threadID = data.threadID, postID = data.postID;
+      path = threadID ? "" + boardID + "/thread/" + threadID : "" + boardID + "/post/" + postID;
       if (archiver === 'foolfuuka') {
         path += '/';
       }
@@ -3540,13 +3695,13 @@
         return filename;
       }
     },
-    postFromObject: function(data, board) {
+    postFromObject: function(data, boardID) {
       var o;
 
       o = {
         postID: data.no,
         threadID: data.resto || data.no,
-        board: board,
+        boardID: boardID,
         name: data.name,
         capcode: data.capcode,
         tripcode: data.trip,
@@ -3565,12 +3720,12 @@
         o.file = {
           name: data.filename + data.ext,
           timestamp: "" + data.tim + data.ext,
-          url: "//images.4chan.org/" + board + "/src/" + data.tim + data.ext,
+          url: "//images.4chan.org/" + boardID + "/src/" + data.tim + data.ext,
           height: data.h,
           width: data.w,
           MD5: data.md5,
           size: data.fsize,
-          turl: "//thumbs.4chan.org/" + board + "/thumb/" + data.tim + "s.jpg",
+          turl: "//thumbs.4chan.org/" + boardID + "/thumb/" + data.tim + "s.jpg",
           theight: data.tn_h,
           twidth: data.tn_w,
           isSpoiler: !!data.spoiler,
@@ -3585,9 +3740,9 @@
       @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
       */
 
-      var a, board, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
 
-      postID = o.postID, threadID = o.threadID, board = o.board, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
+      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
       isOP = postID === threadID;
       staticPath = '//static.4chan.org';
       if (email) {
@@ -3621,7 +3776,7 @@
           capcodeStart = '';
           capcode = '';
       }
-      flag = flagCode ? (" <img src='" + staticPath + "/image/country/" + (board.ID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
+      flag = flagCode ? (" <img src='" + staticPath + "/image/country/" + (boardID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
       if (file != null ? file.isDeleted : void 0) {
         fileHTML = isOP ? ("<div id=f" + postID + " class=file><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted.gif' alt='File deleted.' class='fileDeleted retina'>") + "</span></div>" : ("<div id=f" + postID + " class=file><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted-res.gif' alt='File deleted.' class='fileDeletedRes retina'>") + "</span></div>";
       } else if (file) {
@@ -3636,14 +3791,14 @@
           fileSize = "Spoiler Image, " + fileSize;
           if (!isArchived) {
             fileThumb = '//static.4chan.org/image/spoiler';
-            if (spoilerRange = Build.spoilerRange[board]) {
-              fileThumb += ("-" + board) + Math.floor(1 + spoilerRange * Math.random());
+            if (spoilerRange = Build.spoilerRange[boardID]) {
+              fileThumb += ("-" + boardID) + Math.floor(1 + spoilerRange * Math.random());
             }
             fileThumb += '.png';
             file.twidth = file.theight = 100;
           }
         }
-        if (board.ID !== 'f') {
+        if (boardID.ID !== 'f') {
           imgSrc = ("<a class='fileThumb" + (file.isSpoiler ? ' imgspoiler' : '') + "' href='" + file.url + "' target=_blank>") + ("<img src='" + fileThumb + "' alt='" + fileSize + "' data-md5=" + file.MD5 + " style='height: " + file.theight + "px; width: " + file.twidth + "px;'></a>");
         }
         a = $.el('a', {
@@ -3666,7 +3821,7 @@
       container = $.el('div', {
         id: "pc" + postID,
         className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREAD === +threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + board + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREAD === +threadID ? "javascript:quote(" + postID + ")" : "/" + board + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
+        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
       });
       _ref = $$('.quotelink', container);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -3675,7 +3830,7 @@
         if (href[0] === '/') {
           continue;
         }
-        quote.href = "/" + board + "/res/" + href;
+        quote.href = "/" + boardID + "/res/" + href;
       }
       return container;
     }
@@ -3690,13 +3845,13 @@
       return "/" + thread.board + "/ - " + excerpt;
     },
     postFromRoot: function(root) {
-      var board, index, link, post, postID;
+      var boardID, index, link, post, postID;
 
       link = $('a[title="Highlight this post"]', root);
-      board = link.pathname.split('/')[1];
+      boardID = link.pathname.split('/')[1];
       postID = link.hash.slice(2);
       index = root.dataset.clone;
-      post = g.posts["" + board + "." + postID];
+      post = g.posts["" + boardID + "." + postID];
       if (index) {
         return post.clones[index];
       } else {
@@ -3710,20 +3865,20 @@
       return Get.postFromRoot($.x('ancestor::div[parent::div[@class="thread"]][1]', quotelink));
     },
     postDataFromLink: function(link) {
-      var board, path, postID, threadID;
+      var boardID, path, postID, threadID;
 
       if (link.hostname === 'boards.4chan.org') {
         path = link.pathname.split('/');
-        board = path[1];
+        boardID = path[1];
         threadID = path[3];
         postID = link.hash.slice(2);
       } else {
-        board = link.dataset.board;
+        boardID = link.dataset.boardid;
         threadID = link.dataset.threadid || 0;
         postID = link.dataset.postid;
       }
       return {
-        board: board,
+        boardID: boardID,
         threadID: +threadID,
         postID: +postID
       };
@@ -3758,27 +3913,27 @@
         }
       }
       return quotelinks.filter(function(quotelink) {
-        var board, postID, _ref4;
+        var boardID, postID, _ref4;
 
-        _ref4 = Get.postDataFromLink(quotelink), board = _ref4.board, postID = _ref4.postID;
-        return board === post.board.ID && postID === post.ID;
+        _ref4 = Get.postDataFromLink(quotelink), boardID = _ref4.boardID, postID = _ref4.postID;
+        return boardID === post.board.ID && postID === post.ID;
       });
     },
-    postClone: function(board, threadID, postID, root, context) {
+    postClone: function(boardID, threadID, postID, root, context) {
       var post, url;
 
-      if (post = g.posts["" + board + "." + postID]) {
+      if (post = g.posts["" + boardID + "." + postID]) {
         Get.insert(post, root, context);
         return;
       }
       root.textContent = "Loading post No." + postID + "...";
       if (threadID) {
-        return $.cache("//api.4chan.org/" + board + "/res/" + threadID + ".json", function() {
-          return Get.fetchedPost(this, board, threadID, postID, root, context);
+        return $.cache("//api.4chan.org/" + boardID + "/res/" + threadID + ".json", function() {
+          return Get.fetchedPost(this, boardID, threadID, postID, root, context);
         });
-      } else if (url = Redirect.post(board, postID)) {
+      } else if (url = Redirect.post(boardID, postID)) {
         return $.cache(url, function() {
-          return Get.archivedPost(this, board, postID, root, context);
+          return Get.archivedPost(this, boardID, postID, root, context);
         });
       }
     },
@@ -3796,18 +3951,18 @@
       root.innerHTML = null;
       return $.add(root, nodes.root);
     },
-    fetchedPost: function(req, board, threadID, postID, root, context) {
-      var post, posts, status, thread, url, _i, _len;
+    fetchedPost: function(req, boardID, threadID, postID, root, context) {
+      var board, post, posts, status, thread, url, _i, _len;
 
-      if (post = g.posts["" + board + "." + postID]) {
+      if (post = g.posts["" + boardID + "." + postID]) {
         Get.insert(post, root, context);
         return;
       }
       status = req.status;
       if (![200, 304].contains(status)) {
-        if (url = Redirect.post(board, postID)) {
+        if (url = Redirect.post(boardID, postID)) {
           $.cache(url, function() {
-            return Get.archivedPost(this, board, postID, root, context);
+            return Get.archivedPost(this, boardID, postID, root, context);
           });
         } else {
           $.addClass(root, 'warning');
@@ -3816,16 +3971,16 @@
         return;
       }
       posts = JSON.parse(req.response).posts;
-      Build.spoilerRange[board] = posts[0].custom_spoiler;
+      Build.spoilerRange[boardID] = posts[0].custom_spoiler;
       for (_i = 0, _len = posts.length; _i < _len; _i++) {
         post = posts[_i];
         if (post.no === postID) {
           break;
         }
         if (post.no > postID) {
-          if (url = Redirect.post(board, postID)) {
+          if (url = Redirect.post(boardID, postID)) {
             $.cache(url, function() {
-              return Get.archivedPost(this, board, postID, root, context);
+              return Get.archivedPost(this, boardID, postID, root, context);
             });
           } else {
             $.addClass(root, 'warning');
@@ -3834,16 +3989,16 @@
           return;
         }
       }
-      board = g.boards[board] || new Board(board);
-      thread = g.threads["" + board + "." + threadID] || new Thread(threadID, board);
-      post = new Post(Build.postFromObject(post, board), thread, board);
+      board = g.boards[boardID] || new Board(boardID);
+      thread = g.threads["" + boardID + "." + threadID] || new Thread(threadID, board);
+      post = new Post(Build.postFromObject(post, boardID), thread, board);
       Main.callbackNodes(Post, [post]);
       return Get.insert(post, root, context);
     },
-    archivedPost: function(req, board, postID, root, context) {
-      var bq, comment, data, o, post, thread, threadID, _ref;
+    archivedPost: function(req, boardID, postID, root, context) {
+      var board, bq, comment, data, o, post, thread, threadID, _ref;
 
-      if (post = g.posts["" + board + "." + postID]) {
+      if (post = g.posts["" + boardID + "." + postID]) {
         Get.insert(post, root, context);
         return;
       }
@@ -3887,7 +4042,7 @@
       o = {
         postID: "" + postID,
         threadID: "" + threadID,
-        board: board,
+        boardID: boardID,
         name: data.name_processed,
         capcode: (function() {
           switch (data.capcode) {
@@ -3918,61 +4073,19 @@
           width: data.media.media_w,
           MD5: data.media.media_hash,
           size: data.media.media_size,
-          turl: data.media.thumb_link || ("//thumbs.4chan.org/" + board + "/thumb/" + data.media.preview_orig),
+          turl: data.media.thumb_link || ("//thumbs.4chan.org/" + boardID + "/thumb/" + data.media.preview_orig),
           theight: data.media.preview_h,
           twidth: data.media.preview_w,
           isSpoiler: data.media.spoiler === '1'
         };
       }
-      board = g.boards[board] || new Board(board);
-      thread = g.threads["" + board + "." + threadID] || new Thread(threadID, board);
+      board = g.boards[boardID] || new Board(boardID);
+      thread = g.threads["" + boardID + "." + threadID] || new Thread(threadID, board);
       post = new Post(Build.post(o, true), thread, board, {
         isArchived: true
       });
       Main.callbackNodes(Post, [post]);
       return Get.insert(post, root, context);
-    }
-  };
-
-  Misc = {
-    clearThreads: function(key) {
-      var data;
-
-      if (!(data = $.get(key))) {
-        return;
-      }
-      if (!Object.keys(data.threads).length) {
-        $["delete"](key);
-        return;
-      }
-      if (data.lastChecked > Date.now() - 12 * $.HOUR) {
-        return;
-      }
-      return $.ajax("//api.4chan.org/" + g.BOARD + "/threads.json", {
-        onload: function() {
-          var page, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
-
-          threads = {};
-          _ref = JSON.parse(this.response);
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            page = _ref[_i];
-            _ref1 = page.threads;
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              thread = _ref1[_j];
-              if (thread.no in data.threads) {
-                threads[thread.no] = data.threads[thread.no];
-              }
-            }
-          }
-          if (!Object.keys(threads).length) {
-            $["delete"](key);
-            return;
-          }
-          data.threads = threads;
-          data.lastChecked = Date.now();
-          return $.set(key, data);
-        }
-      });
     }
   };
 
@@ -3990,7 +4103,7 @@
       });
     },
     node: function() {
-      var ID, a, board, deadlink, m, post, quote, quoteID, redirect, _i, _len, _ref, _ref1;
+      var a, boardID, deadlink, m, post, postID, quote, quoteID, redirect, _i, _len, _ref, _ref1;
 
       if (this.isClone) {
         return;
@@ -4003,33 +4116,33 @@
           continue;
         }
         quote = deadlink.textContent;
-        if (!(ID = (_ref1 = quote.match(/\d+$/)) != null ? _ref1[0] : void 0)) {
+        if (!(postID = (_ref1 = quote.match(/\d+$/)) != null ? _ref1[0] : void 0)) {
           continue;
         }
-        board = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : this.board.ID;
-        quoteID = "" + board + "." + ID;
+        boardID = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : this.board.ID;
+        quoteID = "" + boardID + "." + postID;
         if (post = g.posts[quoteID]) {
           if (!post.isDead) {
             a = $.el('a', {
-              href: "/" + board + "/" + post.thread + "/res/#p" + ID,
+              href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
               className: 'quotelink',
               textContent: quote
             });
           } else {
             a = $.el('a', {
-              href: "/" + board + "/" + post.thread + "/res/#p" + ID,
+              href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
               className: 'quotelink deadlink',
               target: '_blank',
               textContent: "" + quote + "\u00A0(Dead)"
             });
-            a.setAttribute('data-board', board);
+            a.setAttribute('data-boardid', boardID);
             a.setAttribute('data-threadid', post.thread.ID);
-            a.setAttribute('data-postid', ID);
+            a.setAttribute('data-postid', postID);
           }
         } else if (redirect = Redirect.to({
-          board: board,
+          boardID: boardID,
           threadID: 0,
-          postID: ID
+          postID: postID
         })) {
           a = $.el('a', {
             href: redirect,
@@ -4037,10 +4150,10 @@
             target: '_blank',
             textContent: "" + quote + "\u00A0(Dead)"
           });
-          if (Redirect.post(board, ID)) {
+          if (Redirect.post(boardID, postID)) {
             $.addClass(a, 'quotelink');
-            a.setAttribute('data-board', board);
-            a.setAttribute('data-postid', ID);
+            a.setAttribute('data-boardid', boardID);
+            a.setAttribute('data-postid', postID);
           }
         }
         if (!this.quotes.contains(quoteID)) {
@@ -4072,35 +4185,30 @@
       });
     },
     node: function() {
-      var link, _i, _j, _len, _len1, _ref, _ref1;
+      var link, _i, _len, _ref;
 
-      _ref = this.nodes.quotelinks;
+      _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
         $.on(link, 'click', QuoteInline.toggle);
       }
-      _ref1 = this.nodes.backlinks;
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        link = _ref1[_j];
-        $.on(link, 'click', QuoteInline.toggle);
-      }
     },
     toggle: function(e) {
-      var board, context, postID, threadID, _ref;
+      var boardID, context, postID, threadID, _ref;
 
       if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
         return;
       }
       e.preventDefault();
-      _ref = Get.postDataFromLink(this), board = _ref.board, threadID = _ref.threadID, postID = _ref.postID;
+      _ref = Get.postDataFromLink(this), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
       context = Get.contextFromLink(this);
       if ($.hasClass(this, 'inlined')) {
-        QuoteInline.rm(this, board, threadID, postID, context);
+        QuoteInline.rm(this, boardID, threadID, postID, context);
       } else {
         if ($.x("ancestor::div[@id='p" + postID + "']", this)) {
           return;
         }
-        QuoteInline.add(this, board, threadID, postID, context);
+        QuoteInline.add(this, boardID, threadID, postID, context);
       }
       return this.classList.toggle('inlined');
     },
@@ -4111,8 +4219,8 @@
         return $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
       }
     },
-    add: function(quotelink, board, threadID, postID, context) {
-      var i, inline, isBacklink, post;
+    add: function(quotelink, boardID, threadID, postID, context) {
+      var inline, isBacklink, post;
 
       isBacklink = $.hasClass(quotelink, 'backlink');
       inline = $.el('div', {
@@ -4120,20 +4228,20 @@
         className: 'inline'
       });
       $.after(QuoteInline.findRoot(quotelink, isBacklink), inline);
-      Get.postClone(board, threadID, postID, inline, context);
-      if (!((post = g.posts["" + board + "." + postID]) && context.thread === post.thread)) {
+      Get.postClone(boardID, threadID, postID, inline, context);
+      if (!((post = g.posts["" + boardID + "." + postID]) && context.thread === post.thread)) {
         return;
       }
       if (isBacklink && Conf['Forward Hiding']) {
         $.addClass(post.nodes.root, 'forwarded');
         post.forwarded++ || (post.forwarded = 1);
       }
-      if (Unread.posts && (i = Unread.posts.indexOf(post)) !== -1) {
-        Unread.posts.splice(i, 1);
-        return Unread.update();
+      if (!Unread.posts) {
+        return;
       }
+      return Unread.readSinglePost(post);
     },
-    rm: function(quotelink, board, threadID, postID, context) {
+    rm: function(quotelink, boardID, threadID, postID, context) {
       var el, inlined, isBacklink, post, root, _ref;
 
       isBacklink = $.hasClass(quotelink, 'backlink');
@@ -4143,15 +4251,15 @@
       if (!(el = root.firstElementChild)) {
         return;
       }
-      post = g.posts["" + board + "." + postID];
+      post = g.posts["" + boardID + "." + postID];
       post.rmClone(el.dataset.clone);
-      if (Conf['Forward Hiding'] && isBacklink && context.thread === g.threads["" + board + "." + threadID] && !--post.forwarded) {
+      if (Conf['Forward Hiding'] && isBacklink && context.thread === g.threads["" + boardID + "." + threadID] && !--post.forwarded) {
         delete post.forwarded;
         $.rmClass(post.nodes.root, 'forwarded');
       }
       while (inlined = $('.inlined', el)) {
-        _ref = Get.postDataFromLink(inlined), board = _ref.board, threadID = _ref.threadID, postID = _ref.postID;
-        QuoteInline.rm(inlined, board, threadID, postID, context);
+        _ref = Get.postDataFromLink(inlined), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
+        QuoteInline.rm(inlined, boardID, threadID, postID, context);
         $.rmClass(inlined, 'inlined');
       }
     }
@@ -4171,32 +4279,27 @@
       });
     },
     node: function() {
-      var link, _i, _j, _len, _len1, _ref, _ref1;
+      var link, _i, _len, _ref;
 
-      _ref = this.nodes.quotelinks;
+      _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         link = _ref[_i];
         $.on(link, 'mouseover', QuotePreview.mouseover);
       }
-      _ref1 = this.nodes.backlinks;
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        link = _ref1[_j];
-        $.on(link, 'mouseover', QuotePreview.mouseover);
-      }
     },
     mouseover: function(e) {
-      var board, clone, origin, post, postID, posts, qp, quote, quoterID, threadID, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2;
+      var boardID, clone, origin, post, postID, posts, qp, quote, quoterID, threadID, _i, _j, _len, _len1, _ref, _ref1;
 
       if ($.hasClass(this, 'inlined')) {
         return;
       }
-      _ref = Get.postDataFromLink(this), board = _ref.board, threadID = _ref.threadID, postID = _ref.postID;
+      _ref = Get.postDataFromLink(this), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
       qp = $.el('div', {
         id: 'qp',
         className: 'dialog'
       });
       $.add(d.body, qp);
-      Get.postClone(board, threadID, postID, qp, Get.contextFromLink(this));
+      Get.postClone(boardID, threadID, postID, qp, Get.contextFromLink(this));
       UI.hover({
         root: this,
         el: qp,
@@ -4207,7 +4310,7 @@
           return qp.firstElementChild;
         }
       });
-      if (!(origin = g.posts["" + board + "." + postID])) {
+      if (!(origin = g.posts["" + boardID + "." + postID])) {
         return;
       }
       if (Conf['Quote Highlighting']) {
@@ -4220,16 +4323,9 @@
       }
       quoterID = $.x('ancestor::*[@id][1]', this).id.match(/\d+$/)[0];
       clone = Get.postFromRoot(qp.firstChild);
-      _ref1 = clone.nodes.quotelinks;
+      _ref1 = clone.nodes.quotelinks.concat(__slice.call(clone.nodes.backlinks));
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         quote = _ref1[_j];
-        if (quote.hash.slice(2) === quoterID) {
-          $.addClass(quote, 'forwardlink');
-        }
-      }
-      _ref2 = clone.nodes.backlinks;
-      for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-        quote = _ref2[_k];
         if (quote.hash.slice(2) === quoterID) {
           $.addClass(quote, 'forwardlink');
         }
@@ -4344,7 +4440,7 @@
       });
     },
     node: function() {
-      var postID, quotelink, quotelinks, quotes, thread, threadID, _i, _len, _ref;
+      var quotelink, quotelinks, quotes, _i, _len;
 
       if (this.isClone) {
         return;
@@ -4355,8 +4451,7 @@
       quotelinks = this.nodes.quotelinks;
       for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
         quotelink = quotelinks[_i];
-        _ref = Get.postDataFromLink(quotelink), threadID = _ref.threadID, postID = _ref.postID;
-        if ((thread = QR.yourPosts.threads[threadID]) && thread.contains(postID)) {
+        if (QR.db.get(Get.postDataFromLink(quotelink))) {
           $.add(quotelink, $.tn(QuoteYou.text));
         }
       }
@@ -4378,7 +4473,7 @@
       });
     },
     node: function() {
-      var board, op, postID, quotelink, quotelinks, quotes, _i, _j, _len, _len1, _ref;
+      var boardID, op, postID, quotelink, quotelinks, quotes, _i, _j, _len, _len1, _ref;
 
       if (this.isClone && this.thread === this.context.thread) {
         return;
@@ -4399,8 +4494,8 @@
       }
       for (_j = 0, _len1 = quotelinks.length; _j < _len1; _j++) {
         quotelink = quotelinks[_j];
-        _ref = Get.postDataFromLink(quotelink), board = _ref.board, postID = _ref.postID;
-        if (("" + board + "." + postID) === op) {
+        _ref = Get.postDataFromLink(quotelink), boardID = _ref.boardID, postID = _ref.postID;
+        if (("" + boardID + "." + postID) === op) {
           $.add(quotelink, $.tn(QuoteOP.text));
         }
       }
@@ -4422,7 +4517,7 @@
       });
     },
     node: function() {
-      var board, data, quotelink, quotelinks, quotes, thread, _i, _len, _ref;
+      var board, boardID, quotelink, quotelinks, quotes, thread, threadID, _i, _len, _ref, _ref1;
 
       if (this.isClone && this.thread === this.context.thread) {
         return;
@@ -4434,14 +4529,14 @@
       _ref = this.isClone ? this.context : this, board = _ref.board, thread = _ref.thread;
       for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
         quotelink = quotelinks[_i];
-        data = Get.postDataFromLink(quotelink);
-        if (!data.threadID) {
+        _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, threadID = _ref1.threadID;
+        if (!threadID) {
           continue;
         }
         if (this.isClone) {
           quotelink.textContent = quotelink.textContent.replace(QuoteCT.text, '');
         }
-        if (data.board === this.board.ID && data.threadID !== thread.ID) {
+        if (boardID === this.board.ID && threadID !== thread.ID) {
           $.add(quotelink, $.tn(QuoteCT.text));
         }
       }
@@ -4841,7 +4936,7 @@
       });
       this.EAI = wrapper.firstElementChild;
       $.on(this.EAI, 'click', ImageExpand.cb.toggleAll);
-      this.menu = new UI.Menu('imageexpand');
+      this.opmenu = new UI.Menu('imageexpand');
       $.on($('.menu-button', wrapper), 'click', this.menuToggle);
       _ref = Config.imageExpansion;
       for (type in _ref) {
@@ -4941,27 +5036,27 @@
       }
     },
     toggle: function(post) {
-      var headRect, postRect, rect, root, thumb, top;
+      var headRect, rect, root, thumb, top;
 
       thumb = post.file.thumb;
       if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
         ImageExpand.expand(post);
         return;
       }
-      rect = thumb.parentNode.getBoundingClientRect();
-      if (rect.bottom > 0) {
-        postRect = post.nodes.root.getBoundingClientRect();
-        headRect = Header.bar.getBoundingClientRect();
-        top = postRect.top - headRect.top - headRect.height - 2;
-        root = $.engine === 'webkit' ? d.body : doc;
-        if (rect.top < 0) {
-          root.scrollTop += top;
-        }
-        if (rect.left < 0) {
-          root.scrollLeft = 0;
-        }
+      ImageExpand.contract(post);
+      rect = post.nodes.root.getBoundingClientRect();
+      if (!(rect.top <= 0 || rect.left <= 0)) {
+        return;
       }
-      return ImageExpand.contract(post);
+      headRect = Header.bar.getBoundingClientRect();
+      top = rect.top - headRect.top - headRect.height;
+      root = $.engine === 'webkit' ? d.body : doc;
+      if (rect.top < 0) {
+        root.scrollTop += top;
+      }
+      if (rect.left < 0) {
+        return root.scrollLeft = 0;
+      }
     },
     contract: function(post) {
       $.rmClass(post.nodes.root, 'expanded-image');
@@ -4997,20 +5092,31 @@
       return $.after(thumb, img);
     },
     completeExpand: function(post) {
-      var rect, root, thumb;
+      var prev, thumb;
 
       thumb = post.file.thumb;
       if (!$.hasClass(thumb, 'expanding')) {
         return;
       }
-      rect = post.nodes.root.getBoundingClientRect();
-      $.addClass(post.nodes.root, 'expanded-image');
-      $.rmClass(post.file.thumb, 'expanding');
-      if (rect.top + rect.height <= 0) {
-        root = $.engine === 'webkit' ? d.body : doc;
-        root.scrollTop += post.nodes.root.clientHeight - rect.height;
+      post.file.isExpanded = true;
+      if (!post.nodes.root.parentNode) {
+        $.addClass(post.nodes.root, 'expanded-image');
+        $.rmClass(post.file.thumb, 'expanding');
+        return;
       }
-      return post.file.isExpanded = true;
+      prev = post.nodes.root.getBoundingClientRect();
+      return $.queueTask(function() {
+        var curr, root;
+
+        $.addClass(post.nodes.root, 'expanded-image');
+        $.rmClass(post.file.thumb, 'expanding');
+        if (!(prev.top + prev.height <= 0)) {
+          return;
+        }
+        root = $.engine === 'webkit' ? d.body : doc;
+        curr = post.nodes.root.getBoundingClientRect();
+        return root.scrollTop += curr.height - prev.height + curr.top - prev.top;
+      });
     },
     error: function() {
       var URL, post, src, timeoutID;
@@ -5057,11 +5163,57 @@
         }
       });
     },
+    menu: {
+      init: function() {
+        var conf, createSubEntry, el, key, subEntries, _ref;
+
+        if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
+          return;
+        }
+        el = $.el('span', {
+          textContent: 'Image Expansion',
+          className: 'image-expansion-link'
+        });
+        createSubEntry = ImageExpand.menu.createSubEntry;
+        subEntries = [];
+        _ref = Config.imageExpansion;
+        for (key in _ref) {
+          conf = _ref[key];
+          subEntries.push(createSubEntry(key, conf));
+        }
+        return $.event('AddMenuEntry', {
+          type: 'header',
+          el: el,
+          order: 80,
+          subEntries: subEntries
+        });
+      },
+      createSubEntry: function(type, config) {
+        var input, label;
+
+        label = $.el('label', {
+          innerHTML: "<input type=checkbox name='" + type + "'> " + type
+        });
+        input = label.firstElementChild;
+        if (type === 'Fit width' || type === 'Fit height') {
+          $.on(input, 'change', ImageExpand.cb.setFitness);
+        }
+        if (config) {
+          label.title = config[1];
+          input.checked = Conf[type];
+          $.event('change', null, input);
+          $.on(input, 'change', $.cb.checked);
+        }
+        return {
+          el: label
+        };
+      }
+    },
     resize: function() {
       return ImageExpand.style.textContent = ":root.fit-height .full-image {max-height:" + doc.clientHeight + "px}";
     },
     menuToggle: function(e) {
-      return ImageExpand.menu.toggle(e, this, g);
+      return ImageExpand.opmenu.toggle(e, this, g);
     }
   };
 
@@ -5343,54 +5495,66 @@
       return ExpandThread.toggle(op.thread);
     },
     toggle: function(thread) {
-      var a, inlined, num, post, replies, reply, text, threadRoot, url, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+      var a, inlined, num, post, replies, reply, threadRoot, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
 
       threadRoot = thread.OP.nodes.root.parentNode;
-      url = "//api.4chan.org/" + thread.board + "/res/" + thread + ".json";
       a = $('.summary', threadRoot);
-      text = a.textContent;
-      switch (text[0]) {
-        case '+':
-          a.textContent = text.replace('+', '× Loading...');
-          $.cache(url, function() {
-            return ExpandThread.parse(this, thread, a);
-          });
+      switch (thread.isExpanded) {
+        case false:
+        case void 0:
+          thread.isExpanded = 'loading';
           _ref = $$('.thread > .postContainer', threadRoot);
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             post = _ref[_i];
             ExpandComment.expand(Get.postFromRoot(post));
           }
+          if (!a) {
+            thread.isExpanded = true;
+            return;
+          }
+          thread.isExpanded = 'loading';
+          a.textContent = a.textContent.replace('+', '× Loading...');
+          $.cache("//api.4chan.org/" + thread.board + "/res/" + thread + ".json", function() {
+            return ExpandThread.parse(this, thread, a);
+          });
           break;
-        case '×':
-          a.textContent = text.replace('× Loading...', '+');
+        case 'loading':
+          thread.isExpanded = false;
+          if (!a) {
+            return;
+          }
+          a.textContent = a.textContent.replace('× Loading...', '+');
           break;
-        case '-':
-          a.textContent = text.replace('-', '+');
-          num = (function() {
-            if (thread.isSticky) {
-              return 1;
-            } else {
-              switch (g.BOARD.ID) {
-                case 'b':
-                case 'vg':
-                case 'q':
-                  return 3;
-                case 't':
-                  return 1;
-                default:
-                  return 5;
+        case true:
+          thread.isExpanded = false;
+          if (a) {
+            a.textContent = a.textContent.replace('-', '+');
+            num = (function() {
+              if (thread.isSticky) {
+                return 1;
+              } else {
+                switch (g.BOARD.ID) {
+                  case 'b':
+                  case 'vg':
+                  case 'q':
+                    return 3;
+                  case 't':
+                    return 1;
+                  default:
+                    return 5;
+                }
               }
-            }
-          })();
-          replies = $$('.thread > .replyContainer', threadRoot).slice(0, -num);
-          for (_j = 0, _len1 = replies.length; _j < _len1; _j++) {
-            reply = replies[_j];
-            if (Conf['Quote Inlining']) {
-              while (inlined = $('.inlined', reply)) {
-                inlined.click();
+            })();
+            replies = $$('.thread > .replyContainer', threadRoot).slice(0, -num);
+            for (_j = 0, _len1 = replies.length; _j < _len1; _j++) {
+              reply = replies[_j];
+              if (Conf['Quote Inlining']) {
+                while (inlined = $('.inlined', reply)) {
+                  inlined.click();
+                }
               }
+              $.rm(reply);
             }
-            $.rm(reply);
           }
           _ref1 = $$('.thread > .postContainer', threadRoot);
           for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
@@ -5411,6 +5575,7 @@
         $.off(a, 'click', ExpandThread.cb.toggle);
         return;
       }
+      thread.isExpanded = true;
       a.textContent = a.textContent.replace('× Loading...', '-');
       posts = JSON.parse(req.response).posts;
       if (spoilerRange = posts[0].custom_spoiler) {
@@ -5465,24 +5630,21 @@
       if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Tab Icon']) {
         return;
       }
-      Unread.hr = $.el('hr', {
+      this.db = new DataBoard('lastReadPosts', this.sync);
+      this.hr = $.el('hr', {
         id: 'unread-line'
       });
-      Misc.clearThreads("lastReadPosts." + g.BOARD);
+      this.posts = [];
+      this.postsQuotingYou = [];
       return Thread.prototype.callbacks.push({
         name: 'Unread',
         cb: this.node
       });
     },
     node: function() {
-      var ID, post, posts, _ref;
+      var ID, hash, post, posts, _ref;
 
       Unread.thread = this;
-      Unread.lastReadPost = $.get("lastReadPosts." + this.board, {
-        threads: {}
-      }).threads[this] || 0;
-      Unread.posts = [];
-      Unread.postsQuotingYou = [];
       Unread.title = d.title;
       posts = [];
       _ref = this.posts;
@@ -5492,8 +5654,15 @@
           posts.push(post);
         }
       }
+      Unread.lastReadPost = Unread.db.get({
+        boardID: this.board.ID,
+        threadID: this.ID,
+        defaultValue: 0
+      });
       Unread.addPosts(posts);
-      if (Unread.posts.length) {
+      if ((hash = location.hash.match(/\d+/)) && (post = this.posts[hash[0]])) {
+        post.nodes.root.scrollIntoView();
+      } else if (Unread.posts.length) {
         $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView(false);
       } else if (posts.length) {
         posts[posts.length - 1].nodes.root.scrollIntoView();
@@ -5504,23 +5673,44 @@
         return $.on(d, 'visibilitychange', Unread.setLine);
       }
     },
-    addPosts: function(newPosts) {
-      var ID, post, youInThisThread, yourPosts, _i, _len;
+    sync: function() {
+      var lastReadPost;
 
-      if (Conf['Quick Reply']) {
-        yourPosts = QR.yourPosts;
-        youInThisThread = yourPosts.threads[Unread.thread];
+      lastReadPost = Unread.db.get({
+        boardID: Unread.thread.board.ID,
+        threadID: Unread.thread.ID,
+        defaultValue: 0
+      });
+      if (!(Unread.lastReadPost < lastReadPost)) {
+        return;
       }
+      Unread.lastReadPost = lastReadPost;
+      Unread.readArray(Unread.posts);
+      Unread.readArray(Unread.postsQuotingYou);
+      Unread.setLine();
+      return Unread.update();
+    },
+    addPosts: function(newPosts) {
+      var ID, data, post, _i, _len;
+
       for (_i = 0, _len = newPosts.length; _i < _len; _i++) {
         post = newPosts[_i];
         ID = post.ID;
-        if (ID <= Unread.lastReadPost || post.isHidden || youInThisThread && youInThisThread.contains(ID)) {
+        if (ID <= Unread.lastReadPost || post.isHidden) {
           continue;
         }
-        Unread.posts.push(post);
-        if (yourPosts) {
-          Unread.addPostQuotingYou(post, yourPosts);
+        if (QR.db) {
+          data = {
+            boardID: post.board.ID,
+            threadID: post.thread.ID,
+            postID: post.ID
+          };
+          if (QR.db.get(data)) {
+            continue;
+          }
         }
+        Unread.posts.push(post);
+        Unread.addPostQuotingYou(post);
       }
       if (Conf['Unread Line']) {
         Unread.setLine(newPosts.contains(Unread.posts[0]));
@@ -5528,23 +5718,17 @@
       Unread.read();
       return Unread.update();
     },
-    addPostQuotingYou: function(post, yourPosts) {
-      var board, postIDs, quote, quoteID, thread, _i, _len, _ref, _ref1, _ref2;
+    addPostQuotingYou: function(post) {
+      var quotelink, _i, _len, _ref;
 
-      _ref = post.quotes;
+      if (!QR.db) {
+        return;
+      }
+      _ref = post.nodes.quotelinks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        _ref1 = quote.split('.'), board = _ref1[0], quoteID = _ref1[1];
-        if (board !== Unread.thread.board.ID) {
-          continue;
-        }
-        _ref2 = yourPosts.threads;
-        for (thread in _ref2) {
-          postIDs = _ref2[thread];
-          if (postIDs.contains(+quoteID)) {
-            Unread.postsQuotingYou.push(post);
-            return;
-          }
+        quotelink = _ref[_i];
+        if (QR.db.get(Get.postDataFromLink(quotelink))) {
+          Unread.postsQuotingYou.push(post);
         }
       }
     },
@@ -5555,8 +5739,35 @@
         return Unread.addPosts(e.detail.newPosts);
       }
     },
+    readSinglePost: function(post) {
+      var i;
+
+      if ((i = Unread.posts.indexOf(post)) === -1) {
+        return;
+      }
+      Unread.posts.splice(i, 1);
+      if (i === 0) {
+        Unread.lastReadPost = post.ID;
+        Unread.saveLastReadPost();
+      }
+      if ((i = Unread.postsQuotingYou.indexOf(post)) !== -1) {
+        Unread.postsQuotingYou.splice(i, 1);
+      }
+      return Unread.update();
+    },
+    readArray: function(arr) {
+      var i, post, _i, _len;
+
+      for (i = _i = 0, _len = arr.length; _i < _len; i = ++_i) {
+        post = arr[i];
+        if (post.ID > Unread.lastReadPost) {
+          break;
+        }
+      }
+      return arr.splice(0, i);
+    },
     read: function(e) {
-      var bottom, height, i, post, _i, _j, _len, _len1, _ref, _ref1;
+      var bottom, height, i, post, _i, _len, _ref;
 
       if (d.hidden || !Unread.posts.length) {
         return;
@@ -5575,27 +5786,18 @@
       }
       Unread.lastReadPost = Unread.posts[i - 1].ID;
       Unread.saveLastReadPost();
-      Unread.posts = Unread.posts.slice(i);
-      _ref1 = Unread.postsQuotingYou;
-      for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
-        post = _ref1[i];
-        if (post.ID > Unread.lastReadPost) {
-          break;
-        }
-      }
-      Unread.postsQuotingYou = Unread.postsQuotingYou.slice(i);
+      Unread.posts.splice(0, i);
+      Unread.readArray(Unread.postsQuotingYou);
       if (e) {
         return Unread.update();
       }
     },
-    saveLastReadPost: $.debounce($.SECOND, function() {
-      var lastReadPosts;
-
-      lastReadPosts = $.get("lastReadPosts." + Unread.thread.board, {
-        threads: {}
+    saveLastReadPost: $.debounce(2 * $.SECOND, function() {
+      return Unread.db.set({
+        boardID: Unread.thread.board.ID,
+        threadID: Unread.thread.ID,
+        val: Unread.lastReadPost
       });
-      lastReadPosts.threads[Unread.thread] = Unread.lastReadPost;
-      return $.set("lastReadPosts." + Unread.thread.board, lastReadPosts);
     }),
     setLine: function(force) {
       var post, root;
@@ -5622,7 +5824,7 @@
       if (!Conf['Unread Tab Icon']) {
         return;
       }
-      Favicon.el.href = g.DEAD ? Unread.postsQuotingYou.length ? Favicon.unreadDeadY : count ? Favicon.unreadDead : Favicon.dead : Unread.postsQuotingYou.length ? Favicon.unreadY : count ? Favicon.unread : Favicon["default"];
+      Favicon.el.href = g.DEAD ? Unread.postsQuotingYou.length ? Favicon.unreadDeadY : count ? Favicon.unreadDead : Favicon.dead : count ? Unread.postsQuotingYou.length ? Favicon.unreadY : Favicon.unread : Favicon["default"];
       return $.add(d.head, Favicon.el);
     }
   };
@@ -5712,25 +5914,28 @@
           fileCount++;
         }
       }
-      ThreadStats.update(postCount, fileCount);
       ThreadStats.thread = this;
+      ThreadStats.update(postCount, fileCount);
       $.on(d, 'ThreadUpdate', ThreadStats.onUpdate);
       return $.add(d.body, ThreadStats.dialog);
     },
     onUpdate: function(e) {
-      var fileCount, fileLimit, postCount, postLimit, _ref;
+      var fileCount, postCount, _ref;
 
       if (e.detail[404]) {
         return;
       }
-      _ref = e.detail, postCount = _ref.postCount, fileCount = _ref.fileCount, postLimit = _ref.postLimit, fileLimit = _ref.fileLimit;
-      return ThreadStats.update(postCount, fileCount, postLimit, fileLimit);
+      _ref = e.detail, postCount = _ref.postCount, fileCount = _ref.fileCount;
+      return ThreadStats.update(postCount, fileCount);
     },
-    update: function(postCount, fileCount, postLimit, fileLimit) {
-      ThreadStats.postCountEl.textContent = postCount;
-      ThreadStats.fileCountEl.textContent = fileCount;
-      (postLimit && !ThreadStats.thread.isSticky ? $.addClass : $.rmClass)(ThreadStats.postCountEl, 'warning');
-      return (fileLimit && !ThreadStats.thread.isSticky ? $.addClass : $.rmClass)(ThreadStats.fileCountEl, 'warning');
+    update: function(postCount, fileCount) {
+      var fileCountEl, postCountEl, thread;
+
+      thread = ThreadStats.thread, postCountEl = ThreadStats.postCountEl, fileCountEl = ThreadStats.fileCountEl;
+      postCountEl.textContent = postCount;
+      fileCountEl.textContent = fileCount;
+      (thread.postLimit && !thread.isSticky ? $.addClass : $.rmClass)(postCountEl, 'warning');
+      return (thread.fileLimit && !thread.isSticky ? $.addClass : $.rmClass)(fileCountEl, 'warning');
     }
   };
 
@@ -5995,6 +6200,8 @@
       Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
       ThreadUpdater.updateThreadStatus('Sticky', OP);
       ThreadUpdater.updateThreadStatus('Closed', OP);
+      ThreadUpdater.thread.postLimit = !!OP.bumplimit;
+      ThreadUpdater.thread.fileLimit = !!OP.imagelimit;
       nodes = [];
       posts = [];
       index = [];
@@ -6080,9 +6287,7 @@
         deletedPosts: deletedPosts,
         deletedFiles: deletedFiles,
         postCount: OP.replies + 1,
-        fileCount: OP.images + (!!ThreadUpdater.thread.OP.file && !ThreadUpdater.thread.OP.file.isDead),
-        postLimit: !!OP.bumplimit,
-        fileLimit: !!OP.imagelimit
+        fileCount: OP.images + (!!ThreadUpdater.thread.OP.file && !ThreadUpdater.thread.OP.file.isDead)
       });
     }
   };
@@ -6102,17 +6307,24 @@
       });
     },
     node: function() {
-      var favicon;
+      var favicon,
+        _this = this;
 
       favicon = $.el('img', {
         className: 'favicon'
       });
       $.on(favicon, 'click', ThreadWatcher.cb.toggle);
       $.before($('input', this.OP.nodes.post), favicon);
-      if (g.VIEW === 'thread' && this.ID === $.get('AutoWatch', 0)) {
-        ThreadWatcher.watch(this);
-        return $["delete"]('AutoWatch');
+      if (g.VIEW !== 'thread') {
+        return;
       }
+      return $.get('AutoWatch', 0, function(item) {
+        if (item['AutoWatch'] !== _this.ID) {
+          return;
+        }
+        ThreadWatcher.watch(_this);
+        return $["delete"]('AutoWatch');
+      });
     },
     ready: function() {
       if (!Main.isThisPageLegit()) {
@@ -6124,7 +6336,12 @@
     refresh: function(watched) {
       var ID, board, div, favicon, id, link, nodes, props, thread, x, _ref, _ref1;
 
-      watched || (watched = $.get('WatchedThreads', {}));
+      if (!watched) {
+        $.get('WatchedThreads', {}, function(item) {
+          return ThreadWatcher.refresh(item['WatchedThreads']);
+        });
+        return;
+      }
       nodes = [$('.move', ThreadWatcher.dialog)];
       for (board in watched) {
         _ref = watched[board];
@@ -6183,27 +6400,31 @@
       }
     },
     unwatch: function(board, threadID) {
-      var watched;
+      return $.get('WatchedThreads', {}, function(item) {
+        var watched;
 
-      watched = $.get('WatchedThreads', {});
-      delete watched[board][threadID];
-      if (!Object.keys(watched[board]).length) {
-        delete watched[board];
-      }
-      ThreadWatcher.refresh(watched);
-      return $.set('WatchedThreads', watched);
+        watched = item['WatchedThreads'];
+        delete watched[board][threadID];
+        if (!Object.keys(watched[board]).length) {
+          delete watched[board];
+        }
+        ThreadWatcher.refresh(watched);
+        return $.set('WatchedThreads', watched);
+      });
     },
     watch: function(thread) {
-      var watched, _name;
+      return $.get('WatchedThreads', {}, function(item) {
+        var watched, _name;
 
-      watched = $.get('WatchedThreads', {});
-      watched[_name = thread.board] || (watched[_name] = {});
-      watched[thread.board][thread] = {
-        href: "/" + thread.board + "/res/" + thread,
-        textContent: Get.threadExcerpt(thread)
-      };
-      ThreadWatcher.refresh(watched);
-      return $.set('WatchedThreads', watched);
+        watched = item['WatchedThreads'];
+        watched[_name = thread.board] || (watched[_name] = {});
+        watched[thread.board][thread] = {
+          href: "/" + thread.board + "/res/" + thread,
+          textContent: Get.threadExcerpt(thread)
+        };
+        ThreadWatcher.refresh(watched);
+        return $.set('WatchedThreads', watched);
+      });
     }
   };
 
@@ -6477,11 +6698,10 @@
     init: function() {
       var sc;
 
-      if (g.VIEW === 'catalog' || !Conf['Quick Reply']) {
+      if (!Conf['Quick Reply']) {
         return;
       }
-      Misc.clearThreads("yourPosts." + g.BOARD);
-      this.syncYourPosts();
+      this.db = new DataBoard('yourPosts');
       sc = $.el('a', {
         className: "qr-shortcut " + (!Conf['Persistent QR'] ? 'disabled' : ''),
         textContent: 'QR',
@@ -6600,16 +6820,6 @@
         return QR.unhide();
       }
     },
-    syncYourPosts: function(yourPosts) {
-      if (yourPosts) {
-        QR.yourPosts = yourPosts;
-        return;
-      }
-      QR.yourPosts = $.get("yourPosts." + g.BOARD, {
-        threads: {}
-      });
-      return $.sync("yourPosts." + g.BOARD, QR.syncYourPosts);
-    },
     error: function(err) {
       var el;
 
@@ -6677,10 +6887,12 @@
           file: board === 'q' ? 300 : 30,
           post: board === 'q' ? 60 : 30
         };
-        QR.cooldown.cooldowns = $.get("cooldown." + board, {});
         QR.cooldown.upSpd = 0;
         QR.cooldown.upSpdAccuracy = .5;
-        QR.cooldown.start();
+        $.get("cooldown." + board, {}, function(item) {
+          QR.cooldown.cooldowns = item["cooldown." + board];
+          return QR.cooldown.start();
+        });
         return $.sync("cooldown." + board, QR.cooldown.sync);
       },
       start: function() {
@@ -6921,24 +7133,17 @@
     },
     resetThreadSelector: function() {
       if (g.VIEW === 'thread') {
-        return QR.nodes.thread.value = g.THREAD;
+        return QR.nodes.thread.value = g.THREADID;
       } else {
         return QR.nodes.thread.value = 'new';
       }
     },
     posts: [],
     post: (function() {
-      function _Class() {
-        var el, event, persona, prev, _i, _len, _ref,
+      function _Class(select) {
+        var el, event, prev, _i, _len, _ref,
           _this = this;
 
-        prev = QR.posts[QR.posts.length - 1];
-        persona = $.get('QR.persona', {});
-        this.name = prev ? prev.name : persona.name || null;
-        this.email = prev && !/^sage$/.test(prev.email) ? prev.email : persona.email || null;
-        this.sub = prev && Conf['Remember Subject'] ? prev.sub : Conf['Remember Subject'] ? persona.sub : null;
-        this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
-        this.com = null;
         el = $.el('a', {
           className: 'qr-preview',
           draggable: true,
@@ -6973,8 +7178,26 @@
           event = _ref[_i];
           $.on(el, event.toLowerCase(), this[event]);
         }
-        this.unlock();
+        prev = QR.posts[QR.posts.length - 1];
         QR.posts.push(this);
+        this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
+        $.get('QR.persona', {}, function(item) {
+          var persona;
+
+          persona = item['QR.persona'];
+          _this.name = prev ? prev.name : persona.name;
+          _this.email = prev && !/^sage$/.test(prev.email) ? prev.email : persona.email;
+          if (Conf['Remember Subject']) {
+            _this.sub = prev ? prev.sub : persona.sub;
+          }
+          if (QR.selected === _this) {
+            return _this.load();
+          }
+        });
+        if (select) {
+          this.select();
+        }
+        this.unlock();
       }
 
       _Class.prototype.rm = function() {
@@ -6983,7 +7206,7 @@
         $.rm(this.nodes.el);
         index = QR.posts.indexOf(this);
         if (QR.posts.length === 1) {
-          new QR.post().select();
+          new QR.post(true);
         } else if (this === QR.selected) {
           (QR.posts[index - 1] || QR.posts[index + 1]).select();
         }
@@ -7020,7 +7243,7 @@
       };
 
       _Class.prototype.select = function() {
-        var name, rectEl, rectList, _i, _len, _ref;
+        var rectEl, rectList;
 
         if (QR.selected) {
           QR.selected.nodes.el.id = null;
@@ -7032,10 +7255,16 @@
         rectEl = this.nodes.el.getBoundingClientRect();
         rectList = this.nodes.el.parentNode.getBoundingClientRect();
         this.nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width / 2 - rectList.left - rectList.width / 2;
+        return this.load();
+      };
+
+      _Class.prototype.load = function() {
+        var name, _i, _len, _ref;
+
         _ref = ['name', 'email', 'sub', 'com'];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
-          QR.nodes[name].value = this[name];
+          QR.nodes[name].value = this[name] || null;
         }
         this.showFileData();
         return QR.characterCount();
@@ -7272,7 +7501,6 @@
         $.on(window, 'captcha:timeout', setLifetime);
         $.globalEval('window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))');
         $.off(window, 'captcha:timeout', setLifetime);
-        c.log(this.lifetime);
         imgContainer = $.el('div', {
           className: 'captcha-img',
           title: 'Reload',
@@ -7299,8 +7527,10 @@
         }
         $.on(imgContainer, 'click', this.reload.bind(this));
         $.on(input, 'keydown', this.keydown.bind(this));
+        $.get('captchas', [], function(item) {
+          return _this.sync(item['captchas']);
+        });
         $.sync('captchas', this.sync);
-        this.sync($.get('captchas', []));
         this.reload();
         $.addClass(QR.nodes.el, 'has-captcha');
         return $.after(QR.nodes.com.parentNode, [imgContainer, input]);
@@ -7486,7 +7716,7 @@
         return nodes.el.classList.toggle('dump');
       });
       $.on(nodes.addPost, 'click', function() {
-        return new QR.post().select();
+        return new QR.post(true);
       });
       $.on(nodes.form, 'submit', QR.submit);
       $.on(nodes.fileRM, 'click', function() {
@@ -7496,7 +7726,7 @@
         return QR.selected.nodes.spoiler.click();
       });
       $.on(nodes.fileInput, 'change', QR.fileInput);
-      new QR.post().select();
+      new QR.post(true);
       _ref1 = ['name', 'email', 'sub', 'com'];
       for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
         name = _ref1[_j];
@@ -7538,10 +7768,12 @@
         } else if (!(post.file || (textOnly = !!$('input[name=textonly]', $.id('postForm'))))) {
           err = 'No file selected.';
         }
-      } else if (g.BOARD.threads[threadID].isSticky) {
+      } else if (g.BOARD.threads[threadID].isClosed) {
         err = 'You can\'t reply to this thread anymore.';
       } else if (!(post.com || post.file)) {
         err = 'No file selected.';
+      } else if (post.file && g.BOARD.threads[threadID].fileLimit) {
+        err = 'Max limit of image replies has been reached.';
       }
       if (QR.captcha.isEnabled && !err) {
         _ref = QR.captcha.getOne(), challenge = _ref.challenge, response = _ref.response;
@@ -7592,6 +7824,7 @@
         }
       };
       opts = {
+        cred: true,
         form: $.formData(postData),
         upCallbacks: {
           onload: function() {
@@ -7612,7 +7845,7 @@
       return QR.status();
     },
     response: function() {
-      var URL, ban, board, err, h1, isReply, persona, post, postID, req, threadID, tmpDoc, _, _base, _ref, _ref1;
+      var URL, ban, board, err, h1, isReply, post, postID, req, threadID, tmpDoc, _, _ref, _ref1;
 
       req = QR.req;
       delete QR.req;
@@ -7653,19 +7886,27 @@
       h1 = $('h1', tmpDoc);
       QR.cleanNotifications();
       QR.notifications.push(new Notification('success', h1.textContent, 5));
-      persona = $.get('QR.persona', {});
-      persona = {
-        name: post.name,
-        email: /^sage$/.test(post.email) ? persona.email : post.email,
-        sub: Conf['Remember Subject'] ? post.sub : null
-      };
-      $.set('QR.persona', persona);
+      $.get('QR.persona', {}, function(item) {
+        var persona;
+
+        persona = item['QR.persona'];
+        persona = {
+          name: post.name,
+          email: /^sage$/.test(post.email) ? persona.email : post.email,
+          sub: Conf['Remember Subject'] ? post.sub : null
+        };
+        return $.set('QR.persona', persona);
+      });
       _ref1 = h1.nextSibling.textContent.match(/thread:(\d+),no:(\d+)/), _ = _ref1[0], threadID = _ref1[1], postID = _ref1[2];
       postID = +postID;
       threadID = +threadID || postID;
       isReply = threadID !== postID;
-      ((_base = QR.yourPosts.threads)[threadID] || (_base[threadID] = [])).push(postID);
-      $.set("yourPosts." + g.BOARD, QR.yourPosts);
+      QR.db.set({
+        boardID: g.BOARD.ID,
+        threadID: threadID,
+        postID: postID,
+        val: true
+      });
       ThreadUpdater.postID = postID;
       $.event('QRPostSuccessful', {
         board: g.BOARD,
@@ -7673,7 +7914,11 @@
         postID: postID
       }, QR.nodes.el);
       QR.cooldown.auto = QR.posts.length > 1 && isReply;
-      post.rm();
+      if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
+        QR.close();
+      } else {
+        post.rm();
+      }
       QR.cooldown.set({
         req: req,
         post: post,
@@ -7690,9 +7935,6 @@
         } else {
           window.location = "/" + g.BOARD + "/res/" + threadID;
         }
-      }
-      if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
-        QR.close();
       }
       return QR.status();
     },
@@ -7737,6 +7979,159 @@
     }
   };
 
+  DataBoards = ['hiddenThreads', 'hiddenPosts', 'lastReadPosts', 'yourPosts'];
+
+  DataBoard = (function() {
+    function DataBoard(key, sync) {
+      var _this = this;
+
+      this.key = key;
+      this.data = Conf[key];
+      $.sync(key, this.onSync.bind(this));
+      this.clean();
+      if (!sync) {
+        return;
+      }
+      $.on(d, '4chanXInitFinished', function() {
+        return _this.sync = sync;
+      });
+    }
+
+    DataBoard.prototype["delete"] = function(_arg) {
+      var boardID, postID, threadID;
+
+      boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID;
+      if (postID) {
+        delete this.data.boards[boardID][threadID][postID];
+        this.deleteIfEmpty({
+          boardID: boardID,
+          threadID: threadID
+        });
+      } else if (threadID) {
+        delete this.data.boards[boardID][threadID];
+        this.deleteIfEmpty({
+          boardID: boardID
+        });
+      } else {
+        delete this.data.boards[boardID];
+      }
+      return $.set(this.key, this.data);
+    };
+
+    DataBoard.prototype.deleteIfEmpty = function(_arg) {
+      var boardID, threadID;
+
+      boardID = _arg.boardID, threadID = _arg.threadID;
+      if (threadID) {
+        if (!Object.keys(this.data.boards[boardID][threadID]).length) {
+          delete this.data.boards[boardID][threadID];
+          return this.deleteIfEmpty({
+            boardID: boardID
+          });
+        }
+      } else if (!Object.keys(this.data.boards[boardID]).length) {
+        return delete this.data.boards[boardID];
+      }
+    };
+
+    DataBoard.prototype.set = function(_arg) {
+      var boardID, postID, threadID, val, _base, _base1, _base2;
+
+      boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID, val = _arg.val;
+      if (postID) {
+        ((_base = ((_base1 = this.data.boards)[boardID] || (_base1[boardID] = {})))[threadID] || (_base[threadID] = {}))[postID] = val;
+      } else if (threadID) {
+        ((_base2 = this.data.boards)[boardID] || (_base2[boardID] = {}))[threadID] = val;
+      } else {
+        this.data.boards[boardID] = val;
+      }
+      return $.set(this.key, this.data);
+    };
+
+    DataBoard.prototype.get = function(_arg) {
+      var ID, board, boardID, defaultValue, postID, thread, threadID, val, _i, _len;
+
+      boardID = _arg.boardID, threadID = _arg.threadID, postID = _arg.postID, defaultValue = _arg.defaultValue;
+      if (board = this.data.boards[boardID]) {
+        if (!threadID) {
+          if (postID) {
+            for (thread = _i = 0, _len = board.length; _i < _len; thread = ++_i) {
+              ID = board[thread];
+              if (postID in thread) {
+                val = thread[postID];
+                break;
+              }
+            }
+          } else {
+            val = board;
+          }
+        } else if (thread = board[threadID]) {
+          val = postID ? thread[postID] : thread;
+        }
+      }
+      return val || defaultValue;
+    };
+
+    DataBoard.prototype.clean = function() {
+      var boardID, now;
+
+      for (boardID in this.data.boards) {
+        this.deleteIfEmpty({
+          boardID: boardID
+        });
+      }
+      now = Date.now();
+      if ((this.data.lastChecked || 0) < now - 12 * $.HOUR) {
+        this.data.lastChecked = now;
+        for (boardID in this.data.boards) {
+          this.ajaxClean(boardID);
+        }
+      }
+      return $.set(this.key, this.data);
+    };
+
+    DataBoard.prototype.ajaxClean = function(boardID) {
+      var _this = this;
+
+      return $.cache("//api.4chan.org/" + boardID + "/threads.json", function(e) {
+        var board, page, thread, threads, _i, _j, _len, _len1, _ref, _ref1;
+
+        if (e.target.status === 404) {
+          _this["delete"](boardID);
+        } else if (e.target.status === 200) {
+          board = _this.data.boards[boardID];
+          threads = {};
+          _ref = JSON.parse(e.target.response);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            page = _ref[_i];
+            _ref1 = page.threads;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              thread = _ref1[_j];
+              if (thread.no in board) {
+                threads[thread.no] = board[thread.no];
+              }
+            }
+          }
+          _this.data.boards[boardID] = threads;
+          _this.deleteIfEmpty({
+            boardID: boardID
+          });
+        }
+        return $.set(_this.key, _this.data);
+      });
+    };
+
+    DataBoard.prototype.onSync = function(data) {
+      this.data = data || {
+        boards: {}
+      };
+      return typeof this.sync === "function" ? this.sync() : void 0;
+    };
+
+    return DataBoard;
+
+  })();
+
   Board = (function() {
     Board.prototype.toString = function() {
       return this.ID;
@@ -7765,7 +8160,7 @@
       this.ID = +ID;
       this.fullID = "" + this.board + "." + this.ID;
       this.posts = {};
-      g.threads["" + board + "." + this] = board.threads[this] = this;
+      g.threads[this.fullID] = board.threads[this] = this;
     }
 
     Thread.prototype.kill = function() {
@@ -7785,7 +8180,7 @@
     };
 
     function Post(root, thread, board, that) {
-      var alt, anchor, capcode, date, email, file, fileInfo, flag, info, name, post, size, subject, thumb, tripcode, uniqueID, unit, _ref;
+      var alt, anchor, capcode, date, email, file, fileInfo, flag, info, name, post, size, subject, thumb, tripcode, uniqueID, unit;
 
       this.thread = thread;
       this.board = board;
@@ -7838,7 +8233,11 @@
         this.info.date = new Date(date.dataset.utc * 1000);
       }
       if (Conf['Quick Reply']) {
-        this.info.yours = !!((_ref = QR.yourPosts.threads[this.thread.ID]) != null ? _ref.contains(this.ID) : void 0);
+        this.info.yours = QR.db.get({
+          boardID: this.board,
+          threadID: this.thread,
+          postID: this.ID
+        });
       }
       this.parseComment();
       this.parseQuotes();
@@ -7873,7 +8272,7 @@
         this.thread.isClosed = !!$('.closedIcon', this.nodes.info);
       }
       this.clones = [];
-      g.posts["" + board + "." + this] = thread.posts[this] = board.posts[this] = this;
+      g.posts[this.fullID] = thread.posts[this] = board.posts[this] = this;
       if (that.isArchived) {
         this.kill();
       }
@@ -7931,10 +8330,16 @@
 
       now || (now = new Date());
       if (file) {
+        if (this.file.isDead) {
+          return;
+        }
         this.file.isDead = true;
         this.file.timeOfDeath = now;
         $.addClass(this.nodes.root, 'deleted-file');
       } else {
+        if (this.isDead) {
+          return;
+        }
         this.isDead = true;
         this.timeOfDeath = now;
         $.addClass(this.nodes.root, 'deleted-post');
@@ -8107,8 +8512,8 @@
   })(Post);
 
   Main = {
-    init: function() {
-      var flatten, initFeatures, key, pathname, val;
+    init: function(items) {
+      var db, flatten, _i, _len;
 
       flatten = function(parent, obj) {
         var key, val;
@@ -8125,10 +8530,19 @@
         }
       };
       flatten(null, Config);
-      for (key in Conf) {
-        val = Conf[key];
-        Conf[key] = $.get(key, val);
+      for (_i = 0, _len = DataBoards.length; _i < _len; _i++) {
+        db = DataBoards[_i];
+        Conf[db] = {
+          boards: {}
+        };
       }
+      $.get(Conf, Main.initFeatures);
+      return $.on(d, '4chanMainInit', Main.initStyle);
+    },
+    initFeatures: function(items) {
+      var initFeatures, pathname;
+
+      Conf = items;
       pathname = location.pathname.split('/');
       g.BOARD = new Board(pathname[1]);
       g.VIEW = (function() {
@@ -8142,7 +8556,7 @@
         }
       })();
       if (g.VIEW === 'thread') {
-        g.THREAD = +pathname[3];
+        g.THREADID = +pathname[3];
       }
       switch (location.hostname) {
         case 'sys.4chan.org':
@@ -8188,14 +8602,14 @@
         'Resurrect Quotes': Quotify,
         'Filter': Filter,
         'Thread Hiding': ThreadHiding,
-        'Reply Hiding': ReplyHiding,
+        'Reply Hiding': PostHiding,
         'Recursive': Recursive,
         'Strike-through Quotes': QuoteStrikeThrough,
         'Quick Reply': QR,
         'Menu': Menu,
         'Report Link': ReportLink,
         'Thread Hiding (Menu)': ThreadHiding.menu,
-        'Reply Hiding (Menu)': ReplyHiding.menu,
+        'Reply Hiding (Menu)': PostHiding.menu,
         'Delete Link': DeleteLink,
         'Filter (Menu)': Filter.menu,
         'Download Link': DownloadLink,
@@ -8212,6 +8626,7 @@
         'File Info Formatting': FileInfo,
         'Sauce': Sauce,
         'Image Expansion': ImageExpand,
+        'Image Expansion (Menu)': ImageExpand.menu,
         'Reveal Spoilers': RevealSpoilers,
         'Image Replace': ImageReplace,
         'Image Hover': ImageHover,
@@ -8227,12 +8642,12 @@
         'Keybinds': Keybinds
       });
       $.on(d, 'AddCallback', Main.addCallback);
-      $.on(d, '4chanMainInit', Main.initStyle);
       return $.ready(Main.initReady);
     },
     initStyle: function() {
       var MutationObserver, mainStyleSheet, observer, setStyle, style, styleSheets, _ref;
 
+      $.off(d, '4chanMainInit', Main.initStyle);
       if (!Main.isThisPageLegit()) {
         return;
       }
@@ -8282,9 +8697,9 @@
       if (d.title === '4chan - 404 Not Found') {
         if (Conf['404 Redirect'] && g.VIEW === 'thread') {
           href = Redirect.to({
-            board: g.BOARD,
-            threadID: g.THREAD,
-            postID: location.hash
+            boardID: g.BOARD.ID,
+            threadID: g.THREADID,
+            postID: +location.hash.match(/\d+/)
           });
           location.href = href || ("/" + g.BOARD + "/");
         }
@@ -8381,43 +8796,49 @@
       return Klass.prototype.callbacks.push(obj.callback);
     },
     checkUpdate: function() {
-      var freq, now;
+      var freq, items, now;
 
-      if (!Main.isThisPageLegit()) {
+      if (!(Conf['Check for Updates'] && Main.isThisPageLegit())) {
         return;
       }
       now = Date.now();
       freq = 7 * $.DAY;
-      if ($.get('lastupdate', 0) > now - freq || $.get('lastchecked', 0) > now - $.DAY) {
-        return;
-      }
-      return $.ajax('https://4chan-x.just-believe.in/builds/version', {
-        onload: function() {
-          var el, version;
-
-          if (this.status !== 200) {
-            return;
-          }
-          version = this.response;
-          if (!/^\d\.\d+\.\d+$/.test(version)) {
-            return;
-          }
-          if (g.VERSION === version) {
-            $.set('lastupdate', now);
-            return;
-          }
-          $.set('lastchecked', now);
-          el = $.el('span', {
-            innerHTML: "Update: 4chan X Beta v" + version + " is out, get it <a href=https://4chan-x.just-believe.in/ target=_blank>here</a>."
-          });
-          return new Notification('info', el, 2 * $.MINUTE);
+      items = {
+        lastupdate: 0,
+        lastchecked: 0
+      };
+      return $.get(items, function(items) {
+        if (items.lastupdate > now - freq || items.lastchecked > now - $.DAY) {
+          return;
         }
+        return $.ajax('https://4chan-x.just-believe.in/builds/version', {
+          onload: function() {
+            var el, version;
+
+            if (this.status !== 200) {
+              return;
+            }
+            version = this.response;
+            if (!/^\d\.\d+\.\d+$/.test(version)) {
+              return;
+            }
+            if (g.VERSION === version) {
+              $.set('lastupdate', now);
+              return;
+            }
+            $.set('lastchecked', now);
+            el = $.el('span', {
+              innerHTML: "Update: 4chan X v" + version + " is out, get it <a href=https://4chan-x.just-believe.in/ target=_blank>here</a>."
+            });
+            return new Notification('info', el, 120);
+          }
+        });
       });
     },
     handleErrors: function(errors) {
       var div, error, logs, _i, _len;
 
-      if (!('length' in errors)) {
+      if (!(errors instanceof Array)) {
         error = errors;
       } else if (errors.length === 1) {
         error = errors[0];
@@ -8430,13 +8851,9 @@
         innerHTML: "" + errors.length + " errors occurred. [<a href=javascript:;>show</a>]"
       });
       $.on(div.lastElementChild, 'click', function() {
-        if (this.textContent === 'show') {
-          this.textContent = 'hide';
-          return logs.hidden = false;
-        } else {
-          this.textContent = 'show';
-          return logs.hidden = true;
-        }
+        var _ref;
+
+        return _ref = this.textContent === 'show' ? ['hide', false] : ['show', true], this.textContent = _ref[0], logs.hidden = _ref[1], _ref;
       });
       logs = $.el('div', {
         hidden: true
@@ -8450,16 +8867,39 @@
     parseError: function(data) {
       var error, message;
 
-      message = data.message, error = data.error;
-      c.log(message, error);
-      c.log(message, error.stack);
+      Main.logError(data);
       message = $.el('div', {
-        textContent: message
+        textContent: data.message
       });
       error = $.el('div', {
-        textContent: error
+        textContent: data.error
       });
       return [message, error];
+    },
+    errors: [],
+    logError: function(data) {
+      if (!Main.errors.length) {
+        $.on(window, 'unload', Main.postErrors);
+      }
+      c.error(data.message, data.error.stack);
+      return Main.errors.push(data);
+    },
+    postErrors: function() {
+      var errors;
+
+      errors = Main.errors.map(function(d) {
+        return d.message + ' ' + d.error.stack;
+      });
+      return $.ajax('https://4chan-x.just-believe.in/errors', {}, {
+        sync: true,
+        form: $.formData({
+          n: "4chan X v" + g.VERSION,
+          t: 'userscript',
+          ua: window.navigator.userAgent,
+          url: window.location.href,
+          e: errors.join('\n')
+        })
+      });
     },
     isThisPageLegit: function() {
       var _ref;
@@ -8469,7 +8909,7 @@
       }
       return Main.thisPageIsLegit;
     },
-    css: "/* General */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.field {\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\n-webkit-transition: color .25s, border-color .25s, -webkit-flex .25s;\ntransition: color .25s, border-color .25s, flex .25s;\n}\n.field::-moz-placeholder,\n.field:hover::-moz-placeholder {\ncolor: #AAA !important;\n}\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.field[disabled] {\nbackground-color: #F2F2F2;\ncolor: #888;\n}\n.move {\ncursor: move;\n}\nlabel, .favicon {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\n}\n.post {\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#overlay,\n#qp, #ihover,\n#updater, #thread-stats,\n#navlinks, #header,\n#qr {\nposition: fixed;\n}\n#overlay {\nz-index: 999;\n}\n#notifications {\nz-index: 70;\n}\n#qp, #ihover {\nz-index: 60;\n}\n#menu {\nz-index: 50;\n}\n#navlinks, #updater, #thread-stats {\nz-index: 40;\n}\n#qr {\nz-index: 30;\n}\n#watcher:hover {\nz-index: 20;\n}\n#header {\nz-index: 10;\n}\n#watcher {\nz-index: 5;\n}\n\n/* Header */\n.fourchan-x body {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\n}\n#header {\ntop: 0;\nright: 0;\nleft: 0;\n}\n#header-bar {\nborder-width: 0 0 1px;\ndisplay: -webkit-flex;\ndisplay: flex;\npadding: 3px 4px 4px;\nposition: relative;\n-webkit-transition: all .1s .05s ease-in-out;\ntransition: all .1s .05s ease-in-out;\n}\n#board-list {\n-webkit-flex: 1;\nflex: 1;\ntext-align: center;\n}\n#header-bar.autohide:not(:hover) {\nbox-shadow: none;\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\n-webkit-transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\ntransition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n#toggle-header-bar {\ncursor: n-resize;\nleft: 0;\nright: 0;\nbottom: -8px;\nheight: 10px;\nposition: absolute;\n}\n#header-bar.autohide:not(:hover) #toggle-header-bar, #toggle-header-bar:hover {\nbottom: -16px;\nheight: 18px;\n}\n#header-bar.autohide #toggle-header-bar {\ncursor: s-resize;\n}\n#header-bar a:not(.entry) {\ntext-decoration: none;\npadding: 1px;\n}\n#shortcuts:empty {\ndisplay: none;\n}\n.brackets-wrap::before {\ncontent: \"\\00a0[\";\n}\n.brackets-wrap::after {\ncontent: \"]\\00a0\";\n}\n.disabled,\n.expand-all-shortcut {\nopacity: .45;\n}\n\n/* Notifications */\n#notifications {\nheight: 0;\ntext-align: center;\nposition: fixed;\ntop: 0;\nright: 0;\nleft: 0;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\n-webkit-transition: all .25s ease-in-out;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 38%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 38%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 38%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 38%, .9);\n}\n.notification a {\ncolor: white;\n}\n.notification > .close {\npadding: 6px;\ntop: 0;\nright: 0;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 6px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* Settings */\n#overlay {\nbackground-color: rgba(0, 0, 0, .5);\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-align-items: center;\nalign-items: center;\n-webkit-justify-content: center;\njustify-content: center;\nposition: fixed;\ntop: 0;\nleft: 0;\nheight: 100%;\nwidth: 100%;\n}\n#fourchanx-settings {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nbox-shadow: 0 0 15px rgba(0, 0, 0, .15);\nheight: 600px;\nmin-height: 0;\nmax-height: 100%;\nwidth: 900px;\nmin-width: 0;\nmax-width: 100%;\npadding: 3px;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\n}\n#fourchanx-settings > nav {\ndisplay: -webkit-flex;\ndisplay: flex;\npadding: 2px 2px 0;\n}\n#fourchanx-settings > nav a {\ntext-decoration: underline;\n}\n#fourchanx-settings > nav a.close {\ntext-decoration: none;\npadding: 2px;\n}\n.sections-list {\n-webkit-flex: 1;\nflex: 1;\n}\n.tab-selected {\nfont-weight: 700;\n}\n.section-container {\n-webkit-flex: 1;\nflex: 1;\nposition: relative;\n}\n.section-container > section {\nposition: absolute;\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\noverflow: auto;\n}\n.section-sauce ul,\n.section-rice ul {\nlist-style: none;\nmargin: 0;\npadding: 8px;\n}\n.section-sauce li,\n.section-rice li {\npadding-left: 4px;\n}\n.section-main label {\ntext-decoration: underline;\n}\n.section-filter ul {\npadding: 0;\n}\n.section-filter li {\nmargin: 10px 40px;\n}\n.section-filter textarea {\nheight: 500px;\n}\n.section-sauce textarea {\nheight: 350px;\n}\n.section-rice .field[name=\"boardnav\"] {\nwidth: 100%;\n}\n.section-rice textarea {\nheight: 150px;\n}\n#fourchanx-settings fieldset {\nborder: 1px solid;\nborder-radius: 3px;\n}\n#fourchanx-settings legend {\nfont-weight: 700;\n}\n#fourchanx-settings textarea {\nfont-family: monospace;\nmin-width: 100%;\nmax-width: 100%;\n}\n#fourchanx-settings code {\ncolor: #000;\nbackground-color: #FFF;\npadding: 0 2px;\n}\n.unscroll {\noverflow: hidden;\n}\n\n/* Unread */\n#unread-line {\nmargin: 0;\n}\n\n/* Thread Updater */\n#updater:not(:hover) {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n#updater > .move {\npadding: 0 3px;\n}\n#updater > div:last-child {\ntext-align: center;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n.new {\ncolor: limegreen;\n}\n\n/* Thread Watcher */\n#watcher {\npadding-bottom: 3px;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#watcher:not(:hover) {\nmax-height: 220px;\n}\n#watcher > .move {\npadding-top: 3px;\n}\n#watcher > div {\nmax-width: 200px;\noverflow: hidden;\npadding-left: 3px;\npadding-right: 3px;\ntext-overflow: ellipsis;\n}\n#watcher a {\ntext-decoration: none;\n}\n\n/* Thread Stats */\n#thread-stats {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n\n/* Quote */\n.deadlink {\ntext-decoration: none !important;\n}\n.backlink.deadlink:not(.forwardlink), .quotelink.deadlink:not(.forwardlink) {\ntext-decoration: underline !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp > .opContainer::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 2px 2px 5px;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\n}\n.qphl > .post {\noutline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* File */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.expanded-image > .post > .file > .fileThumb > img[data-md5],\n:not(.expanded-image) > .post > .file > .fileThumb > .full-image {\ndisplay: none;\n}\n.expanding {\nopacity: .5;\n}\n.expanded-image {\nclear: both;\n}\n.expanded-image > .op > .file::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n:root.fit-width .full-image {\nmax-width: 100%;\n}\n:root.gecko.fit-width .full-image,\n:root.presto.fit-width .full-image {\nwidth: 100%;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n\n/* Index/Reply Navigation */\n#navlinks {\nfont-size: 16px;\ntop: 25px;\nright: 10px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n.stub input {\ndisplay: inline-block;\n}\n\n/* QR */\n.hide-original-post-form #postForm,\n.hide-original-post-form .postingMode,\n#qr.autohide:not(:hover) > form {\ndisplay: none;\n}\n#qr select, #dump-button, .remove, .captcha-img {\ncursor: pointer;\n}\n#qr > div {\nmin-width: 300px;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-align-items: center;\nalign-items: center;\n}\n#qr .move {\n-webkit-align-self: stretch;\nalign-self: stretch;\n-webkit-flex: 1;\nflex: 1;\n}\n#qr select {\nmargin: 0;\n-webkit-appearance: none;\n-moz-appearance: none;\nappearance: none;\nborder: none;\nbackground: none;\n}\n.presto #qr select {\nheight: 1em;\n}\n#qr .close {\npadding: 0 3px;\n}\n#qr > form {\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\n}\n.persona {\ndisplay: -webkit-flex;\ndisplay: flex;\n}\n.persona .field {\n-webkit-flex: 1;\nflex: 1;\n}\n.persona .field:focus {\n-webkit-flex: 4;\nflex: 4;\n}\n#dump-button {\nbackground: -webkit-linear-gradient(#EEE, #CCC);\nbackground: linear-gradient(#EEE, #CCC);\nborder: 1px solid #CCC;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\nwidth: 30px;\n}\n#dump-button:hover, #dump-button:focus {\nbackground: -webkit-linear-gradient(#FFF, #DDD);\nbackground: linear-gradient(#FFF, #DDD);\n}\n#dump-button:active, .dump #dump-button:not(:hover):not(:focus) {\nbackground: -webkit-linear-gradient(#CCC, #DDD);\nbackground: linear-gradient(#CCC, #DDD);\n}\n.gecko #dump-button {\npadding: 0;\n}\n#qr:not(.dump) #dump-list-container {\ndisplay: none;\n}\n#dump-list-container {\nheight: 100px;\nposition: relative;\n-webkit-user-select: none;\n-moz-user-select: none;\n-o-user-select: none;\nuser-select: none;\n}\n#dump-list {\ncounter-reset: qrpreviews;\ntop: 0; right: 0; bottom: 0; left: 0;\noverflow: hidden;\nposition: absolute;\nwhite-space: nowrap;\n}\n#dump-list:hover {\nbottom: -12px;\noverflow-x: auto;\nz-index: 1;\n}\n#dump-list::-webkit-scrollbar {\nheight: 12px;\n}\n#dump-list::-webkit-scrollbar-thumb {\nborder: 1px solid;\n}\n.qr-preview {\nbackground-position: 50% 20%;\nbackground-size: cover;\nborder: 1px solid #808080;\ncolor: #FFF !important;\nfont-size: 12px;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncursor: move;\ndisplay: inline-block;\nheight: 92px; width: 92px;\nmargin: 4px; padding: 2px;\nopacity: .6;\noutline: none;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\n-webkit-transition: opacity .25s ease-in-out;\ntransition: opacity .25s ease-in-out;\nvertical-align: top;\nwhite-space: pre;\n}\n.qr-preview:hover, .qr-preview:focus {\nopacity: .9;\ncolor: #FFF !important;\n}\n.qr-preview#selected {\nopacity: 1;\n}\n.qr-preview::before {\ncounter-increment: qrpreviews;\ncontent: counter(qrpreviews);\nfont-weight: 700;\ntext-shadow: 0 0 3px #000, 0 0 5px #000;\nposition: absolute;\ntop: 3px; right: 3px;\n}\n.qr-preview.drag {\nborder-color: red;\nborder-style: dashed;\n}\n.qr-preview.over {\nborder-color: #FFF;\nborder-style: dashed;\n}\n.remove {\ncolor: #E00 !important;\nfont-weight: 700;\npadding: 3px;\n}\n.remove:hover::after {\ncontent: ' Remove';\n}\n.qr-preview > label {\nbackground: rgba(0, 0, 0, .5);\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.qr-preview > label > input {\nmargin: 1px 0;\nvertical-align: bottom;\n}\n#add-post {\ndisplay: inline-block;\nfont-size: 30px;\nheight: 30px;\nwidth: 30px;\nline-height: 1;\ntext-align: center;\nposition: absolute;\nright: 0; bottom: 0;\nz-index: 1;\n}\n#qr textarea {\nmin-height: 160px;\nmin-width: 100%;\ndisplay: block;\n}\n#qr.has-captcha textarea {\nmin-height: 120px;\n}\n.textarea {\nposition: relative;\n}\n#char-count {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nposition: absolute;\nbottom: 1px;\nright: 1px;\npointer-events: none;\n}\n#char-count.warning {\ncolor: red;\n}\n.captcha-img {\nbackground: #FFF;\noutline: 1px solid #CCC;\noutline-offset: -1px;\n}\n.captcha-img > img {\ndisplay: block;\nheight: 57px;\nwidth: 300px;\n}\n#file-n-submit > input {\nmargin: 0;\n}\n#file-n-submit.has-file #qr-no-file {\nvisibility: hidden;\n}\n#file-n-submit:not(.has-file) #qr-filename,\n#file-n-submit:not(.has-file) #qr-file-spoiler,\n#file-n-submit:not(.has-file) #qr-filerm {\ndisplay: none;\n}\n#file-n-submit {\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: row;\nflex-direction: row;\n-webkit-align-items: center;\nalign-items: center;\n}\n#qr-no-file, #qr-filename-container {\n-webkit-flex: 1;\nflex: 1;\n}\n#qr-filename-container {\ncursor: default;\nposition: relative;\nmargin-left: 2px;\n}\n#qr-filename {\nposition: absolute;\ntop: 0; right: 0; bottom: 0; left: 0;\ntext-overflow: ellipsis;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#qr-filerm {\npadding: 0 2px;\n}\n#file-n-submit > #qr-file-spoiler {\nmargin: 0 2px;\n}\n#file-n-submit input[type='submit'] {\nmin-width: 40px;\n-webkit-order: 1;\norder: 1;\n}\n#qr input[type='file'] {\nposition: absolute;\nvisibility: hidden;\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\nposition: relative;\n}\n.menu-button i {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\nmargin: 2px 0;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\noutline: none;\n}\n.entry {\ncursor: pointer;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.entry.has-submenu {\npadding-right: 20px;\n}\n.has-submenu::after {\ncontent: '';\nborder-left:   6px solid;\nborder-top:    4px solid transparent;\nborder-bottom: 4px solid transparent;\ndisplay: inline-block;\nmargin: 4px;\nposition: absolute;\nright: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\ndisplay: none;\n}\n.submenu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\nmargin: -1px 0;\n}\n.entry input {\nmargin: 0;\n}\n\n/* General */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.yotsuba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.yotsuba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba #menu {\ncolor: #800000;\n}\n:root.yotsuba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 10pt;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.yotsuba-b #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.yotsuba-b .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba-b #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b #menu {\ncolor: #000;\n}\n:root.yotsuba-b .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 10pt;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.futaba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.futaba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.futaba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba #menu {\ncolor: #800000;\n}\n:root.futaba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 12pt;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.burichan #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.burichan .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.burichan #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan #menu {\ncolor: #000000;\n}\n:root.burichan .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 12pt;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .field:focus {\nborder-color: #000;\n}\n\n/* Header */\n:root.tomorrow #header-bar {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a {\ncolor: #81A2BE;\n}\n\n/* Settings */\n:root.tomorrow #fourchanx-settings fieldset {\nborder-color: #111;\n}\n\n/* Quote */\n:root.tomorrow .backlink.deadlink {\ncolor: #81A2BE !important;\n}\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n.tomorrow #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow #qr select {\ncolor: #C5C8C6;\n}\n:root.tomorrow #qr option {\ncolor: #000;\n}\n:root.tomorrow .qr-preview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n\n/* Menu */\n:root.tomorrow #menu {\ncolor: #C5C8C6;\n}\n:root.tomorrow .entry {\nborder-bottom: 1px solid #111;\nfont-size: 10pt;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* General */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a {\ncolor: #FF6600;\n}\n\n/* Settings */\n:root.photon #fourchanx-settings fieldset {\nborder-color: #CCC;\n}\n\n/* Quote */\n:root.photon .backlink.deadlink {\ncolor: #F60 !important;\n}\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.photon #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon #menu {\ncolor: #333;\n}\n:root.photon .entry {\nborder-bottom: 1px solid #CCC;\nfont-size: 10pt;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
+    css: "/* General */\n.dialog {\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder: 1px solid;\ndisplay: block;\npadding: 0;\n}\n.field {\nborder: 1px solid #CCC;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncolor: #333;\nfont: 13px sans-serif;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\ntransition: color .25s, border-color .25s, -webkit-flex .25s;\ntransition: color .25s, border-color .25s, flex .25s;\n}\n.field::-moz-placeholder,\n.field:hover::-moz-placeholder {\ncolor: #AAA !important;\n}\n.field:hover {\nborder-color: #999;\n}\n.field:hover, .field:focus {\ncolor: #000;\n}\n.field[disabled] {\nbackground-color: #F2F2F2;\ncolor: #888;\n}\n.move {\ncursor: move;\n}\nlabel, .favicon {\ncursor: pointer;\n}\na[href=\"javascript:;\"] {\ntext-decoration: none;\n}\n.warning {\ncolor: red;\n}\n\n/* 4chan style fixes */\n.opContainer, .op {\ndisplay: block !important;\n}\n.post {\noverflow: visible !important;\n}\n[hidden] {\ndisplay: none !important;\n}\n\n/* fixed, z-index */\n#overlay,\n#qp, #ihover,\n#updater, #thread-stats,\n#navlinks, #header,\n#qr {\nposition: fixed;\n}\n#overlay {\nz-index: 999;\n}\n#notifications {\nz-index: 70;\n}\n#qp, #ihover {\nz-index: 60;\n}\n#menu {\nz-index: 50;\n}\n#navlinks, #updater, #thread-stats {\nz-index: 40;\n}\n#qr {\nz-index: 30;\n}\n#watcher:hover {\nz-index: 20;\n}\n#header {\nz-index: 10;\n}\n#watcher {\nz-index: 5;\n}\n\n/* Header */\n.fourchan-x body {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\n}\n#header {\ntop: 0;\nright: 0;\nleft: 0;\n}\n#header-bar {\nborder-width: 0 0 1px;\ndisplay: -webkit-flex;\ndisplay: flex;\npadding: 3px 4px 4px;\nposition: relative;\ntransition: all .1s .05s ease-in-out;\n}\n#board-list {\n-webkit-flex: 1;\nflex: 1;\ntext-align: center;\n}\n#header-bar.autohide:not(:hover) {\nbox-shadow: none;\nmargin-bottom: -1em;\n-webkit-transform: translateY(-100%);\ntransform: translateY(-100%);\ntransition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n#toggle-header-bar {\ncursor: n-resize;\nleft: 0;\nright: 0;\nbottom: -8px;\nheight: 10px;\nposition: absolute;\n}\n#header-bar.autohide:not(:hover) #toggle-header-bar, #toggle-header-bar:hover {\nbottom: -16px;\nheight: 18px;\n}\n#header-bar.autohide #toggle-header-bar {\ncursor: s-resize;\n}\n#header-bar a:not(.entry) {\ntext-decoration: none;\npadding: 1px;\n}\n#shortcuts:empty {\ndisplay: none;\n}\n.brackets-wrap::before {\ncontent: \"\\00a0[\";\n}\n.brackets-wrap::after {\ncontent: \"]\\00a0\";\n}\n.disabled,\n.expand-all-shortcut {\nopacity: .45;\n}\n\n/* Notifications */\n#notifications {\nheight: 0;\ntext-align: center;\nposition: fixed;\ntop: 0;\nright: 0;\nleft: 0;\n}\n.notification {\ncolor: #FFF;\nfont-weight: 700;\ntext-shadow: 0 1px 2px rgba(0, 0, 0, .5);\nbox-shadow: 0 1px 2px rgba(0, 0, 0, .15);\nborder-radius: 2px;\nmargin: 1px auto;\nwidth: 500px;\nmax-width: 100%;\nposition: relative;\ntransition: all .25s ease-in-out;\n}\n.notification.error {\nbackground-color: hsla(0, 100%, 38%, .9);\n}\n.notification.warning {\nbackground-color: hsla(36, 100%, 38%, .9);\n}\n.notification.info {\nbackground-color: hsla(200, 100%, 38%, .9);\n}\n.notification.success {\nbackground-color: hsla(104, 100%, 38%, .9);\n}\n.notification a {\ncolor: white;\n}\n.notification > .close {\npadding: 6px;\ntop: 0;\nright: 0;\nposition: absolute;\n}\n.message {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\npadding: 6px 20px;\nmax-height: 200px;\nwidth: 100%;\noverflow: auto;\n}\n\n/* Settings */\n#overlay {\nbackground-color: rgba(0, 0, 0, .5);\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-align-items: center;\nalign-items: center;\n-webkit-justify-content: center;\njustify-content: center;\nposition: fixed;\ntop: 0;\nleft: 0;\nheight: 100%;\nwidth: 100%;\n}\n#fourchanx-settings {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nbox-shadow: 0 0 15px rgba(0, 0, 0, .15);\nheight: 600px;\nmin-height: 0;\nmax-height: 100%;\nwidth: 900px;\nmin-width: 0;\nmax-width: 100%;\npadding: 3px;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\n}\n#fourchanx-settings > nav {\ndisplay: -webkit-flex;\ndisplay: flex;\npadding: 2px 2px 0;\n}\n#fourchanx-settings > nav a {\ntext-decoration: underline;\n}\n#fourchanx-settings > nav a.close {\ntext-decoration: none;\npadding: 2px;\n}\n.sections-list {\n-webkit-flex: 1;\nflex: 1;\n}\n.tab-selected {\nfont-weight: 700;\n}\n.section-container {\n-webkit-flex: 1;\nflex: 1;\nposition: relative;\n}\n.section-container > section {\nposition: absolute;\ntop: 0;\nright: 0;\nbottom: 0;\nleft: 0;\noverflow: auto;\n}\n.section-sauce ul,\n.section-rice ul {\nlist-style: none;\nmargin: 0;\npadding: 8px;\n}\n.section-sauce li,\n.section-rice li {\npadding-left: 4px;\n}\n.section-main label {\ntext-decoration: underline;\n}\n.section-filter ul {\npadding: 0;\n}\n.section-filter li {\nmargin: 10px 40px;\n}\n.section-filter textarea {\nheight: 500px;\n}\n.section-sauce textarea {\nheight: 350px;\n}\n.section-rice .field[name=\"boardnav\"] {\nwidth: 100%;\n}\n.section-rice textarea {\nheight: 150px;\n}\n#fourchanx-settings fieldset {\nborder: 1px solid;\nborder-radius: 3px;\n}\n#fourchanx-settings legend {\nfont-weight: 700;\n}\n#fourchanx-settings textarea {\nfont-family: monospace;\nmin-width: 100%;\nmax-width: 100%;\n}\n#fourchanx-settings code {\ncolor: #000;\nbackground-color: #FFF;\npadding: 0 2px;\n}\n.unscroll {\noverflow: hidden;\n}\n\n/* Unread */\n#unread-line {\nmargin: 0;\n}\n\n/* Thread Updater */\n#updater:not(:hover) {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n#updater > .move {\npadding: 0 3px;\n}\n#updater > div:last-child {\ntext-align: center;\n}\n#updater input[type=number] {\nwidth: 4em;\n}\n#updater:not(:hover) > div:not(.move) {\ndisplay: none;\n}\n#updater input[type=\"button\"] {\nwidth: 100%;\n}\n.new {\ncolor: limegreen;\n}\n\n/* Thread Watcher */\n#watcher {\npadding-bottom: 3px;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#watcher:not(:hover) {\nmax-height: 220px;\n}\n#watcher > .move {\npadding-top: 3px;\n}\n#watcher > div {\nmax-width: 200px;\noverflow: hidden;\npadding-left: 3px;\npadding-right: 3px;\ntext-overflow: ellipsis;\n}\n#watcher a {\ntext-decoration: none;\n}\n\n/* Thread Stats */\n#thread-stats {\nbackground: none;\nborder: none;\nbox-shadow: none;\n}\n\n/* Quote */\n.deadlink {\ntext-decoration: none !important;\n}\n.backlink.deadlink:not(.forwardlink), .quotelink.deadlink:not(.forwardlink) {\ntext-decoration: underline !important;\n}\n.inlined {\nopacity: .5;\n}\n#qp input, .forwarded {\ndisplay: none;\n}\n.quotelink.forwardlink,\n.backlink.forwardlink {\ntext-decoration: none;\nborder-bottom: 1px dashed;\n}\n.filtered {\ntext-decoration: underline line-through;\n}\n.inline {\nborder: 1px solid;\ndisplay: table;\nmargin: 2px 0;\n}\n.inline .post {\nborder: 0 !important;\nbackground-color: transparent !important;\ndisplay: table !important;\nmargin: 0 !important;\npadding: 1px 2px !important;\n}\n#qp > .opContainer::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n#qp .post {\nborder: none;\nmargin: 0;\npadding: 2px 2px 5px;\n}\n#qp img {\nmax-height: 300px;\nmax-width: 500px;\n}\n.qphl > .post {\noutline: 2px solid rgba(216, 94, 49, .7);\n}\n\n/* File */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.expanded-image > .post > .file > .fileThumb > img[data-md5],\n:not(.expanded-image) > .post > .file > .fileThumb > .full-image {\ndisplay: none;\n}\n.expanding {\nopacity: .5;\n}\n.expanded-image {\nclear: both;\n}\n.expanded-image > .op > .file::after {\ncontent: '';\nclear: both;\ndisplay: table;\n}\n:root.fit-width .full-image {\nmax-width: 100%;\n}\n:root.gecko.fit-width .full-image,\n:root.presto.fit-width .full-image {\nwidth: 100%;\n}\n#ihover {\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\nmax-height: 100%;\nmax-width: 75%;\npadding-bottom: 16px;\n}\n\n/* Index/Reply Navigation */\n#navlinks {\nfont-size: 16px;\ntop: 25px;\nright: 10px;\n}\n\n/* Filter */\n.opContainer.filter-highlight {\nbox-shadow: inset 5px 0 rgba(255, 0, 0, .5);\n}\n.filter-highlight > .reply {\nbox-shadow: -5px 0 rgba(255, 0, 0, .5);\n}\n\n/* Thread & Reply Hiding */\n.hide-thread-button,\n.hide-reply-button {\nfloat: left;\nmargin-right: 2px;\n}\n.stub ~ .sideArrows,\n.stub ~ .hide-reply-button,\n.stub ~ .post {\ndisplay: none !important;\n}\n.stub input {\ndisplay: inline-block;\n}\n\n/* QR */\n:root.hide-original-post-form #postForm,\n:root.hide-original-post-form .postingMode,\n:root.hide-original-post-form #togglePostForm,\n#qr.autohide:not(:hover) > form {\ndisplay: none;\n}\n#qr select, #dump-button, .remove, .captcha-img {\ncursor: pointer;\n}\n#qr > div {\nmin-width: 300px;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-align-items: center;\nalign-items: center;\n}\n#qr .move {\n-webkit-align-self: stretch;\nalign-self: stretch;\n-webkit-flex: 1;\nflex: 1;\n}\n#qr select {\nmargin: 0;\n-webkit-appearance: none;\n-moz-appearance: none;\nappearance: none;\nborder: none;\nbackground: none;\n}\n.presto #qr select {\nheight: 1em;\n}\n#qr .close {\npadding: 0 3px;\n}\n#qr > form {\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\n}\n.persona {\ndisplay: -webkit-flex;\ndisplay: flex;\n}\n.persona .field {\n-webkit-flex: 1;\nflex: 1;\n}\n.persona .field:focus {\n-webkit-flex: 3;\nflex: 3;\n}\n#dump-button {\nbackground: linear-gradient(#EEE, #CCC);\nborder: 1px solid #CCC;\nmargin: 0;\npadding: 2px 4px 3px;\noutline: none;\nwidth: 30px;\n}\n#dump-button:hover, #dump-button:focus {\nbackground: linear-gradient(#FFF, #DDD);\n}\n#dump-button:active, .dump #dump-button:not(:hover):not(:focus) {\nbackground: linear-gradient(#CCC, #DDD);\n}\n.gecko #dump-button {\npadding: 0;\n}\n#qr:not(.dump) #dump-list-container {\ndisplay: none;\n}\n#dump-list-container {\nheight: 100px;\nposition: relative;\n-webkit-user-select: none;\n-moz-user-select: none;\n-o-user-select: none;\nuser-select: none;\n}\n#dump-list {\ncounter-reset: qrpreviews;\ntop: 0; right: 0; bottom: 0; left: 0;\noverflow: hidden;\nposition: absolute;\nwhite-space: nowrap;\n}\n#dump-list:hover {\nbottom: -12px;\noverflow-x: auto;\nz-index: 1;\n}\n#dump-list::-webkit-scrollbar {\nheight: 12px;\n}\n#dump-list::-webkit-scrollbar-thumb {\nborder: 1px solid;\n}\n.qr-preview {\nbackground-position: 50% 20%;\nbackground-size: cover;\nborder: 1px solid #808080;\ncolor: #FFF !important;\nfont-size: 12px;\n-moz-box-sizing: border-box;\nbox-sizing: border-box;\ncursor: move;\ndisplay: inline-block;\nheight: 92px; width: 92px;\nmargin: 4px; padding: 2px;\nopacity: .6;\noutline: none;\noverflow: hidden;\nposition: relative;\ntext-shadow: 0 1px 1px #000;\ntransition: opacity .25s ease-in-out;\nvertical-align: top;\nwhite-space: pre;\n}\n.qr-preview:hover, .qr-preview:focus {\nopacity: .9;\ncolor: #FFF !important;\n}\n.qr-preview#selected {\nopacity: 1;\n}\n.qr-preview::before {\ncounter-increment: qrpreviews;\ncontent: counter(qrpreviews);\nfont-weight: 700;\ntext-shadow: 0 0 3px #000, 0 0 5px #000;\nposition: absolute;\ntop: 3px; right: 3px;\n}\n.qr-preview.drag {\nborder-color: red;\nborder-style: dashed;\n}\n.qr-preview.over {\nborder-color: #FFF;\nborder-style: dashed;\n}\n.remove {\ncolor: #E00 !important;\nfont-weight: 700;\npadding: 3px;\n}\n.remove:hover::after {\ncontent: ' Remove';\n}\n.qr-preview > label {\nbackground: rgba(0, 0, 0, .5);\nright: 0; bottom: 0; left: 0;\nposition: absolute;\ntext-align: center;\n}\n.qr-preview > label > input {\nmargin: 1px 0;\nvertical-align: bottom;\n}\n#add-post {\ndisplay: inline-block;\nfont-size: 30px;\nheight: 30px;\nwidth: 30px;\nline-height: 1;\ntext-align: center;\nposition: absolute;\nright: 0; bottom: 0;\nz-index: 1;\n}\n#qr textarea {\nmin-height: 160px;\nmin-width: 100%;\ndisplay: block;\n}\n#qr.has-captcha textarea {\nmin-height: 120px;\n}\n.textarea {\nposition: relative;\n}\n#char-count {\ncolor: #000;\nbackground: hsla(0, 0%, 100%, .5);\nfont-size: 8pt;\nposition: absolute;\nbottom: 1px;\nright: 1px;\npointer-events: none;\n}\n#char-count.warning {\ncolor: red;\n}\n.captcha-img {\nbackground: #FFF;\noutline: 1px solid #CCC;\noutline-offset: -1px;\n}\n.captcha-img > img {\ndisplay: block;\nheight: 57px;\nwidth: 300px;\n}\n#file-n-submit > input {\nmargin: 0;\n}\n#file-n-submit.has-file #qr-no-file {\nvisibility: hidden;\n}\n#file-n-submit:not(.has-file) #qr-filename,\n#file-n-submit:not(.has-file) #qr-file-spoiler,\n#file-n-submit:not(.has-file) #qr-filerm {\ndisplay: none;\n}\n#file-n-submit {\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: row;\nflex-direction: row;\n-webkit-align-items: center;\nalign-items: center;\n}\n#qr-no-file, #qr-filename-container {\n-webkit-flex: 1;\nflex: 1;\n}\n#qr-filename-container {\ncursor: default;\nposition: relative;\nmargin-left: 2px;\n}\n#qr-filename {\nposition: absolute;\ntop: 0; right: 0; bottom: 0; left: 0;\ntext-overflow: ellipsis;\noverflow: hidden;\nwhite-space: nowrap;\n}\n#qr-filerm {\npadding: 0 2px;\n}\n#file-n-submit > #qr-file-spoiler {\nmargin: 0 2px;\n}\n#file-n-submit input[type='submit'] {\nmin-width: 40px;\n-webkit-order: 1;\norder: 1;\n}\n#qr input[type='file'] {\nposition: absolute;\nvisibility: hidden;\n}\n\n/* Menu */\n.menu-button {\ndisplay: inline-block;\nposition: relative;\n}\n.menu-button i {\nborder-top:   6px solid;\nborder-right: 4px solid transparent;\nborder-left:  4px solid transparent;\ndisplay: inline-block;\nmargin: 2px;\nvertical-align: middle;\n}\n#menu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\nmargin: 2px 0;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\noutline: none;\n}\n.entry {\ncursor: pointer;\noutline: none;\npadding: 3px 7px;\nposition: relative;\ntext-decoration: none;\nwhite-space: nowrap;\n}\n.entry.has-submenu {\npadding-right: 20px;\n}\n.has-submenu::after {\ncontent: '';\nborder-left:   6px solid;\nborder-top:    4px solid transparent;\nborder-bottom: 4px solid transparent;\ndisplay: inline-block;\nmargin: 4px;\nposition: absolute;\nright: 3px;\n}\n.has-submenu:not(.focused) > .submenu {\ndisplay: none;\n}\n.submenu {\nborder-bottom: 0;\ndisplay: -webkit-flex;\ndisplay: flex;\n-webkit-flex-direction: column;\nflex-direction: column;\nposition: absolute;\nmargin: -1px 0;\n}\n.entry input {\nmargin: 0;\n}\n\n/* General */\n:root.yotsuba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.yotsuba #header-bar {\nfont-size: 9pt;\ncolor: #B86;\n}\n:root.yotsuba #header-bar a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.yotsuba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.yotsuba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.yotsuba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.yotsuba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba #menu {\ncolor: #800000;\n}\n:root.yotsuba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 10pt;\n}\n:root.yotsuba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.yotsuba-b .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.yotsuba-b #header-bar {\nfont-size: 9pt;\ncolor: #89A;\n}\n:root.yotsuba-b #header-bar a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.yotsuba-b #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.yotsuba-b .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.yotsuba-b .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.yotsuba-b #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.yotsuba-b .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.yotsuba-b #menu {\ncolor: #000;\n}\n:root.yotsuba-b .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 10pt;\n}\n:root.yotsuba-b .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.futaba .dialog {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.futaba #header-bar {\nfont-size: 11pt;\ncolor: #B86;\n}\n:root.futaba #header-bar a {\ncolor: #800000;\n}\n\n/* Settings */\n:root.futaba #fourchanx-settings fieldset {\nborder-color: #D9BFB7;\n}\n\n/* Quote */\n:root.futaba .backlink.deadlink {\ncolor: #00E !important;\n}\n:root.futaba .inline {\nborder-color: #D9BFB7;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.futaba #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #F0E0D6;\nborder-color: #D9BFB7;\n}\n:root.futaba .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.futaba #menu {\ncolor: #800000;\n}\n:root.futaba .entry {\nborder-bottom: 1px solid #D9BFB7;\nfont-size: 12pt;\n}\n:root.futaba .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.burichan .dialog {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .field:focus {\nborder-color: #98E;\n}\n\n/* Header */\n:root.burichan #header-bar {\nfont-size: 11pt;\ncolor: #89A;\n}\n:root.burichan #header-bar a {\ncolor: #34345C;\n}\n\n/* Settings */\n:root.burichan #fourchanx-settings fieldset {\nborder-color: #B7C5D9;\n}\n\n/* Quote */\n:root.burichan .backlink.deadlink {\ncolor: #34345C !important;\n}\n:root.burichan .inline {\nborder-color: #B7C5D9;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.burichan #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #D6DAF0;\nborder-color: #B7C5D9;\n}\n:root.burichan .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.burichan #menu {\ncolor: #000000;\n}\n:root.burichan .entry {\nborder-bottom: 1px solid #B7C5D9;\nfont-size: 12pt;\n}\n:root.burichan .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n\n/* General */\n:root.tomorrow .dialog {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow .field:focus {\nborder-color: #000;\n}\n\n/* Header */\n:root.tomorrow #header-bar {\nfont-size: 9pt;\ncolor: #C5C8C6;\n}\n:root.tomorrow #header-bar a {\ncolor: #81A2BE;\n}\n\n/* Settings */\n:root.tomorrow #fourchanx-settings fieldset {\nborder-color: #111;\n}\n\n/* Quote */\n:root.tomorrow .backlink.deadlink {\ncolor: #81A2BE !important;\n}\n:root.tomorrow .inline {\nborder-color: #111;\nbackground-color: rgba(0, 0, 0, .14);\n}\n\n/* QR */\n.tomorrow #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #282A2E;\nborder-color: #111;\n}\n:root.tomorrow #qr select {\ncolor: #C5C8C6;\n}\n:root.tomorrow #qr option {\ncolor: #000;\n}\n:root.tomorrow .qr-preview {\nbackground-color: rgba(255, 255, 255, .15);\n}\n\n/* Menu */\n:root.tomorrow #menu {\ncolor: #C5C8C6;\n}\n:root.tomorrow .entry {\nborder-bottom: 1px solid #111;\nfont-size: 10pt;\n}\n:root.tomorrow .focused.entry {\nbackground: rgba(0, 0, 0, .33);\n}\n\n/* General */\n:root.photon .dialog {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .field:focus {\nborder-color: #EA8;\n}\n\n/* Header */\n:root.photon #header-bar {\nfont-size: 9pt;\ncolor: #333;\n}\n:root.photon #header-bar a {\ncolor: #FF6600;\n}\n\n/* Settings */\n:root.photon #fourchanx-settings fieldset {\nborder-color: #CCC;\n}\n\n/* Quote */\n:root.photon .backlink.deadlink {\ncolor: #F60 !important;\n}\n:root.photon .inline {\nborder-color: #CCC;\nbackground-color: rgba(255, 255, 255, .14);\n}\n\n/* QR */\n.photon #dump-list::-webkit-scrollbar-thumb {\nbackground-color: #DDD;\nborder-color: #CCC;\n}\n:root.photon .qr-preview {\nbackground-color: rgba(0, 0, 0, .15);\n}\n\n/* Menu */\n:root.photon #menu {\ncolor: #333;\n}\n:root.photon .entry {\nborder-bottom: 1px solid #CCC;\nfont-size: 10pt;\n}\n:root.photon .focused.entry {\nbackground: rgba(255, 255, 255, .33);\n}\n"
   };
 
   Main.init();

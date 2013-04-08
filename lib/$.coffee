@@ -62,11 +62,6 @@ $.extend $,
       $.off d, 'DOMContentLoaded', cb
       fc()
     $.on d, 'DOMContentLoaded', cb
-  sync: (key, cb) ->
-    key = "#{g.NAMESPACE}#{key}"
-    $.on window, 'storage', (e) ->
-      if e.key is key
-        cb JSON.parse e.newValue
   formData: (form) ->
     if form instanceof HTMLFormElement
       return new FormData form
@@ -81,15 +76,15 @@ $.extend $,
         fd.append key, val
     fd
   ajax: (url, callbacks, opts={}) ->
-    {type, headers, upCallbacks, form} = opts
+    {type, cred, headers, upCallbacks, form, sync} = opts
     r = new XMLHttpRequest()
     type or= form and 'post' or 'get'
-    r.open type, url, true
+    r.open type, url, !sync
     for key, val of headers
       r.setRequestHeader key, val
     $.extend r, callbacks
     $.extend r.upload, upCallbacks
-    r.withCredentials = type is 'post'
+    r.withCredentials = cred
     r.send form
     r
   cache: do ->
@@ -101,12 +96,13 @@ $.extend $,
         else
           req.callbacks.push cb
         return
+      rm = -> delete reqs[url]
       req = $.ajax url,
-        onload:  ->
-          cb.call @ for cb in @callbacks
+        onload: (e) ->
+          cb.call @, e for cb in @callbacks
           delete @callbacks
-        onabort: -> delete reqs[url]
-        onerror: -> delete reqs[url]
+        onabort: rm
+        onerror: rm
       req.callbacks = [cb]
       reqs[url] = req
   cb:
@@ -243,19 +239,43 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
-
+  syncing: {}
+  sync: do ->
 <% if (type === 'crx') { %>
-  delete: (keys) ->
-    chrome.storage.sync.remove keys
-  get: (key, defaultVal) ->
-    if val = localStorage.getItem g.NAMESPACE + key
-      JSON.parse val
-    else
-      defaultVal
-  set: (key, val) ->
+    chrome.storage.onChanged.addListener (changes) ->
+      for key of changes
+        if cb = $.syncing[key]
+          cb changes[key].newValue
+      return
+    (key, cb) -> $.syncing[key] = cb
+<% } else { %>
+    window.addEventListener 'storage', (e) ->
+      if cb = $.syncing[e.key]
+        cb JSON.parse e.newValue
+    , false
+    (key, cb) -> $.syncing[g.NAMESPACE + key] = cb
+<% } %>
+  item: (key, val) ->
     item = {}
     item[key] = val
-    chrome.storage.sync.set item
+    item
+<% if (type === 'crx') { %>
+  # https://developer.chrome.com/extensions/storage.html
+  delete: (keys) ->
+    chrome.storage.sync.remove keys
+  get: (key, val, cb) ->
+    if typeof cb is 'function'
+      items = $.item key, val
+    else
+      items = key
+      cb = val
+    chrome.storage.sync.get items, cb
+  set: (key, val) ->
+    items = if typeof key is 'string'
+      $.item key, val
+    else
+      key
+    chrome.storage.sync.set items
 <% } else if (type === 'userjs') { %>
 do ->
   # http://www.opera.com/docs/userjs/specs/#scriptstorage
@@ -274,19 +294,35 @@ do ->
       localStorage.removeItem key
       delete scriptStorage[key]
     return
-  $.get = (key, defaultVal) ->
-    if val = scriptStorage[g.NAMESPACE + key]
-      JSON.parse val
+  $.get = (key, val, cb) ->
+    if typeof cb is 'function'
+      items = $.item key, val
     else
-      defaultVal
-  $.set = (key, val) ->
-    key = g.NAMESPACE + key
-    val = JSON.stringify val
-    # for `storage` events
-    localStorage.setItem key, val
-    scriptStorage[key] = val
+      items = key
+      cb = val
+    $.queueTask ->
+      for key of items
+        if val = scriptStorage[g.NAMESPACE + key]
+          items[key] = JSON.parse val
+      cb items
+  $.set = do ->
+    set = (key, val) ->
+      key = g.NAMESPACE + key
+      val = JSON.stringify val
+      if key of $.syncing
+        # for `storage` events
+        localStorage.setItem key, val
+      scriptStorage[key] = val
+    (keys, val) ->
+      if typeof keys is 'string'
+        set keys, val
+        return
+      for key, val of keys
+        set key, val
+      return
 <% } else { %>
-  delete: (key) ->
+  # http://wiki.greasespot.net/Main_Page
+  delete: (keys) ->
     unless keys instanceof Array
       keys = [keys]
     for key in keys
@@ -294,15 +330,30 @@ do ->
       localStorage.removeItem key
       GM_deleteValue key
     return
-  get: (key, defaultVal) ->
-    if val = GM_getValue g.NAMESPACE + key
-      JSON.parse val
+  get: (key, val, cb) ->
+    if typeof cb is 'function'
+      items = $.item key, val
     else
-      defaultVal
-  set: (key, val) ->
-    key = g.NAMESPACE + key
-    val = JSON.stringify val
-    # for `storage` events
-    localStorage.setItem key, val
-    GM_setValue key, val
+      items = key
+      cb = val
+    $.queueTask ->
+      for key of items
+        if val = GM_getValue g.NAMESPACE + key
+          items[key] = JSON.parse val
+      cb items
+  set: do ->
+    set = (key, val) ->
+      key = g.NAMESPACE + key
+      val = JSON.stringify val
+      if key of $.syncing
+        # for `storage` events
+        localStorage.setItem key, val
+      GM_setValue key, val
+    (keys, val) ->
+      if typeof keys is 'string'
+        set keys, val
+        return
+      for key, val of keys
+        set key, val
+      return
 <% } %>

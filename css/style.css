@@ -14,7 +14,7 @@
   margin: 0;
   padding: 2px 4px 3px;
   outline: none;
-  -webkit-transition: color .25s, border-color .25s, -webkit-flex .25s;
+  transition: color .25s, border-color .25s, -webkit-flex .25s;
   transition: color .25s, border-color .25s, flex .25s;
 }
 .field::-moz-placeholder,
@@ -107,7 +107,6 @@ a[href="javascript:;"] {
   display: flex;
   padding: 3px 4px 4px;
   position: relative;
-  -webkit-transition: all .1s .05s ease-in-out;
   transition: all .1s .05s ease-in-out;
 }
 #board-list {
@@ -120,7 +119,6 @@ a[href="javascript:;"] {
   margin-bottom: -1em;
   -webkit-transform: translateY(-100%);
   transform: translateY(-100%);
-  -webkit-transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
   transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
 }
 #toggle-header-bar {
@@ -175,7 +173,6 @@ a[href="javascript:;"] {
   width: 500px;
   max-width: 100%;
   position: relative;
-  -webkit-transition: all .25s ease-in-out;
   transition: all .25s ease-in-out;
 }
 .notification.error {
@@ -346,6 +343,9 @@ a[href="javascript:;"] {
 #updater:not(:hover) > div:not(.move) {
   display: none;
 }
+#updater input[type="button"] {
+  width: 100%;
+}
 .new {
   color: limegreen;
 }
@@ -495,8 +495,9 @@ a[href="javascript:;"] {
 }
 
 /* QR */
-.hide-original-post-form #postForm,
-.hide-original-post-form .postingMode,
+:root.hide-original-post-form #postForm,
+:root.hide-original-post-form .postingMode,
+:root.hide-original-post-form #togglePostForm,
 #qr.autohide:not(:hover) > form {
   display: none;
 }
@@ -545,11 +546,10 @@ a[href="javascript:;"] {
   flex: 1;
 }
 .persona .field:focus {
-  -webkit-flex: 4;
-  flex: 4;
+  -webkit-flex: 3;
+  flex: 3;
 }
 #dump-button {
-  background: -webkit-linear-gradient(#EEE, #CCC);
   background: linear-gradient(#EEE, #CCC);
   border: 1px solid #CCC;
   margin: 0;
@@ -558,11 +558,9 @@ a[href="javascript:;"] {
   width: 30px;
 }
 #dump-button:hover, #dump-button:focus {
-  background: -webkit-linear-gradient(#FFF, #DDD);
   background: linear-gradient(#FFF, #DDD);
 }
 #dump-button:active, .dump #dump-button:not(:hover):not(:focus) {
-  background: -webkit-linear-gradient(#CCC, #DDD);
   background: linear-gradient(#CCC, #DDD);
 }
 .gecko #dump-button {
@@ -614,7 +612,6 @@ a[href="javascript:;"] {
   overflow: hidden;
   position: relative;
   text-shadow: 0 1px 1px #000;
-  -webkit-transition: opacity .25s ease-in-out;
   transition: opacity .25s ease-in-out;
   vertical-align: top;
   white-space: pre;

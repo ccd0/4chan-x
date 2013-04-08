@@ -9,6 +9,18 @@ master
   GIF thumbnail replacement, unlike Auto-GIF, actually works in /gif/ and /wsg/.
   Various little performance and readability tweaks.
 
+2.39.3
+- Mayhem
+  Add /fa/ and /s4s/ archive redirection.
+
+2.39.2
+- Mayhem
+  Fix importing settings containing unicode characters.
+
+2.39.1
+- Mayhem
+  Add /gd/, /out/, /vp/ and /vr/ archive redirection.
+
 2.39.0
 - Queue
   Fix rare bug in Relative Post Dates.
