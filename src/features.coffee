@@ -2590,6 +2590,7 @@ Quotify =
       $.replace deadlink, a
       if $.hasClass a, 'quotelink'
         @nodes.quotelinks.push a
+      a = null
     return
 
 QuoteInline =
