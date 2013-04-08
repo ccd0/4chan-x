@@ -3170,8 +3170,8 @@ ImageExpand =
     wrapper = $.el 'div',
       id: 'imgControls'
       innerHTML: """
-        <a class='expand-all-shortcut' title='Expand All Images' href='javascript:;'>Expand All Images</a>
-        <a class='menu-button' href='javascript:;'>[<i></i>]</a>
+        <a class='expand-all-shortcut' title='Expand All Images' href='javascript:;'></a>
+        <a class='menu-button' href='javascript:;'><i class=dropmarker></i></a>
       """
     @EAI = wrapper.firstElementChild
     $.on @EAI, 'click', ImageExpand.cb.toggleAll

@@ -237,6 +237,7 @@ Style =
           $ '#navtopright .exlinksOptionsLink', d.body
           notCatalog and $ 'body > a[style="cursor: pointer; float: right;"]', d.body
           notEither and _conf['Image Expansion']
+          notEither and _conf['Image Expansion']
           notEither
           g.REPLY
           notEither and _conf['Fappe Tyme']
@@ -261,6 +262,7 @@ Style =
       position = aligner(
         2 + (if _conf["4chan Banner"] is "at sidebar top" then (Style.logoOffset + 19) else 0)
         [
+          notEither and _conf['Image Expansion']
           notEither and _conf['Image Expansion']
           notCatalog
           _conf['Slideout Navigation'] isnt 'hide'

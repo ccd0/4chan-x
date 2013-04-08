@@ -207,10 +207,14 @@ a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
   color: #{theme["Warnings"]};
 }
 #navlinks a:first-of-type {
-  border-bottom: 11px solid rgb(#{if Style.lightTheme then "130,130,130" else "152,152,152"});
+  border-bottom: 11px solid rgb(130,130,130);
 }
 #navlinks a:last-of-type {
-  border-top: 11px solid rgb(#{if Style.lightTheme then "130,130,130" else "152,152,152"});
+  border-top: 11px solid rgb(130,130,130);
+}
+#imgControls .dropmarker,
+#imgControls .dropmarker:hover {
+  border-top-color: rgb(130,130,130);
 }
 #charCount {
   color: #{(if Style.lightTheme then "rgba(0,0,0,0.7)" else "rgba(255,255,255,0.7)")};
@@ -226,7 +230,6 @@ a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
   color: #{theme["Timestamps"]} !important;
 }
 #fs_status a,
-#imgControls label::after,
 #updater #count:not(.new)::after,
 #showQR,
 #updater,
@@ -381,7 +384,8 @@ a .name {
 #globalMessage::after,
 #boardNavDesktopFoot::after,
 a[style="cursor: pointer; float: right;"]::after,
-#imgControls label:first-of-type::after,
+#imgControls .expand-all-shortcut,
+#imgControls .contract-all-shortcut,
 #catalog::after,
 #fappeTyme {
   background-image: url('#{icons}');

@@ -440,33 +440,19 @@ else "
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
 /* Image Expansion */
-#imgControls .rice {
-  display: none;
+#imgControls .menu-button {
+  margin: 0;
 }
-#imgControls {
-  width: 15px;
-  overflow-x: hidden;
-  overflow-y: visible;
-}
-#imgContainer {
-  float: #{Style.sidebarLocation[0]};
-}
-#imgContainer,
-#imgControls:hover {
-  width: 110px;
-}
-#imgControls label {
-  float: #{Style.sidebarLocation[0]};
-}
-#imgControls .selectrice {
-  float: #{Style.sidebarLocation[1]};
-  width: 90px;
+#imgControls .dropmarker {
+  margin: 1px;
+  border-top-width: 13px;
+  border-right-width: 7px;
+  border-left-width: 7px;
 }
 .fitwidth .fullSize {
   max-width: 100%;
   width: 100%;
 }
-
 #{if _conf['Images Overlap Post Form'] then "
 .fullSize {
   position: relative;
