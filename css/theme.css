@@ -119,10 +119,11 @@ span[style="left: 5px; position: absolute;"] a {
   border-color: #{theme["Buttons Border"]};
 }
 #dump,
-#file,
+#qr-filename-container,
 #appchanx-settings input,
 .captchaimg,
 .dump #dump:not(:hover):not(:focus),
+.qr-preview,
 .selectrice,
 button,
 input,
@@ -132,7 +133,7 @@ textarea {
   color: #{theme["Inputs"]};
 }
 #dump:hover,
-#file:hover,
+#qr-filename-container:hover,
 #appchanx-settings .selectrice li:nth-of-type(2n+1):hover,
 .selectrice:hover,
 .selectrice li:hover,

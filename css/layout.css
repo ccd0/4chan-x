@@ -18,7 +18,7 @@ body > hr {
 }
 /* Empties */
 #qr .warning:empty,
-#threadselect:empty {
+#qr-thread-select:empty {
   display: none;
 }
 /* File Name Trunctuate */
@@ -1015,7 +1015,7 @@ input:checked + .rice {
 #qr.dump {
   #{agent}transform: translate(#{xOffset + (252 + Style.sidebarOffset.W)}px);
 }
-#qr #qrtab {
+#qrtab {
   #{agent}transform: rotate(#{(if Style.sidebarLocation[0] is "left" then "" else "-")}90deg);
   #{agent}transform-origin: bottom #{Style.sidebarLocation[0]};
   position: absolute;
@@ -1033,6 +1033,7 @@ input:checked + .rice {
   #{Style.sidebarLocation[0]}: #{252 + Style.sidebarOffset.W}px;
 }
 #qrtab input,
+#qrtab .close,
 #qrtab .rice,
 #qrtab span {
   display: none;
@@ -1096,19 +1097,19 @@ if _conf['Post Form Style'] isnt 'float' and _conf["Post Form Slideout Transitio
   border-width: 1px;
   border-style: solid;
 }
-.userInfo {
+.persona {
   width: 248px;
   max-width: 100%;
   min-width: 100%;
 }
-#dump {
+#dump-button {
   width: 10%;
   margin: 0;
 }
 
 #{
 if _conf['Compact Post Form Inputs'] then "
-.userInfo input.field {
+.persona input.field {
   width: 29.6%;
   margin: 0 0 0 0.4%;
 }
@@ -1122,10 +1123,10 @@ if _conf['Compact Post Form Inputs'] then "
 
 " else "
 
-.userInfo input.field {
+.persona input.field {
   width: 100%;
 }
-.userInfo input.field[name='name'] {
+.persona input.field[name='name'] {
   width: 89.6%;
   margin: 0 0 0 0.4%;
 }
@@ -1195,58 +1196,66 @@ input:not([type=radio]) {
   top: auto;
 }
 /* Fake File Input */
-#file {
+#qr-filename,
+.has-file #qr-no-file {
+  display: none;
+}
+#qr-no-file,
+.has-file #qr-filename {
+  display: block;
+}
+#qr-filename-container {
   #{Style.sizing}: border-box;
   display: inline-block;
+  position: relative;
   width: 100px;
   min-width: 74.6%;
   max-width: 74.6%;
   margin-right: 0.4%;
   overflow: hidden;
+  padding: 2px 1px 0;
+}
+#qr-filerm {
+  position: absolute;
+  right: 3px;
+  top: 2px;
 }
 /* Thread Select / Spoiler Label */
-#threadselect {
+#qr-thread-select {
   vertical-align: bottom;
   width: 49%;
   display: inline-block;
 }
-#spoilerLabel {
+#qr-spoiler-label {
   vertical-align: bottom;
   width: 49%;
   display: inline-block;
   text-align: right;
 }
-#threadselect:empty + #spoilerLabel {
-  display: inline-block;
-  width: 100%;
-}
 /* Dumping UI */
-.dump #replies {
+.dump #dump-list-container {
   display: block;
 }
-#replies {
+#dump-list-container {
   display: none;
-  height: 90px;
   position: relative;
+  overflow-y: hidden;
 }
-#replies > div {
-  counter-reset: thumbnails;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  overflow: hidden;
-  position: absolute;
+#dump-list {
+  overflow-x: auto;
+  overflow-y: hidden;
   white-space: pre;
+  width: 248px;
+  max-width: 100%;
+  min-width: 100%;
 }
-#replies > div:hover {
+#dump-list:hover {
   overflow-x: auto;
 }
-.thumbnail {
+.qr-preview {
   #{Style.sizing}: border-box;
+  counter-increment: thumbnails;
   cursor: move;
-  border: 1px solid transparent;
-  background: rgba(0,0,0,.2) 50% 20% cover;
   display: inline-block;
   height: 90px;
   width: 90px;
@@ -1258,12 +1267,11 @@ input:not([type=radio]) {
   #{agent}transition: opacity .25s ease-in-out;
   vertical-align: top;
 }
-.thumbnail:hover,
-.thumbnail:focus {
+.qr-preview:hover,
+.qr-preview:focus {
   opacity: .9;
 }
-.thumbnail::before {
-  counter-increment: thumbnails;
+.qr-preview::before {
   content: counter(thumbnails);
   color: #fff;
   position: absolute;
@@ -1271,16 +1279,16 @@ input:not([type=radio]) {
   right: 3px;
   text-shadow: 0 0 3px #000, 0 0 8px #000;
 }
-.thumbnail#selected {
+.qr-preview#selected {
   opacity: 1;
 }
-.thumbnail.drag {
+.qr-preview.drag {
   box-shadow: 0 0 10px rgba(0,0,0,.5);
 }
-.thumbnail.over {
+.qr-preview.over {
   border-color: #fff;
 }
-.thumbnail > span {
+.qr-preview > span {
   color: #fff;
 }
 .remove {
@@ -1295,21 +1303,23 @@ a:only-of-type > .remove {
 .remove:hover::after {
   content: " Remove";
 }
-.thumbnail > label {
+.qr-preview > label {
   background: rgba(0,0,0,.5);
   color: #fff;
   right: 0; bottom: 0; left: 0;
   position: absolute;
   text-align: center;
 }
-.thumbnail > label > input {
+.qr-preview > label > input {
   margin: 0;
 }
-#addReply {
+#add-post {
   cursor: pointer;
-  font-size: 3.5em;
-  line-height: 90px;
-  margin: 0 0.5em;
+  font-size: 2em;
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  #{agent}transform: translateY(-50%);
 }
 /* Ads */
 .topad img,

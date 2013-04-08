@@ -22,7 +22,7 @@ Style =
         Style.iconPositions()
         if exLink = $ "#navtopright .exlinksOptionsLink", d.body
           $.on exLink, "click", ->
-            setTimeout Style.rice, 100
+            setTimeout Rice.nodes, 100
         ), 500
 
     @setup()
@@ -569,6 +569,7 @@ Rice =
     delete Rice.ul
 
   nodes: (source) ->
+    source or= d.body
     checkboxes = $$('[type=checkbox]:not(.riced)', source)
     checkrice = Rice.checkbox
     for input in checkboxes

@@ -416,7 +416,7 @@ QR =
     lock: (lock=true) ->
       @isLocked = lock
       return unless @ is QR.selected
-      for name in ['name', 'email', 'sub', 'com', 'fileButton', 'spoiler']
+      for name in ['name', 'email', 'sub', 'com', 'spoiler']
         QR.nodes[name].disabled = lock
       @nodes.rm.style.visibility =
         QR.nodes.fileRM.style.visibility = if lock then 'hidden' else ''
@@ -693,7 +693,7 @@ QR =
   dialog: ->
     dialog = UI.dialog 'qr', 'top:0;right:0;', """
     <div id=qrtab>
-      <input type=checkbox id=autohide title=Auto-hide>
+      <input type=checkbox id=autohide title=Auto-hide> Post Form
       <span class=move></span>
       <a href=javascript:; class=close title=Close>×</a>
     </div>
@@ -713,20 +713,23 @@ QR =
         <a id=add-post href=javascript:; title="Add a post">+</a>
       </div>
       <div id=file-n-submit>
-        <input type=submit>
-        <input id=qr-file-button type=button value='Choose files'>
-        <span id=qr-filename-container>
+        <span id=qr-filename-container class=field>
           <span id=qr-no-file>No selected file</span>
           <span id=qr-filename></span>
+          <a id=qr-filerm href=javascript:; title='Remove file'>×</a>
         </span>
-        <a id=qr-filerm href=javascript:; title='Remove file'>×</a>
-        <input type=checkbox id=qr-file-spoiler title='Spoiler image'>
+        <input type=submit>
       </div>
       <input type=file multiple>
+      <div id=qr-thread-select>
+        <select title='Create a new thread / Reply'>
+          <option value=new>New thread</option>
+        </select>
+      </div>
+      <label id=qr-spoiler-label>
+        <input type=checkbox id=qr-file-spoiler title='Spoiler image'>Spoiler?
+      </label>
     </form>
-    <select title='Create a new thread / Reply'>
-      <option value=new>New thread</option>
-    </select>
     """.replace />\s+</g, '><' # get rid of spaces between elements
 
     QR.nodes = nodes =
@@ -734,6 +737,7 @@ QR =
       move:       $ '.move',             dialog
       autohide:   $ '#autohide',         dialog
       thread:     $ 'select',            dialog
+      threadPar:  $ '#qr-thread-select', dialog
       close:      $ '.close',            dialog
       form:       $ 'form',              dialog
       dumpButton: $ '#dump-button',      dialog
@@ -745,10 +749,10 @@ QR =
       addPost:    $ '#add-post',         dialog
       charCount:  $ '#char-count',       dialog
       fileSubmit: $ '#file-n-submit',    dialog
-      fileButton: $ '#qr-file-button',   dialog
       filename:   $ '#qr-filename',      dialog
       fileRM:     $ '#qr-filerm',        dialog
       spoiler:    $ '#qr-file-spoiler',  dialog
+      spoilerPar: $ '#qr-spoiler-label', dialog
       status:     $ '[type=submit]',     dialog
       fileInput:  $ '[type=file]',       dialog
 
@@ -770,7 +774,7 @@ QR =
     nodes.fileInput.accept = "text/*, #{mimeTypes}" if $.engine isnt 'presto' # Opera's accept attribute is fucked up
 
     QR.spoiler = !!$ 'input[name=spoiler]'
-    nodes.spoiler.hidden = !QR.spoiler
+    nodes.spoilerPar.hidden = !QR.spoiler
 
     if g.BOARD.ID is 'f'
       nodes.flashTag = $.el 'select',
@@ -791,17 +795,19 @@ QR =
       $.add nodes.thread, $.el 'option',
         value: thread
         textContent: "Thread No.#{thread}"
-    $.after nodes.autohide, nodes.thread
+    $.add nodes.threadPar, nodes.thread
     QR.resetThreadSelector()
 
-    for node in [nodes.fileButton, nodes.filename.parentNode]
-      $.on node,           'click',  QR.openFileInput
+    $.on nodes.filename.parentNode, 'click',  QR.openFileInput
+
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
     $.on nodes.addPost,    'click',  -> new QR.post true
     $.on nodes.form,       'submit', QR.submit
-    $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
+    $.on nodes.fileRM,     'click',  (e) -> 
+      e.stopPropagation()
+      QR.selected.rmFile()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.fileInput
 
@@ -813,6 +819,9 @@ QR =
     QR.status()
     QR.cooldown.init()
     QR.captcha.init()
+    
+    Rice.nodes dialog
+    
     $.add d.body, dialog
 
     # Create a custom event when the QR dialog is first initialized.
