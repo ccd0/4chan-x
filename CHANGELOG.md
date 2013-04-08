@@ -1,3 +1,5 @@
+- Fixed a bug where dead quotelinks would disappear.
+
 ### 3.0.1 - *2013-04-08*
 
 - Added the possibility to combine board-list toggle and custom text.
