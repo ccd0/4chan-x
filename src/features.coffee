@@ -81,7 +81,7 @@ Header =
       if /^toggle-all/.test t
         a = $.el 'a',
           className: 'show-board-list-button'
-          textContent: if m = t.match /-text:"(.+)"/ then m[1] else '+'
+          textContent: (t.match(/-text:"(.+)"/) || [null, '+'])[1]
           href: 'javascript:;'
         $.on a, 'click', Header.toggleBoardList
         return a
