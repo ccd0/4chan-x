@@ -21,6 +21,7 @@ Header =
     @menu = new UI.Menu 'header'
     $.on $('.menu-button', @bar), 'click', @menuToggle
     $.on @toggle, 'mousedown', @toggleBarVisibility
+    $.on window, 'hashchange', Header.hashScroll
 
     catalogToggler = $.el 'label',
       innerHTML: "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}> Use catalog board links"
@@ -131,6 +132,12 @@ Header =
   setBarVisibility: (hide) ->
     Header.headerToggler.firstElementChild.checked = hide
     (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
+  hashScroll: ->
+    return unless post = $.id @location.hash[1..]
+    postRect = post.getBoundingClientRect()
+    headRect = Header.toggle.getBoundingClientRect()
+    root = if $.engine is 'webkit' then d.body else doc
+    root.scrollTop += postRect.top - headRect.top - headRect.height
   toggleBarVisibility: (e) ->
     return if e.type is 'mousedown' and e.button isnt 0 # not LMB
     hide = if @nodeName is 'INPUT'
