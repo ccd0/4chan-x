@@ -1928,7 +1928,7 @@ Keybinds =
 
 Nav =
   init: ->
-    return if g.VIEW isnt 'index' or !Conf['Index Navigation']
+    return if g.VIEW is 'index' and !Conf['Index Navigation'] or g.VIEW is 'thread' and !Conf['Reply Navigation']
 
     span = $.el 'span',
       id: 'navlinks'
@@ -1946,10 +1946,16 @@ Nav =
     $.on d, '4chanXInitFinished', -> $.add d.body, span
 
   prev: ->
-    Nav.scroll -1
+    if g.VIEW is 'thread'
+      window.scrollTo 0, 0
+    else
+      Nav.scroll -1
 
   next: ->
-    Nav.scroll +1
+    if g.VIEW is 'thread'
+      window.scrollTo 0, d.body.scrollHeight
+    else
+      Nav.scroll +1
 
   getThread: (full) ->
     headRect  = Header.bar.getBoundingClientRect()
