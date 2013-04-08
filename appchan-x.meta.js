@@ -17,5 +17,5 @@
 // @run-at       document-start
 // @updateURL    http://zixaphir.github.com/appchan-x/builds/appchan-x.meta.js
 // @downloadURL  http://zixaphir.github.com/appchan-x/builds/appchan-x.user.js
-// @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
+// @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAElBMVEX///8EZgR8ulSk0oT///8EAgQ1A88mAAAAAXRSTlMAQObYZgAAAIpJREFUeF6t0sENwjAMhWF84N4H6gAYMUBkdQMYwfuvwmstEeD4kl892P0OaaWcpga2/K0SGII1HNBXARgu7veoY3ANd+esgMHZIz85u0EABrbms3pl/bkC1Tn5ihGOfQwqHeZ/FdYdirEMgCG2ZAQWDTL0m9FvjAhcvoGNAK2gZhGYYX9+ZgFm9gaiNmNkMENY4QAAAABJRU5ErkJggg==
 // ==/UserScript==

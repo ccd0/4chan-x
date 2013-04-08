@@ -3820,35 +3820,36 @@ Favicon =
       Favicon.switch()
 
   switch: ->
+    unreadDead  = Favicon.unreadDeadY = Favicon.unreadSFW   = Favicon.unreadSFWY  = Favicon.unreadNSFW  = Favicon.unreadNSFWY = 'data:image/png;base64,'
     switch Conf['favicon']
       when 'ferongr'
-        Favicon.unreadDead  = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/ferongr/unreadDead.gif", {encoding: "base64"}) %>'
-        Favicon.unreadDeadY = 'data:image/png;base64,<%= grunt.file.read("img/favicons/ferongr/unreadDeadY.png", {encoding: "base64"}) %>'
-        Favicon.unreadSFW   = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/ferongr/unreadSFW.gif", {encoding: "base64"}) %>'
-        Favicon.unreadSFWY  = 'data:image/png;base64,<%= grunt.file.read("img/favicons/ferongr/unreadSFWY.png", {encoding: "base64"}) %>'
-        Favicon.unreadNSFW  = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/ferongr/unreadNSFW.gif", {encoding: "base64"}) %>'
-        Favicon.unreadNSFWY = 'data:image/png;base64,<%= grunt.file.read("img/favicons/ferongr/unreadNSFWY.png", {encoding: "base64"}) %>'
+        Favicon.unreadDead  += '<%= grunt.file.read("img/favicons/ferongr/unreadDead.png", {encoding: "base64"}) %>'
+        Favicon.unreadDeadY += '<%= grunt.file.read("img/favicons/ferongr/unreadDeadY.png", {encoding: "base64"}) %>'
+        Favicon.unreadSFW   += '<%= grunt.file.read("img/favicons/ferongr/unreadSFW.png", {encoding: "base64"}) %>'
+        Favicon.unreadSFWY  += '<%= grunt.file.read("img/favicons/ferongr/unreadSFWY.png", {encoding: "base64"}) %>'
+        Favicon.unreadNSFW  += '<%= grunt.file.read("img/favicons/ferongr/unreadNSFW.png", {encoding: "base64"}) %>'
+        Favicon.unreadNSFWY += '<%= grunt.file.read("img/favicons/ferongr/unreadNSFWY.png", {encoding: "base64"}) %>'
       when 'xat-'
-        Favicon.unreadDead  = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadDead.png", {encoding: "base64"}) %>'
-        Favicon.unreadDeadY = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadDeadY.png", {encoding: "base64"}) %>'
-        Favicon.unreadSFW   = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadSFW.png", {encoding: "base64"}) %>'
-        Favicon.unreadSFWY  = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadSFWY.png", {encoding: "base64"}) %>'
-        Favicon.unreadNSFW  = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadNSFW.png", {encoding: "base64"}) %>'
-        Favicon.unreadNSFWY = 'data:image/png;base64,<%= grunt.file.read("img/favicons/xat-/unreadNSFWY.png", {encoding: "base64"}) %>'
+        Favicon.unreadDead  += '<%= grunt.file.read("img/favicons/xat-/unreadDead.png", {encoding: "base64"}) %>'
+        Favicon.unreadDeadY += '<%= grunt.file.read("img/favicons/xat-/unreadDeadY.png", {encoding: "base64"}) %>'
+        Favicon.unreadSFW   += '<%= grunt.file.read("img/favicons/xat-/unreadSFW.png", {encoding: "base64"}) %>'
+        Favicon.unreadSFWY  += '<%= grunt.file.read("img/favicons/xat-/unreadSFWY.png", {encoding: "base64"}) %>'
+        Favicon.unreadNSFW  += '<%= grunt.file.read("img/favicons/xat-/unreadNSFW.png", {encoding: "base64"}) %>'
+        Favicon.unreadNSFWY += '<%= grunt.file.read("img/favicons/xat-/unreadNSFWY.png", {encoding: "base64"}) %>'
       when 'Mayhem'
-        Favicon.unreadDead  = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadDead.png", {encoding: "base64"}) %>'
-        Favicon.unreadDeadY = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadDeadY.png", {encoding: "base64"}) %>'
-        Favicon.unreadSFW   = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadSFW.png", {encoding: "base64"}) %>'
-        Favicon.unreadSFWY  = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadSFWY.png", {encoding: "base64"}) %>'
-        Favicon.unreadNSFW  = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadNSFW.png", {encoding: "base64"}) %>'
-        Favicon.unreadNSFWY = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Mayhem/unreadNSFWY.png", {encoding: "base64"}) %>'
+        Favicon.unreadDead  += '<%= grunt.file.read("img/favicons/Mayhem/unreadDead.png", {encoding: "base64"}) %>'
+        Favicon.unreadDeadY += '<%= grunt.file.read("img/favicons/Mayhem/unreadDeadY.png", {encoding: "base64"}) %>'
+        Favicon.unreadSFW   += '<%= grunt.file.read("img/favicons/Mayhem/unreadSFW.png", {encoding: "base64"}) %>'
+        Favicon.unreadSFWY  += '<%= grunt.file.read("img/favicons/Mayhem/unreadSFWY.png", {encoding: "base64"}) %>'
+        Favicon.unreadNSFW  += '<%= grunt.file.read("img/favicons/Mayhem/unreadNSFW.png", {encoding: "base64"}) %>'
+        Favicon.unreadNSFWY += '<%= grunt.file.read("img/favicons/Mayhem/unreadNSFWY.png", {encoding: "base64"}) %>'
       when 'Original'
-        Favicon.unreadDead  = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/Original/unreadDead.gif", {encoding: "base64"}) %>'
-        Favicon.unreadDeadY = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Original/unreadDeadY.png", {encoding: "base64"}) %>'
-        Favicon.unreadSFW   = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/Original/unreadSFW.gif", {encoding: "base64"}) %>'
-        Favicon.unreadSFWY  = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Original/unreadSFWY.png", {encoding: "base64"}) %>'
-        Favicon.unreadNSFW  = 'data:image/gif;base64,<%= grunt.file.read("img/favicons/Original/unreadNSFW.gif", {encoding: "base64"}) %>'
-        Favicon.unreadNSFWY = 'data:image/png;base64,<%= grunt.file.read("img/favicons/Original/unreadNSFWY.png", {encoding: "base64"}) %>'
+        Favicon.unreadDead  += '<%= grunt.file.read("img/favicons/Original/unreadDead.png", {encoding: "base64"}) %>'
+        Favicon.unreadDeadY += '<%= grunt.file.read("img/favicons/Original/unreadDeadY.png", {encoding: "base64"}) %>'
+        Favicon.unreadSFW   += '<%= grunt.file.read("img/favicons/Original/unreadSFW.png", {encoding: "base64"}) %>'
+        Favicon.unreadSFWY  += '<%= grunt.file.read("img/favicons/Original/unreadSFWY.png", {encoding: "base64"}) %>'
+        Favicon.unreadNSFW  += '<%= grunt.file.read("img/favicons/Original/unreadNSFW.png", {encoding: "base64"}) %>'
+        Favicon.unreadNSFWY += '<%= grunt.file.read("img/favicons/Original/unreadNSFWY.png", {encoding: "base64"}) %>'
     if Favicon.SFW
       Favicon.unread  = Favicon.unreadSFW
       Favicon.unreadY = Favicon.unreadSFWY
@@ -3856,8 +3857,8 @@ Favicon =
       Favicon.unread  = Favicon.unreadNSFW
       Favicon.unreadY = Favicon.unreadNSFWY
 
-  empty: 'data:image/gif;base64,<%= grunt.file.read("img/favicons/empty.gif", {encoding: "base64"}) %>'
-  dead:  'data:image/gif;base64,<%= grunt.file.read("img/favicons/dead.gif",  {encoding: "base64"}) %>'
+  empty: 'data:image/png;base64,<%= grunt.file.read("img/favicons/empty.png", {encoding: "base64"}) %>'
+  dead:  'data:image/png;base64,<%= grunt.file.read("img/favicons/dead.png",  {encoding: "base64"}) %>'
 
 
 ThreadStats =
