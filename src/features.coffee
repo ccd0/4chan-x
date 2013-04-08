@@ -1240,7 +1240,7 @@ PostHiding =
         Recursive.apply PostHiding.hide, @, data.makeStub, true
         Recursive.add PostHiding.hide, @, data.makeStub, true
     return unless Conf['Reply Hiding']
-    $.add $('.postInfo', @nodes.post), ReplyHiding.makeButton @, 'hide'
+    $.add $('.postInfo', @nodes.post), PostHiding.makeButton @, 'hide'
 
   menu:
     init: ->

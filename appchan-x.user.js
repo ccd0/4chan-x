@@ -6259,7 +6259,7 @@
       if (!Conf['Reply Hiding']) {
         return;
       }
-      return $.add($('.postInfo', this.nodes.post), ReplyHiding.makeButton(this, 'hide'));
+      return $.add($('.postInfo', this.nodes.post), PostHiding.makeButton(this, 'hide'));
     },
     menu: {
       init: function() {
