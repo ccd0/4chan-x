@@ -16,7 +16,7 @@ class Thread
     @fullID = "#{@board}.#{@ID}"
     @posts  = {}
 
-    g.threads["#{board}.#{@}"] = board.threads[@] = @
+    g.threads[@fullID] = board.threads[@] = @
 
   kill: ->
     @isDead = true
@@ -66,7 +66,11 @@ class Post
       @nodes.date     = date
       @info.date      = new Date date.dataset.utc * 1000
     if Conf['Quick Reply']
-      @info.yours     = !!QR.yourPosts.threads[@thread.ID]?.contains(@ID)
+      @info.yours     = QR.db.get
+        boardID:  @board
+        threadID: @thread
+        postID:   @ID
+
 
     @parseComment()
     @parseQuotes()
@@ -109,7 +113,7 @@ class Post
       @thread.isClosed = !!$ '.closedIcon', @nodes.info
 
     @clones = []
-    g.posts["#{board}.#{@}"] = thread.posts[@] = board.posts[@] = @
+    g.posts[@fullID] = thread.posts[@] = board.posts[@] = @
     @kill() if that.isArchived
 
   parseComment: ->
@@ -160,10 +164,12 @@ class Post
   kill: (file, now) ->
     now or= new Date()
     if file
+      return if @file.isDead
       @file.isDead = true
       @file.timeOfDeath = now
       $.addClass @nodes.root, 'deleted-file'
     else
+      return if @isDead
       @isDead = true
       @timeOfDeath = now
       $.addClass @nodes.root, 'deleted-post'
@@ -283,7 +289,7 @@ class Clone extends Post
 
 
 Main =
-  init: ->
+  init: (items) ->
     # flatten Config into Conf
     # and get saved or default values
     flatten = (parent, obj) ->
@@ -296,8 +302,14 @@ Main =
         Conf[parent] = obj
       return
     flatten null, Config
-    for key, val of Conf
-      Conf[key] = $.get key, val
+    for db in DataBoards
+      Conf[db] = boards: {}
+    $.get Conf, Main.initFeatures
+
+    $.on d, '4chanMainInit', Main.initStyle
+
+  initFeatures: (items) ->
+    Conf = items
 
     pathname = location.pathname.split '/'
     g.BOARD  = new Board pathname[1]
@@ -310,7 +322,7 @@ Main =
         else
           'index'
     if g.VIEW is 'thread'
-      g.THREAD = +pathname[3]
+      g.THREADID = +pathname[3]
 
     # Check if the current board we're on is SFW or not, so we can handle options that need to know that.
     if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains g.BOARD
@@ -351,6 +363,7 @@ Main =
       return
 
     # c.time 'All initializations'
+
     initFeatures
       'Polyfill':                 Polyfill
       'Emoji':                    Emoji
@@ -367,14 +380,14 @@ Main =
       'Resurrect Quotes':         Quotify
       'Filter':                   Filter
       'Thread Hiding':            ThreadHiding
-      'Reply Hiding':             ReplyHiding
+      'Reply Hiding':             PostHiding
       'Recursive':                Recursive
       'Strike-through Quotes':    QuoteStrikeThrough
       'Quick Reply':              QR
       'Menu':                     Menu
       'Report Link':              ReportLink
       'Thread Hiding (Menu)':     ThreadHiding.menu
-      'Reply Hiding (Menu)':      ReplyHiding.menu
+      'Reply Hiding (Menu)':      PostHiding.menu
       'Delete Link':              DeleteLink
       'Filter (Menu)':            Filter.menu
       'Download Link':            DownloadLink
@@ -391,6 +404,7 @@ Main =
       'File Info Formatting':     FileInfo
       'Sauce':                    Sauce
       'Image Expansion':          ImageExpand
+      'Image Expansion (Menu)':   ImageExpand.menu
       'Reveal Spoilers':          RevealSpoilers
       'Image Replace':            ImageReplace
       'Image Hover':              ImageHover
@@ -404,6 +418,7 @@ Main =
       'Thread Watcher':           ThreadWatcher
       'Index Navigation':         Nav
       'Keybinds':                 Keybinds
+
     # c.timeEnd 'All initializations'
 
     $.on d, 'AddCallback',   Main.addCallback
@@ -413,9 +428,9 @@ Main =
     if d.title is '4chan - 404 Not Found'
       if Conf['404 Redirect'] and g.VIEW is 'thread'
         href = Redirect.to
-          board: g.BOARD
-          threadID: g.THREAD
-          postID: location.hash
+          boardID:  g.BOARD.ID
+          threadID: g.THREADID
+          postID:   +location.hash.match /\d+/ # post number or 0
         location.href = href or "/#{g.BOARD}/"
       return
 
@@ -479,30 +494,34 @@ Main =
     Klass::callbacks.push obj.callback
 
   checkUpdate: ->
-    return unless Main.isThisPageLegit()
+    return unless Conf['Check for Updates'] and Main.isThisPageLegit()
     # Check for updates after:
     #  - 6 hours since the last update on Opera because it lacks auto-updating.
     #  - 7 days since the last update on Chrome/Firefox.
     # After that, check for updates every day if we still haven't updated.
     now  = Date.now()
     freq = <% if (type === 'userjs') { %>6 * $.HOUR<% } else { %>7 * $.DAY<% } %>
-    if $.get('lastupdate', 0) > now - freq or $.get('lastchecked', 0) > now - $.DAY
-      return
-    $.ajax '<%= meta.page %><%= meta.buildsPath %>version', onload: ->
-      return unless @status is 200
-      version = @response
-      return unless /^\d\.\d+\.\d+$/.test version
-      if g.VERSION is version
-        # Don't check for updates too frequently if there wasn't one in a 'long' time.
-        $.set 'lastupdate', now
+    items =
+      lastupdate:  0
+      lastchecked: 0
+    $.get items, (items) ->
+      if items.lastupdate > now - freq or items.lastchecked > now - $.DAY
         return
-      $.set 'lastchecked', now
-      el = $.el 'span',
-        innerHTML: "Update: <%= meta.name %> v#{version} is out, get it <a href=<%= meta.page %> target=_blank>here</a>."
-      new Notification 'info', el, 2 * $.MINUTE
+      $.ajax '<%= meta.page %><%= meta.buildsPath %>version', onload: ->
+        return unless @status is 200
+        version = @response
+        return unless /^\d\.\d+\.\d+$/.test version
+        if g.VERSION is version
+          # Don't check for updates too frequently if there wasn't one in a 'long' time.
+          $.set 'lastupdate', now
+          return
+        $.set 'lastchecked', now
+        el = $.el 'span',
+          innerHTML: "Update: <%= meta.name %> v#{version} is out, get it <a href=<%= meta.page %> target=_blank>here</a>."
+        new Notification 'info', el, 120
 
   handleErrors: (errors) ->
-    unless 'length' of errors
+    unless errors instanceof Array
       error = errors
     else if errors.length is 1
       error = errors[0]
@@ -513,12 +532,10 @@ Main =
     div = $.el 'div',
       innerHTML: "#{errors.length} errors occurred. [<a href=javascript:;>show</a>]"
     $.on div.lastElementChild, 'click', ->
-      if @textContent is 'show'
-        @textContent = 'hide'
-        logs.hidden  = false
+      [@textContent, logs.hidden] = if @textContent is 'show'
+        ['hide', false]
       else
-        @textContent = 'show'
-        logs.hidden  = true
+        ['show', true]
 
     logs = $.el 'div',
       hidden: true
@@ -528,14 +545,30 @@ Main =
     new Notification 'error', [div, logs], 30
 
   parseError: (data) ->
-    {message, error} = data
-    c.log message, error
-    c.log message, error.stack
+    Main.logError data
     message = $.el 'div',
-      textContent: message
+      textContent: data.message
     error = $.el 'div',
-      textContent: error
+      textContent: data.error
     [message, error]
+
+  errors: []
+  logError: (data) ->
+    unless Main.errors.length
+      $.on window, 'unload', Main.postErrors
+    c.error data.message, data.error.stack
+    Main.errors.push data
+
+  postErrors: ->
+    errors = Main.errors.map (d) -> d.message + ' ' + d.error.stack
+    $.ajax '<%= meta.page %>errors', {},
+      sync: true
+      form: $.formData
+        n: "<%= meta.name %> v#{g.VERSION}"
+        t: '<%= type %>'
+        ua:  window.navigator.userAgent
+        url: window.location.href
+        e: errors.join '\n'
 
   isThisPageLegit: ->
     # 404 error page or similar.

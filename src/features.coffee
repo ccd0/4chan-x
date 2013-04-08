@@ -44,10 +44,10 @@ Header =
     nodes = text.match(/[\w@]+(-(all|title|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
-      if t is 'toggle-all'
+      if /^toggle-all/.test t
         a = $.el 'a',
           className: 'show-board-list-button'
-          textContent: '+'
+          textContent: (t.match(/-text:"(.+)"/) || [null, '+'])[1]
           href: 'javascript:;'
         $.on a, 'click', Header.toggleBoardList
         return a
@@ -191,10 +191,34 @@ Settings =
       $.asap (-> $.id 'boardNavMobile'), ->
         $.prepend $.id('navtopright'), [$.tn(' ['), link, $.tn('] ')]
 
-    if (prevVersion = $.get 'previousversion', null) isnt g.VERSION
-      $.set 'lastupdate', Date.now()
-      $.set 'previousversion', g.VERSION
-      $.on d, '4chanXInitFinished', Settings.open unless prevVersion
+    $.get 'previousversion', null, (item) ->
+      <% if (type === 'userscript') { %>
+      el = $.el 'span'
+      el.style.flex = 'test'
+      if el.style.flex is 'test'
+        el.innerHTML = """
+        Firefox is not correctly set up and some <%= meta.name %> features will be displayed incorrectly.<br>
+        Follow the instructions of the <a href='<%= meta.page %>' target=_blank>install guide</a> to fix it.
+        """
+        new Notification 'warning', el, 30
+      <% } %>
+      if previous = item['previousversion']
+        return if previous is g.VERSION
+        # Avoid conflicts between sync'd newer versions
+        # and out of date extension on this device.
+        prev = previous.match(/\d+/g).map Number
+        curr = g.VERSION.match(/\d+/g).map Number
+        return unless prev[0] <= curr[0] and prev[1] <= curr[1] and prev[2] <= curr[2]
+
+        changelog = '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
+        el = $.el 'span',
+          innerHTML: "<%= meta.name %> has been updated to <a href='#{changelog}' target=_blank>version #{g.VERSION}</a>."
+        new Notification 'info', el, 30
+      else
+        $.on d, '4chanXInitFinished', Settings.open
+      $.set
+        lastupdate: Date.now()
+        previousversion: g.VERSION
 
     Settings.addSection 'Main',     Settings.main
     Settings.addSection 'Filter',   Settings.filter
@@ -220,7 +244,7 @@ Settings =
           <div class=sections-list></div>
           <div class=credits>
             <a href='<%= meta.page %>' target=_blank><%= meta.name %></a> |
-            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md##{g.VERSION.replace(/\./g, '')}' target=_blank>#{g.VERSION}</a> |
+            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md' target=_blank>#{g.VERSION}</a> |
             <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |
             <a href=javascript:; class=close title=Close>×</a>
           </div>
@@ -290,37 +314,63 @@ Settings =
     $.on $('.import', section), 'click',  Settings.import
     $.on $('input',   section), 'change', Settings.onImport
 
+    items  = {}
+    inputs = {}
     for key, obj of Config.main
       fs = $.el 'fieldset',
         innerHTML: "<legend>#{key}</legend>"
       for key, arr of obj
-        checked = if $.get(key, Conf[key]) then 'checked' else ''
         description = arr[1]
         div = $.el 'div',
-          innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}>#{key}</label><span class=description>: #{description}</span>"
-        $.on $('input', div), 'change', $.cb.checked
+          innerHTML: "<label><input type=checkbox name=\"#{key}\">#{key}</label><span class=description>: #{description}</span>"
+        input = $ 'input', div
+        $.on input, 'change', $.cb.checked
+        items[key]  = Conf[key]
+        inputs[key] = input
         $.add fs, div
       $.add section, fs
 
-    hiddenNum = 0
-    for ID, thread of ThreadHiding.getHiddenThreads().threads
-      hiddenNum++
-    for ID, thread of ReplyHiding.getHiddenPosts().threads
-      for ID, post of thread
-        hiddenNum++
+    $.get items, (items) ->
+      for key, val of items
+        inputs[key].checked = val
+      return
+
     div = $.el 'div',
-      innerHTML: "<button>Hidden: #{hiddenNum}</button><span class=description>: Clear manually hidden threads and posts on /#{g.BOARD}/."
-    $.on $('button', div), 'click', ->
+      innerHTML: "<button></button><span class=description>: Clear manually-hidden threads and posts on all boards. Refresh the page to apply."
+    button = $ 'button', div
+    hiddenNum = 0
+    $.get 'hiddenThreads', boards: {}, (item) ->
+      for ID, board of item.hiddenThreads.boards
+        for ID, thread of board
+          hiddenNum++
+      button.textContent = "Hidden: #{hiddenNum}"
+    $.get 'hiddenPosts', boards: {}, (item) ->
+      for ID, board of item.hiddenPosts.boards
+        for ID, thread of board
+          for ID, post of thread
+            hiddenNum++
+      button.textContent = "Hidden: #{hiddenNum}"
+    $.on button, 'click', ->
       @textContent = 'Hidden: 0'
-      $.delete ["hiddenThreads.#{g.BOARD}", "hiddenPosts.#{g.BOARD}"]
+      $.get 'hiddenThreads', boards: {}, (item) ->
+        for boardID of item.hiddenThreads.boards
+          localStorage.removeItem "4chan-hide-t-#{boardID}"
+        $.delete ['hiddenThreads', 'hiddenPosts']
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
-  export: ->
-    now  = Date.now()
-    data =
-      version: g.VERSION
-      date: now
-      Conf: Conf
-      WatchedThreads: $.get('WatchedThreads', {})
+  export: (now, data) ->
+    unless typeof now is 'number'
+      now  = Date.now()
+      data =
+        version: g.VERSION
+        date: now
+      Conf['WatchedThreads'] = {}
+      for db in DataBoards
+        Conf[db] = boards: {}
+      # Make sure to export the most recent data.
+      $.get Conf, (Conf) ->
+        data.Conf = Conf
+        Settings.export now, data
+      return
     a = $.el 'a',
       className: 'warning'
       textContent: 'Save me!'
@@ -331,9 +381,9 @@ Settings =
       a.click()
       return
     # XXX Firefox won't let us download automatically.
-    output = @parentNode.nextElementSibling
-    output.innerHTML = null
-    $.add output, a
+    p = $ '.imp-exp-result', Settings.dialog
+    p.innerHTML = null
+    $.add p, a
   import: ->
     @nextElementSibling.click()
   onImport: ->
@@ -345,13 +395,13 @@ Settings =
     reader = new FileReader()
     reader.onload = (e) ->
       try
-        data = JSON.parse decodeURIComponent escape e.target.result
+        data = JSON.parse e.target.result
         Settings.loadSettings data
         if confirm 'Import successful. Refresh now?'
           window.location.reload()
       catch err
         output.textContent = 'Import failed due to an error.'
-        c.log err.stack
+        c.error err.stack
     reader.readAsText file
   loadSettings: (data) ->
     version = data.version.split '.'
@@ -421,9 +471,8 @@ Settings =
         continue unless key of data.Conf
         data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, (s) -> "#{s[0].toUpperCase()}#{s[1..]}").replace /(^|.+\+)[A-Z]$/g, (s) ->
           "Shift+#{s[0...-1]}#{s[-1..].toLowerCase()}"
-    for key, val of data.Conf
-      $.set key, val
-    $.set 'WatchedThreads', data.WatchedThreads
+      data.Conf.WatchedThreads = data.WatchedThreads
+    $.set data.Conf
   convertSettings: (data, map) ->
     for prevKey, newKey of map
       data.Conf[newKey] = data.Conf[prevKey] if newKey
@@ -459,8 +508,9 @@ Settings =
       ta = $.el 'textarea',
         name: name
         className: 'field'
-        value: $.get name, Conf[name]
         spellcheck: false
+      $.get name, Conf[name], (item) ->
+        ta.value = item[name]
       $.on ta, 'change', $.cb.value
       $.add div, ta
       return
@@ -510,7 +560,8 @@ Settings =
       <textarea name=sauces class=field spellcheck=false></textarea>
     """
     sauce = $ 'textarea', section
-    sauce.value = $.get 'sauces', Conf['sauces']
+    $.get 'sauces', Conf['sauces'], (item) ->
+      sauce.value = item['sauces']
     $.on sauce, 'change', $.cb.value
 
   rice: (section) ->
@@ -573,17 +624,25 @@ Settings =
         <textarea name=usercss class=field spellcheck=false #{if Conf['Custom CSS'] then '' else 'disabled'}></textarea>
       </fieldset>
     """
+    items = {}
+    inputs = {}
     for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
       input = $ "[name=#{name}]", section
-      input.value = $.get name, Conf[name]
+      items[name]  = Conf[name]
+      inputs[name] = input
       event = if ['favicon', 'usercss'].contains name
         'change'
       else
         'input'
       $.on input, event, $.cb.value
-      unless 'usercss' is name
-        $.on input, event, Settings[name]
-        Settings[name].call input
+    $.get items, (items) ->
+      for key, val of items
+        input = inputs[key]
+        input.value = val
+        unless 'usercss' is name
+          $.on input, event, Settings[key]
+          Settings[key].call input
+      return
     $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
     $.on $.id('apply-css'), 'click', Settings.usercss
   boardnav: ->
@@ -633,17 +692,23 @@ Settings =
         <tr><th>Actions</th><th>Keybinds</th></tr>
       </tbody></table>
     """
-    tbody = $ 'tbody', section
+    tbody  = $ 'tbody', section
+    items  = {}
+    inputs = {}
     for key, arr of Config.hotkeys
       tr = $.el 'tr',
         innerHTML: "<td>#{arr[1]}</td><td><input class=field></td>"
       input = $ 'input', tr
-      input.name  = key
-      input.value = $.get key, Conf[key]
+      input.name = key
       input.spellcheck = false
+      items[key]  = Conf[key]
+      inputs[key] = input
       $.on input, 'keydown', Settings.keybind
       $.add tbody, tr
-    return
+    $.get items, (items) ->
+      for key, val of items
+        inputs[key].value = val
+      return
   keybind: (e) ->
     return if e.keyCode is 9 # tab
     e.preventDefault()
@@ -818,7 +883,7 @@ Filter =
         # Hide
         if result.hide
           if @isReply
-            ReplyHiding.hide @, result.stub
+            PostHiding.hide @, result.stub
           else if g.VIEW is 'index'
             ThreadHiding.hide @thread, result.stub
           else
@@ -971,13 +1036,14 @@ Filter =
         re += ';op:yes'
 
       # Add a new line before the regexp unless the text is empty.
-      save = $.get type, ''
-      save =
-        if save
-          "#{save}\n#{re}"
-        else
-          re
-      $.set type, save
+      $.get type, '', (item) ->
+        save = item[type]
+        save =
+          if save
+            "#{save}\n#{re}"
+          else
+            re
+        $.set type, save
 
       # Open the settings and display & focus the relevant filter textarea.
       Settings.open 'Filter'
@@ -994,41 +1060,63 @@ ThreadHiding =
   init: ->
     return if g.VIEW isnt 'index' or !Conf['Thread Hiding'] and !Conf['Thread Hiding Link']
 
-    Misc.clearThreads "hiddenThreads.#{g.BOARD}"
-    @getHiddenThreads()
-    @syncFromCatalog()
+    @db = new DataBoard 'hiddenThreads'
+    @syncCatalog()
     Thread::callbacks.push
       name: 'Thread Hiding'
       cb:   @node
 
   node: ->
-    if data = ThreadHiding.hiddenThreads.threads[@]
+    if data = ThreadHiding.db.get {boardID: @board.ID, threadID: @ID}
       ThreadHiding.hide @, data.makeStub
     return unless Conf['Thread Hiding']
     $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
 
-  getHiddenThreads: ->
-    ThreadHiding.hiddenThreads = $.get "hiddenThreads.#{g.BOARD}", threads: {}
-
-  syncFromCatalog: ->
+  syncCatalog: ->
     # Sync hidden threads from the catalog into the index.
-    hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
-    {threads} = ThreadHiding.hiddenThreads
+    hiddenThreads = ThreadHiding.db.get
+      boardID: g.BOARD.ID
+      defaultValue: {}
+    # XXX tmp fix
+    try
+      hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
+    catch e
+      localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify {}
+      return ThreadHiding.syncCatalog()
 
     # Add threads that were hidden in the catalog.
     for threadID of hiddenThreadsOnCatalog
-      continue if threadID of threads
-      threads[threadID] = {}
+      unless threadID of hiddenThreads
+        hiddenThreads[threadID] = {}
 
     # Remove threads that were un-hidden in the catalog.
-    for threadID of threads
-      continue if threadID of threads
-      delete threads[threadID]
+    for threadID of hiddenThreads
+      unless threadID of hiddenThreadsOnCatalog
+        delete hiddenThreads[threadID]
 
-    if Object.keys(threads).length
-      $.set "hiddenThreads.#{g.BOARD}", ThreadHiding.hiddenThreads
-    else
-      $.delete "hiddenThreads.#{g.BOARD}"
+    if (ThreadHiding.db.data.lastChecked or 0) > Date.now() - $.MINUTE
+      # Was cleaned just now.
+      ThreadHiding.cleanCatalog hiddenThreadsOnCatalog
+
+    ThreadHiding.db.set
+      boardID: g.BOARD.ID
+      val: hiddenThreads
+
+  cleanCatalog: (hiddenThreadsOnCatalog) ->
+    # We need to clean hidden threads on the catalog ourselves,
+    # otherwise if we don't visit the catalog regularly
+    # it will pollute the localStorage and our data.
+    $.cache "//api.4chan.org/#{g.BOARD}/threads.json", ->
+      return unless @status is 200
+      threads = {}
+      for page in JSON.parse @response
+        for thread in page.threads
+          if thread.no of hiddenThreadsOnCatalog
+            threads[thread.no] = hiddenThreadsOnCatalog[thread.no]
+      if Object.keys(threads).length
+        localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify threads
+      else
+        localStorage.removeItem "4chan-hide-t-#{g.BOARD}"
 
   menu:
     init: ->
@@ -1073,17 +1161,19 @@ ThreadHiding =
     a
 
   saveHiddenState: (thread, makeStub) ->
-    # Get fresh hidden threads.
-    hiddenThreads        = ThreadHiding.getHiddenThreads()
-    hiddenThreadsCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
+    hiddenThreadsOnCatalog = JSON.parse(localStorage.getItem "4chan-hide-t-#{g.BOARD}") or {}
     if thread.isHidden
-      hiddenThreads.threads[thread] = {makeStub}
-      hiddenThreadsCatalog[thread]  = true
+      ThreadHiding.db.set
+        boardID:  thread.board.ID
+        threadID: thread.ID
+        val: {makeStub}
+      hiddenThreadsOnCatalog[thread] = true
     else
-      delete hiddenThreads.threads[thread]
-      delete hiddenThreadsCatalog[thread]
-    $.set "hiddenThreads.#{g.BOARD}", hiddenThreads
-    localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify hiddenThreadsCatalog
+      ThreadHiding.db.delete
+        boardID:  thread.board.ID
+        threadID: thread.ID
+      delete hiddenThreadsOnCatalog[thread]
+    localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify hiddenThreadsOnCatalog
 
   toggle: (thread) ->
     unless thread instanceof Thread
@@ -1132,30 +1222,25 @@ ThreadHiding =
     threadRoot.nextElementSibling.hidden =
       threadRoot.hidden = thread.isHidden = false
 
-ReplyHiding =
+PostHiding =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Reply Hiding'] and !Conf['Reply Hiding Link']
 
-    Misc.clearThreads "hiddenPosts.#{g.BOARD}"
-    @getHiddenPosts()
+    @db = new DataBoard 'hiddenPosts'
     Post::callbacks.push
       name: 'Reply Hiding'
       cb:   @node
 
   node: ->
     return if !@isReply or @isClone
-    if thread = ReplyHiding.hiddenPosts.threads[@thread]
-      if data = thread[@]
-        if data.thisPost
-          ReplyHiding.hide @, data.makeStub, data.hideRecursively
-        else
-          Recursive.apply ReplyHiding.hide, @, data.makeStub, true
-          Recursive.add ReplyHiding.hide, @, data.makeStub, true
+    if data = PostHiding.db.get {boardID: @board.ID, threadID: @thread.ID, postID: @ID}
+      if data.thisPost
+        PostHiding.hide @, data.makeStub, data.hideRecursively
+      else
+        Recursive.apply PostHiding.hide, @, data.makeStub, true
+        Recursive.add PostHiding.hide, @, data.makeStub, true
     return unless Conf['Reply Hiding']
     $.add $('.postInfo', @nodes.post), ReplyHiding.makeButton @, 'hide'
-
-  getHiddenPosts: ->
-    ReplyHiding.hiddenPosts = $.get "hiddenPosts.#{g.BOARD}", threads: {}
 
   menu:
     init: ->
@@ -1169,7 +1254,7 @@ ReplyHiding =
       apply = $.el 'a',
         textContent: 'Apply'
         href: 'javascript:;'
-      $.on apply, 'click', ReplyHiding.menu.hide
+      $.on apply, 'click', PostHiding.menu.hide
 
       thisPost = $.el 'label',
         innerHTML: '<input type=checkbox name=thisPost checked> This post'
@@ -1185,7 +1270,7 @@ ReplyHiding =
         open: (post) ->
           if !post.isReply or post.isClone or post.isHidden
             return false
-          ReplyHiding.menu.post = post
+          PostHiding.menu.post = post
           true
         subEntries: [{el: apply}, {el: thisPost}, {el: replies}, {el: makeStub}]
 
@@ -1197,7 +1282,7 @@ ReplyHiding =
       apply = $.el 'a',
         textContent: 'Apply'
         href: 'javascript:;'
-      $.on apply, 'click', ReplyHiding.menu.show
+      $.on apply, 'click', PostHiding.menu.show
 
       thisPost = $.el 'label',
         innerHTML: '<input type=checkbox name=thisPost> This post'
@@ -1209,47 +1294,45 @@ ReplyHiding =
         el: div
         order: 20
         open: (post) ->
-          if !post.isReply or post.isClone
+          if !post.isReply or post.isClone or !post.isHidden
             return false
-          thread = ReplyHiding.getHiddenPosts().threads[post.thread]
-          unless post.isHidden or data = thread?[post]
+          unless data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
             return false
-          ReplyHiding.menu.post = post
+          PostHiding.menu.post = post
           thisPost.firstChild.checked = post.isHidden
           replies.firstChild.checked  = if data?.hideRecursively? then data.hideRecursively else Conf['Recursive Hiding']
           true
         subEntries: [{el: apply}, {el: thisPost}, {el: replies}]
+
     hide: ->
       parent   = @parentNode
       thisPost = $('input[name=thisPost]', parent).checked
       replies  = $('input[name=replies]',  parent).checked
       makeStub = $('input[name=makeStub]', parent).checked
-      {post}   = ReplyHiding.menu
+      {post}   = PostHiding.menu
       if thisPost
-        ReplyHiding.hide post, makeStub, replies
+        PostHiding.hide post, makeStub, replies
       else if replies
-        Recursive.apply ReplyHiding.hide, post, makeStub, true
-        Recursive.add ReplyHiding.hide, post, makeStub, true
+        Recursive.apply PostHiding.hide, post, makeStub, true
+        Recursive.add PostHiding.hide, post, makeStub, true
       else
         return
-      ReplyHiding.saveHiddenState post, true, thisPost, makeStub, replies
+      PostHiding.saveHiddenState post, true, thisPost, makeStub, replies
       $.event 'CloseMenu'
     show: ->
       parent   = @parentNode
       thisPost = $('input[name=thisPost]', parent).checked
       replies  = $('input[name=replies]',  parent).checked
-      {post}   = ReplyHiding.menu
-      thread   = ReplyHiding.getHiddenPosts().threads[post.thread]
-      data     = thread?[post]
+      {post}   = PostHiding.menu
       if thisPost
-        ReplyHiding.show post, replies
+        PostHiding.show post, replies
       else if replies
-        Recursive.apply ReplyHiding.show, post, true
-        Recursive.rm ReplyHiding.hide, post, true
+        Recursive.apply PostHiding.show, post, true
+        Recursive.rm PostHiding.hide, post, true
       else
         return
-      if data
-        ReplyHiding.saveHiddenState post, !(thisPost and replies), !thisPost, data.makeStub, !replies
+      if data = PostHiding.db.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
+        PostHiding.saveHiddenState post, !(thisPost and replies), !thisPost, data.makeStub, !replies
       $.event 'CloseMenu'
 
   makeButton: (post, type) ->
@@ -1257,41 +1340,38 @@ ReplyHiding =
       className: "#{type}-reply-button"
       innerHTML: "<span>[&nbsp;#{if type is 'hide' then '-' else '+'}&nbsp;]</span>"
       href:      'javascript:;'
-    $.on a, 'click', ReplyHiding.toggle
+    $.on a, 'click', PostHiding.toggle
     a
 
   saveHiddenState: (post, isHiding, thisPost, makeStub, hideRecursively) ->
-    # Get fresh hidden posts.
-    hiddenPosts = ReplyHiding.getHiddenPosts()
+    data =
+      boardID:  post.board.ID
+      threadID: post.thread.ID
+      postID:   post.ID
     if isHiding
-      unless thread = hiddenPosts.threads[post.thread]
-        thread = hiddenPosts.threads[post.thread] = {}
-      thread[post] =
+      data.val =
         thisPost: thisPost isnt false # undefined -> true
         makeStub: makeStub
         hideRecursively: hideRecursively
+      PostHiding.db.set data
     else
-      thread = hiddenPosts.threads[post.thread]
-      delete thread[post]
-      unless Object.keys(thread).length
-        delete hiddenPosts.threads[post.thread]
-    $.set "hiddenPosts.#{g.BOARD}", hiddenPosts
+      PostHiding.db.delete data
 
   toggle: ->
     post = Get.postFromNode @
     if post.isHidden
-      ReplyHiding.show post
+      PostHiding.show post
     else
-      ReplyHiding.hide post
-    ReplyHiding.saveHiddenState post, post.isHidden
+      PostHiding.hide post
+    PostHiding.saveHiddenState post, post.isHidden
 
   hide: (post, makeStub=Conf['Stubs'], hideRecursively=Conf['Recursive Hiding']) ->
     return if post.isHidden
     post.isHidden = true
 
     if hideRecursively
-      Recursive.apply ReplyHiding.hide, post, makeStub, true
-      Recursive.add ReplyHiding.hide, post, makeStub, true
+      Recursive.apply PostHiding.hide, post, makeStub, true
+      Recursive.add PostHiding.hide, post, makeStub, true
 
     for quotelink in Get.allQuotelinksLinkingTo post
       $.addClass quotelink, 'filtered'
@@ -1300,7 +1380,7 @@ ReplyHiding =
       post.nodes.root.hidden = true
       return
 
-    a = ReplyHiding.makeButton post, 'show'
+    a = PostHiding.makeButton post, 'show'
     postInfo =
       if Conf['Anonymize']
         'Anonymous'
@@ -1322,8 +1402,8 @@ ReplyHiding =
       post.nodes.root.hidden = false
     post.isHidden = false
     if showRecursively
-      Recursive.apply ReplyHiding.show, post, true
-      Recursive.rm ReplyHiding.hide, post
+      Recursive.apply PostHiding.show, post, true
+      Recursive.rm PostHiding.hide, post
     for quotelink in Get.allQuotelinksLinkingTo post
       $.rmClass quotelink, 'filtered'
     return
@@ -1378,8 +1458,8 @@ QuoteStrikeThrough =
   node: ->
     return if @isClone
     for quotelink in @nodes.quotelinks
-      {board, postID} = Get.postDataFromLink quotelink
-      if g.posts["#{board}.#{postID}"]?.isHidden
+      {boardID, postID} = Get.postDataFromLink quotelink
+      if g.posts["#{boardID}.#{postID}"]?.isHidden
         $.addClass quotelink, 'filtered'
     return
 
@@ -1476,22 +1556,17 @@ DeleteLink =
       el: div
       order: 40
       open: (post) ->
-        return false if post.isDead or !((thread = QR.yourPosts.threads[post.thread]) and thread.contains post.ID)
+        return false if post.isDead
         DeleteLink.post = post
-        DeleteLink.cooldown.start post
         node = div.firstChild
-        if seconds = DeleteLink.cooldown[post.fullID]
-          node.textContent = "Delete (#{seconds})"
-          DeleteLink.cooldown.el = node
-        else
-          node.textContent = 'Delete'
-          delete DeleteLink.cooldown.el
+        node.textContent = 'Delete'
+        DeleteLink.cooldown.start post, node
         true
       subEntries: [postEntry, fileEntry]
 
   delete: ->
     {post} = DeleteLink
-    return if DeleteLink.cooldown[post.fullID]
+    return if DeleteLink.cooldown.counting is post
 
     $.off @, 'click', DeleteLink.delete
     @textContent = "Deleting #{@textContent}..."
@@ -1509,13 +1584,13 @@ DeleteLink =
     form[post.ID] = 'delete'
 
     link = @
-    $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{post.board}/"), {
-        onload:  -> DeleteLink.load  link, @response
-        onerror: -> DeleteLink.error link
-      }, {
-        form: $.formData form
-      }
-  load: (link, html) ->
+    $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{post.board}/"),
+      onload:  -> DeleteLink.load  link, post, @response
+      onerror: -> DeleteLink.error link
+    ,
+      cred: true
+      form: $.formData form
+  load: (link, post, html) ->
     tmpDoc = d.implementation.createHTMLDocument ''
     tmpDoc.documentElement.innerHTML = html
     if tmpDoc.title is '4chan - Banned' # Ban/warn check
@@ -1524,6 +1599,9 @@ DeleteLink =
       s = msg.textContent
       $.on link, 'click', DeleteLink.delete
     else
+      if tmpDoc.title is 'Updating index...'
+        # We're 100% sure.
+        (post.origin or post).kill()
       s = 'Deleted'
     link.textContent = s
   error: (link) ->
@@ -1531,25 +1609,29 @@ DeleteLink =
     $.on link, 'click', DeleteLink.delete
 
   cooldown:
-    start: (post) ->
-      return if post.fullID of DeleteLink.cooldown
+    start: (post, node) ->
+      unless QR.db?.get {boardID: post.board.ID, threadID: post.thread.ID, postID: post.ID}
+        # Only start counting on our posts.
+        delete DeleteLink.cooldown.counting
+        return
+      DeleteLink.cooldown.counting = post
       length = if post.board.ID is 'q'
         600
       else
         30
       seconds = Math.ceil (length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND
-      DeleteLink.cooldown.count post.fullID, seconds, length
-    count: (fullID, seconds, length) ->
-      return unless 0 <= seconds <= length
-      setTimeout DeleteLink.cooldown.count, 1000, fullID, seconds-1, length
-      {el} = DeleteLink.cooldown
-      if seconds is 0
-        el?.textContent = 'Delete'
-        delete DeleteLink.cooldown[fullID]
-        delete DeleteLink.cooldown.el
+      DeleteLink.cooldown.count post, seconds, length, node
+    count: (post, seconds, length, node) ->
+      return if DeleteLink.cooldown.counting isnt post
+      unless 0 <= seconds <= length
+        if DeleteLink.cooldown.counting is post
+          delete DeleteLink.cooldown.counting
         return
-      el?.textContent = "Delete (#{seconds})"
-      DeleteLink.cooldown[fullID] = seconds
+      setTimeout DeleteLink.cooldown.count, 1000, post, seconds - 1, length, node
+      if seconds is 0
+        node.textContent = 'Delete'
+        return
+      node.textContent = "Delete (#{seconds})"
 
 DownloadLink =
   init: ->
@@ -1582,8 +1664,8 @@ ArchiveLink =
       type: 'post'
       el: div
       order: 90
-      open: ({ID: postID, thread: threadID, board}) ->
-        redirect = Redirect.to {postID, threadID, board}
+      open: ({ID, thread, board}) ->
+        redirect = Redirect.to {postID: ID, threadID: thread.ID, boardID: board.ID}
         redirect isnt "//boards.4chan.org/#{board}/"
       subEntries: []
 
@@ -1606,17 +1688,17 @@ ArchiveLink =
       textContent: text
       target: '_blank'
 
-    if type is 'post'
-      open = ({ID: postID, thread: threadID, board}) ->
-        el.href = Redirect.to {postID, threadID, board}
+    open = if type is 'post'
+      ({ID, thread, board}) ->
+        el.href = Redirect.to {postID: ID, threadID: thread.ID, boardID: board.ID}
         true
     else
-      open = (post) ->
+      (post) ->
         value = Filter[type] post
         # We want to parse the exact same stuff as the filter does already.
         return false unless value
         el.href = Redirect.to
-          board:    post.board
+          boardID:  post.board.ID
           type:     type
           value:    value
           isSearch: true
@@ -1827,7 +1909,7 @@ Keybinds =
 
 Nav =
   init: ->
-    return if g.VIEW isnt 'index' or !Conf['Index Navigation']
+    return if g.VIEW is 'index' and !Conf['Index Navigation'] or g.VIEW is 'thread' and !Conf['Reply Navigation']
 
     span = $.el 'span',
       id: 'navlinks'
@@ -1845,10 +1927,16 @@ Nav =
     $.on d, '4chanXInitFinished', -> $.add d.body, span
 
   prev: ->
-    Nav.scroll -1
+    if g.VIEW is 'thread'
+      window.scrollTo 0, 0
+    else
+      Nav.scroll -1
 
   next: ->
-    Nav.scroll +1
+    if g.VIEW is 'thread'
+      window.scrollTo 0, d.body.scrollHeight
+    else
+      Nav.scroll +1
 
   getThread: (full) ->
     headRect  = Header.bar.getBoundingClientRect()
@@ -1874,90 +1962,84 @@ Nav =
     window.scrollBy 0, top
 
 Redirect =
-  image: (board, filename) ->
+  image: (boardID, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
-    switch "#{board}"
-      when 'a', 'jp', 'm', 'q', 'tg', 'vg', 'wsg'
-        "//archive.foolz.us/#{board}/full_image/#{filename}"
+    switch boardID
+      when 'a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg'
+        "//archive.foolz.us/#{boardID}/full_image/#{filename}"
       when 'u'
-        "//nsfw.foolz.us/#{board}/full_image/#{filename}"
+        "//nsfw.foolz.us/#{boardID}/full_image/#{filename}"
       when 'po'
-        "//archive.thedarkcave.org/#{board}/full_image/#{filename}"
-      when 'ck', 'lit'
-        "//fuuka.warosu.org/#{board}/full_image/#{filename}"
+        "//archive.thedarkcave.org/#{boardID}/full_image/#{filename}"
+      when 'ck', 'fa', 'lit', 's4s'
+        "//fuuka.warosu.org/#{boardID}/full_image/#{filename}"
       when 'cgl', 'g', 'mu', 'w'
-        "//rbt.asia/#{board}/full_image/#{filename}"
+        "//rbt.asia/#{boardID}/full_image/#{filename}"
       when 'an', 'k', 'toy', 'x'
-        "http://archive.heinessen.com/#{board}/full_image/#{filename}"
+        "http://archive.heinessen.com/#{boardID}/full_image/#{filename}"
       when 'c'
-        "//archive.nyafuu.org/#{board}/full_image/#{filename}"
-  post: (board, postID) ->
-    switch "#{board}"
-      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg'
-        "//archive.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
+        "//archive.nyafuu.org/#{boardID}/full_image/#{filename}"
+  post: (boardID, postID) ->
+    switch boardID
+      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'
+        "//archive.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'u'
-        "//nsfw.foolz.us/_/api/chan/post/?board=#{board}&num=#{postID}"
-      when 'c', 'int', 'po'
-        "//archive.thedarkcave.org/_/api/chan/post/?board=#{board}&num=#{postID}"
+        "//nsfw.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+      when 'c', 'int', 'out', 'po'
+        "//archive.thedarkcave.org/_/api/chan/post/?board=#{boardID}&num=#{postID}"
     # for fuuka-based archives:
     # https://github.com/eksopl/fuuka/issues/27
   to: (data) ->
-    {board} = data
-    switch "#{board}"
-      when 'a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg'
-        url = Redirect.path '//archive.foolz.us', 'foolfuuka', data
+    {boardID} = data
+    switch boardID
+      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'
+        Redirect.path '//archive.foolz.us', 'foolfuuka', data
       when 'u'
-        url = Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
-      when 'int', 'po'
-        url = Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
-      when 'ck', 'lit'
-        url = Redirect.path '//fuuka.warosu.org', 'fuuka', data
+        Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
+      when 'int', 'out', 'po'
+        Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
+      when 'ck', 'fa', 'lit', 's4s'
+        Redirect.path '//fuuka.warosu.org', 'fuuka', data
       when 'diy', 'sci'
-        url = Redirect.path '//archive.installgentoo.net', 'fuuka', data
+        Redirect.path '//archive.installgentoo.net', 'fuuka', data
       when 'cgl', 'g', 'mu', 'w'
-        url = Redirect.path '//rbt.asia', 'fuuka', data
+        Redirect.path '//rbt.asia', 'fuuka', data
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
-        url = Redirect.path 'http://archive.heinessen.com', 'fuuka', data
+        Redirect.path 'http://archive.heinessen.com', 'fuuka', data
       when 'c'
-        url = Redirect.path '//archive.nyafuu.org', 'fuuka', data
+        Redirect.path '//archive.nyafuu.org', 'fuuka', data
       else
-        if data.threadID
-          url = "//boards.4chan.org/#{board}/"
-    url or ''
+        if data.threadID then "//boards.4chan.org/#{boardID}/" else ''
   path: (base, archiver, data) ->
     if data.isSearch
-      {board, type, value} = data
-      type =
-        if type is 'name'
-          'username'
-        else if type is 'MD5'
-          'image'
-        else
-          type
+      {boardID, type, value} = data
+      type = if type is 'name'
+        'username'
+      else if type is 'MD5'
+        'image'
+      else
+        type
       value = encodeURIComponent value
       return if archiver is 'foolfuuka'
-          "#{base}/#{board}/search/#{type}/#{value}"
-        else if type is 'image'
-          "#{base}/#{board}/?task=search2&search_media_hash=#{value}"
-        else
-          "#{base}/#{board}/?task=search2&search_#{type}=#{value}"
-
-    {board, threadID, postID} = data
-    # keep the number only if the location.hash was sent f.e.
-    postID = postID.match(/\d+/)[0] if postID and typeof postID is 'string'
-    path =
-      if threadID
-        "#{board}/thread/#{threadID}"
+        "#{base}/#{boardID}/search/#{type}/#{value}"
+      else if type is 'image'
+        "#{base}/#{boardID}/?task=search2&search_media_hash=#{value}"
       else
-        "#{board}/post/#{postID}"
+        "#{base}/#{boardID}/?task=search2&search_#{type}=#{value}"
+
+    {boardID, threadID, postID} = data
+    # keep the number only if the location.hash was sent f.e.
+    path = if threadID
+      "#{boardID}/thread/#{threadID}"
+    else
+      "#{boardID}/post/#{postID}"
     if archiver is 'foolfuuka'
       path += '/'
     if threadID and postID
-      path +=
-        if archiver is 'foolfuuka'
-          "##{postID}"
-        else
-          "#p#{postID}"
+      path += if archiver is 'foolfuuka'
+        "##{postID}"
+      else
+        "#p#{postID}"
     "#{base}/#{path}"
 
 Build =
@@ -1971,12 +2053,12 @@ Build =
       "#{filename[...threshold - 5]}(...).#{filename[-3..]}"
     else
       filename
-  postFromObject: (data, board) ->
+  postFromObject: (data, boardID) ->
     o =
       # id
       postID:   data.no
       threadID: data.resto or data.no
-      board:    board
+      boardID:  boardID
       # info
       name:     data.name
       capcode:  data.capcode
@@ -1997,12 +2079,12 @@ Build =
       o.file =
         name:      data.filename + data.ext
         timestamp: "#{data.tim}#{data.ext}"
-        url:       "//images.4chan.org/#{board}/src/#{data.tim}#{data.ext}"
+        url:       "//images.4chan.org/#{boardID}/src/#{data.tim}#{data.ext}"
         height:    data.h
         width:     data.w
         MD5:       data.md5
         size:      data.fsize
-        turl:      "//thumbs.4chan.org/#{board}/thumb/#{data.tim}s.jpg"
+        turl:      "//thumbs.4chan.org/#{boardID}/thumb/#{data.tim}s.jpg"
         theight:   data.tn_h
         twidth:    data.tn_w
         isSpoiler: !!data.spoiler
@@ -2014,7 +2096,7 @@ Build =
     @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
     ###
     {
-      postID, threadID, board
+      postID, threadID, boardID
       name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
       isSticky, isClosed
       comment
@@ -2069,7 +2151,7 @@ Build =
 
     flag =
       if flagCode
-        " <img src='#{staticPath}/image/country/#{if board.ID is 'pol' then 'troll/' else ''}" +
+        " <img src='#{staticPath}/image/country/#{if boardID is 'pol' then 'troll/' else ''}" +
         flagCode.toLowerCase() + ".gif' alt=#{flagCode} title='#{flagName}' class=countryFlag>"
       else
         ''
@@ -2097,13 +2179,13 @@ Build =
         fileSize = "Spoiler Image, #{fileSize}"
         unless isArchived
           fileThumb = '//static.4chan.org/image/spoiler'
-          if spoilerRange = Build.spoilerRange[board]
+          if spoilerRange = Build.spoilerRange[boardID]
             # Randomize the spoiler image.
-            fileThumb += "-#{board}" + Math.floor 1 + spoilerRange * Math.random()
+            fileThumb += "-#{boardID}" + Math.floor 1 + spoilerRange * Math.random()
           fileThumb += '.png'
           file.twidth = file.theight = 100
 
-      if board.ID isnt 'f'
+      if boardID.ID isnt 'f'
         imgSrc = "<a class='fileThumb#{if file.isSpoiler then ' imgspoiler' else ''}' href='#{file.url}' target=_blank>" +
           "<img src='#{fileThumb}' alt='#{fileSize}' data-md5=#{file.MD5} style='height: #{file.theight}px; width: #{file.twidth}px;'></a>"
 
@@ -2168,12 +2250,12 @@ Build =
             capcodeStart + capcode + userID + flag + sticky + closed +
             "<br>#{subject}" +
           "</span><span class='dateTime postNum' data-utc=#{dateUTC}>#{date}" +
-            "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"}>No.</a>" +
+            "<a href=#{"/#{boardID}/res/#{threadID}#p#{postID}"}>No.</a>" +
             "<a href='#{
-              if g.VIEW is 'thread' and g.THREAD is +threadID
+              if g.VIEW is 'thread' and g.THREADID is +threadID
                 "javascript:quote(#{postID})"
               else
-                "/#{board}/res/#{threadID}#q#{postID}"
+                "/#{boardID}/res/#{threadID}#q#{postID}"
               }'>#{postID}</a>" +
           '</span>' +
         '</div>' +
@@ -2190,12 +2272,12 @@ Build =
           ' </span> ' +
           "<span class=dateTime data-utc=#{dateUTC}>#{date}</span> " +
           "<span class='postNum desktop'>" +
-            "<a href=#{"/#{board}/res/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
+            "<a href=#{"/#{boardID}/res/#{threadID}#p#{postID}"} title='Highlight this post'>No.</a>" +
             "<a href='#{
-              if g.VIEW is 'thread' and g.THREAD is +threadID
+              if g.VIEW is 'thread' and g.THREADID is +threadID
                 "javascript:quote(#{postID})"
               else
-                "/#{board}/res/#{threadID}#q#{postID}"
+                "/#{boardID}/res/#{threadID}#q#{postID}"
               }' title='Quote this post'>#{postID}</a>" +
           '</span>' +
         '</div>' +
@@ -2209,7 +2291,7 @@ Build =
     for quote in $$ '.quotelink', container
       href = quote.getAttribute 'href'
       continue if href[0] is '/' # Cross-board quote, or board link
-      quote.href = "/#{board}/res/#{href}" # Fix pathnames
+      quote.href = "/#{boardID}/res/#{href}" # Fix pathnames
 
     container
 
@@ -2222,11 +2304,11 @@ Get =
       $('.nameBlock', OP.nodes.info).textContent.trim()
     "/#{thread.board}/ - #{excerpt}"
   postFromRoot: (root) ->
-    link   = $ 'a[title="Highlight this post"]', root
-    board  = link.pathname.split('/')[1]
-    postID = link.hash[2..]
-    index  = root.dataset.clone
-    post   = g.posts["#{board}.#{postID}"]
+    link    = $ 'a[title="Highlight this post"]', root
+    boardID = link.pathname.split('/')[1]
+    postID  = link.hash[2..]
+    index   = root.dataset.clone
+    post    = g.posts["#{boardID}.#{postID}"]
     if index then post.clones[index] else post
   postFromNode: (root) ->
     Get.postFromRoot $.x 'ancestor::div[contains(@class,"postContainer")][1]', root
@@ -2235,15 +2317,15 @@ Get =
   postDataFromLink: (link) ->
     if link.hostname is 'boards.4chan.org'
       path     = link.pathname.split '/'
-      board    = path[1]
+      boardID  = path[1]
       threadID = path[3]
       postID   = link.hash[2..]
     else # resurrected quote
-      board    = link.dataset.board
+      boardID  = link.dataset.boardid
       threadID = link.dataset.threadid or 0
       postID   = link.dataset.postid
     return {
-      board:    board
+      boardID:  boardID
       threadID: +threadID
       postID:   +postID
     }
@@ -2271,20 +2353,20 @@ Get =
     # Third:
     #   Filter out irrelevant quotelinks.
     quotelinks.filter (quotelink) ->
-      {board, postID} = Get.postDataFromLink quotelink
-      board is post.board.ID and postID is post.ID
-  postClone: (board, threadID, postID, root, context) ->
-    if post = g.posts["#{board}.#{postID}"]
+      {boardID, postID} = Get.postDataFromLink quotelink
+      boardID is post.board.ID and postID is post.ID
+  postClone: (boardID, threadID, postID, root, context) ->
+    if post = g.posts["#{boardID}.#{postID}"]
       Get.insert post, root, context
       return
 
     root.textContent = "Loading post No.#{postID}..."
     if threadID
-      $.cache "//api.4chan.org/#{board}/res/#{threadID}.json", ->
-        Get.fetchedPost @, board, threadID, postID, root, context
-    else if url = Redirect.post board, postID
+      $.cache "//api.4chan.org/#{boardID}/res/#{threadID}.json", ->
+        Get.fetchedPost @, boardID, threadID, postID, root, context
+    else if url = Redirect.post boardID, postID
       $.cache url, ->
-        Get.archivedPost @, board, postID, root, context
+        Get.archivedPost @, boardID, postID, root, context
   insert: (post, root, context) ->
     # Stop here if the container has been removed while loading.
     return unless root.parentNode
@@ -2298,19 +2380,19 @@ Get =
 
     root.innerHTML = null
     $.add root, nodes.root
-  fetchedPost: (req, board, threadID, postID, root, context) ->
+  fetchedPost: (req, boardID, threadID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
-    if post = g.posts["#{board}.#{postID}"]
+    if post = g.posts["#{boardID}.#{postID}"]
       Get.insert post, root, context
       return
 
     {status} = req
     unless [200, 304].contains status
       # The thread can die by the time we check a quote.
-      if url = Redirect.post board, postID
+      if url = Redirect.post boardID, postID
         $.cache url, ->
-          Get.archivedPost @, board, postID, root, context
+          Get.archivedPost @, boardID, postID, root, context
       else
         $.addClass root, 'warning'
         root.textContent =
@@ -2321,30 +2403,30 @@ Get =
       return
 
     posts = JSON.parse(req.response).posts
-    Build.spoilerRange[board] = posts[0].custom_spoiler
+    Build.spoilerRange[boardID] = posts[0].custom_spoiler
     for post in posts
       break if post.no is postID # we found it!
       if post.no > postID
         # The post can be deleted by the time we check a quote.
-        if url = Redirect.post board, postID
+        if url = Redirect.post boardID, postID
           $.cache url, ->
-            Get.archivedPost @, board, postID, root, context
+            Get.archivedPost @, boardID, postID, root, context
         else
           $.addClass root, 'warning'
           root.textContent = "Post No.#{postID} was not found."
         return
 
-    board = g.boards[board] or
-      new Board board
-    thread = g.threads["#{board}.#{threadID}"] or
+    board = g.boards[boardID] or
+      new Board boardID
+    thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
-    post = new Post Build.postFromObject(post, board), thread, board
+    post = new Post Build.postFromObject(post, boardID), thread, board
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
-  archivedPost: (req, board, postID, root, context) ->
+  archivedPost: (req, boardID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
     # don't parse the same original post more than once.
-    if post = g.posts["#{board}.#{postID}"]
+    if post = g.posts["#{boardID}.#{postID}"]
       Get.insert post, root, context
       return
 
@@ -2401,7 +2483,7 @@ Get =
       # id
       postID:   "#{postID}"
       threadID: "#{threadID}"
-      board:    board
+      boardID:  boardID
       # info
       name:     data.name_processed
       capcode:  switch data.capcode
@@ -2427,42 +2509,19 @@ Get =
         width:     data.media.media_w
         MD5:       data.media.media_hash
         size:      data.media.media_size
-        turl:      data.media.thumb_link or "//thumbs.4chan.org/#{board}/thumb/#{data.media.preview_orig}"
+        turl:      data.media.thumb_link or "//thumbs.4chan.org/#{boardID}/thumb/#{data.media.preview_orig}"
         theight:   data.media.preview_h
         twidth:    data.media.preview_w
         isSpoiler: data.media.spoiler is '1'
 
-    board = g.boards[board] or
-      new Board board
-    thread = g.threads["#{board}.#{threadID}"] or
+    board = g.boards[boardID] or
+      new Board boardID
+    thread = g.threads["#{boardID}.#{threadID}"] or
       new Thread threadID, board
     post = new Post Build.post(o, true), thread, board,
       isArchived: true
     Main.callbackNodes Post, [post]
     Get.insert post, root, context
-
-Misc = # super semantic
-  clearThreads: (key) ->
-    return unless data = $.get key
-
-    unless Object.keys(data.threads).length
-      $.delete key
-      return
-
-    return if data.lastChecked > Date.now() - 12 * $.HOUR
-
-    $.ajax "//api.4chan.org/#{g.BOARD}/threads.json", onload: ->
-      threads = {}
-      for page in JSON.parse @response
-        for thread in page.threads
-          if thread.no of data.threads
-            threads[thread.no] = data.threads[thread.no]
-      unless Object.keys(threads).length
-        $.delete key
-        return
-      data.threads     = threads
-      data.lastChecked = Date.now()
-      $.set key, data
 
 Quotify =
   init: ->
@@ -2484,13 +2543,13 @@ Quotify =
         continue
 
       quote = deadlink.textContent
-      continue unless ID = quote.match(/\d+$/)?[0]
-      board =
+      continue unless postID = quote.match(/\d+$/)?[0]
+      boardID =
         if m = quote.match /^>>>\/([a-z\d]+)/
           m[1]
         else
           @board.ID
-      quoteID = "#{board}.#{ID}"
+      quoteID = "#{boardID}.#{postID}"
 
       # \u00A0 is nbsp
       if post = g.posts[quoteID]
@@ -2498,31 +2557,31 @@ Quotify =
           # Don't (Dead) when quotifying in an archived post,
           # and we know the post still exists.
           a = $.el 'a',
-            href:        "/#{board}/#{post.thread}/res/#p#{ID}"
+            href:        "/#{boardID}/#{post.thread}/res/#p#{postID}"
             className:   'quotelink'
             textContent: quote
         else
           # Replace the .deadlink span if we can redirect.
           a = $.el 'a',
-            href:        "/#{board}/#{post.thread}/res/#p#{ID}"
+            href:        "/#{boardID}/#{post.thread}/res/#p#{postID}"
             className:   'quotelink deadlink'
             target:      '_blank'
             textContent: "#{quote}\u00A0(Dead)"
-          a.setAttribute 'data-board',    board
+          a.setAttribute 'data-boardid',  boardID
           a.setAttribute 'data-threadid', post.thread.ID
-          a.setAttribute 'data-postid',   ID
-      else if redirect = Redirect.to {board, threadID: 0, postID: ID}
+          a.setAttribute 'data-postid',   postID
+      else if redirect = Redirect.to {boardID, threadID: 0, postID}
         # Replace the .deadlink span if we can redirect.
         a = $.el 'a',
           href:        redirect
           className:   'deadlink'
           target:      '_blank'
           textContent: "#{quote}\u00A0(Dead)"
-        if Redirect.post board, ID
+        if Redirect.post boardID, postID
           # Make it function as a normal quote if we can fetch the post.
           $.addClass a,  'quotelink'
-          a.setAttribute 'data-board',  board
-          a.setAttribute 'data-postid', ID
+          a.setAttribute 'data-boardid', boardID
+          a.setAttribute 'data-postid',  postID
 
       unless @quotes.contains quoteID
         @quotes.push quoteID
@@ -2547,21 +2606,19 @@ QuoteInline =
       name: 'Quote Inlining'
       cb:   @node
   node: ->
-    for link in @nodes.quotelinks
-      $.on link, 'click', QuoteInline.toggle
-    for link in @nodes.backlinks
+    for link in @nodes.quotelinks.concat [@nodes.backlinks...]
       $.on link, 'click', QuoteInline.toggle
     return
   toggle: (e) ->
     return if e.shiftKey or e.altKey or e.ctrlKey or e.metaKey or e.button isnt 0
     e.preventDefault()
-    {board, threadID, postID} = Get.postDataFromLink @
+    {boardID, threadID, postID} = Get.postDataFromLink @
     context = Get.contextFromLink @
     if $.hasClass @, 'inlined'
-      QuoteInline.rm @, board, threadID, postID, context
+      QuoteInline.rm @, boardID, threadID, postID, context
     else
       return if $.x "ancestor::div[@id='p#{postID}']", @
-      QuoteInline.add @, board, threadID, postID, context
+      QuoteInline.add @, boardID, threadID, postID, context
     @classList.toggle 'inlined'
 
   findRoot: (quotelink, isBacklink) ->
@@ -2569,15 +2626,15 @@ QuoteInline =
       quotelink.parentNode.parentNode
     else
       $.x 'ancestor-or-self::*[parent::blockquote][1]', quotelink
-  add: (quotelink, board, threadID, postID, context) ->
+  add: (quotelink, boardID, threadID, postID, context) ->
     isBacklink = $.hasClass quotelink, 'backlink'
     inline = $.el 'div',
       id: "i#{postID}"
       className: 'inline'
     $.after QuoteInline.findRoot(quotelink, isBacklink), inline
-    Get.postClone board, threadID, postID, inline, context
+    Get.postClone boardID, threadID, postID, inline, context
 
-    return unless (post = g.posts["#{board}.#{postID}"]) and
+    return unless (post = g.posts["#{boardID}.#{postID}"]) and
       context.thread is post.thread
 
     # Hide forward post if it's a backlink of a post in this thread.
@@ -2586,12 +2643,12 @@ QuoteInline =
       $.addClass post.nodes.root, 'forwarded'
       post.forwarded++ or post.forwarded = 1
 
-    # Decrease the unread count if this post is in the array of unread posts.
-    if Unread.posts and (i = Unread.posts.indexOf post) isnt -1
-      Unread.posts.splice i, 1
-      Unread.update()
+    # Decrease the unread count if this post
+    # is in the array of unread posts.
+    return unless Unread.posts
+    Unread.readSinglePost post
 
-  rm: (quotelink, board, threadID, postID, context) ->
+  rm: (quotelink, boardID, threadID, postID, context) ->
     isBacklink = $.hasClass quotelink, 'backlink'
     # Select the corresponding inlined quote, and remove it.
     root = QuoteInline.findRoot quotelink, isBacklink
@@ -2602,21 +2659,21 @@ QuoteInline =
     return unless el = root.firstElementChild
 
     # Dereference clone.
-    post = g.posts["#{board}.#{postID}"]
+    post = g.posts["#{boardID}.#{postID}"]
     post.rmClone el.dataset.clone
 
     # Decrease forward count and unhide.
     if Conf['Forward Hiding'] and
       isBacklink and
-      context.thread is g.threads["#{board}.#{threadID}"] and
+      context.thread is g.threads["#{boardID}.#{threadID}"] and
       not --post.forwarded
         delete post.forwarded
         $.rmClass post.nodes.root, 'forwarded'
 
     # Repeat.
     while inlined = $ '.inlined', el
-      {board, threadID, postID} = Get.postDataFromLink inlined
-      QuoteInline.rm inlined, board, threadID, postID, context
+      {boardID, threadID, postID} = Get.postDataFromLink inlined
+      QuoteInline.rm inlined, boardID, threadID, postID, context
       $.rmClass inlined, 'inlined'
     return
 
@@ -2631,21 +2688,19 @@ QuotePreview =
       name: 'Quote Previewing'
       cb:   @node
   node: ->
-    for link in @nodes.quotelinks
-      $.on link, 'mouseover', QuotePreview.mouseover
-    for link in @nodes.backlinks
+    for link in @nodes.quotelinks.concat [@nodes.backlinks...]
       $.on link, 'mouseover', QuotePreview.mouseover
     return
   mouseover: (e) ->
     return if $.hasClass @, 'inlined'
 
-    {board, threadID, postID} = Get.postDataFromLink @
+    {boardID, threadID, postID} = Get.postDataFromLink @
 
     qp = $.el 'div',
       id: 'qp'
       className: 'dialog'
     $.add d.body, qp
-    Get.postClone board, threadID, postID, qp, Get.contextFromLink @
+    Get.postClone boardID, threadID, postID, qp, Get.contextFromLink @
 
     UI.hover
       root: @
@@ -2655,7 +2710,7 @@ QuotePreview =
       cb: QuotePreview.mouseout
       asapTest: -> qp.firstElementChild
 
-    return unless origin = g.posts["#{board}.#{postID}"]
+    return unless origin = g.posts["#{boardID}.#{postID}"]
 
     if Conf['Quote Highlighting']
       posts = [origin].concat origin.clones
@@ -2666,10 +2721,7 @@ QuotePreview =
 
     quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
     clone = Get.postFromRoot qp.firstChild
-    for quote in clone.nodes.quotelinks
-      if quote.hash[2..] is quoterID
-        $.addClass quote, 'forwardlink'
-    for quote in clone.nodes.backlinks
+    for quote in clone.nodes.quotelinks.concat [clone.nodes.backlinks...]
       if quote.hash[2..] is quoterID
         $.addClass quote, 'forwardlink'
     return
@@ -2761,8 +2813,7 @@ QuoteYou =
     {quotelinks} = @nodes
 
     for quotelink in quotelinks
-      {threadID, postID} = Get.postDataFromLink quotelink
-      if (thread = QR.yourPosts.threads[threadID]) and thread.contains postID
+      if QR.db.get Get.postDataFromLink quotelink
         $.add quotelink, $.tn QuoteYou.text
     return
 
@@ -2794,8 +2845,8 @@ QuoteOP =
     # add (OP) to quotes quoting this context's OP.
     return unless quotes.contains op
     for quotelink in quotelinks
-      {board, postID} = Get.postDataFromLink quotelink
-      if "#{board}.#{postID}" is op
+      {boardID, postID} = Get.postDataFromLink quotelink
+      if "#{boardID}.#{postID}" is op
         $.add quotelink, $.tn QuoteOP.text
     return
 
@@ -2820,11 +2871,11 @@ QuoteCT =
 
     {board, thread} = if @isClone then @context else @
     for quotelink in quotelinks
-      data = Get.postDataFromLink quotelink
-      continue unless data.threadID # deadlink
+      {boardID, threadID} = Get.postDataFromLink quotelink
+      continue unless threadID # deadlink
       if @isClone
         quotelink.textContent = quotelink.textContent.replace QuoteCT.text, ''
-      if data.board is @board.ID and data.threadID isnt thread.ID
+      if boardID is @board.ID and threadID isnt thread.ID
         $.add quotelink, $.tn QuoteCT.text
     return
 
@@ -3126,7 +3177,7 @@ ImageExpand =
     @EAI = wrapper.firstElementChild
     $.on @EAI, 'click', ImageExpand.cb.toggleAll
 
-    @menu = new UI.Menu 'imageexpand'
+    @opmenu = new UI.Menu 'imageexpand'
     $.on $('.menu-button', wrapper), 'click', @menuToggle
 
     for type, config of Config.imageExpansion
@@ -3199,20 +3250,16 @@ ImageExpand =
     unless post.file.isExpanded or $.hasClass thumb, 'expanding'
       ImageExpand.expand post
       return
-    rect = thumb.parentNode.getBoundingClientRect()
-    if rect.bottom > 0 # Should be at least partially visible.
-      # Scroll back to the thumbnail when contracting the image
-      # to avoid being left miles away from the relevant post.
-      postRect = post.nodes.root.getBoundingClientRect()
-      headRect = Header.toggle.getBoundingClientRect()
-      top  = postRect.top - headRect.top - headRect.height - 2
-      root = if $.engine is 'webkit'
-        d.body
-      else
-        doc
-      root.scrollTop += top if rect.top  < 0
-      root.scrollLeft = 0   if rect.left < 0
     ImageExpand.contract post
+    rect = post.nodes.root.getBoundingClientRect()
+    return unless rect.top <= 0 or rect.left <= 0
+    # Scroll back to the thumbnail when contracting the image
+    # to avoid being left miles away from the relevant post.
+    headRect = Header.bar.getBoundingClientRect()
+    top  = rect.top - headRect.top - headRect.height
+    root = if $.engine is 'webkit' then d.body else doc
+    root.scrollTop += top if rect.top  < 0
+    root.scrollLeft = 0   if rect.left < 0
 
   contract: (post) ->
     $.rmClass post.nodes.root, 'expanded-image'
@@ -3240,16 +3287,21 @@ ImageExpand =
   completeExpand: (post) ->
     {thumb} = post.file
     return unless $.hasClass thumb, 'expanding' # contracted before the image loaded
-    rect = post.nodes.root.getBoundingClientRect()
-    $.addClass post.nodes.root, 'expanded-image'
-    $.rmClass  post.file.thumb, 'expanding'
-    if rect.top + rect.height <= 0
-      root = if $.engine is 'webkit'
-        d.body
-      else
-        doc
-      root.scrollTop += post.nodes.root.clientHeight - rect.height
     post.file.isExpanded = true
+    unless post.nodes.root.parentNode
+      # Image might start/finish loading before the post is inserted.
+      # Don't scroll when it's expanded in a QP for example.
+      $.addClass post.nodes.root, 'expanded-image'
+      $.rmClass  post.file.thumb, 'expanding'
+      return
+    prev = post.nodes.root.getBoundingClientRect()
+    $.queueTask ->
+      $.addClass post.nodes.root, 'expanded-image'
+      $.rmClass  post.file.thumb, 'expanding'
+      return unless prev.top + prev.height <= 0
+      root = if $.engine is 'webkit' then d.body else doc
+      curr = post.nodes.root.getBoundingClientRect()
+      root.scrollTop += curr.height - prev.height + curr.top - prev.top
 
   error: ->
     post = Get.postFromNode @
@@ -3284,11 +3336,43 @@ ImageExpand =
         clearTimeout timeoutID
         post.kill true
 
+  menu:
+    init: ->
+      return if g.VIEW is 'catalog' or !Conf['Image Expansion']
+
+      el = $.el 'span',
+        textContent: 'Image Expansion'
+        className: 'image-expansion-link'
+
+      {createSubEntry} = ImageExpand.menu
+      subEntries = []
+      for key, conf of Config.imageExpansion
+        subEntries.push createSubEntry key, conf
+
+      $.event 'AddMenuEntry',
+        type: 'header'
+        el: el
+        order: 80
+        subEntries: subEntries
+
+    createSubEntry: (type, config) ->
+      label = $.el 'label',
+        innerHTML: "<input type=checkbox name='#{type}'> #{type}"
+      input = label.firstElementChild
+      if type in ['Fit width', 'Fit height']
+        $.on input, 'change', ImageExpand.cb.setFitness
+      if config
+        label.title   = config[1]
+        input.checked = Conf[type]
+        $.event 'change', null, input
+        $.on input, 'change', $.cb.checked
+      el: label
+
   resize: ->
     ImageExpand.style.textContent = ":root.fit-height .full-image {max-height:#{doc.clientHeight}px}"
 
   menuToggle: (e) ->
-    ImageExpand.menu.toggle e, @, g
+    ImageExpand.opmenu.toggle e, @, g
 
 RevealSpoilers =
   init: ->
@@ -3462,36 +3546,44 @@ ExpandThread =
 
   toggle: (thread) ->
     threadRoot = thread.OP.nodes.root.parentNode
-    url = "//api.4chan.org/#{thread.board}/res/#{thread}.json"
-    a   = $ '.summary', threadRoot
+    a = $ '.summary', threadRoot
 
-    text = a.textContent
-    switch text[0]
-      when '+'
-        a.textContent = text.replace '+', '× Loading...'
-        $.cache url, -> ExpandThread.parse @, thread, a
+    switch thread.isExpanded
+      when false, undefined
+        thread.isExpanded = 'loading'
         for post in $$ '.thread > .postContainer', threadRoot
           ExpandComment.expand Get.postFromRoot post
+        unless a
+          thread.isExpanded = true
+          return
+        thread.isExpanded = 'loading'
+        a.textContent = a.textContent.replace '+', '× Loading...'
+        $.cache "//api.4chan.org/#{thread.board}/res/#{thread}.json", ->
+          ExpandThread.parse @, thread, a
 
-      when '×'
-        a.textContent = text.replace '× Loading...', '+'
+      when 'loading'
+        thread.isExpanded = false
+        return unless a
+        a.textContent = a.textContent.replace '× Loading...', '+'
 
-      when '-'
-        a.textContent = text.replace '-', '+'
-        #goddamit moot
-        num = if thread.isSticky
-          1
-        else switch g.BOARD.ID
-          # XXX boards config
-          when 'b', 'vg', 'q' then 3
-          when 't' then 1
-          else 5
-        replies = $$('.thread > .replyContainer', threadRoot)[...-num]
-        for reply in replies
-          if Conf['Quote Inlining']
-            # rm clones
-            inlined.click() while inlined = $ '.inlined', reply
-          $.rm reply
+      when true
+        thread.isExpanded = false
+        if a
+          a.textContent = a.textContent.replace '-', '+'
+          #goddamit moot
+          num = if thread.isSticky
+            1
+          else switch g.BOARD.ID
+            # XXX boards config
+            when 'b', 'vg', 'q' then 3
+            when 't' then 1
+            else 5
+          replies = $$('.thread > .replyContainer', threadRoot)[...-num]
+          for reply in replies
+            if Conf['Quote Inlining']
+              # rm clones
+              inlined.click() while inlined = $ '.inlined', reply
+            $.rm reply
         for post in $$ '.thread > .postContainer', threadRoot
           ExpandComment.contract Get.postFromRoot post
     return
@@ -3504,6 +3596,7 @@ ExpandThread =
       $.off a, 'click', ExpandThread.cb.toggle
       return
 
+    thread.isExpanded = true
     a.textContent = a.textContent.replace '× Loading...', '-'
 
     posts = JSON.parse(req.response).posts
@@ -3550,24 +3643,30 @@ Unread =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Tab Icon']
 
-    Unread.hr = $.el 'hr',
+    @db = new DataBoard 'lastReadPosts', @sync
+    @hr = $.el 'hr',
       id: 'unread-line'
-    Misc.clearThreads "lastReadPosts.#{g.BOARD}"
+    @posts = []
+    @postsQuotingYou = []
+
     Thread::callbacks.push
       name: 'Unread'
       cb:   @node
 
   node: ->
-    Unread.thread          = @
-    Unread.lastReadPost    = $.get("lastReadPosts.#{@board}", threads: {}).threads[@] or 0
-    Unread.posts           = []
-    Unread.postsQuotingYou = []
-    Unread.title           = d.title
+    Unread.thread = @
+    Unread.title  = d.title
     posts = []
     for ID, post of @posts
       posts.push post if post.isReply
+    Unread.lastReadPost = Unread.db.get
+      boardID: @board.ID
+      threadID: @ID
+      defaultValue: 0
     Unread.addPosts posts
-    if Unread.posts.length
+    if (hash = location.hash.match /\d+/) and post = @posts[hash[0]]
+      post.nodes.root.scrollIntoView()
+    else if Unread.posts.length
       # Scroll to before the first unread post.
       $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView false
     else if posts.length
@@ -3577,36 +3676,64 @@ Unread =
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
 
+  sync: ->
+    lastReadPost = Unread.db.get
+      boardID: Unread.thread.board.ID
+      threadID: Unread.thread.ID
+      defaultValue: 0
+    return unless Unread.lastReadPost < lastReadPost
+    Unread.lastReadPost = lastReadPost
+    Unread.readArray Unread.posts
+    Unread.readArray Unread.postsQuotingYou
+    Unread.setLine()
+    Unread.update()
+
   addPosts: (newPosts) ->
-    if Conf['Quick Reply']
-      {yourPosts} = QR
-      youInThisThread = yourPosts.threads[Unread.thread]
     for post in newPosts
       {ID} = post
-      if ID <= Unread.lastReadPost or post.isHidden or youInThisThread and youInThisThread.contains ID
+      if ID <= Unread.lastReadPost or post.isHidden
         continue
+      if QR.db
+        data =
+          boardID:  post.board.ID
+          threadID: post.thread.ID
+          postID:   post.ID
+        continue if QR.db.get data
       Unread.posts.push post
-      Unread.addPostQuotingYou post, yourPosts if yourPosts
+      Unread.addPostQuotingYou post
     if Conf['Unread Line']
       # Force line on visible threads if there were no unread posts previously.
       Unread.setLine newPosts.contains Unread.posts[0]
     Unread.read()
     Unread.update()
 
-  addPostQuotingYou: (post, yourPosts) ->
-    for quote in post.quotes
-      [board, quoteID] = quote.split '.'
-      continue unless board is Unread.thread.board.ID
-      for thread, postIDs of yourPosts.threads
-        if postIDs.contains +quoteID
-          Unread.postsQuotingYou.push post
-          return
+  addPostQuotingYou: (post) ->
+    return unless QR.db
+    for quotelink in post.nodes.quotelinks
+      if QR.db.get Get.postDataFromLink quotelink
+        Unread.postsQuotingYou.push post
+    return
 
   onUpdate: (e) ->
     if e.detail[404]
       Unread.update()
     else
       Unread.addPosts e.detail.newPosts
+
+  readSinglePost: (post) ->
+    return if (i = Unread.posts.indexOf post) is -1
+    Unread.posts.splice i, 1
+    if i is 0
+      Unread.lastReadPost = post.ID
+      Unread.saveLastReadPost()
+    if (i = Unread.postsQuotingYou.indexOf post) isnt -1
+      Unread.postsQuotingYou.splice i, 1
+    Unread.update()
+
+  readArray: (arr) ->
+    for post, i in arr
+      break if post.ID > Unread.lastReadPost
+    arr.splice 0, i
 
   read: (e) ->
     return if d.hidden or !Unread.posts.length
@@ -3618,17 +3745,15 @@ Unread =
 
     Unread.lastReadPost = Unread.posts[i - 1].ID
     Unread.saveLastReadPost()
-    Unread.posts = Unread.posts[i..]
-    for post, i in Unread.postsQuotingYou
-      break if post.ID > Unread.lastReadPost
-    Unread.postsQuotingYou = Unread.postsQuotingYou[i..]
+    Unread.posts.splice 0, i
+    Unread.readArray Unread.postsQuotingYou
     Unread.update() if e
 
-  saveLastReadPost: $.debounce($.SECOND, ->
-    lastReadPosts = $.get "lastReadPosts.#{Unread.thread.board}", threads: {}
-    lastReadPosts.threads[Unread.thread] = Unread.lastReadPost
-    $.set "lastReadPosts.#{Unread.thread.board}", lastReadPosts
-  )
+  saveLastReadPost: $.debounce 2 * $.SECOND, ->
+    Unread.db.set
+      boardID: Unread.thread.board.ID
+      threadID: Unread.thread.ID
+      val: Unread.lastReadPost
 
   setLine: (force) ->
     return unless d.hidden or force is true
@@ -3639,7 +3764,7 @@ Unread =
     else if Unread.hr.parentNode
       $.rm Unread.hr
 
-  update: ->
+  update: <% if (type === 'crx') { %>(dontrepeat) <% } %>->
     count = Unread.posts.length
 
     if Conf['Unread Count']
@@ -3647,6 +3772,17 @@ Unread =
         "(#{Unread.posts.length}) /#{g.BOARD}/ - 404"
       else
         "(#{Unread.posts.length}) #{Unread.title}"
+      <% if (type === 'crx') { %>
+      # XXX Chrome bug where it doesn't always update the tab title.
+      # crbug.com/124381
+      # Call it one second later,
+      # but don't display outdated unread count.
+      unless dontrepeat
+        setTimeout ->
+          d.title = ''
+          Unread.update true
+        , $.SECOND
+      <% } %>
 
     return unless Conf['Unread Tab Icon']
 
@@ -3659,10 +3795,11 @@ Unread =
         else
           Favicon.dead
       else
-        if Unread.postsQuotingYou.length
-          Favicon.unreadY
-        else if count
-          Favicon.unread
+        if count
+          if Unread.postsQuotingYou.length
+            Favicon.unreadY
+          else
+            Favicon.unread
         else
           Favicon.default
 
@@ -3743,19 +3880,20 @@ ThreadStats =
     for ID, post of @posts
       postCount++
       fileCount++ if post.file
-    ThreadStats.update postCount, fileCount
     ThreadStats.thread = @
+    ThreadStats.update postCount, fileCount
     $.on d, 'ThreadUpdate', ThreadStats.onUpdate
     $.add d.body, ThreadStats.dialog
   onUpdate: (e) ->
     return if e.detail[404]
-    {postCount, fileCount, postLimit, fileLimit} = e.detail
-    ThreadStats.update postCount, fileCount, postLimit, fileLimit
-  update: (postCount, fileCount, postLimit, fileLimit) ->
-    ThreadStats.postCountEl.textContent = postCount
-    ThreadStats.fileCountEl.textContent = fileCount
-    (if postLimit and !ThreadStats.thread.isSticky then $.addClass else $.rmClass) ThreadStats.postCountEl, 'warning'
-    (if fileLimit and !ThreadStats.thread.isSticky then $.addClass else $.rmClass) ThreadStats.fileCountEl, 'warning'
+    {postCount, fileCount} = e.detail
+    ThreadStats.update postCount, fileCount
+  update: (postCount, fileCount) ->
+    {thread, postCountEl, fileCountEl} = ThreadStats
+    postCountEl.textContent = postCount
+    fileCountEl.textContent = fileCount
+    (if thread.postLimit and !thread.isSticky then $.addClass else $.rmClass) postCountEl, 'warning'
+    (if thread.fileLimit and !thread.isSticky then $.addClass else $.rmClass) fileCountEl, 'warning'
 
 ThreadUpdater =
   init: ->
@@ -3974,6 +4112,8 @@ ThreadUpdater =
 
     ThreadUpdater.updateThreadStatus 'Sticky', OP
     ThreadUpdater.updateThreadStatus 'Closed', OP
+    ThreadUpdater.thread.postLimit = !!OP.bumplimit
+    ThreadUpdater.thread.fileLimit = !!OP.imagelimit
 
     nodes = [] # post container elements
     posts = [] # post objects
@@ -4052,8 +4192,6 @@ ThreadUpdater =
       deletedFiles: deletedFiles
       postCount: OP.replies + 1
       fileCount: OP.images + (!!ThreadUpdater.thread.OP.file and !ThreadUpdater.thread.OP.file.isDead)
-      postLimit: !!OP.bumplimit
-      fileLimit: !!OP.imagelimit
 
 ThreadWatcher =
   init: ->
@@ -4074,7 +4212,9 @@ ThreadWatcher =
       className: 'favicon'
     $.on favicon, 'click', ThreadWatcher.cb.toggle
     $.before $('input', @OP.nodes.post), favicon
-    if g.VIEW is 'thread' and @ID is $.get 'AutoWatch', 0
+    return if g.VIEW isnt 'thread'
+    $.get 'AutoWatch', 0, (item) =>
+      return if item['AutoWatch'] isnt @ID
       ThreadWatcher.watch @
       $.delete 'AutoWatch'
 
@@ -4084,7 +4224,10 @@ ThreadWatcher =
     $.add d.body, ThreadWatcher.dialog
 
   refresh: (watched) ->
-    watched or= $.get 'WatchedThreads', {}
+    unless watched
+      $.get 'WatchedThreads', {}, (item) ->
+        ThreadWatcher.refresh item['WatchedThreads']
+      return
     nodes = [$('.move', ThreadWatcher.dialog)]
     for board of watched
       for id, props of watched[board]
@@ -4132,20 +4275,22 @@ ThreadWatcher =
       ThreadWatcher.unwatch thread.board, thread.ID
 
   unwatch: (board, threadID) ->
-    watched = $.get 'WatchedThreads', {}
-    delete watched[board][threadID]
-    delete watched[board] unless Object.keys(watched[board]).length
-    ThreadWatcher.refresh watched
-    $.set 'WatchedThreads', watched
+    $.get 'WatchedThreads', {}, (item) ->
+      watched = item['WatchedThreads']
+      delete watched[board][threadID]
+      delete watched[board] unless Object.keys(watched[board]).length
+      ThreadWatcher.refresh watched
+      $.set 'WatchedThreads', watched
 
   watch: (thread) ->
-    watched = $.get 'WatchedThreads', {}
-    watched[thread.board] or= {}
-    watched[thread.board][thread] =
-      href: "/#{thread.board}/res/#{thread}"
-      textContent: Get.threadExcerpt thread
-    ThreadWatcher.refresh watched
-    $.set 'WatchedThreads', watched
+    $.get 'WatchedThreads', {}, (item) ->
+      watched = item['WatchedThreads']
+      watched[thread.board] or= {}
+      watched[thread.board][thread] =
+        href: "/#{thread.board}/res/#{thread}"
+        textContent: Get.threadExcerpt thread
+      ThreadWatcher.refresh watched
+      $.set 'WatchedThreads', watched
 
 Linkify =
   init: ->

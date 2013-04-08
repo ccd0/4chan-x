@@ -1,9 +1,8 @@
 QR =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Quick Reply']
+    return if !Conf['Quick Reply']
 
-    Misc.clearThreads "yourPosts.#{g.BOARD}"
-    @syncYourPosts()
+    @db = new DataBoard 'yourPosts'
 
     sc = $.el 'a',
       className: "qr-shortcut #{unless Conf['Persistent QR'] then 'disabled' else ''}"
@@ -93,13 +92,6 @@ QR =
     else
       QR.unhide()
 
-  syncYourPosts: (yourPosts) ->
-    if yourPosts
-      QR.yourPosts = yourPosts
-      return
-    QR.yourPosts = $.get "yourPosts.#{g.BOARD}", threads: {}
-    $.sync "yourPosts.#{g.BOARD}", QR.syncYourPosts
-
   error: (err) ->
     QR.open()
     if typeof err is 'string'
@@ -150,10 +142,11 @@ QR =
         sage: if board is 'q' then 600 else 60
         file: if board is 'q' then 300 else 30
         post: if board is 'q' then 60  else 30
-      QR.cooldown.cooldowns = $.get "cooldown.#{board}", {}
       QR.cooldown.upSpd = 0
       QR.cooldown.upSpdAccuracy = .5
-      QR.cooldown.start()
+      $.get "cooldown.#{board}", {}, (item) ->
+        QR.cooldown.cooldowns = item["cooldown.#{board}"]
+        QR.cooldown.start()
       $.sync "cooldown.#{board}", QR.cooldown.sync
     start: ->
       return if QR.cooldown.isCounting
@@ -356,22 +349,13 @@ QR =
     $.addClass QR.nodes.el, 'dump'
   resetThreadSelector: ->
     if g.VIEW is 'thread'
-      QR.nodes.thread.value = g.THREAD
+      QR.nodes.thread.value = g.THREADID
     else
       QR.nodes.thread.value = 'new'
 
   posts: []
   post: class
-    constructor: ->
-      # set values, or null, to avoid 'undefined' values in inputs
-      prev     = QR.posts[QR.posts.length - 1]
-      persona  = $.get 'QR.persona', {}
-      @name    = if prev then prev.name else persona.name or null
-      @email   = if prev and !/^sage$/.test prev.email then prev.email   else persona.email or null
-      @sub     = if prev and Conf['Remember Subject']  then prev.sub     else if Conf['Remember Subject'] then persona.sub else null
-      @spoiler = if prev and Conf['Remember Spoiler']  then prev.spoiler else false
-      @com = null
-
+    constructor: (select) ->
       el = $.el 'a',
         className: 'qr-preview'
         draggable: true
@@ -398,13 +382,32 @@ QR =
       for event in ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop']
         $.on el, event.toLowerCase(), @[event]
 
-      @unlock()
+      prev = QR.posts[QR.posts.length - 1]
       QR.posts.push @
+      @spoiler = if prev and Conf['Remember Spoiler']
+        prev.spoiler
+      else
+        false
+      $.get 'QR.persona', {}, (item) =>
+        persona = item['QR.persona']
+        @name = if prev
+          prev.name
+        else
+          persona.name
+        @email = if prev and !/^sage$/.test prev.email
+          prev.email
+        else
+          persona.email
+        if Conf['Remember Subject']
+          @sub = if prev then prev.sub else persona.sub
+        @load() if QR.selected is @ # load persona
+      @select() if select
+      @unlock()
     rm: ->
       $.rm @nodes.el
       index = QR.posts.indexOf @
       if QR.posts.length is 1
-        new QR.post().select()
+        new QR.post true
       else if @ is QR.selected
         (QR.posts[index-1] or QR.posts[index+1]).select()
       QR.posts.splice index, 1
@@ -433,9 +436,11 @@ QR =
       rectEl   = @nodes.el.getBoundingClientRect()
       rectList = @nodes.el.parentNode.getBoundingClientRect()
       @nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
+      @load()
+    load: ->
       # Load this post's values.
       for name in ['name', 'email', 'sub', 'com']
-        QR.nodes[name].value = @[name]
+        QR.nodes[name].value = @[name] or null
       @showFileData()
       QR.characterCount()
     save: (input) ->
@@ -586,7 +591,6 @@ QR =
       $.on  window, 'captcha:timeout', setLifetime
       $.globalEval 'window.dispatchEvent(new CustomEvent("captcha:timeout", {detail: RecaptchaState.timeout}))'
       $.off window, 'captcha:timeout', setLifetime
-      c.log @lifetime
 
       imgContainer = $.el 'div',
         className: 'captcha-img'
@@ -611,8 +615,9 @@ QR =
 
       $.on imgContainer, 'click',   @reload.bind @
       $.on input,        'keydown', @keydown.bind @
+      $.get 'captchas', [], (item) =>
+        @sync item['captchas']
       $.sync 'captchas', @sync
-      @sync $.get 'captchas', []
       # start with an uncached captcha
       @reload()
 
@@ -794,13 +799,13 @@ QR =
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
-    $.on nodes.addPost,    'click',  -> new QR.post().select()
+    $.on nodes.addPost,    'click',  -> new QR.post true
     $.on nodes.form,       'submit', QR.submit
     $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.fileInput
 
-    new QR.post().select()
+    new QR.post true
     # save selected post's data
     for name in ['name', 'email', 'sub', 'com']
       $.on nodes[name], 'input', -> QR.selected.save @
@@ -839,10 +844,12 @@ QR =
         err = 'New threads require a subject.'
       else unless post.file or textOnly = !!$ 'input[name=textonly]', $.id 'postForm'
         err = 'No file selected.'
-    else if g.BOARD.threads[threadID].isSticky
+    else if g.BOARD.threads[threadID].isClosed
       err = 'You can\'t reply to this thread anymore.'
     else unless post.com or post.file
       err = 'No file selected.'
+    else if post.file and g.BOARD.threads[threadID].fileLimit
+      err = 'Max limit of image replies has been reached.'
 
     if QR.captcha.isEnabled and !err
       {challenge, response} = QR.captcha.getOne()
@@ -893,6 +900,7 @@ QR =
         QR.error $.el 'span',
           innerHTML: 'Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.'
     opts =
+      cred: true
       form: $.formData postData
       upCallbacks:
         onload: ->
@@ -965,21 +973,25 @@ QR =
     QR.cleanNotifications()
     QR.notifications.push new Notification 'success', h1.textContent, 5
 
-    persona = $.get 'QR.persona', {}
-    persona =
-      name:  post.name
-      email: if /^sage$/.test post.email then persona.email else post.email
-      sub:   if Conf['Remember Subject'] then post.sub      else null
-    $.set 'QR.persona', persona
+    $.get 'QR.persona', {}, (item) ->
+      persona = item['QR.persona']
+      persona =
+        name:  post.name
+        email: if /^sage$/.test post.email then persona.email else post.email
+        sub:   if Conf['Remember Subject'] then post.sub      else null
+      $.set 'QR.persona', persona
 
     [_, threadID, postID] = h1.nextSibling.textContent.match /thread:(\d+),no:(\d+)/
     postID   = +postID
     threadID = +threadID or postID
     isReply  = threadID isnt postID
 
-    (QR.yourPosts.threads[threadID] or= []).push postID
-    $.set "yourPosts.#{g.BOARD}", QR.yourPosts
-    
+    QR.db.set
+      boardID: g.BOARD.ID
+      threadID: threadID
+      postID: postID
+      val: true
+
     ThreadUpdater.postID = postID
 
     # Post/upload confirmed as successful.
@@ -992,7 +1004,10 @@ QR =
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.posts.length > 1 and isReply
 
-    post.rm()
+    unless Conf['Persistent QR'] or QR.cooldown.auto
+      QR.close()
+    else
+      post.rm()
 
     QR.cooldown.set {req, post, isReply}
 
@@ -1005,9 +1020,6 @@ QR =
         $.open "/#{g.BOARD}/res/#{threadID}"
       else
         window.location = "/#{g.BOARD}/res/#{threadID}"
-
-    unless Conf['Persistent QR'] or QR.cooldown.auto
-      QR.close()
 
     QR.status()
 

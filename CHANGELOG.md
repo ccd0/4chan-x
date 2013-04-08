@@ -1,4 +1,10 @@
-# 3.0.0
+### 3.0.1 - *2013-04-08*
+
+- Added the possibility to combine board-list toggle and custom text.
+- Added Reply Navigation back in, disabled by default.
+- Fixed Thread Hiding initialization error.
+
+# 3.0.0 - *2013-04-07*
 
 **Major rewrite of 4chan X.**
 
@@ -7,10 +13,16 @@ Header:
  - The board list can be customized.
  - The Header can be automatically hidden.
 
+Extension-related changes for Chrome and Opera:
+ - Installing and updating is now pain-free on Chrome.
+ - Settings will persist on different subdomains and protocols (HTTP/HTTPS).
+ - Settings will persist in Incognito on Chrome.
+ - Clearing your cookies won't erase your settings anymore.
+ - Fixed Chrome's install warning saying that 4chan X would run on all web sites.
+
 Egocentrism:
  - `(You)` will be added to quotes linking to your posts.
  - The Unread tab icon will indicate new unread posts quoting you with an exclamation mark.
- - Delete links in the post menu will only appear for your posts.
 
 Quick Reply changes:
  - Opening text files will insert their content in the comment field.
@@ -21,11 +33,12 @@ Quick Reply changes:
  - Closing the QR while uploading will abort the upload and won't close the QR anymore.
  - Creating threads outside of the index is now possible.
  - Selection-to-quote also applies to selected text inside the post, not just inside the comment.
+ - Added support for thread creation in the catalog.
  - Added thumbnailing support for Opera.
 
 Image Expansion changes:
  - The toggle and settings are now located in the Header's shortcuts and menu.
- - There is now a setting to allow expanding spoilers.
+ - Expanding spoilers along with all non-spoiler images is now optional, and disabled by default.
  - Expanding OP images won't squish replies anymore.
 
 Thread Updater changes:

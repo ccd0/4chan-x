@@ -49,6 +49,10 @@ Config =
         false
         'Add buttons to navigate between threads.'
       ]
+      'Reply Navigation': [
+        false
+        'Add buttons to navigate to top / bottom of thread.'
+      ]
       'Check for Updates': [
         true
         'Check for updated versions of <%= meta.name %>.'
@@ -232,7 +236,7 @@ Config =
         'Add quote backlinks.'
       ]
       'OP Backlinks': [
-        false
+        true
         'Add backlinks to the OP.'
       ]
       'Quote Inlining': [
@@ -685,8 +689,8 @@ Config =
     MD5: ''
 
   sauces: """
-http://iqdb.org/?url=%TURL
 https://www.google.com/searchbyimage?image_url=%TURL
+http://iqdb.org/?url=%TURL
 #//tineye.com/search?url=%TURL
 #http://saucenao.com/search.php?url=%TURL
 #http://3d.iqdb.org/?url=%TURL
@@ -829,6 +833,7 @@ https://www.google.com/searchbyimage?image_url=%TURL
       'x'
       'Hide thread.'
     ]
+
   updater:
     checkbox:
       'Beep': [
