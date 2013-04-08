@@ -1,3 +1,5 @@
+### 3.0.1 - *2013-04-08*
+
 - Added possibility to combine board-list toggle and custom text.
 - Added Reply Navigation back in, disabled by default.
 - Fixed Thread Hiding initialization error.
