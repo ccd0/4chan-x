@@ -1129,7 +1129,7 @@ ThreadHiding =
           if thread.no of hiddenThreadsOnCatalog
             threads[thread.no] = hiddenThreadsOnCatalog[thread.no]
       if Object.keys(threads).length
-        localStorage.setItem "4chan-hide-t-#{g.BOARD}", threads
+        localStorage.setItem "4chan-hide-t-#{g.BOARD}", JSON.stringify threads
       else
         localStorage.removeItem "4chan-hide-t-#{g.BOARD}"
 
