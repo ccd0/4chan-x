@@ -251,6 +251,7 @@
       unreadCountTo0: ['z', 'Mark thread as read'],
       expandImage: ['m', 'Expand selected image'],
       expandAllImages: ['M', 'Expand all images'],
+      fappeTyme: ['F', 'Toggle Fappe Tyme'],
       zero: ['0', 'Jump to page 0'],
       nextPage: ['L', 'Jump to the next page'],
       previousPage: ['H', 'Jump to the previous page'],
@@ -1907,6 +1908,9 @@
       keys[_conf.expandAllImages] = function(thread, target, nodeName) {
         return Keybinds.img(thread, true);
       };
+      keys[_conf.fappeTyme] = function(thread, target, nodeName) {
+        return Keybinds.ft(thread);
+      };
       keys[_conf.zero] = function() {
         return window.location = "/" + g.BOARD + "/0#delform";
       };
@@ -2027,6 +2031,9 @@
         thumb = $('img[data-md5]', $('.post.highlight', thread) || thread);
         return ImageExpand.toggle(thumb.parentNode);
       }
+    },
+    ft: function(thread) {
+      return $('#fappeTyme>input').click();
     },
     qr: function(thread, quote) {
       if (quote) {

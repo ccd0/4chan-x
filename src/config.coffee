@@ -525,6 +525,10 @@ div.post.highlight {
       'M'
       'Expand all images'
     ]
+    fappeTyme: [
+      'F'
+      'Toggle Fappe Tyme'
+    ]
     # Board Navigation
     zero: [
       '0'

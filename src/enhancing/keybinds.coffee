@@ -60,6 +60,8 @@ Keybinds =
       Keybinds.img thread
     keys[_conf.expandAllImages] = (thread, target, nodeName) ->
       Keybinds.img thread, true
+    keys[_conf.fappeTyme] = (thread, target, nodeName) ->
+      Keybinds.ft thread
 
     # Board Navigation
     keys[_conf.zero] = ->
@@ -157,6 +159,9 @@ Keybinds =
     else
       thumb = $ 'img[data-md5]', $('.post.highlight', thread) or thread
       ImageExpand.toggle thumb.parentNode
+
+  ft: (thread) ->
+    $('#fappeTyme>input').click()
 
   qr: (thread, quote) ->
     if quote
