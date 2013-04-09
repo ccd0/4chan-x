@@ -14,4 +14,7 @@ MarkOwn =
     if owned
       $.addClass post.el, 'quotedYou'
 
+    if posts[post.ID]
+      $.addClass post.el, 'yourPost'
+      
     return

@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
- * 4chan x - Version 1.0.4 - 2013-04-08
+ * 4chan x - Version 1.0.4 - 2013-04-09
  *
  * Licensed under the MIT license.
  * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -4302,6 +4302,9 @@
       }
       if (owned) {
         $.addClass(post.el, 'quotedYou');
+      }
+      if (posts[post.ID]) {
+        $.addClass(post.el, 'yourPost');
       }
     }
   };
