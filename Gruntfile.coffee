@@ -17,6 +17,7 @@ module.exports = (grunt) ->
           'lib/$.coffee'
           'lib/polyfill.coffee'
           'src/appchan.coffee'
+          'src/settings.coffee'
           'src/features.coffee'
           'src/qr.coffee'
           'src/report.coffee'

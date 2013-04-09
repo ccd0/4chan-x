@@ -458,7 +458,6 @@ vertical-align: top;
       ['Yuno',       '<%= grunt.file.read("img/emoji/yuno.png",         {encoding: "base64"}) %>']
     ]
 
-
 Banner =
   init: ->
     $.asap (-> d.body), ->

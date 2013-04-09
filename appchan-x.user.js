@@ -20,7 +20,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAElBMVEX///8EZgR8ulSk0oT///8EAgQ1A88mAAAAAXRSTlMAQObYZgAAAIpJREFUeF6t0sENwjAMhWF84N4H6gAYMUBkdQMYwfuvwmstEeD4kl892P0OaaWcpga2/K0SGII1HNBXARgu7veoY3ANd+esgMHZIz85u0EABrbms3pl/bkC1Tn5ihGOfQwqHeZ/FdYdirEMgCG2ZAQWDTL0m9FvjAhcvoGNAK2gZhGYYX9+ZgFm9gaiNmNkMENY4QAAAABJRU5ErkJggg==
 // ==/UserScript==
 
-/* appchan x - Version 2.0.0 - 2013-04-08
+/* appchan x - Version 2.0.0 - 2013-04-09
  * http://zixaphir.github.com/appchan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -4862,251 +4862,6 @@
     }
   };
 
-  Header = {
-    init: function() {
-      this.bar = $.el('div', {
-        id: 'notifications'
-      });
-      this.shortcuts = $.el('span', {
-        id: 'shortcuts'
-      });
-      this.hover = $.el('div', {
-        id: 'hoverUI'
-      });
-      $.asap((function() {
-        return d.body;
-      }), function() {
-        if (!Main.isThisPageLegit()) {
-          return;
-        }
-        return $.asap((function() {
-          return $.id('boardNavMobile');
-        }), Header.setBoardList);
-      });
-      return $.ready(function() {
-        return $.add(d.body, Header.hover);
-      });
-    },
-    setBoardList: function() {
-      var a, btn, customBoardList, fullBoardList, nav;
-
-      Header.nav = nav = $.id('boardNavDesktop');
-      if (a = $("a[href*='/" + g.BOARD + "/']", nav)) {
-        a.className = 'current';
-      }
-      fullBoardList = $.el('span', {
-        id: 'full-board-list',
-        hidden: true
-      });
-      customBoardList = $.el('span', {
-        id: 'custom-board-list'
-      });
-      $.add(fullBoardList, __slice.call(nav.childNodes));
-      $.add(nav, [customBoardList, fullBoardList, Header.shortcuts, $('#navtopright', fullBoardList)]);
-      $.add(d.body, Header.bar);
-      if (Conf['Custom Board Navigation']) {
-        Header.generateBoardList(Conf['boardnav']);
-        $.sync('boardnav', Header.generateBoardList);
-        btn = $.el('span', {
-          className: 'hide-board-list-button',
-          innerHTML: '[<a href=javascript:;> - </a>]\u00A0'
-        });
-        $.on(btn, 'click', Header.toggleBoardList);
-        return $.prepend(fullBoardList, btn);
-      } else {
-        $.rm($('#custom-board-list', nav));
-        return fullBoardList.hidden = false;
-      }
-    },
-    generateBoardList: function(text) {
-      var as, list, nodes;
-
-      list = $('#custom-board-list', Header.nav);
-      list.innerHTML = null;
-      if (!text) {
-        return;
-      }
-      as = $$('#full-board-list a', Header.nav).slice(0, -2);
-      nodes = text.match(/[\w@]+(-(all|title|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map(function(t) {
-        var a, board, m, _i, _len;
-
-        if (/^[^\w@]/.test(t)) {
-          return $.tn(t);
-        }
-        if (/^toggle-all/.test(t)) {
-          a = $.el('a', {
-            className: 'show-board-list-button',
-            textContent: (t.match(/-text:"(.+)"/) || [null, '+'])[1],
-            href: 'javascript:;'
-          });
-          $.on(a, 'click', Header.toggleBoardList);
-          return a;
-        }
-        board = /^current/.test(t) ? g.BOARD.ID : t.match(/^[^-]+/)[0];
-        for (_i = 0, _len = as.length; _i < _len; _i++) {
-          a = as[_i];
-          if (a.textContent === board) {
-            a = a.cloneNode(true);
-            if (/-title/.test(t)) {
-              a.textContent = a.title;
-            } else if (/-full/.test(t)) {
-              a.textContent = "/" + board + "/ - " + a.title;
-            } else if (/-(index|catalog|text)/.test(t)) {
-              if (m = t.match(/-(index|catalog)/)) {
-                a.setAttribute('data-only', m[1]);
-                a.href = "//boards.4chan.org/" + board + "/";
-                if (m[1] === 'catalog') {
-                  a.href += 'catalog';
-                }
-              }
-              if (m = t.match(/-text:"(.+)"/)) {
-                a.textContent = m[1];
-              }
-            } else if (board === '@') {
-              $.addClass(a, 'navSmall');
-            }
-            return a;
-          }
-        }
-        return $.tn(t);
-      });
-      return $.add(list, nodes);
-    },
-    toggleBoardList: function() {
-      var custom, full, nav, showBoardList;
-
-      nav = Header.nav;
-      custom = $('#custom-board-list', nav);
-      full = $('#full-board-list', nav);
-      showBoardList = !full.hidden;
-      custom.hidden = !showBoardList;
-      return full.hidden = showBoardList;
-    },
-    addShortcut: function(el) {
-      var shortcut;
-
-      shortcut = $.el('span', {
-        className: 'shortcut'
-      });
-      $.add(shortcut, [$.tn(' ['), el, $.tn(']')]);
-      return $.add(Header.shortcuts, shortcut);
-    }
-  };
-
-  Notification = (function() {
-    var add, close;
-
-    function Notification(type, content, timeout) {
-      this.timeout = timeout;
-      this.add = add.bind(this);
-      this.close = close.bind(this);
-      this.el = $.el('div', {
-        innerHTML: '<a href=javascript:; class=close title=Close>×</a><div class=message></div>'
-      });
-      this.el.style.opacity = 0;
-      this.setType(type);
-      $.on(this.el.firstElementChild, 'click', this.close);
-      if (typeof content === 'string') {
-        content = $.tn(content);
-      }
-      $.add(this.el.lastElementChild, content);
-      $.ready(this.add);
-    }
-
-    Notification.prototype.setType = function(type) {
-      return this.el.className = "notification " + type;
-    };
-
-    add = function() {
-      if (d.hidden) {
-        $.on(d, 'visibilitychange', this.add);
-        return;
-      }
-      $.off(d, 'visibilitychange', this.add);
-      $.add($.id('notifications'), this.el);
-      this.el.clientHeight;
-      this.el.style.opacity = 1;
-      if (this.timeout) {
-        return setTimeout(this.close, this.timeout * $.SECOND);
-      }
-    };
-
-    close = function() {
-      if (this.el.parentNode) {
-        return $.rm(this.el);
-      }
-    };
-
-    return Notification;
-
-  })();
-
-  CatalogLinks = {
-    init: function() {
-      var el;
-
-      $.ready(this.ready);
-      if (!Conf['Catalog Links']) {
-        return;
-      }
-      el = $.el('a', {
-        id: 'toggleCatalog',
-        href: 'javascript:;',
-        className: Conf['Header catalog links'] ? 'disabled' : '',
-        textContent: 'Catalog',
-        title: "Turn catalog links " + (Conf['Header catalog links'] ? 'off' : 'on') + "."
-      });
-      $.on(el, 'click', this.toggle);
-      Header.addShortcut(el);
-      return $.asap((function() {
-        return d.body;
-      }), function() {
-        if (!Main.isThisPageLegit()) {
-          return;
-        }
-        return $.asap((function() {
-          return $.id('boardNavMobile');
-        }), function() {
-          return CatalogLinks.toggle.call(el);
-        });
-      });
-    },
-    toggle: function() {
-      var a, board, useCatalog, _i, _len, _ref;
-
-      $.set('Header catalog links', useCatalog = this.className === 'disabled');
-      $.toggleClass(this, 'disabled');
-      _ref = $$('a', $.id('boardNavDesktop'));
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        a = _ref[_i];
-        board = a.pathname.split('/')[1];
-        if (['f', 'status', '4chan'].contains(board) || !board) {
-          continue;
-        }
-        if (Conf['External Catalog']) {
-          a.href = useCatalog ? CatalogLinks.external(board) : "//boards.4chan.org/" + board + "/";
-        } else {
-          a.pathname = "/" + board + "/" + (useCatalog ? 'catalog' : '');
-        }
-        a.title = useCatalog ? "" + a.title + " - Catalog" : a.title.replace(/\ -\ Catalog$/, '');
-      }
-      return this.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
-    },
-    external: function(board) {
-      return (['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'].contains(board) ? "http://catalog.neet.tv/" + board : ['d', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'].contains(board) ? "http://4index.gropes.us/" + board : "//boards.4chan.org/" + board + "/catalog");
-    },
-    ready: function() {
-      var catalogLink;
-
-      if (catalogLink = $('.pages.cataloglink a', d.body) || $('[href=".././catalog"]', d.body)) {
-        if (!g.VIEW === 'thread') {
-          $.add(d.body, catalogLink);
-        }
-        return catalogLink.id = 'catalog';
-      }
-    }
-  };
-
   Settings = {
     init: function() {
       var link, settings;
@@ -5660,6 +5415,251 @@
       }
       this.value = key;
       return $.cb.value.call(this);
+    }
+  };
+
+  Header = {
+    init: function() {
+      this.bar = $.el('div', {
+        id: 'notifications'
+      });
+      this.shortcuts = $.el('span', {
+        id: 'shortcuts'
+      });
+      this.hover = $.el('div', {
+        id: 'hoverUI'
+      });
+      $.asap((function() {
+        return d.body;
+      }), function() {
+        if (!Main.isThisPageLegit()) {
+          return;
+        }
+        return $.asap((function() {
+          return $.id('boardNavMobile');
+        }), Header.setBoardList);
+      });
+      return $.ready(function() {
+        return $.add(d.body, Header.hover);
+      });
+    },
+    setBoardList: function() {
+      var a, btn, customBoardList, fullBoardList, nav;
+
+      Header.nav = nav = $.id('boardNavDesktop');
+      if (a = $("a[href*='/" + g.BOARD + "/']", nav)) {
+        a.className = 'current';
+      }
+      fullBoardList = $.el('span', {
+        id: 'full-board-list',
+        hidden: true
+      });
+      customBoardList = $.el('span', {
+        id: 'custom-board-list'
+      });
+      $.add(fullBoardList, __slice.call(nav.childNodes));
+      $.add(nav, [customBoardList, fullBoardList, Header.shortcuts, $('#navtopright', fullBoardList)]);
+      $.add(d.body, Header.bar);
+      if (Conf['Custom Board Navigation']) {
+        Header.generateBoardList(Conf['boardnav']);
+        $.sync('boardnav', Header.generateBoardList);
+        btn = $.el('span', {
+          className: 'hide-board-list-button',
+          innerHTML: '[<a href=javascript:;> - </a>]\u00A0'
+        });
+        $.on(btn, 'click', Header.toggleBoardList);
+        return $.prepend(fullBoardList, btn);
+      } else {
+        $.rm($('#custom-board-list', nav));
+        return fullBoardList.hidden = false;
+      }
+    },
+    generateBoardList: function(text) {
+      var as, list, nodes;
+
+      list = $('#custom-board-list', Header.nav);
+      list.innerHTML = null;
+      if (!text) {
+        return;
+      }
+      as = $$('#full-board-list a', Header.nav).slice(0, -2);
+      nodes = text.match(/[\w@]+(-(all|title|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map(function(t) {
+        var a, board, m, _i, _len;
+
+        if (/^[^\w@]/.test(t)) {
+          return $.tn(t);
+        }
+        if (/^toggle-all/.test(t)) {
+          a = $.el('a', {
+            className: 'show-board-list-button',
+            textContent: (t.match(/-text:"(.+)"/) || [null, '+'])[1],
+            href: 'javascript:;'
+          });
+          $.on(a, 'click', Header.toggleBoardList);
+          return a;
+        }
+        board = /^current/.test(t) ? g.BOARD.ID : t.match(/^[^-]+/)[0];
+        for (_i = 0, _len = as.length; _i < _len; _i++) {
+          a = as[_i];
+          if (a.textContent === board) {
+            a = a.cloneNode(true);
+            if (/-title/.test(t)) {
+              a.textContent = a.title;
+            } else if (/-full/.test(t)) {
+              a.textContent = "/" + board + "/ - " + a.title;
+            } else if (/-(index|catalog|text)/.test(t)) {
+              if (m = t.match(/-(index|catalog)/)) {
+                a.setAttribute('data-only', m[1]);
+                a.href = "//boards.4chan.org/" + board + "/";
+                if (m[1] === 'catalog') {
+                  a.href += 'catalog';
+                }
+              }
+              if (m = t.match(/-text:"(.+)"/)) {
+                a.textContent = m[1];
+              }
+            } else if (board === '@') {
+              $.addClass(a, 'navSmall');
+            }
+            return a;
+          }
+        }
+        return $.tn(t);
+      });
+      return $.add(list, nodes);
+    },
+    toggleBoardList: function() {
+      var custom, full, nav, showBoardList;
+
+      nav = Header.nav;
+      custom = $('#custom-board-list', nav);
+      full = $('#full-board-list', nav);
+      showBoardList = !full.hidden;
+      custom.hidden = !showBoardList;
+      return full.hidden = showBoardList;
+    },
+    addShortcut: function(el) {
+      var shortcut;
+
+      shortcut = $.el('span', {
+        className: 'shortcut'
+      });
+      $.add(shortcut, [$.tn(' ['), el, $.tn(']')]);
+      return $.add(Header.shortcuts, shortcut);
+    }
+  };
+
+  Notification = (function() {
+    var add, close;
+
+    function Notification(type, content, timeout) {
+      this.timeout = timeout;
+      this.add = add.bind(this);
+      this.close = close.bind(this);
+      this.el = $.el('div', {
+        innerHTML: '<a href=javascript:; class=close title=Close>×</a><div class=message></div>'
+      });
+      this.el.style.opacity = 0;
+      this.setType(type);
+      $.on(this.el.firstElementChild, 'click', this.close);
+      if (typeof content === 'string') {
+        content = $.tn(content);
+      }
+      $.add(this.el.lastElementChild, content);
+      $.ready(this.add);
+    }
+
+    Notification.prototype.setType = function(type) {
+      return this.el.className = "notification " + type;
+    };
+
+    add = function() {
+      if (d.hidden) {
+        $.on(d, 'visibilitychange', this.add);
+        return;
+      }
+      $.off(d, 'visibilitychange', this.add);
+      $.add($.id('notifications'), this.el);
+      this.el.clientHeight;
+      this.el.style.opacity = 1;
+      if (this.timeout) {
+        return setTimeout(this.close, this.timeout * $.SECOND);
+      }
+    };
+
+    close = function() {
+      if (this.el.parentNode) {
+        return $.rm(this.el);
+      }
+    };
+
+    return Notification;
+
+  })();
+
+  CatalogLinks = {
+    init: function() {
+      var el;
+
+      $.ready(this.ready);
+      if (!Conf['Catalog Links']) {
+        return;
+      }
+      el = $.el('a', {
+        id: 'toggleCatalog',
+        href: 'javascript:;',
+        className: Conf['Header catalog links'] ? 'disabled' : '',
+        textContent: 'Catalog',
+        title: "Turn catalog links " + (Conf['Header catalog links'] ? 'off' : 'on') + "."
+      });
+      $.on(el, 'click', this.toggle);
+      Header.addShortcut(el);
+      return $.asap((function() {
+        return d.body;
+      }), function() {
+        if (!Main.isThisPageLegit()) {
+          return;
+        }
+        return $.asap((function() {
+          return $.id('boardNavMobile');
+        }), function() {
+          return CatalogLinks.toggle.call(el);
+        });
+      });
+    },
+    toggle: function() {
+      var a, board, useCatalog, _i, _len, _ref;
+
+      $.set('Header catalog links', useCatalog = this.className === 'disabled');
+      $.toggleClass(this, 'disabled');
+      _ref = $$('a', $.id('boardNavDesktop'));
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        a = _ref[_i];
+        board = a.pathname.split('/')[1];
+        if (['f', 'status', '4chan'].contains(board) || !board) {
+          continue;
+        }
+        if (Conf['External Catalog']) {
+          a.href = useCatalog ? CatalogLinks.external(board) : "//boards.4chan.org/" + board + "/";
+        } else {
+          a.pathname = "/" + board + "/" + (useCatalog ? 'catalog' : '');
+        }
+        a.title = useCatalog ? "" + a.title + " - Catalog" : a.title.replace(/\ -\ Catalog$/, '');
+      }
+      return this.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
+    },
+    external: function(board) {
+      return (['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'].contains(board) ? "http://catalog.neet.tv/" + board : ['d', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'].contains(board) ? "http://4index.gropes.us/" + board : "//boards.4chan.org/" + board + "/catalog");
+    },
+    ready: function() {
+      var catalogLink;
+
+      if (catalogLink = $('.pages.cataloglink a', d.body) || $('[href=".././catalog"]', d.body)) {
+        if (!g.VIEW === 'thread') {
+          $.add(d.body, catalogLink);
+        }
+        return catalogLink.id = 'catalog';
+      }
     }
   };
 
