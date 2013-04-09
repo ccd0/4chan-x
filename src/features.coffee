@@ -1909,10 +1909,8 @@ Nav =
     span = $.el 'span',
       id: 'navlinks'
     prev = $.el 'a',
-      textContent: '▲'
       href: 'javascript:;'
     next = $.el 'a',
-      textContent: '▼'
       href: 'javascript:;'
 
     $.on prev, 'click', @prev
@@ -3171,7 +3169,7 @@ ImageExpand =
       id: 'imgControls'
       innerHTML: """
         <a class='expand-all-shortcut' title='Expand All Images' href='javascript:;'></a>
-        <a class='menu-button' href='javascript:;'><i class=dropmarker></i></a>
+        <a class='menu-button' href='javascript:;'></a>
       """
     @EAI = wrapper.firstElementChild
     $.on @EAI, 'click', ImageExpand.cb.toggleAll

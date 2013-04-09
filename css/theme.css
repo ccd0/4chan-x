@@ -211,9 +211,9 @@ a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
 #navlinks a:last-of-type {
   border-top: 11px solid rgb(130,130,130);
 }
-#imgControls .dropmarker,
-#imgControls .dropmarker:hover {
-  border-top-color: rgb(130,130,130);
+#imgControls .menu-button {
+  border-color: rgb(130,130,130);
+  color: rgb(130,130,130);
 }
 #charCount {
   color: #{(if Style.lightTheme then "rgba(0,0,0,0.7)" else "rgba(255,255,255,0.7)")};
@@ -292,13 +292,28 @@ textarea {
   color: #{theme["Navigation Links"]};
 }
 input[type=checkbox]:checked + .rice {
-  background: #{theme["Checkbox Checked Background"]};
-  background-image: url(data:image/png;base64,#{
-  if Style.lightTheme
-    "AkAAAAJCAMAAADXT/YiAAAAWlBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACLSV5RAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg=="
-  else
-    "AkAAAAJCAMAAADXT/YiAAAAWlBMVEX///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////9jZLFEAAAAHXRSTlMAgVHwkF11LdsM9vm9n5x+ye0qMOfk/GzqSMC6EsZzJYoAAABBSURBVHheLcZHEoAwEMRArcHknNP8/5u4MLqo+SszcBMwFyt57cFXamjV0UtyDBotIIVFiiAJ33aijhOA67bnwwuZdAPNxckOUgAAAABJRU5ErkJggg=="
-});
+  position: relative;
+}
+input[type=checkbox]:checked + .rice::after {
+  content: "";
+  display: block;
+  width: 5px;
+  height: 12px;
+  border-radius: 1px;
+  border: solid rgb(50, 50, 50);
+  border-width: 0 3px 3px 0;
+  #{agent}transform: rotate(45deg);
+  position: absolute;
+  left: 2px;
+  bottom: -1px;
+  #{unless Style.lightTheme then "
+filter: url(\"
+data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='
+-1 0 0 0 1
+ 0 -1 0 0 1
+ 0 0 -1 0 1
+ 0 0 0 1 0' /></filter></svg>#filters
+\");" else ""}
 }
 #addReply,
 #dump,

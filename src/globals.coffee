@@ -647,7 +647,6 @@ Themes =
     'Input Border'                : 'rgba(51,51,51,1)'
     'Checkbox Background'         : 'rgba(68,68,68,1)'
     'Checkbox Border'             : 'rgba(68,68,68,1)'
-    'Checkbox Checked Background' : 'rgba(17,17,17,1)'
     'Buttons Background'          : 'rgba(48,48,48,1)'
     'Buttons Border'              : 'rgba(48,48,48,1)'
     'Focused Input Background'    : 'rgba(63,63,63,1)'
@@ -698,7 +697,6 @@ Themes =
     'Input Border'                : 'rgba(204,204,204,1)'
     'Checkbox Background'         : 'rgba(255,255,238,1)'
     'Checkbox Border'             : 'rgba(204,204,204,1)'
-    'Checkbox Checked Background' : 'rgba(188,192,212,1)'
     'Buttons Background'          : 'rgba(255,255,255,1)'
     'Buttons Border'              : 'rgba(204,204,204,1)'
     'Focused Input Background'    : 'rgba(255,255,255,1)'
@@ -773,7 +771,6 @@ Themes =
     'Focused Input Border'        : 'rgba(27,27,27,1)'
     'Hovered Input Background'    : 'rgba(17,17,17,1)'
     'Hovered Input Border'        : 'rgba(17,17,17,1)'
-    'Checkbox Checked Background' : 'rgba(17,17,17,1)'
     'Buttons Background'          : 'rgba(27,27,27,1)'
     'Buttons Border'              : 'rgba(27,27,27,1)'
     'Navigation Background'       : 'rgba(45,45,45,0.9)'
@@ -838,7 +835,6 @@ Themes =
     'Focused Input Border'        : 'rgba(28,28,28,1)'
     'Checkbox Background'         : 'rgba(0,0,0,1)'
     'Checkbox Border'             : 'rgba(60,60,60,1)'
-    'Checkbox Checked Background' : 'rgba(60,60,60,1)'
     'Buttons Background'          : 'rgba(24,24,24,1)'
     'Buttons Border'              : 'rgba(24,24,24,1)'
     'Navigation Background'       : 'rgba(16,16,16,0.9)'
@@ -886,7 +882,6 @@ Themes =
     'Focused Input Border'        : 'rgba(102,102,102,1)'
     'Hovered Input Background'    : 'rgba(24,24,24,1)'
     'Hovered Input Border'        : 'rgba(21,21,21,1)'
-    'Checkbox Checked Background' : 'rgba(57,57,57,1)'
     'Buttons Background'          : 'rgba(32,32,32,1)'
     'Buttons Border'              : 'rgba(16,16,16,1)'
     'Navigation Background'       : 'rgba(26,26,26,0.9)'
@@ -994,7 +989,6 @@ div.post:hover .name {
     'Hovered Input Border'        : 'rgba(0,0,0,0.4)'
     'Focused Input Background'    : 'rgba(0,0,0,0.4)'
     'Focused Input Border'        : 'rgba(0,0,0,0.4)'
-    'Checkbox Checked Background' : 'rgba(255,0,127,1)'
     'Buttons Background'          : 'rgba(0,0,0,0.4)'
     'Buttons Border'              : 'rgba(0,0,0,0.4)'
     'Navigation Background'       : 'rgba(0,0,0,0.7)'
@@ -1053,7 +1047,6 @@ div.post:hover .name {
     'Hovered Input Border'        : 'rgba(24,24,24,1)'
     'Focused Input Background'    : 'rgba(32,32,32,1)'
     'Focused Input Border'        : 'rgba(32,32,32,1)'
-    'Checkbox Checked Background' : 'rgba(34,34,34,1)'
     'Buttons Background'          : 'rgba(32,32,32,1)'
     'Buttons Border'              : 'rgba(32,32,32,1)'
     'Navigation Background'       : 'rgba(16,16,16,0.9)'
@@ -1214,7 +1207,6 @@ a.forwardlink{
     'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
     'Checkbox Background'         : 'rgba(255,255,238)'
     'Checkbox Border'             : 'rgba(255,255,238)'
-    'Checkbox Checked Background' : 'rgba(188,192,212)'
     'Input Background'            : 'rgba(255,255,255,1)'
     'Input Border'                : 'rgba(204,204,204,1)'
     'Hovered Input Background'    : 'rgba(204,204,204,1)'
@@ -1282,7 +1274,6 @@ a.forwardlink{
     'Focused Input Background'    : 'rgb(240,240,240)'
     'Focused Input Border'        : 'rgb(220,210,210)'
     'Checkbox Background'         : 'rgba(238,242,255,1)'
-    'Checkbox Checked Background' : 'rgba(255,255,255,1)'
     'Checkbox Border'             : 'rgba(180,180,180,1)'
     'Buttons Background'          : 'linear-gradient(rgb(222,222,222), rgb(240,240,240)), rgb(240,240,240)'
     'Buttons Border'              : 'rgb(220,210,210)'
@@ -1410,7 +1401,6 @@ a.forwardlink{
     'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
     'Checkbox Background'         : 'rgba(88,110,117,1)'
     'Checkbox Border'             : 'rgba(88,110,117,1)'
-    'Checkbox Checked Background' : 'rgba(17,17,17,1)'
     'Input Background'            : 'rgba(0,43,54,1)'
     'Input Border'                : 'rgba(0,43,54,1)'
     'Hovered Input Background'    : 'rgba(7,54,66,1)'
@@ -1463,7 +1453,6 @@ a.forwardlink{
     'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
     'Checkbox Background'         : 'rgba(255,255,238,1)'
     'Checkbox Border'             : 'rgba(217,191,183,1)'
-    'Checkbox Checked Background' : 'rgba(255,255,238,1)'
     'Input Background'            : 'rgba(240,224,214,1)'
     'Input Border'                : 'rgba(217,191,183,1)'
     'Hovered Input Background'    : 'rgba(240,224,214,1)'
@@ -1519,7 +1508,6 @@ a.forwardlink{
     'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
     'Checkbox Background'         : 'rgba(238,242,255,1)'
     'Checkbox Border'             : 'rgba(183,197,217,1)'
-    'Checkbox Checked Background' : 'rgba(188,192,212,1)'
     'Input Background'            : 'rgba(238,242,255,1)'
     'Input Border'                : 'rgba(183,197,217,1)'
     'Hovered Input Background'    : 'rgba(214,186,208,1)'
@@ -1574,7 +1562,6 @@ a.forwardlink{
     'Backlinked Reply Outline'    : 'rgba(98,124,141,1)'
     'Checkbox Background'         : 'rgba(63,63,63,1)'
     'Checkbox Border'             : 'rgba(136,136,136,1)'
-    'Checkbox Checked Background' : 'rgba(17,17,17,1)'
     'Input Background'            : 'rgba(87,87,87,1)'
     'Input Border'                : 'rgba(136,136,136,1)'
     'Hovered Input Background'    : 'rgba(38,38,38,1)'
@@ -1621,7 +1608,6 @@ a.forwardlink{
     "Backlinked Reply Outline"    : "rgb(191,122,180)"
     "Checkbox Background"         : "rgba(240,240,240,1.0)"
     "Checkbox Border"             : "rgb(222,222,222)"
-    "Checkbox Checked Background" : "rgb(240,240,240)"
     "Input Background"            : "rgba(240,240,240,1.0)"
     "Input Border"                : "rgb(222,222,222)"
     "Hovered Input Background"    : "rgba(224,224,224,1.0)"
@@ -1705,7 +1691,6 @@ textarea,
     "Backlinked Reply Outline"    : "rgb(150,37,148)"
     "Checkbox Background"         : "rgba(255,255,255,1.0)"
     "Checkbox Border"             : "rgb(202,183,217)"
-    "Checkbox Checked Background" : "rgb(255,255,255)"
     "Input Background"            : "rgba(255,255,255,1.0)"
     "Input Border"                : "rgb(202,183,217)"
     "Hovered Input Background"    : "rgba(239,239,239,1.0)"
@@ -1794,7 +1779,6 @@ textarea,
     "Backlinked Reply Outline"    : "rgb(83,189,177)"
     "Checkbox Background"         : "rgba(9,13,15,.9)"
     "Checkbox Border"             : "rgb(11,19,22)"
-    "Checkbox Checked Background" : "rgb(9,13,15)"
     "Input Background"            : "rgba(9,13,15,.9)"
     "Input Border"                : "rgb(11,19,22)"
     "Hovered Input Background"    : "rgba(0,0,0,.9)"
@@ -1872,7 +1856,6 @@ textarea,
     "Backlinked Reply Outline"    : "rgb(129,162,190)"
     "Checkbox Background"         : "rgba(40,42,46,.9)"
     "Checkbox Border"             : "rgb(29,31,33)"
-    "Checkbox Checked Background" : "rgb(40,42,46)"
     "Input Background"            : "rgba(40,42,46,.9)"
     "Input Border"                : "rgb(29,31,33)"
     "Hovered Input Background"    : "rgba(24,26,30,.9)"
@@ -1950,7 +1933,6 @@ textarea,
     "Backlinked Reply Outline"    : "rgb(108,113,196)"
     "Checkbox Background"         : "rgba(255,255,255,1.0)"
     "Checkbox Border"             : "rgb(204,204,204)"
-    "Checkbox Checked Background" : "rgb(255,255,255)"
     "Input Background"            : "rgba(255,255,255,1.0)"
     "Input Border"                : "rgb(204,204,204)"
     "Hovered Input Background"    : "rgba(239,239,239,1.0)"
@@ -2036,7 +2018,6 @@ textarea,
     "Backlinked Reply Outline"    : "rgb(188,49,42)"
     "Checkbox Background"         : "rgba(255,255,255,.9)"
     "Checkbox Border"             : "rgb(204,204,204)"
-    "Checkbox Checked Background" : "rgb(255,255,255)"
     "Input Background"            : "rgba(255,255,255,.9)"
     "Input Border"                : "rgb(204,204,204)"
     "Hovered Input Background"    : "rgba(239,239,239,.9)"
@@ -2128,7 +2109,6 @@ div.reply a.quotelink{
     "Backlinked Reply Outline"    : "rgb(226,219,116)"
     "Checkbox Background"         : "rgba(32,33,28,1.0)"
     "Checkbox Border"             : "rgb(23,23,19)"
-    "Checkbox Checked Background" : "rgb(32,33,28)"
     "Input Background"            : "rgba(32,33,28,1.0)"
     "Input Border"                : "rgb(23,23,19)"
     "Hovered Input Background"    : "rgba(16,17,12,1.0)"
@@ -2207,7 +2187,6 @@ textarea,
     "Backlinked Reply Outline"    : "rgb(172,155,176)"
     "Checkbox Background"         : "rgba(24,25,26,.9)"
     "Checkbox Border"             : "rgb(18,19,20)"
-    "Checkbox Checked Background" : "rgb(24,25,26)"
     "Input Background"            : "rgba(24,25,26,.9)"
     "Input Border"                : "rgb(18,19,20)"
     "Hovered Input Background"    : "rgba(8,9,10,.9)"
@@ -2285,7 +2264,6 @@ textarea,
     "Backlinked Reply Outline"    : "rgb(251,222,45)"
     "Checkbox Background"         : "rgba(12,16,33,1.0)"
     "Checkbox Border"             : "rgb(8,11,22)"
-    "Checkbox Checked Background" : "rgb(12,16,33)"
     "Input Background"            : "rgba(12,16,33,1.0)"
     "Input Border"                : "rgb(8,11,22)"
     "Hovered Input Background"    : "rgba(0,0,17,1.0)"
@@ -2367,7 +2345,6 @@ textarea,
     "Backlinked Reply Outline"    : "rgba(191,127,63,0.5)"
     "Checkbox Background"         : "rgba(228,228,228,.9)"
     "Checkbox Border"             : "rgb(204,204,204)"
-    "Checkbox Checked Background" : "rgb(228,228,228)"
     "Input Background"            : "rgba(244,244,244,0.9)"
     "Input Border"                : "rgb(204,204,204)"
     "Hovered Input Background"    : "rgba(212,212,212,.9)"
@@ -2464,7 +2441,6 @@ textarea,
     "Backlinked Reply Outline"    : "rgb(221,221,221)"
     "Checkbox Background"         : "rgba(47,47,47,.9)"
     "Checkbox Border"             : "rgb(15,15,15)"
-    "Checkbox Checked Background" : "rgb(47,47,47)"
     "Input Background"            : "rgba(47,47,47,.9)"
     "Input Border"                : "rgb(15,15,15)"
     "Hovered Input Background"    : "rgba(31,31,31,.9)"
@@ -2566,7 +2542,6 @@ a:not([href='javascript:;']){
     "Backlinked Reply Outline"    : "rgb(191,128,64)"
     "Checkbox Background"         : "rgba(204,204,204,.9)"
     "Checkbox Border"             : "rgb(187,187,187)"
-    "Checkbox Checked Background" : "rgb(204,204,204)"
     "Input Background"            : "rgba(204,204,204,.9)"
     "Input Border"                : "rgb(187,187,187)"
     "Hovered Input Background"    : "rgba(188,188,188,.9)"
@@ -2643,7 +2618,6 @@ textarea,
     "Backlinked Reply Outline"    : "rgb(42,127,160)"
     "Checkbox Background"         : "rgba(24,25,26,.9)"
     "Checkbox Border"             : "rgb(18,19,20)"
-    "Checkbox Checked Background" : "rgb(24,25,26)"
     "Input Background"            : "rgba(24,25,26,.9)"
     "Input Border"                : "rgb(18,19,20)"
     "Hovered Input Background"    : "rgba(40,41,42,.9)"
@@ -2722,7 +2696,6 @@ textarea,
     "Input Border"                : "#171717"
     "Checkbox Background"         : "#3c212a"
     "Checkbox Border"             : "#171717"
-    "Checkbox Checked Background" : "rgba(17,17,17,1)"
     "Buttons Background"          : "#3c212a"
     "Buttons Border"              : "#171717"
     "Focused Input Background"    : "#3c212a"
@@ -2755,6 +2728,87 @@ textarea,
     "Background Attachment"       : ""
     "Background Position"         : ""
     "Background Repeat"           : ""
+
+  "White Rainbow":
+    "Author"                      : "Shiro"
+    "Author Tripcode"             : "!i.Neko0OEM"
+    "Background Image"            : "url('http://subtlepatterns.com/patterns/paper_fibers.png')"
+    "Background Attachment"       : "fixed"
+    "Background Position"         : "top left"
+    "Background Repeat"           : "repeat"
+    "Background Color"            : "rgb(255,255,255)"
+    "Dialog Background"           : "rgba(239,239,239,.98)"
+    "Dialog Border"               : "rgb(214,214,214)"
+    "Thread Wrapper Background"   : "rgba(239,239,239,.98)"
+    "Thread Wrapper Border"       : "rgba(214,214,214,.4)"
+    "Reply Background"            : "rgba(255,255,255,.90)"
+    "Reply Border"                : "rgb(214,214,214)"
+    "Highlighted Reply Background": "rgba(239,239,239,.90)"
+    "Highlighted Reply Border"    : "#b84818"
+    "Backlinked Reply Outline"    : "#b84818"
+    "Checkbox Background"         : "rgba(239,239,239,.98)"
+    "Checkbox Border"             : "rgb(187,187,187)"
+    "Checkbox Checked Background" : "rgba(239,239,239,.98)"
+    "Input Background"            : "#fffffff"
+    "Input Border"                : "rgb(187,187,187)"
+    "Hovered Input Background"    : "#f0f0f0"
+    "Hovered Input Border"        : "rgb(187,187,187)"
+    "Focused Input Background"    : "#f0f0f0"
+    "Focused Input Border"        : "rgb(187,187,187)"
+    "Buttons Background"          : "rgba(239,239,239,.98)"
+    "Buttons Border"              : "rgb(187,187,187)"
+    "Navigation Background"       : "rgba(255,255,255,0.8)"
+    "Navigation Border"           : "rgb(239,239,239)"
+    "Quotelinks"                  : "#7a2634"
+    "Links"                       : "#7a2634"
+    "Hovered Links"               : "#c24646"
+    "Navigation Links"            : "#404d41"
+    "Hovered Navigation Links"    : "#527054"
+    "Subjects"                    : "#5533ff"
+    "Names"                       : "#242ca3"
+    "Sage"                        : "#6910ad"
+    "Tripcodes"                   : "#0c76ab"
+    "Emails"                      : "#0c76ab"
+    "Post Numbers"                : "#b86e2e"
+    "Text"                        : "#242423"
+    "Backlinks"                   : "#7a2634"
+    "Greentext"                   : "#10610a"
+    "Board Title"                 : "#000000"
+    "Timestamps"                  : "#00913f"
+    "Inputs"                      : "#242423"
+    "Warnings"                    : "rgb(200,40,41)"
+    "Shadow Color"                : "#b0b0b0"
+    "Custom CSS"                  : """
+.thread {
+  padding: 1px;
+}
+.rice {
+  box-shadow:rgba(255,255,255,.3) 0 1px;
+}
+input[type=password]:hover,
+input[type=text]:not([disabled]):hover,
+input#fs_search:hover,
+input.field:hover,
+.webkit select:hover,
+textarea:hover,
+#options input:not([type=checkbox]):hover {
+  box-shadow: inset rgba(0,0,0,.2) 0 1px 2px;
+}
+input[type=password]:focus,
+input[type=text]:focus,
+input#fs_search:focus,
+input.field:focus,
+.webkit select:focus,
+textarea:focus,
+#options input:focus {
+  box-shadow: inset rgba(200,200,200,.2) 0 1px 2px;
+}
+button,
+input,
+textarea,
+.rice {
+  transition: background .2s,box-shadow .2s;
+}"""
 
 Icons =
   oneechan:   '<%= grunt.file.read("img/icons/oneechan.png", {encoding: "base64"}) %>'

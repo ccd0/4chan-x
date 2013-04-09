@@ -440,14 +440,26 @@ else "
   z-index: 10;
 }
 /* Image Expansion */
-#imgControls .menu-button {
+#imgControls a.menu-button {
   margin: 0;
-}
-#imgControls .dropmarker {
   margin: 1px;
-  border-top-width: 13px;
-  border-right-width: 7px;
-  border-left-width: 7px;
+  border: 2px solid;
+  border-radius: 10px;
+  height: 14px;
+  width: 14px;
+  #{Style.sizing}: border-box;
+}
+#imgControls .menu-button::after {
+  content: '';
+  font-size: 10px;
+  position: absolute;
+  bottom: 50%;
+  right: 50%;
+  #{agent}transform: translate(50%, 60%);
+  display: block;
+  border-top: 6px solid rgb(130, 130, 130);
+  border-left: 3px solid transparent;
+  border-right: 3px solid transparent;
 }
 .fitwidth .fullSize {
   max-width: 100%;
@@ -1259,6 +1271,7 @@ input:not([type=radio]) {
   display: none;
   position: relative;
   overflow-y: hidden;
+  margin-top: 1px;
 }
 #dump-list {
   overflow-x: auto;
