@@ -65,7 +65,7 @@ module.exports = (grunt) ->
         command: ->
           release = "#{pkg.meta.name} v#{pkg.version}"
           return [
-            'git checkout master'
+            'git checkout 4chanX'
             'git commit -am "Release ' + release + '."'
             'git tag -a ' + pkg.version + ' -m "' + release + '."'
             'git tag -af stable -m "' + release + '."'

@@ -1,5 +1,11 @@
 master
 
+1.0.4:
+seaweedchan:
+	-Fix Fappe Tyme
+	-Re-add label for image expanding
+	-Move restore button to left side as per RiDeag
+
 1.0.3
 seaweedchan:
 	-Add ad-blocking CSS into Custom CSS examples

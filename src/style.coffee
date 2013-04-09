@@ -103,7 +103,8 @@ a[href="javascript:;"] {
 #content > [name=tab]:not(:checked) + div,
 #updater:not(:hover) > :not(.move),
 .autohide:not(:hover) > form,
-#qp input, .forwarded {
+#qp input, .forwarded,
+.fappeTyme > #delform .noFile {
   display: none !important;
 }
 

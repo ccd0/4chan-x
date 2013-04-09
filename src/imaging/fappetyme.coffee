@@ -1,13 +1,16 @@
 FappeTyme = 
   init: ->
     return if g.CATALOG or g.BOARD is 'f'
-    el = $.el 'a',
+
+    el = $.el 'label',
       href:  'javascript:;'
       id:    'fappeTyme'
       title: 'Fappe Tyme'
-    $.on el, 'click', FappeTyme.toggle
-    $.add $.id('navtopright'), el
+      innerHTML: '<input type="checkbox"><span>Fappe Tyme</span>'
+    $.add $.id('imgContainer'), el
+    $.on $('input', el), 'click', FappeTyme.toggle
     Main.callbacks.push @node
+    console.log("faggots")
 
   node: (post) ->
     return if post.img
