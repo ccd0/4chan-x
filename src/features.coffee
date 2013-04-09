@@ -1101,16 +1101,16 @@ Filter =
             re
         $.set type, save
 
-      # Open the settings and display & focus the relevant filter textarea.
-      Settings.open 'Filter'
-      section = $ '.section-container'
-      select = $ 'select[name=filter]', section
-      select.value = type
-      Settings.selectFilter.call select
-      ta = $ 'textarea', section
-      tl = ta.textLength
-      ta.setSelectionRange tl, tl
-      ta.focus()
+        # Open the settings and display & focus the relevant filter textarea.
+        Settings.open 'Filter'
+        section = $ '.section-container'
+        select = $ 'select[name=filter]', section
+        select.value = type
+        Settings.selectFilter.call select
+        ta = $ 'textarea', section
+        tl = ta.textLength
+        ta.setSelectionRange tl, tl
+        ta.focus()
 
 ThreadHiding =
   init: ->
