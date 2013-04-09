@@ -1414,6 +1414,9 @@ a:only-of-type > .remove {
 .section-style fieldset {
   text-align: left;
 }
+.section-keybinds table {
+  margin: auto;
+}
 #appchanx-settings ul {
   padding: 0;
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
@@ -1470,6 +1473,9 @@ article li {
   width: 50%;
   display: inline-block;
   vertical-align: bottom;
+}
+.option input {
+  width: 100%;
 }
 .optionlabel {
   padding-left: 18px;

@@ -20,10 +20,6 @@
 .filter_highlight > .reply {
   box-shadow: -5px 0 #{theme["Backlinked Reply Outline"]};
 }
-::#{agent}selection {
-  background: #{theme["Text"]};
-  color: #{backgroundC};
-}
 hr {
   border-bottom: 1px solid #{theme["Reply Border"]};
 }
