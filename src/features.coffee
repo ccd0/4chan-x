@@ -6,6 +6,9 @@ Header =
       id: 'shortcuts'
     @hover = $.el 'div',
       id: 'hoverUI'
+
+    $.on window, 'load hashchange', Header.hashScroll
+
     $.asap (-> d.body), ->
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
@@ -87,6 +90,17 @@ Header =
     showBoardList = !full.hidden
     custom.hidden = !showBoardList
     full.hidden   =  showBoardList
+
+  hashScroll: ->
+    return unless post = $.id @location.hash[1..]
+    Header.scrollToPost post
+
+  scrollToPost: (post) ->
+    {top} = post.getBoundingClientRect()
+    unless Conf['Bottom header']
+      headRect = Header.bar.getBoundingClientRect()
+      top += - headRect.top - headRect.height
+    (if $.engine is 'webkit' then d.body else doc).scrollTop += top
 
   addShortcut: (el) ->
     shortcut = $.el 'span',
@@ -1871,8 +1885,11 @@ Keybinds =
       location.href = url
 
   hl: (delta, thread) ->
-    headRect  = Header.bar.getBoundingClientRect()
-    topMargin = headRect.top + headRect.height
+    if Conf['Bottom header']
+      topMargin = 0
+    else
+      headRect  = Header.toggle.getBoundingClientRect()
+      topMargin = headRect.top + headRect.height
     if postEl = $ '.reply.highlight', thread
       $.rmClass postEl, 'highlight'
       rect = postEl.getBoundingClientRect()
@@ -1936,8 +1953,11 @@ Nav =
       Nav.scroll +1
 
   getThread: (full) ->
-    headRect  = Header.bar.getBoundingClientRect()
-    topMargin = headRect.top + headRect.height
+    if Conf['Bottom header']
+      topMargin = 0
+    else
+      headRect  = Header.toggle.getBoundingClientRect()
+      topMargin = headRect.top + headRect.height
     threads = $$ '.thread:not([hidden])'
     for thread, i in threads
       rect = thread.getBoundingClientRect()
@@ -2717,7 +2737,7 @@ QuotePreview =
       # Remove the clone that's in the qp from the array.
       posts.pop()
       for post in posts
-        $.addClass post.nodes.root, 'qphl'
+        $.addClass post.nodes.post, 'qphl'
 
     quoterID = $.x('ancestor::*[@id][1]', @).id.match(/\d+$/)[0]
     clone = Get.postFromRoot qp.firstChild
@@ -2736,7 +2756,7 @@ QuotePreview =
 
     return unless Conf['Quote Highlighting']
     for post in [post].concat post.clones
-      $.rmClass post.nodes.root, 'qphl'
+      $.rmClass post.nodes.post, 'qphl'
     return
 
 QuoteBacklink =
@@ -3205,8 +3225,15 @@ ImageExpand =
       name: 'Image Expansion'
       cb:   @node
   node: ->
-    return unless @file and @file.isImage
-    $.on @file.thumb.parentNode, 'click', ImageExpand.cb.toggle
+    return unless @file?.isImage
+    {thumb} = @file
+    $.on thumb.parentNode, 'click', ImageExpand.cb.toggle
+    if @isClone and $.hasClass thumb, 'expanding'
+      # If we clone a post where the image is still loading,
+      # make it loading in the clone too.
+      ImageExpand.contract @
+      ImageExpand.expand @
+      return
     if ImageExpand.on and !@isHidden
       ImageExpand.expand @
   cb:
@@ -3256,8 +3283,15 @@ ImageExpand =
     return unless rect.top <= 0 or rect.left <= 0
     # Scroll back to the thumbnail when contracting the image
     # to avoid being left miles away from the relevant post.
+<<<<<<< HEAD
     headRect = Header.bar.getBoundingClientRect()
     top  = rect.top - headRect.top - headRect.height
+=======
+    {top} = rect
+    unless Conf['Bottom header']
+      headRect = Header.toggle.getBoundingClientRect()
+      top += - headRect.top - headRect.height
+>>>>>>> 354f566672b2dc8a556c33d6a24c0ec33ee995c8
     root = if $.engine is 'webkit' then d.body else doc
     root.scrollTop += top if rect.top  < 0
     root.scrollLeft = 0   if rect.left < 0
@@ -3480,7 +3514,7 @@ ExpandComment =
     post = Get.postFromNode @
     ExpandComment.expand post
   expand: (post) ->
-    if post.nodes.longComment
+    if post.nodes.longComment and !post.nodes.longComment.parentNode
       $.replace post.nodes.shortComment, post.nodes.longComment
       post.nodes.comment = post.nodes.longComment
       return
@@ -3666,13 +3700,13 @@ Unread =
       defaultValue: 0
     Unread.addPosts posts
     if (hash = location.hash.match /\d+/) and post = @posts[hash[0]]
-      post.nodes.root.scrollIntoView()
+      Header.scrollToPost post.nodes.root
     else if Unread.posts.length
       # Scroll to before the first unread post.
       $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView false
     else if posts.length
       # Scroll to the last read post.
-      posts[posts.length - 1].nodes.root.scrollIntoView()
+      Header.scrollToPost posts[posts.length - 1].nodes.root
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
@@ -4174,7 +4208,7 @@ ThreadUpdater =
         if Conf['Bottom Scroll']
           (if $.engine is 'webkit' then d.body else doc).scrollTop = d.body.clientHeight
         else
-          nodes[0].scrollIntoView()
+          Header.scrollToPost nodes[0]
 
       $.queueTask ->
         # Enable 4chan features.
