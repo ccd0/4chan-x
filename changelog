@@ -1,6 +1,11 @@
 master
+
+1.0.5:
 seaweedchan:
 	-Added keybind to toggle Fappe Tyme
+	-Fix code tag keybind
+Zixaphir:
+	-Add 'yourPost' class to own replies
 
 1.0.4:
 seaweedchan:

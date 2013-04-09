@@ -10,7 +10,6 @@ FappeTyme =
     $.add $.id('imgContainer'), el
     $.on $('input', el), 'click', FappeTyme.toggle
     Main.callbacks.push @node
-    console.log("faggots")
 
   node: (post) ->
     return if post.img

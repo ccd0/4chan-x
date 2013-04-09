@@ -40,7 +40,7 @@ Keybinds =
       return unless g.BOARD is (!! $ 'script[src^="//boards.4chan.org/jsMath/"]', d.head) and nodeName is 'textarea'
       Keybinds.tags 'eqn', target
     keys[_conf.code] = (thread, target, nodeName) ->
-      return unless g.BOARD is Main.hasCodeTags and nodeName is 'textarea'
+      return unless g.BOARD is 'g' and nodeName is 'textarea'
       Keybinds.tags 'code', target
     keys[_conf.sageru] = ->
       $("[name=email]", QR.el).value = "sage"

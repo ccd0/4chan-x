@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                4chan x
 // @namespace           aeosynth
-// @version             1.0.4
+// @version             1.0.5
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           2013 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2013 Jordan Bates <saudrapsmann@gmail.com>
@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
- * 4chan x - Version 1.0.4 - 2013-04-09
+ * 4chan x - Version 1.0.5 - 2013-04-09
  *
  * Licensed under the MIT license.
  * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -1883,7 +1883,7 @@
         return Keybinds.tags('eqn', target);
       };
       keys[_conf.code] = function(thread, target, nodeName) {
-        if (!(g.BOARD === Main.hasCodeTags && nodeName === 'textarea')) {
+        if (!(g.BOARD === 'g' && nodeName === 'textarea')) {
           return;
         }
         return Keybinds.tags('code', target);
@@ -2898,8 +2898,7 @@
       });
       $.add($.id('imgContainer'), el);
       $.on($('input', el), 'click', FappeTyme.toggle);
-      Main.callbacks.push(this.node);
-      return console.log("faggots");
+      return Main.callbacks.push(this.node);
     },
     node: function(post) {
       if (post.img) {
@@ -7318,7 +7317,7 @@
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
-    version: '1.0.4',
+    version: '1.0.5',
     callbacks: []
   };
 
