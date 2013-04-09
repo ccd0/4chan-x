@@ -21,7 +21,7 @@ Header =
     @menu = new UI.Menu 'header'
     $.on $('.menu-button', @bar), 'click', @menuToggle
     $.on @toggle, 'mousedown', @toggleBarVisibility
-    $.on window, 'hashchange', Header.hashScroll
+    $.on window, 'load hashchange', Header.hashScroll
 
     catalogToggler = $.el 'label',
       innerHTML: "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}> Use catalog board links"
@@ -31,6 +31,17 @@ Header =
       type: 'header'
       el: catalogToggler
       order: 50
+
+    @positionToggler = $.el 'label',
+      innerHTML: "<input type=checkbox #{if Conf['Bottom header'] then 'checked' else ''}> Bottom header"
+    $.on @positionToggler.firstElementChild, 'change', @toggleBarPosition
+    $.event 'AddMenuEntry',
+      type: 'header'
+      el: @positionToggler
+      order: 108
+
+    @setBarPosition Conf['Bottom header']
+    $.sync 'Bottom header', @setBarPosition
 
     @headerToggler = $.el 'label',
       innerHTML: "<input type=checkbox #{if Conf['Header auto-hide'] then 'checked' else ''}> Auto-hide header"
@@ -129,15 +140,31 @@ Header =
     Header.setCatalogLinks @checked
     $.set 'Header catalog links', @checked
 
+  setBarPosition: (bottom) ->
+    $.event 'CloseMenu'
+    Header.positionToggler.firstElementChild.checked = bottom
+    Header.bar.parentNode.className = if bottom
+      'bottom'
+    else
+      'top'
+  toggleBarPosition: ->
+    bottom = @checked
+    Header.setBarPosition bottom
+    Conf['Bottom header'] = bottom
+    $.set 'Bottom header', bottom
+
   setBarVisibility: (hide) ->
     Header.headerToggler.firstElementChild.checked = hide
     (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
   hashScroll: ->
     return unless post = $.id @location.hash[1..]
-    postRect = post.getBoundingClientRect()
-    headRect = Header.toggle.getBoundingClientRect()
-    root = if $.engine is 'webkit' then d.body else doc
-    root.scrollTop += postRect.top - headRect.top - headRect.height
+    Header.scrollToPost post
+  scrollToPost: (post) ->
+    {top} = post.getBoundingClientRect()
+    unless Conf['Bottom header']
+      headRect = Header.toggle.getBoundingClientRect()
+      top += - headRect.top - headRect.height
+    (if $.engine is 'webkit' then d.body else doc).scrollTop += top
   toggleBarVisibility: (e) ->
     return if e.type is 'mousedown' and e.button isnt 0 # not LMB
     hide = if @nodeName is 'INPUT'
@@ -1900,8 +1927,11 @@ Keybinds =
       location.href = url
 
   hl: (delta, thread) ->
-    headRect  = Header.bar.getBoundingClientRect()
-    topMargin = headRect.top + headRect.height
+    if Conf['Bottom header']
+      topMargin = 0
+    else
+      headRect  = Header.toggle.getBoundingClientRect()
+      topMargin = headRect.top + headRect.height
     if postEl = $ '.reply.highlight', thread
       $.rmClass postEl, 'highlight'
       rect = postEl.getBoundingClientRect()
@@ -1965,8 +1995,11 @@ Nav =
       Nav.scroll +1
 
   getThread: (full) ->
-    headRect  = Header.bar.getBoundingClientRect()
-    topMargin = headRect.top + headRect.height
+    if Conf['Bottom header']
+      topMargin = 0
+    else
+      headRect  = Header.toggle.getBoundingClientRect()
+      topMargin = headRect.top + headRect.height
     threads = $$ '.thread:not([hidden])'
     for thread, i in threads
       rect = thread.getBoundingClientRect()
@@ -3242,8 +3275,10 @@ ImageExpand =
     return unless rect.top <= 0 or rect.left <= 0
     # Scroll back to the thumbnail when contracting the image
     # to avoid being left miles away from the relevant post.
-    headRect = Header.toggle.getBoundingClientRect()
-    top  = rect.top - headRect.top - headRect.height
+    {top} = rect
+    unless Conf['Bottom header']
+      headRect = Header.toggle.getBoundingClientRect()
+      top += - headRect.top - headRect.height
     root = if $.engine is 'webkit' then d.body else doc
     root.scrollTop += top if rect.top  < 0
     root.scrollLeft = 0   if rect.left < 0
@@ -3653,13 +3688,13 @@ Unread =
       defaultValue: 0
     Unread.addPosts posts
     if (hash = location.hash.match /\d+/) and post = @posts[hash[0]]
-      post.nodes.root.scrollIntoView()
+      Header.scrollToPost post.nodes.root
     else if Unread.posts.length
       # Scroll to before the first unread post.
       $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView false
     else if posts.length
       # Scroll to the last read post.
-      posts[posts.length - 1].nodes.root.scrollIntoView()
+      Header.scrollToPost posts[posts.length - 1].nodes.root
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
@@ -4143,7 +4178,7 @@ ThreadUpdater =
         if Conf['Bottom Scroll']
           (if $.engine is 'webkit' then d.body else doc).scrollTop = d.body.clientHeight
         else
-          nodes[0].scrollIntoView()
+          Header.scrollToPost nodes[0]
 
       $.queueTask ->
         # Enable 4chan features.

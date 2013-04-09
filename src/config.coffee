@@ -132,6 +132,7 @@ Config =
     '#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/'
   ].join '\n'
   'Custom CSS': false
+  'Bottom header': false
   'Header auto-hide': false
   'Header catalog links': false
   boardnav: '[current-title / toggle-all]'
