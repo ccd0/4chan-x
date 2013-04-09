@@ -1083,16 +1083,13 @@ Filter =
           else
             "\\#{c}"
 
-      re =
-        if type in ['uniqueID', 'MD5']
-          "/#{re}/"
-        else
-          "/^#{re}$/"
-      unless Filter.menu.post.isReply
-        re += ';op:yes'
+      re = if type in ['uniqueID', 'MD5']
+        "/#{re}/"
+      else
+        "/^#{re}$/"
 
       # Add a new line before the regexp unless the text is empty.
-      $.get type, '', (item) ->
+      $.get type, Conf[type], (item) ->
         save = item[type]
         save =
           if save
