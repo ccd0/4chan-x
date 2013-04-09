@@ -128,6 +128,7 @@ QR =
 
   cooldown:
     init: ->
+      return unless Conf['Cooldown']
       board = g.BOARD.ID
       QR.cooldown.types =
         thread: switch board
@@ -144,6 +145,7 @@ QR =
         QR.cooldown.start()
       $.sync "cooldown.#{board}", QR.cooldown.sync
     start: ->
+      return unless Conf['Cooldown']
       return if QR.cooldown.isCounting
       QR.cooldown.isCounting = true
       QR.cooldown.count()
@@ -154,6 +156,7 @@ QR =
         QR.cooldown.cooldowns[id] = cooldowns[id]
       QR.cooldown.start()
     set: (data) ->
+      return unless Conf['Cooldown']
       {req, post, isReply, delay} = data
       start = if req then req.uploadEndTime else Date.now()
       if delay

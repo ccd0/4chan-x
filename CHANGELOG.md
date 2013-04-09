@@ -1,3 +1,4 @@
+- Added Cooldown setting back in.
 - Fixed the Header going above posts when following quotelinks for example.
 - Fixed a bug where dead quotelinks would disappear.
 
