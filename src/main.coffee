@@ -328,15 +328,28 @@ Main =
     if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains g.BOARD
       g.TYPE = 'nsfw'
 
+    $.get "userThemes", {}, (item) ->
+      for name, theme of item["userThemes"]
+        Themes[name] = theme
+
+    $.get "userMascots", {}, (item) ->
+      for name, mascot of item["userMasctos"]
+        Mascots[name] = mascot
+
     if Conf["NSFW/SFW Mascots"]
       g.MASCOTSTRING = "Enabled Mascots #{g.TYPE}"
     else
       g.MASCOTSTRING = "Enabled Mascots"
 
-    Conf["Enabled Mascots"] =       $.get "Enabled Mascots",      []
-    Conf["Enabled Mascots sfw"] =   $.get "Enabled Mascots sfw",  []
-    Conf["Enabled Mascots nsfw"] =  $.get "Enabled Mascots nsfw", []
-    Conf["Deleted Mascots"] =       $.get "Deleted Mascots",      []
+    items =
+      'Enabled Mascots':      []
+      'Enabled Mascots sfw':  []
+      'Enabled Mascots nsfw': []
+      'Deleted Mascots':      []
+    
+    $.get items, (items) ->
+      for key, val of items
+        Conf[key] = val
 
     switch location.hostname
       when 'sys.4chan.org'

@@ -29,8 +29,7 @@ Header =
     customBoardList = $.el 'span',
       id:     'custom-board-list'
     $.add fullBoardList, [nav.childNodes...]
-    $.add nav, [customBoardList, fullBoardList, Header.shortcuts, $ '#navtopright', fullBoardList]
-    $.add d.body, Header.bar
+    $.add nav, [customBoardList, fullBoardList, Header.shortcuts, $ '#navtopright', fullBoardList, Header.bar]
 
     if Conf['Custom Board Navigation']
       Header.generateBoardList Conf['boardnav']
@@ -1354,7 +1353,7 @@ Keybinds =
     if Conf['Bottom header']
       topMargin = 0
     else
-      headRect  = Header.toggle.getBoundingClientRect()
+      headRect  = Header.bar.getBoundingClientRect()
       topMargin = headRect.top + headRect.height
     if postEl = $ '.reply.highlight', thread
       $.rmClass postEl, 'highlight'
@@ -1420,7 +1419,7 @@ Nav =
     if Conf['Bottom header']
       topMargin = 0
     else
-      headRect  = Header.toggle.getBoundingClientRect()
+      headRect  = Header.bar.getBoundingClientRect()
       topMargin = headRect.top + headRect.height
     threads = $$ '.thread:not([hidden])'
     for thread, i in threads

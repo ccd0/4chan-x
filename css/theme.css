@@ -48,7 +48,7 @@ html {
   background-attachment: #{theme["Background Attachment"] or ''};
   background-position: #{theme["Background Position"] or ''};
 }
-#appchanx-settingsContent,
+.section-container,
 #exlinks-options-content,
 #mascotcontent,
 #themecontent {
@@ -56,7 +56,7 @@ html {
   border: 1px solid #{theme["Reply Border"]};
   padding: 5px;
 }
-#selected_tab {
+.tab-selected {
   background: #{backgroundC};
   border-color: #{theme["Reply Border"]};
   border-style: solid;

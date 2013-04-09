@@ -1403,15 +1403,15 @@ a:only-of-type > .remove {
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
 }
 #appchanx-settings h3,
-.keybinds_tab,
-.mascots_tab,
-.main_tab,
-.style_tab {
+.section-keybinds,
+.section-mascots,
+.section-main,
+.style {
   text-align: center;
 }
-.keybinds_tab table,
-.main_tab ul,
-.style_tab ul {
+.section-keybinds table,
+.section-main fieldset,
+.section-style fieldset {
   text-align: left;
 }
 #appchanx-settings ul {
@@ -1431,11 +1431,11 @@ a:only-of-type > .remove {
   padding: 0 3px;
   float: left;
 }
-.sections-list label {
+.sections-list > a {
   cursor: pointer;
   #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}
 }
-.sections-list label {
+.sections-list > a {
   position: relative;
   padding: 0 4px;
   z-index: 1;
@@ -1451,18 +1451,17 @@ a:only-of-type > .remove {
 #appchanx-settings h3 {
   margin: 0;
 }
-.main_tab li,
-.style_tab li,
-.rice_tab li {
+.section-main fieldset > div,
+.section-style fieldset > div,
+.section-rice fieldset > div {
   overflow: visible;
   padding: 0 5px 0 7px;
-  list-style-type: none;
 }
 #appchanx-settings tr:nth-of-type(2n+1),
-.main_tab li:nth-of-type(2n+1),
-.rice_tab li:nth-of-type(2n+1),
-.style_tab li:nth-of-type(2n+1),
-.keybinds_tab li:nth-of-type(2n+1),
+.section-main fieldset > div:nth-of-type(2n+1),
+.section-rice fieldset > div:nth-of-type(2n+1),
+.section-style fieldset > div:nth-of-type(2n+1),
+.section-keybinds fieldset > div:nth-of-type(2n+1),
 #selectrice li:nth-of-type(2n+1) {
   background-color: rgba(0, 0, 0, 0.05);
 }
@@ -1480,19 +1479,19 @@ article li {
 .rice + .optionlabel {
   padding-left: 0;
 }
-#appchanx-settings .style_tab ul,
-#appchanx-settings .main_tab ul {
+#appchanx-settings .section-style fieldset,
+#appchanx-settings .section-main fieldset {
   vertical-align: top;
   #{if _conf["Single Column Mode"] then "margin: 0 auto 6px;" else "margin: 0 3px 6px;\n display: inline-block;"}
 }
-.main_tab li,
+.section-main fieldset > div,
 .styleoption {
   text-align: left;
 }
-.style_tab .suboptions ul {
+.section-style fieldset > div {
   width: 370px;
 }
-.main_tab ul {
+.section-main fieldset {
   width: 200px;
 }
 .suboptions,
@@ -1519,10 +1518,10 @@ article li {
   right: 10px;
   bottom: 0;
 }
-.style_tab .suboptions {
+.section-style .suboptions {
   bottom: 0;
 }
-#appchanx-settingsContent textarea {
+.section-container textarea {
   font-family: monospace;
   min-height: 350px;
   resize: vertical;
@@ -1630,7 +1629,7 @@ opacity: 0;
   bottom: 0;
 }
 /* Themes Tab */
-.theme_tab h1 {
+#themes h1 {
   position: absolute;
   right: 300px;
   bottom: 10px;
@@ -1638,7 +1637,7 @@ opacity: 0;
   #{agent}transition: all .2s ease-in-out;
   opacity: 0;
 }
-.theme_tab .selectedtheme h1 {
+#themes .selectedtheme h1 {
   right: 11px;
   opacity: 1;
 }

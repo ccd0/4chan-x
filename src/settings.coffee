@@ -33,7 +33,10 @@ Settings =
         lastupdate: Date.now()
         previousversion: g.VERSION
 
-    Settings.addSection 'Main',     Settings.main
+    Settings.addSection 'Style',    Settings.style
+    Settings.addSection 'Themes',   Settings.themes
+    # Settings.addSection 'Mascots',  Settings.mascots
+    Settings.addSection 'Script',   Settings.main
     Settings.addSection 'Filter',   Settings.filter
     Settings.addSection 'Sauce',    Settings.sauce
     Settings.addSection 'Rice',     Settings.rice
@@ -48,6 +51,18 @@ Settings =
     localStorage.setItem '4chan-settings', JSON.stringify settings
 
   open: (openSection) ->
+    if Conf['editMode'] is "theme"
+      if confirm "Opening the options dialog will close and discard any theme changes made with the theme editor."
+        ThemeTools.close()
+      else
+        return
+
+    if Conf['editMode'] is "mascot"
+      if confirm "Opening the options dialog will close and discard any mascot changes made with the mascot editor."
+        MascotTools.close()
+      else
+        return
+
     return if Settings.dialog
     $.event 'CloseMenu'
 
@@ -78,9 +93,8 @@ Settings =
         textContent: section.title
         href: 'javascript:;'
       $.on link, 'click', Settings.openSection.bind section
-      links.push link, $.tn ' | '
+      links.push link
       sectionToOpen = link if section.title is openSection
-    links.pop()
     $.add $('.sections-list', overlay), links
     (if sectionToOpen then sectionToOpen else links[0]).click()
 
@@ -91,6 +105,7 @@ Settings =
     d.body.style.width = "#{d.body.clientWidth}px"
     $.addClass d.body, 'unscroll'
     $.add d.body, overlay
+
   close: ->
     return unless Settings.dialog
     d.body.style.removeProperty 'width'
@@ -99,19 +114,21 @@ Settings =
     delete Settings.dialog
 
   sections: []
+
   addSection: (title, open) ->
     if typeof title isnt 'string'
       {title, open} = title.detail
     hyphenatedTitle = title.toLowerCase().replace /\s+/g, '-'
     Settings.sections.push {title, hyphenatedTitle, open}
-  openSection: ->
+
+  openSection: (mode)->
     if selected = $ '.tab-selected', Settings.dialog
       $.rmClass selected, 'tab-selected'
     $.addClass $(".tab-#{@hyphenatedTitle}", Settings.dialog), 'tab-selected'
     section = $ 'section', Settings.dialog
     section.innerHTML = null
     section.className = "section-#{@hyphenatedTitle}"
-    @open section, g
+    @open section, mode
     section.scrollTop = 0
 
   main: (section) ->
@@ -135,12 +152,13 @@ Settings =
       for key, arr of obj
         description = arr[1]
         div = $.el 'div',
-          innerHTML: "<label><input type=checkbox name=\"#{key}\">#{key}</label><span class=description>: #{description}</span>"
+          innerHTML: "<label><input type=checkbox name='#{key}'>#{key}</label><span class=description>: #{description}</span>"
         input = $ 'input', div
         $.on input, 'change', $.cb.checked
         items[key]  = Conf[key]
         inputs[key] = input
         $.add fs, div
+      Rice.nodes fs
       $.add section, fs
 
     $.get items, (items) ->
@@ -170,6 +188,7 @@ Settings =
           localStorage.removeItem "4chan-hide-t-#{boardID}"
         $.delete ['hiddenThreads', 'hiddenPosts']
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
+
   export: (now, data) ->
     unless typeof now is 'number'
       now  = Date.now()
@@ -197,8 +216,10 @@ Settings =
     p = $ '.imp-exp-result', Settings.dialog
     p.innerHTML = null
     $.add p, a
+
   import: ->
     @nextElementSibling.click()
+
   onImport: ->
     return unless file = @files[0]
     output = @parentNode.nextElementSibling
@@ -216,6 +237,7 @@ Settings =
         output.textContent = 'Import failed due to an error.'
         c.error err.stack
     reader.readAsText file
+
   loadSettings: (data) ->
     version = data.version.split '.'
     if version[0] is '2'
@@ -286,6 +308,7 @@ Settings =
           "Shift+#{s[0...-1]}#{s[-1..].toLowerCase()}"
       data.Conf.WatchedThreads = data.WatchedThreads
     $.set data.Conf
+
   convertSettings: (data, map) ->
     for prevKey, newKey of map
       data.Conf[newKey] = data.Conf[prevKey] if newKey
@@ -314,6 +337,7 @@ Settings =
     select = $ 'select', section
     $.on select, 'change', Settings.selectFilter
     Settings.selectFilter.call select
+
   selectFilter: ->
     div = @nextElementSibling
     if (name = @value) isnt 'guide'
@@ -440,7 +464,7 @@ Settings =
     items = {}
     inputs = {}
     for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
-      input = $ "[name=#{name}]", section
+      input = $ "[name='#{name}']", section
       items[name]  = Conf[name]
       inputs[name] = input
       event = if ['favicon', 'usercss'].contains name
@@ -456,15 +480,20 @@ Settings =
           $.on input, event, Settings[key]
           Settings[key].call input
       return
+    Rice.nodes section
     $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
     $.on $.id('apply-css'), 'click', Settings.usercss
+
   boardnav: ->
     Header.generateBoardList @value
+
   time: ->
     funk = Time.createFunc @value
     @nextElementSibling.textContent = funk Time, new Date()
+
   backlink: ->
     @nextElementSibling.textContent = Conf['backlink'].replace /%id/, '123456789'
+
   fileInfo: ->
     data =
       isReply: true
@@ -478,6 +507,7 @@ Settings =
         isSpoiler: true
     funk = FileInfo.createFunc @value
     @nextElementSibling.innerHTML = funk FileInfo, data
+
   favicon: ->
     Favicon.switch()
     Unread.update() if g.VIEW is 'thread' and Conf['Unread Tab Icon']
@@ -493,6 +523,7 @@ Settings =
     else
       CustomCSS.addStyle()
     $.cb.checked.call @
+
   usercss: ->
     CustomCSS.update()
 
@@ -517,11 +548,13 @@ Settings =
       items[key]  = Conf[key]
       inputs[key] = input
       $.on input, 'keydown', Settings.keybind
+      Rice.nodes tr
       $.add tbody, tr
     $.get items, (items) ->
       for key, val of items
         inputs[key].value = val
       return
+
   keybind: (e) ->
     return if e.keyCode is 9 # tab
     e.preventDefault()
@@ -529,3 +562,298 @@ Settings =
     return unless (key = Keybinds.keyCode e)?
     @value = key
     $.cb.value.call @
+
+  style: (section) ->
+    nodes = []
+
+    for key, obj of Config.style
+
+      fs = $.el 'fieldset',
+        innerHTML: "<legend>#{key}</legend>"
+
+      for key, arr of obj
+        [value, description, type] = arr
+
+        div = $.el 'div',
+          className: 'styleoption'
+
+        if type
+          inputtype = 'value'
+
+          if type is 'text'
+
+            div.innerHTML = "<div class=option><span class=optionlabel>#{key}</span><div style=display: none>#{description}</div></div><div class=option><input name='#{key}' style=width: 100%></div>"
+            input = $ "input[name='#{key}']", div
+
+          else
+
+            html = "<label><span class=optionlabel>#{key}</span><div style=display: none>#{description}</div></div><div class=option><select name='#{key}'></label>"
+            for name, val in type
+              html += "<option value='#{val}'>#{name}</option>"
+            html += "</select>"
+            div.innerHTML = html
+            input = $ "select", div
+
+        else
+          inputtype = 'checked'
+
+          div.innerHTML = "<label><input type=checkbox name='#{key}'>#{key}</label><span class=description>: #{description}</span>"
+          input = $ 'input', div
+
+        Settings.sandbox input, key, value, inputtype
+
+        $.on input, 'change', ->
+          $.cb[inputtype].call @
+          Style.addStyle()
+
+        Rice.nodes fs
+        $.add fs, div
+
+      nodes.push fs
+
+    $.add section, nodes
+  
+  sandbox: (input, key, value, inputtype) ->
+    $.get key, value, (item) ->
+       input[inputtype] = item[key]
+
+  themes: (section, mode) ->
+    if typeof mode isnt 'string'
+      mode = 'default'
+
+    parentdiv  = $.el 'div',
+      id:        "themeContainer"
+
+    suboptions = $.el 'div',
+      className: "suboptions"
+      id:        "themes"
+
+    keys = Object.keys(Themes)
+    keys.sort()
+
+    if mode is "default"
+
+      for name in keys
+        theme = Themes[name]
+
+        unless theme["Deleted"]
+
+          div = $.el 'div',
+            className: "theme #{if name is Conf['theme'] then 'selectedtheme' else ''}"
+            id:        name
+            innerHTML: "
+<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
+  <div>
+    <div style='cursor: pointer; width: 9px; height: 9px; margin: 2px 3px; display: inline-block; vertical-align: bottom; background: #{theme['Checkbox Background']}; border: 1px solid #{theme['Checkbox Border']};'></div>
+    <span style='color:#{theme['Subjects']}!important; font-weight: 600 !important'>
+      #{name}
+    </span>
+    <span style='color:#{theme['Names']}!important; font-weight: 600 !important'>
+      #{theme['Author']}
+    </span>
+    <span style='color:#{theme['Sage']}!important'>
+      (SAGE)
+    </span>
+    <span style='color:#{theme['Tripcodes']}!important'>
+      #{theme['Author Tripcode']}
+    </span>
+    <time style='color:#{theme['Timestamps']}'>
+      20XX.01.01 12:00
+    </time>
+    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Post Numbers']}!important;' href='javascript:;'>
+      No.27583594
+    </a>
+    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important;' href='javascript:;' name='#{name}' class=edit>
+      &gt;&gt;edit
+    </a>
+    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important;' href='javascript:;' name='#{name}' class=export>
+      &gt;&gt;export
+    </a>
+    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Backlinks']}!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important;&quot;)' style='color:#{theme['Backlinks']}!important;' href='javascript:;' name='#{name}' class=delete>
+      &gt;&gt;delete
+    </a>
+  </div>
+  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>
+    <a style='color:#{theme['Quotelinks']}!important; text-shadow: none;'>
+      &gt;&gt;27582902
+    </a>
+    <br>
+    Post content is right here.
+  </blockquote>
+  <h1 style='color: #{theme['Text']}'>
+    Selected
+  </h1>
+</div>"
+
+          div.style.backgroundColor = theme['Background Color']
+
+          $.on $('a.edit', div), 'click', (e) ->
+            e.preventDefault()
+            e.stopPropagation()
+            ThemeTools.init @name
+            Settings.close()
+
+          $.on $('a.export', div), 'click', (e) ->
+            e.preventDefault()
+            e.stopPropagation()
+            exportTheme = Themes[@name]
+            exportTheme['Theme'] = @name
+            exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme))
+
+            if window.open exportedTheme, "_blank"
+              return
+            else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
+              window.location exportedTheme
+
+          $.on $('a.delete', div), 'click', (e) ->
+            e.preventDefault()
+            e.stopPropagation()
+            container = $.id @name
+
+            unless container.previousSibling or container.nextSibling
+              alert "Cannot delete theme (No other themes available)."
+              return
+
+            if confirm "Are you sure you want to delete \"#{@name}\"?"
+              if @name is Conf['theme']
+                if settheme = container.previousSibling or container.nextSibling
+                  Conf['theme'] = settheme.id
+                  $.addClass settheme, 'selectedtheme'
+                  $.set 'theme', Conf['theme']
+              Themes[@name]["Deleted"] = true
+              userThemes = $.get "userThemes", {}
+              userThemes[@name] = Themes[@name]
+              $.set 'userThemes', userThemes
+              $.rm container
+
+          $.on div, 'click', Settings.selectTheme
+          $.add suboptions, div
+
+      div = $.el 'div',
+        id:        'addthemes'
+        innerHTML: "
+<a id=newtheme href='javascript:;'>New Theme</a> /
+ <a id=import href='javascript:;'>Import Theme</a><input id=importbutton type=file hidden> /
+ <a id=SSimport href='javascript:;'>Import from 4chan SS</a><input id=SSimportbutton type=file hidden> /
+ <a id=OCimport href='javascript:;'>Import from Oneechan</a><input id=OCimportbutton type=file hidden> /
+ <a id=tUndelete href='javascript:;'>Undelete Theme</a>
+"
+
+      $.on $("#newtheme", div), 'click', ->
+        ThemeTools.init "untitled"
+        Settings.close()
+
+      $.on $("#import", div), 'click', ->
+        @nextSibling.click()
+      $.on $("#importbutton", div), 'change', (evt) ->
+        ThemeTools.importtheme "appchan", evt
+
+      $.on $("#OCimport", div), 'click', ->
+        @nextSibling.click()
+      $.on $("#OCimportbutton", div), 'change', (evt) ->
+        ThemeTools.importtheme "oneechan", evt
+
+      $.on $("#SSimportbutton", div), 'change', (evt) ->
+        ThemeTools.importtheme "SS", evt
+      $.on $("#SSimport", div), 'click', ->
+        @nextSibling.click()
+
+      $.on $('#tUndelete', div), 'click', ->
+        $.rm $.id "themeContainer"
+        Settings.openSection themes, 'undelete'
+
+    else
+
+      for name in keys
+        theme = Themes[name]
+
+        if theme["Deleted"]
+
+          div = $.el 'div',
+            id:        name
+            className: theme
+            innerHTML: "
+<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:#{theme['Reply Background']}!important;border:1px solid #{theme['Reply Border']}!important;color:#{theme['Text']}!important'>
+  <div style='padding: 3px 0px 0px 8px;'>
+    <span style='color:#{theme['Subjects']}!important; font-weight: 600 !important'>#{name}</span>
+    <span style='color:#{theme['Names']}!important; font-weight: 600 !important'>#{theme['Author']}</span>
+    <span style='color:#{theme['Sage']}!important'>(SAGE)</span>
+    <span style='color:#{theme['Tripcodes']}!important'>#{theme['Author Tripcode']}</span>
+    <time style='color:#{theme['Timestamps']}'>20XX.01.01 12:00</time>
+    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Post Numbers']}!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:#{theme['Hovered Links']}!important&quot;)' style='color:#{theme['Post Numbers']}!important;' href='javascript:;'>No.27583594</a>
+  </div>
+  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>
+    <a style='color:#{theme['Quotelinks']}!important; text-shadow: none;'>
+      &gt;&gt;27582902
+    </a>
+    <br>
+    I forgive you for using VLC to open me. ;__;
+  </blockquote>
+</div>"
+
+          $.on div, 'click', ->
+            if confirm "Are you sure you want to undelete \"#{@id}\"?"
+              Themes[@id]["Deleted"] = false
+              $.get "userThemes", {}, (item) ->
+                userThemes = item["userThemes"]
+                userThemes[@id] = Themes[@id]
+                $.set 'userThemes', userThemes
+                $.rm @
+
+          $.add suboptions, div
+
+      div = $.el 'div',
+        id:        'addthemes'
+        innerHTML: "<a href='javascript:;'>Return</a>"
+
+      $.on $('a', div), 'click', ->
+        $.rm $.id "themeContainer"
+        Settings.openSection themes
+
+    $.add parentdiv, suboptions
+    $.add parentdiv, div
+    $.add section, parentdiv
+
+  selectTheme: ->
+    if currentTheme = $.id(Conf['theme'])
+      $.rmClass currentTheme, 'selectedtheme'
+
+    if Conf["NSFW/SFW Themes"]
+      $.set "theme_#{g.TYPE}", @id
+    else
+      $.set "theme", @id
+    Conf['theme'] = @id
+    $.addClass @, 'selectedtheme'
+    Style.addStyle()
+
+  mouseover: (e) ->
+    if mouseover = $.id 'mouseover'
+      if children = mouseover.childNodes
+        for child in children
+          $.rm child
+    else
+      mouseover = $.el 'div',
+        id:        'mouseover'
+        className: 'dialog'
+
+      $.add d.body, mouseover
+      
+    mouseover.innerHTML = @nextElementSibling.innerHTML
+
+    UI.el = mouseover
+
+    $.on @, 'mousemove',      Settings.hover
+    $.on @, 'mouseout',       Settings.mouseout
+
+    return
+
+  hover: (e) ->
+    UI.hover e, "menu"
+
+  mouseout: (e) ->
+    mouseover = UI.el
+    for child in mouseover.childNodes
+      $.rm child
+    delete UI.el
+
+    $.off @, 'mousemove',     Settings.hover

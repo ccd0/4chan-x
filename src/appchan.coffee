@@ -1331,10 +1331,11 @@ MascotTools =
     Mascots[name]        = JSON.parse(JSON.stringify(mascot))
     Conf["mascot"]       = name
     delete Mascots[name].name
-    userMascots = $.get "userMascots", {}
-    userMascots[name] = Mascots[name]
-    $.set 'userMascots', userMascots
-    alert "Mascot \"#{name}\" saved."
+    $.get "userMascots", {}, (item) ->
+      userMascots = item['userMascots']
+      userMascots[name] = Mascots[name]
+      $.set 'userMascots', userMascots
+      alert "Mascot \"#{name}\" saved."
 
   close: ->
     Conf['editMode'] = false
@@ -1367,9 +1368,10 @@ MascotTools =
 
       Mascots[name] = imported
 
-      userMascots = $.get "userMascots", {}
-      userMascots[name] = Mascots[name]
-      $.set 'userMascots', userMascots
+      $.get "userMascots", {}, (item) ->
+        userMascots = item['userMascots']
+        userMascots[name] = Mascots[name]
+        $.set 'userMascots', userMascots
 
       alert "Mascot \"#{name}\" imported!"
       $.rm $("#mascotContainer", d.body)
@@ -1387,10 +1389,11 @@ ThemeTools =
 
     if Themes[key]
       editTheme = JSON.parse(JSON.stringify(Themes[key]))
-      if ($.get "userThemes", {})[key]
-        editTheme["Theme"] = key
-      else
-        editTheme["Theme"] = key += " [custom]"
+      $.get "userThemes", {}, (items) ->
+        if items[key]
+          editTheme["Theme"] = key
+        else
+          editTheme["Theme"] = key += " [custom]"
     else
       editTheme = JSON.parse(JSON.stringify(Themes['Yotsuba B']))
       editTheme["Theme"] = "Untitled"

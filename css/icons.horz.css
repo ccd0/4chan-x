@@ -47,7 +47,7 @@ div.navLinks > a:first-of-type::after {
 /* Thread Navigation Links */
 #navlinks a {
   margin: 2px;
-  top: 2px;
+  top: 0;
 }
 #navlinks a:last-of-type {
   #{align}: #{position[i++]}px;
@@ -73,7 +73,7 @@ div.navLinks > a:first-of-type::after {
 div.navLinks > a:first-of-type::after,
 #catalog::after,
 body > a[style="cursor: pointer; float: right;"]::after {
-  top: 2px !important;
+  top: 0 !important;
 }
 #{if _conf["Announcements"] is "slideout" then "#globalMessage," else ""}
 #{if _conf["Slideout Watcher"] then "#watcher," else ""}
