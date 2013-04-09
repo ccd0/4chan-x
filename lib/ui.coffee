@@ -56,7 +56,8 @@ UI = do ->
       @focus entry
       $.on d, 'click',     @close
       $.on d, 'CloseMenu', @close
-      $.add button, menu
+      Rice.nodes menu
+      $.add Header.hover, menu
 
       # Position
       mRect   = menu.getBoundingClientRect()
@@ -66,18 +67,18 @@ UI = do ->
       cHeight = doc.clientHeight
       cWidth  = doc.clientWidth
       [top, bottom] = if bRect.top + bRect.height + mRect.height < cHeight
-        ['100%', null]
+        [bRect.bottom, null]
       else
-        [null, '100%']
+        [null, cHeight - bRect.top]
       [left, right] = if bRect.left + mRect.width < cWidth
-        ['0px', null]
+        [bRect.left, null]
       else
-        [null, '0px']
+        [null, cWidth - bRect.right]
       {style} = menu
-      style.top    = top
-      style.right  = right
-      style.bottom = bottom
-      style.left   = left
+      style.top    = "#{top}px"
+      style.right  = "#{right}px"
+      style.bottom = "#{bottom}px"
+      style.left   = "#{left}px"
 
       menu.focus()
 
