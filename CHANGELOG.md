@@ -1,3 +1,8 @@
+### 3.0.2 - *2013-04-09*
+
+- Added a setting in the Header's menu to move it at the bottom of the screen.
+- Added Cooldown setting back in.
+- Fixed the Header going above posts when following quotelinks for example.
 - Fixed a bug where dead quotelinks would disappear.
 
 ### 3.0.1 - *2013-04-08*

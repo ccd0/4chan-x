@@ -239,9 +239,9 @@ Style =
           notEither and _conf['Image Expansion']
           notEither and _conf['Image Expansion']
           notEither
-          g.REPLY
+          g.VIEW is 'thread'
           notEither and _conf['Fappe Tyme']
-          navlinks = ((!g.REPLY and _conf['Index Navigation']) or (g.REPLY and _conf['Reply Navigation'])) and notCatalog
+          navlinks = ((!g.VIEW is 'thread' and _conf['Index Navigation']) or (g.VIEW is 'thread' and _conf['Reply Navigation'])) and notCatalog
           navlinks
         ]
       )
@@ -271,19 +271,19 @@ Style =
           notCatalog and $ 'body > a[style="cursor: pointer; float: right;"]', d.body
           $ '#navtopright .exlinksOptionsLink', d.body
           notEither
-          g.REPLY
+          g.VIEW is 'thread'
           notEither and _conf['Fappe Tyme']
-          navlinks = ((!g.REPLY and _conf['Index Navigation']) or (g.REPLY and _conf['Reply Navigation'])) and notCatalog
+          navlinks = ((!g.VIEW is 'thread' and _conf['Index Navigation']) or (g.VIEW is 'thread' and _conf['Reply Navigation'])) and notCatalog
           navlinks
         ]
       )
 
       iconOffset = (
-        if g.REPLY and _conf['Prefetch']
+        if g.VIEW is 'thread' and _conf['Prefetch']
           250 + Style.sidebarOffset.W
         else
           20 + (
-            if g.REPLY and _conf['Updater Position'] is 'top'
+            if g.VIEW is 'thread' and _conf['Updater Position'] is 'top'
               100
             else
               0
@@ -996,9 +996,9 @@ MascotTools =
       return if el then el.src = "" else null
 
     position = "#{if Conf['Mascot Position'] is 'bottom' or !(Conf['Mascot Position'] is "default" and Conf['Post Form Style'] is "fixed")
-      0 + (if (!g.REPLY or Conf['Boards Navigation'] is 'sticky bottom') and Conf['4chan SS Navigation'] then 1.6 else 0)
+      0 + (if (!g.VIEW is 'thread' or Conf['Boards Navigation'] is 'sticky bottom') and Conf['4chan SS Navigation'] then 1.6 else 0)
     else
-      20.3 + (if !g.REPLY or !!$ '#postForm input[name=spoiler]' then 1.4 else 0) + (if Conf['Show Post Form Header'] then 1.5 else 0) + (if Conf['Post Form Decorations'] then 0.2 else 0)
+      20.3 + (if !g.VIEW is 'thread' or !!$ '#postForm input[name=spoiler]' then 1.4 else 0) + (if Conf['Show Post Form Header'] then 1.5 else 0) + (if Conf['Post Form Decorations'] then 0.2 else 0)
     }em"
 
     # If we're editting anything, let's not change mascots any time we change a value.

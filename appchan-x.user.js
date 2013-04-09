@@ -116,7 +116,8 @@
         'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
-        'Hide Original Post Form': [true, 'Hide the normal post form.']
+        'Hide Original Post Form': [true, 'Hide the normal post form.'],
+        'Cooldown': [true, 'Prevent "flood detected" errors.']
       },
       'Quote Links': {
         'Quote Backlinks': [true, 'Add quote backlinks.'],
@@ -3546,7 +3547,7 @@
         return position;
       };
       if (_conf["Icon Orientation"] === "horizontal") {
-        position = aligner(2, [notCatalog, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], $('#navtopright .exlinksOptionsLink', d.body), notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), notEither && _conf['Image Expansion'], notEither && _conf['Image Expansion'], notEither, g.REPLY, notEither && _conf['Fappe Tyme'], navlinks = ((!g.REPLY && _conf['Index Navigation']) || (g.REPLY && _conf['Reply Navigation'])) && notCatalog, navlinks]);
+        position = aligner(2, [notCatalog, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], $('#navtopright .exlinksOptionsLink', d.body), notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), notEither && _conf['Image Expansion'], notEither && _conf['Image Expansion'], notEither, g.VIEW === 'thread', notEither && _conf['Fappe Tyme'], navlinks = ((!g.VIEW === 'thread' && _conf['Index Navigation']) || (g.VIEW === 'thread' && _conf['Reply Navigation'])) && notCatalog, navlinks]);
         iconOffset = position[position.length - 1] - (_conf['4chan SS Navigation'] ? 0 : Style.sidebar + parseInt(_conf["Right Thread Padding"], 10));
         if (iconOffset < 0) {
           iconOffset = 0;
@@ -3556,8 +3557,8 @@
           css += "/* Updater + Stats */\n#updater,\n#thread-stats {\n  " + align + ": " + (_conf["Updater Position"] === "bottom" && !_conf["Hide Delete UI"] ? 23 : 2) + "px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: auto !important;\n  bottom: auto !important;\n  " + (_conf["Updater Position"] === 'top' ? "top: 18px !important" : "bottom: 0 !important") + ";\n}";
         }
       } else {
-        position = aligner(2 + (_conf["4chan Banner"] === "at sidebar top" ? Style.logoOffset + 19 : 0), [notEither && _conf['Image Expansion'], notEither && _conf['Image Expansion'], notCatalog, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), $('#navtopright .exlinksOptionsLink', d.body), notEither, g.REPLY, notEither && _conf['Fappe Tyme'], navlinks = ((!g.REPLY && _conf['Index Navigation']) || (g.REPLY && _conf['Reply Navigation'])) && notCatalog, navlinks]);
-        iconOffset = (g.REPLY && _conf['Prefetch'] ? 250 + Style.sidebarOffset.W : 20 + (g.REPLY && _conf['Updater Position'] === 'top' ? 100 : 0)) - (_conf['4chan SS Navigation'] ? 0 : Style.sidebar + parseInt(_conf[align.capitalize() + " Thread Padding"], 10));
+        position = aligner(2 + (_conf["4chan Banner"] === "at sidebar top" ? Style.logoOffset + 19 : 0), [notEither && _conf['Image Expansion'], notEither && _conf['Image Expansion'], notCatalog, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), $('#navtopright .exlinksOptionsLink', d.body), notEither, g.VIEW === 'thread', notEither && _conf['Fappe Tyme'], navlinks = ((!g.VIEW === 'thread' && _conf['Index Navigation']) || (g.VIEW === 'thread' && _conf['Reply Navigation'])) && notCatalog, navlinks]);
+        iconOffset = (g.VIEW === 'thread' && _conf['Prefetch'] ? 250 + Style.sidebarOffset.W : 20 + (g.VIEW === 'thread' && _conf['Updater Position'] === 'top' ? 100 : 0)) - (_conf['4chan SS Navigation'] ? 0 : Style.sidebar + parseInt(_conf[align.capitalize() + " Thread Padding"], 10));
         css += "/* Expand Images */\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut {\n  top: " + position[i++] + "px;\n}\n/* Expand Images Menu */\n#imgControls .menu-button {\n  top: " + position[i++] + "px;\n}\n/* 4chan X Options */\n#appchanOptions {\n  top: " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after {\n  top: " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage,\n#globalMessage::after {\n  top: " + position[i++] + "px;\n}\n/* Watcher */\n" + (_conf["Slideout Watcher"] ? "#watcher, #watcher::after" : "") + " {\n  top: " + position[i++] + "px !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  top: " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  top: " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  top: " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  top: " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a:first-of-type {\n  top: " + position[i++] + "px !important;\n}\n#navlinks a:last-of-type {\n  top: " + position[i++] + "px !important;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 0;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#navlinks a,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#boardNavDesktopFoot::after,\n#globalMessage::after,\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut,\n#imgControls .menu-button,\n#fappeTyme,\n" + (_conf["Slideout Watcher"] ? "#watcher::after," : "") + "\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#catalog::after,\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": 3px !important;\n}\n#boardNavDesktopFoot,\n#globalMessage,\n#watcher {\n  width: " + (233 + Style.sidebarOffset.W) + "px !important;\n  " + align + ": 18px !important;\n}\n" + (_conf['Boards Navigation'] === 'top' || _conf['Boards Navigation'] === 'sticky top' ? '#boardNavDesktop' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}";
         if (_conf["Updater Position"] !== 'moveable') {
           css += "/* Updater + Stats */\n#updater,\n#thread-stats {\n  " + align + ": " + (_conf["Updater Position"] === "top" || !_conf["Hide Delete UI"] ? 23 : 2) + "px !important; \n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: " + (_conf["Updater Position"] === "top" ? "-1px" : "auto") + " !important;\n  bottom: " + (_conf["Updater Position"] === "bottom" ? "-2px" : "auto") + " !important;\n}";
@@ -4220,7 +4221,7 @@
           return null;
         }
       }
-      position = "" + (Conf['Mascot Position'] === 'bottom' || !(Conf['Mascot Position'] === "default" && Conf['Post Form Style'] === "fixed") ? 0 + ((!g.REPLY || Conf['Boards Navigation'] === 'sticky bottom') && Conf['4chan SS Navigation'] ? 1.6 : 0) : 20.3 + (!g.REPLY || !!$('#postForm input[name=spoiler]') ? 1.4 : 0) + (Conf['Show Post Form Header'] ? 1.5 : 0) + (Conf['Post Form Decorations'] ? 0.2 : 0)) + "em";
+      position = "" + (Conf['Mascot Position'] === 'bottom' || !(Conf['Mascot Position'] === "default" && Conf['Post Form Style'] === "fixed") ? 0 + ((!g.VIEW === 'thread' || Conf['Boards Navigation'] === 'sticky bottom') && Conf['4chan SS Navigation'] ? 1.6 : 0) : 20.3 + (!g.VIEW === 'thread' || !!$('#postForm input[name=spoiler]') ? 1.4 : 0) + (Conf['Show Post Form Header'] ? 1.5 : 0) + (Conf['Post Form Decorations'] ? 0.2 : 0)) + "em";
       if (Conf['editMode']) {
         if (!(mascot = editMascot || (mascot = Mascots[Conf["mascot"]]))) {
           return;
@@ -5429,6 +5430,7 @@
       this.hover = $.el('div', {
         id: 'hoverUI'
       });
+      $.on(window, 'load hashchange', Header.hashScroll);
       $.asap((function() {
         return d.body;
       }), function() {
@@ -5537,6 +5539,24 @@
       showBoardList = !full.hidden;
       custom.hidden = !showBoardList;
       return full.hidden = showBoardList;
+    },
+    hashScroll: function() {
+      var post;
+
+      if (!(post = $.id(this.location.hash.slice(1)))) {
+        return;
+      }
+      return Header.scrollToPost(post);
+    },
+    scrollToPost: function(post) {
+      var headRect, top;
+
+      top = post.getBoundingClientRect().top;
+      if (!Conf['Bottom header']) {
+        headRect = Header.bar.getBoundingClientRect();
+        top += -headRect.top - headRect.height;
+      }
+      return ($.engine === 'webkit' ? d.body : doc).scrollTop += top;
     },
     addShortcut: function(el) {
       var shortcut;
@@ -7205,8 +7225,12 @@
     hl: function(delta, thread) {
       var headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
 
-      headRect = Header.bar.getBoundingClientRect();
-      topMargin = headRect.top + headRect.height;
+      if (Conf['Bottom header']) {
+        topMargin = 0;
+      } else {
+        headRect = Header.toggle.getBoundingClientRect();
+        topMargin = headRect.top + headRect.height;
+      }
       if (postEl = $('.reply.highlight', thread)) {
         $.rmClass(postEl, 'highlight');
         rect = postEl.getBoundingClientRect();
@@ -7290,8 +7314,12 @@
     getThread: function(full) {
       var headRect, i, rect, thread, threads, topMargin, _i, _len;
 
-      headRect = Header.bar.getBoundingClientRect();
-      topMargin = headRect.top + headRect.height;
+      if (Conf['Bottom header']) {
+        topMargin = 0;
+      } else {
+        headRect = Header.toggle.getBoundingClientRect();
+        topMargin = headRect.top + headRect.height;
+      }
       threads = $$('.thread:not([hidden])');
       for (i = _i = 0, _len = threads.length; _i < _len; i = ++_i) {
         thread = threads[i];
@@ -8102,7 +8130,7 @@
         posts.pop();
         for (_i = 0, _len = posts.length; _i < _len; _i++) {
           post = posts[_i];
-          $.addClass(post.nodes.root, 'qphl');
+          $.addClass(post.nodes.post, 'qphl');
         }
       }
       quoterID = $.x('ancestor::*[@id][1]', this).id.match(/\d+$/)[0];
@@ -8130,7 +8158,7 @@
       _ref = [post].concat(post.clones);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         post = _ref[_i];
-        $.rmClass(post.nodes.root, 'qphl');
+        $.rmClass(post.nodes.post, 'qphl');
       }
     }
   };
@@ -8754,10 +8782,18 @@
       });
     },
     node: function() {
-      if (!(this.file && this.file.isImage)) {
+      var thumb, _ref;
+
+      if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
         return;
       }
-      $.on(this.file.thumb.parentNode, 'click', ImageExpand.cb.toggle);
+      thumb = this.file.thumb;
+      $.on(thumb.parentNode, 'click', ImageExpand.cb.toggle);
+      if (this.isClone && $.hasClass(thumb, 'expanding')) {
+        ImageExpand.contract(this);
+        ImageExpand.expand(this);
+        return;
+      }
       if (ImageExpand.on && !this.isHidden) {
         return ImageExpand.expand(this);
       }
@@ -8832,8 +8868,11 @@
       if (!(rect.top <= 0 || rect.left <= 0)) {
         return;
       }
-      headRect = Header.bar.getBoundingClientRect();
-      top = rect.top - headRect.top - headRect.height;
+      top = rect.top;
+      if (!Conf['Bottom header']) {
+        headRect = Header.bar.getBoundingClientRect();
+        top += -headRect.top - headRect.height;
+      }
       root = $.engine === 'webkit' ? d.body : doc;
       if (rect.top < 0) {
         root.scrollTop += top;
@@ -9175,7 +9214,7 @@
     expand: function(post) {
       var a;
 
-      if (post.nodes.longComment) {
+      if (post.nodes.longComment && !post.nodes.longComment.parentNode) {
         $.replace(post.nodes.shortComment, post.nodes.longComment);
         post.nodes.comment = post.nodes.longComment;
         return;
@@ -9445,11 +9484,11 @@
       });
       Unread.addPosts(posts);
       if ((hash = location.hash.match(/\d+/)) && (post = this.posts[hash[0]])) {
-        post.nodes.root.scrollIntoView();
+        Header.scrollToPost(post.nodes.root);
       } else if (Unread.posts.length) {
         $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView(false);
       } else if (posts.length) {
-        posts[posts.length - 1].nodes.root.scrollIntoView();
+        Header.scrollToPost(posts[posts.length - 1].nodes.root);
       }
       $.on(d, 'ThreadUpdate', Unread.onUpdate);
       $.on(d, 'scroll visibilitychange', Unread.read);
@@ -10070,7 +10109,7 @@
           if (Conf['Bottom Scroll']) {
             ($.engine === 'webkit' ? d.body : doc).scrollTop = d.body.clientHeight;
           } else {
-            nodes[0].scrollIntoView();
+            Header.scrollToPost(nodes[0]);
           }
         }
         $.queueTask(function() {
@@ -10674,6 +10713,9 @@
       init: function() {
         var board;
 
+        if (!Conf['Cooldown']) {
+          return;
+        }
         board = g.BOARD.ID;
         QR.cooldown.types = {
           thread: (function() {
@@ -10701,6 +10743,9 @@
         return $.sync("cooldown." + board, QR.cooldown.sync);
       },
       start: function() {
+        if (!Conf['Cooldown']) {
+          return;
+        }
         if (QR.cooldown.isCounting) {
           return;
         }
@@ -10718,6 +10763,9 @@
       set: function(data) {
         var cooldown, delay, hasFile, isReply, isSage, post, req, start, type, upSpd;
 
+        if (!Conf['Cooldown']) {
+          return;
+        }
         req = data.req, post = data.post, isReply = data.isReply, delay = data.delay;
         start = req ? req.uploadEndTime : Date.now();
         if (delay) {

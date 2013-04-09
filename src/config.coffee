@@ -229,6 +229,10 @@ Config =
         true
         'Hide the normal post form.'
       ]
+      'Cooldown': [
+        true
+        'Prevent "flood detected" errors.'
+      ]
 
     'Quote Links':
       'Quote Backlinks': [
