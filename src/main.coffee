@@ -287,9 +287,6 @@ Main =
     for node in $$ '.postContainer', board
       Main.node Main.preParse(node), ready
 
-    # Execute these scripts on inserted posts, not page init.
-    Main.hasCodeTags = !! $ 'script[src^="//static.4chan.org/js/prettify/prettify"]'
-
     if MutationObserver
       Main.observer = new MutationObserver Main.observe
       Main.observer.observe board,

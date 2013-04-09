@@ -7135,7 +7135,6 @@
         node = _ref1[_j];
         Main.node(Main.preParse(node), ready);
       }
-      Main.hasCodeTags = !!$('script[src^="//static.4chan.org/js/prettify/prettify"]');
       if (MutationObserver) {
         Main.observer = new MutationObserver(Main.observe);
         Main.observer.observe(board, {
