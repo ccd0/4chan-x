@@ -1434,8 +1434,6 @@ a:only-of-type > .remove {
 .sections-list > a {
   cursor: pointer;
   #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}
-}
-.sections-list > a {
   position: relative;
   padding: 0 4px;
   z-index: 1;
@@ -1479,10 +1477,12 @@ article li {
 .rice + .optionlabel {
   padding-left: 0;
 }
-#appchanx-settings .section-style fieldset,
-#appchanx-settings .section-main fieldset {
+.section-style fieldset,
+.section-main fieldset {
   vertical-align: top;
   #{if _conf["Single Column Mode"] then "margin: 0 auto 6px;" else "margin: 0 3px 6px;\n display: inline-block;"}
+  padding: 0;
+  border: 0;
 }
 .section-main fieldset > div,
 .styleoption {

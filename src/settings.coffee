@@ -517,6 +517,7 @@ Settings =
       <img src=#{Favicon.unreadNSFW}>
       <img src=#{Favicon.unreadDead}>
       """
+
   togglecss: ->
     if $('textarea', @parentNode.parentNode).disabled = !@checked
       CustomCSS.rmStyle()
@@ -582,12 +583,12 @@ Settings =
 
           if type is 'text'
 
-            div.innerHTML = "<div class=option><span class=optionlabel>#{key}</span><div style=display: none>#{description}</div></div><div class=option><input name='#{key}' style=width: 100%></div>"
+            div.innerHTML = "<div class=option><span class=optionlabel>#{key}</span></div><div style='display:none;'>#{description}</div><div class=option><input name='#{key}' style=width: 100%></div>"
             input = $ "input[name='#{key}']", div
 
           else
 
-            html = "<label><span class=optionlabel>#{key}</span><div style=display: none>#{description}</div></div><div class=option><select name='#{key}'></label>"
+            html = "<div class=option><span class=optionlabel>#{key}</span></div><div style='display:none;'>#{description}</div><div class=option><select name='#{key}'></div>"
             for name, val in type
               html += "<option value='#{val}'>#{name}</option>"
             html += "</select>"
@@ -597,10 +598,12 @@ Settings =
         else
           inputtype = 'checked'
 
-          div.innerHTML = "<label><input type=checkbox name='#{key}'>#{key}</label><span class=description>: #{description}</span>"
+          div.innerHTML = "<div class=option><label><input type=checkbox name='#{key}'>#{key}</label></div><span style='display:none;'>#{description}</span>"
           input = $ 'input', div
 
         Settings.sandbox input, key, value, inputtype
+
+        $.on $('.option', div), 'mouseover', Settings.mouseover
 
         $.on input, 'change', ->
           $.cb[inputtype].call @
@@ -827,33 +830,20 @@ Settings =
     Style.addStyle()
 
   mouseover: (e) ->
-    if mouseover = $.id 'mouseover'
-      if children = mouseover.childNodes
-        for child in children
-          $.rm child
-    else
-      mouseover = $.el 'div',
-        id:        'mouseover'
-        className: 'dialog'
+    mouseover = $.el 'div',
+      id:        'mouseover'
+      className: 'dialog'
 
-      $.add d.body, mouseover
-      
+    $.add Header.hover, mouseover
+
     mouseover.innerHTML = @nextElementSibling.innerHTML
 
-    UI.el = mouseover
-
-    $.on @, 'mousemove',      Settings.hover
-    $.on @, 'mouseout',       Settings.mouseout
+    UI.hover
+      root:         @
+      el:           mouseover
+      latestEvent:  e
+      endEvents:    'mouseout'
+      asapTest: ->  true
+      close:        true
 
     return
-
-  hover: (e) ->
-    UI.hover e, "menu"
-
-  mouseout: (e) ->
-    mouseover = UI.el
-    for child in mouseover.childNodes
-      $.rm child
-    delete UI.el
-
-    $.off @, 'mousemove',     Settings.hover

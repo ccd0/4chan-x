@@ -189,7 +189,6 @@ UI = do ->
         @parseEntry subEntry
       return
 
-
   dragstart = (e) ->
     return if e.type is 'mousedown' and e.button isnt 0 # not LMB
     # prevent text selection
@@ -223,11 +222,13 @@ UI = do ->
       o.up   = dragend.bind o
       $.on d, 'mousemove', o.move
       $.on d, 'mouseup',   o.up
+
   touchmove = (e) ->
     for touch in e.changedTouches
       if touch.identifier is @identifier
         drag.call @, touch
         return
+
   drag = (e) ->
     {clientX, clientY} = e
 
@@ -261,11 +262,13 @@ UI = do ->
     style.right  = right
     style.top    = top
     style.bottom = bottom
+
   touchend = (e) ->
     for touch in e.changedTouches
       if touch.identifier is @identifier
         dragend.call @
         return
+
   dragend = ->
     if @isTouching
       $.off d, 'touchmove', @move
@@ -275,12 +278,13 @@ UI = do ->
       $.off d, 'mouseup',   @up
     localStorage.setItem "#{g.NAMESPACE}#{@id}.position", @style.cssText
 
-  hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb}) ->
+  hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb, close}) ->
     o = {
       root:   root
       el:     el
       style:  el.style
       cb:     cb
+      close:  close
       endEvents:    endEvents
       latestEvent:  latestEvent
       clientHeight: doc.clientHeight
@@ -296,12 +300,13 @@ UI = do ->
 
     $.on root, endEvents,   o.hoverend
     $.on root, 'mousemove', o.hover
+
   hover = (e) ->
     @latestEvent = e
     height = @el.offsetHeight
     {clientX, clientY} = e
 
-    top = clientY - 120
+    top = clientY + (if close then 0 else -120)
     top = if @clientHeight <= height or top <= 0
       0
     else if top + height >= @clientHeight
@@ -310,7 +315,7 @@ UI = do ->
       top
 
     [left, right] = if clientX <= @clientWidth - 400
-      [clientX + 45 + 'px', null]
+      [clientX + (if @close then 15 else 45) + 'px', null]
     else
       [null, @clientWidth - clientX + 45 + 'px']
 
@@ -318,6 +323,7 @@ UI = do ->
     style.top   = top + 'px'
     style.left  = left
     style.right = right
+
   hoverend = ->
     $.rm @el
     $.off @root, @endEvents,  @hoverend

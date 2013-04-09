@@ -56,7 +56,7 @@ html {
   border: 1px solid #{theme["Reply Border"]};
   padding: 5px;
 }
-.tab-selected {
+.sections-list > a.tab-selected {
   background: #{backgroundC};
   border-color: #{theme["Reply Border"]};
   border-style: solid;

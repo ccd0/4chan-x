@@ -1159,7 +1159,7 @@ a.pointer{
   margin-top:-16px !important;
   padding-left:150px !important;
 }
-.file{
+.file {
   margin-top: 2px;
 }
 a.backlink{
