@@ -3456,7 +3456,7 @@ ExpandComment =
     post = Get.postFromNode @
     ExpandComment.expand post
   expand: (post) ->
-    if post.nodes.longComment
+    if post.nodes.longComment and !post.nodes.longComment.parentNode
       $.replace post.nodes.shortComment, post.nodes.longComment
       post.nodes.comment = post.nodes.longComment
       return
