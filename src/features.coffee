@@ -673,7 +673,9 @@ Settings =
       </fieldset>
 
       <fieldset>
-        <legend><input type=checkbox name='Custom CSS' #{if Conf['Custom CSS'] then 'checked' else ''}> Custom CSS</legend>
+        <legend>
+          <label><input type=checkbox name='Custom CSS' #{if Conf['Custom CSS'] then 'checked' else ''}> Custom CSS</label>
+        </legend>
         <button id=apply-css>Apply CSS</button>
         <textarea name=usercss class=field spellcheck=false #{if Conf['Custom CSS'] then '' else 'disabled'}></textarea>
       </fieldset>
