@@ -1778,7 +1778,8 @@ Keybinds =
       return unless /(Esc|Alt|Ctrl|Meta)/.test key
 
     threadRoot = Nav.getThread()
-    thread = Get.postFromNode($('.op', threadRoot)).thread
+    if op = $ '.op', threadRoot
+      thread = Get.postFromNode(op).thread
     switch key
       # QR & Options
       when Conf['Toggle board list']
