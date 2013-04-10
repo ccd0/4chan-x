@@ -54,6 +54,8 @@ Header =
     @setBarVisibility Conf['Header auto-hide']
     $.sync 'Header auto-hide', @setBarVisibility
 
+    $.on d, 'CreateNotification', @createNotification
+
     $.asap (-> d.body), ->
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
@@ -187,6 +189,11 @@ Header =
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g
+
+  createNotification: (e) ->
+    {type, content, lifetime, cb} = e.detail
+    notif = new Notification type, content, lifetime
+    cb notif if cb
 
 class Notification
   constructor: (type, content, @timeout) ->
