@@ -331,10 +331,12 @@ Main =
     $.get "userThemes", {}, (item) ->
       for name, theme of item["userThemes"]
         Themes[name] = theme
+      return
 
     $.get "userMascots", {}, (item) ->
       for name, mascot of item["userMasctos"]
         Mascots[name] = mascot
+      return
 
     if Conf["NSFW/SFW Mascots"]
       g.MASCOTSTRING = "Enabled Mascots #{g.TYPE}"
@@ -350,6 +352,7 @@ Main =
     $.get items, (items) ->
       for key, val of items
         Conf[key] = val
+      return
 
     switch location.hostname
       when 'sys.4chan.org'

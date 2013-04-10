@@ -3817,16 +3817,14 @@
       return $.on(d, 'click scroll blur resize', Rice.cleanup);
     },
     cleanup: function() {
-      var child, _i, _len, _ref, _results;
+      var child, _i, _len, _ref;
 
       $.off(d, 'click scroll blur resize', Rice.cleanup);
       _ref = __slice.call(Rice.ul.children);
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         child = _ref[_i];
-        _results.push($.rm(child));
+        $.rm(child);
       }
-      return _results;
     },
     nodes: function(source) {
       var checkboxes, checkrice, input, selectrice, selects, _i, _j, _len, _len1;
@@ -9507,7 +9505,7 @@
       return post.nodes.comment = post.nodes.shortComment;
     },
     parse: function(req, a, post) {
-      var callback, clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _results;
+      var callback, clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
 
       status = req.status;
       if (![200, 304].contains(status)) {
@@ -9546,12 +9544,10 @@
       post.parseComment();
       post.parseQuotes();
       _ref1 = ExpandComment.callbacks;
-      _results = [];
       for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
         callback = _ref1[_k];
-        _results.push(callback.call(post));
+        callback.call(post);
       }
-      return _results;
     }
   };
 
@@ -10556,7 +10552,7 @@
     regString: /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]+|[-a-z0-9]+\.[a-z]|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|[a-z]{3,}:[a-z0-9?]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi,
     cypher: $.el('div'),
     node: function() {
-      var a, child, cypher, cypherText, data, embedder, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2, _results;
+      var a, child, cypher, cypherText, data, embedder, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
 
       if (this.isClone && Conf['Embedding']) {
         _ref = $$('.embedder', this.nodes.comment);
@@ -10570,7 +10566,6 @@
       cypher = Linkify.cypher;
       i = -1;
       len = snapshot.snapshotLength;
-      _results = [];
       while (++i < len) {
         nodes = $.frag();
         node = snapshot.snapshotItem(i);
@@ -10631,9 +10626,8 @@
             $.add(nodes, child);
           }
         }
-        _results.push($.replace(node, nodes));
+        $.replace(node, nodes);
       }
-      return _results;
     },
     toggle: function() {
       var el, embed, style, type, url;
@@ -12682,26 +12676,22 @@
         g.TYPE = 'nsfw';
       }
       $.get("userThemes", {}, function(item) {
-        var name, theme, _ref, _results;
+        var name, theme, _ref;
 
         _ref = item["userThemes"];
-        _results = [];
         for (name in _ref) {
           theme = _ref[name];
-          _results.push(Themes[name] = theme);
+          Themes[name] = theme;
         }
-        return _results;
       });
       $.get("userMascots", {}, function(item) {
-        var mascot, name, _ref, _results;
+        var mascot, name, _ref;
 
         _ref = item["userMasctos"];
-        _results = [];
         for (name in _ref) {
           mascot = _ref[name];
-          _results.push(Mascots[name] = mascot);
+          Mascots[name] = mascot;
         }
-        return _results;
       });
       if (Conf["NSFW/SFW Mascots"]) {
         g.MASCOTSTRING = "Enabled Mascots " + g.TYPE;
@@ -12715,14 +12705,12 @@
         'Deleted Mascots': []
       };
       $.get(items, function(items) {
-        var key, val, _results;
+        var key, val;
 
-        _results = [];
         for (key in items) {
           val = items[key];
-          _results.push(Conf[key] = val);
+          Conf[key] = val;
         }
-        return _results;
       });
       switch (location.hostname) {
         case 'sys.4chan.org':

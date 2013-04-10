@@ -3019,6 +3019,7 @@ ExpandComment =
 
     for callback in ExpandComment.callbacks
       callback.call post
+    return
 
 ExpandThread =
   init: ->
@@ -3906,6 +3907,7 @@ Linkify =
           $.add nodes, child
 
       $.replace node, nodes
+    return
 
   toggle: ->
     # We setup the link to be replaced by the embedded video

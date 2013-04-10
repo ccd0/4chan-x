@@ -579,6 +579,7 @@ Rice =
     $.off d, 'click scroll blur resize', Rice.cleanup
     for child in [Rice.ul.children...]
       $.rm child
+    return
 
   nodes: (source) ->
     source or= d.body
