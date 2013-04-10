@@ -5,7 +5,7 @@
   "meta": {
     "name": "4chan x",
     "repo": "https://github.com/seaweedchan/4chan-x/",
-    "page": "http://seaweedchan.github.com/4chan-x/",
+    "page": "http://seaweedchan.github.io/4chan-x/",
     "mainBranch": "4chanX",
     "files": {
       "metajs": "4chan_x.meta.js",

@@ -5,15 +5,15 @@
  * <%= meta.repo %>blob/master/LICENSE
  *
  * Appchan X Copyright © <%= grunt.template.today('yyyy') %> Zixaphir <zixaphirmoxphar@gmail.com>
- *   http://zixaphir.github.com/appchan-x/
+ *   http://zixaphir.github.io/appchan-x/
  * 4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
- *   http://aeosynth.github.com/4chan-x/
+ *   https://github.com/aeosynth/4chan-x
  * 4chan x Copyright © <%= grunt.template.today('yyyy') %> Nicolas Stepien <stepien.nicolas@gmail.com>
- *   http://mayhemydg.github.com/4chan-x/
+ *   https://4chan-x.just-believe.in/
  * OneeChan Copyright © <%= grunt.template.today('yyyy') %> Jordan Bates
- *   http://seaweedchan.github.com/oneechan/
+ *   http://seaweedchan.github.io/oneechan/
  * 4chan SS Copyright © <%= grunt.template.today('yyyy') %> Ahodesuka
- *   http://ahodesuka.github.com/4chan-Style-Script
+ *   https://github.com/ahodesuka/4chan-Style-Script/
  * Raphael Icons Copyright © <%= grunt.template.today('yyyy') %> Dmitry Baranovskiy
  *   http://raphaeljs.com/icons/
  *

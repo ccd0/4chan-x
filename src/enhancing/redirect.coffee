@@ -32,7 +32,7 @@ Redirect =
   archiver:
     'Foolz':
       base:    '//archive.foolz.us'
-      boards:  ['a', 'co', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'wsg', 'dev', 'foolz']
+      boards:  ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg', 'dev', 'foolz']
       type:    'foolfuuka'
     'NSFWFoolz':
       base:    '//nsfw.foolz.us'
@@ -40,11 +40,11 @@ Redirect =
       type:    'foolfuuka'
     'TheDarkCave':
       base:    'http://archive.thedarkcave.org'
-      boards:  ['c', 'int', 'po']
+      boards:  ['c', 'int', 'out', 'po']
       type:    'foolfuuka'
     'Warosu':
       base:    '//fuuka.warosu.org'
-      boards:  ['cgl', 'ck', 'jp', 'lit', 'q', 'tg']
+      boards:  ['cgl', 'ck', 'fa', 'jp', 'lit', 'q', 's4s', 'tg', 'vr']
       type:    'fuuka'
     'RebeccaBlackTech':
       base:    '//rbt.asia'
@@ -66,7 +66,6 @@ Redirect =
       base: '//archive.nyafuu.org'
       boards: ['c', 'w']
       type: 'fuuka'
-
   select: (board) ->
     return (name for name, archive of @archiver when archive.boards.contains board or g.BOARD)
 

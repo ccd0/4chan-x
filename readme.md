@@ -1,4 +1,4 @@
-# Get 4chan X [HERE](http://seaweedchan.github.com/4chan-x/).
+# Get 4chan X [HERE](http://seaweedchan.github.io/4chan-x/).
 
 ## Reporting bugs
 

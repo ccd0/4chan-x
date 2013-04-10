@@ -1,4 +1,7 @@
 master
+seaweedchan:
+	-Update supported boards for archive redirection and custom navigation
+	-Point to github.io instead of github.com for pages
 
 1.0.5:
 seaweedchan:

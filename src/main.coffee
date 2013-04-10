@@ -18,7 +18,7 @@ Main =
         g.CATALOG = true
 
     # Check if the current board we're on is SFW or not, so we can handle options that need to know that.
-    if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains g.BOARD
+    if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 's4s', 'soc', 't', 'u', 'y'].contains g.BOARD
       g.TYPE = 'nsfw'
 
     # Scope a local _conf variable for performance.
