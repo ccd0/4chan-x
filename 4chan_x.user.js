@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
- * 4chan x - Version 1.0.5 - 2013-04-09
+ * 4chan x - Version 1.0.5 - 2013-04-10
  *
  * Licensed under the MIT license.
  * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -6551,7 +6551,6 @@
       var bq, comment, data, o, post, postNode, _ref;
       data = JSON.parse(req.response);
       if (data.error) {
-        $.addClass(root, 'warning');
         root.textContent = data.error;
         return;
       }
