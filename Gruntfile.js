@@ -104,13 +104,14 @@ module.exports = function(grunt) {
     compress: {
       crx: {
         options: {
-          archive: 'builds/4chan-X.zip',
+          archive: 'builds/<%= pkg.name %>.zip',
           level: 9,
           pretty: true
         },
         expand: true,
-        cwd: 'builds/crx/',
-        src: '**'
+        flatten: true,
+        src: 'builds/crx/*',
+        dest: '/'
       }
     },
     clean: {
