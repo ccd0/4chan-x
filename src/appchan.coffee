@@ -524,56 +524,61 @@ Rice =
     Post::callbacks.push
       name: 'Rice Checkboxes'
       cb:   @node
+    
+  cb: 
+    check: ->
+      @check.click()
 
-  checkclick: ->
-    @check.click()
+    option: (e) ->
+      e.stopPropagation()
+      select = Rice.input
+      container = select.nextElementSibling
+      container.firstChild.textContent = @textContent
+      select.value = @getAttribute 'data-value'
+      ev = document.createEvent 'HTMLEvents'
+      ev.initEvent "change", true, true
+      $.event select, ev
+      Rice.cleanup()
 
-  selectclick: ->
+  selectclick: (e) ->
     e.stopPropagation()
-    unless {ul} = Rice
+
+    {ul} = Rice
+
+    unless ul
       Rice.ul = ul = $.el 'ul',
         id: "selectrice"
       $.add d.body, ul 
-      
+
     if ul.children.length > 0
-      return Rice.rmOption() 
+      return Rice.cleanup() 
       
     rect = @getBoundingClientRect()
     {clientHeight} = d.documentElement
     {style} = ul
 
     style.cssText = "width: #{rect.width}px; left: #{rect.left}px;" + (if clientHeight - rect.bottom < 200 then "bottom: #{clientHeight - rect.top}px" else "top: #{rect.bottom}px") 
-    Rice.select = @previousSibling
+    Rice.input = select = @previousSibling
     nodes = []
     
-    for option in Rice.select.options
+    for option in select.options
       li = $.el 'li',
         textContent: option.textContent
       li.setAttribute 'data-value', option.value
 
-      $.on li, 'click', (e) ->
-        e.stopPropagation()
-        select = Rice.select
-        container = select.nextElementSibling
-        container.firstChild.textContent = @textContent
-        input.value = @getAttribute 'data-value'
-        ev = document.createEvent 'HTMLEvents'
-        ev.initEvent "change", true, true
-        $.event input, ev
-        Rice.remSelect()
+      $.on li, 'click', Rice.cb.option
       nodes.push li
-    $.add ul, nodes 
+    $.add ul, nodes
 
     $.on ul, 'click scroll blur', (e) ->
       e.stopPropagation()
 
-    $.on d, 'click scroll blur resize', Rice.remSelect
-    $.add @, ul
+    $.on d, 'click scroll blur resize', Rice.cleanup
 
-  remSelect: ->
-    $.off d, 'click scroll blur resize', Rice.remSelect
-    $.rm Rice.ul
-    delete Rice.ul
+  cleanup: ->
+    $.off d, 'click scroll blur resize', Rice.cleanup
+    for child in [Rice.ul.children...]
+      $.rm child
 
   nodes: (source) ->
     source or= d.body
@@ -599,15 +604,14 @@ Rice =
     div.check = input
     $.after input, div
     if div.parentElement.tagName.toLowerCase() != 'label'
-      $.on div, 'click', Rice.checkclick
+      $.on div, 'click', Rice.cb.check
 
   select: (input) ->
     $.addClass input, 'riced'
     div = $.el 'div',
       className: 'selectrice'
       innerHTML: "<div>#{input.options[input.selectedIndex].textContent or null}</div>"
-    $.on div, "click", (e) ->
-      Rice.selectclick
+    $.on div, "click", Rice.selectclick
 
     $.after input, div
 

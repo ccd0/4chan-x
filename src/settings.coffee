@@ -579,7 +579,6 @@ Settings =
           className: 'styleoption'
 
         if type
-          inputtype = 'value'
 
           if type is 'text'
 
@@ -595,23 +594,25 @@ Settings =
             div.innerHTML = html
             input = $ "select", div
 
+          input.cb = 'value'
+
         else
-          inputtype = 'checked'
 
           div.innerHTML = "<div class=option><label><input type=checkbox name='#{key}'>#{key}</label></div><span style='display:none;'>#{description}</span>"
           input = $ 'input', div
+          input.cb = 'checked'
 
-        Settings.sandbox input, key, value, inputtype
+        Settings.sandbox input, key, value, input.cb
 
         $.on $('.option', div), 'mouseover', Settings.mouseover
 
         $.on input, 'change', ->
-          $.cb[inputtype].call @
+          $.cb[@cb].call @
           Style.addStyle()
 
-        Rice.nodes fs
         $.add fs, div
 
+      Rice.nodes fs
       nodes.push fs
 
     $.add section, nodes

@@ -1405,21 +1405,25 @@ a:only-of-type > .remove {
 #appchanx-settings h3,
 .section-keybinds,
 .section-mascots,
-.section-main,
+.section-script,
 .style {
   text-align: center;
 }
 .section-keybinds table,
-.section-main fieldset,
+.section-script fieldset,
 .section-style fieldset {
   text-align: left;
 }
 .section-keybinds table {
   margin: auto;
 }
-#appchanx-settings ul {
+#appchanx-settings fieldset {
   padding: 0;
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
+  vertical-align: top;
+  #{if _conf["Single Column Mode"] then "margin: 0 auto 6px;" else "margin: 0 3px 6px;\n display: inline-block;"}
+  padding: 0;
+  border: 0;
 }
 .section-container {
   overflow: auto;
@@ -1452,17 +1456,17 @@ a:only-of-type > .remove {
 #appchanx-settings h3 {
   margin: 0;
 }
-.section-main fieldset > div,
+.section-script fieldset > div,
 .section-style fieldset > div,
 .section-rice fieldset > div {
   overflow: visible;
   padding: 0 5px 0 7px;
 }
 #appchanx-settings tr:nth-of-type(2n+1),
-.section-main fieldset > div:nth-of-type(2n+1),
+.section-script fieldset > div:nth-of-type(2n+1),
 .section-rice fieldset > div:nth-of-type(2n+1),
 .section-style fieldset > div:nth-of-type(2n+1),
-.section-keybinds fieldset > div:nth-of-type(2n+1),
+.section-keybinds tr:nth-of-type(2n+1),
 #selectrice li:nth-of-type(2n+1) {
   background-color: rgba(0, 0, 0, 0.05);
 }
@@ -1483,21 +1487,14 @@ article li {
 .rice + .optionlabel {
   padding-left: 0;
 }
-.section-style fieldset,
-.section-main fieldset {
-  vertical-align: top;
-  #{if _conf["Single Column Mode"] then "margin: 0 auto 6px;" else "margin: 0 3px 6px;\n display: inline-block;"}
-  padding: 0;
-  border: 0;
-}
-.section-main fieldset > div,
+.section-script fieldset > div,
 .styleoption {
   text-align: left;
 }
 .section-style fieldset > div {
   width: 370px;
 }
-.section-main fieldset {
+.section-script fieldset {
   width: 200px;
 }
 .suboptions,
