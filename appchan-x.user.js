@@ -295,6 +295,8 @@
     embedWidth: 640,
     embedHeight: 390,
     theme: 'Yotsuba B',
+    'theme_sfw': 'Yotsuba B',
+    'theme_nsfw': 'Yotsuba',
     mascot: ''
   };
 
@@ -12830,6 +12832,9 @@
         g.MASCOTSTRING = "Enabled Mascots " + g.TYPE;
       } else {
         g.MASCOTSTRING = "Enabled Mascots";
+      }
+      if (Conf["NSFW/SFW Themes"]) {
+        Conf["theme"] = Conf["theme_" + g.TYPE];
       }
       switch (location.hostname) {
         case 'sys.4chan.org':

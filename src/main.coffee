@@ -334,14 +334,16 @@ Main =
     if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains g.BOARD
       g.TYPE = 'nsfw'
 
-    
-    $.extend Themes, Conf["userThemes"]
+    $.extend Themes,  Conf["userThemes"]
     $.extend Mascots, Conf["userMascots"]
 
     if Conf["NSFW/SFW Mascots"]
       g.MASCOTSTRING = "Enabled Mascots #{g.TYPE}"
     else
       g.MASCOTSTRING = "Enabled Mascots"
+
+    if Conf["NSFW/SFW Themes"]
+      Conf["theme"] = Conf["theme_#{g.TYPE}"]
 
     switch location.hostname
       when 'sys.4chan.org'

@@ -897,7 +897,9 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
       ]
     'Interval': 30
 
-  embedWidth: 640
+  embedWidth:  640
   embedHeight: 390
-  theme : 'Yotsuba B'
+  theme :       'Yotsuba B'
+  'theme_sfw':  'Yotsuba B'
+  'theme_nsfw': 'Yotsuba'
   mascot : ''
