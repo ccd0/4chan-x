@@ -304,9 +304,15 @@ Main =
     flatten null, Config
     for db in DataBoards
       Conf[db] = boards: {}
-    $.get Conf, Main.initFeatures
+    $.extend Conf,
+      'userThemes':           []
+      'userMascots':          []
+      'Enabled Mascots':      []
+      'Enabled Mascots sfw':  []
+      'Enabled Mascots nsfw': []
+      'Deleted Mascots':      []
 
-    $.on d, '4chanMainInit', Main.initStyle
+    $.get Conf, Main.initFeatures
 
   initFeatures: (items) ->
     Conf = items
@@ -328,31 +334,14 @@ Main =
     if ['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains g.BOARD
       g.TYPE = 'nsfw'
 
-    $.get "userThemes", {}, (item) ->
-      for name, theme of item["userThemes"]
-        Themes[name] = theme
-      return
-
-    $.get "userMascots", {}, (item) ->
-      for name, mascot of item["userMascots"]
-        Mascots[name] = mascot
-      return
+    
+    $.extend Themes, Conf["userThemes"]
+    $.extend Mascots, Conf["userMascots"]
 
     if Conf["NSFW/SFW Mascots"]
       g.MASCOTSTRING = "Enabled Mascots #{g.TYPE}"
     else
       g.MASCOTSTRING = "Enabled Mascots"
-
-    items =
-      'Enabled Mascots':      []
-      'Enabled Mascots sfw':  []
-      'Enabled Mascots nsfw': []
-      'Deleted Mascots':      []
-    
-    $.get items, (items) ->
-      for key, val of items
-        Conf[key] = val
-      return
 
     switch location.hostname
       when 'sys.4chan.org'

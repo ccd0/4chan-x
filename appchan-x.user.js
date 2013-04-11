@@ -4878,7 +4878,7 @@
       return reader.readAsText(file);
     },
     save: function(theme) {
-      var name, userThemes;
+      var name;
 
       name = theme["Theme"];
       if (Themes[name] && !Themes[name]["Deleted"]) {
@@ -4890,15 +4890,19 @@
       }
       Themes[name] = JSON.parse(JSON.stringify(theme));
       delete Themes[name]["Theme"];
-      userThemes = $.get("userThemes", {});
-      userThemes[name] = Themes[name];
-      $.set('userThemes', userThemes);
-      $.set("theme", Conf['theme'] = name);
-      return alert("Theme \"" + name + "\" saved.");
+      return $.get("userThemes", {}, function(item) {
+        var userThemes;
+
+        userThemes = item["userThemes"];
+        userThemes[name] = Themes[name];
+        $.set('userThemes', userThemes);
+        $.set("theme", Conf['theme'] = name);
+        return alert("Theme \"" + name + "\" saved.");
+      });
     },
     close: function() {
       Conf['editMode'] = false;
-      $.rm($id('themeConf'));
+      $.rm($.id('themeConf'));
       Style.addStyle();
       return Settings.open('themes');
     }
@@ -12700,8 +12704,15 @@
           boards: {}
         };
       }
-      $.get(Conf, Main.initFeatures);
-      return $.on(d, '4chanMainInit', Main.initStyle);
+      $.extend(Conf, {
+        'userThemes': [],
+        'userMascots': [],
+        'Enabled Mascots': [],
+        'Enabled Mascots sfw': [],
+        'Enabled Mascots nsfw': [],
+        'Deleted Mascots': []
+      });
+      return $.get(Conf, Main.initFeatures);
     },
     initFeatures: function(items) {
       var initFeatures, pathname;
@@ -12725,43 +12736,13 @@
       if (['b', 'd', 'e', 'gif', 'h', 'hc', 'hm', 'hr', 'pol', 'r', 'r9k', 'rs', 's', 'soc', 't', 'u', 'y'].contains(g.BOARD)) {
         g.TYPE = 'nsfw';
       }
-      $.get("userThemes", {}, function(item) {
-        var name, theme, _ref;
-
-        _ref = item["userThemes"];
-        for (name in _ref) {
-          theme = _ref[name];
-          Themes[name] = theme;
-        }
-      });
-      $.get("userMascots", {}, function(item) {
-        var mascot, name, _ref;
-
-        _ref = item["userMascots"];
-        for (name in _ref) {
-          mascot = _ref[name];
-          Mascots[name] = mascot;
-        }
-      });
+      $.extend(Themes, Conf["userThemes"]);
+      $.extend(Mascots, Conf["userMascots"]);
       if (Conf["NSFW/SFW Mascots"]) {
         g.MASCOTSTRING = "Enabled Mascots " + g.TYPE;
       } else {
         g.MASCOTSTRING = "Enabled Mascots";
       }
-      items = {
-        'Enabled Mascots': [],
-        'Enabled Mascots sfw': [],
-        'Enabled Mascots nsfw': [],
-        'Deleted Mascots': []
-      };
-      $.get(items, function(items) {
-        var key, val;
-
-        for (key in items) {
-          val = items[key];
-          Conf[key] = val;
-        }
-      });
       switch (location.hostname) {
         case 'sys.4chan.org':
           Report.init();

@@ -1773,14 +1773,15 @@ ThemeTools =
 
     Themes[name] = JSON.parse(JSON.stringify(theme))
     delete Themes[name]["Theme"]
-    userThemes = $.get "userThemes", {}
-    userThemes[name] = Themes[name]
-    $.set 'userThemes', userThemes
-    $.set "theme", Conf['theme'] = name
-    alert "Theme \"#{name}\" saved."
+    $.get "userThemes", {}, (item) ->
+      userThemes = item["userThemes"]
+      userThemes[name] = Themes[name]
+      $.set 'userThemes', userThemes
+      $.set "theme", Conf['theme'] = name
+      alert "Theme \"#{name}\" saved."
 
   close: ->
     Conf['editMode'] = false
-    $.rm $id 'themeConf'
+    $.rm $.id 'themeConf'
     Style.addStyle()
     Settings.open 'themes'
