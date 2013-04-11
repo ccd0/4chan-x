@@ -54,7 +54,7 @@
         'Catalog Links': [true, 'Turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
         'Enable 4chan\'s Extension': [false, 'Compatibility between appchan x and 4chan\'s inline extension is NOT guaranteed.'],
-        'Custom Board Navigation': [true, 'Show custom links instead of the full board list.'],
+        'Custom Board Navigation': [false, 'Show custom links instead of the full board list.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps.'],
@@ -111,7 +111,7 @@
       },
       'Posting': {
         'Quick Reply': [true, 'All-in-one form to reply, create threads, automate dumping and more.'],
-        'Persistent QR': [false, 'The Quick reply won\'t disappear after posting.'],
+        'Persistent QR': [true, 'The Quick reply won\'t disappear after posting.'],
         'Auto Hide QR': [false, 'Automatically hide the quick reply when posting.'],
         'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
@@ -213,7 +213,7 @@
         'Slideout Navigation': ['compact', 'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']],
         'Pagination': ['sticky bottom', 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']],
         'Pagination Alignment': ['center', 'Change the text alignment of the pagination.', ['left', 'center', 'right']],
-        'Hide Navigation Decorations': [false, 'Hide non-link text in the board navigation and pagination. This also disables the delimiter in <code>Custom Navigation</code>']
+        'Hide Navigation Decorations': [false, 'Hide non-link text in the board navigation and pagination. This also disables the delimiters in <code>Custom Navigation</code>']
       },
       'Post Form': {
         'Compact Post Form Inputs': [true, 'Use compact inputs on the post form.'],

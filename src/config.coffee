@@ -14,7 +14,7 @@ Config =
         'Compatibility between <%= meta.name %> and 4chan\'s inline extension is NOT guaranteed.'
       ]
       'Custom Board Navigation': [
-        true
+        false
         'Show custom links instead of the full board list.'
       ]
       '404 Redirect': [
@@ -206,7 +206,7 @@ Config =
         'All-in-one form to reply, create threads, automate dumping and more.'
       ]
       'Persistent QR': [
-        false
+        true
         'The Quick reply won\'t disappear after posting.'
       ]
       'Auto Hide QR': [
@@ -601,7 +601,7 @@ Config =
       ]
       'Hide Navigation Decorations': [
         false
-        'Hide non-link text in the board navigation and pagination. This also disables the delimiter in <code>Custom Navigation</code>'
+        'Hide non-link text in the board navigation and pagination. This also disables the delimiters in <code>Custom Navigation</code>'
       ]
 
     'Post Form':
