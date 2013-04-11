@@ -738,7 +738,7 @@ Settings =
       <img src=#{Favicon.unreadDead}>
       """
   togglecss: ->
-    if $('textarea', @parentNode.parentNode).disabled = !@checked
+    if $('textarea[name=usercss]', $.x 'ancestor::fieldset[1]', @).disabled = !@checked
       CustomCSS.rmStyle()
     else
       CustomCSS.addStyle()
