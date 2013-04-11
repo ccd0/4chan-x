@@ -53,6 +53,7 @@ QR =
   persist: ->
     QR.open()
     QR.hide() if Conf['Auto-Hide QR']
+
   open: ->
     if QR.nodes
       QR.nodes.el.hidden = false
@@ -65,6 +66,7 @@ QR =
       Main.handleErrors
         message: 'Quick Reply dialog creation crashed.'
         error: err
+
   close: ->
     if QR.req
       QR.abort()
@@ -83,9 +85,11 @@ QR =
     d.activeElement.blur()
     $.addClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = true
+
   unhide: ->
     $.rmClass QR.nodes.el, 'autohide'
     QR.nodes.autohide.checked = false
+
   toggleHide: ->
     if @checked
       QR.hide()
@@ -104,7 +108,9 @@ QR =
       QR.captcha.nodes.input.focus()
     alert el.textContent if d.hidden
     QR.notifications.push new Notification 'warning', el
+  
   notifications: []
+  
   cleanNotifications: ->
     for notification in QR.notifications
       notification.close()
@@ -292,9 +298,11 @@ QR =
     toggle = if e.type is 'dragstart' then $.off else $.on
     toggle d, 'dragover', QR.dragOver
     toggle d, 'drop',     QR.dropFile
+  
   dragOver: (e) ->
     e.preventDefault()
     e.dataTransfer.dropEffect = 'copy' # cursor feedback
+  
   dropFile: (e) ->
     # Let it only handle files from the desktop.
     return unless e.dataTransfer.files.length
@@ -302,6 +310,7 @@ QR =
     QR.open()
     QR.fileInput e.dataTransfer.files
     $.addClass QR.nodes.el, 'dump'
+  
   paste: (e) ->
     files = []
     for item in e.clipboardData.items
@@ -313,8 +322,12 @@ QR =
     return unless files.length
     QR.open()
     QR.fileInput files
-  openFileInput: ->
+  
+  openFileInput: (e) ->
+    if e.keyCode
+      return unless e.keyCode is 32
     QR.nodes.fileInput.click()
+  
   fileInput: (files) ->
     if @ instanceof Element #or files instanceof Event # file input
       files = [@files...]
@@ -350,6 +363,7 @@ QR =
           post = new QR.post()
         post.setFile file
     $.addClass QR.nodes.el, 'dump'
+  
   resetThreadSelector: ->
     if g.VIEW is 'thread'
       QR.nodes.thread.value = g.THREADID
@@ -357,6 +371,7 @@ QR =
       QR.nodes.thread.value = 'new'
 
   posts: []
+  
   post: class
     constructor: (select) ->
       el = $.el 'a',
@@ -406,6 +421,7 @@ QR =
         @load() if QR.selected is @ # load persona
       @select() if select
       @unlock()
+    
     rm: ->
       $.rm @nodes.el
       index = QR.posts.indexOf @
@@ -416,6 +432,7 @@ QR =
       QR.posts.splice index, 1
       return unless window.URL
       URL.revokeObjectURL @URL
+    
     lock: (lock=true) ->
       @isLocked = lock
       return unless @ is QR.selected
@@ -426,8 +443,10 @@ QR =
       (if lock then $.off else $.on) QR.nodes.filename.parentNode, 'click', QR.openFileInput
       @nodes.spoiler.disabled = lock
       @nodes.el.draggable = !lock
+    
     unlock: ->
       @lock false
+    
     select: ->
       if QR.selected
         QR.selected.nodes.el.id = null
@@ -440,12 +459,14 @@ QR =
       rectList = @nodes.el.parentNode.getBoundingClientRect()
       @nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
       @load()
+    
     load: ->
       # Load this post's values.
       for name in ['name', 'email', 'sub', 'com']
         QR.nodes[name].value = @[name] or null
       @showFileData()
       QR.characterCount()
+    
     save: (input) ->
       {value} = input
       @[input.dataset.name] = value
@@ -456,6 +477,7 @@ QR =
       # during the last 5 seconds of the cooldown.
       if QR.cooldown.auto and @ is QR.posts[0] and 0 < QR.cooldown.seconds <= 5
         QR.cooldown.auto = false
+    
     forceSave: ->
       return unless @ is QR.selected
       # Do this in case people use extensions
@@ -463,6 +485,7 @@ QR =
       for name in ['name', 'email', 'sub', 'com']
         @save QR.nodes[name]
       return
+    
     setFile: (@file) ->
       @filename           = "#{file.name} (#{$.bytesToString file.size})"
       @nodes.el.title     = @filename
@@ -473,6 +496,7 @@ QR =
         @nodes.el.style.backgroundImage = null
         return
       @setThumbnail()
+    
     setThumbnail: (fileURL) ->
       # XXX Opera does not support blob URL
       # Create a redimensioned thumbnail.
@@ -532,6 +556,7 @@ QR =
         applyBlob new Blob [ui8a], type: 'image/png'
 
       img.src = fileURL
+    
     rmFile: ->
       delete @file
       delete @filename
@@ -541,6 +566,7 @@ QR =
       @showFileData()
       return unless window.URL
       URL.revokeObjectURL @URL
+    
     showFileData: (hide) ->
       if @file
         QR.nodes.filename.textContent = @filename
@@ -549,6 +575,7 @@ QR =
         $.addClass QR.nodes.fileSubmit, 'has-file'
       else
         $.rmClass QR.nodes.fileSubmit, 'has-file'
+    
     pasteText: (file) ->
       reader = new FileReader()
       reader.onload = (e) =>
@@ -561,17 +588,23 @@ QR =
           QR.nodes.com.value    = @com
         @nodes.span.textContent = @com
       reader.readAsText file
+    
     dragStart: ->
       $.addClass @, 'drag'
+    
     dragEnd: ->
       $.rmClass @, 'drag'
+    
     dragEnter: ->
       $.addClass @, 'over'
+    
     dragLeave: ->
       $.rmClass @, 'over'
+    
     dragOver: (e) ->
       e.preventDefault()
       e.dataTransfer.dropEffect = 'move'
+    
     drop: ->
       el = $ '.drag', @parentNode
       $.rmClass el, 'drag' # Opera doesn't fire dragEnd if we drop it on something else
@@ -589,6 +622,7 @@ QR =
       return if d.cookie.indexOf('pass_enabled=1') >= 0
       return unless @isEnabled = !!$.id 'captchaFormPart'
       $.asap (-> $.id 'recaptcha_challenge_field_holder'), @ready.bind @
+    
     ready: ->
       setLifetime = (e) => @lifetime = e.detail
       $.on  window, 'captcha:timeout', setLifetime
@@ -626,8 +660,10 @@ QR =
 
       $.addClass QR.nodes.el, 'has-captcha'
       $.after QR.nodes.com.parentNode, [imgContainer, input]
+    
     sync: (@captchas) ->
       QR.captcha.count()
+    
     getOne: ->
       @clear()
       if captcha = @captchas.shift()
@@ -643,6 +679,7 @@ QR =
         # If there's only one word, duplicate it.
         response = "#{response} #{response}" unless /\s/.test response
       {challenge, response}
+    
     save: ->
       return unless response = @nodes.input.value.trim()
       @captchas.push
@@ -652,6 +689,7 @@ QR =
       @count()
       @reload()
       $.set 'captchas', @captchas
+    
     clear: ->
       now = Date.now()
       for captcha, i in @captchas
@@ -660,6 +698,7 @@ QR =
       @captchas = @captchas[i..]
       @count()
       $.set 'captchas', @captchas
+    
     load: ->
       return unless @nodes.challenge.firstChild
       # -1 minute to give upload some time.
@@ -669,6 +708,7 @@ QR =
       @nodes.img.src = "//www.google.com/recaptcha/api/image?c=#{challenge}"
       @nodes.input.value = null
       @clear()
+    
     count: ->
       count = @captchas.length
       @nodes.input.placeholder = switch count
@@ -679,11 +719,13 @@ QR =
         else
           "Verification (#{count} cached captchas)"
       @nodes.input.alt = count # For XTRM RICE.
+    
     reload: (focus) ->
       # the 't' argument prevents the input from being focused
       $.globalEval 'Recaptcha.reload("t")'
       # Focus if we meant to.
       @nodes.input.focus() if focus
+    
     keydown: (e) ->
       if e.keyCode is 8 and not @nodes.input.value
         @reload()
@@ -702,26 +744,26 @@ QR =
     </div>
     <form>
       <div class=persona>
-        <input id=dump-button type=button title='Dump list' value=+>
-        <input name=name  data-name=name  title=Name    placeholder=Name    class=field size=1>
-        <input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1>
-        <input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1>
+        <input id=dump-button type=button title='Dump list' value=+ tabindex=0>
+        <input name=name  data-name=name  title=Name    placeholder=Name    class=field size=1 tabindex=10>
+        <input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1 tabindex=20>
+        <input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1 tabindex=30>
       </div>
       <div class=textarea>
-        <textarea data-name=com title=Comment placeholder=Comment class=field></textarea>
+        <textarea data-name=com title=Comment placeholder=Comment class=field tabindex=40></textarea>
         <span id=char-count></span>
       </div>
       <div id=dump-list-container>
         <div id=dump-list></div>
-        <a id=add-post href=javascript:; title="Add a post">+</a>
+        <a id=add-post href=javascript:; title="Add a post" tabindex=50>+</a>
       </div>
       <div id=file-n-submit>
-        <span id=qr-filename-container class=field>
+        <span id=qr-filename-container class=field tabindex=60>
           <span id=qr-no-file>No selected file</span>
           <span id=qr-filename></span>
-          <a id=qr-filerm href=javascript:; title='Remove file'>×</a>
+          <a id=qr-filerm href=javascript:; title='Remove file' tabindex=80>×</a>
         </span>
-        <input type=submit>
+        <input type=submit tabindex=70>
       </div>
       <input type=file multiple>
       <div id=qr-thread-select>
@@ -730,7 +772,7 @@ QR =
         </select>
       </div>
       <label id=qr-spoiler-label>
-        <input type=checkbox id=qr-file-spoiler title='Spoiler image'>Spoiler?
+        <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=90>Spoiler?
       </label>
     </form>
     """.replace />\s+</g, '><' # get rid of spaces between elements
@@ -801,7 +843,7 @@ QR =
     $.add nodes.threadPar, nodes.thread
     QR.resetThreadSelector()
 
-    $.on nodes.filename.parentNode, 'click',  QR.openFileInput
+    $.on nodes.filename.parentNode, 'click keyup',  QR.openFileInput
 
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
@@ -818,6 +860,8 @@ QR =
     # save selected post's data
     for name in ['name', 'email', 'sub', 'com']
       $.on nodes[name], 'input', -> QR.selected.save @
+      $.on nodes[name], 'focus', -> $.addClass nodes.el, 'focus'
+      $.on nodes[name], 'blur',  -> $.rmClass  nodes.el, 'focus'
 
     QR.status()
     QR.cooldown.init()

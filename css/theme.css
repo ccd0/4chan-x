@@ -129,6 +129,7 @@ textarea {
 }
 #dump:hover,
 #qr-filename-container:hover,
+#qr-filename-container:hover,
 .selectrice:hover,
 #selectrice li:hover,
 #selectrice li:nth-of-type(2n+1):hover,
@@ -142,12 +143,15 @@ textarea:hover {
 #dump:focus,
 #selectrice li:focus,
 .selectrice:focus,
+#qr-filename-container:active,
+#qr-filename-container:focus,
 input:focus,
 textarea:focus,
 textarea.field:focus {
   background: #{theme["Focused Input Background"]};
   border-color: #{theme["Focused Input Border"]};
   color: #{theme["Inputs"]};
+  outline: none;
 }
 #mouseover,
 #post-preview,

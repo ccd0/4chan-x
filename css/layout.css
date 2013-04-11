@@ -1097,7 +1097,7 @@ unless _conf['Post Form Style'] is 'tabbed slideout'
     unless _conf['Post Form Style'] is 'float' or _conf['Show Post Form Header']
       "#qrtab { display: none; }"
     else unless _conf['Post Form Style'] is 'slideout'
-      ".autohide:not(:hover) > form { display: none !important; }"
+      ".autohide:not(:hover):not(.focus) > form { display: none !important; }"
     else ""
   ) + "#qrtab { margin-bottom: 1px; }"
 else ""}
@@ -1253,6 +1253,7 @@ input:not([type=radio]) {
   position: absolute;
   right: 3px;
   top: 2px;
+  z-index: 2;
 }
 /* Thread Select / Spoiler Label */
 #qr-thread-select {
