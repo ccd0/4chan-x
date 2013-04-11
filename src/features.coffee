@@ -3931,10 +3931,14 @@ Linkify =
       el = (type = Linkify.types[@getAttribute("data-service")]).el.call @
 
       # Set style values.
-      el.style.cssText = if style = type.style
-        style
+      if style = type.style
+        el.style.cssText = style
       else
-        "border: 0; width: #{$.get 'embedWidth', Config['embedWidth']}px; height: #{$.get 'embedHeight', Config['embedHeight']}px"
+        items = 
+          'embedWidth':  Config['embedWidth']
+          'embedHeight': Config['embedHeight']
+        $.get items, (items) ->
+          el.style.cssText = "border: 0; width: #{item[0]}px; height: #{item[1]}px"
 
       @textContent = '(unembed)'
 

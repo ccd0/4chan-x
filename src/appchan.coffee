@@ -108,8 +108,8 @@ Style =
 #{bg.b} #{-fg.b} 0 0 #{fg.b}
 "
 
-    fgHex = Style.colorToHex text
-    bgHex = Style.colorToHex background
+    fgHex = Style.colorToHex(text) or 'ffffff'
+    bgHex = Style.colorToHex(background) or '000000'
     string = matrix {
       r: parseInt(fgHex.substr(0, 2), 16) / 255
       g: parseInt(fgHex.substr(2, 2), 16) / 255
@@ -193,13 +193,15 @@ Style =
     _conf = Conf
     agent = Style.agent
 
-    bgColor = new Style.color Style.colorToHex backgroundC = theme["Background Color"]
+    bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) or 'aaaaaa')
 
     Style.lightTheme = bgColor.isLight()
 
     icons = "data:image/png;base64,#{Icons[_conf["Icons"]]}"
 
     css = """<%= grunt.file.read('css/theme.css') %>"""
+    
+    <%= grunt.file.read('css/themeoptions.css') %>
 
   iconPositions: ->
     css = """<%= grunt.file.read('css/icons.base.css') %>"""
@@ -1532,7 +1534,7 @@ ThemeTools =
 
           colorInput = $.el 'input',
             className: 'color'
-            value: "##{Style.colorToHex input.value}"
+            value: "##{Style.colorToHex(input.value) or 'aaaaaa'}"
 
           JSColor.bind colorInput
 
@@ -1553,7 +1555,7 @@ ThemeTools =
           return alert "Syntax error on #{@name}."
 
         if @className == "colorfield"
-          @nextSibling.value = "##{Style.colorToHex @value}"
+          @nextSibling.value = "##{Style.colorToHex(@value) or 'aaaaaa'}"
           @nextSibling.color.importColor()
 
         editTheme[@name] = @value
