@@ -834,6 +834,7 @@ QR =
     if g.BOARD.ID is 'f'
       filetag = QR.nodes.flashTag.value
     threadID = QR.nodes.thread.value
+    thread = g.BOARD.threads[threadID]
 
     # prevent errors
     if threadID is 'new'
@@ -846,7 +847,7 @@ QR =
       err = 'You can\'t reply to this thread anymore.'
     else unless post.com or post.file
       err = 'No file selected.'
-    else if post.file and g.BOARD.threads[threadID].fileLimit
+    else if post.file and thread.fileLimit and !thread.isSticky
       err = 'Max limit of image replies has been reached.'
 
     if QR.captcha.isEnabled and !err
