@@ -3747,11 +3747,23 @@
         return e.stopPropagation();
       },
       focus: function() {
+        var items, string;
+
+        string = "" + g.BOARD + "." + this.className;
+        items = {
+          title: this.innerHTML
+        };
+        items["" + string] = '';
+        items["" + string + ".orig"] = false;
+        $.get(items, function(items) {
+          if (!(items["" + string + ".orig"] && items.title === items["" + string])) {
+            return $.set("" + string + ".orig", items.title);
+          }
+        });
         return this.textContent = this.innerHTML;
       },
       blur: function() {
         $.set("" + g.BOARD + "." + this.className, this.textContent);
-        $.set("" + g.BOARD + "." + child.className + ".orig", cachedTest);
         this.innerHTML = this.textContent;
         return this.contentEditable = false;
       }
@@ -3761,15 +3773,20 @@
 
       cachedTest = child.innerHTML;
       $.get("" + g.BOARD + "." + child.className, cachedTest, function(item) {
+        var title;
+
+        if (!(title = item["" + g.BOARD + "." + child.className])) {
+          return;
+        }
         if (Conf['Persistent Custom Board Titles']) {
-          return child.innerHTML = item["" + g.BOARD + "." + child.className];
+          return child.innerHTML = title;
         } else {
           return $.get("" + g.BOARD + "." + child.className + ".orig", cachedTest, function(itemb) {
             if (cachedTest === itemb["" + g.BOARD + "." + child.className + ".orig"]) {
-              return child.innerHTML = item["" + g.BOARD + "." + child.className];
+              return child.innerHTML = title;
             } else {
-              $.set("" + g.BOARD + "." + child.className + ".orig", cachedTest);
-              return $.set("" + g.BOARD + "." + child.className, cachedTest);
+              $.set("" + g.BOARD + "." + child.className, cachedTest);
+              return $.set("" + g.BOARD + "." + child.className + ".orig", cachedTest);
             }
           });
         }
