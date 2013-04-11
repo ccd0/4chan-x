@@ -413,6 +413,7 @@ Main =
       'Reveal Spoilers':          RevealSpoilers
       'Image Replace':            ImageReplace
       'Image Hover':              ImageHover
+      'Fappe Tyme':               FappeTyme
       'Comment Expansion':        ExpandComment
       'Thread Expansion':         ExpandThread
       'Thread Excerpt':           ThreadExcerpt

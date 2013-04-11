@@ -131,6 +131,10 @@ Config =
         false
         'Replace jpgs.'
       ]
+      'Fappe Tyme': [
+        false
+        'Hide posts without images when toggled.'
+      ]
 
     'Menu':
       'Menu': [
@@ -808,6 +812,10 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
     'Expand images': [
       'e'
       'Expand all images.'
+    ]
+    'fappeTyme': [
+      'f'
+      'Fappe Tyme.'
     ]
     # Board Navigation
     'Front page': [

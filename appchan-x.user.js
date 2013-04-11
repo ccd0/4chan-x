@@ -43,7 +43,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notification, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notification, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -87,7 +87,8 @@
         'Reveal Spoilers': [false, 'Reveal spoiler thumbnails.'],
         'Replace GIF': [false, 'Replace thumbnail of gifs with its actual image.'],
         'Replace PNG': [false, 'Replace pngs.'],
-        'Replace JPG': [false, 'Replace jpgs.']
+        'Replace JPG': [false, 'Replace jpgs.'],
+        'Fappe Tyme': [false, 'Hide posts without images when toggled.']
       },
       'Menu': {
         'Menu': [true, 'Add a drop-down menu to posts.'],
@@ -266,6 +267,7 @@
       'Update': ['r', 'Update the thread now.'],
       'Expand image': ['Shift+e', 'Expand selected image.'],
       'Expand images': ['e', 'Expand all images.'],
+      'fappeTyme': ['f', 'Fappe Tyme.'],
       'Front page': ['0', 'Jump to page 0.'],
       'Open front page': ['Shift+0', 'Open page 0 in a new tab.'],
       'Next page': ['Right', 'Jump to the next page.'],
@@ -3589,7 +3591,7 @@
           css += "/* Updater + Stats */\n#updater,\n#thread-stats {\n  " + align + ": " + (_conf["Updater Position"] === "bottom" && !_conf["Hide Delete UI"] ? 23 : 2) + "px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: auto !important;\n  bottom: auto !important;\n  " + (_conf["Updater Position"] === 'top' ? "top: 16px !important" : "bottom: 0 !important") + ";\n}";
         }
       } else {
-        position = aligner(2 + (_conf["4chan Banner"] === "at sidebar top" ? Style.logoOffset + 19 : 0), [notEither && _conf['Image Expansion'], notEither && _conf['Image Expansion'], notCatalog, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), $('#navtopright .exlinksOptionsLink', d.body), notEither, g.VIEW === 'thread', notEither && _conf['Fappe Tyme'], navlinks = ((!g.VIEW === 'thread' && _conf['Index Navigation']) || (g.VIEW === 'thread' && _conf['Reply Navigation'])) && notCatalog, navlinks]);
+        position = aligner(2 + (_conf["4chan Banner"] === "at sidebar top" ? Style.logoOffset + 19 : 0), [notEither && _conf['Image Expansion'], notEither && _conf['Image Expansion'], notCatalog, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), $('#navtopright .exlinksOptionsLink', d.body), notEither, g.VIEW === 'thread', notEither && _conf['Fappe Tyme'], navlinks = ((g.VIEW !== 'thread' && _conf['Index Navigation']) || (g.VIEW === 'thread' && _conf['Reply Navigation'])) && notCatalog, navlinks]);
         iconOffset = (g.VIEW === 'thread' && _conf['Prefetch'] ? 250 + Style.sidebarOffset.W : 20 + (g.VIEW === 'thread' && _conf['Updater Position'] === 'top' ? 100 : 0)) - (_conf['4chan SS Navigation'] ? 0 : Style.sidebar + parseInt(_conf[align.capitalize() + " Thread Padding"], 10));
         css += "/* Expand Images */\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut {\n  top: " + position[i++] + "px;\n}\n/* Expand Images Menu */\n#imgControls .menu-button {\n  top: " + position[i++] + "px;\n}\n/* 4chan X Options */\n#appchanOptions {\n  top: " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after {\n  top: " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage,\n#globalMessage::after {\n  top: " + position[i++] + "px;\n}\n/* Watcher */\n" + (_conf["Slideout Watcher"] ? "#watcher, #watcher::after" : "") + " {\n  top: " + position[i++] + "px !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  top: " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  top: " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  top: " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  top: " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a:first-of-type {\n  top: " + position[i++] + "px !important;\n}\n#navlinks a:last-of-type {\n  top: " + position[i++] + "px !important;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 0;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#navlinks a,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#boardNavDesktopFoot::after,\n#globalMessage::after,\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut,\n#imgControls .menu-button,\n#fappeTyme,\n" + (_conf["Slideout Watcher"] ? "#watcher::after," : "") + "\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#catalog::after,\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": 3px !important;\n}\n#boardNavDesktopFoot,\n#globalMessage,\n#watcher {\n  width: " + (233 + Style.sidebarOffset.W) + "px !important;\n  " + align + ": 18px !important;\n}\n" + (_conf['Boards Navigation'] === 'top' || _conf['Boards Navigation'] === 'sticky top' ? '#boardNavDesktop' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}";
         if (_conf["Updater Position"] !== 'moveable') {
@@ -4290,7 +4292,7 @@
           return null;
         }
       }
-      position = "" + (Conf['Mascot Position'] === 'bottom' || !(Conf['Mascot Position'] === "default" && Conf['Post Form Style'] === "fixed") ? 0 + ((!g.VIEW === 'thread' || Conf['Boards Navigation'] === 'sticky bottom') && Conf['4chan SS Navigation'] ? 1.6 : 0) : 20.3 + (!g.VIEW === 'thread' || !!$('#postForm input[name=spoiler]') ? 1.4 : 0) + (Conf['Show Post Form Header'] ? 1.5 : 0) + (Conf['Post Form Decorations'] ? 0.2 : 0)) + "em";
+      position = "" + (Conf['Mascot Position'] === 'bottom' || !(Conf['Mascot Position'] === "default" && Conf['Post Form Style'] === "fixed") ? 0 + ((g.VIEW !== 'thread' || Conf['Boards Navigation'] === 'sticky bottom') && Conf['4chan SS Navigation'] ? 1.6 : 0) : 20.3 + (g.VIEW !== 'thread' || !!$('#postForm input[name=spoiler]') ? 1.4 : 0) + (Conf['Show Post Form Header'] ? 1.5 : 0) + (Conf['Post Form Decorations'] ? 0.2 : 0)) + "em";
       if (Conf['editMode']) {
         if (!(mascot = editMascot || (mascot = Mascots[Conf["mascot"]]))) {
           return;
@@ -6023,7 +6025,7 @@
       var catalogLink;
 
       if (catalogLink = $('.pages.cataloglink a', d.body) || $('[href=".././catalog"]', d.body)) {
-        if (!g.VIEW === 'thread') {
+        if (g.VIEW !== 'thread') {
           $.add(d.body, catalogLink);
         }
         return catalogLink.id = 'catalog';
@@ -7428,6 +7430,9 @@
           break;
         case Conf['Expand images']:
           Keybinds.img(threadRoot, true);
+          break;
+        case Conf['fappeTyme']:
+          FappeTyme.toggle();
           break;
         case Conf['Front page']:
           window.location = "/" + g.BOARD + "/0#delform";
@@ -9385,6 +9390,40 @@
     },
     menuToggle: function(e) {
       return ImageExpand.opmenu.toggle(e, this, g);
+    }
+  };
+
+  FappeTyme = {
+    init: function() {
+      var el;
+
+      if (!Conf['Fappe Tyme'] && (g.VIEW === 'catalog' || g.BOARD === 'f')) {
+        return;
+      }
+      el = $.el('a', {
+        href: 'javascript:;',
+        id: 'fappeTyme',
+        title: 'Fappe Tyme'
+      });
+      $.on(el, 'click', FappeTyme.toggle);
+      $.asap((function() {
+        return $.id('boardNavMobile');
+      }), function() {
+        return $.add($.id('navtopright'), el);
+      });
+      return Post.prototype.callbacks.push({
+        name: 'Fappe Tyme',
+        cb: this.node
+      });
+    },
+    node: function() {
+      if (this.file) {
+        return;
+      }
+      return $.addClass(this.nodes.root, "noFile");
+    },
+    toggle: function() {
+      return $.toggleClass(doc, 'fappeTyme');
     }
   };
 
@@ -12869,6 +12908,7 @@
         'Reveal Spoilers': RevealSpoilers,
         'Image Replace': ImageReplace,
         'Image Hover': ImageHover,
+        'Fappe Tyme': FappeTyme,
         'Comment Expansion': ExpandComment,
         'Thread Expansion': ExpandThread,
         'Thread Excerpt': ThreadExcerpt,

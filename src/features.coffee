@@ -189,7 +189,7 @@ CatalogLinks =
 
   ready: ->
     if catalogLink = ($('.pages.cataloglink a', d.body) or $ '[href=".././catalog"]', d.body)
-      if !g.VIEW is 'thread'
+      if g.VIEW isnt 'thread'
         $.add d.body, catalogLink
       catalogLink.id = 'catalog'
 
@@ -1249,6 +1249,8 @@ Keybinds =
         Keybinds.img threadRoot
       when Conf['Expand images']
         Keybinds.img threadRoot, true
+      when Conf['fappeTyme']
+        do FappeTyme.toggle
       # Board Navigation
       when Conf['Front page']
         window.location = "/#{g.BOARD}/0#delform"
@@ -1282,8 +1284,8 @@ Keybinds =
         ThreadHiding.toggle thread if g.VIEW is 'index'
       else
         return
-    e.preventDefault()
-    e.stopPropagation()
+    do e.preventDefault
+    do e.stopPropagation
 
   keyCode: (e) ->
     key = switch kc = e.keyCode
@@ -1315,10 +1317,10 @@ Keybinds =
 
   qr: (thread, quote) ->
     return unless Conf['Quick Reply'] and QR.postingIsEnabled
-    QR.open()
+    do QR.open
     if quote
       QR.quote.call $ 'input', $('.post.highlight', thread) or thread
-    QR.nodes.com.focus()
+    do QR.nodes.com.focus
 
   tags: (tag, ta) ->
     value    = ta.value
@@ -1339,11 +1341,11 @@ Keybinds =
 
   img: (thread, all) ->
     if all
-      ImageExpand.cb.toggleAll()
+      do ImageExpand.cb.toggleAll
     else
       post = Get.postFromNode $('.post.highlight', thread) or $ '.op', thread
       ImageExpand.toggle post
-
+      
   open: (thread, tab) ->
     return if g.VIEW isnt 'index'
     url = "/#{thread.board}/res/#{thread}"
@@ -2869,6 +2871,30 @@ ImageExpand =
 
   menuToggle: (e) ->
     ImageExpand.opmenu.toggle e, @, g
+
+FappeTyme =
+  init: ->
+    return if not Conf['Fappe Tyme'] and (g.VIEW is 'catalog' or g.BOARD is 'f')
+    el = $.el 'a',
+      href: 'javascript:;'
+      id: 'fappeTyme'
+      title: 'Fappe Tyme'
+
+    $.on el, 'click', FappeTyme.toggle
+
+    $.asap (-> $.id 'boardNavMobile'), ->
+      $.add $.id('navtopright'), el
+
+    Post::callbacks.push
+      name: 'Fappe Tyme'
+      cb:   @node
+
+  node: ->
+    return if @file
+    $.addClass @nodes.root, "noFile"
+
+  toggle: ->
+    $.toggleClass doc, 'fappeTyme'
 
 RevealSpoilers =
   init: ->
