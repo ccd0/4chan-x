@@ -150,6 +150,7 @@
         'Announcements': ['slideout', 'The style of announcements and the ability to hide them.', ['4chan default', 'slideout', 'hide']],
         'Board Title': ['at sidebar top', 'The positioning of the board\'s logo and subtitle.', ['at sidebar top', 'at sidebar bottom', 'at top', 'under post form', 'hide']],
         'Custom Board Titles': [false, 'Customize Board Titles by shift-clicking the board title or subtitle.'],
+        'Persistent Custom Board Titles': [false, 'Forces custom board titles to be persistent, even if moot updates the board titles.'],
         'Board Subtitle': [true, 'Show the board subtitle.'],
         '4chan Banner': ['at sidebar top', 'The positioning of 4chan\'s image banner.', ['at sidebar top', 'at sidebar bottom', 'under post form', 'at top', 'hide']],
         '4chan Banner Reflection': [false, 'Adds reflection effects to 4chan\'s image banner.'],
@@ -3713,7 +3714,7 @@
       });
     },
     ready: function() {
-      var banner, cachedTest, child, children, i, nodes, title;
+      var banner, child, children, i, nodes, title;
 
       banner = $(".boardBanner");
       title = $.el("div", {
@@ -3729,34 +3730,54 @@
           continue;
         }
         if (Conf['Custom Board Titles']) {
-          cachedTest = child.innerHTML;
-          if (!Conf['Persistent Custom Board Titles'] || cachedTest === $.get("" + g.BOARD + "." + child.className + ".orig", cachedTest)) {
-            child.innerHTML = $.get("" + g.BOARD + "." + child.className, cachedTest);
-          } else {
-            $.set("" + g.BOARD + "." + child.className + ".orig", cachedTest);
-            $.set("" + g.BOARD + "." + child.className, cachedTest);
-          }
-          $.on(child, 'click', function(e) {
-            if (e.shiftKey) {
-              return this.contentEditable = true;
-            }
-          });
-          $.on(child, 'keydown', function(e) {
-            return e.stopPropagation();
-          });
-          $.on(child, 'focus', function() {
-            return this.textContent = this.innerHTML;
-          });
-          $.on(child, 'blur', function() {
-            $.set("" + g.BOARD + "." + this.className, this.textContent);
-            this.innerHTML = this.textContent;
-            return this.contentEditable = false;
-          });
+          Banner.custom(child);
         }
         nodes.push(child);
       }
       $.add(title, nodes.reverse());
       $.after(banner, title);
+    },
+    cb: {
+      click: function(e) {
+        if (e.shiftKey) {
+          return this.contentEditable = true;
+        }
+      },
+      keydown: function(e) {
+        return e.stopPropagation();
+      },
+      focus: function() {
+        return this.textContent = this.innerHTML;
+      },
+      blur: function() {
+        $.set("" + g.BOARD + "." + this.className, this.textContent);
+        $.set("" + g.BOARD + "." + child.className + ".orig", cachedTest);
+        this.innerHTML = this.textContent;
+        return this.contentEditable = false;
+      }
+    },
+    custom: function(child) {
+      var cachedTest;
+
+      cachedTest = child.innerHTML;
+      $.get("" + g.BOARD + "." + child.className, cachedTest, function(item) {
+        if (Conf['Persistent Custom Board Titles']) {
+          return child.innerHTML = item["" + g.BOARD + "." + child.className];
+        } else {
+          return $.get("" + g.BOARD + "." + child.className + ".orig", cachedTest, function(itemb) {
+            if (cachedTest === itemb["" + g.BOARD + "." + child.className + ".orig"]) {
+              return child.innerHTML = item["" + g.BOARD + "." + child.className];
+            } else {
+              $.set("" + g.BOARD + "." + child.className + ".orig", cachedTest);
+              return $.set("" + g.BOARD + "." + child.className, cachedTest);
+            }
+          });
+        }
+      });
+      $.on(child, 'click', Banner.cb.click);
+      $.on(child, 'keydown', Banner.cb.keydown);
+      $.on(child, 'focus', Banner.cb.focus);
+      return $.on(child, 'blur', Banner.cb.blur);
     }
   };
 

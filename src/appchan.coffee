@@ -480,33 +480,49 @@ Banner =
         continue
 
       if Conf['Custom Board Titles']
-        cachedTest = child.innerHTML
-        if not Conf['Persistent Custom Board Titles'] or cachedTest is $.get "#{g.BOARD}.#{child.className}.orig", cachedTest
-          child.innerHTML = $.get "#{g.BOARD}.#{child.className}", cachedTest
-        else
-          $.set "#{g.BOARD}.#{child.className}.orig", cachedTest
-          $.set "#{g.BOARD}.#{child.className}",      cachedTest
-
-        $.on child, 'click', (e) ->
-          if e.shiftKey
-            @contentEditable = true
-
-        $.on child, 'keydown', (e) ->
-          e.stopPropagation()
-
-        $.on child, 'focus', ->
-          @textContent = @innerHTML
-
-        $.on child, 'blur', ->
-          $.set "#{g.BOARD}.#{@className}", @textContent
-          @innerHTML = @textContent
-          @contentEditable = false
+        Banner.custom child
 
       nodes.push child
 
     $.add title, nodes.reverse()
     $.after banner, title
     return
+
+  cb:
+    click: (e) ->
+      if e.shiftKey
+        @contentEditable = true
+    
+    keydown: (e) ->
+      e.stopPropagation()
+    
+    focus: ->
+      @textContent = @innerHTML
+    
+    blur: ->
+      $.set "#{g.BOARD}.#{@className}",           @textContent
+      $.set "#{g.BOARD}.#{child.className}.orig", cachedTest
+      @innerHTML = @textContent
+      @contentEditable = false
+
+  custom: (child) ->
+    cachedTest = child.innerHTML
+        
+    $.get "#{g.BOARD}.#{child.className}", cachedTest, (item) ->
+      if Conf['Persistent Custom Board Titles']
+        child.innerHTML = item["#{g.BOARD}.#{child.className}"]
+      else
+        $.get "#{g.BOARD}.#{child.className}.orig", cachedTest, (itemb) ->
+          if cachedTest is itemb["#{g.BOARD}.#{child.className}.orig"]
+            child.innerHTML = item["#{g.BOARD}.#{child.className}"]
+          else
+            $.set "#{g.BOARD}.#{child.className}.orig", cachedTest
+            $.set "#{g.BOARD}.#{child.className}",      cachedTest
+
+    $.on child, 'click',   Banner.cb.click
+    $.on child, 'keydown', Banner.cb.keydown
+    $.on child, 'focus',   Banner.cb.focus
+    $.on child, 'blur',    Banner.cb.blur
 
 GlobalMessage =
   init: ->

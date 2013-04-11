@@ -348,6 +348,10 @@ Config =
         false
         'Customize Board Titles by shift-clicking the board title or subtitle.'
       ]
+      'Persistent Custom Board Titles': [
+        false
+        'Forces custom board titles to be persistent, even if moot updates the board titles.'
+      ]
       'Board Subtitle': [
         true
         'Show the board subtitle.'
