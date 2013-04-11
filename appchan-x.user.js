@@ -20,7 +20,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAElBMVEX///8EZgR8ulSk0oT///8EAgQ1A88mAAAAAXRSTlMAQObYZgAAAIpJREFUeF6t0sENwjAMhWF84N4H6gAYMUBkdQMYwfuvwmstEeD4kl892P0OaaWcpga2/K0SGII1HNBXARgu7veoY3ANd+esgMHZIz85u0EABrbms3pl/bkC1Tn5ihGOfQwqHeZ/FdYdirEMgCG2ZAQWDTL0m9FvjAhcvoGNAK2gZhGYYX9+ZgFm9gaiNmNkMENY4QAAAABJRU5ErkJggg==
 // ==/UserScript==
 
-/* appchan x - Version 2.0.0 - 2013-04-09
+/* appchan x - Version 2.0.0 - 2013-04-10
  * http://zixaphir.github.com/appchan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -3200,6 +3200,9 @@
       size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
       return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
     },
+    minmax: function(value, min, max) {
+      return (value < min ? min : value > max ? max : value);
+    },
     syncing: {},
     sync: (function() {
       window.addEventListener('storage', function(e) {
@@ -3450,7 +3453,7 @@
         }[_conf["Sidebar"]] || "left",
         left: parseInt(_conf['Right Thread Padding'], 10) < 100 ? "right" : "left"
       }[_conf["Sidebar Location"]];
-      Style['sidebarOffset'] = _conf["Sidebar"] === "large" ? {
+      Style['sidebarOffset'] = _conf['Sidebar'] === "large" ? {
         W: 51,
         H: 17
       } : {
@@ -3473,9 +3476,9 @@
       Style.sidebar = {
         minimal: 20,
         hide: 2
-      }[_conf.Sidebar] || (252 + Style.sidebarOffset.W);
+      }[_conf['Sidebar']] || (252 + Style.sidebarOffset.W);
       Style.replyMargin = _conf["Post Spacing"];
-      return css = "/* Cleanup */\n#absbot,\n#delPassword,\n#delform > hr:last-of-type,\n#navbotright,\n#postForm,\n#styleSwitcher,\n.boardBanner > div,\n.mobile,\n.postingMode,\n.riced,\n.sideArrows,\n.stylechanger,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr {\n  display: none;\n}\n/* Empties */\n#qr .warning:empty,\n#qr-thread-select:empty {\n  display: none;\n}\n/* File Name Trunctuate */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n/* Unnecessary */\n#qp input,\n#qp .rice,\n.inline .rice {\n  display: none !important;\n}\n/* Hidden Content */\n.forwarded,\n.hidden_thread ~ div,\n.hidden_thread ~ a,\n[hidden] {\n  display: none !important;\n}\n/* Hidden UI */\n#catalog,\n#navlinks,\n#navtopright,\n.cataloglink,\n.navLinks,\na[style=\"cursor: pointer; float: right;\"] {\n  position: fixed;\n  top: 100%;\n  left: 100%;\n}\n/* Hide last horizontal rule, keep clear functionality. */\n.board > hr:last-of-type {\n  visibility: hidden;\n}\n/* Fappe Tyme */\n.fappeTyme .thread > .noFile {\n  display: none;\n}\n/* Defaults */\na {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  outline: none;\n}\nbody,\nhtml {\n  min-height: 100%;\n  " + Style.sizing + ": border-box;\n}\nbody {\n  outline: none;\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 0;\n  margin-bottom: 0;\n  margin-" + Style.sidebarLocation[0] + ": " + (/^boards\.4chan\.org$/.test(location.hostname) ? Style.sidebar : '2') + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0 " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px 0 " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n}\n" + (_conf["4chan SS Sidebar"] && /^boards\.4chan\.org$/.test(location.hostname) ? "body::before {  content: '';  position: fixed;  top: 0;  bottom: 0;  " + Style.sidebarLocation[0] + ": 0;  width: " + (_conf["Sidebar"] === 'large' ? 305 : _conf['Sidebar'] === 'normal' ? 254 : _conf['Sidebar'] === 'minimal' ? 27 : 0) + "px;  z-index: 1;  " + Style.sizing + ": border-box;  display: block;}body {  padding-" + Style.sidebarLocation[0] + ": 2px;}" : "") + "\nbutton,\ninput,\ntextarea {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n}\nhr {\n  clear: both;\n  border: 0;\n  padding: 0;\n  margin: 0 0 1px;\n  " + (_conf['Hide Horizontal Rules'] ? 'visibility: hidden;' : '') + "\n}\n.center {\n  text-align: center;\n}\n.disabled {\n  opacity: 0.5;\n}\n/* Symbols */\n.dropmarker {\n  vertical-align: middle;\n  display: inline-block;\n  margin: 2px 2px 3px;\n  border-top: .5em solid;\n  border-right: .3em solid transparent;\n  border-left: .3em solid transparent;\n}\n/* Thread / Reply Nav */\n#navlinks a {\n  position: fixed;\n  z-index: 12;\n  opacity: 0.5;\n  display: inline-block;\n  border-right: 6px solid transparent;\n  border-left: 6px solid transparent;\n  margin: 1.5px;\n}\n/* Navigation */\n#boardNavDesktop {\n  z-index: 6;\n  border-width: 1px;\n" + {
+      return css = "/* Cleanup */\n#absbot,\n#delPassword,\n#delform > hr:last-of-type,\n#navbotright,\n#postForm,\n#styleSwitcher,\n.boardBanner > div,\n.mobile,\n.postingMode,\n.riced,\n.sideArrows,\n.stylechanger,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr {\n  display: none;\n}\n/* Empties */\n#qr .warning:empty,\n#qr-thread-select:empty {\n  display: none;\n}\n/* File Name Trunctuate */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n/* Unnecessary */\n#qp input,\n#qp .rice,\n.inline .rice {\n  display: none !important;\n}\n/* Hidden Content */\n.forwarded,\n.hidden_thread ~ div,\n.hidden_thread ~ a,\n[hidden] {\n  display: none !important;\n}\n/* Hidden UI */\n#catalog,\n#navlinks,\n#navtopright,\n.cataloglink,\n.navLinks,\na[style=\"cursor: pointer; float: right;\"] {\n  position: fixed;\n  top: 100%;\n  left: 100%;\n}\n/* Hide last horizontal rule, keep clear functionality. */\n.board > hr:last-of-type {\n  visibility: hidden;\n}\n/* Fappe Tyme */\n.fappeTyme .thread > .noFile {\n  display: none;\n}\n/* Defaults */\na {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  outline: none;\n}\nbody,\nhtml {\n  min-height: 100%;\n  " + Style.sizing + ": border-box;\n}\nbody {\n  outline: none;\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 0;\n  margin-bottom: 0;\n  margin-" + Style.sidebarLocation[0] + ": " + (/^boards\.4chan\.org$/.test(location.hostname) ? Style.sidebar : '2') + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0 " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px 0 " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n}\nbody.unscroll {\n  overflow: hidden;\n}\n" + (_conf["4chan SS Sidebar"] && /^boards\.4chan\.org$/.test(location.hostname) ? "body::before {  content: '';  position: fixed;  top: 0;  bottom: 0;  " + Style.sidebarLocation[0] + ": 0;  width: " + (_conf['Sidebar'] === 'large' ? 305 : _conf['Sidebar'] === 'normal' ? 254 : _conf['Sidebar'] === 'minimal' ? 27 : 0) + "px;  z-index: 1;  " + Style.sizing + ": border-box;  display: block;}body {  padding-" + Style.sidebarLocation[0] + ": 2px;}" : "") + "\nbutton,\ninput,\ntextarea {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n}\nhr {\n  clear: both;\n  border: 0;\n  padding: 0;\n  margin: 0 0 1px;\n  " + (_conf['Hide Horizontal Rules'] ? 'visibility: hidden;' : '') + "\n}\n.center {\n  text-align: center;\n}\n.disabled {\n  opacity: 0.5;\n}\n/* Symbols */\n.dropmarker {\n  vertical-align: middle;\n  display: inline-block;\n  margin: 2px 2px 3px;\n  border-top: .5em solid;\n  border-right: .3em solid transparent;\n  border-left: .3em solid transparent;\n}\n/* Thread / Reply Nav */\n#navlinks a {\n  position: fixed;\n  z-index: 12;\n  opacity: 0.5;\n  display: inline-block;\n  border-right: 6px solid transparent;\n  border-left: 6px solid transparent;\n  margin: 1.5px;\n}\n/* Navigation */\n#boardNavDesktop {\n  z-index: 6;\n  border-width: 1px;\n" + {
         "sticky top": "  position: fixed;  top: 0;  border-top-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : ""),
         "sticky bottom": "  position: fixed;  bottom: 0;  border-bottom-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : ""),
         "top": "  position: absolute;  top: 0;  border-top-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : ""),
@@ -3488,7 +3491,7 @@
         "hide": "  display: none;",
         "on side": "  position: fixed;  padding: 0;  top: auto;  bottom: " + (['fixed', 'transparent fade'].contains(_conf['Post Form Style']) ? 21.6 + (Conf['Show Post Form Header'] ? 1.5 : 0) + (Conf['Post Form Decorations'] ? 0.2 : 0) : .5) + "em;  " + Style.sidebarLocation[1] + ": auto;  " + Style.sidebarLocation[0] + ": " + (250 + Style.sidebarOffset.W) + "px  position: fixed;" + (Style.sidebarLocation[0] === 'right' ? "  " + agent + "transform: rotate(90deg);  " + agent + "transform-origin: bottom right;" : "  " + agent + "transform: rotate(-90deg);  " + agent + "transform-origin: bottom left;") + "  z-index: 6;  margin: 0;  background: none transparent !important;  border: 0 none !important;  text-align: right;"
       }[_conf['Pagination']] + "\n" + (_conf["Hide Navigation Decorations"] ? "  font-size: 0;  color: transparent;  word-spacing: 0;" : "") + "\n  z-index: 6;\n}\n.pagelist input,\n.pagelist div {\n  vertical-align: middle;\n}\n#boardNavDesktop a {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n}\n" + (_conf["Hide Navigation Decorations"] ? ".pages a {  margin: 0 1px;  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;}" : "") + "\n.next,\n.pages,\n.prev {\n  display: inline-block;\n  margin: 0 3px;\n}\n/* Banner */\n.boardBanner {\n  line-height: 0;\n}\n" + (_conf["Faded 4chan Banner"] ? ".boardBanner {  opacity: 0.5;  " + agent + "transition: opacity 0.3s ease-in-out .5s;}.boardBanner:hover {  opacity: 1;  " + agent + "transition: opacity 0.3s ease-in;}" : "") + "\n" + (_conf["4chan Banner Reflection"] ? "/* From 4chan SS / OneeChan */.gecko .boardBanner::after {  background-image: -moz-element(#Banner);  bottom: -100%;  content: '';  left: 0;  mask: url(\"data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask\");  opacity: 0.3;  position: absolute;  right: 0;  top: 100%;  -moz-transform: scaleY(-1);  z-index: -1;}.webkit #Banner {  -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));}" : "") + "\n" + {
-        "at sidebar top": ".boardBanner {  position: fixed;  top: 18px;  " + Style.sidebarLocation[0] + ": 2px;}.boardBanner img {  width: " + width + "px;}",
+        "at sidebar top": ".boardBanner {  position: fixed;  top: 16px;  " + Style.sidebarLocation[0] + ": 2px;}.boardBanner img {  width: " + width + "px;}",
         "at sidebar bottom": ".boardBanner {  position: fixed;  bottom: 270px;  " + Style.sidebarLocation[0] + ": 2px;}.boardBanner img {  width: " + width + "px;}",
         "under post form": "  .boardBanner {  position: fixed;  bottom: 130px;  " + Style.sidebarLocation[0] + ": 2px;}.boardBanner img {  width: " + width + "px;}",
         "at top": ".boardBanner {  position: relative;  display: table;  margin: 12px auto;  text-align: center;}",
@@ -3515,7 +3518,7 @@
         "slideout": "#qr {  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": -" + (233 + Style.sidebarOffset.W) + "px !important;  " + Style.sidebarLocation[1] + ": auto !important;}#qr:hover,#qr.focus,#qr.dump {  " + agent + "transform: translate(" + (xOffset + (233 + Style.sidebarOffset.W)) + "px);}",
         "tabbed slideout": "#qr {  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": -" + (252 + Style.sidebarOffset.W) + "px !important;  " + Style.sidebarLocation[1] + ": auto !important;}#qr:hover,#qr.focus,#qr.dump {  " + agent + "transform: translate(" + (xOffset + (252 + Style.sidebarOffset.W)) + "px);}#qrtab {  " + agent + "transform: rotate(" + (Style.sidebarLocation[0] === "left" ? "" : "-") + "90deg);  " + agent + "transform-origin: bottom " + Style.sidebarLocation[0] + ";  position: absolute;  top: 0;  " + Style.sidebarLocation[0] + ": 100%;  width: 110px;  text-align: center;  border-width: 1px 1px 0 1px;  cursor: default;}#qr:hover #qrtab,#qr.focus #qrtab,#qr.dump #qrtab {  opacity: 0;  " + Style.sidebarLocation[0] + ": " + (252 + Style.sidebarOffset.W) + "px;}#qrtab input,#qrtab .close,#qrtab .rice,#qrtab span {  display: none;}",
         "transparent fade": "#qr {  overflow: visible;  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": 2px !important;  " + Style.sidebarLocation[1] + ": auto !important;  opacity: 0.2;  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover,#qr.focus,#qr.dump {  opacity: 1;  " + agent + "transition: opacity .3s linear;}"
-      }[_conf['Post Form Style']] || "") + "\n\n" + (_conf['Post Form Style'] !== 'tabbed slideout' ? (!(_conf['Post Form Style'] === 'float' || _conf['Show Post Form Header']) ? "#qrtab { display: none; }" : _conf['Post Form Style'] !== 'slideout' ? ".autohide:not(:hover) > form { display: none !important; }" : "") + "#qrtab { margin-bottom: 1px; }" : "") + "\n\n" + (_conf['Post Form Style'] !== 'float' && _conf["Post Form Slideout Transitions"] ? "#qr {  " + agent + "transition: " + agent + "transform .3s ease-in-out 1s;}#qr:hover,#qr.focus,#qr.dump {  " + agent + "transition: " + agent + "transform .3s linear;}#qrtab {  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover #qrtab {  " + agent + "transition: opacity .3s linear;}" : "") + "\n\n#qr .close {\n  float: right;\n  padding: 0 3px;\n}\n#qr .warning {\n  min-height: 1.6em;\n  vertical-align: middle;\n  padding: 0 1px;\n  border-width: 1px;\n  border-style: solid;\n}\n.persona {\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-button {\n  width: 10%;\n  margin: 0;\n}\n\n" + (_conf['Compact Post Form Inputs'] ? ".persona input.field {  width: 29.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 14.8em;  min-height: 9em;}#qr.captcha textarea.field {  height: 9em;}" : ".persona input.field {  width: 100%;}.persona input.field[name='name'] {  width: 89.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 11.6em;  min-height: 6em;}#qr.captcha textarea.field {  height: 6em;}") + "\n\n" + (_conf["Tripcode Hider"] ? "input.field.tripped:not(:hover):not(:focus) {  color: transparent !important;  text-shadow: none !important;}" : "") + "\n\n#qr textarea {\n  resize: " + _conf['Textarea Resize'] + ";\n}\n.captchaimg {\n  margin: 1px 0 0;\n  text-align: center;\n}\n.captchaimg img {\n  width: 100%;\n  height: 4em;\n  width: 246px;\n}\n.captchainput .field {\n  width: 100%;\n  margin: 1px 0 0;\n}\n.field,\n.selectrice,\nbutton,\ninput:not([type=radio]) {\n  " + Style.sizing + ": border-box;\n  font-size: " + (parseInt(_conf['Font Size'], 10)) + "px;\n  height: 1.6em;\n  margin: 1px 0 0;\n  vertical-align: bottom;\n  padding: 0 1px;\n}\n#qr textarea {\n  min-width: 100%;\n}\n#qr [type='submit'] {\n  width: 25%;\n}\n[type='file'] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n#showQR {\n  display: " + (_conf["Hide Show Post Form"] ? "none" : "block") + ";\n  z-index: 4;\n  " + Style.sidebarLocation[0] + ": 2px;\n  width: " + width + "px;\n  background-color: transparent;\n  text-align: center;\n  position: fixed;\n  top: auto;\n}\n/* Fake File Input */\n#qr-filename,\n.has-file #qr-no-file {\n  display: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\n  display: block;\n}\n#qr-filename-container {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  position: relative;\n  width: 100px;\n  min-width: 74.6%;\n  max-width: 74.6%;\n  margin-right: 0.4%;\n  overflow: hidden;\n  padding: 2px 1px 0;\n}\n#qr-filerm {\n  position: absolute;\n  right: 3px;\n  top: 2px;\n}\n/* Thread Select / Spoiler Label */\n#qr-thread-select {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n}\n#qr-spoiler-label {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n  text-align: right;\n}\n/* Dumping UI */\n.dump #dump-list-container {\n  display: block;\n}\n#dump-list-container {\n  display: none;\n  position: relative;\n  overflow-y: hidden;\n  margin-top: 1px;\n}\n#dump-list {\n  overflow-x: auto;\n  overflow-y: hidden;\n  white-space: pre;\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-list:hover {\n  overflow-x: auto;\n}\n.qr-preview {\n  " + Style.sizing + ": border-box;\n  counter-increment: thumbnails;\n  cursor: move;\n  display: inline-block;\n  height: 90px;\n  width: 90px;\n  padding: 2px;\n  opacity: .5;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + agent + "transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.qr-preview:hover,\n.qr-preview:focus {\n  opacity: .9;\n}\n.qr-preview::before {\n  content: counter(thumbnails);\n  color: #fff;\n  position: absolute;\n  top: 3px;\n  right: 3px;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\n  opacity: 1;\n}\n.qr-preview.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\n  border-color: #fff;\n}\n.qr-preview > span {\n  color: #fff;\n}\n.remove {\n  background: none;\n  color: #e00;\n  font-weight: 700;\n  padding: 3px;\n}\na:only-of-type > .remove {\n  display: none;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.qr-preview > label {\n  background: rgba(0,0,0,.5);\n  color: #fff;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.qr-preview > label > input {\n  margin: 0;\n}\n#add-post {\n  cursor: pointer;\n  font-size: 2em;\n  position: absolute;\n  top: 50%;\n  right: 10px;\n  " + agent + "transform: translateY(-50%);\n}\n/* Ads */\n.topad img,\n.middlead img,\n.bottomad img {\n  opacity: 0.3;\n  " + agent + "transition: opacity .3s linear;\n}\n.topad img:hover,\n.middlead img:hover,\n.bottomad img:hover {\n  opacity: 1;\n}\n" + (_conf["Block Ads"] ? "/* AdBlock Minus */.bottomad + hr,.topad img,.middlead img,.bottomad img {  display: none;}" : "") + "\n" + (_conf["Shrink Ads"] ? ".topad a img,.middlead a img,.bottomad a img {  width: 500px;  height: auto;}" : "") + "\n/* Options */\n#overlay {\n  position: fixed;\n  z-index: 30;\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n}\n#appchanx-settings {\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n  position: absolute;\n  padding: .3em;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#appchanx-settings h3,\n.section-keybinds,\n.section-mascots,\n.section-script,\n.style {\n  text-align: center;\n}\n.section-keybinds table,\n.section-script fieldset,\n.section-style fieldset {\n  text-align: left;\n}\n.section-keybinds table {\n  margin: auto;\n}\n#appchanx-settings fieldset {\n  padding: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n  vertical-align: top;\n  " + (_conf["Single Column Mode"] ? "margin: 0 auto 6px;" : "margin: 0 3px 6px;\n display: inline-block;") + "\n  padding: 0;\n  border: 0;\n}\n.section-container {\n  overflow: auto;\n  position: absolute;\n  top: 1.7em;\n  right: 5px;\n  bottom: 5px;\n  left: 5px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.sections-list {\n  padding: 0 3px;\n  float: left;\n}\n.sections-list > a {\n  cursor: pointer;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\n  position: relative;\n  padding: 0 4px;\n  z-index: 1;\n  height: 1.4em;\n  display: inline-block;\n  border-width: 1px 1px 0 1px;\n  border-color: transparent;\n  border-style: solid;\n}\n.credits {\n  float: right;\n}\n#appchanx-settings h3 {\n  margin: 0;\n}\n.section-script fieldset > div,\n.section-style fieldset > div,\n.section-rice fieldset > div {\n  overflow: visible;\n  padding: 0 5px 0 7px;\n}\n#appchanx-settings tr:nth-of-type(2n+1),\n.section-script fieldset > div:nth-of-type(2n+1),\n.section-rice fieldset > div:nth-of-type(2n+1),\n.section-style fieldset > div:nth-of-type(2n+1),\n.section-keybinds tr:nth-of-type(2n+1),\n#selectrice li:nth-of-type(2n+1) {\n  background-color: rgba(0, 0, 0, 0.05);\n}\narticle li {\n  margin: 10px 0 10px 2em;\n}\n#appchanx-settings .option {\n  width: 50%;\n  display: inline-block;\n  vertical-align: bottom;\n}\n.option input {\n  width: 100%;\n}\n.optionlabel {\n  padding-left: 18px;\n}\n.rice + .optionlabel {\n  padding-left: 0;\n}\n.section-script fieldset > div,\n.styleoption {\n  text-align: left;\n}\n.section-style fieldset > div {\n  width: 370px;\n}\n.section-script fieldset {\n  width: 200px;\n}\n.suboptions,\n#mascotcontent,\n#themecontent {\n  overflow: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 1.7em;\n  left: 0;\n}\n.mAlign {\n  height: 250px;\n  vertical-align: middle;\n  display: table-cell;\n}\n#themecontent {\n  top: 1.7em;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n.section-style .suboptions {\n  bottom: 0;\n}\n.section-container textarea {\n  font-family: monospace;\n  min-height: 350px;\n  resize: vertical;\n  width: 100%;\n}\n/* Hover Functionality */\n#mouseover {\n  z-index: 32;\n  position: fixed;\n  max-width: 70%;\n}\n#mouseover:empty {\n  display: none;\n}\n/* Mascot Tab */\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#mascot_hide label {\n  width: 100%;\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n.mascots {\n  padding: 0;\n  text-align: center;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.mascot,\n.mascotcontainer {\n  overflow: hidden;\n}\n.mascot {\n  position: relative;\n  border: none;\n  margin: 5px;\n  padding: 0;\n  width: 200px;\n  display: inline-block;\n  background-color: transparent;\n}\n.mascotcontainer {\n  height: 250px;\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  bottom: 0;\n  border-width: 0 1px 1px;\n  border-style: solid;\n  border-color: transparent;\n  overflow: hidden;\n}\n.mascot img {\n  max-width: 200px;\n}\n.mascotname,\n.mascotoptions {\n  padding: 0;\n  width: 100%;\n}\n.mascot .mascotoptions {\nopacity: 0;\n  " + agent + "transition: opacity .3s linear;\n}\n.mascot:hover .mascotoptions {\n  opacity: 1;\n}\n.mascotoptions {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n}\n.mascotoptions a {\n  display: inline-block;\n  width: 33%;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Themes Tab */\n#themes h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  " + agent + "transition: all .2s ease-in-out;\n  opacity: 0;\n}\n#themes .selectedtheme h1 {\n  right: 11px;\n  opacity: 1;\n}\n#themeContainer {\n  margin-bottom: 3px;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.theme {\n  margin: 1em;\n}\n/* Theme Editor */\n#themeConf {\n  position: fixed;\n  " + Style.sidebarLocation[1] + ": 2px;\n  " + Style.sidebarLocation[0] + ": auto;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n  z-index: 10;\n}\n#themebar input {\n  width: 30%;\n}\n.color {\n  width: 10%;\n  border-left: none !important;\n  color: transparent !important;\n}\n.colorfield {\n  width: 90%;\n}\n.themevar textarea {\n  min-width: 100%;\n  max-width: 100%;\n  height: 20em;\n  resize: vertical;\n}\n/* Mascot Editor */\n#mascotConf {\n  position: fixed;\n  height: 17em;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n  z-index: 10;\n}\n#mascotConf .option,\n#mascotConf .optionlabel {\n  " + Style.sizing + ": border-box;\n  width: 50%;\n  display: inline-block;\n  vertical-align: middle;\n}\n#mascotConf .option input {\n  width: 100%;\n}\n#close {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Catalog */\n#content .navLinks,\n#info .navLinks,\n.btn-wrap {\n  display: block;\n}\n.navLinks > .btn-wrap:not(:first-of-type)::before {\n  content: ' - ';\n}\n.button {\n  cursor: pointer;\n}\n#content .btn-wrap,\n#info .btn-wrap {\n  display: inline-block;\n}\n#settings .selectrice {\n  width: 100px;\n  display: inline-block;\n}\n#post-preview {\n  position: absolute;\n  z-index: 22;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#settings,\n#threads,\n#info .navLinks,\n#content .navLinks {\n  text-align: center;\n}\n#threads .thread {\n  vertical-align: top;\n  display: inline-block;\n  word-wrap: break-word;\n  overflow: hidden;\n  margin-top: 5px;\n  padding: 5px 0 3px;\n  text-align: center;\n}\n.extended-small .thread,\n.small .thread {\n  width: 165px;\n  max-height: 320px;\n}\n.small .teaser,\n.large .teaser {\n  display: none;\n}\n.extended-large .thread,\n.large .thread {\n  width: 270px;\n  max-height: 410px;\n}\n.extended-small .thumb,\n.small .thumb {\n  max-width: 150px;\n  max-height: 150px;\n}\n/* Front Page */\n#logo {\n  text-align: center;\n}\n#doc {\n  margin: 0 auto;\n  width: 1000px;\n  position: relative;\n}\n#boards .boxcontent {\n  vertical-align: top;\n  text-align: center;\n}\n#filter-container,\n#options-container {\n  float: right;\n  position: relative;\n}\n#optionssmenu {\n  top: 100% !important;\n  left: 0 !important;\n}\n#boards .column {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  width: 16em;\n  text-align: left;\n  vertical-align: top;\n}\n.bd ul,\n.boxcontent ul {\n  vertical-align: top;\n  padding: 0;\n}\n.right-box .boxcontent ul {\n  padding: 0 10px;\n}\n.yuimenuitem,\n.boxcontent li {\n  list-style-type: none;\n}\n.bd ul {\n  margin: 0;\n}\n.yuimenuitem::before {\n  content: \" [ ] \";\n  font-family: monospace;\n}\n.yuimenuitem-checked::before {\n  content: \" [x] \"\n}\n.yui-u {\n  display: inline-block;\n  vertical-align: top;\n  width: 475px;\n  margin: 10px;\n}\n#recent-images .boxcontent {\n  text-align: center;\n}\n#ft {\n  text-align: center;\n}\n#ft ul {\n  padding: 0;\n}\n#ft li {\n  list-style-type: none;\n  display: inline-block;\n  width: 100px;\n}\n#preview-tooltip-nws,\n#preview-tooltip-ws,\n#ft .fill,\n.clear-bug {\n  display: none;\n}";
+      }[_conf['Post Form Style']] || "") + "\n\n" + (_conf['Post Form Style'] !== 'tabbed slideout' ? (!(_conf['Post Form Style'] === 'float' || _conf['Show Post Form Header']) ? "#qrtab { display: none; }" : _conf['Post Form Style'] !== 'slideout' ? ".autohide:not(:hover) > form { display: none !important; }" : "") + "#qrtab { margin-bottom: 1px; }" : "") + "\n\n" + (_conf['Post Form Style'] !== 'float' && _conf["Post Form Slideout Transitions"] ? "#qr {  " + agent + "transition: " + agent + "transform .3s ease-in-out 1s;}#qr:hover,#qr.focus,#qr.dump {  " + agent + "transition: " + agent + "transform .3s linear;}#qrtab {  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover #qrtab {  " + agent + "transition: opacity .3s linear;}" : "") + "\n\n#qr .close {\n  float: right;\n  padding: 0 3px;\n}\n#qr .warning {\n  min-height: 1.6em;\n  vertical-align: middle;\n  padding: 0 1px;\n  border-width: 1px;\n  border-style: solid;\n}\n.persona {\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-button {\n  width: 10%;\n  margin: 0;\n}\n\n" + (_conf['Compact Post Form Inputs'] ? ".persona input.field {  width: 29.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 14.8em;  min-height: 9em;}#qr.captcha textarea.field {  height: 9em;}" : ".persona input.field {  width: 100%;}.persona input.field[name='name'] {  width: 89.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 11.6em;  min-height: 6em;}#qr.captcha textarea.field {  height: 6em;}") + "\n\n" + (_conf["Tripcode Hider"] ? "input.field.tripped:not(:hover):not(:focus) {  color: transparent !important;  text-shadow: none !important;}" : "") + "\n\n#qr textarea {\n  resize: " + _conf['Textarea Resize'] + ";\n}\n.captchaimg {\n  margin: 1px 0 0;\n  text-align: center;\n}\n.captchaimg img {\n  width: 100%;\n  height: 4em;\n  width: 246px;\n}\n.captchainput .field {\n  width: 100%;\n  margin: 1px 0 0;\n}\n.field,\n.selectrice,\nbutton,\ninput:not([type=radio]) {\n  " + Style.sizing + ": border-box;\n  font-size: " + (parseInt(_conf['Font Size'], 10)) + "px;\n  height: 1.6em;\n  margin: 1px 0 0;\n  vertical-align: bottom;\n  padding: 0 1px;\n}\n#qr textarea {\n  min-width: 100%;\n}\n#qr [type='submit'] {\n  width: 25%;\n}\n[type='file'] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n#showQR {\n  display: " + (_conf["Hide Show Post Form"] ? "none" : "block") + ";\n  z-index: 4;\n  " + Style.sidebarLocation[0] + ": 2px;\n  width: " + width + "px;\n  background-color: transparent;\n  text-align: center;\n  position: fixed;\n  top: auto;\n}\n/* Fake File Input */\n#qr-filename,\n.has-file #qr-no-file {\n  display: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\n  display: block;\n}\n#qr-filename-container {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  position: relative;\n  width: 100px;\n  min-width: 74.6%;\n  max-width: 74.6%;\n  margin-right: 0.4%;\n  overflow: hidden;\n  padding: 2px 1px 0;\n}\n#qr-filerm {\n  position: absolute;\n  right: 3px;\n  top: 2px;\n}\n/* Thread Select / Spoiler Label */\n#qr-thread-select {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n}\n#qr-spoiler-label {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n  text-align: right;\n}\n/* Dumping UI */\n.dump #dump-list-container {\n  display: block;\n}\n#dump-list-container {\n  display: none;\n  position: relative;\n  overflow-y: hidden;\n  margin-top: 1px;\n}\n#dump-list {\n  overflow-x: auto;\n  overflow-y: hidden;\n  white-space: pre;\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-list:hover {\n  overflow-x: auto;\n}\n.qr-preview {\n  " + Style.sizing + ": border-box;\n  counter-increment: thumbnails;\n  cursor: move;\n  display: inline-block;\n  height: 90px;\n  width: 90px;\n  padding: 2px;\n  opacity: .5;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + agent + "transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.qr-preview:hover,\n.qr-preview:focus {\n  opacity: .9;\n}\n.qr-preview::before {\n  content: counter(thumbnails);\n  color: #fff;\n  position: absolute;\n  top: 3px;\n  right: 3px;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\n  opacity: 1;\n}\n.qr-preview.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\n  border-color: #fff;\n}\n.qr-preview > span {\n  color: #fff;\n}\n.remove {\n  background: none;\n  color: #e00;\n  font-weight: 700;\n  padding: 3px;\n}\na:only-of-type > .remove {\n  display: none;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.qr-preview > label {\n  background: rgba(0,0,0,.5);\n  color: #fff;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.qr-preview > label > input {\n  margin: 0;\n}\n#add-post {\n  cursor: pointer;\n  font-size: 2em;\n  position: absolute;\n  top: 50%;\n  right: 10px;\n  " + agent + "transform: translateY(-50%);\n}\n/* Ads */\n.topad img,\n.middlead img,\n.bottomad img {\n  opacity: 0.3;\n  " + agent + "transition: opacity .3s linear;\n}\n.topad img:hover,\n.middlead img:hover,\n.bottomad img:hover {\n  opacity: 1;\n}\n" + (_conf["Block Ads"] ? "/* AdBlock Minus */.bottomad + hr,.topad img,.middlead img,.bottomad img {  display: none;}" : "") + "\n" + (_conf["Shrink Ads"] ? ".topad a img,.middlead a img,.bottomad a img {  width: 500px;  height: auto;}" : "") + "\n/* Options */\n#overlay {\n  position: fixed;\n  z-index: 30;\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n}\n#appchanx-settings {\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n  position: fixed;\n  z-index: 31;\n  padding: .3em;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.description {\n  display: none;\n}\n#appchanx-settings h3,\n.section-keybinds,\n.section-mascots,\n.section-script,\n.style {\n  text-align: center;\n}\n.section-keybinds table,\n.section-script fieldset,\n.section-style fieldset {\n  text-align: left;\n}\n.section-keybinds table {\n  margin: auto;\n}\n#appchanx-settings fieldset {\n  padding: 5px 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n  vertical-align: top;\n  " + (_conf["Single Column Mode"] ? "margin: 0 auto 6px;" : "margin: 0 3px 6px;\n display: inline-block;") + "\n  border: 0;\n}\n.section-container {\n  overflow: auto;\n  position: absolute;\n  top: 1.7em;\n  right: 5px;\n  bottom: 5px;\n  left: 5px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.sections-list {\n  padding: 0 3px;\n  float: left;\n}\n.sections-list > a {\n  cursor: pointer;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\n  position: relative;\n  padding: 0 4px;\n  z-index: 1;\n  height: 1.4em;\n  display: inline-block;\n  border-width: 1px 1px 0 1px;\n  border-color: transparent;\n  border-style: solid;\n}\n.credits {\n  float: right;\n}\n#appchanx-settings h3 {\n  margin: 0;\n}\n.section-script fieldset > div,\n.section-style fieldset > div,\n.section-rice fieldset > div {\n  overflow: visible;\n  padding: 0 5px 0 7px;\n}\n#appchanx-settings tr:nth-of-type(2n+1),\n.section-script fieldset > div:nth-of-type(2n+1),\n.section-rice fieldset > div:nth-of-type(2n+1),\n.section-style fieldset > div:nth-of-type(2n+1),\n.section-keybinds tr:nth-of-type(2n+1),\n#selectrice li:nth-of-type(2n+1) {\n  background-color: rgba(0, 0, 0, 0.05);\n}\narticle li {\n  margin: 10px 0 10px 2em;\n}\n#appchanx-settings .option {\n  width: 50%;\n  display: inline-block;\n  vertical-align: bottom;\n}\n.option input {\n  width: 100%;\n}\n.optionlabel {\n  padding-left: 18px;\n}\n.rice + .optionlabel {\n  padding-left: 0;\n}\n.section-script fieldset,\n.styleoption {\n  text-align: left;\n}\n.section-style fieldset {\n  width: 370px;\n}\n.section-script fieldset {\n  width: 200px;\n}\n.suboptions,\n#mascotcontent,\n#themecontent {\n  overflow: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 1.7em;\n  left: 0;\n}\n.mAlign {\n  height: 250px;\n  vertical-align: middle;\n  display: table-cell;\n}\n#themecontent {\n  top: 1.7em;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n.section-style .suboptions {\n  bottom: 0;\n}\n.section-container textarea {\n  font-family: monospace;\n  min-height: 350px;\n  resize: vertical;\n  width: 100%;\n}\n/* Hover Functionality */\n#mouseover {\n  z-index: 33;\n  position: fixed;\n  max-width: 70%;\n}\n#mouseover:empty {\n  display: none;\n}\n/* Mascot Tab */\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#mascot_hide label {\n  width: 100%;\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n.mascots {\n  padding: 0;\n  text-align: center;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.mascot,\n.mascotcontainer {\n  overflow: hidden;\n}\n.mascot {\n  position: relative;\n  border: none;\n  margin: 5px;\n  padding: 0;\n  width: 200px;\n  display: inline-block;\n  background-color: transparent;\n}\n.mascotcontainer {\n  height: 250px;\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  bottom: 0;\n  border-width: 0 1px 1px;\n  border-style: solid;\n  border-color: transparent;\n  overflow: hidden;\n}\n.mascot img {\n  max-width: 200px;\n}\n.mascotname,\n.mascotoptions {\n  padding: 0;\n  width: 100%;\n}\n.mascot .mascotoptions {\nopacity: 0;\n  " + agent + "transition: opacity .3s linear;\n}\n.mascot:hover .mascotoptions {\n  opacity: 1;\n}\n.mascotoptions {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n}\n.mascotoptions a {\n  display: inline-block;\n  width: 33%;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Themes Tab */\n#themes h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  " + agent + "transition: all .2s ease-in-out;\n  opacity: 0;\n}\n#themes .selectedtheme h1 {\n  right: 11px;\n  opacity: 1;\n}\n#themeContainer {\n  margin-bottom: 3px;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.theme {\n  margin: 1em;\n}\n/* Theme Editor */\n#themeConf {\n  position: fixed;\n  " + Style.sidebarLocation[1] + ": 2px;\n  " + Style.sidebarLocation[0] + ": auto;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n  z-index: 10;\n}\n#themebar input {\n  width: 30%;\n}\n.color {\n  width: 10%;\n  border-left: none !important;\n  color: transparent !important;\n}\n.colorfield {\n  width: 90%;\n}\n.themevar textarea {\n  min-width: 100%;\n  max-width: 100%;\n  height: 20em;\n  resize: vertical;\n}\n/* Mascot Editor */\n#mascotConf {\n  position: fixed;\n  height: 17em;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n  z-index: 10;\n}\n#mascotConf .option,\n#mascotConf .optionlabel {\n  " + Style.sizing + ": border-box;\n  width: 50%;\n  display: inline-block;\n  vertical-align: middle;\n}\n#mascotConf .option input {\n  width: 100%;\n}\n#close {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Catalog */\n#content .navLinks,\n#info .navLinks,\n.btn-wrap {\n  display: block;\n}\n.navLinks > .btn-wrap:not(:first-of-type)::before {\n  content: ' - ';\n}\n.button {\n  cursor: pointer;\n}\n#content .btn-wrap,\n#info .btn-wrap {\n  display: inline-block;\n}\n#settings .selectrice {\n  width: 100px;\n  display: inline-block;\n}\n#post-preview {\n  position: absolute;\n  z-index: 22;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#settings,\n#threads,\n#info .navLinks,\n#content .navLinks {\n  text-align: center;\n}\n#threads .thread {\n  vertical-align: top;\n  display: inline-block;\n  word-wrap: break-word;\n  overflow: hidden;\n  margin-top: 5px;\n  padding: 5px 0 3px;\n  text-align: center;\n}\n.extended-small .thread,\n.small .thread {\n  width: 165px;\n  max-height: 320px;\n}\n.small .teaser,\n.large .teaser {\n  display: none;\n}\n.extended-large .thread,\n.large .thread {\n  width: 270px;\n  max-height: 410px;\n}\n.extended-small .thumb,\n.small .thumb {\n  max-width: 150px;\n  max-height: 150px;\n}\n/* Front Page */\n#logo {\n  text-align: center;\n}\n#doc {\n  margin: 0 auto;\n  width: 1000px;\n  position: relative;\n}\n#boards .boxcontent {\n  vertical-align: top;\n  text-align: center;\n}\n#filter-container,\n#options-container {\n  float: right;\n  position: relative;\n}\n#optionssmenu {\n  top: 100% !important;\n  left: 0 !important;\n}\n#boards .column {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  width: 16em;\n  text-align: left;\n  vertical-align: top;\n}\n.bd ul,\n.boxcontent ul {\n  vertical-align: top;\n  padding: 0;\n}\n.right-box .boxcontent ul {\n  padding: 0 10px;\n}\n.yuimenuitem,\n.boxcontent li {\n  list-style-type: none;\n}\n.bd ul {\n  margin: 0;\n}\n.yuimenuitem::before {\n  content: \" [ ] \";\n  font-family: monospace;\n}\n.yuimenuitem-checked::before {\n  content: \" [x] \"\n}\n.yui-u {\n  display: inline-block;\n  vertical-align: top;\n  width: 475px;\n  margin: 10px;\n}\n#recent-images .boxcontent {\n  text-align: center;\n}\n#ft {\n  text-align: center;\n}\n#ft ul {\n  padding: 0;\n}\n#ft li {\n  list-style-type: none;\n  display: inline-block;\n  width: 100px;\n}\n#preview-tooltip-nws,\n#preview-tooltip-ws,\n#ft .fill,\n.clear-bug {\n  display: none;\n}";
     },
     theme: function(theme) {
       var agent, backgroundC, bgColor, css, icons, _conf;
@@ -3525,7 +3528,7 @@
       bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]));
       Style.lightTheme = bgColor.isLight();
       icons = "data:image/png;base64," + Icons[_conf["Icons"]];
-      return css = ".hide_thread_button span > span,\n.hide_reply_button span > span {\n  background-color: " + theme["Links"] + ";\n}\n#mascot_hide label {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n#content .thumb {\n  box-shadow: 0 0 5px " + theme["Reply Border"] + ";\n}\n.mascotname,\n.mascotoptions {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\nhr {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\na[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + backgroundC + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n}\n#fs_status {\n  background: " + theme["Dialog Background"] + " !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data * {\n  border-color: " + theme["Reply Border"] + " !important;\n}\nhtml {\n  background: " + (backgroundC || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n.section-container,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + backgroundC + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n.sections-list > a.tab-selected {\n  background: " + backgroundC + ";\n  border-color: " + theme["Reply Border"] + ";\n  border-style: solid;\n}\n.captchaimg img {\n  " + (Style.filter(theme["Text"], theme["Input Background"])) + "\n}\n#boardTitle,\n#prefetch,\n#showQR,\n" + (!_conf["Post Form Decorations"] ? '#spoilerLabel,' : '') + "\n#thread-stats {\n  text-shadow:\n     1px  1px 0 " + backgroundC + ",\n    -1px -1px 0 " + backgroundC + ",\n     1px -1px 0 " + backgroundC + ",\n    -1px  1px 0 " + backgroundC + ",\n     0    1px 0 " + backgroundC + ",\n     0   -1px 0 " + backgroundC + ",\n     1px  0   0 " + backgroundC + ",\n    -1px  0   0 " + backgroundC + "\n    " + (_conf["Sidebar Glow"] ? ", 0 2px 5px " + theme['Text'] + ";" : ";") + "\n}\n/* Fixes text spoilers */\n" + (_conf['Remove Spoilers'] && _conf['Indicate Spoilers'] ? ".spoiler::before,s::before {  content: '[spoiler]';}.spoiler::after,s::after {  content: '[/spoiler]';}" : !_conf['Remove Spoilers'] ? ".spoiler:not(:hover) *,s:not(:hover) * {  color: rgb(0,0,0) !important;  text-shadow: none !important;}.spoiler:not(:hover),s:not(:hover) {  background-color: rgb(0,0,0);  color: rgb(0,0,0) !important;  text-shadow: none !important;}" : "") + "\n#exlinks-options,\n#appchanx-settings,\n#qrtab,\n" + (_conf["Post Form Decorations"] ? "#qr," : "") + "\n#updater,\ninput[type=\"submit\"],\ninput[value=\"Report\"],\nspan[style=\"left: 5px; position: absolute;\"] a {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.enabled .mascotcontainer {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#qr-filename-container,\n#appchanx-settings input,\n.captchaimg,\n.dump #dump:not(:hover):not(:focus),\n.qr-preview,\n.selectrice,\nbutton,\ninput,\ntextarea {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:hover,\n#qr-filename-container:hover,\n.selectrice:hover,\n#selectrice li:hover,\n#selectrice li:nth-of-type(2n+1):hover,\ninput:hover,\ntextarea:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:active,\n#dump:focus,\n#selectrice li:focus,\n.selectrice:focus,\ninput:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#mouseover,\n#post-preview,\n#qp .post,\n#xupdater,\n.reply.post {\n  border-width: 1px;\n  border-style: solid;\n  border-color: " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.thread > .replyContainer > .reply.post {\n  border-width: " + (_conf['Post Spacing'] === "0" ? "1px 1px 0 1px" : '1px') + ";\n}\n.exblock.reply,\n.reply.post.highlight,\n.reply.post:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#boardNavDesktop,\n.pagelist {\n  background: " + theme["Navigation Background"] + ";\n  border-style: solid;\n  border-color: " + theme["Navigation Border"] + ";\n}\n.thread {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#selectrice,\n#themeConf,\n#watcher,\n#watcher:hover,\n.submenu,\na[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n.deleteform::before,\n.deleteform,\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border-color: " + theme["Input Border"] + ";\n}\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\n#navlinks a:first-of-type {\n  border-bottom: 11px solid rgb(130,130,130);\n}\n#navlinks a:last-of-type {\n  border-top: 11px solid rgb(130,130,130);\n}\n#imgControls .menu-button {\n  border-color: rgb(130,130,130);\n  color: rgb(130,130,130);\n}\n#charCount {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + ";\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n}\n.dateTime,\n.post-ago {\n  color: " + theme["Timestamps"] + " !important;\n}\n#fs_status a,\n#updater #count:not(.new)::after,\n#showQR,\n#updater,\n.abbr,\n.boxbar,\n.boxcontent,\n.deleteform::before,\n.pages strong,\n.pln,\n.reply,\n.reply.highlight,\n.summary,\nbody,\nbutton,\nspan[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#appchanx-settings ul,\n#selectrice {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\n.forwardlink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  border-bottom: 1px dashed " + theme["Backlinks"] + ";\n}\n.container::before {\n  color: " + theme["Timestamps"] + ";\n}\n#menu,\n#post-preview,\n#qp .opContainer,\n#qp .replyContainer,\n.submenu {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n}\n.selectrice::before {\n  border-left: 1px solid " + theme["Input Border"] + ";\n}\n.selectrice::after {\n  border-top: .45em solid " + theme["Inputs"] + ";\n}\n#updater input,\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#boardNavDesktop a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  position: relative;\n}\ninput[type=checkbox]:checked + .rice::after {\n  content: \"\";\n  display: block;\n  width: 5px;\n  height: 12px;\n  border-radius: 1px;\n  border: solid rgb(50, 50, 50);\n  border-width: 0 3px 3px 0;\n  " + agent + "transform: rotate(45deg);\n  position: absolute;\n  left: 2px;\n  bottom: -1px;\n  " + (!Style.lightTheme ? "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>#filters\");" : "") + "\n}\n#addReply,\n#dump,\n.button,\n.entry,\n.replylink,\na {\n  color: " + theme["Links"] + ";\n}\n.backlink {\n  color: " + theme["Backlinks"] + ";\n}\n.qiQuote,\n.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\n#addReply:hover,\n#dump:hover,\n.entry:hover,\n.sideArrows a:hover,\n.replylink:hover,\n.qiQuote:hover,\n.quotelink:hover,\na .name:hover,\na .postertrip:hover,\na:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#boardNavDesktop a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name,\n.post-author {\n  color: " + theme["Names"] + " !important;\n}\n.post-tripcode,\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\na .postertrip,\na .name {\n  color: " + theme["Emails"] + ";\n}\n.post.reply.qphl,\n.post.op.qphl {\n  border-color: " + theme["Backlinked Reply Outline"] + ";\n  background: " + theme["Highlighted Reply Background"] + ";\n}\n.inline .post {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.placeholder,\n#qr input::" + agent + "placeholder,\n#qr textarea::" + agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#qr input:" + agent + "placeholder,\n#qr textarea:" + agent + "placeholder,\n.placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#appchanx-settings ul,\n.boxcontent dd,\n.selectrice ul {\n  border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + ";\n}\n#appchanx-settings li,\n#selectrice li:not(:first-of-type) {\n  border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + ";\n}\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\na[style=\"cursor: pointer; float: right;\"]::after,\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut,\n#catalog::after,\n#fappeTyme {\n  background-image: url('" + icons + "');\n" + (!Style.lightTheme ? "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>#filters\");" : "") + "\n}\n" + theme["Custom CSS"];
+      return css = ".hide_thread_button span > span,\n.hide_reply_button span > span {\n  background-color: " + theme["Links"] + ";\n}\n#mascot_hide label {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n#content .thumb {\n  box-shadow: 0 0 5px " + theme["Reply Border"] + ";\n}\n.mascotname,\n.mascotoptions {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\nhr {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\na[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + backgroundC + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n}\n#fs_status {\n  background: " + theme["Dialog Background"] + " !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data * {\n  border-color: " + theme["Reply Border"] + " !important;\n}\nhtml {\n  background: " + (backgroundC || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n.section-container,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + backgroundC + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n.sections-list > a.tab-selected {\n  background: " + backgroundC + ";\n  border-color: " + theme["Reply Border"] + ";\n  border-style: solid;\n}\n.captchaimg img {\n  " + (Style.filter(theme["Text"], theme["Input Background"])) + "\n}\n#boardTitle,\n#prefetch,\n#showQR,\n" + (!_conf["Post Form Decorations"] ? '#spoilerLabel,' : '') + "\n#thread-stats {\n  text-shadow:\n     1px  1px 0 " + backgroundC + ",\n    -1px -1px 0 " + backgroundC + ",\n     1px -1px 0 " + backgroundC + ",\n    -1px  1px 0 " + backgroundC + ",\n     0    1px 0 " + backgroundC + ",\n     0   -1px 0 " + backgroundC + ",\n     1px  0   0 " + backgroundC + ",\n    -1px  0   0 " + backgroundC + "\n    " + (_conf["Sidebar Glow"] ? ", 0 2px 5px " + theme['Text'] + ";" : ";") + "\n}\n/* Fixes text spoilers */\n" + (_conf['Remove Spoilers'] && _conf['Indicate Spoilers'] ? ".spoiler::before,s::before {  content: '[spoiler]';}.spoiler::after,s::after {  content: '[/spoiler]';}" : !_conf['Remove Spoilers'] ? ".spoiler:not(:hover) *,s:not(:hover) * {  color: rgb(0,0,0) !important;  text-shadow: none !important;}.spoiler:not(:hover),s:not(:hover) {  background-color: rgb(0,0,0);  color: rgb(0,0,0) !important;  text-shadow: none !important;}" : "") + "\n#exlinks-options,\n#appchanx-settings,\n#qrtab,\n" + (_conf["Post Form Decorations"] ? "#qr," : "") + "\n#updater,\ninput[type=\"submit\"],\ninput[value=\"Report\"],\nspan[style=\"left: 5px; position: absolute;\"] a {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.enabled .mascotcontainer {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#qr-filename-container,\n#appchanx-settings input,\n.captchaimg,\n.dump #dump:not(:hover):not(:focus),\n.qr-preview,\n.selectrice,\nbutton,\ninput,\ntextarea {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:hover,\n#qr-filename-container:hover,\n.selectrice:hover,\n#selectrice li:hover,\n#selectrice li:nth-of-type(2n+1):hover,\ninput:hover,\ntextarea:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:active,\n#dump:focus,\n#selectrice li:focus,\n.selectrice:focus,\ninput:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#mouseover,\n#post-preview,\n#qp .post,\n#xupdater,\n.reply.post {\n  border-width: 1px;\n  border-style: solid;\n  border-color: " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.thread > .replyContainer > .reply.post {\n  border-width: " + (_conf['Post Spacing'] === "0" ? "1px 1px 0 1px" : '1px') + ";\n}\n.exblock.reply,\n.reply.post.highlight,\n.reply.post:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#boardNavDesktop,\n.pagelist {\n  background: " + theme["Navigation Background"] + ";\n  border-style: solid;\n  border-color: " + theme["Navigation Border"] + ";\n}\n.thread {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#selectrice,\n#themeConf,\n#watcher,\n#watcher:hover,\n.submenu,\na[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n.deleteform::before,\n.deleteform,\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border-color: " + theme["Input Border"] + ";\n}\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\n#navlinks a:first-of-type {\n  border-bottom: 11px solid rgb(130,130,130);\n}\n#navlinks a:last-of-type {\n  border-top: 11px solid rgb(130,130,130);\n}\n#imgControls .menu-button {\n  border-color: rgb(130,130,130);\n  color: rgb(130,130,130);\n}\n#charCount {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + ";\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n}\n.dateTime,\n.post-ago {\n  color: " + theme["Timestamps"] + " !important;\n}\n#fs_status a,\n#updater #count:not(.new)::after,\n#showQR,\n#updater,\n.abbr,\n.boxbar,\n.boxcontent,\n.deleteform::before,\n.pages strong,\n.pln,\n.reply,\n.reply.highlight,\n.summary,\nbody,\nbutton,\nspan[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#appchanx-settings fieldset,\n#selectrice {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\n.forwardlink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  border-bottom: 1px dashed " + theme["Backlinks"] + ";\n}\n.container::before {\n  color: " + theme["Timestamps"] + ";\n}\n#menu,\n#post-preview,\n#qp .opContainer,\n#qp .replyContainer,\n.submenu {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n}\n.selectrice::before {\n  border-left: 1px solid " + theme["Input Border"] + ";\n}\n.selectrice::after {\n  border-top: .45em solid " + theme["Inputs"] + ";\n}\n#updater input,\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#boardNavDesktop a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  position: relative;\n}\ninput[type=checkbox]:checked + .rice::after {\n  content: \"\";\n  display: block;\n  width: 5px;\n  height: 12px;\n  border-radius: 1px;\n  border: solid rgb(50, 50, 50);\n  border-width: 0 3px 3px 0;\n  " + agent + "transform: rotate(45deg);\n  position: absolute;\n  left: 2px;\n  bottom: -1px;\n  " + (!Style.lightTheme ? "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>#filters\");" : "") + "\n}\n#addReply,\n#dump,\n.button,\n.entry,\n.replylink,\na {\n  color: " + theme["Links"] + ";\n}\n.backlink {\n  color: " + theme["Backlinks"] + ";\n}\n.qiQuote,\n.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\n#addReply:hover,\n#dump:hover,\n.entry:hover,\n.sideArrows a:hover,\n.replylink:hover,\n.qiQuote:hover,\n.quotelink:hover,\na .name:hover,\na .postertrip:hover,\na:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#boardNavDesktop a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name,\n.post-author {\n  color: " + theme["Names"] + " !important;\n}\n.post-tripcode,\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\na .postertrip,\na .name {\n  color: " + theme["Emails"] + ";\n}\n.post.reply.qphl,\n.post.op.qphl {\n  border-color: " + theme["Backlinked Reply Outline"] + ";\n  background: " + theme["Highlighted Reply Background"] + ";\n}\n.inline .post {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.placeholder,\n#qr input::" + agent + "placeholder,\n#qr textarea::" + agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#qr input:" + agent + "placeholder,\n#qr textarea:" + agent + "placeholder,\n.placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#appchanx-settings fieldset,\n.boxcontent dd,\n.selectrice ul {\n  border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + ";\n}\n#appchanx-settings li,\n#selectrice li:not(:first-of-type) {\n  border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + ";\n}\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\na[style=\"cursor: pointer; float: right;\"]::after,\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut,\n#catalog::after,\n#fappeTyme {\n  background-image: url('" + icons + "');\n" + (!Style.lightTheme ? "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>#filters\");" : "") + "\n}\n" + theme["Custom CSS"];
     },
     iconPositions: function() {
       var align, aligner, css, i, iconOffset, navlinks, notCatalog, notEither, position, _conf;
@@ -3534,7 +3537,7 @@
       i = 0;
       align = Style.sidebarLocation[0];
       _conf = Conf;
-      notCatalog = !g.CATALOG;
+      notCatalog = g.VIEW !== 'catalog';
       notEither = notCatalog && g.BOARD !== 'f';
       aligner = function(first, checks) {
         var enabled, position, _i, _len;
@@ -3542,19 +3545,19 @@
         position = [first];
         for (_i = 0, _len = checks.length; _i < _len; _i++) {
           enabled = checks[_i];
-          position[position.length] = enabled ? first += 19 : first;
+          position.push(enabled ? first += 19 : first);
         }
         return position;
       };
       if (_conf["Icon Orientation"] === "horizontal") {
-        position = aligner(2, [notCatalog, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], $('#navtopright .exlinksOptionsLink', d.body), notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), notEither && _conf['Image Expansion'], notEither && _conf['Image Expansion'], notEither, g.VIEW === 'thread', notEither && _conf['Fappe Tyme'], navlinks = ((!g.VIEW === 'thread' && _conf['Index Navigation']) || (g.VIEW === 'thread' && _conf['Reply Navigation'])) && notCatalog, navlinks]);
+        position = aligner(2, [notCatalog, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], $('#navtopright .exlinksOptionsLink', d.body), notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), notEither && _conf['Image Expansion'], notEither && _conf['Image Expansion'], notEither, g.VIEW === 'thread', notEither && _conf['Fappe Tyme'], navlinks = ((g.VIEW !== 'thread' && _conf['Index Navigation']) || (g.VIEW === 'thread' && _conf['Reply Navigation'])) && notCatalog, navlinks]);
         iconOffset = position[position.length - 1] - (_conf['4chan SS Navigation'] ? 0 : Style.sidebar + parseInt(_conf["Right Thread Padding"], 10));
         if (iconOffset < 0) {
           iconOffset = 0;
         }
-        css += "/* 4chan X Options */\n#appchanOptions {\n  " + align + ": " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Watcher */\n#watcher::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Expand Images */\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut {\n  " + align + ": " + position[i++] + "px;\n}\n/* Expand Images Menu */\n#imgControls .menu-button {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  " + align + ": " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a {\n  margin: 2px;\n  top: 0;\n}\n#navlinks a:last-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#navlinks a:first-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 1.6em;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#boardNavDesktopFoot::after,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#watcher::after,\n#globalMessage::after,\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut,\n#imgControls .menu-button,\n#fappeTyme,\ndiv.navLinks > a:first-of-type::after,\n#catalog::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: 0 !important;\n}\n" + (_conf["Announcements"] === "slideout" ? "#globalMessage," : "") + "\n" + (_conf["Slideout Watcher"] ? "#watcher," : "") + "\n#boardNavDesktopFoot {\n  top: 17px !important;\n}\n" + (_conf['Boards Navigation'] === 'top' || _conf['Boards Navigation'] === 'sticky top' ? '#boardNavDesktop' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}\n";
+        css += "/* 4chan X Options */\n#appchanOptions {\n  " + align + ": " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Watcher */\n#watcher::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Expand Images */\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut {\n  " + align + ": " + position[i++] + "px;\n}\n/* Expand Images Menu */\n#imgControls .menu-button {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  " + align + ": " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a {\n  margin: 2px;\n  top: 1px;\n}\n#navlinks a:last-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#navlinks a:first-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 1.6em;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#boardNavDesktopFoot::after,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#watcher::after,\n#globalMessage::after,\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut,\n#imgControls .menu-button,\n#fappeTyme,\ndiv.navLinks > a:first-of-type::after,\n#catalog::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: 1px !important;\n}\n" + (_conf["Announcements"] === "slideout" ? "#globalMessage," : "") + "\n" + (_conf["Slideout Watcher"] ? "#watcher," : "") + "\n#boardNavDesktopFoot {\n  top: 16px !important;\n}\n" + (_conf['Boards Navigation'] === 'top' || _conf['Boards Navigation'] === 'sticky top' ? '#boardNavDesktop' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}\n";
         if (_conf["Updater Position"] !== 'moveable') {
-          css += "/* Updater + Stats */\n#updater,\n#thread-stats {\n  " + align + ": " + (_conf["Updater Position"] === "bottom" && !_conf["Hide Delete UI"] ? 23 : 2) + "px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: auto !important;\n  bottom: auto !important;\n  " + (_conf["Updater Position"] === 'top' ? "top: 18px !important" : "bottom: 0 !important") + ";\n}";
+          css += "/* Updater + Stats */\n#updater,\n#thread-stats {\n  " + align + ": " + (_conf["Updater Position"] === "bottom" && !_conf["Hide Delete UI"] ? 23 : 2) + "px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: auto !important;\n  bottom: auto !important;\n  " + (_conf["Updater Position"] === 'top' ? "top: 16px !important" : "bottom: 0 !important") + ";\n}";
         }
       } else {
         position = aligner(2 + (_conf["4chan Banner"] === "at sidebar top" ? Style.logoOffset + 19 : 0), [notEither && _conf['Image Expansion'], notEither && _conf['Image Expansion'], notCatalog, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), $('#navtopright .exlinksOptionsLink', d.body), notEither, g.VIEW === 'thread', notEither && _conf['Fappe Tyme'], navlinks = ((!g.VIEW === 'thread' && _conf['Index Navigation']) || (g.VIEW === 'thread' && _conf['Reply Navigation'])) && notCatalog, navlinks]);
@@ -3767,54 +3770,54 @@
         return this.check.click();
       },
       option: function(e) {
-        var container, ev, select;
+        var container, select;
 
         e.stopPropagation();
+        e.preventDefault();
         select = Rice.input;
         container = select.nextElementSibling;
         container.firstChild.textContent = this.textContent;
         select.value = this.getAttribute('data-value');
-        ev = document.createEvent('HTMLEvents');
-        ev.initEvent("change", true, true);
-        $.event(select, ev);
+        $.event('change', null, select);
         return Rice.cleanup();
-      }
-    },
-    selectclick: function(e) {
-      var clientHeight, li, nodes, option, rect, select, style, ul, _i, _len, _ref;
+      },
+      select: function(e) {
+        var clientHeight, li, nodes, option, rect, select, style, ul, _i, _len, _ref;
 
-      e.stopPropagation();
-      ul = Rice.ul;
-      if (!ul) {
-        Rice.ul = ul = $.el('ul', {
-          id: "selectrice"
+        e.stopPropagation();
+        e.preventDefault();
+        ul = Rice.ul;
+        if (!ul) {
+          Rice.ul = ul = $.el('ul', {
+            id: "selectrice"
+          });
+          $.add(d.body, ul);
+        }
+        if (ul.children.length > 0) {
+          return Rice.cleanup();
+        }
+        rect = this.getBoundingClientRect();
+        clientHeight = d.documentElement.clientHeight;
+        style = ul.style;
+        style.cssText = ("width: " + rect.width + "px; left: " + rect.left + "px;") + (clientHeight - rect.bottom < 200 ? "bottom: " + (clientHeight - rect.top) + "px" : "top: " + rect.bottom + "px");
+        Rice.input = select = this.previousSibling;
+        nodes = [];
+        _ref = select.options;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          option = _ref[_i];
+          li = $.el('li', {
+            textContent: option.textContent
+          });
+          li.setAttribute('data-value', option.value);
+          $.on(li, 'click', Rice.cb.option);
+          nodes.push(li);
+        }
+        $.add(ul, nodes);
+        $.on(ul, 'click scroll blur', function(e) {
+          return e.stopPropagation();
         });
-        $.add(d.body, ul);
+        return $.on(d, 'click scroll blur resize', Rice.cleanup);
       }
-      if (ul.children.length > 0) {
-        return Rice.cleanup();
-      }
-      rect = this.getBoundingClientRect();
-      clientHeight = d.documentElement.clientHeight;
-      style = ul.style;
-      style.cssText = ("width: " + rect.width + "px; left: " + rect.left + "px;") + (clientHeight - rect.bottom < 200 ? "bottom: " + (clientHeight - rect.top) + "px" : "top: " + rect.bottom + "px");
-      Rice.input = select = this.previousSibling;
-      nodes = [];
-      _ref = select.options;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        option = _ref[_i];
-        li = $.el('li', {
-          textContent: option.textContent
-        });
-        li.setAttribute('data-value', option.value);
-        $.on(li, 'click', Rice.cb.option);
-        nodes.push(li);
-      }
-      $.add(ul, nodes);
-      $.on(ul, 'click scroll blur', function(e) {
-        return e.stopPropagation();
-      });
-      return $.on(d, 'click scroll blur resize', Rice.cleanup);
     },
     cleanup: function() {
       var child, _i, _len, _ref;
@@ -3826,21 +3829,21 @@
         $.rm(child);
       }
     },
-    nodes: function(source) {
-      var checkboxes, checkrice, input, selectrice, selects, _i, _j, _len, _len1;
+    nodes: function(root) {
+      var checkboxes, checkrice, input, select, selectrice, selects, _i, _j, _len, _len1;
 
-      source || (source = d.body);
-      checkboxes = $$('[type=checkbox]:not(.riced)', source);
+      root || (root = d.body);
+      checkboxes = $$('[type=checkbox]:not(.riced)', root);
       checkrice = Rice.checkbox;
       for (_i = 0, _len = checkboxes.length; _i < _len; _i++) {
         input = checkboxes[_i];
         checkrice(input);
       }
-      selects = $$('select:not(.riced)', source);
+      selects = $$('select:not(.riced)', root);
       selectrice = Rice.select;
       for (_j = 0, _len1 = selects.length; _j < _len1; _j++) {
-        input = selects[_j];
-        selectrice(input);
+        select = selects[_j];
+        selectrice(select);
       }
     },
     node: function() {
@@ -3858,20 +3861,20 @@
       });
       div.check = input;
       $.after(input, div);
-      if (div.parentElement.tagName.toLowerCase() !== 'label') {
+      if (div.parentElement.tagName !== 'LABEL') {
         return $.on(div, 'click', Rice.cb.check);
       }
     },
-    select: function(input) {
+    select: function(select) {
       var div;
 
-      $.addClass(input, 'riced');
+      $.addClass(select, 'riced');
       div = $.el('div', {
         className: 'selectrice',
-        innerHTML: "<div>" + (input.options[input.selectedIndex].textContent || null) + "</div>"
+        innerHTML: "<div>" + (select.options[select.selectedIndex].textContent || null) + "</div>"
       });
-      $.on(div, "click", Rice.selectclick);
-      return $.after(input, div);
+      $.on(div, "click", Rice.cb.select);
+      return $.after(select, div);
     }
   };
 
@@ -3903,22 +3906,16 @@
         return mixed;
       }
     },
-    fireEvent: function(el, evnt) {
-      var ev;
-
+    fireEvent: function(el, event) {
       if (!el) {
         return;
       }
-      ev = document.createEvent('HTMLEvents');
-      ev.initEvent(evnt, true, true);
-      return el.dispatchEvent(ev);
+      return $.event(event, null, el);
     },
     getRelMousePos: function(e) {
       var x, y;
 
-      if (e == null) {
-        e = window.event;
-      }
+      e || (e = window.event);
       x = 0;
       y = 0;
       if (typeof e.offsetX === 'number') {
@@ -4485,9 +4482,9 @@
     close: function() {
       Conf['editMode'] = false;
       editMascot = {};
-      $.rm($("#mascotConf", d.body));
+      $.rm($.id(mascotConf));
       Style.addStyle();
-      return Options.dialog("mascot");
+      return Settings.open("mascots");
     },
     importMascot: function(evt) {
       var file, reader;
@@ -4524,7 +4521,7 @@
         });
         alert("Mascot \"" + name + "\" imported!");
         $.rm($("#mascotContainer", d.body));
-        return Options.mascotTab.dialog();
+        return Settings.open('mascots');
       };
       return reader.readAsText(file);
     }
@@ -4739,105 +4736,105 @@
             Themes[name] = {
               'Author': "Anonymous",
               'Author Tripcode': "!POMF.9waa",
-              'Background Image': 'url("' + (imported.bgImg || '') + '")',
-              'Background Attachment': bgRPA[3] || '',
-              'Background Position': ((bgRPA[1] + " ") || '') + (bgRPA[2] || ''),
-              'Background Repeat': bgRPA[0] || '',
-              'Background Color': 'rgb(' + bgColor.rgb + ')',
-              'Dialog Background': 'rgba(' + mainColor.rgb + ',.98)',
-              'Dialog Border': 'rgb(' + brderColor.rgb + ')',
-              'Thread Wrapper Background': 'rgba(0,0,0,0)',
-              'Thread Wrapper Border': 'rgba(0,0,0,0)',
-              'Reply Background': 'rgba(' + mainColor.rgb + ',' + imported.replyOp + ')',
-              'Reply Border': 'rgb(' + brderColor.rgb + ')',
-              'Highlighted Reply Background': 'rgba(' + mainColor.shiftRGB(4, true) + ',' + imported.replyOp + ')',
-              'Highlighted Reply Border': 'rgb(' + linkColor.rgb + ')',
-              'Backlinked Reply Outline': 'rgb(' + linkColor.rgb + ')',
-              'Checkbox Background': 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')',
-              'Checkbox Border': 'rgb(' + inputbColor.rgb + ')',
-              'Checkbox Checked Background': 'rgb(' + inputColor.rgb + ')',
-              'Input Background': 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')',
-              'Input Border': 'rgb(' + inputbColor.rgb + ')',
-              'Hovered Input Background': 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')',
-              'Hovered Input Border': 'rgb(' + inputbColor.rgb + ')',
-              'Focused Input Background': 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')',
-              'Focused Input Border': 'rgb(' + inputbColor.rgb + ')',
-              'Buttons Background': 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')',
-              'Buttons Border': 'rgb(' + inputbColor.rgb + ')',
-              'Navigation Background': 'rgba(' + bgColor.rgb + ',0.8)',
-              'Navigation Border': 'rgb(' + mainColor.rgb + ')',
-              'Quotelinks': 'rgb(' + linkColor.rgb + ')',
-              'Links': 'rgb(' + linkColor.rgb + ')',
-              'Hovered Links': 'rgb(' + linkHColor.rgb + ')',
-              'Navigation Links': 'rgb(' + textColor.rgb + ')',
-              'Hovered Navigation Links': 'rgb(' + linkHColor.rgb + ')',
-              'Subjects': 'rgb(' + titleColor.rgb + ')',
-              'Names': 'rgb(' + nameColor.rgb + ')',
-              'Sage': 'rgb(' + sageColor.rgb + ')',
-              'Tripcodes': 'rgb(' + tripColor.rgb + ')',
-              'Emails': 'rgb(' + linkColor.rgb + ')',
-              'Post Numbers': 'rgb(' + linkColor.rgb + ')',
-              'Text': 'rgb(' + textColor.rgb + ')',
-              'Backlinks': 'rgb(' + linkColor.rgb + ')',
-              'Greentext': 'rgb(' + quoteColor.rgb + ')',
-              'Board Title': 'rgb(' + textColor.rgb + ')',
-              'Timestamps': 'rgb(' + timeColor.rgb + ')',
-              'Inputs': 'rgb(' + textColor.rgb + ')',
-              'Warnings': 'rgb(' + sageColor.rgb + ')',
-              'Shadow Color': 'rgba(0,0,0,0.1)',
-              'Custom CSS': ".rice {\nbox-shadow:rgba(" + mainColor.shiftRGB(32) + ",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + (imported.customCSS || '')
+              'Background Image': "url('" + (imported.bgImg || '') + "')",
+              'Background Attachment': "" + (bgRPA[3] || ''),
+              'Background Position': "" + (bgRPA[1] || '') + " " + (bgRPA[2] || ''),
+              'Background Repeat': "" + (bgRPA[0] || ''),
+              'Background Color': "rgb(" + bgColor.rgb + ")",
+              'Dialog Background': "rgba(" + mainColor.rgb + ",.98)",
+              'Dialog Border': "rgb(" + brderColor.rgb + ")",
+              'Thread Wrapper Background': "rgba(0,0,0,0)",
+              'Thread Wrapper Border': "rgba(0,0,0,0)",
+              'Reply Background': "rgba(" + mainColor.rgb + "," + imported.replyOp + ")",
+              'Reply Border': "rgb(" + brderColor.rgb + ")",
+              'Highlighted Reply Background': "rgba(" + (mainColor.shiftRGB(4, true)) + ", " + imported.replyOp + ")",
+              'Highlighted Reply Border': "rgb(" + linkColor.rgb + ")",
+              'Backlinked Reply Outline': "rgb(" + linkColor.rgb + ")",
+              'Checkbox Background': "rgba(" + inputColor.rgb + ", " + imported.replyOp + ")",
+              'Checkbox Border': "rgb(" + inputbColor.rgb + ")",
+              'Checkbox Checked Background': "rgb(" + inputColor.rgb + ")",
+              'Input Background': "rgba(" + inputColor.rgb + ", " + imported.replyOp + ")",
+              'Input Border': "rgb(" + inputbColor.rgb + ")",
+              'Hovered Input Background': "rgba(" + inputColor.hover + ", " + imported.replyOp + ")",
+              'Hovered Input Border': "rgb(" + inputbColor.rgb + ")",
+              'Focused Input Background': "rgba(" + inputColor.hover + ", " + imported.replyOp + ")",
+              'Focused Input Border': "rgb(" + inputbColor.rgb + ")",
+              'Buttons Background': "rgba(" + inputColor.rgb + ", " + imported.replyOp + ")",
+              'Buttons Border': "rgb(" + inputbColor.rgb + ")",
+              'Navigation Background': "rgba(" + bgColor.rgb + ", 0.8)",
+              'Navigation Border': "rgb(" + mainColor.rgb + ")",
+              'Quotelinks': "rgb(" + linkColor.rgb + ")",
+              'Links': "rgb(" + linkColor.rgb + ")",
+              'Hovered Links': "rgb(" + linkHColor.rgb + ")",
+              'Navigation Links': "rgb(" + textColor.rgb + ")",
+              'Hovered Navigation Links': "rgb(" + linkHColor.rgb + ")",
+              'Subjects': "rgb(" + titleColor.rgb + ")",
+              'Names': "rgb(" + nameColor.rgb + ")",
+              'Sage': "rgb(" + sageColor.rgb + ")",
+              'Tripcodes': "rgb(" + tripColor.rgb + ")",
+              'Emails': "rgb(" + linkColor.rgb + ")",
+              'Post Numbers': "rgb(" + linkColor.rgb + ")",
+              'Text': "rgb(" + textColor.rgb + ")",
+              'Backlinks': "rgb(" + linkColor.rgb + ")",
+              'Greentext': "rgb(" + quoteColor.rgb + ")",
+              'Board Title': "rgb(" + textColor.rgb + ")",
+              'Timestamps': "rgb(" + timeColor.rgb + ")",
+              'Inputs': "rgb(" + textColor.rgb + ")",
+              'Warnings': "rgb(" + sageColor.rgb + ")",
+              'Shadow Color': "rgba(0,0,0,0.1)",
+              'Custom CSS': ".rice {\nbox-shadow:rgba(" + mainColor.shiftRGB(32) + (",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n " + (imported.customCSS || ''))
             };
           } else if (origin === "SS") {
             Themes[name] = {
               'Author': "Anonymous",
               'Author Tripcode': "!.pC/AHOKAg",
-              'Background Image': 'url("' + (imported.bgImg || '') + '")',
-              'Background Attachment': bgRPA[3] || '',
-              'Background Position': ((bgRPA[1] + " ") || '') + (bgRPA[2] || ''),
-              'Background Repeat': bgRPA[0] || '',
-              'Background Color': 'rgb(' + bgColor.rgb + ')',
-              'Dialog Background': 'rgba(' + mainColor.rgb + ',.98)',
-              'Dialog Border': 'rgb(' + brderColor.rgb + ')',
-              'Thread Wrapper Background': 'rgba(' + mainColor.rgb + ',.5)',
-              'Thread Wrapper Border': 'rgba(' + brderColor.rgb + ',.9)',
-              'Reply Background': 'rgba(' + mainColor.rgb + ',.9)',
-              'Reply Border': 'rgb(' + brderColor.rgb + ')',
-              'Highlighted Reply Background': 'rgba(' + mainColor.shiftRGB(4, true) + ',.9)',
-              'Highlighted Reply Border': 'rgb(' + linkColor.rgb + ')',
-              'Backlinked Reply Outline': 'rgb(' + linkColor.rgb + ')',
-              'Checkbox Background': 'rgba(' + inputColor.rgb + ',.9)',
-              'Checkbox Border': 'rgb(' + inputbColor.rgb + ')',
-              'Checkbox Checked Background': 'rgb(' + inputColor.rgb + ')',
-              'Input Background': 'rgba(' + inputColor.rgb + ',.9)',
-              'Input Border': 'rgb(' + inputbColor.rgb + ')',
-              'Hovered Input Background': 'rgba(' + inputColor.hover + ',.9)',
-              'Hovered Input Border': 'rgb(' + inputbColor.rgb + ')',
-              'Focused Input Background': 'rgba(' + inputColor.hover + ',.9)',
-              'Focused Input Border': 'rgb(' + inputbColor.rgb + ')',
-              'Buttons Background': 'rgba(' + inputColor.rgb + ',.9)',
-              'Buttons Border': 'rgb(' + inputbColor.rgb + ')',
-              'Navigation Background': 'rgba(' + bgColor.rgb + ',0.8)',
-              'Navigation Border': 'rgb(' + mainColor.rgb + ')',
-              'Quotelinks': 'rgb(' + linkColor.rgb + ')',
-              'Links': 'rgb(' + linkColor.rgb + ')',
-              'Hovered Links': 'rgb(' + linkHColor.rgb + ')',
-              'Navigation Links': 'rgb(' + textColor.rgb + ')',
-              'Hovered Navigation Links': 'rgb(' + linkHColor.rgb + ')',
-              'Subjects': 'rgb(' + titleColor.rgb + ')',
-              'Names': 'rgb(' + nameColor.rgb + ')',
-              'Sage': 'rgb(' + sageColor.rgb + ')',
-              'Tripcodes': 'rgb(' + tripColor.rgb + ')',
-              'Emails': 'rgb(' + linkColor.rgb + ')',
-              'Post Numbers': 'rgb(' + linkColor.rgb + ')',
-              'Text': 'rgb(' + textColor.rgb + ')',
-              'Backlinks': 'rgb(' + linkColor.rgb + ')',
-              'Greentext': 'rgb(' + quoteColor.rgb + ')',
-              'Board Title': 'rgb(' + textColor.rgb + ')',
-              'Timestamps': 'rgb(' + timeColor.rgb + ')',
-              'Inputs': 'rgb(' + textColor.rgb + ')',
-              'Warnings': 'rgb(' + sageColor.rgb + ')',
-              'Shadow Color': 'rgba(0,0,0,0.1)',
-              'Custom CSS': ".board {\npadding: 1px 2px;\n}\n.rice {\nbox-shadow:rgba(" + mainColor.shiftRGB(32) + ",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}" + (imported.customCSS || '')
+              'Background Image': "url('" + (imported.bgImg || '') + "')",
+              'Background Attachment': "" + (bgRPA[3] || ''),
+              'Background Position': "" + (bgRPA[1] || '') + " " + (bgRPA[2] || ''),
+              'Background Repeat': "" + (bgRPA[0] || ''),
+              'Background Color': "rgb(" + bgColor.rgb + ")",
+              'Dialog Background': "rgba(" + mainColor.rgb + ", .98)",
+              'Dialog Border': "rgb(" + brderColor.rgb + ")",
+              'Thread Wrapper Background': "rgba(" + mainColor.rgb + ", .5)",
+              'Thread Wrapper Border': "rgba(" + brderColor.rgb + ", .9)",
+              'Reply Background': "rgba(" + mainColor.rgb + ", .9)",
+              'Reply Border': "rgb(" + brderColor.rgb + ")",
+              'Highlighted Reply Background': "rgba(" + (mainColor.shiftRGB(4, true)) + ", .9)",
+              'Highlighted Reply Border': "rgb(" + linkColor.rgb + ")",
+              'Backlinked Reply Outline': "rgb(" + linkColor.rgb + ")",
+              'Checkbox Background': "rgba(" + inputColor.rgb + ", .9)",
+              'Checkbox Border': "rgb(" + inputbColor.rgb + ")",
+              'Checkbox Checked Background': "rgb(" + inputColor.rgb + ")",
+              'Input Background': "rgba(" + inputColor.rgb + ", .9)",
+              'Input Border': "rgb(" + inputbColor.rgb + ")",
+              'Hovered Input Background': "rgba(" + inputColor.hover + ", .9)",
+              'Hovered Input Border': "rgb(" + inputbColor.rgb + ")",
+              'Focused Input Background': "rgba(" + inputColor.hover + ", .9)",
+              'Focused Input Border': "rgb(" + inputbColor.rgb + ")",
+              'Buttons Background': "rgba(" + inputColor.rgb + ", .9)",
+              'Buttons Border': "rgb(" + inputbColor.rgb + ")",
+              'Navigation Background': "rgba(" + bgColor.rgb + "', 0.8)",
+              'Navigation Border': "rgb(" + mainColor.rgb + ")",
+              'Quotelinks': "rgb(" + linkColor.rgb + ")",
+              'Links': "rgb(" + linkColor.rgb + ")",
+              'Hovered Links': "rgb(" + linkHColor.rgb + ")",
+              'Navigation Links': "rgb(" + textColor.rgb + ")",
+              'Hovered Navigation Links': "rgb(" + linkHColor.rgb + ")",
+              'Subjects': "rgb(" + titleColor.rgb + ")",
+              'Names': "rgb(" + nameColor.rgb + ")",
+              'Sage': "rgb(" + sageColor.rgb + ")",
+              'Tripcodes': "rgb(" + tripColor.rgb + ")",
+              'Emails': "rgb(" + linkColor.rgb + ")",
+              'Post Numbers': "rgb(" + linkColor.rgb + ")",
+              'Text': "rgb(" + textColor.rgb + ")",
+              'Backlinks': "rgb(" + linkColor.rgb + ")",
+              'Greentext': "rgb(" + quoteColor.rgb + ")",
+              'Board Title': "rgb(" + textColor.rgb + ")",
+              'Timestamps': "rgb(" + timeColor.rgb + ")",
+              'Inputs': "rgb(" + textColor.rgb + ")",
+              'Warnings': "rgb(" + sageColor.rgb + ")",
+              'Shadow Color': "rgba(0,0,0,0.1)",
+              'Custom CSS': ".board {\npadding: 1px 2px;\n}\n.rice {\nbox-shadow:rgba(" + mainColor.shiftRGB(32) + (",.3) 0 1px;\n}\ninput[type=password]:hover,\ninput[type=text]:not([disabled]):hover,\ninput#fs_search:hover,\ninput.field:hover,\n.webkit select:hover,\ntextarea:hover,\n#options input:not([type=checkbox]):hover {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\ninput[type=password]:focus,\ninput[type=text]:focus,\ninput#fs_search:focus,\ninput.field:focus,\n.webkit select:focus,\ntextarea:focus,\n#options input:focus {\n  box-shadow:inset rgba(0,0,0,.2) 0 1px 2px;\n}\nbutton,\ninput,\ntextarea,\n.rice {\n  transition:background .2s,box-shadow .2s;\n}\n " + (imported.customCSS || ''))
             };
           }
         } else if (origin === 'appchan') {
@@ -4848,7 +4845,7 @@
         $.set('userThemes', userThemes);
         alert("Theme \"" + name + "\" imported!");
         $.rm($("#themes", d.body));
-        return Options.themeTab();
+        return Settings.open('themes');
       };
       return reader.readAsText(file);
     },
@@ -4873,9 +4870,9 @@
     },
     close: function() {
       Conf['editMode'] = false;
-      $.rm($("#themeConf", d.body));
+      $.rm($id('themeConf'));
       Style.addStyle();
-      return Options.dialog("theme");
+      return Settings.open('themes');
     }
   };
 
@@ -4948,30 +4945,31 @@
       return localStorage.setItem('4chan-settings', JSON.stringify(settings));
     },
     open: function(openSection) {
-      var html, link, links, overlay, section, sectionToOpen, _i, _len, _ref;
+      var dialog, link, links, overlay, section, sectionToOpen, _i, _len, _ref;
 
       if (Conf['editMode'] === "theme") {
         if (confirm("Opening the options dialog will close and discard any theme changes made with the theme editor.")) {
           ThemeTools.close();
-        } else {
-          return;
         }
+        return;
       }
       if (Conf['editMode'] === "mascot") {
         if (confirm("Opening the options dialog will close and discard any mascot changes made with the mascot editor.")) {
           MascotTools.close();
-        } else {
-          return;
         }
+        return;
       }
-      if (Settings.dialog) {
+      if (Settings.overlay) {
         return;
       }
       $.event('CloseMenu');
-      html = "<div id=appchanx-settings class=dialog>\n  <nav>\n    <div class=sections-list></div>\n    <div class=credits>\n      <a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a> |\n      <a href='https://github.com/zixaphir/appchan-x/blob/Av2/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n      <a href='https://github.com/zixaphir/appchan-x/blob/Av2/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |\n      <a href=javascript:; class=close title=Close>×</a>\n    </div>\n  </nav>\n  <hr>\n  <div class=section-container><section></section></div>\n</div>";
-      Settings.dialog = overlay = $.el('div', {
-        id: 'overlay',
-        innerHTML: html
+      Settings.dialog = dialog = $.el('div', {
+        id: 'appchanx-settings',
+        "class": 'dialog',
+        innerHTML: "<nav>\n  <div class=sections-list></div>\n  <div class=credits>\n    <a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a> |\n    <a href='https://github.com/zixaphir/appchan-x/blob/Av2/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n    <a href='https://github.com/zixaphir/appchan-x/blob/Av2/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |\n    <a href=javascript:; class=close title=Close>×</a>\n  </div>\n</nav>\n<hr>\n<div class=section-container><section></section></div>"
+      });
+      Settings.overlay = overlay = $.el('div', {
+        id: 'overlay'
       });
       links = [];
       _ref = Settings.sections;
@@ -4988,16 +4986,13 @@
           sectionToOpen = link;
         }
       }
-      $.add($('.sections-list', overlay), links);
+      $.add($('.sections-list', dialog), links);
       (sectionToOpen ? sectionToOpen : links[0]).click();
-      $.on($('.close', overlay), 'click', Settings.close);
+      $.on($('.close', dialog), 'click', Settings.close);
       $.on(overlay, 'click', Settings.close);
-      $.on(overlay.firstElementChild, 'click', function(e) {
-        return e.stopPropagation();
-      });
       d.body.style.width = "" + d.body.clientWidth + "px";
       $.addClass(d.body, 'unscroll');
-      return $.add(d.body, overlay);
+      return $.add(d.body, [overlay, dialog]);
     },
     close: function() {
       if (!Settings.dialog) {
@@ -5005,7 +5000,9 @@
       }
       d.body.style.removeProperty('width');
       $.rmClass(d.body, 'unscroll');
+      $.rm(Settings.overlay);
       $.rm(Settings.dialog);
+      delete Settings.overlay;
       return delete Settings.dialog;
     },
     sections: [],
@@ -5054,9 +5051,10 @@
           arr = obj[key];
           description = arr[1];
           div = $.el('div', {
-            innerHTML: "<label><input type=checkbox name='" + key + "'>" + key + "</label><span class=description>: " + description + "</span>"
+            innerHTML: "<label><input type=checkbox name='" + key + "'>" + key + "</label><span class=description>" + description + "</span>"
           });
           input = $('input', div);
+          $.on($('label', div), 'mouseover', Settings.mouseover);
           $.on(input, 'change', $.cb.checked);
           items[key] = Conf[key];
           inputs[key] = input;
@@ -5452,9 +5450,11 @@
       return $.cb.value.call(this);
     },
     style: function(section) {
-      var arr, description, div, fs, html, input, key, name, nodes, obj, type, val, value, _i, _len, _ref;
+      var arr, description, div, fs, html, input, inputs, items, key, name, nodes, obj, type, value, _i, _len, _ref;
 
-      nodes = [];
+      nodes = $.frag();
+      items = {};
+      inputs = {};
       _ref = Config.style;
       for (key in _ref) {
         obj = _ref[key];
@@ -5469,41 +5469,53 @@
           });
           if (type) {
             if (type === 'text') {
-              div.innerHTML = "<div class=option><span class=optionlabel>" + key + "</span></div><div style='display:none;'>" + description + "</div><div class=option><input name='" + key + "' style=width: 100%></div>";
-              input = $("input[name='" + key + "']", div);
+              div.innerHTML = "<div class=option><span class=optionlabel>" + key + "</span></div><div class=description>" + description + "</div><div class=option><input name='" + key + "' style=width: 100%></div>";
+              input = $("input", div);
             } else {
-              html = "<div class=option><span class=optionlabel>" + key + "</span></div><div style='display:none;'>" + description + "</div><div class=option><select name='" + key + "'></div>";
-              for (val = _i = 0, _len = type.length; _i < _len; val = ++_i) {
-                name = type[val];
-                html += "<option value='" + val + "'>" + name + "</option>";
+              html = "<div class=option><span class=optionlabel>" + key + "</span></div><div class=description>" + description + "</div><div class=option><select name='" + key + "'>";
+              for (_i = 0, _len = type.length; _i < _len; _i++) {
+                name = type[_i];
+                html += "<option value='" + name + "'>" + name + "</option>";
               }
-              html += "</select>";
+              html += "</select></div>";
               div.innerHTML = html;
               input = $("select", div);
             }
-            input.cb = 'value';
           } else {
             div.innerHTML = "<div class=option><label><input type=checkbox name='" + key + "'>" + key + "</label></div><span style='display:none;'>" + description + "</span>";
             input = $('input', div);
-            input.cb = 'checked';
+            input.bool = true;
           }
-          Settings.sandbox(input, key, value, input.cb);
+          items[key] = Conf[key];
+          inputs[key] = input;
           $.on($('.option', div), 'mouseover', Settings.mouseover);
-          $.on(input, 'change', function() {
-            $.cb[this.cb].call(this);
-            return Style.addStyle();
-          });
+          $.on(input, 'change', Settings.change);
           $.add(fs, div);
         }
-        Rice.nodes(fs);
-        nodes.push(fs);
+        $.add(nodes, fs);
       }
-      return $.add(section, nodes);
-    },
-    sandbox: function(input, key, value, inputtype) {
-      return $.get(key, value, function(item) {
-        return input[inputtype] = item[key];
+      return $.get(items, function(items) {
+        var val;
+
+        for (key in items) {
+          val = items[key];
+          input = inputs[key];
+          if (input.bool) {
+            input.checked = val;
+            Rice.checkbox(input);
+          } else {
+            input.value = val;
+            if (input.nodeName === 'SELECT') {
+              Rice.select(input);
+            }
+          }
+        }
+        return $.add(section, nodes);
       });
+    },
+    change: function() {
+      $.cb[this.bool ? 'checked' : 'value'].call(this);
+      return Style.addStyle();
     },
     themes: function(section, mode) {
       var div, keys, name, parentdiv, suboptions, theme, _i, _j, _len, _len1;

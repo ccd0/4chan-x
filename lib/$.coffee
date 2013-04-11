@@ -240,6 +240,16 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
+  minmax: (value, min, max) ->
+    return (
+      if value < min
+        min
+      else
+        if value > max
+          max
+        else
+          value
+    )
   syncing: {}
   sync: do ->
 <% if (type === 'crx') { %>

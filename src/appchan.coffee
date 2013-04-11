@@ -147,7 +147,7 @@ Style =
 
     # Offsets various UI of the sidebar depending on the sidebar's width.
     # Only really used for the board banner or right sidebar.
-    Style['sidebarOffset'] = if _conf["Sidebar"] is "large"
+    Style['sidebarOffset'] = if _conf['Sidebar'] is "large"
       {
         W: 51
         H: 17
@@ -183,7 +183,7 @@ Style =
     Style.sidebar = {
       minimal:  20
       hide:     2
-    }[_conf.Sidebar] or (252 + Style.sidebarOffset.W)
+    }[_conf['Sidebar']] or (252 + Style.sidebarOffset.W)
 
     Style.replyMargin = _conf["Post Spacing"]
 
@@ -207,7 +207,7 @@ Style =
     align = Style.sidebarLocation[0]
 
     _conf = Conf
-    notCatalog = !g.CATALOG
+    notCatalog = g.VIEW isnt 'catalog'
     notEither  = notCatalog and g.BOARD isnt 'f'
 
     aligner = (first, checks) ->
@@ -217,11 +217,12 @@ Style =
       # Check which elements we actually have. Some are easy, because the script creates them so we'd know they're here
       # Some are hard, like 4sight, which we have no way of knowing if available without looking for it.
       for enabled in checks
-        position[position.length] =
+        position.push(
           if enabled
             first += 19
           else
             first
+        )
 
       position
 
@@ -241,7 +242,7 @@ Style =
           notEither
           g.VIEW is 'thread'
           notEither and _conf['Fappe Tyme']
-          navlinks = ((!g.VIEW is 'thread' and _conf['Index Navigation']) or (g.VIEW is 'thread' and _conf['Reply Navigation'])) and notCatalog
+          navlinks = ((g.VIEW isnt 'thread' and _conf['Index Navigation']) or (g.VIEW is 'thread' and _conf['Reply Navigation'])) and notCatalog
           navlinks
         ]
       )
@@ -524,56 +525,56 @@ Rice =
     Post::callbacks.push
       name: 'Rice Checkboxes'
       cb:   @node
-    
-  cb: 
+
+  cb:
     check: ->
       @check.click()
 
     option: (e) ->
       e.stopPropagation()
+      e.preventDefault()
       select = Rice.input
       container = select.nextElementSibling
       container.firstChild.textContent = @textContent
       select.value = @getAttribute 'data-value'
-      ev = document.createEvent 'HTMLEvents'
-      ev.initEvent "change", true, true
-      $.event select, ev
+      $.event 'change', null, select
       Rice.cleanup()
 
-  selectclick: (e) ->
-    e.stopPropagation()
-
-    {ul} = Rice
-
-    unless ul
-      Rice.ul = ul = $.el 'ul',
-        id: "selectrice"
-      $.add d.body, ul 
-
-    if ul.children.length > 0
-      return Rice.cleanup() 
-      
-    rect = @getBoundingClientRect()
-    {clientHeight} = d.documentElement
-    {style} = ul
-
-    style.cssText = "width: #{rect.width}px; left: #{rect.left}px;" + (if clientHeight - rect.bottom < 200 then "bottom: #{clientHeight - rect.top}px" else "top: #{rect.bottom}px") 
-    Rice.input = select = @previousSibling
-    nodes = []
-    
-    for option in select.options
-      li = $.el 'li',
-        textContent: option.textContent
-      li.setAttribute 'data-value', option.value
-
-      $.on li, 'click', Rice.cb.option
-      nodes.push li
-    $.add ul, nodes
-
-    $.on ul, 'click scroll blur', (e) ->
+    select: (e) ->
       e.stopPropagation()
+      e.preventDefault()
 
-    $.on d, 'click scroll blur resize', Rice.cleanup
+      {ul} = Rice
+
+      unless ul
+        Rice.ul = ul = $.el 'ul',
+          id: "selectrice"
+        $.add d.body, ul
+
+      if ul.children.length > 0
+        return Rice.cleanup()
+
+      rect = @getBoundingClientRect()
+      {clientHeight} = d.documentElement
+      {style} = ul
+
+      style.cssText = "width: #{rect.width}px; left: #{rect.left}px;" + (if clientHeight - rect.bottom < 200 then "bottom: #{clientHeight - rect.top}px" else "top: #{rect.bottom}px")
+      Rice.input = select = @previousSibling
+      nodes = []
+
+      for option in select.options
+        li = $.el 'li',
+          textContent: option.textContent
+        li.setAttribute 'data-value', option.value
+
+        $.on li, 'click', Rice.cb.option
+        nodes.push li
+      $.add ul, nodes
+
+      $.on ul, 'click scroll blur', (e) ->
+        e.stopPropagation()
+
+      $.on d, 'click scroll blur resize', Rice.cleanup
 
   cleanup: ->
     $.off d, 'click scroll blur resize', Rice.cleanup
@@ -581,17 +582,21 @@ Rice =
       $.rm child
     return
 
-  nodes: (source) ->
-    source or= d.body
-    checkboxes = $$('[type=checkbox]:not(.riced)', source)
+  nodes: (root) ->
+    root or= d.body
+
+    checkboxes = $$('[type=checkbox]:not(.riced)', root)
     checkrice = Rice.checkbox
+
     for input in checkboxes
       checkrice input
 
-    selects = $$('select:not(.riced)', source)
+    selects = $$('select:not(.riced)', root)
     selectrice = Rice.select
-    for input in selects
-      selectrice input
+
+    for select in selects
+      selectrice select
+
     return
 
   node: ->
@@ -604,17 +609,17 @@ Rice =
       className: 'rice'
     div.check = input
     $.after input, div
-    if div.parentElement.tagName.toLowerCase() != 'label'
+    if div.parentElement.tagName isnt 'LABEL'
       $.on div, 'click', Rice.cb.check
 
-  select: (input) ->
-    $.addClass input, 'riced'
+  select: (select) ->
+    $.addClass select, 'riced'
     div = $.el 'div',
       className: 'selectrice'
-      innerHTML: "<div>#{input.options[input.selectedIndex].textContent or null}</div>"
-    $.on div, "click", Rice.selectclick
+      innerHTML: "<div>#{select.options[select.selectedIndex].textContent or null}</div>"
+    $.on div, "click", Rice.cb.select
 
-    $.after input, div
+    $.after select, div
 
 ###
   JSColor
@@ -635,14 +640,13 @@ JSColor =
   fetchElement: (mixed) ->
     if typeof mixed is "string" then $.id mixed else mixed
 
-  fireEvent: (el, evnt) ->
+  fireEvent: (el, event) ->
     return unless el
 
-    ev = document.createEvent 'HTMLEvents'
-    ev.initEvent evnt, true, true
-    el.dispatchEvent ev
+    $.event event, null, el
 
-  getRelMousePos: (e = window.event) ->
+  getRelMousePos: (e) ->
+    e or= window.event
     x = 0
     y = 0
     if typeof e.offsetX is 'number'
@@ -1345,9 +1349,9 @@ MascotTools =
   close: ->
     Conf['editMode'] = false
     editMascot = {}
-    $.rm $("#mascotConf", d.body)
+    $.rm $.id mascotConf
     Style.addStyle()
-    Options.dialog("mascot")
+    Settings.open "mascots"
 
   importMascot: (evt) ->
     file = evt.target.files[0]
@@ -1380,7 +1384,7 @@ MascotTools =
 
       alert "Mascot \"#{name}\" imported!"
       $.rm $("#mascotContainer", d.body)
-      Options.mascotTab.dialog()
+      Settings.open 'mascots'
 
     reader.readAsText(file)
 
@@ -1641,108 +1645,108 @@ ThemeTools =
           bgRPA = ['no-repeat', 'bottom', 'left', 'fixed']
 
         if origin == "oneechan"
-          Themes[name] = {
+          Themes[name] =
             'Author'                      : "Anonymous"
             'Author Tripcode'             : "!POMF.9waa"
-            'Background Image'            : 'url("' + (imported.bgImg or '') + '")'
-            'Background Attachment'       : bgRPA[3] or ''
-            'Background Position'         : ((bgRPA[1] + " ") or '') + (bgRPA[2] or '')
-            'Background Repeat'           : bgRPA[0] or ''
-            'Background Color'            : 'rgb(' + bgColor.rgb + ')'
-            'Dialog Background'           : 'rgba(' + mainColor.rgb + ',.98)'
-            'Dialog Border'               : 'rgb(' + brderColor.rgb + ')'
-            'Thread Wrapper Background'   : 'rgba(0,0,0,0)'
-            'Thread Wrapper Border'       : 'rgba(0,0,0,0)'
-            'Reply Background'            : 'rgba(' + mainColor.rgb + ',' + imported.replyOp + ')'
-            'Reply Border'                : 'rgb(' + brderColor.rgb + ')'
-            'Highlighted Reply Background': 'rgba(' + mainColor.shiftRGB(4, true) + ',' + imported.replyOp + ')'
-            'Highlighted Reply Border'    : 'rgb(' + linkColor.rgb + ')'
-            'Backlinked Reply Outline'    : 'rgb(' + linkColor.rgb + ')'
-            'Checkbox Background'         : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
-            'Checkbox Border'             : 'rgb(' + inputbColor.rgb + ')'
-            'Checkbox Checked Background' : 'rgb(' + inputColor.rgb + ')'
-            'Input Background'            : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
-            'Input Border'                : 'rgb(' + inputbColor.rgb + ')'
-            'Hovered Input Background'    : 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')'
-            'Hovered Input Border'        : 'rgb(' + inputbColor.rgb + ')'
-            'Focused Input Background'    : 'rgba(' + inputColor.hover + ',' + imported.replyOp + ')'
-            'Focused Input Border'        : 'rgb(' + inputbColor.rgb + ')'
-            'Buttons Background'          : 'rgba(' + inputColor.rgb + ',' + imported.replyOp + ')'
-            'Buttons Border'              : 'rgb(' + inputbColor.rgb + ')'
-            'Navigation Background'       : 'rgba(' + bgColor.rgb + ',0.8)'
-            'Navigation Border'           : 'rgb(' + mainColor.rgb + ')'
-            'Quotelinks'                  : 'rgb(' + linkColor.rgb + ')'
-            'Links'                       : 'rgb(' + linkColor.rgb + ')'
-            'Hovered Links'               : 'rgb(' + linkHColor.rgb + ')'
-            'Navigation Links'            : 'rgb(' + textColor.rgb + ')'
-            'Hovered Navigation Links'    : 'rgb(' + linkHColor.rgb + ')'
-            'Subjects'                    : 'rgb(' + titleColor.rgb + ')'
-            'Names'                       : 'rgb(' + nameColor.rgb + ')'
-            'Sage'                        : 'rgb(' + sageColor.rgb + ')'
-            'Tripcodes'                   : 'rgb(' + tripColor.rgb + ')'
-            'Emails'                      : 'rgb(' + linkColor.rgb + ')'
-            'Post Numbers'                : 'rgb(' + linkColor.rgb + ')'
-            'Text'                        : 'rgb(' + textColor.rgb + ')'
-            'Backlinks'                   : 'rgb(' + linkColor.rgb + ')'
-            'Greentext'                   : 'rgb(' + quoteColor.rgb + ')'
-            'Board Title'                 : 'rgb(' + textColor.rgb + ')'
-            'Timestamps'                  : 'rgb(' + timeColor.rgb + ')'
-            'Inputs'                      : 'rgb(' + textColor.rgb + ')'
-            'Warnings'                    : 'rgb(' + sageColor.rgb + ')'
-            'Shadow Color'                : 'rgba(0,0,0,0.1)'
-            'Custom CSS'                  : """<%= grunt.file.read('css/theme.oneechan.css') %>""" + (imported.customCSS or '') }
+            'Background Image'            : "url('#{imported.bgImg or ''}')"
+            'Background Attachment'       : "#{bgRPA[3] or ''}"
+            'Background Position'         : "#{bgRPA[1] or ''} #{bgRPA[2] or ''}"
+            'Background Repeat'           : "#{bgRPA[0] or ''}"
+            'Background Color'            : "rgb(#{bgColor.rgb})"
+            'Dialog Background'           : "rgba(#{mainColor.rgb},.98)"
+            'Dialog Border'               : "rgb(#{brderColor.rgb})"
+            'Thread Wrapper Background'   : "rgba(0,0,0,0)"
+            'Thread Wrapper Border'       : "rgba(0,0,0,0)"
+            'Reply Background'            : "rgba(#{mainColor.rgb},#{imported.replyOp})"
+            'Reply Border'                : "rgb(#{brderColor.rgb})"
+            'Highlighted Reply Background': "rgba(#{mainColor.shiftRGB(4, true)}, #{imported.replyOp})"
+            'Highlighted Reply Border'    : "rgb(#{linkColor.rgb})"
+            'Backlinked Reply Outline'    : "rgb(#{linkColor.rgb})"
+            'Checkbox Background'         : "rgba(#{inputColor.rgb}, #{imported.replyOp})"
+            'Checkbox Border'             : "rgb(#{inputbColor.rgb})"
+            'Checkbox Checked Background' : "rgb(#{inputColor.rgb})"
+            'Input Background'            : "rgba(#{inputColor.rgb}, #{imported.replyOp})"
+            'Input Border'                : "rgb(#{inputbColor.rgb})"
+            'Hovered Input Background'    : "rgba(#{inputColor.hover}, #{imported.replyOp})"
+            'Hovered Input Border'        : "rgb(#{inputbColor.rgb})"
+            'Focused Input Background'    : "rgba(#{inputColor.hover}, #{imported.replyOp})"
+            'Focused Input Border'        : "rgb(#{inputbColor.rgb})"
+            'Buttons Background'          : "rgba(#{inputColor.rgb}, #{imported.replyOp})"
+            'Buttons Border'              : "rgb(#{inputbColor.rgb})"
+            'Navigation Background'       : "rgba(#{bgColor.rgb}, 0.8)"
+            'Navigation Border'           : "rgb(#{mainColor.rgb})"
+            'Quotelinks'                  : "rgb(#{linkColor.rgb})"
+            'Links'                       : "rgb(#{linkColor.rgb})"
+            'Hovered Links'               : "rgb(#{linkHColor.rgb})"
+            'Navigation Links'            : "rgb(#{textColor.rgb})"
+            'Hovered Navigation Links'    : "rgb(#{linkHColor.rgb})"
+            'Subjects'                    : "rgb(#{titleColor.rgb})"
+            'Names'                       : "rgb(#{nameColor.rgb})"
+            'Sage'                        : "rgb(#{sageColor.rgb})"
+            'Tripcodes'                   : "rgb(#{tripColor.rgb})"
+            'Emails'                      : "rgb(#{linkColor.rgb})"
+            'Post Numbers'                : "rgb(#{linkColor.rgb})"
+            'Text'                        : "rgb(#{textColor.rgb})"
+            'Backlinks'                   : "rgb(#{linkColor.rgb})"
+            'Greentext'                   : "rgb(#{quoteColor.rgb})"
+            'Board Title'                 : "rgb(#{textColor.rgb})"
+            'Timestamps'                  : "rgb(#{timeColor.rgb})"
+            'Inputs'                      : "rgb(#{textColor.rgb})"
+            'Warnings'                    : "rgb(#{sageColor.rgb})"
+            'Shadow Color'                : "rgba(0,0,0,0.1)"
+            'Custom CSS'                  : """<%= grunt.file.read('css/theme.oneechan.css') %> #{imported.customCSS or ''}"""
 
         else if origin == "SS"
-          Themes[name] = {
+          Themes[name] =
             'Author'                      : "Anonymous"
             'Author Tripcode'             : "!.pC/AHOKAg"
-            'Background Image'            : 'url("' + (imported.bgImg or '') + '")'
-            'Background Attachment'       : bgRPA[3] or ''
-            'Background Position'         : ((bgRPA[1] + " ") or '') + (bgRPA[2] or '')
-            'Background Repeat'           : bgRPA[0] or ''
-            'Background Color'            : 'rgb(' + bgColor.rgb + ')'
-            'Dialog Background'           : 'rgba(' + mainColor.rgb + ',.98)'
-            'Dialog Border'               : 'rgb(' + brderColor.rgb + ')'
-            'Thread Wrapper Background'   : 'rgba(' + mainColor.rgb + ',.5)'
-            'Thread Wrapper Border'       : 'rgba(' + brderColor.rgb + ',.9)'
-            'Reply Background'            : 'rgba(' + mainColor.rgb + ',.9)'
-            'Reply Border'                : 'rgb(' + brderColor.rgb + ')'
-            'Highlighted Reply Background': 'rgba(' + mainColor.shiftRGB(4, true) + ',.9)'
-            'Highlighted Reply Border'    : 'rgb(' + linkColor.rgb + ')'
-            'Backlinked Reply Outline'    : 'rgb(' + linkColor.rgb + ')'
-            'Checkbox Background'         : 'rgba(' + inputColor.rgb + ',.9)'
-            'Checkbox Border'             : 'rgb(' + inputbColor.rgb + ')'
-            'Checkbox Checked Background' : 'rgb(' + inputColor.rgb + ')'
-            'Input Background'            : 'rgba(' + inputColor.rgb + ',.9)'
-            'Input Border'                : 'rgb(' + inputbColor.rgb + ')'
-            'Hovered Input Background'    : 'rgba(' + inputColor.hover + ',.9)'
-            'Hovered Input Border'        : 'rgb(' + inputbColor.rgb + ')'
-            'Focused Input Background'    : 'rgba(' + inputColor.hover + ',.9)'
-            'Focused Input Border'        : 'rgb(' + inputbColor.rgb + ')'
-            'Buttons Background'          : 'rgba(' + inputColor.rgb + ',.9)'
-            'Buttons Border'              : 'rgb(' + inputbColor.rgb + ')'
-            'Navigation Background'       : 'rgba(' + bgColor.rgb + ',0.8)'
-            'Navigation Border'           : 'rgb(' + mainColor.rgb + ')'
-            'Quotelinks'                  : 'rgb(' + linkColor.rgb + ')'
-            'Links'                       : 'rgb(' + linkColor.rgb + ')'
-            'Hovered Links'               : 'rgb(' + linkHColor.rgb + ')'
-            'Navigation Links'            : 'rgb(' + textColor.rgb + ')'
-            'Hovered Navigation Links'    : 'rgb(' + linkHColor.rgb + ')'
-            'Subjects'                    : 'rgb(' + titleColor.rgb + ')'
-            'Names'                       : 'rgb(' + nameColor.rgb + ')'
-            'Sage'                        : 'rgb(' + sageColor.rgb + ')'
-            'Tripcodes'                   : 'rgb(' + tripColor.rgb + ')'
-            'Emails'                      : 'rgb(' + linkColor.rgb + ')'
-            'Post Numbers'                : 'rgb(' + linkColor.rgb + ')'
-            'Text'                        : 'rgb(' + textColor.rgb + ')'
-            'Backlinks'                   : 'rgb(' + linkColor.rgb + ')'
-            'Greentext'                   : 'rgb(' + quoteColor.rgb + ')'
-            'Board Title'                 : 'rgb(' + textColor.rgb + ')'
-            'Timestamps'                  : 'rgb(' + timeColor.rgb + ')'
-            'Inputs'                      : 'rgb(' + textColor.rgb + ')'
-            'Warnings'                    : 'rgb(' + sageColor.rgb + ')'
-            'Shadow Color'                : 'rgba(0,0,0,0.1)'
-            'Custom CSS'                  : """<%= grunt.file.read('css/theme.4chanss.css') %>""" + (imported.customCSS or '') }
+            'Background Image'            : "url('#{imported.bgImg or ''}')"
+            'Background Attachment'       : "#{bgRPA[3] or ''}"
+            'Background Position'         : "#{bgRPA[1] or ''} #{bgRPA[2] or ''}"
+            'Background Repeat'           : "#{bgRPA[0] or ''}"
+            'Background Color'            : "rgb(#{bgColor.rgb})"
+            'Dialog Background'           : "rgba(#{mainColor.rgb}, .98)"
+            'Dialog Border'               : "rgb(#{brderColor.rgb})"
+            'Thread Wrapper Background'   : "rgba(#{mainColor.rgb}, .5)"
+            'Thread Wrapper Border'       : "rgba(#{brderColor.rgb}, .9)"
+            'Reply Background'            : "rgba(#{mainColor.rgb}, .9)"
+            'Reply Border'                : "rgb(#{brderColor.rgb})"
+            'Highlighted Reply Background': "rgba(#{mainColor.shiftRGB(4, true)}, .9)"
+            'Highlighted Reply Border'    : "rgb(#{linkColor.rgb})"
+            'Backlinked Reply Outline'    : "rgb(#{linkColor.rgb})"
+            'Checkbox Background'         : "rgba(#{inputColor.rgb}, .9)"
+            'Checkbox Border'             : "rgb(#{inputbColor.rgb})"
+            'Checkbox Checked Background' : "rgb(#{inputColor.rgb})"
+            'Input Background'            : "rgba(#{inputColor.rgb}, .9)"
+            'Input Border'                : "rgb(#{inputbColor.rgb})"
+            'Hovered Input Background'    : "rgba(#{inputColor.hover}, .9)"
+            'Hovered Input Border'        : "rgb(#{inputbColor.rgb})"
+            'Focused Input Background'    : "rgba(#{inputColor.hover}, .9)"
+            'Focused Input Border'        : "rgb(#{inputbColor.rgb})"
+            'Buttons Background'          : "rgba(#{inputColor.rgb}, .9)"
+            'Buttons Border'              : "rgb(#{inputbColor.rgb})"
+            'Navigation Background'       : "rgba(#{bgColor.rgb}', 0.8)"
+            'Navigation Border'           : "rgb(#{mainColor.rgb})"
+            'Quotelinks'                  : "rgb(#{linkColor.rgb})"
+            'Links'                       : "rgb(#{linkColor.rgb})"
+            'Hovered Links'               : "rgb(#{linkHColor.rgb})"
+            'Navigation Links'            : "rgb(#{textColor.rgb})"
+            'Hovered Navigation Links'    : "rgb(#{linkHColor.rgb})"
+            'Subjects'                    : "rgb(#{titleColor.rgb})"
+            'Names'                       : "rgb(#{nameColor.rgb})"
+            'Sage'                        : "rgb(#{sageColor.rgb})"
+            'Tripcodes'                   : "rgb(#{tripColor.rgb})"
+            'Emails'                      : "rgb(#{linkColor.rgb})"
+            'Post Numbers'                : "rgb(#{linkColor.rgb})"
+            'Text'                        : "rgb(#{textColor.rgb})"
+            'Backlinks'                   : "rgb(#{linkColor.rgb})"
+            'Greentext'                   : "rgb(#{quoteColor.rgb})"
+            'Board Title'                 : "rgb(#{textColor.rgb})"
+            'Timestamps'                  : "rgb(#{timeColor.rgb})"
+            'Inputs'                      : "rgb(#{textColor.rgb})"
+            'Warnings'                    : "rgb(#{sageColor.rgb})"
+            'Shadow Color'                : "rgba(0,0,0,0.1)"
+            'Custom CSS'                  : """<%= grunt.file.read('css/theme.4chanss.css') %> #{imported.customCSS or ''}"""
 
       else if origin == 'appchan'
         Themes[name] = imported
@@ -1752,7 +1756,7 @@ ThemeTools =
       $.set 'userThemes', userThemes
       alert "Theme \"#{name}\" imported!"
       $.rm $("#themes", d.body)
-      Options.themeTab()
+      Settings.open 'themes'
 
     reader.readAsText(file)
 
@@ -1775,6 +1779,6 @@ ThemeTools =
 
   close: ->
     Conf['editMode'] = false
-    $.rm $("#themeConf", d.body)
+    $.rm $id 'themeConf'
     Style.addStyle()
-    Options.dialog("theme")
+    Settings.open 'themes'

@@ -54,20 +54,20 @@ Settings =
     if Conf['editMode'] is "theme"
       if confirm "Opening the options dialog will close and discard any theme changes made with the theme editor."
         ThemeTools.close()
-      else
-        return
+      return
 
     if Conf['editMode'] is "mascot"
       if confirm "Opening the options dialog will close and discard any mascot changes made with the mascot editor."
         MascotTools.close()
-      else
-        return
+      return
 
-    return if Settings.dialog
+    return if Settings.overlay
     $.event 'CloseMenu'
 
-    html = """
-      <div id=appchanx-settings class=dialog>
+    Settings.dialog = dialog = $.el 'div',
+      id:    'appchanx-settings'
+      class: 'dialog'
+      innerHTML: """
         <nav>
           <div class=sections-list></div>
           <div class=credits>
@@ -78,13 +78,10 @@ Settings =
           </div>
         </nav>
         <hr>
-        <div class=section-container><section></section></div>
-      </div>
-    """
+        <div class=section-container><section></section></div>"""
 
-    Settings.dialog = overlay = $.el 'div',
+    Settings.overlay = overlay = $.el 'div',
       id: 'overlay'
-      innerHTML: html
 
     links = []
     for section in Settings.sections
@@ -95,22 +92,23 @@ Settings =
       $.on link, 'click', Settings.openSection.bind section
       links.push link
       sectionToOpen = link if section.title is openSection
-    $.add $('.sections-list', overlay), links
+    $.add $('.sections-list', dialog), links
     (if sectionToOpen then sectionToOpen else links[0]).click()
 
-    $.on $('.close', overlay), 'click', Settings.close
-    $.on overlay,              'click', Settings.close
-    $.on overlay.firstElementChild, 'click', (e) -> e.stopPropagation()
+    $.on $('.close', dialog), 'click', Settings.close
+    $.on overlay,             'click', Settings.close
 
     d.body.style.width = "#{d.body.clientWidth}px"
     $.addClass d.body, 'unscroll'
-    $.add d.body, overlay
+    $.add d.body, [overlay, dialog]
 
   close: ->
     return unless Settings.dialog
     d.body.style.removeProperty 'width'
     $.rmClass d.body, 'unscroll'
+    $.rm Settings.overlay
     $.rm Settings.dialog
+    delete Settings.overlay
     delete Settings.dialog
 
   sections: []
@@ -152,8 +150,9 @@ Settings =
       for key, arr of obj
         description = arr[1]
         div = $.el 'div',
-          innerHTML: "<label><input type=checkbox name='#{key}'>#{key}</label><span class=description>: #{description}</span>"
+          innerHTML: "<label><input type=checkbox name='#{key}'>#{key}</label><span class=description>#{description}</span>"
         input = $ 'input', div
+        $.on $('label', div), 'mouseover', Settings.mouseover
         $.on input, 'change', $.cb.checked
         items[key]  = Conf[key]
         inputs[key] = input
@@ -551,6 +550,7 @@ Settings =
       $.on input, 'keydown', Settings.keybind
       Rice.nodes tr
       $.add tbody, tr
+
     $.get items, (items) ->
       for key, val of items
         inputs[key].value = val
@@ -565,7 +565,9 @@ Settings =
     $.cb.value.call @
 
   style: (section) ->
-    nodes = []
+    nodes  = $.frag()
+    items  = {}
+    inputs = {}
 
     for key, obj of Config.style
 
@@ -582,44 +584,51 @@ Settings =
 
           if type is 'text'
 
-            div.innerHTML = "<div class=option><span class=optionlabel>#{key}</span></div><div style='display:none;'>#{description}</div><div class=option><input name='#{key}' style=width: 100%></div>"
-            input = $ "input[name='#{key}']", div
+            div.innerHTML = "<div class=option><span class=optionlabel>#{key}</span></div><div class=description>#{description}</div><div class=option><input name='#{key}' style=width: 100%></div>"
+            input = $ "input", div
 
           else
 
-            html = "<div class=option><span class=optionlabel>#{key}</span></div><div style='display:none;'>#{description}</div><div class=option><select name='#{key}'></div>"
-            for name, val in type
-              html += "<option value='#{val}'>#{name}</option>"
-            html += "</select>"
+            html = "<div class=option><span class=optionlabel>#{key}</span></div><div class=description>#{description}</div><div class=option><select name='#{key}'>"
+            for name in type
+              html += "<option value='#{name}'>#{name}</option>"
+            html += "</select></div>"
             div.innerHTML = html
             input = $ "select", div
-
-          input.cb = 'value'
 
         else
 
           div.innerHTML = "<div class=option><label><input type=checkbox name='#{key}'>#{key}</label></div><span style='display:none;'>#{description}</span>"
           input = $ 'input', div
-          input.cb = 'checked'
+          input.bool = true
 
-        Settings.sandbox input, key, value, input.cb
+        items[key]  = Conf[key]
+        inputs[key] = input
 
         $.on $('.option', div), 'mouseover', Settings.mouseover
 
-        $.on input, 'change', ->
-          $.cb[@cb].call @
-          Style.addStyle()
+        $.on input, 'change', Settings.change
 
         $.add fs, div
+      $.add nodes, fs
 
-      Rice.nodes fs
-      nodes.push fs
+    $.get items, (items) ->
+      for key, val of items
+        input = inputs[key]
+        if input.bool
+          input.checked = val
+          Rice.checkbox input
+        else
+          input.value   = val
+          if input.nodeName is 'SELECT'
+            Rice.select input
 
-    $.add section, nodes
-  
-  sandbox: (input, key, value, inputtype) ->
-    $.get key, value, (item) ->
-       input[inputtype] = item[key]
+      $.add section, nodes
+
+
+  change: ->
+    $.cb[if @bool then 'checked' else 'value'].call @
+    Style.addStyle()
 
   themes: (section, mode) ->
     if typeof mode isnt 'string'

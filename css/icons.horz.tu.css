@@ -5,5 +5,5 @@
   #{Style.sidebarLocation[1]}: auto !important;
   top: auto !important;
   bottom: auto !important;
-  #{if _conf["Updater Position"] is 'top' then "top: 18px !important" else "bottom: 0 !important"};
+  #{if _conf["Updater Position"] is 'top' then "top: 16px !important" else "bottom: 0 !important"};
 }

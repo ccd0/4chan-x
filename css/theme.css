@@ -245,7 +245,7 @@ textarea {
   color: #{theme["Text"]};
 }
 #exlinks-options-content > table,
-#appchanx-settings ul,
+#appchanx-settings fieldset,
 #selectrice {
   border-bottom: 1px solid #{theme["Reply Border"]};
   box-shadow: inset #{theme["Shadow Color"]} 0 0 5px;
@@ -376,7 +376,7 @@ a .name {
 .placeholder {
   color: #{if Style.lightTheme then "rgba(0,0,0,0.3)" else "rgba(255,255,255,0.2)"} !important;
 }
-#appchanx-settings ul,
+#appchanx-settings fieldset,
 .boxcontent dd,
 .selectrice ul {
   border-color: #{if Style.lightTheme then "rgba(0,0,0,0.1)" else "rgba(255,255,255,0.1)"};

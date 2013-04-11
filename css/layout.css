@@ -79,6 +79,9 @@ body {
   margin-#{Style.sidebarLocation[1]}: 2px;
   padding: 0 #{parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]}px 0 #{parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]}px;
 }
+body.unscroll {
+  overflow: hidden;
+}
 #{if _conf["4chan SS Sidebar"] and /^boards\.4chan\.org$/.test location.hostname then "
 body::before {
   content: '';
@@ -86,7 +89,7 @@ body::before {
   top: 0;
   bottom: 0;
   #{Style.sidebarLocation[0]}: 0;
-  width: #{if _conf["Sidebar"] is 'large' then 305 else if _conf['Sidebar'] is 'normal' then 254 else if _conf['Sidebar'] is 'minimal' then 27 else 0}px;
+  width: #{if _conf['Sidebar'] is 'large' then 305 else if _conf['Sidebar'] is 'normal' then 254 else if _conf['Sidebar'] is 'minimal' then 27 else 0}px;
   z-index: 1;
   #{Style.sizing}: border-box;
   display: block;
@@ -304,7 +307,7 @@ else "
 "at sidebar top": "
 .boardBanner {
   position: fixed;
-  top: 18px;
+  top: 16px;
   #{Style.sidebarLocation[0]}: 2px;
 }
 .boardBanner img {
@@ -1398,9 +1401,13 @@ a:only-of-type > .remove {
   right: 15%;
   top: 15%;
   bottom: 15%;
-  position: absolute;
+  position: fixed;
+  z-index: 31;
   padding: .3em;
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
+}
+.description {
+  display: none;
 }
 #appchanx-settings h3,
 .section-keybinds,
@@ -1418,11 +1425,10 @@ a:only-of-type > .remove {
   margin: auto;
 }
 #appchanx-settings fieldset {
-  padding: 0;
+  padding: 5px 0;
   #{if _conf["Rounded Edges"] then "border-radius: 3px;" else ""}
   vertical-align: top;
   #{if _conf["Single Column Mode"] then "margin: 0 auto 6px;" else "margin: 0 3px 6px;\n display: inline-block;"}
-  padding: 0;
   border: 0;
 }
 .section-container {
@@ -1487,11 +1493,11 @@ article li {
 .rice + .optionlabel {
   padding-left: 0;
 }
-.section-script fieldset > div,
+.section-script fieldset,
 .styleoption {
   text-align: left;
 }
-.section-style fieldset > div {
+.section-style fieldset {
   width: 370px;
 }
 .section-script fieldset {
@@ -1532,7 +1538,7 @@ article li {
 }
 /* Hover Functionality */
 #mouseover {
-  z-index: 32;
+  z-index: 33;
   position: fixed;
   max-width: 70%;
 }
