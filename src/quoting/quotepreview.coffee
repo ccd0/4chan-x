@@ -74,6 +74,7 @@ QuotePreview =
   mouseout: (e) ->
     delete UI.el
     $.rm QuotePreview.el.firstChild
+    $.rmClass QuotePreview.el, 'warning'
     if (hash = @hash) and el = $.id hash[1..]
       $.rmClass el.parentNode, 'qphl' # op
       $.rmClass el,            'qphl' # reply

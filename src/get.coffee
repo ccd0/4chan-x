@@ -57,6 +57,7 @@ Get =
   parseArchivedPost: (req, board, postID, root, cb) ->
     data = JSON.parse req.response
     if data.error
+      $.addClass root, 'warning'
       root.textContent = data.error
       return
 
