@@ -408,7 +408,7 @@ else "
   display: block;
   content: "";
 }
-#qp .fullSize {
+#qp .full-image {
   max-height: 300px;
   max-width: 500px;
 }
@@ -464,12 +464,12 @@ else "
   border-left: 3px solid transparent;
   border-right: 3px solid transparent;
 }
-.fitwidth .fullSize {
+.fit-width .full-image {
   max-width: 100%;
   width: 100%;
 }
 #{if _conf['Images Overlap Post Form'] then "
-.fullSize {
+.full-image {
   position: relative;
   z-index: 22;
 }" else ""
