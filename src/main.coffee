@@ -334,7 +334,7 @@ Main =
       return
 
     $.get "userMascots", {}, (item) ->
-      for name, mascot of item["userMasctos"]
+      for name, mascot of item["userMascots"]
         Mascots[name] = mascot
       return
 

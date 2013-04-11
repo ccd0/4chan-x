@@ -1023,7 +1023,7 @@ MascotTools =
 
       unless mascot = Mascots[Conf["mascot"]]
         Conf[g.MASCOTSTRING].remove Conf["mascot"]
-        return @init()
+        return MascotTools.init()
 
       MascotTools.addMascot mascot
 

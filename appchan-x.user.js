@@ -4267,7 +4267,7 @@
         }
         if (!(mascot = Mascots[Conf["mascot"]])) {
           Conf[g.MASCOTSTRING].remove(Conf["mascot"]);
-          return this.init();
+          return MascotTools.init();
         }
         MascotTools.addMascot(mascot);
       }
@@ -12737,7 +12737,7 @@
       $.get("userMascots", {}, function(item) {
         var mascot, name, _ref;
 
-        _ref = item["userMasctos"];
+        _ref = item["userMascots"];
         for (name in _ref) {
           mascot = _ref[name];
           Mascots[name] = mascot;
