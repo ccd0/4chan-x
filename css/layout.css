@@ -1025,29 +1025,35 @@ input:checked + .rice {
 }"
 
 "slideout": "
+#qrtab input,
+#qrtab .rice {
+  display: none;
+}
 #qr {
   top: auto !important;
   bottom: 1.7em !important;
-  #{Style.sidebarLocation[0]}: -#{233 + Style.sidebarOffset.W}px !important;
+  #{Style.sidebarLocation[0]}: 0 !important;
   #{Style.sidebarLocation[1]}: auto !important;
+  #{agent}transform: translateX(#{xOffset}93%);
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
-  #{agent}transform: translate(#{xOffset + (233 + Style.sidebarOffset.W)}px);
+  #{agent}transform: translate(0);
 }"
 
 "tabbed slideout": "
 #qr {
   top: auto !important;
   bottom: 1.7em !important;
-  #{Style.sidebarLocation[0]}: -#{252 + Style.sidebarOffset.W}px !important;
+  #{Style.sidebarLocation[0]}: 0 !important;
   #{Style.sidebarLocation[1]}: auto !important;
+  #{agent}transform: translateX(#{xOffset}100%);
 }
 #qr:hover,
 #qr.focus,
 #qr.dump {
-  #{agent}transform: translate(#{xOffset + (252 + Style.sidebarOffset.W)}px);
+  #{agent}transform: translateX(0);
 }
 #qrtab {
   #{agent}transform: rotate(#{(if Style.sidebarLocation[0] is "left" then "" else "-")}90deg);

@@ -125,7 +125,7 @@ Style =
   layout: ->
     _conf   = Conf
     agent   = Style.agent
-    xOffset = if _conf["Sidebar Location"] is "left" then '' else '-'
+    xOffset = if _conf["Sidebar Location"] is "left" then '-' else ''
 
     # Position of submenus in relation to the post menu.
     position = {
