@@ -634,11 +634,11 @@ QR =
         title: 'Reload'
         innerHTML: '<img>'
       input = $.el 'input',
-        className: 'captcha-input field'
-        title: 'Verification'
+        className:    'captcha-input field'
+        title:        'Verification'
         autocomplete: 'off'
-        spellcheck: false
-        tabindex:   55
+        spellcheck:   false
+        tabIndex:     55
       @nodes =
         challenge: $.id 'recaptcha_challenge_field_holder'
         img:       imgContainer.firstChild

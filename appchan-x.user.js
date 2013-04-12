@@ -11960,7 +11960,7 @@
           title: 'Verification',
           autocomplete: 'off',
           spellcheck: false,
-          tabindex: 55
+          tabIndex: 55
         });
         this.nodes = {
           challenge: $.id('recaptcha_challenge_field_holder'),
