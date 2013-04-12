@@ -4999,6 +4999,7 @@
       });
       Settings.addSection('Style', Settings.style);
       Settings.addSection('Themes', Settings.themes);
+      Settings.addSection('Mascots', Settings.mascots);
       Settings.addSection('Script', Settings.main);
       Settings.addSection('Filter', Settings.filter);
       Settings.addSection('Sauce', Settings.sauce);
@@ -5769,6 +5770,201 @@
         },
         close: true
       });
+    },
+    mascots: function(section, mode) {
+      var batchmascots, categories, category, header, keys, li, mascot, mascotHide, name, option, parentdiv, suboptions, ul, _i, _j, _k, _len, _len1, _len2, _ref;
+
+      ul = {};
+      categories = [];
+      if (typeof mode !== 'string') {
+        mode = 'default';
+      }
+      parentdiv = $.el("div", {
+        id: "mascotContainer"
+      });
+      suboptions = $.el("div", {
+        className: "suboptions"
+      });
+      mascotHide = $.el("div", {
+        id: "mascot_hide",
+        className: "reply",
+        innerHTML: "Hide Categories <span></span><div></div>"
+      });
+      keys = Object.keys(Mascots);
+      keys.sort();
+      if (mode === 'default') {
+        _ref = MascotTools.categories;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          category = _ref[_i];
+          ul[category] = $.el("ul", {
+            className: "mascots",
+            id: category
+          });
+          if (Conf["Hidden Categories"].contains(category)) {
+            ul[category].hidden = true;
+          }
+          header = $.el("h3", {
+            className: "mascotHeader",
+            textContent: category
+          });
+          categories.push(option = $.el("label", {
+            name: category,
+            innerHTML: "<input name='" + category + "' type=checkbox " + (Conf["Hidden Categories"].contains(category) ? 'checked' : '') + ">" + category
+          }));
+          $.on($('input', option), 'change', function() {
+            return Settings.mascotTab.toggle.call(this);
+          });
+          $.add(ul[category], header);
+          $.add(suboptions, ul[category]);
+        }
+        for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
+          name = keys[_j];
+          if (!Conf["Deleted Mascots"].contains(name)) {
+            mascot = Mascots[name];
+            li = $.el('li', {
+              className: 'mascot',
+              id: name,
+              innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</div><div class='mascotcontainer'><div class='mAlign " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (Style.lightTheme ? mascot.image[1] : mascot.image[0]) : mascot.image) + "'></div></div><div class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a><a class=delete name='" + name + "' href='javascript:;'>Delete</a><a class=export name='" + name + "' href='javascript:;'>Export</a></div>"
+            });
+            if (Conf[g.MASCOTSTRING].contains(name)) {
+              $.addClass(li, 'enabled');
+            }
+            $.on($('a.edit', li), 'click', function(e) {
+              e.stopPropagation();
+              MascotTools.dialog(this.name);
+              return Settings.close();
+            });
+            $.on($('a.delete', li), 'click', function(e) {
+              var type, _k, _len2, _ref1;
+
+              e.stopPropagation();
+              if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
+                if (Conf['mascot'] === this.name) {
+                  MascotTools.init();
+                }
+                _ref1 = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
+                for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+                  type = _ref1[_k];
+                  Conf[type].remove(this.name);
+                  $.set(type, Conf[type]);
+                }
+                Conf["Deleted Mascots"].push(this.name);
+                $.set("Deleted Mascots", Conf["Deleted Mascots"]);
+                return $.rm($.id(this.name));
+              }
+            });
+            $.on($('a.export', li), 'click', function(e) {
+              var exportMascot, exportedMascot;
+
+              e.stopPropagation();
+              exportMascot = Mascots[this.name];
+              exportMascot['Mascot'] = this.name;
+              exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot));
+              if (window.open(exportedMascot, "_blank")) {
+
+              } else if (confirm("Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?")) {
+                return window.location(exportedMascot);
+              }
+            });
+            $.on(li, 'click', function() {
+              if (Conf[g.MASCOTSTRING].remove(this.id)) {
+                if (Conf['mascot'] === this.id) {
+                  MascotTools.init();
+                }
+              } else {
+                Conf[g.MASCOTSTRING].push(this.id);
+                MascotTools.init(this.id);
+              }
+              $.toggleClass(this, 'enabled');
+              return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING]);
+            });
+            if (MascotTools.categories.contains(mascot.category)) {
+              $.add(ul[mascot.category], li);
+            } else {
+              $.add(ul[MascotTools.categories[0]], li);
+            }
+          }
+        }
+        $.add($('div', mascotHide), categories);
+        batchmascots = $.el('div', {
+          id: "mascots_batch",
+          innerHTML: "<a href=\"javascript:;\" id=clear>Clear All</a> /<a href=\"javascript:;\" id=selectAll>Select All</a> /<a href=\"javascript:;\" id=createNew>Add Mascot</a> /<a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden> /<a href=\"javascript:;\" id=undelete>Undelete Mascots</a> /<a href=\"http://appchan.booru.org/\" target=_blank>Get More Mascots!</a>  "
+        });
+        $.on($('#clear', batchmascots), 'click', function() {
+          var enabledMascots, _k, _len2;
+
+          enabledMascots = JSON.parse(JSON.stringify(Conf[g.MASCOTSTRING]));
+          for (_k = 0, _len2 = enabledMascots.length; _k < _len2; _k++) {
+            name = enabledMascots[_k];
+            $.rmClass($.id(name), 'enabled');
+          }
+          return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING] = []);
+        });
+        $.on($('#selectAll', batchmascots), 'click', function() {
+          for (name in Mascots) {
+            mascot = Mascots[name];
+            if (!(Conf["Hidden Categories"].contains(mascot.category) || Conf[g.MASCOTSTRING].contains(name) || Conf["Deleted Mascots"].contains(name))) {
+              $.addClass($.id(name), 'enabled');
+              Conf[g.MASCOTSTRING].push(name);
+            }
+          }
+          return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING]);
+        });
+        $.on($('#createNew', batchmascots), 'click', function() {
+          MascotTools.dialog();
+          return Settings.close();
+        });
+        $.on($("#importMascot", batchmascots), 'click', function() {
+          return this.nextSibling.click();
+        });
+        $.on($("#importMascotButton", batchmascots), 'change', function(evt) {
+          return MascotTools.importMascot(evt);
+        });
+        $.on($('#undelete', batchmascots), 'click', function() {
+          if (!(Conf["Deleted Mascots"].length > 0)) {
+            alert("No mascots have been deleted.");
+            return;
+          }
+          $.rm($.id("mascotContainer"));
+          return Settings.mascotTab.dialog(Settings.el, 'undelete');
+        });
+      } else {
+        ul = $.el("ul", {
+          className: "mascots",
+          id: category
+        });
+        for (_k = 0, _len2 = keys.length; _k < _len2; _k++) {
+          name = keys[_k];
+          if (Conf["Deleted Mascots"].contains(name)) {
+            mascot = Mascots[name];
+            li = $.el('li', {
+              className: 'mascot',
+              id: name,
+              innerHTML: "  <div class='mascotname'>" + (name.replace(/_/g, " ")) + "</span>  <div class='container " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (Style.lightTheme ? mascot.image[1] : mascot.image[0]) : mascot.image) + "'></div>  "
+            });
+            $.on(li, 'click', function() {
+              if (confirm("Are you sure you want to undelete \"" + this.id + "\"?")) {
+                Conf["Deleted Mascots"].remove(this.id);
+                $.set("Deleted Mascots", Conf["Deleted Mascots"]);
+                return $.rm(this);
+              }
+            });
+            $.add(ul, li);
+          }
+        }
+        $.add(suboptions, ul);
+        batchmascots = $.el('div', {
+          id: "mascots_batch",
+          innerHTML: "<a href=\"javascript:;\" id=\"return\">Return</a>"
+        });
+        $.on($('#return', batchmascots), 'click', function() {
+          $.rm($.id("mascotContainer"));
+          return Settings.section('mascots');
+        });
+      }
+      $.add(parentdiv, [suboptions, batchmascots, mascotHide]);
+      Rice.nodes(parentdiv);
+      return $.add(section, parentdiv);
     }
   };
 
@@ -12800,7 +12996,8 @@
         'Enabled Mascots': [],
         'Enabled Mascots sfw': [],
         'Enabled Mascots nsfw': [],
-        'Deleted Mascots': []
+        'Deleted Mascots': [],
+        'Hidden Categories': ["Questionable"]
       });
       return $.get(Conf, Main.initFeatures);
     },

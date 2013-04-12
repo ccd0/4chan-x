@@ -304,6 +304,8 @@ Main =
     flatten null, Config
     for db in DataBoards
       Conf[db] = boards: {}
+      
+    # Unflattened Config.
     $.extend Conf,
       'userThemes':           []
       'userMascots':          []
@@ -311,6 +313,7 @@ Main =
       'Enabled Mascots sfw':  []
       'Enabled Mascots nsfw': []
       'Deleted Mascots':      []
+      'Hidden Categories':    ["Questionable"]
 
     $.get Conf, Main.initFeatures
 
