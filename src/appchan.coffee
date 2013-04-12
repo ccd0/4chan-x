@@ -103,13 +103,13 @@ Style =
   filter: (text, background) ->
 
     matrix = (fg, bg) -> "
-#{bg.r} #{-fg.r} 0 0 #{fg.r}
-#{bg.g} #{-fg.g} 0 0 #{fg.g}
-#{bg.b} #{-fg.b} 0 0 #{fg.b}
+ #{bg.r} #{-fg.r} 0 0 #{fg.r}
+ #{bg.g} #{-fg.g} 0 0 #{fg.g}
+ #{bg.b} #{-fg.b} 0 0 #{fg.b}
 "
 
-    fgHex = Style.colorToHex(text) or 'ffffff'
-    bgHex = Style.colorToHex(background) or '000000'
+    fgHex = Style.colorToHex(text)
+    bgHex = Style.colorToHex(background)
     string = matrix {
       r: parseInt(fgHex.substr(0, 2), 16) / 255
       g: parseInt(fgHex.substr(2, 2), 16) / 255
@@ -120,7 +120,7 @@ Style =
       b: parseInt(bgHex.substr(4, 2), 16) / 255
     }
 
-    return "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='#{string} 0 0 0 1 0' /></filter></svg>#filters\");"
+    return """filter: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='#{string} 0 0 0 1 0' /></filter></svg>#filters");"""
 
   layout: ->
     _conf   = Conf

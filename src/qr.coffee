@@ -638,6 +638,7 @@ QR =
         title: 'Verification'
         autocomplete: 'off'
         spellcheck: false
+        tabindex:   55
       @nodes =
         challenge: $.id 'recaptcha_challenge_field_holder'
         img:       imgContainer.firstChild
@@ -652,6 +653,8 @@ QR =
 
       $.on imgContainer, 'click',   @reload.bind @
       $.on input,        'keydown', @keydown.bind @
+      $.on input,        'focus', -> $.addClass QR.nodes.el, 'focus'
+      $.on input,        'blur',  -> $.rmClass  QR.nodes.el, 'focus'
       $.get 'captchas', [], (item) =>
         @sync item['captchas']
       $.sync 'captchas', @sync
@@ -659,7 +662,7 @@ QR =
       @reload()
 
       $.addClass QR.nodes.el, 'has-captcha'
-      $.after QR.nodes.com.parentNode, [imgContainer, input]
+      $.after QR.nodes.dumpList.parentElement, [imgContainer, input]
     
     sync: (@captchas) ->
       QR.captcha.count()

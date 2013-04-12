@@ -57,7 +57,7 @@ html {
   border-color: #{theme["Reply Border"]};
   border-style: solid;
 }
-.captchaimg img {
+.captcha-img img {
   #{Style.filter theme["Text"], theme["Input Background"]}
 }
 #boardTitle,
@@ -116,7 +116,7 @@ span[style="left: 5px; position: absolute;"] a {
 #dump,
 #qr-filename-container,
 #appchanx-settings input,
-.captchaimg,
+.captcha-img,
 .dump #dump:not(:hover):not(:focus),
 .qr-preview,
 .selectrice,

@@ -1157,7 +1157,7 @@ if _conf['Compact Post Form Inputs'] then "
   height: 14.8em;
   min-height: 9em;
 }
-#qr.captcha textarea.field {
+#qr.has-captcha textarea.field {
   height: 9em;
 }
 
@@ -1174,7 +1174,7 @@ if _conf['Compact Post Form Inputs'] then "
   height: 11.6em;
   min-height: 6em;
 }
-#qr.captcha textarea.field {
+#qr.has-captcha textarea.field {
   height: 6em;
 }"
 }
@@ -1190,16 +1190,16 @@ input.field.tripped:not(:hover):not(:focus) {
 #qr textarea {
   resize: #{_conf['Textarea Resize']};
 }
-.captchaimg {
+.captcha-img {
   margin: 1px 0 0;
   text-align: center;
 }
-.captchaimg img {
+.captcha-img img {
   width: 100%;
   height: 4em;
   width: 246px;
 }
-.captchainput .field {
+.captcha-input {
   width: 100%;
   margin: 1px 0 0;
 }
