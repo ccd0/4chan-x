@@ -1478,7 +1478,7 @@
       var a, el;
 
       el = $.el('span', {
-        id: 'toggleCatalog',
+        className: 'toggleCatalog',
         innerHTML: '[<a href=javascript:;></a>]'
       });
       $.on((a = el.firstElementChild), 'click', this.toggle);

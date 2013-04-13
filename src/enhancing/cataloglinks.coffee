@@ -1,7 +1,7 @@
 CatalogLinks =
   init: ->
     el = $.el 'span',
-      id:        'toggleCatalog'
+      className:        'toggleCatalog'
       innerHTML: '[<a href=javascript:;></a>]'
     $.on (a = el.firstElementChild), 'click', @toggle
     $.add $.id('boardNavDesktop'), [$.tn(' '), el]
