@@ -576,6 +576,8 @@ a[href="javascript:;"] {
   min-width: 100%;
 }
 #dump-button {
+  background: linear-gradient(#EEE, #CCC);
+  border: 1px solid #CCC; 
   width: 10%;
   margin: 0;
 }

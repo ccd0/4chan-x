@@ -776,7 +776,7 @@ QR =
     nodes.fileInput.accept = "text/*, #{mimeTypes}" if $.engine isnt 'presto' # Opera's accept attribute is fucked up
 
     QR.spoiler = !!$ 'input[name=spoiler]'
-    nodes.spoiler.hidden = !QR.spoiler
+    nodes.spoiler.parentElement.hidden = !QR.spoiler
 
     if g.BOARD.ID is 'f'
       nodes.flashTag = $.el 'select',
