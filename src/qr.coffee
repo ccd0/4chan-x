@@ -968,6 +968,12 @@ QR =
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
         QR.cooldown.set delay: 2
+      else if err.textContent and m = err.textContent.match /wait\s(\d+)\ssecond/i
+        QR.cooldown.auto = if QR.captcha.isEnabled
+          !!QR.captcha.captchas.length
+        else
+          true
+        QR.cooldown.set delay: m[1]
       else # stop auto-posting
         QR.cooldown.auto = false
       QR.status()
