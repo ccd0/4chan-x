@@ -1,3 +1,5 @@
+### 3.0.5 - *2013-04-14*
+
 - `Scroll to Last Read Post` is now optional, enabled by default.
 - The QR won't auto-hide when auto-hide is enabled and one of its input is focused. Doesn't work on Firefox.
 - Added the `Remember QR Size` setting back in, disabled by default. Only on Firefox.
