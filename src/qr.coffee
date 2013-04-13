@@ -367,8 +367,6 @@ QR =
         spoiler: $ 'input', el
         span:    el.lastChild
 
-      @nodes.spoiler.checked = @spoiler
-
       $.on el,             'click',  @select.bind @
       $.on @nodes.rm,      'click',  (e) => e.stopPropagation(); @rm()
       $.on @nodes.label,   'click',  (e) => e.stopPropagation()
@@ -382,7 +380,7 @@ QR =
 
       prev = QR.posts[QR.posts.length - 1]
       QR.posts.push @
-      @spoiler = if prev and Conf['Remember Spoiler']
+      @nodes.spoiler.checked = @spoiler = if prev and Conf['Remember Spoiler']
         prev.spoiler
       else
         false
@@ -442,6 +440,9 @@ QR =
       @showFileData()
       QR.characterCount()
     save: (input) ->
+      if input.type is 'checkbox'
+        @spoiler = input.checked
+        return
       {value} = input
       @[input.dataset.name] = value
       return if input.nodeName isnt 'TEXTAREA'
@@ -455,7 +456,7 @@ QR =
       return unless @ is QR.selected
       # Do this in case people use extensions
       # that do not trigger the `input` event.
-      for name in ['name', 'email', 'sub', 'com']
+      for name in ['name', 'email', 'sub', 'com', 'spoiler']
         @save QR.nodes[name]
       return
     setFile: (@file) ->
@@ -536,7 +537,7 @@ QR =
       @showFileData()
       return unless window.URL
       URL.revokeObjectURL @URL
-    showFileData: (hide) ->
+    showFileData: ->
       if @file
         QR.nodes.filename.textContent = @filename
         QR.nodes.filename.title       = @filename

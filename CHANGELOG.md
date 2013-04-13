@@ -1,3 +1,6 @@
+- Fix QR remembering the file spoiler state when it shouldn't.
+- Fix QR cooldown in Opera.
+
 ### 3.0.4 - *2013-04-11*
 
 - More minor fixes.
