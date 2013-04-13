@@ -2,9 +2,8 @@
 // @name         appchan x
 // @version      2.0.0
 // @namespace    zixaphir
-// @description  Cross-browser userscript for maximum lurking on 4chan.
-// @copyright    2009-2011 James Campos <james.r.campos@gmail.com>
-// @copyright    2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
+// @description  The most comprehensive 4chan userscript.
+// @copyright    2012-2013 Zixaphir <zixaphirmoxphar@gmail.com>
 // @license      MIT; http://en.wikipedia.org/wiki/Mit_license
 // @match        *://api.4chan.org/*
 // @match        *://boards.4chan.org/*

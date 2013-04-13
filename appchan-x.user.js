@@ -2,9 +2,8 @@
 // @name         appchan x
 // @version      2.0.0
 // @namespace    zixaphir
-// @description  Cross-browser userscript for maximum lurking on 4chan.
-// @copyright    2009-2011 James Campos <james.r.campos@gmail.com>
-// @copyright    2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
+// @description  The most comprehensive 4chan userscript.
+// @copyright    2012-2013 Zixaphir <zixaphirmoxphar@gmail.com>
 // @license      MIT; http://en.wikipedia.org/wiki/Mit_license
 // @match        *://api.4chan.org/*
 // @match        *://boards.4chan.org/*
@@ -2435,7 +2434,7 @@
     var Menu, dialog, drag, dragend, dragstart, hover, hoverend, hoverstart, touchend, touchmove;
 
     dialog = function(id, position, html) {
-      var el, move;
+      var child, el, move, _i, _len, _ref;
 
       el = $.el('div', {
         className: 'dialog',
@@ -2445,6 +2444,16 @@
       el.style.cssText = localStorage.getItem("" + g.NAMESPACE + id + ".position") || position;
       move = $('.move', el);
       $.on(move, 'touchstart mousedown', dragstart);
+      _ref = move.children;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        child = _ref[_i];
+        if (!child.tagName) {
+          continue;
+        }
+        $.on(child, 'touchstart mousedown', function(e) {
+          return e.stopPropagation();
+        });
+      }
       return el;
     };
     Menu = (function() {
@@ -5980,6 +5989,7 @@
         id: 'hoverUI'
       });
       $.on(window, 'load hashchange', Header.hashScroll);
+      $.on(d, 'CreateNotification', this.createNotification);
       $.asap((function() {
         return d.body;
       }), function() {
@@ -6114,6 +6124,15 @@
       });
       $.add(shortcut, [$.tn(' ['), el, $.tn(']')]);
       return $.add(Header.shortcuts, shortcut);
+    },
+    createNotification: function(e) {
+      var cb, content, lifetime, notif, type, _ref;
+
+      _ref = e.detail, type = _ref.type, content = _ref.content, lifetime = _ref.lifetime, cb = _ref.cb;
+      notif = new Notification(type, content, lifetime);
+      if (cb) {
+        return cb(notif);
+      }
     }
   };
 
@@ -6554,7 +6573,7 @@
         };
       },
       makeFilter: function() {
-        var re, section, select, ta, tl, type, value;
+        var re, type, value;
 
         type = this.dataset.type;
         value = Filter[type](Filter.menu.post);
@@ -6568,25 +6587,22 @@
           }
         });
         re = ['uniqueID', 'MD5'].contains(type) ? "/" + re + "/" : "/^" + re + "$/";
-        if (!Filter.menu.post.isReply) {
-          re += ';op:yes';
-        }
-        $.get(type, '', function(item) {
-          var save;
+        return $.get(type, Conf[type], function(item) {
+          var save, section, select, ta, tl;
 
           save = item[type];
           save = save ? "" + save + "\n" + re : re;
-          return $.set(type, save);
+          $.set(type, save);
+          Settings.open('Filter');
+          section = $('.section-container');
+          select = $('select[name=filter]', section);
+          select.value = type;
+          Settings.selectFilter.call(select);
+          ta = $('textarea', section);
+          tl = ta.textLength;
+          ta.setSelectionRange(tl, tl);
+          return ta.focus();
         });
-        Settings.open('Filter');
-        section = $('.section-container');
-        select = $('select[name=filter]', section);
-        select.value = type;
-        Settings.selectFilter.call(select);
-        ta = $('textarea', section);
-        tl = ta.textLength;
-        ta.setSelectionRange(tl, tl);
-        return ta.focus();
       }
     }
   };
@@ -7548,7 +7564,7 @@
       });
     },
     keydown: function(e) {
-      var form, key, notification, notifications, target, thread, threadRoot, _i, _len;
+      var form, key, notification, notifications, op, target, thread, threadRoot, _i, _len;
 
       if (!(key = Keybinds.keyCode(e))) {
         return;
@@ -7560,7 +7576,9 @@
         }
       }
       threadRoot = Nav.getThread();
-      thread = Get.postFromNode($('.op', threadRoot)).thread;
+      if (op = $('.op', threadRoot)) {
+        thread = Get.postFromNode(op).thread;
+      }
       switch (key) {
         case Conf['Toggle board list']:
           if (Conf['Custom Board Navigation']) {
@@ -9107,7 +9125,7 @@
         _ref = [post].concat(post.clones);
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           singlePost = _ref[_i];
-          singlePost.nodes.date.textContent = relative;
+          singlePost.nodes.date.firstChild.textContent = relative;
         }
         return setOwnTimeout(diff);
       };
@@ -9419,11 +9437,8 @@
       if (!(rect.top <= 0 || rect.left <= 0)) {
         return;
       }
-      top = rect.top;
-      if (!Conf['Bottom header']) {
-        headRect = Header.bar.getBoundingClientRect();
-        top += -headRect.top - headRect.height;
-      }
+      headRect = Header.bar.getBoundingClientRect();
+      top = rect.top - headRect.top - headRect.height;
       root = $.engine === 'webkit' ? d.body : doc;
       if (rect.top < 0) {
         root.scrollTop += top;
@@ -11527,10 +11542,8 @@
       return QR.fileInput(files);
     },
     openFileInput: function(e) {
-      if (e.keyCode) {
-        if (e.keyCode !== 32) {
-          return;
-        }
+      if (e.keyCode && e.keyCode !== 32) {
+        return;
       }
       return QR.nodes.fileInput.click();
     },
@@ -12102,7 +12115,7 @@
     dialog: function() {
       var dialog, mimeTypes, name, nodes, thread, _i, _len, _ref;
 
-      dialog = UI.dialog('qr', 'top:0;right:0;', "<div id=qrtab>\n  <input type=checkbox id=autohide title=Auto-hide> Post Form\n  <span class=move></span>\n  <a href=javascript:; class=close title=Close>×</a>\n</div>\n<form>\n  <div class=persona>\n    <input id=dump-button type=button title='Dump list' value=+ tabindex=0>\n    <input name=name  data-name=name  title=Name    placeholder=Name    class=field size=1 tabindex=10>\n    <input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1 tabindex=20>\n    <input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1 tabindex=30>\n  </div>\n  <div class=textarea>\n    <textarea data-name=com title=Comment placeholder=Comment class=field tabindex=40></textarea>\n    <span id=char-count></span>\n  </div>\n  <div id=dump-list-container>\n    <div id=dump-list></div>\n    <a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a>\n  </div>\n  <div id=file-n-submit>\n    <span id=qr-filename-container class=field tabindex=60>\n      <span id=qr-no-file>No selected file</span>\n      <span id=qr-filename></span>\n      <a id=qr-filerm href=javascript:; title='Remove file' tabindex=80>×</a>\n    </span>\n    <input type=submit tabindex=70>\n  </div>\n  <input type=file multiple>\n  <div id=qr-thread-select>\n    <select title='Create a new thread / Reply'>\n      <option value=new>New thread</option>\n    </select>\n  </div>\n  <label id=qr-spoiler-label>\n    <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=90>Spoiler?\n  </label>\n</form>".replace(/>\s+</g, '><'));
+      dialog = UI.dialog('qr', 'top:0;right:0;', "<div id=qrtab class=move>\n  <input type=checkbox id=autohide title=Auto-hide> Post Form\n  <a href=javascript:; class=close title=Close>×</a>\n</div>\n<form>\n  <div class=persona>\n    <input id=dump-button type=button title='Dump list' value=+ tabindex=0>\n    <input name=name  data-name=name  title=Name    placeholder=Name    class=field size=1 tabindex=10>\n    <input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1 tabindex=20>\n    <input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1 tabindex=30>\n  </div>\n  <div class=textarea>\n    <textarea data-name=com title=Comment placeholder=Comment class=field tabindex=40></textarea>\n    <span id=char-count></span>\n  </div>\n  <div id=dump-list-container>\n    <div id=dump-list></div>\n    <a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a>\n  </div>\n  <div id=file-n-submit>\n    <span id=qr-filename-container class=field tabindex=60>\n      <span id=qr-no-file>No selected file</span>\n      <span id=qr-filename></span>\n      <a id=qr-filerm href=javascript:; title='Remove file' tabindex=80>×</a>\n    </span>\n    <input type=submit tabindex=70>\n  </div>\n  <input type=file multiple>\n  <label id=qr-spoiler-label>\n    <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=90>Spoiler?\n  </label>\n</form>".replace(/>\s+</g, '><'));
       QR.nodes = nodes = {
         el: dialog,
         move: $('.move', dialog),
@@ -12123,7 +12136,6 @@
         filename: $('#qr-filename', dialog),
         fileRM: $('#qr-filerm', dialog),
         spoiler: $('#qr-file-spoiler', dialog),
-        spoilerPar: $('#qr-spoiler-label', dialog),
         status: $('[type=submit]', dialog),
         fileInput: $('[type=file]', dialog)
       };
@@ -12146,7 +12158,7 @@
         nodes.fileInput.accept = "text/*, " + mimeTypes;
       }
       QR.spoiler = !!$('input[name=spoiler]');
-      nodes.spoilerPar.hidden = !QR.spoiler;
+      nodes.spoiler.parentElement.hidden = !QR.spoiler;
       if (g.BOARD.ID === 'f') {
         nodes.flashTag = $.el('select', {
           name: 'filetag',
@@ -12160,7 +12172,6 @@
           textContent: "Thread No." + thread
         }));
       }
-      $.add(nodes.threadPar, nodes.thread);
       QR.resetThreadSelector();
       $.on(nodes.filename.parentNode, 'click keyup', QR.openFileInput);
       $.on(nodes.autohide, 'change', QR.toggleHide);
@@ -12202,7 +12213,7 @@
       return $.event('QRDialogCreation', null, dialog);
     },
     submit: function(e) {
-      var callbacks, challenge, err, filetag, m, opts, post, postData, response, textOnly, threadID, _ref;
+      var callbacks, challenge, err, filetag, m, opts, post, postData, response, textOnly, thread, threadID, _ref;
 
       if (e != null) {
         e.preventDefault();
@@ -12222,6 +12233,7 @@
         filetag = QR.nodes.flashTag.value;
       }
       threadID = QR.nodes.thread.value;
+      thread = g.BOARD.threads[threadID];
       if (threadID === 'new') {
         threadID = null;
         if (['vg', 'q'].contains(g.BOARD.ID) && !post.sub) {
@@ -12233,7 +12245,7 @@
         err = 'You can\'t reply to this thread anymore.';
       } else if (!(post.com || post.file)) {
         err = 'No file selected.';
-      } else if (post.file && g.BOARD.threads[threadID].fileLimit) {
+      } else if (post.file && thread.fileLimit && !thread.isSticky) {
         err = 'Max limit of image replies has been reached.';
       }
       if (QR.captcha.isEnabled && !err) {

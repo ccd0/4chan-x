@@ -322,10 +322,9 @@ QR =
     return unless files.length
     QR.open()
     QR.fileInput files
-  
+
   openFileInput: (e) ->
-    if e.keyCode
-      return unless e.keyCode is 32
+    return if e.keyCode and e.keyCode isnt 32
     QR.nodes.fileInput.click()
   
   fileInput: (files) ->
@@ -653,8 +652,9 @@ QR =
 
       $.on imgContainer, 'click',   @reload.bind @
       $.on input,        'keydown', @keydown.bind @
-      $.on input,        'focus', -> $.addClass QR.nodes.el, 'focus'
-      $.on input,        'blur',  -> $.rmClass  QR.nodes.el, 'focus'
+      $.on input,        'focus',   -> $.addClass QR.nodes.el, 'focus'
+      $.on input,        'blur',    -> $.rmClass  QR.nodes.el, 'focus'
+
       $.get 'captchas', [], (item) =>
         @sync item['captchas']
       $.sync 'captchas', @sync
@@ -740,9 +740,8 @@ QR =
 
   dialog: ->
     dialog = UI.dialog 'qr', 'top:0;right:0;', """
-    <div id=qrtab>
+    <div id=qrtab class=move>
       <input type=checkbox id=autohide title=Auto-hide> Post Form
-      <span class=move></span>
       <a href=javascript:; class=close title=Close>×</a>
     </div>
     <form>
@@ -769,11 +768,6 @@ QR =
         <input type=submit tabindex=70>
       </div>
       <input type=file multiple>
-      <div id=qr-thread-select>
-        <select title='Create a new thread / Reply'>
-          <option value=new>New thread</option>
-        </select>
-      </div>
       <label id=qr-spoiler-label>
         <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=90>Spoiler?
       </label>
@@ -800,7 +794,6 @@ QR =
       filename:   $ '#qr-filename',      dialog
       fileRM:     $ '#qr-filerm',        dialog
       spoiler:    $ '#qr-file-spoiler',  dialog
-      spoilerPar: $ '#qr-spoiler-label', dialog
       status:     $ '[type=submit]',     dialog
       fileInput:  $ '[type=file]',       dialog
 
@@ -822,7 +815,7 @@ QR =
     nodes.fileInput.accept = "text/*, #{mimeTypes}" if $.engine isnt 'presto' # Opera's accept attribute is fucked up
 
     QR.spoiler = !!$ 'input[name=spoiler]'
-    nodes.spoilerPar.hidden = !QR.spoiler
+    nodes.spoiler.parentElement.hidden = !QR.spoiler
 
     if g.BOARD.ID is 'f'
       nodes.flashTag = $.el 'select',
@@ -843,10 +836,9 @@ QR =
       $.add nodes.thread, $.el 'option',
         value: thread
         textContent: "Thread No.#{thread}"
-    $.add nodes.threadPar, nodes.thread
     QR.resetThreadSelector()
 
-    $.on nodes.filename.parentNode, 'click keyup',  QR.openFileInput
+    $.on nodes.filename.parentNode, 'click keyup', QR.openFileInput
 
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
@@ -895,6 +887,7 @@ QR =
     if g.BOARD.ID is 'f'
       filetag = QR.nodes.flashTag.value
     threadID = QR.nodes.thread.value
+    thread = g.BOARD.threads[threadID]
 
     # prevent errors
     if threadID is 'new'
@@ -907,7 +900,7 @@ QR =
       err = 'You can\'t reply to this thread anymore.'
     else unless post.com or post.file
       err = 'No file selected.'
-    else if post.file and g.BOARD.threads[threadID].fileLimit
+    else if post.file and thread.fileLimit and !thread.isSticky
       err = 'Max limit of image replies has been reached.'
 
     if QR.captcha.isEnabled and !err

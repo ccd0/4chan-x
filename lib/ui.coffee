@@ -7,6 +7,10 @@ UI = do ->
     el.style.cssText = localStorage.getItem("#{g.NAMESPACE}#{id}.position") or position
     move = $ '.move', el
     $.on move, 'touchstart mousedown', dragstart
+    for child in move.children
+      continue unless child.tagName
+      $.on child, 'touchstart mousedown', (e) ->
+        e.stopPropagation()
     el
 
   class Menu
