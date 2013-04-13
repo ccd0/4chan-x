@@ -792,7 +792,7 @@ s {
 /* Summary */
 #{
 if _conf["Force Reply Break"]
-  ".summary { clear: both; float: left; }"
+  ".summary { clear: both;}"
 else ""
 }
 /* Inlined */
