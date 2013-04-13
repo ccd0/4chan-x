@@ -768,6 +768,11 @@ QR =
         <input type=submit tabindex=70>
       </div>
       <input type=file multiple>
+      <div id=qr-thread-select>
+        <select title='Create a new thread / Reply'>
+          <option value=new>New thread</option>
+        </select>
+      </div> 
       <label id=qr-spoiler-label>
         <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=90>Spoiler?
       </label>
