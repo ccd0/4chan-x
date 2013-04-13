@@ -9,6 +9,8 @@ Header =
 
     $.on window, 'load hashchange', Header.hashScroll
 
+    $.on d, 'CreateNotification', @createNotification
+
     $.asap (-> d.body), ->
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
@@ -107,6 +109,11 @@ Header =
       className: 'shortcut'
     $.add shortcut, [$.tn(' ['), el, $.tn(']')]
     $.add Header.shortcuts, shortcut
+
+  createNotification: (e) ->
+    {type, content, lifetime, cb} = e.detail
+    notif = new Notification type, content, lifetime
+    cb notif if cb
 
 class Notification
   constructor: (type, content, @timeout) ->
@@ -631,7 +638,9 @@ Settings =
       </fieldset>
 
       <fieldset>
-        <legend><input type=checkbox name='Custom CSS' #{if Conf['Custom CSS'] then 'checked' else ''}> Custom CSS</legend>
+        <legend>
+          <label><input type=checkbox name='Custom CSS' #{if Conf['Custom CSS'] then 'checked' else ''}> Custom CSS</label>
+        </legend>
         <button id=apply-css>Apply CSS</button>
         <textarea name=usercss class=field spellcheck=false #{if Conf['Custom CSS'] then '' else 'disabled'}></textarea>
       </fieldset>
@@ -687,7 +696,7 @@ Settings =
       <img src=#{Favicon.unreadDead}>
       """
   togglecss: ->
-    if $('textarea', @parentNode.parentNode).disabled = !@checked
+    if $('textarea[name=usercss]', $.x 'ancestor::fieldset[1]', @).disabled = !@checked
       CustomCSS.rmStyle()
     else
       CustomCSS.addStyle()
@@ -1039,16 +1048,13 @@ Filter =
           else
             "\\#{c}"
 
-      re =
-        if ['uniqueID', 'MD5'].contains type
-          "/#{re}/"
-        else
-          "/^#{re}$/"
-      unless Filter.menu.post.isReply
-        re += ';op:yes'
+      re = if ['uniqueID', 'MD5'].contains type
+        "/#{re}/"
+      else
+        "/^#{re}$/"
 
       # Add a new line before the regexp unless the text is empty.
-      $.get type, '', (item) ->
+      $.get type, Conf[type], (item) ->
         save = item[type]
         save =
           if save
@@ -1057,16 +1063,16 @@ Filter =
             re
         $.set type, save
 
-      # Open the settings and display & focus the relevant filter textarea.
-      Settings.open 'Filter'
-      section = $ '.section-container'
-      select = $ 'select[name=filter]', section
-      select.value = type
-      Settings.selectFilter.call select
-      ta = $ 'textarea', section
-      tl = ta.textLength
-      ta.setSelectionRange tl, tl
-      ta.focus()
+        # Open the settings and display & focus the relevant filter textarea.
+        Settings.open 'Filter'
+        section = $ '.section-container'
+        select = $ 'select[name=filter]', section
+        select.value = type
+        Settings.selectFilter.call select
+        ta = $ 'textarea', section
+        tl = ta.textLength
+        ta.setSelectionRange tl, tl
+        ta.focus()
 
 ThreadHiding =
   init: ->
@@ -1737,7 +1743,8 @@ Keybinds =
       return unless /(Esc|Alt|Ctrl|Meta)/.test key
 
     threadRoot = Nav.getThread()
-    thread = Get.postFromNode($('.op', threadRoot)).thread
+    if op = $ '.op', threadRoot
+      thread = Get.postFromNode(op).thread
     switch key
       # QR & Options
       when Conf['Toggle board list']
@@ -3082,7 +3089,7 @@ RelativeDates =
       diff = now - date
       relative = RelativeDates.relative diff, now, date
       for singlePost in [post].concat post.clones
-        singlePost.nodes.date.textContent = relative
+        singlePost.nodes.date.firstChild.textContent = relative
       setOwnTimeout diff
 
     markStale = -> RelativeDates.stale.push update
@@ -3283,15 +3290,8 @@ ImageExpand =
     return unless rect.top <= 0 or rect.left <= 0
     # Scroll back to the thumbnail when contracting the image
     # to avoid being left miles away from the relevant post.
-<<<<<<< HEAD
     headRect = Header.bar.getBoundingClientRect()
     top  = rect.top - headRect.top - headRect.height
-=======
-    {top} = rect
-    unless Conf['Bottom header']
-      headRect = Header.toggle.getBoundingClientRect()
-      top += - headRect.top - headRect.height
->>>>>>> 354f566672b2dc8a556c33d6a24c0ec33ee995c8
     root = if $.engine is 'webkit' then d.body else doc
     root.scrollTop += top if rect.top  < 0
     root.scrollLeft = 0   if rect.left < 0

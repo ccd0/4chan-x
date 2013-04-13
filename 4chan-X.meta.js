@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         4chan X
-// @version      3.0.1
+// @version      3.0.4
 // @namespace    4chan-X
-// @description  Cross-browser userscript for maximum lurking on 4chan.
+// @description  Cross-browser extension for productive lurking on 4chan.
 // @copyright    2009-2011 James Campos <james.r.campos@gmail.com>
 // @copyright    2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
 // @license      MIT; http://en.wikipedia.org/wiki/Mit_license

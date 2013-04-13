@@ -1,3 +1,11 @@
+### 3.0.4 - *2013-04-11*
+
+- More minor fixes.
+
+### 3.0.3 - *2013-04-10*
+
+- Minor fixes.
+
 ### 3.0.2 - *2013-04-09*
 
 - Added a setting in the Header's menu to move it at the bottom of the screen.
