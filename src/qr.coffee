@@ -921,6 +921,11 @@ QR =
     QR.status()
 
   response: ->
+    <% if (type === 'userjs') { %>
+    # The upload.onload callback is not called
+    # or at least not in time with Opera.
+    QR.req.upload.onload()
+    <% } %>
     {req} = QR
     delete QR.req
 
