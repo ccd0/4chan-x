@@ -107,6 +107,6 @@ Redirect =
         "post/#{postID}"
     ) + (
       if threadID and postID
-        "##{if archiver is 'foolfuuka' or 'InstallGentoo' then 'p' else ''}#{postID}"
+        "##{if archiver is 'InstallGentoo' then 'p' else ''}#{postID}"
       else ""
     )

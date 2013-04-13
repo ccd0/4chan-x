@@ -2367,7 +2367,7 @@
       if (postID) {
         postID = postID.match(/\d+/)[0];
       }
-      return base + "/" + board + "/" + (threadID ? "thread/" + threadID : "post/" + postID) + (threadID && postID ? "#" + (archiver === 'foolfuuka' || 'InstallGentoo' ? 'p' : '') + postID : "");
+      return base + "/" + board + "/" + (threadID ? "thread/" + threadID : "post/" + postID) + (threadID && postID ? "#" + (archiver === 'InstallGentoo' ? 'p' : '') + postID : "");
     }
   };
 
