@@ -1636,20 +1636,22 @@ DeleteLink =
       else
         $.id('delPassword').value
 
+    fileOnly = $.hasClass @, 'delete-file'
+
     form =
       mode: 'usrdel'
-      onlyimgdel: $.hasClass @, 'delete-file'
+      onlyimgdel: fileOnly
       pwd: pwd
     form[post.ID] = 'delete'
 
     link = @
     $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{post.board}/"),
-      onload:  -> DeleteLink.load  link, post, @response
+      onload:  -> DeleteLink.load  link, post, fileOnly, @response
       onerror: -> DeleteLink.error link
     ,
       cred: true
       form: $.formData form
-  load: (link, post, html) ->
+  load: (link, post, fileOnly, html) ->
     tmpDoc = d.implementation.createHTMLDocument ''
     tmpDoc.documentElement.innerHTML = html
     if tmpDoc.title is '4chan - Banned' # Ban/warn check
@@ -1660,7 +1662,7 @@ DeleteLink =
     else
       if tmpDoc.title is 'Updating index...'
         # We're 100% sure.
-        (post.origin or post).kill()
+        (post.origin or post).kill fileOnly
       s = 'Deleted'
     link.textContent = s
   error: (link) ->
