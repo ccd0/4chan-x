@@ -6,6 +6,7 @@ seaweedchan:
 	-Point to github.io instead of github.com for pages
 	-Fix post archive link for InstallGentoo and Foolz
 	-Make InstallGentoo default for /g/
+	-Fix embedding issues
 
 1.0.5:
 seaweedchan:

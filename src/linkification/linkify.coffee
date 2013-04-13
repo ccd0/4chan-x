@@ -221,7 +221,7 @@ Linkify =
 
       embed = $.el 'a',
         name:         (a.name = match[1])
-        className:    'embed'
+        className:    'embedlink'
         href:         'javascript:;'
         textContent:  '(embed)'
 

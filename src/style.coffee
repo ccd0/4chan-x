@@ -578,6 +578,9 @@ div.opContainer {
   margin-left: 20px;
   border-left: 1px solid black;
 }
+.postContainer iframe {
+  display: block !important;
+}
 #{if Conf["Custom CSS"] then Conf["customCSS"] else ""}
 #{if Conf['Emoji'] then Style.emoji Conf['emojiPos'] else ''} 
 #{if Conf['Quick Reply'] and Conf['Hide Original Post Form'] then '#postForm { display: none; }' else ''}"""
