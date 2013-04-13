@@ -477,11 +477,6 @@ Main =
       Main.callbackNodes Thread, threads
       Main.callbackNodes Post, posts
 
-    if $.hasClass d.body, 'fourchan_x'
-      alert '4chan X v2 detected: Disable it or v3 will break.'
-    if /Firefox\/1/.test navigator.userAgent
-      alert 'Your version of Firefox is incompatible with 4chan X v3. Firefox 20+ is required.'
-
     $.event '4chanXInitFinished'
     Main.checkUpdate()
 

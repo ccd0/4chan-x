@@ -313,7 +313,8 @@ QR =
     return unless files.length
     QR.open()
     QR.fileInput files
-  openFileInput: ->
+  openFileInput: (e) ->
+    return if e.keyCode and e.keyCode isnt 32
     QR.nodes.fileInput.click()
   fileInput: (files) ->
     if @ instanceof Element #or files instanceof Event # file input
@@ -419,7 +420,7 @@ QR =
     lock: (lock=true) ->
       @isLocked = lock
       return unless @ is QR.selected
-      for name in ['name', 'email', 'sub', 'com', 'fileButton', 'spoiler']
+      for name in ['name', 'email', 'sub', 'com', 'spoiler']
         QR.nodes[name].disabled = lock
       @nodes.rm.style.visibility =
         QR.nodes.fileRM.style.visibility = if lock then 'hidden' else ''
@@ -604,6 +605,7 @@ QR =
         title: 'Verification'
         autocomplete: 'off'
         spellcheck: false
+        tabIndex: 55
       @nodes =
         challenge: $.id 'recaptcha_challenge_field_holder'
         img:       imgContainer.firstChild
@@ -618,6 +620,8 @@ QR =
 
       $.on imgContainer, 'click',   @reload.bind @
       $.on input,        'keydown', @keydown.bind @
+      $.on input,        'focus',   -> $.addClass QR.nodes.el, 'focus'
+      $.on input,        'blur',    -> $.rmClass QR.nodes.el,  'focus'
       $.get 'captchas', [], (item) =>
         @sync item['captchas']
       $.sync 'captchas', @sync
@@ -695,40 +699,40 @@ QR =
 
   dialog: ->
     dialog = UI.dialog 'qr', 'top:0;right:0;', """
-    <div>
+    <div class=move>
       <input type=checkbox id=autohide title=Auto-hide>
+      <a href=javascript:; class=close title=Close>×</a>
       <select title='Create a new thread / Reply'>
         <option value=new>New thread</option>
       </select>
-      <span class=move></span>
-      <a href=javascript:; class=close title=Close>×</a>
     </div>
     <form>
       <div class=persona>
-        <input id=dump-button type=button title='Dump list' value=+>
-        <input name=name  data-name=name  title=Name    placeholder=Name    class=field size=1>
-        <input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1>
-        <input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1>
+        <input id=dump-button type=button title='Dump list' value=+ tabindex=0>
+        <input name=name  data-name=name  title=Name    placeholder=Name    class=field size=1 tabindex=10>
+        <input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1 tabindex=20>
+        <input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1 tabindex=30>
+      </div>
+      <div class=textarea>
+        <textarea data-name=com title=Comment placeholder=Comment class=field tabindex=40></textarea>
+        <span id=char-count></span>
       </div>
       <div id=dump-list-container>
         <div id=dump-list></div>
-        <a id=add-post href=javascript:; title="Add a post">+</a>
-      </div>
-      <div class=textarea>
-        <textarea data-name=com title=Comment placeholder=Comment class=field></textarea>
-        <span id=char-count></span>
+        <a id=add-post href=javascript:; title="Add a post" tabindex=50>+</a>
       </div>
       <div id=file-n-submit>
-        <input type=submit>
-        <input id=qr-file-button type=button value='Choose files'>
-        <span id=qr-filename-container>
+        <span id=qr-filename-container class=field tabindex=60>
           <span id=qr-no-file>No selected file</span>
           <span id=qr-filename></span>
+          <a id=qr-filerm href=javascript:; title='Remove file' tabindex=80>×</a>
         </span>
-        <a id=qr-filerm href=javascript:; title='Remove file'>×</a>
-        <input type=checkbox id=qr-file-spoiler title='Spoiler image'>
+        <input type=submit tabindex=70>
       </div>
       <input type=file multiple>
+      <label id=qr-spoiler-label>
+        <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=90>Spoiler?
+      </label>
     </form>
     """.replace />\s+</g, '><' # get rid of spaces between elements
 
@@ -748,7 +752,6 @@ QR =
       addPost:    $ '#add-post',         dialog
       charCount:  $ '#char-count',       dialog
       fileSubmit: $ '#file-n-submit',    dialog
-      fileButton: $ '#qr-file-button',   dialog
       filename:   $ '#qr-filename',      dialog
       fileRM:     $ '#qr-filerm',        dialog
       spoiler:    $ '#qr-file-spoiler',  dialog
@@ -794,11 +797,10 @@ QR =
       $.add nodes.thread, $.el 'option',
         value: thread
         textContent: "Thread No.#{thread}"
-    $.after nodes.autohide, nodes.thread
     QR.resetThreadSelector()
 
-    for node in [nodes.fileButton, nodes.filename.parentNode]
-      $.on node,           'click',  QR.openFileInput
+    $.on nodes.filename.parentNode, 'click keyup', QR.openFileInput
+
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
@@ -812,6 +814,8 @@ QR =
     # save selected post's data
     for name in ['name', 'email', 'sub', 'com']
       $.on nodes[name], 'input', -> QR.selected.save @
+      $.on nodes[name], 'focus', -> $.addClass nodes.el, 'focus'
+      $.on nodes[name], 'blur',  -> $.rmClass nodes.el, 'focus'
 
     QR.status()
     QR.cooldown.init()

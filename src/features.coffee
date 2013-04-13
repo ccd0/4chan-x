@@ -211,16 +211,6 @@ Settings =
         $.prepend $.id('navtopright'), [$.tn(' ['), link, $.tn('] ')]
 
     $.get 'previousversion', null, (item) ->
-      <% if (type === 'userscript') { %>
-      el = $.el 'span'
-      el.style.flex = 'test'
-      if el.style.flex is 'test'
-        el.innerHTML = """
-        Firefox is not correctly set up and some <%= meta.name %> features will be displayed incorrectly.<br>
-        Follow the instructions of the <a href='<%= meta.page %>' target=_blank>install guide</a> to fix it.
-        """
-        new Notification 'warning', el, 30
-      <% } %>
       if previous = item['previousversion']
         return if previous is g.VERSION
         # Avoid conflicts between sync'd newer versions
@@ -258,7 +248,6 @@ Settings =
     $.event 'CloseMenu'
 
     html = """
-      <div id=fourchanx-settings class=dialog>
         <nav>
           <div class=sections-list></div>
           <div class=credits>
@@ -270,11 +259,14 @@ Settings =
         </nav>
         <hr>
         <div class=section-container><section></section></div>
-      </div>
     """
 
-    Settings.dialog = overlay = $.el 'div',
+    Settings.overlay = overlay = $.el 'div',
       id: 'overlay'
+    
+    Settings.dialog = dialog = $.el 'div',
+      id:        'fourchanx-settings'
+      className: 'dialog'
       innerHTML: html
 
     links = []
@@ -287,21 +279,23 @@ Settings =
       links.push link, $.tn ' | '
       sectionToOpen = link if section.title is openSection
     links.pop()
-    $.add $('.sections-list', overlay), links
+    $.add $('.sections-list', dialog), links
     (if sectionToOpen then sectionToOpen else links[0]).click()
 
-    $.on $('.close', overlay), 'click', Settings.close
-    $.on overlay,              'click', Settings.close
-    $.on overlay.firstElementChild, 'click', (e) -> e.stopPropagation()
+    $.on $('.close', dialog), 'click', Settings.close
+    $.on overlay,             'click', Settings.close
 
     d.body.style.width = "#{d.body.clientWidth}px"
     $.addClass d.body, 'unscroll'
-    $.add d.body, overlay
+    $.add d.body, [overlay, dialog]
+
   close: ->
     return unless Settings.dialog
     d.body.style.removeProperty 'width'
     $.rmClass d.body, 'unscroll'
+    $.rm Settings.overlay
     $.rm Settings.dialog
+    delete Settings.overlay
     delete Settings.dialog
 
   sections: []
@@ -1895,7 +1889,7 @@ Keybinds =
     if Conf['Bottom header']
       topMargin = 0
     else
-      headRect  = Header.toggle.getBoundingClientRect()
+      headRect  = Header.bar.getBoundingClientRect()
       topMargin = headRect.top + headRect.height
     if postEl = $ '.reply.highlight', thread
       $.rmClass postEl, 'highlight'
@@ -1963,7 +1957,7 @@ Nav =
     if Conf['Bottom header']
       topMargin = 0
     else
-      headRect  = Header.toggle.getBoundingClientRect()
+      headRect  = Header.bar.getBoundingClientRect()
       topMargin = headRect.top + headRect.height
     threads = $$ '.thread:not([hidden])'
     for thread, i in threads
