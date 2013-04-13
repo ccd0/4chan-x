@@ -73,6 +73,10 @@ QR =
     QR.status()
     if !Conf['Remember Spoiler'] and QR.nodes.spoiler.checked
       QR.nodes.spoiler.click()
+  focusin: ->
+    $.addClass QR.nodes.el, 'has-focus'
+  focusout: ->
+    $.rmClass QR.nodes.el, 'has-focus'
   hide: ->
     d.activeElement.blur()
     $.addClass QR.nodes.el, 'autohide'
@@ -361,6 +365,12 @@ QR =
         spoiler: $ 'input', el
         span:    el.lastChild
 
+      <% if (type === 'userscript') { %>
+      # XXX Firefox lacks focusin/focusout support.
+      for elm in $$ '*', el
+        $.on elm, 'blur',  QR.focusout
+        $.on elm, 'focus', QR.focusin
+      <% } %>
       $.on el,             'click',  @select.bind @
       $.on @nodes.rm,      'click',  (e) => e.stopPropagation(); @rm()
       $.on @nodes.label,   'click',  (e) => e.stopPropagation()
@@ -619,6 +629,12 @@ QR =
       # start with an uncached captcha
       @reload()
 
+      <% if (type === 'userscript') { %>
+      # XXX Firefox lacks focusin/focusout support.
+      $.on input, 'blur',  QR.focusout
+      $.on input, 'focus', QR.focusin
+      <% } %>
+
       $.addClass QR.nodes.el, 'has-captcha'
       $.after QR.nodes.com.parentNode, [imgContainer, input]
     sync: (@captchas) ->
@@ -791,6 +807,14 @@ QR =
         textContent: "Thread No.#{thread}"
     $.after nodes.autohide, nodes.thread
 
+    <% if (type === 'userscript') { %>
+    # XXX Firefox lacks focusin/focusout support.
+    for elm in $$ '*', QR.nodes.el
+      $.on elm, 'blur',  QR.focusout
+      $.on elm, 'focus', QR.focusin
+    <% } %>
+    $.on QR.nodes.el, 'focusin',  QR.focusin
+    $.on QR.nodes.el, 'focusout', QR.focusout
     for node in [nodes.fileButton, nodes.filename.parentNode]
       $.on node,           'click',  QR.openFileInput
     $.on nodes.autohide,   'change', QR.toggleHide
