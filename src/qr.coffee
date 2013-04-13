@@ -830,6 +830,15 @@ QR =
       $.on nodes[name], 'input',  -> QR.selected.save @
     $.on nodes.thread,  'change', -> QR.selected.save @
 
+    <% if (type === 'userscript') { %>
+    if Conf['Remember QR Size']
+      $.get 'QR Size', '', (item) ->
+        nodes.com.style.cssText = item['QR Size']
+      $.on nodes.com, 'mouseup', (e) ->
+        return if e.button isnt 0
+        $.set 'QR Size', @style.cssText
+    <% } %>
+
     new QR.post true
 
     QR.status()
