@@ -1,7 +1,11 @@
 master
+
+1.0.6
 seaweedchan:
 	-Update supported boards for archive redirection and custom navigation
 	-Point to github.io instead of github.com for pages
+	-Fix post archive link for InstallGentoo
+	-Make InstallGentoo default for /g/
 
 1.0.5:
 seaweedchan:

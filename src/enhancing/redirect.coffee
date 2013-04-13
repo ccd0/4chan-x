@@ -46,14 +46,14 @@ Redirect =
       base:    '//fuuka.warosu.org'
       boards:  ['cgl', 'ck', 'fa', 'jp', 'lit', 'q', 's4s', 'tg', 'vr']
       type:    'fuuka'
-    'RebeccaBlackTech':
-      base:    '//rbt.asia'
-      boards:  ['cgl', 'g', 'mu', 'w']
-      type:    'fuuka_mail'
     'InstallGentoo':
       base:    '//archive.installgentoo.net'
       boards:  ['diy', 'g', 'sci']
       type:    'fuuka'
+    'RebeccaBlackTech':
+      base:    '//rbt.asia'
+      boards:  ['cgl', 'g', 'mu', 'w']
+      type:    'fuuka_mail'
     'Heinessen':
       base:    'http://archive.heinessen.com'
       boards:  ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x']
@@ -107,6 +107,6 @@ Redirect =
         "post/#{postID}"
     ) + (
       if threadID and postID
-        "##{if archiver is 'foolfuuka' then 'p' else ''}#{postID}"
+        "##{if archiver is 'foolfuuka' or 'InstallGentoo' then 'p' else ''}#{postID}"
       else ""
     )
