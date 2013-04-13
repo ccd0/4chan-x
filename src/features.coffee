@@ -225,7 +225,7 @@ class Notification
     setTimeout @close, @timeout * $.SECOND if @timeout
 
   close = ->
-    $.rm @el if @el.parentNode
+    $.rm @el
 
 Settings =
   init: ->
@@ -3798,7 +3798,7 @@ Unread =
       {root} = post.nodes
       if root isnt $ '.thread > .replyContainer', root.parentNode # not the first reply
         $.before root, Unread.hr
-    else if Unread.hr.parentNode
+    else
       $.rm Unread.hr
 
   update: <% if (type === 'crx') { %>(dontrepeat) <% } %>->
