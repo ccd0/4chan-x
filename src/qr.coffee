@@ -25,7 +25,6 @@ QR =
     $.on sc, 'click', ->
       $.event 'CloseMenu'
       QR.open()
-      QR.resetThreadSelector()
       QR.nodes.com.focus()
     Header.addShortcut sc
 
@@ -202,7 +201,7 @@ QR =
 
       now     = Date.now()
       post    = QR.posts[0]
-      isReply = QR.nodes.thread.value isnt 'new'
+      isReply = post.thread isnt 'new'
       isSage  = /sage/i.test post.email
       hasFile = !!post.file
       seconds = null
@@ -345,11 +344,6 @@ QR =
           post = new QR.post()
         post.setFile file
     $.addClass QR.nodes.el, 'dump'
-  resetThreadSelector: ->
-    if g.VIEW is 'thread'
-      QR.nodes.thread.value = g.THREADID
-    else
-      QR.nodes.thread.value = 'new'
 
   posts: []
   post: class
@@ -377,6 +371,11 @@ QR =
 
       for event in ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop']
         $.on el, event.toLowerCase(), @[event]
+
+      @thread = if g.VIEW is 'thread'
+        g.THREADID
+      else
+        'new'
 
       prev = QR.posts[QR.posts.length - 1]
       QR.posts.push @
@@ -412,7 +411,7 @@ QR =
     lock: (lock=true) ->
       @isLocked = lock
       return unless @ is QR.selected
-      for name in ['name', 'email', 'sub', 'com', 'fileButton', 'spoiler']
+      for name in ['thread', 'name', 'email', 'sub', 'com', 'fileButton', 'spoiler']
         QR.nodes[name].disabled = lock
       @nodes.rm.style.visibility =
         QR.nodes.fileRM.style.visibility = if lock then 'hidden' else ''
@@ -435,7 +434,7 @@ QR =
       @load()
     load: ->
       # Load this post's values.
-      for name in ['name', 'email', 'sub', 'com']
+      for name in ['thread', 'name', 'email', 'sub', 'com']
         QR.nodes[name].value = @[name] or null
       @showFileData()
       QR.characterCount()
@@ -456,7 +455,7 @@ QR =
       return unless @ is QR.selected
       # Do this in case people use extensions
       # that do not trigger the `input` event.
-      for name in ['name', 'email', 'sub', 'com', 'spoiler']
+      for name in ['thread', 'name', 'email', 'sub', 'com', 'spoiler']
         @save QR.nodes[name]
       return
     setFile: (@file) ->
@@ -693,7 +692,7 @@ QR =
     dialog = UI.dialog 'qr', 'top:0;right:0;', """
     <div>
       <input type=checkbox id=autohide title=Auto-hide>
-      <select title='Create a new thread / Reply'>
+      <select data-name=thread title='Create a new thread / Reply'>
         <option value=new>New thread</option>
       </select>
       <span class=move></span>
@@ -791,7 +790,6 @@ QR =
         value: thread
         textContent: "Thread No.#{thread}"
     $.after nodes.autohide, nodes.thread
-    QR.resetThreadSelector()
 
     for node in [nodes.fileButton, nodes.filename.parentNode]
       $.on node,           'click',  QR.openFileInput
@@ -803,11 +801,12 @@ QR =
     $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.fileInput
-
-    new QR.post true
     # save selected post's data
     for name in ['name', 'email', 'sub', 'com']
-      $.on nodes[name], 'input', -> QR.selected.save @
+      $.on nodes[name], 'input',  -> QR.selected.save @
+    $.on nodes.thread,  'change', -> QR.selected.save @
+
+    new QR.post true
 
     QR.status()
     QR.cooldown.init()
@@ -834,7 +833,7 @@ QR =
     post.forceSave()
     if g.BOARD.ID is 'f'
       filetag = QR.nodes.flashTag.value
-    threadID = QR.nodes.thread.value
+    threadID = post.thread
     thread = g.BOARD.threads[threadID]
 
     # prevent errors
