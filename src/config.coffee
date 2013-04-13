@@ -39,6 +39,7 @@ Config =
       'Unread Count':                 [true,  'Show the unread posts count in the tab title.']
       'Unread Tab Icon':              [true,  'Show a different favicon when there are unread posts.']
       'Unread Line':                  [true,  'Show a line to distinguish read posts from unread ones.']
+      'Scroll to Last Read Post':     [true,  'Scroll back to the last read post when reopening a thread.']
       'Thread Excerpt':               [true,  'Show an excerpt of the thread in the tab title.']
       'Thread Stats':                 [true,  'Display reply and image count.']
       'Thread Watcher':               [true,  'Bookmark threads.']

@@ -160,6 +160,7 @@ Header =
     (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
   hashScroll: ->
     return unless post = $.id @location.hash[1..]
+    return if (Get.postFromRoot post).isHidden
     Header.scrollToPost post
   scrollToPost: (post) ->
     {top} = post.getBoundingClientRect()
@@ -3709,17 +3710,21 @@ Unread =
       threadID: @ID
       defaultValue: 0
     Unread.addPosts posts
-    if (hash = location.hash.match /\d+/) and post = @posts[hash[0]]
-      Header.scrollToPost post.nodes.root
-    else if Unread.posts.length
-      # Scroll to before the first unread post.
-      $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView false
-    else if posts.length
-      # Scroll to the last read post.
-      Header.scrollToPost posts[posts.length - 1].nodes.root
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
+
+    return unless Conf['Scroll to Last Read Post']
+    # Let the header's onload callback handle it.
+    return if (hash = location.hash.match /\d+/) and hash[0] of @posts
+    if Unread.posts.length
+      # Scroll to before the first unread post.
+      while root = $.x 'preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root
+        break unless (Get.postFromRoot root).isHidden
+      root.scrollIntoView false
+    else if posts.length
+      # Scroll to the last read post.
+      Header.scrollToPost posts[posts.length - 1].nodes.root
 
   sync: ->
     lastReadPost = Unread.db.get

@@ -1,3 +1,4 @@
+- `Scroll to Last Read Post` is now optional, enabled by default.
 - The QR won't auto-hide when auto-hide is enabled and one of its input is focused. Doesn't work on Firefox.
 - Fix QR remembering the file spoiler state when it shouldn't.
 - Fix QR cooldown in Opera.
