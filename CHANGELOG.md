@@ -1,3 +1,5 @@
+### 3.0.6 - *2013-04-14*
+
 - Fix regression concerning thread selection when quoting on the index.
 
 ### 3.0.5 - *2013-04-14*
