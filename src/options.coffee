@@ -84,130 +84,125 @@ Options =
   </div>
   <input type=radio name=tab hidden id=rice_tab>
   <div class=rice_tab>
-  <div class=warning style="margin-top: 20px; width: 35%"><code>Emoji</code> is disabled.</div>
-  <ul style="display: inline-block; margin-right: 20px;">
-      Emoji Position<br>
-     <span></span>
-      <select name=emojiPos>
-        <option value=before>Before</option>
-        <option value=after>After</option>
-      </select>
-    </ul>
-    <ul style="display: inline-block; margin-right: 20px;">
-      Sage Emoji<br>
-     <span></span>
-      <select name=sageEmoji>
-        <option value=appchan>Appchan</option>
-        <option value=4chanSS>4chan SS</option>
-      </select>
-      </ul>
-    <ul style="display: inline-block;">
-      <div class=warning><code>Unread Favicon</code> is disabled.</div>
-      Unread favicons<br>
-     <span></span>
-      <select name=favicon>
-        <option value=ferongr>ferongr</option>
-        <option value=xat->xat-</option>
-        <option value=Mayhem>Mayhem</option>
-        <option value=4chanJS>4chanJS</option>
-        <option value=Original>Original</option>
-      </select>
-    </ul>
+  <fieldset style="margin-top: 15px;">
+    <legend>Icons</legend>
+    <div class=warning style="width: 35%"><code>Emoji</code> is disabled.</div>
+    <div style="display: inline-block; margin-right: 20px;">
+        Emoji Position<br>
+       <span></span>
+        <select name=emojiPos>
+          <option value=before>Before</option>
+          <option value=after>After</option>
+        </select>
+      </div>
+      <div style="display: inline-block; margin-right: 20px;">
+        Sage Emoji<br>
+       <span></span>
+        <select name=sageEmoji>
+          <option value=appchan>Appchan</option>
+          <option value=4chanSS>4chan SS</option>
+        </select>
+        </div>
+      <div style="display: inline-block;">
+        <div class=warning><code>Unread Favicon</code> is disabled.</div>
+        Unread favicons<br>
+       <span></span>
+        <select name=favicon>
+          <option value=ferongr>ferongr</option>
+          <option value=xat->xat-</option>
+          <option value=Mayhem>Mayhem</option>
+          <option value=4chanJS>4chanJS</option>
+          <option value=Original>Original</option>
+        </select>
+      </div>
+    </fieldset>
     <span></span>
-    <ul style="margin-top:0px;">
-      Archiver
-      <li>
+    <fieldset>
+      <legend>Archiver</legend>
+      <div>
         Select an Archiver for this board:
         <select name=archiver></select>
-      </li>
-    </ul>
-    <ul>
-      <li>Amounts for Optional Increase</li>
-      <li>Visible tab</li>
-      <li><input name=updateIncrease class=field></li>
-      <li>Background tab</li>
-      <li><input name=updateIncreaseB class=field></li>
-    </ul>
-    <div class=warning><code>Quote Backlinks</code> are disabled.</div>
-    <ul>
-      Backlink formatting
-      <li><input name=backlink class=field> : <span id=backlinkPreview></span></li>
-    </ul>
-    <div class=warning><code>Time Formatting</code> is disabled.</div>
-    <ul>
-      Time formatting
-      <li><input name=time class=field> : <span id=timePreview></span></li>
-      <li>Supported <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</li>
-      <li>Day: %a, %A, %d, %e</li>
-      <li>Month: %m, %b, %B</li>
-      <li>Year: %y</li>
-      <li>Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P</li>
-      <li>Minutes: %M</li>
-      <li>Seconds: %S</li>
-    </ul>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Updater\'s Dynamic Increase</legend>
+      <div>Visible tab</div>
+      <div><input name=updateIncrease class=field></div>
+      <div>Background tab</div>
+      <div><input name=updateIncreaseB class=field></div>
+    </fieldset>
+    <fieldset>
+      <legend>Backlink formatting</legend>
+      <div class=warning><code>Quote Backlinks</code> are disabled.</div>
+      <div><input name=backlink class=field> : <span id=backlinkPreview></span></div>
+    </fieldset>
+    <fieldset>
+    <legend>Time Formatting</legend>
+      <div class=warning><code>Time Formatting</code> is disabled.</div>
+      <input name=time class=field> : <span id=timePreview></span><br>
+      Supported <a href=http://en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:<br>
+      Day: %a, %A, %d, %e<br>
+      Month: %m, %b, %B<br>
+      Year: %y<br>
+      Hour: %k, %H, %l (lowercase L), %I (uppercase i), %p, %P<br>
+      Minutes: %M<br>
+      Seconds: %S<br>
+    </fieldset>
+    <fieldset>
     <div class=warning><code>File Info Formatting</code> is disabled.</div>
-    <ul>
-      File Info Formatting
-      <li><input name=fileInfo class=field> : <span id=fileInfoPreview class=fileText></span></li>
-      <li>Link: %l (lowercase L, truncated), %L (untruncated), %t (Unix timestamp)</li>
-      <li>Original file name: %n (truncated), %N (untruncated), %T (Unix timestamp)</li>
-      <li>Spoiler indicator: %p</li>
-      <li>Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)</li>
-      <li>Resolution: %r (Displays PDF on /po/, for PDFs)</li>
-    </ul>
-    <div class=warning><code>Per Board Persona</code> is disabled.</div>
-      <div id=persona>
-        Per Board Persona<br>
+      <legend>File Info Formatting</legend>
+      <input name=fileInfo class=field> : <span id=fileInfoPreview class=fileText></span><br>
+      Link: %l (lowercase L, truncated), %L (untruncated), %t (Unix timestamp)<br>
+      Original file name: %n (truncated), %N (untruncated), %T (Unix timestamp)<br>
+      Spoiler indicator: %p<br>
+      Size: %B (Bytes), %K (KB), %M (MB), %s (4chan default)<br>
+      Resolution: %r (Displays PDF on /po/, for PDFs)<br>
+    </fieldset>
+    <fieldset id=persona>
+    <div class=warning style="margin-bottom: 5px;"><code>Per Board Persona</code> is disabled.</div>
+        <legend>Per Board Persona</legend>
         <select name=personaboards></select>
-        <ul>
-          <li>
+            <br><br>
             <div class=option>
               Name:
             </div>
-          </li>
-          <li>
             <div class=option>
               <input name=name>
             </div>
-          </li>
-          <li>
             <div class=option>
               Email:
             </div>
-          </li>
-          <li>
             <div class=option>
               <input name=email>
             </div>
-          </li>
-          <li>
             <div class=option>
               Subject:
             </div>
-          </li>
-          <li>
             <div class=option>
               <input name=sub>
             </div>
-          </li>
-          <li>
+            <br>
             <button></button>
-          </li>
-        </ul>
-      </div>
-    <ul>
+      </fieldset>
+    <fieldset>
+      <legend>Embedding</legend>
       Specify size of video embeds<br>
       Height: <input name=embedHeight type=number />px
       |
       Width:  <input name=embedWidth  type=number />px
       <button name=resetSize>Reset</button>
-    </ul>
-    <div class=warning><code>Custom Navigation</code> is disabled.</div>
-    <div id=customNavigation>
-    </div>
-    <div class=warning><code>Custom CSS</code> is disabled.</div><br>
-    Remove Comment blocks to use! ( "/*" and "*/" around CSS blocks )
-    <textarea name=customCSS id=customCSS class=field></textarea>
+    </fieldset>
+    <fieldset>
+    <legend>Custom Navigation</legend>
+      <div class=warning style="margin-bottom: 5px;"><code>Custom Navigation</code> is disabled.</div>
+      <div id=customNavigation>
+      </div>
+    </fieldset>
+    <fieldset>
+    <legend>Custom CSS</legend>
+      <div class=warning><code>Custom CSS</code> is disabled.</div><br>
+      Remove Comment blocks to use! ( "/*" and "*/" around CSS blocks )
+      <textarea name=customCSS id=customCSS class=field></textarea>
   </div>
   <input type=radio name=tab hidden id=keybinds_tab>
   <div class=keybinds_tab>
@@ -412,13 +407,12 @@ Options =
   customNavigation:
     dialog: (dialog) ->
       div = $ "#customNavigation", dialog
-      ul = $.el "ul",
-        textContent: "Custom Navigation"
+      ul = $.el "div"
 
       # Delimiter
-      li = $.el "li",
+      li = $.el "div",
         className: "delimiter"
-        textContent: "delimiter: "
+        textContent: "Delimiter: "
       input = $.el "input",
         className: "field"
         name:      "delimiter"
@@ -436,7 +430,7 @@ Options =
       $.add ul, li
 
       # Description of Syntax.
-      li = $.el "li",
+      li = $.el "div",
         innerHTML: "Navigation Syntax:<br>Display Name | Title / Alternate Text | URL"
       $.add ul, li
 
@@ -452,7 +446,7 @@ Options =
           continue
 
         # This input holds the index of the current link in the userNavigation array/object.
-        li = $.el "li"
+        li = $.el "div"
         input = $.el "input",
           className: "hidden"
           value:     index
@@ -516,7 +510,7 @@ Options =
 
       # Final addLink Button. Allows the user to add a new item
       # to the bottom of the list or add an item if none exist.
-      li = $.el "li",
+      li = $.el "div",
         innerHTML: "<a name='add' href='javascript:;'>+</a> | <a name='reset' href='javascript:;'>Reset</a>"
 
       $.on $('a[name=add]', li), "click", ->
@@ -534,7 +528,7 @@ Options =
 
     cleanup: ->
       $.set "userNavigation", userNavigation
-      $.rm $("#customNavigation > ul", d.body)
+      $.rm $("#customNavigation > div", d.body)
       Options.customNavigation.dialog $("#options", d.body)
 
   persona:

@@ -467,6 +467,7 @@ body.unscroll {
 }
 .rice_tab, .main_tab {
   margin-top: -15px;
+  margin-right: 5px;
 }
 #content {
   overflow: auto;
