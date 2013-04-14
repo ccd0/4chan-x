@@ -23,6 +23,10 @@ Config =
         true
         'Arbitrarily formatted timestamps, using your local time'
       ]
+      'Relative Post Dates': [
+        false
+        'Display dates as "3 minutes ago" f.e., tooltip shows the timestamp'
+      ]
       'File Info Formatting': [
         true
         'Reformats the file information'

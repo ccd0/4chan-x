@@ -222,8 +222,19 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
-  hidden: ->
-    d.hidden or d.mozHidden or d.webkitHidden or d.oHidden
+  # a function that will execute at most every 'wait' ms. executes immediately
+  # if possible, else discards invocation
+  debounce: (wait, fn) ->
+    timeout = null
+    return ->
+      if timeout
+        # stop current reset
+        clearTimeout timeout
+      else
+        fn.apply this, arguments
+
+      # after wait, let next invocation execute immediately
+      timeout = setTimeout (-> timeout = null), wait
 
 $.cache.requests = {}
 

@@ -77,7 +77,7 @@ QR =
     if QR.captcha.isEnabled and /captcha|verification/i.test QR.warning.textContent
       # Focus the captcha input on captcha error.
       $('[autocomplete]', QR.el).focus()
-    alert QR.warning.textContent if $.hidden()
+    alert QR.warning.textContent if d.hidden
 
   cleanError: ->
     QR.warning.textContent = null

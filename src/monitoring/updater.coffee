@@ -93,7 +93,7 @@ Updater =
       delete Updater.postID
 
     visibility: ->
-      return if $.hidden()
+      return if d.hidden
       # Reset the counter when we focus this tab.
       Updater.unsuccessfulFetchCount = 0
 
@@ -132,7 +132,7 @@ Updater =
         if @checked
           -> true
         else
-          -> ! $.hidden()
+          -> ! d.hidden
 
     load: ->
       switch @status
@@ -198,7 +198,7 @@ Updater =
         Updater.count.className = if count then 'new' else null
 
       if count
-        if Conf['Beep'] and $.hidden() and (Unread.replies.length is 0)
+        if Conf['Beep'] and d.hidden and (Unread.replies.length is 0)
           Updater.audio.play()
         Updater.unsuccessfulFetchCount = 0
       else
@@ -234,7 +234,7 @@ Updater =
   getInterval: ->
     string = "Interval" + (if Conf['Interval per board'] then "_#{g.BOARD}" else "")
     increaseString = "updateIncrease"
-    if $.hidden()
+    if d.hidden
       string = "BG#{string}"
       increaseString += "B"
     i  = +Conf[string]

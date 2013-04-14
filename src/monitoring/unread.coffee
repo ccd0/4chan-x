@@ -26,7 +26,7 @@ Unread =
     Unread.count() unless Unread.replies is 0
 
   scroll: ->
-    Unread.count() unless $.hidden() or Unread.replies is 0
+    Unread.count() unless d.hidden or Unread.replies is 0
 
   count: ->
     height = d.documentElement.clientHeight

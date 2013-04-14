@@ -72,10 +72,32 @@ Main =
     settings.disableAll = true
     localStorage.setItem '4chan-settings', JSON.stringify settings
 
+    Main.polyfill()
+
     if g.CATALOG
       $.ready Main.catalog
     else
       Main.features()
+
+  polyfill: ->
+    # page visibility API
+    unless 'visibilityState' of document
+      prefix = if 'mozVisibilityState' of document
+        'moz'
+      else if 'webkitVisibilityState' of document
+        'webkit'
+      else
+        'o'
+
+      property = prefix + 'VisibilityState'
+      event = prefix + 'visibilitychange'
+
+      d.visibilityState = d[property]
+      d.hidden = d.visibilityState is 'hidden'
+      $.on d, event, ->
+        d.visibilityState = d[property]
+        d.hidden = d.visibilityState is 'hidden'
+        $.event d, new CustomEvent 'visibilitychange'
 
   catalog: ->
     _conf = Conf
@@ -118,6 +140,9 @@ Main =
 
     if _conf['Time Formatting']
       Time.init()
+
+    if Conf['Relative Post Dates']
+      RelativeDates.init()
 
     if _conf['File Info Formatting']
       FileInfo.init()
