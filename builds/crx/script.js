@@ -210,7 +210,9 @@
         innerHTML: html,
         id: id
       });
-      el.style.cssText = localStorage.getItem("" + g.NAMESPACE + id + ".position") || position;
+      $.get("" + id + ".position", position, function(item) {
+        return el.style.cssText = item["" + id + ".position"];
+      });
       move = $('.move', el);
       $.on(move, 'touchstart mousedown', dragstart);
       _ref = move.children;
@@ -545,18 +547,17 @@
         $.off(d, 'mousemove', this.move);
         $.off(d, 'mouseup', this.up);
       }
-      return localStorage.setItem("" + g.NAMESPACE + this.id + ".position", this.style.cssText);
+      return $.set("" + this.id + ".position", this.style.cssText);
     };
     hoverstart = function(_arg) {
-      var asapTest, cb, close, el, endEvents, latestEvent, o, root;
+      var asapTest, cb, el, endEvents, latestEvent, o, root;
 
-      root = _arg.root, el = _arg.el, latestEvent = _arg.latestEvent, endEvents = _arg.endEvents, asapTest = _arg.asapTest, cb = _arg.cb, close = _arg.close;
+      root = _arg.root, el = _arg.el, latestEvent = _arg.latestEvent, endEvents = _arg.endEvents, asapTest = _arg.asapTest, cb = _arg.cb;
       o = {
         root: root,
         el: el,
         style: el.style,
         cb: cb,
-        close: close,
         endEvents: endEvents,
         latestEvent: latestEvent,
         clientHeight: doc.clientHeight,
@@ -580,9 +581,9 @@
       this.latestEvent = e;
       height = this.el.offsetHeight;
       clientX = e.clientX, clientY = e.clientY;
-      top = clientY + (close ? 0 : -120);
+      top = clientY - 120;
       top = this.clientHeight <= height || top <= 0 ? 0 : top + height >= this.clientHeight ? this.clientHeight - height : top;
-      _ref = clientX <= this.clientWidth - 400 ? [clientX + (this.close ? 15 : 45) + 'px', null] : [null, this.clientWidth - clientX + 45 + 'px'], left = _ref[0], right = _ref[1];
+      _ref = clientX <= this.clientWidth - 400 ? [clientX + 45 + 'px', null] : [null, this.clientWidth - clientX + 45 + 'px'], left = _ref[0], right = _ref[1];
       style = this.style;
       style.top = top + 'px';
       style.left = left;
