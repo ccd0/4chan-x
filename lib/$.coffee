@@ -102,9 +102,9 @@ $.extend $,
       (el) -> el.remove()
     else
       (el) -> el.parentNode?.removeChild el
-  rmAll: (el) ->
+  rmAll: (root) ->
     # jsperf.com/emptify-element
-    while node = el.firstChild
+    while node = root.firstChild
       $.rm node
     return
   tn: (s) ->

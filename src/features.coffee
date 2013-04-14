@@ -2077,9 +2077,9 @@ Redirect =
         Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
       when 'ck', 'fa', 'lit', 's4s'
         Redirect.path '//fuuka.warosu.org', 'fuuka', data
-      when 'diy', 'sci'
+      when 'diy', 'g', 'sci'
         Redirect.path '//archive.installgentoo.net', 'fuuka', data
-      when 'cgl', 'g', 'mu', 'w'
+      when 'cgl', 'mu', 'w'
         Redirect.path '//rbt.asia', 'fuuka', data
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
         Redirect.path 'http://archive.heinessen.com', 'fuuka', data
