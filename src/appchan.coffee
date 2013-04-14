@@ -12,13 +12,13 @@ Style =
 
     $.ready ->
       return unless $.id 'navtopright'
-      Style.padding.nav = $ "#boardNavDesktop", d.body
-      Style.padding.pages = $(".pagelist", d.body)
-      Style.padding()
-      $.on window, "resize", Style.padding
 
       # Give ExLinks and 4sight a little time to append their dialog links
       setTimeout (->
+        Style.padding.nav = Header.nav
+        Style.padding.pages = $(".pagelist", d.body)
+        Style.padding()
+        $.on window, "resize", Style.padding
         Style.iconPositions()
         if exLink = $ "#navtopright .exlinksOptionsLink", d.body
           $.on exLink, "click", ->

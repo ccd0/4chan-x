@@ -3366,13 +3366,13 @@
         if (!$.id('navtopright')) {
           return;
         }
-        Style.padding.nav = $("#boardNavDesktop", d.body);
-        Style.padding.pages = $(".pagelist", d.body);
-        Style.padding();
-        $.on(window, "resize", Style.padding);
         return setTimeout((function() {
           var exLink;
 
+          Style.padding.nav = Header.nav;
+          Style.padding.pages = $(".pagelist", d.body);
+          Style.padding();
+          $.on(window, "resize", Style.padding);
           Style.iconPositions();
           if (exLink = $("#navtopright .exlinksOptionsLink", d.body)) {
             return $.on(exLink, "click", function() {
@@ -6176,11 +6176,12 @@
           innerHTML: '[<a href=javascript:;> - </a>]\u00A0'
         });
         $.on(btn, 'click', Header.toggleBoardList);
-        return $.prepend(fullBoardList, btn);
+        $.prepend(fullBoardList, btn);
       } else {
         $.rm($('#custom-board-list', nav));
-        return fullBoardList.hidden = false;
+        fullBoardList.hidden = false;
       }
+      return Style.padding();
     },
     generateBoardList: function(text) {
       var as, list, nodes;

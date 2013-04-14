@@ -98,6 +98,8 @@ Header =
     else
       $.rm $ '#custom-board-list', nav
       fullBoardList.hidden = false
+      
+    do Style.padding
 
   generateBoardList: (text) ->
     list = $ '#custom-board-list', Header.nav

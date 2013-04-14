@@ -138,6 +138,7 @@ module.exports = (grunt) ->
     'coffee:script'
     'concat:crx'
     'copy:crx'
+    'compress:crx'
     'clean:tmp'
   ]
 
