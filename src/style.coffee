@@ -432,19 +432,27 @@ body.unscroll {
   position: relative;
   text-align: left;
   vertical-align: middle;
-  width: 600px;
+  width: 900px;
   max-width: 100%;
-  height: 500px;
+  height: 600px;
   max-height: 100%;
   background: rgb(255,255,255);
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4); 
   border-radius: 4px;
 }
+
 #credits {
   float: right;
 }
 #options ul {
   padding: 0;
+}
+#options fieldset {
+  border: 1px solid #DDD;
+  border-radius: 3px;
+}
+#options legend {
+  font-weight: 700;
 }
 #options article li {
   margin: 10px 0 10px 2em;

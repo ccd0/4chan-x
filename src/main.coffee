@@ -207,7 +207,7 @@ Main =
     if _conf['Quote Backlinks']
       QuoteBacklink.init()
 
-    if _conf['Mark Owned Posts']
+    if _conf['Indicate Own Posts']
       MarkOwn.init()
 
     if _conf['Indicate OP quote']

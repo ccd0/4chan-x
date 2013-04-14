@@ -233,7 +233,8 @@ Options =
 
     # Main
     for key, obj of Config.main
-      ul = $.el 'ul',
+      fieldset = $.el 'fieldset'
+      legend = $.el 'legend',
         textContent: key
 
       for key, arr of obj
@@ -241,23 +242,25 @@ Options =
         checked = if $.get(key, Conf[key]) then 'checked' else ''
         description = arr[1]
 
-        li = $.el 'li',
+        div = $.el 'div',
           innerHTML: "<label><input type=checkbox name=\"#{key}\" #{checked}><span class=\"optionlabel\">#{key}</span></label><span>: #{description}</span>"
 
-        $.on $('input', li), 'click', $.cb.checked
+        $.on $('input', div), 'click', $.cb.checked
 
-        $.add ul, li
 
-      $.add $('#main_tab + div', dialog), ul
+        $.add fieldset, legend
+        $.add fieldset, div
+
+      $.add $('#main_tab + div', dialog), fieldset
 
     # Clear Hidden button.
     hiddenThreads = $.get "hiddenThreads/#{g.BOARD}/", {}
     hiddenNum = Object.keys(g.hiddenReplies).length + Object.keys(hiddenThreads).length
-    li = $.el 'li',
+    div = $.el 'div',
       innerHTML: "<span class=\"optionlabel\"><button>hidden: #{hiddenNum}</button></span><div style=\"display: none\">Forget all hidden posts. Useful if you accidentally hide a post and have \"Show Stubs\" disabled.</div>"
-    $.on $('button', li), 'click', Options.clearHidden
-    $.on $('.optionlabel', li), 'mouseover', Options.mouseover
-    $.add $('ul:nth-child(3)', dialog), li
+    $.on $('button', div), 'click', Options.clearHidden
+    $.on $('.optionlabel', div), 'mouseover', Options.mouseover
+    $.add $('fieldset:nth-child(3)', dialog), div
 
     # Filter
     # The filter is a bit weird because it consists of a select, and when that select changes,
