@@ -13,6 +13,10 @@ Config =
         false
         'Compatibility between <%= meta.name %> and 4chan\'s inline extension is NOT guaranteed.'
       ]
+      'Fixed Header': [
+        false
+        'Mayhem X\'s Fixed Header (kinda).'
+      ]
       'Custom Board Navigation': [
         true
         'Show custom links instead of the full board list.'
@@ -364,7 +368,9 @@ http://iqdb.org/?url=%TURL
 #//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/
 """
 
-  'Custom CSS': false 
+  'Custom CSS': false
+
+  'Bottom header': false
 
   'Header auto-hide': false
 

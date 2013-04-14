@@ -6,8 +6,28 @@ Header =
       id: 'shortcuts'
     @hover = $.el 'div',
       id: 'hoverUI'
+    @toggle = $.el 'div',
+      id: 'toggle-header-bar'
 
-    $.on window, 'load hashchange', Header.hashScroll
+    $.on @toggle, 'mousedown',       @toggleBarVisibility
+    $.on window,  'load hashchange', Header.hashScroll
+
+    @positionToggler = $.el 'label',
+      innerHTML: "<input type=checkbox #{if Conf['Bottom header'] then 'checked' else ''}> Bottom header"
+    $.on @positionToggler.firstElementChild, 'change', @toggleBarPosition
+    $.event 'AddMenuEntry',
+      type: 'header'
+      el: @positionToggler
+      order: 108
+
+    @headerToggler = $.el 'label',
+      innerHTML: "<input type=checkbox #{if Conf['Header auto-hide'] then 'checked' else ''}> Auto-hide header"
+    $.on @headerToggler.firstElementChild, 'change', @toggleBarVisibility
+
+    $.event 'AddMenuEntry',
+      type: 'header'
+      el: @headerToggler
+      order: 109
 
     $.on d, 'CreateNotification', @createNotification
 
@@ -21,17 +41,21 @@ Header =
       $.add d.body, Header.hover
 
   setBoardList: ->
-    
     Header.nav = nav = $.id 'boardNavDesktop'
     if a = $ "a[href*='/#{g.BOARD}/']", nav
       a.className = 'current'
+
     fullBoardList = $.el 'span',
       id:     'full-board-list'
       hidden: true
+
     customBoardList = $.el 'span',
       id:     'custom-board-list'
+
+    Header.fixedHeader nav if Conf['Fixed Header']
+
     $.add fullBoardList, [nav.childNodes...]
-    $.add nav, [customBoardList, fullBoardList, Header.shortcuts, $ '#navtopright', fullBoardList]
+    $.add nav, [customBoardList, fullBoardList, Header.shortcuts, $('#navtopright', fullBoardList), Header.toggle]
     $.add d.body, Header.bar
 
     if Conf['Custom Board Navigation']
@@ -45,6 +69,16 @@ Header =
     else
       $.rm $ '#custom-board-list', nav
       fullBoardList.hidden = false
+
+  fixedHeader: (nav) ->
+    $.addClass nav, 'fixed'
+    $.addClass nav, 'dialog'
+
+    @setBarPosition Conf['Bottom header']
+    $.sync 'Bottom header', @setBarPosition
+
+    @setBarVisibility Conf['Header auto-hide']
+    $.sync 'Header auto-hide', @setBarVisibility
 
   generateBoardList: (text) ->
     list = $ '#custom-board-list', Header.nav
@@ -93,6 +127,26 @@ Header =
     custom.hidden = !showBoardList
     full.hidden   =  showBoardList
 
+  setBarPosition: (bottom) ->
+    $.event 'CloseMenu'
+    Header.positionToggler.firstElementChild.checked = bottom
+    if bottom
+      $.addClass Header.nav, 'bottom'
+      $.rmClass  Header.nav, 'top'
+    else
+      $.addClass Header.nav, 'top'
+      $.rmClass  Header.nav, 'bottom'
+
+  toggleBarPosition: ->
+    bottom = @checked
+    Header.setBarPosition bottom
+    Conf['Bottom header'] = bottom
+    $.set 'Bottom header', bottom
+
+  setBarVisibility: (hide) ->
+    Header.headerToggler.firstElementChild.checked = hide
+    (if hide then $.addClass else $.rmClass) Header.nav, 'autohide'
+
   hashScroll: ->
     return unless post = $.id @location.hash[1..]
     return if (Get.postFromRoot post).isHidden
@@ -104,6 +158,20 @@ Header =
       headRect = Header.bar.getBoundingClientRect()
       top += - headRect.top - headRect.height
     (if $.engine is 'webkit' then d.body else doc).scrollTop += top
+
+  toggleBarVisibility: (e) ->
+    return if e.type is 'mousedown' and e.button isnt 0 # not LMB
+    hide = if @nodeName is 'INPUT'
+      @checked
+    else
+      !$.hasClass Header.nav, 'autohide'
+    Header.setBarVisibility hide
+    message = if hide
+      'The header bar will automatically hide itself.'
+    else
+      'The header bar will remain visible.'
+    new Notification 'info', message, 2
+    $.set 'Header auto-hide', hide
 
   addShortcut: (el) ->
     shortcut = $.el 'span',
@@ -264,7 +332,7 @@ Settings =
 
     Settings.overlay = overlay = $.el 'div',
       id: 'overlay'
-    
+
     Settings.dialog = dialog = $.el 'div',
       id:        'fourchanx-settings'
       className: 'dialog'
@@ -1889,7 +1957,7 @@ Keybinds =
       location.href = url
 
   hl: (delta, thread) ->
-    if Conf['Bottom header']
+    if Conf['Fixed Header'] and Conf['Bottom header']
       topMargin = 0
     else
       headRect  = Header.bar.getBoundingClientRect()
@@ -4084,7 +4152,7 @@ ThreadUpdater =
     unless d.hidden
       # Lower the max refresh rate limit on visible tabs.
       j = Math.min j, 7
-    ThreadUpdater.seconds = 
+    ThreadUpdater.seconds =
       if Conf['Optional Increase']
         Math.max i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
       else
@@ -4533,7 +4601,7 @@ Linkify =
 
   embedder: (a) ->
     return [a] unless Conf['Embedding']
-    
+
     callbacks = ->
       a.textContent = switch @status
         when 200, 304

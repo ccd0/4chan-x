@@ -62,7 +62,7 @@ a[href="javascript:;"] {
 #fourchanx-settings,
 #qp, #ihover,
 #updater, #thread-stats,
-#navlinks, #header,
+#navlinks, #boardNavDesktop.fixed,
 #watcher,
 #qr {
   position: fixed;
@@ -91,7 +91,7 @@ a[href="javascript:;"] {
 #watcher:hover {
   z-index: 20;
 }
-#header {
+#boardNavDesktop.fixed {
   z-index: 10;
 }
 #watcher {
@@ -103,46 +103,46 @@ a[href="javascript:;"] {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-#header {
+#boardNavDesktop.fixed {
   right: 0;
   left: 0;
 }
-#header.top {
+#boardNavDesktop.fixed.top {
   top: 0;
 }
-#header.bottom {
+#boardNavDesktop.fixed.bottom {
   bottom: 0;
 }
-#header-bar {
+#boardNavDesktop {
   border-width: 0;
   padding: 3px 4px 4px;
   position: relative;
   transition: all .1s .05s ease-in-out;
 }
-#header.top #header-bar {
+#boardNavDesktop.fixed.top {
   border-bottom-width: 1px;
 }
-#header.bottom #header-bar {
+#boardNavDesktop.fixed.bottom {
   box-shadow: 0 -1px 2px rgba(0, 0, 0, .15);
   border-top-width: 1px;
 }
-#header.bottom .menu-button i {
+#boardNavDesktop.fixed.bottom .menu-button i {
   border-top: none;
   border-bottom: 6px solid;
 }
 #board-list {
   text-align: center;
 }
-#header-bar.autohide:not(:hover) {
+#boardNavDesktop.fixed.autohide:not(:hover) {
   box-shadow: none;
   transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
 }
-#header.top #header-bar.autohide:not(:hover) {
+#boardNavDesktop.fixed.top.autohide:not(:hover) {
   margin-bottom: -1em;
   -webkit-transform: translateY(-100%);
   transform: translateY(-100%);
 }
-#header.bottom #header-bar.autohide:not(:hover) {
+#boardNavDesktop.fixed.bottom.autohide:not(:hover) {
   -webkit-transform: translateY(100%);
   transform: translateY(100%);
 }
@@ -152,33 +152,22 @@ a[href="javascript:;"] {
   height: 10px;
   position: absolute;
 }
-#header.top #toggle-header-bar {
-  cursor: n-resize;
-  bottom: -8px;
+#boardNavDesktop:not(.fixed) #toggle-header-bar {
+  display: none;
 }
-#header.bottom #toggle-header-bar {
-  cursor: s-resize;
-  top: -8px;
-}
-#header-bar.autohide:not(:hover) #toggle-header-bar,
-#toggle-header-bar:hover {
-  height: 18px;
-}
-#header.top #header-bar.autohide:not(:hover) #toggle-header-bar,
-#header.top #toggle-header-bar:hover {
-  bottom: -16px;
-}
-#header.bottom #header-bar.autohide:not(:hover) #toggle-header-bar,
-#header.bottom #toggle-header-bar:hover {
-  top: -16px;
-}
-#header.top #header-bar.autohide #toggle-header-bar {
-  cursor: s-resize;
-}
-#header.bottom #header-bar.autohide #toggle-header-bar {
+#boardNavDesktop.fixed #toggle-header-bar {
   cursor: n-resize;
 }
-#header-bar a:not(.entry) {
+#boardNavDesktop.fixed.top #toggle-header-bar {
+  top: 100%;
+}
+#boardNavDesktop.fixed.bottom #toggle-header-bar {
+  bottom: 100%;
+}
+##boardNavDesktop.fixed #header-bar.autohide #toggle-header-bar {
+  cursor: s-resize;
+}
+#boardNavDesktop a:not(.entry) {
   text-decoration: none;
   padding: 1px;
 }
@@ -204,12 +193,10 @@ a[href="javascript:;"] {
   top: 0;
   right: 0;
   left: 0;
+  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
 }
-#header.bottom #notifications {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
+.top:not(.autohide) ~ #notifications {
+  top: 2em;
 }
 .notification {
   color: #FFF;
