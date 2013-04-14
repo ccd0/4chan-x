@@ -69,7 +69,7 @@ hr.abovePostForm {
 .move {
   cursor: move;
 }
-label, .favicon {
+label, .favicon, .export, .import {
   cursor: pointer;
 }
 a[href="javascript:;"] {
@@ -482,6 +482,19 @@ body.unscroll {
   min-height: 350px;
   resize: vertical;
   width: 100%;
+}
+.imp-exp .placeholder:not(:empty) {
+  position: absolute;
+  top:20px;
+  right:10px;
+}
+.imp-exp-result:empty {
+  display: none;
+}
+.imp-exp-result {
+  position: absolute;
+  top:10px;
+  right:10px;
 }
 
 #updater {

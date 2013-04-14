@@ -29,9 +29,12 @@ Options =
       innerHTML: '<div id=optionsbar>
   <div id=credits>
     <label for=apply>Apply</label>
+    | <a class=export>Export</a>
+    | <a class=import>Import</a>
     | <a target=_blank href=http://seaweedchan.github.io/4chan-x/>4chan X</a>
     | <a target=_blank href=https://raw.github.com/seaweedchan/4chan-x/4chanX/changelog>' + Main.version + '</a>
   </div>
+
   <div class=tabs>
     <label for=main_tab id=selected_tab>Main</label>
     | <label for=filter_tab>Filter</label>
@@ -44,9 +47,8 @@ Options =
   <input type=radio name=tab hidden id=main_tab checked>
   <div>
     <div class=imp-exp>
-      <button class=export>Export settings</button>
-      <button class=import>Import settings</button>
-      <input type=file style="visibility:hidden">
+      <div class=placeholder></div>
+      <input type=file style="visibility:hidden; position: absolute;">
     </div>
     <p class=imp-exp-result></p>
   </div>
@@ -222,8 +224,8 @@ Options =
           previous.id = ''
         @id = 'selected_tab'
 
-    $.on $('#main_tab + div .export', dialog), 'click',  Options.export
-    $.on $('#main_tab + div .import', dialog), 'click',  Options.import
+    $.on $('#credits .export', dialog), 'click',  Options.export
+    $.on $('#credits .import', dialog), 'click',  Options.import
     $.on $('#main_tab + div input',   dialog), 'change', Options.onImport
 
     # Main
@@ -681,11 +683,13 @@ Options =
       a.click()
       return
     # XXX Firefox won't let us download automatically.
-    output = @parentNode.nextElementSibling
+    output = $('.imp-exp>.placeholder')
     output.innerHTML = null
+    $('.imp-exp-result').innerHTML = null
     $.add output, a
   import: ->
-    @nextElementSibling.click()
+    $('.imp-exp>input').click()
+    $('.imp-exp>.placeholder').innerHTML = null
   onImport: ->
     return unless file = @files[0]
     output = @parentNode.nextElementSibling

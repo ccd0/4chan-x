@@ -1,4 +1,7 @@
 master
+seaweedchan
+	-Redo settings menu styling
+	-Move Export/Import buttons and dialog
 
 1.0.7:
 qqueue:
