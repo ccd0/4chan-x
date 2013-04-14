@@ -2055,6 +2055,8 @@ Redirect =
       when 'c'
         "//archive.nyafuu.org/#{boardID}/full_image/#{filename}"
   post: (boardID, postID) ->
+    # XXX foolz had HSTS set for 120 days, which broke XHR+CORS+Redirection when on HTTP.
+    # Remove necessary HTTPS procotol in September 2013.
     switch boardID
       when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'
         "https://archive.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
