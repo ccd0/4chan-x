@@ -1292,7 +1292,7 @@ MascotTools =
       MascotTools.save editMascot
 
     $.on  $('#close > a', dialog), 'click', MascotTools.close
-    Style.rice(dialog)
+    Rice.nodes(dialog)
     $.add d.body, dialog
 
   input: (item, name) ->
@@ -1376,7 +1376,7 @@ MascotTools =
   close: ->
     Conf['editMode'] = false
     editMascot = {}
-    $.rm $.id mascotConf
+    $.rm $.id 'mascotConf'
     Style.addStyle()
     Settings.open "mascots"
 

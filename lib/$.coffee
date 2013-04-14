@@ -9,6 +9,7 @@ $$ = (selector, root=d.body) ->
 
 $.extend = (object, properties) ->
   for key, val of properties
+    continue unless properties.hasOwnProperty key
     object[key] = val
   return
 

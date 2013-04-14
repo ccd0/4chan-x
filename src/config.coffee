@@ -229,6 +229,10 @@ Config =
         false
         'Remember the spoiler state, instead of resetting after posting.'
       ]
+      'Remember QR Size': [
+        false
+        'Remember the size of the quick reply\'s comment field.'
+      ]
       'Hide Original Post Form': [
         true
         'Hide the normal post form.'

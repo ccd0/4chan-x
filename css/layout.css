@@ -1193,6 +1193,7 @@ input.field.tripped:not(:hover):not(:focus) {
 .captcha-img {
   margin: 1px 0 0;
   text-align: center;
+  line-height: 0;
 }
 .captcha-img img {
   width: 100%;
@@ -1681,12 +1682,12 @@ opacity: 0;
 #themebar input {
   width: 30%;
 }
-.color {
+.option .color {
   width: 10%;
   border-left: none !important;
   color: transparent !important;
 }
-.colorfield {
+.option .colorfield {
   width: 90%;
 }
 .themevar textarea {

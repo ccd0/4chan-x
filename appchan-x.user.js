@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAElBMVEX///8EZgR8ulSk0oT///8EAgQ1A88mAAAAAXRSTlMAQObYZgAAAIpJREFUeF6t0sENwjAMhWF84N4H6gAYMUBkdQMYwfuvwmstEeD4kl892P0OaaWcpga2/K0SGII1HNBXARgu7veoY3ANd+esgMHZIz85u0EABrbms3pl/bkC1Tn5ihGOfQwqHeZ/FdYdirEMgCG2ZAQWDTL0m9FvjAhcvoGNAK2gZhGYYX9+ZgFm9gaiNmNkMENY4QAAAABJRU5ErkJggg==
 // ==/UserScript==
 
-/* appchan x - Version 2.0.0 - 2013-04-12
+/* appchan x - Version 2.0.0 - 2013-04-13
  * http://zixaphir.github.com/appchan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -116,6 +116,7 @@
         'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
+        'Remember QR Size': [false, 'Remember the size of the quick reply\'s comment field.'],
         'Hide Original Post Form': [true, 'Hide the normal post form.'],
         'Cooldown': [true, 'Prevent "flood detected" errors.']
       },
@@ -1523,7 +1524,7 @@
       'Timestamps': 'rgb(0,0,0)',
       'Warnings': 'rgb(87,87,123)',
       'Shadow Color': 'rgba(0,0,0,.07)',
-      'Custom CSS': ".thread .reply {\n  background-color: transparent;\n  border-color: #ccc transparent transparent transparent;\n  border-style: solid;\n  border-radius: 0 !important;\n  margin-bottom: 0;\n}\n.thread .op {\n  padding: 0 3px;\n}\n#themes {\n  text-shadow: none;\n}\n#qp {\n  text-shadow: 1px 0 0 rgb(0,0,0),\n    1px 1px 0 rgb(0,0,0),\n    0 1px 0 rgb(0,0,0),\n    1px 1px 2px rgb(0,0,0);\n}\n#qp .op.post,\n#qp .reply.post {\n  border: 1px rgba(0,0,0,0.7) solid;\n  background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), transparent;\n}\n#qp div.post,\n#qp .pln,\n#qp .postNum a {\n  color: #fcd;\n}\n#qp .dateTime {\n  color: #fcd !important;\n}\n#qp .subject,\n#qp .nameBlock > .useremail > .name,\n#qp .nameBlock > .useremail > .postertrip,\n#qp .name,\n#qp .postertrip,\n#qp .trip {\n  color: #ffaac0 !important;\n}\n#qp a {\n  color: #aaaac8;\n}\n.boardBanner a,\n#qp a.backlink,\n#qp span.quote > a.quotelink {\n  color: rgb(255,255,255);\n}\n#qp span.quote {\n  color: rgb(130,163,100);\n}\n.board {\n  box-shadow: 0 20px 40px 10px rgba(0,0,0,0.1);\n  border-radius: 4px;\n}\n:not(#themes) .rice {\n  box-shadow:rgba(170, 170, 170,0.3) 0 1px;\n}\n#qp .prettyprint {\n  background-color: rgba(0,0,0,0.3);\n  border: 1px solid rgba(0,0,0,0.5);\n}\n#qp span.tag {\n  color: #96562c;\n}\n#qp span.pun {\n  color: #5b6f2a;\n}\n#qp span.com {\n  color: #a34443;\n}\n#qp span.str,\n#qp span.atv {\n  color: #8ba446;\n}\n#qp span.kwd {\n  color: #987d3e;\n}\n#qp span.typ,\n#qp span.atn {\n  color: #897399;\n}\n#qp span.lit {\n  color: #558773;\n}"
+      'Custom CSS': ".thread .reply {\n  background-color: transparent;\n  border-color: #ccc transparent transparent transparent;\n  border-style: solid;\n  border-radius: 0 !important;\n  margin-bottom: 0;\n}\n#themes {\n  text-shadow: none;\n}\n#qp {\n  text-shadow: 1px 0 0 rgb(0,0,0),\n    1px 1px 0 rgb(0,0,0),\n    0 1px 0 rgb(0,0,0),\n    1px 1px 2px rgb(0,0,0);\n}\n#qp .op.post,\n#qp .reply.post {\n  border: 1px rgba(0,0,0,0.7) solid;\n  background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.5)), transparent;\n}\n#qp div.post,\n#qp .pln,\n#qp .postNum a {\n  color: #fcd;\n}\n#qp .dateTime {\n  color: #fcd !important;\n}\n#qp .subject,\n#qp .nameBlock > .useremail > .name,\n#qp .nameBlock > .useremail > .postertrip,\n#qp .name,\n#qp .postertrip,\n#qp .trip {\n  color: #ffaac0 !important;\n}\n#qp a {\n  color: #aaaac8;\n}\n.boardBanner a,\n#qp a.backlink,\n#qp span.quote > a.quotelink {\n  color: rgb(255,255,255);\n}\n#qp span.quote {\n  color: rgb(130,163,100);\n}\n.board {\n  box-shadow: 0 20px 40px 10px rgba(0,0,0,0.1);\n  border-radius: 4px;\n}\n:not(#themes) .rice {\n  box-shadow:rgba(170, 170, 170,0.3) 0 1px;\n}\n#qp .prettyprint {\n  background-color: rgba(0,0,0,0.3);\n  border: 1px solid rgba(0,0,0,0.5);\n}\n#qp span.tag {\n  color: #96562c;\n}\n#qp span.pun {\n  color: #5b6f2a;\n}\n#qp span.com {\n  color: #a34443;\n}\n#qp span.str,\n#qp span.atv {\n  color: #8ba446;\n}\n#qp span.kwd {\n  color: #987d3e;\n}\n#qp span.typ,\n#qp span.atn {\n  color: #897399;\n}\n#qp span.lit {\n  color: #558773;\n}"
     },
     'Solarized': {
       'Author': 'ubuntufriend',
@@ -2854,6 +2855,9 @@
 
     for (key in properties) {
       val = properties[key];
+      if (!properties.hasOwnProperty(key)) {
+        continue;
+      }
       object[key] = val;
     }
   };
@@ -3532,7 +3536,7 @@
         "slideout": "#qrtab input,#qrtab .rice {  display: none;}#qr {  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": 0 !important;  " + Style.sidebarLocation[1] + ": auto !important;  " + agent + "transform: translateX(" + xOffset + "93%);}#qr:hover,#qr.focus,#qr.dump {  " + agent + "transform: translate(0);}",
         "tabbed slideout": "#qr {  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": 0 !important;  " + Style.sidebarLocation[1] + ": auto !important;  " + agent + "transform: translateX(" + xOffset + "100%);}#qr:hover,#qr.focus,#qr.dump {  " + agent + "transform: translateX(0);}#qrtab {  " + agent + "transform: rotate(" + (Style.sidebarLocation[0] === "left" ? "" : "-") + "90deg);  " + agent + "transform-origin: bottom " + Style.sidebarLocation[0] + ";  position: absolute;  top: 0;  " + Style.sidebarLocation[0] + ": 100%;  width: 110px;  text-align: center;  border-width: 1px 1px 0 1px;  cursor: default;}#qr:hover #qrtab,#qr.focus #qrtab,#qr.dump #qrtab {  opacity: 0;  " + Style.sidebarLocation[0] + ": " + (252 + Style.sidebarOffset.W) + "px;}#qrtab input,#qrtab .close,#qrtab .rice,#qrtab span {  display: none;}",
         "transparent fade": "#qr {  overflow: visible;  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": 2px !important;  " + Style.sidebarLocation[1] + ": auto !important;  opacity: 0.2;  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover,#qr.focus,#qr.dump {  opacity: 1;  " + agent + "transition: opacity .3s linear;}"
-      }[_conf['Post Form Style']] || "") + "\n\n" + (_conf['Post Form Style'] !== 'tabbed slideout' ? (!(_conf['Post Form Style'] === 'float' || _conf['Show Post Form Header']) ? "#qrtab { display: none; }" : _conf['Post Form Style'] !== 'slideout' ? ".autohide:not(:hover):not(.focus) > form { display: none !important; }" : "") + "#qrtab { margin-bottom: 1px; }" : "") + "\n\n" + (_conf['Post Form Style'] !== 'float' && _conf["Post Form Slideout Transitions"] ? "#qr {  " + agent + "transition: " + agent + "transform .3s ease-in-out 1s;}#qr:hover,#qr.focus,#qr.dump {  " + agent + "transition: " + agent + "transform .3s linear;}#qrtab {  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover #qrtab {  " + agent + "transition: opacity .3s linear;}" : "") + "\n\n#qr .close {\n  float: right;\n  padding: 0 3px;\n}\n#qr .warning {\n  min-height: 1.6em;\n  vertical-align: middle;\n  padding: 0 1px;\n  border-width: 1px;\n  border-style: solid;\n}\n.persona {\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-button {\n  width: 10%;\n  margin: 0;\n}\n\n" + (_conf['Compact Post Form Inputs'] ? ".persona input.field {  width: 29.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 14.8em;  min-height: 9em;}#qr.has-captcha textarea.field {  height: 9em;}" : ".persona input.field {  width: 100%;}.persona input.field[name='name'] {  width: 89.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 11.6em;  min-height: 6em;}#qr.has-captcha textarea.field {  height: 6em;}") + "\n\n" + (_conf["Tripcode Hider"] ? "input.field.tripped:not(:hover):not(:focus) {  color: transparent !important;  text-shadow: none !important;}" : "") + "\n\n#qr textarea {\n  resize: " + _conf['Textarea Resize'] + ";\n}\n.captcha-img {\n  margin: 1px 0 0;\n  text-align: center;\n}\n.captcha-img img {\n  width: 100%;\n  height: 4em;\n  width: 246px;\n}\n.captcha-input {\n  width: 100%;\n  margin: 1px 0 0;\n}\n.field,\n.selectrice,\nbutton,\ninput:not([type=radio]) {\n  " + Style.sizing + ": border-box;\n  font-size: " + (parseInt(_conf['Font Size'], 10)) + "px;\n  height: 1.6em;\n  margin: 1px 0 0;\n  vertical-align: bottom;\n  padding: 0 1px;\n}\n#qr textarea {\n  min-width: 100%;\n}\n#qr [type='submit'] {\n  width: 25%;\n}\n[type='file'] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n#showQR {\n  display: " + (_conf["Hide Show Post Form"] ? "none" : "block") + ";\n  z-index: 4;\n  " + Style.sidebarLocation[0] + ": 2px;\n  width: " + width + "px;\n  background-color: transparent;\n  text-align: center;\n  position: fixed;\n  top: auto;\n}\n/* Fake File Input */\n#qr-filename,\n.has-file #qr-no-file {\n  display: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\n  display: block;\n}\n#qr-filename-container {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  position: relative;\n  width: 100px;\n  min-width: 74.6%;\n  max-width: 74.6%;\n  margin-right: 0.4%;\n  overflow: hidden;\n  padding: 2px 1px 0;\n}\n#qr-filerm {\n  position: absolute;\n  right: 3px;\n  top: 2px;\n  z-index: 2;\n}\n/* Thread Select / Spoiler Label */\n#qr-thread-select {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n}\n#qr-spoiler-label {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n  text-align: right;\n}\n/* Dumping UI */\n.dump #dump-list-container {\n  display: block;\n}\n#dump-list-container {\n  display: none;\n  position: relative;\n  overflow-y: hidden;\n  margin-top: 1px;\n}\n#dump-list {\n  overflow-x: auto;\n  overflow-y: hidden;\n  white-space: pre;\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-list:hover {\n  overflow-x: auto;\n}\n.qr-preview {\n  " + Style.sizing + ": border-box;\n  counter-increment: thumbnails;\n  cursor: move;\n  display: inline-block;\n  height: 90px;\n  width: 90px;\n  padding: 2px;\n  opacity: .5;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + agent + "transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.qr-preview:hover,\n.qr-preview:focus {\n  opacity: .9;\n}\n.qr-preview::before {\n  content: counter(thumbnails);\n  color: #fff;\n  position: absolute;\n  top: 3px;\n  right: 3px;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\n  opacity: 1;\n}\n.qr-preview.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\n  border-color: #fff;\n}\n.qr-preview > span {\n  color: #fff;\n}\n.remove {\n  background: none;\n  color: #e00;\n  font-weight: 700;\n  padding: 3px;\n}\na:only-of-type > .remove {\n  display: none;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.qr-preview > label {\n  background: rgba(0,0,0,.5);\n  color: #fff;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.qr-preview > label > input {\n  margin: 0;\n}\n#add-post {\n  cursor: pointer;\n  font-size: 2em;\n  position: absolute;\n  top: 50%;\n  right: 10px;\n  " + agent + "transform: translateY(-50%);\n}\n/* Ads */\n.topad img,\n.middlead img,\n.bottomad img {\n  opacity: 0.3;\n  " + agent + "transition: opacity .3s linear;\n}\n.topad img:hover,\n.middlead img:hover,\n.bottomad img:hover {\n  opacity: 1;\n}\n" + (_conf["Block Ads"] ? "/* AdBlock Minus */.bottomad + hr,.topad img,.middlead img,.bottomad img {  display: none;}" : "") + "\n" + (_conf["Shrink Ads"] ? ".topad a img,.middlead a img,.bottomad a img {  width: 500px;  height: auto;}" : "") + "\n/* Options */\n#overlay {\n  position: fixed;\n  z-index: 30;\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n}\n#appchanx-settings {\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n  position: fixed;\n  z-index: 31;\n  padding: .3em;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.description {\n  display: none;\n}\n#appchanx-settings h3,\n.section-keybinds,\n.section-mascots,\n.section-script,\n.style {\n  text-align: center;\n}\n.section-keybinds table,\n.section-script fieldset,\n.section-style fieldset {\n  text-align: left;\n}\n.section-keybinds table {\n  margin: auto;\n}\n#appchanx-settings fieldset {\n  padding: 5px 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n  vertical-align: top;\n  " + (_conf["Single Column Mode"] ? "margin: 0 auto 6px;" : "margin: 0 3px 6px;\n display: inline-block;") + "\n  border: 0;\n}\n.section-container {\n  overflow: auto;\n  position: absolute;\n  top: 1.7em;\n  right: 5px;\n  bottom: 5px;\n  left: 5px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.sections-list {\n  padding: 0 3px;\n  float: left;\n}\n.sections-list > a {\n  cursor: pointer;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\n  position: relative;\n  padding: 0 4px;\n  z-index: 1;\n  height: 1.4em;\n  display: inline-block;\n  border-width: 1px 1px 0 1px;\n  border-color: transparent;\n  border-style: solid;\n}\n.credits {\n  float: right;\n}\n#appchanx-settings h3 {\n  margin: 0;\n}\n.section-script fieldset > div,\n.section-style fieldset > div,\n.section-rice fieldset > div {\n  overflow: visible;\n  padding: 0 5px 0 7px;\n}\n#appchanx-settings tr:nth-of-type(2n+1),\n.section-script fieldset > div:nth-of-type(2n+1),\n.section-rice fieldset > div:nth-of-type(2n+1),\n.section-style fieldset > div:nth-of-type(2n+1),\n.section-keybinds tr:nth-of-type(2n+1),\n#selectrice li:nth-of-type(2n+1) {\n  background-color: rgba(0, 0, 0, 0.05);\n}\narticle li {\n  margin: 10px 0 10px 2em;\n}\n#appchanx-settings .option {\n  width: 50%;\n  display: inline-block;\n  vertical-align: bottom;\n}\n.option input {\n  width: 100%;\n}\n.optionlabel {\n  padding-left: 18px;\n}\n.rice + .optionlabel {\n  padding-left: 0;\n}\n.section-script fieldset,\n.styleoption {\n  text-align: left;\n}\n.section-style fieldset {\n  width: 370px;\n}\n.section-script fieldset {\n  width: 200px;\n}\n.suboptions,\n#mascotcontent,\n#themecontent {\n  overflow: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 1.7em;\n  left: 0;\n}\n.mAlign {\n  height: 250px;\n  vertical-align: middle;\n  display: table-cell;\n}\n#themecontent {\n  top: 1.7em;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n.section-style .suboptions {\n  bottom: 0;\n}\n.section-container textarea {\n  font-family: monospace;\n  min-height: 350px;\n  resize: vertical;\n  width: 100%;\n}\n/* Hover Functionality */\n#mouseover {\n  z-index: 33;\n  position: fixed;\n  max-width: 70%;\n}\n#mouseover:empty {\n  display: none;\n}\n/* Mascot Tab */\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#mascot_hide label {\n  width: 100%;\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n.mascots {\n  padding: 0;\n  text-align: center;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.mascot,\n.mascotcontainer {\n  overflow: hidden;\n}\n.mascot {\n  position: relative;\n  border: none;\n  margin: 5px;\n  padding: 0;\n  width: 200px;\n  display: inline-block;\n  background-color: transparent;\n}\n.mascotcontainer {\n  height: 250px;\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  bottom: 0;\n  border-width: 0 1px 1px;\n  border-style: solid;\n  border-color: transparent;\n  overflow: hidden;\n}\n.mascot img {\n  max-width: 200px;\n}\n.mascotname,\n.mascotoptions {\n  padding: 0;\n  width: 100%;\n}\n.mascot .mascotoptions {\nopacity: 0;\n  " + agent + "transition: opacity .3s linear;\n}\n.mascot:hover .mascotoptions {\n  opacity: 1;\n}\n.mascotoptions {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n}\n.mascotoptions a {\n  display: inline-block;\n  width: 33%;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Themes Tab */\n#themes h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  " + agent + "transition: all .2s ease-in-out;\n  opacity: 0;\n}\n#themes .selectedtheme h1 {\n  right: 11px;\n  opacity: 1;\n}\n#themeContainer {\n  margin-bottom: 3px;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.theme {\n  margin: 1em;\n}\n/* Theme Editor */\n#themeConf {\n  position: fixed;\n  " + Style.sidebarLocation[1] + ": 2px;\n  " + Style.sidebarLocation[0] + ": auto;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n  z-index: 10;\n}\n#themebar input {\n  width: 30%;\n}\n.color {\n  width: 10%;\n  border-left: none !important;\n  color: transparent !important;\n}\n.colorfield {\n  width: 90%;\n}\n.themevar textarea {\n  min-width: 100%;\n  max-width: 100%;\n  height: 20em;\n  resize: vertical;\n}\n/* Mascot Editor */\n#mascotConf {\n  position: fixed;\n  height: 17em;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n  z-index: 10;\n}\n#mascotConf .option,\n#mascotConf .optionlabel {\n  " + Style.sizing + ": border-box;\n  width: 50%;\n  display: inline-block;\n  vertical-align: middle;\n}\n#mascotConf .option input {\n  width: 100%;\n}\n#close {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Catalog */\n#content .navLinks,\n#info .navLinks,\n.btn-wrap {\n  display: block;\n}\n.navLinks > .btn-wrap:not(:first-of-type)::before {\n  content: ' - ';\n}\n.button {\n  cursor: pointer;\n}\n#content .btn-wrap,\n#info .btn-wrap {\n  display: inline-block;\n}\n#settings .selectrice {\n  width: 100px;\n  display: inline-block;\n}\n#post-preview {\n  position: absolute;\n  z-index: 22;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#settings,\n#threads,\n#info .navLinks,\n#content .navLinks {\n  text-align: center;\n}\n#threads .thread {\n  vertical-align: top;\n  display: inline-block;\n  word-wrap: break-word;\n  overflow: hidden;\n  margin-top: 5px;\n  padding: 5px 0 3px;\n  text-align: center;\n}\n.extended-small .thread,\n.small .thread {\n  width: 165px;\n  max-height: 320px;\n}\n.small .teaser,\n.large .teaser {\n  display: none;\n}\n.extended-large .thread,\n.large .thread {\n  width: 270px;\n  max-height: 410px;\n}\n.extended-small .thumb,\n.small .thumb {\n  max-width: 150px;\n  max-height: 150px;\n}\n/* Front Page */\n#logo {\n  text-align: center;\n}\n#doc {\n  margin: 0 auto;\n  width: 1000px;\n  position: relative;\n}\n#boards .boxcontent {\n  vertical-align: top;\n  text-align: center;\n}\n#filter-container,\n#options-container {\n  float: right;\n  position: relative;\n}\n#optionssmenu {\n  top: 100% !important;\n  left: 0 !important;\n}\n#boards .column {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  width: 16em;\n  text-align: left;\n  vertical-align: top;\n}\n.bd ul,\n.boxcontent ul {\n  vertical-align: top;\n  padding: 0;\n}\n.right-box .boxcontent ul {\n  padding: 0 10px;\n}\n.yuimenuitem,\n.boxcontent li {\n  list-style-type: none;\n}\n.bd ul {\n  margin: 0;\n}\n.yuimenuitem::before {\n  content: \" [ ] \";\n  font-family: monospace;\n}\n.yuimenuitem-checked::before {\n  content: \" [x] \"\n}\n.yui-u {\n  display: inline-block;\n  vertical-align: top;\n  width: 475px;\n  margin: 10px;\n}\n#recent-images .boxcontent {\n  text-align: center;\n}\n#ft {\n  text-align: center;\n}\n#ft ul {\n  padding: 0;\n}\n#ft li {\n  list-style-type: none;\n  display: inline-block;\n  width: 100px;\n}\n#preview-tooltip-nws,\n#preview-tooltip-ws,\n#ft .fill,\n.clear-bug {\n  display: none;\n}";
+      }[_conf['Post Form Style']] || "") + "\n\n" + (_conf['Post Form Style'] !== 'tabbed slideout' ? (!(_conf['Post Form Style'] === 'float' || _conf['Show Post Form Header']) ? "#qrtab { display: none; }" : _conf['Post Form Style'] !== 'slideout' ? ".autohide:not(:hover):not(.focus) > form { display: none !important; }" : "") + "#qrtab { margin-bottom: 1px; }" : "") + "\n\n" + (_conf['Post Form Style'] !== 'float' && _conf["Post Form Slideout Transitions"] ? "#qr {  " + agent + "transition: " + agent + "transform .3s ease-in-out 1s;}#qr:hover,#qr.focus,#qr.dump {  " + agent + "transition: " + agent + "transform .3s linear;}#qrtab {  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover #qrtab {  " + agent + "transition: opacity .3s linear;}" : "") + "\n\n#qr .close {\n  float: right;\n  padding: 0 3px;\n}\n#qr .warning {\n  min-height: 1.6em;\n  vertical-align: middle;\n  padding: 0 1px;\n  border-width: 1px;\n  border-style: solid;\n}\n.persona {\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-button {\n  width: 10%;\n  margin: 0;\n}\n\n" + (_conf['Compact Post Form Inputs'] ? ".persona input.field {  width: 29.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 14.8em;  min-height: 9em;}#qr.has-captcha textarea.field {  height: 9em;}" : ".persona input.field {  width: 100%;}.persona input.field[name='name'] {  width: 89.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 11.6em;  min-height: 6em;}#qr.has-captcha textarea.field {  height: 6em;}") + "\n\n" + (_conf["Tripcode Hider"] ? "input.field.tripped:not(:hover):not(:focus) {  color: transparent !important;  text-shadow: none !important;}" : "") + "\n\n#qr textarea {\n  resize: " + _conf['Textarea Resize'] + ";\n}\n.captcha-img {\n  margin: 1px 0 0;\n  text-align: center;\n  line-height: 0;\n}\n.captcha-img img {\n  width: 100%;\n  height: 4em;\n  width: 246px;\n}\n.captcha-input {\n  width: 100%;\n  margin: 1px 0 0;\n}\n.field,\n.selectrice,\nbutton,\ninput:not([type=radio]) {\n  " + Style.sizing + ": border-box;\n  font-size: " + (parseInt(_conf['Font Size'], 10)) + "px;\n  height: 1.6em;\n  margin: 1px 0 0;\n  vertical-align: bottom;\n  padding: 0 1px;\n}\n#qr textarea {\n  min-width: 100%;\n}\n#qr [type='submit'] {\n  width: 25%;\n}\n[type='file'] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n#showQR {\n  display: " + (_conf["Hide Show Post Form"] ? "none" : "block") + ";\n  z-index: 4;\n  " + Style.sidebarLocation[0] + ": 2px;\n  width: " + width + "px;\n  background-color: transparent;\n  text-align: center;\n  position: fixed;\n  top: auto;\n}\n/* Fake File Input */\n#qr-filename,\n.has-file #qr-no-file {\n  display: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\n  display: block;\n}\n#qr-filename-container {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  position: relative;\n  width: 100px;\n  min-width: 74.6%;\n  max-width: 74.6%;\n  margin-right: 0.4%;\n  overflow: hidden;\n  padding: 2px 1px 0;\n}\n#qr-filerm {\n  position: absolute;\n  right: 3px;\n  top: 2px;\n  z-index: 2;\n}\n/* Thread Select / Spoiler Label */\n#qr-thread-select {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n}\n#qr-spoiler-label {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n  text-align: right;\n}\n/* Dumping UI */\n.dump #dump-list-container {\n  display: block;\n}\n#dump-list-container {\n  display: none;\n  position: relative;\n  overflow-y: hidden;\n  margin-top: 1px;\n}\n#dump-list {\n  overflow-x: auto;\n  overflow-y: hidden;\n  white-space: pre;\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-list:hover {\n  overflow-x: auto;\n}\n.qr-preview {\n  " + Style.sizing + ": border-box;\n  counter-increment: thumbnails;\n  cursor: move;\n  display: inline-block;\n  height: 90px;\n  width: 90px;\n  padding: 2px;\n  opacity: .5;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + agent + "transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.qr-preview:hover,\n.qr-preview:focus {\n  opacity: .9;\n}\n.qr-preview::before {\n  content: counter(thumbnails);\n  color: #fff;\n  position: absolute;\n  top: 3px;\n  right: 3px;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\n  opacity: 1;\n}\n.qr-preview.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\n  border-color: #fff;\n}\n.qr-preview > span {\n  color: #fff;\n}\n.remove {\n  background: none;\n  color: #e00;\n  font-weight: 700;\n  padding: 3px;\n}\na:only-of-type > .remove {\n  display: none;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.qr-preview > label {\n  background: rgba(0,0,0,.5);\n  color: #fff;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.qr-preview > label > input {\n  margin: 0;\n}\n#add-post {\n  cursor: pointer;\n  font-size: 2em;\n  position: absolute;\n  top: 50%;\n  right: 10px;\n  " + agent + "transform: translateY(-50%);\n}\n/* Ads */\n.topad img,\n.middlead img,\n.bottomad img {\n  opacity: 0.3;\n  " + agent + "transition: opacity .3s linear;\n}\n.topad img:hover,\n.middlead img:hover,\n.bottomad img:hover {\n  opacity: 1;\n}\n" + (_conf["Block Ads"] ? "/* AdBlock Minus */.bottomad + hr,.topad img,.middlead img,.bottomad img {  display: none;}" : "") + "\n" + (_conf["Shrink Ads"] ? ".topad a img,.middlead a img,.bottomad a img {  width: 500px;  height: auto;}" : "") + "\n/* Options */\n#overlay {\n  position: fixed;\n  z-index: 30;\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n}\n#appchanx-settings {\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n  position: fixed;\n  z-index: 31;\n  padding: .3em;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.description {\n  display: none;\n}\n#appchanx-settings h3,\n.section-keybinds,\n.section-mascots,\n.section-script,\n.style {\n  text-align: center;\n}\n.section-keybinds table,\n.section-script fieldset,\n.section-style fieldset {\n  text-align: left;\n}\n.section-keybinds table {\n  margin: auto;\n}\n#appchanx-settings fieldset {\n  padding: 5px 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n  vertical-align: top;\n  " + (_conf["Single Column Mode"] ? "margin: 0 auto 6px;" : "margin: 0 3px 6px;\n display: inline-block;") + "\n  border: 0;\n}\n.section-container {\n  overflow: auto;\n  position: absolute;\n  top: 1.7em;\n  right: 5px;\n  bottom: 5px;\n  left: 5px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.sections-list {\n  padding: 0 3px;\n  float: left;\n}\n.sections-list > a {\n  cursor: pointer;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\n  position: relative;\n  padding: 0 4px;\n  z-index: 1;\n  height: 1.4em;\n  display: inline-block;\n  border-width: 1px 1px 0 1px;\n  border-color: transparent;\n  border-style: solid;\n}\n.credits {\n  float: right;\n}\n#appchanx-settings h3 {\n  margin: 0;\n}\n.section-script fieldset > div,\n.section-style fieldset > div,\n.section-rice fieldset > div {\n  overflow: visible;\n  padding: 0 5px 0 7px;\n}\n#appchanx-settings tr:nth-of-type(2n+1),\n.section-script fieldset > div:nth-of-type(2n+1),\n.section-rice fieldset > div:nth-of-type(2n+1),\n.section-style fieldset > div:nth-of-type(2n+1),\n.section-keybinds tr:nth-of-type(2n+1),\n#selectrice li:nth-of-type(2n+1) {\n  background-color: rgba(0, 0, 0, 0.05);\n}\narticle li {\n  margin: 10px 0 10px 2em;\n}\n#appchanx-settings .option {\n  width: 50%;\n  display: inline-block;\n  vertical-align: bottom;\n}\n.option input {\n  width: 100%;\n}\n.optionlabel {\n  padding-left: 18px;\n}\n.rice + .optionlabel {\n  padding-left: 0;\n}\n.section-script fieldset,\n.styleoption {\n  text-align: left;\n}\n.section-style fieldset {\n  width: 370px;\n}\n.section-script fieldset {\n  width: 200px;\n}\n.suboptions,\n#mascotcontent,\n#themecontent {\n  overflow: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 1.7em;\n  left: 0;\n}\n.mAlign {\n  height: 250px;\n  vertical-align: middle;\n  display: table-cell;\n}\n#themecontent {\n  top: 1.7em;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n.section-style .suboptions {\n  bottom: 0;\n}\n.section-container textarea {\n  font-family: monospace;\n  min-height: 350px;\n  resize: vertical;\n  width: 100%;\n}\n/* Hover Functionality */\n#mouseover {\n  z-index: 33;\n  position: fixed;\n  max-width: 70%;\n}\n#mouseover:empty {\n  display: none;\n}\n/* Mascot Tab */\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#mascot_hide label {\n  width: 100%;\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n.mascots {\n  padding: 0;\n  text-align: center;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.mascot,\n.mascotcontainer {\n  overflow: hidden;\n}\n.mascot {\n  position: relative;\n  border: none;\n  margin: 5px;\n  padding: 0;\n  width: 200px;\n  display: inline-block;\n  background-color: transparent;\n}\n.mascotcontainer {\n  height: 250px;\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  bottom: 0;\n  border-width: 0 1px 1px;\n  border-style: solid;\n  border-color: transparent;\n  overflow: hidden;\n}\n.mascot img {\n  max-width: 200px;\n}\n.mascotname,\n.mascotoptions {\n  padding: 0;\n  width: 100%;\n}\n.mascot .mascotoptions {\nopacity: 0;\n  " + agent + "transition: opacity .3s linear;\n}\n.mascot:hover .mascotoptions {\n  opacity: 1;\n}\n.mascotoptions {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n}\n.mascotoptions a {\n  display: inline-block;\n  width: 33%;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Themes Tab */\n#themes h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  " + agent + "transition: all .2s ease-in-out;\n  opacity: 0;\n}\n#themes .selectedtheme h1 {\n  right: 11px;\n  opacity: 1;\n}\n#themeContainer {\n  margin-bottom: 3px;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.theme {\n  margin: 1em;\n}\n/* Theme Editor */\n#themeConf {\n  position: fixed;\n  " + Style.sidebarLocation[1] + ": 2px;\n  " + Style.sidebarLocation[0] + ": auto;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n  z-index: 10;\n}\n#themebar input {\n  width: 30%;\n}\n.option .color {\n  width: 10%;\n  border-left: none !important;\n  color: transparent !important;\n}\n.option .colorfield {\n  width: 90%;\n}\n.themevar textarea {\n  min-width: 100%;\n  max-width: 100%;\n  height: 20em;\n  resize: vertical;\n}\n/* Mascot Editor */\n#mascotConf {\n  position: fixed;\n  height: 17em;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n  z-index: 10;\n}\n#mascotConf .option,\n#mascotConf .optionlabel {\n  " + Style.sizing + ": border-box;\n  width: 50%;\n  display: inline-block;\n  vertical-align: middle;\n}\n#mascotConf .option input {\n  width: 100%;\n}\n#close {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Catalog */\n#content .navLinks,\n#info .navLinks,\n.btn-wrap {\n  display: block;\n}\n.navLinks > .btn-wrap:not(:first-of-type)::before {\n  content: ' - ';\n}\n.button {\n  cursor: pointer;\n}\n#content .btn-wrap,\n#info .btn-wrap {\n  display: inline-block;\n}\n#settings .selectrice {\n  width: 100px;\n  display: inline-block;\n}\n#post-preview {\n  position: absolute;\n  z-index: 22;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#settings,\n#threads,\n#info .navLinks,\n#content .navLinks {\n  text-align: center;\n}\n#threads .thread {\n  vertical-align: top;\n  display: inline-block;\n  word-wrap: break-word;\n  overflow: hidden;\n  margin-top: 5px;\n  padding: 5px 0 3px;\n  text-align: center;\n}\n.extended-small .thread,\n.small .thread {\n  width: 165px;\n  max-height: 320px;\n}\n.small .teaser,\n.large .teaser {\n  display: none;\n}\n.extended-large .thread,\n.large .thread {\n  width: 270px;\n  max-height: 410px;\n}\n.extended-small .thumb,\n.small .thumb {\n  max-width: 150px;\n  max-height: 150px;\n}\n/* Front Page */\n#logo {\n  text-align: center;\n}\n#doc {\n  margin: 0 auto;\n  width: 1000px;\n  position: relative;\n}\n#boards .boxcontent {\n  vertical-align: top;\n  text-align: center;\n}\n#filter-container,\n#options-container {\n  float: right;\n  position: relative;\n}\n#optionssmenu {\n  top: 100% !important;\n  left: 0 !important;\n}\n#boards .column {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  width: 16em;\n  text-align: left;\n  vertical-align: top;\n}\n.bd ul,\n.boxcontent ul {\n  vertical-align: top;\n  padding: 0;\n}\n.right-box .boxcontent ul {\n  padding: 0 10px;\n}\n.yuimenuitem,\n.boxcontent li {\n  list-style-type: none;\n}\n.bd ul {\n  margin: 0;\n}\n.yuimenuitem::before {\n  content: \" [ ] \";\n  font-family: monospace;\n}\n.yuimenuitem-checked::before {\n  content: \" [x] \"\n}\n.yui-u {\n  display: inline-block;\n  vertical-align: top;\n  width: 475px;\n  margin: 10px;\n}\n#recent-images .boxcontent {\n  text-align: center;\n}\n#ft {\n  text-align: center;\n}\n#ft ul {\n  padding: 0;\n}\n#ft li {\n  list-style-type: none;\n  display: inline-block;\n  width: 100px;\n}\n#preview-tooltip-nws,\n#preview-tooltip-ws,\n#ft .fill,\n.clear-bug {\n  display: none;\n}";
     },
     theme: function(theme) {
       var agent, background, backgroundC, bgColor, css, fileHeading, icons, replyHeading, _conf;
@@ -4461,7 +4465,7 @@
         return MascotTools.save(editMascot);
       });
       $.on($('#close > a', dialog), 'click', MascotTools.close);
-      Style.rice(dialog);
+      Rice.nodes(dialog);
       return $.add(d.body, dialog);
     },
     input: function(item, name) {
@@ -4561,7 +4565,7 @@
     close: function() {
       Conf['editMode'] = false;
       editMascot = {};
-      $.rm($.id(mascotConf));
+      $.rm($.id('mascotConf'));
       Style.addStyle();
       return Settings.open("mascots");
     },
@@ -5602,7 +5606,7 @@
       return Style.addStyle();
     },
     themes: function(section, mode) {
-      var div, keys, name, parentdiv, suboptions, theme, _i, _j, _len, _len1;
+      var cb, div, keys, name, parentdiv, suboptions, theme, _i, _j, _len, _len1;
 
       if (typeof mode !== 'string') {
         mode = 'default';
@@ -5616,6 +5620,7 @@
       });
       keys = Object.keys(Themes);
       keys.sort();
+      cb = Settings.cb.theme;
       if (mode === "default") {
         for (_i = 0, _len = keys.length; _i < _len; _i++) {
           name = keys[_i];
@@ -5627,52 +5632,10 @@
               innerHTML: "<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div>    <div style='cursor: pointer; width: 9px; height: 9px; margin: 2px 3px; display: inline-block; vertical-align: bottom; background: " + theme['Checkbox Background'] + "; border: 1px solid " + theme['Checkbox Border'] + ";'></div>    <span style='color:" + theme['Subjects'] + "!important; font-weight: 600 !important'>      " + name + "    </span>    <span style='color:" + theme['Names'] + "!important; font-weight: 600 !important'>      " + theme['Author'] + "    </span>    <span style='color:" + theme['Sage'] + "!important'>      (SAGE)    </span>    <span style='color:" + theme['Tripcodes'] + "!important'>      " + theme['Author Tripcode'] + "    </span>    <time style='color:" + theme['Timestamps'] + "'>      20XX.01.01 12:00    </time>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>      No.27583594    </a>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important;' href='javascript:;' name='" + name + "' class=edit>      &gt;&gt;edit    </a>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important;' href='javascript:;' name='" + name + "' class=export>      &gt;&gt;export    </a>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Backlinks'] + "!important;&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important;&quot;)' style='color:" + theme['Backlinks'] + "!important;' href='javascript:;' name='" + name + "' class=delete>      &gt;&gt;delete    </a>  </div>  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>    <a style='color:" + theme['Quotelinks'] + "!important; text-shadow: none;'>      &gt;&gt;27582902    </a>    <br>    Post content is right here.  </blockquote>  <h1 style='color: " + theme['Text'] + "'>    Selected  </h1></div>"
             });
             div.style.backgroundColor = theme['Background Color'];
-            $.on($('a.edit', div), 'click', function(e) {
-              e.preventDefault();
-              e.stopPropagation();
-              ThemeTools.init(this.name);
-              return Settings.close();
-            });
-            $.on($('a.export', div), 'click', function(e) {
-              var exportTheme, exportedTheme;
-
-              e.preventDefault();
-              e.stopPropagation();
-              exportTheme = Themes[this.name];
-              exportTheme['Theme'] = this.name;
-              exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme));
-              if (window.open(exportedTheme, "_blank")) {
-
-              } else if (confirm("Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?")) {
-                return window.location(exportedTheme);
-              }
-            });
-            $.on($('a.delete', div), 'click', function(e) {
-              var container, settheme, userThemes;
-
-              e.preventDefault();
-              e.stopPropagation();
-              container = $.id(this.name);
-              if (!(container.previousSibling || container.nextSibling)) {
-                alert("Cannot delete theme (No other themes available).");
-                return;
-              }
-              if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
-                if (this.name === Conf['theme']) {
-                  if (settheme = container.previousSibling || container.nextSibling) {
-                    Conf['theme'] = settheme.id;
-                    $.addClass(settheme, 'selectedtheme');
-                    $.set('theme', Conf['theme']);
-                  }
-                }
-                Themes[this.name]["Deleted"] = true;
-                userThemes = $.get("userThemes", {});
-                userThemes[this.name] = Themes[this.name];
-                $.set('userThemes', userThemes);
-                return $.rm(container);
-              }
-            });
-            $.on(div, 'click', Settings.selectTheme);
+            $.on($('a.edit', div), 'click', cb.edit);
+            $.on($('a.export', div), 'click', cb["export"]);
+            $.on($('a.delete', div), 'click', cb["delete"]);
+            $.on(div, 'click', cb.select);
             $.add(suboptions, div);
           }
         }
@@ -5687,17 +5650,17 @@
         $.on($("#import", div), 'click', function() {
           return this.nextSibling.click();
         });
-        $.on($("#importbutton", div), 'change', function(evt) {
-          return ThemeTools.importtheme("appchan", evt);
+        $.on($("#importbutton", div), 'change', function(e) {
+          return ThemeTools.importtheme("appchan", e);
         });
         $.on($("#OCimport", div), 'click', function() {
           return this.nextSibling.click();
         });
-        $.on($("#OCimportbutton", div), 'change', function(evt) {
-          return ThemeTools.importtheme("oneechan", evt);
+        $.on($("#OCimportbutton", div), 'change', function(e) {
+          return ThemeTools.importtheme("oneechan", e);
         });
-        $.on($("#SSimportbutton", div), 'change', function(evt) {
-          return ThemeTools.importtheme("SS", evt);
+        $.on($("#SSimportbutton", div), 'change', function(e) {
+          return ThemeTools.importtheme("SS", e);
         });
         $.on($("#SSimport", div), 'click', function() {
           return this.nextSibling.click();
@@ -5716,19 +5679,7 @@
               className: theme,
               innerHTML: "<div style='cursor: pointer; position: relative; margin-bottom: 2px; width: 100% !important; box-shadow: none !important; background:" + theme['Reply Background'] + "!important;border:1px solid " + theme['Reply Border'] + "!important;color:" + theme['Text'] + "!important'>  <div style='padding: 3px 0px 0px 8px;'>    <span style='color:" + theme['Subjects'] + "!important; font-weight: 600 !important'>" + name + "</span>    <span style='color:" + theme['Names'] + "!important; font-weight: 600 !important'>" + theme['Author'] + "</span>    <span style='color:" + theme['Sage'] + "!important'>(SAGE)</span>    <span style='color:" + theme['Tripcodes'] + "!important'>" + theme['Author Tripcode'] + "</span>    <time style='color:" + theme['Timestamps'] + "'>20XX.01.01 12:00</time>    <a onmouseout='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Post Numbers'] + "!important&quot;)' onmouseover='this.setAttribute(&quot;style&quot;,&quot;color:" + theme['Hovered Links'] + "!important&quot;)' style='color:" + theme['Post Numbers'] + "!important;' href='javascript:;'>No.27583594</a>  </div>  <blockquote style='margin: 0; padding: 12px 40px 12px 38px'>    <a style='color:" + theme['Quotelinks'] + "!important; text-shadow: none;'>      &gt;&gt;27582902    </a>    <br>    I forgive you for using VLC to open me. ;__;  </blockquote></div>"
             });
-            $.on(div, 'click', function() {
-              if (confirm("Are you sure you want to undelete \"" + this.id + "\"?")) {
-                Themes[this.id]["Deleted"] = false;
-                return $.get("userThemes", {}, function(item) {
-                  var userThemes;
-
-                  userThemes = item["userThemes"];
-                  userThemes[this.id] = Themes[this.id];
-                  $.set('userThemes', userThemes);
-                  return $.rm(this);
-                });
-              }
-            });
+            $.on(div, 'click', cb.restore);
             $.add(suboptions, div);
           }
         }
@@ -5744,21 +5695,6 @@
       $.add(parentdiv, suboptions);
       $.add(parentdiv, div);
       return $.add(section, parentdiv);
-    },
-    selectTheme: function() {
-      var currentTheme;
-
-      if (currentTheme = $.id(Conf['theme'])) {
-        $.rmClass(currentTheme, 'selectedtheme');
-      }
-      if (Conf["NSFW/SFW Themes"]) {
-        $.set("theme_" + g.TYPE, this.id);
-      } else {
-        $.set("theme", this.id);
-      }
-      Conf['theme'] = this.id;
-      $.addClass(this, 'selectedtheme');
-      return Style.addStyle();
     },
     mouseover: function(e) {
       var mouseover;
@@ -5781,10 +5717,11 @@
       });
     },
     mascots: function(section, mode) {
-      var batchmascots, categories, category, header, keys, li, mascot, mascotHide, name, option, parentdiv, suboptions, ul, _i, _j, _k, _len, _len1, _len2, _ref;
+      var batchmascots, categories, cb, header, keys, mascot, mascotEl, mascotHide, menu, name, option, parentdiv, suboptions, _i, _j, _k, _len, _len1, _len2, _ref;
 
-      ul = {};
-      categories = [];
+      categories = {};
+      menu = [];
+      cb = Settings.cb.mascot;
       if (typeof mode !== 'string') {
         mode = 'default';
       }
@@ -5797,104 +5734,58 @@
       mascotHide = $.el("div", {
         id: "mascot_hide",
         className: "reply",
-        innerHTML: "Hide Categories <span></span><div></div>"
+        innerHTML: "Hide Categories <span class=dropmarker></span><div></div>"
       });
       keys = Object.keys(Mascots);
       keys.sort();
       if (mode === 'default') {
         _ref = MascotTools.categories;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          category = _ref[_i];
-          ul[category] = $.el("ul", {
+          name = _ref[_i];
+          categories[name] = $.el("div", {
             className: "mascots",
-            id: category
+            id: name
           });
-          if (Conf["Hidden Categories"].contains(category)) {
-            ul[category].hidden = true;
+          if (Conf["Hidden Categories"].contains(name)) {
+            categories[name].hidden = true;
           }
           header = $.el("h3", {
             className: "mascotHeader",
-            textContent: category
+            textContent: name
           });
-          categories.push(option = $.el("label", {
-            name: category,
-            innerHTML: "<input name='" + category + "' type=checkbox " + (Conf["Hidden Categories"].contains(category) ? 'checked' : '') + ">" + category
+          menu.push(option = $.el("label", {
+            name: name,
+            innerHTML: "<input name='" + name + "' type=checkbox " + (Conf["Hidden Categories"].contains(name) ? 'checked' : '') + ">" + name
           }));
-          $.on($('input', option), 'change', function() {
-            return Settings.mascotTab.toggle.call(this);
-          });
-          $.add(ul[category], header);
-          $.add(suboptions, ul[category]);
+          $.on($('input', option), 'change', Settings.cb.mascotCategory);
+          $.add(categories[name], header);
+          $.add(suboptions, categories[name]);
         }
         for (_j = 0, _len1 = keys.length; _j < _len1; _j++) {
           name = keys[_j];
-          if (!Conf["Deleted Mascots"].contains(name)) {
-            mascot = Mascots[name];
-            li = $.el('li', {
-              className: 'mascot',
-              id: name,
-              innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</div><div class='mascotcontainer'><div class='mAlign " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (Style.lightTheme ? mascot.image[1] : mascot.image[0]) : mascot.image) + "'></div></div><div class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a><a class=delete name='" + name + "' href='javascript:;'>Delete</a><a class=export name='" + name + "' href='javascript:;'>Export</a></div>"
-            });
-            if (Conf[g.MASCOTSTRING].contains(name)) {
-              $.addClass(li, 'enabled');
-            }
-            $.on($('a.edit', li), 'click', function(e) {
-              e.stopPropagation();
-              MascotTools.dialog(this.name);
-              return Settings.close();
-            });
-            $.on($('a.delete', li), 'click', function(e) {
-              var type, _k, _len2, _ref1;
-
-              e.stopPropagation();
-              if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
-                if (Conf['mascot'] === this.name) {
-                  MascotTools.init();
-                }
-                _ref1 = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
-                for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-                  type = _ref1[_k];
-                  Conf[type].remove(this.name);
-                  $.set(type, Conf[type]);
-                }
-                Conf["Deleted Mascots"].push(this.name);
-                $.set("Deleted Mascots", Conf["Deleted Mascots"]);
-                return $.rm($.id(this.name));
-              }
-            });
-            $.on($('a.export', li), 'click', function(e) {
-              var exportMascot, exportedMascot;
-
-              e.stopPropagation();
-              exportMascot = Mascots[this.name];
-              exportMascot['Mascot'] = this.name;
-              exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot));
-              if (window.open(exportedMascot, "_blank")) {
-
-              } else if (confirm("Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?")) {
-                return window.location(exportedMascot);
-              }
-            });
-            $.on(li, 'click', function() {
-              if (Conf[g.MASCOTSTRING].remove(this.id)) {
-                if (Conf['mascot'] === this.id) {
-                  MascotTools.init();
-                }
-              } else {
-                Conf[g.MASCOTSTRING].push(this.id);
-                MascotTools.init(this.id);
-              }
-              $.toggleClass(this, 'enabled');
-              return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING]);
-            });
-            if (MascotTools.categories.contains(mascot.category)) {
-              $.add(ul[mascot.category], li);
-            } else {
-              $.add(ul[MascotTools.categories[0]], li);
-            }
+          if (Conf["Deleted Mascots"].contains(name)) {
+            continue;
+          }
+          mascot = Mascots[name];
+          mascotEl = $.el('div', {
+            className: 'mascot',
+            id: name,
+            innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</div><div class='mascotcontainer'><div class='mAlign " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (Style.lightTheme ? mascot.image[1] : mascot.image[0]) : mascot.image) + "'></div></div><div class='mascotoptions'><a class=edit name='" + name + "' href='javascript:;'>Edit</a><a class=delete name='" + name + "' href='javascript:;'>Delete</a><a class=export name='" + name + "' href='javascript:;'>Export</a></div>"
+          });
+          if (Conf[g.MASCOTSTRING].contains(name)) {
+            $.addClass(mascotEl, 'enabled');
+          }
+          $.on($('.edit', mascotEl), 'click', cb.edit);
+          $.on($('.delete', mascotEl), 'click', cb["delete"]);
+          $.on($('.export', mascotEl), 'click', cb["export"]);
+          $.on(mascotEl, 'click', cb.select);
+          if (MascotTools.categories.contains(mascot.category)) {
+            $.add(categories[mascot.category], mascotEl);
+          } else {
+            $.add(categories[MascotTools.categories[0]], mascotEl);
           }
         }
-        $.add($('div', mascotHide), categories);
+        $.add($('div', mascotHide), menu);
         batchmascots = $.el('div', {
           id: "mascots_batch",
           innerHTML: "<a href=\"javascript:;\" id=clear>Clear All</a> /<a href=\"javascript:;\" id=selectAll>Select All</a> /<a href=\"javascript:;\" id=createNew>Add Mascot</a> /<a href=\"javascript:;\" id=importMascot>Import Mascot</a><input id=importMascotButton type=file hidden> /<a href=\"javascript:;\" id=undelete>Undelete Mascots</a> /<a href=\"http://appchan.booru.org/\" target=_blank>Get More Mascots!</a>  "
@@ -5926,8 +5817,8 @@
         $.on($("#importMascot", batchmascots), 'click', function() {
           return this.nextSibling.click();
         });
-        $.on($("#importMascotButton", batchmascots), 'change', function(evt) {
-          return MascotTools.importMascot(evt);
+        $.on($("#importMascotButton", batchmascots), 'change', function(e) {
+          return MascotTools.importMascot(e);
         });
         $.on($('#undelete', batchmascots), 'click', function() {
           if (!(Conf["Deleted Mascots"].length > 0)) {
@@ -5938,30 +5829,25 @@
           return Settings.mascotTab.dialog(Settings.el, 'undelete');
         });
       } else {
-        ul = $.el("ul", {
+        categories = $.el("div", {
           className: "mascots",
-          id: category
+          id: name
         });
         for (_k = 0, _len2 = keys.length; _k < _len2; _k++) {
           name = keys[_k];
-          if (Conf["Deleted Mascots"].contains(name)) {
-            mascot = Mascots[name];
-            li = $.el('li', {
-              className: 'mascot',
-              id: name,
-              innerHTML: "  <div class='mascotname'>" + (name.replace(/_/g, " ")) + "</span>  <div class='container " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (Style.lightTheme ? mascot.image[1] : mascot.image[0]) : mascot.image) + "'></div>  "
-            });
-            $.on(li, 'click', function() {
-              if (confirm("Are you sure you want to undelete \"" + this.id + "\"?")) {
-                Conf["Deleted Mascots"].remove(this.id);
-                $.set("Deleted Mascots", Conf["Deleted Mascots"]);
-                return $.rm(this);
-              }
-            });
-            $.add(ul, li);
+          if (!Conf["Deleted Mascots"].contains(name)) {
+            continue;
           }
+          mascot = Mascots[name];
+          mascotEl = $.el('div', {
+            className: 'mascot',
+            id: name,
+            innerHTML: "<div class='mascotname'>" + (name.replace(/_/g, " ")) + "</span><div class='container " + mascot.category + "'><img class=mascotimg src='" + (Array.isArray(mascot.image) ? (Style.lightTheme ? mascot.image[1] : mascot.image[0]) : mascot.image) + "'></div>"
+          });
+          $.on(mascotEl, 'click', Settings.cb.mascot.restore);
+          $.add(categories, mascotEl);
         }
-        $.add(suboptions, ul);
+        $.add(suboptions, categories);
         batchmascots = $.el('div', {
           id: "mascots_batch",
           innerHTML: "<a href=\"javascript:;\" id=\"return\">Return</a>"
@@ -5974,6 +5860,170 @@
       $.add(parentdiv, [suboptions, batchmascots, mascotHide]);
       Rice.nodes(parentdiv);
       return $.add(section, parentdiv);
+    },
+    cb: {
+      mascot: {
+        category: function() {
+          var i, name, setting, test, type, _i, _len, _ref;
+
+          if ($.id(this.name).hidden = this.checked) {
+            Conf["Hidden Categories"].push(this.name);
+            _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              type = _ref[_i];
+              setting = Conf[type];
+              i = setting.length;
+              test = type === g.MASCOTSTRING;
+              while (i--) {
+                name = setting[i];
+                if (Mascots[name].category !== this.name) {
+                  continue;
+                }
+                setting.remove(name);
+                if (!test) {
+                  continue;
+                }
+                $.rmClass($.id(name), 'enabled');
+              }
+              $.set(type, setting);
+            }
+          } else {
+            Conf["Hidden Categories"].remove(this.name);
+          }
+          return $.set("Hidden Categories", Conf["Hidden Categories"]);
+        },
+        edit: function(e) {
+          e.stopPropagation();
+          MascotTools.dialog(this.name);
+          return Settings.close();
+        },
+        "delete": function(e) {
+          var type, _i, _len, _ref;
+
+          e.stopPropagation();
+          if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
+            if (Conf['mascot'] === this.name) {
+              MascotTools.init();
+            }
+            _ref = ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"];
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              type = _ref[_i];
+              Conf[type].remove(this.name);
+              $.set(type, Conf[type]);
+            }
+            Conf["Deleted Mascots"].push(this.name);
+            $.set("Deleted Mascots", Conf["Deleted Mascots"]);
+            return $.rm($.id(this.name));
+          }
+        },
+        "export": function(e) {
+          var exportMascot, exportedMascot;
+
+          e.stopPropagation();
+          exportMascot = Mascots[this.name];
+          exportMascot['Mascot'] = this.name;
+          exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot));
+          if (window.open(exportedMascot, "_blank")) {
+
+          } else if (confirm("Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?")) {
+            return window.location(exportedMascot);
+          }
+        },
+        restore: function() {
+          if (confirm("Are you sure you want to restore \"" + this.id + "\"?")) {
+            Conf["Deleted Mascots"].remove(this.id);
+            $.set("Deleted Mascots", Conf["Deleted Mascots"]);
+            return $.rm(this);
+          }
+        },
+        select: function() {
+          if (Conf[g.MASCOTSTRING].remove(this.id)) {
+            if (Conf['mascot'] === this.id) {
+              MascotTools.init();
+            }
+          } else {
+            Conf[g.MASCOTSTRING].push(this.id);
+            MascotTools.init(this.id);
+          }
+          $.toggleClass(this, 'enabled');
+          return $.set(g.MASCOTSTRING, Conf[g.MASCOTSTRING]);
+        }
+      },
+      theme: {
+        select: function() {
+          var currentTheme;
+
+          if (currentTheme = $.id(Conf['theme'])) {
+            $.rmClass(currentTheme, 'selectedtheme');
+          }
+          if (Conf["NSFW/SFW Themes"]) {
+            $.set("theme_" + g.TYPE, this.id);
+          } else {
+            $.set("theme", this.id);
+          }
+          Conf['theme'] = this.id;
+          $.addClass(this, 'selectedtheme');
+          return Style.addStyle();
+        },
+        edit: function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          ThemeTools.init(this.name);
+          return Settings.close();
+        },
+        "export": function(e) {
+          var exportTheme, exportedTheme;
+
+          e.preventDefault();
+          e.stopPropagation();
+          exportTheme = Themes[this.name];
+          exportTheme['Theme'] = this.name;
+          exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme));
+          if (window.open(exportedTheme, "_blank")) {
+
+          } else if (confirm("Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?")) {
+            return window.location(exportedTheme);
+          }
+        },
+        "delete": function(e) {
+          var container, settheme, userThemes;
+
+          e.preventDefault();
+          e.stopPropagation();
+          container = $.id(this.name);
+          if (!(container.previousSibling || container.nextSibling)) {
+            alert("Cannot delete theme (No other themes available).");
+            return;
+          }
+          if (confirm("Are you sure you want to delete \"" + this.name + "\"?")) {
+            if (this.name === Conf['theme']) {
+              if (settheme = container.previousSibling || container.nextSibling) {
+                Conf['theme'] = settheme.id;
+                $.addClass(settheme, 'selectedtheme');
+                $.set('theme', Conf['theme']);
+              }
+            }
+            Themes[this.name]["Deleted"] = true;
+            userThemes = $.get("userThemes", {});
+            userThemes[this.name] = Themes[this.name];
+            $.set('userThemes', userThemes);
+            return $.rm(container);
+          }
+        },
+        restore: function() {
+          if (confirm("Are you sure you want to restore \"" + this.id + "\"?")) {
+            Themes[this.id]["Deleted"] = false;
+            return $.get("userThemes", {}, function(item) {
+              var userThemes;
+
+              userThemes = item["userThemes"];
+              userThemes[this.id] = Themes[this.id];
+              $.set('userThemes', userThemes);
+              return $.rm(this);
+            });
+          }
+        }
+      }
     }
   };
 
@@ -12139,6 +12189,14 @@
         status: $('[type=submit]', dialog),
         fileInput: $('[type=file]', dialog)
       };
+      if (Conf['Remember QR Size']) {
+        $.get('QR.size', '', function(item) {
+          return nodes.com.style.cssText = item['QR.size'];
+        });
+        $.on(nodes.com, 'mouseup', function() {
+          return $.set('QR.size', this.style.cssText);
+        });
+      }
       mimeTypes = $('ul.rules > li').textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':

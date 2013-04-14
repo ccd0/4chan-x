@@ -644,6 +644,8 @@ Settings =
     keys = Object.keys(Themes)
     keys.sort()
 
+    cb = Settings.cb.theme
+    
     if mode is "default"
 
       for name in keys
@@ -700,46 +702,11 @@ Settings =
 
           div.style.backgroundColor = theme['Background Color']
 
-          $.on $('a.edit', div), 'click', (e) ->
-            e.preventDefault()
-            e.stopPropagation()
-            ThemeTools.init @name
-            Settings.close()
+          $.on $('a.edit',   div), 'click', cb.edit
+          $.on $('a.export', div), 'click', cb.export
+          $.on $('a.delete', div), 'click', cb.delete
+          $.on div,                'click', cb.select
 
-          $.on $('a.export', div), 'click', (e) ->
-            e.preventDefault()
-            e.stopPropagation()
-            exportTheme = Themes[@name]
-            exportTheme['Theme'] = @name
-            exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme))
-
-            if window.open exportedTheme, "_blank"
-              return
-            else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
-              window.location exportedTheme
-
-          $.on $('a.delete', div), 'click', (e) ->
-            e.preventDefault()
-            e.stopPropagation()
-            container = $.id @name
-
-            unless container.previousSibling or container.nextSibling
-              alert "Cannot delete theme (No other themes available)."
-              return
-
-            if confirm "Are you sure you want to delete \"#{@name}\"?"
-              if @name is Conf['theme']
-                if settheme = container.previousSibling or container.nextSibling
-                  Conf['theme'] = settheme.id
-                  $.addClass settheme, 'selectedtheme'
-                  $.set 'theme', Conf['theme']
-              Themes[@name]["Deleted"] = true
-              userThemes = $.get "userThemes", {}
-              userThemes[@name] = Themes[@name]
-              $.set 'userThemes', userThemes
-              $.rm container
-
-          $.on div, 'click', Settings.selectTheme
           $.add suboptions, div
 
       div = $.el 'div',
@@ -758,16 +725,17 @@ Settings =
 
       $.on $("#import", div), 'click', ->
         @nextSibling.click()
-      $.on $("#importbutton", div), 'change', (evt) ->
-        ThemeTools.importtheme "appchan", evt
+      $.on $("#importbutton", div), 'change', (e) ->
+        ThemeTools.importtheme "appchan", e
 
       $.on $("#OCimport", div), 'click', ->
         @nextSibling.click()
-      $.on $("#OCimportbutton", div), 'change', (evt) ->
-        ThemeTools.importtheme "oneechan", evt
+      $.on $("#OCimportbutton", div), 'change', (e) ->
+        ThemeTools.importtheme "oneechan", e
 
-      $.on $("#SSimportbutton", div), 'change', (evt) ->
-        ThemeTools.importtheme "SS", evt
+      $.on $("#SSimportbutton", div), 'change', (e) ->
+        ThemeTools.importtheme "SS", e
+
       $.on $("#SSimport", div), 'click', ->
         @nextSibling.click()
 
@@ -804,14 +772,7 @@ Settings =
   </blockquote>
 </div>"
 
-          $.on div, 'click', ->
-            if confirm "Are you sure you want to undelete \"#{@id}\"?"
-              Themes[@id]["Deleted"] = false
-              $.get "userThemes", {}, (item) ->
-                userThemes = item["userThemes"]
-                userThemes[@id] = Themes[@id]
-                $.set 'userThemes', userThemes
-                $.rm @
+          $.on div, 'click', cb.restore
 
           $.add suboptions, div
 
@@ -826,18 +787,6 @@ Settings =
     $.add parentdiv, suboptions
     $.add parentdiv, div
     $.add section, parentdiv
-
-  selectTheme: ->
-    if currentTheme = $.id(Conf['theme'])
-      $.rmClass currentTheme, 'selectedtheme'
-
-    if Conf["NSFW/SFW Themes"]
-      $.set "theme_#{g.TYPE}", @id
-    else
-      $.set "theme", @id
-    Conf['theme'] = @id
-    $.addClass @, 'selectedtheme'
-    Style.addStyle()
 
   mouseover: (e) ->
     mouseover = $.el 'div',
@@ -858,10 +807,10 @@ Settings =
 
     return
 
-
   mascots: (section, mode) ->
-    ul = {}
-    categories = []
+    categories = {}
+    menu       = []
+    cb         = Settings.cb.mascot
 
     if typeof mode isnt 'string'
       mode = 'default'
@@ -875,94 +824,60 @@ Settings =
     mascotHide = $.el "div",
       id: "mascot_hide"
       className: "reply"
-      innerHTML: "Hide Categories <span></span><div></div>"
+      innerHTML: "Hide Categories <span class=dropmarker></span><div></div>"
 
     keys = Object.keys Mascots
     keys.sort()
 
     if mode is 'default'
       # Create a keyed Unordered List Element and hide option for each mascot category.
-      for category in MascotTools.categories
-        ul[category] = $.el "ul",
+      for name in MascotTools.categories
+        categories[name] = $.el "div",
           className: "mascots"
-          id: category
+          id: name
 
-        if Conf["Hidden Categories"].contains category
-          ul[category].hidden = true
+        if Conf["Hidden Categories"].contains name
+          categories[name].hidden = true
 
         header = $.el "h3",
           className: "mascotHeader"
-          textContent: category
+          textContent: name
 
-        categories.push option = $.el "label",
-          name: category
-          innerHTML: "<input name='#{category}' type=checkbox #{if Conf["Hidden Categories"].contains(category) then 'checked' else ''}>#{category}"
+        menu.push option = $.el "label",
+          name: name
+          innerHTML: "<input name='#{name}' type=checkbox #{if Conf["Hidden Categories"].contains(name) then 'checked' else ''}>#{name}"
 
-        $.on $('input', option), 'change', ->
-          Settings.mascotTab.toggle.call @
+        $.on $('input', option), 'change', Settings.cb.mascotCategory
 
-        $.add ul[category], header
-        $.add suboptions, ul[category]
+        $.add categories[name], header
+        $.add suboptions, categories[name]
 
       for name in keys
-        unless Conf["Deleted Mascots"].contains name
-          mascot = Mascots[name]
-          li = $.el 'li',
-            className: 'mascot'
-            id: name
-            innerHTML: "
+
+        continue if Conf["Deleted Mascots"].contains name
+        mascot = Mascots[name]
+        mascotEl = $.el 'div',
+          className: 'mascot'
+          id: name
+          innerHTML: "
 <div class='mascotname'>#{name.replace /_/g, " "}</div>
 <div class='mascotcontainer'><div class='mAlign #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'></div></div>
 <div class='mascotoptions'><a class=edit name='#{name}' href='javascript:;'>Edit</a><a class=delete name='#{name}' href='javascript:;'>Delete</a><a class=export name='#{name}' href='javascript:;'>Export</a></div>"
 
-          if Conf[g.MASCOTSTRING].contains name
-            $.addClass li, 'enabled'
+        if Conf[g.MASCOTSTRING].contains name
+          $.addClass mascotEl, 'enabled'
 
-          $.on $('a.edit', li), 'click', (e) ->
-            e.stopPropagation()
-            MascotTools.dialog @name
-            Settings.close()
+        $.on $('.edit',   mascotEl), 'click', cb.edit
+        $.on $('.delete', mascotEl), 'click', cb.delete
+        $.on $('.export', mascotEl), 'click', cb.export
+        $.on mascotEl,               'click', cb.select
 
-          $.on $('a.delete', li), 'click', (e) ->
-            e.stopPropagation()
-            if confirm "Are you sure you want to delete \"#{@name}\"?"
-              if Conf['mascot'] is @name
-                MascotTools.init()
-              for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
-                Conf[type].remove @name
-                $.set type, Conf[type]
-              Conf["Deleted Mascots"].push @name
-              $.set "Deleted Mascots", Conf["Deleted Mascots"]
-              $.rm $.id @name
+        if MascotTools.categories.contains mascot.category
+          $.add categories[mascot.category], mascotEl
+        else
+          $.add categories[MascotTools.categories[0]], mascotEl
 
-          # Mascot Exporting
-          $.on $('a.export', li), 'click', (e) ->
-            e.stopPropagation()
-            exportMascot = Mascots[@name]
-            exportMascot['Mascot'] = @name
-            exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot))
-
-            if window.open exportedMascot, "_blank"
-              return
-            else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
-              window.location exportedMascot
-
-          $.on li, 'click', ->
-            if Conf[g.MASCOTSTRING].remove @id
-              if Conf['mascot'] is @id
-                MascotTools.init()
-            else
-              Conf[g.MASCOTSTRING].push @id
-              MascotTools.init @id
-            $.toggleClass @, 'enabled'
-            $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
-
-          if MascotTools.categories.contains mascot.category
-            $.add ul[mascot.category], li
-          else
-            $.add ul[MascotTools.categories[0]], li
-
-      $.add $('div', mascotHide), categories
+      $.add $('div', mascotHide), menu
 
       batchmascots = $.el 'div',
         id: "mascots_batch"
@@ -995,8 +910,8 @@ Settings =
       $.on $("#importMascot", batchmascots), 'click', ->
         @nextSibling.click()
 
-      $.on $("#importMascotButton", batchmascots), 'change', (evt) ->
-        MascotTools.importMascot evt
+      $.on $("#importMascotButton", batchmascots), 'change', (e) ->
+        MascotTools.importMascot e
 
       $.on $('#undelete', batchmascots), 'click', ->
         unless Conf["Deleted Mascots"].length > 0
@@ -1006,30 +921,26 @@ Settings =
         Settings.mascotTab.dialog Settings.el, 'undelete'
 
     else
-      ul = $.el "ul",
+      categories = $.el "div",
         className: "mascots"
-        id: category
+        id: name
 
       for name in keys
-        if Conf["Deleted Mascots"].contains name
-          mascot = Mascots[name]
-          li = $.el 'li',
-            className: 'mascot'
-            id: name
-            innerHTML: "
-  <div class='mascotname'>#{name.replace /_/g, " "}</span>
-  <div class='container #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'></div>
-  "
+        continue unless Conf["Deleted Mascots"].contains name
+        mascot = Mascots[name]
+        mascotEl = $.el 'div',
+          className: 'mascot'
+          id: name
+          innerHTML: "
+<div class='mascotname'>#{name.replace /_/g, " "}</span>
+<div class='container #{mascot.category}'><img class=mascotimg src='#{if Array.isArray(mascot.image) then (if Style.lightTheme then mascot.image[1] else mascot.image[0]) else mascot.image}'></div>
+"
 
-          $.on li, 'click', ->
-            if confirm "Are you sure you want to undelete \"#{@id}\"?"
-              Conf["Deleted Mascots"].remove @id
-              $.set "Deleted Mascots", Conf["Deleted Mascots"]
-              $.rm @
+        $.on mascotEl, 'click', Settings.cb.mascot.restore
 
-          $.add ul, li
+        $.add categories, mascotEl
 
-      $.add suboptions, ul
+      $.add suboptions, categories
 
       batchmascots = $.el 'div',
         id: "mascots_batch"
@@ -1044,3 +955,135 @@ Settings =
     Rice.nodes parentdiv
 
     $.add section, parentdiv
+
+  cb:
+    mascot:
+      category: ->
+        if $.id(@name).hidden = @checked
+          Conf["Hidden Categories"].push @name
+      
+          # Gather all names of enabled mascots in the hidden category in every context it could be enabled.
+          for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
+            setting = Conf[type]
+            i = setting.length
+      
+            test = type is g.MASCOTSTRING
+      
+            while i--
+              name = setting[i]
+              continue unless Mascots[name].category is @name
+              setting.remove name
+              continue unless test
+              $.rmClass $.id(name), 'enabled'
+            $.set type, setting
+      
+        else
+          Conf["Hidden Categories"].remove @name
+      
+        $.set "Hidden Categories", Conf["Hidden Categories"]
+      
+      edit: (e) ->
+        e.stopPropagation()
+        MascotTools.dialog @name
+        Settings.close()
+      
+      delete: (e) ->
+        e.stopPropagation()
+        if confirm "Are you sure you want to delete \"#{@name}\"?"
+          if Conf['mascot'] is @name
+            MascotTools.init()
+          for type in ["Enabled Mascots", "Enabled Mascots sfw", "Enabled Mascots nsfw"]
+            Conf[type].remove @name
+            $.set type, Conf[type]
+          Conf["Deleted Mascots"].push @name
+          $.set "Deleted Mascots", Conf["Deleted Mascots"]
+          $.rm $.id @name
+      
+      export: (e) ->
+        e.stopPropagation()
+        exportMascot = Mascots[@name]
+        exportMascot['Mascot'] = @name
+        exportedMascot = "data:application/json," + encodeURIComponent(JSON.stringify(exportMascot))
+      
+        if window.open exportedMascot, "_blank"
+          return
+        else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
+          window.location exportedMascot
+          
+      restore: ->
+        if confirm "Are you sure you want to restore \"#{@id}\"?"
+          Conf["Deleted Mascots"].remove @id
+          $.set "Deleted Mascots", Conf["Deleted Mascots"]
+          $.rm @
+      
+      select: ->
+        if Conf[g.MASCOTSTRING].remove @id
+          if Conf['mascot'] is @id
+            MascotTools.init()
+        else
+          Conf[g.MASCOTSTRING].push @id
+          MascotTools.init @id
+        $.toggleClass @, 'enabled'
+        $.set g.MASCOTSTRING, Conf[g.MASCOTSTRING]
+      
+    
+    theme:
+      select: ->
+        if currentTheme = $.id(Conf['theme'])
+          $.rmClass currentTheme, 'selectedtheme'
+      
+        if Conf["NSFW/SFW Themes"]
+          $.set "theme_#{g.TYPE}", @id
+        else
+          $.set "theme", @id
+        Conf['theme'] = @id
+        $.addClass @, 'selectedtheme'
+        Style.addStyle()
+
+      edit: (e) ->
+        e.preventDefault()
+        e.stopPropagation()
+        ThemeTools.init @name
+        Settings.close()
+
+      export: (e) ->
+        e.preventDefault()
+        e.stopPropagation()
+        exportTheme = Themes[@name]
+        exportTheme['Theme'] = @name
+        exportedTheme = "data:application/json," + encodeURIComponent(JSON.stringify(exportTheme))
+
+        if window.open exportedTheme, "_blank"
+          return
+        else if confirm "Your popup blocker is preventing Appchan X from exporting this theme. Would you like to open the exported theme in this window?"
+          window.location exportedTheme
+
+      delete: (e) ->
+        e.preventDefault()
+        e.stopPropagation()
+        container = $.id @name
+
+        unless container.previousSibling or container.nextSibling
+          alert "Cannot delete theme (No other themes available)."
+          return
+
+        if confirm "Are you sure you want to delete \"#{@name}\"?"
+          if @name is Conf['theme']
+            if settheme = container.previousSibling or container.nextSibling
+              Conf['theme'] = settheme.id
+              $.addClass settheme, 'selectedtheme'
+              $.set 'theme', Conf['theme']
+          Themes[@name]["Deleted"] = true
+          userThemes = $.get "userThemes", {}
+          userThemes[@name] = Themes[@name]
+          $.set 'userThemes', userThemes
+          $.rm container
+
+      restore: ->
+        if confirm "Are you sure you want to restore \"#{@id}\"?"
+          Themes[@id]["Deleted"] = false
+          $.get "userThemes", {}, (item) ->
+            userThemes = item["userThemes"]
+            userThemes[@id] = Themes[@id]
+            $.set 'userThemes', userThemes
+            $.rm @

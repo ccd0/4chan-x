@@ -1306,9 +1306,6 @@ a.forwardlink{
   border-radius: 0 !important;
   margin-bottom: 0;
 }
-.thread .op {
-  padding: 0 3px;
-}
 #themes {
   text-shadow: none;
 }

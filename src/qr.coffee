@@ -802,6 +802,12 @@ QR =
       status:     $ '[type=submit]',     dialog
       fileInput:  $ '[type=file]',       dialog
 
+    if Conf['Remember QR Size']
+      $.get 'QR.size', '', (item) ->
+        nodes.com.style.cssText = item['QR.size']
+      $.on nodes.com, 'mouseup', ->
+        $.set 'QR.size', @style.cssText
+
     # Allow only this board's supported files.
     mimeTypes = $('ul.rules > li').textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
       switch type
