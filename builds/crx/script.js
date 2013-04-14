@@ -3535,8 +3535,9 @@
         css += "#globalMessage {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n";
       }
       if (_conf["Post Form Decorations"]) {
-        return css += "#qr {\n  border-color: " + theme["Buttons Border"] + ";\n  background: " + backgroundC + ";\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n";
+        css += "#qr {\n  border-color: " + theme["Buttons Border"] + ";\n  background: " + backgroundC + ";\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n";
       }
+      return css;
     },
     iconPositions: function() {
       var align, aligner, css, i, iconOffset, navlinks, notCatalog, notEither, position, _conf;
@@ -6112,12 +6113,11 @@
           innerHTML: '[<a href=javascript:;> - </a>]\u00A0'
         });
         $.on(btn, 'click', Header.toggleBoardList);
-        $.prepend(fullBoardList, btn);
+        return $.prepend(fullBoardList, btn);
       } else {
         $.rm($('#custom-board-list', nav));
-        fullBoardList.hidden = false;
+        return fullBoardList.hidden = false;
       }
-      return Style.padding();
     },
     generateBoardList: function(text) {
       var as, list, nodes;

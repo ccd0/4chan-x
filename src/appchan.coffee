@@ -202,6 +202,8 @@ Style =
     css = """<%= grunt.file.read('css/theme.css') %>"""
 
     <%= grunt.file.read('css/themeoptions.css') %>
+    
+    css
 
   iconPositions: ->
     css = """<%= grunt.file.read('css/icons.base.css') %>"""
