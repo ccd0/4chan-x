@@ -264,19 +264,19 @@ QR =
       text += ">#{s}\n"
 
     QR.open()
-    ta = QR.nodes.com
-    QR.nodes.thread.value = OP.ID unless ta.value
+    {com, thread} = QR.nodes
+    thread.value = OP.ID unless com.value
 
-    caretPos = ta.selectionStart
+    caretPos = com.selectionStart
     # Replace selection for text.
-    ta.value = ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
+    com.value = com.value[...caretPos] + text + com.value[com.selectionEnd..]
     # Move the caret to the end of the new quote.
     range = caretPos + text.length
-    ta.setSelectionRange range, range
-    ta.focus()
+    com.setSelectionRange range, range
+    com.focus()
 
-    # Fire the 'input' event
-    $.event 'input', null, ta
+    QR.selected.save com
+    QR.selected.save thread
 
   characterCount: ->
     counter = QR.nodes.charCount
