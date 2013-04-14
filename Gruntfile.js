@@ -1,13 +1,18 @@
 module.exports = function(grunt) {
 
   var pkg = grunt.file.readJSON('package.json');
+  var concatOptions = {
+    process: {
+      data: pkg
+    }
+  };
 
   // Project configuration.
   grunt.initConfig({
     pkg: pkg,
     concat: {
       coffee: {
-        options: { process: { data: pkg } },
+        options: concatOptions,
         src: [
           'src/config.coffee',
           'src/globals.coffee',
@@ -23,7 +28,7 @@ module.exports = function(grunt) {
         dest: 'tmp/script.coffee'
       },
       crx: {
-        options: { process: { data: pkg } },
+        options: concatOptions,
         files: {
           'builds/crx/manifest.json': 'src/manifest.json',
           'builds/crx/script.js': [
@@ -33,7 +38,7 @@ module.exports = function(grunt) {
         }
       },
       userjs: {
-        options: { process: { data: pkg } },
+        options: concatOptions,
         src: [
           'src/metadata.js',
           'src/banner.js',
@@ -42,7 +47,7 @@ module.exports = function(grunt) {
         dest: 'builds/<%= pkg.name %>.js'
       },
       userscript: {
-        options: { process: { data: pkg } },
+        options: concatOptions,
         files: {
           'builds/<%= pkg.name %>.meta.js': 'src/metadata.js',
           'builds/<%= pkg.name %>.user.js': [
@@ -160,12 +165,18 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('release', ['exec:commit', 'exec:push', 'build-crx', 'compress:crx']);
-  grunt.registerTask('patch',   ['bump',       'updcl:3', 'release']);
-  grunt.registerTask('minor',   ['bump:minor', 'updcl:2', 'release']);
-  grunt.registerTask('major',   ['bump:major', 'updcl:1', 'release']);
-  grunt.registerTask('updcl', 'Update the changelog', function(i) {
+  grunt.registerTask('patch',   ['bump',       'reloadPkg', 'updcl:3', 'release']);
+  grunt.registerTask('minor',   ['bump:minor', 'reloadPkg', 'updcl:2', 'release']);
+  grunt.registerTask('major',   ['bump:major', 'reloadPkg', 'updcl:1', 'release']);
+
+  grunt.registerTask('reloadPkg', 'Reload the package', function() {
     // Update the `pkg` object with the new version.
     pkg = grunt.file.readJSON('package.json');
+    concatOptions.process.data = pkg;
+    grunt.log.ok('pkg reloaded.');
+  });
+
+  grunt.registerTask('updcl', 'Update the changelog', function(i) {
     // i is the number of #s for markdown.
     var version = new Array(+i + 1).join('#') + ' ' + pkg.version + ' - *' + grunt.template.today('yyyy-mm-dd') + '*';
     grunt.file.write('CHANGELOG.md', version + '\n\n' + grunt.file.read('CHANGELOG.md'));
