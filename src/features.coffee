@@ -4564,16 +4564,17 @@ Linkify =
       $.on embed, 'click', Linkify.toggle
 
       if Conf['Link Title'] and (service = type.title)
-        titles = $.get 'CachedTitles', {}
+        $.get 'CachedTitles', {}, (item) ->
+          titles = item['CachedTitles']
 
-        if title = titles[match[1]]
-          a.textContent = title[0]
-          embed.setAttribute 'data-title', title[0]
-        else
-          try
-            $.cache service.api.call(a), callbacks
-          catch err
-            a.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
+          if title = titles[match[1]]
+            a.textContent = title[0]
+            embed.setAttribute 'data-title', title[0]
+          else
+            try
+              $.cache service.api.call(a), callbacks
+            catch err
+              a.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
 
       return [a, $.tn(' '), embed]
     return [a]

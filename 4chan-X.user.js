@@ -6727,7 +6727,7 @@
       }
     },
     embedder: function(a) {
-      var callbacks, embed, err, key, match, service, title, titles, type, _ref;
+      var callbacks, embed, key, match, service, type, _ref;
 
       if (!Conf['Embedding']) {
         return [a];
@@ -6769,18 +6769,22 @@
         embed.setAttribute('data-originalURL', a.href);
         $.on(embed, 'click', Linkify.toggle);
         if (Conf['Link Title'] && (service = type.title)) {
-          titles = $.get('CachedTitles', {});
-          if (title = titles[match[1]]) {
-            a.textContent = title[0];
-            embed.setAttribute('data-title', title[0]);
-          } else {
-            try {
-              $.cache(service.api.call(a), callbacks);
-            } catch (_error) {
-              err = _error;
-              a.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
+          $.get('CachedTitles', {}, function(item) {
+            var err, title, titles;
+
+            titles = item['CachedTitles'];
+            if (title = titles[match[1]]) {
+              a.textContent = title[0];
+              return embed.setAttribute('data-title', title[0]);
+            } else {
+              try {
+                return $.cache(service.api.call(a), callbacks);
+              } catch (_error) {
+                err = _error;
+                return a.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
+              }
             }
-          }
+          });
         }
         return [a, $.tn(' '), embed];
       }
