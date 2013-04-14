@@ -835,7 +835,14 @@
 </div>\
 <div id=content>\
   <input type=radio name=tab hidden id=main_tab checked>\
-  <div class=main_tab></div>\
+  <div>\
+    <div class=imp-exp>\
+      <button class=export>Export settings</button>\
+      <button class=import>Import settings</button>\
+      <input type=file style="visibility:hidden">\
+    </div>\
+    <p class=imp-exp-result></p>\
+  </div>\
   <input type=radio name=tab hidden id=sauces_tab>\
   <div class=sauces_tab>\
     <div class=warning><code>Sauce</code> is disabled.</div>\
@@ -1019,6 +1026,9 @@
           return this.id = 'selected_tab';
         });
       }
+      $.on($('#main_tab + div .export', dialog), 'click', Options["export"]);
+      $.on($('#main_tab + div .import', dialog), 'click', Options["import"]);
+      $.on($('#main_tab + div input', dialog), 'change', Options.onImport);
       _ref1 = Config.main;
       for (key in _ref1) {
         obj = _ref1[key];
@@ -1422,6 +1432,72 @@
     sageEmoji: function() {
       Conf['sageEmoji'] = this.value;
       return this.previousElementSibling.innerHTML = "<img src=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA" + (Emoji.icons[Emoji.icons.length - 1][1] = Emoji.sageValue(this.value)) + ">";
+    },
+    "export": function() {
+      var a, data, now, output;
+
+      now = Date.now();
+      data = {
+        version: Main.version,
+        date: now,
+        Conf: Conf,
+        WatchedThreads: $.get('watched', {})
+      };
+      a = $.el('a', {
+        className: 'warning',
+        textContent: 'Save me!',
+        download: "4chan X v" + Main.version + "-" + now + ".json",
+        href: "data:application/json;base64," + (btoa(unescape(encodeURIComponent(JSON.stringify(data))))),
+        target: '_blank'
+      });
+      if ($.engine !== 'gecko') {
+        a.click();
+        return;
+      }
+      output = this.parentNode.nextElementSibling;
+      output.innerHTML = null;
+      return $.add(output, a);
+    },
+    "import": function() {
+      return this.nextElementSibling.click();
+    },
+    onImport: function() {
+      var file, output, reader;
+
+      if (!(file = this.files[0])) {
+        return;
+      }
+      output = this.parentNode.nextElementSibling;
+      if (!confirm('Your current settings will be entirely overwritten, are you sure?')) {
+        output.textContent = 'Import aborted.';
+        return;
+      }
+      reader = new FileReader();
+      reader.onload = function(e) {
+        var data, err;
+
+        try {
+          data = JSON.parse(e.target.result);
+          Options.loadSettings(data);
+          if (confirm('Import successful. Refresh now?')) {
+            return window.location.reload();
+          }
+        } catch (_error) {
+          err = _error;
+          return output.textContent = 'Import failed due to an error.';
+        }
+      };
+      return reader.readAsText(file);
+    },
+    loadSettings: function(data) {
+      var key, val, _ref;
+
+      _ref = data.Conf;
+      for (key in _ref) {
+        val = _ref[key];
+        $.set(key, val);
+      }
+      return $.set('watched', data.WatchedThreads);
     }
   };
 
@@ -4804,7 +4880,7 @@
       }
       $.add(d.body, dialog);
       $.on(d, 'QRPostSuccessful', this.cb.post);
-      return $.on(d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', this.cb.visibility);
+      return $.on(d, 'visibilitychange', this.cb.visibility);
     },
     /*
     beep1.wav

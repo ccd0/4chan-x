@@ -65,7 +65,7 @@ Updater =
     # Check for new posts on post.
     $.on d, 'QRPostSuccessful', @cb.post
 
-    $.on d, 'visibilitychange ovisibilitychange mozvisibilitychange webkitvisibilitychange', @cb.visibility
+    $.on d, 'visibilitychange', @cb.visibility
 
   ###
   beep1.wav
