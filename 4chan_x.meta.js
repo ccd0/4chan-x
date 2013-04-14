@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                4chan x
 // @namespace           aeosynth
-// @version             1.0.6
+// @version             1.0.7
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           2013 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2013 Jordan Bates <saudrapsmann@gmail.com>
