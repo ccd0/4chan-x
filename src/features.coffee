@@ -1687,12 +1687,10 @@ DeleteLink =
       return if DeleteLink.cooldown.counting isnt post
       unless 0 <= seconds <= length
         if DeleteLink.cooldown.counting is post
+          node.textContent = 'Delete'
           delete DeleteLink.cooldown.counting
         return
       setTimeout DeleteLink.cooldown.count, 1000, post, seconds - 1, length, node
-      if seconds is 0
-        node.textContent = 'Delete'
-        return
       node.textContent = "Delete (#{seconds})"
 
 DownloadLink =
