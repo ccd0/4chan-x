@@ -2057,9 +2057,9 @@ Redirect =
   post: (boardID, postID) ->
     switch boardID
       when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'
-        "//archive.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+        "https://archive.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'u'
-        "//nsfw.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+        "https://nsfw.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'c', 'int', 'out', 'po'
         "//archive.thedarkcave.org/_/api/chan/post/?board=#{boardID}&num=#{postID}"
     # for fuuka-based archives:
