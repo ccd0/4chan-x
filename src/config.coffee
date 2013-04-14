@@ -221,6 +221,12 @@ Config =
         false
         'Remember the subject field, instead of resetting after posting.'
       ]
+      <% if (type === 'userscript') { %>
+      'Remember QR Size': [
+        false
+        'Remember the size of the Quick reply.'
+      ]
+      <% } %>
       'Remember Spoiler': [
         false
         'Remember the spoiler state, instead of resetting after posting.'

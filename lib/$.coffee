@@ -138,8 +138,11 @@ $.extend $,
     el.classList.toggle className
   hasClass: (el, className) ->
     el.classList.contains className
-  rm: (el) ->
-    el.parentNode.removeChild el
+  rm: do ->
+    if 'remove' of Element.prototype
+      (el) -> el.remove()
+    else
+      (el) -> el.parentNode?.removeChild el
   tn: (s) ->
     d.createTextNode s
   frag: ->

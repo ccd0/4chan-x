@@ -542,6 +542,15 @@ a[href="javascript:;"] {
 }
 
 /* QR */
+:root.hide-original-post-form #postForm,
+:root.hide-original-post-form .postingMode,
+:root.hide-original-post-form #togglePostForm,
+#qr.autohide:not(.has-focus):not(:hover) > form {
+  display: none;
+}
+#qr select, #dump-button, .remove, .captcha-img {
+  cursor: pointer;
+}
 #qr {
   z-index: 20;
   position: fixed;
@@ -552,9 +561,6 @@ a[href="javascript:;"] {
 }
 #qrtab {
   border-radius: 3px 3px 0 0;
-}
-.autohide:not(:hover):not(.focus) > form {
-  display: none !important;
 }
 #qrtab {
   margin-bottom: 1px;

@@ -11,9 +11,9 @@ QR =
       href: 'javascript:;'
     $.on sc, 'click', ->
       if !QR.nodes or QR.nodes.el.hidden
+        $.event 'CloseMenu'
         QR.open()
         QR.nodes.com.focus()
-        QR.resetThreadSelector()
       else
         QR.close()
       $.toggleClass @, 'disabled'
@@ -21,8 +21,7 @@ QR =
     Header.addShortcut sc
 
     if Conf['Hide Original Post Form']
-      $.asap (-> doc), ->
-        $.addClass doc, 'hide-original-post-form'
+      $.asap (-> doc), -> $.addClass doc, 'hide-original-post-form'
 
     $.on d, '4chanXInitFinished', @initReady
 
@@ -79,6 +78,10 @@ QR =
     QR.status()
     if !Conf['Remember Spoiler'] and QR.nodes.spoiler.checked
       QR.nodes.spoiler.click()
+  focusin: ->
+    $.addClass QR.nodes.el, 'has-focus'
+  focusout: ->
+    $.rmClass QR.nodes.el, 'has-focus'
   hide: ->
     d.activeElement.blur()
     $.addClass QR.nodes.el, 'autohide'
@@ -207,7 +210,7 @@ QR =
 
       now     = Date.now()
       post    = QR.posts[0]
-      isReply = QR.nodes.thread.value isnt 'new'
+      isReply = post.thread isnt 'new'
       isSage  = /sage/i.test post.email
       hasFile = !!post.file
       seconds = null
@@ -266,19 +269,19 @@ QR =
       text += ">#{s}\n"
 
     QR.open()
-    ta = QR.nodes.com
-    QR.nodes.thread.value = OP.ID unless ta.value
+    {com, thread} = QR.nodes
+    thread.value = OP.ID unless com.value
 
-    caretPos = ta.selectionStart
+    caretPos = com.selectionStart
     # Replace selection for text.
-    ta.value = ta.value[...caretPos] + text + ta.value[ta.selectionEnd..]
+    com.value = com.value[...caretPos] + text + com.value[com.selectionEnd..]
     # Move the caret to the end of the new quote.
     range = caretPos + text.length
-    ta.setSelectionRange range, range
-    ta.focus()
+    com.setSelectionRange range, range
+    com.focus()
 
-    # Fire the 'input' event
-    $.event 'input', null, ta
+    QR.selected.save com
+    QR.selected.save thread
 
   characterCount: ->
     counter = QR.nodes.charCount
@@ -351,11 +354,6 @@ QR =
           post = new QR.post()
         post.setFile file
     $.addClass QR.nodes.el, 'dump'
-  resetThreadSelector: ->
-    if g.VIEW is 'thread'
-      QR.nodes.thread.value = g.THREADID
-    else
-      QR.nodes.thread.value = 'new'
 
   posts: []
   post: class
@@ -373,8 +371,12 @@ QR =
         spoiler: $ 'input', el
         span:    el.lastChild
 
-      @nodes.spoiler.checked = @spoiler
-
+      <% if (type === 'userscript') { %>
+      # XXX Firefox lacks focusin/focusout support.
+      for elm in $$ '*', el
+        $.on elm, 'blur',  QR.focusout
+        $.on elm, 'focus', QR.focusin
+      <% } %>
       $.on el,             'click',  @select.bind @
       $.on @nodes.rm,      'click',  (e) => e.stopPropagation(); @rm()
       $.on @nodes.label,   'click',  (e) => e.stopPropagation()
@@ -386,9 +388,14 @@ QR =
       for event in ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop']
         $.on el, event.toLowerCase(), @[event]
 
+      @thread = if g.VIEW is 'thread'
+        g.THREADID
+      else
+        'new'
+
       prev = QR.posts[QR.posts.length - 1]
       QR.posts.push @
-      @spoiler = if prev and Conf['Remember Spoiler']
+      @nodes.spoiler.checked = @spoiler = if prev and Conf['Remember Spoiler']
         prev.spoiler
       else
         false
@@ -420,7 +427,7 @@ QR =
     lock: (lock=true) ->
       @isLocked = lock
       return unless @ is QR.selected
-      for name in ['name', 'email', 'sub', 'com', 'spoiler']
+      for name in ['thread', 'name', 'email', 'sub', 'com', 'spoiler']
         QR.nodes[name].disabled = lock
       @nodes.rm.style.visibility =
         QR.nodes.fileRM.style.visibility = if lock then 'hidden' else ''
@@ -443,11 +450,14 @@ QR =
       @load()
     load: ->
       # Load this post's values.
-      for name in ['name', 'email', 'sub', 'com']
+      for name in ['thread', 'name', 'email', 'sub', 'com']
         QR.nodes[name].value = @[name] or null
       @showFileData()
       QR.characterCount()
     save: (input) ->
+      if input.type is 'checkbox'
+        @spoiler = input.checked
+        return
       {value} = input
       @[input.dataset.name] = value
       return if input.nodeName isnt 'TEXTAREA'
@@ -461,7 +471,7 @@ QR =
       return unless @ is QR.selected
       # Do this in case people use extensions
       # that do not trigger the `input` event.
-      for name in ['name', 'email', 'sub', 'com']
+      for name in ['thread', 'name', 'email', 'sub', 'com', 'spoiler']
         @save QR.nodes[name]
       return
     setFile: (@file) ->
@@ -542,7 +552,7 @@ QR =
       @showFileData()
       return unless window.URL
       URL.revokeObjectURL @URL
-    showFileData: (hide) ->
+    showFileData: ->
       if @file
         QR.nodes.filename.textContent = @filename
         QR.nodes.filename.title       = @filename
@@ -628,6 +638,12 @@ QR =
       # start with an uncached captcha
       @reload()
 
+      <% if (type === 'userscript') { %>
+      # XXX Firefox lacks focusin/focusout support.
+      $.on input, 'blur',  QR.focusout
+      $.on input, 'focus', QR.focusin
+      <% } %>
+
       $.addClass QR.nodes.el, 'has-captcha'
       $.after QR.nodes.com.parentNode, [imgContainer, input]
     sync: (@captchas) ->
@@ -702,7 +718,7 @@ QR =
     <div class=move>
       <input type=checkbox id=autohide title=Auto-hide>
       <a href=javascript:; class=close title=Close>×</a>
-      <select title='Create a new thread / Reply'>
+      <select data-name=thread title='Create a new thread / Reply'>
         <option value=new>New thread</option>
       </select>
     </div>
@@ -797,10 +813,17 @@ QR =
       $.add nodes.thread, $.el 'option',
         value: thread
         textContent: "Thread No.#{thread}"
-    QR.resetThreadSelector()
 
     $.on nodes.filename.parentNode, 'click keyup', QR.openFileInput
 
+    <% if (type === 'userscript') { %>
+    # XXX Firefox lacks focusin/focusout support.
+    for elm in $$ '*', QR.nodes.el
+      $.on elm, 'blur',  QR.focusout
+      $.on elm, 'focus', QR.focusin
+    <% } %>
+    $.on QR.nodes.el, 'focusin',  QR.focusin
+    $.on QR.nodes.el, 'focusout', QR.focusout
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'
@@ -809,13 +832,21 @@ QR =
     $.on nodes.fileRM,     'click',  -> QR.selected.rmFile()
     $.on nodes.spoiler,    'change', -> QR.selected.nodes.spoiler.click()
     $.on nodes.fileInput,  'change', QR.fileInput
-
-    new QR.post true
     # save selected post's data
     for name in ['name', 'email', 'sub', 'com']
-      $.on nodes[name], 'input', -> QR.selected.save @
-      $.on nodes[name], 'focus', -> $.addClass nodes.el, 'focus'
-      $.on nodes[name], 'blur',  -> $.rmClass nodes.el, 'focus'
+      $.on nodes[name], 'input',  -> QR.selected.save @
+    $.on nodes.thread,  'change', -> QR.selected.save @
+
+    <% if (type === 'userscript') { %>
+    if Conf['Remember QR Size']
+      $.get 'QR Size', '', (item) ->
+        nodes.com.style.cssText = item['QR Size']
+      $.on nodes.com, 'mouseup', (e) ->
+        return if e.button isnt 0
+        $.set 'QR Size', @style.cssText
+    <% } %>
+
+    new QR.post true
 
     QR.status()
     QR.cooldown.init()
@@ -842,7 +873,7 @@ QR =
     post.forceSave()
     if g.BOARD.ID is 'f'
       filetag = QR.nodes.flashTag.value
-    threadID = QR.nodes.thread.value
+    threadID = post.thread
     thread = g.BOARD.threads[threadID]
 
     # prevent errors
@@ -930,6 +961,11 @@ QR =
     QR.status()
 
   response: ->
+    <% if (type === 'userjs') { %>
+    # The upload.onload callback is not called
+    # or at least not in time with Opera.
+    QR.req.upload.onload()
+    <% } %>
     {req} = QR
     delete QR.req
 
@@ -971,6 +1007,12 @@ QR =
         # Too many frequent mistyped captchas will auto-ban you!
         # On connection error, the post most likely didn't go through.
         QR.cooldown.set delay: 2
+      else if err.textContent and m = err.textContent.match /wait\s(\d+)\ssecond/i
+        QR.cooldown.auto = if QR.captcha.isEnabled
+          !!QR.captcha.captchas.length
+        else
+          true
+        QR.cooldown.set delay: m[1]
       else # stop auto-posting
         QR.cooldown.auto = false
       QR.status()

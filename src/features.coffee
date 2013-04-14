@@ -95,6 +95,7 @@ Header =
 
   hashScroll: ->
     return unless post = $.id @location.hash[1..]
+    return if (Get.postFromRoot post).isHidden
     Header.scrollToPost post
 
   scrollToPost: (post) ->
@@ -145,7 +146,7 @@ class Notification
     setTimeout @close, @timeout * $.SECOND if @timeout
 
   close = ->
-    $.rm @el if @el.parentNode
+    $.rm @el
 
 CatalogLinks =
   init: ->
@@ -1536,7 +1537,7 @@ ReportLink =
 
 DeleteLink =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Delete Link'] or !Conf['Quick Reply']
+    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Delete Link']
 
     div = $.el 'div',
       className: 'delete-link'
@@ -1588,20 +1589,22 @@ DeleteLink =
       else
         $.id('delPassword').value
 
+    fileOnly = $.hasClass @, 'delete-file'
+
     form =
       mode: 'usrdel'
-      onlyimgdel: $.hasClass @, 'delete-file'
+      onlyimgdel: fileOnly
       pwd: pwd
     form[post.ID] = 'delete'
 
     link = @
     $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{post.board}/"),
-      onload:  -> DeleteLink.load  link, post, @response
+      onload:  -> DeleteLink.load  link, post, fileOnly, @response
       onerror: -> DeleteLink.error link
     ,
       cred: true
       form: $.formData form
-  load: (link, post, html) ->
+  load: (link, post, fileOnly, html) ->
     tmpDoc = d.implementation.createHTMLDocument ''
     tmpDoc.documentElement.innerHTML = html
     if tmpDoc.title is '4chan - Banned' # Ban/warn check
@@ -1612,7 +1615,7 @@ DeleteLink =
     else
       if tmpDoc.title is 'Updating index...'
         # We're 100% sure.
-        (post.origin or post).kill()
+        (post.origin or post).kill fileOnly
       s = 'Deleted'
     link.textContent = s
   error: (link) ->
@@ -1924,7 +1927,13 @@ Keybinds =
 
 Nav =
   init: ->
-    return if g.VIEW is 'index' and !Conf['Index Navigation'] or g.VIEW is 'thread' and !Conf['Reply Navigation']
+    switch g.VIEW
+      when 'index'
+        return unless Conf['Index Navigation']
+      when 'thread'
+        return unless Conf['Reply Navigation']
+      else # catalog
+        return
 
     span = $.el 'span',
       id: 'navlinks'
@@ -3693,17 +3702,21 @@ Unread =
       threadID: @ID
       defaultValue: 0
     Unread.addPosts posts
-    if (hash = location.hash.match /\d+/) and post = @posts[hash[0]]
-      Header.scrollToPost post.nodes.root
-    else if Unread.posts.length
-      # Scroll to before the first unread post.
-      $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView false
-    else if posts.length
-      # Scroll to the last read post.
-      Header.scrollToPost posts[posts.length - 1].nodes.root
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
+
+    return unless Conf['Scroll to Last Read Post']
+    # Let the header's onload callback handle it.
+    return if (hash = location.hash.match /\d+/) and hash[0] of @posts
+    if Unread.posts.length
+      # Scroll to before the first unread post.
+      while root = $.x 'preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root
+        break unless (Get.postFromRoot root).isHidden
+      root.scrollIntoView false
+    else if posts.length
+      # Scroll to the last read post.
+      Header.scrollToPost posts[posts.length - 1].nodes.root
 
   sync: ->
     lastReadPost = Unread.db.get
@@ -3790,7 +3803,7 @@ Unread =
       {root} = post.nodes
       if root isnt $ '.thread > .replyContainer', root.parentNode # not the first reply
         $.before root, Unread.hr
-    else if Unread.hr.parentNode
+    else
       $.rm Unread.hr
 
   update: <% if (type === 'crx') { %>(dontrepeat) <% } %>->

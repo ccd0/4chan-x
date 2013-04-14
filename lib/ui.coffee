@@ -4,7 +4,8 @@ UI = do ->
       className: 'dialog'
       innerHTML: html
       id: id
-    el.style.cssText = localStorage.getItem("#{g.NAMESPACE}#{id}.position") or position
+    $.get "#{id}.position", position, (item) ->
+      el.style.cssText = item["#{id}.position"]
     move = $ '.move', el
     $.on move, 'touchstart mousedown', dragstart
     for child in move.children
@@ -276,7 +277,7 @@ UI = do ->
     else # mouseup
       $.off d, 'mousemove', @move
       $.off d, 'mouseup',   @up
-    localStorage.setItem "#{g.NAMESPACE}#{@id}.position", @style.cssText
+    $.set "#{@id}.position", @style.cssText
 
   hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb}) ->
     o = {

@@ -1,3 +1,15 @@
+### 3.0.6 - *2013-04-14*
+
+- Fix regression concerning thread selection when quoting on the index.
+
+### 3.0.5 - *2013-04-14*
+
+- `Scroll to Last Read Post` is now optional, enabled by default.
+- The QR won't auto-hide when auto-hide is enabled and one of its input is focused. Doesn't work on Firefox.
+- Added the `Remember QR Size` setting back in, disabled by default. Only on Firefox.
+- Fix QR remembering the file spoiler state when it shouldn't.
+- Fix QR cooldown in Opera.
+
 ### 3.0.4 - *2013-04-11*
 
 - More minor fixes.
@@ -9,7 +21,7 @@
 ### 3.0.2 - *2013-04-09*
 
 - Added a setting in the Header's menu to move it at the bottom of the screen.
-- Added Cooldown setting back in.
+- Added the `Cooldown` setting back in.
 - Fixed the Header going above posts when following quotelinks for example.
 - Fixed a bug where dead quotelinks would disappear.
 
