@@ -5986,7 +5986,7 @@
           }
         },
         "delete": function(e) {
-          var container, settheme, userThemes;
+          var container, settheme;
 
           e.preventDefault();
           e.stopPropagation();
@@ -6004,10 +6004,14 @@
               }
             }
             Themes[this.name]["Deleted"] = true;
-            userThemes = $.get("userThemes", {});
-            userThemes[this.name] = Themes[this.name];
-            $.set('userThemes', userThemes);
-            return $.rm(container);
+            return $.get("userThemes", {}, function() {
+              var userThemes;
+
+              userThemes = items['userThemes'];
+              userThemes[this.name] = Themes[this.name];
+              $.set('userThemes', userThemes);
+              return $.rm(container);
+            });
           }
         },
         restore: function() {

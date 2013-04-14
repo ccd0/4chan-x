@@ -1074,10 +1074,12 @@ Settings =
               $.addClass settheme, 'selectedtheme'
               $.set 'theme', Conf['theme']
           Themes[@name]["Deleted"] = true
-          userThemes = $.get "userThemes", {}
-          userThemes[@name] = Themes[@name]
-          $.set 'userThemes', userThemes
-          $.rm container
+
+          $.get "userThemes", {}, ->
+            userThemes = items['userThemes']
+            userThemes[@name] = Themes[@name]
+            $.set 'userThemes', userThemes
+            $.rm container
 
       restore: ->
         if confirm "Are you sure you want to restore \"#{@id}\"?"
