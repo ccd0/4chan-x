@@ -1,0 +1,21 @@
+{
+  "name": "4chan X",
+  "version": "3.0.6",
+  "manifest_version": 2,
+  "description": "Cross-browser extension for productive lurking on 4chan.",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [{
+    "js": ["script.js"],
+    "matches": ["*://api.4chan.org/*","*://boards.4chan.org/*","*://images.4chan.org/*","*://sys.4chan.org/*"],
+    "run_at": "document_start"
+  }],
+  "homepage_url": "https://4chan-x.just-believe.in/",
+  "minimum_chrome_version": "26",
+  "permissions": [
+    "storage"
+  ]
+}

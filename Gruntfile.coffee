@@ -16,6 +16,8 @@ module.exports = (grunt) ->
           'lib/ui.coffee'
           'lib/$.coffee'
           'lib/polyfill.coffee'
+          'src/appchan.coffee'
+          'src/settings.coffee'
           'src/features.coffee'
           'src/qr.coffee'
           'src/report.coffee'
@@ -51,8 +53,8 @@ module.exports = (grunt) ->
           process:
             data: pkg
         files:
-          '<%= pkg.name %>.meta.js': 'src/metadata.js'
-          '<%= pkg.name %>.user.js': [
+          'builds/<%= pkg.name %>.meta.js': 'src/metadata.js'
+          'builds/<%= pkg.name %>.user.js': [
             'src/metadata.js'
             'src/banner.js'
             'tmp/script.js'
