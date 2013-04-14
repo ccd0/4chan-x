@@ -45,7 +45,7 @@ Options =
 </div>
 <div id=content>
   <input type=radio name=tab hidden id=main_tab checked>
-  <div>
+  <div class=main_tab>
     <div class=imp-exp>
       <div class=placeholder></div>
       <input type=file style="visibility:hidden; position: absolute;">
