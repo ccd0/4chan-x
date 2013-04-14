@@ -12283,14 +12283,6 @@
         status: $('[type=submit]', dialog),
         fileInput: $('[type=file]', dialog)
       };
-      if (Conf['Remember QR Size']) {
-        $.get('QR.size', '', function(item) {
-          return nodes.com.style.cssText = item['QR.size'];
-        });
-        $.on(nodes.com, 'mouseup', function() {
-          return $.set('QR.size', this.style.cssText);
-        });
-      }
       mimeTypes = $('ul.rules > li').textContent.trim().match(/: (.+)/)[1].toLowerCase().replace(/\w+/g, function(type) {
         switch (type) {
           case 'jpg':
@@ -12360,6 +12352,9 @@
       QR.captcha.init();
       Rice.nodes(dialog);
       $.add(d.body, dialog);
+      if (Conf['Auto Hide QR']) {
+        nodes.autohide.click();
+      }
       return $.event('QRDialogCreation', null, dialog);
     },
     submit: function(e) {

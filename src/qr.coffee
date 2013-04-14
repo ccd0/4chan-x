@@ -80,10 +80,13 @@ QR =
     QR.status()
     if !Conf['Remember Spoiler'] and QR.nodes.spoiler.checked
       QR.nodes.spoiler.click()
+
   focusin: ->
     $.addClass QR.nodes.el, 'has-focus'
+
   focusout: ->
     $.rmClass QR.nodes.el, 'has-focus'
+
   hide: ->
     d.activeElement.blur()
     $.addClass QR.nodes.el, 'autohide'
@@ -817,12 +820,6 @@ QR =
       status:     $ '[type=submit]',     dialog
       fileInput:  $ '[type=file]',       dialog
 
-    if Conf['Remember QR Size']
-      $.get 'QR.size', '', (item) ->
-        nodes.com.style.cssText = item['QR.size']
-      $.on nodes.com, 'mouseup', ->
-        $.set 'QR.size', @style.cssText
-
     # Allow only this board's supported files.
     mimeTypes = $('ul.rules > li').textContent.trim().match(/: (.+)/)[1].toLowerCase().replace /\w+/g, (type) ->
       switch type
@@ -896,7 +893,6 @@ QR =
         return if e.button isnt 0
         $.set 'QR Size', @style.cssText
     <% } %>
-
     new QR.post true
 
     QR.status()
@@ -906,6 +902,9 @@ QR =
     Rice.nodes dialog
     
     $.add d.body, dialog
+
+    if Conf['Auto Hide QR']
+      nodes.autohide.click()
 
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
