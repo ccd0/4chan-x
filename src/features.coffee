@@ -8,16 +8,22 @@ Header =
       id: 'hoverUI'
     @toggle = $.el 'div',
       id: 'toggle-header-bar'
+    @menuButton = $.el 'span',
+      className: 'menu-button'
+      innerHTML: '<a class=brackets-wrap href=javascript:;><i></i></a>'
 
-    $.on @toggle, 'mousedown',       @toggleBarVisibility
-    $.on window,  'load hashchange', Header.hashScroll
+    @menu = new UI.Menu 'header'
+    $.on @menuButton, 'click',           @menuToggle
+    $.on @toggle,     'mousedown',       @toggleBarVisibility
+    $.on window,      'load hashchange', Header.hashScroll
 
     @positionToggler = $.el 'label',
       innerHTML: "<input type=checkbox #{if Conf['Bottom header'] then 'checked' else ''}> Bottom header"
     $.on @positionToggler.firstElementChild, 'change', @toggleBarPosition
+
     $.event 'AddMenuEntry',
-      type: 'header'
-      el: @positionToggler
+      type:  'header'
+      el:    @positionToggler
       order: 108
 
     @headerToggler = $.el 'label',
@@ -25,8 +31,8 @@ Header =
     $.on @headerToggler.firstElementChild, 'change', @toggleBarVisibility
 
     $.event 'AddMenuEntry',
-      type: 'header'
-      el: @headerToggler
+      type:  'header'
+      el:    @headerToggler
       order: 109
 
     $.on d, 'CreateNotification', @createNotification
@@ -55,7 +61,7 @@ Header =
     Header.fixedHeader nav if Conf['Fixed Header']
 
     $.add fullBoardList, [nav.childNodes...]
-    $.add nav, [customBoardList, fullBoardList, Header.shortcuts, $('#navtopright', fullBoardList), Header.toggle]
+    $.add nav, [Header.menuButton, customBoardList, fullBoardList, Header.shortcuts, $('#navtopright', fullBoardList), Header.toggle]
     $.add d.body, Header.bar
 
     if Conf['Custom Board Navigation']
@@ -65,17 +71,17 @@ Header =
         className: 'hide-board-list-button brackets-wrap'
         innerHTML: '<a href=javascript:;> - </a>'
       $.on btn, 'click', Header.toggleBoardList
-      $.add fullBoardList, btn
+      $.prepend fullBoardList, btn
     else
       $.rm $ '#custom-board-list', nav
       fullBoardList.hidden = false
 
   fixedHeader: (nav) ->
-    $.addClass nav, 'fixed'
+    $.addClass doc, 'fixed'
     $.addClass nav, 'dialog'
 
     @setBarPosition Conf['Bottom header']
-    $.sync 'Bottom header', @setBarPosition
+    $.sync 'Bottom header',    @setBarPosition
 
     @setBarVisibility Conf['Header auto-hide']
     $.sync 'Header auto-hide', @setBarVisibility
@@ -131,11 +137,11 @@ Header =
     $.event 'CloseMenu'
     Header.positionToggler.firstElementChild.checked = bottom
     if bottom
-      $.addClass Header.nav, 'bottom'
-      $.rmClass  Header.nav, 'top'
+      $.addClass doc, 'bottom'
+      $.rmClass  doc, 'top'
     else
-      $.addClass Header.nav, 'top'
-      $.rmClass  Header.nav, 'bottom'
+      $.addClass doc, 'top'
+      $.rmClass  doc, 'bottom'
 
   toggleBarPosition: ->
     bottom = @checked
@@ -178,6 +184,9 @@ Header =
       className: 'shortcut'
     $.add shortcut, [$.tn(' ['), el, $.tn(']')]
     $.add Header.shortcuts, shortcut
+
+  menuToggle: (e) ->
+    Header.menu.toggle e, @, g
 
   createNotification: (e) ->
     {type, content, lifetime, cb} = e.detail
@@ -3267,41 +3276,17 @@ ImageExpand =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Image Expansion']
 
-    wrapper = $.el 'div',
-      id: 'imgControls'
-      innerHTML: """
-        <a class='expand-all-shortcut' title='Expand All Images' href='javascript:;'>Expand All Images</a>
-        <a class='menu-button' href='javascript:;'>[<i></i>]</a>
-      """
-    @EAI = wrapper.firstElementChild
+    @EAI = $.el 'a',
+      className: 'expand-all-shortcut'
+      textContent: 'EAI'
+      title: 'Expand All Images'
+      href: 'javascript:;'
     $.on @EAI, 'click', ImageExpand.cb.toggleAll
-
-    @opmenu = new UI.Menu 'imageexpand'
-    $.on $('.menu-button', wrapper), 'click', @menuToggle
-
-    for type, config of Config.imageExpansion
-      label = $.el 'label',
-        innerHTML: "<input type=checkbox name='#{type}'> #{type}"
-      input = label.firstElementChild
-      if ['Fit width', 'Fit height'].contains type
-        $.on input, 'change', ImageExpand.cb.setFitness
-
-      if config
-        label.title   = config[1]
-        input.checked = Conf[type]
-        $.event 'change', null, input
-        $.on input, 'change', $.cb.checked
-
-      $.event 'AddMenuEntry',
-        type: 'imageexpand'
-        el:   label
-
-    $.asap (-> $.id 'delform'), ->
-      $.prepend $.id('delform'), wrapper
+    Header.addShortcut @EAI
 
     Post::callbacks.push
       name: 'Image Expansion'
-      cb:   @node
+      cb: @node
   node: ->
     return unless @file?.isImage
     {thumb} = @file

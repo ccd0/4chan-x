@@ -4,8 +4,7 @@ UI = do ->
       className: 'dialog'
       innerHTML: html
       id: id
-    $.get "#{id}.position", position, (item) ->
-      el.style.cssText = item["#{id}.position"]
+    el.style.cssText = localStorage.getItem("#{g.NAMESPACE}#{id}.position") or position
     move = $ '.move', el
     $.on move, 'touchstart mousedown', dragstart
     for child in move.children
@@ -61,7 +60,7 @@ UI = do ->
       @focus entry
       $.on d, 'click',     @close
       $.on d, 'CloseMenu', @close
-      $.add button, menu
+      $.add Header.hover, menu
 
       # Position
       mRect   = menu.getBoundingClientRect()
@@ -71,18 +70,18 @@ UI = do ->
       cHeight = doc.clientHeight
       cWidth  = doc.clientWidth
       [top, bottom] = if bRect.top + bRect.height + mRect.height < cHeight
-        ['100%', null]
+        [bRect.bottom, null]
       else
-        [null, '100%']
+        [null, cHeight - bRect.top]
       [left, right] = if bRect.left + mRect.width < cWidth
-        ['0px', null]
+        [bRect.left, null]
       else
-        [null, '0px']
+        [null, cWidth - bRect.right]
       {style} = menu
-      style.top    = top
-      style.right  = right
-      style.bottom = bottom
-      style.left   = left
+      style.top    = "#{top}px"
+      style.right  = "#{right}px"
+      style.bottom = "#{bottom}px"
+      style.left   = "#{left}px"
 
       menu.focus()
 
@@ -193,7 +192,6 @@ UI = do ->
         @parseEntry subEntry
       return
 
-
   dragstart = (e) ->
     return if e.type is 'mousedown' and e.button isnt 0 # not LMB
     # prevent text selection
@@ -227,11 +225,13 @@ UI = do ->
       o.up   = dragend.bind o
       $.on d, 'mousemove', o.move
       $.on d, 'mouseup',   o.up
+
   touchmove = (e) ->
     for touch in e.changedTouches
       if touch.identifier is @identifier
         drag.call @, touch
         return
+
   drag = (e) ->
     {clientX, clientY} = e
 
@@ -265,11 +265,13 @@ UI = do ->
     style.right  = right
     style.top    = top
     style.bottom = bottom
+
   touchend = (e) ->
     for touch in e.changedTouches
       if touch.identifier is @identifier
         dragend.call @
         return
+
   dragend = ->
     if @isTouching
       $.off d, 'touchmove', @move
@@ -277,14 +279,15 @@ UI = do ->
     else # mouseup
       $.off d, 'mousemove', @move
       $.off d, 'mouseup',   @up
-    $.set "#{@id}.position", @style.cssText
+    localStorage.setItem "#{g.NAMESPACE}#{@id}.position", @style.cssText
 
-  hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb}) ->
+  hoverstart = ({root, el, latestEvent, endEvents, asapTest, cb, close}) ->
     o = {
       root:   root
       el:     el
       style:  el.style
       cb:     cb
+      close:  close
       endEvents:    endEvents
       latestEvent:  latestEvent
       clientHeight: doc.clientHeight
@@ -300,12 +303,13 @@ UI = do ->
 
     $.on root, endEvents,   o.hoverend
     $.on root, 'mousemove', o.hover
+
   hover = (e) ->
     @latestEvent = e
     height = @el.offsetHeight
     {clientX, clientY} = e
 
-    top = clientY - 120
+    top = clientY + (if close then 0 else -120)
     top = if @clientHeight <= height or top <= 0
       0
     else if top + height >= @clientHeight
@@ -314,7 +318,7 @@ UI = do ->
       top
 
     [left, right] = if clientX <= @clientWidth - 400
-      [clientX + 45 + 'px', null]
+      [clientX + (if @close then 15 else 45) + 'px', null]
     else
       [null, @clientWidth - clientX + 45 + 'px']
 
@@ -322,6 +326,7 @@ UI = do ->
     style.top   = top + 'px'
     style.left  = left
     style.right = right
+
   hoverend = ->
     $.rm @el
     $.off @root, @endEvents,  @hoverend
