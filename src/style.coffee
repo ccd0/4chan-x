@@ -488,7 +488,7 @@ body.unscroll {
 .imp-exp .placeholder:not(:empty) {
   position: absolute;
   top:20px;
-  right:10px;
+  right:15px;
 }
 .imp-exp-result:empty {
   display: none;
@@ -496,7 +496,7 @@ body.unscroll {
 .imp-exp-result {
   position: absolute;
   top:10px;
-  right:10px;
+  right:15px;
 }
 
 #updater {
