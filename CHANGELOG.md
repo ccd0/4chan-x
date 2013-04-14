@@ -1,3 +1,4 @@
+- Fix support for www.4chan.org/frames on Chrome.
 - Fix resurrecting dead quotelinks on HTTP.
 
 ### 3.0.6 - *2013-04-14*
