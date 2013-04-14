@@ -86,7 +86,7 @@ Header =
 
   generateBoardList: (text) ->
     list = $ '#custom-board-list', Header.bar
-    list.innerHTML = null
+    $.rmAll list
     return unless text
     as = $$('#full-board-list a', Header.bar)[0...-2] # ignore the Settings and Home links
     nodes = text.match(/[\w@]+(-(all|title|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
@@ -358,7 +358,7 @@ Settings =
       $.rmClass selected, 'tab-selected'
     $.addClass $(".tab-#{@hyphenatedTitle}", Settings.dialog), 'tab-selected'
     section = $ 'section', Settings.dialog
-    section.innerHTML = null
+    $.rmAll section
     section.className = "section-#{@hyphenatedTitle}"
     @open section, g
     section.scrollTop = 0
@@ -444,7 +444,7 @@ Settings =
       return
     # XXX Firefox won't let us download automatically.
     p = $ '.imp-exp-result', Settings.dialog
-    p.innerHTML = null
+    $.rmAll p
     $.add p, a
   import: ->
     @nextElementSibling.click()
@@ -566,7 +566,7 @@ Settings =
   selectFilter: ->
     div = @nextElementSibling
     if (name = @value) isnt 'guide'
-      div.innerHTML = null
+      $.rmAll div
       ta = $.el 'textarea',
         name: name
         className: 'field'
@@ -2452,10 +2452,10 @@ Get =
 
     # Get rid of the side arrows.
     {nodes} = clone
-    nodes.root.innerHTML = null
+    $.rmAll nodes.root
     $.add nodes.root, nodes.post
 
-    root.innerHTML = null
+    $.rmAll root
     $.add root, nodes.root
   fetchedPost: (req, boardID, threadID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
@@ -4276,7 +4276,7 @@ ThreadWatcher =
         $.add div, [x, $.tn(' '), link]
         nodes.push div
 
-    ThreadWatcher.dialog.innerHTML = ''
+    $.rmAll ThreadWatcher.dialog
     $.add ThreadWatcher.dialog, nodes
 
     watched = watched[g.BOARD] or {}

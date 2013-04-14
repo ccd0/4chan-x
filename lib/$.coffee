@@ -102,6 +102,11 @@ $.extend $,
       (el) -> el.remove()
     else
       (el) -> el.parentNode?.removeChild el
+  rmAll: (el) ->
+    # jsperf.com/emptify-element
+    while node = el.firstChild
+      $.rm node
+    return
   tn: (s) ->
     d.createTextNode s
   nodes: (nodes) ->
