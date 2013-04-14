@@ -1,13 +1,37 @@
 Header =
   init: ->
-    @bar = $.el 'div',
-      id: 'notifications'
-    @shortcuts = $.el 'span',
-      id: 'shortcuts'
-    @hover = $.el 'div',
-      id: 'hoverUI'
+    @menuButton = $.el 'span',
+      className: 'menu-button'
+      innerHTML: '<a class=brackets-wrap href=javascript:;><i class=drop-marker></i></a>'
 
-    $.on window, 'load hashchange', Header.hashScroll
+    @menu = new UI.Menu 'header'
+    $.on @menuButton, 'click',           @menuToggle
+    $.on @toggle,     'mousedown',       @toggleBarVisibility
+    $.on window,      'load hashchange', Header.hashScroll
+
+    @positionToggler = $.el 'span',
+      textContent: 'Header Position'
+      className:   'header-position-link'
+
+    {createSubEntry} = Header
+    subEntries = []
+    for setting in ['sticky top', 'sticky bottom', 'top', 'hide']
+      subEntries.push createSubEntry setting
+
+    $.event 'AddMenuEntry',
+      type:  'header'
+      el:    @positionToggler
+      order: 108
+      subEntries: subEntries
+
+    @headerToggler = $.el 'label',
+      innerHTML: "<input type=checkbox #{if Conf['Header auto-hide'] then 'checked' else ''}> Auto-hide header"
+    $.on @headerToggler.firstElementChild, 'change', @toggleBarVisibility
+
+    $.event 'AddMenuEntry',
+      type:  'header'
+      el:    @headerToggler
+      order: 109
 
     $.on d, 'CreateNotification', @createNotification
 
@@ -20,18 +44,48 @@ Header =
     $.ready ->
       $.add d.body, Header.hover
 
-  setBoardList: ->
+  bar: $.el 'div',
+    id: 'notifications'
+
+  shortcuts: $.el 'span',
+    id: 'shortcuts'
+
+  hover: $.el 'div',
+    id: 'hoverUI'
+
+  toggle: $.el 'div',
+    id: 'toggle-header-bar'
+
+  createSubEntry: (setting)->
+    label = $.el 'label',
+      textContent: "#{setting}"
     
+    $.on label, 'click', Header.setBarPosition
+
+    el: label
+
+  setBoardList: ->
     Header.nav = nav = $.id 'boardNavDesktop'
     if a = $ "a[href*='/#{g.BOARD}/']", nav
       a.className = 'current'
+
     fullBoardList = $.el 'span',
       id:     'full-board-list'
       hidden: true
+
     customBoardList = $.el 'span',
       id:     'custom-board-list'
+
+    Header.setBarPosition.call textContent: "#{Conf['Boards Navigation']}"
+    $.sync 'Boards Navigation', ->
+      Header.setBarPosition.call textContent: "#{Conf['Boards Navigation']}"
+
+    Header.setBarVisibility Conf['Header auto-hide']
+    $.sync 'Header auto-hide',  Header.setBarVisibility
+
     $.add fullBoardList, [nav.childNodes...]
-    $.add nav, [customBoardList, fullBoardList, Header.shortcuts, $ '#navtopright', fullBoardList, Header.bar]
+    $.add nav, [Header.menuButton, customBoardList, fullBoardList, Header.shortcuts, $('#navtopright', fullBoardList), Header.toggle]
+    $.add d.body, Header.bar
 
     if Conf['Custom Board Navigation']
       Header.generateBoardList Conf['boardnav']
@@ -47,7 +101,7 @@ Header =
 
   generateBoardList: (text) ->
     list = $ '#custom-board-list', Header.nav
-    list.innerHTML = null
+    $.rmAll list
     return unless text
     as = $$('#full-board-list a', Header.nav)[0...-2] # ignore the Settings and Home links
     nodes = text.match(/[\w@]+(-(all|title|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
@@ -92,8 +146,41 @@ Header =
     custom.hidden = !showBoardList
     full.hidden   =  showBoardList
 
+  setBarPosition: ->
+    $.event 'CloseMenu'
+
+    switch @textContent
+      when 'sticky top'
+        $.addClass doc, 'top'
+        $.addClass doc, 'fixed'
+        $.rmClass  doc, 'bottom'
+        $.rmClass  doc, 'hide'
+      when 'sticky bottom'
+        $.rmClass  doc, 'top'
+        $.addClass doc, 'fixed'
+        $.addClass doc, 'bottom'
+        $.rmClass  doc, 'hide'
+      when 'top'
+        $.addClass doc, 'top'
+        $.rmClass  doc, 'fixed'
+        $.rmClass  doc, 'bottom'
+        $.rmClass  doc, 'hide'
+      when 'hide'
+        $.rmClass  doc, 'top'
+        $.rmClass  doc, 'fixed'
+        $.rmClass  doc, 'bottom'
+        $.addClass doc, 'hide'
+
+    Conf['Boards Navigation'] = @textContent
+    $.set 'Boards Navigation',  @textContent
+
+  setBarVisibility: (hide) ->
+    Header.headerToggler.firstElementChild.checked = hide
+    (if hide then $.addClass else $.rmClass) Header.nav, 'autohide'
+
   hashScroll: ->
     return unless post = $.id @location.hash[1..]
+    return if (Get.postFromRoot post).isHidden
     Header.scrollToPost post
 
   scrollToPost: (post) ->
@@ -103,11 +190,28 @@ Header =
       top += - headRect.top - headRect.height
     (if $.engine is 'webkit' then d.body else doc).scrollTop += top
 
+  toggleBarVisibility: (e) ->
+    return if e.type is 'mousedown' and e.button isnt 0 # not LMB
+    hide = if @nodeName is 'INPUT'
+      @checked
+    else
+      !$.hasClass Header.nav, 'autohide'
+    Header.setBarVisibility hide
+    message = if hide
+      'The header bar will automatically hide itself.'
+    else
+      'The header bar will remain visible.'
+    new Notification 'info', message, 2
+    $.set 'Header auto-hide', hide
+
   addShortcut: (el) ->
     shortcut = $.el 'span',
       className: 'shortcut'
     $.add shortcut, [$.tn(' ['), el, $.tn(']')]
     $.add Header.shortcuts, shortcut
+
+  menuToggle: (e) ->
+    Header.menu.toggle e, @, g
 
   createNotification: (e) ->
     {type, content, lifetime, cb} = e.detail
@@ -144,7 +248,7 @@ class Notification
     setTimeout @close, @timeout * $.SECOND if @timeout
 
   close = ->
-    $.rm @el if @el.parentNode
+    $.rm @el
 
 CatalogLinks =
   init: ->
@@ -193,7 +297,6 @@ CatalogLinks =
       else
         "//boards.4chan.org/#{board}/catalog"
     )
-
   ready: ->
     if catalogLink = ($('.pages.cataloglink a', d.body) or $ '[href=".././catalog"]', d.body)
       if g.VIEW isnt 'thread'
@@ -967,7 +1070,7 @@ Menu =
     (post) ->
       a or= $.el 'a',
         className: 'menu-button'
-        innerHTML: '[<span class=dropmarker></span>]'
+        innerHTML: '[<span class=drop-marker></span>]'
         href:      'javascript:;'
       clone = a.cloneNode true
       clone.setAttribute 'data-postid', post.fullID
@@ -1008,7 +1111,7 @@ ReportLink =
 
 DeleteLink =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Delete Link'] or !Conf['Quick Reply']
+    return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Delete Link']
 
     div = $.el 'div',
       className: 'delete-link'
@@ -1060,20 +1163,22 @@ DeleteLink =
       else
         $.id('delPassword').value
 
+    fileOnly = $.hasClass @, 'delete-file'
+
     form =
       mode: 'usrdel'
-      onlyimgdel: $.hasClass @, 'delete-file'
+      onlyimgdel: fileOnly
       pwd: pwd
     form[post.ID] = 'delete'
 
     link = @
     $.ajax $.id('delform').action.replace("/#{g.BOARD}/", "/#{post.board}/"),
-      onload:  -> DeleteLink.load  link, post, @response
+      onload:  -> DeleteLink.load  link, post, fileOnly, @response
       onerror: -> DeleteLink.error link
     ,
       cred: true
       form: $.formData form
-  load: (link, post, html) ->
+  load: (link, post, fileOnly, html) ->
     tmpDoc = d.implementation.createHTMLDocument ''
     tmpDoc.documentElement.innerHTML = html
     if tmpDoc.title is '4chan - Banned' # Ban/warn check
@@ -1084,7 +1189,7 @@ DeleteLink =
     else
       if tmpDoc.title is 'Updating index...'
         # We're 100% sure.
-        (post.origin or post).kill()
+        (post.origin or post).kill fileOnly
       s = 'Deleted'
     link.textContent = s
   error: (link) ->
@@ -1360,7 +1465,7 @@ Keybinds =
       location.href = url
 
   hl: (delta, thread) ->
-    if Conf['Bottom header']
+    if Conf['Fixed Header'] and Conf['Bottom header']
       topMargin = 0
     else
       headRect  = Header.bar.getBoundingClientRect()
@@ -1398,7 +1503,13 @@ Keybinds =
 
 Nav =
   init: ->
-    return if g.VIEW is 'index' and !Conf['Index Navigation'] or g.VIEW is 'thread' and !Conf['Reply Navigation']
+    switch g.VIEW
+      when 'index'
+        return unless Conf['Index Navigation']
+      when 'thread'
+        return unless Conf['Reply Navigation']
+      else # catalog
+        return
 
     span = $.el 'span',
       id: 'navlinks'
@@ -1470,11 +1581,13 @@ Redirect =
       when 'c'
         "//archive.nyafuu.org/#{boardID}/full_image/#{filename}"
   post: (boardID, postID) ->
+    # XXX foolz had HSTS set for 120 days, which broke XHR+CORS+Redirection when on HTTP.
+    # Remove necessary HTTPS procotol in September 2013.
     switch boardID
       when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'
-        "//archive.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+        "https://archive.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'u'
-        "//nsfw.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+        "https://nsfw.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'c', 'int', 'out', 'po'
         "//archive.thedarkcave.org/_/api/chan/post/?board=#{boardID}&num=#{postID}"
     # for fuuka-based archives:
@@ -1490,9 +1603,9 @@ Redirect =
         Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
       when 'ck', 'fa', 'lit', 's4s'
         Redirect.path '//fuuka.warosu.org', 'fuuka', data
-      when 'diy', 'sci'
+      when 'diy', 'g', 'sci'
         Redirect.path '//archive.installgentoo.net', 'fuuka', data
-      when 'cgl', 'g', 'mu', 'w'
+      when 'cgl', 'mu', 'w'
         Redirect.path '//rbt.asia', 'fuuka', data
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
         Redirect.path 'http://archive.heinessen.com', 'fuuka', data
@@ -1865,10 +1978,10 @@ Get =
 
     # Get rid of the side arrows.
     {nodes} = clone
-    nodes.root.innerHTML = null
+    $.rmAll nodes.root
     $.add nodes.root, nodes.post
 
-    root.innerHTML = null
+    $.rmAll root
     $.add root, nodes.root
   fetchedPost: (req, boardID, threadID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
@@ -2662,41 +2775,21 @@ ImageExpand =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Image Expansion']
 
-    wrapper = $.el 'div',
-      id: 'imgControls'
-      innerHTML: """
-        <a class='expand-all-shortcut' title='Expand All Images' href='javascript:;'></a>
-        <a class='menu-button' href='javascript:;'></a>
-      """
-    @EAI = wrapper.firstElementChild
+    @EAI = $.el 'a',
+      id:        'img-controls'
+      className: 'expand-all-shortcut'
+      title:     'Expand All Images'
+      href:      'javascript:;'
+
     $.on @EAI, 'click', ImageExpand.cb.toggleAll
-
-    @opmenu = new UI.Menu 'imageexpand'
-    $.on $('.menu-button', wrapper), 'click', @menuToggle
-
-    for type, config of Config.imageExpansion
-      label = $.el 'label',
-        innerHTML: "<input type=checkbox name='#{type}'> #{type}"
-      input = label.firstElementChild
-      if ['Fit width', 'Fit height'].contains type
-        $.on input, 'change', ImageExpand.cb.setFitness
-
-      if config
-        label.title   = config[1]
-        input.checked = Conf[type]
-        $.event 'change', null, input
-        $.on input, 'change', $.cb.checked
-
-      $.event 'AddMenuEntry',
-        type: 'imageexpand'
-        el:   label
-
-    $.asap (-> $.id 'delform'), ->
-      $.prepend $.id('delform'), wrapper
 
     Post::callbacks.push
       name: 'Image Expansion'
-      cb:   @node
+      cb: @node
+
+    $.asap (-> $.id 'delform'), ->
+      $.prepend $.id('delform'), ImageExpand.EAI
+
   node: ->
     return unless @file?.isImage
     {thumb} = @file
@@ -2843,7 +2936,7 @@ ImageExpand =
 
       el = $.el 'span',
         textContent: 'Image Expansion'
-        className: 'image-expansion-link'
+        className:   'image-expansion-link'
 
       {createSubEntry} = ImageExpand.menu
       subEntries = []
@@ -3190,17 +3283,21 @@ Unread =
       threadID: @ID
       defaultValue: 0
     Unread.addPosts posts
-    if (hash = location.hash.match /\d+/) and post = @posts[hash[0]]
-      Header.scrollToPost post.nodes.root
-    else if Unread.posts.length
-      # Scroll to before the first unread post.
-      $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView false
-    else if posts.length
-      # Scroll to the last read post.
-      Header.scrollToPost posts[posts.length - 1].nodes.root
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
+
+    return unless Conf['Scroll to Last Read Post']
+    # Let the header's onload callback handle it.
+    return if (hash = location.hash.match /\d+/) and hash[0] of @posts
+    if Unread.posts.length
+      # Scroll to before the first unread post.
+      while root = $.x 'preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root
+        break unless (Get.postFromRoot root).isHidden
+      root.scrollIntoView false
+    else if posts.length
+      # Scroll to the last read post.
+      Header.scrollToPost posts[posts.length - 1].nodes.root
 
   sync: ->
     lastReadPost = Unread.db.get
@@ -3287,7 +3384,7 @@ Unread =
       {root} = post.nodes
       if root isnt $ '.thread > .replyContainer', root.parentNode # not the first reply
         $.before root, Unread.hr
-    else if Unread.hr.parentNode
+    else
       $.rm Unread.hr
 
   update: <% if (type === 'crx') { %>(dontrepeat) <% } %>->
@@ -3581,7 +3678,7 @@ ThreadUpdater =
     unless d.hidden
       # Lower the max refresh rate limit on visible tabs.
       j = Math.min j, 7
-    ThreadUpdater.seconds = 
+    ThreadUpdater.seconds =
       if Conf['Optional Increase']
         Math.max i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
       else
@@ -3781,7 +3878,7 @@ ThreadWatcher =
         $.add div, [x, $.tn(' '), link]
         nodes.push div
 
-    ThreadWatcher.dialog.innerHTML = ''
+    $.rmAll ThreadWatcher.dialog
     $.add ThreadWatcher.dialog, nodes
 
     watched = watched[g.BOARD] or {}
@@ -4035,7 +4132,7 @@ Linkify =
 
   embedder: (a) ->
     return [a] unless Conf['Embedding']
-    
+
     callbacks = ->
       a.textContent = switch @status
         when 200, 304
@@ -4066,16 +4163,17 @@ Linkify =
       $.on embed, 'click', Linkify.toggle
 
       if Conf['Link Title'] and (service = type.title)
-        titles = $.get 'CachedTitles', {}
+        $.get 'CachedTitles', {}, (item) ->
+          titles = item['CachedTitles']
 
-        if title = titles[match[1]]
-          a.textContent = title[0]
-          embed.setAttribute 'data-title', title[0]
-        else
-          try
-            $.cache service.api.call(a), callbacks
-          catch err
-            a.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
+          if title = titles[match[1]]
+            a.textContent = title[0]
+            embed.setAttribute 'data-title', title[0]
+          else
+            try
+              $.cache service.api.call(a), callbacks
+            catch err
+              a.innerHTML = "[#{key}] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>"
 
       return [a, $.tn(' '), embed]
     return [a]

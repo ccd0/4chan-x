@@ -118,13 +118,19 @@ hr {
   opacity: 0.5;
 }
 /* Symbols */
-.dropmarker {
+.drop-marker {
   vertical-align: middle;
   display: inline-block;
   margin: 2px 2px 3px;
   border-top: .5em solid;
   border-right: .3em solid transparent;
   border-left: .3em solid transparent;
+}
+.brackets-wrap::before {
+  content: "\\00a0[";
+}
+.brackets-wrap::after {
+  content: "]\\00a0";
 }
 /* Thread / Reply Nav */
 #navlinks a {
@@ -140,30 +146,7 @@ hr {
 #boardNavDesktop {
   z-index: 6;
   border-width: 1px;
-#{{
-"sticky top": "
-  position: fixed;
-  top: 0;
-  border-top-width: 0;
-  #{if _conf["Rounded Edges"] then "border-radius: 0 0 3px 3px;" else ""}"
-
-"sticky bottom": "
-  position: fixed;
-  bottom: 0;
-  border-bottom-width: 0;
-  #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}"
-
-"top": "
   position: absolute;
-  top: 0;
-  border-top-width: 0;
-  #{if _conf["Rounded Edges"] then "border-radius: 0 0 3px 3px;" else ""}"
-
-"hide": "
-  position: fixed;
-  top: 110%;"
-
-}[_conf['Boards Navigation']]}
 #{
 if _conf['4chan SS Navigation'] then "
   left: 0;
@@ -181,6 +164,71 @@ else "
   word-spacing: 2px;
 " else ""}
    text-align: #{_conf["Navigation Alignment"]};
+}
+.fixed #boardNavDesktop {
+  position: fixed;
+}
+.top #boardNavDesktop {
+  top: 0;
+  border-top-width: 0;
+  #{if _conf["Rounded Edges"] then "border-radius: 0 0 3px 3px;" else ""}"
+}
+.fixed.bottom #boardNavDesktop {
+  bottom: 0;
+  border-bottom-width: 0;
+  #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}"
+}
+.hide #boardNavDesktop {
+  position: fixed;
+  top: 110%;
+  bottom: auto;
+}
+/* Header Autohide */
+.fixed #boardNavDesktop.autohide:not(:hover) {
+  box-shadow: none;
+  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
+}
+.fixed.top #boardNavDesktop.autohide:not(:hover) {
+  margin-bottom: -1em;
+  -webkit-transform: translateY(-100%);
+  transform: translateY(-100%);
+}
+.fixed.bottom #boardNavDesktop.autohide:not(:hover) {
+  -webkit-transform: translateY(100%);
+  transform: translateY(100%);
+}
+#toggle-header-bar {
+  left: 0;
+  right: 0;
+  height: 10px;
+  position: absolute;
+}
+#boardNavDesktop #toggle-header-bar {
+  display: none;
+}
+.fixed #boardNavDesktop #toggle-header-bar {
+  display: block;
+}
+.fixed #boardNavDesktop #toggle-header-bar {
+  cursor: n-resize;
+}
+.fixed.top boardNavDesktop #toggle-header-bar {
+  top: 100%;
+}
+.fixed.bottom #boardNavDesktop #toggle-header-bar {
+  bottom: 100%;
+}
+.fixed #boardNavDesktop #header-bar.autohide #toggle-header-bar {
+  cursor: s-resize;
+}
+/* Notifications */
+.notification {
+  display: block;
+  overflow: hidden;
+  width: 300px;
+}
+.close {
+  float: right;
 }
 /* Pagination */
 .pagelist {
@@ -443,27 +491,6 @@ else "
   z-index: 10;
 }
 /* Image Expansion */
-#imgControls a.menu-button {
-  margin: 0;
-  margin: 1px;
-  border: 2px solid;
-  border-radius: 10px;
-  height: 14px;
-  width: 14px;
-  #{Style.sizing}: border-box;
-}
-#imgControls .menu-button::after {
-  content: '';
-  font-size: 10px;
-  position: absolute;
-  bottom: 50%;
-  right: 50%;
-  #{agent}transform: translate(50%, 60%);
-  display: block;
-  border-top: 6px solid rgb(130, 130, 130);
-  border-left: 3px solid transparent;
-  border-right: 3px solid transparent;
-}
 .fit-width .full-image {
   max-width: 100%;
   width: 100%;
@@ -691,7 +718,7 @@ hide: "
 .menu-button {
   position: relative;
 }
-.menu-button,
+.post .menu-button,
 .hide-thread-button,
 .hide-reply-button {
   float: right;
@@ -1037,7 +1064,7 @@ input:checked + .rice {
   #{agent}transform: translateX(#{xOffset}93%);
 }
 #qr:hover,
-#qr.focus,
+#qr.has-focus,
 #qr.dump {
   #{agent}transform: translate(0);
 }"
@@ -1051,7 +1078,7 @@ input:checked + .rice {
   #{agent}transform: translateX(#{xOffset}100%);
 }
 #qr:hover,
-#qr.focus,
+#qr.has-focus,
 #qr.dump {
   #{agent}transform: translateX(0);
 }
@@ -1067,7 +1094,7 @@ input:checked + .rice {
   cursor: default;
 }
 #qr:hover #qrtab,
-#qr.focus #qrtab,
+#qr.has-focus #qrtab,
 #qr.dump #qrtab {
   opacity: 0;
   #{Style.sidebarLocation[0]}: #{252 + Style.sidebarOffset.W}px;
@@ -1090,7 +1117,7 @@ input:checked + .rice {
   #{agent}transition: opacity .3s ease-in-out 1s;
 }
 #qr:hover,
-#qr.focus,
+#qr.has-focus,
 #qr.dump {
   opacity: 1;
   #{agent}transition: opacity .3s linear;
@@ -1103,7 +1130,7 @@ unless _conf['Post Form Style'] is 'tabbed slideout'
     unless _conf['Post Form Style'] is 'float' or _conf['Show Post Form Header']
       "#qrtab { display: none; }"
     else unless _conf['Post Form Style'] is 'slideout'
-      ".autohide:not(:hover):not(.focus) > form { display: none !important; }"
+      ".autohide:not(:hover):not(.has-focus) > form { display: none !important; }"
     else ""
   ) + "#qrtab { margin-bottom: 1px; }"
 else ""}
@@ -1114,7 +1141,7 @@ if _conf['Post Form Style'] isnt 'float' and _conf["Post Form Slideout Transitio
   #{agent}transition: #{agent}transform .3s ease-in-out 1s;
 }
 #qr:hover,
-#qr.focus,
+#qr.has-focus,
 #qr.dump {
   #{agent}transition: #{agent}transform .3s linear;
 }

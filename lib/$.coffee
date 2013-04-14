@@ -140,8 +140,16 @@ $.extend $,
     el.classList.toggle className
   hasClass: (el, className) ->
     el.classList.contains className
-  rm: (el) ->
-    el.parentNode.removeChild el
+  rm: do ->
+    if 'remove' of Element.prototype
+      (el) -> el.remove()
+    else
+      (el) -> el.parentNode?.removeChild el
+  rmAll: (root) ->
+    # jsperf.com/emptify-element
+    while node = root.firstChild
+      $.rm node
+    return
   tn: (s) ->
     d.createTextNode s
   frag: ->

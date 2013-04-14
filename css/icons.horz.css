@@ -24,12 +24,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
   #{align}: #{position[i++]}px;
 }
 /* Expand Images */
-#imgControls .expand-all-shortcut,
-#imgControls .contract-all-shortcut {
-  #{align}: #{position[i++]}px;
-}
-/* Expand Images Menu */
-#imgControls .menu-button {
+#img-controls {
   #{align}: #{position[i++]}px;
 }
 /* 4chan Catalog */
@@ -66,9 +61,7 @@ div.navLinks > a:first-of-type::after {
 #appchanOptions,
 #watcher::after,
 #globalMessage::after,
-#imgControls .expand-all-shortcut,
-#imgControls .contract-all-shortcut,
-#imgControls .menu-button,
+#img-controls,
 #fappeTyme,
 div.navLinks > a:first-of-type::after,
 #catalog::after,

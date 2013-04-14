@@ -124,7 +124,7 @@ Settings =
       $.rmClass selected, 'tab-selected'
     $.addClass $(".tab-#{@hyphenatedTitle}", Settings.dialog), 'tab-selected'
     section = $ 'section', Settings.dialog
-    section.innerHTML = null
+    $.rmAll section
     section.className = "section-#{@hyphenatedTitle}"
     @open section, mode
     section.scrollTop = 0
@@ -188,6 +188,13 @@ Settings =
         $.delete ['hiddenThreads', 'hiddenPosts']
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
 
+    div = $.el 'div',
+      innerHTML: "<button>Reset Header</button><span class=description>: Unhide the navigation bar."
+    unhide = $ 'button', div
+    $.on unhide, 'click', ->
+      Header.setBarPosition.call textContent: "sticky top"
+    $.after $('input[name="Check for Updates"]', section).parentNode.parentNode, div
+
   export: (now, data) ->
     unless typeof now is 'number'
       now  = Date.now()
@@ -213,7 +220,7 @@ Settings =
       return
     # XXX Firefox won't let us download automatically.
     p = $ '.imp-exp-result', Settings.dialog
-    p.innerHTML = null
+    $.rmAll p
     $.add p, a
 
   import: ->
@@ -340,7 +347,7 @@ Settings =
   selectFilter: ->
     div = @nextElementSibling
     if (name = @value) isnt 'guide'
-      div.innerHTML = null
+      $.rmAll div
       ta = $.el 'textarea',
         name: name
         className: 'field'
@@ -824,7 +831,7 @@ Settings =
     mascotHide = $.el "div",
       id: "mascot_hide"
       className: "reply"
-      innerHTML: "Hide Categories <span class=dropmarker></span><div></div>"
+      innerHTML: "Hide Categories <span class=drop-marker></span><div></div>"
 
     keys = Object.keys Mascots
     keys.sort()

@@ -6,9 +6,7 @@ body > div.navLinks > a:first-of-type::after,
 #{if Conf['Announcements'] is 'slideout' then '#globalMessage::after,' else ''}
 #boardNavDesktopFoot::after,
 body > a[style="cursor: pointer; float: right;"]::after,
-#imgControls .expand-all-shortcut,
-#imgControls .contract-all-shortcut,
-#imgControls .menu-button,
+#img-controls,
 #catalog::after,
 #fappeTyme {
   z-index: 18;
@@ -34,9 +32,7 @@ body > div.navLinks > a:first-of-type:hover,
 #{if Conf['Announcements'] is 'slideout' then '#globalMessage:hover,' else ''}
 #boardNavDesktopFoot:hover,
 body > a[style="cursor: pointer; float: right;"]:hover,
-#imgControls .expand-all-shortcut,
-#imgControls .contract-all-shortcut,
-#imgControls .menu-button,
+#img-controls,
 #catalog:hover {
   z-index: 17;
 }
@@ -62,8 +58,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
   cursor: pointer;
   background-position: 0 -75px;
 }
-#imgControls .expand-all-shortcut,
-#imgControls .contract-all-shortcut {
+#img-controls {
   background-position: 0 -90px;
 }
 #navtopright .exlinksOptionsLink::after {
@@ -78,9 +73,7 @@ body > a[style="cursor: pointer; float: right;"]::after {
 }
 #boardNavDesktopFoot:hover::after,
 #globalMessage:hover::after,
-#imgControls .expand-all-shortcut:hover,
-#imgControls .contract-all-shortcut:hover,
-#imgControls .menu-button:hover,
+#img-controls:hover,
 #navlinks a:hover,
 #appchanOptions:hover,
 #navtopright .exlinksOptionsLink:hover::after,

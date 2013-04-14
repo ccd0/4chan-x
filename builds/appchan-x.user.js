@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAElBMVEX///8EZgR8ulSk0oT///8EAgQ1A88mAAAAAXRSTlMAQObYZgAAAIpJREFUeF6t0sENwjAMhWF84N4H6gAYMUBkdQMYwfuvwmstEeD4kl892P0OaaWcpga2/K0SGII1HNBXARgu7veoY3ANd+esgMHZIz85u0EABrbms3pl/bkC1Tn5ihGOfQwqHeZ/FdYdirEMgCG2ZAQWDTL0m9FvjAhcvoGNAK2gZhGYYX9+ZgFm9gaiNmNkMENY4QAAAABJRU5ErkJggg==
 // ==/UserScript==
 
-/* appchan x - Version 2.0.0 - 2013-04-13
+/* appchan x - Version 2.0.0 - 2013-04-14
  * http://zixaphir.github.com/appchan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -53,6 +53,7 @@
         'Catalog Links': [true, 'Turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
         'Enable 4chan\'s Extension': [false, 'Compatibility between appchan x and 4chan\'s inline extension is NOT guaranteed.'],
+        'Fixed Header': [false, 'Mayhem X\'s Fixed Header (kinda).'],
         'Custom Board Navigation': [false, 'Show custom links instead of the full board list.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
@@ -115,6 +116,7 @@
         'Auto Hide QR': [false, 'Automatically hide the quick reply when posting.'],
         'Open Post in New Tab': [true, 'Open new threads or replies to a thread from the index in a new tab.'],
         'Remember Subject': [false, 'Remember the subject field, instead of resetting after posting.'],
+        'Remember QR Size': [false, 'Remember the size of the Quick reply.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
         'Remember QR Size': [false, 'Remember the size of the quick reply\'s comment field.'],
         'Hide Original Post Form': [true, 'Hide the normal post form.'],
@@ -210,7 +212,6 @@
         'Hide Mascots on Catalog': [false, 'Do not show mascots on the official catalog pages.']
       },
       Navigation: {
-        'Boards Navigation': ['sticky top', 'The position of 4chan board navigation', ['sticky top', 'sticky bottom', 'top', 'hide']],
         'Navigation Alignment': ['center', 'Change the text alignment of the navigation.', ['left', 'center', 'right']],
         'Slideout Navigation': ['compact', 'How the slideout navigation will be displayed.', ['compact', 'list', 'hide']],
         'Pagination': ['sticky bottom', 'The position of 4chan page navigation', ['sticky top', 'sticky bottom', 'top', 'bottom', 'on side', 'hide']],
@@ -243,7 +244,9 @@
       MD5: ''
     },
     sauces: "https://www.google.com/searchbyimage?image_url=%TURL\nhttp://iqdb.org/?url=%TURL\n#//tineye.com/search?url=%TURL\n#http://saucenao.com/search.php?url=%TURL\n#http://3d.iqdb.org/?url=%TURL\n#http://regex.info/exif.cgi?imgurl=%URL\n# uploaders:\n#http://imgur.com/upload?url=%URL;text:Upload to imgur\n#http://ompldr.org/upload?url1=%URL;text:Upload to ompldr\n# \"View Same\" in archives:\n#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz\n#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/\n#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/",
+    'Boards Navigation': 'sticky top',
     'Custom CSS': false,
+    'Bottom header': false,
     'Header auto-hide': false,
     'Header catalog links': false,
     boardnav: '[ toggle-all ] [current-title]',
@@ -2442,7 +2445,9 @@
         innerHTML: html,
         id: id
       });
-      el.style.cssText = localStorage.getItem("" + g.NAMESPACE + id + ".position") || position;
+      $.get("" + id + ".position", position, function(item) {
+        return el.style.cssText = item["" + id + ".position"];
+      });
       move = $('.move', el);
       $.on(move, 'touchstart mousedown', dragstart);
       _ref = move.children;
@@ -2778,7 +2783,7 @@
         $.off(d, 'mousemove', this.move);
         $.off(d, 'mouseup', this.up);
       }
-      return localStorage.setItem("" + g.NAMESPACE + this.id + ".position", this.style.cssText);
+      return $.set("" + this.id + ".position", this.style.cssText);
     };
     hoverstart = function(_arg) {
       var asapTest, cb, close, el, endEvents, latestEvent, o, root;
@@ -3062,8 +3067,25 @@
     hasClass: function(el, className) {
       return el.classList.contains(className);
     },
-    rm: function(el) {
-      return el.parentNode.removeChild(el);
+    rm: (function() {
+      if ('remove' in Element.prototype) {
+        return function(el) {
+          return el.remove();
+        };
+      } else {
+        return function(el) {
+          var _ref;
+
+          return (_ref = el.parentNode) != null ? _ref.removeChild(el) : void 0;
+        };
+      }
+    })(),
+    rmAll: function(root) {
+      var node;
+
+      while (node = root.firstChild) {
+        $.rm(node);
+      }
     },
     tn: function(s) {
       return d.createTextNode(s);
@@ -3496,12 +3518,7 @@
         hide: 2
       }[_conf['Sidebar']] || (252 + Style.sidebarOffset.W);
       Style.replyMargin = _conf["Post Spacing"];
-      return css = "/* Cleanup */\n#absbot,\n#delPassword,\n#delform > hr:last-of-type,\n#navbotright,\n#postForm,\n#styleSwitcher,\n.boardBanner > div,\n.mobile,\n.postingMode,\n.riced,\n.sideArrows,\n.stylechanger,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr {\n  display: none;\n}\n/* Empties */\n#qr .warning:empty,\n#qr-thread-select:empty {\n  display: none;\n}\n/* File Name Trunctuate */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n/* Unnecessary */\n#qp input,\n#qp .rice,\n.inline .rice {\n  display: none !important;\n}\n/* Hidden Content */\n.forwarded,\n.hidden_thread ~ div,\n.hidden_thread ~ a,\n[hidden] {\n  display: none !important;\n}\n/* Hidden UI */\n#catalog,\n#navlinks,\n#navtopright,\n.cataloglink,\n.navLinks,\na[style=\"cursor: pointer; float: right;\"] {\n  position: fixed;\n  top: 100%;\n  left: 100%;\n}\n/* Hide last horizontal rule, keep clear functionality. */\n.board > hr:last-of-type {\n  visibility: hidden;\n}\n/* Fappe Tyme */\n.fappeTyme .thread > .noFile {\n  display: none;\n}\n/* Defaults */\na {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  outline: none;\n}\nbody,\nhtml {\n  min-height: 100%;\n  " + Style.sizing + ": border-box;\n}\nbody {\n  outline: none;\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 0;\n  margin-bottom: 0;\n  margin-" + Style.sidebarLocation[0] + ": " + (/^boards\.4chan\.org$/.test(location.hostname) ? Style.sidebar : '2') + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0 " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px 0 " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n}\nbody.unscroll {\n  overflow: hidden;\n}\n" + (_conf["4chan SS Sidebar"] && /^boards\.4chan\.org$/.test(location.hostname) ? "body::before {  content: '';  position: fixed;  top: 0;  bottom: 0;  " + Style.sidebarLocation[0] + ": 0;  width: " + (_conf['Sidebar'] === 'large' ? 305 : _conf['Sidebar'] === 'normal' ? 254 : _conf['Sidebar'] === 'minimal' ? 27 : 0) + "px;  z-index: 1;  " + Style.sizing + ": border-box;  display: block;}body {  padding-" + Style.sidebarLocation[0] + ": 2px;}" : "") + "\nbutton,\ninput,\ntextarea {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n}\nhr {\n  clear: both;\n  border: 0;\n  padding: 0;\n  margin: 0 0 1px;\n  " + (_conf['Hide Horizontal Rules'] ? 'visibility: hidden;' : '') + "\n}\n.center {\n  text-align: center;\n}\n.disabled {\n  opacity: 0.5;\n}\n/* Symbols */\n.dropmarker {\n  vertical-align: middle;\n  display: inline-block;\n  margin: 2px 2px 3px;\n  border-top: .5em solid;\n  border-right: .3em solid transparent;\n  border-left: .3em solid transparent;\n}\n/* Thread / Reply Nav */\n#navlinks a {\n  position: fixed;\n  z-index: 12;\n  opacity: 0.5;\n  display: inline-block;\n  border-right: 6px solid transparent;\n  border-left: 6px solid transparent;\n  margin: 1.5px;\n}\n/* Navigation */\n#boardNavDesktop {\n  z-index: 6;\n  border-width: 1px;\n" + {
-        "sticky top": "  position: fixed;  top: 0;  border-top-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : ""),
-        "sticky bottom": "  position: fixed;  bottom: 0;  border-bottom-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : ""),
-        "top": "  position: absolute;  top: 0;  border-top-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : ""),
-        "hide": "  position: fixed;  top: 110%;"
-      }[_conf['Boards Navigation']] + "\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + (_conf["Hide Navigation Decorations"] ? "  font-size: 0;  color: transparent;  word-spacing: 2px;" : "") + "\n   text-align: " + _conf["Navigation Alignment"] + ";\n}\n/* Pagination */\n.pagelist {\n  border-width: 1px;\n  text-align: " + _conf["Pagination Alignment"] + ";\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + {
+      return css = "/* Cleanup */\n#absbot,\n#delPassword,\n#delform > hr:last-of-type,\n#navbotright,\n#postForm,\n#styleSwitcher,\n.boardBanner > div,\n.mobile,\n.postingMode,\n.riced,\n.sideArrows,\n.stylechanger,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr {\n  display: none;\n}\n/* Empties */\n#qr .warning:empty,\n#qr-thread-select:empty {\n  display: none;\n}\n/* File Name Trunctuate */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n/* Unnecessary */\n#qp input,\n#qp .rice,\n.inline .rice {\n  display: none !important;\n}\n/* Hidden Content */\n.forwarded,\n.hidden_thread ~ div,\n.hidden_thread ~ a,\n[hidden] {\n  display: none !important;\n}\n/* Hidden UI */\n#catalog,\n#navlinks,\n#navtopright,\n.cataloglink,\n.navLinks,\na[style=\"cursor: pointer; float: right;\"] {\n  position: fixed;\n  top: 100%;\n  left: 100%;\n}\n/* Hide last horizontal rule, keep clear functionality. */\n.board > hr:last-of-type {\n  visibility: hidden;\n}\n/* Fappe Tyme */\n.fappeTyme .thread > .noFile {\n  display: none;\n}\n/* Defaults */\na {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  outline: none;\n}\nbody,\nhtml {\n  min-height: 100%;\n  " + Style.sizing + ": border-box;\n}\nbody {\n  outline: none;\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 0;\n  margin-bottom: 0;\n  margin-" + Style.sidebarLocation[0] + ": " + (/^boards\.4chan\.org$/.test(location.hostname) ? Style.sidebar : '2') + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0 " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px 0 " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n}\nbody.unscroll {\n  overflow: hidden;\n}\n" + (_conf["4chan SS Sidebar"] && /^boards\.4chan\.org$/.test(location.hostname) ? "body::before {  content: '';  position: fixed;  top: 0;  bottom: 0;  " + Style.sidebarLocation[0] + ": 0;  width: " + (_conf['Sidebar'] === 'large' ? 305 : _conf['Sidebar'] === 'normal' ? 254 : _conf['Sidebar'] === 'minimal' ? 27 : 0) + "px;  z-index: 1;  " + Style.sizing + ": border-box;  display: block;}body {  padding-" + Style.sidebarLocation[0] + ": 2px;}" : "") + "\nbutton,\ninput,\ntextarea {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n}\nhr {\n  clear: both;\n  border: 0;\n  padding: 0;\n  margin: 0 0 1px;\n  " + (_conf['Hide Horizontal Rules'] ? 'visibility: hidden;' : '') + "\n}\n.center {\n  text-align: center;\n}\n.disabled {\n  opacity: 0.5;\n}\n/* Symbols */\n.drop-marker {\n  vertical-align: middle;\n  display: inline-block;\n  margin: 2px 2px 3px;\n  border-top: .5em solid;\n  border-right: .3em solid transparent;\n  border-left: .3em solid transparent;\n}\n.brackets-wrap::before {\n  content: \"\\00a0[\";\n}\n.brackets-wrap::after {\n  content: \"]\\00a0\";\n}\n/* Thread / Reply Nav */\n#navlinks a {\n  position: fixed;\n  z-index: 12;\n  opacity: 0.5;\n  display: inline-block;\n  border-right: 6px solid transparent;\n  border-left: 6px solid transparent;\n  margin: 1.5px;\n}\n/* Navigation */\n#boardNavDesktop {\n  z-index: 6;\n  border-width: 1px;\n  position: absolute;\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + (_conf["Hide Navigation Decorations"] ? "  font-size: 0;  color: transparent;  word-spacing: 2px;" : "") + "\n   text-align: " + _conf["Navigation Alignment"] + ";\n}\n.fixed #boardNavDesktop {\n  position: fixed;\n}\n.top #boardNavDesktop {\n  top: 0;\n  border-top-width: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : "") + "\"\n}\n.fixed.bottom #boardNavDesktop {\n  bottom: 0;\n  border-bottom-width: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\"\n}\n.hide #boardNavDesktop {\n  position: fixed;\n  top: 110%;\n  bottom: auto;\n}\n/* Header Autohide */\n.fixed #boardNavDesktop.autohide:not(:hover) {\n  box-shadow: none;\n  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #boardNavDesktop.autohide:not(:hover) {\n  margin-bottom: -1em;\n  -webkit-transform: translateY(-100%);\n  transform: translateY(-100%);\n}\n.fixed.bottom #boardNavDesktop.autohide:not(:hover) {\n  -webkit-transform: translateY(100%);\n  transform: translateY(100%);\n}\n#toggle-header-bar {\n  left: 0;\n  right: 0;\n  height: 10px;\n  position: absolute;\n}\n#boardNavDesktop #toggle-header-bar {\n  display: none;\n}\n.fixed #boardNavDesktop #toggle-header-bar {\n  display: block;\n}\n.fixed #boardNavDesktop #toggle-header-bar {\n  cursor: n-resize;\n}\n.fixed.top boardNavDesktop #toggle-header-bar {\n  top: 100%;\n}\n.fixed.bottom #boardNavDesktop #toggle-header-bar {\n  bottom: 100%;\n}\n.fixed #boardNavDesktop #header-bar.autohide #toggle-header-bar {\n  cursor: s-resize;\n}\n/* Notifications */\n.notification {\n  display: block;\n  overflow: hidden;\n  width: 300px;\n}\n.close {\n  float: right;\n}\n/* Pagination */\n.pagelist {\n  border-width: 1px;\n  text-align: " + _conf["Pagination Alignment"] + ";\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + {
         "sticky top": "  position: fixed;  top: 0;  border-top-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : ""),
         "sticky bottom": "  position: fixed;  bottom: 0;  border-bottom-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : ""),
         "top": "  position: absolute;  top: 0;  border-top-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : ""),
@@ -3520,23 +3537,23 @@
         "under post form": "  position: fixed;  " + Style.sidebarLocation[0] + ": 2px;  bottom: 140px;  width: " + width + "px;",
         "at top": "  margin: 12px 0;",
         "hide": "  display: none;"
-      }[_conf["Board Title"]] + "\n}\n.boardTitle a {\n  font-size: " + (parseInt(_conf["Font Size"], 10) + 10) + "px;\n}\n.boardSubtitle,\n.boardSubtitle a {\n  font-size: " + (parseInt(_conf["Font Size"], 10) - 1) + "px;\n}\n/* Dialogs */\n.move {\n  cursor: pointer;\n}\n#ihover {\n  position: fixed;\n  max-height: 97%;\n  max-width: 75%;\n  padding: 10px;\n  z-index: 22;\n}\n#qp {\n  position: fixed;\n  z-index: 22;\n}\n#qp .postMessage::after {\n  clear: both;\n  display: block;\n  content: \"\";\n}\n#qp .full-image {\n  max-height: 300px;\n  max-width: 500px;\n}\n#menu {\n  position: fixed;\n  outline: none;\n  z-index: 22;\n}\n/* Updater */\n#updater {\n  position: fixed;\n  z-index: 10;\n  padding: 0 1px 1px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#updater:hover {\n  z-index: 30;\n} \n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n#updater input {\n  text-align: right;\n}\n#updater .field {\n  width: 50px;\n}\n/* Stats */\n#thread-stats {\n  position: fixed;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n  z-index: 10;\n}\n/* Image Expansion */\n#imgControls a.menu-button {\n  margin: 0;\n  margin: 1px;\n  border: 2px solid;\n  border-radius: 10px;\n  height: 14px;\n  width: 14px;\n  " + Style.sizing + ": border-box;\n}\n#imgControls .menu-button::after {\n  content: '';\n  font-size: 10px;\n  position: absolute;\n  bottom: 50%;\n  right: 50%;\n  " + agent + "transform: translate(50%, 60%);\n  display: block;\n  border-top: 6px solid rgb(130, 130, 130);\n  border-left: 3px solid transparent;\n  border-right: 3px solid transparent;\n}\n.fit-width .full-image {\n  max-width: 100%;\n  width: 100%;\n}\n" + (_conf['Images Overlap Post Form'] ? ".full-image {  position: relative;  z-index: 22;}" : "") + "\n/* Prefetcher */\n#prefetch {\n  z-index: 9;\n  position: fixed;\n}\n/* Delete Buttons */\n" + (_conf['Hide Delete UI'] ? ".deleteform,.post .rice {  display: none;}.postInfo {  padding: 0 0 0 3px;}" : ".deleteform {  position: fixed;  z-index: 18;  width: 0;  bottom: 0;  right: 0;  border-width: 1px 0 0 1px;  border-style: solid;  font-size: 0;  color: transparent;}.deleteform:hover {  width: auto;}.deleteform::before {  z-index: 18;  border-width: 1px 0 0 1px;  border-style: solid;  content: 'X';  display: block;  position: fixed;  bottom: 0;  right: 0;  font-size: " + _conf['Font Size'] + "px;  " + Style.sizing + ": border-box;  height: 1.6em;  width: 1.4em;  text-align: center;}.deleteform:hover::before {  display: none;}.deleteform input {  margin: 0 1px 0 0;}") + "\n/* Slideout Navigation */\n#boardNavDesktopFoot {\n  position: fixed;\n  width: " + width + "px;\n  " + Style.sidebarLocation[0] + ": 2px;\n  text-align: center;\n  font-size: 0;\n  color: transparent;\n  overflow: hidden;\n  " + Style.sizing + ": border-box;\n}\n#boardNavDesktopFoot a,\n#boardNavDesktopFoot a::after,\n#boardNavDesktopFoot a::before {\n  font-size: " + _conf['Font Size'] + "px;\n}\n#boardNavDesktopFoot:hover {\n  overflow-y: auto;\n  padding: 2px;\n}\n#boardNavDesktopFoot:not(:hover) {\n  border-color: transparent;\n  background-color: transparent;\n  height: 0;\n  overflow: hidden;\n  padding: 0;\n  border: 0 none;\n}\n" + {
+      }[_conf["Board Title"]] + "\n}\n.boardTitle a {\n  font-size: " + (parseInt(_conf["Font Size"], 10) + 10) + "px;\n}\n.boardSubtitle,\n.boardSubtitle a {\n  font-size: " + (parseInt(_conf["Font Size"], 10) - 1) + "px;\n}\n/* Dialogs */\n.move {\n  cursor: pointer;\n}\n#ihover {\n  position: fixed;\n  max-height: 97%;\n  max-width: 75%;\n  padding: 10px;\n  z-index: 22;\n}\n#qp {\n  position: fixed;\n  z-index: 22;\n}\n#qp .postMessage::after {\n  clear: both;\n  display: block;\n  content: \"\";\n}\n#qp .full-image {\n  max-height: 300px;\n  max-width: 500px;\n}\n#menu {\n  position: fixed;\n  outline: none;\n  z-index: 22;\n}\n/* Updater */\n#updater {\n  position: fixed;\n  z-index: 10;\n  padding: 0 1px 1px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#updater:hover {\n  z-index: 30;\n} \n#updater:not(:hover) > div:not(.move) {\n  display: none;\n}\n#updater input {\n  text-align: right;\n}\n#updater .field {\n  width: 50px;\n}\n/* Stats */\n#thread-stats {\n  position: fixed;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n  z-index: 10;\n}\n/* Image Expansion */\n.fit-width .full-image {\n  max-width: 100%;\n  width: 100%;\n}\n" + (_conf['Images Overlap Post Form'] ? ".full-image {  position: relative;  z-index: 22;}" : "") + "\n/* Prefetcher */\n#prefetch {\n  z-index: 9;\n  position: fixed;\n}\n/* Delete Buttons */\n" + (_conf['Hide Delete UI'] ? ".deleteform,.post .rice {  display: none;}.postInfo {  padding: 0 0 0 3px;}" : ".deleteform {  position: fixed;  z-index: 18;  width: 0;  bottom: 0;  right: 0;  border-width: 1px 0 0 1px;  border-style: solid;  font-size: 0;  color: transparent;}.deleteform:hover {  width: auto;}.deleteform::before {  z-index: 18;  border-width: 1px 0 0 1px;  border-style: solid;  content: 'X';  display: block;  position: fixed;  bottom: 0;  right: 0;  font-size: " + _conf['Font Size'] + "px;  " + Style.sizing + ": border-box;  height: 1.6em;  width: 1.4em;  text-align: center;}.deleteform:hover::before {  display: none;}.deleteform input {  margin: 0 1px 0 0;}") + "\n/* Slideout Navigation */\n#boardNavDesktopFoot {\n  position: fixed;\n  width: " + width + "px;\n  " + Style.sidebarLocation[0] + ": 2px;\n  text-align: center;\n  font-size: 0;\n  color: transparent;\n  overflow: hidden;\n  " + Style.sizing + ": border-box;\n}\n#boardNavDesktopFoot a,\n#boardNavDesktopFoot a::after,\n#boardNavDesktopFoot a::before {\n  font-size: " + _conf['Font Size'] + "px;\n}\n#boardNavDesktopFoot:hover {\n  overflow-y: auto;\n  padding: 2px;\n}\n#boardNavDesktopFoot:not(:hover) {\n  border-color: transparent;\n  background-color: transparent;\n  height: 0;\n  overflow: hidden;\n  padding: 0;\n  border: 0 none;\n}\n" + {
         compact: "#boardNavDesktopFoot {  word-spacing: 1px;}",
         list: "#boardNavDesktopFoot a {  display: block;}#boardNavDesktopFoot:hover {  max-height: 400px;}#boardNavDesktopFoot a::after {  content: ' - ' attr(title);}#boardNavDesktopFoot a[href*='//boards.4chan.org/']::after,#boardNavDesktopFoot a[href*='//rs.4chan.org/']::after {  content: '/ - ' attr(title);}#boardNavDesktopFoot a[href*='//boards.4chan.org/']::before,#boardNavDesktopFoot a[href*='//rs.4chan.org/']::before {  content: '/';}",
         hide: "#boardNavDesktopFoot {  display: none;}"
       }[_conf["Slideout Navigation"]] + "\n/* Watcher */\n#watcher {\n  position: fixed;\n  z-index: 14;\n  padding: 2px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#watcher > div {\n  max-height: 1.3em;\n  overflow: hidden;\n} \n" + (_conf['Slideout Watcher'] ? "#watcher {  width: " + width + "px;  " + Style.sidebarLocation[0] + ": 2px !important;  " + Style.sidebarLocation[1] + ": auto !important;  " + Style.sizing + ": border-box;}#watcher .move {  cursor: default;  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";}#watcher > div {  overflow: hidden;}#watcher:hover {  overflow-y: auto;}#watcher:not(:hover) {  height: 0;  overflow: hidden;  border: 0 none;  padding: 0;}" : "#watcher {  width: 200px;}#watcher:not(:hover) {  max-height: 200px;  overflow: hidden;} ") + "\n/* Announcements */\n#globalMessage {\n  text-align: center;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n" + ({
         'slideout': " #globalMessage {  position: fixed;  padding: 2px;  width: " + width + "px;  " + Style.sidebarLocation[0] + ": 2px !important;  " + Style.sidebarLocation[1] + ": auto !important;}#globalMessage h3 {  margin: 0;}#globalMessage:hover {  " + Style.sizing + ": border-box;  overflow-y: auto;}#globalMessage:not(:hover) {  height: 0;  overflow: hidden;  padding: 0;  border: 0 none;}",
         'hide': "#globalMessage {  display: none !important;}"
-      }[_conf['Announcements']] || "") + "\n/* Threads */\n.thread {\n  margin: " + (parseInt(_conf["Top Thread Padding"], 10)) + "px 0 " + (parseInt(_conf["Bottom Thread Padding"], 10)) + "px 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 4px;" : "") + "\n}\n/* Thread Clearfix */\n.thread > div:last-of-type::after {\n  display: block;\n  content: ' ';\n  clear: both;\n}\n/* Posts */\n.expanding {\n  opacity: .5;\n}\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.expanded-image > .post > .file > .fileThumb > img[data-md5],\n.post > .file > .fileThumb > .full-image {\n  display: none;\n}\n.expanded-image > .post > .file > .fileThumb > .full-image {\n  display: block;\n}\n.summary {\n  margin-bottom: " + Style.replyMargin + "px;\n}\n.post {\n  margin-bottom: " + Style.replyMargin + "px;\n}\n.replyContainer:last-of-type .post {\n  margin-bottom: 0;\n}\n.menu-button {\n  position: relative;\n}\n.menu-button,\n.hide-thread-button,\n.hide-reply-button {\n  float: right;\n  margin: 0 3px;\n  opacity: 0;\n  " + agent + "transition: opacity .3s ease-out 0s;\n}\n.post:hover .hide-reply-button,\n.post:hover .menu-button,\n.post:hover .hide-thread-button,\n.hidden_thread .hide-thread-button,\n.hidden_thread .menu-button,\n.inline .hide-reply-button,\n.inline .menu-button {\n  opacity: 1;\n}\n.hidden_thread {\n  text-align: right;\n}\n" + (_conf['Color user IDs'] ? ".posteruid .hand {  padding: .1em .3em;  border-radius: 1em;  font-size: 80%;}" : "") + "\n.postInfo > span {\n  vertical-align: bottom;\n}\n.subject,\n.name {\n  " + (_conf["Bolds"] ? 'font-weight: 600;' : '') + "\n}\n.postertrip {\n  " + (_conf["Italics"] ? 'font-style: italic;' : '') + "\n}\n.replylink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n}\n.fileInfo {\n  padding: 0 3px;\n}\n.fileThumb {\n  float: left;\n  margin: 3px 20px;\n  outline: none;\n}\n.reply.post {\n  " + Style.sizing + ": border-box;\n}\n" + (_conf["Fit Width Replies"] ? ".reply.post {  display: block;  overflow: hidden;}.expanded-image .reply.post {  width: 100%;}" : ".reply.post {  display: inline-block;}") + "\n.expanded-image .reply.post {\n  display: inline-block;\n  overflow: visible;\n  clear: both;\n} \n.post {\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.postMessage {\n  margin: " + _conf['Vertical Post Padding'] + "px " + _conf['Horizontal Post Padding'] + "px;\n}\n.spoiler,\ns {\n  text-decoration: none;\n}\n/* Reply Clearfix */\n.reply.post .postMessage {\n  clear: right;\n}\n" + (_conf['Force Reply Break'] || _conf["OP Background"] ? ".op.post .postMessage::after {  display: block;  content: ' ';  clear: both;}" : "") + "\n/* OP */\n.favicon {\n  vertical-align: bottom;\n}\n" + (_conf["OP Background"] ? ".op.post {  " + Style.sizing + ": border-box;}" : "") + "\n/* Summary */\n" + (_conf["Force Reply Break"] ? ".summary { clear: both;}" : "") + "\n/* Inlined */\n.inline {\n  margin: 2px 8px 2px 2px;\n}\n.post .inline {\n  margin: 2px;\n}\n.inline .replyContainer {\n  display: inline-block;\n}\n/* Inlined Clearfix */\n.inline .postMessage::after {\n  clear: both;\n  display: block;\n  content: \"\";\n}\n/* Quotes */\n.inlined {\n  opacity: .5;\n}\n.quotelink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n}\n.filtered,\n.quotelink.filtered {\n  text-decoration: underline;\n  text-decoration: line-through !important;\n}\n/* Backlinks */\n.backlink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n}\n.backlink.dead {\n  text-decoration: none;\n}\n" + {
+      }[_conf['Announcements']] || "") + "\n/* Threads */\n.thread {\n  margin: " + (parseInt(_conf["Top Thread Padding"], 10)) + "px 0 " + (parseInt(_conf["Bottom Thread Padding"], 10)) + "px 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 4px;" : "") + "\n}\n/* Thread Clearfix */\n.thread > div:last-of-type::after {\n  display: block;\n  content: ' ';\n  clear: both;\n}\n/* Posts */\n.expanding {\n  opacity: .5;\n}\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull,\n.expanded-image > .post > .file > .fileThumb > img[data-md5],\n.post > .file > .fileThumb > .full-image {\n  display: none;\n}\n.expanded-image > .post > .file > .fileThumb > .full-image {\n  display: block;\n}\n.summary {\n  margin-bottom: " + Style.replyMargin + "px;\n}\n.post {\n  margin-bottom: " + Style.replyMargin + "px;\n}\n.replyContainer:last-of-type .post {\n  margin-bottom: 0;\n}\n.menu-button {\n  position: relative;\n}\n.post .menu-button,\n.hide-thread-button,\n.hide-reply-button {\n  float: right;\n  margin: 0 3px;\n  opacity: 0;\n  " + agent + "transition: opacity .3s ease-out 0s;\n}\n.post:hover .hide-reply-button,\n.post:hover .menu-button,\n.post:hover .hide-thread-button,\n.hidden_thread .hide-thread-button,\n.hidden_thread .menu-button,\n.inline .hide-reply-button,\n.inline .menu-button {\n  opacity: 1;\n}\n.hidden_thread {\n  text-align: right;\n}\n" + (_conf['Color user IDs'] ? ".posteruid .hand {  padding: .1em .3em;  border-radius: 1em;  font-size: 80%;}" : "") + "\n.postInfo > span {\n  vertical-align: bottom;\n}\n.subject,\n.name {\n  " + (_conf["Bolds"] ? 'font-weight: 600;' : '') + "\n}\n.postertrip {\n  " + (_conf["Italics"] ? 'font-style: italic;' : '') + "\n}\n.replylink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n}\n.fileInfo {\n  padding: 0 3px;\n}\n.fileThumb {\n  float: left;\n  margin: 3px 20px;\n  outline: none;\n}\n.reply.post {\n  " + Style.sizing + ": border-box;\n}\n" + (_conf["Fit Width Replies"] ? ".reply.post {  display: block;  overflow: hidden;}.expanded-image .reply.post {  width: 100%;}" : ".reply.post {  display: inline-block;}") + "\n.expanded-image .reply.post {\n  display: inline-block;\n  overflow: visible;\n  clear: both;\n} \n.post {\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.postMessage {\n  margin: " + _conf['Vertical Post Padding'] + "px " + _conf['Horizontal Post Padding'] + "px;\n}\n.spoiler,\ns {\n  text-decoration: none;\n}\n/* Reply Clearfix */\n.reply.post .postMessage {\n  clear: right;\n}\n" + (_conf['Force Reply Break'] || _conf["OP Background"] ? ".op.post .postMessage::after {  display: block;  content: ' ';  clear: both;}" : "") + "\n/* OP */\n.favicon {\n  vertical-align: bottom;\n}\n" + (_conf["OP Background"] ? ".op.post {  " + Style.sizing + ": border-box;}" : "") + "\n/* Summary */\n" + (_conf["Force Reply Break"] ? ".summary { clear: both;}" : "") + "\n/* Inlined */\n.inline {\n  margin: 2px 8px 2px 2px;\n}\n.post .inline {\n  margin: 2px;\n}\n.inline .replyContainer {\n  display: inline-block;\n}\n/* Inlined Clearfix */\n.inline .postMessage::after {\n  clear: both;\n  display: block;\n  content: \"\";\n}\n/* Quotes */\n.inlined {\n  opacity: .5;\n}\n.quotelink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n}\n.filtered,\n.quotelink.filtered {\n  text-decoration: underline;\n  text-decoration: line-through !important;\n}\n/* Backlinks */\n.backlink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n}\n.backlink.dead {\n  text-decoration: none;\n}\n" + {
         "lower left": ".container {  padding: 0 5px;  max-width: 100%;}.reply.quoted {  position: relative;  padding-bottom: 1.7em;}.reply .container {  position: absolute;  left: 0;  bottom: 0;  padding: 0 5px;}.reply .container::before {  content: 'REPLIES: ';}#qp .container {  position: static;  max-width: 100%;}#qp .container::before {  content: '';}.inline .container {  position: static;  max-width: 100%;}.inline .container::before {  content: '';}",
         'lower right': ".reply.quoted {  position: relative;  padding-bottom: 1.7em;}.reply .container {  position: absolute;  right: 0;  bottom: 0;}.container::before {  content: 'REPLIES: ';}.container {  max-width: 100%;  padding: 0 5px;}#qp .container {  position: static;  max-width: 100%;}#qp .container::before {  content: '';}.inline .container {  position: static;  float: none;}.inline .container::before {  content: '';}",
         'default': ""
       }[_conf["Backlinks Position"]] + "\n/* Code */\n.prettyprint {\n  " + Style.sizing + ": border-box;\n  font-family: monospace;\n  display: inline-block;\n  margin-right: auto;\n  white-space: pre-wrap;\n  border-radius: 2px;\n  overflow-x: auto;\n  padding: 3px;\n  max-width: 100%;\n}\n/* Menu */\n.entry {\n  border-bottom: 1px solid rgba(0,0,0,.25);\n  cursor: pointer;\n  display: block;\n  outline: none;\n  padding: 3px 7px;\n  position: relative;\n  text-decoration: none;\n  white-space: nowrap;\n}\n.entry:last-child {\n  border-bottom: 0;\n}\n.has-submenu::after {\n  content: \"\";\n  border-" + position + ": .5em solid;\n  border-top: .3em solid transparent;\n  border-bottom: .3em solid transparent;\n  display: inline-block;\n  margin: .3em;\n  position: absolute;\n  right: 3px;\n}\n.submenu {\n  display: none;\n  position: absolute;\n  " + position + ": 100%;\n  top: -1px;\n}\n.focused .submenu {\n  display: block;\n}\n/* Stubs */\n" + (_conf['Fit Width Replies'] ? ".stub {  float: right;  clear: both;}" : "") + "\n/* Emoji */\n" + (_conf["Emoji"] !== "disable" ? Emoji.css(_conf["Emoji Position"]) : "") + "\n/* Element Replacing */\n/* Checkboxes */\n.rice {\n  cursor: pointer;\n  width: 9px;\n  height: 9px;\n  margin: 2px 3px 3px;\n  display: inline-block;\n  vertical-align: bottom;\n  " + (_conf["Rounded Edges"] ? "border-radius: 2px;" : "") + "\n  " + (_conf["Circle Checkboxes"] ? "border-radius: 6px;" : "") + "\n}\ninput:checked + .rice {\n  background-attachment: scroll;\n  background-repeat: no-repeat;\n  background-position: bottom right;\n}\n/* Selects */\n.selectrice {\n  position: relative;\n  cursor: default;\n  overflow: hidden;\n  text-align: left;\n}\n.selectrice::after {\n  content: \"\";\n  border-right: .25em solid transparent;\n  border-left: .25em solid transparent;\n  position: absolute;\n  right: .4em;\n  top: .5em;\n}\n.selectrice::before {\n  content: \"\";\n  height: 1.6em;\n  position: absolute;\n  right: 1.3em;\n  top: 0;\n}\n/* Select Dropdown */\n#selectrice {\n  padding: 0;\n  margin: 0;\n  position: fixed;\n  max-height: 120px;\n  overflow-y: auto;\n  overflow-x: hidden;\n  z-index: 32;\n}\n#selectrice:empty {\n  display: none;\n}\n/* Post Form */\n#qr {\n  z-index: 20;\n  position: fixed;\n  padding: 1px;\n  border: 1px solid transparent;\n  min-width: " + width + "px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\n}\n#qrtab {\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\n}\n\n" + ({
         "fixed": "#qr {  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": 0 !important;  " + Style.sidebarLocation[1] + ": auto !important;}",
-        "slideout": "#qrtab input,#qrtab .rice {  display: none;}#qr {  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": 0 !important;  " + Style.sidebarLocation[1] + ": auto !important;  " + agent + "transform: translateX(" + xOffset + "93%);}#qr:hover,#qr.focus,#qr.dump {  " + agent + "transform: translate(0);}",
-        "tabbed slideout": "#qr {  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": 0 !important;  " + Style.sidebarLocation[1] + ": auto !important;  " + agent + "transform: translateX(" + xOffset + "100%);}#qr:hover,#qr.focus,#qr.dump {  " + agent + "transform: translateX(0);}#qrtab {  " + agent + "transform: rotate(" + (Style.sidebarLocation[0] === "left" ? "" : "-") + "90deg);  " + agent + "transform-origin: bottom " + Style.sidebarLocation[0] + ";  position: absolute;  top: 0;  " + Style.sidebarLocation[0] + ": 100%;  width: 110px;  text-align: center;  border-width: 1px 1px 0 1px;  cursor: default;}#qr:hover #qrtab,#qr.focus #qrtab,#qr.dump #qrtab {  opacity: 0;  " + Style.sidebarLocation[0] + ": " + (252 + Style.sidebarOffset.W) + "px;}#qrtab input,#qrtab .close,#qrtab .rice,#qrtab span {  display: none;}",
-        "transparent fade": "#qr {  overflow: visible;  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": 2px !important;  " + Style.sidebarLocation[1] + ": auto !important;  opacity: 0.2;  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover,#qr.focus,#qr.dump {  opacity: 1;  " + agent + "transition: opacity .3s linear;}"
-      }[_conf['Post Form Style']] || "") + "\n\n" + (_conf['Post Form Style'] !== 'tabbed slideout' ? (!(_conf['Post Form Style'] === 'float' || _conf['Show Post Form Header']) ? "#qrtab { display: none; }" : _conf['Post Form Style'] !== 'slideout' ? ".autohide:not(:hover):not(.focus) > form { display: none !important; }" : "") + "#qrtab { margin-bottom: 1px; }" : "") + "\n\n" + (_conf['Post Form Style'] !== 'float' && _conf["Post Form Slideout Transitions"] ? "#qr {  " + agent + "transition: " + agent + "transform .3s ease-in-out 1s;}#qr:hover,#qr.focus,#qr.dump {  " + agent + "transition: " + agent + "transform .3s linear;}#qrtab {  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover #qrtab {  " + agent + "transition: opacity .3s linear;}" : "") + "\n\n#qr .close {\n  float: right;\n  padding: 0 3px;\n}\n#qr .warning {\n  min-height: 1.6em;\n  vertical-align: middle;\n  padding: 0 1px;\n  border-width: 1px;\n  border-style: solid;\n}\n.persona {\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-button {\n  width: 10%;\n  margin: 0;\n}\n\n" + (_conf['Compact Post Form Inputs'] ? ".persona input.field {  width: 29.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 14.8em;  min-height: 9em;}#qr.has-captcha textarea.field {  height: 9em;}" : ".persona input.field {  width: 100%;}.persona input.field[name='name'] {  width: 89.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 11.6em;  min-height: 6em;}#qr.has-captcha textarea.field {  height: 6em;}") + "\n\n" + (_conf["Tripcode Hider"] ? "input.field.tripped:not(:hover):not(:focus) {  color: transparent !important;  text-shadow: none !important;}" : "") + "\n\n#qr textarea {\n  resize: " + _conf['Textarea Resize'] + ";\n}\n.captcha-img {\n  margin: 1px 0 0;\n  text-align: center;\n  line-height: 0;\n}\n.captcha-img img {\n  width: 100%;\n  height: 4em;\n  width: 246px;\n}\n.captcha-input {\n  width: 100%;\n  margin: 1px 0 0;\n}\n.field,\n.selectrice,\nbutton,\ninput:not([type=radio]) {\n  " + Style.sizing + ": border-box;\n  font-size: " + (parseInt(_conf['Font Size'], 10)) + "px;\n  height: 1.6em;\n  margin: 1px 0 0;\n  vertical-align: bottom;\n  padding: 0 1px;\n}\n#qr textarea {\n  min-width: 100%;\n}\n#qr [type='submit'] {\n  width: 25%;\n}\n[type='file'] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n#showQR {\n  display: " + (_conf["Hide Show Post Form"] ? "none" : "block") + ";\n  z-index: 4;\n  " + Style.sidebarLocation[0] + ": 2px;\n  width: " + width + "px;\n  background-color: transparent;\n  text-align: center;\n  position: fixed;\n  top: auto;\n}\n/* Fake File Input */\n#qr-filename,\n.has-file #qr-no-file {\n  display: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\n  display: block;\n}\n#qr-filename-container {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  position: relative;\n  width: 100px;\n  min-width: 74.6%;\n  max-width: 74.6%;\n  margin-right: 0.4%;\n  overflow: hidden;\n  padding: 2px 1px 0;\n}\n#qr-filerm {\n  position: absolute;\n  right: 3px;\n  top: 2px;\n  z-index: 2;\n}\n/* Thread Select / Spoiler Label */\n#qr-thread-select {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n}\n#qr-spoiler-label {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n  text-align: right;\n}\n/* Dumping UI */\n.dump #dump-list-container {\n  display: block;\n}\n#dump-list-container {\n  display: none;\n  position: relative;\n  overflow-y: hidden;\n  margin-top: 1px;\n}\n#dump-list {\n  overflow-x: auto;\n  overflow-y: hidden;\n  white-space: pre;\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-list:hover {\n  overflow-x: auto;\n}\n.qr-preview {\n  " + Style.sizing + ": border-box;\n  counter-increment: thumbnails;\n  cursor: move;\n  display: inline-block;\n  height: 90px;\n  width: 90px;\n  padding: 2px;\n  opacity: .5;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + agent + "transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.qr-preview:hover,\n.qr-preview:focus {\n  opacity: .9;\n}\n.qr-preview::before {\n  content: counter(thumbnails);\n  color: #fff;\n  position: absolute;\n  top: 3px;\n  right: 3px;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\n  opacity: 1;\n}\n.qr-preview.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\n  border-color: #fff;\n}\n.qr-preview > span {\n  color: #fff;\n}\n.remove {\n  background: none;\n  color: #e00;\n  font-weight: 700;\n  padding: 3px;\n}\na:only-of-type > .remove {\n  display: none;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.qr-preview > label {\n  background: rgba(0,0,0,.5);\n  color: #fff;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.qr-preview > label > input {\n  margin: 0;\n}\n#add-post {\n  cursor: pointer;\n  font-size: 2em;\n  position: absolute;\n  top: 50%;\n  right: 10px;\n  " + agent + "transform: translateY(-50%);\n}\n/* Ads */\n.topad img,\n.middlead img,\n.bottomad img {\n  opacity: 0.3;\n  " + agent + "transition: opacity .3s linear;\n}\n.topad img:hover,\n.middlead img:hover,\n.bottomad img:hover {\n  opacity: 1;\n}\n" + (_conf["Block Ads"] ? "/* AdBlock Minus */.bottomad + hr,.topad img,.middlead img,.bottomad img {  display: none;}" : "") + "\n" + (_conf["Shrink Ads"] ? ".topad a img,.middlead a img,.bottomad a img {  width: 500px;  height: auto;}" : "") + "\n/* Options */\n#overlay {\n  position: fixed;\n  z-index: 30;\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n}\n#appchanx-settings {\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n  position: fixed;\n  z-index: 31;\n  padding: .3em;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.description {\n  display: none;\n}\n#appchanx-settings h3,\n.section-keybinds,\n.section-mascots,\n.section-script,\n.style {\n  text-align: center;\n}\n.section-keybinds table,\n.section-script fieldset,\n.section-style fieldset {\n  text-align: left;\n}\n.section-keybinds table {\n  margin: auto;\n}\n#appchanx-settings fieldset {\n  padding: 5px 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n  vertical-align: top;\n  " + (_conf["Single Column Mode"] ? "margin: 0 auto 6px;" : "margin: 0 3px 6px;\n display: inline-block;") + "\n  border: 0;\n}\n.section-container {\n  overflow: auto;\n  position: absolute;\n  top: 1.7em;\n  right: 5px;\n  bottom: 5px;\n  left: 5px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.sections-list {\n  padding: 0 3px;\n  float: left;\n}\n.sections-list > a {\n  cursor: pointer;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\n  position: relative;\n  padding: 0 4px;\n  z-index: 1;\n  height: 1.4em;\n  display: inline-block;\n  border-width: 1px 1px 0 1px;\n  border-color: transparent;\n  border-style: solid;\n}\n.credits {\n  float: right;\n}\n#appchanx-settings h3 {\n  margin: 0;\n}\n.section-script fieldset > div,\n.section-style fieldset > div,\n.section-rice fieldset > div {\n  overflow: visible;\n  padding: 0 5px 0 7px;\n}\n#appchanx-settings tr:nth-of-type(2n+1),\n.section-script fieldset > div:nth-of-type(2n+1),\n.section-rice fieldset > div:nth-of-type(2n+1),\n.section-style fieldset > div:nth-of-type(2n+1),\n.section-keybinds tr:nth-of-type(2n+1),\n#selectrice li:nth-of-type(2n+1) {\n  background-color: rgba(0, 0, 0, 0.05);\n}\narticle li {\n  margin: 10px 0 10px 2em;\n}\n#appchanx-settings .option {\n  width: 50%;\n  display: inline-block;\n  vertical-align: bottom;\n}\n.option input {\n  width: 100%;\n}\n.optionlabel {\n  padding-left: 18px;\n}\n.rice + .optionlabel {\n  padding-left: 0;\n}\n.section-script fieldset,\n.styleoption {\n  text-align: left;\n}\n.section-style fieldset {\n  width: 370px;\n}\n.section-script fieldset {\n  width: 200px;\n}\n.suboptions,\n#mascotcontent,\n#themecontent {\n  overflow: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 1.7em;\n  left: 0;\n}\n.mAlign {\n  height: 250px;\n  vertical-align: middle;\n  display: table-cell;\n}\n#themecontent {\n  top: 1.7em;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n.section-style .suboptions {\n  bottom: 0;\n}\n.section-container textarea {\n  font-family: monospace;\n  min-height: 350px;\n  resize: vertical;\n  width: 100%;\n}\n/* Hover Functionality */\n#mouseover {\n  z-index: 33;\n  position: fixed;\n  max-width: 70%;\n}\n#mouseover:empty {\n  display: none;\n}\n/* Mascot Tab */\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#mascot_hide label {\n  width: 100%;\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n.mascots {\n  padding: 0;\n  text-align: center;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.mascot,\n.mascotcontainer {\n  overflow: hidden;\n}\n.mascot {\n  position: relative;\n  border: none;\n  margin: 5px;\n  padding: 0;\n  width: 200px;\n  display: inline-block;\n  background-color: transparent;\n}\n.mascotcontainer {\n  height: 250px;\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  bottom: 0;\n  border-width: 0 1px 1px;\n  border-style: solid;\n  border-color: transparent;\n  overflow: hidden;\n}\n.mascot img {\n  max-width: 200px;\n}\n.mascotname,\n.mascotoptions {\n  padding: 0;\n  width: 100%;\n}\n.mascot .mascotoptions {\nopacity: 0;\n  " + agent + "transition: opacity .3s linear;\n}\n.mascot:hover .mascotoptions {\n  opacity: 1;\n}\n.mascotoptions {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n}\n.mascotoptions a {\n  display: inline-block;\n  width: 33%;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Themes Tab */\n#themes h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  " + agent + "transition: all .2s ease-in-out;\n  opacity: 0;\n}\n#themes .selectedtheme h1 {\n  right: 11px;\n  opacity: 1;\n}\n#themeContainer {\n  margin-bottom: 3px;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.theme {\n  margin: 1em;\n}\n/* Theme Editor */\n#themeConf {\n  position: fixed;\n  " + Style.sidebarLocation[1] + ": 2px;\n  " + Style.sidebarLocation[0] + ": auto;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n  z-index: 10;\n}\n#themebar input {\n  width: 30%;\n}\n.option .color {\n  width: 10%;\n  border-left: none !important;\n  color: transparent !important;\n}\n.option .colorfield {\n  width: 90%;\n}\n.themevar textarea {\n  min-width: 100%;\n  max-width: 100%;\n  height: 20em;\n  resize: vertical;\n}\n/* Mascot Editor */\n#mascotConf {\n  position: fixed;\n  height: 17em;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n  z-index: 10;\n}\n#mascotConf .option,\n#mascotConf .optionlabel {\n  " + Style.sizing + ": border-box;\n  width: 50%;\n  display: inline-block;\n  vertical-align: middle;\n}\n#mascotConf .option input {\n  width: 100%;\n}\n#close {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Catalog */\n#content .navLinks,\n#info .navLinks,\n.btn-wrap {\n  display: block;\n}\n.navLinks > .btn-wrap:not(:first-of-type)::before {\n  content: ' - ';\n}\n.button {\n  cursor: pointer;\n}\n#content .btn-wrap,\n#info .btn-wrap {\n  display: inline-block;\n}\n#settings .selectrice {\n  width: 100px;\n  display: inline-block;\n}\n#post-preview {\n  position: absolute;\n  z-index: 22;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#settings,\n#threads,\n#info .navLinks,\n#content .navLinks {\n  text-align: center;\n}\n#threads .thread {\n  vertical-align: top;\n  display: inline-block;\n  word-wrap: break-word;\n  overflow: hidden;\n  margin-top: 5px;\n  padding: 5px 0 3px;\n  text-align: center;\n}\n.extended-small .thread,\n.small .thread {\n  width: 165px;\n  max-height: 320px;\n}\n.small .teaser,\n.large .teaser {\n  display: none;\n}\n.extended-large .thread,\n.large .thread {\n  width: 270px;\n  max-height: 410px;\n}\n.extended-small .thumb,\n.small .thumb {\n  max-width: 150px;\n  max-height: 150px;\n}\n/* Front Page */\n#logo {\n  text-align: center;\n}\n#doc {\n  margin: 0 auto;\n  width: 1000px;\n  position: relative;\n}\n#boards .boxcontent {\n  vertical-align: top;\n  text-align: center;\n}\n#filter-container,\n#options-container {\n  float: right;\n  position: relative;\n}\n#optionssmenu {\n  top: 100% !important;\n  left: 0 !important;\n}\n#boards .column {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  width: 16em;\n  text-align: left;\n  vertical-align: top;\n}\n.bd ul,\n.boxcontent ul {\n  vertical-align: top;\n  padding: 0;\n}\n.right-box .boxcontent ul {\n  padding: 0 10px;\n}\n.yuimenuitem,\n.boxcontent li {\n  list-style-type: none;\n}\n.bd ul {\n  margin: 0;\n}\n.yuimenuitem::before {\n  content: \" [ ] \";\n  font-family: monospace;\n}\n.yuimenuitem-checked::before {\n  content: \" [x] \"\n}\n.yui-u {\n  display: inline-block;\n  vertical-align: top;\n  width: 475px;\n  margin: 10px;\n}\n#recent-images .boxcontent {\n  text-align: center;\n}\n#ft {\n  text-align: center;\n}\n#ft ul {\n  padding: 0;\n}\n#ft li {\n  list-style-type: none;\n  display: inline-block;\n  width: 100px;\n}\n#preview-tooltip-nws,\n#preview-tooltip-ws,\n#ft .fill,\n.clear-bug {\n  display: none;\n}";
+        "slideout": "#qrtab input,#qrtab .rice {  display: none;}#qr {  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": 0 !important;  " + Style.sidebarLocation[1] + ": auto !important;  " + agent + "transform: translateX(" + xOffset + "93%);}#qr:hover,#qr.has-focus,#qr.dump {  " + agent + "transform: translate(0);}",
+        "tabbed slideout": "#qr {  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": 0 !important;  " + Style.sidebarLocation[1] + ": auto !important;  " + agent + "transform: translateX(" + xOffset + "100%);}#qr:hover,#qr.has-focus,#qr.dump {  " + agent + "transform: translateX(0);}#qrtab {  " + agent + "transform: rotate(" + (Style.sidebarLocation[0] === "left" ? "" : "-") + "90deg);  " + agent + "transform-origin: bottom " + Style.sidebarLocation[0] + ";  position: absolute;  top: 0;  " + Style.sidebarLocation[0] + ": 100%;  width: 110px;  text-align: center;  border-width: 1px 1px 0 1px;  cursor: default;}#qr:hover #qrtab,#qr.has-focus #qrtab,#qr.dump #qrtab {  opacity: 0;  " + Style.sidebarLocation[0] + ": " + (252 + Style.sidebarOffset.W) + "px;}#qrtab input,#qrtab .close,#qrtab .rice,#qrtab span {  display: none;}",
+        "transparent fade": "#qr {  overflow: visible;  top: auto !important;  bottom: 1.7em !important;  " + Style.sidebarLocation[0] + ": 2px !important;  " + Style.sidebarLocation[1] + ": auto !important;  opacity: 0.2;  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover,#qr.has-focus,#qr.dump {  opacity: 1;  " + agent + "transition: opacity .3s linear;}"
+      }[_conf['Post Form Style']] || "") + "\n\n" + (_conf['Post Form Style'] !== 'tabbed slideout' ? (!(_conf['Post Form Style'] === 'float' || _conf['Show Post Form Header']) ? "#qrtab { display: none; }" : _conf['Post Form Style'] !== 'slideout' ? ".autohide:not(:hover):not(.has-focus) > form { display: none !important; }" : "") + "#qrtab { margin-bottom: 1px; }" : "") + "\n\n" + (_conf['Post Form Style'] !== 'float' && _conf["Post Form Slideout Transitions"] ? "#qr {  " + agent + "transition: " + agent + "transform .3s ease-in-out 1s;}#qr:hover,#qr.has-focus,#qr.dump {  " + agent + "transition: " + agent + "transform .3s linear;}#qrtab {  " + agent + "transition: opacity .3s ease-in-out 1s;}#qr:hover #qrtab {  " + agent + "transition: opacity .3s linear;}" : "") + "\n\n#qr .close {\n  float: right;\n  padding: 0 3px;\n}\n#qr .warning {\n  min-height: 1.6em;\n  vertical-align: middle;\n  padding: 0 1px;\n  border-width: 1px;\n  border-style: solid;\n}\n.persona {\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-button {\n  width: 10%;\n  margin: 0;\n}\n\n" + (_conf['Compact Post Form Inputs'] ? ".persona input.field {  width: 29.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 14.8em;  min-height: 9em;}#qr.has-captcha textarea.field {  height: 9em;}" : ".persona input.field {  width: 100%;}.persona input.field[name='name'] {  width: 89.6%;  margin: 0 0 0 0.4%;}#qr textarea.field {  height: 11.6em;  min-height: 6em;}#qr.has-captcha textarea.field {  height: 6em;}") + "\n\n" + (_conf["Tripcode Hider"] ? "input.field.tripped:not(:hover):not(:focus) {  color: transparent !important;  text-shadow: none !important;}" : "") + "\n\n#qr textarea {\n  resize: " + _conf['Textarea Resize'] + ";\n}\n.captcha-img {\n  margin: 1px 0 0;\n  text-align: center;\n  line-height: 0;\n}\n.captcha-img img {\n  width: 100%;\n  height: 4em;\n  width: 246px;\n}\n.captcha-input {\n  width: 100%;\n  margin: 1px 0 0;\n}\n.field,\n.selectrice,\nbutton,\ninput:not([type=radio]) {\n  " + Style.sizing + ": border-box;\n  font-size: " + (parseInt(_conf['Font Size'], 10)) + "px;\n  height: 1.6em;\n  margin: 1px 0 0;\n  vertical-align: bottom;\n  padding: 0 1px;\n}\n#qr textarea {\n  min-width: 100%;\n}\n#qr [type='submit'] {\n  width: 25%;\n}\n[type='file'] {\n  position: absolute;\n  opacity: 0;\n  z-index: -1;\n}\n#showQR {\n  display: " + (_conf["Hide Show Post Form"] ? "none" : "block") + ";\n  z-index: 4;\n  " + Style.sidebarLocation[0] + ": 2px;\n  width: " + width + "px;\n  background-color: transparent;\n  text-align: center;\n  position: fixed;\n  top: auto;\n}\n/* Fake File Input */\n#qr-filename,\n.has-file #qr-no-file {\n  display: none;\n}\n#qr-no-file,\n.has-file #qr-filename {\n  display: block;\n}\n#qr-filename-container {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  position: relative;\n  width: 100px;\n  min-width: 74.6%;\n  max-width: 74.6%;\n  margin-right: 0.4%;\n  overflow: hidden;\n  padding: 2px 1px 0;\n}\n#qr-filerm {\n  position: absolute;\n  right: 3px;\n  top: 2px;\n  z-index: 2;\n}\n/* Thread Select / Spoiler Label */\n#qr-thread-select {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n}\n#qr-spoiler-label {\n  vertical-align: bottom;\n  width: 49%;\n  display: inline-block;\n  text-align: right;\n}\n/* Dumping UI */\n.dump #dump-list-container {\n  display: block;\n}\n#dump-list-container {\n  display: none;\n  position: relative;\n  overflow-y: hidden;\n  margin-top: 1px;\n}\n#dump-list {\n  overflow-x: auto;\n  overflow-y: hidden;\n  white-space: pre;\n  width: 248px;\n  max-width: 100%;\n  min-width: 100%;\n}\n#dump-list:hover {\n  overflow-x: auto;\n}\n.qr-preview {\n  " + Style.sizing + ": border-box;\n  counter-increment: thumbnails;\n  cursor: move;\n  display: inline-block;\n  height: 90px;\n  width: 90px;\n  padding: 2px;\n  opacity: .5;\n  overflow: hidden;\n  position: relative;\n  text-shadow: 0 1px 1px #000;\n  " + agent + "transition: opacity .25s ease-in-out;\n  vertical-align: top;\n}\n.qr-preview:hover,\n.qr-preview:focus {\n  opacity: .9;\n}\n.qr-preview::before {\n  content: counter(thumbnails);\n  color: #fff;\n  position: absolute;\n  top: 3px;\n  right: 3px;\n  text-shadow: 0 0 3px #000, 0 0 8px #000;\n}\n.qr-preview#selected {\n  opacity: 1;\n}\n.qr-preview.drag {\n  box-shadow: 0 0 10px rgba(0,0,0,.5);\n}\n.qr-preview.over {\n  border-color: #fff;\n}\n.qr-preview > span {\n  color: #fff;\n}\n.remove {\n  background: none;\n  color: #e00;\n  font-weight: 700;\n  padding: 3px;\n}\na:only-of-type > .remove {\n  display: none;\n}\n.remove:hover::after {\n  content: \" Remove\";\n}\n.qr-preview > label {\n  background: rgba(0,0,0,.5);\n  color: #fff;\n  right: 0; bottom: 0; left: 0;\n  position: absolute;\n  text-align: center;\n}\n.qr-preview > label > input {\n  margin: 0;\n}\n#add-post {\n  cursor: pointer;\n  font-size: 2em;\n  position: absolute;\n  top: 50%;\n  right: 10px;\n  " + agent + "transform: translateY(-50%);\n}\n/* Ads */\n.topad img,\n.middlead img,\n.bottomad img {\n  opacity: 0.3;\n  " + agent + "transition: opacity .3s linear;\n}\n.topad img:hover,\n.middlead img:hover,\n.bottomad img:hover {\n  opacity: 1;\n}\n" + (_conf["Block Ads"] ? "/* AdBlock Minus */.bottomad + hr,.topad img,.middlead img,.bottomad img {  display: none;}" : "") + "\n" + (_conf["Shrink Ads"] ? ".topad a img,.middlead a img,.bottomad a img {  width: 500px;  height: auto;}" : "") + "\n/* Options */\n#overlay {\n  position: fixed;\n  z-index: 30;\n  top: 0;\n  right: 0;\n  left: 0;\n  bottom: 0;\n  background: rgba(0,0,0,.5);\n}\n#appchanx-settings {\n  width: auto;\n  left: 15%;\n  right: 15%;\n  top: 15%;\n  bottom: 15%;\n  position: fixed;\n  z-index: 31;\n  padding: .3em;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.description {\n  display: none;\n}\n#appchanx-settings h3,\n.section-keybinds,\n.section-mascots,\n.section-script,\n.style {\n  text-align: center;\n}\n.section-keybinds table,\n.section-script fieldset,\n.section-style fieldset {\n  text-align: left;\n}\n.section-keybinds table {\n  margin: auto;\n}\n#appchanx-settings fieldset {\n  padding: 5px 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n  vertical-align: top;\n  " + (_conf["Single Column Mode"] ? "margin: 0 auto 6px;" : "margin: 0 3px 6px;\n display: inline-block;") + "\n  border: 0;\n}\n.section-container {\n  overflow: auto;\n  position: absolute;\n  top: 1.7em;\n  right: 5px;\n  bottom: 5px;\n  left: 5px;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.sections-list {\n  padding: 0 3px;\n  float: left;\n}\n.sections-list > a {\n  cursor: pointer;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\n  position: relative;\n  padding: 0 4px;\n  z-index: 1;\n  height: 1.4em;\n  display: inline-block;\n  border-width: 1px 1px 0 1px;\n  border-color: transparent;\n  border-style: solid;\n}\n.credits {\n  float: right;\n}\n#appchanx-settings h3 {\n  margin: 0;\n}\n.section-script fieldset > div,\n.section-style fieldset > div,\n.section-rice fieldset > div {\n  overflow: visible;\n  padding: 0 5px 0 7px;\n}\n#appchanx-settings tr:nth-of-type(2n+1),\n.section-script fieldset > div:nth-of-type(2n+1),\n.section-rice fieldset > div:nth-of-type(2n+1),\n.section-style fieldset > div:nth-of-type(2n+1),\n.section-keybinds tr:nth-of-type(2n+1),\n#selectrice li:nth-of-type(2n+1) {\n  background-color: rgba(0, 0, 0, 0.05);\n}\narticle li {\n  margin: 10px 0 10px 2em;\n}\n#appchanx-settings .option {\n  width: 50%;\n  display: inline-block;\n  vertical-align: bottom;\n}\n.option input {\n  width: 100%;\n}\n.optionlabel {\n  padding-left: 18px;\n}\n.rice + .optionlabel {\n  padding-left: 0;\n}\n.section-script fieldset,\n.styleoption {\n  text-align: left;\n}\n.section-style fieldset {\n  width: 370px;\n}\n.section-script fieldset {\n  width: 200px;\n}\n.suboptions,\n#mascotcontent,\n#themecontent {\n  overflow: auto;\n  position: absolute;\n  top: 0;\n  right: 0;\n  bottom: 1.7em;\n  left: 0;\n}\n.mAlign {\n  height: 250px;\n  vertical-align: middle;\n  display: table-cell;\n}\n#themecontent {\n  top: 1.7em;\n}\n#save,\n.stylesettings {\n  position: absolute;\n  right: 10px;\n  bottom: 0;\n}\n.section-style .suboptions {\n  bottom: 0;\n}\n.section-container textarea {\n  font-family: monospace;\n  min-height: 350px;\n  resize: vertical;\n  width: 100%;\n}\n/* Hover Functionality */\n#mouseover {\n  z-index: 33;\n  position: fixed;\n  max-width: 70%;\n}\n#mouseover:empty {\n  display: none;\n}\n/* Mascot Tab */\n#mascot_hide {\n  padding: 3px;\n  position: absolute;\n  top: 2px;\n  right: 18px;\n}\n#mascot_hide .rice {\n  float: left;\n}\n#mascot_hide > div {\n  height: 0;\n  text-align: right;\n  overflow: hidden;\n}\n#mascot_hide:hover > div {\n  height: auto;\n}\n#mascot_hide label {\n  width: 100%;\n  display: block;\n  clear: both;\n  text-decoration: none;\n}\n.mascots {\n  padding: 0;\n  text-align: center;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n.mascot,\n.mascotcontainer {\n  overflow: hidden;\n}\n.mascot {\n  position: relative;\n  border: none;\n  margin: 5px;\n  padding: 0;\n  width: 200px;\n  display: inline-block;\n  background-color: transparent;\n}\n.mascotcontainer {\n  height: 250px;\n  border: 0;\n  margin: 0;\n  max-height: 250px;\n  cursor: pointer;\n  bottom: 0;\n  border-width: 0 1px 1px;\n  border-style: solid;\n  border-color: transparent;\n  overflow: hidden;\n}\n.mascot img {\n  max-width: 200px;\n}\n.mascotname,\n.mascotoptions {\n  padding: 0;\n  width: 100%;\n}\n.mascot .mascotoptions {\nopacity: 0;\n  " + agent + "transition: opacity .3s linear;\n}\n.mascot:hover .mascotoptions {\n  opacity: 1;\n}\n.mascotoptions {\n  position: absolute;\n  bottom: 0;\n  right: 0;\n  left: 0;\n}\n.mascotoptions a {\n  display: inline-block;\n  width: 33%;\n}\n#upload {\n  position: absolute;\n  width: 100px;\n  left: 50%;\n  margin-left: -50px;\n  text-align: center;\n  bottom: 0;\n}\n#mascots_batch {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Themes Tab */\n#themes h1 {\n  position: absolute;\n  right: 300px;\n  bottom: 10px;\n  margin: 0;\n  " + agent + "transition: all .2s ease-in-out;\n  opacity: 0;\n}\n#themes .selectedtheme h1 {\n  right: 11px;\n  opacity: 1;\n}\n#themeContainer {\n  margin-bottom: 3px;\n}\n#addthemes {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n.theme {\n  margin: 1em;\n}\n/* Theme Editor */\n#themeConf {\n  position: fixed;\n  " + Style.sidebarLocation[1] + ": 2px;\n  " + Style.sidebarLocation[0] + ": auto;\n  top: 0;\n  bottom: 0;\n  width: 296px;\n  z-index: 10;\n}\n#themebar input {\n  width: 30%;\n}\n.option .color {\n  width: 10%;\n  border-left: none !important;\n  color: transparent !important;\n}\n.option .colorfield {\n  width: 90%;\n}\n.themevar textarea {\n  min-width: 100%;\n  max-width: 100%;\n  height: 20em;\n  resize: vertical;\n}\n/* Mascot Editor */\n#mascotConf {\n  position: fixed;\n  height: 17em;\n  bottom: 0;\n  left: 50%;\n  width: 500px;\n  margin-left: -250px;\n  overflow: auto;\n  z-index: 10;\n}\n#mascotConf .option,\n#mascotConf .optionlabel {\n  " + Style.sizing + ": border-box;\n  width: 50%;\n  display: inline-block;\n  vertical-align: middle;\n}\n#mascotConf .option input {\n  width: 100%;\n}\n#close {\n  position: absolute;\n  left: 10px;\n  bottom: 0;\n}\n/* Catalog */\n#content .navLinks,\n#info .navLinks,\n.btn-wrap {\n  display: block;\n}\n.navLinks > .btn-wrap:not(:first-of-type)::before {\n  content: ' - ';\n}\n.button {\n  cursor: pointer;\n}\n#content .btn-wrap,\n#info .btn-wrap {\n  display: inline-block;\n}\n#settings .selectrice {\n  width: 100px;\n  display: inline-block;\n}\n#post-preview {\n  position: absolute;\n  z-index: 22;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px;" : "") + "\n}\n#settings,\n#threads,\n#info .navLinks,\n#content .navLinks {\n  text-align: center;\n}\n#threads .thread {\n  vertical-align: top;\n  display: inline-block;\n  word-wrap: break-word;\n  overflow: hidden;\n  margin-top: 5px;\n  padding: 5px 0 3px;\n  text-align: center;\n}\n.extended-small .thread,\n.small .thread {\n  width: 165px;\n  max-height: 320px;\n}\n.small .teaser,\n.large .teaser {\n  display: none;\n}\n.extended-large .thread,\n.large .thread {\n  width: 270px;\n  max-height: 410px;\n}\n.extended-small .thumb,\n.small .thumb {\n  max-width: 150px;\n  max-height: 150px;\n}\n/* Front Page */\n#logo {\n  text-align: center;\n}\n#doc {\n  margin: 0 auto;\n  width: 1000px;\n  position: relative;\n}\n#boards .boxcontent {\n  vertical-align: top;\n  text-align: center;\n}\n#filter-container,\n#options-container {\n  float: right;\n  position: relative;\n}\n#optionssmenu {\n  top: 100% !important;\n  left: 0 !important;\n}\n#boards .column {\n  " + Style.sizing + ": border-box;\n  display: inline-block;\n  width: 16em;\n  text-align: left;\n  vertical-align: top;\n}\n.bd ul,\n.boxcontent ul {\n  vertical-align: top;\n  padding: 0;\n}\n.right-box .boxcontent ul {\n  padding: 0 10px;\n}\n.yuimenuitem,\n.boxcontent li {\n  list-style-type: none;\n}\n.bd ul {\n  margin: 0;\n}\n.yuimenuitem::before {\n  content: \" [ ] \";\n  font-family: monospace;\n}\n.yuimenuitem-checked::before {\n  content: \" [x] \"\n}\n.yui-u {\n  display: inline-block;\n  vertical-align: top;\n  width: 475px;\n  margin: 10px;\n}\n#recent-images .boxcontent {\n  text-align: center;\n}\n#ft {\n  text-align: center;\n}\n#ft ul {\n  padding: 0;\n}\n#ft li {\n  list-style-type: none;\n  display: inline-block;\n  width: 100px;\n}\n#preview-tooltip-nws,\n#preview-tooltip-ws,\n#ft .fill,\n.clear-bug {\n  display: none;\n}";
     },
     theme: function(theme) {
       var agent, background, backgroundC, bgColor, css, fileHeading, icons, replyHeading, _conf;
@@ -3546,7 +3563,7 @@
       bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) || 'aaaaaa');
       Style.lightTheme = bgColor.isLight();
       icons = "data:image/png;base64," + Icons[_conf["Icons"]];
-      css = ".hide_thread_button span > span,\n.hide_reply_button span > span {\n  background-color: " + theme["Links"] + ";\n}\n#mascot_hide label {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n#content .thumb {\n  box-shadow: 0 0 5px " + theme["Reply Border"] + ";\n}\n.mascotname,\n.mascotoptions {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\nhr {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\na[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + backgroundC + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n}\n#fs_status {\n  background: " + theme["Dialog Background"] + " !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data * {\n  border-color: " + theme["Reply Border"] + " !important;\n}\nhtml {\n  background: " + (backgroundC || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n.section-container,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + backgroundC + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n.sections-list > a.tab-selected {\n  background: " + backgroundC + ";\n  border-color: " + theme["Reply Border"] + ";\n  border-style: solid;\n}\n.captcha-img img {\n  " + (Style.filter(theme["Text"], theme["Input Background"])) + "\n}\n#boardTitle,\n#prefetch,\n#showQR,\n" + (!_conf["Post Form Decorations"] ? '#spoilerLabel,' : '') + "\n#thread-stats {\n  text-shadow:\n     1px  1px 0 " + backgroundC + ",\n    -1px -1px 0 " + backgroundC + ",\n     1px -1px 0 " + backgroundC + ",\n    -1px  1px 0 " + backgroundC + ",\n     0    1px 0 " + backgroundC + ",\n     0   -1px 0 " + backgroundC + ",\n     1px  0   0 " + backgroundC + ",\n    -1px  0   0 " + backgroundC + "\n    " + (_conf["Sidebar Glow"] ? ", 0 2px 5px " + theme['Text'] + ";" : ";") + "\n}\n/* Fixes text spoilers */\n" + (_conf['Remove Spoilers'] && _conf['Indicate Spoilers'] ? ".spoiler::before,s::before {  content: '[spoiler]';}.spoiler::after,s::after {  content: '[/spoiler]';}" : !_conf['Remove Spoilers'] ? ".spoiler:not(:hover) *,s:not(:hover) * {  color: rgb(0,0,0) !important;  text-shadow: none !important;}.spoiler:not(:hover),s:not(:hover) {  background-color: rgb(0,0,0);  color: rgb(0,0,0) !important;  text-shadow: none !important;}" : "") + "\n#exlinks-options,\n#appchanx-settings,\n#qrtab,\n" + (_conf["Post Form Decorations"] ? "#qr," : "") + "\n#updater,\ninput[type=\"submit\"],\ninput[value=\"Report\"],\nspan[style=\"left: 5px; position: absolute;\"] a {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.enabled .mascotcontainer {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#qr-filename-container,\n#appchanx-settings input,\n.captcha-img,\n.dump #dump:not(:hover):not(:focus),\n.qr-preview,\n.selectrice,\nbutton,\ninput,\ntextarea {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:hover,\n#qr-filename-container:hover,\n#qr-filename-container:hover,\n.selectrice:hover,\n#selectrice li:hover,\n#selectrice li:nth-of-type(2n+1):hover,\ninput:hover,\ntextarea:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:active,\n#dump:focus,\n#selectrice li:focus,\n.selectrice:focus,\n#qr-filename-container:active,\n#qr-filename-container:focus,\ninput:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n  outline: none;\n}\n#mouseover,\n#post-preview,\n#qp .post,\n#xupdater,\n.reply.post {\n  border-width: 1px;\n  border-style: solid;\n  border-color: " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.thread > .replyContainer > .reply.post {\n  border-width: " + (_conf['Post Spacing'] === "0" ? "1px 1px 0 1px" : '1px') + ";\n}\n.exblock.reply,\n.reply.post.highlight,\n.reply.post:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#boardNavDesktop,\n.pagelist {\n  background: " + theme["Navigation Background"] + ";\n  border-style: solid;\n  border-color: " + theme["Navigation Border"] + ";\n}\n.thread {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#selectrice,\n#themeConf,\n#watcher,\n#watcher:hover,\n.submenu,\na[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n.deleteform::before,\n.deleteform,\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border-color: " + theme["Input Border"] + ";\n}\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\n#navlinks a:first-of-type {\n  border-bottom: 11px solid rgb(130,130,130);\n}\n#navlinks a:last-of-type {\n  border-top: 11px solid rgb(130,130,130);\n}\n#imgControls .menu-button {\n  border-color: rgb(130,130,130);\n  color: rgb(130,130,130);\n}\n#charCount {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + ";\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n}\n.dateTime,\n.post-ago {\n  color: " + theme["Timestamps"] + " !important;\n}\n#fs_status a,\n#updater #count:not(.new)::after,\n#showQR,\n#updater,\n.abbr,\n.boxbar,\n.boxcontent,\n.deleteform::before,\n.pages strong,\n.pln,\n.reply,\n.reply.highlight,\n.summary,\nbody,\nbutton,\nspan[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#appchanx-settings fieldset,\n#selectrice {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\n.forwardlink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  border-bottom: 1px dashed " + theme["Backlinks"] + ";\n}\n.container::before {\n  color: " + theme["Timestamps"] + ";\n}\n#menu,\n#post-preview,\n#qp .opContainer,\n#qp .replyContainer,\n.submenu {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n}\n.selectrice::before {\n  border-left: 1px solid " + theme["Input Border"] + ";\n}\n.selectrice::after {\n  border-top: .45em solid " + theme["Inputs"] + ";\n}\n#updater input,\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#boardNavDesktop a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  position: relative;\n}\ninput[type=checkbox]:checked + .rice::after {\n  content: \"\";\n  display: block;\n  width: 5px;\n  height: 12px;\n  border-radius: 1px;\n  border: solid rgb(50, 50, 50);\n  border-width: 0 3px 3px 0;\n  " + agent + "transform: rotate(45deg);\n  position: absolute;\n  left: 2px;\n  bottom: -1px;\n  " + (!Style.lightTheme ? "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>#filters\");" : "") + "\n}\n#addReply,\n#dump,\n.button,\n.entry,\n.replylink,\na {\n  color: " + theme["Links"] + ";\n}\n.backlink {\n  color: " + theme["Backlinks"] + ";\n}\n.qiQuote,\n.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\n#addReply:hover,\n#dump:hover,\n.entry:hover,\n.sideArrows a:hover,\n.replylink:hover,\n.qiQuote:hover,\n.quotelink:hover,\na .name:hover,\na .postertrip:hover,\na:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#boardNavDesktop a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name,\n.post-author {\n  color: " + theme["Names"] + " !important;\n}\n.post-tripcode,\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\na .postertrip,\na .name {\n  color: " + theme["Emails"] + ";\n}\n.post.reply.qphl,\n.post.op.qphl {\n  border-color: " + theme["Backlinked Reply Outline"] + ";\n  background: " + theme["Highlighted Reply Background"] + ";\n}\n.inline .post {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.placeholder,\n#qr input::" + agent + "placeholder,\n#qr textarea::" + agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#qr input:" + agent + "placeholder,\n#qr textarea:" + agent + "placeholder,\n.placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#appchanx-settings fieldset,\n.boxcontent dd,\n.selectrice ul {\n  border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + ";\n}\n#appchanx-settings li,\n#selectrice li:not(:first-of-type) {\n  border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + ";\n}\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\na[style=\"cursor: pointer; float: right;\"]::after,\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut,\n#catalog::after,\n#fappeTyme {\n  background-image: url('" + icons + "');\n" + (!Style.lightTheme ? "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>#filters\");" : "") + "\n}\n" + theme["Custom CSS"];
+      css = ".hide_thread_button span > span,\n.hide_reply_button span > span {\n  background-color: " + theme["Links"] + ";\n}\n#mascot_hide label {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n#content .thumb {\n  box-shadow: 0 0 5px " + theme["Reply Border"] + ";\n}\n.mascotname,\n.mascotoptions {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\nhr {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\na[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + backgroundC + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n}\n#fs_status {\n  background: " + theme["Dialog Background"] + " !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data * {\n  border-color: " + theme["Reply Border"] + " !important;\n}\nhtml {\n  background: " + (backgroundC || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n.section-container,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + backgroundC + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n.sections-list > a.tab-selected {\n  background: " + backgroundC + ";\n  border-color: " + theme["Reply Border"] + ";\n  border-style: solid;\n}\n.captcha-img img {\n  " + (Style.filter(theme["Text"], theme["Input Background"])) + "\n}\n#boardTitle,\n#prefetch,\n#showQR,\n" + (!_conf["Post Form Decorations"] ? '#spoilerLabel,' : '') + "\n#thread-stats {\n  text-shadow:\n     1px  1px 0 " + backgroundC + ",\n    -1px -1px 0 " + backgroundC + ",\n     1px -1px 0 " + backgroundC + ",\n    -1px  1px 0 " + backgroundC + ",\n     0    1px 0 " + backgroundC + ",\n     0   -1px 0 " + backgroundC + ",\n     1px  0   0 " + backgroundC + ",\n    -1px  0   0 " + backgroundC + "\n    " + (_conf["Sidebar Glow"] ? ", 0 2px 5px " + theme['Text'] + ";" : ";") + "\n}\n/* Fixes text spoilers */\n" + (_conf['Remove Spoilers'] && _conf['Indicate Spoilers'] ? ".spoiler::before,s::before {  content: '[spoiler]';}.spoiler::after,s::after {  content: '[/spoiler]';}" : !_conf['Remove Spoilers'] ? ".spoiler:not(:hover) *,s:not(:hover) * {  color: rgb(0,0,0) !important;  text-shadow: none !important;}.spoiler:not(:hover),s:not(:hover) {  background-color: rgb(0,0,0);  color: rgb(0,0,0) !important;  text-shadow: none !important;}" : "") + "\n#exlinks-options,\n#appchanx-settings,\n#qrtab,\n" + (_conf["Post Form Decorations"] ? "#qr," : "") + "\n#updater,\ninput[type=\"submit\"],\ninput[value=\"Report\"],\nspan[style=\"left: 5px; position: absolute;\"] a {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.enabled .mascotcontainer {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#qr-filename-container,\n#appchanx-settings input,\n.captcha-img,\n.dump #dump:not(:hover):not(:focus),\n.qr-preview,\n.selectrice,\nbutton,\ninput,\ntextarea {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:hover,\n#qr-filename-container:hover,\n#qr-filename-container:hover,\n.selectrice:hover,\n#selectrice li:hover,\n#selectrice li:nth-of-type(2n+1):hover,\ninput:hover,\ntextarea:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:active,\n#dump:focus,\n#selectrice li:focus,\n.selectrice:focus,\n#qr-filename-container:active,\n#qr-filename-container:focus,\ninput:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n  outline: none;\n}\n#mouseover,\n#post-preview,\n#qp .post,\n#xupdater,\n.reply.post {\n  border-width: 1px;\n  border-style: solid;\n  border-color: " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.thread > .replyContainer > .reply.post {\n  border-width: " + (_conf['Post Spacing'] === "0" ? "1px 1px 0 1px" : '1px') + ";\n}\n.exblock.reply,\n.reply.post.highlight,\n.reply.post:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#boardNavDesktop,\n.pagelist {\n  background: " + theme["Navigation Background"] + ";\n  border-style: solid;\n  border-color: " + theme["Navigation Border"] + ";\n}\n.thread {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#selectrice,\n#themeConf,\n#watcher,\n#watcher:hover,\n.submenu,\na[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n.deleteform::before,\n.deleteform,\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border-color: " + theme["Input Border"] + ";\n}\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\n#navlinks a:first-of-type {\n  border-bottom: 11px solid rgb(130,130,130);\n}\n#navlinks a:last-of-type {\n  border-top: 11px solid rgb(130,130,130);\n}\n#charCount {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + ";\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n}\n.dateTime,\n.post-ago {\n  color: " + theme["Timestamps"] + " !important;\n}\n#fs_status a,\n#updater #count:not(.new)::after,\n#showQR,\n#updater,\n.abbr,\n.boxbar,\n.boxcontent,\n.deleteform::before,\n.pages strong,\n.pln,\n.reply,\n.reply.highlight,\n.summary,\nbody,\nbutton,\nspan[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#appchanx-settings fieldset,\n#selectrice {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\n.forwardlink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  border-bottom: 1px dashed " + theme["Backlinks"] + ";\n}\n.container::before {\n  color: " + theme["Timestamps"] + ";\n}\n#menu,\n#post-preview,\n#qp .opContainer,\n#qp .replyContainer,\n.submenu {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n}\n.selectrice::before {\n  border-left: 1px solid " + theme["Input Border"] + ";\n}\n.selectrice::after {\n  border-top: .45em solid " + theme["Inputs"] + ";\n}\n#updater input,\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#boardNavDesktop a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  position: relative;\n}\ninput[type=checkbox]:checked + .rice::after {\n  content: \"\";\n  display: block;\n  width: 5px;\n  height: 12px;\n  border-radius: 1px;\n  border: solid rgb(50, 50, 50);\n  border-width: 0 3px 3px 0;\n  " + agent + "transform: rotate(45deg);\n  position: absolute;\n  left: 2px;\n  bottom: -1px;\n  " + (!Style.lightTheme ? "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>#filters\");" : "") + "\n}\n#addReply,\n#dump,\n.button,\n.entry,\n.replylink,\na {\n  color: " + theme["Links"] + ";\n}\n.backlink {\n  color: " + theme["Backlinks"] + ";\n}\n.qiQuote,\n.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\n#addReply:hover,\n#dump:hover,\n.entry:hover,\n.sideArrows a:hover,\n.replylink:hover,\n.qiQuote:hover,\n.quotelink:hover,\na .name:hover,\na .postertrip:hover,\na:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#boardNavDesktop a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name,\n.post-author {\n  color: " + theme["Names"] + " !important;\n}\n.post-tripcode,\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\na .postertrip,\na .name {\n  color: " + theme["Emails"] + ";\n}\n.post.reply.qphl,\n.post.op.qphl {\n  border-color: " + theme["Backlinked Reply Outline"] + ";\n  background: " + theme["Highlighted Reply Background"] + ";\n}\n.inline .post {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.placeholder,\n#qr input::" + agent + "placeholder,\n#qr textarea::" + agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#qr input:" + agent + "placeholder,\n#qr textarea:" + agent + "placeholder,\n.placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#appchanx-settings fieldset,\n.boxcontent dd,\n.selectrice ul {\n  border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + ";\n}\n#appchanx-settings li,\n#selectrice li:not(:first-of-type) {\n  border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + ";\n}\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\na[style=\"cursor: pointer; float: right;\"]::after,\n#img-controls,\n#catalog::after,\n#fappeTyme {\n  background-image: url('" + icons + "');\n" + (!Style.lightTheme ? "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>#filters\");" : "") + "\n}\n" + theme["Custom CSS"];
       css += (Style.lightTheme ? ".prettyprint {\n  background-color: #e7e7e7;\n  border: 1px solid #dcdcdc;\n}\n.com {\n  color: #dd0000;\n}\n.str,\n.atv {\n  color: #7fa61b;\n}\n.pun {\n  color: #61663a;\n}\n.tag {\n  color: #117743;\n}\n.kwd {\n  color: #5a6F9e;\n}\n.typ,\n.atn {\n  color: #9474bd;\n}\n.lit {\n  color: #368c72;\n}\n" : ".prettyprint {\n  background-color: rgba(0,0,0,.1);\n  border: 1px solid rgba(0,0,0,0.5);\n}\n.tag {\n  color: #96562c;\n}\n.pun {\n  color: #5b6f2a;\n}\n.com {\n  color: #a34443;\n}\n.str,\n.atv {\n  color: #8ba446;\n}\n.kwd {\n  color: #987d3e;\n}\n.typ,\n.atn {\n  color: #897399;\n}\n.lit {\n  color: #558773;\n}\n");
       if (_conf["Alternate Post Colors"]) {
         css += ".replyContainer:not(.hidden):nth-of-type(2n+1) .post {\n  background-image: " + agent + "linear-gradient(" + (Style.lightTheme ? "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" : "rgba(255,255,255,0.02), rgba(255,255,255,0.02)") + ");\n}\n";
@@ -3579,7 +3596,7 @@
     iconPositions: function() {
       var align, aligner, css, i, iconOffset, navlinks, notCatalog, notEither, position, _conf;
 
-      css = "#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\nbody > div.navLinks > a:first-of-type::after,\n" + (Conf['Slideout Watcher'] ? '#watcher::after,' : '') + "\n" + (Conf['Announcements'] === 'slideout' ? '#globalMessage::after,' : '') + "\n#boardNavDesktopFoot::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut,\n#imgControls .menu-button,\n#catalog::after,\n#fappeTyme {\n  z-index: 18;\n  position: fixed;\n  display: block;\n  width: 15px;\n  height: 15px;\n  content: \"\";\n  opacity: " + (Conf['Invisible Icons'] ? 0 : 0.5) + ";\n}\n#navtopright .exlinksOptionsLink,\nbody > div.navLinks > a:first-of-type,\n" + (Conf['Slideout Watcher'] ? '#watcher,' : '') + "\n" + (Conf['Announcements'] === 'slideout' ? '#globalMessage,' : '') + "\n#boardNavDesktopFoot,\nbody > a[style=\"cursor: pointer; float: right;\"],\n#catalog {\n  z-index: 16;\n}\n#navtopright .exlinksOptionsLink:hover,\nbody > div.navLinks > a:first-of-type:hover,\n" + (Conf['Slideout Watcher'] ? '#watcher:hover,' : '') + "\n" + (Conf['Announcements'] === 'slideout' ? '#globalMessage:hover,' : '') + "\n#boardNavDesktopFoot:hover,\nbody > a[style=\"cursor: pointer; float: right;\"]:hover,\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut,\n#imgControls .menu-button,\n#catalog:hover {\n  z-index: 17;\n}\n#appchanOptions {\n  visibility: visible;\n  background-position: 0 0;\n}\nbody > div.navLinks > a:first-of-type::after {\n  cursor: pointer;\n  background-position: 0 -15px;\n}\n#watcher::after {\n  background-position: 0 -30px;\n}\n#globalMessage::after {\n  background-position: 0 -45px;\n}\n#boardNavDesktopFoot::after {\n  background-position: 0 -60px;\n}\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  visibility: visible;\n  cursor: pointer;\n  background-position: 0 -75px;\n}\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut {\n  background-position: 0 -90px;\n}\n#navtopright .exlinksOptionsLink::after {\n  background-position: 0 -105px;\n}\n#catalog::after {\n  visibility: visible;\n  background-position: 0 -120px;\n}\n#fappeTyme {\n  background-position: 0 -135px;\n}\n#boardNavDesktopFoot:hover::after,\n#globalMessage:hover::after,\n#imgControls .expand-all-shortcut:hover,\n#imgControls .contract-all-shortcut:hover,\n#imgControls .menu-button:hover,\n#navlinks a:hover,\n#appchanOptions:hover,\n#navtopright .exlinksOptionsLink:hover::after,\n#qr #qrtab,\n#watcher:hover::after,\n.thumbnail#selected,\nbody > a[style=\"cursor: pointer; float: right;\"]:hover::after,\ndiv.navLinks > a:first-of-type:hover::after,\n#catalog:hover::after,\n#fappeTyme:hover {\n  opacity: 1;\n}";
+      css = "#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\nbody > div.navLinks > a:first-of-type::after,\n" + (Conf['Slideout Watcher'] ? '#watcher::after,' : '') + "\n" + (Conf['Announcements'] === 'slideout' ? '#globalMessage::after,' : '') + "\n#boardNavDesktopFoot::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#img-controls,\n#catalog::after,\n#fappeTyme {\n  z-index: 18;\n  position: fixed;\n  display: block;\n  width: 15px;\n  height: 15px;\n  content: \"\";\n  opacity: " + (Conf['Invisible Icons'] ? 0 : 0.5) + ";\n}\n#navtopright .exlinksOptionsLink,\nbody > div.navLinks > a:first-of-type,\n" + (Conf['Slideout Watcher'] ? '#watcher,' : '') + "\n" + (Conf['Announcements'] === 'slideout' ? '#globalMessage,' : '') + "\n#boardNavDesktopFoot,\nbody > a[style=\"cursor: pointer; float: right;\"],\n#catalog {\n  z-index: 16;\n}\n#navtopright .exlinksOptionsLink:hover,\nbody > div.navLinks > a:first-of-type:hover,\n" + (Conf['Slideout Watcher'] ? '#watcher:hover,' : '') + "\n" + (Conf['Announcements'] === 'slideout' ? '#globalMessage:hover,' : '') + "\n#boardNavDesktopFoot:hover,\nbody > a[style=\"cursor: pointer; float: right;\"]:hover,\n#img-controls,\n#catalog:hover {\n  z-index: 17;\n}\n#appchanOptions {\n  visibility: visible;\n  background-position: 0 0;\n}\nbody > div.navLinks > a:first-of-type::after {\n  cursor: pointer;\n  background-position: 0 -15px;\n}\n#watcher::after {\n  background-position: 0 -30px;\n}\n#globalMessage::after {\n  background-position: 0 -45px;\n}\n#boardNavDesktopFoot::after {\n  background-position: 0 -60px;\n}\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  visibility: visible;\n  cursor: pointer;\n  background-position: 0 -75px;\n}\n#img-controls {\n  background-position: 0 -90px;\n}\n#navtopright .exlinksOptionsLink::after {\n  background-position: 0 -105px;\n}\n#catalog::after {\n  visibility: visible;\n  background-position: 0 -120px;\n}\n#fappeTyme {\n  background-position: 0 -135px;\n}\n#boardNavDesktopFoot:hover::after,\n#globalMessage:hover::after,\n#img-controls:hover,\n#navlinks a:hover,\n#appchanOptions:hover,\n#navtopright .exlinksOptionsLink:hover::after,\n#qr #qrtab,\n#watcher:hover::after,\n.thumbnail#selected,\nbody > a[style=\"cursor: pointer; float: right;\"]:hover::after,\ndiv.navLinks > a:first-of-type:hover::after,\n#catalog:hover::after,\n#fappeTyme:hover {\n  opacity: 1;\n}";
       i = 0;
       align = Style.sidebarLocation[0];
       _conf = Conf;
@@ -3596,19 +3613,19 @@
         return position;
       };
       if (_conf["Icon Orientation"] === "horizontal") {
-        position = aligner(2, [notCatalog, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], $('#navtopright .exlinksOptionsLink', d.body), notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), notEither && _conf['Image Expansion'], notEither && _conf['Image Expansion'], notEither, g.VIEW === 'thread', notEither && _conf['Fappe Tyme'], navlinks = ((g.VIEW !== 'thread' && _conf['Index Navigation']) || (g.VIEW === 'thread' && _conf['Reply Navigation'])) && notCatalog, navlinks]);
+        position = aligner(2, [notCatalog, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], $('#navtopright .exlinksOptionsLink', d.body), notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), notEither && _conf['Image Expansion'], notEither, g.VIEW === 'thread', notEither && _conf['Fappe Tyme'], navlinks = ((g.VIEW !== 'thread' && _conf['Index Navigation']) || (g.VIEW === 'thread' && _conf['Reply Navigation'])) && notCatalog, navlinks]);
         iconOffset = position[position.length - 1] - (_conf['4chan SS Navigation'] ? 0 : Style.sidebar + parseInt(_conf["Right Thread Padding"], 10));
         if (iconOffset < 0) {
           iconOffset = 0;
         }
-        css += "/* 4chan X Options */\n#appchanOptions {\n  " + align + ": " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Watcher */\n#watcher::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Expand Images */\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut {\n  " + align + ": " + position[i++] + "px;\n}\n/* Expand Images Menu */\n#imgControls .menu-button {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  " + align + ": " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a {\n  margin: 2px;\n  top: 1px;\n}\n#navlinks a:last-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#navlinks a:first-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 1.6em;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#boardNavDesktopFoot::after,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#watcher::after,\n#globalMessage::after,\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut,\n#imgControls .menu-button,\n#fappeTyme,\ndiv.navLinks > a:first-of-type::after,\n#catalog::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: 1px !important;\n}\n" + (_conf["Announcements"] === "slideout" ? "#globalMessage," : "") + "\n" + (_conf["Slideout Watcher"] ? "#watcher," : "") + "\n#boardNavDesktopFoot {\n  top: 16px !important;\n}\n" + (_conf['Boards Navigation'] === 'top' || _conf['Boards Navigation'] === 'sticky top' ? '#boardNavDesktop' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}\n";
+        css += "/* 4chan X Options */\n#appchanOptions {\n  " + align + ": " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Watcher */\n#watcher::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Expand Images */\n#img-controls {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  " + align + ": " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a {\n  margin: 2px;\n  top: 1px;\n}\n#navlinks a:last-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#navlinks a:first-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 1.6em;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#boardNavDesktopFoot::after,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#watcher::after,\n#globalMessage::after,\n#img-controls,\n#fappeTyme,\ndiv.navLinks > a:first-of-type::after,\n#catalog::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: 1px !important;\n}\n" + (_conf["Announcements"] === "slideout" ? "#globalMessage," : "") + "\n" + (_conf["Slideout Watcher"] ? "#watcher," : "") + "\n#boardNavDesktopFoot {\n  top: 16px !important;\n}\n" + (_conf['Boards Navigation'] === 'top' || _conf['Boards Navigation'] === 'sticky top' ? '#boardNavDesktop' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}\n";
         if (_conf["Updater Position"] !== 'moveable') {
           css += "/* Updater + Stats */\n#updater,\n#thread-stats {\n  " + align + ": " + (_conf["Updater Position"] === "bottom" && !_conf["Hide Delete UI"] ? 23 : 2) + "px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: auto !important;\n  bottom: auto !important;\n  " + (_conf["Updater Position"] === 'top' ? "top: 16px !important" : "bottom: 0 !important") + ";\n}";
         }
       } else {
-        position = aligner(2 + (_conf["4chan Banner"] === "at sidebar top" ? Style.logoOffset + 19 : 0), [notEither && _conf['Image Expansion'], notEither && _conf['Image Expansion'], notCatalog, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), $('#navtopright .exlinksOptionsLink', d.body), notEither, g.VIEW === 'thread', notEither && _conf['Fappe Tyme'], navlinks = ((g.VIEW !== 'thread' && _conf['Index Navigation']) || (g.VIEW === 'thread' && _conf['Reply Navigation'])) && notCatalog, navlinks]);
+        position = aligner(2 + (_conf["4chan Banner"] === "at sidebar top" ? Style.logoOffset + 19 : 0), [notEither && _conf['Image Expansion'], notCatalog, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), $('#navtopright .exlinksOptionsLink', d.body), notEither, g.VIEW === 'thread', notEither && _conf['Fappe Tyme'], navlinks = ((g.VIEW !== 'thread' && _conf['Index Navigation']) || (g.VIEW === 'thread' && _conf['Reply Navigation'])) && notCatalog, navlinks]);
         iconOffset = (g.VIEW === 'thread' && _conf['Prefetch'] ? 250 + Style.sidebarOffset.W : 20 + (g.VIEW === 'thread' && _conf['Updater Position'] === 'top' ? 100 : 0)) - (_conf['4chan SS Navigation'] ? 0 : Style.sidebar + parseInt(_conf[align.capitalize() + " Thread Padding"], 10));
-        css += "/* Expand Images */\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut {\n  top: " + position[i++] + "px;\n}\n/* Expand Images Menu */\n#imgControls .menu-button {\n  top: " + position[i++] + "px;\n}\n/* 4chan X Options */\n#appchanOptions {\n  top: " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after {\n  top: " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage,\n#globalMessage::after {\n  top: " + position[i++] + "px;\n}\n/* Watcher */\n" + (_conf["Slideout Watcher"] ? "#watcher, #watcher::after" : "") + " {\n  top: " + position[i++] + "px !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  top: " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  top: " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  top: " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  top: " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a:first-of-type {\n  top: " + position[i++] + "px !important;\n}\n#navlinks a:last-of-type {\n  top: " + position[i++] + "px !important;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 0;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#navlinks a,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#boardNavDesktopFoot::after,\n#globalMessage::after,\n#imgControls .expand-all-shortcut,\n#imgControls .contract-all-shortcut,\n#imgControls .menu-button,\n#fappeTyme,\n" + (_conf["Slideout Watcher"] ? "#watcher::after," : "") + "\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#catalog::after,\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": 3px !important;\n}\n#boardNavDesktopFoot,\n#globalMessage,\n#watcher {\n  width: " + (233 + Style.sidebarOffset.W) + "px !important;\n  " + align + ": 18px !important;\n}\n" + (_conf['Boards Navigation'] === 'top' || _conf['Boards Navigation'] === 'sticky top' ? '#boardNavDesktop' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}";
+        css += "/* Expand Images */\n#img-controls {\n  top: " + position[i++] + "px;\n}\n/* 4chan X Options */\n#appchanOptions {\n  top: " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after {\n  top: " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage,\n#globalMessage::after {\n  top: " + position[i++] + "px;\n}\n/* Watcher */\n" + (_conf["Slideout Watcher"] ? "#watcher, #watcher::after" : "") + " {\n  top: " + position[i++] + "px !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  top: " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  top: " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  top: " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  top: " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a:first-of-type {\n  top: " + position[i++] + "px !important;\n}\n#navlinks a:last-of-type {\n  top: " + position[i++] + "px !important;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 0;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#navlinks a,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#boardNavDesktopFoot::after,\n#globalMessage::after,\n#img-controls,\n#fappeTyme,\n" + (_conf["Slideout Watcher"] ? "#watcher::after," : "") + "\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#catalog::after,\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": 3px !important;\n}\n#boardNavDesktopFoot,\n#globalMessage,\n#watcher {\n  width: " + (233 + Style.sidebarOffset.W) + "px !important;\n  " + align + ": 18px !important;\n}\n" + (_conf['Boards Navigation'] === 'top' || _conf['Boards Navigation'] === 'sticky top' ? '#boardNavDesktop' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}";
         if (_conf["Updater Position"] !== 'moveable') {
           css += "/* Updater + Stats */\n#updater,\n#thread-stats {\n  " + align + ": " + (_conf["Updater Position"] === "top" || !_conf["Hide Delete UI"] ? 23 : 2) + "px !important; \n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: " + (_conf["Updater Position"] === "top" ? "-1px" : "auto") + " !important;\n  bottom: " + (_conf["Updater Position"] === "bottom" ? "-2px" : "auto") + " !important;\n}";
         }
@@ -3629,13 +3646,11 @@
         Style.padding.pages.property = Style.padding.pages.property[Style.padding.pages.property.length - 1];
       }
       css = "body::before {\n";
-      if (_conf["4chan SS Emulation"]) {
-        if (Style.padding.pages && (_conf["Pagination"] === "sticky top" || _conf["Pagination"] === "sticky bottom")) {
-          css += "  " + Style.padding.pages.property + ": " + Style.padding.pages.offsetHeight + "px !important;\n";
-        }
-        if (_conf["Boards Navigation"] === "sticky top" || _conf["Boards Navigation"] === "sticky bottom") {
-          css += "  " + Style.padding.nav.property + ": " + Style.padding.nav.offsetHeight + "px !important;\n";
-        }
+      if (Style.padding.pages && (_conf["Pagination"] === "sticky top" || _conf["Pagination"] === "sticky bottom")) {
+        css += "  " + Style.padding.pages.property + ": " + Style.padding.pages.offsetHeight + "px !important;\n";
+      }
+      if (_conf["Boards Navigation"] === "sticky top" || _conf["Boards Navigation"] === "sticky bottom") {
+        css += "  " + Style.padding.nav.property + ": " + Style.padding.nav.offsetHeight + "px !important;\n";
       }
       css += "}\nbody {\n  padding-bottom: 0;\n";
       if ((Style.padding.pages != null) && (_conf["Pagination"] === "sticky top" || _conf["Pagination"] === "sticky bottom" || _conf["Pagination"] === "top")) {
@@ -5115,13 +5130,13 @@
       }
       $.addClass($(".tab-" + this.hyphenatedTitle, Settings.dialog), 'tab-selected');
       section = $('section', Settings.dialog);
-      section.innerHTML = null;
+      $.rmAll(section);
       section.className = "section-" + this.hyphenatedTitle;
       this.open(section, mode);
       return section.scrollTop = 0;
     },
     main: function(section) {
-      var arr, button, description, div, fs, hiddenNum, input, inputs, items, key, obj, _ref;
+      var arr, button, description, div, fs, hiddenNum, input, inputs, items, key, obj, unhide, _ref;
 
       section.innerHTML = "<div class=imp-exp>\n  <button class=export>Export Settings</button>\n  <button class=import>Import Settings</button>\n  <input type=file style='visibility:hidden'>\n</div>\n<p class=imp-exp-result></p>";
       $.on($('.export', section), 'click', Settings["export"]);
@@ -5210,7 +5225,17 @@
           return $["delete"](['hiddenThreads', 'hiddenPosts']);
         });
       });
-      return $.after($('input[name="Stubs"]', section).parentNode.parentNode, div);
+      $.after($('input[name="Stubs"]', section).parentNode.parentNode, div);
+      div = $.el('div', {
+        innerHTML: "<button>Reset Header</button><span class=description>: Unhide the navigation bar."
+      });
+      unhide = $('button', div);
+      $.on(unhide, 'click', function() {
+        return Header.setBarPosition.call({
+          textContent: "sticky top"
+        });
+      });
+      return $.after($('input[name="Check for Updates"]', section).parentNode.parentNode, div);
     },
     "export": function(now, data) {
       var a, db, p, _i, _len;
@@ -5246,7 +5271,7 @@
         return;
       }
       p = $('.imp-exp-result', Settings.dialog);
-      p.innerHTML = null;
+      $.rmAll(p);
       return $.add(p, a);
     },
     "import": function() {
@@ -5387,7 +5412,7 @@
 
       div = this.nextElementSibling;
       if ((name = this.value) !== 'guide') {
-        div.innerHTML = null;
+        $.rmAll(div);
         ta = $.el('textarea', {
           name: name,
           className: 'field',
@@ -5734,7 +5759,7 @@
       mascotHide = $.el("div", {
         id: "mascot_hide",
         className: "reply",
-        innerHTML: "Hide Categories <span class=dropmarker></span><div></div>"
+        innerHTML: "Hide Categories <span class=drop-marker></span><div></div>"
       });
       keys = Object.keys(Mascots);
       keys.sort();
@@ -6033,16 +6058,42 @@
 
   Header = {
     init: function() {
-      this.bar = $.el('div', {
-        id: 'notifications'
+      var createSubEntry, setting, subEntries, _i, _len, _ref;
+
+      this.menuButton = $.el('span', {
+        className: 'menu-button',
+        innerHTML: '<a class=brackets-wrap href=javascript:;><i class=drop-marker></i></a>'
       });
-      this.shortcuts = $.el('span', {
-        id: 'shortcuts'
-      });
-      this.hover = $.el('div', {
-        id: 'hoverUI'
-      });
+      this.menu = new UI.Menu('header');
+      $.on(this.menuButton, 'click', this.menuToggle);
+      $.on(this.toggle, 'mousedown', this.toggleBarVisibility);
       $.on(window, 'load hashchange', Header.hashScroll);
+      this.positionToggler = $.el('span', {
+        textContent: 'Header Position',
+        className: 'header-position-link'
+      });
+      createSubEntry = Header.createSubEntry;
+      subEntries = [];
+      _ref = ['sticky top', 'sticky bottom', 'top', 'hide'];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        setting = _ref[_i];
+        subEntries.push(createSubEntry(setting));
+      }
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: this.positionToggler,
+        order: 108,
+        subEntries: subEntries
+      });
+      this.headerToggler = $.el('label', {
+        innerHTML: "<input type=checkbox " + (Conf['Header auto-hide'] ? 'checked' : '') + "> Auto-hide header"
+      });
+      $.on(this.headerToggler.firstElementChild, 'change', this.toggleBarVisibility);
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: this.headerToggler,
+        order: 109
+      });
       $.on(d, 'CreateNotification', this.createNotification);
       $.asap((function() {
         return d.body;
@@ -6058,6 +6109,29 @@
         return $.add(d.body, Header.hover);
       });
     },
+    bar: $.el('div', {
+      id: 'notifications'
+    }),
+    shortcuts: $.el('span', {
+      id: 'shortcuts'
+    }),
+    hover: $.el('div', {
+      id: 'hoverUI'
+    }),
+    toggle: $.el('div', {
+      id: 'toggle-header-bar'
+    }),
+    createSubEntry: function(setting) {
+      var label;
+
+      label = $.el('label', {
+        textContent: "" + setting
+      });
+      $.on(label, 'click', Header.setBarPosition);
+      return {
+        el: label
+      };
+    },
     setBoardList: function() {
       var a, btn, customBoardList, fullBoardList, nav;
 
@@ -6072,8 +6146,19 @@
       customBoardList = $.el('span', {
         id: 'custom-board-list'
       });
+      Header.setBarPosition.call({
+        textContent: "" + Conf['Boards Navigation']
+      });
+      $.sync('Boards Navigation', function() {
+        return Header.setBarPosition.call({
+          textContent: "" + Conf['Boards Navigation']
+        });
+      });
+      Header.setBarVisibility(Conf['Header auto-hide']);
+      $.sync('Header auto-hide', Header.setBarVisibility);
       $.add(fullBoardList, __slice.call(nav.childNodes));
-      $.add(nav, [customBoardList, fullBoardList, Header.shortcuts, $('#navtopright', fullBoardList, Header.bar)]);
+      $.add(nav, [Header.menuButton, customBoardList, fullBoardList, Header.shortcuts, $('#navtopright', fullBoardList), Header.toggle]);
+      $.add(d.body, Header.bar);
       if (Conf['Custom Board Navigation']) {
         Header.generateBoardList(Conf['boardnav']);
         $.sync('boardnav', Header.generateBoardList);
@@ -6092,7 +6177,7 @@
       var as, list, nodes;
 
       list = $('#custom-board-list', Header.nav);
-      list.innerHTML = null;
+      $.rmAll(list);
       if (!text) {
         return;
       }
@@ -6152,10 +6237,47 @@
       custom.hidden = !showBoardList;
       return full.hidden = showBoardList;
     },
+    setBarPosition: function() {
+      $.event('CloseMenu');
+      switch (this.textContent) {
+        case 'sticky top':
+          $.addClass(doc, 'top');
+          $.addClass(doc, 'fixed');
+          $.rmClass(doc, 'bottom');
+          $.rmClass(doc, 'hide');
+          break;
+        case 'sticky bottom':
+          $.rmClass(doc, 'top');
+          $.addClass(doc, 'fixed');
+          $.addClass(doc, 'bottom');
+          $.rmClass(doc, 'hide');
+          break;
+        case 'top':
+          $.addClass(doc, 'top');
+          $.rmClass(doc, 'fixed');
+          $.rmClass(doc, 'bottom');
+          $.rmClass(doc, 'hide');
+          break;
+        case 'hide':
+          $.rmClass(doc, 'top');
+          $.rmClass(doc, 'fixed');
+          $.rmClass(doc, 'bottom');
+          $.addClass(doc, 'hide');
+      }
+      Conf['Boards Navigation'] = this.textContent;
+      return $.set('Boards Navigation', this.textContent);
+    },
+    setBarVisibility: function(hide) {
+      Header.headerToggler.firstElementChild.checked = hide;
+      return (hide ? $.addClass : $.rmClass)(Header.nav, 'autohide');
+    },
     hashScroll: function() {
       var post;
 
       if (!(post = $.id(this.location.hash.slice(1)))) {
+        return;
+      }
+      if ((Get.postFromRoot(post)).isHidden) {
         return;
       }
       return Header.scrollToPost(post);
@@ -6170,6 +6292,18 @@
       }
       return ($.engine === 'webkit' ? d.body : doc).scrollTop += top;
     },
+    toggleBarVisibility: function(e) {
+      var hide, message;
+
+      if (e.type === 'mousedown' && e.button !== 0) {
+        return;
+      }
+      hide = this.nodeName === 'INPUT' ? this.checked : !$.hasClass(Header.nav, 'autohide');
+      Header.setBarVisibility(hide);
+      message = hide ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
+      new Notification('info', message, 2);
+      return $.set('Header auto-hide', hide);
+    },
     addShortcut: function(el) {
       var shortcut;
 
@@ -6178,6 +6312,9 @@
       });
       $.add(shortcut, [$.tn(' ['), el, $.tn(']')]);
       return $.add(Header.shortcuts, shortcut);
+    },
+    menuToggle: function(e) {
+      return Header.menu.toggle(e, this, g);
     },
     createNotification: function(e) {
       var cb, content, lifetime, notif, type, _ref;
@@ -6229,9 +6366,7 @@
     };
 
     close = function() {
-      if (this.el.parentNode) {
-        return $.rm(this.el);
-      }
+      return $.rm(this.el);
     };
 
     return Notification;
@@ -7293,7 +7428,7 @@
 
         a || (a = $.el('a', {
           className: 'menu-button',
-          innerHTML: '[<span class=dropmarker></span>]',
+          innerHTML: '[<span class=drop-marker></span>]',
           href: 'javascript:;'
         }));
         clone = a.cloneNode(true);
@@ -7351,7 +7486,7 @@
     init: function() {
       var div, fileEl, fileEntry, postEl, postEntry;
 
-      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Delete Link'] || !Conf['Quick Reply']) {
+      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Delete Link']) {
         return;
       }
       div = $.el('div', {
@@ -7408,7 +7543,7 @@
       });
     },
     "delete": function() {
-      var form, link, m, post, pwd;
+      var fileOnly, form, link, m, post, pwd;
 
       post = DeleteLink.post;
       if (DeleteLink.cooldown.counting === post) {
@@ -7417,16 +7552,17 @@
       $.off(this, 'click', DeleteLink["delete"]);
       this.textContent = "Deleting " + this.textContent + "...";
       pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $.id('delPassword').value;
+      fileOnly = $.hasClass(this, 'delete-file');
       form = {
         mode: 'usrdel',
-        onlyimgdel: $.hasClass(this, 'delete-file'),
+        onlyimgdel: fileOnly,
         pwd: pwd
       };
       form[post.ID] = 'delete';
       link = this;
       return $.ajax($.id('delform').action.replace("/" + g.BOARD + "/", "/" + post.board + "/"), {
         onload: function() {
-          return DeleteLink.load(link, post, this.response);
+          return DeleteLink.load(link, post, fileOnly, this.response);
         },
         onerror: function() {
           return DeleteLink.error(link);
@@ -7436,7 +7572,7 @@
         form: $.formData(form)
       });
     },
-    load: function(link, post, html) {
+    load: function(link, post, fileOnly, html) {
       var msg, s, tmpDoc;
 
       tmpDoc = d.implementation.createHTMLDocument('');
@@ -7448,7 +7584,7 @@
         $.on(link, 'click', DeleteLink["delete"]);
       } else {
         if (tmpDoc.title === 'Updating index...') {
-          (post.origin || post).kill();
+          (post.origin || post).kill(fileOnly);
         }
         s = 'Deleted';
       }
@@ -7848,7 +7984,7 @@
     hl: function(delta, thread) {
       var headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
 
-      if (Conf['Bottom header']) {
+      if (Conf['Fixed Header'] && Conf['Bottom header']) {
         topMargin = 0;
       } else {
         headRect = Header.bar.getBoundingClientRect();
@@ -7901,8 +8037,19 @@
     init: function() {
       var next, prev, span;
 
-      if (g.VIEW === 'index' && !Conf['Index Navigation'] || g.VIEW === 'thread' && !Conf['Reply Navigation']) {
-        return;
+      switch (g.VIEW) {
+        case 'index':
+          if (!Conf['Index Navigation']) {
+            return;
+          }
+          break;
+        case 'thread':
+          if (!Conf['Reply Navigation']) {
+            return;
+          }
+          break;
+        default:
+          return;
       }
       span = $.el('span', {
         id: 'navlinks'
@@ -8023,9 +8170,9 @@
         case 'vp':
         case 'vr':
         case 'wsg':
-          return "//archive.foolz.us/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+          return "https://archive.foolz.us/_/api/chan/post/?board=" + boardID + "&num=" + postID;
         case 'u':
-          return "//nsfw.foolz.us/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+          return "https://nsfw.foolz.us/_/api/chan/post/?board=" + boardID + "&num=" + postID;
         case 'c':
         case 'int':
         case 'out':
@@ -8065,10 +8212,10 @@
         case 's4s':
           return Redirect.path('//fuuka.warosu.org', 'fuuka', data);
         case 'diy':
+        case 'g':
         case 'sci':
           return Redirect.path('//archive.installgentoo.net', 'fuuka', data);
         case 'cgl':
-        case 'g':
         case 'mu':
         case 'w':
           return Redirect.path('//rbt.asia', 'fuuka', data);
@@ -8380,9 +8527,9 @@
       clone = post.addClone(context);
       Main.callbackNodes(Post, [clone]);
       nodes = clone.nodes;
-      nodes.root.innerHTML = null;
+      $.rmAll(nodes.root);
       $.add(nodes.root, nodes.post);
-      root.innerHTML = null;
+      $.rmAll(root);
       return $.add(root, nodes.root);
     },
     fetchedPost: function(req, boardID, threadID, postID, root, context) {
@@ -9360,48 +9507,24 @@
 
   ImageExpand = {
     init: function() {
-      var config, input, label, type, wrapper, _ref;
-
       if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
         return;
       }
-      wrapper = $.el('div', {
-        id: 'imgControls',
-        innerHTML: "<a class='expand-all-shortcut' title='Expand All Images' href='javascript:;'></a>\n<a class='menu-button' href='javascript:;'></a>"
+      this.EAI = $.el('a', {
+        id: 'img-controls',
+        className: 'expand-all-shortcut',
+        title: 'Expand All Images',
+        href: 'javascript:;'
       });
-      this.EAI = wrapper.firstElementChild;
       $.on(this.EAI, 'click', ImageExpand.cb.toggleAll);
-      this.opmenu = new UI.Menu('imageexpand');
-      $.on($('.menu-button', wrapper), 'click', this.menuToggle);
-      _ref = Config.imageExpansion;
-      for (type in _ref) {
-        config = _ref[type];
-        label = $.el('label', {
-          innerHTML: "<input type=checkbox name='" + type + "'> " + type
-        });
-        input = label.firstElementChild;
-        if (['Fit width', 'Fit height'].contains(type)) {
-          $.on(input, 'change', ImageExpand.cb.setFitness);
-        }
-        if (config) {
-          label.title = config[1];
-          input.checked = Conf[type];
-          $.event('change', null, input);
-          $.on(input, 'change', $.cb.checked);
-        }
-        $.event('AddMenuEntry', {
-          type: 'imageexpand',
-          el: label
-        });
-      }
-      $.asap((function() {
-        return $.id('delform');
-      }), function() {
-        return $.prepend($.id('delform'), wrapper);
-      });
-      return Post.prototype.callbacks.push({
+      Post.prototype.callbacks.push({
         name: 'Image Expansion',
         cb: this.node
+      });
+      return $.asap((function() {
+        return $.id('delform');
+      }), function() {
+        return $.prepend($.id('delform'), ImageExpand.EAI);
       });
     },
     node: function() {
@@ -10117,7 +10240,7 @@
       });
     },
     node: function() {
-      var ID, hash, post, posts, _ref;
+      var ID, hash, post, posts, root, _ref;
 
       Unread.thread = this;
       Unread.title = d.title;
@@ -10135,17 +10258,26 @@
         defaultValue: 0
       });
       Unread.addPosts(posts);
-      if ((hash = location.hash.match(/\d+/)) && (post = this.posts[hash[0]])) {
-        Header.scrollToPost(post.nodes.root);
-      } else if (Unread.posts.length) {
-        $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root).scrollIntoView(false);
-      } else if (posts.length) {
-        Header.scrollToPost(posts[posts.length - 1].nodes.root);
-      }
       $.on(d, 'ThreadUpdate', Unread.onUpdate);
       $.on(d, 'scroll visibilitychange', Unread.read);
       if (Conf['Unread Line']) {
-        return $.on(d, 'visibilitychange', Unread.setLine);
+        $.on(d, 'visibilitychange', Unread.setLine);
+      }
+      if (!Conf['Scroll to Last Read Post']) {
+        return;
+      }
+      if ((hash = location.hash.match(/\d+/)) && hash[0] in this.posts) {
+        return;
+      }
+      if (Unread.posts.length) {
+        while (root = $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root)) {
+          if (!(Get.postFromRoot(root)).isHidden) {
+            break;
+          }
+        }
+        return root.scrollIntoView(false);
+      } else if (posts.length) {
+        return Header.scrollToPost(posts[posts.length - 1].nodes.root);
       }
     },
     sync: function() {
@@ -10285,7 +10417,7 @@
         if (root !== $('.thread > .replyContainer', root.parentNode)) {
           return $.before(root, Unread.hr);
         }
-      } else if (Unread.hr.parentNode) {
+      } else {
         return $.rm(Unread.hr);
       }
     },
@@ -10855,7 +10987,7 @@
           nodes.push(div);
         }
       }
-      ThreadWatcher.dialog.innerHTML = '';
+      $.rmAll(ThreadWatcher.dialog);
       $.add(ThreadWatcher.dialog, nodes);
       watched = watched[g.BOARD] || {};
       _ref1 = g.BOARD.threads;
@@ -11137,7 +11269,7 @@
       }
     },
     embedder: function(a) {
-      var callbacks, embed, err, key, match, service, title, titles, type, _ref;
+      var callbacks, embed, key, match, service, type, _ref;
 
       if (!Conf['Embedding']) {
         return [a];
@@ -11179,18 +11311,22 @@
         embed.setAttribute('data-originalURL', a.href);
         $.on(embed, 'click', Linkify.toggle);
         if (Conf['Link Title'] && (service = type.title)) {
-          titles = $.get('CachedTitles', {});
-          if (title = titles[match[1]]) {
-            a.textContent = title[0];
-            embed.setAttribute('data-title', title[0]);
-          } else {
-            try {
-              $.cache(service.api.call(a), callbacks);
-            } catch (_error) {
-              err = _error;
-              a.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
+          $.get('CachedTitles', {}, function(item) {
+            var err, title, titles;
+
+            titles = item['CachedTitles'];
+            if (title = titles[match[1]]) {
+              a.textContent = title[0];
+              return embed.setAttribute('data-title', title[0]);
+            } else {
+              try {
+                return $.cache(service.api.call(a), callbacks);
+              } catch (_error) {
+                err = _error;
+                return a.innerHTML = "[" + key + "] <span class=warning>Title Link Blocked</span> (are you using NoScript?)</a>";
+              }
             }
-          }
+          });
         }
         return [a, $.tn(' '), embed];
       }
@@ -11214,9 +11350,9 @@
       });
       $.on(sc, 'click', function() {
         if (!QR.nodes || QR.nodes.el.hidden) {
+          $.event('CloseMenu');
           QR.open();
           QR.nodes.com.focus();
-          QR.resetThreadSelector();
         } else {
           QR.close();
         }
@@ -11307,6 +11443,12 @@
       if (!Conf['Remember Spoiler'] && QR.nodes.spoiler.checked) {
         return QR.nodes.spoiler.click();
       }
+    },
+    focusin: function() {
+      return $.addClass(QR.nodes.el, 'has-focus');
+    },
+    focusout: function() {
+      return $.rmClass(QR.nodes.el, 'has-focus');
     },
     hide: function() {
       d.activeElement.blur();
@@ -11473,7 +11615,7 @@
         setTimeout(QR.cooldown.count, $.SECOND);
         now = Date.now();
         post = QR.posts[0];
-        isReply = QR.nodes.thread.value !== 'new';
+        isReply = post.thread !== 'new';
         isSage = /sage/i.test(post.email);
         hasFile = !!post.file;
         seconds = null;
@@ -11515,7 +11657,7 @@
       }
     },
     quote: function(e) {
-      var OP, caretPos, post, range, s, sel, selectionRoot, ta, text;
+      var OP, caretPos, com, post, range, s, sel, selectionRoot, text, thread, _ref;
 
       if (e != null) {
         e.preventDefault();
@@ -11533,16 +11675,17 @@
         text += ">" + s + "\n";
       }
       QR.open();
-      ta = QR.nodes.com;
-      if (!ta.value) {
-        QR.nodes.thread.value = OP.ID;
+      _ref = QR.nodes, com = _ref.com, thread = _ref.thread;
+      if (!com.value) {
+        thread.value = OP.ID;
       }
-      caretPos = ta.selectionStart;
-      ta.value = ta.value.slice(0, caretPos) + text + ta.value.slice(ta.selectionEnd);
+      caretPos = com.selectionStart;
+      com.value = com.value.slice(0, caretPos) + text + com.value.slice(com.selectionEnd);
       range = caretPos + text.length;
-      ta.setSelectionRange(range, range);
-      ta.focus();
-      return $.event('input', null, ta);
+      com.setSelectionRange(range, range);
+      com.focus();
+      QR.selected.save(com);
+      return QR.selected.save(thread);
     },
     characterCount: function() {
       var count, counter;
@@ -11647,17 +11790,10 @@
       }
       return $.addClass(QR.nodes.el, 'dump');
     },
-    resetThreadSelector: function() {
-      if (g.VIEW === 'thread') {
-        return QR.nodes.thread.value = g.THREADID;
-      } else {
-        return QR.nodes.thread.value = 'new';
-      }
-    },
     posts: [],
     post: (function() {
       function _Class(select) {
-        var el, event, prev, _i, _len, _ref,
+        var el, elm, event, prev, _i, _j, _len, _len1, _ref, _ref1,
           _this = this;
 
         el = $.el('a', {
@@ -11673,7 +11809,12 @@
           spoiler: $('input', el),
           span: el.lastChild
         };
-        this.nodes.spoiler.checked = this.spoiler;
+        _ref = $$('*', el);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          elm = _ref[_i];
+          $.on(elm, 'blur', QR.focusout);
+          $.on(elm, 'focus', QR.focusin);
+        }
         $.on(el, 'click', this.select.bind(this));
         $.on(this.nodes.rm, 'click', function(e) {
           e.stopPropagation();
@@ -11689,14 +11830,15 @@
           }
         });
         $.add(QR.nodes.dumpList, el);
-        _ref = ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop'];
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          event = _ref[_i];
+        _ref1 = ['dragStart', 'dragEnter', 'dragLeave', 'dragOver', 'dragEnd', 'drop'];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          event = _ref1[_j];
           $.on(el, event.toLowerCase(), this[event]);
         }
+        this.thread = g.VIEW === 'thread' ? g.THREADID : 'new';
         prev = QR.posts[QR.posts.length - 1];
         QR.posts.push(this);
-        this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
+        this.nodes.spoiler.checked = this.spoiler = prev && Conf['Remember Spoiler'] ? prev.spoiler : false;
         $.get('QR.persona', {}, function(item) {
           var persona;
 
@@ -11743,7 +11885,7 @@
         if (this !== QR.selected) {
           return;
         }
-        _ref = ['name', 'email', 'sub', 'com', 'spoiler'];
+        _ref = ['thread', 'name', 'email', 'sub', 'com', 'spoiler'];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
           QR.nodes[name].disabled = lock;
@@ -11777,7 +11919,7 @@
       _Class.prototype.load = function() {
         var name, _i, _len, _ref;
 
-        _ref = ['name', 'email', 'sub', 'com'];
+        _ref = ['thread', 'name', 'email', 'sub', 'com'];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
           QR.nodes[name].value = this[name] || null;
@@ -11789,6 +11931,10 @@
       _Class.prototype.save = function(input) {
         var value, _ref;
 
+        if (input.type === 'checkbox') {
+          this.spoiler = input.checked;
+          return;
+        }
         value = input.value;
         this[input.dataset.name] = value;
         if (input.nodeName !== 'TEXTAREA') {
@@ -11807,7 +11953,7 @@
         if (this !== QR.selected) {
           return;
         }
-        _ref = ['name', 'email', 'sub', 'com'];
+        _ref = ['thread', 'name', 'email', 'sub', 'com', 'spoiler'];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           name = _ref[_i];
           this.save(QR.nodes[name]);
@@ -11917,7 +12063,7 @@
         return URL.revokeObjectURL(this.URL);
       };
 
-      _Class.prototype.showFileData = function(hide) {
+      _Class.prototype.showFileData = function() {
         if (this.file) {
           QR.nodes.filename.textContent = this.filename;
           QR.nodes.filename.title = this.filename;
@@ -12055,6 +12201,8 @@
         });
         $.sync('captchas', this.sync);
         this.reload();
+        $.on(input, 'blur', QR.focusout);
+        $.on(input, 'focus', QR.focusin);
         $.addClass(QR.nodes.el, 'has-captcha');
         return $.after(QR.nodes.dumpList.parentElement, [imgContainer, input]);
       },
@@ -12167,7 +12315,7 @@
       }
     },
     dialog: function() {
-      var dialog, mimeTypes, name, nodes, thread, _i, _len, _ref;
+      var dialog, elm, mimeTypes, name, nodes, thread, _i, _j, _len, _len1, _ref, _ref1;
 
       dialog = UI.dialog('qr', 'top:0;right:0;', "<div id=qrtab class=move>\n  <input type=checkbox id=autohide title=Auto-hide> Post Form\n  <a href=javascript:; class=close title=Close>×</a>\n</div>\n<form>\n  <div class=persona>\n    <input id=dump-button type=button title='Dump list' value=+ tabindex=0>\n    <input name=name  data-name=name  title=Name    placeholder=Name    class=field size=1 tabindex=10>\n    <input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1 tabindex=20>\n    <input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1 tabindex=30>\n  </div>\n  <div class=textarea>\n    <textarea data-name=com title=Comment placeholder=Comment class=field tabindex=40></textarea>\n    <span id=char-count></span>\n  </div>\n  <div id=dump-list-container>\n    <div id=dump-list></div>\n    <a id=add-post href=javascript:; title=\"Add a post\" tabindex=50>+</a>\n  </div>\n  <div id=file-n-submit>\n    <span id=qr-filename-container class=field tabindex=60>\n      <span id=qr-no-file>No selected file</span>\n      <span id=qr-filename></span>\n      <a id=qr-filerm href=javascript:; title='Remove file' tabindex=80>×</a>\n    </span>\n    <input type=submit tabindex=70>\n  </div>\n  <input type=file multiple>\n  <div id=qr-thread-select>\n    <select title='Create a new thread / Reply'>\n      <option value=new>New thread</option>\n    </select>\n  </div> \n  <label id=qr-spoiler-label>\n    <input type=checkbox id=qr-file-spoiler title='Spoiler image' tabindex=90>Spoiler?\n  </label>\n</form>".replace(/>\s+</g, '><'));
       QR.nodes = nodes = {
@@ -12234,8 +12382,15 @@
           textContent: "Thread No." + thread
         }));
       }
-      QR.resetThreadSelector();
       $.on(nodes.filename.parentNode, 'click keyup', QR.openFileInput);
+      _ref = $$('*', QR.nodes.el);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        elm = _ref[_i];
+        $.on(elm, 'blur', QR.focusout);
+        $.on(elm, 'focus', QR.focusin);
+      }
+      $.on(QR.nodes.el, 'focusin', QR.focusin);
+      $.on(QR.nodes.el, 'focusout', QR.focusout);
       $.on(nodes.autohide, 'change', QR.toggleHide);
       $.on(nodes.close, 'click', QR.close);
       $.on(nodes.dumpButton, 'click', function() {
@@ -12253,20 +12408,28 @@
         return QR.selected.nodes.spoiler.click();
       });
       $.on(nodes.fileInput, 'change', QR.fileInput);
-      new QR.post(true);
-      _ref = ['name', 'email', 'sub', 'com'];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        name = _ref[_i];
+      _ref1 = ['name', 'email', 'sub', 'com'];
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        name = _ref1[_j];
         $.on(nodes[name], 'input', function() {
           return QR.selected.save(this);
         });
-        $.on(nodes[name], 'focus', function() {
-          return $.addClass(nodes.el, 'focus');
+      }
+      $.on(nodes.thread, 'change', function() {
+        return QR.selected.save(this);
+      });
+      if (Conf['Remember QR Size']) {
+        $.get('QR Size', '', function(item) {
+          return nodes.com.style.cssText = item['QR Size'];
         });
-        $.on(nodes[name], 'blur', function() {
-          return $.rmClass(nodes.el, 'focus');
+        $.on(nodes.com, 'mouseup', function(e) {
+          if (e.button !== 0) {
+            return;
+          }
+          return $.set('QR Size', this.style.cssText);
         });
       }
+      new QR.post(true);
       QR.status();
       QR.cooldown.init();
       QR.captcha.init();
@@ -12294,7 +12457,7 @@
       if (g.BOARD.ID === 'f') {
         filetag = QR.nodes.flashTag.value;
       }
-      threadID = QR.nodes.thread.value;
+      threadID = post.thread;
       thread = g.BOARD.threads[threadID];
       if (threadID === 'new') {
         threadID = null;
@@ -12380,7 +12543,7 @@
       return QR.status();
     },
     response: function() {
-      var URL, ban, board, err, h1, isReply, post, postID, req, threadID, tmpDoc, _, _ref, _ref1;
+      var URL, ban, board, err, h1, isReply, m, post, postID, req, threadID, tmpDoc, _, _ref, _ref1;
 
       req = QR.req;
       delete QR.req;
@@ -12410,6 +12573,11 @@
           QR.cooldown.auto = QR.captcha.isEnabled ? !!QR.captcha.captchas.length : err === 'Connection error with sys.4chan.org.' ? true : false;
           QR.cooldown.set({
             delay: 2
+          });
+        } else if (err.textContent && (m = err.textContent.match(/wait\s(\d+)\ssecond/i))) {
+          QR.cooldown.auto = QR.captcha.isEnabled ? !!QR.captcha.captchas.length : true;
+          QR.cooldown.set({
+            delay: m[1]
           });
         } else {
           QR.cooldown.auto = false;

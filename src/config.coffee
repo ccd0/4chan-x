@@ -13,6 +13,10 @@ Config =
         false
         'Compatibility between <%= meta.name %> and 4chan\'s inline extension is NOT guaranteed.'
       ]
+      'Fixed Header': [
+        false
+        'Mayhem X\'s Fixed Header (kinda).'
+      ]
       'Custom Board Navigation': [
         false
         'Show custom links instead of the full board list.'
@@ -225,6 +229,12 @@ Config =
         false
         'Remember the subject field, instead of resetting after posting.'
       ]
+      <% if (type === 'userscript') { %>
+      'Remember QR Size': [
+        false
+        'Remember the size of the Quick reply.'
+      ]
+      <% } %>
       'Remember Spoiler': [
         false
         'Remember the spoiler state, instead of resetting after posting.'
@@ -586,11 +596,6 @@ Config =
       ]
 
     Navigation:
-      'Boards Navigation': [
-        'sticky top'
-        'The position of 4chan board navigation'
-        ['sticky top', 'sticky bottom', 'top', 'hide']
-      ]
       'Navigation Alignment': [
         'center'
         'Change the text alignment of the navigation.'
@@ -716,7 +721,11 @@ http://iqdb.org/?url=%TURL
 #//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/
 """
 
-  'Custom CSS': false 
+  'Boards Navigation': 'sticky top'
+
+  'Custom CSS': false
+
+  'Bottom header': false
 
   'Header auto-hide': false
 

@@ -1,0 +1,21 @@
+{
+  "name": "appchan x",
+  "version": "2.0.0",
+  "manifest_version": 2,
+  "description": "The most comprehensive 4chan userscript.",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [{
+    "js": ["script.js"],
+    "matches": ["*://api.4chan.org/*","*://boards.4chan.org/*","*://images.4chan.org/*","*://sys.4chan.org/*"],
+    "run_at": "document_start"
+  }],
+  "homepage_url": "http://zixaphir.github.com/appchan-x/",
+  "minimum_chrome_version": "26",
+  "permissions": [
+    "storage"
+  ]
+}

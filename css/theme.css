@@ -211,10 +211,6 @@ a[style="cursor: pointer; float: right;"] ~ div[style^="width: 100%;"] > table {
 #navlinks a:last-of-type {
   border-top: 11px solid rgb(130,130,130);
 }
-#imgControls .menu-button {
-  border-color: rgb(130,130,130);
-  color: rgb(130,130,130);
-}
 #charCount {
   color: #{(if Style.lightTheme then "rgba(0,0,0,0.7)" else "rgba(255,255,255,0.7)")};
 }
@@ -396,8 +392,7 @@ a .name {
 #globalMessage::after,
 #boardNavDesktopFoot::after,
 a[style="cursor: pointer; float: right;"]::after,
-#imgControls .expand-all-shortcut,
-#imgControls .contract-all-shortcut,
+#img-controls,
 #catalog::after,
 #fappeTyme {
   background-image: url('#{icons}');

@@ -240,7 +240,6 @@ Style =
           $ '#navtopright .exlinksOptionsLink', d.body
           notCatalog and $ 'body > a[style="cursor: pointer; float: right;"]', d.body
           notEither and _conf['Image Expansion']
-          notEither and _conf['Image Expansion']
           notEither
           g.VIEW is 'thread'
           notEither and _conf['Fappe Tyme']
@@ -265,7 +264,6 @@ Style =
       position = aligner(
         2 + (if _conf["4chan Banner"] is "at sidebar top" then (Style.logoOffset + 19) else 0)
         [
-          notEither and _conf['Image Expansion']
           notEither and _conf['Image Expansion']
           notCatalog
           _conf['Slideout Navigation'] isnt 'hide'
@@ -314,12 +312,11 @@ Style =
       Style.padding.pages.property = _conf["Pagination"].split(" ")
       Style.padding.pages.property = Style.padding.pages.property[Style.padding.pages.property.length - 1]
     css = "body::before {\n"
-    if _conf["4chan SS Emulation"]
-      if Style.padding.pages and (_conf["Pagination"] is "sticky top"  or _conf["Pagination"] is "sticky bottom")
-        css += "  #{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight}px !important;\n"
+    if Style.padding.pages and (_conf["Pagination"] is "sticky top"  or _conf["Pagination"] is "sticky bottom")
+      css += "  #{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight}px !important;\n"
 
-      if _conf["Boards Navigation"] is "sticky top" or _conf["Boards Navigation"] is "sticky bottom"
-        css += "  #{Style.padding.nav.property}: #{Style.padding.nav.offsetHeight}px !important;\n"
+    if _conf["Boards Navigation"] is "sticky top" or _conf["Boards Navigation"] is "sticky bottom"
+      css += "  #{Style.padding.nav.property}: #{Style.padding.nav.offsetHeight}px !important;\n"
 
     css += """
 }

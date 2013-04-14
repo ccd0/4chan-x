@@ -1,11 +1,6 @@
 
 /* Expand Images */
-#imgControls .expand-all-shortcut,
-#imgControls .contract-all-shortcut {
-  top: #{position[i++]}px;
-}
-/* Expand Images Menu */
-#imgControls .menu-button {
+#img-controls {
   top: #{position[i++]}px;
 }
 /* 4chan X Options */
@@ -64,9 +59,7 @@ div.navLinks > a:first-of-type::after {
 #appchanOptions,
 #boardNavDesktopFoot::after,
 #globalMessage::after,
-#imgControls .expand-all-shortcut,
-#imgControls .contract-all-shortcut,
-#imgControls .menu-button,
+#img-controls,
 #fappeTyme,
 #{if _conf["Slideout Watcher"] then "#watcher::after," else ""}
 body > a[style="cursor: pointer; float: right;"]::after,

@@ -432,7 +432,7 @@ Main =
 
     # c.timeEnd 'All initializations'
 
-    $.on d, 'AddCallback',   Main.addCallback
+    $.on d, 'AddCallback', Main.addCallback
     $.ready Main.initReady
 
   initReady: ->
