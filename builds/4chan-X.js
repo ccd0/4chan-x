@@ -865,6 +865,13 @@
         };
       }
     })(),
+    rmAll: function(root) {
+      var node;
+
+      while (node = root.firstChild) {
+        $.rm(node);
+      }
+    },
     tn: function(s) {
       return d.createTextNode(s);
     },
@@ -1224,7 +1231,7 @@
       var as, list, nodes;
 
       list = $('#custom-board-list', Header.nav);
-      list.innerHTML = null;
+      $.rmAll(list);
       if (!text) {
         return;
       }
@@ -1603,7 +1610,7 @@
       }
       $.addClass($(".tab-" + this.hyphenatedTitle, Settings.dialog), 'tab-selected');
       section = $('section', Settings.dialog);
-      section.innerHTML = null;
+      $.rmAll(section);
       section.className = "section-" + this.hyphenatedTitle;
       this.open(section, g);
       return section.scrollTop = 0;
@@ -1732,7 +1739,7 @@
         return;
       }
       p = $('.imp-exp-result', Settings.dialog);
-      p.innerHTML = null;
+      $.rmAll(p);
       return $.add(p, a);
     },
     "import": function() {
@@ -1873,7 +1880,7 @@
 
       div = this.nextElementSibling;
       if ((name = this.value) !== 'guide') {
-        div.innerHTML = null;
+        $.rmAll(div);
         ta = $.el('textarea', {
           name: name,
           className: 'field',
@@ -3753,9 +3760,9 @@
         case 'vp':
         case 'vr':
         case 'wsg':
-          return "//archive.foolz.us/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+          return "https://archive.foolz.us/_/api/chan/post/?board=" + boardID + "&num=" + postID;
         case 'u':
-          return "//nsfw.foolz.us/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+          return "https://nsfw.foolz.us/_/api/chan/post/?board=" + boardID + "&num=" + postID;
         case 'c':
         case 'int':
         case 'out':
@@ -3795,10 +3802,10 @@
         case 's4s':
           return Redirect.path('//fuuka.warosu.org', 'fuuka', data);
         case 'diy':
+        case 'g':
         case 'sci':
           return Redirect.path('//archive.installgentoo.net', 'fuuka', data);
         case 'cgl':
-        case 'g':
         case 'mu':
         case 'w':
           return Redirect.path('//rbt.asia', 'fuuka', data);
@@ -4110,9 +4117,9 @@
       clone = post.addClone(context);
       Main.callbackNodes(Post, [clone]);
       nodes = clone.nodes;
-      nodes.root.innerHTML = null;
+      $.rmAll(nodes.root);
       $.add(nodes.root, nodes.post);
-      root.innerHTML = null;
+      $.rmAll(root);
       return $.add(root, nodes.root);
     },
     fetchedPost: function(req, boardID, threadID, postID, root, context) {
@@ -6513,7 +6520,7 @@
           nodes.push(div);
         }
       }
-      ThreadWatcher.dialog.innerHTML = '';
+      $.rmAll(ThreadWatcher.dialog);
       $.add(ThreadWatcher.dialog, nodes);
       watched = watched[g.BOARD] || {};
       _ref1 = g.BOARD.threads;

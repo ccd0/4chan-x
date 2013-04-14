@@ -1,3 +1,5 @@
+- Fix resurrecting dead quotelinks on HTTP.
+
 ### 3.0.6 - *2013-04-14*
 
 - Fix regression concerning thread selection when quoting on the index.

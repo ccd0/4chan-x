@@ -1,15 +1,16 @@
 module.exports = (grunt) ->
 
   pkg = grunt.file.readJSON 'package.json'
+  concatOptions =
+    process:
+      data: pkg
 
   # Project configuration.
   grunt.initConfig
     pkg: pkg
     concat:
       coffee:
-        options:
-          process:
-            data: pkg
+        options: concatOptions
         src: [
           'src/config.coffee'
           'src/globals.coffee'
@@ -27,9 +28,7 @@ module.exports = (grunt) ->
         dest: 'tmp/script.coffee'
 
       crx:
-        options:
-          process:
-            data: pkg
+        options: concatOptions
         files:
           'builds/crx/manifest.json': 'src/manifest.json'
           'builds/crx/script.js': [
@@ -38,9 +37,7 @@ module.exports = (grunt) ->
           ]
 
       userjs:
-        options:
-          process:
-            data: pkg
+        options: concatOptions
         src: [
           'src/metadata.js'
           'src/banner.js'
@@ -49,9 +46,7 @@ module.exports = (grunt) ->
         dest: 'builds/<%= pkg.name %>.js'
 
       userscript:
-        options:
-          process:
-            data: pkg
+        options: concatOptions
         files:
           'builds/<%= pkg.name %>.meta.js': 'src/metadata.js'
           'builds/<%= pkg.name %>.user.js': [
@@ -170,22 +165,29 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'patch',   [
     'bump'
+    'reloadPkh'
     'updcl:3'
   ]
 
   grunt.registerTask 'minor',   [
     'bump:minor'
+    'reloadPkh'
     'updcl:2'
   ]
 
   grunt.registerTask 'major',   [
     'bump:major'
+    'reloadPkh'
     'updcl:1'
   ]
 
-  grunt.registerTask 'updcl',   'Update the changelog', (i) ->
+  grunt.registerTask 'reloadPkg', 'Reload the package', ->
     # Update the `pkg` object with the new version.
-    pkg = grunt.file.readJSON('package.json');
+    pkg = grunt.file.readJSON('package.json')
+    concatOptions.process.data = pkg
+    grunt.log.ok('pkg reloaded.')
+
+  grunt.registerTask 'updcl',   'Update the changelog', (i) ->
     # i is the number of #s for markdown.
     version = []
     version.length = +i + 1

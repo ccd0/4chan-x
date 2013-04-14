@@ -88,7 +88,7 @@ Header =
 
   generateBoardList: (text) ->
     list = $ '#custom-board-list', Header.nav
-    list.innerHTML = null
+    $.rmAll list
     return unless text
     as = $$('#full-board-list a', Header.nav)[0...-2] # ignore the Settings and Home links
     nodes = text.match(/[\w@]+(-(all|title|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
@@ -387,7 +387,7 @@ Settings =
       $.rmClass selected, 'tab-selected'
     $.addClass $(".tab-#{@hyphenatedTitle}", Settings.dialog), 'tab-selected'
     section = $ 'section', Settings.dialog
-    section.innerHTML = null
+    $.rmAll section
     section.className = "section-#{@hyphenatedTitle}"
     @open section, g
     section.scrollTop = 0
@@ -473,7 +473,7 @@ Settings =
       return
     # XXX Firefox won't let us download automatically.
     p = $ '.imp-exp-result', Settings.dialog
-    p.innerHTML = null
+    $.rmAll p
     $.add p, a
   import: ->
     @nextElementSibling.click()
@@ -595,7 +595,7 @@ Settings =
   selectFilter: ->
     div = @nextElementSibling
     if (name = @value) isnt 'guide'
-      div.innerHTML = null
+      $.rmAll div
       ta = $.el 'textarea',
         name: name
         className: 'field'
@@ -2084,11 +2084,13 @@ Redirect =
       when 'c'
         "//archive.nyafuu.org/#{boardID}/full_image/#{filename}"
   post: (boardID, postID) ->
+    # XXX foolz had HSTS set for 120 days, which broke XHR+CORS+Redirection when on HTTP.
+    # Remove necessary HTTPS procotol in September 2013.
     switch boardID
       when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'
-        "//archive.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+        "https://archive.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'u'
-        "//nsfw.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+        "https://nsfw.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'c', 'int', 'out', 'po'
         "//archive.thedarkcave.org/_/api/chan/post/?board=#{boardID}&num=#{postID}"
     # for fuuka-based archives:
@@ -2104,9 +2106,9 @@ Redirect =
         Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
       when 'ck', 'fa', 'lit', 's4s'
         Redirect.path '//fuuka.warosu.org', 'fuuka', data
-      when 'diy', 'sci'
+      when 'diy', 'g', 'sci'
         Redirect.path '//archive.installgentoo.net', 'fuuka', data
-      when 'cgl', 'g', 'mu', 'w'
+      when 'cgl', 'mu', 'w'
         Redirect.path '//rbt.asia', 'fuuka', data
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
         Redirect.path 'http://archive.heinessen.com', 'fuuka', data
@@ -2479,10 +2481,10 @@ Get =
 
     # Get rid of the side arrows.
     {nodes} = clone
-    nodes.root.innerHTML = null
+    $.rmAll nodes.root
     $.add nodes.root, nodes.post
 
-    root.innerHTML = null
+    $.rmAll root
     $.add root, nodes.root
   fetchedPost: (req, boardID, threadID, postID, root, context) ->
     # In case of multiple callbacks for the same request,
@@ -4337,7 +4339,7 @@ ThreadWatcher =
         $.add div, [x, $.tn(' '), link]
         nodes.push div
 
-    ThreadWatcher.dialog.innerHTML = ''
+    $.rmAll ThreadWatcher.dialog
     $.add ThreadWatcher.dialog, nodes
 
     watched = watched[g.BOARD] or {}
