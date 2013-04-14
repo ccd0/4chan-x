@@ -84,8 +84,7 @@ Header =
     $.sync 'Header auto-hide',  Header.setBarVisibility
 
     $.add fullBoardList, [nav.childNodes...]
-    $.add nav, [Header.menuButton, customBoardList, fullBoardList, Header.shortcuts, $('#navtopright', fullBoardList), Header.toggle]
-    $.add d.body, Header.bar
+    $.add nav, [Header.menuButton, customBoardList, fullBoardList, Header.shortcuts, $('#navtopright', fullBoardList), Header.bar, Header.toggle]
 
     if Conf['Custom Board Navigation']
       Header.generateBoardList Conf['boardnav']
@@ -185,7 +184,7 @@ Header =
 
   scrollToPost: (post) ->
     {top} = post.getBoundingClientRect()
-    unless Conf['Bottom header']
+    if Conf['Boards Navigation'] is 'sticky top'
       headRect = Header.bar.getBoundingClientRect()
       top += - headRect.top - headRect.height
     (if $.engine is 'webkit' then d.body else doc).scrollTop += top

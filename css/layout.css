@@ -190,12 +190,10 @@ else "
 }
 .fixed.top #boardNavDesktop.autohide:not(:hover) {
   margin-bottom: -1em;
-  -webkit-transform: translateY(-100%);
-  transform: translateY(-100%);
+  #{agent}transform: translateY(-100%);
 }
 .fixed.bottom #boardNavDesktop.autohide:not(:hover) {
-  -webkit-transform: translateY(100%);
-  transform: translateY(100%);
+  #{agent}transform: translateY(100%);
 }
 #toggle-header-bar {
   left: 0;
@@ -222,6 +220,16 @@ else "
   cursor: s-resize;
 }
 /* Notifications */
+#notifications {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+.fixed.top #notifications {
+  position: absolute;
+  top: 100%;
+}
 .notification {
   display: block;
   overflow: hidden;
