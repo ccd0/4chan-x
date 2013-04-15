@@ -237,6 +237,10 @@ else "
   display: block;
   overflow: hidden;
   width: 300px;
+  border: 1px solid;
+}
+.notification:not(:first-of-type) {
+  border-top: none;
 }
 .close {
   float: right;
