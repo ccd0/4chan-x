@@ -3436,7 +3436,8 @@
       MascotTools.init(_conf["mascot"]);
       Style.layoutCSS.textContent = Style.layout();
       Style.themeCSS.textContent = Style.theme(theme);
-      return Style.iconPositions();
+      Style.iconPositions();
+      return Style.padding();
     },
     headCount: 12,
     addStyleReady: function() {
@@ -11266,11 +11267,12 @@
       }
     },
     embedder: function(a) {
-      var callbacks, embed, key, match, service, type, _ref;
+      var callbacks, embed, key, match, service, titles, type, _ref;
 
       if (!Conf['Embedding']) {
         return [a];
       }
+      titles = [];
       callbacks = function() {
         var title;
 
@@ -11309,7 +11311,7 @@
         $.on(embed, 'click', Linkify.toggle);
         if (Conf['Link Title'] && (service = type.title)) {
           $.get('CachedTitles', {}, function(item) {
-            var err, title, titles;
+            var err, title;
 
             titles = item['CachedTitles'];
             if (title = titles[match[1]]) {

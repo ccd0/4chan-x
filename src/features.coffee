@@ -4136,6 +4136,7 @@ Linkify =
 
   embedder: (a) ->
     return [a] unless Conf['Embedding']
+    titles = []
 
     callbacks = ->
       a.textContent = switch @status
