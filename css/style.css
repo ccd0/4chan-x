@@ -374,6 +374,10 @@ a[href="javascript:;"] {
 :root.hide-announcement #globalMessage {
   display: none;
 }
+a.hide-announcement,
+a.show-announcement {
+  float: left;
+}
 
 /* Unread */
 #unread-line {
