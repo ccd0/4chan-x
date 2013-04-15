@@ -28,8 +28,9 @@ QR =
       QR.nodes.com.focus()
     Header.addShortcut sc
 
-    if $.engine is 'webkit'
-      $.on d, 'paste',            QR.paste
+    <% if (type === 'crx') { %>
+    $.on d, 'paste',              QR.paste
+    <% } %>
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
@@ -781,7 +782,10 @@ QR =
     # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
     QR.mimeTypes.push ''
     nodes.fileInput.max    = $('input[name=MAX_FILE_SIZE]').value
-    nodes.fileInput.accept = "text/*, #{mimeTypes}" if $.engine isnt 'presto' # Opera's accept attribute is fucked up
+    <% if (type !== 'userjs') { %>
+    # Opera's accept attribute is fucked up
+    nodes.fileInput.accept = "text/*, #{mimeTypes}"
+    <% } %>
 
     QR.spoiler = !!$ 'input[name=spoiler]'
     nodes.spoiler.hidden = !QR.spoiler

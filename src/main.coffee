@@ -397,7 +397,7 @@ Main =
     return unless Main.isThisPageLegit()
     # disable the mobile layout
     $('link[href*=mobile]', d.head)?.disabled = true
-    $.addClass doc, $.engine
+    $.addClass doc, '<% if (type === 'crx') { %>webkit<% } else if (type === 'userjs') { %>presto<% } else { %>gecko<% } %>'
     $.addClass doc, 'fourchan-x'
     $.addStyle Main.css
 

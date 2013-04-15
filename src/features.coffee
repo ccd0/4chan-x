@@ -167,7 +167,7 @@ Header =
     unless Conf['Bottom header']
       headRect = Header.toggle.getBoundingClientRect()
       top += - headRect.top - headRect.height
-    (if $.engine is 'webkit' then d.body else doc).scrollTop += top
+    <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop += top
   toggleBarVisibility: (e) ->
     return if e.type is 'mousedown' and e.button isnt 0 # not LMB
     hide = if @nodeName is 'INPUT'
@@ -439,13 +439,14 @@ Settings =
       download: "<%= meta.name %> v#{g.VERSION}-#{now}.json"
       href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
       target: '_blank'
-    if $.engine isnt 'gecko'
-      a.click()
-      return
+    <% if (type === 'userscript') { %>
     # XXX Firefox won't let us download automatically.
     p = $ '.imp-exp-result', Settings.dialog
     $.rmAll p
     $.add p, a
+    <% } else { %>
+    a.click()
+    <% } %>
   import: ->
     @nextElementSibling.click()
   onImport: ->
@@ -1695,11 +1696,15 @@ DeleteLink =
 
 DownloadLink =
   init: ->
+    <% if (type === 'userscript') { %>
+    # Firefox won't let us download cross-domain content.
+    return
+    <% } %>
     return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Download Link']
 
-    # Firefox won't let us download cross-domain content.
     # Test for download feature support.
-    return if $.engine is 'gecko' or $.el('a').download is undefined
+    return unless 'download' of $.el 'a'
+
     a = $.el 'a',
       className: 'download-link'
       textContent: 'Download file'
@@ -3305,7 +3310,7 @@ ImageExpand =
     unless Conf['Bottom header']
       headRect = Header.toggle.getBoundingClientRect()
       top += - headRect.top - headRect.height
-    root = if $.engine is 'webkit' then d.body else doc
+    root = <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>
     root.scrollTop += top if rect.top  < 0
     root.scrollLeft = 0   if rect.left < 0
 
@@ -3347,7 +3352,7 @@ ImageExpand =
       $.addClass post.nodes.root, 'expanded-image'
       $.rmClass  post.file.thumb, 'expanding'
       return unless prev.top + prev.height <= 0
-      root = if $.engine is 'webkit' then d.body else doc
+      root = <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>
       curr = post.nodes.root.getBoundingClientRect()
       root.scrollTop += curr.height - prev.height + curr.top - prev.top
 
@@ -4206,7 +4211,7 @@ ThreadUpdater =
       $.add ThreadUpdater.root, nodes
       if scroll
         if Conf['Bottom Scroll']
-          (if $.engine is 'webkit' then d.body else doc).scrollTop = d.body.clientHeight
+          <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop = d.body.clientHeight
         else
           Header.scrollToPost nodes[0]
 
