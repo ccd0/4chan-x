@@ -202,12 +202,7 @@ Options =
       </div>
     </fieldset>
     <fieldset>
-    <legend>
-      <label>
-      <input type=checkbox name="Custom CSS"></input>
-      <span class=optionlabel>Custom CSS</span>
-      </label>
-    </legend>
+    <legend>Custom CSS</legend>
       <div class=warning><code>Custom CSS</code> is disabled.</div><br>
       Remove Comment blocks to use! ( "/*" and "*/" around CSS blocks )
       <textarea name=customCSS id=customCSS class=field></textarea>
