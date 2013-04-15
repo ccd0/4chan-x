@@ -48,6 +48,13 @@ module.exports = (grunt) ->
         src:  'meta/data.js',
         dest: '<%= pkg.meta.files.metajs %>'
 
+      license:
+        options:
+          process:
+            data: pkg
+        src:  'meta/banner.js',
+        dest: 'LICENSE'
+
       latest:
         options:
           process:
@@ -106,6 +113,7 @@ module.exports = (grunt) ->
     'coffee:script'
     'concat:script'
     'concat:metadata'
+    'concat:license'
     'clean'
   ]
 

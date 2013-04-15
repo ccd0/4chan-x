@@ -3,10 +3,10 @@
 // @namespace           aeosynth
 // @version             <%= version %>
 // @description         Cross-browser userscript for maximum lurking on 4chan.
-// @copyright           <%= grunt.template.today('yyyy') %> Zixaphir <zixaphirmoxphar@gmail.com>
-// @copyright           <%= grunt.template.today('yyyy') %> Jordan Bates <saudrapsmann@gmail.com>
+// @copyright           2013-<%= grunt.template.today('yyyy') %> Zixaphir <zixaphirmoxphar@gmail.com>
+// @copyright           2013-<%= grunt.template.today('yyyy') %> Jordan Bates <saudrapsmann@gmail.com>
 // @copyright           2009-2011 James Campos <james.r.campos@gmail.com>
-// @copyright           <%= grunt.template.today('yyyy') %> Nicolas Stepien <stepien.nicolas@gmail.com>
+// @copyright           2012-<%= grunt.template.today('yyyy') %> Nicolas Stepien <stepien.nicolas@gmail.com>
 // @license             MIT; http://en.wikipedia.org/wiki/Mit_license
 // @match               *://*.4chan.org/*
 // @grant               GM_getValue

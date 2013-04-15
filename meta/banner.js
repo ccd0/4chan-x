@@ -4,15 +4,17 @@
  * Licensed under the MIT license.
  * <%= meta.repo %>blob/master/LICENSE
  *
- * Appchan X Copyright © <%= grunt.template.today('yyyy') %> Zixaphir <zixaphirmoxphar@gmail.com>
+ * Appchan X Copyright © 2013-<%= grunt.template.today('yyyy') %> Zixaphir <zixaphirmoxphar@gmail.com>
  *   http://zixaphir.github.io/appchan-x/
  * 4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
  *   https://github.com/aeosynth/4chan-x
- * 4chan x Copyright © <%= grunt.template.today('yyyy') %> Nicolas Stepien <stepien.nicolas@gmail.com>
+ * 4chan x Copyright © 2012-<%= grunt.template.today('yyyy') %> Nicolas Stepien <stepien.nicolas@gmail.com>
  *   https://4chan-x.just-believe.in/
- * OneeChan Copyright © <%= grunt.template.today('yyyy') %> Jordan Bates
+ * 4chan x Copyright © 2013-<%= grunt.template.today('yyyy') %> Jordan Bates <saudrapsmann@gmail.com>
+ * 	 http://seaweedchan.github.io/4chan-x/
+ * OneeChan Copyright © 2011-<%= grunt.template.today('yyyy') %> Jordan Bates <saudrapsmann@gmail.com>
  *   http://seaweedchan.github.io/oneechan/
- * 4chan SS Copyright © <%= grunt.template.today('yyyy') %> Ahodesuka
+ * 4chan SS Copyright © 2011-<%= grunt.template.today('yyyy') %> Ahodesuka
  *   https://github.com/ahodesuka/4chan-Style-Script/
  * Raphael Icons Copyright © <%= grunt.template.today('yyyy') %> Dmitry Baranovskiy
  *   http://raphaeljs.com/icons/

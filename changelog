@@ -2,6 +2,7 @@ master
 seaweedchan
 	-Redo settings menu styling
 	-Move Export/Import buttons and dialog
+	-Update license and use banner.js for license
 
 1.0.7:
 qqueue:

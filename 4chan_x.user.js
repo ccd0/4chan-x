@@ -3,10 +3,10 @@
 // @namespace           aeosynth
 // @version             1.0.7
 // @description         Cross-browser userscript for maximum lurking on 4chan.
-// @copyright           2013 Zixaphir <zixaphirmoxphar@gmail.com>
-// @copyright           2013 Jordan Bates <saudrapsmann@gmail.com>
+// @copyright           2013-2013 Zixaphir <zixaphirmoxphar@gmail.com>
+// @copyright           2013-2013 Jordan Bates <saudrapsmann@gmail.com>
 // @copyright           2009-2011 James Campos <james.r.campos@gmail.com>
-// @copyright           2013 Nicolas Stepien <stepien.nicolas@gmail.com>
+// @copyright           2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
 // @license             MIT; http://en.wikipedia.org/wiki/Mit_license
 // @match               *://*.4chan.org/*
 // @grant               GM_getValue
@@ -25,15 +25,17 @@
  * Licensed under the MIT license.
  * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
  *
- * Appchan X Copyright © 2013 Zixaphir <zixaphirmoxphar@gmail.com>
+ * Appchan X Copyright © 2013-2013 Zixaphir <zixaphirmoxphar@gmail.com>
  *   http://zixaphir.github.io/appchan-x/
  * 4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
  *   https://github.com/aeosynth/4chan-x
- * 4chan x Copyright © 2013 Nicolas Stepien <stepien.nicolas@gmail.com>
+ * 4chan x Copyright © 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
  *   https://4chan-x.just-believe.in/
- * OneeChan Copyright © 2013 Jordan Bates
+ * 4chan x Copyright © 2013-2013 Jordan Bates <saudrapsmann@gmail.com>
+ * 	 http://seaweedchan.github.io/4chan-x/
+ * OneeChan Copyright © 2011-2013 Jordan Bates <saudrapsmann@gmail.com>
  *   http://seaweedchan.github.io/oneechan/
- * 4chan SS Copyright © 2013 Ahodesuka
+ * 4chan SS Copyright © 2011-2013 Ahodesuka
  *   https://github.com/ahodesuka/4chan-Style-Script/
  * Raphael Icons Copyright © 2013 Dmitry Baranovskiy
  *   http://raphaeljs.com/icons/
