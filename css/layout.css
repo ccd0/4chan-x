@@ -238,6 +238,7 @@ else "
   overflow: hidden;
   width: 300px;
   border: 1px solid;
+  #{if _conf['Sidebar Location'] is 'left' then 'margin-left: auto;' else ''}
 }
 .notification:not(:first-of-type) {
   border-top: none;
