@@ -319,6 +319,8 @@ Main =
       g.THREADID = +pathname[3]
 
     switch location.hostname
+      when 'api.4chan.org'
+        return
       when 'sys.4chan.org'
         Report.init()
         return
