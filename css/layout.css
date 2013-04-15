@@ -36,6 +36,9 @@ body > hr {
 .forwarded,
 .hidden_thread ~ div,
 .hidden_thread ~ a,
+.replyContainer .stub ~ div,
+.replyContainer .stub ~ a,
+.stub + div,
 [hidden] {
   display: none !important;
 }
@@ -726,10 +729,17 @@ hide: "
 .menu-button {
   position: relative;
 }
+.stub .menu-button,
+.post .menu-button,
+.hide-thread-button,
+.show-thread-button span,
+.hide-reply-button,
+.show-reply-button span {
+  float: right;
+}
 .post .menu-button,
 .hide-thread-button,
 .hide-reply-button {
-  float: right;
   margin: 0 3px;
   opacity: 0;
   #{agent}transition: opacity .3s ease-out 0s;
@@ -980,8 +990,8 @@ else ""
 /* Stubs */
 #{if _conf['Fit Width Replies'] then "
 .stub {
-  float: right;
-  clear: both;
+  display: block;
+  text-align: right;
 }" else ""}
 /* Emoji */
 #{unless _conf["Emoji"] is "disable" then Emoji.css _conf["Emoji Position"] else ""}

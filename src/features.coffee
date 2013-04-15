@@ -655,7 +655,7 @@ ThreadHiding =
     if data = ThreadHiding.db.get {boardID: @board.ID, threadID: @ID}
       ThreadHiding.hide @, data.makeStub
     return unless Conf['Thread Hiding']
-    $.prepend @OP.nodes.root, ThreadHiding.makeButton @, 'hide'
+    $.prepend @OP.nodes.info, ThreadHiding.makeButton @, 'hide'
 
   syncCatalog: ->
     # Sync hidden threads from the catalog into the index.
