@@ -532,10 +532,10 @@
     rm: function(el) {
       return el.parentNode.removeChild(el);
     },
-    rmAll: function(el) {
+    rmAll: function(root) {
       var node;
 
-      while (node = el.firstChild) {
+      while (node = root.firstChild) {
         $.rm(node);
       }
     },
