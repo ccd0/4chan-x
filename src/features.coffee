@@ -297,6 +297,7 @@ Settings =
     localStorage.setItem '4chan-settings', JSON.stringify settings
 
   open: (openSection) ->
+    $.off d, '4chanXInitFinished', Settings.open
     return if Settings.dialog
     $.event 'CloseMenu'
 
@@ -1778,11 +1779,13 @@ Keybinds =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Keybinds']
 
-    $.on d, '4chanXInitFinished', ->
+    init = ->
+      $.off d, '4chanXInitFinished', init
       $.on d, 'keydown',  Keybinds.keydown
       for node in $$ '[accesskey]'
         node.removeAttribute 'accesskey'
       return
+    $.on d, '4chanXInitFinished', init
 
   keydown: (e) ->
     return unless key = Keybinds.keyCode e
@@ -1999,7 +2002,10 @@ Nav =
     $.on next, 'click', @next
 
     $.add span, [prev, $.tn(' '), next]
-    $.on d, '4chanXInitFinished', -> $.add d.body, span
+    append = ->
+      $.off d, '4chanXInitFinished', append
+      $.add d.body, span
+    $.on d, '4chanXInitFinished', append
 
   prev: ->
     if g.VIEW is 'thread'
@@ -4259,6 +4265,7 @@ ThreadWatcher =
       $.delete 'AutoWatch'
 
   ready: ->
+    $.off d, '4chanXInitFinished', ThreadWatcher.ready
     return unless Main.isThisPageLegit()
     ThreadWatcher.refresh()
     $.add d.body, ThreadWatcher.dialog

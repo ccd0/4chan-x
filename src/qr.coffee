@@ -14,6 +14,7 @@ QR =
       cb:   @node
 
   initReady: ->
+    $.off d, '4chanXInitFinished', QR.initReady
     QR.postingIsEnabled = !!$.id 'postForm'
     return unless QR.postingIsEnabled
 

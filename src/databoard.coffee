@@ -8,7 +8,10 @@ class DataBoard
     return unless sync
     # Chrome also fires the onChanged callback on the current tab,
     # so we only start syncing when we're ready.
-    $.on d, '4chanXInitFinished', => @sync = sync
+    init = =>
+      $.off d, '4chanXInitFinished', init
+      @sync = sync
+    $.on d, '4chanXInitFinished', init
 
   delete: ({boardID, threadID, postID}) ->
     if postID
