@@ -235,7 +235,7 @@ Style =
       position = aligner(
         2
         [
-          notCatalog
+          true
           _conf['Slideout Navigation'] isnt 'hide'
           _conf['Announcements'] is 'slideout' and $ '#globalMessage', d.body
           notCatalog and _conf['Slideout Watcher'] and _conf['Thread Watcher']
@@ -267,7 +267,7 @@ Style =
         2 + (if _conf["4chan Banner"] is "at sidebar top" then (Style.logoOffset + 19) else 0)
         [
           notEither and _conf['Image Expansion']
-          notCatalog
+          true
           _conf['Slideout Navigation'] isnt 'hide'
           _conf['Announcements'] is 'slideout' and $ '#globalMessage', d.body
           notCatalog and _conf['Slideout Watcher'] and _conf['Thread Watcher']
