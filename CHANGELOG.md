@@ -1,3 +1,5 @@
+## 3.1.0 - *2013-04-16*
+
 - **New feature**: `Announcement Hiding`, enabled by default.
 - Fix support for www.4chan.org/frames on Chrome.
 - Fix quote features not working on dead quotelinks in inlined posts.
