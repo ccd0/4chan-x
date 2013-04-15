@@ -127,6 +127,13 @@ textarea {
   border: 1px solid #{theme["Input Border"]};
   color: #{theme["Inputs"]};
 }
+#{
+if _conf["Tripcode Hider"] then "
+.persona input.field.tripped:not(:hover):not(:focus) {
+  color: #{theme["Input Background"]} !important;
+  text-shadow: none !important;
+}" else ""
+}
 #dump:hover,
 #qr-filename-container:hover,
 #qr-filename-container:hover,

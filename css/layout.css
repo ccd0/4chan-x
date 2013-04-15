@@ -1230,9 +1230,8 @@ if _conf['Compact Post Form Inputs'] then "
 
 #{
 if _conf["Tripcode Hider"] then "
-input.field.tripped:not(:hover):not(:focus) {
-  color: transparent !important;
-  text-shadow: none !important;
+.tripped:not(:hover):not(:focus) {
+  opacity: 0;
 }" else ""
 }
 

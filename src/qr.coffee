@@ -472,6 +472,8 @@ QR =
       # Load this post's values.
       for name in ['thread', 'name', 'email', 'sub', 'com']
         QR.nodes[name].value = @[name] or null
+      
+      QR.tripcodeHider.call QR.nodes['name']
       @showFileData()
       QR.characterCount()
     
@@ -883,6 +885,7 @@ QR =
     # save selected post's data
     for name in ['name', 'email', 'sub', 'com']
       $.on nodes[name], 'input',  -> QR.selected.save @
+    $.on nodes['name'], 'blur', QR.tripcodeHider
     $.on nodes.thread,  'change', -> QR.selected.save @
 
     <% if (type === 'userscript') { %>
@@ -909,6 +912,11 @@ QR =
     # Create a custom event when the QR dialog is first initialized.
     # Use it to extend the QR's functionalities, or for XTRM RICE.
     $.event 'QRDialogCreation', null, dialog
+
+  tripcodeHider: ->
+    check = /^.*##?.+/.test @value
+    if check and !@.className.match "\\btripped\\b" then $.addClass @, 'tripped'
+    else if !check and @.className.match "\\btripped\\b" then $.rmClass @, 'tripped'
 
   submit: (e) ->
     e?.preventDefault()
