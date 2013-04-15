@@ -897,7 +897,7 @@ QR =
       err = 'You can\'t reply to this thread anymore.'
     else unless post.com or post.file
       err = 'No file selected.'
-    else if post.file and thread.fileLimit and !thread.isSticky
+    else if post.file and thread.fileLimit
       err = 'Max limit of image replies has been reached.'
     else for hook in QR.preSubmitHooks
       if err = hook post, thread
