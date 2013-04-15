@@ -71,6 +71,7 @@ Style =
     Style.layoutCSS.textContent = Style.layout()
     Style.themeCSS.textContent = Style.theme(theme)
     Style.iconPositions()
+    Style.padding()
 
   headCount: 12
 
@@ -416,9 +417,9 @@ Emoji =
 a.useremail[href*='#{name}']:last-of-type::#{position},
 a.useremail[href*='#{name.toLowerCase()}']:last-of-type::#{position},
 a.useremail[href*='#{name.toUpperCase()}']:last-of-type::#{position} {
-content: url('data:image/png;base64,#{icon[1]}');
-vertical-align: top;
-#{margin}
+  content: url('data:image/png;base64,#{icon[1]}');
+  vertical-align: top;
+  #{margin}
 }\n
 """
     css.join ""
@@ -1198,6 +1199,11 @@ MascotTools =
 </div>
 <hr>
 <div id=mascotcontent>
+  <center>
+    PROTIP: Shift-Click the Mascot Image field to upload your own images!
+    <br>
+    <a href='https://github.com/zixaphir/appchan-x/issues/126#issuecomment-14365049'>This may have some caveats.</a>
+  </center>
 </div>
 <div id=save>
   <a href='javascript:;'>Save Mascot</a>

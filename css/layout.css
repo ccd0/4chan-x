@@ -550,7 +550,7 @@ else "
 /* Delete Buttons */
 #{if _conf['Hide Delete UI'] then "
 .deleteform,
-.post .rice {
+.post:not(#exlinks-options) .rice {
   display: none;
 }
 .postInfo {
