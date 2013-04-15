@@ -4,6 +4,7 @@ UI = do ->
       className: 'dialog'
       innerHTML: html
       id: id
+    el.style.cssText = position
     $.get "#{id}.position", position, (item) ->
       el.style.cssText = item["#{id}.position"]
     $.on $('.move', el), 'touchstart mousedown', dragstart
