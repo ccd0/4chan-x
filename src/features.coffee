@@ -77,8 +77,7 @@ Header =
       id:     'custom-board-list'
 
     Header.setBarPosition.call textContent: "#{Conf['Boards Navigation']}"
-    $.sync 'Boards Navigation', ->
-      Header.setBarPosition.call textContent: "#{Conf['Boards Navigation']}"
+    $.sync 'Boards Navigation', Header.changeBarPosition
 
     Header.setBarVisibility Conf['Header auto-hide']
     $.sync 'Header auto-hide',  Header.setBarVisibility
@@ -151,7 +150,13 @@ Header =
   setBarPosition: ->
     $.event 'CloseMenu'
 
-    switch @textContent
+    Header.changeBarPosition @textContent
+
+    Conf['Boards Navigation'] = @textContent
+    $.set 'Boards Navigation',  @textContent
+
+  changeBarPosition: (setting) ->
+    switch setting
       when 'sticky top'
         $.addClass doc, 'top'
         $.addClass doc, 'fixed'
@@ -172,9 +177,6 @@ Header =
         $.rmClass  doc, 'fixed'
         $.rmClass  doc, 'bottom'
         $.addClass doc, 'hide'
-
-    Conf['Boards Navigation'] = @textContent
-    $.set 'Boards Navigation',  @textContent
 
   setBarVisibility: (hide) ->
     Header.headerToggler.firstElementChild.checked = hide

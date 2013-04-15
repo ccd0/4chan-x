@@ -188,13 +188,6 @@ Settings =
         $.delete ['hiddenThreads', 'hiddenPosts']
     $.after $('input[name="Stubs"]', section).parentNode.parentNode, div
 
-    div = $.el 'div',
-      innerHTML: "<button>Reset Header</button><span class=description>: Unhide the navigation bar."
-    unhide = $ 'button', div
-    $.on unhide, 'click', ->
-      Header.setBarPosition.call textContent: "sticky top"
-    $.after $('input[name="Check for Updates"]', section).parentNode.parentNode, div
-
   export: (now, data) ->
     unless typeof now is 'number'
       now  = Date.now()

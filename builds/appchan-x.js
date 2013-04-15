@@ -5146,7 +5146,7 @@
       return section.scrollTop = 0;
     },
     main: function(section) {
-      var arr, button, description, div, fs, hiddenNum, input, inputs, items, key, obj, unhide, _ref;
+      var arr, button, description, div, fs, hiddenNum, input, inputs, items, key, obj, _ref;
 
       section.innerHTML = "<div class=imp-exp>\n  <button class=export>Export Settings</button>\n  <button class=import>Import Settings</button>\n  <input type=file style='visibility:hidden'>\n</div>\n<p class=imp-exp-result></p>";
       $.on($('.export', section), 'click', Settings["export"]);
@@ -5235,17 +5235,7 @@
           return $["delete"](['hiddenThreads', 'hiddenPosts']);
         });
       });
-      $.after($('input[name="Stubs"]', section).parentNode.parentNode, div);
-      div = $.el('div', {
-        innerHTML: "<button>Reset Header</button><span class=description>: Unhide the navigation bar."
-      });
-      unhide = $('button', div);
-      $.on(unhide, 'click', function() {
-        return Header.setBarPosition.call({
-          textContent: "sticky top"
-        });
-      });
-      return $.after($('input[name="Check for Updates"]', section).parentNode.parentNode, div);
+      return $.after($('input[name="Stubs"]', section).parentNode.parentNode, div);
     },
     "export": function(now, data) {
       var a, db, p, _i, _len;
@@ -6159,11 +6149,7 @@
       Header.setBarPosition.call({
         textContent: "" + Conf['Boards Navigation']
       });
-      $.sync('Boards Navigation', function() {
-        return Header.setBarPosition.call({
-          textContent: "" + Conf['Boards Navigation']
-        });
-      });
+      $.sync('Boards Navigation', Header.changeBarPosition);
       Header.setBarVisibility(Conf['Header auto-hide']);
       $.sync('Header auto-hide', Header.setBarVisibility);
       $.prepend(d.body, settings = $.id('navtopright'));
@@ -6250,33 +6236,33 @@
     },
     setBarPosition: function() {
       $.event('CloseMenu');
-      switch (this.textContent) {
+      Header.changeBarPosition(this.textContent);
+      Conf['Boards Navigation'] = this.textContent;
+      return $.set('Boards Navigation', this.textContent);
+    },
+    changeBarPosition: function(setting) {
+      switch (setting) {
         case 'sticky top':
           $.addClass(doc, 'top');
           $.addClass(doc, 'fixed');
           $.rmClass(doc, 'bottom');
-          $.rmClass(doc, 'hide');
-          break;
+          return $.rmClass(doc, 'hide');
         case 'sticky bottom':
           $.rmClass(doc, 'top');
           $.addClass(doc, 'fixed');
           $.addClass(doc, 'bottom');
-          $.rmClass(doc, 'hide');
-          break;
+          return $.rmClass(doc, 'hide');
         case 'top':
           $.addClass(doc, 'top');
           $.rmClass(doc, 'fixed');
           $.rmClass(doc, 'bottom');
-          $.rmClass(doc, 'hide');
-          break;
+          return $.rmClass(doc, 'hide');
         case 'hide':
           $.rmClass(doc, 'top');
           $.rmClass(doc, 'fixed');
           $.rmClass(doc, 'bottom');
-          $.addClass(doc, 'hide');
+          return $.addClass(doc, 'hide');
       }
-      Conf['Boards Navigation'] = this.textContent;
-      return $.set('Boards Navigation', this.textContent);
     },
     setBarVisibility: function(hide) {
       Header.headerToggler.firstElementChild.checked = hide;
