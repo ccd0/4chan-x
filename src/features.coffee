@@ -826,9 +826,9 @@ PSAHiding =
     {btn} = PSAHiding
     psa   = $.id 'globalMessage'
     [psa.hidden, btn.innerHTML, btn.className] = if PSAHiding.trim(psa) in hiddenPSAs
-      [true,  '[&nbsp;+&nbsp;]', 'show-announcement']
+      [true,  '<span>[&nbsp;+&nbsp;]</span>', 'show-announcement']
     else
-      [false, '[&nbsp;-&nbsp;]', 'hide-announcement']
+      [false, '<span>[&nbsp;-&nbsp;]</span>', 'hide-announcement']
   trim: (psa) ->
     psa.textContent.replace(/\W+/g, '').toLowerCase()
 
