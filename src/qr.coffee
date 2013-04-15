@@ -265,6 +265,11 @@ QR =
       text += ">#{s}\n"
 
     QR.open()
+    if QR.selected.isLocked
+      index = QR.posts.indexOf QR.selected
+      (QR.posts[index+1] or new QR.post()).select()
+      $.addClass QR.nodes.el, 'dump'
+      QR.cooldown.auto = true
     {com, thread} = QR.nodes
     thread.value = OP.ID unless com.value
 
