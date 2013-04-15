@@ -346,6 +346,7 @@ Main =
     initFeature 'Polyfill',                 Polyfill
     initFeature 'Header',                   Header
     initFeature 'Settings',                 Settings
+    initFeature 'Announcement Hiding',      PSAHiding
     initFeature 'Fourchan thingies',        Fourchan
     initFeature 'Custom CSS',               CustomCSS
     initFeature 'Resurrect Quotes',         Quotify

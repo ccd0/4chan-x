@@ -370,6 +370,11 @@ a[href="javascript:;"] {
   overflow: hidden;
 }
 
+/* Announcement Hiding */
+:root.hide-announcement #globalMessage {
+  display: none;
+}
+
 /* Unread */
 #unread-line {
   margin: 0;
