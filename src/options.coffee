@@ -685,12 +685,12 @@ Options =
       return
     # XXX Firefox won't let us download automatically.
     output = $('.imp-exp>.placeholder')
-    output.innerHTML = null
-    $('.imp-exp-result').innerHTML = null
+    $.rmAll output
+    $.rmAll $('.imp-exp-result')
     $.add output, a
   import: ->
     $('.imp-exp>input').click()
-    $('.imp-exp>.placeholder').innerHTML = null
+    $.rmAll $('.imp-exp>.placeholder')
   onImport: ->
     return unless file = @files[0]
     output = $('.imp-exp-result')

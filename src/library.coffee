@@ -156,6 +156,11 @@ $.extend $,
     el.classList.toggle className
   rm: (el) ->
     el.parentNode.removeChild el
+  rmAll: (el) ->
+    # jsperf.com/emptify-element
+    while node = el.firstChild
+      $.rm node
+    return
   tn: (string) ->
     d.createTextNode string
   nodes: (nodes) ->

@@ -532,6 +532,13 @@
     rm: function(el) {
       return el.parentNode.removeChild(el);
     },
+    rmAll: function(el) {
+      var node;
+
+      while (node = el.firstChild) {
+        $.rm(node);
+      }
+    },
     tn: function(string) {
       return d.createTextNode(string);
     },
@@ -1455,13 +1462,13 @@
         return;
       }
       output = $('.imp-exp>.placeholder');
-      output.innerHTML = null;
-      $('.imp-exp-result').innerHTML = null;
+      $.rmAll(output);
+      $.rmAll($('.imp-exp-result'));
       return $.add(output, a);
     },
     "import": function() {
       $('.imp-exp>input').click();
-      return $('.imp-exp>.placeholder').innerHTML = null;
+      return $.rmAll($('.imp-exp>.placeholder'));
     },
     onImport: function() {
       var file, output, reader;
