@@ -35,6 +35,12 @@ Options =
     | <a target=_blank href=https://raw.github.com/seaweedchan/4chan-x/4chanX/changelog>' + Main.version + '</a>
   </div>
 
+  <div class=imp-exp>
+      <div class=placeholder></div>
+      <input type=file style="visibility:hidden; position: absolute;">
+      <p class=imp-exp-result></p>
+  </div>
+
   <div class=tabs>
     <label for=main_tab id=selected_tab>Main</label>
     | <label for=filter_tab>Filter</label>
@@ -46,11 +52,6 @@ Options =
 <div id=content>
   <input type=radio name=tab hidden id=main_tab checked>
   <div class=main_tab>
-    <div class=imp-exp>
-      <div class=placeholder></div>
-      <input type=file style="visibility:hidden; position: absolute;">
-    </div>
-    <p class=imp-exp-result></p>
   </div>
   <input type=radio name=tab hidden id=sauces_tab>
   <div class=sauces_tab>
@@ -226,7 +227,7 @@ Options =
 
     $.on $('#credits .export', dialog), 'click',  Options.export
     $.on $('#credits .import', dialog), 'click',  Options.import
-    $.on $('#main_tab + div input',   dialog), 'change', Options.onImport
+    $.on $('.imp-exp>input',   dialog), 'change', Options.onImport
 
     # Main
     for key, obj of Config.main
@@ -692,7 +693,7 @@ Options =
     $('.imp-exp>.placeholder').innerHTML = null
   onImport: ->
     return unless file = @files[0]
-    output = @parentNode.nextElementSibling
+    output = $('.imp-exp-result')
     unless confirm 'Your current settings will be entirely overwritten, are you sure?'
       output.textContent = 'Import aborted.'
       return

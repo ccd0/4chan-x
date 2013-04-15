@@ -487,16 +487,25 @@ body.unscroll {
 }
 .imp-exp .placeholder:not(:empty) {
   position: absolute;
-  top:20px;
-  right:15px;
+  top:5px;
+  right:0px;
+  left:0px;
+  text-align:center;
+  width: 200px;
+  margin: auto;
 }
 .imp-exp-result:empty {
   display: none;
 }
 .imp-exp-result {
   position: absolute;
-  top:10px;
-  right:15px;
+  top:5px;
+  right:0px;
+  left:0px;
+  width:200px;
+  margin:auto;
+  text-align: center;
+  color:red;
 }
 
 #updater {
