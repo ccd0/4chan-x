@@ -2,7 +2,7 @@ Header =
   init: ->
     @menuButton = $.el 'span',
       className: 'menu-button'
-      innerHTML: '<a class=brackets-wrap href=javascript:;><i class=drop-marker></i></a>'
+      id:        'main-menu'
 
     @menu = new UI.Menu 'header'
     $.on @menuButton, 'click',           @menuToggle
@@ -83,10 +83,11 @@ Header =
     Header.setBarVisibility Conf['Header auto-hide']
     $.sync 'Header auto-hide',  Header.setBarVisibility
 
-    $.prepend d.body, $.id 'navtopright'
+    $.prepend d.body, settings = $.id 'navtopright'
+    $.add settings, Header.menuButton
 
     $.add fullBoardList, [nav.childNodes...]
-    $.add nav, [Header.menuButton, customBoardList, fullBoardList, Header.shortcuts, Header.bar, Header.toggle]
+    $.add nav, [customBoardList, fullBoardList, Header.shortcuts, Header.bar, Header.toggle]
 
     if Conf['Custom Board Navigation']
       Header.generateBoardList Conf['boardnav']
