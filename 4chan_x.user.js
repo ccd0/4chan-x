@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                4chan x
 // @namespace           aeosynth
-// @version             1.0.7
+// @version             1.0.8
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           2013-2013 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2013-2013 Jordan Bates <saudrapsmann@gmail.com>
@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
- * 4chan x - Version 1.0.7 - 2013-04-14
+ * 4chan x - Version 1.0.8 - 2013-04-15
  *
  * Licensed under the MIT license.
  * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -997,7 +997,12 @@
       </div>\
     </fieldset>\
     <fieldset>\
-    <legend>Custom CSS</legend>\
+    <legend>\
+      <label>\
+      <input type=checkbox name="Custom CSS"></input>\
+      <span class=optionlabel>Custom CSS</span>\
+      </label>\
+    </legend>\
       <div class=warning><code>Custom CSS</code> is disabled.</div><br>\
       Remove Comment blocks to use! ( "/*" and "*/" around CSS blocks )\
       <textarea name=customCSS id=customCSS class=field></textarea>\
@@ -7770,7 +7775,7 @@
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
-    version: '1.0.7',
+    version: '1.0.8',
     callbacks: []
   };
 

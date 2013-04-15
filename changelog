@@ -1,4 +1,6 @@
 master
+
+1.0.8:
 seaweedchan
 	-Redo settings menu styling
 	-Move Export/Import buttons and dialog
