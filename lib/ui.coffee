@@ -6,8 +6,7 @@ UI = do ->
       id: id
     $.get "#{id}.position", position, (item) ->
       el.style.cssText = item["#{id}.position"]
-    move = $ '.move', el
-    $.on move, 'touchstart mousedown', dragstart
+    $.on $('.move', el), 'touchstart mousedown', dragstart
     el
 
 
