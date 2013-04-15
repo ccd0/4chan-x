@@ -1,5 +1,7 @@
 ### 3.1.1 - *2013-04-16*
 
+- Styling adjustments for the announcement toggler.
+
 ## 3.1.0 - *2013-04-16*
 
 - **New feature**: `Announcement Hiding`, enabled by default.
