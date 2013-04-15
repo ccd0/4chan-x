@@ -69,6 +69,7 @@
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
         'Embedding': [true, 'Embed supported services.'],
+        'Auto-embed': [false, 'Auto-embed Linkify Embeds.'],
         'Link Title': [true, 'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud']
       },
       'Filtering': {
@@ -11061,7 +11062,7 @@
     regString: /(\b([a-z]+:\/\/|[a-z]{3,}\.[-a-z0-9]+\.[a-z]+|[-a-z0-9]+\.[a-z]|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+|[a-z]{3,}:[a-z0-9?]|[a-z0-9._%+-:]+@[a-z0-9.-]+\.[a-z0-9])[^\s'"]+)/gi,
     cypher: $.el('div'),
     node: function() {
-      var a, child, cypher, cypherText, data, embedder, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _ref, _ref1, _ref2;
+      var a, child, cypher, cypherText, data, embed, embedder, embeds, i, index, len, link, links, lookahead, name, next, node, nodes, snapshot, spoiler, text, _i, _j, _k, _l, _len, _len1, _len2, _len3, _len4, _m, _ref, _ref1, _ref2;
 
       if (this.isClone && Conf['Embedding']) {
         _ref = $$('.embedder', this.nodes.comment);
@@ -11137,6 +11138,13 @@
         }
         $.replace(node, nodes);
       }
+      if (Conf['Auto-embed']) {
+        embeds = $$('.embedder', this.nodes.comment);
+        for (_m = 0, _len4 = embeds.length; _m < _len4; _m++) {
+          embed = embeds[_m];
+          embed.click();
+        }
+      }
     },
     toggle: function() {
       var el, embed, items, style, type, url;
@@ -11161,7 +11169,7 @@
             'embedHeight': Config['embedHeight']
           };
           $.get(items, function(items) {
-            return el.style.cssText = "border: 0; width: " + item[0] + "px; height: " + item[1] + "px";
+            return el.style.cssText = "border: 0; width: " + items['embedWidth'] + "px; height: " + items['embedHeight'] + "px";
           });
         }
         this.textContent = '(unembed)';
@@ -11263,7 +11271,7 @@
       if (!Conf['Embedding']) {
         return [a];
       }
-      titles = [];
+      titles = {};
       callbacks = function() {
         var title;
 

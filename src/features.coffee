@@ -4037,6 +4037,11 @@ Linkify =
           $.add nodes, child
 
       $.replace node, nodes
+
+    if Conf['Auto-embed']
+      embeds = $$ '.embedder', @nodes.comment
+      for embed in embeds
+        embed.click()
     return
 
   toggle: ->
@@ -4068,7 +4073,7 @@ Linkify =
           'embedWidth':  Config['embedWidth']
           'embedHeight': Config['embedHeight']
         $.get items, (items) ->
-          el.style.cssText = "border: 0; width: #{item[0]}px; height: #{item[1]}px"
+          el.style.cssText = "border: 0; width: #{items['embedWidth']}px; height: #{items['embedHeight']}px"
 
       @textContent = '(unembed)'
 
@@ -4136,7 +4141,7 @@ Linkify =
 
   embedder: (a) ->
     return [a] unless Conf['Embedding']
-    titles = []
+    titles = {}
 
     callbacks = ->
       a.textContent = switch @status

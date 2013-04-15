@@ -71,6 +71,10 @@ Config =
         true
         'Embed supported services.'
       ]
+      'Auto-embed': [
+        false
+        'Auto-embed Linkify Embeds.'
+      ]
       'Link Title': [
         true
         'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud'
