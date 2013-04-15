@@ -127,13 +127,6 @@ textarea {
   border: 1px solid #{theme["Input Border"]};
   color: #{theme["Inputs"]};
 }
-#{
-if _conf["Tripcode Hider"] then "
-.persona input.field.tripped:not(:hover):not(:focus) {
-  color: #{theme["Input Background"]} !important;
-  text-shadow: none !important;
-}" else ""
-}
 #dump:hover,
 #qr-filename-container:hover,
 #qr-filename-container:hover,
@@ -301,23 +294,14 @@ input[type=checkbox]:checked + .rice {
 input[type=checkbox]:checked + .rice::after {
   content: "";
   display: block;
-  width: 5px;
-  height: 12px;
-  border-radius: 1px;
-  border: solid rgb(50, 50, 50);
+  width: 4px;
+  height: 10px;
+  border: solid #{theme["Inputs"]};
   border-width: 0 3px 3px 0;
   #{agent}transform: rotate(45deg);
   position: absolute;
   left: 2px;
   bottom: -1px;
-  #{unless Style.lightTheme then "
-filter: url(\"
-data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='
--1 0 0 0 1
- 0 -1 0 0 1
- 0 0 -1 0 1
- 0 0 0 1 0' /></filter></svg>#filters
-\");" else ""}
 }
 #addReply,
 #dump,
