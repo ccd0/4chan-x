@@ -21,6 +21,10 @@ Config =
         false
         'Show custom links instead of the full board list.'
       ]
+      'Announcement Hiding': [
+        true
+        'Add button to hide 4chan announcements.'
+      ]
       '404 Redirect': [
         true
         'Redirect dead threads and images.'
@@ -729,7 +733,7 @@ http://iqdb.org/?url=%TURL
 
   'Custom CSS': false
 
-  'Bottom header': false
+  'Boards Navigation': 'sticky top'
 
   'Header auto-hide': false
 

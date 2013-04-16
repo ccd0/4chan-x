@@ -1,4 +1,4 @@
-/* appchan x - Version 2.0.0 - 2013-04-14
+/* appchan x - Version 2.0.0 - 2013-04-16
  * http://zixaphir.github.com/appchan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -21,8 +21,9 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notification, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -34,6 +35,7 @@
         'Enable 4chan\'s Extension': [false, 'Compatibility between appchan x and 4chan\'s inline extension is NOT guaranteed.'],
         'Fixed Header': [false, 'Mayhem X\'s Fixed Header (kinda).'],
         'Custom Board Navigation': [false, 'Show custom links instead of the full board list.'],
+        'Announcement Hiding': [true, 'Add button to hide 4chan announcements.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
         'Time Formatting': [true, 'Localize and format timestamps.'],
@@ -225,7 +227,7 @@
     sauces: "https://www.google.com/searchbyimage?image_url=%TURL\nhttp://iqdb.org/?url=%TURL\n#//tineye.com/search?url=%TURL\n#http://saucenao.com/search.php?url=%TURL\n#http://3d.iqdb.org/?url=%TURL\n#http://regex.info/exif.cgi?imgurl=%URL\n# uploaders:\n#http://imgur.com/upload?url=%URL;text:Upload to imgur\n#http://ompldr.org/upload?url1=%URL;text:Upload to ompldr\n# \"View Same\" in archives:\n#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz\n#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/\n#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/",
     'Boards Navigation': 'sticky top',
     'Custom CSS': false,
-    'Bottom header': false,
+    'Boards Navigation': 'sticky top',
     'Header auto-hide': false,
     'Header catalog links': false,
     boardnav: '[ toggle-all ] [current-title]',
@@ -2424,6 +2426,7 @@
         innerHTML: html,
         id: id
       });
+      el.style.cssText = position;
       $.get("" + id + ".position", position, function(item) {
         return el.style.cssText = item["" + id + ".position"];
       });
@@ -2827,6 +2830,8 @@
     return root.querySelector(selector);
   };
 
+  $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)));
+
   $$ = function(selector, root) {
     if (root == null) {
       root = d.body;
@@ -2899,10 +2904,7 @@
     }
   });
 
-  $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)));
-
   $.extend($, {
-    engine: 'webkit',
     id: function(id) {
       return d.getElementById(id);
     },
@@ -3063,7 +3065,7 @@
       var node;
 
       while (node = root.firstChild) {
-        $.rm(node);
+        root.removeChild(node);
       }
     },
     tn: function(s) {
@@ -3290,12 +3292,6 @@
 
   Style = {
     init: function() {
-      this.agent = {
-        'gecko': '-moz-',
-        'webkit': '-webkit-',
-        'presto': '-o-'
-      }[$.engine];
-      this.sizing = "" + ($.engine === 'gecko' ? this.agent : '') + "box-sizing";
       $.asap((function() {
         return d.body;
       }), MascotTools.init);
@@ -3320,6 +3316,8 @@
       });
       return this.setup();
     },
+    agent: "-webkit-",
+    sizing: "box-sizing",
     setup: function() {
       this.addStyleReady();
       if (d.head) {
@@ -5204,10 +5202,8 @@
         href: "data:application/json;base64," + (btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))))),
         target: '_blank'
       });
-      if ($.engine !== 'gecko') {
-        a.click();
-        return;
-      }
+      a.click();
+      return;
       p = $('.imp-exp-result', Settings.dialog);
       $.rmAll(p);
       return $.add(p, a);
@@ -5378,7 +5374,7 @@
     rice: function(section) {
       var event, input, inputs, items, name, _i, _len, _ref;
 
-      section.innerHTML = "<fieldset>\n  <legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Index-only link: <code>board-index</code></div>\n  <div>Catalog-only link: <code>board-catalog</code></div>\n  <div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Tab Icon <span class=warning " + (Conf['Unread Tab Icon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea>\n</fieldset>";
+      section.innerHTML = "<fieldset>\n  <legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>\n    For example:<br>\n    <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n    will give you<br>\n    <code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n    if you are on /g/.\n  </div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Index-only link: <code>board-index</code></div>\n  <div>Catalog-only link: <code>board-catalog</code></div>\n  <div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Tab Icon <span class=warning " + (Conf['Unread Tab Icon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea>\n</fieldset>";
       items = {};
       inputs = {};
       _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss'];
@@ -6179,26 +6175,20 @@
       return $.set('Boards Navigation', this.textContent);
     },
     changeBarPosition: function(setting) {
+      $.rmClass(doc, 'top');
+      $.rmClass(doc, 'fixed');
+      $.rmClass(doc, 'bottom');
+      $.rmClass(doc, 'hide');
       switch (setting) {
         case 'sticky top':
-          $.addClass(doc, 'top');
           $.addClass(doc, 'fixed');
-          $.rmClass(doc, 'bottom');
-          return $.rmClass(doc, 'hide');
+          return $.addClass(doc, 'top');
         case 'sticky bottom':
-          $.rmClass(doc, 'top');
           $.addClass(doc, 'fixed');
-          $.addClass(doc, 'bottom');
-          return $.rmClass(doc, 'hide');
+          return $.addClass(doc, 'bottom');
         case 'top':
-          $.addClass(doc, 'top');
-          $.rmClass(doc, 'fixed');
-          $.rmClass(doc, 'bottom');
-          return $.rmClass(doc, 'hide');
+          return $.addClass(doc, 'top');
         case 'hide':
-          $.rmClass(doc, 'top');
-          $.rmClass(doc, 'fixed');
-          $.rmClass(doc, 'bottom');
           return $.addClass(doc, 'hide');
       }
     },
@@ -6225,7 +6215,7 @@
         headRect = Header.bar.getBoundingClientRect();
         top += -headRect.top - headRect.height;
       }
-      return ($.engine === 'webkit' ? d.body : doc).scrollTop += top;
+      return d.body.scrollTop += top;
     },
     toggleBarVisibility: function(e) {
       var hide, message;
@@ -6371,6 +6361,67 @@
         }
         return catalogLink.id = 'catalog';
       }
+    }
+  };
+
+  PSAHiding = {
+    init: function() {
+      if (!Conf['Announcement Hiding']) {
+        return;
+      }
+      $.addClass(doc, 'hide-announcement');
+      return $.on(d, '4chanXInitFinished', this.setup);
+    },
+    setup: function() {
+      var btn, psa, text;
+
+      $.off(d, '4chanXInitFinished', PSAHiding.setup);
+      if (!(psa = $.id('globalMessage'))) {
+        $.rmClass(doc, 'hide-announcement');
+        return;
+      }
+      PSAHiding.btn = btn = $.el('a', {
+        title: 'Toggle announcement.',
+        href: 'javascript:;'
+      });
+      $.on(btn, 'click', PSAHiding.toggle);
+      text = PSAHiding.trim(psa);
+      $.get('hiddenPSAs', [], function(item) {
+        PSAHiding.sync(item['hiddenPSAs']);
+        $.before(psa, btn);
+        return $.rmClass(doc, 'hide-announcement');
+      });
+      return $.sync('hiddenPSAs', PSAHiding.sync);
+    },
+    toggle: function(e) {
+      var hide, text;
+
+      hide = $.hasClass(this, 'hide-announcement');
+      text = PSAHiding.trim($.id('globalMessage'));
+      return $.get('hiddenPSAs', [], function(item) {
+        var hiddenPSAs, i;
+
+        hiddenPSAs = item.hiddenPSAs;
+        if (hide) {
+          hiddenPSAs.push(text);
+        } else {
+          i = hiddenPSAs.indexOf(text);
+          hiddenPSAs.splice(i, 1);
+        }
+        hiddenPSAs = hiddenPSAs.slice(-5);
+        PSAHiding.sync(hiddenPSAs);
+        return $.set('hiddenPSAs', hiddenPSAs);
+      });
+    },
+    sync: function(hiddenPSAs) {
+      var btn, psa, _ref, _ref1;
+
+      btn = PSAHiding.btn;
+      psa = $.id('globalMessage');
+      return _ref1 = (_ref = PSAHiding.trim(psa), __indexOf.call(hiddenPSAs, _ref) >= 0) ? [true, '<span>[&nbsp;+&nbsp;]</span>', 'show-announcement'] : [false, '<span>[&nbsp;-&nbsp;]</span>', 'hide-announcement'], psa.hidden = _ref1[0], btn.innerHTML = _ref1[1], btn.className = _ref1[2], _ref1;
+    },
+    trim: function(psa) {
+      return psa.textContent.replace(/\W+/g, '').toLowerCase();
     }
   };
 
@@ -7552,15 +7603,12 @@
         }
         if (!((0 <= seconds && seconds <= length))) {
           if (DeleteLink.cooldown.counting === post) {
+            node.textContent = 'Delete';
             delete DeleteLink.cooldown.counting;
           }
           return;
         }
         setTimeout(DeleteLink.cooldown.count, 1000, post, seconds - 1, length, node);
-        if (seconds === 0) {
-          node.textContent = 'Delete';
-          return;
-        }
         return node.textContent = "Delete (" + seconds + ")";
       }
     }
@@ -7573,7 +7621,7 @@
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Download Link']) {
         return;
       }
-      if ($.engine === 'gecko' || $.el('a').download === void 0) {
+      if (!('download' in $.el('a'))) {
         return;
       }
       a = $.el('a', {
@@ -7674,19 +7722,23 @@
 
   Keybinds = {
     init: function() {
+      var init;
+
       if (g.VIEW === 'catalog' || !Conf['Keybinds']) {
         return;
       }
-      return $.on(d, '4chanXInitFinished', function() {
+      init = function() {
         var node, _i, _len, _ref;
 
+        $.off(d, '4chanXInitFinished', init);
         $.on(d, 'keydown', Keybinds.keydown);
         _ref = $$('[accesskey]');
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           node = _ref[_i];
           node.removeAttribute('accesskey');
         }
-      });
+      };
+      return $.on(d, '4chanXInitFinished', init);
     },
     keydown: function(e) {
       var form, key, notification, notifications, op, target, thread, threadRoot, _i, _len;
@@ -7970,7 +8022,7 @@
 
   Nav = {
     init: function() {
-      var next, prev, span;
+      var append, next, prev, span;
 
       switch (g.VIEW) {
         case 'index':
@@ -7998,9 +8050,11 @@
       $.on(prev, 'click', this.prev);
       $.on(next, 'click', this.next);
       $.add(span, [prev, $.tn(' '), next]);
-      return $.on(d, '4chanXInitFinished', function() {
+      append = function() {
+        $.off(d, '4chanXInitFinished', append);
         return $.add(d.body, span);
-      });
+      };
+      return $.on(d, '4chanXInitFinished', append);
     },
     prev: function() {
       if (g.VIEW === 'thread') {
@@ -8619,71 +8673,78 @@
       });
     },
     node: function() {
-      var a, boardID, deadlink, m, post, postID, quote, quoteID, redirect, _i, _len, _ref, _ref1;
+      var deadlink, _i, _len, _ref;
 
-      if (this.isClone) {
-        return;
-      }
       _ref = $$('.deadlink', this.nodes.comment);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         deadlink = _ref[_i];
-        if (deadlink.parentNode.className === 'prettyprint') {
-          $.replace(deadlink, __slice.call(deadlink.childNodes));
-          continue;
-        }
-        quote = deadlink.textContent;
-        if (!(postID = (_ref1 = quote.match(/\d+$/)) != null ? _ref1[0] : void 0)) {
-          continue;
-        }
-        boardID = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : this.board.ID;
-        quoteID = "" + boardID + "." + postID;
-        if (post = g.posts[quoteID]) {
-          if (!post.isDead) {
-            a = $.el('a', {
-              href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
-              className: 'quotelink',
-              textContent: quote
-            });
-          } else {
-            a = $.el('a', {
-              href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
-              className: 'quotelink deadlink',
-              target: '_blank',
-              textContent: "" + quote + "\u00A0(Dead)"
-            });
-            a.setAttribute('data-boardid', boardID);
-            a.setAttribute('data-threadid', post.thread.ID);
-            a.setAttribute('data-postid', postID);
+        if (this.isClone) {
+          if ($.hasClass(deadlink, 'quotelink')) {
+            this.nodes.quotelinks.push(deadlink);
           }
-        } else if (redirect = Redirect.to({
-          boardID: boardID,
-          threadID: 0,
-          postID: postID
-        })) {
+        } else {
+          Quotify.parseDeadlink.call(this, deadlink);
+        }
+      }
+    },
+    parseDeadlink: function(deadlink) {
+      var a, boardID, m, post, postID, quote, quoteID, redirect, _ref;
+
+      if (deadlink.parentNode.className === 'prettyprint') {
+        $.replace(deadlink, __slice.call(deadlink.childNodes));
+        return;
+      }
+      quote = deadlink.textContent;
+      if (!(postID = (_ref = quote.match(/\d+$/)) != null ? _ref[0] : void 0)) {
+        return;
+      }
+      boardID = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : this.board.ID;
+      quoteID = "" + boardID + "." + postID;
+      if (post = g.posts[quoteID]) {
+        if (!post.isDead) {
           a = $.el('a', {
-            href: redirect,
-            className: 'deadlink',
+            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
+            className: 'quotelink',
+            textContent: quote
+          });
+        } else {
+          a = $.el('a', {
+            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
+            className: 'quotelink deadlink',
             target: '_blank',
             textContent: "" + quote + "\u00A0(Dead)"
           });
-          if (Redirect.post(boardID, postID)) {
-            $.addClass(a, 'quotelink');
-            a.setAttribute('data-boardid', boardID);
-            a.setAttribute('data-postid', postID);
-          }
+          a.setAttribute('data-boardid', boardID);
+          a.setAttribute('data-threadid', post.thread.ID);
+          a.setAttribute('data-postid', postID);
         }
-        if (!this.quotes.contains(quoteID)) {
-          this.quotes.push(quoteID);
+      } else if (redirect = Redirect.to({
+        boardID: boardID,
+        threadID: 0,
+        postID: postID
+      })) {
+        a = $.el('a', {
+          href: redirect,
+          className: 'deadlink',
+          target: '_blank',
+          textContent: "" + quote + "\u00A0(Dead)"
+        });
+        if (Redirect.post(boardID, postID)) {
+          $.addClass(a, 'quotelink');
+          a.setAttribute('data-boardid', boardID);
+          a.setAttribute('data-postid', postID);
         }
-        if (!a) {
-          deadlink.textContent += "\u00A0(Dead)";
-          continue;
-        }
-        $.replace(deadlink, a);
-        if ($.hasClass(a, 'quotelink')) {
-          this.nodes.quotelinks.push(a);
-        }
-        a = null;
+      }
+      if (__indexOf.call(this.quotes, quoteID) < 0) {
+        this.quotes.push(quoteID);
+      }
+      if (!a) {
+        deadlink.textContent = "" + quote + "\u00A0(Dead)";
+        return;
+      }
+      $.replace(deadlink, a);
+      if ($.hasClass(a, 'quotelink')) {
+        return this.nodes.quotelinks.push(a);
       }
     }
   };
@@ -9551,7 +9612,7 @@
       }
       headRect = Header.bar.getBoundingClientRect();
       top = rect.top - headRect.top - headRect.height;
-      root = $.engine === 'webkit' ? d.body : doc;
+      root = d.body;
       if (rect.top < 0) {
         root.scrollTop += top;
       }
@@ -9614,7 +9675,7 @@
         if (!(prev.top + prev.height <= 0)) {
           return;
         }
-        root = $.engine === 'webkit' ? d.body : doc;
+        root = d.body;
         curr = post.nodes.root.getBoundingClientRect();
         return root.scrollTop += curr.height - prev.height + curr.top - prev.top;
       });
@@ -10831,7 +10892,7 @@
         $.add(ThreadUpdater.root, nodes);
         if (scroll) {
           if (Conf['Bottom Scroll']) {
-            ($.engine === 'webkit' ? d.body : doc).scrollTop = d.body.clientHeight;
+            d.body.scrollTop = d.body.clientHeight;
           } else {
             Header.scrollToPost(nodes[0]);
           }
@@ -10895,6 +10956,7 @@
       });
     },
     ready: function() {
+      $.off(d, '4chanXInitFinished', ThreadWatcher.ready);
       if (!Main.isThisPageLegit()) {
         return;
       }
@@ -11321,13 +11383,24 @@
       });
     },
     initReady: function() {
+      $.off(d, '4chanXInitFinished', QR.initReady);
       QR.postingIsEnabled = !!$.id('postForm');
       if (!QR.postingIsEnabled) {
         return;
       }
-      if ($.engine === 'webkit') {
-        $.on(d, 'paste', QR.paste);
-      }
+      $.on(d, 'QRGetSelectedPost', function(_arg) {
+        var cb;
+
+        cb = _arg.detail;
+        return cb(QR.selected);
+      });
+      $.on(d, 'QRAddPreSubmitHook', function(_arg) {
+        var cb;
+
+        cb = _arg.detail;
+        return QR.preSubmitHooks.push(cb);
+      });
+      $.on(d, 'paste', QR.paste);
       $.on(d, 'dragover', QR.dragOver);
       $.on(d, 'drop', QR.dropFile);
       $.on(d, 'dragstart dragend', QR.drag);
@@ -11605,7 +11678,7 @@
       }
     },
     quote: function(e) {
-      var OP, caretPos, com, post, range, s, sel, selectionRoot, text, thread, _ref;
+      var OP, caretPos, com, index, post, range, s, sel, selectionRoot, text, thread, _ref;
 
       if (e != null) {
         e.preventDefault();
@@ -11623,6 +11696,12 @@
         text += ">" + s + "\n";
       }
       QR.open();
+      if (QR.selected.isLocked) {
+        index = QR.posts.indexOf(QR.selected);
+        (QR.posts[index + 1] || new QR.post()).select();
+        $.addClass(QR.nodes.el, 'dump');
+        QR.cooldown.auto = true;
+      }
       _ref = QR.nodes, com = _ref.com, thread = _ref.thread;
       if (!com.value) {
         thread.value = OP.ID;
@@ -11855,7 +11934,8 @@
         rectEl = this.nodes.el.getBoundingClientRect();
         rectList = this.nodes.el.parentNode.getBoundingClientRect();
         this.nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width / 2 - rectList.left - rectList.width / 2;
-        return this.load();
+        this.load();
+        return $.event('QRPostSelection', this);
       };
 
       _Class.prototype.load = function() {
@@ -12297,9 +12377,7 @@
       QR.mimeTypes = mimeTypes.split(', ');
       QR.mimeTypes.push('');
       nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value;
-      if ($.engine !== 'presto') {
-        nodes.fileInput.accept = "text/*, " + mimeTypes;
-      }
+      nodes.fileInput.accept = "text/*, " + mimeTypes;
       QR.spoiler = !!$('input[name=spoiler]');
       nodes.spoiler.parentElement.hidden = !QR.spoiler;
       if (g.BOARD.ID === 'f') {
@@ -12367,8 +12445,9 @@
         return $.rmClass(this, 'tripped');
       }
     },
+    preSubmitHooks: [],
     submit: function(e) {
-      var callbacks, challenge, err, filetag, m, opts, post, postData, response, textOnly, thread, threadID, _ref;
+      var callbacks, challenge, err, filetag, hook, m, opts, post, postData, response, textOnly, thread, threadID, _i, _len, _ref, _ref1;
 
       if (e != null) {
         e.preventDefault();
@@ -12400,11 +12479,19 @@
         err = 'You can\'t reply to this thread anymore.';
       } else if (!(post.com || post.file)) {
         err = 'No file selected.';
-      } else if (post.file && thread.fileLimit && !thread.isSticky) {
+      } else if (post.file && thread.fileLimit) {
         err = 'Max limit of image replies has been reached.';
+      } else {
+        _ref = QR.preSubmitHooks;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          hook = _ref[_i];
+          if (err = hook(post, thread)) {
+            break;
+          }
+        }
       }
       if (QR.captcha.isEnabled && !err) {
-        _ref = QR.captcha.getOne(), challenge = _ref.challenge, response = _ref.response;
+        _ref1 = QR.captcha.getOne(), challenge = _ref1.challenge, response = _ref1.response;
         if (!response) {
           err = 'No valid captcha.';
         }
@@ -12545,7 +12632,7 @@
         board: g.BOARD,
         threadID: threadID,
         postID: postID
-      }, QR.nodes.el);
+      });
       QR.cooldown.auto = QR.posts.length > 1 && isReply;
       if (!(Conf['Persistent QR'] || QR.cooldown.auto)) {
         QR.close();
@@ -12616,7 +12703,8 @@
 
   DataBoard = (function() {
     function DataBoard(key, sync) {
-      var _this = this;
+      var init,
+        _this = this;
 
       this.key = key;
       this.data = Conf[key];
@@ -12625,9 +12713,11 @@
       if (!sync) {
         return;
       }
-      $.on(d, '4chanXInitFinished', function() {
+      init = function() {
+        $.off(d, '4chanXInitFinished', init);
         return _this.sync = sync;
-      });
+      };
+      $.on(d, '4chanXInitFinished', init);
     }
 
     DataBoard.prototype["delete"] = function(_arg) {
@@ -13181,7 +13271,7 @@
       return $.get(Conf, Main.initFeatures);
     },
     initFeatures: function(items) {
-      var initFeatures, pathname;
+      var init, pathname;
 
       Conf = items;
       pathname = location.pathname.split('/');
@@ -13213,6 +13303,8 @@
         Conf["theme"] = Conf["theme_" + g.TYPE];
       }
       switch (location.hostname) {
+        case 'api.4chan.org':
+          return;
         case 'sys.4chan.org':
           Report.init();
           return;
@@ -13229,7 +13321,7 @@
           });
           return;
       }
-      initFeatures = function(features) {
+      init = function(features) {
         var err, module, name;
 
         for (name in features) {
@@ -13245,7 +13337,7 @@
           }
         }
       };
-      initFeatures({
+      init({
         'Polyfill': Polyfill,
         'Emoji': Emoji,
         'Style': Style,
@@ -13255,6 +13347,7 @@
         'Header': Header,
         'Catalog Links': CatalogLinks,
         'Settings': Settings,
+        'Announcement Hiding': PSAHiding,
         'Fourchan thingies': Fourchan,
         'Custom CSS': CustomCSS,
         'Linkify': Linkify,

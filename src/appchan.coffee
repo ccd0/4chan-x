@@ -1,12 +1,5 @@
 Style =
   init: ->
-    @agent = {
-      'gecko': '-moz-'
-      'webkit': '-webkit-'
-      'presto': '-o-'
-    }[$.engine]
-
-    @sizing = "#{if $.engine is 'gecko' then @agent else ''}box-sizing"
 
     $.asap (-> d.body), MascotTools.init
 
@@ -26,6 +19,10 @@ Style =
         ), 500
 
     @setup()
+
+  agent:  "<% if (type === 'crx') { %>-webkit-<% } else if (type === 'userjs') { %>-moz-<% } else { %>-o-<% } %>"
+
+  sizing: "<% if (type === 'userjs') { %>-moz-<% } else { %><% } %>box-sizing"
 
   setup: ->
     @addStyleReady()

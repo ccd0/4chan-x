@@ -4,14 +4,17 @@ UI = do ->
       className: 'dialog'
       innerHTML: html
       id: id
+    el.style.cssText = position
     $.get "#{id}.position", position, (item) ->
       el.style.cssText = item["#{id}.position"]
+
     move = $ '.move', el
     $.on move, 'touchstart mousedown', dragstart
     for child in move.children
       continue unless child.tagName
       $.on child, 'touchstart mousedown', (e) ->
         e.stopPropagation()
+
     el
 
   class Menu

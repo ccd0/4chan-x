@@ -349,6 +349,8 @@ Main =
       Conf["theme"] = Conf["theme_#{g.TYPE}"]
 
     switch location.hostname
+      when 'api.4chan.org'
+        return
       when 'sys.4chan.org'
         Report.init()
         return
@@ -359,7 +361,7 @@ Main =
             location.href = url if url
         return
 
-    initFeatures = (features) ->
+    init = (features) ->
       for name, module of features
         # c.time "#{name} initialization"
         try
@@ -374,7 +376,7 @@ Main =
 
     # c.time 'All initializations'
 
-    initFeatures
+    init
       'Polyfill':                 Polyfill
       'Emoji':                    Emoji
       'Style':                    Style
@@ -384,6 +386,7 @@ Main =
       'Header':                   Header
       'Catalog Links':            CatalogLinks
       'Settings':                 Settings
+      'Announcement Hiding':      PSAHiding
       'Fourchan thingies':        Fourchan
       'Custom CSS':               CustomCSS
       'Linkify':                  Linkify

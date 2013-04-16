@@ -30,11 +30,18 @@ QR =
       cb:   @node
 
   initReady: ->
+    $.off d, '4chanXInitFinished', QR.initReady
     QR.postingIsEnabled = !!$.id 'postForm'
     return unless QR.postingIsEnabled
 
-    if $.engine is 'webkit'
-      $.on d, 'paste',            QR.paste
+    $.on d, 'QRGetSelectedPost', ({detail: cb}) ->
+      cb QR.selected
+    $.on d, 'QRAddPreSubmitHook', ({detail: cb}) ->
+      QR.preSubmitHooks.push cb
+
+    <% if (type === 'crx') { %>
+    $.on d, 'paste',              QR.paste
+    <% } %>
     $.on d, 'dragover',           QR.dragOver
     $.on d, 'drop',               QR.dropFile
     $.on d, 'dragstart dragend',  QR.drag
@@ -278,6 +285,11 @@ QR =
       text += ">#{s}\n"
 
     QR.open()
+    if QR.selected.isLocked
+      index = QR.posts.indexOf QR.selected
+      (QR.posts[index+1] or new QR.post()).select()
+      $.addClass QR.nodes.el, 'dump'
+      QR.cooldown.auto = true
     {com, thread} = QR.nodes
     thread.value = OP.ID unless com.value
 
@@ -467,7 +479,8 @@ QR =
       rectList = @nodes.el.parentNode.getBoundingClientRect()
       @nodes.el.parentNode.scrollLeft += rectEl.left + rectEl.width/2 - rectList.left - rectList.width/2
       @load()
-    
+
+      $.event 'QRPostSelection', @
     load: ->
       # Load this post's values.
       for name in ['thread', 'name', 'email', 'sub', 'com']
@@ -837,7 +850,10 @@ QR =
     # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
     QR.mimeTypes.push ''
     nodes.fileInput.max    = $('input[name=MAX_FILE_SIZE]').value
-    nodes.fileInput.accept = "text/*, #{mimeTypes}" if $.engine isnt 'presto' # Opera's accept attribute is fucked up
+    <% if (type !== 'userjs') { %>
+    # Opera's accept attribute is fucked up
+    nodes.fileInput.accept = "text/*, #{mimeTypes}"
+    <% } %>
 
     QR.spoiler = !!$ 'input[name=spoiler]'
     nodes.spoiler.parentElement.hidden = !QR.spoiler
@@ -918,6 +934,7 @@ QR =
     if check and !@.className.match "\\btripped\\b" then $.addClass @, 'tripped'
     else if !check and @.className.match "\\btripped\\b" then $.rmClass @, 'tripped'
 
+  preSubmitHooks: []
   submit: (e) ->
     e?.preventDefault()
 
@@ -948,8 +965,11 @@ QR =
       err = 'You can\'t reply to this thread anymore.'
     else unless post.com or post.file
       err = 'No file selected.'
-    else if post.file and thread.fileLimit and !thread.isSticky
+    else if post.file and thread.fileLimit
       err = 'Max limit of image replies has been reached.'
+    else for hook in QR.preSubmitHooks
+      if err = hook post, thread
+        break
 
     if QR.captcha.isEnabled and !err
       {challenge, response} = QR.captcha.getOne()
@@ -1110,7 +1130,7 @@ QR =
       board: g.BOARD
       threadID
       postID
-    }, QR.nodes.el
+    }
 
     # Enable auto-posting if we have stuff to post, disable it otherwise.
     QR.cooldown.auto = QR.posts.length > 1 and isReply

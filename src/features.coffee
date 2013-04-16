@@ -59,7 +59,7 @@ Header =
   createSubEntry: (setting)->
     label = $.el 'label',
       textContent: "#{setting}"
-    
+
     $.on label, 'click', Header.setBarPosition
 
     el: label
@@ -156,26 +156,20 @@ Header =
     $.set 'Boards Navigation',  @textContent
 
   changeBarPosition: (setting) ->
+    $.rmClass doc, 'top'
+    $.rmClass doc, 'fixed'
+    $.rmClass doc, 'bottom'
+    $.rmClass doc, 'hide'
     switch setting
       when 'sticky top'
-        $.addClass doc, 'top'
         $.addClass doc, 'fixed'
-        $.rmClass  doc, 'bottom'
-        $.rmClass  doc, 'hide'
+        $.addClass doc, 'top'
       when 'sticky bottom'
-        $.rmClass  doc, 'top'
         $.addClass doc, 'fixed'
         $.addClass doc, 'bottom'
-        $.rmClass  doc, 'hide'
       when 'top'
         $.addClass doc, 'top'
-        $.rmClass  doc, 'fixed'
-        $.rmClass  doc, 'bottom'
-        $.rmClass  doc, 'hide'
       when 'hide'
-        $.rmClass  doc, 'top'
-        $.rmClass  doc, 'fixed'
-        $.rmClass  doc, 'bottom'
         $.addClass doc, 'hide'
 
   setBarVisibility: (hide) ->
@@ -192,7 +186,7 @@ Header =
     if Conf['Boards Navigation'] is 'sticky top'
       headRect = Header.bar.getBoundingClientRect()
       top += - headRect.top - headRect.height
-    (if $.engine is 'webkit' then d.body else doc).scrollTop += top
+    <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop += top
 
   toggleBarVisibility: (e) ->
     return if e.type is 'mousedown' and e.button isnt 0 # not LMB
@@ -306,6 +300,55 @@ CatalogLinks =
       if g.VIEW isnt 'thread'
         $.add d.body, catalogLink
       catalogLink.id = 'catalog'
+
+PSAHiding =
+  init: ->
+    return if !Conf['Announcement Hiding']
+
+    $.addClass doc, 'hide-announcement'
+
+    $.on d, '4chanXInitFinished', @setup
+  setup: ->
+    $.off d, '4chanXInitFinished', PSAHiding.setup
+
+    unless psa = $.id 'globalMessage'
+      $.rmClass doc, 'hide-announcement'
+      return
+
+    PSAHiding.btn = btn = $.el 'a',
+      title: 'Toggle announcement.'
+      href: 'javascript:;'
+    $.on btn, 'click', PSAHiding.toggle
+
+    text = PSAHiding.trim psa
+    $.get 'hiddenPSAs', [], (item) ->
+      PSAHiding.sync item['hiddenPSAs']
+      $.before psa, btn
+      $.rmClass doc, 'hide-announcement'
+
+    $.sync 'hiddenPSAs', PSAHiding.sync
+  toggle: (e) ->
+    hide = $.hasClass @, 'hide-announcement'
+    text = PSAHiding.trim $.id 'globalMessage'
+    $.get 'hiddenPSAs', [], (item) ->
+      {hiddenPSAs} = item
+      if hide
+        hiddenPSAs.push text
+      else
+        i = hiddenPSAs.indexOf text
+        hiddenPSAs.splice i, 1
+      hiddenPSAs = hiddenPSAs[-5..]
+      PSAHiding.sync hiddenPSAs
+      $.set 'hiddenPSAs', hiddenPSAs
+  sync: (hiddenPSAs) ->
+    {btn} = PSAHiding
+    psa   = $.id 'globalMessage'
+    [psa.hidden, btn.innerHTML, btn.className] = if PSAHiding.trim(psa) in hiddenPSAs
+      [true,  '<span>[&nbsp;+&nbsp;]</span>', 'show-announcement']
+    else
+      [false, '<span>[&nbsp;-&nbsp;]</span>', 'hide-announcement']
+  trim: (psa) ->
+    psa.textContent.replace(/\W+/g, '').toLowerCase()
 
 Fourchan =
   init: ->
@@ -1217,21 +1260,23 @@ DeleteLink =
       return if DeleteLink.cooldown.counting isnt post
       unless 0 <= seconds <= length
         if DeleteLink.cooldown.counting is post
+          node.textContent = 'Delete'
           delete DeleteLink.cooldown.counting
         return
       setTimeout DeleteLink.cooldown.count, 1000, post, seconds - 1, length, node
-      if seconds is 0
-        node.textContent = 'Delete'
-        return
       node.textContent = "Delete (#{seconds})"
 
 DownloadLink =
   init: ->
+    <% if (type === 'userscript') { %>
+    # Firefox won't let us download cross-domain content.
+    return
+    <% } %>
     return if g.VIEW is 'catalog' or !Conf['Menu'] or !Conf['Download Link']
 
-    # Firefox won't let us download cross-domain content.
     # Test for download feature support.
-    return if $.engine is 'gecko' or $.el('a').download is undefined
+    return unless 'download' of $.el 'a'
+
     a = $.el 'a',
       className: 'download-link'
       textContent: 'Download file'
@@ -1305,11 +1350,13 @@ Keybinds =
   init: ->
     return if g.VIEW is 'catalog' or !Conf['Keybinds']
 
-    $.on d, '4chanXInitFinished', ->
+    init = ->
+      $.off d, '4chanXInitFinished', init
       $.on d, 'keydown',  Keybinds.keydown
       for node in $$ '[accesskey]'
         node.removeAttribute 'accesskey'
       return
+    $.on d, '4chanXInitFinished', init
 
   keydown: (e) ->
     return unless key = Keybinds.keyCode e
@@ -1526,7 +1573,10 @@ Nav =
     $.on next, 'click', @next
 
     $.add span, [prev, $.tn(' '), next]
-    $.on d, '4chanXInitFinished', -> $.add d.body, span
+    append = ->
+      $.off d, '4chanXInitFinished', append
+      $.add d.body, span
+    $.on d, '4chanXInitFinished', append
 
   prev: ->
     if g.VIEW is 'thread'
@@ -2141,67 +2191,71 @@ Quotify =
       name: 'Resurrect Quotes'
       cb:   @node
   node: ->
-    return if @isClone
     for deadlink in $$ '.deadlink', @nodes.comment
-      if deadlink.parentNode.className is 'prettyprint'
-        # Don't quotify deadlinks inside code tags,
-        # un-`span` them.
-        $.replace deadlink, [deadlink.childNodes...]
-        continue
+      if @isClone
+        if $.hasClass deadlink, 'quotelink'
+          @nodes.quotelinks.push deadlink
+      else
+        Quotify.parseDeadlink.call @, deadlink
+    return
 
-      quote = deadlink.textContent
-      continue unless postID = quote.match(/\d+$/)?[0]
-      boardID =
-        if m = quote.match /^>>>\/([a-z\d]+)/
-          m[1]
-        else
-          @board.ID
-      quoteID = "#{boardID}.#{postID}"
+  parseDeadlink: (deadlink) ->
+    if deadlink.parentNode.className is 'prettyprint'
+      # Don't quotify deadlinks inside code tags,
+      # un-`span` them.
+      $.replace deadlink, [deadlink.childNodes...]
+      return
 
-      # \u00A0 is nbsp
-      if post = g.posts[quoteID]
-        unless post.isDead
-          # Don't (Dead) when quotifying in an archived post,
-          # and we know the post still exists.
-          a = $.el 'a',
-            href:        "/#{boardID}/#{post.thread}/res/#p#{postID}"
-            className:   'quotelink'
-            textContent: quote
-        else
-          # Replace the .deadlink span if we can redirect.
-          a = $.el 'a',
-            href:        "/#{boardID}/#{post.thread}/res/#p#{postID}"
-            className:   'quotelink deadlink'
-            target:      '_blank'
-            textContent: "#{quote}\u00A0(Dead)"
-          a.setAttribute 'data-boardid',  boardID
-          a.setAttribute 'data-threadid', post.thread.ID
-          a.setAttribute 'data-postid',   postID
-      else if redirect = Redirect.to {boardID, threadID: 0, postID}
+    quote = deadlink.textContent
+    return unless postID = quote.match(/\d+$/)?[0]
+    boardID = if m = quote.match /^>>>\/([a-z\d]+)/
+      m[1]
+    else
+      @board.ID
+    quoteID = "#{boardID}.#{postID}"
+
+    if post = g.posts[quoteID]
+      unless post.isDead
+        # Don't (Dead) when quotifying in an archived post,
+        # and we know the post still exists.
+        a = $.el 'a',
+          href:        "/#{boardID}/#{post.thread}/res/#p#{postID}"
+          className:   'quotelink'
+          textContent: quote
+      else
         # Replace the .deadlink span if we can redirect.
         a = $.el 'a',
-          href:        redirect
-          className:   'deadlink'
+          href:        "/#{boardID}/#{post.thread}/res/#p#{postID}"
+          className:   'quotelink deadlink'
           target:      '_blank'
           textContent: "#{quote}\u00A0(Dead)"
-        if Redirect.post boardID, postID
-          # Make it function as a normal quote if we can fetch the post.
-          $.addClass a,  'quotelink'
-          a.setAttribute 'data-boardid', boardID
-          a.setAttribute 'data-postid',  postID
 
-      unless @quotes.contains quoteID
-        @quotes.push quoteID
+        a.setAttribute 'data-boardid',  boardID
+        a.setAttribute 'data-threadid', post.thread.ID
+        a.setAttribute 'data-postid',   postID
+    else if redirect = Redirect.to {boardID, threadID: 0, postID}
+      # Replace the .deadlink span if we can redirect.
+      a = $.el 'a',
+        href:        redirect
+        className:   'deadlink'
+        target:      '_blank'
+        textContent: "#{quote}\u00A0(Dead)"
+      if Redirect.post boardID, postID
+        # Make it function as a normal quote if we can fetch the post.
+        $.addClass a,  'quotelink'
+        a.setAttribute 'data-boardid', boardID
+        a.setAttribute 'data-postid',  postID
 
-      unless a
-        deadlink.textContent += "\u00A0(Dead)"
-        continue
+    unless quoteID in @quotes
+      @quotes.push quoteID
 
-      $.replace deadlink, a
-      if $.hasClass a, 'quotelink'
-        @nodes.quotelinks.push a
-      a = null
-    return
+    unless a
+      deadlink.textContent = "#{quote}\u00A0(Dead)"
+      return
+
+    $.replace deadlink, a
+    if $.hasClass a, 'quotelink'
+      @nodes.quotelinks.push a
 
 QuoteInline =
   init: ->
@@ -2851,11 +2905,13 @@ ImageExpand =
     ImageExpand.contract post
     rect = post.nodes.root.getBoundingClientRect()
     return unless rect.top <= 0 or rect.left <= 0
+
     # Scroll back to the thumbnail when contracting the image
     # to avoid being left miles away from the relevant post.
     headRect = Header.bar.getBoundingClientRect()
     top  = rect.top - headRect.top - headRect.height
-    root = if $.engine is 'webkit' then d.body else doc
+    root = <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>
+
     root.scrollTop += top if rect.top  < 0
     root.scrollLeft = 0   if rect.left < 0
 
@@ -2897,7 +2953,7 @@ ImageExpand =
       $.addClass post.nodes.root, 'expanded-image'
       $.rmClass  post.file.thumb, 'expanding'
       return unless prev.top + prev.height <= 0
-      root = if $.engine is 'webkit' then d.body else doc
+      root = <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>
       curr = post.nodes.root.getBoundingClientRect()
       root.scrollTop += curr.height - prev.height + curr.top - prev.top
 
@@ -3811,7 +3867,7 @@ ThreadUpdater =
       $.add ThreadUpdater.root, nodes
       if scroll
         if Conf['Bottom Scroll']
-          (if $.engine is 'webkit' then d.body else doc).scrollTop = d.body.clientHeight
+          <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop = d.body.clientHeight
         else
           Header.scrollToPost nodes[0]
 
@@ -3859,6 +3915,7 @@ ThreadWatcher =
       $.delete 'AutoWatch'
 
   ready: ->
+    $.off d, '4chanXInitFinished', ThreadWatcher.ready
     return unless Main.isThisPageLegit()
     ThreadWatcher.refresh()
     $.add d.body, ThreadWatcher.dialog
@@ -3931,6 +3988,7 @@ ThreadWatcher =
         textContent: Get.threadExcerpt thread
       ThreadWatcher.refresh watched
       $.set 'WatchedThreads', watched
+
 
 Linkify =
   init: ->
@@ -4069,7 +4127,7 @@ Linkify =
       if style = type.style
         el.style.cssText = style
       else
-        items = 
+        items =
           'embedWidth':  Config['embedWidth']
           'embedHeight': Config['embedHeight']
         $.get items, (items) ->
