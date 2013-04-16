@@ -1,3 +1,5 @@
+- Fix Chrome freezing when switching from the `Filter` tab to another tab in the settings.
+
 ### 3.1.2 - *2013-04-16*
 
 - Fix error with successful posting.

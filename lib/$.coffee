@@ -104,7 +104,8 @@ $.extend $,
   rmAll: (root) ->
     # jsperf.com/emptify-element
     while node = root.firstChild
-      $.rm node
+      # HTMLSelectElement.remove !== Element.remove
+      root.removeChild node
     return
   tn: (s) ->
     d.createTextNode s
