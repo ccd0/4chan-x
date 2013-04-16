@@ -20,9 +20,9 @@ Style =
 
     @setup()
 
-  agent:  "<% if (type === 'crx') { %>-webkit-<% } else if (type === 'userjs') { %>-moz-<% } else { %>-o-<% } %>"
+  agent:  "<% if (type === 'crx') { %>-webkit-<% } else if (type === 'userscript') { %>-moz-<% } else { %>-o-<% } %>"
 
-  sizing: "<% if (type === 'userjs') { %>-moz-<% } else { %><% } %>box-sizing"
+  sizing: "<% if (type === 'userscript') { %>-moz-<% } else { %><% } %>box-sizing"
 
   setup: ->
     @addStyleReady()

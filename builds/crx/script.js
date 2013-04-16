@@ -23,7 +23,6 @@
 (function() {
   var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -6414,11 +6413,11 @@
       });
     },
     sync: function(hiddenPSAs) {
-      var btn, psa, _ref, _ref1;
+      var btn, psa, _ref;
 
       btn = PSAHiding.btn;
       psa = $.id('globalMessage');
-      return _ref1 = (_ref = PSAHiding.trim(psa), __indexOf.call(hiddenPSAs, _ref) >= 0) ? [true, '<span>[&nbsp;+&nbsp;]</span>', 'show-announcement'] : [false, '<span>[&nbsp;-&nbsp;]</span>', 'hide-announcement'], psa.hidden = _ref1[0], btn.innerHTML = _ref1[1], btn.className = _ref1[2], _ref1;
+      return _ref = hiddenPSAs.contains(PSAHiding.trim(psa)) ? [true, '<span>[&nbsp;+&nbsp;]</span>', 'show-announcement'] : [false, '<span>[&nbsp;-&nbsp;]</span>', 'hide-announcement'], psa.hidden = _ref[0], btn.innerHTML = _ref[1], btn.className = _ref[2], _ref;
     },
     trim: function(psa) {
       return psa.textContent.replace(/\W+/g, '').toLowerCase();
@@ -8735,7 +8734,7 @@
           a.setAttribute('data-postid', postID);
         }
       }
-      if (__indexOf.call(this.quotes, quoteID) < 0) {
+      if (!this.quotes.contains(quoteID)) {
         this.quotes.push(quoteID);
       }
       if (!a) {

@@ -343,7 +343,7 @@ PSAHiding =
   sync: (hiddenPSAs) ->
     {btn} = PSAHiding
     psa   = $.id 'globalMessage'
-    [psa.hidden, btn.innerHTML, btn.className] = if PSAHiding.trim(psa) in hiddenPSAs
+    [psa.hidden, btn.innerHTML, btn.className] = if hiddenPSAs.contains PSAHiding.trim psa
       [true,  '<span>[&nbsp;+&nbsp;]</span>', 'show-announcement']
     else
       [false, '<span>[&nbsp;-&nbsp;]</span>', 'hide-announcement']
@@ -2246,7 +2246,7 @@ Quotify =
         a.setAttribute 'data-boardid', boardID
         a.setAttribute 'data-postid',  postID
 
-    unless quoteID in @quotes
+    unless @quotes.contains quoteID
       @quotes.push quoteID
 
     unless a
