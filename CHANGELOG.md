@@ -1,3 +1,5 @@
+### 3.1.4 - *2013-04-17*
+
 - Fix QR remembering the file spoiler state when it shouldn't, for real this time.
 - Fix inputs in the `Rice` tab being empty when `Custom Board Navigation` is disabled.
 
