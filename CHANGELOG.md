@@ -1,3 +1,5 @@
+### 3.1.2 - *2013-04-16*
+
 - Fix error with successful posting.
 
 ### 3.1.1 - *2013-04-16*
