@@ -1,3 +1,20 @@
+### 3.1.3 - *2013-04-16*
+
+- Fix Chrome freezing when switching from the `Filter` tab to another tab in the settings.
+
+### 3.1.2 - *2013-04-16*
+
+- Fix error with successful posting.
+
+### 3.1.1 - *2013-04-16*
+
+- Styling adjustments for the announcement toggler.
+
+## 3.1.0 - *2013-04-16*
+
+- **New feature**: `Announcement Hiding`, enabled by default.
+- Fix support for www.4chan.org/frames on Chrome.
+- Fix quote features not working on dead quotelinks in inlined posts.
 - Fix resurrecting dead quotelinks on HTTP.
 
 ### 3.0.6 - *2013-04-14*

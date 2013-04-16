@@ -354,6 +354,15 @@ a[href="javascript:;"] {
   overflow: hidden;
 }
 
+/* Announcement Hiding */
+:root.hide-announcement #globalMessage {
+  display: none;
+}
+a.hide-announcement,
+a.show-announcement {
+  float: left;
+}
+
 /* Unread */
 #unread-line {
   margin: 0;

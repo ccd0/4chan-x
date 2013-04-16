@@ -4,6 +4,8 @@
 $ = (selector, root=d.body) ->
   root.querySelector selector
 
+$.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)))
+
 $$ = (selector, root=d.body) ->
   [root.querySelectorAll(selector)...]
 
@@ -48,10 +50,7 @@ $.extend String::,
   contains: (string) ->
     @indexOf(string) > -1
 
-$.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)))
-
 $.extend $,
-  engine: '<% if (type === 'crx') { %>webkit<% } else if (type === 'userjs') { %>presto<% } else { %>gecko<% } %>'
   id: (id) ->
     d.getElementById id
   ready: (fc) ->
@@ -146,7 +145,8 @@ $.extend $,
   rmAll: (root) ->
     # jsperf.com/emptify-element
     while node = root.firstChild
-      $.rm node
+      # HTMLSelectElement.remove !== Element.remove
+      root.removeChild node
     return
   tn: (s) ->
     d.createTextNode s

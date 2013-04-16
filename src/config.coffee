@@ -21,6 +21,10 @@ Config =
         true
         'Show custom links instead of the full board list.'
       ]
+      'Announcement Hiding': [
+        true
+        'Add button to hide 4chan announcements.'
+      ]
       '404 Redirect': [
         true
         'Redirect dead threads and images.'
