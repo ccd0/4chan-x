@@ -469,6 +469,16 @@ Main =
 
     if $.hasClass d.body, 'fourchan_x'
       alert '4chan X v2 detected: Disable it or v3 will break.'
+    <% if (type === 'userscript') { %>
+    el = $.el 'span'
+    el.style.flex = 'test'
+    if el.style.flex is 'test'
+      el.innerHTML = """
+      Firefox is not correctly set up and some <%= meta.name %> features will be displayed incorrectly.<br>
+      Follow the instructions of the <a href='<%= meta.page %>' target=_blank>install guide</a> to fix it.
+      """
+      new Notification 'warning', el, 30
+    <% } %>
 
     $.event '4chanXInitFinished'
     Main.checkUpdate()
