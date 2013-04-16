@@ -685,6 +685,13 @@ Settings =
         <legend>Custom Board Navigation <span class=warning #{if Conf['Custom Board Navigation'] then 'hidden' else ''}>is disabled.</span></legend>
         <div><input name=boardnav class=field spellcheck=false></div>
         <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>
+        <div>
+          For example:<br>
+          <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:"Piracy"]</code><br>
+          will give you<br>
+          <code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>
+          if you are on /g/.
+        </div>
         <div>Board link: <code>board</code></div>
         <div>Title link: <code>board-title</code></div>
         <div>Full text link: <code>board-full</code></div>
