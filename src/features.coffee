@@ -1,13 +1,5 @@
 Header =
   init: ->
-    @bar = $.el 'div',
-      id: 'notifications'
-    @shortcuts = $.el 'span',
-      id: 'shortcuts'
-    @hover = $.el 'div',
-      id: 'hoverUI'
-    @toggle = $.el 'div',
-      id: 'toggle-header-bar'
     @menuButton = $.el 'span',
       className: 'menu-button'
       innerHTML: '<a class=brackets-wrap href=javascript:;><i></i></a>'
@@ -17,14 +9,20 @@ Header =
     $.on @toggle,     'mousedown',       @toggleBarVisibility
     $.on window,      'load hashchange', Header.hashScroll
 
-    @positionToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{if Conf['Bottom header'] then 'checked' else ''}> Bottom header"
-    $.on @positionToggler.firstElementChild, 'change', @toggleBarPosition
+    @positionToggler = $.el 'span',
+      textContent: 'Header Position'
+      className:   'header-position-link'
+
+    {createSubEntry} = Header
+    subEntries = []
+    for setting in ['sticky top', 'sticky bottom', 'top']
+      subEntries.push createSubEntry setting
 
     $.event 'AddMenuEntry',
       type:  'header'
       el:    @positionToggler
       order: 108
+      subEntries: subEntries
 
     @headerToggler = $.el 'label',
       innerHTML: "<input type=checkbox #{if Conf['Header auto-hide'] then 'checked' else ''}> Auto-hide header"
@@ -46,6 +44,26 @@ Header =
     $.ready ->
       $.add d.body, Header.hover
 
+  bar: $.el 'div',
+    id: 'notifications'
+
+  shortcuts: $.el 'span',
+    id: 'shortcuts'
+
+  hover: $.el 'div',
+    id: 'hoverUI'
+
+  toggle: $.el 'div',
+    id: 'toggle-header-bar'
+
+  createSubEntry: (setting)->
+    label = $.el 'label',
+      textContent: "#{setting}"
+
+    $.on label, 'click', Header.setBarPosition
+
+    el: label
+
   setBoardList: ->
     Header.nav = nav = $.id 'boardNavDesktop'
     if a = $ "a[href*='/#{g.BOARD}/']", nav
@@ -58,33 +76,28 @@ Header =
     customBoardList = $.el 'span',
       id:     'custom-board-list'
 
-    Header.fixedHeader nav if Conf['Fixed Header']
+    Header.setBarPosition.call textContent: "#{Conf['Boards Navigation']}"
+    $.sync 'Boards Navigation', Header.changeBarPosition
+
+    Header.setBarVisibility Conf['Header auto-hide']
+    $.sync 'Header auto-hide',  Header.setBarVisibility
+
+    $.after nav, $.id 'navtopright'
 
     $.add fullBoardList, [nav.childNodes...]
-    $.add nav, [Header.menuButton, customBoardList, fullBoardList, Header.shortcuts, $('#navtopright', fullBoardList), Header.toggle]
-    $.add d.body, Header.bar
+    $.add nav, [Header.menuButton, customBoardList, fullBoardList, Header.shortcuts, Header.bar, Header.toggle]
 
     if Conf['Custom Board Navigation']
       Header.generateBoardList Conf['boardnav']
       $.sync 'boardnav', Header.generateBoardList
       btn = $.el 'span',
-        className: 'hide-board-list-button brackets-wrap'
-        innerHTML: '<a href=javascript:;> - </a>'
+        className: 'hide-board-list-button'
+        innerHTML: '[<a href=javascript:;> - </a>]\u00A0'
       $.on btn, 'click', Header.toggleBoardList
       $.prepend fullBoardList, btn
     else
       $.rm $ '#custom-board-list', nav
       fullBoardList.hidden = false
-
-  fixedHeader: (nav) ->
-    $.addClass doc, 'fixed'
-    $.addClass nav, 'dialog'
-
-    @setBarPosition Conf['Bottom header']
-    $.sync 'Bottom header',    @setBarPosition
-
-    @setBarVisibility Conf['Header auto-hide']
-    $.sync 'Header auto-hide', @setBarVisibility
 
   generateBoardList: (text) ->
     list = $ '#custom-board-list', Header.nav
@@ -133,21 +146,30 @@ Header =
     custom.hidden = !showBoardList
     full.hidden   =  showBoardList
 
-  setBarPosition: (bottom) ->
+  setBarPosition: ->
     $.event 'CloseMenu'
-    Header.positionToggler.firstElementChild.checked = bottom
-    if bottom
-      $.addClass doc, 'bottom'
-      $.rmClass  doc, 'top'
-    else
-      $.addClass doc, 'top'
-      $.rmClass  doc, 'bottom'
 
-  toggleBarPosition: ->
-    bottom = @checked
-    Header.setBarPosition bottom
-    Conf['Bottom header'] = bottom
-    $.set 'Bottom header', bottom
+    Header.changeBarPosition @textContent
+
+    Conf['Boards Navigation'] = @textContent
+    $.set 'Boards Navigation',  @textContent
+
+  changeBarPosition: (setting) ->
+    $.rmClass  doc, 'top'
+    $.rmClass  doc, 'fixed'
+    $.rmClass  doc, 'bottom'
+    $.rmClass  Header.nav, 'dialog'
+    switch setting
+      when 'sticky top'
+        $.addClass doc, 'top'
+        $.addClass doc, 'fixed'
+        $.addClass Header.nav, 'dialog'
+      when 'sticky bottom'
+        $.addClass doc, 'fixed'
+        $.addClass doc, 'bottom'
+        $.addClass Header.nav, 'dialog'
+      when 'top'
+        $.addClass doc, 'top'
 
   setBarVisibility: (hide) ->
     Header.headerToggler.firstElementChild.checked = hide
@@ -160,10 +182,10 @@ Header =
 
   scrollToPost: (post) ->
     {top} = post.getBoundingClientRect()
-    unless Conf['Bottom header']
+    if Conf['Boards Navigation'] is 'sticky top'
       headRect = Header.bar.getBoundingClientRect()
       top += - headRect.top - headRect.height
-    <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop += top
+    (if $.engine is 'webkit' then d.body else doc).scrollTop += top
 
   toggleBarVisibility: (e) ->
     return if e.type is 'mousedown' and e.button isnt 0 # not LMB
@@ -4454,6 +4476,7 @@ ThreadWatcher =
       ThreadWatcher.refresh watched
       $.set 'WatchedThreads', watched
 
+
 Linkify =
   init: ->
     return if g.VIEW is 'catalog' or not Conf['Linkify']
@@ -4560,6 +4583,12 @@ Linkify =
 
       $.replace node, nodes
 
+    if Conf['Auto-embed']
+      embeds = $$ '.embedder', @nodes.comment
+      for embed in embeds
+        embed.click()
+    return
+
   toggle: ->
     # We setup the link to be replaced by the embedded video
     embed = @previousElementSibling
@@ -4582,10 +4611,14 @@ Linkify =
       el = (type = Linkify.types[@getAttribute("data-service")]).el.call @
 
       # Set style values.
-      el.style.cssText = if style = type.style
-        style
+      if style = type.style
+        el.style.cssText = style
       else
-        "border: 0; width: #{$.get 'embedWidth', Config['embedWidth']}px; height: #{$.get 'embedHeight', Config['embedHeight']}px"
+        items =
+          'embedWidth':  Config['embedWidth']
+          'embedHeight': Config['embedHeight']
+        $.get items, (items) ->
+          el.style.cssText = "border: 0; width: #{items['embedWidth']}px; height: #{items['embedHeight']}px"
 
       @textContent = '(unembed)'
 
@@ -4653,6 +4686,7 @@ Linkify =
 
   embedder: (a) ->
     return [a] unless Conf['Embedding']
+    titles = {}
 
     callbacks = ->
       a.textContent = switch @status

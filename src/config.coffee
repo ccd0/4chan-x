@@ -75,6 +75,10 @@ Config =
         true
         'Embed supported services.'
       ]
+      'Auto-embed': [
+        false
+        'Auto-embed Linkify Embeds.'
+      ]
       'Link Title': [
         true
         'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud'
@@ -374,7 +378,7 @@ http://iqdb.org/?url=%TURL
 
   'Custom CSS': false
 
-  'Bottom header': false
+  'Boards Navigation': 'sticky top'
 
   'Header auto-hide': false
 

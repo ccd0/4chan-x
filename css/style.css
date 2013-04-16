@@ -94,15 +94,25 @@ a[href="javascript:;"] {
 .fixed #boardNavDesktop {
   z-index: 10;
 }
-
 /* Header */
 .fourchan-x body {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+.fixed.top body {
+  padding-top: 2em;
+}
+.fixed.bottom body {
+  padding-bottom: 2em;
+}
+#boardNavDesktop {
+  float: left;
+}
 .fixed #boardNavDesktop {
+  float: none;
   right: 0;
   left: 0;
+  padding: 3px 4px 4px;
 }
 .fixed.top #boardNavDesktop {
   top: 0;
@@ -112,8 +122,6 @@ a[href="javascript:;"] {
 }
 #boardNavDesktop {
   border-width: 0;
-  padding: 3px 4px 4px;
-  position: relative;
   transition: all .1s .05s ease-in-out;
 }
 .fixed.top #boardNavDesktop {
