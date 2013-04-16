@@ -1,3 +1,5 @@
+- Fix error with successful posting.
+
 ### 3.1.1 - *2013-04-16*
 
 - Styling adjustments for the announcement toggler.
