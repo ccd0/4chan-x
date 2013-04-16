@@ -85,7 +85,9 @@ Header =
     Header.setCatalogLinks Conf['Header catalog links']
 
   generateBoardList: (text) ->
-    list = $ '#custom-board-list', Header.bar
+    unless list = $ '#custom-board-list', Header.bar
+      # init'd with the custom board list disabled.
+      return
     $.rmAll list
     return unless text
     as = $$('#full-board-list a', Header.bar)[0...-2] # ignore the Settings and Home links
