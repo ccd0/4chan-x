@@ -1848,7 +1848,7 @@ Keybinds =
       when Conf['Open settings']
         Settings.open()
       when Conf['Close']
-        if $.id 'fourchanx-settings'
+        if Settings.dialog
           Settings.close()
         else if (notifications = $$ '.notification').length
           for notification in notifications
