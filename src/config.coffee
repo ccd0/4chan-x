@@ -33,7 +33,9 @@ Config =
       'Thread Hiding Link':           [true,  'Add a link to hide entire threads.']
       'Reply Hiding Link':            [true,  'Add a link to hide single replies.']
       'Delete Link':                  [true,  'Add post and image deletion links to the menu.']
-      'Download Link':                [true,  'Add a download with original filename link to the menu. Chrome-only currently.']
+      <% if (type === 'crx') { %>
+      'Download Link':                [true,  'Add a download with original filename link to the menu.']
+      <% } %>
       'Archive Link':                 [true,  'Add an archive link to the menu.']
     'Monitoring':
       'Thread Updater':               [true,  'Fetch and insert new replies. Has more options in its own dialog.']
