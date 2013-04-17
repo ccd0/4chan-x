@@ -271,6 +271,9 @@ Main =
     if _conf['Fappe Tyme']
       FappeTyme.init()
 
+    if _conf['Announcement Hiding']
+      AnnouncementHiding.init()
+
     if g.REPLY
       if _conf['Prefetch']
         Prefetch.init()

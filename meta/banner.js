@@ -12,6 +12,8 @@
  *   https://4chan-x.just-believe.in/
  * 4chan x Copyright © 2013-<%= grunt.template.today('yyyy') %> Jordan Bates <saudrapsmann@gmail.com>
  * 	 http://seaweedchan.github.io/4chan-x/
+ * 4chan x Copyright © 2012-<%= grunt.template.today('yyyy') %> ihavenoface
+ * 	 http://ihavenoface.github.io/4chan-x/
  * OneeChan Copyright © 2011-<%= grunt.template.today('yyyy') %> Jordan Bates <saudrapsmann@gmail.com>
  *   http://seaweedchan.github.io/oneechan/
  * 4chan SS Copyright © 2011-<%= grunt.template.today('yyyy') %> Ahodesuka

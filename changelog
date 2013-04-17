@@ -1,7 +1,9 @@
 master
+ihavenoface:
+	-Implement Announcement Hiding
 
 1.0.8:
-seaweedchan
+seaweedchan:
 	-Redo settings menu styling
 	-Move Export/Import buttons and dialog
 	-Update license and use banner.js for license
@@ -50,7 +52,7 @@ seaweedchan:
 -New option: Emoji
 -New Rice option: Sage Emoji
 seaweedchan:
-  -Prettier error messages
+	-Prettier error messages
 
 1.0.0
 -Initial release

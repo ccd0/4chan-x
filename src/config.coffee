@@ -91,6 +91,10 @@ Config =
       ]
 
     Filtering:
+      'Announcement Hiding': [
+        false
+        'Allow toggling of announcement'
+      ]
       'Anonymize': [
         false
         'Make everybody anonymous'

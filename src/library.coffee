@@ -154,6 +154,8 @@ $.extend $,
     el.classList.remove className
   toggleClass: (el, className) ->
     el.classList.toggle className
+  hasClass: (el, className) ->
+    el.classList.contains className
   rm: (el) ->
     el.parentNode.removeChild el
   rmAll: (root) ->

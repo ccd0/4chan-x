@@ -614,6 +614,24 @@ div.opContainer {
 .postContainer iframe {
   display: block !important;
 }
+#toggleMsgButton {
+    width: 200px;
+    display: block;
+    text-align: center;
+    margin: 0 auto 0;
+}
+.redButton {
+    background-color: rgb(255, 173, 173);
+    background-image: url("http://static.4chan.org/image/buttonfade-red.png");
+    border: 1px solid rgb(196, 88, 88);
+    color: rgb(136, 0, 0) !important;
+    border-radius: 3px 3px 3px 3px;
+    padding: 6px 10px 5px;
+    font-weight: bold;
+    background-repeat: repeat-x;
+    text-decoration: none;
+}
+#{if Conf["Announcement Hiding"] then '#globalMessage.hidden { display: none; }' else ''}
 #{if Conf["Custom CSS"] then Conf["customCSS"] else ""}
 #{if Conf['Emoji'] then Style.emoji Conf['emojiPos'] else ''} 
 #{if Conf['Quick Reply'] and Conf['Hide Original Post Form'] then '#postForm { display: none; }' else ''}"""
