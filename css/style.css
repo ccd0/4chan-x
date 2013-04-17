@@ -260,10 +260,6 @@ a[href="javascript:;"] {
   background-color: rgba(0, 0, 0, .5);
   display: -webkit-flex;
   display: flex;
-  -webkit-align-items: center;
-  align-items: center;
-  -webkit-justify-content: center;
-  justify-content: center;
   position: fixed;
   top: 0;
   left: 0;
@@ -280,6 +276,7 @@ a[href="javascript:;"] {
   width: 900px;
   min-width: 0;
   max-width: 100%;
+  margin: auto;
   padding: 3px;
   display: -webkit-flex;
   display: flex;
