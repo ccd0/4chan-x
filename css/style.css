@@ -485,6 +485,8 @@ a.hide-announcement {
 #qp img {
   max-height: 300px;
   max-width: 500px;
+  max-height: 80vh;
+  max-width: 50vw;
 }
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .7);
