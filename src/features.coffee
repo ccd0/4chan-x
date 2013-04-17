@@ -1288,7 +1288,7 @@ ThreadHiding =
     ThreadHiding.saveHiddenState thread
 
   hide: (thread, makeStub=Conf['Stubs']) ->
-    return if thread.hidden
+    return if thread.isHidden
     {OP} = thread
     threadRoot = OP.nodes.root.parentNode
     threadRoot.hidden = thread.isHidden = true
