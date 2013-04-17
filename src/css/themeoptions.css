@@ -116,7 +116,7 @@ a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
 a.useremail[href*="sage"]:last-of-type::#{_conf["Sage Highlight Position"]},
 a.useremail[href*="Sage"]:last-of-type::#{_conf["Sage Highlight Position"]},
 a.useremail[href*="SAGE"]:last-of-type::#{_conf["Sage Highlight Position"]} {
-  content: url("data:image/png;base64,<%= grunt.file.read("img/emoji/sage.png",       {encoding: "base64"}) %>");
+  content: url("data:image/png;base64,<%= grunt.file.read("src/img/emoji/sage.png",       {encoding: "base64"}) %>");
   vertical-align: top;
   margin-#{if _conf["Sage Highlight Position"] is "before" then "right" else "left"}: #{parseInt _conf['Emoji Spacing']}px;
 }\n

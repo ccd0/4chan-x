@@ -17,5 +17,5 @@
 // @run-at       document-start
 // @updateURL    <%= meta.page %><%= meta.buildsPath %><%= name %>.meta.js
 // @downloadURL  <%= meta.page %><%= meta.buildsPath %><%= name %>.user.js
-// @icon         data:image/png;base64,<%= grunt.file.read('img/icon48.png', {encoding: 'base64'}) %>
+// @icon         data:image/png;base64,<%= grunt.file.read('src/img/icon48.png', {encoding: 'base64'}) %>
 // ==/UserScript==

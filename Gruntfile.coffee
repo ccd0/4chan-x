@@ -12,36 +12,30 @@ module.exports = (grunt) ->
       coffee:
         options: concatOptions
         src: [
-          'src/config.coffee'
-          'src/globals.coffee'
-          'lib/ui.coffee'
-          'lib/$.coffee'
-          'lib/polyfill.coffee'
-          'src/appchan.coffee'
-          'src/settings.coffee'
-          'src/features.coffee'
-          'src/qr.coffee'
-          'src/report.coffee'
-          'src/databoard.coffee'
-          'src/main.coffee'
+          'src/code/config.coffee'
+          'src/code/globals.coffee'
+          'src/lib/*.coffee'
+          'src/code/*/*.coffee'
+          'src/code/settings.coffee'
+          'src/code/main.coffee'
         ]
-        dest: 'tmp/script.coffee'
+        dest: 'tmp-<%= pkg.type %>/script.coffee'
 
       crx:
         options: concatOptions
         files:
-          'builds/crx/manifest.json': 'src/manifest.json'
+          'builds/crx/manifest.json': 'src/meta/manifest.json'
           'builds/crx/script.js': [
             'src/banner.js'
-            'tmp/script.js'
+            'tmp-<%= pkg.type %>/script.js'
           ]
 
       userjs:
         options: concatOptions
         src: [
-          'src/metadata.js'
-          'src/banner.js'
-          'tmp/script.js'
+          'src/meta/metadata.js'
+          'src/meta/banner.js'
+          'tmp-<%= pkg.type %>/script.js'
         ]
         dest: 'builds/<%= pkg.name %>.js'
 
@@ -50,22 +44,29 @@ module.exports = (grunt) ->
         files:
           'builds/<%= pkg.name %>.meta.js': 'src/metadata.js'
           'builds/<%= pkg.name %>.user.js': [
-            'src/metadata.js'
-            'src/banner.js'
-            'tmp/script.js'
+            'src/meta/metadata.js'
+            'src/meta/banner.js'
+            'tmp-<%= pkg.type %>/script.js'
           ]
 
     copy:
       crx:
-        src:    'img/*.png'
+        src:    'src/img/*.png'
         dest:   'builds/crx/'
         expand:  true
         flatten: true
 
     coffee:
       script:
-        src:  'tmp/script.coffee'
-        dest: 'tmp/script.js'
+        src:  'tmp-<%= pkg.type %>/script.coffee'
+        dest: 'tmp-<%= pkg.type %>/script.js'
+
+    concurrent:
+      build: [
+        'build-crx'
+        'build-userjs'
+        'build-userscript'
+      ]
 
     exec:
       commit:
@@ -87,13 +88,11 @@ module.exports = (grunt) ->
       all:
         options:
           interrupt: true
+          nospawn:   true
         files: [
           'Gruntfile.coffee'
           'package.json'
-          'lib/**/*'
           'src/**/*'
-          'css/**/*'
-          'img/**/*'
         ]
         tasks: 'build'
 
@@ -108,10 +107,13 @@ module.exports = (grunt) ->
         src: '**'
 
     clean:
-      builds: 'builds'
-      tmp:    'tmp'
+      builds:        'builds'
+      tmpcrx:        'tmp-crx'
+      tmpuserjs:     'tmp-userjs'
+      tmpuserscript: 'tmp-userscript'
 
   grunt.loadNpmTasks 'grunt-bump'
+  grunt.loadNpmTasks 'grunt-concurrent'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-compress'
@@ -120,16 +122,16 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-exec'
 
-  grunt.registerTask 'default', ['build']
+  grunt.registerTask 'default', [
+    'build'
+  ]
 
   grunt.registerTask 'set-build', 'Set the build type variable', (type) ->
     pkg.type = type;
     grunt.log.ok 'pkg.type = %s', type
 
   grunt.registerTask 'build', [
-    'build-crx'
-    'build-userjs'
-    'build-userscript'
+    'concurrent:build'
   ]
 
   grunt.registerTask 'build-crx', [
@@ -138,8 +140,7 @@ module.exports = (grunt) ->
     'coffee:script'
     'concat:crx'
     'copy:crx'
-    'compress:crx'
-    'clean:tmp'
+    'clean:tmpcrx'
   ]
 
   grunt.registerTask 'build-userjs', [
@@ -147,7 +148,7 @@ module.exports = (grunt) ->
     'concat:coffee'
     'coffee:script'
     'concat:userjs'
-    'clean:tmp'
+    'clean:tmpuserjs'
   ]
 
   grunt.registerTask 'build-userscript', [
@@ -155,7 +156,7 @@ module.exports = (grunt) ->
     'concat:coffee'
     'coffee:script'
     'concat:userscript'
-    'clean:tmp'
+    'clean:tmpuserscript'
   ]
 
   grunt.registerTask 'release', [

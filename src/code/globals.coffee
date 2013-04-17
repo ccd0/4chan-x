@@ -2808,5 +2808,5 @@ textarea,
 }"""
 
 Icons =
-  oneechan:   '<%= grunt.file.read("img/icons/oneechan.png", {encoding: "base64"}) %>'
-  "4chan SS": '<%= grunt.file.read("img/icons/4chanSS.png",  {encoding: "base64"}) %>'
+  oneechan:   '<%= grunt.file.read("src/img/icons/oneechan.png", {encoding: "base64"}) %>'
+  "4chan SS": '<%= grunt.file.read("src/img/icons/4chanSS.png",  {encoding: "base64"}) %>'
