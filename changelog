@@ -3,6 +3,9 @@ master
 1.0.9:
 ihavenoface:
 	-Implement Announcement Hiding
+seaweedchan:
+	-Change #options back to inheriting colors from replies
+	-Fix script breaking when disabling image expansion
 
 1.0.8:
 seaweedchan:

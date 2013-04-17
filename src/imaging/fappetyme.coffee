@@ -2,6 +2,13 @@ FappeTyme =
   init: ->
     return if g.CATALOG or g.BOARD is 'f'
 
+    unless $.id('imgControls')
+      controls = $.el 'div',
+        id: 'imgControls'
+        innerHTML:
+          "<div id=imgContainer></div>"
+      $.prepend $.id('delform'), controls
+
     el = $.el 'label',
       href:  'javascript:;'
       id:    'fappeTyme'
