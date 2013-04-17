@@ -12,25 +12,19 @@ module.exports = (grunt) ->
       coffee:
         options: concatOptions
         src: [
-          'src/config.coffee'
-          'src/globals.coffee'
-          'lib/ui.coffee'
-          'lib/$.coffee'
-          'lib/polyfill.coffee'
-          'src/appchan.coffee'
-          'src/settings.coffee'
-          'src/features.coffee'
-          'src/qr.coffee'
-          'src/report.coffee'
-          'src/databoard.coffee'
-          'src/main.coffee'
+          'src/code/config.coffee'
+          'src/code/globals.coffee'
+          'src/lib/*.coffee'
+          'src/code/*/*.coffee'
+          'src/code/settings.coffee'
+          'src/code/main.coffee'
         ]
         dest: 'tmp-<%= pkg.type %>/script.coffee'
 
       crx:
         options: concatOptions
         files:
-          'builds/crx/manifest.json': 'src/manifest.json'
+          'builds/crx/manifest.json': 'src/meta/manifest.json'
           'builds/crx/script.js': [
             'src/banner.js'
             'tmp-<%= pkg.type %>/script.js'
@@ -39,8 +33,8 @@ module.exports = (grunt) ->
       userjs:
         options: concatOptions
         src: [
-          'src/metadata.js'
-          'src/banner.js'
+          'src/meta/metadata.js'
+          'src/meta/banner.js'
           'tmp-<%= pkg.type %>/script.js'
         ]
         dest: 'builds/<%= pkg.name %>.js'
@@ -50,14 +44,14 @@ module.exports = (grunt) ->
         files:
           'builds/<%= pkg.name %>.meta.js': 'src/metadata.js'
           'builds/<%= pkg.name %>.user.js': [
-            'src/metadata.js'
-            'src/banner.js'
+            'src/meta/metadata.js'
+            'src/meta/banner.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
 
     copy:
       crx:
-        src:    'img/*.png'
+        src:    'src/img/*.png'
         dest:   'builds/crx/'
         expand:  true
         flatten: true
@@ -98,10 +92,7 @@ module.exports = (grunt) ->
         files: [
           'Gruntfile.coffee'
           'package.json'
-          'lib/**/*'
           'src/**/*'
-          'css/**/*'
-          'img/**/*'
         ]
         tasks: 'build'
 
