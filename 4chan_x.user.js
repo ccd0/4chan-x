@@ -23,7 +23,7 @@
  * 4chan x - Version 1.0.9 - 2013-04-17
  *
  * Licensed under the MIT license.
- * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
+ * https://github.com/seaweedchan/4chan-x/blob/4chanX/LICENSE
  *
  * Appchan X Copyright © 2013-2013 Zixaphir <zixaphirmoxphar@gmail.com>
  *   http://zixaphir.github.io/appchan-x/
