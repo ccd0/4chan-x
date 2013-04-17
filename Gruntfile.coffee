@@ -25,7 +25,7 @@ module.exports = (grunt) ->
           'src/databoard.coffee'
           'src/main.coffee'
         ]
-        dest: 'tmp/script.coffee'
+        dest: 'tmp-<%= pkg.type %>/script.coffee'
 
       crx:
         options: concatOptions
@@ -33,7 +33,7 @@ module.exports = (grunt) ->
           'builds/crx/manifest.json': 'src/manifest.json'
           'builds/crx/script.js': [
             'src/banner.js'
-            'tmp/script.js'
+            'tmp-<%= pkg.type %>/script.js'
           ]
 
       userjs:
@@ -41,7 +41,7 @@ module.exports = (grunt) ->
         src: [
           'src/metadata.js'
           'src/banner.js'
-          'tmp/script.js'
+          'tmp-<%= pkg.type %>/script.js'
         ]
         dest: 'builds/<%= pkg.name %>.js'
 
@@ -52,7 +52,7 @@ module.exports = (grunt) ->
           'builds/<%= pkg.name %>.user.js': [
             'src/metadata.js'
             'src/banner.js'
-            'tmp/script.js'
+            'tmp-<%= pkg.type %>/script.js'
           ]
 
     copy:
@@ -64,8 +64,15 @@ module.exports = (grunt) ->
 
     coffee:
       script:
-        src:  'tmp/script.coffee'
-        dest: 'tmp/script.js'
+        src:  'tmp-<%= pkg.type %>/script.coffee'
+        dest: 'tmp-<%= pkg.type %>/script.js'
+
+    concurrent:
+      build: [
+        'build-crx'
+        'build-userjs'
+        'build-userscript'
+      ]
 
     exec:
       commit:
@@ -87,6 +94,7 @@ module.exports = (grunt) ->
       all:
         options:
           interrupt: true
+          nospawn:   true
         files: [
           'Gruntfile.coffee'
           'package.json'
@@ -108,10 +116,13 @@ module.exports = (grunt) ->
         src: '**'
 
     clean:
-      builds: 'builds'
-      tmp:    'tmp'
+      builds:        'builds'
+      tmpcrx:        'tmp-crx'
+      tmpuserjs:     'tmp-userjs'
+      tmpuserscript: 'tmp-userscript'
 
   grunt.loadNpmTasks 'grunt-bump'
+  grunt.loadNpmTasks 'grunt-concurrent'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-compress'
@@ -120,16 +131,16 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-exec'
 
-  grunt.registerTask 'default', ['build']
+  grunt.registerTask 'default', [
+    'build'
+  ]
 
   grunt.registerTask 'set-build', 'Set the build type variable', (type) ->
     pkg.type = type;
     grunt.log.ok 'pkg.type = %s', type
 
   grunt.registerTask 'build', [
-    'build-crx'
-    'build-userjs'
-    'build-userscript'
+    'concurrent:build'
   ]
 
   grunt.registerTask 'build-crx', [
@@ -138,7 +149,7 @@ module.exports = (grunt) ->
     'coffee:script'
     'concat:crx'
     'copy:crx'
-    'clean:tmp'
+    'clean:tmpcrx'
   ]
 
   grunt.registerTask 'build-userjs', [
@@ -146,7 +157,7 @@ module.exports = (grunt) ->
     'concat:coffee'
     'coffee:script'
     'concat:userjs'
-    'clean:tmp'
+    'clean:tmpuserjs'
   ]
 
   grunt.registerTask 'build-userscript', [
@@ -154,7 +165,7 @@ module.exports = (grunt) ->
     'concat:coffee'
     'coffee:script'
     'concat:userscript'
-    'clean:tmp'
+    'clean:tmpuserscript'
   ]
 
   grunt.registerTask 'release', [

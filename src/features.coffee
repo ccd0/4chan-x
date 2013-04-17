@@ -100,7 +100,9 @@ Header =
       fullBoardList.hidden = false
 
   generateBoardList: (text) ->
-    list = $ '#custom-board-list', Header.nav
+    unless list = $ '#custom-board-list', Header.nav
+      # init'd with the custom board list disabled.
+      return
     $.rmAll list
     return unless text
     as = $$('#full-board-list a', Header.nav)[0...-2] # ignore the Settings and Home links
@@ -317,7 +319,6 @@ Settings =
         # and out of date extension on this device.
         prev = previous.match(/\d+/g).map Number
         curr = g.VERSION.match(/\d+/g).map Number
-        return unless prev[0] <= curr[0] and prev[1] <= curr[1] and prev[2] <= curr[2]
 
         changelog = '<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md'
         el = $.el 'span',
@@ -1915,7 +1916,7 @@ Keybinds =
       when Conf['Open settings']
         Settings.open()
       when Conf['Close']
-        if $.id 'fourchanx-settings'
+        if Settings.dialog
           Settings.close()
         else if (notifications = $$ '.notification').length
           for notification in notifications

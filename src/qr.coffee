@@ -83,8 +83,6 @@ QR =
       QR.posts[0].rm()
     QR.cooldown.auto = false
     QR.status()
-    if !Conf['Remember Spoiler'] and QR.nodes.spoiler.checked
-      QR.nodes.spoiler.click()
   focusin: ->
     $.addClass QR.nodes.el, 'has-focus'
   focusout: ->
@@ -569,7 +567,7 @@ QR =
       if @file
         QR.nodes.filename.textContent = @filename
         QR.nodes.filename.title       = @filename
-        QR.nodes.spoiler.checked      = @spoiler if QR.spoiler
+        QR.nodes.spoiler.checked      = @spoiler
         $.addClass QR.nodes.fileSubmit, 'has-file'
       else
         $.rmClass QR.nodes.fileSubmit, 'has-file'

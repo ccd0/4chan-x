@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      3.1.3
+// @version      3.1.4
 // @namespace    4chan-X
 // @description  Cross-browser extension for productive lurking on 4chan.
 // @copyright    2009-2011 James Campos <james.r.campos@gmail.com>
