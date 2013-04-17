@@ -93,7 +93,7 @@ Config =
     Filtering:
       'Announcement Hiding': [
         false
-        'Allow toggling of announcement'
+        'Allow toggling of announcement. New announcements will unhide automatically.'
       ]
       'Anonymize': [
         false

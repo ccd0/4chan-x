@@ -140,7 +140,7 @@
         'Link Title': [true, 'Replace the link of a supported site with its actual title. Currently Supported: YouTube, Vimeo, SoundCloud']
       },
       Filtering: {
-        'Announcement Hiding': [false, 'Allow toggling of announcement'],
+        'Announcement Hiding': [false, 'Allow toggling of announcement. New announcements will unhide automatically.'],
         'Anonymize': [false, 'Make everybody anonymous'],
         'Filter': [true, 'Self-moderation placebo'],
         'Recursive Filtering': [true, 'Filter replies of filtered posts, recursively'],
