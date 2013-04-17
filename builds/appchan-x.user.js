@@ -6423,7 +6423,6 @@
       if (!Conf['Announcement Hiding']) {
         return;
       }
-      $.addClass(doc, 'hide-announcement');
       return $.on(d, '4chanXInitFinished', this.setup);
     },
     setup: function() {
@@ -6431,48 +6430,43 @@
 
       $.off(d, '4chanXInitFinished', PSAHiding.setup);
       if (!(psa = $.id('globalMessage'))) {
-        $.rmClass(doc, 'hide-announcement');
         return;
       }
       PSAHiding.btn = btn = $.el('a', {
         title: 'Toggle announcement.',
-        href: 'javascript:;'
+        href: 'javascript:;',
+        textContent: '[ - ]'
       });
       $.on(btn, 'click', PSAHiding.toggle);
+      $.prepend(psa, btn);
       text = PSAHiding.trim(psa);
-      $.get('hiddenPSAs', [], function(item) {
-        PSAHiding.sync(item['hiddenPSAs']);
-        $.before(psa, btn);
-        return $.rmClass(doc, 'hide-announcement');
+      return $.get('hiddenPSAs', [], function(item) {
+        return PSAHiding.sync(item['hiddenPSAs']);
       });
-      return $.sync('hiddenPSAs', PSAHiding.sync);
     },
     toggle: function(e) {
-      var hide, text;
+      var text;
 
-      hide = $.hasClass(this, 'hide-announcement');
       text = PSAHiding.trim($.id('globalMessage'));
       return $.get('hiddenPSAs', [], function(item) {
-        var hiddenPSAs, i;
+        var hiddenPSAs;
 
         hiddenPSAs = item.hiddenPSAs;
-        if (hide) {
-          hiddenPSAs.push(text);
-        } else {
-          i = hiddenPSAs.indexOf(text);
-          hiddenPSAs.splice(i, 1);
-        }
+        hiddenPSAs.push(text);
         hiddenPSAs = hiddenPSAs.slice(-5);
         PSAHiding.sync(hiddenPSAs);
         return $.set('hiddenPSAs', hiddenPSAs);
       });
     },
     sync: function(hiddenPSAs) {
-      var btn, psa, _ref;
+      var btn, psa;
 
       btn = PSAHiding.btn;
       psa = $.id('globalMessage');
-      return _ref = hiddenPSAs.contains(PSAHiding.trim(psa)) ? [true, '<span>[&nbsp;+&nbsp;]</span>', 'show-announcement'] : [false, '<span>[&nbsp;-&nbsp;]</span>', 'hide-announcement'], psa.hidden = _ref[0], btn.innerHTML = _ref[1], btn.className = _ref[2], _ref;
+      if (hiddenPSAs.contains(PSAHiding.trim(psa))) {
+        $.rm(psa);
+        return Style.iconPositions();
+      }
     },
     trim: function(psa) {
       return psa.textContent.replace(/\W+/g, '').toLowerCase();
