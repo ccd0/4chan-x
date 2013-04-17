@@ -819,7 +819,6 @@ QR =
       $.add nodes.thread, $.el 'option',
         value: thread
         textContent: "Thread No.#{thread}"
-    $.after nodes.autohide, nodes.thread
 
     <% if (type === 'userscript') { %>
     # XXX Firefox lacks focusin/focusout support.
