@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name                4chan x
 // @namespace           aeosynth
-// @version             1.0.8
+// @version             1.0.9
 // @description         Cross-browser userscript for maximum lurking on 4chan.
 // @copyright           2013-2013 Zixaphir <zixaphirmoxphar@gmail.com>
 // @copyright           2013-2013 Jordan Bates <saudrapsmann@gmail.com>
@@ -20,7 +20,7 @@
 // ==/UserScript==
 
 /*
- * 4chan x - Version 1.0.8 - 2013-04-17
+ * 4chan x - Version 1.0.9 - 2013-04-17
  *
  * Licensed under the MIT license.
  * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -7823,7 +7823,7 @@
       return $.globalEval(("" + code).replace('_id_', bq.id));
     },
     namespace: '4chan_x.',
-    version: '1.0.8',
+    version: '1.0.9',
     callbacks: []
   };
 
