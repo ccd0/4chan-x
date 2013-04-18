@@ -17,7 +17,7 @@ Open your console with:
 
 Respect these guidelines:
 - Describe the issue clearly, put some effort into it. A one-liner isn't a good enough description.
-- If you to get your suggestion implemented sooner, make it convincing.
+- If you want to get your suggestion implemented sooner, make it convincing.
 - If you want to criticize, make it convincing and constructive.
 - Be mature. Act like an idiot and you will be blocked without warning.
 
