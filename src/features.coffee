@@ -2094,6 +2094,8 @@ Redirect =
         "//nsfw.foolz.us/#{boardID}/full_image/#{filename}"
       when 'po'
         "//archive.thedarkcave.org/#{boardID}/full_image/#{filename}"
+      when 'hr', 'tv'
+        "http://archive.4plebs.org/#{boardID}/full_image/#{filename}"
       when 'ck', 'fa', 'lit', 's4s'
         "//fuuka.warosu.org/#{boardID}/full_image/#{filename}"
       when 'cgl', 'g', 'mu', 'w'
@@ -2112,6 +2114,8 @@ Redirect =
         "https://nsfw.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'c', 'int', 'out', 'po'
         "//archive.thedarkcave.org/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+      when 'hr', 'x'
+        "http://archive.4plebs.org/_/api/chan/post/?board=#{boardID}&num=#{postID}"
     # for fuuka-based archives:
     # https://github.com/eksopl/fuuka/issues/27
   to: (data) ->
@@ -2123,6 +2127,8 @@ Redirect =
         Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
       when 'int', 'out', 'po'
         Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
+      when 'hr'
+        Redirect.path 'http://archive.4plebs.org', 'foolfuuka', data
       when 'ck', 'fa', 'lit', 's4s'
         Redirect.path '//fuuka.warosu.org', 'fuuka', data
       when 'diy', 'g', 'sci'
