@@ -3759,8 +3759,9 @@ Unread =
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
+    $.on window, 'load',               Unread.scroll  if Conf['Scroll to Last Read Post']
 
-    return unless Conf['Scroll to Last Read Post']
+  scroll: ->
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of @posts
     if Unread.posts.length
