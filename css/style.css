@@ -93,10 +93,11 @@ a[href="javascript:;"] {
 }
 
 /* Header */
-.fourchan-x body {
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+:root.top-header body {
   margin-top: 2em;
+}
+:root.bottom-header body {
+  margin-bottom: 2em;
 }
 .fourchan-x #boardNavDesktop,
 .fourchan-x #navtopright,
@@ -256,6 +257,10 @@ a[href="javascript:;"] {
 }
 
 /* Settings */
+:root.fourchan-x body {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
 #overlay {
   background-color: rgba(0, 0, 0, .5);
   display: -webkit-flex;

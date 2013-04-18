@@ -146,6 +146,12 @@ Header =
 
   setBarPosition: (bottom) ->
     $.event 'CloseMenu'
+    if bottom
+      $.addClass doc, 'bottom-header'
+      $.rmClass  doc, 'top-header'
+    else
+      $.addClass doc, 'top-header'
+      $.rmClass  doc, 'bottom-header'
     Header.positionToggler.firstElementChild.checked = bottom
     Header.bar.parentNode.className = if bottom
       'bottom'
