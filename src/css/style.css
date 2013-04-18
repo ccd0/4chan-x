@@ -662,6 +662,9 @@ input.field.tripped:not(:hover):not(:focus) {
   overflow: hidden;
   padding: 2px 1px 0;
 }
+#qr-filename-container:hover {
+  cursor: text;
+}
 #qr-filerm {
   position: relative;
   right: 14px;
