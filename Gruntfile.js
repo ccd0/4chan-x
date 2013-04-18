@@ -6,6 +6,11 @@ module.exports = function(grunt) {
       data: pkg
     }
   };
+  var shellOptions = {
+    stdout: true,
+    stderr: true,
+    failOnError: true
+  };
 
   // Project configuration.
   grunt.initConfig({
@@ -75,22 +80,19 @@ module.exports = function(grunt) {
     concurrent: {
       build: ['build-crx', 'build-userjs', 'build-userscript']
     },
-    exec: {
+    shell: {
       commit: {
-        command: function() {
-          var release = pkg.meta.name + ' v' + pkg.version;
-          return [
-            'git checkout ' + pkg.meta.mainBranch,
-            'git commit -am "Release ' + release + '."',
-            'git tag -a ' + pkg.version + ' -m "' + release + '."',
-            'git tag -af stable-v3 -m "' + release + '."'
-          ].join(' && ');
-        },
-        stdout: true
+        options: shellOptions,
+        command: [
+          'git checkout <%= pkg.meta.mainBranch %>',
+          'git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."',
+          'git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."',
+          'git tag -af stable-v3 -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
+        ].join(' && ')
       },
       push: {
-        command: 'git push origin --tags -f && git push origin --all',
-        stdout: true
+        options: shellOptions,
+        command: 'git push origin --tags -f && git push origin --all'
       }
     },
     watch: {
@@ -139,7 +141,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-exec');
+  grunt.loadNpmTasks('grunt-shell');
 
   grunt.registerTask('default', ['build']);
 
@@ -171,7 +173,7 @@ module.exports = function(grunt) {
     'clean:tmpuserscript'
   ]);
 
-  grunt.registerTask('release', ['exec:commit', 'exec:push', 'build-crx', 'compress:crx']);
+  grunt.registerTask('release', ['shell:commit', 'shell:push', 'build-crx', 'compress:crx']);
   grunt.registerTask('patch',   ['bump',       'reloadPkg', 'updcl:3', 'release']);
   grunt.registerTask('minor',   ['bump:minor', 'reloadPkg', 'updcl:2', 'release']);
   grunt.registerTask('major',   ['bump:major', 'reloadPkg', 'updcl:1', 'release']);
