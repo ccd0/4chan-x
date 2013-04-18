@@ -4981,7 +4981,8 @@
       if (quote) {
         QR.quote.call($('input', $('.post.highlight', thread) || thread));
       }
-      return QR.nodes.com.focus();
+      QR.nodes.com.focus();
+      return $.rmClass($('.qr-shortcut'), 'disabled');
     },
     tags: function(tag, ta) {
       var range, selEnd, selStart, value;
@@ -6521,6 +6522,7 @@
       QR.cleanNotifications();
       d.activeElement.blur();
       $.rmClass(QR.nodes.el, 'dump');
+      $.toggleClass($('.qr-shortcut'), 'disabled');
       _ref = QR.posts;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         i = _ref[_i];

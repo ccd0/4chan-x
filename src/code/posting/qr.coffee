@@ -79,6 +79,7 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
+    $.toggleClass $('.qr-shortcut'), 'disabled'
     for i in QR.posts
       QR.posts[0].rm()
     QR.cooldown.auto = false
