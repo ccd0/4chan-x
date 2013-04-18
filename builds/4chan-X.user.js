@@ -4798,7 +4798,7 @@
     hashScroll: function() {
       var post;
 
-      if (!(post = $.id(this.location.hash.slice(1)))) {
+      if (!(post = this.location.hash.slice(1))) {
         return;
       }
       if ((Get.postFromRoot(post)).isHidden) {
