@@ -727,7 +727,10 @@ QR =
   dialog: ->
     dialog = UI.dialog 'qr', 'top:0;right:0;', """
     <div class=move>
-      <input type=checkbox id=autohide title=Auto-hide>
+      <label>
+        <input type=checkbox id=autohide title=Auto-hide>
+        Quick Reply
+      </label>
       <a href=javascript:; class=close title=Close>×</a>
       <select data-name=thread title='Create a new thread / Reply'>
         <option value=new>New thread</option>
