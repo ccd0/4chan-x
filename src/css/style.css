@@ -614,6 +614,9 @@ input.field.tripped:not(:hover):not(:focus) {
   margin: 0px;
   text-align: center;
   background-image: #fff;
+  font-size: 0px;
+  min-height: 59px;
+  min-width: 302px;
 }
 .captcha-input {
   width: 100%;
