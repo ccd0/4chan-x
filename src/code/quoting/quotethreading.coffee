@@ -33,10 +33,7 @@ QuoteThreading =
 
     for ID, post of posts
       if post.cb
-        try 
-          post.cb.call post
-        catch err
-          console.log err
+        post.cb.call post
     return
 
     QuoteThreading.hasRun = true
@@ -68,11 +65,12 @@ QuoteThreading =
         if qid of posts
           uniq[qid] = true
     else
+      len = "#{g.BOARD}".length + 1
       for quote in quotes
         qid = quote
-        continue unless qid[2..] < ID
+        continue unless qid[len..] < ID
         if qid of posts
-          uniq[qid[2..]] = true
+          uniq[qid[len..]] = true
 
     keys = Object.keys uniq
     return unless keys.length is 1

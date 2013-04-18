@@ -8274,7 +8274,7 @@
       });
     },
     setup: function() {
-      var ID, err, post, posts;
+      var ID, post, posts;
 
       $.off(d, '4chanXInitFinished', QuoteThreading.setup);
       posts = g.posts;
@@ -8283,19 +8283,14 @@
       for (ID in posts) {
         post = posts[ID];
         if (post.cb) {
-          try {
-            post.cb.call(post);
-          } catch (_error) {
-            err = _error;
-            console.log(err);
-          }
+          post.cb.call(post);
         }
       }
       return;
       return QuoteThreading.hasRun = true;
     },
     node: function() {
-      var ID, keys, post, posts, qid, quote, quotes, uniq, _i, _j, _len, _len1;
+      var ID, keys, len, post, posts, qid, quote, quotes, uniq, _i, _j, _len, _len1;
 
       if (this.isClone || !QuoteThreading.enabled || this.thread.OP === this) {
         return;
@@ -8325,14 +8320,15 @@
           }
         }
       } else {
+        len = ("" + g.BOARD).length + 1;
         for (_j = 0, _len1 = quotes.length; _j < _len1; _j++) {
           quote = quotes[_j];
           qid = quote;
-          if (!(qid.slice(2) < ID)) {
+          if (!(qid.slice(len) < ID)) {
             continue;
           }
           if (qid in posts) {
-            uniq[qid.slice(2)] = true;
+            uniq[qid.slice(len)] = true;
           }
         }
       }
