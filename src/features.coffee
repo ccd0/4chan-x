@@ -790,6 +790,7 @@ PSAHiding =
 
     PSAHiding.btn = btn = $.el 'a',
       title: 'Toggle announcement.'
+      innerHTML: '<span></span>'
       href: 'javascript:;'
     $.on btn, 'click', PSAHiding.toggle
 
@@ -816,10 +817,10 @@ PSAHiding =
   sync: (hiddenPSAs) ->
     {btn} = PSAHiding
     psa   = $.id 'globalMessage'
-    [psa.hidden, btn.innerHTML, btn.className] = if PSAHiding.trim(psa) in hiddenPSAs
-      [true,  '<span>[&nbsp;+&nbsp;]</span>', 'show-announcement']
+    [psa.hidden, btn.firstChild.textContent, btn.className] = if PSAHiding.trim(psa) in hiddenPSAs
+      [true,  '[\u00A0+\u00A0]', 'show-announcement']
     else
-      [false, '<span>[&nbsp;-&nbsp;]</span>', 'hide-announcement']
+      [false, '[\u00A0-\u00A0]', 'hide-announcement']
   trim: (psa) ->
     psa.textContent.replace(/\W+/g, '').toLowerCase()
 
