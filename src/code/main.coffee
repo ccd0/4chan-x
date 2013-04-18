@@ -107,6 +107,7 @@ Main =
       'Thread Excerpt':           ThreadExcerpt
       'Favicon':                  Favicon
       'Unread':                   Unread
+      'Quote Threading':          QuoteThreading
       'Thread Stats':             ThreadStats
       'Thread Updater':           ThreadUpdater
       'Thread Watcher':           ThreadWatcher

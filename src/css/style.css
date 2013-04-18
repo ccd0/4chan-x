@@ -481,6 +481,12 @@ a.hide-announcement {
   outline: 2px solid rgba(216, 94, 49, .7);
 }
 
+/* Quote Threading */
+.threadContainer {
+  margin-left: 20px;
+  border-left: 1px solid black;
+}
+
 /* File */
 .fileText:hover .fntrunc,
 .fileText:not(:hover) .fnfull,

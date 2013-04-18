@@ -11,6 +11,7 @@ $$ = (selector, root=d.body) ->
 
 $.extend = (object, properties) ->
   for key, val of properties
+    continue unless properties.hasOwnProperty key
     object[key] = val
   return
 
@@ -35,7 +36,7 @@ $.extend Array::,
     args = arguments
     for arg in args
       @push.apply @, arg
-    return @
+    return
 
   remove: (object) ->
     if (index = @indexOf object) > -1
@@ -116,8 +117,9 @@ $.extend $,
       cb()
     else
       setTimeout $.asap, 25, test, cb
-  addStyle: (css) ->
+  addStyle: (css, id) ->
     style = $.el 'style',
+      id: id
       textContent: css
     $.asap (-> d.head), ->
       $.add d.head, style
@@ -247,6 +249,16 @@ $.extend $,
         # Round to an integer otherwise.
         Math.round size
     "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
+  minmax: (value, min, max) ->
+    return (
+      if value < min
+        min
+      else
+        if value > max
+          max
+        else
+          value
+    )
   syncing: {}
   sync: do ->
 <% if (type === 'crx') { %>

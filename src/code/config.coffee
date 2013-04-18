@@ -277,6 +277,10 @@ Config =
         true
         'Highlight the previewed post.'
       ]
+      'Quote Threading': [
+        true
+        ''
+      ]
       'Resurrect Quotes': [
         true
         'Link dead quotes to the archives.'
