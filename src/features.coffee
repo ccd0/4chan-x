@@ -299,7 +299,7 @@ Settings =
           <div class=credits>
             <a href='<%= meta.page %>' target=_blank><%= meta.name %></a> |
             <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md' target=_blank>#{g.VERSION}</a> |
-            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |
+            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |
             <a href=javascript:; class=close title=Close>×</a>
           </div>
         </nav>
@@ -804,8 +804,7 @@ PSAHiding =
   toggle: (e) ->
     hide = $.hasClass @, 'hide-announcement'
     text = PSAHiding.trim $.id 'globalMessage'
-    $.get 'hiddenPSAs', [], (item) ->
-      {hiddenPSAs} = item
+    $.get 'hiddenPSAs', [], ({hiddenPSAs}) ->
       if hide
         hiddenPSAs.push text
       else

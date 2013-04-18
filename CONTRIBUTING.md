@@ -1,5 +1,6 @@
-## Reporting bugs
+## Reporting bugs and suggestions
 
+Reporting bugs:
 1. Make sure both your **browser** and **4chan X** are up to date.
 2. Disable your other extensions & scripts to identify conflicts.
 3. If your issue persists, open a [new issue](https://github.com/MayhemYDG/4chan-x/issues) with the following information:
@@ -12,6 +13,12 @@ Open your console with:
 - `Ctrl + Shift + J` on Chrome.
 - `Ctrl + Shift + K` on Firefox.
 - `Ctrl + Shift + O` on Opera.
+
+Respect these guidelines:
+- Describe the issue clearly, put some effort into it. A one-liner isn't a good enough description.
+- If you to get your suggestion implemented sooner, make it convincing.
+- If you want to criticize, make it convincing and constructive.
+- Be mature. Act like an idiot and you will be blocked without warning.
 
 ## Development & Contribution
 
