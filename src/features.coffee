@@ -3865,10 +3865,7 @@ Unread =
     count = Unread.posts.length
 
     if Conf['Unread Count']
-      d.title = if g.DEAD
-        "(#{Unread.posts.length}) /#{g.BOARD}/ - 404"
-      else
-        "(#{Unread.posts.length}) #{Unread.title}"
+      d.title = "#{if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''}#{if g.DEAD then "/#{g.BOARD}/ - 404" else "#{Unread.title}"}"
       <% if (type === 'crx') { %>
       # XXX Chrome bug where it doesn't always update the tab title.
       # crbug.com/124381

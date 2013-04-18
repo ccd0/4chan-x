@@ -1,3 +1,5 @@
+- Added the option `Hide Unread Count at (0)`, disabled by default.
+
 ### 3.1.4 - *2013-04-17*
 
 - Fix QR remembering the file spoiler state when it shouldn't, for real this time.
