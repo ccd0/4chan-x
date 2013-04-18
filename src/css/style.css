@@ -548,7 +548,8 @@ a.hide-announcement {
 :root.hide-original-post-form .postingMode,
 :root.hide-original-post-form #togglePostForm,
 #qr.autohide:not(.has-focus):not(:hover) > form,
-.postingMode ~ #qr select {
+.postingMode ~ #qr select,
+#file-n-submit:not(.has-file) #qr-filerm {
   display: none;
 }
 #qr select, #dump-button, .remove, .captcha-img {
@@ -662,9 +663,10 @@ input.field.tripped:not(:hover):not(:focus) {
   padding: 2px 1px 0;
 }
 #qr-filerm {
-  position: absolute;
-  right: 3px;
-  top: 2px;
+  position: relative;
+  right: 14px;
+  bottom: 6px;
+  margin-right: -8px;
   z-index: 2;
 }
 #file-n-submit {

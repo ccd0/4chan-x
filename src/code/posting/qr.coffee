@@ -755,8 +755,8 @@ QR =
         <span id=qr-filename-container class=field tabindex=60>
           <span id=qr-no-file>No selected file</span>
           <span id=qr-filename></span>
-          <a id=qr-filerm href=javascript:; title='Remove file' tabindex=80>×</a>
         </span>
+        <a id=qr-filerm href=javascript:; title='Remove file' tabindex=80>×</a>
         <input type=submit tabindex=70>
       </div>
       <input type=file multiple>
