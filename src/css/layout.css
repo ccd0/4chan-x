@@ -898,6 +898,14 @@ else ""
   text-decoration: underline;
   text-decoration: line-through !important;
 }
+/* Quote Threading */
+.threadContainer {
+  margin-left: 2em;
+  border-left: 1px solid;
+}
+.threadOP {
+  clear: both;
+}
 /* Backlinks */
 .backlink {
   text-decoration: #{if _conf["Underline Links"] then "underline" else "none"};

@@ -34,7 +34,8 @@ a[style="cursor: pointer; float: right;"] + div[style^="width: 100%;"] > table >
   background: #{theme["Reply Background"]} !important;
 }
 #fs_data,
-#fs_data * {
+#fs_data *,
+.threadContainer {
   border-color: #{theme["Reply Border"]} !important;
 }
 html {
