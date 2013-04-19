@@ -20,6 +20,8 @@
 .field::-moz-placeholder,
 .field:hover::-moz-placeholder {
   color: #AAA !important;
+  font-size: 13px !important;
+  opacity: 1.0 !important;
 }
 .captch-img:hover,
 .field:hover {
@@ -49,8 +51,6 @@ a[href="javascript:;"] {
 /* 4chan style fixes */
 .opContainer, .op {
   display: block !important;
-}
-.post {
   overflow: visible !important;
 }
 [hidden] {
@@ -63,9 +63,11 @@ a[href="javascript:;"] {
 #qp, #ihover,
 #updater, #thread-stats,
 #navlinks, .fixed #boardNavDesktop,
-#watcher,
 #qr {
   position: fixed;
+}
+#watcher {
+  position: absolute;
 }
 #fourchanx-settings {
   z-index: 999;
@@ -192,6 +194,9 @@ a[href="javascript:;"] {
 .expand-all-shortcut {
   opacity: .45;
 }
+#navtopright a {
+  text-decoration: none;
+}
 
 /* Notifications */
 #notifications {
@@ -276,6 +281,7 @@ a[href="javascript:;"] {
 }
 #fourchanx-settings > nav {
   padding: 2px 2px 0;
+  height: 15px;
 }
 #fourchanx-settings > nav a {
   text-decoration: underline;
@@ -287,10 +293,11 @@ a[href="javascript:;"] {
 .section-container {
   overflow: auto;
   position: absolute;
-  top: 1.7em;
+  top: 2.1em;
   right: 5px;
   bottom: 5px;
   left: 5px;
+  padding-top: 10px;
 }
 .sections-list {
   padding: 0 3px;
@@ -301,14 +308,6 @@ a[href="javascript:;"] {
 }
 .tab-selected {
   font-weight: 700;
-}
-.section-container {
-  overflow: auto;
-  position: absolute;
-  top: 1.7em;
-  right: 5px;
-  bottom: 5px;
-  left: 5px;
 }
 .section-sauce ul,
 .section-rice ul {
@@ -548,7 +547,9 @@ a.hide-announcement {
 :root.hide-original-post-form #postForm,
 :root.hide-original-post-form .postingMode,
 :root.hide-original-post-form #togglePostForm,
-#qr.autohide:not(.has-focus):not(:hover) > form {
+#qr.autohide:not(.has-focus):not(:hover) > form,
+.postingMode ~ #qr select,
+#file-n-submit:not(.has-file) #qr-filerm {
   display: none;
 }
 #qr select, #dump-button, .remove, .captcha-img {
@@ -589,10 +590,13 @@ a.hide-announcement {
   border: 1px solid #CCC; 
   width: 10%;
   margin: 0;
+  font: 13px sans-serif;
+  padding: 1px 0px 2px;
 }
-.persona input.field {
-  width: 29.6%;
-  margin: 0 0 0 0.4%;
+.persona .field:not(#dump) {
+  width: 95px;
+  min-width: 30%;
+  max-width: 30%;
 }
 #qr textarea.field {
   height: 14.8em;
@@ -608,30 +612,29 @@ input.field.tripped:not(:hover):not(:focus) {
   resize: both;
 }
 .captcha-img {
-  margin: 1px 0 0;
+  margin: 0px;
   text-align: center;
   background-image: #fff;
+  font-size: 0px;
+  min-height: 59px;
+  min-width: 302px;
 }
 .captcha-input {
   width: 100%;
   margin: 1px 0 0;
 }
 .field,
-.selectrice,
-button,
-input:not([type=radio]) {
+.selectrice {
   -moz-box-sizing: border-box;
-  font-size: 12px;
-  height: 1.6em;
-  margin: 1px 0 0;
-  vertical-align: bottom;
-  padding: 0 1px;
+  margin: 0px;
+  padding: 2px 4px 3px;
 }
 #qr textarea {
   min-width: 100%;
 }
 #qr [type='submit'] {
   width: 25%;
+  vertical-align: top;
 }
 /* Fake File Input */
 #qr-filename,
@@ -641,6 +644,11 @@ input:not([type=radio]) {
 #qr-no-file,
 .has-file #qr-filename {
   display: block;
+  padding: 0px 4px;
+  margin-bottom: 2px;
+}
+#qr-no-file {
+  color: #AAA;
 }
 #qr-filename-container {
   -moz-box-sizing: border-box;
@@ -650,14 +658,22 @@ input:not([type=radio]) {
   min-width: 74.6%;
   max-width: 74.6%;
   margin-right: 0.4%;
+  margin-top: 1px;
   overflow: hidden;
   padding: 2px 1px 0;
 }
+#qr-filename-container:hover {
+  cursor: text;
+}
 #qr-filerm {
-  position: absolute;
-  right: 3px;
-  top: 2px;
+  position: relative;
+  right: 14px;
+  bottom: 6px;
+  margin-right: -8px;
   z-index: 2;
+}
+#file-n-submit {
+  height: 23px;
 }
 #qr input[type=file] {
   display: none;
