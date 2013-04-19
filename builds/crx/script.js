@@ -6037,7 +6037,9 @@
             continue;
           }
           if (post.cb) {
-            post.cb.call(post);
+            if (!post.cb.call(post)) {
+              $.add(ThreadUpdater.root, post.nodes.root);
+            }
           } else {
             $.add(ThreadUpdater.root, post.nodes.root);
           }
@@ -8154,13 +8156,8 @@
       qpost = posts[this.threaded];
       delete this.threaded;
       delete this.cb;
-      if (this.thread.OP === qpost) {
-        return;
-      }
-      if (QuoteThreading.hasRun) {
-        if (!Unread.posts.contains(qpost)) {
-          return;
-        }
+      if (this.thread.OP === qpost || (QuoteThreading.hasRun && !Unread.posts.contains(qpost))) {
+        return false;
       }
       qroot = qpost.nodes.root;
       threadContainer = qroot.nextSibling;
@@ -8170,7 +8167,8 @@
         });
         $.after(qroot, threadContainer);
       }
-      return $.add(threadContainer, this.nodes.root);
+      $.add(threadContainer, this.nodes.root);
+      return true;
     },
     toggle: function() {
       var container, containers, node, nodes, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _results;
@@ -8215,6 +8213,12 @@
         }
         return Unread.update(true);
       }
+    },
+    kb: function() {
+      var control;
+
+      control = $.id('threadingControl');
+      return control.click();
     }
   };
 

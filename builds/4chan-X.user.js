@@ -20,7 +20,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 
-/* 4chan X - Version 3.1.4 - 2013-04-18
+/* 4chan X - Version 3.1.4 - 2013-04-19
  * https://4chan-x.just-believe.in/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -6116,7 +6116,9 @@
             continue;
           }
           if (post.cb) {
-            post.cb.call(post);
+            if (!post.cb.call(post)) {
+              $.add(ThreadUpdater.root, post.nodes.root);
+            }
           } else {
             $.add(ThreadUpdater.root, post.nodes.root);
           }
@@ -8252,13 +8254,8 @@
       qpost = posts[this.threaded];
       delete this.threaded;
       delete this.cb;
-      if (this.thread.OP === qpost) {
-        return;
-      }
-      if (QuoteThreading.hasRun) {
-        if (!Unread.posts.contains(qpost)) {
-          return;
-        }
+      if (this.thread.OP === qpost || (QuoteThreading.hasRun && !Unread.posts.contains(qpost))) {
+        return false;
       }
       qroot = qpost.nodes.root;
       threadContainer = qroot.nextSibling;
@@ -8268,7 +8265,8 @@
         });
         $.after(qroot, threadContainer);
       }
-      return $.add(threadContainer, this.nodes.root);
+      $.add(threadContainer, this.nodes.root);
+      return true;
     },
     toggle: function() {
       var container, containers, node, nodes, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _results;
@@ -8313,6 +8311,12 @@
         }
         return Unread.update(true);
       }
+    },
+    kb: function() {
+      var control;
+
+      control = $.id('threadingControl');
+      return control.click();
     }
   };
 

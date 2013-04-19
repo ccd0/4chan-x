@@ -62,10 +62,7 @@ QuoteThreading =
     delete @threaded
     delete @cb
 
-    return if @thread.OP is qpost
-    
-    if QuoteThreading.hasRun
-      return unless Unread.posts.contains qpost
+    return false if @thread.OP is qpost or (QuoteThreading.hasRun and !Unread.posts.contains qpost)
 
     qroot = qpost.nodes.root
     threadContainer = qroot.nextSibling
@@ -75,6 +72,7 @@ QuoteThreading =
       $.after qroot, threadContainer
 
     $.add threadContainer, @nodes.root
+    return true
 
   toggle: ->
     thread = $ '.thread'
@@ -94,9 +92,6 @@ QuoteThreading =
       $.rm container for container in containers
       Unread.update true
 
-# Keybind comes later.
-#  public:
-#    toggle: ->
-#      control = $.id 'threadingControl'
-#      control.checked = not control.checked
-#      QuoteThreading.toggle.call control
+  kb: ->
+      control = $.id 'threadingControl'
+      control.click()

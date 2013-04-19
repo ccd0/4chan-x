@@ -274,7 +274,8 @@ ThreadUpdater =
       for key, post of posts
         continue unless posts.hasOwnProperty key
         if post.cb
-          post.cb.call post
+          unless post.cb.call post
+            $.add ThreadUpdater.root, post.nodes.root
         else
           $.add ThreadUpdater.root, post.nodes.root
 
