@@ -5,7 +5,7 @@ Unread =
     @db = new DataBoard 'lastReadPosts', @sync
     @hr = $.el 'hr',
       id: 'unread-line'
-    @posts = new RandomAccessList
+    @posts = []
     @postsQuotingYou = []
 
     Thread::callbacks.push
@@ -19,7 +19,7 @@ Unread =
     for ID, post of @posts
       posts.push post if post.isReply
     Unread.lastReadPost = Unread.db.get
-      boardID:  @board.ID
+      boardID: @board.ID
       threadID: @ID
       defaultValue: 0
     Unread.addPosts posts
@@ -62,14 +62,13 @@ Unread =
           threadID: post.thread.ID
           postID:   post.ID
         continue if QR.db.get data
-      Unread.posts.push ID, post
+      Unread.posts.push post
       Unread.addPostQuotingYou post
     if Conf['Unread Line']
       # Force line on visible threads if there were no unread posts previously.
-      Unread.setLine newPosts.contains Unread.posts.first
-    unless Conf['Quote Threading']
-      Unread.read()
-      Unread.update()
+      Unread.setLine newPosts.contains Unread.posts[0]
+    Unread.read()
+    Unread.update()
 
   addPostQuotingYou: (post) ->
     return unless QR.db
@@ -85,22 +84,14 @@ Unread =
       Unread.addPosts e.detail.newPosts
 
   readSinglePost: (post) ->
-    {ID} = post
-    return unless Unread.posts[ID]
-    Unread.posts.rm ID
-    unless Unread.posts.first
-      Unread.lastReadPost = ID
+    return if (i = Unread.posts.indexOf post) is -1
+    Unread.posts.splice i, 1
+    if i is 0
+      Unread.lastReadPost = post.ID
       Unread.saveLastReadPost()
     if (i = Unread.postsQuotingYou.indexOf post) isnt -1
       Unread.postsQuotingYou.splice i, 1
     Unread.update()
-    
-  readRAL: (ral) ->
-    items = []
-    for post of ral
-      items.push post.ID > Unread.lastReadPost
-    for item in items
-      ral.rm item
 
   readArray: (arr) ->
     for post, i in arr
@@ -109,16 +100,19 @@ Unread =
 
   read: (e) ->
     return if d.hidden or !Unread.posts.length
+    height  = doc.clientHeight
     {posts} = Unread
-    height = doc.clientHeight
-    for key, post of posts
-      continue unless posts.hasOwnProperty key
-      {bottom} = post.nodes.root.getBoundingClientRect()
-      break if bottom > height # post is not completely read
-      Unread.posts.rm post
-    return unless post
+    read    = []
+    i = posts.length
 
-    Unread.lastReadPost = post.ID
+    while post = posts[--i]
+      {bottom, top} = post.nodes.root.getBoundingClientRect()
+      if (bottom < height) and (top > 0)  # post is completely read
+        read.push post
+        posts.remove post
+    return unless read.length
+
+    Unread.lastReadPost = read[read.length - 1].ID
     Unread.saveLastReadPost()
     Unread.readArray Unread.postsQuotingYou
     Unread.update() if e

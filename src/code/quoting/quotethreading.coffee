@@ -28,13 +28,9 @@ QuoteThreading =
     $.off d, '4chanXInitFinished', QuoteThreading.setup
     {posts} = g
 
-    Unread.read()
-    Unread.update()
-
     for ID, post of posts
       if post.cb
         post.cb.call post
-    return
 
     QuoteThreading.hasRun = true
 
@@ -48,46 +44,30 @@ QuoteThreading =
     # Of course, implementing your own data structure can be awkward.
     return if @isClone or not QuoteThreading.enabled or @thread.OP is @
 
-    {quotes, ID} = @
-    if QuoteThreading.hasRun
-      {posts} = Unread
-      return if !(post = posts[ID]) or post.isHidden # Filtered
-        
-    else
-      {posts} = g
-      return if !(post = posts["#{g.BOARD}.#{ID}"]) or post.isHidden # Filtered
+    {quotes, ID, fullID} = @
+    {posts} = g
+    return if !(post = posts[fullID]) or post.isHidden # Filtered
 
     uniq = {}
-    if QuoteThreading.hasRun
-      for quote in quotes
-        qid = quote[2..]
-        continue unless qid < ID
-        if qid of posts
-          uniq[qid] = true
-    else
-      len = "#{g.BOARD}".length + 1
-      for quote in quotes
-        qid = quote
-        continue unless qid[len..] < ID
-        if qid of posts
-          uniq[qid[len..]] = true
+    len = "#{g.BOARD}".length + 1
+    for quote in quotes
+      qid = quote
+      continue unless qid[len..] < ID
+      if qid of posts
+        uniq[qid[len..]] = true
 
     keys = Object.keys uniq
     return unless keys.length is 1
 
-    @threaded = keys[0]
+    @threaded = "#{g.BOARD}.#{keys[0]}"
     @cb       = QuoteThreading.nodeinsert
 
   nodeinsert: ->
-    qid          = @threaded
+    {posts} = g
+    qpost   = posts[@threaded]
 
-    if QuoteThreading.hasRun
-      {posts} = Unread
-      qpost   = posts[qid]
-    else
-      {posts} = g
-      unread  = Unread.posts
-      qpost   = posts["#{g.BOARD}.#{qid}"]
+    delete @threaded
+    delete @cb
 
     return if @thread.OP is qpost
 
@@ -99,17 +79,6 @@ QuoteThreading =
       $.after qroot, threadContainer
 
     $.add threadContainer, @nodes.root
-
-    pEl   = $.x 'preceding::div[contains(@class,"post reply")][1]/parent::div', @nodes.root
-    pid   = pEl.id[2..]
-
-    if QuoteThreading.hasRun
-      ppost = posts[pid]
-    else
-      ppost = posts[pid]
-      return unless (post = unread["#{g.BOARD}.#{@id}"]) and (ppost = unread["#{g.BOARD}.#{pid}"])
-
-    posts.after ppost, @
 
   toggle: ->
     thread = $ '.thread'

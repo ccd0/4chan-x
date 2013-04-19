@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, RandomAccessList, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, ExpandComment, ExpandThread, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -1356,79 +1356,6 @@
     };
 
     return Notification;
-
-  })();
-
-  RandomAccessList = (function() {
-    function RandomAccessList() {
-      this.first = null;
-      this.last = null;
-      this.length = 0;
-    }
-
-    RandomAccessList.prototype.push = function(id, post) {
-      var item, last;
-
-      last = this.last;
-      this[id] = item = post;
-      item.prev = last;
-      item.next = null;
-      this.last = item;
-      if (last) {
-        last.next = item;
-      } else {
-        this.first = item;
-      }
-      return this.length++;
-    };
-
-    RandomAccessList.prototype.shift = function() {
-      return this.rm(this.first.ID);
-    };
-
-    RandomAccessList.prototype.after = function(root, item) {
-      var next;
-
-      if (item.prev === root) {
-        return;
-      }
-      this.rmi(item);
-      next = root.next;
-      root.next = item;
-      item.prev = root;
-      item.next = next;
-      return next.prev = item;
-    };
-
-    RandomAccessList.prototype.rm = function(id) {
-      var item;
-
-      item = this[id];
-      if (!item) {
-        return;
-      }
-      delete this[id];
-      this.length--;
-      return this.rmi(item);
-    };
-
-    RandomAccessList.prototype.rmi = function(item) {
-      var next, prev;
-
-      prev = item.prev, next = item.next;
-      if (prev) {
-        prev.next = next;
-      } else {
-        this.first = next;
-      }
-      if (next) {
-        return next.prev = prev;
-      } else {
-        return this.last = prev;
-      }
-    };
-
-    return RandomAccessList;
 
   })();
 
@@ -6290,7 +6217,7 @@
       this.hr = $.el('hr', {
         id: 'unread-line'
       });
-      this.posts = new RandomAccessList;
+      this.posts = [];
       this.postsQuotingYou = [];
       return Thread.prototype.callbacks.push({
         name: 'Unread',
@@ -6374,16 +6301,14 @@
             continue;
           }
         }
-        Unread.posts.push(ID, post);
+        Unread.posts.push(post);
         Unread.addPostQuotingYou(post);
       }
       if (Conf['Unread Line']) {
-        Unread.setLine(newPosts.contains(Unread.posts.first));
+        Unread.setLine(newPosts.contains(Unread.posts[0]));
       }
-      if (!Conf['Quote Threading']) {
-        Unread.read();
-        return Unread.update();
-      }
+      Unread.read();
+      return Unread.update();
     },
     addPostQuotingYou: function(post) {
       var quotelink, _i, _len, _ref;
@@ -6407,35 +6332,20 @@
       }
     },
     readSinglePost: function(post) {
-      var ID, i;
+      var i;
 
-      ID = post.ID;
-      if (!Unread.posts[ID]) {
+      if ((i = Unread.posts.indexOf(post)) === -1) {
         return;
       }
-      Unread.posts.rm(ID);
-      if (!Unread.posts.first) {
-        Unread.lastReadPost = ID;
+      Unread.posts.splice(i, 1);
+      if (i === 0) {
+        Unread.lastReadPost = post.ID;
         Unread.saveLastReadPost();
       }
       if ((i = Unread.postsQuotingYou.indexOf(post)) !== -1) {
         Unread.postsQuotingYou.splice(i, 1);
       }
       return Unread.update();
-    },
-    readRAL: function(ral) {
-      var item, items, post, _i, _len, _results;
-
-      items = [];
-      for (post in ral) {
-        items.push(post.ID > Unread.lastReadPost);
-      }
-      _results = [];
-      for (_i = 0, _len = items.length; _i < _len; _i++) {
-        item = items[_i];
-        _results.push(ral.rm(item));
-      }
-      return _results;
     },
     readArray: function(arr) {
       var i, post, _i, _len;
@@ -6449,28 +6359,26 @@
       return arr.splice(0, i);
     },
     read: function(e) {
-      var bottom, height, key, post, posts;
+      var bottom, height, i, post, posts, read, top, _ref;
 
       if (d.hidden || !Unread.posts.length) {
         return;
       }
-      posts = Unread.posts;
       height = doc.clientHeight;
-      for (key in posts) {
-        post = posts[key];
-        if (!posts.hasOwnProperty(key)) {
-          continue;
+      posts = Unread.posts;
+      read = [];
+      i = posts.length;
+      while (post = posts[--i]) {
+        _ref = post.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
+        if ((bottom < height) && (top > 0)) {
+          read.push(post);
+          posts.remove(post);
         }
-        bottom = post.nodes.root.getBoundingClientRect().bottom;
-        if (bottom > height) {
-          break;
-        }
-        Unread.posts.rm(post);
       }
-      if (!post) {
+      if (!read.length) {
         return;
       }
-      Unread.lastReadPost = post.ID;
+      Unread.lastReadPost = read[read.length - 1].ID;
       Unread.saveLastReadPost();
       Unread.readArray(Unread.postsQuotingYou);
       if (e) {
@@ -8197,79 +8105,51 @@
 
       $.off(d, '4chanXInitFinished', QuoteThreading.setup);
       posts = g.posts;
-      Unread.read();
-      Unread.update();
       for (ID in posts) {
         post = posts[ID];
         if (post.cb) {
           post.cb.call(post);
         }
       }
-      return;
       return QuoteThreading.hasRun = true;
     },
     node: function() {
-      var ID, keys, len, post, posts, qid, quote, quotes, uniq, _i, _j, _len, _len1;
+      var ID, fullID, keys, len, post, posts, qid, quote, quotes, uniq, _i, _len;
 
       if (this.isClone || !QuoteThreading.enabled || this.thread.OP === this) {
         return;
       }
-      quotes = this.quotes, ID = this.ID;
-      if (QuoteThreading.hasRun) {
-        posts = Unread.posts;
-        if (!(post = posts[ID]) || post.isHidden) {
-          return;
-        }
-      } else {
-        posts = g.posts;
-        if (!(post = posts["" + g.BOARD + "." + ID]) || post.isHidden) {
-          return;
-        }
+      quotes = this.quotes, ID = this.ID, fullID = this.fullID;
+      posts = g.posts;
+      if (!(post = posts[fullID]) || post.isHidden) {
+        return;
       }
       uniq = {};
-      if (QuoteThreading.hasRun) {
-        for (_i = 0, _len = quotes.length; _i < _len; _i++) {
-          quote = quotes[_i];
-          qid = quote.slice(2);
-          if (!(qid < ID)) {
-            continue;
-          }
-          if (qid in posts) {
-            uniq[qid] = true;
-          }
+      len = ("" + g.BOARD).length + 1;
+      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
+        quote = quotes[_i];
+        qid = quote;
+        if (!(qid.slice(len) < ID)) {
+          continue;
         }
-      } else {
-        len = ("" + g.BOARD).length + 1;
-        for (_j = 0, _len1 = quotes.length; _j < _len1; _j++) {
-          quote = quotes[_j];
-          qid = quote;
-          if (!(qid.slice(len) < ID)) {
-            continue;
-          }
-          if (qid in posts) {
-            uniq[qid.slice(len)] = true;
-          }
+        if (qid in posts) {
+          uniq[qid.slice(len)] = true;
         }
       }
       keys = Object.keys(uniq);
       if (keys.length !== 1) {
         return;
       }
-      this.threaded = keys[0];
+      this.threaded = "" + g.BOARD + "." + keys[0];
       return this.cb = QuoteThreading.nodeinsert;
     },
     nodeinsert: function() {
-      var pEl, pid, post, posts, ppost, qid, qpost, qroot, threadContainer, unread;
+      var posts, qpost, qroot, threadContainer;
 
-      qid = this.threaded;
-      if (QuoteThreading.hasRun) {
-        posts = Unread.posts;
-        qpost = posts[qid];
-      } else {
-        posts = g.posts;
-        unread = Unread.posts;
-        qpost = posts["" + g.BOARD + "." + qid];
-      }
+      posts = g.posts;
+      qpost = posts[this.threaded];
+      delete this.threaded;
+      delete this.cb;
       if (this.thread.OP === qpost) {
         return;
       }
@@ -8281,18 +8161,7 @@
         });
         $.after(qroot, threadContainer);
       }
-      $.add(threadContainer, this.nodes.root);
-      pEl = $.x('preceding::div[contains(@class,"post reply")][1]/parent::div', this.nodes.root);
-      pid = pEl.id.slice(2);
-      if (QuoteThreading.hasRun) {
-        ppost = posts[pid];
-      } else {
-        ppost = posts[pid];
-        if (!((post = unread["" + g.BOARD + "." + this.id]) && (ppost = unread["" + g.BOARD + "." + pid]))) {
-          return;
-        }
-      }
-      return posts.after(ppost, this);
+      return $.add(threadContainer, this.nodes.root);
     },
     toggle: function() {
       var container, containers, node, nodes, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _results;

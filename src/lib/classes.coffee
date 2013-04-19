@@ -4,4 +4,3 @@
 <%= grunt.file.read('src/lib/clone.class') %>
 <%= grunt.file.read('src/lib/databoard.class') %>
 <%= grunt.file.read('src/lib/notification.class') %>
-<%= grunt.file.read('src/lib/randomaccesslist.class') %>
