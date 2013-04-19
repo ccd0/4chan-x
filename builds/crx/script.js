@@ -1,5 +1,5 @@
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, MutationObserver, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -284,6 +284,8 @@
     threads: {},
     posts: {}
   };
+
+  MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.OMutationObserver;
 
   Mascots = {
     'Akiyama_Mio': {
@@ -9537,7 +9539,7 @@
         }), this.ready.bind(this));
       },
       ready: function() {
-        var MutationObserver, imgContainer, input, observer, setLifetime,
+        var imgContainer, input, observer, setLifetime,
           _this = this;
 
         setLifetime = function(e) {
@@ -9563,7 +9565,7 @@
           img: imgContainer.firstChild,
           input: input
         };
-        if (MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.OMutationObserver) {
+        if (MutationObserver) {
           observer = new MutationObserver(this.load.bind(this));
           observer.observe(this.nodes.challenge, {
             childList: true
@@ -10444,14 +10446,21 @@
       return this.cb = QuoteThreading.nodeinsert;
     },
     nodeinsert: function() {
-      var posts, qpost, qroot, threadContainer;
+      var bottom, height, posts, qpost, qroot, threadContainer, top, _ref;
 
       posts = g.posts;
       qpost = posts[this.threaded];
       delete this.threaded;
       delete this.cb;
-      if (this.thread.OP === qpost || (QuoteThreading.hasRun && !Unread.posts.contains(qpost))) {
+      if (this.thread.OP === qpost) {
         return false;
+      }
+      if (QuoteThreading.hasRun) {
+        height = doc.clientHeight;
+        _ref = qpost.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
+        if (!(Unread.posts.contains(qpost) || ((bottom < height) && (top > 0)))) {
+          return false;
+        }
       }
       qroot = qpost.nodes.root;
       threadContainer = qroot.nextSibling;

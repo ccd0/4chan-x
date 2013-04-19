@@ -62,7 +62,14 @@ QuoteThreading =
     delete @threaded
     delete @cb
 
-    return false if @thread.OP is qpost or (QuoteThreading.hasRun and !Unread.posts.contains qpost)
+    return false if @thread.OP is qpost 
+    
+    if QuoteThreading.hasRun
+      height  = doc.clientHeight
+      {bottom, top} = qpost.nodes.root.getBoundingClientRect()
+
+      # Post is unread or is fully visible.
+      return false unless Unread.posts.contains(qpost) or ((bottom < height) and (top > 0))
 
     qroot = qpost.nodes.root
     threadContainer = qroot.nextSibling
