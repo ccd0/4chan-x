@@ -35,13 +35,6 @@ QuoteThreading =
     QuoteThreading.hasRun = true
 
   node: ->
-    # Random access list
-    #
-    # 'Array' implementation is very awkward - mid-object inserts, loop to find
-    # quoted post, loop to find inserted post(!), loop to find distance from
-    # threaded post to thread root
-    #
-    # Of course, implementing your own data structure can be awkward.
     return if @isClone or not QuoteThreading.enabled or @thread.OP is @
 
     {quotes, ID, fullID} = @
