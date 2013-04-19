@@ -178,7 +178,7 @@ Header =
     (if hide then $.addClass else $.rmClass) Header.nav, 'autohide'
 
   hashScroll: ->
-    return unless post = $.id @location.hash[1..]
+    return unless post = @location.hash[1..]
     return if (Get.postFromRoot post).isHidden
     Header.scrollToPost post
 

@@ -79,6 +79,7 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
+    $.toggleClass $('.qr-shortcut'), 'disabled'
     for i in QR.posts
       QR.posts[0].rm()
     QR.cooldown.auto = false
@@ -292,6 +293,8 @@ QR =
 
     QR.selected.save com
     QR.selected.save thread
+
+    $.rmClass $('.qr-shortcut'), 'disabled'
 
   characterCount: ->
     counter = QR.nodes.charCount
@@ -727,7 +730,10 @@ QR =
   dialog: ->
     dialog = UI.dialog 'qr', 'top:0;right:0;', """
     <div class=move>
-      <input type=checkbox id=autohide title=Auto-hide>
+      <label>
+        <input type=checkbox id=autohide title=Auto-hide>
+        Quick Reply
+      </label>
       <a href=javascript:; class=close title=Close>×</a>
       <select data-name=thread title='Create a new thread / Reply'>
         <option value=new>New thread</option>
@@ -752,8 +758,8 @@ QR =
         <span id=qr-filename-container class=field tabindex=60>
           <span id=qr-no-file>No selected file</span>
           <span id=qr-filename></span>
-          <a id=qr-filerm href=javascript:; title='Remove file' tabindex=80>×</a>
         </span>
+        <a id=qr-filerm href=javascript:; title='Remove file' tabindex=80>×</a>
         <input type=submit tabindex=70>
       </div>
       <input type=file multiple>
