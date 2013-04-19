@@ -15,46 +15,45 @@ Header =
         <div id=notifications></div>
       """.replace />\s+</g, '><' # get rid of spaces between elements
 
-    @bar = $ '#header-bar', headerEl
+    @bar    = $ '#header-bar', headerEl
     @toggle = $ '#toggle-header-bar', @bar
 
     @menu = new UI.Menu 'header'
     $.on $('.menu-button', @bar), 'click', @menuToggle
     $.on @toggle, 'mousedown', @toggleBarVisibility
     $.on window, 'load hashchange', Header.hashScroll
+    $.on d, 'CreateNotification', @createNotification
 
     catalogToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}> Use catalog board links"
-    $.on catalogToggler.firstElementChild, 'change', @toggleCatalogLinks
-    $.sync 'Header catalog links', @setCatalogLinks
-    $.event 'AddMenuEntry',
-      type: 'header'
-      el: catalogToggler
-      order: 50
+      innerHTML: '<input type=checkbox name="Header catalog links"> Use catalog board links'
+    headerToggler = $.el 'label',
+      innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
+    barPositionToggler = $.el 'label',
+      innerHTML: '<input type=checkbox name="Bottom header"> Bottom header'
 
-    @positionToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{if Conf['Bottom header'] then 'checked' else ''}> Bottom header"
-    $.on @positionToggler.firstElementChild, 'change', @toggleBarPosition
-    $.event 'AddMenuEntry',
-      type: 'header'
-      el: @positionToggler
-      order: 108
+    @catalogToggler     = catalogToggler.firstElementChild
+    @headerToggler      = headerToggler.firstElementChild
+    @barPositionToggler = barPositionToggler.firstElementChild
 
-    @setBarPosition Conf['Bottom header']
-    $.sync 'Bottom header', @setBarPosition
-
-    @headerToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{if Conf['Header auto-hide'] then 'checked' else ''}> Auto-hide header"
-    $.on @headerToggler.firstElementChild, 'change', @toggleBarVisibility
-    $.event 'AddMenuEntry',
-      type: 'header'
-      el: @headerToggler
-      order: 109
+    $.on @catalogToggler,     'change', @toggleCatalogLinks
+    $.on @headerToggler,      'change', @toggleBarVisibility
+    $.on @barPositionToggler, 'change', @toggleBarPosition
 
     @setBarVisibility Conf['Header auto-hide']
-    $.sync 'Header auto-hide', @setBarVisibility
+    @setBarPosition   Conf['Bottom header']
 
-    $.on d, 'CreateNotification', @createNotification
+    $.sync 'Header auto-hide', @setBarVisibility
+    $.sync 'Bottom header',    @setBarPosition
+
+    $.event 'AddMenuEntry',
+      type: 'header'
+      el: $.el 'span', textContent: 'Header'
+      order: 105
+      subEntries: [
+        {el: catalogToggler}
+        {el: headerToggler}
+        {el: barPositionToggler}
+      ]
 
     $.asap (-> d.body), ->
       return unless Main.isThisPageLegit()
@@ -83,6 +82,7 @@ Header =
       fullBoardList.hidden = false
 
     Header.setCatalogLinks Conf['Header catalog links']
+    $.sync 'Header catalog links', Header.setCatalogLinks
 
   generateBoardList: (text) ->
     unless list = $ '#custom-board-list', Header.bar
@@ -134,38 +134,51 @@ Header =
     full.hidden   =  showBoardList
 
   setCatalogLinks: (useCatalog) ->
+    Header.catalogToggler.checked = useCatalog
     as = $$ '#board-list a[href*="boards.4chan.org"]', Header.bar
-    str = if useCatalog then 'catalog' else ''
+    path = if useCatalog then 'catalog' else ''
     for a in as
       continue if a.dataset.only
-      a.pathname = "/#{a.pathname.split('/')[1]}/#{str}"
+      a.pathname = "/#{a.pathname.split('/')[1]}/#{path}"
     return
   toggleCatalogLinks: ->
+    $.cb.checked.call @
     Header.setCatalogLinks @checked
-    $.set 'Header catalog links', @checked
+
+  setBarVisibility: (hide) ->
+    Header.headerToggler.checked = hide
+    $.event 'CloseMenu'
+    (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
+  toggleBarVisibility: (e) ->
+    return if e.type is 'mousedown' and e.button isnt 0 # not LMB
+    hide = if @nodeName is 'INPUT'
+      @checked
+    else
+      !$.hasClass Header.bar, 'autohide'
+    Conf['Header auto-hide'] = hide
+    $.set 'Header auto-hide', hide
+    Header.setBarVisibility hide
+    message = if hide
+      'The header bar will automatically hide itself.'
+    else
+      'The header bar will remain visible.'
+    new Notification 'info', message, 2
 
   setBarPosition: (bottom) ->
+    Header.barPositionToggler.checked = bottom
     $.event 'CloseMenu'
     if bottom
       $.addClass doc, 'bottom-header'
       $.rmClass  doc, 'top-header'
+      Header.bar.parentNode.className = 'bottom'
     else
       $.addClass doc, 'top-header'
       $.rmClass  doc, 'bottom-header'
-    Header.positionToggler.firstElementChild.checked = bottom
-    Header.bar.parentNode.className = if bottom
-      'bottom'
-    else
-      'top'
+      Header.bar.parentNode.className = 'top'
   toggleBarPosition: ->
-    bottom = @checked
-    Header.setBarPosition bottom
-    Conf['Bottom header'] = bottom
-    $.set 'Bottom header', bottom
+    $.cb.checked.call @
+    Header.setBarPosition @checked
 
-  setBarVisibility: (hide) ->
-    Header.headerToggler.firstElementChild.checked = hide
-    (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
   hashScroll: ->
     return unless post = $.id @location.hash[1..]
     return if (Get.postFromRoot post).isHidden
@@ -176,19 +189,6 @@ Header =
       headRect = Header.toggle.getBoundingClientRect()
       top += - headRect.top - headRect.height
     <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop += top
-  toggleBarVisibility: (e) ->
-    return if e.type is 'mousedown' and e.button isnt 0 # not LMB
-    hide = if @nodeName is 'INPUT'
-      @checked
-    else
-      !$.hasClass Header.bar, 'autohide'
-    Header.setBarVisibility hide
-    message = if hide
-      'The header bar will automatically hide itself.'
-    else
-      'The header bar will remain visible.'
-    new Notification 'info', message, 2
-    $.set 'Header auto-hide', hide
 
   addShortcut: (el) ->
     shortcut = $.el 'span',

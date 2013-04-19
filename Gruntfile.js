@@ -98,8 +98,7 @@ module.exports = function(grunt) {
     watch: {
       all: {
         options: {
-          interrupt: true,
-          nospawn: true
+          interrupt: true
         },
         files: [
           'Gruntfile.js',
