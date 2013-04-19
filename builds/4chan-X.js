@@ -6446,7 +6446,7 @@
       return arr.splice(0, i);
     },
     read: function(e) {
-      var bottom, height, i, post, posts, read, top, _ref;
+      var ID, bottom, height, i, post, posts, read, top, _ref;
 
       if (d.hidden || !Unread.posts.length) {
         return;
@@ -6458,14 +6458,14 @@
       while (post = posts[--i]) {
         _ref = post.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
         if ((bottom < height) && (top > 0)) {
-          read.push(post);
+          ID = post.ID;
           posts.remove(post);
         }
       }
-      if (!read.length) {
+      if (!ID) {
         return;
       }
-      Unread.lastReadPost = read[read.length - 1].ID;
+      Unread.lastReadPost = ID;
       Unread.saveLastReadPost();
       Unread.readArray(Unread.postsQuotingYou);
       if (e) {
@@ -8233,6 +8233,11 @@
       delete this.cb;
       if (this.thread.OP === qpost) {
         return;
+      }
+      if (QuoteThreading.hasRun) {
+        if (!Unread.posts.contains(qpost)) {
+          return;
+        }
       }
       qroot = qpost.nodes.root;
       threadContainer = qroot.nextSibling;

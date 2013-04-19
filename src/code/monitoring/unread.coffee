@@ -108,11 +108,11 @@ Unread =
     while post = posts[--i]
       {bottom, top} = post.nodes.root.getBoundingClientRect()
       if (bottom < height) and (top > 0)  # post is completely read
-        read.push post
+        ID = post.ID
         posts.remove post
-    return unless read.length
+    return unless ID
 
-    Unread.lastReadPost = read[read.length - 1].ID
+    Unread.lastReadPost = ID
     Unread.saveLastReadPost()
     Unread.readArray Unread.postsQuotingYou
     Unread.update() if e

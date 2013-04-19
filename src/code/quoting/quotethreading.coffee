@@ -70,6 +70,9 @@ QuoteThreading =
     delete @cb
 
     return if @thread.OP is qpost
+    
+    if QuoteThreading.hasRun
+      return unless Unread.posts.contains qpost
 
     qroot = qpost.nodes.root
     threadContainer = qroot.nextSibling
