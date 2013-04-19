@@ -301,6 +301,10 @@ Config =
         true
         'Add \'(Cross-thread)\' to cross-threads quotes.'
       ]
+      'Quote Threading': [
+        false
+        'Thread conversations'
+      ]
 
   imageExpansion:
     'Fit width': [

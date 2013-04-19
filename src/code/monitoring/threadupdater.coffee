@@ -219,7 +219,6 @@ ThreadUpdater =
     ThreadUpdater.thread.postLimit = !!OP.bumplimit
     ThreadUpdater.thread.fileLimit = !!OP.imagelimit
 
-    nodes = [] # post container elements
     posts = [] # post objects
     index = [] # existing posts
     files = [] # existing files
@@ -233,7 +232,6 @@ ThreadUpdater =
       # Insert new posts, not older ones.
       count++
       node = Build.postFromObject postObject, ThreadUpdater.thread.board
-      nodes.push node
       posts.push new Post node, ThreadUpdater.thread, ThreadUpdater.thread.board
 
     deletedPosts = []
@@ -259,6 +257,7 @@ ThreadUpdater =
     unless count
       ThreadUpdater.set 'status', null, null
       ThreadUpdater.outdateCount++
+
     else
       ThreadUpdater.set 'status', "+#{count}", 'new'
       ThreadUpdater.outdateCount = 0
@@ -272,7 +271,15 @@ ThreadUpdater =
 
       scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
         ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
-      $.add ThreadUpdater.root, nodes
+      
+      for key, post of posts
+        continue unless posts.hasOwnProperty key
+        if post.cb
+          unless post.cb.call post
+            $.add ThreadUpdater.root, post.nodes.root
+        else
+          $.add ThreadUpdater.root, post.nodes.root
+
       if scroll
         if Conf['Bottom Scroll']
           <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop = d.body.clientHeight

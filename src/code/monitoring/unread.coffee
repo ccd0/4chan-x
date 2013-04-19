@@ -100,15 +100,20 @@ Unread =
 
   read: (e) ->
     return if d.hidden or !Unread.posts.length
-    height = doc.clientHeight
-    for post, i in Unread.posts
-      {bottom} = post.nodes.root.getBoundingClientRect()
-      break if bottom > height # post is not completely read
-    return unless i
+    height  = doc.clientHeight
+    {posts} = Unread
+    read    = []
+    i = posts.length
 
-    Unread.lastReadPost = Unread.posts[i - 1].ID
+    while post = posts[--i]
+      {bottom, top} = post.nodes.root.getBoundingClientRect()
+      if (bottom < height) and (top > 0)  # post is completely read
+        ID = post.ID
+        posts.remove post
+    return unless ID
+
+    Unread.lastReadPost = ID
     Unread.saveLastReadPost()
-    Unread.posts.splice 0, i
     Unread.readArray Unread.postsQuotingYou
     Unread.update() if e
 

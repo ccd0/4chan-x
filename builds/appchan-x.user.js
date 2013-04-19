@@ -19,7 +19,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAElBMVEX///8EZgR8ulSk0oT///8EAgQ1A88mAAAAAXRSTlMAQObYZgAAAIpJREFUeF6t0sENwjAMhWF84N4H6gAYMUBkdQMYwfuvwmstEeD4kl892P0OaaWcpga2/K0SGII1HNBXARgu7veoY3ANd+esgMHZIz85u0EABrbms3pl/bkC1Tn5ihGOfQwqHeZ/FdYdirEMgCG2ZAQWDTL0m9FvjAhcvoGNAK2gZhGYYX9+ZgFm9gaiNmNkMENY4QAAAABJRU5ErkJggg==
 // ==/UserScript==
 
-/* appchan x - Version 2.0.0 - 2013-04-16
+/* appchan x - Version 2.0.0 - 2013-04-19
  * http://zixaphir.github.com/appchan-x/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -42,7 +42,7 @@
  */
 
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
+  var $, $$, Anonymize, ArchiveLink, Banner, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, GlobalMessage, Header, Icons, ImageExpand, ImageHover, ImageReplace, JSColor, Keybinds, Linkify, Main, MascotTools, Mascots, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Rice, Sauce, Settings, Style, ThemeTools, Themes, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, editMascot, editTheme, g, userNavigation,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -134,7 +134,8 @@
         'Resurrect Quotes': [true, 'Link dead quotes to the archives.'],
         'Mark Quotes of You': [true, 'Add \'(You)\' to quotes linking to your posts.'],
         'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
-        'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.']
+        'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.'],
+        'Quote Threading': [false, 'Thread conversations']
       }
     },
     imageExpansion: {
@@ -2495,7 +2496,6 @@
         arg = args[_i];
         this.push.apply(this, arg);
       }
-      return this;
     },
     remove: function(object) {
       var index;
@@ -2562,6 +2562,7 @@
       }
       type = opts.type, cred = opts.cred, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form, sync = opts.sync;
       r = new XMLHttpRequest();
+      r.overrideMimeType('text/html');
       type || (type = form && 'post' || 'get');
       r.open(type, url, !sync);
       for (key in headers) {
@@ -7058,7 +7059,7 @@
     hashScroll: function() {
       var post;
 
-      if (!(post = $.id(this.location.hash.slice(1)))) {
+      if (!(post = this.location.hash.slice(1))) {
         return;
       }
       if ((Get.postFromRoot(post)).isHidden) {
@@ -7323,7 +7324,8 @@
       if (quote) {
         QR.quote.call($('input', $('.post.highlight', thread) || thread));
       }
-      return QR.nodes.com.focus();
+      QR.nodes.com.focus();
+      return $.rmClass($('.qr-shortcut'), 'disabled');
     },
     tags: function(tag, ta) {
       var range, selEnd, selStart, value;
@@ -8321,7 +8323,7 @@
       return $.after(root, [$.tn(' '), icon]);
     },
     parse: function(postObjects) {
-      var ID, OP, count, deletedFiles, deletedPosts, files, index, node, nodes, num, post, postObject, posts, scroll, _i, _len, _ref;
+      var ID, OP, count, deletedFiles, deletedPosts, files, index, key, node, num, post, postObject, posts, scroll, _i, _len, _ref;
 
       OP = postObjects[0];
       Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
@@ -8329,7 +8331,6 @@
       ThreadUpdater.updateThreadStatus('Closed', OP);
       ThreadUpdater.thread.postLimit = !!OP.bumplimit;
       ThreadUpdater.thread.fileLimit = !!OP.imagelimit;
-      nodes = [];
       posts = [];
       index = [];
       files = [];
@@ -8346,7 +8347,6 @@
         }
         count++;
         node = Build.postFromObject(postObject, ThreadUpdater.thread.board);
-        nodes.push(node);
         posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board));
       }
       deletedPosts = [];
@@ -8387,7 +8387,19 @@
         ThreadUpdater.lastPost = posts[count - 1].ID;
         Main.callbackNodes(Post, posts);
         scroll = Conf['Auto Scroll'] && ThreadUpdater.scrollBG() && ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25;
-        $.add(ThreadUpdater.root, nodes);
+        for (key in posts) {
+          post = posts[key];
+          if (!posts.hasOwnProperty(key)) {
+            continue;
+          }
+          if (post.cb) {
+            if (!post.cb.call(post)) {
+              $.add(ThreadUpdater.root, post.nodes.root);
+            }
+          } else {
+            $.add(ThreadUpdater.root, post.nodes.root);
+          }
+        }
         if (scroll) {
           if (Conf['Bottom Scroll']) {
             doc.scrollTop = d.body.clientHeight;
@@ -8707,26 +8719,27 @@
       return arr.splice(0, i);
     },
     read: function(e) {
-      var bottom, height, i, post, _i, _len, _ref;
+      var ID, bottom, height, i, post, posts, read, top, _ref;
 
       if (d.hidden || !Unread.posts.length) {
         return;
       }
       height = doc.clientHeight;
-      _ref = Unread.posts;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        post = _ref[i];
-        bottom = post.nodes.root.getBoundingClientRect().bottom;
-        if (bottom > height) {
-          break;
+      posts = Unread.posts;
+      read = [];
+      i = posts.length;
+      while (post = posts[--i]) {
+        _ref = post.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
+        if ((bottom < height) && (top > 0)) {
+          ID = post.ID;
+          posts.remove(post);
         }
       }
-      if (!i) {
+      if (!ID) {
         return;
       }
-      Unread.lastReadPost = Unread.posts[i - 1].ID;
+      Unread.lastReadPost = ID;
       Unread.saveLastReadPost();
-      Unread.posts.splice(0, i);
       Unread.readArray(Unread.postsQuotingYou);
       if (e) {
         return Unread.update();
@@ -8878,6 +8891,7 @@
       QR.cleanNotifications();
       d.activeElement.blur();
       $.rmClass(QR.nodes.el, 'dump');
+      $.toggleClass($('.qr-shortcut'), 'disabled');
       _ref = QR.posts;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         i = _ref[_i];
@@ -9133,7 +9147,8 @@
       com.setSelectionRange(range, range);
       com.focus();
       QR.selected.save(com);
-      return QR.selected.save(thread);
+      QR.selected.save(thread);
+      return $.rmClass($('.qr-shortcut'), 'disabled');
     },
     characterCount: function() {
       var count, counter;
@@ -10452,6 +10467,151 @@
         post = _ref[_i];
         $.rmClass(post.nodes.post, 'qphl');
       }
+    }
+  };
+
+  /*
+    <3 aeosynth
+  */
+
+
+  QuoteThreading = {
+    init: function() {
+      var input;
+
+      if (!(Conf['Quote Threading'] && g.VIEW === 'thread')) {
+        return;
+      }
+      this.enabled = true;
+      this.controls = $.el('span', {
+        innerHTML: '<label><input id=threadingControl type=checkbox checked> Threading</label>'
+      });
+      input = $('input', this.controls);
+      $.on(input, 'change', QuoteThreading.toggle);
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: this.controls,
+        order: 115
+      });
+      $.on(d, '4chanXInitFinished', this.setup);
+      return Post.prototype.callbacks.push({
+        name: 'Quote Threading',
+        cb: this.node
+      });
+    },
+    setup: function() {
+      var ID, post, posts;
+
+      $.off(d, '4chanXInitFinished', QuoteThreading.setup);
+      posts = g.posts;
+      for (ID in posts) {
+        post = posts[ID];
+        if (post.cb) {
+          post.cb.call(post);
+        }
+      }
+      return QuoteThreading.hasRun = true;
+    },
+    node: function() {
+      var ID, fullID, keys, len, post, posts, qid, quote, quotes, uniq, _i, _len;
+
+      if (this.isClone || !QuoteThreading.enabled || this.thread.OP === this) {
+        return;
+      }
+      quotes = this.quotes, ID = this.ID, fullID = this.fullID;
+      posts = g.posts;
+      if (!(post = posts[fullID]) || post.isHidden) {
+        return;
+      }
+      uniq = {};
+      len = ("" + g.BOARD).length + 1;
+      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
+        quote = quotes[_i];
+        qid = quote;
+        if (!(qid.slice(len) < ID)) {
+          continue;
+        }
+        if (qid in posts) {
+          uniq[qid.slice(len)] = true;
+        }
+      }
+      keys = Object.keys(uniq);
+      if (keys.length !== 1) {
+        return;
+      }
+      this.threaded = "" + g.BOARD + "." + keys[0];
+      return this.cb = QuoteThreading.nodeinsert;
+    },
+    nodeinsert: function() {
+      var posts, qpost, qroot, threadContainer;
+
+      posts = g.posts;
+      qpost = posts[this.threaded];
+      delete this.threaded;
+      delete this.cb;
+      if (this.thread.OP === qpost || (QuoteThreading.hasRun && !Unread.posts.contains(qpost))) {
+        return false;
+      }
+      qroot = qpost.nodes.root;
+      threadContainer = qroot.nextSibling;
+      if ((threadContainer != null ? threadContainer.className : void 0) !== 'threadContainer') {
+        threadContainer = $.el('div', {
+          className: 'threadContainer'
+        });
+        $.after(qroot, threadContainer);
+      }
+      $.add(threadContainer, this.nodes.root);
+      return true;
+    },
+    toggle: function() {
+      var container, containers, node, nodes, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _results;
+
+      thread = $('.thread');
+      replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
+      QuoteThreading.enabled = this.checked;
+      if (this.checked) {
+        nodes = (function() {
+          var _i, _len, _results;
+
+          _results = [];
+          for (_i = 0, _len = replies.length; _i < _len; _i++) {
+            reply = replies[_i];
+            _results.push(Get.postFromNode(reply));
+          }
+          return _results;
+        })();
+        for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+          node = nodes[_i];
+          Unread.node.call(node);
+        }
+        _results = [];
+        for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
+          node = nodes[_j];
+          _results.push(QuoteThreading.node(node));
+        }
+        return _results;
+      } else {
+        replies.sort(function(a, b) {
+          var aID, bID;
+
+          aID = Number(a.id.slice(2));
+          bID = Number(b.id.slice(2));
+          return aID - bID;
+        });
+        $.add(thread, replies);
+        containers = $$('.threadContainer', thread);
+        for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
+          container = containers[_k];
+          $.rm(container);
+        }
+        return Unread.update(true);
+      }
+    },
+    kb: function() {
+      var control;
+
+      control = $.id('threadingControl');
+      return control.click();
     }
   };
 
@@ -13453,6 +13613,7 @@
         'Thread Excerpt': ThreadExcerpt,
         'Favicon': Favicon,
         'Unread': Unread,
+        'Quote Threading': QuoteThreading,
         'Thread Updater': ThreadUpdater,
         'Thread Stats': ThreadStats,
         'Thread Watcher': ThreadWatcher,

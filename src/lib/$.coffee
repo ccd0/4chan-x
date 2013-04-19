@@ -36,7 +36,7 @@ $.extend Array::,
     args = arguments
     for arg in args
       @push.apply @, arg
-    return @
+    return
 
   remove: (object) ->
     if (index = @indexOf object) > -1
@@ -78,6 +78,7 @@ $.extend $,
   ajax: (url, callbacks, opts={}) ->
     {type, cred, headers, upCallbacks, form, sync} = opts
     r = new XMLHttpRequest()
+    r.overrideMimeType 'text/html'
     type or= form and 'post' or 'get'
     r.open type, url, !sync
     for key, val of headers

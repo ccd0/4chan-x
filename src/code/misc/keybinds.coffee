@@ -134,6 +134,7 @@ Keybinds =
     if quote
       QR.quote.call $ 'input', $('.post.highlight', thread) or thread
     do QR.nodes.com.focus
+    $.rmClass $('.qr-shortcut'), 'disabled'
 
   tags: (tag, ta) ->
     value    = ta.value
