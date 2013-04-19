@@ -7699,11 +7699,9 @@
         id: 'navlinks'
       });
       prev = $.el('a', {
-        textContent: '▲',
         href: 'javascript:;'
       });
       next = $.el('a', {
-        textContent: '▼',
         href: 'javascript:;'
       });
       $.on(prev, 'click', this.prev);
