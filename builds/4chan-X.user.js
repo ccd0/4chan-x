@@ -6852,7 +6852,8 @@
       com.setSelectionRange(range, range);
       com.focus();
       QR.selected.save(com);
-      return QR.selected.save(thread);
+      QR.selected.save(thread);
+      return $.rmClass($('.qr-shortcut'), 'disabled');
     },
     characterCount: function() {
       var count, counter;

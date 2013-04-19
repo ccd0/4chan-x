@@ -294,6 +294,8 @@ QR =
     QR.selected.save com
     QR.selected.save thread
 
+    $.rmClass $('.qr-shortcut'), 'disabled'
+
   characterCount: ->
     counter = QR.nodes.charCount
     count   = QR.nodes.com.textLength
