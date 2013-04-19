@@ -905,6 +905,12 @@ else ""
 .backlink.dead {
   text-decoration: none;
 }
+#{
+if _conf["Filtered Backlinks"] then "
+.filtered.backlink {
+  display: none;
+}"
+}
 #{{
 "lower left": "
 .container {

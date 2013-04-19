@@ -448,7 +448,7 @@ Config =
       ]
       'Filtered Backlinks': [
         true
-        'Mark backlinks to filtered posts.'
+        'Hide backlinks to filtered posts.'
       ]
       'Force Reply Break': [
         false
