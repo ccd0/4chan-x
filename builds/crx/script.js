@@ -86,11 +86,11 @@
         'Forward Hiding': [true, 'Hide original posts of inlined backlinks.'],
         'Quote Previewing': [true, 'Show quoted post on hover.'],
         'Quote Highlighting': [true, 'Highlight the previewed post.'],
-        'Quote Threading': [true, ''],
         'Resurrect Quotes': [true, 'Link dead quotes to the archives.'],
         'Mark Quotes of You': [true, 'Add \'(You)\' to quotes linking to your posts.'],
         'Mark OP Quotes': [true, 'Add \'(OP)\' to OP quotes.'],
-        'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.']
+        'Mark Cross-thread Quotes': [true, 'Add \'(Cross-thread)\' to cross-threads quotes.'],
+        'Quote Threading': [false, 'Thread conversations']
       }
     },
     imageExpansion: {

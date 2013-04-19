@@ -277,10 +277,6 @@ Config =
         true
         'Highlight the previewed post.'
       ]
-      'Quote Threading': [
-        true
-        ''
-      ]
       'Resurrect Quotes': [
         true
         'Link dead quotes to the archives.'
@@ -296,6 +292,10 @@ Config =
       'Mark Cross-thread Quotes': [
         true
         'Add \'(Cross-thread)\' to cross-threads quotes.'
+      ]
+      'Quote Threading': [
+        false
+        'Thread conversations'
       ]
 
   imageExpansion:
