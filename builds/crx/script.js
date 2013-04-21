@@ -6362,8 +6362,8 @@
       }
       return arr.splice(0, i);
     },
-    read: function(e) {
-      var ID, bottom, height, i, post, posts, read, top, _ref;
+    read: $.debounce(50, function(e) {
+      var ID, bottom, height, i, post, posts, read;
 
       if (d.hidden || !Unread.posts.length) {
         return;
@@ -6373,8 +6373,8 @@
       read = [];
       i = posts.length;
       while (post = posts[--i]) {
-        _ref = post.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
-        if ((bottom < height) && (top > 0)) {
+        bottom = post.nodes.root.getBoundingClientRect().bottom;
+        if (bottom < height) {
           ID = post.ID;
           posts.remove(post);
         }
@@ -6388,7 +6388,7 @@
       if (e) {
         return Unread.update();
       }
-    },
+    }),
     saveLastReadPost: $.debounce(2 * $.SECOND, function() {
       return Unread.db.set({
         boardID: Unread.thread.board.ID,

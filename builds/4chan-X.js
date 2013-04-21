@@ -20,7 +20,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 
-/* 4chan X - Version 3.1.4 - 2013-04-19
+/* 4chan X - Version 3.1.4 - 2013-04-21
  * https://4chan-x.just-believe.in/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -6449,8 +6449,8 @@
       }
       return arr.splice(0, i);
     },
-    read: function(e) {
-      var ID, bottom, height, i, post, posts, read, top, _ref;
+    read: $.debounce(50, function(e) {
+      var ID, bottom, height, i, post, posts, read;
 
       if (d.hidden || !Unread.posts.length) {
         return;
@@ -6460,8 +6460,8 @@
       read = [];
       i = posts.length;
       while (post = posts[--i]) {
-        _ref = post.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
-        if ((bottom < height) && (top > 0)) {
+        bottom = post.nodes.root.getBoundingClientRect().bottom;
+        if (bottom < height) {
           ID = post.ID;
           posts.remove(post);
         }
@@ -6475,7 +6475,7 @@
       if (e) {
         return Unread.update();
       }
-    },
+    }),
     saveLastReadPost: $.debounce(2 * $.SECOND, function() {
       return Unread.db.set({
         boardID: Unread.thread.board.ID,

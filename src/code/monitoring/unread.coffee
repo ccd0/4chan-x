@@ -98,7 +98,7 @@ Unread =
       break if post.ID > Unread.lastReadPost
     arr.splice 0, i
 
-  read: (e) ->
+  read: $.debounce 50, (e) ->
     return if d.hidden or !Unread.posts.length
     height  = doc.clientHeight
     {posts} = Unread
@@ -106,8 +106,8 @@ Unread =
     i = posts.length
 
     while post = posts[--i]
-      {bottom, top} = post.nodes.root.getBoundingClientRect()
-      if (bottom < height) and (top > 0)  # post is completely read
+      {bottom} = post.nodes.root.getBoundingClientRect()
+      if (bottom < height)  # post is completely read
         ID = post.ID
         posts.remove post
     return unless ID
