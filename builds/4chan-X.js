@@ -1831,6 +1831,8 @@
         if (right) {
           $.addClass(menu, 'left');
         }
+        entry = $('.entry', menu);
+        this.focus(entry);
         return menu.focus();
       };
 
