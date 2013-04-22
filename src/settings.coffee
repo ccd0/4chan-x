@@ -391,6 +391,7 @@ Settings =
         </div>
         <div>Board link: <code>board</code></div>
         <div>Title link: <code>board-title</code></div>
+        <div>Board link (Replace with title when on that board): <code>board-replace</code></div>
         <div>Full text link: <code>board-full</code></div>
         <div>Custom text link: <code>board-text:"VIP Board"</code></div>
         <div>Index-only link: <code>board-index</code></div>
