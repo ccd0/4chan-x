@@ -82,12 +82,14 @@ UI = do ->
       style.right  = "#{right}px"
       style.bottom = "#{bottom}px"
       style.left   = "#{left}px"
+      if right
+        $.addClass menu, 'left'
 
-      entry = $ '.entry', menu
+      # entry = $ '.entry', menu
       # We've removed flexbox, so we don't user order anymore.
       # while prevEntry = @findNextEntry entry, -1
       #   entry = prevEntry
-      @focus entry
+      # @focus entry
 
       menu.focus()
 

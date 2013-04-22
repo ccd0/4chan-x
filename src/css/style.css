@@ -840,6 +840,10 @@ a:only-of-type > .remove {
   position: absolute;
   right: 3px;
 }
+.left .has-submenu::after {
+  border-left: 0;
+  border-right: .5em solid;
+}
 .submenu {
   display: none;
   position: absolute;
