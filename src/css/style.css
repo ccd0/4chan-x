@@ -590,6 +590,9 @@ a.hide-announcement {
   border-width: 1px;
   border-style: solid;
 }
+.qr-link {
+  text-align: center;
+}
 .persona {
   width: 248px;
   max-width: 100%;

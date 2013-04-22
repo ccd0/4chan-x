@@ -13,6 +13,10 @@ Config =
         true
         'Show custom links instead of the full board list.'
       ]
+      'QR Shortcut': [
+        false,
+        'Adds a small [QR] link in the header.'
+      ]
       'Announcement Hiding': [
         true
         'Add button to hide 4chan announcements.'
