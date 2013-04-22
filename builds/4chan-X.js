@@ -1807,6 +1807,9 @@
         menu = this.makeMenu();
         currentMenu = menu;
         lastToggledButton = button;
+        this.entries.sort(function(first, second) {
+          return first.order - second.order;
+        });
         _ref = this.entries;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           entry = _ref[_i];
@@ -3292,7 +3295,7 @@
         return $.event('AddMenuEntry', {
           type: 'header',
           el: el,
-          order: 80,
+          order: 105,
           subEntries: subEntries
         });
       },
@@ -8332,7 +8335,7 @@
       return true;
     },
     toggle: function() {
-      var container, containers, node, nodes, replies, reply, thread, _i, _j, _k, _len, _len1, _len2;
+      var container, containers, node, nodes, replies, reply, thread, _i, _j, _len, _len1;
 
       thread = $('.thread');
       replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
@@ -8350,10 +8353,6 @@
         })();
         for (_i = 0, _len = nodes.length; _i < _len; _i++) {
           node = nodes[_i];
-          Unread.node.call(node);
-        }
-        for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
-          node = nodes[_j];
           QuoteThreading.node(node);
         }
       } else {
@@ -8366,8 +8365,8 @@
         });
         $.add(thread, replies);
         containers = $$('.threadContainer', thread);
-        for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
-          container = containers[_k];
+        for (_j = 0, _len1 = containers.length; _j < _len1; _j++) {
+          container = containers[_j];
           $.rm(container);
         }
         Unread.update(true);

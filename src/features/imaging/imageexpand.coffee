@@ -171,7 +171,7 @@ ImageExpand =
       $.event 'AddMenuEntry',
         type: 'header'
         el: el
-        order: 80
+        order: 105
         subEntries: subEntries
 
     createSubEntry: (type, config) ->

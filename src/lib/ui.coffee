@@ -54,6 +54,9 @@ UI = do ->
       menu = @makeMenu()
       currentMenu       = menu
       lastToggledButton = button
+      
+      @entries.sort (first, second) ->
+        first.order - second.order
 
       for entry in @entries
         @insertEntry entry, menu, data

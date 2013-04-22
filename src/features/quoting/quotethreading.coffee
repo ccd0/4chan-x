@@ -89,7 +89,6 @@ QuoteThreading =
     QuoteThreading.enabled = @checked
     if @checked
       nodes = (Get.postFromNode reply for reply in replies)
-      Unread.node.call    node for node in nodes
       QuoteThreading.node node for node in nodes
     else
       replies.sort (a, b) ->
