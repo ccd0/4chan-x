@@ -7,7 +7,7 @@ Settings =
       href:        'javascript:;'
     $.on link, 'click', Settings.open
 
-    $.add Header.settings, [$.tn(' ['), link, $.tn('] ')]
+    Header.addShortcut link
 
     $.get 'previousversion', null, (item) ->
       if previous = item['previousversion']

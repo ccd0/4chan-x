@@ -2,7 +2,7 @@ Header =
   init: ->
     @menuButton = $.el 'span',
       className: 'menu-button'
-      innerHTML: '<a class=brackets-wrap href=javascript:;><i></i></a>'
+      innerHTML: '<i></i>'
 
     @menu = new UI.Menu 'header'
     $.on @menuButton, 'click',           @menuToggle
@@ -17,7 +17,9 @@ Header =
     subEntries = []
     for setting in ['sticky top', 'sticky bottom', 'top']
       subEntries.push createSubEntry setting
-
+    
+    @addShortcut Header.menuButton
+    
     $.event 'AddMenuEntry',
       type:  'header'
       el:    @positionToggler
@@ -69,6 +71,7 @@ Header =
 
   setBoardList: ->
     Header.nav = nav = $.id 'boardNavDesktop'
+    nav.id = 'header-bar'
     if a = $ "a[href*='/#{g.BOARD}/']", nav
       a.className = 'current'
 
@@ -82,7 +85,7 @@ Header =
     $.sync 'Header auto-hide',  Header.setBarVisibility
 
     $.add fullBoardList, [nav.childNodes...]
-    $.add nav, [Header.menuButton, fullBoardList, Header.shortcuts, Header.bar, Header.toggle, Header.settings]
+    $.add nav, [fullBoardList, Header.shortcuts, Header.bar, Header.toggle, Header.settings]
 
     if Conf['Custom Board Navigation']
       fullBoardList.hidden = true
@@ -211,7 +214,7 @@ Header =
     shortcut = $.el 'span',
       className: 'shortcut'
     $.add shortcut, [$.tn(' ['), el, $.tn(']')]
-    $.add Header.shortcuts, shortcut
+    $.prepend Header.shortcuts, shortcut
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g
