@@ -4,21 +4,22 @@ QR =
 
     @db = new DataBoard 'yourPosts'
 
-    sc = $.el 'a',
-      className: "qr-shortcut #{unless Conf['Persistent QR'] then 'disabled' else ''}"
-      textContent: 'QR'
-      title: 'Quick Reply'
-      href: 'javascript:;'
-    $.on sc, 'click', ->
-      if !QR.nodes or QR.nodes.el.hidden
-        $.event 'CloseMenu'
-        QR.open()
-        QR.nodes.com.focus()
-      else
-        QR.close()
-      $.toggleClass @, 'disabled'
+    if Conf['QR Shortcut']
+      sc = $.el 'a',
+        className: "qr-shortcut #{unless Conf['Persistent QR'] then 'disabled' else ''}"
+        textContent: 'QR'
+        title: 'Quick Reply'
+        href: 'javascript:;'
+      $.on sc, 'click', ->
+        if !QR.nodes or QR.nodes.el.hidden
+          $.event 'CloseMenu'
+          QR.open()
+          QR.nodes.com.focus()
+        else
+          QR.close()
+        $.toggleClass @, 'disabled'
 
-    Header.addShortcut sc
+      Header.addShortcut sc
 
     if Conf['Hide Original Post Form']
       $.asap (-> doc), -> $.addClass doc, 'hide-original-post-form'
@@ -33,6 +34,22 @@ QR =
     $.off d, '4chanXInitFinished', QR.initReady
     QR.postingIsEnabled = !!$.id 'postForm'
     return unless QR.postingIsEnabled
+
+    link = $.el 'h1',
+      innerHTML: "<a href=javascript:;>#{title = if g.VIEW is 'thread' then 'Reply to Thread' else 'Start a Thread'}</a>"
+      title:  title
+      className: "qr-link"
+    $.on link, 'click', ->
+      if !QR.nodes or QR.nodes.el.hidden
+        $.event 'CloseMenu'
+        QR.open()
+        QR.nodes.com.focus()
+        if Conf['QR Shortcut']
+          $.rmClass $('.qr-shortcut'), 'disabled'
+      else
+        QR.close()
+
+    $.before $.id('postForm'), link
 
     $.on d, 'QRGetSelectedPost', ({detail: cb}) ->
       cb QR.selected
@@ -79,7 +96,8 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
-    $.toggleClass $('.qr-shortcut'), 'disabled'
+    if Conf['QR Shortcut']
+      $.toggleClass $('.qr-shortcut'), 'disabled'
     for i in QR.posts
       QR.posts[0].rm()
     QR.cooldown.auto = false
@@ -294,7 +312,8 @@ QR =
     QR.selected.save com
     QR.selected.save thread
 
-    $.rmClass $('.qr-shortcut'), 'disabled'
+    if Conf['QR Shortcut']
+      $.rmClass $('.qr-shortcut'), 'disabled'
 
   characterCount: ->
     counter = QR.nodes.charCount
