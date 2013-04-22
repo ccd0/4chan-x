@@ -201,6 +201,9 @@ a[href="javascript:;"] {
 #navtopright {
   display: none;
 }
+#toggleMsgBtn {
+  display: none !important;
+}
 
 /* Notifications */
 #notifications {
@@ -487,8 +490,11 @@ a.hide-announcement {
 /* Quote Threading */
 .threadContainer {
   margin-left: 20px;
-  border-left: 1px solid black;
+  border-left: 1px solid rgba(0,0,0,0.5);
 }
+.threadOP {
+  clear: both;
+} 
 
 /* File */
 .fileText:hover .fntrunc,

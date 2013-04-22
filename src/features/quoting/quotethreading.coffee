@@ -62,20 +62,29 @@ QuoteThreading =
     delete @threaded
     delete @cb
 
-    return false if @thread.OP is qpost or (QuoteThreading.hasRun and !Unread.posts.contains qpost)
+    return false if @thread.OP is qpost 
+    
+    if QuoteThreading.hasRun
+      height  = doc.clientHeight
+      {bottom, top} = qpost.nodes.root.getBoundingClientRect()
+
+      # Post is unread or is fully visible.
+      return false unless Unread.posts.contains(qpost) or ((bottom < height) and (top > 0))
 
     qroot = qpost.nodes.root
-    threadContainer = qroot.nextSibling
-    if threadContainer?.className isnt 'threadContainer'
+    unless $.hasClass qroot, 'threadOP'
+      $.addClass qroot, 'threadOP'
       threadContainer = $.el 'div',
         className: 'threadContainer'
       $.after qroot, threadContainer
+    else
+      threadContainer = qroot.nextSibling
 
     $.add threadContainer, @nodes.root
     return true
 
   toggle: ->
-    thread = $ '.thread'
+    thread  = $ '.thread'
     replies = $$ '.thread > .replyContainer, .threadContainer > .replyContainer', thread
     QuoteThreading.enabled = @checked
     if @checked
