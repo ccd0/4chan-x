@@ -6342,7 +6342,8 @@
       });
     },
     node: function() {
-      var ID, post, posts, _ref;
+      var ID, post, posts, _ref,
+        _this = this;
 
       Unread.thread = this;
       Unread.title = d.title;
@@ -6366,7 +6367,9 @@
         $.on(d, 'visibilitychange', Unread.setLine);
       }
       if (Conf['Scroll to Last Read Post']) {
-        return $.on(window, 'load', Unread.scroll);
+        return $.on(window, 'load', function(posts) {
+          return Unread.scroll.apply(_this, posts);
+        });
       }
     },
     scroll: function() {
@@ -6381,9 +6384,12 @@
             break;
           }
         }
+        if (!root) {
+          return;
+        }
         return root.scrollIntoView(false);
       } else if (posts.length) {
-        return Header.scrollToPost(posts[posts.length - 1].nodes.root);
+        return Header.scrollToPost(posts[post.length - 1].nodes.root);
       }
     },
     sync: function() {
