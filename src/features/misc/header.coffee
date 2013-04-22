@@ -80,8 +80,11 @@ Header =
     if a = $ "a[href*='/#{g.BOARD}/']", nav
       a.className = 'current'
 
-    fullBoardList = $.el 'span',
-      id:     'full-board-list'
+    boardList = $.el 'span',
+      id: 'board-list'
+
+    $.add boardList, fullBoardList = $.el 'span',
+      id: 'full-board-list'
 
     Header.setBarPosition.call textContent: "#{Conf['Boards Navigation']}"
     $.sync 'Boards Navigation', Header.changeBarPosition
@@ -90,13 +93,13 @@ Header =
     $.sync 'Header auto-hide',  Header.setBarVisibility
 
     $.add fullBoardList, [nav.childNodes...]
-    $.add nav, [fullBoardList, Header.shortcuts, Header.bar, Header.toggle]
+    $.add nav, [boardList, Header.shortcuts, Header.bar, Header.toggle]
 
     if Conf['Custom Board Navigation']
       fullBoardList.hidden = true
       customBoardList = $.el 'span',
-        id:     'custom-board-list'
-      $.before fullBoardList, customBoardList
+        id: 'custom-board-list'
+      $.add boardList, customBoardList
 
       Header.generateBoardList Conf['boardnav']
       $.sync 'boardnav', Header.generateBoardList

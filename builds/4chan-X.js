@@ -4167,17 +4167,8 @@
         el: el,
         order: 95
       });
-      return $.asap((function() {
-        return d.body;
-      }), function() {
-        if (!Main.isThisPageLegit()) {
-          return;
-        }
-        return $.asap((function() {
-          return $.id('boardNavMobile');
-        }), function() {
-          return CatalogLinks.set(input.checked);
-        });
+      return $.on(d, '4chanXInitFinished', function() {
+        return CatalogLinks.set(Conf['Header catalog links']);
       });
     },
     toggle: function() {
@@ -4191,7 +4182,7 @@
       var a, board, path, _i, _len, _ref;
 
       path = useCatalog ? 'catalog' : '';
-      _ref = $$('a', $.id('boardNavDesktop'));
+      _ref = $$('a', $.id('board-list'));
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
         board = a.pathname.split('/')[1];
@@ -4698,16 +4689,19 @@
       };
     },
     setBoardList: function() {
-      var a, btn, customBoardList, fullBoardList, nav;
+      var a, boardList, btn, customBoardList, fullBoardList, nav;
 
       Header.nav = nav = $.id('boardNavDesktop');
       nav.id = 'header-bar';
       if (a = $("a[href*='/" + g.BOARD + "/']", nav)) {
         a.className = 'current';
       }
-      fullBoardList = $.el('span', {
-        id: 'full-board-list'
+      boardList = $.el('span', {
+        id: 'board-list'
       });
+      $.add(boardList, fullBoardList = $.el('span', {
+        id: 'full-board-list'
+      }));
       Header.setBarPosition.call({
         textContent: "" + Conf['Boards Navigation']
       });
@@ -4715,13 +4709,13 @@
       Header.setBarVisibility(Conf['Header auto-hide']);
       $.sync('Header auto-hide', Header.setBarVisibility);
       $.add(fullBoardList, __slice.call(nav.childNodes));
-      $.add(nav, [fullBoardList, Header.shortcuts, Header.bar, Header.toggle]);
+      $.add(nav, [boardList, Header.shortcuts, Header.bar, Header.toggle]);
       if (Conf['Custom Board Navigation']) {
         fullBoardList.hidden = true;
         customBoardList = $.el('span', {
           id: 'custom-board-list'
         });
-        $.before(fullBoardList, customBoardList);
+        $.add(boardList, customBoardList);
         Header.generateBoardList(Conf['boardnav']);
         $.sync('boardnav', Header.generateBoardList);
         btn = $.el('span', {

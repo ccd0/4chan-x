@@ -6,7 +6,7 @@ CatalogLinks =
       href:         'javascript:;'
       innerHTML:    "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}>Catalog"
       title:        "Turn catalog links #{if Conf['Header catalog links'] then 'off' else 'on'}."
-      
+
     input = $ 'input', el
     $.on input, 'change', @toggle
     $.sync 'Header catalog links', CatalogLinks.set
@@ -16,22 +16,18 @@ CatalogLinks =
       el:    el
       order: 95
 
-    $.asap (-> d.body), ->
-      return unless Main.isThisPageLegit()
-      # Wait for #boardNavMobile instead of #boardNavDesktop,
-      # it might be incomplete otherwise.
-      $.asap (-> $.id 'boardNavMobile'), ->
-        # Set links on load.
-        CatalogLinks.set input.checked
+    $.on d, '4chanXInitFinished', ->
+      # Set links on load.
+      CatalogLinks.set Conf['Header catalog links']
 
   toggle: ->
     $.event 'CloseMenu'
     $.set 'Header catalog links', useCatalog = @checked
     CatalogLinks.set useCatalog
-  
+
   set: (useCatalog) ->
     path = if useCatalog then 'catalog' else ''
-    for a in $$ 'a', $.id('boardNavDesktop')
+    for a in $$ 'a', $.id('board-list')
       board = a.pathname.split('/')[1]
       continue if ['f', 'status', '4chan'].contains(board) or !board
       if Conf['External Catalog']
