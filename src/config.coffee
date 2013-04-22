@@ -384,6 +384,8 @@ http://iqdb.org/?url=%TURL
 
   'Header auto-hide': false
 
+  'Footer auto-hide': true
+
   'Header catalog links': false
 
   boardnav: '[ toggle-all ] [current-title]'
