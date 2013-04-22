@@ -106,7 +106,7 @@ Header =
     $.rmAll list
     return unless text
     as = $$('#full-board-list a', Header.nav)[0...-2] # ignore the Settings and Home links
-    nodes = text.match(/[\w@]+(-(all|title|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
+    nodes = text.match(/[\w@]+(-(all|title|replace|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
       if /^toggle-all/.test t
@@ -125,6 +125,9 @@ Header =
           a = a.cloneNode true
           if /-title/.test t
             a.textContent = a.title
+          else if /-replace/.test t
+            if $.hasClass a, 'current'
+              a.textContent = a.title
           else if /-full/.test t
             a.textContent = "/#{board}/ - #{a.title}"
           else if /-(index|catalog|text)/.test t
