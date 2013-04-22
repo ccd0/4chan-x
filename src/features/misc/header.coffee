@@ -31,6 +31,15 @@ Header =
       order: 105
       subEntries: subEntries
 
+    @footerToggler = $.el 'label',
+      innerHTML: "<input type=checkbox #{if Conf['Footer auto-hide'] then 'checked' else ''}> Hide Footer Nav"
+    $.on @footerToggler.firstElementChild, 'change', @toggleFooterVisibility
+
+    $.event 'AddMenuEntry',
+      type: 'header'
+      el: @footerToggler
+      order: 100
+
     $.on d, 'CreateNotification', @createNotification
 
     $.asap (-> d.body), ->
@@ -41,6 +50,9 @@ Header =
 
     $.ready ->
       $.add d.body, Header.hover
+      Header.footer = footer = $.id 'boardNavDesktopFoot'
+      Header.setFooterVisibility Conf['Footer auto-hide']
+      $.sync 'Footer auto-hide', Header.setFooterVisibility
 
   bar: $.el 'div',
     id: 'notifications'
@@ -181,6 +193,10 @@ Header =
     $.event 'CloseMenu'
     (if hide then $.addClass else $.rmClass) Header.nav, 'autohide'
 
+  setFooterVisibility: (hide) ->
+    Header.footerToggler.firstElementChild.checked = hide
+    Header.footer.hidden = hide
+
   toggleBarVisibility: (e) ->
     return if e.type is 'mousedown' and e.button isnt 0 # not LMB
     hide = if @nodeName is 'INPUT'
@@ -194,6 +210,20 @@ Header =
       'The header bar will automatically hide itself.'
     else
       'The header bar will remain visible.'
+    new Notification 'info', message, 2
+
+  toggleFooterVisibility: ->
+    $.event 'CloseMenu'
+    hide = if @nodeName is 'INPUT'
+      @checked
+    else
+      !Header.footer.hidden
+    Header.setFooterVisibility hide
+    $.set 'Footer auto-hide', hide
+    message = if hide
+      'The bottom navigation will now be hidden.'
+    else
+      'The bottom navigation will remain visible.'
     new Notification 'info', message, 2
 
   hashScroll: ->

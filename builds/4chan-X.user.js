@@ -161,6 +161,7 @@
     'Custom CSS': false,
     'Boards Navigation': 'sticky top',
     'Header auto-hide': false,
+    'Footer auto-hide': true,
     'Header catalog links': false,
     boardnav: '[ toggle-all ] [current-title]',
     time: '%m/%d/%y(%a)%H:%M:%S',
@@ -4635,6 +4636,15 @@
         order: 105,
         subEntries: subEntries
       });
+      this.footerToggler = $.el('label', {
+        innerHTML: "<input type=checkbox " + (Conf['Footer auto-hide'] ? 'checked' : '') + "> Hide Footer Nav"
+      });
+      $.on(this.footerToggler.firstElementChild, 'change', this.toggleFooterVisibility);
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: this.footerToggler,
+        order: 100
+      });
       $.on(d, 'CreateNotification', this.createNotification);
       $.asap((function() {
         return d.body;
@@ -4647,7 +4657,12 @@
         }), Header.setBoardList);
       });
       return $.ready(function() {
-        return $.add(d.body, Header.hover);
+        var footer;
+
+        $.add(d.body, Header.hover);
+        Header.footer = footer = $.id('boardNavDesktopFoot');
+        Header.setFooterVisibility(Conf['Footer auto-hide']);
+        return $.sync('Footer auto-hide', Header.setFooterVisibility);
       });
     },
     bar: $.el('div', {
@@ -4809,6 +4824,10 @@
       $.event('CloseMenu');
       return (hide ? $.addClass : $.rmClass)(Header.nav, 'autohide');
     },
+    setFooterVisibility: function(hide) {
+      Header.footerToggler.firstElementChild.checked = hide;
+      return Header.footer.hidden = hide;
+    },
     toggleBarVisibility: function(e) {
       var hide, message;
 
@@ -4820,6 +4839,16 @@
       $.set('Header auto-hide', hide);
       Header.setBarVisibility(hide);
       message = hide ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
+      return new Notification('info', message, 2);
+    },
+    toggleFooterVisibility: function() {
+      var hide, message;
+
+      $.event('CloseMenu');
+      hide = this.nodeName === 'INPUT' ? this.checked : !Header.footer.hidden;
+      Header.setFooterVisibility(hide);
+      $.set('Footer auto-hide', hide);
+      message = hide ? 'The bottom navigation will now be hidden.' : 'The bottom navigation will remain visible.';
       return new Notification('info', message, 2);
     },
     hashScroll: function() {
