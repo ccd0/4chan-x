@@ -11,7 +11,6 @@
         'Catalog Links': [true, 'Turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
         'Enable 4chan\'s Extension': [false, 'Compatibility between 4chan X and 4chan\'s inline extension is NOT guaranteed.'],
-        'Fixed Header': [false, 'Mayhem X\'s Fixed Header (kinda).'],
         'Custom Board Navigation': [true, 'Show custom links instead of the full board list.'],
         'Announcement Hiding': [true, 'Add button to hide 4chan announcements.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],

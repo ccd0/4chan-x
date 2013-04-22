@@ -13,10 +13,6 @@ Config =
         false
         'Compatibility between <%= meta.name %> and 4chan\'s inline extension is NOT guaranteed.'
       ]
-      'Fixed Header': [
-        false
-        'Mayhem X\'s Fixed Header (kinda).'
-      ]
       'Custom Board Navigation': [
         true
         'Show custom links instead of the full board list.'

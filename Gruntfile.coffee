@@ -12,12 +12,12 @@ module.exports = (grunt) ->
       coffee:
         options: concatOptions
         src: [
-          'src/code/config.coffee'
-          'src/code/globals.coffee'
+          'src/config.coffee'
+          'src/globals.coffee'
           'src/lib/*.coffee'
-          'src/code/*/*.coffee'
-          'src/code/settings.coffee'
-          'src/code/main.coffee'
+          'src/features/*/*.coffee'
+          'src/settings.coffee'
+          'src/main.coffee'
         ]
         dest: 'tmp-<%= pkg.type %>/script.coffee'
 
