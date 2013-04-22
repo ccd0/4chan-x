@@ -21,7 +21,7 @@ CatalogLinks =
       # it might be incomplete otherwise.
       $.asap (-> $.id 'boardNavMobile'), ->
         # Set links on load.
-        CatalogLinks.toggle.call el
+        CatalogLinks.toggle.call input
 
   toggle: ->
     $.set 'Header catalog links', useCatalog = @checked

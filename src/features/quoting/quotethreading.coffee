@@ -100,6 +100,7 @@ QuoteThreading =
       containers = $$ '.threadContainer', thread
       $.rm container for container in containers
       Unread.update true
+    return
 
   kb: ->
       control = $.id 'threadingControl'

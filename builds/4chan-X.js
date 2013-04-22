@@ -4172,7 +4172,7 @@
         return $.asap((function() {
           return $.id('boardNavMobile');
         }), function() {
-          return CatalogLinks.toggle.call(el);
+          return CatalogLinks.toggle.call(input);
         });
       });
     },
@@ -4260,7 +4260,7 @@
       return post.nodes.comment = post.nodes.shortComment;
     },
     parse: function(req, a, post) {
-      var callback, clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _results;
+      var callback, clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
 
       status = req.status;
       if (![200, 304].contains(status)) {
@@ -4299,12 +4299,10 @@
       post.parseComment();
       post.parseQuotes();
       _ref1 = ExpandComment.callbacks;
-      _results = [];
       for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
         callback = _ref1[_k];
-        _results.push(callback.call(post));
+        callback.call(post);
       }
-      return _results;
     }
   };
 
@@ -8256,7 +8254,7 @@
       return true;
     },
     toggle: function() {
-      var container, containers, node, nodes, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _results;
+      var container, containers, node, nodes, replies, reply, thread, _i, _j, _k, _len, _len1, _len2;
 
       thread = $('.thread');
       replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
@@ -8276,12 +8274,10 @@
           node = nodes[_i];
           Unread.node.call(node);
         }
-        _results = [];
         for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
           node = nodes[_j];
-          _results.push(QuoteThreading.node(node));
+          QuoteThreading.node(node);
         }
-        return _results;
       } else {
         replies.sort(function(a, b) {
           var aID, bID;
@@ -8296,7 +8292,7 @@
           container = containers[_k];
           $.rm(container);
         }
-        return Unread.update(true);
+        Unread.update(true);
       }
     },
     kb: function() {
