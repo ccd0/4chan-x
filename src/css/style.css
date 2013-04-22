@@ -194,8 +194,8 @@ a[href="javascript:;"] {
 .expand-all-shortcut {
   opacity: .45;
 }
-#navtopright a {
-  text-decoration: none;
+#navtopright {
+  display: none;
 }
 
 /* Notifications */

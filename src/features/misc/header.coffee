@@ -55,6 +55,9 @@ Header =
 
   toggle: $.el 'div',
     id: 'toggle-header-bar'
+  
+  settings: $.el 'div',
+    id: 'settingsContainer'
 
   createSubEntry: (setting)->
     label = $.el 'label',
@@ -71,10 +74,6 @@ Header =
 
     fullBoardList = $.el 'span',
       id:     'full-board-list'
-      hidden: true
-
-    customBoardList = $.el 'span',
-      id:     'custom-board-list'
 
     Header.setBarPosition.call textContent: "#{Conf['Boards Navigation']}"
     $.sync 'Boards Navigation', Header.changeBarPosition
@@ -82,21 +81,26 @@ Header =
     Header.setBarVisibility Conf['Header auto-hide']
     $.sync 'Header auto-hide',  Header.setBarVisibility
 
-    settings = $.id 'navtopright'
-
     $.add fullBoardList, [nav.childNodes...]
-    $.add nav, [Header.menuButton, customBoardList, fullBoardList, Header.shortcuts, Header.bar, Header.toggle, settings]
+    $.add nav, [Header.menuButton, fullBoardList, Header.shortcuts, Header.bar, Header.toggle, Header.settings]
 
     if Conf['Custom Board Navigation']
+      fullBoardList.hidden = true
+      customBoardList = $.el 'span',
+        id:     'custom-board-list'
+
       Header.generateBoardList Conf['boardnav']
       $.sync 'boardnav', Header.generateBoardList
+
       btn = $.el 'span',
         className: 'hide-board-list-button'
         innerHTML: '[<a href=javascript:;> - </a>]\u00A0'
       $.on btn, 'click', Header.toggleBoardList
+
       $.prepend fullBoardList, btn
+      $.before fullBoardList, customBoardList
+
     else
-      $.rm $ '#custom-board-list', nav
       fullBoardList.hidden = false
 
   generateBoardList: (text) ->

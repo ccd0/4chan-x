@@ -289,7 +289,10 @@ ThreadUpdater =
         # Enable 4chan features.
         threadID = ThreadUpdater.thread.ID
         {length} = $$ '.thread > .postContainer', ThreadUpdater.root
-        Fourchan.parseThread threadID, length - count, length
+        if Conf['Enable 4chan\'s Extension']
+          $.globalEval "Parser.parseThread(#{threadID}, #{-count})"
+        else
+          Fourchan.parseThread threadID, length - count, length
 
     $.event 'ThreadUpdate',
       404: false
