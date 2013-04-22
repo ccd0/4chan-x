@@ -135,6 +135,10 @@ Config =
         false
         'Replace jpgs.'
       ]
+      'Fappe Tyme': [
+        false
+        'Hide posts without images. *hint* *hint*'
+      ]
 
     'Menu':
       'Menu': [
@@ -463,6 +467,10 @@ http://iqdb.org/?url=%TURL
     'Expand images': [
       'e'
       'Expand all images.'
+    ]
+    'fappeTyme': [
+      'f'
+      'Fappe Tyme.'
     ]
     # Board Navigation
     'Front page': [

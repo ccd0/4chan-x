@@ -62,6 +62,8 @@ Keybinds =
         Keybinds.img threadRoot
       when Conf['Expand images']
         Keybinds.img threadRoot, true
+      when Conf['fappeTyme']
+        do FappeTyme.input.click
       # Board Navigation
       when Conf['Front page']
         window.location = "/#{g.BOARD}/0#delform"
