@@ -4741,9 +4741,9 @@
       return new Notification('info', message, 2);
     },
     hashScroll: function() {
-      var post;
+      var hash, post;
 
-      if (!(post = $.id(this.location.hash.slice(1)))) {
+      if (!((hash = this.location.hash) && (post = $.id(hash.slice(1))))) {
         return;
       }
       if ((Get.postFromRoot(post)).isHidden) {

@@ -194,7 +194,7 @@ Header =
     new Notification 'info', message, 2
 
   hashScroll: ->
-    return unless post = $.id @location.hash[1..]
+    return unless (hash = @location.hash) and post = $.id hash[1..]
     return if (Get.postFromRoot post).isHidden
     Header.scrollToPost post
 
