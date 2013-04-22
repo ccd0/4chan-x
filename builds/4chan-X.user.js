@@ -54,7 +54,6 @@
       'Miscellaneous': {
         'Catalog Links': [true, 'Turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
-        'Enable 4chan\'s Extension': [false, 'Compatibility between 4chan X and 4chan\'s inline extension is NOT guaranteed.'],
         'Custom Board Navigation': [true, 'Show custom links instead of the full board list.'],
         'Announcement Hiding': [true, 'Add button to hide 4chan announcements.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
@@ -4434,11 +4433,7 @@
       }
       Main.callbackNodes(Post, posts);
       $.after(a, nodes);
-      if (Conf['Enable 4chan\'s Extension']) {
-        return $.globalEval("Parser.parseThread(" + thread.ID + ", 1, " + nodes.length + ")");
-      } else {
-        return Fourchan.parseThread(thread.ID, 1, nodes.length);
-      }
+      return Fourchan.parseThread(thread.ID, 1, nodes.length);
     }
   };
 
@@ -4672,7 +4667,7 @@
       };
     },
     setBoardList: function() {
-      var a, btn, customBoardList, fullBoardList, nav;
+      var a, btn, customBoardList, fullBoardList, nav, settings;
 
       Header.nav = nav = $.id('boardNavDesktop');
       if (a = $("a[href*='/" + g.BOARD + "/']", nav)) {
@@ -4691,9 +4686,9 @@
       $.sync('Boards Navigation', Header.changeBarPosition);
       Header.setBarVisibility(Conf['Header auto-hide']);
       $.sync('Header auto-hide', Header.setBarVisibility);
-      $.after(nav, $.id('navtopright'));
+      settings = $.id('navtopright');
       $.add(fullBoardList, __slice.call(nav.childNodes));
-      $.add(nav, [Header.menuButton, customBoardList, fullBoardList, Header.shortcuts, Header.bar, Header.toggle]);
+      $.add(nav, [Header.menuButton, customBoardList, fullBoardList, Header.shortcuts, Header.bar, Header.toggle, settings]);
       if (Conf['Custom Board Navigation']) {
         Header.generateBoardList(Conf['boardnav']);
         $.sync('boardnav', Header.generateBoardList);
@@ -6134,11 +6129,7 @@
 
           threadID = ThreadUpdater.thread.ID;
           length = $$('.thread > .postContainer', ThreadUpdater.root).length;
-          if (Conf['Enable 4chan\'s Extension']) {
-            return $.globalEval("Parser.parseThread(" + threadID + ", " + (-count) + ")");
-          } else {
-            return Fourchan.parseThread(threadID, length - count, length);
-          }
+          return Fourchan.parseThread(threadID, length - count, length);
         });
       }
       return $.event('ThreadUpdate', {
@@ -8482,7 +8473,7 @@
         return $.asap((function() {
           return $.id('boardNavMobile');
         }), function() {
-          return $.prepend($.id('navtopright'), [$.tn(' ['), link, $.tn('] ')]);
+          return $.replace($.id('settingsWindowLink'), link);
         });
       });
       $.get('previousversion', null, function(item) {
@@ -8516,9 +8507,6 @@
       $.on(d, 'OpenSettings', function(e) {
         return Settings.open(e.detail);
       });
-      if (Conf['Enable 4chan\'s Extension']) {
-        return;
-      }
       settings = JSON.parse(localStorage.getItem('4chan-settings')) || {};
       if (settings.disableAll) {
         return;

@@ -82,10 +82,10 @@ Header =
     Header.setBarVisibility Conf['Header auto-hide']
     $.sync 'Header auto-hide',  Header.setBarVisibility
 
-    $.after nav, $.id 'navtopright'
+    settings = $.id 'navtopright'
 
     $.add fullBoardList, [nav.childNodes...]
-    $.add nav, [Header.menuButton, customBoardList, fullBoardList, Header.shortcuts, Header.bar, Header.toggle]
+    $.add nav, [Header.menuButton, customBoardList, fullBoardList, Header.shortcuts, Header.bar, Header.toggle, settings]
 
     if Conf['Custom Board Navigation']
       Header.generateBoardList Conf['boardnav']

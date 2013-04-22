@@ -12,7 +12,7 @@ Settings =
       # Wait for #boardNavMobile instead of #boardNavDesktop,
       # it might be incomplete otherwise.
       $.asap (-> $.id 'boardNavMobile'), ->
-        $.prepend $.id('navtopright'), [$.tn(' ['), link, $.tn('] ')]
+        $.replace $.id('settingsWindowLink'), link
 
     $.get 'previousversion', null, (item) ->
       if previous = item['previousversion']
@@ -40,7 +40,6 @@ Settings =
     $.on d, 'AddSettingsSection',   Settings.addSection
     $.on d, 'OpenSettings',         (e) -> Settings.open e.detail
 
-    return if Conf['Enable 4chan\'s Extension']
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
     return if settings.disableAll
     settings.disableAll = true
