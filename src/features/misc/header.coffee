@@ -57,7 +57,7 @@ Header =
     id: 'toggle-header-bar'
   
   settings: $.el 'div',
-    id: 'settingsContainer'
+    id: 'settings-container'
 
   createSubEntry: (setting)->
     label = $.el 'label',
@@ -88,6 +88,7 @@ Header =
       fullBoardList.hidden = true
       customBoardList = $.el 'span',
         id:     'custom-board-list'
+      $.before fullBoardList, customBoardList
 
       Header.generateBoardList Conf['boardnav']
       $.sync 'boardnav', Header.generateBoardList
@@ -98,7 +99,6 @@ Header =
       $.on btn, 'click', Header.toggleBoardList
 
       $.prepend fullBoardList, btn
-      $.before fullBoardList, customBoardList
 
     else
       fullBoardList.hidden = false

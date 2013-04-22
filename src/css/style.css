@@ -194,6 +194,10 @@ a[href="javascript:;"] {
 .expand-all-shortcut {
   opacity: .45;
 }
+#settings-container {
+  float: right;
+}
+#navbotright,
 #navtopright {
   display: none;
 }

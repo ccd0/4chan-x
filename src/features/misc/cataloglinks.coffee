@@ -1,15 +1,19 @@
 CatalogLinks =
   init: ->
     return unless Conf['Catalog Links']
-    el = $.el 'a',
+    el = $.el 'label',
       id:           'toggleCatalog'
       href:         'javascript:;'
-      className:    if Conf['Header catalog links'] then 'disabled' else ''
-      textContent:  'Catalog'
+      innerHTML:    "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}>Catalog"
       title:        "Turn catalog links #{if Conf['Header catalog links'] then 'off' else 'on'}."
-    $.on el, 'click', @toggle
+      
+    input = $ 'input', el
+    $.on input, 'change', @toggle
 
-    Header.addShortcut el
+    $.event 'AddMenuEntry',
+      type:  'header'
+      el:    el
+      order: 95
 
     $.asap (-> d.body), ->
       return unless Main.isThisPageLegit()
@@ -20,8 +24,7 @@ CatalogLinks =
         CatalogLinks.toggle.call el
 
   toggle: ->
-    $.set 'Header catalog links', useCatalog = @className is 'disabled'
-    $.toggleClass @, 'disabled'
+    $.set 'Header catalog links', useCatalog = @checked
     for a in $$ 'a', $.id('boardNavDesktop')
       board = a.pathname.split('/')[1]
       continue if ['f', 'status', '4chan'].contains(board) or !board
@@ -33,7 +36,7 @@ CatalogLinks =
       else
         a.pathname = "/#{board}/#{if useCatalog then 'catalog' else ''}"
       a.title = if useCatalog then "#{a.title} - Catalog" else a.title.replace(/\ -\ Catalog$/, '')
-    @title       = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
+    @title = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
 
   external: (board) ->
     return (
