@@ -1716,7 +1716,7 @@
       };
 
       Menu.prototype.open = function(button, data) {
-        var bLeft, bRect, bTop, bottom, cHeight, cWidth, entry, left, mRect, menu, prevEntry, right, style, top, _i, _len, _ref, _ref1, _ref2;
+        var bLeft, bRect, bTop, bottom, cHeight, cWidth, entry, left, mRect, menu, right, style, top, _i, _len, _ref, _ref1, _ref2;
 
         menu = this.makeMenu();
         currentMenu = menu;
@@ -1726,11 +1726,6 @@
           entry = _ref[_i];
           this.insertEntry(entry, menu, data);
         }
-        entry = $('.entry', menu);
-        while (prevEntry = this.findNextEntry(entry, -1)) {
-          entry = prevEntry;
-        }
-        this.focus(entry);
         $.on(d, 'click', this.close);
         $.on(d, 'CloseMenu', this.close);
         $.add(Header.hover, menu);
@@ -1747,6 +1742,8 @@
         style.right = "" + right + "px";
         style.bottom = "" + bottom + "px";
         style.left = "" + left + "px";
+        entry = $('.entry', menu);
+        this.focus(entry);
         return menu.focus();
       };
 

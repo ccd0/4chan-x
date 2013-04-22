@@ -58,10 +58,6 @@ UI = do ->
       for entry in @entries
         @insertEntry entry, menu, data
 
-      entry = $ '.entry', menu
-      while prevEntry = @findNextEntry entry, -1
-        entry = prevEntry
-      @focus entry
       $.on d, 'click',     @close
       $.on d, 'CloseMenu', @close
       $.add Header.hover, menu
@@ -86,6 +82,12 @@ UI = do ->
       style.right  = "#{right}px"
       style.bottom = "#{bottom}px"
       style.left   = "#{left}px"
+
+      entry = $ '.entry', menu
+      # We've removed flexbox, so we don't user order anymore.
+      # while prevEntry = @findNextEntry entry, -1
+      #   entry = prevEntry
+      @focus entry
 
       menu.focus()
 
