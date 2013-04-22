@@ -15,6 +15,7 @@ PSAHiding =
 
     PSAHiding.btn = btn = $.el 'a',
       title: 'Toggle announcement.'
+      innerHTML: '<span></span>'
       href: 'javascript:;'
     $.on btn, 'click', PSAHiding.toggle
 
