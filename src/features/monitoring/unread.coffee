@@ -26,8 +26,9 @@ Unread =
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
+    $.on window, 'load',               Unread.scroll  if Conf['Scroll to Last Read Post']
 
-    return unless Conf['Scroll to Last Read Post']
+  scroll: ->
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of @posts
     if Unread.posts.length
@@ -136,10 +137,7 @@ Unread =
     count = Unread.posts.length
 
     if Conf['Unread Count']
-      d.title = if g.DEAD
-        "(#{Unread.posts.length}) /#{g.BOARD}/ - 404"
-      else
-        "(#{Unread.posts.length}) #{Unread.title}"
+      d.title = "#{if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''}#{if g.DEAD then "/#{g.BOARD}/ - 404" else "#{Unread.title}"}" 
       <% if (type === 'crx') { %>
       # XXX Chrome bug where it doesn't always update the tab title.
       # crbug.com/124381

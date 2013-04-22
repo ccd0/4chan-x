@@ -97,10 +97,6 @@ Config =
         true
         'Add buttons to hide single replies.'
       ]
-      'Hiding Buttons': [
-        true
-        'Add buttons to hide threads / replies, in addition to menu links.'
-      ]
       'Stubs': [
         true
         'Show stubs of hidden threads / replies.'
@@ -141,6 +137,10 @@ Config =
         true
         'Add a drop-down menu to posts.'
       ]
+      'Report Link': [
+        true
+        'Add a report link to the menu.'
+      ]
       'Thread Hiding Link': [
         true
         'Add a link to hide entire threads.'
@@ -148,19 +148,17 @@ Config =
       'Reply Hiding Link': [
         true
         'Add a link to hide single replies.'
-      ] 
-      'Report Link': [
-        true
-        'Add a report link to the menu.'
       ]
       'Delete Link': [
         true
         'Add post and image deletion links to the menu.'
       ]
+      <% if (type === 'crx') { %>
       'Download Link': [
         true
         'Add a download with original filename link to the menu. Chrome-only currently.'
       ]
+      <% } %>
       'Archive Link': [
         true
         'Add an archive link to the menu.'
@@ -175,6 +173,10 @@ Config =
         true
         'Show the unread posts count in the tab title.'
       ]
+      'Hide Unread Count at (0)': [
+        false
+        'Hide the unread posts count when it reaches 0.'
+      ]
       'Unread Tab Icon': [
         true
         'Show a different favicon when there are unread posts.'
@@ -182,6 +184,10 @@ Config =
       'Unread Line': [
         true
         'Show a line to distinguish read posts from unread ones.'
+      ]
+      'Scroll to Last Read Post': [
+        true
+        'Scroll back to the last read post when reopening a thread.'
       ]
       'Thread Excerpt': [
         true

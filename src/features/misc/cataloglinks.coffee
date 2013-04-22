@@ -9,6 +9,7 @@ CatalogLinks =
       
     input = $ 'input', el
     $.on input, 'change', @toggle
+    $.sync 'Header catalog links', CatalogLinks.set
 
     $.event 'AddMenuEntry',
       type:  'header'
@@ -21,10 +22,15 @@ CatalogLinks =
       # it might be incomplete otherwise.
       $.asap (-> $.id 'boardNavMobile'), ->
         # Set links on load.
-        CatalogLinks.toggle.call input
+        CatalogLinks.set input.checked
 
   toggle: ->
+    $.event 'CloseMenu'
     $.set 'Header catalog links', useCatalog = @checked
+    CatalogLinks.set useCatalog
+  
+  set: (useCatalog) ->
+    path = if useCatalog then 'catalog' else ''
     for a in $$ 'a', $.id('boardNavDesktop')
       board = a.pathname.split('/')[1]
       continue if ['f', 'status', '4chan'].contains(board) or !board
@@ -34,7 +40,7 @@ CatalogLinks =
         else
           "//boards.4chan.org/#{board}/"
       else
-        a.pathname = "/#{board}/#{if useCatalog then 'catalog' else ''}"
+        a.pathname = "/#{board}/#{path}"
       a.title = if useCatalog then "#{a.title} - Catalog" else a.title.replace(/\ -\ Catalog$/, '')
     @title = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
 

@@ -5,6 +5,11 @@ module.exports = (grunt) ->
     process:
       data: pkg
 
+  shellOptions =
+    stdout:      true
+    stderr:      true
+    failOnError: true
+
   # Project configuration.
   grunt.initConfig
     pkg: pkg
@@ -68,27 +73,25 @@ module.exports = (grunt) ->
         'build-userscript'
       ]
 
-    exec:
+    shell:
       commit:
-        command: ->
-          release = "#{pkg.meta.name} v#{pkg.version}"
-          return [
-            'git checkout ' + pkg.meta.mainBranch,
-            'git commit -am "Release ' + release + '."',
-            'git tag -a ' + pkg.version + ' -m "' + release + '."',
-            'git tag -af stable-v3 -m "' + release + '."'
-          ].join(' && ');
+        options: shellOptions
+        command: [
+          'git checkout <%= pkg.meta.mainBranch %>',
+          'git commit -am "Release <%= pkg.meta.name %> v<%= pkg.version %>."',
+          'git tag -a <%= pkg.version %> -m "<%= pkg.meta.name %> v<%= pkg.version %>."',
+          'git tag -af stable-v3 -m "<%= pkg.meta.name %> v<%= pkg.version %>."'
+        ].join(' && ')
         stdout: true
 
       push:
-        command: 'git push origin --all && git push origin --tags'
-        stdout: true
+        options: shellOptions
+        command: 'git push origin --tags -f && git push origin --all' 
 
     watch:
       all:
         options:
           interrupt: true
-          nospawn:   true
         files: [
           'Gruntfile.coffee'
           'package.json'
@@ -120,7 +123,7 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-concat'
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.loadNpmTasks 'grunt-exec'
+  grunt.loadNpmTasks 'grunt-shell'
 
   grunt.registerTask 'default', [
     'build'
@@ -161,8 +164,8 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'release', [
     'default'
-    'exec:commit'
-    'exec:push'
+    'shell:commit'
+    'shell:push'
   ]
 
   grunt.registerTask 'patch',   [

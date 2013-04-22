@@ -97,10 +97,6 @@ a[href="javascript:;"] {
   z-index: 10;
 }
 /* Header */
-.fourchan-x body {
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
 .fixed.top body {
   padding-top: 2em;
 }
@@ -155,23 +151,17 @@ a[href="javascript:;"] {
   height: 10px;
   position: absolute;
 }
-#header-bar #toggle-header-bar {
+#boardNavDesktop #toggle-header-bar {
   display: none;
 }
-.fixed #header-bar #toggle-header-bar {
+.fixed #boardNavDesktop #toggle-header-bar {
   display: block;
 }
-.fixed #header-bar #toggle-header-bar {
-  cursor: n-resize;
-}
-.fixed.top header-bar #toggle-header-bar {
+.fixed.top boardNavDesktop #toggle-header-bar {
   top: 100%;
 }
-.fixed.bottom #header-bar #toggle-header-bar {
+.fixed.bottom #boardNavDesktop #toggle-header-bar {
   bottom: 100%;
-}
-.fixed #header-bar #header-bar.autohide #toggle-header-bar {
-  cursor: s-resize;
 }
 #header-bar a:not(.entry) {
   text-decoration: none;
@@ -203,16 +193,17 @@ a[href="javascript:;"] {
 
 /* Notifications */
 #notifications {
-  height: 0;
-  text-align: center;
   position: fixed;
   top: 0;
+  height: 0;
+  text-align: center;
   right: 0;
   left: 0;
   transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
 }
-.top:not(.autohide) ~ #notifications {
-  top: 2em;
+.fixed.top #header-bar #notifications {
+  position: absolute;
+  top: 100%;
 }
 .notification {
   color: #FFF;
@@ -257,6 +248,10 @@ a[href="javascript:;"] {
 }
 
 /* Settings */
+:root.fourchan-x body {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
 #overlay {
   background-color: rgba(0, 0, 0, .5);
   top: 0;
@@ -274,6 +269,7 @@ a[href="javascript:;"] {
   width: 900px;
   min-width: 0;
   max-width: 100%;
+  margin: auto;
   padding: 3px;
   top: 50%;
   left: 50%;
@@ -478,6 +474,8 @@ a.hide-announcement {
 #qp img {
   max-height: 300px;
   max-width: 500px;
+  max-height: 80vh;
+  max-width: 50vw;
 }
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .7);

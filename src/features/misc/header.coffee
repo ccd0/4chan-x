@@ -5,35 +5,31 @@ Header =
       innerHTML: '<i></i>'
 
     @menu = new UI.Menu 'header'
-    $.on @menuButton, 'click',           @menuToggle
-    $.on @toggle,     'mousedown',       @toggleBarVisibility
-    $.on window,      'load hashchange', Header.hashScroll
 
-    @positionToggler = $.el 'span',
-      textContent: 'Header Position'
-      className:   'header-position-link'
+    headerToggler = $.el 'label',
+      innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
+
+    @headerToggler   = headerToggler.firstElementChild
+
+    $.on @menuButton,     'click',           @menuToggle
+    $.on window,          'load hashchange', Header.hashScroll
+    $.on @headerToggler,  'change',          @toggleBarVisibility
 
     {createSubEntry} = Header
     subEntries = []
     for setting in ['sticky top', 'sticky bottom', 'top']
       subEntries.push createSubEntry setting
-    
+
+    subEntries.push {el: headerToggler}
+
     @addShortcut Header.menuButton
-    
+
     $.event 'AddMenuEntry',
-      type:  'header'
-      el:    @positionToggler
-      order: 108
+      type: 'header'
+      el: $.el 'span',
+        textContent: 'Header'
+      order: 105
       subEntries: subEntries
-
-    @headerToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{if Conf['Header auto-hide'] then 'checked' else ''}> Auto-hide header"
-    $.on @headerToggler.firstElementChild, 'change', @toggleBarVisibility
-
-    $.event 'AddMenuEntry',
-      type:  'header'
-      el:    @headerToggler
-      order: 109
 
     $.on d, 'CreateNotification', @createNotification
 
@@ -57,11 +53,8 @@ Header =
 
   toggle: $.el 'div',
     id: 'toggle-header-bar'
-  
-  settings: $.el 'div',
-    id: 'settings-container'
 
-  createSubEntry: (setting)->
+  createSubEntry: (setting) ->
     label = $.el 'label',
       textContent: "#{setting}"
 
@@ -85,7 +78,7 @@ Header =
     $.sync 'Header auto-hide',  Header.setBarVisibility
 
     $.add fullBoardList, [nav.childNodes...]
-    $.add nav, [fullBoardList, Header.shortcuts, Header.bar, Header.toggle, Header.settings]
+    $.add nav, [fullBoardList, Header.shortcuts, Header.bar, Header.toggle]
 
     if Conf['Custom Board Navigation']
       fullBoardList.hidden = true
@@ -181,11 +174,27 @@ Header =
         $.addClass doc, 'top'
 
   setBarVisibility: (hide) ->
-    Header.headerToggler.firstElementChild.checked = hide
+    Header.headerToggler.checked = hide
+    $.event 'CloseMenu'
     (if hide then $.addClass else $.rmClass) Header.nav, 'autohide'
 
+  toggleBarVisibility: (e) ->
+    return if e.type is 'mousedown' and e.button isnt 0 # not LMB
+    hide = if @nodeName is 'INPUT'
+      @checked
+    else
+      !$.hasClass Header.bar, 'autohide'
+    Conf['Header auto-hide'] = hide
+    $.set 'Header auto-hide', hide
+    Header.setBarVisibility hide
+    message = if hide
+      'The header bar will automatically hide itself.'
+    else
+      'The header bar will remain visible.'
+    new Notification 'info', message, 2
+
   hashScroll: ->
-    return unless post = @location.hash[1..]
+    return unless post = $.id @location.hash[1..]
     return if (Get.postFromRoot post).isHidden
     Header.scrollToPost post
 
@@ -195,20 +204,6 @@ Header =
       headRect = Header.bar.getBoundingClientRect()
       top += - headRect.top - headRect.height
     (if $.engine is 'webkit' then d.body else doc).scrollTop += top
-
-  toggleBarVisibility: (e) ->
-    return if e.type is 'mousedown' and e.button isnt 0 # not LMB
-    hide = if @nodeName is 'INPUT'
-      @checked
-    else
-      !$.hasClass Header.nav, 'autohide'
-    Header.setBarVisibility hide
-    message = if hide
-      'The header bar will automatically hide itself.'
-    else
-      'The header bar will remain visible.'
-    new Notification 'info', message, 2
-    $.set 'Header auto-hide', hide
 
   addShortcut: (el) ->
     shortcut = $.el 'span',

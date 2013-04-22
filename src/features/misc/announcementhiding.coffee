@@ -5,6 +5,7 @@ PSAHiding =
     $.addClass doc, 'hide-announcement'
 
     $.on d, '4chanXInitFinished', @setup
+
   setup: ->
     $.off d, '4chanXInitFinished', PSAHiding.setup
 
@@ -24,11 +25,11 @@ PSAHiding =
       $.rmClass doc, 'hide-announcement'
 
     $.sync 'hiddenPSAs', PSAHiding.sync
+
   toggle: (e) ->
     hide = $.hasClass @, 'hide-announcement'
     text = PSAHiding.trim $.id 'globalMessage'
-    $.get 'hiddenPSAs', [], (item) ->
-      {hiddenPSAs} = item
+    $.get 'hiddenPSAs', [], ({hiddenPSAs}) -> 
       if hide
         hiddenPSAs.push text
       else
@@ -37,12 +38,13 @@ PSAHiding =
       hiddenPSAs = hiddenPSAs[-5..]
       PSAHiding.sync hiddenPSAs
       $.set 'hiddenPSAs', hiddenPSAs
+
   sync: (hiddenPSAs) ->
     {btn} = PSAHiding
     psa   = $.id 'globalMessage'
-    [psa.hidden, btn.innerHTML, btn.className] = if PSAHiding.trim(psa) in hiddenPSAs
-      [true,  '<span>[&nbsp;+&nbsp;]</span>', 'show-announcement']
+    [psa.hidden, btn.firstChild.textContent, btn.className] = if PSAHiding.trim(psa) in hiddenPSAs
+      [true,  '[\u00A0+\u00A0]', 'show-announcement'] 
     else
-      [false, '<span>[&nbsp;-&nbsp;]</span>', 'hide-announcement']
+      [false, '[\u00A0-\u00A0]', 'hide-announcement'] 
   trim: (psa) ->
     psa.textContent.replace(/\W+/g, '').toLowerCase()
