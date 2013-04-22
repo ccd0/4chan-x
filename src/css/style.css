@@ -799,8 +799,7 @@ a:only-of-type > .remove {
 .menu-button {
   display: inline-block;
   position: relative;
-}
-.menu-button i {
+  cursor: pointer;
   border-top:   6px solid;
   border-right: 4px solid transparent;
   border-left:  4px solid transparent;
