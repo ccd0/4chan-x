@@ -53,6 +53,10 @@ Header =
       Header.footer = footer = $.id 'boardNavDesktopFoot'
       Header.setFooterVisibility Conf['Footer auto-hide']
       $.sync 'Footer auto-hide', Header.setFooterVisibility
+      cs = $.id('settingsWindowLink')
+      cs.textContent = 'Catalog Settings'
+      if g.VIEW is 'catalog'
+        Header.addShortcut cs
 
   bar: $.el 'div',
     id: 'notifications'

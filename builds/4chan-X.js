@@ -4697,12 +4697,17 @@
         }), Header.setBoardList);
       });
       return $.ready(function() {
-        var footer;
+        var cs, footer;
 
         $.add(d.body, Header.hover);
         Header.footer = footer = $.id('boardNavDesktopFoot');
         Header.setFooterVisibility(Conf['Footer auto-hide']);
-        return $.sync('Footer auto-hide', Header.setFooterVisibility);
+        $.sync('Footer auto-hide', Header.setFooterVisibility);
+        cs = $.id('settingsWindowLink');
+        cs.textContent = 'Catalog Settings';
+        if (g.VIEW === 'catalog') {
+          return Header.addShortcut(cs);
+        }
       });
     },
     bar: $.el('div', {
