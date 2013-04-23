@@ -32,6 +32,9 @@ Header =
       innerHTML: '<input type=checkbox name="Header catalog links"> Use catalog board links'
     customNavToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
+    editCustomNav = $.el 'a',
+      textContent: 'Edit custom board navigation'
+      href: 'javascript:;'
 
     @headerToggler      = headerToggler.firstElementChild
     @barPositionToggler = barPositionToggler.firstElementChild
@@ -42,6 +45,7 @@ Header =
     $.on @barPositionToggler, 'change', @toggleBarPosition
     $.on @catalogToggler,     'change', @toggleCatalogLinks
     $.on @customNavToggler,   'change', @toggleCustomNav
+    $.on editCustomNav,       'click',  @editCustomNav
 
     @setBarVisibility Conf['Header auto-hide']
     @setBarPosition   Conf['Bottom header']
@@ -58,6 +62,7 @@ Header =
         {el: barPositionToggler}
         {el: catalogToggler}
         {el: customNavToggler}
+        {el: editCustomNav}
       ]
 
     $.asap (-> d.body), ->
@@ -196,6 +201,11 @@ Header =
   toggleCustomNav: ->
     $.cb.checked.call @
     Header.setCustomNav @checked
+
+  editCustomNav: ->
+    Settings.open 'Rice'
+    settings = $.id 'fourchanx-settings'
+    $('input[name=boardnav]', settings).focus()
 
   hashScroll: ->
     return unless post = $.id @location.hash[1..]
