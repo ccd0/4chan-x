@@ -30,6 +30,10 @@ Header =
       innerHTML: '<input type=checkbox name="Bottom header"> Bottom header'
     catalogToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Header catalog links"> Use catalog board links'
+    topBoardToggler = $.el 'label',
+      innerHTML: '<input type=checkbox name="Top Board List"> Top original board list'
+    botBoardToggler = $.el 'label',
+      innerHTML: '<input type=checkbox name="Bottom Board List"> Bottom original board list'
     customNavToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
     editCustomNav = $.el 'a',
@@ -39,19 +43,27 @@ Header =
     @headerToggler      = headerToggler.firstElementChild
     @barPositionToggler = barPositionToggler.firstElementChild
     @catalogToggler     = catalogToggler.firstElementChild
+    @topBoardToggler    = topBoardToggler.firstElementChild
+    @botBoardToggler    = botBoardToggler.firstElementChild
     @customNavToggler   = customNavToggler.firstElementChild
 
     $.on @headerToggler,      'change', @toggleBarVisibility
     $.on @barPositionToggler, 'change', @toggleBarPosition
     $.on @catalogToggler,     'change', @toggleCatalogLinks
+    $.on @topBoardToggler,    'change', @toggleOriginalBoardList
+    $.on @botBoardToggler,    'change', @toggleOriginalBoardList
     $.on @customNavToggler,   'change', @toggleCustomNav
     $.on editCustomNav,       'click',  @editCustomNav
 
     @setBarVisibility Conf['Header auto-hide']
     @setBarPosition   Conf['Bottom header']
+    @setTopBoardList  Conf['Top Board List']
+    @setBotBoardList  Conf['Bottom Board List']
 
-    $.sync 'Header auto-hide', @setBarVisibility
-    $.sync 'Bottom header',    @setBarPosition
+    $.sync 'Header auto-hide',  @setBarVisibility
+    $.sync 'Bottom header',     @setBarPosition
+    $.sync 'Top Board List',    @setTopBoardList
+    $.sync 'Bottom Board List', @setBotBoardList
 
     $.event 'AddMenuEntry',
       type: 'header'
@@ -61,6 +73,8 @@ Header =
         {el: headerToggler}
         {el: barPositionToggler}
         {el: catalogToggler}
+        {el: topBoardToggler}
+        {el: botBoardToggler}
         {el: customNavToggler}
         {el: editCustomNav}
       ]
@@ -71,6 +85,13 @@ Header =
       # it might be incomplete otherwise.
       $.asap (-> $.id('boardNavMobile') or d.readyState is 'complete'), Header.setBoardList
       $.prepend d.body, headerEl
+
+    $.ready ->
+      if a = $ "a[href*='/#{g.BOARD}/']", $.id 'boardNavDesktopFoot'
+        a.className = 'current'
+
+      Header.setCatalogLinks Conf['Header catalog links']
+      $.sync 'Header catalog links', Header.setCatalogLinks
 
   setBoardList: ->
     nav = $.id 'boardNavDesktop'
@@ -85,11 +106,9 @@ Header =
     $.on btn, 'click', Header.toggleBoardList
     $.add fullBoardList, btn
 
-    Header.setCatalogLinks   Conf['Header catalog links']
     Header.setCustomNav      Conf['Custom Board Navigation']
     Header.generateBoardList Conf['boardnav']
 
-    $.sync 'Header catalog links',    Header.setCatalogLinks
     $.sync 'Custom Board Navigation', Header.setCustomNav
     $.sync 'boardnav',                Header.generateBoardList
 
@@ -179,7 +198,11 @@ Header =
 
   setCatalogLinks: (useCatalog) ->
     Header.catalogToggler.checked = useCatalog
-    as = $$ '#board-list a[href*="boards.4chan.org"]', Header.bar
+    as = $$ [
+      '#board-list a[href*="boards.4chan.org"]'
+      '#boardNavDesktop a[href*="boards.4chan.org"]'
+      '#boardNavDesktopFoot a[href*="boards.4chan.org"]'
+    ].join ', '
     path = if useCatalog then 'catalog' else ''
     for a in as
       continue if a.dataset.only
@@ -188,6 +211,22 @@ Header =
   toggleCatalogLinks: ->
     $.cb.checked.call @
     Header.setCatalogLinks @checked
+
+  setTopBoardList: (show) ->
+    Header.topBoardToggler.checked = show
+    if show
+      $.addClass doc, 'show-original-top-board-list'
+    else
+      $.rmClass  doc, 'show-original-top-board-list'
+  setBotBoardList: (show) ->
+    Header.botBoardToggler.checked = show
+    if show
+      $.addClass doc, 'show-original-bot-board-list'
+    else
+      $.rmClass  doc, 'show-original-bot-board-list'
+  toggleOriginalBoardList: ->
+    $.cb.checked.call @
+    (if @name is 'Top Board List' then Header.setTopBoardList else Header.setBotBoardList) @checked
 
   setCustomNav: (show) ->
     Header.customNavToggler.checked = show

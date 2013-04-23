@@ -99,9 +99,10 @@ a[href="javascript:;"] {
 :root.bottom-header body {
   margin-bottom: 2em;
 }
-.fourchan-x #boardNavDesktop,
-.fourchan-x #navtopright,
-.fourchan-x #boardNavDesktopFoot {
+:root.fourchan-x #navtopright,
+:root.fourchan-x #navbotright,
+:root.fourchan-x:not(.show-original-top-board-list) #boardNavDesktop,
+:root.fourchan-x:not(.show-original-bot-board-list) #boardNavDesktopFoot {
   display: none !important;
 }
 #header {
