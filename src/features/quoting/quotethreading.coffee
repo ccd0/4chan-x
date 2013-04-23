@@ -16,7 +16,7 @@ QuoteThreading =
     $.event 'AddMenuEntry',
       type:  'header'
       el:    @controls
-      order: 115
+      order: 98
 
     $.on d, '4chanXInitFinished', @setup
 

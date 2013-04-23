@@ -17,7 +17,7 @@ Header =
 
     {createSubEntry} = Header
     subEntries = []
-    for setting in ['sticky top', 'sticky bottom', 'top', 'hide']
+    for setting in ['Sticky top', 'Sticky bottom', 'Top', 'Hide']
       subEntries.push createSubEntry setting
 
     subEntries.push {el: headerToggler}
@@ -50,7 +50,7 @@ Header =
     id: 'hoverUI'
 
   toggle: $.el 'div',
-    id: 'toggle-header-bar'
+    id: 'scroll-marker'
 
   createSubEntry: (setting) ->
     label = $.el 'label',
@@ -167,15 +167,15 @@ Header =
     $.rmClass doc, 'bottom'
     $.rmClass doc, 'hide'
     switch setting
-      when 'sticky top'
-        $.addClass doc, 'fixed'
+      when 'Sticky top'
         $.addClass doc, 'top'
-      when 'sticky bottom'
+        $.addClass doc, 'fixed'
+      when 'Sticky bottom'
         $.addClass doc, 'fixed'
         $.addClass doc, 'bottom'
-      when 'top'
+      when 'Top'
         $.addClass doc, 'top'
-      when 'hide'
+      when 'Hide'
         $.addClass doc, 'hide'
 
   setBarVisibility: (hide) ->
@@ -217,7 +217,7 @@ Header =
 
   scrollToPost: (post) ->
     {top} = post.getBoundingClientRect()
-    if Conf['Boards Navigation'] is 'sticky top'
+    if Conf['Boards Navigation'] is 'Sticky top'
       headRect = Header.bar.getBoundingClientRect()
       top += - headRect.top - headRect.height
     <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop += top

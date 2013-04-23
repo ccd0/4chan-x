@@ -1,6 +1,6 @@
 Unread =
   init: ->
-    return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Tab Icon']
+    return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Favicon']
 
     @db = new DataBoard 'lastReadPosts', @sync
     @hr = $.el 'hr',
@@ -26,22 +26,21 @@ Unread =
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
-    if Conf['Scroll to Last Read Post']
-      $.on window, 'load', (posts) =>
-        Unread.scroll.apply @, posts
 
-  scroll: (posts) ->
-    # Let the header's onload callback handle it.
-    return if (hash = location.hash.match /\d+/) and hash[0] of @posts
-    if Unread.posts.length
-      # Scroll to before the first unread post.
-      while root = $.x 'preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root
-        break unless (Get.postFromRoot root).isHidden
-      return unless root
-      root.scrollIntoView false
-    else if posts.length
-      # Scroll to the last read post.
-      Header.scrollToPost (posts[post.length - 1]).nodes.root
+    return unless Conf['Scroll to Last Read Post']
+
+    $.on window, 'load', ->
+      # Let the header's onload callback handle it.
+      return if (hash = location.hash.match /\d+/) and hash[0] of @posts
+      if Unread.posts.length
+        # Scroll to before the first unread post.
+        while root = $.x 'preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root
+          break unless (Get.postFromRoot root).isHidden
+        return unless root
+        root.scrollIntoView false
+      else if posts.length
+        # Scroll to the last read post.
+        Header.scrollToPost (posts[posts.length - 1]).nodes.root
 
   sync: ->
     lastReadPost = Unread.db.get
@@ -153,7 +152,7 @@ Unread =
         , $.SECOND
       <% } %>
 
-    return unless Conf['Unread Tab Icon']
+    return unless Conf['Unread Favicon']
 
     Favicon.el.href =
       if g.DEAD

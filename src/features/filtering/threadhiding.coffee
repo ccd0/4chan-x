@@ -1,6 +1,6 @@
 ThreadHiding =
   init: ->
-    return if g.VIEW isnt 'index' or !Conf['Thread Hiding'] and !Conf['Thread Hiding Link']
+    return if g.VIEW isnt 'index' or !Conf['Thread Hiding Buttons'] and !Conf['Thread Hiding Link']
 
     @db = new DataBoard 'hiddenThreads'
     @syncCatalog()
@@ -11,7 +11,7 @@ ThreadHiding =
   node: ->
     if data = ThreadHiding.db.get {boardID: @board.ID, threadID: @ID}
       ThreadHiding.hide @, data.makeStub
-    return unless Conf['Thread Hiding']
+    return unless Conf['Thread Hiding Buttons']
     $.prepend @OP.nodes.info, ThreadHiding.makeButton @, 'hide'
 
   syncCatalog: ->

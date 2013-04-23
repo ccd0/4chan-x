@@ -71,7 +71,11 @@ Settings =
       innerHTML: """
         <nav>
           <div class=sections-list></div>
+          <p class='imp-exp-result warning'></p>
           <div class=credits>
+              <a class=export>Export</a> |
+              <a class=import>Import</a> |
+              <input type=file style='display: none;'>
             <a href='<%= meta.page %>' target=_blank><%= meta.name %></a> |
             <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md' target=_blank>#{g.VERSION}</a> |
             <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |
@@ -83,6 +87,10 @@ Settings =
 
     Settings.overlay = overlay = $.el 'div',
       id: 'overlay'
+
+    $.on $('.export', Settings.dialog), 'click',  Settings.export
+    $.on $('.import', Settings.dialog), 'click',  Settings.import
+    $.on $('input',   Settings.dialog), 'change', Settings.onImport
 
     links = []
     for section in Settings.sections
@@ -131,18 +139,6 @@ Settings =
     section.scrollTop = 0
 
   main: (section) ->
-    section.innerHTML = """
-      <div class=imp-exp>
-        <button class=export>Export Settings</button>
-        <button class=import>Import Settings</button>
-        <input type=file style='visibility:hidden'>
-      </div>
-      <p class=imp-exp-result></p>
-    """
-    $.on $('.export', section), 'click',  Settings.export
-    $.on $('.import', section), 'click',  Settings.import
-    $.on $('input',   section), 'change', Settings.onImport
-
     items  = {}
     inputs = {}
     for key, obj of Config.main
@@ -223,7 +219,7 @@ Settings =
 
   onImport: ->
     return unless file = @files[0]
-    output = @parentNode.nextElementSibling
+    output = $('.imp-exp-result')
     unless confirm 'Your current settings will be entirely overwritten, are you sure?'
       output.textContent = 'Import aborted.'
       return
@@ -250,7 +246,7 @@ Settings =
         'Show Stubs': 'Stubs'
         'Image Auto-Gif': 'Auto-GIF'
         'Expand From Current': ''
-        'Unread Favicon': 'Unread Tab Icon'
+        'Unread Tab Icon': 'Unread Favicon'
         'Post in Title': 'Thread Excerpt'
         'Auto Hide QR': ''
         'Open Reply in New Tab': ''
@@ -259,6 +255,8 @@ Settings =
         'Quote Preview': 'Quote Previewing'
         'Indicate OP quote': 'Mark OP Quotes'
         'Indicate Cross-thread Quotes': 'Mark Cross-thread Quotes'
+        'Reply Hiding': 'Reply Hiding Buttons'
+        'Thread Hiding': 'Thread Hiding Buttons'
         # filter
         'uniqueid': 'uniqueID'
         'mod': 'capcode'
@@ -459,7 +457,7 @@ Settings =
       </fieldset>
 
       <fieldset>
-        <legend>Unread Tab Icon <span class=warning #{if Conf['Unread Tab Icon'] then 'hidden' else ''}>is disabled.</span></legend>
+        <legend>Unread Favicon <span class=warning #{if Conf['Unread Favicon'] then 'hidden' else ''}>is disabled.</span></legend>
         <select name=favicon>
           <option value=ferongr>ferongr</option>
           <option value=xat->xat-</option>
@@ -539,7 +537,7 @@ Settings =
 
   favicon: ->
     Favicon.switch()
-    Unread.update() if g.VIEW is 'thread' and Conf['Unread Tab Icon']
+    Unread.update() if g.VIEW is 'thread' and Conf['Unread Favicon']
     @nextElementSibling.innerHTML = """
       <img src=#{Favicon.default}>
       <img src=#{Favicon.unreadSFW}>

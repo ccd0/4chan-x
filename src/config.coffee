@@ -3,7 +3,7 @@ Config =
     'Miscellaneous':
       'Catalog Links': [
         true
-        'Turn Navigation links into links to each board\'s catalog.'
+        'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'
       ]
       'External Catalog': [
         false
@@ -93,11 +93,11 @@ Config =
         true
         'Hide replies of hidden posts, recursively.'
       ]
-      'Thread Hiding': [
+      'Thread Hiding Buttons': [
         true
         'Add buttons to hide entire threads.'
       ]
-      'Reply Hiding': [
+      'Reply Hiding Buttons': [
         true
         'Add buttons to hide single replies.'
       ]
@@ -185,7 +185,7 @@ Config =
         false
         'Hide the unread posts count when it reaches 0.'
       ]
-      'Unread Tab Icon': [
+      'Unread Favicon': [
         true
         'Show a different favicon when there are unread posts.'
       ]
@@ -739,7 +739,7 @@ http://iqdb.org/?url=%TURL
 
   'Custom CSS': false
 
-  'Boards Navigation': 'sticky top'
+  'Boards Navigation': 'Sticky top'
 
   'Header auto-hide': false
 
@@ -751,7 +751,7 @@ http://iqdb.org/?url=%TURL
 
   backlink: '>>%id'
 
-  fileInfo: '%l (%p%s, %r)'
+  fileInfo: '%L (%p%s, %r)'
 
   favicon: 'ferongr'
 
@@ -787,11 +787,11 @@ box-shadow: inset 2px 2px 2px rgba(0,0,0,0.2);
       'Toggle the full board list.'
     ]
     'Open empty QR': [
-      'q'
+      'l'
       'Open QR without post number inserted.'
     ]
     'Open QR': [
-      'Shift+q'
+      'Shift+l'
       'Open QR with post number inserted.'
     ]
     'Open settings': [
