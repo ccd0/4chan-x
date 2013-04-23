@@ -489,6 +489,10 @@ http://iqdb.org/?url=%TURL
       'Left'
       'Jump to the previous page.'
     ]
+    'Open catalog': [
+      'Shift+c'
+      'Open the catalog of the current board'
+    ]
     # Thread Navigation
     'Next thread': [
       'Down'

@@ -77,6 +77,11 @@ Keybinds =
       when Conf['Previous page']
         if form = $ '.prev form'
           window.location = form.action
+      when Conf['Open catalog']
+        if Conf['External Catalog']
+          window.location = CatalogLinks.external(g.BOARD.ID)
+        else
+          window.location = "/#{g.BOARD}/catalog"
       # Thread Navigation
       when Conf['Next thread']
         return if g.VIEW is 'thread'
