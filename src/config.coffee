@@ -141,9 +141,11 @@ Config =
   ].join '\n'
   'Custom CSS': false
   Header:
-    'Header catalog links': false
-    'Header auto-hide': false
-    'Bottom header': false
+    'Header auto-hide':        false
+    'Bottom header':           false
+    'Header catalog links':    false
+    'Top Board List':          false
+    'Bottom Board List':       false
     'Custom Board Navigation': true
   boardnav: '[current-title / toggle-all]'
   time: '%m/%d/%y(%a)%H:%M:%S'
