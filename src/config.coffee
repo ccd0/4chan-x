@@ -2,7 +2,6 @@ Config =
   main:
     'Miscellaneous':
       'Enable 4chan\'s Extension':    [false, 'Compatibility between <%= meta.name %> and 4chan\'s inline extension is NOT guaranteed.']
-      'Custom Board Navigation':      [true,  'Show custom links instead of the full board list']
       'Announcement Hiding':          [true,  'Add button to hide 4chan announcements.']
       '404 Redirect':                 [true,  'Redirect dead threads and images.']
       'Keybinds':                     [true,  'Bind actions to keyboard shortcuts.']
@@ -141,9 +140,11 @@ Config =
     '#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/'
   ].join '\n'
   'Custom CSS': false
-  'Bottom header': false
-  'Header auto-hide': false
-  'Header catalog links': false
+  Header:
+    'Header catalog links': false
+    'Header auto-hide': false
+    'Bottom header': false
+    'Custom Board Navigation': true
   boardnav: '[current-title / toggle-all]'
   time: '%m/%d/%y(%a)%H:%M:%S'
   backlink: '>>%id'
