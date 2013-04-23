@@ -239,7 +239,7 @@ QR =
           elapsed = Math.floor (now - start) / $.SECOND
           if elapsed >= 0 # clock changed since then?
             seconds = Math.max seconds, types[type] - elapsed
-            if hasFile and upSpd
+            if Conf['Cooldown Prediction'] and hasFile and upSpd
               seconds -= Math.floor post.file.size / upSpd * upSpdAccuracy
               seconds  = Math.max seconds, 0
         unless start <= now <= cooldown.timeout
