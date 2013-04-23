@@ -24,20 +24,24 @@ Header =
     $.on window, 'load hashchange', Header.hashScroll
     $.on d, 'CreateNotification', @createNotification
 
-    catalogToggler = $.el 'label',
-      innerHTML: '<input type=checkbox name="Header catalog links"> Use catalog board links'
     headerToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
     barPositionToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Bottom header"> Bottom header'
+    catalogToggler = $.el 'label',
+      innerHTML: '<input type=checkbox name="Header catalog links"> Use catalog board links'
+    customNavToggler = $.el 'label',
+      innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
 
-    @catalogToggler     = catalogToggler.firstElementChild
     @headerToggler      = headerToggler.firstElementChild
     @barPositionToggler = barPositionToggler.firstElementChild
+    @catalogToggler     = catalogToggler.firstElementChild
+    @customNavToggler   = customNavToggler.firstElementChild
 
-    $.on @catalogToggler,     'change', @toggleCatalogLinks
     $.on @headerToggler,      'change', @toggleBarVisibility
     $.on @barPositionToggler, 'change', @toggleBarPosition
+    $.on @catalogToggler,     'change', @toggleCatalogLinks
+    $.on @customNavToggler,   'change', @toggleCustomNav
 
     @setBarVisibility Conf['Header auto-hide']
     @setBarPosition   Conf['Bottom header']
@@ -50,9 +54,10 @@ Header =
       el: $.el 'span', textContent: 'Header'
       order: 105
       subEntries: [
-        {el: catalogToggler}
         {el: headerToggler}
         {el: barPositionToggler}
+        {el: catalogToggler}
+        {el: customNavToggler}
       ]
 
     $.asap (-> d.body), ->
@@ -67,27 +72,24 @@ Header =
     if a = $ "a[href*='/#{g.BOARD}/']", nav
       a.className = 'current'
     fullBoardList = $ '#full-board-list', Header.bar
-    $.add fullBoardList, [nav.childNodes...]
+    fullBoardList.innerHTML = nav.innerHTML
+    $.rm $ '#navtopright', fullBoardList
+    btn = $.el 'span',
+      className: 'hide-board-list-button brackets-wrap'
+      innerHTML: '<a href=javascript:;> - </a>'
+    $.on btn, 'click', Header.toggleBoardList
+    $.add fullBoardList, btn
 
-    if Conf['Custom Board Navigation']
-      Header.generateBoardList Conf['boardnav']
-      $.sync 'boardnav', Header.generateBoardList
-      btn = $.el 'span',
-        className: 'hide-board-list-button brackets-wrap'
-        innerHTML: '<a href=javascript:;> - </a>'
-      $.on btn, 'click', Header.toggleBoardList
-      $.add fullBoardList, btn
-    else
-      $.rm $ '#custom-board-list', Header.bar
-      fullBoardList.hidden = false
+    Header.setCatalogLinks   Conf['Header catalog links']
+    Header.setCustomNav      Conf['Custom Board Navigation']
+    Header.generateBoardList Conf['boardnav']
 
-    Header.setCatalogLinks Conf['Header catalog links']
-    $.sync 'Header catalog links', Header.setCatalogLinks
+    $.sync 'Header catalog links',    Header.setCatalogLinks
+    $.sync 'Custom Board Navigation', Header.setCustomNav
+    $.sync 'boardnav',                Header.generateBoardList
 
   generateBoardList: (text) ->
-    unless list = $ '#custom-board-list', Header.bar
-      # init'd with the custom board list disabled.
-      return
+    list = $ '#custom-board-list', Header.bar
     $.rmAll list
     return unless text
     as = $$('#full-board-list a', Header.bar)[0...-2] # ignore the Settings and Home links
@@ -136,18 +138,6 @@ Header =
     custom.hidden = !showBoardList
     full.hidden   =  showBoardList
 
-  setCatalogLinks: (useCatalog) ->
-    Header.catalogToggler.checked = useCatalog
-    as = $$ '#board-list a[href*="boards.4chan.org"]', Header.bar
-    path = if useCatalog then 'catalog' else ''
-    for a in as
-      continue if a.dataset.only
-      a.pathname = "/#{a.pathname.split('/')[1]}/#{path}"
-    return
-  toggleCatalogLinks: ->
-    $.cb.checked.call @
-    Header.setCatalogLinks @checked
-
   setBarVisibility: (hide) ->
     Header.headerToggler.checked = hide
     $.event 'CloseMenu'
@@ -181,6 +171,31 @@ Header =
   toggleBarPosition: ->
     $.cb.checked.call @
     Header.setBarPosition @checked
+
+  setCatalogLinks: (useCatalog) ->
+    Header.catalogToggler.checked = useCatalog
+    as = $$ '#board-list a[href*="boards.4chan.org"]', Header.bar
+    path = if useCatalog then 'catalog' else ''
+    for a in as
+      continue if a.dataset.only
+      a.pathname = "/#{a.pathname.split('/')[1]}/#{path}"
+    return
+  toggleCatalogLinks: ->
+    $.cb.checked.call @
+    Header.setCatalogLinks @checked
+
+  setCustomNav: (show) ->
+    Header.customNavToggler.checked = show
+    cust = $ '#custom-board-list', Header.bar
+    full = $ '#full-board-list',   Header.bar
+    btn  = $ '.hide-board-list-button', full
+    [cust.hidden, full.hidden, btn.hidden] = if show
+      [false, true, false]
+    else
+      [true, false, true]
+  toggleCustomNav: ->
+    $.cb.checked.call @
+    Header.setCustomNav @checked
 
   hashScroll: ->
     return unless post = $.id @location.hash[1..]
