@@ -14,6 +14,7 @@ Main =
     flatten null, Config
     for db in DataBoards
       Conf[db] = boards: {}
+    Conf['archivers'] = {}
     $.get Conf, Main.initFeatures
 
     $.on d, '4chanMainInit', Main.initStyle
@@ -64,6 +65,7 @@ Main =
 
     init
       'Polyfill':                 Polyfill
+      'Redirection':              Redirect
       'Header':                   Header
       'Catalog Links':            CatalogLinks
       'Settings':                 Settings

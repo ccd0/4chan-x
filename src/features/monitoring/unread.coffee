@@ -30,7 +30,7 @@ Unread =
       $.on window, 'load', (posts) =>
         Unread.scroll.apply @, posts
 
-  scroll: ->
+  scroll: (posts) ->
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of @posts
     if Unread.posts.length

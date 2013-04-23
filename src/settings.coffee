@@ -32,6 +32,7 @@ Settings =
     Settings.addSection 'Sauce',    Settings.sauce
     Settings.addSection 'Rice',     Settings.rice
     Settings.addSection 'Keybinds', Settings.keybinds
+
     $.on d, 'AddSettingsSection',   Settings.addSection
     $.on d, 'OpenSettings',         (e) -> Settings.open e.detail
 
@@ -379,6 +380,11 @@ Settings =
   rice: (section) ->
     section.innerHTML = """
       <fieldset>
+        <legend>Archiver</legend>
+        Select an Archiver for this board:
+        <select name=archiver></select>
+      </fieldset>
+      <fieldset>
         <legend>Custom Board Navigation <span class=warning #{if Conf['Custom Board Navigation'] then 'hidden' else ''}>is disabled.</span></legend>
         <div><input name=boardnav class=field spellcheck=false></div>
         <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>
@@ -457,6 +463,21 @@ Settings =
       else
         'input'
       $.on input, event, $.cb.value
+
+    # Archiver
+    archiver = $ 'select[name=archiver]', section
+    toSelect = Redirect.select g.BOARD.ID
+    toSelect = ['No Archive Available'] unless toSelect[0]
+
+    $.add archiver, $.el('option', {textContent: name}) for name in toSelect
+
+    if toSelect[1]
+      Conf['archivers'][g.BOARD]
+      archiver.value = Conf['archivers'][g.BOARD] or toSelect[0]
+      $.on archiver, 'change', ->
+        Conf['archivers'][g.BOARD] = @value
+        $.set 'archivers', Conf.archivers
+
     $.get items, (items) ->
       for key, val of items
         input = inputs[key]

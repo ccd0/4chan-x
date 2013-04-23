@@ -5156,6 +5156,17 @@
   };
 
   Redirect = {
+    init: function() {
+      return $.sync('archs', this.updateArchives);
+    },
+    updateArchives: function() {
+      return $.get('archivers', {}, function(_arg) {
+        var archivers;
+
+        archivers = _arg.archivers;
+        return Conf['archivers'] = archivers;
+      });
+    },
     image: function(boardID, filename) {
       switch (boardID) {
         case 'a':
@@ -5196,91 +5207,99 @@
       }
     },
     post: function(boardID, postID) {
-      switch (boardID) {
-        case 'a':
-        case 'co':
-        case 'gd':
-        case 'jp':
-        case 'm':
-        case 'q':
-        case 'sp':
-        case 'tg':
-        case 'tv':
-        case 'v':
-        case 'vg':
-        case 'vp':
-        case 'vr':
-        case 'wsg':
-          return "https://archive.foolz.us/_/api/chan/post/?board=" + boardID + "&num=" + postID;
-        case 'u':
-          return "https://nsfw.foolz.us/_/api/chan/post/?board=" + boardID + "&num=" + postID;
-        case 'c':
-        case 'int':
-        case 'out':
-        case 'po':
-          return "//archive.thedarkcave.org/_/api/chan/post/?board=" + boardID + "&num=" + postID;
-        case 'hr':
-        case 'x':
-          return "http://archive.4plebs.org/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+      var archive, name, _base, _ref;
+
+      if (Redirect.post[boardID] == null) {
+        _ref = this.archiver;
+        for (name in _ref) {
+          archive = _ref[name];
+          if (archive.type === 'foolfuuka' && archive.boards.contains(boardID)) {
+            Redirect.post[boardID] = archive.base;
+            break;
+          }
+        }
+        (_base = Redirect.post)[boardID] || (_base[boardID] = false);
+      }
+      if (Redirect.post[boardID]) {
+        return "" + Redirect.post[boardID] + "/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+      } else {
+        return null;
       }
     },
+    select: function(board) {
+      var archive, name, _ref, _results;
+
+      _ref = this.archiver;
+      _results = [];
+      for (name in _ref) {
+        archive = _ref[name];
+        if (!archive.boards.contains(board)) {
+          continue;
+        }
+        _results.push(name);
+      }
+      return _results;
+    },
     to: function(data) {
-      var boardID;
+      var arch, archive, boardID;
 
       boardID = data.boardID;
-      switch (boardID) {
-        case 'a':
-        case 'co':
-        case 'gd':
-        case 'jp':
-        case 'm':
-        case 'q':
-        case 'sp':
-        case 'tg':
-        case 'tv':
-        case 'v':
-        case 'vg':
-        case 'vp':
-        case 'vr':
-        case 'wsg':
-          return Redirect.path('//archive.foolz.us', 'foolfuuka', data);
-        case 'u':
-          return Redirect.path('//nsfw.foolz.us', 'foolfuuka', data);
-        case 'int':
-        case 'out':
-        case 'po':
-          return Redirect.path('//archive.thedarkcave.org', 'foolfuuka', data);
-        case 'hr':
-          return Redirect.path('http://archive.4plebs.org', 'foolfuuka', data);
-        case 'ck':
-        case 'fa':
-        case 'lit':
-        case 's4s':
-          return Redirect.path('//fuuka.warosu.org', 'fuuka', data);
-        case 'diy':
-        case 'g':
-        case 'sci':
-          return Redirect.path('//archive.installgentoo.net', 'fuuka', data);
-        case 'cgl':
-        case 'mu':
-        case 'w':
-          return Redirect.path('//rbt.asia', 'fuuka', data);
-        case 'an':
-        case 'fit':
-        case 'k':
-        case 'mlp':
-        case 'r9k':
-        case 'toy':
-        case 'x':
-          return Redirect.path('http://archive.heinessen.com', 'fuuka', data);
-        case 'c':
-          return Redirect.path('//archive.nyafuu.org', 'fuuka', data);
-        default:
-          if (data.threadID) {
-            return "//boards.4chan.org/" + boardID + "/";
-          } else {
-            return '';
-          }
+      if ((arch = Conf.archivers[boardID]) == null) {
+        Conf.archivers[boardID] = arch = this.select(boardID)[0];
+        $.set('archivers', Conf.archivers);
+      }
+      return (arch && (archive = this.archiver[arch]) ? Redirect.path(archive.base, archive.type, data) : data.threadID ? "//boards.4chan.org/" + boardID + "/" : null);
+    },
+    archiver: {
+      'Foolz': {
+        base: 'https://archive.foolz.us',
+        boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'],
+        type: 'foolfuuka'
+      },
+      'NSFWFoolz': {
+        base: 'https://nsfw.foolz.us',
+        boards: ['u'],
+        type: 'foolfuuka'
+      },
+      'TheDarkCave': {
+        base: 'http://archive.thedarkcave.org',
+        boards: ['c', 'int', 'out', 'po'],
+        type: 'foolfuuka'
+      },
+      '4plebs': {
+        base: 'http://archive.4plebs.org',
+        boards: ['hr', 'tg', 'tv', 'x'],
+        base: 'foolfuuka'
+      },
+      'Warosu': {
+        base: '//fuuka.warosu.org',
+        boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg'],
+        type: 'fuuka'
+      },
+      'RebeccaBlackTech': {
+        base: '//rbt.asia',
+        boards: ['an', 'cgl', 'g', 'mu', 'w'],
+        type: 'fuuka_mail'
+      },
+      'InstallGentoo': {
+        base: '//archive.installgentoo.net',
+        boards: ['diy', 'g', 'sci'],
+        type: 'fuuka'
+      },
+      'Heinessen': {
+        base: 'http://archive.heinessen.com',
+        boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'],
+        type: 'fuuka'
+      },
+      'Cliche': {
+        base: '//www.cliché.net/4chan/cgi-board.pl',
+        boards: ['e'],
+        type: 'fuuka'
+      },
+      'NyaFuu': {
+        base: '//archive.nyafuu.org',
+        boards: ['c', 'w'],
+        type: 'fuuka'
       }
     },
     path: function(base, archiver, data) {
@@ -6338,7 +6357,7 @@
         });
       }
     },
-    scroll: function() {
+    scroll: function(posts) {
       var hash, root;
 
       if ((hash = location.hash.match(/\d+/)) && hash[0] in this.posts) {
@@ -8897,9 +8916,9 @@
       return $.on(sauce, 'change', $.cb.value);
     },
     rice: function(section) {
-      var event, input, inputs, items, name, _i, _len, _ref;
+      var archiver, event, input, inputs, items, name, toSelect, _i, _j, _len, _len1, _ref;
 
-      section.innerHTML = "<fieldset>\n  <legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>\n    For example:<br>\n    <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n    will give you<br>\n    <code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n    if you are on /g/.\n  </div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Board link (Replace with title when on that board): <code>board-replace</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Index-only link: <code>board-index</code></div>\n  <div>Catalog-only link: <code>board-catalog</code></div>\n  <div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Tab Icon <span class=warning " + (Conf['Unread Tab Icon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend>\n    <label><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</label>\n  </legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea>\n</fieldset>";
+      section.innerHTML = "<fieldset>\n  <legend>Archiver</legend>\n  Select an Archiver for this board:\n  <select name=archiver></select>\n</fieldset>\n<fieldset>\n  <legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>\n    For example:<br>\n    <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n    will give you<br>\n    <code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n    if you are on /g/.\n  </div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Board link (Replace with title when on that board): <code>board-replace</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Index-only link: <code>board-index</code></div>\n  <div>Catalog-only link: <code>board-catalog</code></div>\n  <div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Tab Icon <span class=warning " + (Conf['Unread Tab Icon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend>\n    <label><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</label>\n  </legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea>\n</fieldset>";
       items = {};
       inputs = {};
       _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss'];
@@ -8910,6 +8929,25 @@
         inputs[name] = input;
         event = ['favicon', 'usercss'].contains(name) ? 'change' : 'input';
         $.on(input, event, $.cb.value);
+      }
+      archiver = $('select[name=archiver]', section);
+      toSelect = Redirect.select(g.BOARD.ID);
+      if (!toSelect[0]) {
+        toSelect = ['No Archive Available'];
+      }
+      for (_j = 0, _len1 = toSelect.length; _j < _len1; _j++) {
+        name = toSelect[_j];
+        $.add(archiver, $.el('option', {
+          textContent: name
+        }));
+      }
+      if (toSelect[1]) {
+        Conf['archivers'][g.BOARD];
+        archiver.value = Conf['archivers'][g.BOARD] || toSelect[0];
+        $.on(archiver, 'change', function() {
+          Conf['archivers'][g.BOARD] = this.value;
+          return $.set('archivers', Conf.archivers);
+        });
       }
       $.get(items, function(items) {
         var key, val;
@@ -9046,6 +9084,7 @@
           boards: {}
         };
       }
+      Conf['archivers'] = {};
       $.get(Conf, Main.initFeatures);
       return $.on(d, '4chanMainInit', Main.initStyle);
     },
@@ -9105,6 +9144,7 @@
       };
       init({
         'Polyfill': Polyfill,
+        'Redirection': Redirect,
         'Header': Header,
         'Catalog Links': CatalogLinks,
         'Settings': Settings,
