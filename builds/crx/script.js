@@ -4957,6 +4957,9 @@
           Keybinds.img(threadRoot, true);
           break;
         case Conf['fappeTyme']:
+          if (!$('#menu.left')) {
+            Header.menuButton.click();
+          }
           FappeTyme.input.click();
           break;
         case Conf['Front page']:

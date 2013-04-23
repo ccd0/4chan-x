@@ -63,6 +63,8 @@ Keybinds =
       when Conf['Expand images']
         Keybinds.img threadRoot, true
       when Conf['fappeTyme']
+        unless $('#menu.left')
+          do Header.menuButton.click
         do FappeTyme.input.click
       # Board Navigation
       when Conf['Front page']

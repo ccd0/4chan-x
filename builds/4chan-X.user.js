@@ -20,7 +20,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 
-/* 4chan X - Version 3.1.4 - 2013-04-22
+/* 4chan X - Version 3.1.4 - 2013-04-23
  * https://4chan-x.just-believe.in/
  *
  * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
@@ -5034,6 +5034,9 @@
           Keybinds.img(threadRoot, true);
           break;
         case Conf['fappeTyme']:
+          if (!$('#menu.left')) {
+            Header.menuButton.click();
+          }
           FappeTyme.input.click();
           break;
         case Conf['Front page']:
