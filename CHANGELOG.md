@@ -1,3 +1,4 @@
+- The button to show a hidden announcement is now inside the header's menu.
 - Added the `board-replace` setting to Custom Board Navigation ricing.
 - Added the option `Cooldown Prediction`, enabled by default.
 - Added the option `Hide Unread Count at (0)`, disabled by default.
