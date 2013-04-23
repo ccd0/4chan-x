@@ -71,7 +71,7 @@ Settings =
       innerHTML: """
         <nav>
           <div class=sections-list></div>
-          <p class='imp-exp-result warning'></p>
+          <span class='imp-exp-result warning'></span>
           <div class=credits>
               <a class=export>Export</a> |
               <a class=import>Import</a> |
@@ -88,9 +88,9 @@ Settings =
     Settings.overlay = overlay = $.el 'div',
       id: 'overlay'
 
-    $.on $('.export', Settings.dialog), 'click',  Settings.export
-    $.on $('.import', Settings.dialog), 'click',  Settings.import
-    $.on $('input',   Settings.dialog), 'change', Settings.onImport
+    $.on $('.export', dialog), 'click',  Settings.export
+    $.on $('.import', dialog), 'click',  Settings.import
+    $.on $('input',   dialog), 'change', Settings.onImport
 
     links = []
     for section in Settings.sections
@@ -205,14 +205,14 @@ Settings =
       download: "<%= meta.name %> v#{g.VERSION}-#{now}.json"
       href: "data:application/json;base64,#{btoa unescape encodeURIComponent JSON.stringify data, null, 2}"
       target: '_blank'
-    <% if (type !== 'userjs') { %>
+    <% if (type !== 'userscript') { %>
     a.click()
     return
     <% } %>
     # XXX Firefox won't let us download automatically.
-    p = $ '.imp-exp-result', Settings.dialog
-    $.rmAll p
-    $.add p, a
+    span = $ '.imp-exp-result', Settings.dialog
+    $.rmAll span
+    $.add span, a
 
   import: ->
     @nextElementSibling.click()

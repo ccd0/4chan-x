@@ -317,7 +317,7 @@ Style =
     if Style.padding.pages and (_conf["Pagination"] is "sticky top"  or _conf["Pagination"] is "sticky bottom")
       css += "  #{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight}px !important;\n"
 
-    if _conf["Boards Navigation"] is "sticky top" or _conf["Boards Navigation"] is "sticky bottom"
+    if _conf["Boards Navigation"] is "Sticky top" or _conf["Boards Navigation"] is "Sticky bottom"
       css += "  #{Style.padding.nav.property}: #{Style.padding.nav.offsetHeight}px !important;\n"
 
     css += """
@@ -329,7 +329,7 @@ body {
     if Style.padding.pages? and (_conf["Pagination"] is "sticky top" or _conf["Pagination"] is "sticky bottom" or _conf["Pagination"] is "top")
       css += "  padding-#{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight}px;\n"
 
-    unless _conf["Boards Navigation"] is "hide"
+    unless _conf["Boards Navigation"] is "Hide"
       css += "  padding-#{Style.padding.nav.property}: #{Style.padding.nav.offsetHeight}px;\n"
 
     css += "}"

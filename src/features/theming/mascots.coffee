@@ -7,8 +7,8 @@ MascotTools =
     if !Conf['Mascots'] or (g.CATALOG and Conf['Hide Mascots on Catalog'])
       return if el then el.src = "" else null
 
-    position = "#{if Conf['Mascot Position'] is 'bottom' or !(Conf['Mascot Position'] is "default" and Conf['Post Form Style'] is "fixed")
-      0 + (if (g.VIEW isnt 'thread' or Conf['Boards Navigation'] is 'sticky bottom') and Conf['4chan SS Navigation'] then 1.6 else 0)
+    position = "#{if Conf['Mascot Position'] is 'bottom' or (Conf['Mascot Position'] is "default" and Conf['Post Form Style'] isnt "fixed")
+      0 + (if (g.VIEW isnt 'thread' or Conf['Boards Navigation'] is 'Sticky bottom') and Conf['4chan SS Navigation'] then 1.6 else 0)
     else
       20.3 + (if g.VIEW isnt 'thread' or !!$ '#postForm input[name=spoiler]' then 1.4 else 0) + (if Conf['Show Post Form Header'] then 1.5 else 0) + (if Conf['Post Form Decorations'] then 0.2 else 0)
     }em"

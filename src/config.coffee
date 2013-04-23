@@ -735,8 +735,6 @@ http://iqdb.org/?url=%TURL
 #//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/
 """
 
-  'Boards Navigation': 'sticky top'
-
   'Custom CSS': false
 
   'Boards Navigation': 'Sticky top'

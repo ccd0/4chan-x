@@ -198,29 +198,23 @@ else "
 .fixed.bottom #header-bar.autohide:not(:hover) {
   #{agent}transform: translateY(100%);
 }
-#toggle-header-bar {
+#scroll-marker {
   left: 0;
   right: 0;
   height: 10px;
   position: absolute;
 }
-#header-bar #toggle-header-bar {
+#header-bar #scroll-marker {
   display: none;
 }
-.fixed #header-bar #toggle-header-bar {
+.fixed #header-bar #scroll-marker {
   display: block;
 }
-.fixed #header-bar #toggle-header-bar {
-  cursor: n-resize;
-}
-.fixed.top header-bar #toggle-header-bar {
+.fixed.top header-bar #scroll-marker {
   top: 100%;
 }
-.fixed.bottom #header-bar #toggle-header-bar {
+.fixed.bottom #header-bar #scroll-marker {
   bottom: 100%;
-}
-.fixed #header-bar #header-bar.autohide #toggle-header-bar {
-  cursor: s-resize;
 }
 /* Notifications */
 #notifications {
