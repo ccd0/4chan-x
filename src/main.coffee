@@ -171,9 +171,9 @@ class Post
     unless strong = $ 'strong.warning', @nodes.info
       strong = $.el 'strong',
           className: 'warning'
-          textContent: '[Deleted]'
+          textContent: if @isReply then '[Deleted]' else '[Dead]'
       $.after $('input', @nodes.info), strong
-    strong.textContent = if file then '[File deleted]' else '[Deleted]'
+    strong.textContent = if file then '[File deleted]' else if @isReply then '[Deleted]' else '[Dead]'
 
     return if @isClone
     for clone in @clones
