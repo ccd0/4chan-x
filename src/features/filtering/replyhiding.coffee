@@ -1,6 +1,6 @@
 PostHiding =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Reply Hiding'] and !Conf['Reply Hiding Link']
+    return if g.VIEW is 'catalog' or !Conf['Reply Hiding Buttons'] and !Conf['Reply Hiding Link']
 
     @db = new DataBoard 'hiddenPosts'
     Post::callbacks.push
@@ -15,7 +15,7 @@ PostHiding =
       else
         Recursive.apply PostHiding.hide, @, data.makeStub, true
         Recursive.add PostHiding.hide, @, data.makeStub, true
-    return unless Conf['Reply Hiding']
+    return unless Conf['Reply Hiding Buttons']
     $.replace $('.sideArrows', @nodes.root), PostHiding.makeButton @, 'hide'
 
   menu:

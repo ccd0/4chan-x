@@ -8,7 +8,7 @@
   Config = {
     main: {
       'Miscellaneous': {
-        'Catalog Links': [true, 'Turn Navigation links into links to each board\'s catalog.'],
+        'Catalog Links': [true, 'Add toggle link in header menu to turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
         'Custom Board Navigation': [true, 'Show custom links instead of the full board list.'],
         'QR Shortcut': [false, 'Adds a small [QR] link in the header.'],
@@ -34,8 +34,8 @@
         'Anonymize': [false, 'Make everyone Anonymous.'],
         'Filter': [true, 'Self-moderation placebo.'],
         'Recursive Hiding': [true, 'Hide replies of hidden posts, recursively.'],
-        'Thread Hiding': [true, 'Add buttons to hide entire threads.'],
-        'Reply Hiding': [true, 'Add buttons to hide single replies.'],
+        'Thread Hiding Buttons': [true, 'Add buttons to hide entire threads.'],
+        'Reply Hiding Buttons': [true, 'Add buttons to hide single replies.'],
         'Stubs': [true, 'Show stubs of hidden threads / replies.']
       },
       'Images': {
@@ -61,7 +61,7 @@
         'Thread Updater': [true, 'Fetch and insert new replies. Has more options in its own dialog.'],
         'Unread Count': [true, 'Show the unread posts count in the tab title.'],
         'Hide Unread Count at (0)': [false, 'Hide the unread posts count when it reaches 0.'],
-        'Unread Tab Icon': [true, 'Show a different favicon when there are unread posts.'],
+        'Unread Favicon': [true, 'Show a different favicon when there are unread posts.'],
         'Unread Line': [true, 'Show a line to distinguish read posts from unread ones.'],
         'Scroll to Last Read Post': [true, 'Scroll back to the last read post when reopening a thread.'],
         'Thread Excerpt': [true, 'Show an excerpt of the thread in the tab title.'],
@@ -116,20 +116,20 @@
     },
     sauces: "https://www.google.com/searchbyimage?image_url=%TURL\nhttp://iqdb.org/?url=%TURL\n#//tineye.com/search?url=%TURL\n#http://saucenao.com/search.php?url=%TURL\n#http://3d.iqdb.org/?url=%TURL\n#http://regex.info/exif.cgi?imgurl=%URL\n# uploaders:\n#http://imgur.com/upload?url=%URL;text:Upload to imgur\n#http://ompldr.org/upload?url1=%URL;text:Upload to ompldr\n# \"View Same\" in archives:\n#//archive.foolz.us/_/search/image/%MD5/;text:View same on foolz\n#//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/\n#//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/",
     'Custom CSS': false,
-    'Boards Navigation': 'sticky top',
+    'Boards Navigation': 'Sticky top',
     'Header auto-hide': false,
     'Footer auto-hide': true,
     'Header catalog links': false,
     boardnav: '[ toggle-all ] [current-title]',
     time: '%m/%d/%y(%a)%H:%M:%S',
     backlink: '>>%id',
-    fileInfo: '%l (%p%s, %r)',
+    fileInfo: '%L (%p%s, %r)',
     favicon: 'ferongr',
     usercss: '',
     hotkeys: {
       'Toggle board list': ['Ctrl+b', 'Toggle the full board list.'],
-      'Open empty QR': ['q', 'Open QR without post number inserted.'],
-      'Open QR': ['Shift+q', 'Open QR with post number inserted.'],
+      'Open empty QR': ['l', 'Open QR without post number inserted.'],
+      'Open QR': ['Shift+l', 'Open QR with post number inserted.'],
       'Open settings': ['Alt+o', 'Open Settings.'],
       'Close': ['Esc', 'Close Settings, Notifications or QR.'],
       'Spoiler tags': ['Ctrl+s', 'Insert spoiler tags.'],
@@ -2440,7 +2440,7 @@
 
   PostHiding = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Reply Hiding'] && !Conf['Reply Hiding Link']) {
+      if (g.VIEW === 'catalog' || !Conf['Reply Hiding Buttons'] && !Conf['Reply Hiding Link']) {
         return;
       }
       this.db = new DataBoard('hiddenPosts');
@@ -2467,7 +2467,7 @@
           Recursive.add(PostHiding.hide, this, data.makeStub, true);
         }
       }
-      if (!Conf['Reply Hiding']) {
+      if (!Conf['Reply Hiding Buttons']) {
         return;
       }
       return $.replace($('.sideArrows', this.nodes.root), PostHiding.makeButton(this, 'hide'));
@@ -2718,7 +2718,7 @@
 
   QuoteStrikeThrough = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Reply Hiding'] && !Conf['Reply Hiding Link'] && !Conf['Filter']) {
+      if (g.VIEW === 'catalog' || !Conf['Reply Hiding Buttons'] && !Conf['Reply Hiding Link'] && !Conf['Filter']) {
         return;
       }
       return Post.prototype.callbacks.push({
@@ -2745,7 +2745,7 @@
 
   ThreadHiding = {
     init: function() {
-      if (g.VIEW !== 'index' || !Conf['Thread Hiding'] && !Conf['Thread Hiding Link']) {
+      if (g.VIEW !== 'index' || !Conf['Thread Hiding Buttons'] && !Conf['Thread Hiding Link']) {
         return;
       }
       this.db = new DataBoard('hiddenThreads');
@@ -2764,7 +2764,7 @@
       })) {
         ThreadHiding.hide(this, data.makeStub);
       }
-      if (!Conf['Thread Hiding']) {
+      if (!Conf['Thread Hiding Buttons']) {
         return;
       }
       return $.prepend(this.OP.nodes.root, ThreadHiding.makeButton(this, 'hide'));
@@ -4110,7 +4110,7 @@
       el = $.el('label', {
         id: 'toggleCatalog',
         href: 'javascript:;',
-        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + ">Catalog",
+        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + ">Catalog Links",
         title: "Turn catalog links " + (Conf['Header catalog links'] ? 'off' : 'on') + "."
       });
       input = $('input', el);
@@ -4573,7 +4573,7 @@
       $.on(this.headerToggler, 'change', this.toggleBarVisibility);
       createSubEntry = Header.createSubEntry;
       subEntries = [];
-      _ref = ['sticky top', 'sticky bottom', 'top'];
+      _ref = ['Sticky top', 'Sticky bottom', 'Top'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         setting = _ref[_i];
         subEntries.push(createSubEntry(setting));
@@ -4764,15 +4764,15 @@
       $.rmClass(doc, 'bottom');
       $.rmClass(Header.nav, 'dialog');
       switch (setting) {
-        case 'sticky top':
+        case 'Sticky top':
           $.addClass(doc, 'top');
           $.addClass(doc, 'fixed');
           return $.addClass(Header.nav, 'dialog');
-        case 'sticky bottom':
+        case 'Sticky bottom':
           $.addClass(doc, 'fixed');
           $.addClass(doc, 'bottom');
           return $.addClass(Header.nav, 'dialog');
-        case 'top':
+        case 'Top':
           return $.addClass(doc, 'top');
       }
     },
@@ -4823,7 +4823,7 @@
       var headRect, top;
 
       top = post.getBoundingClientRect().top;
-      if (Conf['Boards Navigation'] === 'sticky top') {
+      if (Conf['Boards Navigation'] === 'Sticky top') {
         headRect = Header.bar.getBoundingClientRect();
         top += -headRect.top - headRect.height;
       }
@@ -6312,7 +6312,7 @@
 
   Unread = {
     init: function() {
-      if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Tab Icon']) {
+      if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Favicon']) {
         return;
       }
       this.db = new DataBoard('lastReadPosts', this.sync);
@@ -6532,7 +6532,7 @@
           }, $.SECOND);
         }
       }
-      if (!Conf['Unread Tab Icon']) {
+      if (!Conf['Unread Favicon']) {
         return;
       }
       return Favicon.el.href = g.DEAD ? Unread.postsQuotingYou.length ? Favicon.unreadDeadY : count ? Favicon.unreadDead : Favicon.dead : count ? Unread.postsQuotingYou.length ? Favicon.unreadY : Favicon.unread : Favicon["default"];
@@ -8232,7 +8232,7 @@
       $.event('AddMenuEntry', {
         type: 'header',
         el: this.controls,
-        order: 115
+        order: 98
       });
       $.on(d, '4chanXInitFinished', this.setup);
       return Post.prototype.callbacks.push({
@@ -8796,7 +8796,7 @@
           'Show Stubs': 'Stubs',
           'Image Auto-Gif': 'Auto-GIF',
           'Expand From Current': '',
-          'Unread Favicon': 'Unread Tab Icon',
+          'Unread Tab Icon': 'Unread Favicon',
           'Post in Title': 'Thread Excerpt',
           'Auto Hide QR': '',
           'Open Reply in New Tab': '',
@@ -8805,6 +8805,8 @@
           'Quote Preview': 'Quote Previewing',
           'Indicate OP quote': 'Mark OP Quotes',
           'Indicate Cross-thread Quotes': 'Mark Cross-thread Quotes',
+          'Reply Hiding': 'Reply Hiding Buttons',
+          'Thread Hiding': 'Thread Hiding Buttons',
           'uniqueid': 'uniqueID',
           'mod': 'capcode',
           'country': 'flag',
@@ -8918,7 +8920,7 @@
     rice: function(section) {
       var archiver, event, input, inputs, items, name, toSelect, _i, _j, _len, _len1, _ref;
 
-      section.innerHTML = "<fieldset>\n  <legend>Archiver</legend>\n  Select an Archiver for this board:\n  <select name=archiver></select>\n</fieldset>\n<fieldset>\n  <legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>\n    For example:<br>\n    <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n    will give you<br>\n    <code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n    if you are on /g/.\n  </div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Board link (Replace with title when on that board): <code>board-replace</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Index-only link: <code>board-index</code></div>\n  <div>Catalog-only link: <code>board-catalog</code></div>\n  <div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Tab Icon <span class=warning " + (Conf['Unread Tab Icon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend>\n    <label><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</label>\n  </legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea>\n</fieldset>";
+      section.innerHTML = "<fieldset>\n  <legend>Archiver</legend>\n  Select an Archiver for this board:\n  <select name=archiver></select>\n</fieldset>\n<fieldset>\n  <legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>\n    For example:<br>\n    <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n    will give you<br>\n    <code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n    if you are on /g/.\n  </div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Board link (Replace with title when on that board): <code>board-replace</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Index-only link: <code>board-index</code></div>\n  <div>Catalog-only link: <code>board-catalog</code></div>\n  <div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend>\n    <label><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</label>\n  </legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea>\n</fieldset>";
       items = {};
       inputs = {};
       _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss'];
@@ -8997,7 +8999,7 @@
     },
     favicon: function() {
       Favicon["switch"]();
-      if (g.VIEW === 'thread' && Conf['Unread Tab Icon']) {
+      if (g.VIEW === 'thread' && Conf['Unread Favicon']) {
         Unread.update();
       }
       return this.nextElementSibling.innerHTML = "<img src=" + Favicon["default"] + ">\n<img src=" + Favicon.unreadSFW + ">\n<img src=" + Favicon.unreadNSFW + ">\n<img src=" + Favicon.unreadDead + ">";
@@ -9154,8 +9156,8 @@
         'Linkify': Linkify,
         'Resurrect Quotes': Quotify,
         'Filter': Filter,
-        'Thread Hiding': ThreadHiding,
-        'Reply Hiding': PostHiding,
+        'Thread Hiding Buttons': ThreadHiding,
+        'Reply Hiding Buttons': PostHiding,
         'Recursive': Recursive,
         'Strike-through Quotes': QuoteStrikeThrough,
         'Quick Reply': QR,

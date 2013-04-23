@@ -17,7 +17,7 @@ Header =
 
     {createSubEntry} = Header
     subEntries = []
-    for setting in ['sticky top', 'sticky bottom', 'top']
+    for setting in ['Sticky top', 'Sticky bottom', 'Top']
       subEntries.push createSubEntry setting
 
     subEntries.push {el: headerToggler}
@@ -180,15 +180,15 @@ Header =
     $.rmClass  doc, 'bottom'
     $.rmClass  Header.nav, 'dialog'
     switch setting
-      when 'sticky top'
+      when 'Sticky top'
         $.addClass doc, 'top'
         $.addClass doc, 'fixed'
         $.addClass Header.nav, 'dialog'
-      when 'sticky bottom'
+      when 'Sticky bottom'
         $.addClass doc, 'fixed'
         $.addClass doc, 'bottom'
         $.addClass Header.nav, 'dialog'
-      when 'top'
+      when 'Top'
         $.addClass doc, 'top'
 
   setBarVisibility: (hide) ->
@@ -236,7 +236,7 @@ Header =
 
   scrollToPost: (post) ->
     {top} = post.getBoundingClientRect()
-    if Conf['Boards Navigation'] is 'sticky top'
+    if Conf['Boards Navigation'] is 'Sticky top'
       headRect = Header.bar.getBoundingClientRect()
       top += - headRect.top - headRect.height
     (if $.engine is 'webkit' then d.body else doc).scrollTop += top

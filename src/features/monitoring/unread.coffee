@@ -1,6 +1,6 @@
 Unread =
   init: ->
-    return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Tab Icon']
+    return if g.VIEW isnt 'thread' or !Conf['Unread Count'] and !Conf['Unread Favicon']
 
     @db = new DataBoard 'lastReadPosts', @sync
     @hr = $.el 'hr',
@@ -153,7 +153,7 @@ Unread =
         , $.SECOND
       <% } %>
 
-    return unless Conf['Unread Tab Icon']
+    return unless Conf['Unread Favicon']
 
     Favicon.el.href =
       if g.DEAD

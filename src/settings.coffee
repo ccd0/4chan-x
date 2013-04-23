@@ -227,7 +227,7 @@ Settings =
         'Show Stubs': 'Stubs'
         'Image Auto-Gif': 'Auto-GIF'
         'Expand From Current': ''
-        'Unread Favicon': 'Unread Tab Icon'
+        'Unread Tab Icon': 'Unread Favicon'
         'Post in Title': 'Thread Excerpt'
         'Auto Hide QR': ''
         'Open Reply in New Tab': ''
@@ -236,6 +236,8 @@ Settings =
         'Quote Preview': 'Quote Previewing'
         'Indicate OP quote': 'Mark OP Quotes'
         'Indicate Cross-thread Quotes': 'Mark Cross-thread Quotes'
+        'Reply Hiding': 'Reply Hiding Buttons'
+        'Thread Hiding': 'Thread Hiding Buttons'
         # filter
         'uniqueid': 'uniqueID'
         'mod': 'capcode'
@@ -434,7 +436,7 @@ Settings =
       </fieldset>
 
       <fieldset>
-        <legend>Unread Tab Icon <span class=warning #{if Conf['Unread Tab Icon'] then 'hidden' else ''}>is disabled.</span></legend>
+        <legend>Unread Favicon <span class=warning #{if Conf['Unread Favicon'] then 'hidden' else ''}>is disabled.</span></legend>
         <select name=favicon>
           <option value=ferongr>ferongr</option>
           <option value=xat->xat-</option>
@@ -510,7 +512,7 @@ Settings =
     @nextElementSibling.innerHTML = funk FileInfo, data
   favicon: ->
     Favicon.switch()
-    Unread.update() if g.VIEW is 'thread' and Conf['Unread Tab Icon']
+    Unread.update() if g.VIEW is 'thread' and Conf['Unread Favicon']
     @nextElementSibling.innerHTML = """
       <img src=#{Favicon.default}>
       <img src=#{Favicon.unreadSFW}>
