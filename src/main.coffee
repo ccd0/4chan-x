@@ -248,6 +248,8 @@ Main =
 
     now = Date.now()
 
+    UpdateAlert.init()
+
     Favicon.init()
     Options.init()
 

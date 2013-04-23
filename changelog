@@ -1,5 +1,8 @@
 master
 
+1.0.10:
+-Add message pertaining to rewrite
+
 1.0.9:
 ihavenoface:
 	-Implement Announcement Hiding

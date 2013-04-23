@@ -630,6 +630,52 @@ div.opContainer {
     background-repeat: repeat-x;
     text-decoration: none;
 }
+.updateAlert {
+    width: 400px;
+    height: 150px;
+    text-align: center;
+    margin: auto;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    border-radius: 3px;
+    padding: 10px;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4); 
+    height: 250px !important;
+    width: 500px !important;
+    padding: 25px !important;
+}
+.updateAlert>span {
+    display: block;
+}
+.updateAlert>.dismiss {
+    font-size: 14px;
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    left: 0px;
+}
+.updateAlert>.dismiss:hover {
+    cursor:pointer;
+}
+.authors {
+    font-size: 12px;
+    text-align: right;
+}
+.dear {
+    text-align: left;
+    font-size: 12px;
+}
+.dismissMessage {
+    font-size: 12px;
+    opacity: 0.4;
+}
+.alertMessage {
+    font-size: 15px;
+    text-align: center;
+}
 #{if Conf["Announcement Hiding"] then '#globalMessage.hidden { display: none; }' else ''}
 #{if Conf["Custom CSS"] then Conf["customCSS"] else ""}
 #{if Conf['Emoji'] then Style.emoji Conf['emojiPos'] else ''} 
