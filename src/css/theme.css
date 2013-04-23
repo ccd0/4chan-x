@@ -173,7 +173,7 @@ textarea.field:focus {
   background: #{theme["Highlighted Reply Background"]};
   border: 1px solid #{theme["Highlighted Reply Border"]};
 }
-#boardNavDesktop,
+#header-bar,
 .pagelist {
   background: #{theme["Navigation Background"]};
   border-style: solid;
@@ -286,7 +286,7 @@ textarea {
   border: 1px solid #{theme["Buttons Border"]};
 }
 .pages a,
-#boardNavDesktop a {
+#header-bar a {
   color: #{theme["Navigation Links"]};
 }
 input[type=checkbox]:checked + .rice {
@@ -331,7 +331,7 @@ a .postertrip:hover,
 a:hover {
   color: #{theme["Hovered Links"]};
 }
-#boardNavDesktop a:hover,
+#header-bar a:hover,
 #boardTitle a:hover {
   color: #{theme["Hovered Navigation Links"]};
 }

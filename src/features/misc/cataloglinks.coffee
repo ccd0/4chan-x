@@ -2,28 +2,33 @@ CatalogLinks =
   init: ->
     $.ready @ready 
     return unless Conf['Catalog Links']
-    el = $.el 'a',
+    el = $.el 'label',
       id:           'toggleCatalog'
       href:         'javascript:;'
-      className:    if Conf['Header catalog links'] then 'disabled' else ''
-      textContent:  'Catalog'
+      innerHTML:    "<input type=checkbox #{if Conf['Header catalog links'] then 'checked' else ''}>Catalog"
       title:        "Turn catalog links #{if Conf['Header catalog links'] then 'off' else 'on'}."
-    $.on el, 'click', @toggle
 
-    Header.addShortcut el
+    input = $ 'input', el
+    $.on input, 'change', @toggle
+    $.sync 'Header catalog links', CatalogLinks.set
 
-    $.asap (-> d.body), ->
-      return unless Main.isThisPageLegit()
-      # Wait for #boardNavMobile instead of #boardNavDesktop,
-      # it might be incomplete otherwise.
-      $.asap (-> $.id 'boardNavMobile'), ->
-        # Set links on load.
-        CatalogLinks.toggle.call el
+    $.event 'AddMenuEntry',
+      type:  'header'
+      el:    el
+      order: 95
+
+    $.on d, '4chanXInitFinished', ->
+      # Set links on load.
+      CatalogLinks.set Conf['Header catalog links']
 
   toggle: ->
-    $.set 'Header catalog links', useCatalog = @className is 'disabled'
-    $.toggleClass @, 'disabled'
-    for a in $$ 'a', $.id('boardNavDesktop')
+    $.event 'CloseMenu'
+    $.set 'Header catalog links', useCatalog = @checked
+    CatalogLinks.set useCatalog
+
+  set: (useCatalog) ->
+    path = if useCatalog then 'catalog' else ''
+    for a in $$ 'a', $.id('board-list')
       board = a.pathname.split('/')[1]
       continue if ['f', 'status', '4chan'].contains(board) or !board
       if Conf['External Catalog']
@@ -32,9 +37,9 @@ CatalogLinks =
         else
           "//boards.4chan.org/#{board}/"
       else
-        a.pathname = "/#{board}/#{if useCatalog then 'catalog' else ''}"
+        a.pathname = "/#{board}/#{path}"
       a.title = if useCatalog then "#{a.title} - Catalog" else a.title.replace(/\ -\ Catalog$/, '')
-    @title       = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
+    @title = "Turn catalog links #{if useCatalog then 'off' else 'on'}."
 
   external: (board) ->
     return (

@@ -9,9 +9,8 @@
       'Miscellaneous': {
         'Catalog Links': [true, 'Turn Navigation links into links to each board\'s catalog.'],
         'External Catalog': [false, 'Link to external catalog instead of the internal one.'],
-        'Enable 4chan\'s Extension': [false, 'Compatibility between appchan x and 4chan\'s inline extension is NOT guaranteed.'],
-        'Fixed Header': [false, 'Mayhem X\'s Fixed Header (kinda).'],
         'Custom Board Navigation': [false, 'Show custom links instead of the full board list.'],
+        'QR Shortcut': [false, 'Adds a small [QR] link in the header.'],
         'Announcement Hiding': [true, 'Add button to hide 4chan announcements.'],
         '404 Redirect': [true, 'Redirect dead threads and images.'],
         'Keybinds': [true, 'Bind actions to keyboard shortcuts.'],
@@ -36,7 +35,6 @@
         'Recursive Hiding': [true, 'Hide replies of hidden posts, recursively.'],
         'Thread Hiding': [true, 'Add buttons to hide entire threads.'],
         'Reply Hiding': [true, 'Add buttons to hide single replies.'],
-        'Hiding Buttons': [true, 'Add buttons to hide threads / replies, in addition to menu links.'],
         'Stubs': [true, 'Show stubs of hidden threads / replies.']
       },
       'Images': {
@@ -47,13 +45,13 @@
         'Replace GIF': [false, 'Replace thumbnail of gifs with its actual image.'],
         'Replace PNG': [false, 'Replace pngs.'],
         'Replace JPG': [false, 'Replace jpgs.'],
-        'Fappe Tyme': [false, 'Hide posts without images when toggled.']
+        'Fappe Tyme': [false, 'Hide posts without images when toggled. *hint* *hint*']
       },
       'Menu': {
         'Menu': [true, 'Add a drop-down menu to posts.'],
+        'Report Link': [true, 'Add a report link to the menu.'],
         'Thread Hiding Link': [true, 'Add a link to hide entire threads.'],
         'Reply Hiding Link': [true, 'Add a link to hide single replies.'],
-        'Report Link': [true, 'Add a report link to the menu.'],
         'Delete Link': [true, 'Add post and image deletion links to the menu.'],
         'Download Link': [true, 'Add a download with original filename link to the menu. Chrome-only currently.'],
         'Archive Link': [true, 'Add an archive link to the menu.']
@@ -61,8 +59,10 @@
       'Monitoring': {
         'Thread Updater': [true, 'Fetch and insert new replies. Has more options in its own dialog.'],
         'Unread Count': [true, 'Show the unread posts count in the tab title.'],
+        'Hide Unread Count at (0)': [false, 'Hide the unread posts count when it reaches 0.'],
         'Unread Tab Icon': [true, 'Show a different favicon when there are unread posts.'],
         'Unread Line': [true, 'Show a line to distinguish read posts from unread ones.'],
+        'Scroll to Last Read Post': [true, 'Scroll back to the last read post when reopening a thread.'],
         'Thread Excerpt': [true, 'Show an excerpt of the thread in the tab title.'],
         'Thread Stats': [true, 'Display reply and image count.'],
         'Thread Watcher': [true, 'Bookmark threads.'],
@@ -3580,6 +3580,9 @@
 
       OP = thread.OP;
       excerpt = ((_ref = OP.info.subject) != null ? _ref.trim() : void 0) || OP.info.comment.replace(/\n+/g, ' // ') || Conf['Anonymize'] && 'Anonymous' || $('.nameBlock', OP.nodes.info).textContent.trim();
+      if (excerpt.length > 70) {
+        excerpt = "" + excerpt.slice(0, 67) + "...";
+      }
       return "/" + thread.board + "/ - " + excerpt;
     },
     postFromRoot: function(root) {
@@ -3926,21 +3929,19 @@
       };
 
       Menu.prototype.open = function(button, data) {
-        var bLeft, bRect, bTop, bottom, cHeight, cWidth, entry, left, mRect, menu, prevEntry, right, style, top, _i, _len, _ref, _ref1, _ref2;
+        var bLeft, bRect, bTop, bottom, cHeight, cWidth, entry, left, mRect, menu, right, style, top, _i, _len, _ref, _ref1, _ref2;
 
         menu = this.makeMenu();
         currentMenu = menu;
         lastToggledButton = button;
+        this.entries.sort(function(first, second) {
+          return first.order - second.order;
+        });
         _ref = this.entries;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           entry = _ref[_i];
           this.insertEntry(entry, menu, data);
         }
-        entry = $('.entry', menu);
-        while (prevEntry = this.findNextEntry(entry, -1)) {
-          entry = prevEntry;
-        }
-        this.focus(entry);
         $.on(d, 'click', this.close);
         $.on(d, 'CloseMenu', this.close);
         Rice.nodes(menu);
@@ -3958,6 +3959,11 @@
         style.right = "" + right + "px";
         style.bottom = "" + bottom + "px";
         style.left = "" + left + "px";
+        if (right) {
+          $.addClass(menu, 'left');
+        }
+        entry = $('.entry', menu);
+        this.focus(entry);
         return menu.focus();
       };
 
@@ -5137,7 +5143,7 @@
       if (makeStub == null) {
         makeStub = Conf['Stubs'];
       }
-      if (thread.hidden) {
+      if (thread.isHidden) {
         return;
       }
       OP = thread.OP;
@@ -5456,7 +5462,7 @@
         return $.event('AddMenuEntry', {
           type: 'header',
           el: el,
-          order: 80,
+          order: 105,
           subEntries: subEntries
         });
       },
@@ -6141,9 +6147,6 @@
       if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Download Link']) {
         return;
       }
-      if (!('download' in $.el('a'))) {
-        return;
-      }
       a = $.el('a', {
         className: 'download-link',
         textContent: 'Download file'
@@ -6267,6 +6270,7 @@
       }
       PSAHiding.btn = btn = $.el('a', {
         title: 'Toggle announcement.',
+        innerHTML: '<span></span>',
         href: 'javascript:;',
         textContent: '[ - ]'
       });
@@ -6308,40 +6312,42 @@
 
   CatalogLinks = {
     init: function() {
-      var el;
+      var el, input;
 
       $.ready(this.ready);
       if (!Conf['Catalog Links']) {
         return;
       }
-      el = $.el('a', {
+      el = $.el('label', {
         id: 'toggleCatalog',
         href: 'javascript:;',
-        className: Conf['Header catalog links'] ? 'disabled' : '',
-        textContent: 'Catalog',
+        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + ">Catalog",
         title: "Turn catalog links " + (Conf['Header catalog links'] ? 'off' : 'on') + "."
       });
-      $.on(el, 'click', this.toggle);
-      Header.addShortcut(el);
-      return $.asap((function() {
-        return d.body;
-      }), function() {
-        if (!Main.isThisPageLegit()) {
-          return;
-        }
-        return $.asap((function() {
-          return $.id('boardNavMobile');
-        }), function() {
-          return CatalogLinks.toggle.call(el);
-        });
+      input = $('input', el);
+      $.on(input, 'change', this.toggle);
+      $.sync('Header catalog links', CatalogLinks.set);
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: el,
+        order: 95
+      });
+      return $.on(d, '4chanXInitFinished', function() {
+        return CatalogLinks.set(Conf['Header catalog links']);
       });
     },
     toggle: function() {
-      var a, board, useCatalog, _i, _len, _ref;
+      var useCatalog;
 
-      $.set('Header catalog links', useCatalog = this.className === 'disabled');
-      $.toggleClass(this, 'disabled');
-      _ref = $$('a', $.id('boardNavDesktop'));
+      $.event('CloseMenu');
+      $.set('Header catalog links', useCatalog = this.checked);
+      return CatalogLinks.set(useCatalog);
+    },
+    set: function(useCatalog) {
+      var a, board, path, _i, _len, _ref;
+
+      path = useCatalog ? 'catalog' : '';
+      _ref = $$('a', $.id('board-list'));
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         a = _ref[_i];
         board = a.pathname.split('/')[1];
@@ -6351,7 +6357,7 @@
         if (Conf['External Catalog']) {
           a.href = useCatalog ? CatalogLinks.external(board) : "//boards.4chan.org/" + board + "/";
         } else {
-          a.pathname = "/" + board + "/" + (useCatalog ? 'catalog' : '');
+          a.pathname = "/" + board + "/" + path;
         }
         a.title = useCatalog ? "" + a.title + " - Catalog" : a.title.replace(/\ -\ Catalog$/, '');
       }
@@ -6613,11 +6619,7 @@
       }
       Main.callbackNodes(Post, posts);
       $.after(a, nodes);
-      if (Conf['Enable 4chan\'s Extension']) {
-        return $.globalEval("Parser.parseThread(" + thread.ID + ", 1, " + nodes.length + ")");
-      } else {
-        return Fourchan.parseThread(thread.ID, 1, nodes.length);
-      }
+      return Fourchan.parseThread(thread.ID, 1, nodes.length);
     }
   };
 
@@ -6776,20 +6778,20 @@
 
   Header = {
     init: function() {
-      var createSubEntry, setting, subEntries, _i, _len, _ref;
+      var createSubEntry, headerToggler, setting, subEntries, _i, _len, _ref;
 
       this.menuButton = $.el('span', {
         className: 'menu-button',
         id: 'main-menu'
       });
       this.menu = new UI.Menu('header');
-      $.on(this.menuButton, 'click', this.menuToggle);
-      $.on(this.toggle, 'mousedown', this.toggleBarVisibility);
-      $.on(window, 'load hashchange', Header.hashScroll);
-      this.positionToggler = $.el('span', {
-        textContent: 'Header Position',
-        className: 'header-position-link'
+      headerToggler = $.el('label', {
+        innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
       });
+      this.headerToggler = headerToggler.firstElementChild;
+      $.on(this.menuButton, 'click', this.menuToggle);
+      $.on(window, 'load hashchange', Header.hashScroll);
+      $.on(this.headerToggler, 'change', this.toggleBarVisibility);
       createSubEntry = Header.createSubEntry;
       subEntries = [];
       _ref = ['sticky top', 'sticky bottom', 'top', 'hide'];
@@ -6797,20 +6799,16 @@
         setting = _ref[_i];
         subEntries.push(createSubEntry(setting));
       }
+      subEntries.push({
+        el: headerToggler
+      });
       $.event('AddMenuEntry', {
         type: 'header',
-        el: this.positionToggler,
-        order: 108,
+        el: $.el('span', {
+          textContent: 'Header'
+        }),
+        order: 105,
         subEntries: subEntries
-      });
-      this.headerToggler = $.el('label', {
-        innerHTML: "<input type=checkbox " + (Conf['Header auto-hide'] ? 'checked' : '') + "> Auto-hide header"
-      });
-      $.on(this.headerToggler.firstElementChild, 'change', this.toggleBarVisibility);
-      $.event('AddMenuEntry', {
-        type: 'header',
-        el: this.headerToggler,
-        order: 109
       });
       $.on(d, 'CreateNotification', this.createNotification);
       $.asap((function() {
@@ -6851,19 +6849,19 @@
       };
     },
     setBoardList: function() {
-      var a, btn, customBoardList, fullBoardList, nav, settings;
+      var a, boardList, btn, customBoardList, fullBoardList, nav, settings;
 
       Header.nav = nav = $.id('boardNavDesktop');
+      nav.id = 'header-bar';
       if (a = $("a[href*='/" + g.BOARD + "/']", nav)) {
         a.className = 'current';
       }
-      fullBoardList = $.el('span', {
-        id: 'full-board-list',
-        hidden: true
+      boardList = $.el('span', {
+        id: 'board-list'
       });
-      customBoardList = $.el('span', {
-        id: 'custom-board-list'
-      });
+      $.add(boardList, fullBoardList = $.el('span', {
+        id: 'full-board-list'
+      }));
       Header.setBarPosition.call({
         textContent: "" + Conf['Boards Navigation']
       });
@@ -6873,8 +6871,13 @@
       $.prepend(d.body, settings = $.id('navtopright'));
       $.add(settings, Header.menuButton);
       $.add(fullBoardList, __slice.call(nav.childNodes));
-      $.add(nav, [customBoardList, fullBoardList, Header.shortcuts, Header.bar, Header.toggle]);
+      $.add(nav, [boardList, Header.shortcuts, Header.bar, Header.toggle]);
       if (Conf['Custom Board Navigation']) {
+        fullBoardList.hidden = true;
+        customBoardList = $.el('span', {
+          id: 'custom-board-list'
+        });
+        $.add(boardList, customBoardList);
         Header.generateBoardList(Conf['boardnav']);
         $.sync('boardnav', Header.generateBoardList);
         btn = $.el('span', {
@@ -6884,7 +6887,6 @@
         $.on(btn, 'click', Header.toggleBoardList);
         return $.prepend(fullBoardList, btn);
       } else {
-        $.rm($('#custom-board-list', nav));
         return fullBoardList.hidden = false;
       }
     },
@@ -6897,7 +6899,7 @@
         return;
       }
       as = $$('#full-board-list a', Header.nav).slice(0, -2);
-      nodes = text.match(/[\w@]+(-(all|title|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map(function(t) {
+      nodes = text.match(/[\w@]+(-(all|title|replace|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map(function(t) {
         var a, board, m, _i, _len;
 
         if (/^[^\w@]/.test(t)) {
@@ -6919,6 +6921,10 @@
             a = a.cloneNode(true);
             if (/-title/.test(t)) {
               a.textContent = a.title;
+            } else if (/-replace/.test(t)) {
+              if ($.hasClass(a, 'current')) {
+                a.textContent = a.title;
+              }
             } else if (/-full/.test(t)) {
               a.textContent = "/" + board + "/ - " + a.title;
             } else if (/-(index|catalog|text)/.test(t)) {
@@ -6977,7 +6983,8 @@
       }
     },
     setBarVisibility: function(hide) {
-      Header.headerToggler.firstElementChild.checked = hide;
+      Header.headerToggler.checked = hide;
+      $.event('CloseMenu');
       return (hide ? $.addClass : $.rmClass)(Header.nav, 'autohide');
     },
     hashScroll: function() {
@@ -7007,11 +7014,33 @@
       if (e.type === 'mousedown' && e.button !== 0) {
         return;
       }
-      hide = this.nodeName === 'INPUT' ? this.checked : !$.hasClass(Header.nav, 'autohide');
+      hide = this.nodeName === 'INPUT' ? this.checked : !$.hasClass(Header.bar, 'autohide');
+      Conf['Header auto-hide'] = hide;
+      $.set('Header auto-hide', hide);
       Header.setBarVisibility(hide);
       message = hide ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
-      new Notification('info', message, 2);
-      return $.set('Header auto-hide', hide);
+      return new Notification('info', message, 2);
+    },
+    hashScroll: function() {
+      var hash, post;
+
+      if (!((hash = this.location.hash) && (post = $.id(hash.slice(1))))) {
+        return;
+      }
+      if ((Get.postFromRoot(post)).isHidden) {
+        return;
+      }
+      return Header.scrollToPost(post);
+    },
+    scrollToPost: function(post) {
+      var headRect, top;
+
+      top = post.getBoundingClientRect().top;
+      if (Conf['Boards Navigation'] === 'sticky top') {
+        headRect = Header.bar.getBoundingClientRect();
+        top += -headRect.top - headRect.height;
+      }
+      return d.body.scrollTop += top;
     },
     addShortcut: function(el) {
       var shortcut;
@@ -7020,7 +7049,7 @@
         className: 'shortcut'
       });
       $.add(shortcut, [$.tn(' ['), el, $.tn(']')]);
-      return $.add(Header.shortcuts, shortcut);
+      return $.prepend(Header.shortcuts, shortcut);
     },
     menuToggle: function(e) {
       return Header.menu.toggle(e, this, g);
@@ -7249,7 +7278,9 @@
         QR.quote.call($('input', $('.post.highlight', thread) || thread));
       }
       QR.nodes.com.focus();
-      return $.rmClass($('.qr-shortcut'), 'disabled');
+      if (Conf['QR Shortcut']) {
+        return $.rmClass($('.qr-shortcut'), 'disabled');
+      }
     },
     tags: function(tag, ta) {
       var range, selEnd, selStart, value;
@@ -7338,6 +7369,17 @@
   };
 
   Redirect = {
+    init: function() {
+      return $.sync('archs', this.updateArchives);
+    },
+    updateArchives: function() {
+      return $.get('archivers', {}, function(_arg) {
+        var archivers;
+
+        archivers = _arg.archivers;
+        return Conf['archivers'] = archivers;
+      });
+    },
     image: function(boardID, filename) {
       switch (boardID) {
         case 'a':
@@ -7355,6 +7397,9 @@
           return "//nsfw.foolz.us/" + boardID + "/full_image/" + filename;
         case 'po':
           return "//archive.thedarkcave.org/" + boardID + "/full_image/" + filename;
+        case 'hr':
+        case 'tv':
+          return "http://archive.4plebs.org/" + boardID + "/full_image/" + filename;
         case 'ck':
         case 'fa':
         case 'lit':
@@ -7375,86 +7420,99 @@
       }
     },
     post: function(boardID, postID) {
-      switch (boardID) {
-        case 'a':
-        case 'co':
-        case 'gd':
-        case 'jp':
-        case 'm':
-        case 'q':
-        case 'sp':
-        case 'tg':
-        case 'tv':
-        case 'v':
-        case 'vg':
-        case 'vp':
-        case 'vr':
-        case 'wsg':
-          return "https://archive.foolz.us/_/api/chan/post/?board=" + boardID + "&num=" + postID;
-        case 'u':
-          return "https://nsfw.foolz.us/_/api/chan/post/?board=" + boardID + "&num=" + postID;
-        case 'c':
-        case 'int':
-        case 'out':
-        case 'po':
-          return "//archive.thedarkcave.org/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+      var archive, name, _base, _ref;
+
+      if (Redirect.post[boardID] == null) {
+        _ref = this.archiver;
+        for (name in _ref) {
+          archive = _ref[name];
+          if (archive.type === 'foolfuuka' && archive.boards.contains(boardID)) {
+            Redirect.post[boardID] = archive.base;
+            break;
+          }
+        }
+        (_base = Redirect.post)[boardID] || (_base[boardID] = false);
+      }
+      if (Redirect.post[boardID]) {
+        return "" + Redirect.post[boardID] + "/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+      } else {
+        return null;
       }
     },
+    select: function(board) {
+      var archive, name, _ref, _results;
+
+      _ref = this.archiver;
+      _results = [];
+      for (name in _ref) {
+        archive = _ref[name];
+        if (!archive.boards.contains(board)) {
+          continue;
+        }
+        _results.push(name);
+      }
+      return _results;
+    },
     to: function(data) {
-      var boardID;
+      var arch, archive, boardID;
 
       boardID = data.boardID;
-      switch (boardID) {
-        case 'a':
-        case 'co':
-        case 'gd':
-        case 'jp':
-        case 'm':
-        case 'q':
-        case 'sp':
-        case 'tg':
-        case 'tv':
-        case 'v':
-        case 'vg':
-        case 'vp':
-        case 'vr':
-        case 'wsg':
-          return Redirect.path('//archive.foolz.us', 'foolfuuka', data);
-        case 'u':
-          return Redirect.path('//nsfw.foolz.us', 'foolfuuka', data);
-        case 'int':
-        case 'out':
-        case 'po':
-          return Redirect.path('//archive.thedarkcave.org', 'foolfuuka', data);
-        case 'ck':
-        case 'fa':
-        case 'lit':
-        case 's4s':
-          return Redirect.path('//fuuka.warosu.org', 'fuuka', data);
-        case 'diy':
-        case 'g':
-        case 'sci':
-          return Redirect.path('//archive.installgentoo.net', 'fuuka', data);
-        case 'cgl':
-        case 'mu':
-        case 'w':
-          return Redirect.path('//rbt.asia', 'fuuka', data);
-        case 'an':
-        case 'fit':
-        case 'k':
-        case 'mlp':
-        case 'r9k':
-        case 'toy':
-        case 'x':
-          return Redirect.path('http://archive.heinessen.com', 'fuuka', data);
-        case 'c':
-          return Redirect.path('//archive.nyafuu.org', 'fuuka', data);
-        default:
-          if (data.threadID) {
-            return "//boards.4chan.org/" + boardID + "/";
-          } else {
-            return '';
-          }
+      if ((arch = Conf.archivers[boardID]) == null) {
+        Conf.archivers[boardID] = arch = this.select(boardID)[0];
+        $.set('archivers', Conf.archivers);
+      }
+      return (arch && (archive = this.archiver[arch]) ? Redirect.path(archive.base, archive.type, data) : data.threadID ? "//boards.4chan.org/" + boardID + "/" : null);
+    },
+    archiver: {
+      'Foolz': {
+        base: 'https://archive.foolz.us',
+        boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'],
+        type: 'foolfuuka'
+      },
+      'NSFWFoolz': {
+        base: 'https://nsfw.foolz.us',
+        boards: ['u'],
+        type: 'foolfuuka'
+      },
+      'TheDarkCave': {
+        base: 'http://archive.thedarkcave.org',
+        boards: ['c', 'int', 'out', 'po'],
+        type: 'foolfuuka'
+      },
+      '4plebs': {
+        base: 'http://archive.4plebs.org',
+        boards: ['hr', 'tg', 'tv', 'x'],
+        base: 'foolfuuka'
+      },
+      'Warosu': {
+        base: '//fuuka.warosu.org',
+        boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg'],
+        type: 'fuuka'
+      },
+      'RebeccaBlackTech': {
+        base: '//rbt.asia',
+        boards: ['an', 'cgl', 'g', 'mu', 'w'],
+        type: 'fuuka_mail'
+      },
+      'InstallGentoo': {
+        base: '//archive.installgentoo.net',
+        boards: ['diy', 'g', 'sci'],
+        type: 'fuuka'
+      },
+      'Heinessen': {
+        base: 'http://archive.heinessen.com',
+        boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'],
+        type: 'fuuka'
+      },
+      'Cliche': {
+        base: '//www.cliché.net/4chan/cgi-board.pl',
+        boards: ['e'],
+        type: 'fuuka'
+      },
+      'NyaFuu': {
+        base: '//archive.nyafuu.org',
+        boards: ['c', 'w'],
+        type: 'fuuka'
       }
     },
     path: function(base, archiver, data) {
@@ -7915,9 +7973,7 @@
       });
     },
     node: function() {
-      var excerpt;
-
-      return d.title = (excerpt = Get.threadExcerpt(this)).length > 80 ? "" + excerpt.slice(0, 77) + "..." : excerpt;
+      return d.title = Get.threadExcerpt(this);
     }
   };
 
@@ -8334,11 +8390,7 @@
 
           threadID = ThreadUpdater.thread.ID;
           length = $$('.thread > .postContainer', ThreadUpdater.root).length;
-          if (Conf['Enable 4chan\'s Extension']) {
-            return $.globalEval("Parser.parseThread(" + threadID + ", " + (-count) + ")");
-          } else {
-            return Fourchan.parseThread(threadID, length - count, length);
-          }
+          return Fourchan.parseThread(threadID, length - count, length);
         });
       }
       return $.event('ThreadUpdate', {
@@ -8507,7 +8559,8 @@
       });
     },
     node: function() {
-      var ID, hash, post, posts, root, _ref;
+      var ID, post, posts, _ref,
+        _this = this;
 
       Unread.thread = this;
       Unread.title = d.title;
@@ -8530,9 +8583,15 @@
       if (Conf['Unread Line']) {
         $.on(d, 'visibilitychange', Unread.setLine);
       }
-      if (!Conf['Scroll to Last Read Post']) {
-        return;
+      if (Conf['Scroll to Last Read Post']) {
+        return $.on(window, 'load', function(posts) {
+          return Unread.scroll.apply(_this, posts);
+        });
       }
+    },
+    scroll: function(posts) {
+      var hash, root;
+
       if ((hash = location.hash.match(/\d+/)) && hash[0] in this.posts) {
         return;
       }
@@ -8542,9 +8601,12 @@
             break;
           }
         }
+        if (!root) {
+          return;
+        }
         return root.scrollIntoView(false);
       } else if (posts.length) {
-        return Header.scrollToPost(posts[posts.length - 1].nodes.root);
+        return Header.scrollToPost(posts[post.length - 1].nodes.root);
       }
     },
     sync: function() {
@@ -8640,8 +8702,8 @@
       }
       return arr.splice(0, i);
     },
-    read: function(e) {
-      var ID, bottom, height, i, post, posts, read, top, _ref;
+    read: $.debounce(50, function(e) {
+      var ID, bottom, height, i, post, posts, read;
 
       if (d.hidden || !Unread.posts.length) {
         return;
@@ -8651,8 +8713,8 @@
       read = [];
       i = posts.length;
       while (post = posts[--i]) {
-        _ref = post.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
-        if ((bottom < height) && (top > 0)) {
+        bottom = post.nodes.root.getBoundingClientRect().bottom;
+        if (bottom < height) {
           ID = post.ID;
           posts.remove(post);
         }
@@ -8666,7 +8728,7 @@
       if (e) {
         return Unread.update();
       }
-    },
+    }),
     saveLastReadPost: $.debounce(2 * $.SECOND, function() {
       return Unread.db.set({
         boardID: Unread.thread.board.ID,
@@ -8694,7 +8756,7 @@
 
       count = Unread.posts.length;
       if (Conf['Unread Count']) {
-        d.title = g.DEAD ? "(" + Unread.posts.length + ") /" + g.BOARD + "/ - 404" : "(" + Unread.posts.length + ") " + Unread.title;
+        d.title = "" + (count || !Conf['Hide Unread Count at (0)'] ? "(" + count + ") " : '') + (g.DEAD ? "/" + g.BOARD + "/ - 404" : "" + Unread.title);
         if (!dontrepeat) {
           setTimeout(function() {
             d.title = '';
@@ -8819,7 +8881,9 @@
       QR.cleanNotifications();
       d.activeElement.blur();
       $.rmClass(QR.nodes.el, 'dump');
-      $.toggleClass($('.qr-shortcut'), 'disabled');
+      if (Conf['QR Shortcut']) {
+        $.toggleClass($('.qr-shortcut'), 'disabled');
+      }
       _ref = QR.posts;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         i = _ref[_i];
@@ -9076,7 +9140,9 @@
       com.focus();
       QR.selected.save(com);
       QR.selected.save(thread);
-      return $.rmClass($('.qr-shortcut'), 'disabled');
+      if (Conf['QR Shortcut']) {
+        return $.rmClass($('.qr-shortcut'), 'disabled');
+      }
     },
     characterCount: function() {
       var count, counter;
@@ -9756,8 +9822,8 @@
         }));
       }
       $.on(nodes.filename.parentNode, 'click keyup', QR.openFileInput);
-      $.on(QR.nodes.el, 'focusin', QR.focusin);
-      $.on(QR.nodes.el, 'focusout', QR.focusout);
+      $.on(dialog, 'focusin', QR.focusin);
+      $.on(dialog, 'focusout', QR.focusout);
       $.on(nodes.autohide, 'change', QR.toggleHide);
       $.on(nodes.close, 'click', QR.close);
       $.on(nodes.dumpButton, 'click', function() {
@@ -10463,18 +10529,20 @@
         }
       }
       qroot = qpost.nodes.root;
-      threadContainer = qroot.nextSibling;
-      if ((threadContainer != null ? threadContainer.className : void 0) !== 'threadContainer') {
+      if (!$.hasClass(qroot, 'threadOP')) {
+        $.addClass(qroot, 'threadOP');
         threadContainer = $.el('div', {
           className: 'threadContainer'
         });
         $.after(qroot, threadContainer);
+      } else {
+        threadContainer = qroot.nextSibling;
       }
       $.add(threadContainer, this.nodes.root);
       return true;
     },
     toggle: function() {
-      var container, containers, node, nodes, replies, reply, thread, _i, _j, _k, _len, _len1, _len2, _results;
+      var container, containers, node, nodes, replies, reply, thread, _i, _j, _len, _len1;
 
       thread = $('.thread');
       replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
@@ -10492,14 +10560,8 @@
         })();
         for (_i = 0, _len = nodes.length; _i < _len; _i++) {
           node = nodes[_i];
-          Unread.node.call(node);
+          QuoteThreading.node(node);
         }
-        _results = [];
-        for (_j = 0, _len1 = nodes.length; _j < _len1; _j++) {
-          node = nodes[_j];
-          _results.push(QuoteThreading.node(node));
-        }
-        return _results;
       } else {
         replies.sort(function(a, b) {
           var aID, bID;
@@ -10510,11 +10572,11 @@
         });
         $.add(thread, replies);
         containers = $$('.threadContainer', thread);
-        for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
-          container = containers[_k];
+        for (_j = 0, _len1 = containers.length; _j < _len1; _j++) {
+          container = containers[_j];
           $.rm(container);
         }
-        return Unread.update(true);
+        Unread.update(true);
       }
     },
     kb: function() {
@@ -11761,14 +11823,14 @@
         hide: 2
       }[_conf['Sidebar']] || (252 + Style.sidebarOffset.W);
       Style.replyMargin = _conf["Post Spacing"];
-      return css = "/* Cleanup */\n#absbot,\n#delPassword,\n#delform > hr:last-of-type,\n#navbotright,\n#postForm,\n#styleSwitcher,\n.boardBanner > div,\n.mobile,\n.postingMode,\n.riced,\n.sideArrows,\n.stylechanger,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr {\n  display: none;\n}\n/* Empties */\n#qr .warning:empty,\n#qr-thread-select:empty {\n  display: none;\n}\n/* File Name Trunctuate */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n/* Unnecessary */\n#qp input,\n#qp .rice,\n.inline .rice {\n  display: none !important;\n}\n/* Hidden Content */\n.forwarded,\n.hidden_thread ~ div,\n.hidden_thread ~ a,\n.replyContainer .stub ~ div,\n.replyContainer .stub ~ a,\n.stub + div,\n[hidden] {\n  display: none !important;\n}\n/* Hidden UI */\n#catalog,\n#navlinks,\n#navtopright,\n.cataloglink,\n.navLinks,\na[style=\"cursor: pointer; float: right;\"] {\n  position: fixed;\n  top: 100%;\n  left: 100%;\n}\n/* Hide last horizontal rule, keep clear functionality. */\n.board > hr:last-of-type {\n  visibility: hidden;\n}\n/* Fappe Tyme */\n.fappeTyme .thread > .noFile {\n  display: none;\n}\n/* Defaults */\na {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  outline: none;\n}\nbody,\nhtml {\n  min-height: 100%;\n  " + Style.sizing + ": border-box;\n}\nbody {\n  outline: none;\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 0;\n  margin-bottom: 0;\n  margin-" + Style.sidebarLocation[0] + ": " + (/^boards\.4chan\.org$/.test(location.hostname) ? Style.sidebar : '2') + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0 " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px 0 " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n}\nbody.unscroll {\n  overflow: hidden;\n}\n" + (_conf["4chan SS Sidebar"] && /^boards\.4chan\.org$/.test(location.hostname) ? "body::before {  content: '';  position: fixed;  top: 0;  bottom: 0;  " + Style.sidebarLocation[0] + ": 0;  width: " + (_conf['Sidebar'] === 'large' ? 305 : _conf['Sidebar'] === 'normal' ? 254 : _conf['Sidebar'] === 'minimal' ? 27 : 0) + "px;  z-index: 1;  " + Style.sizing + ": border-box;  display: block;}body {  padding-" + Style.sidebarLocation[0] + ": 2px;}" : "") + "\nbutton,\ninput,\ntextarea {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n}\nhr {\n  clear: both;\n  border: 0;\n  padding: 0;\n  margin: 0 0 1px;\n  " + (_conf['Hide Horizontal Rules'] ? 'visibility: hidden;' : '') + "\n}\n.center {\n  text-align: center;\n}\n.disabled {\n  opacity: 0.5;\n}\n/* Symbols */\n.drop-marker {\n  vertical-align: middle;\n  display: inline-block;\n  margin: 2px 2px 3px;\n  border-top: .5em solid;\n  border-right: .3em solid transparent;\n  border-left: .3em solid transparent;\n}\n.brackets-wrap::before {\n  content: \"\\00a0[\";\n}\n.brackets-wrap::after {\n  content: \"]\\00a0\";\n}\n/* Thread / Reply Nav */\n#navlinks a {\n  position: fixed;\n  z-index: 12;\n  opacity: 0.5;\n  display: inline-block;\n  border-right: 6px solid transparent;\n  border-left: 6px solid transparent;\n  margin: 1.5px;\n}\n/* Header */\n#boardNavDesktop {\n  z-index: 6;\n  border-width: 1px;\n  position: absolute;\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + (_conf["Hide Navigation Decorations"] ? "  font-size: 0;  color: transparent;  word-spacing: 2px;" : "") + "\n   text-align: " + _conf["Navigation Alignment"] + ";\n}\n.fixed #boardNavDesktop {\n  position: fixed;\n}\n.top #boardNavDesktop {\n  top: 0;\n  border-top-width: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : "") + "\"\n}\n.fixed.bottom #boardNavDesktop {\n  bottom: 0;\n  border-bottom-width: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\"\n}\n.hide #boardNavDesktop {\n  position: fixed;\n  top: 110%;\n  bottom: auto;\n}\n/* Header Autohide */\n.fixed #boardNavDesktop.autohide:not(:hover) {\n  box-shadow: none;\n  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #boardNavDesktop.autohide:not(:hover) {\n  margin-bottom: -1em;\n  " + agent + "transform: translateY(-100%);\n}\n.fixed.bottom #boardNavDesktop.autohide:not(:hover) {\n  " + agent + "transform: translateY(100%);\n}\n#toggle-header-bar {\n  left: 0;\n  right: 0;\n  height: 10px;\n  position: absolute;\n}\n#boardNavDesktop #toggle-header-bar {\n  display: none;\n}\n.fixed #boardNavDesktop #toggle-header-bar {\n  display: block;\n}\n.fixed #boardNavDesktop #toggle-header-bar {\n  cursor: n-resize;\n}\n.fixed.top boardNavDesktop #toggle-header-bar {\n  top: 100%;\n}\n.fixed.bottom #boardNavDesktop #toggle-header-bar {\n  bottom: 100%;\n}\n.fixed #boardNavDesktop #header-bar.autohide #toggle-header-bar {\n  cursor: s-resize;\n}\n/* Notifications */\n#notifications {\n  position: fixed;\n  top: 0;\n  left: 0;\n  right: 0;\n}\n.fixed.top #notifications {\n  position: absolute;\n  top: 100%;\n}\n.notification {\n  display: block;\n  overflow: hidden;\n  width: 300px;\n  border: 1px solid;\n  " + (_conf['Sidebar Location'] === 'left' ? 'margin-left: auto;' : '') + "\n}\n.notification:not(:first-of-type) {\n  border-top: none;\n}\n.close {\n  float: right;\n}\n/* Main Menu */\n#main-menu {\n  margin: 0;\n  border: 2px solid;\n  border-radius: 10px;\n  height: 14px;\n  width: 14px;\n  " + Style.sizing + ": border-box;\n  border-color: rgb(130,130,130);\n  color: rgb(130,130,130);\n}\n#main-menu::after {\n  content: '';\n  font-size: 10px;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  " + agent + "transform: translate(-60%, -50%);\n  display: block;\n  border-top: 5px solid rgb(130, 130, 130);\n  border-left: 3px solid transparent;\n  border-right: 3px solid transparent;\n  width: 7px;\n  " + Style.sizing + ": border-box;\n} \n/* Pagination */\n.pagelist {\n  border-width: 1px;\n  text-align: " + _conf["Pagination Alignment"] + ";\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + {
+      return css = "/* Cleanup */\n#absbot,\n#delPassword,\n#delform > hr:last-of-type,\n#navbotright,\n#postForm,\n#styleSwitcher,\n.boardBanner > div,\n.mobile,\n.postingMode,\n.riced,\n.sideArrows,\n.stylechanger,\nbody > br,\nbody > div[style^=\"text-align\"],\nbody > hr {\n  display: none;\n}\n/* Empties */\n#qr .warning:empty,\n#qr-thread-select:empty {\n  display: none;\n}\n/* File Name Trunctuate */\n.fileText:hover .fntrunc,\n.fileText:not(:hover) .fnfull {\n  display: none;\n}\n/* Unnecessary */\n#qp input,\n#qp .rice,\n.inline .rice {\n  display: none !important;\n}\n/* Hidden Content */\n.forwarded,\n.hidden_thread ~ div,\n.hidden_thread ~ a,\n.replyContainer .stub ~ div,\n.replyContainer .stub ~ a,\n.stub + div,\n[hidden] {\n  display: none !important;\n}\n/* Hidden UI */\n#catalog,\n#navlinks,\n#navtopright,\n.cataloglink,\n.navLinks,\na[style=\"cursor: pointer; float: right;\"] {\n  position: fixed;\n  top: 100%;\n  left: 100%;\n}\n/* Hide last horizontal rule, keep clear functionality. */\n.board > hr:last-of-type {\n  visibility: hidden;\n}\n/* Fappe Tyme */\n.fappeTyme .thread > .noFile {\n  display: none;\n}\n/* Defaults */\na {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  outline: none;\n}\nbody,\nhtml {\n  min-height: 100%;\n  " + Style.sizing + ": border-box;\n}\nbody {\n  outline: none;\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n  min-height: 100%;\n  margin-top: 0;\n  margin-bottom: 0;\n  margin-" + Style.sidebarLocation[0] + ": " + (/^boards\.4chan\.org$/.test(location.hostname) ? Style.sidebar : '2') + "px;\n  margin-" + Style.sidebarLocation[1] + ": 2px;\n  padding: 0 " + (parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px 0 " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"]) + "px;\n}\nbody.unscroll {\n  overflow: hidden;\n}\n" + (_conf["4chan SS Sidebar"] && /^boards\.4chan\.org$/.test(location.hostname) ? "body::before {  content: '';  position: fixed;  top: 0;  bottom: 0;  " + Style.sidebarLocation[0] + ": 0;  width: " + (_conf['Sidebar'] === 'large' ? 305 : _conf['Sidebar'] === 'normal' ? 254 : _conf['Sidebar'] === 'minimal' ? 27 : 0) + "px;  z-index: 1;  " + Style.sizing + ": border-box;  display: block;}body {  padding-" + Style.sidebarLocation[0] + ": 2px;}" : "") + "\nbutton,\ninput,\ntextarea {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n  font-family: " + _conf["Font"] + ";\n}\nhr {\n  clear: both;\n  border: 0;\n  padding: 0;\n  margin: 0 0 1px;\n  " + (_conf['Hide Horizontal Rules'] ? 'visibility: hidden;' : '') + "\n}\n.center {\n  text-align: center;\n}\n.disabled {\n  opacity: 0.5;\n}\n/* Symbols */\n.drop-marker {\n  vertical-align: middle;\n  display: inline-block;\n  margin: 2px 2px 3px;\n  border-top: .5em solid;\n  border-right: .3em solid transparent;\n  border-left: .3em solid transparent;\n}\n.brackets-wrap::before {\n  content: \"\\00a0[\";\n}\n.brackets-wrap::after {\n  content: \"]\\00a0\";\n}\n/* Thread / Reply Nav */\n#navlinks a {\n  position: fixed;\n  z-index: 12;\n  opacity: 0.5;\n  display: inline-block;\n  border-right: 6px solid transparent;\n  border-left: 6px solid transparent;\n  margin: 1.5px;\n}\n/* Header */\n#header-bar {\n  z-index: 6;\n  border-width: 1px;\n  position: absolute;\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + (_conf["Hide Navigation Decorations"] ? "  font-size: 0;  color: transparent;  word-spacing: 2px;" : "") + "\n   text-align: " + _conf["Navigation Alignment"] + ";\n}\n.fixed #header-bar {\n  position: fixed;\n}\n.top #header-bar {\n  top: 0;\n  border-top-width: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : "") + "\"\n}\n.fixed.bottom #header-bar {\n  bottom: 0;\n  border-bottom-width: 0;\n  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : "") + "\"\n}\n.hide #header-bar {\n  position: fixed;\n  top: 110%;\n  bottom: auto;\n}\n/* Header Autohide */\n.fixed #header-bar.autohide:not(:hover) {\n  box-shadow: none;\n  transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);\n}\n.fixed.top #header-bar.autohide:not(:hover) {\n  margin-bottom: -1em;\n  " + agent + "transform: translateY(-100%);\n}\n.fixed.bottom #header-bar.autohide:not(:hover) {\n  " + agent + "transform: translateY(100%);\n}\n#toggle-header-bar {\n  left: 0;\n  right: 0;\n  height: 10px;\n  position: absolute;\n}\n#header-bar #toggle-header-bar {\n  display: none;\n}\n.fixed #header-bar #toggle-header-bar {\n  display: block;\n}\n.fixed #header-bar #toggle-header-bar {\n  cursor: n-resize;\n}\n.fixed.top header-bar #toggle-header-bar {\n  top: 100%;\n}\n.fixed.bottom #header-bar #toggle-header-bar {\n  bottom: 100%;\n}\n.fixed #header-bar #header-bar.autohide #toggle-header-bar {\n  cursor: s-resize;\n}\n/* Notifications */\n#notifications {\n  position: fixed;\n  top: 0;\n  left: 0;\n  right: 0;\n}\n.fixed.top #notifications {\n  position: absolute;\n  top: 100%;\n}\n.notification {\n  display: block;\n  overflow: hidden;\n  width: 300px;\n  border: 1px solid;\n  " + (_conf['Sidebar Location'] === 'left' ? 'margin-left: auto;' : '') + "\n}\n.notification:not(:first-of-type) {\n  border-top: none;\n}\n.close {\n  float: right;\n}\n/* Main Menu */\n#main-menu {\n  margin: 0;\n  border: 2px solid;\n  border-radius: 10px;\n  height: 14px;\n  width: 14px;\n  " + Style.sizing + ": border-box;\n  border-color: rgb(130,130,130);\n  color: rgb(130,130,130);\n}\n#main-menu::after {\n  content: '';\n  font-size: 10px;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  " + agent + "transform: translate(-60%, -50%);\n  display: block;\n  border-top: 5px solid rgb(130, 130, 130);\n  border-left: 3px solid transparent;\n  border-right: 3px solid transparent;\n  width: 7px;\n  " + Style.sizing + ": border-box;\n} \n/* Pagination */\n.pagelist {\n  border-width: 1px;\n  text-align: " + _conf["Pagination Alignment"] + ";\n" + (_conf['4chan SS Navigation'] ? "  left: 0;  right: 0;  border-left: 0;  border-right: 0;  border-radius: 0 !important;" : "  " + Style.sidebarLocation[0] + ": " + (Style.sidebar + parseInt(_conf["Right Thread Padding"], 10) + editSpace["right"]) + "px;  " + Style.sidebarLocation[1] + ": " + (parseInt(_conf["Left Thread Padding"], 10) + editSpace["left"] + 2) + "px;") + "\n" + {
         "sticky top": "  position: fixed;  top: 0;  border-top-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : ""),
         "sticky bottom": "  position: fixed;  bottom: 0;  border-bottom-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : ""),
         "top": "  position: absolute;  top: 0;  border-top-width: 0;  " + (_conf["Rounded Edges"] ? "border-radius: 0 0 3px 3px;" : ""),
         "bottom": "  position: static;  " + (_conf["Rounded Edges"] ? "border-radius: 3px 3px 0 0;" : ""),
         "hide": "  display: none;",
         "on side": "  position: fixed;  padding: 0;  top: auto;  bottom: " + (['fixed', 'transparent fade'].contains(_conf['Post Form Style']) ? 21.6 + (Conf['Show Post Form Header'] ? 1.5 : 0) + (Conf['Post Form Decorations'] ? 0.2 : 0) : .5) + "em;  " + Style.sidebarLocation[1] + ": auto;  " + Style.sidebarLocation[0] + ": " + (250 + Style.sidebarOffset.W) + "px  position: fixed;" + (Style.sidebarLocation[0] === 'right' ? "  " + agent + "transform: rotate(90deg);  " + agent + "transform-origin: bottom right;" : "  " + agent + "transform: rotate(-90deg);  " + agent + "transform-origin: bottom left;") + "  z-index: 6;  margin: 0;  background: none transparent !important;  border: 0 none !important;  text-align: right;"
-      }[_conf['Pagination']] + "\n" + (_conf["Hide Navigation Decorations"] ? "  font-size: 0;  color: transparent;  word-spacing: 0;" : "") + "\n  z-index: 6;\n}\n.pagelist input,\n.pagelist div {\n  vertical-align: middle;\n}\n#boardNavDesktop a {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n}\n" + (_conf["Hide Navigation Decorations"] ? ".pages a {  margin: 0 1px;  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;}" : "") + "\n.next,\n.pages,\n.prev {\n  display: inline-block;\n  margin: 0 3px;\n}\n/* Banner */\n.boardBanner {\n  line-height: 0;\n}\n" + (_conf["Faded 4chan Banner"] ? ".boardBanner {  opacity: 0.5;  " + agent + "transition: opacity 0.3s ease-in-out .5s;}.boardBanner:hover {  opacity: 1;  " + agent + "transition: opacity 0.3s ease-in;}" : "") + "\n" + (_conf["4chan Banner Reflection"] ? "/* From 4chan SS / OneeChan */.gecko .boardBanner::after {  background-image: -moz-element(#Banner);  bottom: -100%;  content: '';  left: 0;  mask: url(\"data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask\");  opacity: 0.3;  position: absolute;  right: 0;  top: 100%;  -moz-transform: scaleY(-1);  z-index: -1;}.webkit #Banner {  -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));}" : "") + "\n" + {
+      }[_conf['Pagination']] + "\n" + (_conf["Hide Navigation Decorations"] ? "  font-size: 0;  color: transparent;  word-spacing: 0;" : "") + "\n  z-index: 6;\n}\n.pagelist input,\n.pagelist div {\n  vertical-align: middle;\n}\n#header-bar a {\n  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;\n}\n" + (_conf["Hide Navigation Decorations"] ? ".pages a {  margin: 0 1px;  font-size: " + (parseInt(_conf["Font Size"], 10)) + "px;}" : "") + "\n.next,\n.pages,\n.prev {\n  display: inline-block;\n  margin: 0 3px;\n}\n/* Banner */\n.boardBanner {\n  line-height: 0;\n}\n" + (_conf["Faded 4chan Banner"] ? ".boardBanner {  opacity: 0.5;  " + agent + "transition: opacity 0.3s ease-in-out .5s;}.boardBanner:hover {  opacity: 1;  " + agent + "transition: opacity 0.3s ease-in;}" : "") + "\n" + (_conf["4chan Banner Reflection"] ? "/* From 4chan SS / OneeChan */.gecko .boardBanner::after {  background-image: -moz-element(#Banner);  bottom: -100%;  content: '';  left: 0;  mask: url(\"data:image/svg+xml,<svg version='1.1' xmlns='http://www.w3.org/2000/svg'><defs><linearGradient gradientUnits='objectBoundingBox' id='gradient' x2='0' y2='1'><stop stop-offset='0'/><stop stop-color='white' offset='1'/></linearGradient><mask id='mask' maskUnits='objectBoundingBox' maskContentUnits='objectBoundingBox' x='0' y='0' width='100%' height='100%'> <rect fill='url(%23gradient)' width='1' height='1' /></mask></defs></svg>#mask\");  opacity: 0.3;  position: absolute;  right: 0;  top: 100%;  -moz-transform: scaleY(-1);  z-index: -1;}.webkit #Banner {  -webkit-box-reflect: below 0 -webkit-linear-gradient(rgba(255,255,255,0), rgba(255,255,255,0) 10%, rgba(255,255,255,.5));}" : "") + "\n" + {
         "at sidebar top": ".boardBanner {  position: fixed;  top: 16px;  " + Style.sidebarLocation[0] + ": 2px;}.boardBanner img {  width: " + width + "px;}",
         "at sidebar bottom": ".boardBanner {  position: fixed;  bottom: 270px;  " + Style.sidebarLocation[0] + ": 2px;}.boardBanner img {  width: " + width + "px;}",
         "under post form": "  .boardBanner {  position: fixed;  bottom: 130px;  " + Style.sidebarLocation[0] + ": 2px;}.boardBanner img {  width: " + width + "px;}",
@@ -11806,7 +11868,7 @@
       bgColor = new Style.color(Style.colorToHex(backgroundC = theme["Background Color"]) || 'aaaaaa');
       Style.lightTheme = bgColor.isLight();
       icons = "data:image/png;base64," + Icons[_conf["Icons"]];
-      css = ".hide_thread_button span > span,\n.hide_reply_button span > span {\n  background-color: " + theme["Links"] + ";\n}\n#mascot_hide label {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n#content .thumb {\n  box-shadow: 0 0 5px " + theme["Reply Border"] + ";\n}\n.mascotname,\n.mascotoptions {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\nhr {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\na[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + backgroundC + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n}\n#fs_status {\n  background: " + theme["Dialog Background"] + " !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data *,\n.threadContainer {\n  border-color: " + theme["Reply Border"] + " !important;\n}\nhtml {\n  background: " + (backgroundC || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n.section-container,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + backgroundC + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n.sections-list > a.tab-selected {\n  background: " + backgroundC + ";\n  border-color: " + theme["Reply Border"] + ";\n  border-style: solid;\n}\n.captcha-img img {\n  " + (Style.filter(theme["Text"], theme["Input Background"])) + "\n}\n#boardTitle,\n#prefetch,\n#showQR,\n" + (!_conf["Post Form Decorations"] ? '#spoilerLabel,' : '') + "\n#thread-stats {\n  text-shadow:\n     1px  1px 0 " + backgroundC + ",\n    -1px -1px 0 " + backgroundC + ",\n     1px -1px 0 " + backgroundC + ",\n    -1px  1px 0 " + backgroundC + ",\n     0    1px 0 " + backgroundC + ",\n     0   -1px 0 " + backgroundC + ",\n     1px  0   0 " + backgroundC + ",\n    -1px  0   0 " + backgroundC + "\n    " + (_conf["Sidebar Glow"] ? ", 0 2px 5px " + theme['Text'] + ";" : ";") + "\n}\n/* Fixes text spoilers */\n" + (_conf['Remove Spoilers'] && _conf['Indicate Spoilers'] ? ".spoiler::before,s::before {  content: '[spoiler]';}.spoiler::after,s::after {  content: '[/spoiler]';}" : !_conf['Remove Spoilers'] ? ".spoiler:not(:hover) *,s:not(:hover) * {  color: rgb(0,0,0) !important;  text-shadow: none !important;}.spoiler:not(:hover),s:not(:hover) {  background-color: rgb(0,0,0);  color: rgb(0,0,0) !important;  text-shadow: none !important;}" : "") + "\n#exlinks-options,\n#appchanx-settings,\n#qrtab,\n" + (_conf["Post Form Decorations"] ? "#qr," : "") + "\n#updater,\ninput[type=\"submit\"],\ninput[value=\"Report\"],\nspan[style=\"left: 5px; position: absolute;\"] a {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.enabled .mascotcontainer {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#qr-filename-container,\n#appchanx-settings input,\n.captcha-img,\n.dump #dump:not(:hover):not(:focus),\n.qr-preview,\n.selectrice,\nbutton,\ninput,\ntextarea {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:hover,\n#qr-filename-container:hover,\n#qr-filename-container:hover,\n.selectrice:hover,\n#selectrice li:hover,\n#selectrice li:nth-of-type(2n+1):hover,\ninput:hover,\ntextarea:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:active,\n#dump:focus,\n#selectrice li:focus,\n.selectrice:focus,\n#qr-filename-container:active,\n#qr-filename-container:focus,\ninput:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n  outline: none;\n}\n#mouseover,\n#post-preview,\n#qp .post,\n#xupdater,\n.reply.post {\n  border-width: 1px;\n  border-style: solid;\n  border-color: " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.thread > .replyContainer > .reply.post {\n  border-width: " + (_conf['Post Spacing'] === "0" ? "1px 1px 0 1px" : '1px') + ";\n}\n.exblock.reply,\n.reply.post.highlight,\n.reply.post:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#boardNavDesktop,\n.pagelist {\n  background: " + theme["Navigation Background"] + ";\n  border-style: solid;\n  border-color: " + theme["Navigation Border"] + ";\n}\n.thread {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#selectrice,\n#themeConf,\n#watcher,\n#watcher:hover,\n.notification,\n.submenu,\na[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n.deleteform::before,\n.deleteform,\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border-color: " + theme["Input Border"] + ";\n}\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\n#navlinks a:first-of-type {\n  border-bottom: 11px solid rgb(130,130,130);\n}\n#navlinks a:last-of-type {\n  border-top: 11px solid rgb(130,130,130);\n}\n#charCount {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + ";\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n}\n.dateTime,\n.post-ago {\n  color: " + theme["Timestamps"] + " !important;\n}\n#fs_status a,\n#updater #count:not(.new)::after,\n#showQR,\n#updater,\n.abbr,\n.boxbar,\n.boxcontent,\n.deleteform::before,\n.pages strong,\n.pln,\n.reply,\n.reply.highlight,\n.summary,\nbody,\nbutton,\nspan[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#appchanx-settings fieldset,\n#selectrice {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\n.forwardlink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  border-bottom: 1px dashed " + theme["Backlinks"] + ";\n}\n.container::before {\n  color: " + theme["Timestamps"] + ";\n}\n#menu,\n#post-preview,\n#qp .opContainer,\n#qp .replyContainer,\n.submenu {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n}\n.selectrice::before {\n  border-left: 1px solid " + theme["Input Border"] + ";\n}\n.selectrice::after {\n  border-top: .45em solid " + theme["Inputs"] + ";\n}\n#updater input,\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#boardNavDesktop a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  position: relative;\n}\ninput[type=checkbox]:checked + .rice::after {\n  content: \"\";\n  display: block;\n  width: 4px;\n  height: 10px;\n  border: solid " + theme["Inputs"] + ";\n  border-width: 0 3px 3px 0;\n  " + agent + "transform: rotate(45deg);\n  position: absolute;\n  left: 2px;\n  bottom: -1px;\n}\n#addReply,\n#dump,\n.button,\n.entry,\n.replylink,\na {\n  color: " + theme["Links"] + ";\n}\n.backlink {\n  color: " + theme["Backlinks"] + ";\n}\n.qiQuote,\n.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\n#addReply:hover,\n#dump:hover,\n.entry:hover,\n.sideArrows a:hover,\n.replylink:hover,\n.qiQuote:hover,\n.quotelink:hover,\na .name:hover,\na .postertrip:hover,\na:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#boardNavDesktop a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name,\n.post-author {\n  color: " + theme["Names"] + " !important;\n}\n.post-tripcode,\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\na .postertrip,\na .name {\n  color: " + theme["Emails"] + ";\n}\n.post.reply.qphl,\n.post.op.qphl {\n  border-color: " + theme["Backlinked Reply Outline"] + ";\n  background: " + theme["Highlighted Reply Background"] + ";\n}\n.inline .post {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.placeholder,\n#qr input::" + agent + "placeholder,\n#qr textarea::" + agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#qr input:" + agent + "placeholder,\n#qr textarea:" + agent + "placeholder,\n.placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#appchanx-settings fieldset,\n.boxcontent dd,\n.selectrice ul {\n  border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + ";\n}\n#appchanx-settings li,\n#selectrice li:not(:first-of-type) {\n  border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + ";\n}\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\na[style=\"cursor: pointer; float: right;\"]::after,\n#img-controls,\n#catalog::after,\n#fappeTyme {\n  background-image: url('" + icons + "');\n" + (!Style.lightTheme ? "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>#filters\");" : "") + "\n}\n" + theme["Custom CSS"];
+      css = ".hide_thread_button span > span,\n.hide_reply_button span > span {\n  background-color: " + theme["Links"] + ";\n}\n#mascot_hide label {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\n#content .thumb {\n  box-shadow: 0 0 5px " + theme["Reply Border"] + ";\n}\n.mascotname,\n.mascotoptions {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.opContainer.filter_highlight {\n  box-shadow: inset 5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\n.filter_highlight > .reply {\n  box-shadow: -5px 0 " + theme["Backlinked Reply Outline"] + ";\n}\nhr {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n}\na[style=\"cursor: pointer; float: right;\"] + div[style^=\"width: 100%;\"] > table > tbody > tr > td {\n  background: " + backgroundC + " !important;\n  border: 1px solid " + theme["Reply Border"] + " !important;\n}\n#fs_status {\n  background: " + theme["Dialog Background"] + " !important;\n}\n#fs_data tr[style=\"background-color: #EA8;\"] {\n  background: " + theme["Reply Background"] + " !important;\n}\n#fs_data,\n#fs_data *,\n.threadContainer {\n  border-color: " + theme["Reply Border"] + " !important;\n}\nhtml {\n  background: " + (backgroundC || '') + ";\n  background-image: " + (theme["Background Image"] || '') + ";\n  background-repeat: " + (theme["Background Repeat"] || '') + ";\n  background-attachment: " + (theme["Background Attachment"] || '') + ";\n  background-position: " + (theme["Background Position"] || '') + ";\n}\n.section-container,\n#exlinks-options-content,\n#mascotcontent,\n#themecontent {\n  background: " + backgroundC + ";\n  border: 1px solid " + theme["Reply Border"] + ";\n  padding: 5px;\n}\n.sections-list > a.tab-selected {\n  background: " + backgroundC + ";\n  border-color: " + theme["Reply Border"] + ";\n  border-style: solid;\n}\n.captcha-img img {\n  " + (Style.filter(theme["Text"], theme["Input Background"])) + "\n}\n#boardTitle,\n#prefetch,\n#showQR,\n" + (!_conf["Post Form Decorations"] ? '#spoilerLabel,' : '') + "\n#thread-stats {\n  text-shadow:\n     1px  1px 0 " + backgroundC + ",\n    -1px -1px 0 " + backgroundC + ",\n     1px -1px 0 " + backgroundC + ",\n    -1px  1px 0 " + backgroundC + ",\n     0    1px 0 " + backgroundC + ",\n     0   -1px 0 " + backgroundC + ",\n     1px  0   0 " + backgroundC + ",\n    -1px  0   0 " + backgroundC + "\n    " + (_conf["Sidebar Glow"] ? ", 0 2px 5px " + theme['Text'] + ";" : ";") + "\n}\n/* Fixes text spoilers */\n" + (_conf['Remove Spoilers'] && _conf['Indicate Spoilers'] ? ".spoiler::before,s::before {  content: '[spoiler]';}.spoiler::after,s::after {  content: '[/spoiler]';}" : !_conf['Remove Spoilers'] ? ".spoiler:not(:hover) *,s:not(:hover) * {  color: rgb(0,0,0) !important;  text-shadow: none !important;}.spoiler:not(:hover),s:not(:hover) {  background-color: rgb(0,0,0);  color: rgb(0,0,0) !important;  text-shadow: none !important;}" : "") + "\n#exlinks-options,\n#appchanx-settings,\n#qrtab,\n" + (_conf["Post Form Decorations"] ? "#qr," : "") + "\n#updater,\ninput[type=\"submit\"],\ninput[value=\"Report\"],\nspan[style=\"left: 5px; position: absolute;\"] a {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.enabled .mascotcontainer {\n  background: " + theme["Buttons Background"] + ";\n  border-color: " + theme["Buttons Border"] + ";\n}\n#dump,\n#qr-filename-container,\n#appchanx-settings input,\n.captcha-img,\n.dump #dump:not(:hover):not(:focus),\n.qr-preview,\n.selectrice,\nbutton,\ninput,\ntextarea {\n  background: " + theme["Input Background"] + ";\n  border: 1px solid " + theme["Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:hover,\n#qr-filename-container:hover,\n#qr-filename-container:hover,\n.selectrice:hover,\n#selectrice li:hover,\n#selectrice li:nth-of-type(2n+1):hover,\ninput:hover,\ntextarea:hover {\n  background: " + theme["Hovered Input Background"] + ";\n  border-color: " + theme["Hovered Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n}\n#dump:active,\n#dump:focus,\n#selectrice li:focus,\n.selectrice:focus,\n#qr-filename-container:active,\n#qr-filename-container:focus,\ninput:focus,\ntextarea:focus,\ntextarea.field:focus {\n  background: " + theme["Focused Input Background"] + ";\n  border-color: " + theme["Focused Input Border"] + ";\n  color: " + theme["Inputs"] + ";\n  outline: none;\n}\n#mouseover,\n#post-preview,\n#qp .post,\n#xupdater,\n.reply.post {\n  border-width: 1px;\n  border-style: solid;\n  border-color: " + theme["Reply Border"] + ";\n  background: " + theme["Reply Background"] + ";\n}\n.thread > .replyContainer > .reply.post {\n  border-width: " + (_conf['Post Spacing'] === "0" ? "1px 1px 0 1px" : '1px') + ";\n}\n.exblock.reply,\n.reply.post.highlight,\n.reply.post:target {\n  background: " + theme["Highlighted Reply Background"] + ";\n  border: 1px solid " + theme["Highlighted Reply Border"] + ";\n}\n#header-bar,\n.pagelist {\n  background: " + theme["Navigation Background"] + ";\n  border-style: solid;\n  border-color: " + theme["Navigation Border"] + ";\n}\n.thread {\n  background: " + theme["Thread Wrapper Background"] + ";\n  border: 1px solid " + theme["Thread Wrapper Border"] + ";\n}\n#boardNavDesktopFoot,\n#mascotConf,\n#mascot_hide,\n#menu,\n#selectrice,\n#themeConf,\n#watcher,\n#watcher:hover,\n.notification,\n.submenu,\na[style=\"cursor: pointer; float: right;\"] ~ div[style^=\"width: 100%;\"] > table {\n  background: " + theme["Dialog Background"] + ";\n  border: 1px solid " + theme["Dialog Border"] + ";\n}\n.deleteform::before,\n.deleteform,\n#qr .warning {\n  background: " + theme["Input Background"] + ";\n  border-color: " + theme["Input Border"] + ";\n}\n.disabledwarning,\n.warning {\n  color: " + theme["Warnings"] + ";\n}\n#navlinks a:first-of-type {\n  border-bottom: 11px solid rgb(130,130,130);\n}\n#navlinks a:last-of-type {\n  border-top: 11px solid rgb(130,130,130);\n}\n#charCount {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.7)" : "rgba(255,255,255,0.7)") + ";\n}\n.postNum a {\n  color: " + theme["Post Numbers"] + ";\n}\n.subject {\n  color: " + theme["Subjects"] + " !important;\n}\n.dateTime,\n.post-ago {\n  color: " + theme["Timestamps"] + " !important;\n}\n#fs_status a,\n#updater #count:not(.new)::after,\n#showQR,\n#updater,\n.abbr,\n.boxbar,\n.boxcontent,\n.deleteform::before,\n.pages strong,\n.pln,\n.reply,\n.reply.highlight,\n.summary,\nbody,\nbutton,\nspan[style=\"left: 5px; position: absolute;\"] a,\ninput,\ntextarea {\n  color: " + theme["Text"] + ";\n}\n#exlinks-options-content > table,\n#appchanx-settings fieldset,\n#selectrice {\n  border-bottom: 1px solid " + theme["Reply Border"] + ";\n  box-shadow: inset " + theme["Shadow Color"] + " 0 0 5px;\n}\n.quote + .spoiler:hover,\n.quote {\n  color: " + theme["Greentext"] + ";\n}\n.forwardlink {\n  text-decoration: " + (_conf["Underline Links"] ? "underline" : "none") + ";\n  border-bottom: 1px dashed " + theme["Backlinks"] + ";\n}\n.container::before {\n  color: " + theme["Timestamps"] + ";\n}\n#menu,\n#post-preview,\n#qp .opContainer,\n#qp .replyContainer,\n.submenu {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.rice {\n  background: " + theme["Checkbox Background"] + ";\n  border: 1px solid " + theme["Checkbox Border"] + ";\n}\n.selectrice::before {\n  border-left: 1px solid " + theme["Input Border"] + ";\n}\n.selectrice::after {\n  border-top: .45em solid " + theme["Inputs"] + ";\n}\n#updater input,\n.bd {\n  background: " + theme["Buttons Background"] + ";\n  border: 1px solid " + theme["Buttons Border"] + ";\n}\n.pages a,\n#header-bar a {\n  color: " + theme["Navigation Links"] + ";\n}\ninput[type=checkbox]:checked + .rice {\n  position: relative;\n}\ninput[type=checkbox]:checked + .rice::after {\n  content: \"\";\n  display: block;\n  width: 4px;\n  height: 10px;\n  border: solid " + theme["Inputs"] + ";\n  border-width: 0 3px 3px 0;\n  " + agent + "transform: rotate(45deg);\n  position: absolute;\n  left: 2px;\n  bottom: -1px;\n}\n#addReply,\n#dump,\n.button,\n.entry,\n.replylink,\na {\n  color: " + theme["Links"] + ";\n}\n.backlink {\n  color: " + theme["Backlinks"] + ";\n}\n.qiQuote,\n.quotelink {\n  color: " + theme["Quotelinks"] + ";\n}\n#addReply:hover,\n#dump:hover,\n.entry:hover,\n.sideArrows a:hover,\n.replylink:hover,\n.qiQuote:hover,\n.quotelink:hover,\na .name:hover,\na .postertrip:hover,\na:hover {\n  color: " + theme["Hovered Links"] + ";\n}\n#header-bar a:hover,\n#boardTitle a:hover {\n  color: " + theme["Hovered Navigation Links"] + ";\n}\n#boardTitle {\n  color: " + theme["Board Title"] + ";\n}\n.name,\n.post-author {\n  color: " + theme["Names"] + " !important;\n}\n.post-tripcode,\n.postertrip,\n.trip {\n  color: " + theme["Tripcodes"] + " !important;\n}\na .postertrip,\na .name {\n  color: " + theme["Emails"] + ";\n}\n.post.reply.qphl,\n.post.op.qphl {\n  border-color: " + theme["Backlinked Reply Outline"] + ";\n  background: " + theme["Highlighted Reply Background"] + ";\n}\n.inline .post {\n  box-shadow: " + (_conf['Quote Shadows'] ? "5px 5px 5px " + theme['Shadow Color'] : "") + ";\n}\n.placeholder,\n#qr input::" + agent + "placeholder,\n#qr textarea::" + agent + "placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#qr input:" + agent + "placeholder,\n#qr textarea:" + agent + "placeholder,\n.placeholder {\n  color: " + (Style.lightTheme ? "rgba(0,0,0,0.3)" : "rgba(255,255,255,0.2)") + " !important;\n}\n#appchanx-settings fieldset,\n.boxcontent dd,\n.selectrice ul {\n  border-color: " + (Style.lightTheme ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)") + ";\n}\n#appchanx-settings li,\n#selectrice li:not(:first-of-type) {\n  border-top: 1px solid " + (Style.lightTheme ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.025)") + ";\n}\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n.navLinks > a:first-of-type::after,\n#watcher::after,\n#globalMessage::after,\n#boardNavDesktopFoot::after,\na[style=\"cursor: pointer; float: right;\"]::after,\n#img-controls,\n#catalog::after,\n#fappeTyme {\n  background-image: url('" + icons + "');\n" + (!Style.lightTheme ? "filter: url(\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><filter id='filters' color-interpolation-filters='sRGB'><feColorMatrix values='-1 0 0 0 1 0 -1 0 0 1 0 0 -1 0 1 0 0 0 1 0' /></filter></svg>#filters\");" : "") + "\n}\n" + theme["Custom CSS"];
       css += (Style.lightTheme ? ".prettyprint {\n  background-color: #e7e7e7;\n  border: 1px solid #dcdcdc;\n}\n.com {\n  color: #dd0000;\n}\n.str,\n.atv {\n  color: #7fa61b;\n}\n.pun {\n  color: #61663a;\n}\n.tag {\n  color: #117743;\n}\n.kwd {\n  color: #5a6F9e;\n}\n.typ,\n.atn {\n  color: #9474bd;\n}\n.lit {\n  color: #368c72;\n}\n" : ".prettyprint {\n  background-color: rgba(0,0,0,.1);\n  border: 1px solid rgba(0,0,0,0.5);\n}\n.tag {\n  color: #96562c;\n}\n.pun {\n  color: #5b6f2a;\n}\n.com {\n  color: #a34443;\n}\n.str,\n.atv {\n  color: #8ba446;\n}\n.kwd {\n  color: #987d3e;\n}\n.typ,\n.atn {\n  color: #897399;\n}\n.lit {\n  color: #558773;\n}\n");
       if (_conf["Alternate Post Colors"]) {
         css += ".replyContainer:not(.hidden):nth-of-type(2n+1) .post {\n  background-image: " + agent + "linear-gradient(" + (Style.lightTheme ? "rgba(0,0,0,0.05), rgba(0,0,0,0.05)" : "rgba(255,255,255,0.02), rgba(255,255,255,0.02)") + ");\n}\n";
@@ -11862,14 +11924,14 @@
         if (iconOffset < 0) {
           iconOffset = 0;
         }
-        css += "/* 4chan X Options */\n#appchanOptions {\n  " + align + ": " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Watcher */\n#watcher::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Expand Images */\n#img-controls {\n  " + align + ": " + position[i++] + "px;\n}\n/* Main Menu */\n#main-menu {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  " + align + ": " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a {\n  margin: 2px;\n  top: 1px;\n}\n#navlinks a:last-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#navlinks a:first-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 1.6em;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#boardNavDesktopFoot::after,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#watcher::after,\n#globalMessage::after,\n#img-controls,\n#main-menu,\n#fappeTyme,\ndiv.navLinks > a:first-of-type::after,\n#catalog::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: 1px !important;\n}\n" + (_conf["Announcements"] === "slideout" ? "#globalMessage," : "") + "\n" + (_conf["Slideout Watcher"] ? "#watcher," : "") + "\n#boardNavDesktopFoot {\n  top: 16px !important;\n}\n" + (_conf['Boards Navigation'] === 'top' || _conf['Boards Navigation'] === 'sticky top' ? '#boardNavDesktop' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}\n";
+        css += "/* 4chan X Options */\n#appchanOptions {\n  " + align + ": " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Watcher */\n#watcher::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Expand Images */\n#img-controls {\n  " + align + ": " + position[i++] + "px;\n}\n/* Main Menu */\n#main-menu {\n  " + align + ": " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  " + align + ": " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a {\n  margin: 2px;\n  top: 1px;\n}\n#navlinks a:last-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#navlinks a:first-of-type {\n  " + align + ": " + position[i++] + "px;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 1.6em;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#boardNavDesktopFoot::after,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#watcher::after,\n#globalMessage::after,\n#img-controls,\n#main-menu,\n#fappeTyme,\ndiv.navLinks > a:first-of-type::after,\n#catalog::after,\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: 1px !important;\n}\n" + (_conf["Announcements"] === "slideout" ? "#globalMessage," : "") + "\n" + (_conf["Slideout Watcher"] ? "#watcher," : "") + "\n#boardNavDesktopFoot {\n  top: 16px !important;\n}\n" + (_conf['Boards Navigation'] === 'top' || _conf['Boards Navigation'] === 'sticky top' ? '#header-bar' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}\n";
         if (_conf["Updater Position"] !== 'moveable') {
           css += "/* Updater + Stats */\n#updater,\n#thread-stats {\n  " + align + ": " + (_conf["Updater Position"] === "bottom" && !_conf["Hide Delete UI"] ? 23 : 2) + "px !important;\n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: auto !important;\n  bottom: auto !important;\n  " + (_conf["Updater Position"] === 'top' ? "top: 16px !important" : "bottom: 0 !important") + ";\n}";
         }
       } else {
         position = aligner(2 + (_conf["4chan Banner"] === "at sidebar top" ? Style.logoOffset + 19 : 0), [notEither && _conf['Image Expansion'], true, true, _conf['Slideout Navigation'] !== 'hide', _conf['Announcements'] === 'slideout' && $('#globalMessage', d.body), notCatalog && _conf['Slideout Watcher'] && _conf['Thread Watcher'], notCatalog && $('body > a[style="cursor: pointer; float: right;"]', d.body), $('#navtopright .exlinksOptionsLink', d.body), notEither, g.VIEW === 'thread', notEither && _conf['Fappe Tyme'], navlinks = ((g.VIEW !== 'thread' && _conf['Index Navigation']) || (g.VIEW === 'thread' && _conf['Reply Navigation'])) && notCatalog, navlinks]);
         iconOffset = (g.VIEW === 'thread' && _conf['Prefetch'] ? 250 + Style.sidebarOffset.W : 20 + (g.VIEW === 'thread' && _conf['Updater Position'] === 'top' ? 100 : 0)) - (_conf['4chan SS Navigation'] ? 0 : Style.sidebar + parseInt(_conf[align.capitalize() + " Thread Padding"], 10));
-        css += "/* Expand Images */\n#img-controls {\n  top: " + position[i++] + "px;\n}\n/* Main Menu */\n#main-menu {\n  top: " + position[i++] + "px;\n}\n/* 4chan X Options */\n#appchanOptions {\n  top: " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after {\n  top: " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage,\n#globalMessage::after {\n  top: " + position[i++] + "px;\n}\n/* Watcher */\n" + (_conf["Slideout Watcher"] ? "#watcher, #watcher::after" : "") + " {\n  top: " + position[i++] + "px !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  top: " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  top: " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  top: " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  top: " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a:first-of-type {\n  top: " + position[i++] + "px !important;\n}\n#navlinks a:last-of-type {\n  top: " + position[i++] + "px !important;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 0;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#navlinks a,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#boardNavDesktopFoot::after,\n#globalMessage::after,\n#img-controls,\n#main-menu,\n#fappeTyme,\n" + (_conf["Slideout Watcher"] ? "#watcher::after," : "") + "\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#catalog::after,\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": 3px !important;\n}\n#boardNavDesktopFoot,\n#globalMessage,\n#watcher {\n  width: " + (233 + Style.sidebarOffset.W) + "px !important;\n  " + align + ": 18px !important;\n}\n" + (_conf['Boards Navigation'] === 'top' || _conf['Boards Navigation'] === 'sticky top' ? '#boardNavDesktop' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}";
+        css += "/* Expand Images */\n#img-controls {\n  top: " + position[i++] + "px;\n}\n/* Main Menu */\n#main-menu {\n  top: " + position[i++] + "px;\n}\n/* 4chan X Options */\n#appchanOptions {\n  top: " + position[i++] + "px;\n}\n/* Slideout Navigation */\n#boardNavDesktopFoot,\n#boardNavDesktopFoot::after {\n  top: " + position[i++] + "px;\n}\n/* Global Message */\n#globalMessage,\n#globalMessage::after {\n  top: " + position[i++] + "px;\n}\n/* Watcher */\n" + (_conf["Slideout Watcher"] ? "#watcher, #watcher::after" : "") + " {\n  top: " + position[i++] + "px !important;\n}\n/* 4sight */\nbody > a[style=\"cursor: pointer; float: right;\"]::after {\n  top: " + position[i++] + "px;\n}\n/* ExLinks */\n#navtopright .exlinksOptionsLink::after {\n  top: " + position[i++] + "px;\n}\n/* 4chan Catalog */\n#catalog::after {\n  top: " + position[i++] + "px;\n}\n/* Back */\ndiv.navLinks > a:first-of-type::after {\n  top: " + position[i++] + "px;\n}\n/* Fappe Tyme */\n#fappeTyme {\n  top: " + position[i++] + "px;\n}\n/* Thread Navigation Links */\n#navlinks a:first-of-type {\n  top: " + position[i++] + "px !important;\n}\n#navlinks a:last-of-type {\n  top: " + position[i++] + "px !important;\n}\n#prefetch {\n  width: " + (248 + Style.sidebarOffset.W) + "px;\n  " + align + ": 2px;\n  top: 0;\n  text-align: " + Style.sidebarLocation[1] + ";\n}\n#navlinks a,\n#navtopright .exlinksOptionsLink::after,\n#appchanOptions,\n#boardNavDesktopFoot::after,\n#globalMessage::after,\n#img-controls,\n#main-menu,\n#fappeTyme,\n" + (_conf["Slideout Watcher"] ? "#watcher::after," : "") + "\nbody > a[style=\"cursor: pointer; float: right;\"]::after,\n#catalog::after,\ndiv.navLinks > a:first-of-type::after {\n  " + align + ": 3px !important;\n}\n#boardNavDesktopFoot,\n#globalMessage,\n#watcher {\n  width: " + (233 + Style.sidebarOffset.W) + "px !important;\n  " + align + ": 18px !important;\n}\n" + (_conf['Boards Navigation'] === 'top' || _conf['Boards Navigation'] === 'sticky top' ? '#header-bar' : _conf['Pagination'] === 'top' || _conf['Pagination'] === 'sticky top' ? '.pagelist' : void 0) + " {\n  " + (_conf['4chan SS Navigation'] ? "padding-" + align + ": " + iconOffset + "px;" : "margin-" + align + ": " + iconOffset + "px;") + "\n}";
         if (_conf["Updater Position"] !== 'moveable') {
           css += "/* Updater + Stats */\n#updater,\n#thread-stats {\n  " + align + ": " + (_conf["Updater Position"] === "top" || !_conf["Hide Delete UI"] ? 23 : 2) + "px !important; \n  " + Style.sidebarLocation[1] + ": auto !important;\n  top: " + (_conf["Updater Position"] === "top" ? "-1px" : "auto") + " !important;\n  bottom: " + (_conf["Updater Position"] === "bottom" ? "-2px" : "auto") + " !important;\n}";
         }
@@ -12362,9 +12424,6 @@
       $.on(d, 'OpenSettings', function(e) {
         return Settings.open(e.detail);
       });
-      if (Conf['Enable 4chan\'s Extension']) {
-        return;
-      }
       settings = JSON.parse(localStorage.getItem('4chan-settings')) || {};
       if (settings.disableAll) {
         return;
@@ -12394,7 +12453,7 @@
       Settings.dialog = dialog = $.el('div', {
         id: 'appchanx-settings',
         "class": 'dialog',
-        innerHTML: "<nav>\n  <div class=sections-list></div>\n  <div class=credits>\n    <a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a> |\n    <a href='https://github.com/zixaphir/appchan-x/blob/Av2/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n    <a href='https://github.com/zixaphir/appchan-x/blob/Av2/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |\n    <a href=javascript:; class=close title=Close>×</a>\n  </div>\n</nav>\n<hr>\n<div class=section-container><section></section></div>"
+        innerHTML: "<nav>\n  <div class=sections-list></div>\n  <div class=credits>\n    <a href='http://zixaphir.github.com/appchan-x/' target=_blank>appchan x</a> |\n    <a href='https://github.com/zixaphir/appchan-x/blob/Av2/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n    <a href='https://github.com/zixaphir/appchan-x/blob/Av2/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |\n    <a href=javascript:; class=close title=Close>×</a>\n  </div>\n</nav>\n<hr>\n<div class=section-container><section></section></div>"
       });
       Settings.overlay = overlay = $.el('div', {
         id: 'overlay'
@@ -12751,9 +12810,9 @@
       return $.on(sauce, 'change', $.cb.value);
     },
     rice: function(section) {
-      var event, input, inputs, items, name, _i, _len, _ref;
+      var archiver, event, input, inputs, items, name, toSelect, _i, _j, _len, _len1, _ref;
 
-      section.innerHTML = "<fieldset>\n  <legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>\n    For example:<br>\n    <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n    will give you<br>\n    <code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n    if you are on /g/.\n  </div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Index-only link: <code>board-index</code></div>\n  <div>Catalog-only link: <code>board-catalog</code></div>\n  <div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Tab Icon <span class=warning " + (Conf['Unread Tab Icon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea>\n</fieldset>";
+      section.innerHTML = "<fieldset>\n  <legend>Archiver</legend>\n  Select an Archiver for this board:\n  <select name=archiver></select>\n</fieldset>\n<fieldset>\n  <legend>Custom Board Navigation <span class=warning " + (Conf['Custom Board Navigation'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>\n    For example:<br>\n    <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n    will give you<br>\n    <code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n    if you are on /g/.\n  </div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Board link (Replace with title when on that board): <code>board-replace</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Index-only link: <code>board-index</code></div>\n  <div>Catalog-only link: <code>board-catalog</code></div>\n  <div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Tab Icon <span class=warning " + (Conf['Unread Tab Icon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea>\n</fieldset>";
       items = {};
       inputs = {};
       _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss'];
@@ -12764,6 +12823,25 @@
         inputs[name] = input;
         event = ['favicon', 'usercss'].contains(name) ? 'change' : 'input';
         $.on(input, event, $.cb.value);
+      }
+      archiver = $('select[name=archiver]', section);
+      toSelect = Redirect.select(g.BOARD.ID);
+      if (!toSelect[0]) {
+        toSelect = ['No Archive Available'];
+      }
+      for (_j = 0, _len1 = toSelect.length; _j < _len1; _j++) {
+        name = toSelect[_j];
+        $.add(archiver, $.el('option', {
+          textContent: name
+        }));
+      }
+      if (toSelect[1]) {
+        Conf['archivers'][g.BOARD];
+        archiver.value = Conf['archivers'][g.BOARD] || toSelect[0];
+        $.on(archiver, 'change', function() {
+          Conf['archivers'][g.BOARD] = this.value;
+          return $.set('archivers', Conf.archivers);
+        });
       }
       $.get(items, function(items) {
         var key, val;
@@ -13401,7 +13479,8 @@
         'Enabled Mascots sfw': [],
         'Enabled Mascots nsfw': [],
         'Deleted Mascots': [],
-        'Hidden Categories': ["Questionable"]
+        'Hidden Categories': ["Questionable"],
+        'archivers': {}
       });
       return $.get(Conf, Main.initFeatures);
     },
@@ -13479,6 +13558,7 @@
         'Rice': Rice,
         'Banner': Banner,
         'Announcements': GlobalMessage,
+        'Redirection': Redirect,
         'Header': Header,
         'Catalog Links': CatalogLinks,
         'Settings': Settings,
@@ -13511,6 +13591,7 @@
         'Time Formatting': Time,
         'Relative Post Dates': RelativeDates,
         'File Info Formatting': FileInfo,
+        'Fappe Tyme': FappeTyme,
         'Sauce': Sauce,
         'Image Expansion': ImageExpand,
         'Image Expansion (Menu)': ImageExpand.menu,

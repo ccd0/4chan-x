@@ -72,22 +72,23 @@ QuoteThreading =
       return false unless Unread.posts.contains(qpost) or ((bottom < height) and (top > 0))
 
     qroot = qpost.nodes.root
-    threadContainer = qroot.nextSibling
-    if threadContainer?.className isnt 'threadContainer'
+    unless $.hasClass qroot, 'threadOP'
+      $.addClass qroot, 'threadOP'
       threadContainer = $.el 'div',
         className: 'threadContainer'
       $.after qroot, threadContainer
+    else
+      threadContainer = qroot.nextSibling
 
     $.add threadContainer, @nodes.root
     return true
 
   toggle: ->
-    thread = $ '.thread'
+    thread  = $ '.thread'
     replies = $$ '.thread > .replyContainer, .threadContainer > .replyContainer', thread
     QuoteThreading.enabled = @checked
     if @checked
       nodes = (Get.postFromNode reply for reply in replies)
-      Unread.node.call    node for node in nodes
       QuoteThreading.node node for node in nodes
     else
       replies.sort (a, b) ->
@@ -98,6 +99,7 @@ QuoteThreading =
       containers = $$ '.threadContainer', thread
       $.rm container for container in containers
       Unread.update true
+    return
 
   kb: ->
       control = $.id 'threadingControl'

@@ -26,18 +26,22 @@ Unread =
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
+    if Conf['Scroll to Last Read Post']
+      $.on window, 'load', (posts) =>
+        Unread.scroll.apply @, posts
 
-    return unless Conf['Scroll to Last Read Post']
+  scroll: (posts) ->
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of @posts
     if Unread.posts.length
       # Scroll to before the first unread post.
       while root = $.x 'preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root
         break unless (Get.postFromRoot root).isHidden
+      return unless root
       root.scrollIntoView false
     else if posts.length
       # Scroll to the last read post.
-      Header.scrollToPost posts[posts.length - 1].nodes.root
+      Header.scrollToPost (posts[post.length - 1]).nodes.root
 
   sync: ->
     lastReadPost = Unread.db.get
@@ -98,7 +102,7 @@ Unread =
       break if post.ID > Unread.lastReadPost
     arr.splice 0, i
 
-  read: (e) ->
+  read: $.debounce 50, (e) ->
     return if d.hidden or !Unread.posts.length
     height  = doc.clientHeight
     {posts} = Unread
@@ -106,8 +110,8 @@ Unread =
     i = posts.length
 
     while post = posts[--i]
-      {bottom, top} = post.nodes.root.getBoundingClientRect()
-      if (bottom < height) and (top > 0)  # post is completely read
+      {bottom} = post.nodes.root.getBoundingClientRect()
+      if (bottom < height)  # post is completely read
         ID = post.ID
         posts.remove post
     return unless ID
@@ -136,10 +140,7 @@ Unread =
     count = Unread.posts.length
 
     if Conf['Unread Count']
-      d.title = if g.DEAD
-        "(#{Unread.posts.length}) /#{g.BOARD}/ - 404"
-      else
-        "(#{Unread.posts.length}) #{Unread.title}"
+      d.title = "#{if count or !Conf['Hide Unread Count at (0)'] then "(#{count}) " else ''}#{if g.DEAD then "/#{g.BOARD}/ - 404" else "#{Unread.title}"}" 
       <% if (type === 'crx') { %>
       # XXX Chrome bug where it doesn't always update the tab title.
       # crbug.com/124381

@@ -9,17 +9,13 @@ Config =
         false
         'Link to external catalog instead of the internal one.'
       ]
-      'Enable 4chan\'s Extension': [
-        false
-        'Compatibility between <%= meta.name %> and 4chan\'s inline extension is NOT guaranteed.'
-      ]
-      'Fixed Header': [
-        false
-        'Mayhem X\'s Fixed Header (kinda).'
-      ]
       'Custom Board Navigation': [
         false
         'Show custom links instead of the full board list.'
+      ]
+      'QR Shortcut': [
+        false,
+        'Adds a small [QR] link in the header.'
       ]
       'Announcement Hiding': [
         true
@@ -105,10 +101,6 @@ Config =
         true
         'Add buttons to hide single replies.'
       ]
-      'Hiding Buttons': [
-        true
-        'Add buttons to hide threads / replies, in addition to menu links.'
-      ]
       'Stubs': [
         true
         'Show stubs of hidden threads / replies.'
@@ -145,13 +137,17 @@ Config =
       ]
       'Fappe Tyme': [
         false
-        'Hide posts without images when toggled.'
+        'Hide posts without images when toggled. *hint* *hint*'
       ]
 
     'Menu':
       'Menu': [
         true
         'Add a drop-down menu to posts.'
+      ]
+      'Report Link': [
+        true
+        'Add a report link to the menu.'
       ]
       'Thread Hiding Link': [
         true
@@ -160,19 +156,17 @@ Config =
       'Reply Hiding Link': [
         true
         'Add a link to hide single replies.'
-      ] 
-      'Report Link': [
-        true
-        'Add a report link to the menu.'
       ]
       'Delete Link': [
         true
         'Add post and image deletion links to the menu.'
       ]
+      <% if (type === 'crx') { %>
       'Download Link': [
         true
         'Add a download with original filename link to the menu. Chrome-only currently.'
       ]
+      <% } %>
       'Archive Link': [
         true
         'Add an archive link to the menu.'
@@ -187,6 +181,10 @@ Config =
         true
         'Show the unread posts count in the tab title.'
       ]
+      'Hide Unread Count at (0)': [
+        false
+        'Hide the unread posts count when it reaches 0.'
+      ]
       'Unread Tab Icon': [
         true
         'Show a different favicon when there are unread posts.'
@@ -194,6 +192,10 @@ Config =
       'Unread Line': [
         true
         'Show a line to distinguish read posts from unread ones.'
+      ]
+      'Scroll to Last Read Post': [
+        true
+        'Scroll back to the last read post when reopening a thread.'
       ]
       'Thread Excerpt': [
         true

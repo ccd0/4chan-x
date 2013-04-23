@@ -78,7 +78,7 @@ div.navLinks > a:first-of-type::after {
   width: #{233 + Style.sidebarOffset.W}px !important;
   #{align}: 18px !important;
 }
-#{if _conf['Boards Navigation'] is 'top' or _conf['Boards Navigation'] is 'sticky top' then '#boardNavDesktop' else if _conf['Pagination'] is 'top' or _conf['Pagination'] is 'sticky top' then '.pagelist'} {
+#{if _conf['Boards Navigation'] is 'top' or _conf['Boards Navigation'] is 'sticky top' then '#header-bar' else if _conf['Pagination'] is 'top' or _conf['Pagination'] is 'sticky top' then '.pagelist'} {
   #{if _conf['4chan SS Navigation']
     "padding-#{align}: #{iconOffset}px;"
   else

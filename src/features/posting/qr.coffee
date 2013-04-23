@@ -81,7 +81,8 @@ QR =
     QR.cleanNotifications()
     d.activeElement.blur()
     $.rmClass QR.nodes.el, 'dump'
-    $.toggleClass $('.qr-shortcut'), 'disabled'
+    if Conf['QR Shortcut']
+      $.toggleClass $('.qr-shortcut'), 'disabled'
     for i in QR.posts
       QR.posts[0].rm()
     QR.cooldown.auto = false
@@ -303,7 +304,8 @@ QR =
     QR.selected.save com
     QR.selected.save thread
 
-    $.rmClass $('.qr-shortcut'), 'disabled'
+    if Conf['QR Shortcut']
+      $.rmClass $('.qr-shortcut'), 'disabled'
 
   characterCount: ->
     counter = QR.nodes.charCount
@@ -850,7 +852,7 @@ QR =
     QR.mimeTypes = mimeTypes.split ', '
     # Add empty mimeType to avoid errors with URLs selected in Window's file dialog.
     QR.mimeTypes.push ''
-    nodes.fileInput.max    = $('input[name=MAX_FILE_SIZE]').value
+    nodes.fileInput.max = $('input[name=MAX_FILE_SIZE]').value
     <% if (type !== 'userjs') { %>
     # Opera's accept attribute is fucked up
     nodes.fileInput.accept = "text/*, #{mimeTypes}"
@@ -887,8 +889,8 @@ QR =
       $.on elm, 'blur',  QR.focusout
       $.on elm, 'focus', QR.focusin
     <% } %>
-    $.on QR.nodes.el, 'focusin',  QR.focusin
-    $.on QR.nodes.el, 'focusout', QR.focusout
+    $.on dialog,           'focusin',  QR.focusin
+    $.on dialog,           'focusout', QR.focusout
     $.on nodes.autohide,   'change', QR.toggleHide
     $.on nodes.close,      'click',  QR.close
     $.on nodes.dumpButton, 'click',  -> nodes.el.classList.toggle 'dump'

@@ -94,8 +94,4 @@ ExpandThread =
     Main.callbackNodes Post, posts
     $.after a, nodes
 
-    # Enable 4chan features.
-    if Conf['Enable 4chan\'s Extension']
-      $.globalEval "Parser.parseThread(#{thread.ID}, 1, #{nodes.length})"
-    else
-      Fourchan.parseThread thread.ID, 1, nodes.length
+    Fourchan.parseThread thread.ID, 1, nodes.length

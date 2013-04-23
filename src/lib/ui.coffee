@@ -54,14 +54,13 @@ UI = do ->
       menu = @makeMenu()
       currentMenu       = menu
       lastToggledButton = button
+      
+      @entries.sort (first, second) ->
+        first.order - second.order
 
       for entry in @entries
         @insertEntry entry, menu, data
 
-      entry = $ '.entry', menu
-      while prevEntry = @findNextEntry entry, -1
-        entry = prevEntry
-      @focus entry
       $.on d, 'click',     @close
       $.on d, 'CloseMenu', @close
       Rice.nodes menu
@@ -87,6 +86,14 @@ UI = do ->
       style.right  = "#{right}px"
       style.bottom = "#{bottom}px"
       style.left   = "#{left}px"
+      if right
+        $.addClass menu, 'left'
+
+      entry = $ '.entry', menu
+      # We've removed flexbox, so we don't user order anymore.
+      # while prevEntry = @findNextEntry entry, -1
+      #   entry = prevEntry
+      @focus entry
 
       menu.focus()
 

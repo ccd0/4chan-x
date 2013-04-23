@@ -5,33 +5,29 @@ Header =
       id:        'main-menu'
 
     @menu = new UI.Menu 'header'
-    $.on @menuButton, 'click',           @menuToggle
-    $.on @toggle,     'mousedown',       @toggleBarVisibility
-    $.on window,      'load hashchange', Header.hashScroll
 
-    @positionToggler = $.el 'span',
-      textContent: 'Header Position'
-      className:   'header-position-link'
+    headerToggler = $.el 'label',
+      innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
+
+    @headerToggler   = headerToggler.firstElementChild
+
+    $.on @menuButton,     'click',           @menuToggle
+    $.on window,          'load hashchange', Header.hashScroll
+    $.on @headerToggler,  'change',          @toggleBarVisibility
 
     {createSubEntry} = Header
     subEntries = []
     for setting in ['sticky top', 'sticky bottom', 'top', 'hide']
       subEntries.push createSubEntry setting
 
+    subEntries.push {el: headerToggler}
+
     $.event 'AddMenuEntry',
-      type:  'header'
-      el:    @positionToggler
-      order: 108
+      type: 'header'
+      el: $.el 'span',
+        textContent: 'Header'
+      order: 105
       subEntries: subEntries
-
-    @headerToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{if Conf['Header auto-hide'] then 'checked' else ''}> Auto-hide header"
-    $.on @headerToggler.firstElementChild, 'change', @toggleBarVisibility
-
-    $.event 'AddMenuEntry',
-      type:  'header'
-      el:    @headerToggler
-      order: 109
 
     $.on d, 'CreateNotification', @createNotification
 
@@ -56,7 +52,7 @@ Header =
   toggle: $.el 'div',
     id: 'toggle-header-bar'
 
-  createSubEntry: (setting)->
+  createSubEntry: (setting) ->
     label = $.el 'label',
       textContent: "#{setting}"
 
@@ -66,15 +62,15 @@ Header =
 
   setBoardList: ->
     Header.nav = nav = $.id 'boardNavDesktop'
+    nav.id = 'header-bar'
     if a = $ "a[href*='/#{g.BOARD}/']", nav
       a.className = 'current'
 
-    fullBoardList = $.el 'span',
-      id:     'full-board-list'
-      hidden: true
+    boardList = $.el 'span',
+      id: 'board-list'
 
-    customBoardList = $.el 'span',
-      id:     'custom-board-list'
+    $.add boardList, fullBoardList = $.el 'span',
+      id: 'full-board-list'
 
     Header.setBarPosition.call textContent: "#{Conf['Boards Navigation']}"
     $.sync 'Boards Navigation', Header.changeBarPosition
@@ -86,18 +82,25 @@ Header =
     $.add settings, Header.menuButton
 
     $.add fullBoardList, [nav.childNodes...]
-    $.add nav, [customBoardList, fullBoardList, Header.shortcuts, Header.bar, Header.toggle]
+    $.add nav, [boardList, Header.shortcuts, Header.bar, Header.toggle]
 
     if Conf['Custom Board Navigation']
+      fullBoardList.hidden = true
+      customBoardList = $.el 'span',
+        id: 'custom-board-list'
+      $.add boardList, customBoardList
+
       Header.generateBoardList Conf['boardnav']
       $.sync 'boardnav', Header.generateBoardList
+
       btn = $.el 'span',
         className: 'hide-board-list-button'
         innerHTML: '[<a href=javascript:;> - </a>]\u00A0'
       $.on btn, 'click', Header.toggleBoardList
+
       $.prepend fullBoardList, btn
+
     else
-      $.rm $ '#custom-board-list', nav
       fullBoardList.hidden = false
 
   generateBoardList: (text) ->
@@ -105,7 +108,7 @@ Header =
     $.rmAll list
     return unless text
     as = $$('#full-board-list a', Header.nav)[0...-2] # ignore the Settings and Home links
-    nodes = text.match(/[\w@]+(-(all|title|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
+    nodes = text.match(/[\w@]+(-(all|title|replace|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
       if /^toggle-all/.test t
@@ -124,6 +127,9 @@ Header =
           a = a.cloneNode true
           if /-title/.test t
             a.textContent = a.title
+          else if /-replace/.test t
+            if $.hasClass a, 'current'
+              a.textContent = a.title
           else if /-full/.test t
             a.textContent = "/#{board}/ - #{a.title}"
           else if /-(index|catalog|text)/.test t
@@ -173,7 +179,8 @@ Header =
         $.addClass doc, 'hide'
 
   setBarVisibility: (hide) ->
-    Header.headerToggler.firstElementChild.checked = hide
+    Header.headerToggler.checked = hide
+    $.event 'CloseMenu'
     (if hide then $.addClass else $.rmClass) Header.nav, 'autohide'
 
   hashScroll: ->
@@ -193,20 +200,33 @@ Header =
     hide = if @nodeName is 'INPUT'
       @checked
     else
-      !$.hasClass Header.nav, 'autohide'
+      !$.hasClass Header.bar, 'autohide'
+    Conf['Header auto-hide'] = hide
+    $.set 'Header auto-hide', hide
     Header.setBarVisibility hide
     message = if hide
       'The header bar will automatically hide itself.'
     else
       'The header bar will remain visible.'
     new Notification 'info', message, 2
-    $.set 'Header auto-hide', hide
+
+  hashScroll: ->
+    return unless (hash = @location.hash) and post = $.id hash[1..]
+    return if (Get.postFromRoot post).isHidden
+    Header.scrollToPost post
+
+  scrollToPost: (post) ->
+    {top} = post.getBoundingClientRect()
+    if Conf['Boards Navigation'] is 'sticky top'
+      headRect = Header.bar.getBoundingClientRect()
+      top += - headRect.top - headRect.height
+    <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>.scrollTop += top
 
   addShortcut: (el) ->
     shortcut = $.el 'span',
       className: 'shortcut'
     $.add shortcut, [$.tn(' ['), el, $.tn(']')]
-    $.add Header.shortcuts, shortcut
+    $.prepend Header.shortcuts, shortcut
 
   menuToggle: (e) ->
     Header.menu.toggle e, @, g

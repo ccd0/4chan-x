@@ -146,7 +146,7 @@ hr {
   margin: 1.5px;
 }
 /* Header */
-#boardNavDesktop {
+#header-bar {
   z-index: 6;
   border-width: 1px;
   position: absolute;
@@ -168,34 +168,34 @@ else "
 " else ""}
    text-align: #{_conf["Navigation Alignment"]};
 }
-.fixed #boardNavDesktop {
+.fixed #header-bar {
   position: fixed;
 }
-.top #boardNavDesktop {
+.top #header-bar {
   top: 0;
   border-top-width: 0;
   #{if _conf["Rounded Edges"] then "border-radius: 0 0 3px 3px;" else ""}"
 }
-.fixed.bottom #boardNavDesktop {
+.fixed.bottom #header-bar {
   bottom: 0;
   border-bottom-width: 0;
   #{if _conf["Rounded Edges"] then "border-radius: 3px 3px 0 0;" else ""}"
 }
-.hide #boardNavDesktop {
+.hide #header-bar {
   position: fixed;
   top: 110%;
   bottom: auto;
 }
 /* Header Autohide */
-.fixed #boardNavDesktop.autohide:not(:hover) {
+.fixed #header-bar.autohide:not(:hover) {
   box-shadow: none;
   transition: all .8s .6s cubic-bezier(.55, .055, .675, .19);
 }
-.fixed.top #boardNavDesktop.autohide:not(:hover) {
+.fixed.top #header-bar.autohide:not(:hover) {
   margin-bottom: -1em;
   #{agent}transform: translateY(-100%);
 }
-.fixed.bottom #boardNavDesktop.autohide:not(:hover) {
+.fixed.bottom #header-bar.autohide:not(:hover) {
   #{agent}transform: translateY(100%);
 }
 #toggle-header-bar {
@@ -204,22 +204,22 @@ else "
   height: 10px;
   position: absolute;
 }
-#boardNavDesktop #toggle-header-bar {
+#header-bar #toggle-header-bar {
   display: none;
 }
-.fixed #boardNavDesktop #toggle-header-bar {
+.fixed #header-bar #toggle-header-bar {
   display: block;
 }
-.fixed #boardNavDesktop #toggle-header-bar {
+.fixed #header-bar #toggle-header-bar {
   cursor: n-resize;
 }
-.fixed.top boardNavDesktop #toggle-header-bar {
+.fixed.top header-bar #toggle-header-bar {
   top: 100%;
 }
-.fixed.bottom #boardNavDesktop #toggle-header-bar {
+.fixed.bottom #header-bar #toggle-header-bar {
   bottom: 100%;
 }
-.fixed #boardNavDesktop #header-bar.autohide #toggle-header-bar {
+.fixed #header-bar #header-bar.autohide #toggle-header-bar {
   cursor: s-resize;
 }
 /* Notifications */
@@ -345,7 +345,7 @@ else "
 .pagelist div {
   vertical-align: middle;
 }
-#boardNavDesktop a {
+#header-bar a {
   font-size: #{parseInt(_conf["Font Size"], 10)}px;
 }
 #{if _conf["Hide Navigation Decorations"] then "

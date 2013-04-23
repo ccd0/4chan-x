@@ -14,7 +14,6 @@ Main =
     flatten null, Config
     for db in DataBoards
       Conf[db] = boards: {}
-      
     # Unflattened Config.
     $.extend Conf,
       'userThemes':           []
@@ -24,6 +23,7 @@ Main =
       'Enabled Mascots nsfw': []
       'Deleted Mascots':      []
       'Hidden Categories':    ["Questionable"]
+      'archivers':            {}
 
     $.get Conf, Main.initFeatures
 
@@ -93,6 +93,7 @@ Main =
       'Rice':                     Rice
       'Banner':                   Banner
       'Announcements':            GlobalMessage
+      'Redirection':              Redirect
       'Header':                   Header
       'Catalog Links':            CatalogLinks
       'Settings':                 Settings
@@ -125,6 +126,7 @@ Main =
       'Time Formatting':          Time
       'Relative Post Dates':      RelativeDates
       'File Info Formatting':     FileInfo
+      'Fappe Tyme':               FappeTyme
       'Sauce':                    Sauce
       'Image Expansion':          ImageExpand
       'Image Expansion (Menu)':   ImageExpand.menu

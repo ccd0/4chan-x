@@ -7,6 +7,7 @@ Settings =
       href:        'javascript:;'
     $.on link, 'click', Settings.open
 
+
     $.asap (-> d.body), ->
       return unless Main.isThisPageLegit()
       # Wait for #boardNavMobile instead of #boardNavDesktop,
@@ -41,10 +42,10 @@ Settings =
     Settings.addSection 'Sauce',    Settings.sauce
     Settings.addSection 'Rice',     Settings.rice
     Settings.addSection 'Keybinds', Settings.keybinds
+
     $.on d, 'AddSettingsSection',   Settings.addSection
     $.on d, 'OpenSettings',         (e) -> Settings.open e.detail
 
-    return if Conf['Enable 4chan\'s Extension']
     settings = JSON.parse(localStorage.getItem '4chan-settings') or {}
     return if settings.disableAll
     settings.disableAll = true
@@ -73,7 +74,7 @@ Settings =
           <div class=credits>
             <a href='<%= meta.page %>' target=_blank><%= meta.name %></a> |
             <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md' target=_blank>#{g.VERSION}</a> |
-            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CONTRIBUTING.md#reporting-bugs' target=_blank>Issues</a> |
+            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |
             <a href=javascript:; class=close title=Close>×</a>
           </div>
         </nav>
@@ -404,6 +405,11 @@ Settings =
   rice: (section) ->
     section.innerHTML = """
       <fieldset>
+        <legend>Archiver</legend>
+        Select an Archiver for this board:
+        <select name=archiver></select>
+      </fieldset>
+      <fieldset>
         <legend>Custom Board Navigation <span class=warning #{if Conf['Custom Board Navigation'] then 'hidden' else ''}>is disabled.</span></legend>
         <div><input name=boardnav class=field spellcheck=false></div>
         <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>
@@ -416,6 +422,7 @@ Settings =
         </div>
         <div>Board link: <code>board</code></div>
         <div>Title link: <code>board-title</code></div>
+        <div>Board link (Replace with title when on that board): <code>board-replace</code></div>
         <div>Full text link: <code>board-full</code></div>
         <div>Custom text link: <code>board-text:"VIP Board"</code></div>
         <div>Index-only link: <code>board-index</code></div>
@@ -479,6 +486,21 @@ Settings =
       else
         'input'
       $.on input, event, $.cb.value
+
+    # Archiver
+    archiver = $ 'select[name=archiver]', section
+    toSelect = Redirect.select g.BOARD.ID
+    toSelect = ['No Archive Available'] unless toSelect[0]
+
+    $.add archiver, $.el('option', {textContent: name}) for name in toSelect
+
+    if toSelect[1]
+      Conf['archivers'][g.BOARD]
+      archiver.value = Conf['archivers'][g.BOARD] or toSelect[0]
+      $.on archiver, 'change', ->
+        Conf['archivers'][g.BOARD] = @value
+        $.set 'archivers', Conf.archivers
+
     $.get items, (items) ->
       for key, val of items
         input = inputs[key]
