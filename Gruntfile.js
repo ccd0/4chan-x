@@ -180,7 +180,7 @@ module.exports = function(grunt) {
   grunt.registerTask('reloadPkg', 'Reload the package', function() {
     // Update the `pkg` object with the new version.
     pkg = grunt.file.readJSON('package.json');
-    concatOptions.process.data = pkg;
+    grunt.config.data.pkg = concatOptions.process.data = pkg;
     grunt.log.ok('pkg reloaded.');
   });
 
