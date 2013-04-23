@@ -91,7 +91,7 @@ Header =
     $.rmAll list
     return unless text
     as = $$('#full-board-list a', Header.bar)[0...-2] # ignore the Settings and Home links
-    nodes = text.match(/[\w@]+(-(all|title|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
+    nodes = text.match(/[\w@]+(-(all|title|replace|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map (t) ->
       if /^[^\w@]/.test t
         return $.tn t
       if /^toggle-all/.test t
@@ -110,6 +110,9 @@ Header =
           a = a.cloneNode true
           if /-title/.test t
             a.textContent = a.title
+          else if /-replace/.test t
+            if $.hasClass a, 'current'
+              a.textContent = a.title
           else if /-full/.test t
             a.textContent = "/#{board}/ - #{a.title}"
           else if /-(index|catalog|text)/.test t
@@ -633,6 +636,7 @@ Settings =
         <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>
         <div>Board link: <code>board</code></div>
         <div>Title link: <code>board-title</code></div>
+        <div>Board link (Replace with title when on that board): <code>board-replace</code></div>
         <div>Full text link: <code>board-full</code></div>
         <div>Custom text link: <code>board-text:"VIP Board"</code></div>
         <div>Index-only link: <code>board-index</code></div>
