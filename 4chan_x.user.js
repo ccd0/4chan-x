@@ -2656,10 +2656,14 @@
       });
       dismiss = $('.dismiss', dialog);
       $.on(overlay, 'click', function() {
-        return $.rm(overlay);
+        $.rm(overlay);
+        d.body.style.removeProperty('width');
+        return $.rmClass(d.body, 'unscroll');
       });
       $.on(dismiss, 'click', function() {
-        return $.rm(overlay);
+        $.rm(overlay);
+        d.body.style.removeProperty('width');
+        return $.rmClass(d.body, 'unscroll');
       });
       $.add(overlay, dialog);
       $.add(d.body, overlay);

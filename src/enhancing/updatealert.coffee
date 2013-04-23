@@ -15,8 +15,12 @@ UpdateAlert =
     dismiss = $('.dismiss', dialog)
     $.on overlay, 'click', ->
       $.rm overlay
+      d.body.style.removeProperty 'width'
+      $.rmClass d.body, 'unscroll'
     $.on dismiss, 'click', ->
       $.rm overlay
+      d.body.style.removeProperty 'width'
+      $.rmClass d.body, 'unscroll'
     $.add overlay, dialog
     $.add d.body, overlay
     d.body.style.setProperty 'width', "#{d.body.clientWidth}px", null
