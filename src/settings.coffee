@@ -49,7 +49,11 @@ Settings =
     html = """
         <nav>
           <div class=sections-list></div>
+          <p class='imp-exp-result warning'></p>
           <div class=credits>
+              <a class=export>Export</a> |
+              <a class=import>Import</a> |
+              <input type=file style='display: none;'>
             <a href='<%= meta.page %>' target=_blank><%= meta.name %></a> |
             <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md' target=_blank>#{g.VERSION}</a> |
             <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |
@@ -67,6 +71,10 @@ Settings =
       id:        'fourchanx-settings'
       className: 'dialog'
       innerHTML: html
+
+    $.on $('.export', Settings.dialog), 'click',  Settings.export
+    $.on $('.import', Settings.dialog), 'click',  Settings.import
+    $.on $('input',   Settings.dialog), 'change', Settings.onImport
 
     links = []
     for section in Settings.sections
@@ -114,18 +122,6 @@ Settings =
     section.scrollTop = 0
 
   main: (section) ->
-    section.innerHTML = """
-      <div class=imp-exp>
-        <button class=export>Export Settings</button>
-        <button class=import>Import Settings</button>
-        <input type=file style='visibility:hidden'>
-      </div>
-      <p class=imp-exp-result></p>
-    """
-    $.on $('.export', section), 'click',  Settings.export
-    $.on $('.import', section), 'click',  Settings.import
-    $.on $('input',   section), 'change', Settings.onImport
-
     items  = {}
     inputs = {}
     for key, obj of Config.main
@@ -201,7 +197,7 @@ Settings =
     @nextElementSibling.click()
   onImport: ->
     return unless file = @files[0]
-    output = @parentNode.nextElementSibling
+    output = $('.imp-exp-result')
     unless confirm 'Your current settings will be entirely overwritten, are you sure?'
       output.textContent = 'Import aborted.'
       return

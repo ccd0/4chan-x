@@ -857,3 +857,15 @@ a:only-of-type > .remove {
 .focused .submenu {
   display: block;
 }
+.imp-exp-result {
+  position: absolute;
+  text-align: center;
+  margin: auto;
+  right: 0px;
+  left: 0px;
+  width: 200px;
+}
+.export, .import {
+  cursor: pointer;
+  text-decoration: none !important;
+}
