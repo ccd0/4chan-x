@@ -145,22 +145,22 @@ a[href="javascript:;"] {
   -webkit-transform: translateY(100%);
   transform: translateY(100%);
 }
-#toggle-header-bar {
+#scroll-marker {
   left: 0;
   right: 0;
   height: 10px;
   position: absolute;
 }
-#boardNavDesktop #toggle-header-bar {
+#header-bar #scroll-marker {
   display: none;
 }
-.fixed #boardNavDesktop #toggle-header-bar {
+.fixed #header-bar #scroll-marker {
   display: block;
 }
-.fixed.top boardNavDesktop #toggle-header-bar {
+.fixed.top #header-bar #scroll-marker {
   top: 100%;
 }
-.fixed.bottom #boardNavDesktop #toggle-header-bar {
+.fixed.bottom #header-bar #scroll-marker {
   bottom: 100%;
 }
 #header-bar a:not(.entry) {
@@ -856,4 +856,16 @@ a:only-of-type > .remove {
 }
 .focused .submenu {
   display: block;
+}
+.imp-exp-result {
+  position: absolute;
+  text-align: center;
+  margin: auto;
+  right: 0px;
+  left: 0px;
+  width: 200px;
+}
+.export, .import {
+  cursor: pointer;
+  text-decoration: none !important;
 }

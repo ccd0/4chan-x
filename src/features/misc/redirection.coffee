@@ -79,14 +79,14 @@ Redirect =
       base:   '//fuuka.warosu.org'
       boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg']
       type:   'fuuka'
-    'RebeccaBlackTech':
-      base:   '//rbt.asia'
-      boards: ['an', 'cgl', 'g', 'mu', 'w']
-      type:   'fuuka_mail'
     'InstallGentoo':
       base:   '//archive.installgentoo.net'
       boards: ['diy', 'g', 'sci']
       type:   'fuuka'
+    'RebeccaBlackTech':
+      base:   '//rbt.asia'
+      boards: ['an', 'cgl', 'g', 'mu', 'w']
+      type:   'fuuka_mail'
     'Heinessen':
       base:   'http://archive.heinessen.com'
       boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x']

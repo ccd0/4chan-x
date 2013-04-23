@@ -75,8 +75,8 @@ Main =
       'Linkify':                  Linkify
       'Resurrect Quotes':         Quotify
       'Filter':                   Filter
-      'Thread Hiding':            ThreadHiding
-      'Reply Hiding':             PostHiding
+      'Thread Hiding Buttons':    ThreadHiding
+      'Reply Hiding Buttons':     PostHiding
       'Recursive':                Recursive
       'Strike-through Quotes':    QuoteStrikeThrough
       'Quick Reply':              QR
