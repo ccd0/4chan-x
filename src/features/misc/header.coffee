@@ -64,7 +64,7 @@ Header =
     id: 'hoverUI'
 
   toggle: $.el 'div',
-    id: 'toggle-header-bar'
+    id: 'scroll-marker'
 
   createSubEntry: (setting) ->
     label = $.el 'label',
