@@ -8,11 +8,11 @@
 }
 
 /* Header */
-:root.photon #header-bar {
+:root.photon #header-bar, :root.photon #notifications {
   font-size: 9pt;
   color: #333;
 }
-:root.photon #header-bar a {
+:root.photon #header-bar a, :root.photon #notifications a {
   color: #FF6600;
 }
 

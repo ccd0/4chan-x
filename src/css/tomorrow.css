@@ -8,11 +8,11 @@
 }
 
 /* Header */
-:root.tomorrow #header-bar {
+:root.tomorrow #header-bar, :root.tomorrow #notifications {
   font-size: 9pt;
   color: #C5C8C6;
 }
-:root.tomorrow #header-bar a {
+:root.tomorrow #header-bar a, :root.tomorrow #notifications a {
   color: #81A2BE;
 }
 

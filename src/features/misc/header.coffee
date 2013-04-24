@@ -103,7 +103,7 @@ Header =
 
     boardList = $.el 'span',
       id: 'board-list'
-      innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-button brackets-wrap'><a href=javascript:;> - </a></span>#{fourchannav.innerHTML}</span>"
+      innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden>[<a href=javascript:; class='hide-board-list-button'> - </a>] #{fourchannav.innerHTML}</span>"
     fullBoardList = $ '#full-board-list', boardList
     btn = $ '.hide-board-list-button', fullBoardList
     $.on btn, 'click', Header.toggleBoardList
@@ -257,7 +257,7 @@ Header =
     Header.setCustomNav @checked
 
   editCustomNav: ->
-    Settings.open 'Rice'
+    Settings.open 'Advanced'
     settings = $.id 'fourchanx-settings'
     $('input[name=boardnav]', settings).focus()
 

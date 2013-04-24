@@ -47,7 +47,7 @@ module.exports = (grunt) ->
       userscript:
         options: concatOptions
         files:
-          'builds/<%= pkg.name %>.meta.js': 'src/metadata.js'
+          'builds/<%= pkg.name %>.meta.js': 'src/meta/metadata.js'
           'builds/<%= pkg.name %>.user.js': [
             'src/meta/metadata.js'
             'src/meta/banner.js'

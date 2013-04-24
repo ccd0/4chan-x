@@ -8,11 +8,11 @@
 }
 
 /* Header */
-:root.yotsuba #header-bar {
+:root.yotsuba #header-bar, :root.yotsuba #notifications {
   font-size: 9pt;
   color: #B86;
 }
-:root.yotsuba #header-bar a {
+:root.yotsuba #header-bar a, :root.yotsuba #notifications a {
   color: #800000;
 }
 

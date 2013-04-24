@@ -30,7 +30,7 @@ Settings =
     Settings.addSection 'Main',     Settings.main
     Settings.addSection 'Filter',   Settings.filter
     Settings.addSection 'Sauce',    Settings.sauce
-    Settings.addSection 'Rice',     Settings.rice
+    Settings.addSection 'Advanced', Settings.advanced
     Settings.addSection 'Keybinds', Settings.keybinds
 
     $.on d, 'AddSettingsSection',   Settings.addSection
@@ -375,7 +375,7 @@ Settings =
       sauce.value = item['sauces']
     $.on sauce, 'change', $.cb.value
 
-  rice: (section) ->
+  advanced: (section) ->
     section.innerHTML = """
       <fieldset>
         <legend>Archiver</legend>
@@ -383,7 +383,7 @@ Settings =
         <select name=archiver></select>
       </fieldset>
       <fieldset>
-        <legend>Custom Board Navigation <span class=warning #{if Conf['Custom Board Navigation'] then 'hidden' else ''}>is disabled.</span></legend>
+        <legend>Custom Board Navigation</span></legend>
         <div><input name=boardnav class=field spellcheck=false></div>
         <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>
         <div>

@@ -401,7 +401,7 @@ http://iqdb.org/?url=%TURL
     'Bottom Header':           false
     'Header catalog links':    false
     'Bottom Board List':       false
-    'Custom Board Navigation': false
+    'Custom Board Navigation': true
 
   boardnav: '[ toggle-all ] [current-title]'
 
@@ -422,11 +422,11 @@ http://iqdb.org/?url=%TURL
       'Toggle the full board list.'
     ]
     'Open empty QR': [
-      'l'
+      'i'
       'Open QR without post number inserted.'
     ]
     'Open QR': [
-      'Shift+l'
+      'Shift+i'
       'Open QR with post number inserted.'
     ]
     'Open settings': [
