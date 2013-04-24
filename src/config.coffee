@@ -446,8 +446,12 @@ http://iqdb.org/?url=%TURL
       'Alt+m'
       'Insert math tags.'
     ]
-    'Submit QR': [
+    'Toggle sage': [
       'Alt+s'
+      'Toggle sage in email field'
+    ]
+    'Submit QR': [
+      'Ctrl+Enter'
       'Submit post.'
     ]
     # Thread related
@@ -488,6 +492,10 @@ http://iqdb.org/?url=%TURL
     'Previous page': [
       'Left'
       'Jump to the previous page.'
+    ]
+    'Open catalog': [
+      'Shift+c'
+      'Open the catalog of the current board'
     ]
     # Thread Navigation
     'Next thread': [

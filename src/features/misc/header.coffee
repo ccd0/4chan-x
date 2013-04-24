@@ -14,7 +14,7 @@ Header =
     customNavToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
     footerToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{unless Conf['Bottom Board List'] then 'checked' else ''}> Hide Footer Nav"
+      innerHTML: "<input type=checkbox #{unless Conf['Bottom Board List'] then 'checked' else ''}> Bottom original board list"
     editCustomNav = $.el 'a',
       textContent: 'Edit custom board navigation'
       href: 'javascript:;'
@@ -71,9 +71,16 @@ Header =
       if a = $ "a[href*='/#{g.BOARD}/']", $.id 'boardNavDesktopFoot'
         a.className = 'current'
 
-      $.add d.body, @hover
+    $.ready ->
+      $.add d.body, Header.hover
+      Header.footer = footer = $.id 'boardNavDesktopFoot'
       @footer = $.id 'boardNavDesktopFoot'
-      @setFooterVisibility !Conf['Bottom Board List']
+      Header.setFooterVisibility Conf['Footer auto-hide']
+      $.sync 'Footer auto-hide', Header.setFooterVisibility
+      cs = $.id('settingsWindowLink')
+      cs.textContent = 'Catalog Settings'
+      if g.VIEW is 'catalog'
+        Header.addShortcut cs   
       $.sync 'Bottom Board List', Header.setFooterVisibility
 
   bar: $.el 'div',

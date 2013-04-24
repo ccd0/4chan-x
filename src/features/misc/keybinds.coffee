@@ -50,6 +50,8 @@ Keybinds =
       when Conf['Math tags']
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'math', target
+      when Conf['Toggle sage']
+        Keybinds.sage() if QR.nodes
       when Conf['Submit QR']
         QR.submit() if QR.nodes and !QR.status()
       # Thread related
@@ -63,7 +65,9 @@ Keybinds =
       when Conf['Expand images']
         Keybinds.img threadRoot, true
       when Conf['fappeTyme']
-        do FappeTyme.input.click
+        unless $('#menu.left')
+          Header.menuButton.click()
+        FappeTyme.input.click()
       # Board Navigation
       when Conf['Front page']
         window.location = "/#{g.BOARD}/0#delform"
@@ -75,6 +79,11 @@ Keybinds =
       when Conf['Previous page']
         if form = $ '.prev form'
           window.location = form.action
+      when Conf['Open catalog']
+        if Conf['External Catalog']
+          window.location = CatalogLinks.external(g.BOARD.ID)
+        else
+          window.location = "/#{g.BOARD}/catalog"
       # Thread Navigation
       when Conf['Next thread']
         return if g.VIEW is 'thread'
@@ -153,6 +162,12 @@ Keybinds =
 
     # Fire the 'input' event
     $.event 'input', null, ta
+
+  sage: ->
+    isSage  = /sage/i.test QR.nodes.email.value
+    QR.nodes.email.value = if isSage
+      ""
+    else "sage"
 
   img: (thread, all) ->
     if all
