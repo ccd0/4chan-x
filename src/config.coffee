@@ -394,7 +394,7 @@ http://iqdb.org/?url=%TURL
     'Bottom Header':           false
     'Header catalog links':    false
     'Bottom Board List':       false
-    'Custom Board Navigation': false
+    'Custom Board Navigation': true
 
   boardnav: '[ toggle-all ] [current-title]'
 
