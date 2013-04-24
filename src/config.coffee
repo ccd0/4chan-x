@@ -415,11 +415,11 @@ http://iqdb.org/?url=%TURL
       'Toggle the full board list.'
     ]
     'Open empty QR': [
-      'l'
+      'i'
       'Open QR without post number inserted.'
     ]
     'Open QR': [
-      'Shift+l'
+      'Shift+i'
       'Open QR with post number inserted.'
     ]
     'Open settings': [

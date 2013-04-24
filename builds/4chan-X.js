@@ -234,8 +234,8 @@
     usercss: '',
     hotkeys: {
       'Toggle board list': ['Ctrl+b', 'Toggle the full board list.'],
-      'Open empty QR': ['l', 'Open QR without post number inserted.'],
-      'Open QR': ['Shift+l', 'Open QR with post number inserted.'],
+      'Open empty QR': ['i', 'Open QR without post number inserted.'],
+      'Open QR': ['Shift+i', 'Open QR with post number inserted.'],
       'Open settings': ['Alt+o', 'Open Settings.'],
       'Close': ['Esc', 'Close Settings, Notifications or QR.'],
       'Spoiler tags': ['Ctrl+s', 'Insert spoiler tags.'],
