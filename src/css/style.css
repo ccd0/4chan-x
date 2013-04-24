@@ -166,7 +166,7 @@ a[href="javascript:;"] {
 .fixed.bottom #header-bar #scroll-marker {
   bottom: 100%;
 }
-#header-bar a:not(.entry) {
+#header-bar a:not(.entry):not(.close) {
   text-decoration: none;
   padding: 1px;
 }

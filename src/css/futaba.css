@@ -8,11 +8,11 @@
 }
 
 /* Header */
-:root.futaba #header-bar {
+:root.futaba #header-bar, :root.futaba #notifications {
   font-size: 11pt;
   color: #B86;
 }
-:root.futaba #header-bar a {
+:root.futaba #header-bar a, :root.futaba #notifications a {
   color: #800000;
 }
 
