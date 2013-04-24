@@ -4364,7 +4364,7 @@
       var rgb;
 
       rgb = IDColor.ids[this] || IDColor.compute(this);
-      return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black;" : "white;");
+      return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black;" : "white; border-radius: 3px; padding: 0px 2px;");
     },
     hash: function(str) {
       var i, j, msg;
