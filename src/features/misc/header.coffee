@@ -257,7 +257,7 @@ Header =
     Header.setCustomNav @checked
 
   editCustomNav: ->
-    Settings.open 'Rice'
+    Settings.open 'Advanced'
     settings = $.id 'fourchanx-settings'
     $('input[name=boardnav]', settings).focus()
 

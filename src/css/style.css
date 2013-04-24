@@ -312,13 +312,13 @@ a[href="javascript:;"] {
   font-weight: 700;
 }
 .section-sauce ul,
-.section-rice ul {
+.section-advanced ul {
   list-style: none;
   margin: 0;
   padding: 8px;
 }
 .section-sauce li,
-.section-rice li {
+.section-advanced li {
   padding-left: 4px;
 }
 .section-main label {
@@ -336,10 +336,10 @@ a[href="javascript:;"] {
 .section-sauce textarea {
   height: 350px;
 }
-.section-rice .field[name="boardnav"] {
+.section-advanced .field[name="boardnav"] {
   width: 100%;
 }
-.section-rice textarea {
+.section-advanced textarea {
   height: 150px;
 }
 #fourchanx-settings fieldset {
@@ -647,7 +647,7 @@ input.field.tripped:not(:hover):not(:focus) {
   margin: 1px 0 0;
 }
 .field,
-.selectrice {
+.selectadvanced {
   -moz-box-sizing: border-box;
   margin: 0px;
   padding: 2px 4px 3px;

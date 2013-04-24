@@ -30,7 +30,7 @@ Settings =
     Settings.addSection 'Main',     Settings.main
     Settings.addSection 'Filter',   Settings.filter
     Settings.addSection 'Sauce',    Settings.sauce
-    Settings.addSection 'Rice',     Settings.rice
+    Settings.addSection 'Advanced', Settings.advanced
     Settings.addSection 'Keybinds', Settings.keybinds
 
     $.on d, 'AddSettingsSection',   Settings.addSection
@@ -375,7 +375,7 @@ Settings =
       sauce.value = item['sauces']
     $.on sauce, 'change', $.cb.value
 
-  rice: (section) ->
+  advanced: (section) ->
     section.innerHTML = """
       <fieldset>
         <legend>Archiver</legend>
