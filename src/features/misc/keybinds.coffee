@@ -51,7 +51,7 @@ Keybinds =
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'math', target
       when Conf['Toggle sage']
-        do Keybinds.sage if QR.nodes
+        Keybinds.sage() if QR.nodes
       when Conf['Submit QR']
         QR.submit() if QR.nodes and !QR.status()
       # Thread related
@@ -66,8 +66,8 @@ Keybinds =
         Keybinds.img threadRoot, true
       when Conf['fappeTyme']
         unless $('#menu.left')
-          do Header.menuButton.click
-        do FappeTyme.input.click
+          Header.menuButton.click()
+        FappeTyme.input.click()
       # Board Navigation
       when Conf['Front page']
         window.location = "/#{g.BOARD}/0#delform"
