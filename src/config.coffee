@@ -57,6 +57,10 @@ Config =
         true
         'Check for updated versions of <%= meta.name %>.'
       ]
+      'Emoji': [
+        false
+        'Adds icons next to names for different emails'
+      ]
 
     'Linkification':
       'Linkify': [
@@ -385,7 +389,10 @@ http://iqdb.org/?url=%TURL
 #//archive.foolz.us/%board/search/image/%MD5/;text:View same on foolz /%board/
 #//archive.installgentoo.net/%board/image/%MD5;text:View same on installgentoo /%board/
 """
-
+  'sageEmoji': '4chan SS'
+  
+  'emojiPos': 'before'
+  
   'Custom CSS': false
 
   Header:

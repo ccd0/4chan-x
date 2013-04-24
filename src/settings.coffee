@@ -443,6 +443,23 @@ Settings =
       </fieldset>
 
       <fieldset>
+        <legend>Emoji <span class=warning #{if Conf['Emoji'] then 'hidden' else ''}>is disabled.</span></legend>
+        <div>
+          Sage Icon: <select name=sageEmoji>
+            <option value="4chan SS">4chan SS</option>
+            <option value="appchan">appchan</option>
+          </select>
+          <span class=sage-icon-preview></span>
+        </div>
+        <div>
+          Position: <select name=emojiPos>
+            <option value="before">Before</option>
+            <option value="after">After</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <fieldset>
         <legend>
           <label><input type=checkbox name='Custom CSS' #{if Conf['Custom CSS'] then 'checked' else ''}> Custom CSS</label>
         </legend>
@@ -452,11 +469,11 @@ Settings =
     """
     items = {}
     inputs = {}
-    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'usercss']
+    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'sageEmoji', 'emojiPos', 'usercss']
       input = $ "[name=#{name}]", section
       items[name]  = Conf[name]
       inputs[name] = input
-      event = if ['favicon', 'usercss'].contains name
+      event = if ['favicon', 'usercss', 'sageEmoji', 'emojiPos'].contains name
         'change'
       else
         'input'
@@ -480,10 +497,11 @@ Settings =
       for key, val of items
         input = inputs[key]
         input.value = val
-        unless 'usercss' is name
+        unless ['usercss', 'emojiPos', 'archiver'].contains name
           $.on input, event, Settings[key]
           Settings[key].call input
       return
+
     $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
     $.on $.id('apply-css'), 'click', Settings.usercss
   boardnav: ->
@@ -514,6 +532,10 @@ Settings =
       <img src=#{Favicon.unreadSFW}>
       <img src=#{Favicon.unreadNSFW}>
       <img src=#{Favicon.unreadDead}>
+      """
+  sageEmoji: ->
+    @nextElementSibling.innerHTML = """
+      <img src=data:image/png;base64,#{Emoji.sage[@value]}>
       """
   togglecss: ->
     if $('textarea[name=usercss]', $.x 'ancestor::fieldset[1]', @).disabled = !@checked
