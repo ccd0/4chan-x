@@ -9,10 +9,6 @@ Config =
         false
         'Link to external catalog instead of the internal one.'
       ]
-      'Custom Board Navigation': [
-        true
-        'Show custom links instead of the full board list.'
-      ]
       'QR Shortcut': [
         false,
         'Adds a small [QR] link in the header.'
@@ -257,6 +253,10 @@ Config =
         true
         'Prevent "flood detected" errors.'
       ]
+      'Cooldown Prediction': [
+        true
+        'Decrease the cooldown time by taking into account upload speed. Disable it if it\'s inaccurate for you.'
+      ]
 
     'Quote Links':
       'Quote Backlinks': [
@@ -388,13 +388,13 @@ http://iqdb.org/?url=%TURL
 
   'Custom CSS': false
 
-  'Boards Navigation': 'Sticky top'
-
-  'Header auto-hide': false
-
-  'Footer auto-hide': true
-
-  'Header catalog links': false
+  Header:
+    'Fixed Header':            true
+    'Header auto-hide':        false
+    'Bottom Header':           false
+    'Header catalog links':    false
+    'Bottom Board List':       false
+    'Custom Board Navigation': false
 
   boardnav: '[ toggle-all ] [current-title]'
 

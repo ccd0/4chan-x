@@ -1,3 +1,10 @@
+## 3.2.0 - *2013-04-23*
+
+- The top and bottom original board lists are now optional, disabled by default.
+- The button to show a hidden announcement is now inside the header's menu.
+- Reorganized Header menu:<br>![menu](img/changelog/3.2.0/0.png)
+- Added the `board-replace` setting to Custom Board Navigation ricing.
+- Added the option `Cooldown Prediction`, enabled by default.
 - Added the option `Hide Unread Count at (0)`, disabled by default.
 
 ### 3.1.4 - *2013-04-17*
