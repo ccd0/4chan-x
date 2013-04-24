@@ -6440,29 +6440,27 @@
       if (Conf['Unread Line']) {
         $.on(d, 'visibilitychange', Unread.setLine);
       }
-      if (!Conf['Scroll to Last Read Post']) {
+      if (Conf['Scroll to Last Read Post']) {
+        return $.on(window, 'load', Unread.scroll);
+      }
+    },
+    scroll: function() {
+      var hash, posts, root;
+
+      if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
       }
-      return $.on(window, 'load', function() {
-        var hash, root;
-
-        if ((hash = location.hash.match(/\d+/)) && hash[0] in this.posts) {
-          return;
-        }
-        if (Unread.posts.length) {
-          while (root = $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root)) {
-            if (!(Get.postFromRoot(root)).isHidden) {
-              break;
-            }
+      if (Unread.posts.length) {
+        while (root = $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root)) {
+          if (!(Get.postFromRoot(root)).isHidden) {
+            break;
           }
-          if (!root) {
-            return;
-          }
-          return root.scrollIntoView(false);
-        } else if (posts.length) {
-          return Header.scrollToPost(posts[posts.length - 1].nodes.root);
         }
-      });
+        root.scrollIntoView(false);
+        return;
+      }
+      posts = Object.keys(Unread.thread.posts);
+      return Header.scrollToPost(Unread.thread.posts[posts[posts.length - 1]].nodes.root);
     },
     sync: function() {
       var lastReadPost;

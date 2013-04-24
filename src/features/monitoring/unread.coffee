@@ -26,21 +26,20 @@ Unread =
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
+    $.on window, 'load',               Unread.scroll  if Conf['Scroll to Last Read Post']
 
-    return unless Conf['Scroll to Last Read Post']
-
-    $.on window, 'load', ->
-      # Let the header's onload callback handle it.
-      return if (hash = location.hash.match /\d+/) and hash[0] of @posts
-      if Unread.posts.length
-        # Scroll to before the first unread post.
-        while root = $.x 'preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root
-          break unless (Get.postFromRoot root).isHidden
-        return unless root
-        root.scrollIntoView false
-      else if posts.length
-        # Scroll to the last read post.
-        Header.scrollToPost (posts[posts.length - 1]).nodes.root
+  scroll: ->
+    # Let the header's onload callback handle it.
+    return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
+    if Unread.posts.length
+      # Scroll to before the first unread post.
+      while root = $.x 'preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root
+        break unless (Get.postFromRoot root).isHidden
+      root.scrollIntoView false
+      return
+    # Scroll to the last read post.
+    posts = Object.keys Unread.thread.posts
+    Header.scrollToPost Unread.thread.posts[posts[posts.length - 1]].nodes.root
 
   sync: ->
     lastReadPost = Unread.db.get
