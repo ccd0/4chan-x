@@ -8944,7 +8944,7 @@
         return;
       }
       $.event('CloseMenu');
-      html = "<nav>\n  <div class=sections-list></div>\n  <p class='imp-exp-result warning'></p>\n  <div class=credits>\n      <a class=export>Export</a> |\n      <a class=import>Import</a> |\n      <input type=file style='display: none;'>\n    <a href='http://seaweedchan.github.io/4chan-x/' target=_blank>4chan X</a> |\n    <a href='https://github.com/seaweedchan/4chan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n    <a href='https://github.com/seaweedchan/4chan-x/blob/master/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |\n    <a href=javascript:; class=close title=Close>×</a>\n  </div>\n</nav>\n<hr>\n<div class=section-container><section></section></div>";
+      html = "<nav>\n  <div class=sections-list></div>\n  <p class='imp-exp-result warning'></p>\n  <div class=credits>\n      <a class=export>Export</a> |\n      <a class=import>Import</a> |\n      <input type=file style='display: none;'>\n    <a href='http://seaweedchan.github.io/4chan-x/' target=_blank>4chan X</a> |\n    <a href='https://github.com/seaweedchan/4chan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n    <a href='https://github.com/seaweedchan/4chan-x/blob/master/README.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |\n    <a href=javascript:; class=close title=Close>×</a>\n  </div>\n</nav>\n<hr>\n<div class=section-container><section></section></div>";
       Settings.overlay = overlay = $.el('div', {
         id: 'overlay'
       });
