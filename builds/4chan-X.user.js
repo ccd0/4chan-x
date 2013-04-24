@@ -4979,7 +4979,7 @@
       if (!text) {
         return;
       }
-      as = $$('#full-board-list a', Header.bar).slice(0, -2);
+      as = $$('#full-board-list a', Header.bar);
       nodes = text.match(/[\w@]+(-(all|title|replace|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map(function(t) {
         var a, board, m, _i, _len;
 
