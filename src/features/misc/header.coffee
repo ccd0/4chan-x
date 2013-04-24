@@ -35,7 +35,6 @@ Header =
 
     @setBarFixed      Conf['Fixed Header']
     @setBarVisibility Conf['Header auto-hide']
-    @setBarPosition   Conf['Bottom Header']
 
     $.sync 'Fixed Header',     Header.setBarFixed
     $.sync 'Bottom Header',    Header.setBarPosition
@@ -66,21 +65,17 @@ Header =
       # it might be incomplete otherwise.
       $.asap (-> $.id('boardNavMobile') or d.readyState is 'complete'), Header.setBoardList
       $.prepend d.body, @bar
+      @setBarPosition Conf['Bottom Header']
 
     $.ready =>
       if a = $ "a[href*='/#{g.BOARD}/']", $.id 'boardNavDesktopFoot'
         a.className = 'current'
 
-    $.ready ->
       $.add d.body, Header.hover
       Header.footer = footer = $.id 'boardNavDesktopFoot'
       @footer = $.id 'boardNavDesktopFoot'
       Header.setFooterVisibility Conf['Footer auto-hide']
       $.sync 'Footer auto-hide', Header.setFooterVisibility
-      cs = $.id('settingsWindowLink')
-      cs.textContent = 'Catalog Settings'
-      if g.VIEW is 'catalog'
-        Header.addShortcut cs   
       $.sync 'Bottom Board List', Header.setFooterVisibility
 
   bar: $.el 'div',
@@ -175,9 +170,11 @@ Header =
     if bottom
       $.rmClass  doc, 'top'
       $.addClass doc, 'bottom'
+      $.after Header.bar, Header.notify
     else
       $.rmClass  doc, 'bottom'
       $.addClass doc, 'top'
+      $.add Header.bar, Header.notify
 
   toggleBarPosition: ->
     $.event 'CloseMenu'
@@ -248,9 +245,9 @@ Header =
     full = $ '#full-board-list',   Header.bar
     btn = $ '.hide-board-list-button', full
     [cust.hidden, full.hidden] = if show
-      [false, true, false]
+      [false, true]
     else
-      [true, false, true]
+      [true, false]
 
   toggleCustomNav: ->
     $.cb.checked.call @
