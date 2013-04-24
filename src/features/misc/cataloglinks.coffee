@@ -27,7 +27,11 @@ CatalogLinks =
 
   set: (useCatalog) ->
     path = if useCatalog then 'catalog' else ''
-    for a in $$ 'a', $.id('board-list')
+    for a in $$ """
+      #board-list a[href*="boards.4chan.org"],
+      #boardNavDesktop a[href*="boards.4chan.org"],
+      #boardNavDesktopFoot a[href*="boards.4chan.org"]
+    """
       board = a.pathname.split('/')[1]
       continue if ['f', 'status', '4chan'].contains(board) or !board
       if Conf['External Catalog']

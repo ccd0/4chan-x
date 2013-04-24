@@ -47,6 +47,9 @@ a[href="javascript:;"] {
 .warning {
   color: red;
 }
+#boardNavDesktop {
+  display: none !important;
+}
 
 /* 4chan style fixes */
 .opContainer, .op {
@@ -366,6 +369,9 @@ a[href="javascript:;"] {
 }
 a.hide-announcement {
   float: left;
+}
+#toggleMsgBtn {
+  display: none;
 }
 
 /* Unread */
@@ -830,6 +836,9 @@ a:only-of-type > .remove {
   position: relative;
   text-decoration: none;
   white-space: nowrap;
+}
+.left>.entry.has-submenu {
+  padding-right: 17px !important;
 }
 .entry:last-child {
   border-bottom: 0;

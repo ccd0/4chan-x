@@ -2,6 +2,20 @@ PSAHiding =
   init: ->
     return if !Conf['Announcement Hiding']
 
+    entry =
+      type: 'header'
+      el: $.el 'a',
+        textContent: 'Show announcement'
+        className: 'show-announcement'
+        href: 'javascript:;'
+      order: 50
+      open: ->
+        if $.id('globalMessage')?.hidden
+          return true
+        false
+    $.event 'AddMenuEntry', entry
+
+    $.on entry.el, 'click', PSAHiding.toggle 
     $.addClass doc, 'hide-announcement'
 
     $.on d, '4chanXInitFinished', @setup
@@ -14,12 +28,12 @@ PSAHiding =
       return
 
     PSAHiding.btn = btn = $.el 'a',
-      title: 'Toggle announcement.'
-      innerHTML: '<span></span>'
+      innerHTML: '<span>[&nbsp;-&nbsp;]</span>'
+      title:     'Hide announcement.'
+      className: 'hide-announcement' 
       href: 'javascript:;'
     $.on btn, 'click', PSAHiding.toggle
 
-    text = PSAHiding.trim psa
     $.get 'hiddenPSAs', [], (item) ->
       PSAHiding.sync item['hiddenPSAs']
       $.before psa, btn
@@ -33,19 +47,21 @@ PSAHiding =
     $.get 'hiddenPSAs', [], ({hiddenPSAs}) -> 
       if hide
         hiddenPSAs.push text
+        hiddenPSAs = hiddenPSAs[-5..] 
       else
+        $.event 'CloseMenu' 
         i = hiddenPSAs.indexOf text
         hiddenPSAs.splice i, 1
-      hiddenPSAs = hiddenPSAs[-5..]
       PSAHiding.sync hiddenPSAs
       $.set 'hiddenPSAs', hiddenPSAs
 
   sync: (hiddenPSAs) ->
-    {btn} = PSAHiding
-    psa   = $.id 'globalMessage'
-    [psa.hidden, btn.firstChild.textContent, btn.className] = if PSAHiding.trim(psa) in hiddenPSAs
-      [true,  '[\u00A0+\u00A0]', 'show-announcement'] 
+    psa = $.id 'globalMessage'
+    psa.hidden = PSAHiding.btn.hidden = if PSAHiding.trim(psa) in hiddenPSAs
+      true 
     else
-      [false, '[\u00A0-\u00A0]', 'hide-announcement'] 
+      false
+    if hr = $.x 'following-sibling::hr', psa
+      hr.hidden = psa.hidden 
   trim: (psa) ->
     psa.textContent.replace(/\W+/g, '').toLowerCase()
