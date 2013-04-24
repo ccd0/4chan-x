@@ -61,6 +61,14 @@ Config =
         false
         'Adds icons next to names for different emails'
       ]
+      'Remove Spoilers': [
+        false
+        'Remove all spoilers in text.'
+      ]
+      'Indicate Spoilers': [
+        false
+        'Indicate spoilers if Remove Spoilers is enabled.'
+      ]
 
     'Linkification':
       'Linkify': [

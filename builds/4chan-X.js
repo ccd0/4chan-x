@@ -102,7 +102,7 @@
 * this notice is kept intact.
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -125,7 +125,9 @@
         'Index Navigation': [false, 'Add buttons to navigate between threads.'],
         'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
         'Check for Updates': [true, 'Check for updated versions of 4chan X.'],
-        'Emoji': [false, 'Adds icons next to names for different emails']
+        'Emoji': [false, 'Adds icons next to names for different emails'],
+        'Remove Spoilers': [false, 'Remove all spoilers in text.'],
+        'Indicate Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled.']
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
@@ -5701,6 +5703,35 @@
     }
   };
 
+  RemoveSpoilers = {
+    init: function() {
+      if (!Conf['Remove Spoilers']) {
+        return;
+      }
+      if (Conf['Indicate Spoilers']) {
+        this.wrapper = function(text) {
+          return "[spoiler]" + text + "[/spoiler]";
+        };
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Reveal Spoilers',
+        cb: this.node
+      });
+    },
+    wrapper: function(text) {
+      return text;
+    },
+    node: function(post) {
+      var spoiler, spoilers, _i, _len;
+
+      spoilers = $$('s', this.nodes.comment);
+      for (_i = 0, _len = spoilers.length; _i < _len; _i++) {
+        spoiler = spoilers[_i];
+        $.replace(spoiler, $.tn(RemoveSpoilers.wrapper(spoiler.textContent)));
+      }
+    }
+  };
+
   Report = {
     init: function() {
       if (!/report/.test(location.search)) {
@@ -9437,6 +9468,7 @@
         'Announcement Hiding': PSAHiding,
         'Fourchan thingies': Fourchan,
         'Emoji': Emoji,
+        'Remove Spoilers': RemoveSpoilers,
         'Custom CSS': CustomCSS,
         'Linkify': Linkify,
         'Resurrect Quotes': Quotify,

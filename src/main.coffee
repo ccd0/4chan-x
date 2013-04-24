@@ -72,6 +72,7 @@ Main =
       'Announcement Hiding':      PSAHiding
       'Fourchan thingies':        Fourchan
       'Emoji':                    Emoji
+      'Remove Spoilers':          RemoveSpoilers
       'Custom CSS':               CustomCSS
       'Linkify':                  Linkify
       'Resurrect Quotes':         Quotify
