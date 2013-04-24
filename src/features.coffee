@@ -3859,15 +3859,16 @@ Unread =
 
   scroll: ->
     # Let the header's onload callback handle it.
-    return if (hash = location.hash.match /\d+/) and hash[0] of @posts
+    return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
     if Unread.posts.length
       # Scroll to before the first unread post.
       while root = $.x 'preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root
         break unless (Get.postFromRoot root).isHidden
       root.scrollIntoView false
-    else if posts.length
-      # Scroll to the last read post.
-      Header.scrollToPost posts[posts.length - 1].nodes.root
+      return
+    # Scroll to the last read post.
+    posts = Object.keys Unread.thread.posts
+    Header.scrollToPost Unread.thread.posts[posts[posts.length - 1]].nodes.root
 
   sync: ->
     lastReadPost = Unread.db.get
