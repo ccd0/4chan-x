@@ -105,7 +105,7 @@ Header =
 
     boardList = $.el 'span',
       id: 'board-list'
-      innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden>[<a href=javascript:; class='hide-board-list-button'> - </a>]#{fourchannav.innerHTML}</span>"
+      innerHTML: "<span id=custom-board-list></span><span id=full-board-list>[<a href=javascript:; class='hide-board-list-button'> - </a>] #{fourchannav.innerHTML}</span>"
     fullBoardList = $ '#full-board-list', boardList
     btn = $ '.hide-board-list-button', fullBoardList
     $.on btn, 'click', Header.toggleBoardList
@@ -247,7 +247,7 @@ Header =
     cust = $ '#custom-board-list', Header.bar
     full = $ '#full-board-list',   Header.bar
     btn = $ '.hide-board-list-button', full
-    [cust.hidden, full.hidden, btn.hidden] = if show
+    [cust.hidden, full.hidden] = if show
       [false, true, false]
     else
       [true, false, true]

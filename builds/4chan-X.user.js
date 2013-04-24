@@ -4851,7 +4851,7 @@
       }
       boardList = $.el('span', {
         id: 'board-list',
-        innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden>[<a href=javascript:; class='hide-board-list-button'> - </a>]" + fourchannav.innerHTML + "</span>"
+        innerHTML: "<span id=custom-board-list></span><span id=full-board-list>[<a href=javascript:; class='hide-board-list-button'> - </a>] " + fourchannav.innerHTML + "</span>"
       });
       fullBoardList = $('#full-board-list', boardList);
       btn = $('.hide-board-list-button', fullBoardList);
@@ -5003,7 +5003,7 @@
       cust = $('#custom-board-list', Header.bar);
       full = $('#full-board-list', Header.bar);
       btn = $('.hide-board-list-button', full);
-      return _ref = show ? [false, true, false] : [true, false, true], cust.hidden = _ref[0], full.hidden = _ref[1], btn.hidden = _ref[2], _ref;
+      return _ref = show ? [false, true, false] : [true, false, true], cust.hidden = _ref[0], full.hidden = _ref[1], _ref;
     },
     toggleCustomNav: function() {
       $.cb.checked.call(this);
