@@ -4714,7 +4714,6 @@
       $.on(editCustomNav, 'click', this.editCustomNav);
       this.setBarFixed(Conf['Fixed Header']);
       this.setBarVisibility(Conf['Header auto-hide']);
-      this.setBarPosition(Conf['Bottom Header']);
       $.sync('Fixed Header', Header.setBarFixed);
       $.sync('Bottom Header', Header.setBarPosition);
       $.sync('Header auto-hide', Header.setBarVisibility);
@@ -4752,28 +4751,20 @@
         $.asap((function() {
           return $.id('boardNavMobile') || d.readyState === 'complete';
         }), Header.setBoardList);
-        return $.prepend(d.body, _this.bar);
-      });
-      $.ready(function() {
-        var a;
-
-        if (a = $("a[href*='/" + g.BOARD + "/']", $.id('boardNavDesktopFoot'))) {
-          return a.className = 'current';
-        }
+        $.prepend(d.body, _this.bar);
+        return _this.setBarPosition(Conf['Bottom Header']);
       });
       return $.ready(function() {
-        var cs, footer;
+        var a, footer;
 
+        if (a = $("a[href*='/" + g.BOARD + "/']", $.id('boardNavDesktopFoot'))) {
+          a.className = 'current';
+        }
         $.add(d.body, Header.hover);
         Header.footer = footer = $.id('boardNavDesktopFoot');
-        this.footer = $.id('boardNavDesktopFoot');
+        _this.footer = $.id('boardNavDesktopFoot');
         Header.setFooterVisibility(Conf['Footer auto-hide']);
         $.sync('Footer auto-hide', Header.setFooterVisibility);
-        cs = $.id('settingsWindowLink');
-        cs.textContent = 'Catalog Settings';
-        if (g.VIEW === 'catalog') {
-          Header.addShortcut(cs);
-        }
         return $.sync('Bottom Board List', Header.setFooterVisibility);
       });
     },
@@ -4801,7 +4792,7 @@
       }
       boardList = $.el('span', {
         id: 'board-list',
-        innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden>[<a href=javascript:; class='hide-board-list-button'> - </a>]" + fourchannav.innerHTML + "</span>"
+        innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden><span class='hide-board-list-button brackets-wrap'><a href=javascript:;> - </a></span>" + fourchannav.innerHTML + "</span>"
       });
       fullBoardList = $('#full-board-list', boardList);
       btn = $('.hide-board-list-button', fullBoardList);
@@ -4886,10 +4877,12 @@
       Header.barPositionToggler.checked = bottom;
       if (bottom) {
         $.rmClass(doc, 'top');
-        return $.addClass(doc, 'bottom');
+        $.addClass(doc, 'bottom');
+        return $.after(Header.bar, Header.notify);
       } else {
         $.rmClass(doc, 'bottom');
-        return $.addClass(doc, 'top');
+        $.addClass(doc, 'top');
+        return $.add(Header.bar, Header.notify);
       }
     },
     toggleBarPosition: function() {
@@ -4953,7 +4946,7 @@
       cust = $('#custom-board-list', Header.bar);
       full = $('#full-board-list', Header.bar);
       btn = $('.hide-board-list-button', full);
-      return _ref = show ? [false, true, false] : [true, false, true], cust.hidden = _ref[0], full.hidden = _ref[1], btn.hidden = _ref[2], _ref;
+      return _ref = show ? [false, true] : [true, false], cust.hidden = _ref[0], full.hidden = _ref[1], _ref;
     },
     toggleCustomNav: function() {
       $.cb.checked.call(this);
