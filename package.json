@@ -1,9 +1,9 @@
 {
-  "name": "4chan-x",
+  "name": "4chan-X",
   "version": "1.1.0",
-  "description": "The most comprehensive 4chan userscript",
+  "description": "Cross-browser userscript for maximum lurking on 4chan.",
   "meta": {
-    "name": "4chan x",
+    "name": "4chan X",
     "repo": "https://github.com/seaweedchan/4chan-x/",
     "page": "http://seaweedchan.github.io/4chan-x/",
     "mainBranch": "master",
@@ -14,8 +14,8 @@
       "*://sys.4chan.org/*"
     ],
     "files": {
-      "metajs": "4chan_x.meta.js",
-      "userjs": "4chan_x.user.js"
+      "metajs": "4chan_X.meta.js",
+      "userjs": "4chan_X.user.js"
     }
   },
   "devDependencies": {

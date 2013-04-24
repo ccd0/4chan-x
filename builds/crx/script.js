@@ -21,7 +21,7 @@
         'Thread Expansion': [true, 'Add buttons to expand threads.'],
         'Index Navigation': [false, 'Add buttons to navigate between threads.'],
         'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
-        'Check for Updates': [true, 'Check for updated versions of 4chan x.']
+        'Check for Updates': [true, 'Check for updated versions of 4chan X.']
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
@@ -184,7 +184,7 @@
 
   g = {
     VERSION: '1.1.0',
-    NAMESPACE: '4chan x.',
+    NAMESPACE: '4chan X.',
     boards: {},
     threads: {},
     posts: {}
@@ -8615,7 +8615,7 @@
           curr = g.VERSION.match(/\d+/g).map(Number);
           changelog = 'https://github.com/seaweedchan/4chan-x/blob/master/CHANGELOG.md';
           el = $.el('span', {
-            innerHTML: "4chan x has been updated to <a href='" + changelog + "' target=_blank>version " + g.VERSION + "</a>."
+            innerHTML: "4chan X has been updated to <a href='" + changelog + "' target=_blank>version " + g.VERSION + "</a>."
           });
           new Notification('info', el, 30);
         } else {
@@ -8650,7 +8650,7 @@
         return;
       }
       $.event('CloseMenu');
-      html = "<nav>\n  <div class=sections-list></div>\n  <p class='imp-exp-result warning'></p>\n  <div class=credits>\n      <a class=export>Export</a> |\n      <a class=import>Import</a> |\n      <input type=file style='display: none;'>\n    <a href='http://seaweedchan.github.io/4chan-x/' target=_blank>4chan x</a> |\n    <a href='https://github.com/seaweedchan/4chan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n    <a href='https://github.com/seaweedchan/4chan-x/blob/master/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |\n    <a href=javascript:; class=close title=Close>×</a>\n  </div>\n</nav>\n<hr>\n<div class=section-container><section></section></div>";
+      html = "<nav>\n  <div class=sections-list></div>\n  <p class='imp-exp-result warning'></p>\n  <div class=credits>\n      <a class=export>Export</a> |\n      <a class=import>Import</a> |\n      <input type=file style='display: none;'>\n    <a href='http://seaweedchan.github.io/4chan-x/' target=_blank>4chan X</a> |\n    <a href='https://github.com/seaweedchan/4chan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n    <a href='https://github.com/seaweedchan/4chan-x/blob/master/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |\n    <a href=javascript:; class=close title=Close>×</a>\n  </div>\n</nav>\n<hr>\n<div class=section-container><section></section></div>";
       Settings.overlay = overlay = $.el('div', {
         id: 'overlay'
       });
@@ -8835,7 +8835,7 @@
       a = $.el('a', {
         className: 'warning',
         textContent: 'Save me!',
-        download: "4chan x v" + g.VERSION + "-" + now + ".json",
+        download: "4chan X v" + g.VERSION + "-" + now + ".json",
         href: "data:application/json;base64," + (btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))))),
         target: '_blank'
       });
@@ -9474,7 +9474,7 @@
             }
             $.set('lastchecked', now);
             el = $.el('span', {
-              innerHTML: "Update: 4chan x v" + version + " is out, get it <a href=http://seaweedchan.github.io/4chan-x/ target=_blank>here</a>."
+              innerHTML: "Update: 4chan X v" + version + " is out, get it <a href=http://seaweedchan.github.io/4chan-x/ target=_blank>here</a>."
             });
             return new Notification('info', el, 120);
           }
@@ -9539,7 +9539,7 @@
       return $.ajax('http://seaweedchan.github.io/4chan-x/errors', {}, {
         sync: true,
         form: $.formData({
-          n: "4chan x v" + g.VERSION,
+          n: "4chan X v" + g.VERSION,
           t: 'crx',
           ua: window.navigator.userAgent,
           url: window.location.href,
