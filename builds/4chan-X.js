@@ -4811,17 +4811,21 @@
           return $.id('boardNavMobile') || d.readyState === 'complete';
         }), Header.setBoardList);
         $.prepend(d.body, _this.bar);
+        $.add(d.body, Header.hover);
         return _this.setBarPosition(Conf['Bottom Header']);
       });
       return $.ready(function() {
-        var a, footer;
+        var a, cs;
 
+        _this.footer = $.id('boardNavDesktopFoot');
         if (a = $("a[href*='/" + g.BOARD + "/']", $.id('boardNavDesktopFoot'))) {
           a.className = 'current';
         }
-        $.add(d.body, Header.hover);
-        Header.footer = footer = $.id('boardNavDesktopFoot');
-        _this.footer = $.id('boardNavDesktopFoot');
+        cs = $.id('settingsWindowLink');
+        cs.textContent = 'Catalog Settings';
+        if (g.VIEW === 'catalog') {
+          _this.addShortcut(cs);
+        }
         Header.setFooterVisibility(Conf['Footer auto-hide']);
         $.sync('Footer auto-hide', Header.setFooterVisibility);
         return $.sync('Bottom Board List', Header.setFooterVisibility);

@@ -65,15 +65,18 @@ Header =
       # it might be incomplete otherwise.
       $.asap (-> $.id('boardNavMobile') or d.readyState is 'complete'), Header.setBoardList
       $.prepend d.body, @bar
+      $.add d.body, Header.hover
       @setBarPosition Conf['Bottom Header']
 
     $.ready =>
+      @footer = $.id 'boardNavDesktopFoot'
       if a = $ "a[href*='/#{g.BOARD}/']", $.id 'boardNavDesktopFoot'
         a.className = 'current'
 
-      $.add d.body, Header.hover
-      Header.footer = footer = $.id 'boardNavDesktopFoot'
-      @footer = $.id 'boardNavDesktopFoot'
+      cs = $.id('settingsWindowLink')
+      cs.textContent = 'Catalog Settings'
+      @addShortcut cs if g.VIEW is 'catalog'
+
       Header.setFooterVisibility Conf['Footer auto-hide']
       $.sync 'Footer auto-hide', Header.setFooterVisibility
       $.sync 'Bottom Board List', Header.setFooterVisibility
