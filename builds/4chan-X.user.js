@@ -3258,8 +3258,11 @@
       if (!(rect.top <= 0 || rect.left <= 0)) {
         return;
       }
-      headRect = Header.bar.getBoundingClientRect();
-      top = rect.top - headRect.top - headRect.height;
+      top = rect.top;
+      if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
+        headRect = Header.bar.getBoundingClientRect();
+        top += -headRect.top - headRect.height;
+      }
       root = doc;
       if (rect.top < 0) {
         root.scrollTop += top;
