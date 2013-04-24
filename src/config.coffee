@@ -61,6 +61,10 @@ Config =
         false
         'Adds icons next to names for different emails'
       ]
+      'Color User IDs': [
+        false
+        'Assign unique colors to user IDs on boards that use them'
+      ]
       'Remove Spoilers': [
         false
         'Remove all spoilers in text.'

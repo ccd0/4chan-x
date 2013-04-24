@@ -102,7 +102,7 @@
 * this notice is kept intact.
 */
 (function() {
-  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+  var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
@@ -126,6 +126,7 @@
         'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
         'Check for Updates': [true, 'Check for updated versions of 4chan X.'],
         'Emoji': [false, 'Adds icons next to names for different emails'],
+        'Color User IDs': [false, 'Assign unique colors to user IDs on boards that use them'],
         'Remove Spoilers': [false, 'Remove all spoilers in text.'],
         'Indicate Spoilers': [false, 'Indicate spoilers if Remove Spoilers is enabled.']
       },
@@ -4334,6 +4335,57 @@
     },
     external: function(board) {
       return (['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'].contains(board) ? "http://catalog.neet.tv/" + board : ['d', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'].contains(board) ? "http://4index.gropes.us/" + board : "//boards.4chan.org/" + board + "/catalog");
+    }
+  };
+
+  IDColor = {
+    init: function() {
+      if (!Conf['Color User IDs']) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Reveal Spoilers',
+        cb: this.node
+      });
+    },
+    node: function(post) {
+      var str, uid;
+
+      if (!(uid = $('.hand', this.nodes.uniqueID))) {
+        return;
+      }
+      str = this.info.uniqueID;
+      if (uid.nodeName === 'SPAN') {
+        return uid.style.cssText = IDColor.apply.call(str);
+      }
+    },
+    ids: {},
+    compute: function(str) {
+      var hash, rgb;
+
+      hash = this.hash(str);
+      rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
+      rgb[3] = ((rgb[0] * 0.299) + (rgb[1] * 0.587) + (rgb[2] * 0.114)) > 125;
+      this.ids[str] = rgb;
+      return rgb;
+    },
+    apply: function() {
+      var rgb;
+
+      rgb = IDColor.ids[this] || IDColor.compute(this);
+      return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black;" : "white;");
+    },
+    hash: function(str) {
+      var i, j, msg;
+
+      msg = 0;
+      i = 0;
+      j = str.length;
+      while (i < j) {
+        msg = ((msg << 5) - msg) + str.charCodeAt(i);
+        ++i;
+      }
+      return msg;
     }
   };
 
@@ -9468,6 +9520,7 @@
         'Announcement Hiding': PSAHiding,
         'Fourchan thingies': Fourchan,
         'Emoji': Emoji,
+        'Color User IDs': IDColor,
         'Remove Spoilers': RemoveSpoilers,
         'Custom CSS': CustomCSS,
         'Linkify': Linkify,
