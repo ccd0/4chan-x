@@ -165,10 +165,9 @@ Keybinds =
 
   sage: ->
     isSage  = /sage/i.test QR.nodes.email.value
-    if isSage
-      QR.nodes.email.value = ""
-    else
-      QR.nodes.email.value = "sage"
+    QR.nodes.email.value = if isSage
+      ""
+    else "sage"
 
   img: (thread, all) ->
     if all

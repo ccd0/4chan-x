@@ -5171,11 +5171,7 @@
       var isSage;
 
       isSage = /sage/i.test(QR.nodes.email.value);
-      if (isSage) {
-        return QR.nodes.email.value = "";
-      } else {
-        return QR.nodes.email.value = "sage";
-      }
+      return QR.nodes.email.value = isSage ? "" : "sage";
     },
     img: function(thread, all) {
       var post;
