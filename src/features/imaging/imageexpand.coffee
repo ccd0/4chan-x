@@ -71,10 +71,11 @@ ImageExpand =
     rect = post.nodes.root.getBoundingClientRect()
     return unless rect.top <= 0 or rect.left <= 0
 
-    # Scroll back to the thumbnail when contracting the image
-    # to avoid being left miles away from the relevant post.
-    headRect = Header.bar.getBoundingClientRect()
-    top  = rect.top - headRect.top - headRect.height
+    {top} = rect
+    if Conf['Fixed Header'] and not Conf['Bottom Header']
+      headRect = Header.bar.getBoundingClientRect()
+      top += - headRect.top - headRect.height
+
     root = <% if (type === 'crx') { %>d.body<% } else { %>doc<% } %>
 
     root.scrollTop += top if rect.top  < 0
