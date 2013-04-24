@@ -446,8 +446,12 @@ http://iqdb.org/?url=%TURL
       'Alt+m'
       'Insert math tags.'
     ]
-    'Submit QR': [
+    'Toggle sage': [
       'Alt+s'
+      'Toggle sage in email field'
+    ]
+    'Submit QR': [
+      'Ctrl+Enter'
       'Submit post.'
     ]
     # Thread related

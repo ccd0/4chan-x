@@ -50,6 +50,8 @@ Keybinds =
       when Conf['Math tags']
         return if target.nodeName isnt 'TEXTAREA'
         Keybinds.tags 'math', target
+      when Conf['Toggle sage']
+        do Keybinds.sage if QR.nodes
       when Conf['Submit QR']
         QR.submit() if QR.nodes and !QR.status()
       # Thread related
@@ -160,6 +162,13 @@ Keybinds =
 
     # Fire the 'input' event
     $.event 'input', null, ta
+
+  sage: ->
+    isSage  = /sage/i.test QR.nodes.email.value
+    if isSage
+      QR.nodes.email.value = ""
+    else
+      QR.nodes.email.value = "sage"
 
   img: (thread, all) ->
     if all

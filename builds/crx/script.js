@@ -140,7 +140,8 @@
       'Code tags': ['Alt+c', 'Insert code tags.'],
       'Eqn tags': ['Alt+e', 'Insert eqn tags.'],
       'Math tags': ['Alt+m', 'Insert math tags.'],
-      'Submit QR': ['Alt+s', 'Submit post.'],
+      'Toggle sage': ['Alt+s', 'Toggle sage in email field'],
+      'Submit QR': ['Ctrl+Enter', 'Submit post.'],
       'Watch': ['w', 'Watch thread.'],
       'Update': ['r', 'Update the thread now.'],
       'Expand image': ['Shift+e', 'Expand selected image.'],
@@ -5010,6 +5011,11 @@
           }
           Keybinds.tags('math', target);
           break;
+        case Conf['Toggle sage']:
+          if (QR.nodes) {
+            Keybinds.sage();
+          }
+          break;
         case Conf['Submit QR']:
           if (QR.nodes && !QR.status()) {
             QR.submit();
@@ -5160,6 +5166,16 @@
       range = ("[" + tag + "]").length + selEnd;
       ta.setSelectionRange(range, range);
       return $.event('input', null, ta);
+    },
+    sage: function() {
+      var isSage;
+
+      isSage = /sage/i.test(QR.nodes.email.value);
+      if (isSage) {
+        return QR.nodes.email.value = "";
+      } else {
+        return QR.nodes.email.value = "sage";
+      }
     },
     img: function(thread, all) {
       var post;
