@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name         4chan X
-// @version      3.2.0
-// @namespace    4chan-X
-// @description  Cross-browser extension for productive lurking on 4chan.
-// @copyright    2009-2011 James Campos <james.r.campos@gmail.com>
-// @copyright    2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
+// @name         4chan x
+// @version      1.1.0
+// @namespace    4chan-x
+// @description  The most comprehensive 4chan userscript
+// @copyright 2013-2013 Zixaphir <zixaphirmoxphar@gmail.com>
+// @copyright 2013-2013 Jordan Bates <saudrapsmann@gmail.com>
+// @copyright 2009-2011 James Campos <james.r.campos@gmail.com>
+// @copyright 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
 // @license      MIT; http://en.wikipedia.org/wiki/Mit_license
 // @match        *://api.4chan.org/*
 // @match        *://boards.4chan.org/*
@@ -15,33 +17,90 @@
 // @grant        GM_deleteValue
 // @grant        GM_openInTab
 // @run-at       document-start
-// @updateURL    https://4chan-x.just-believe.in/builds/4chan-X.meta.js
-// @downloadURL  https://4chan-x.just-believe.in/builds/4chan-X.user.js
+// @updateURL https://github.com/seaweedchan/4chan-x/raw/stable/builds/4chan_x.meta.js
+// @downloadURL https://github.com/seaweedchan/4chan-x/raw/stable/builds/4chan_x.user.js
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
+/*
+* 4chan x - Version 1.1.0 - 2013-04-24
+*
+* Licensed under the MIT license.
+* https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
+*
+* Appchan X Copyright © 2013-2013 Zixaphir <zixaphirmoxphar@gmail.com>
+* http://zixaphir.github.io/appchan-x/
+* 4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
+* https://github.com/aeosynth/4chan-x
+* 4chan x Copyright © 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
+* https://4chan-x.just-believe.in/
+* 4chan x Copyright © 2013-2013 Jordan Bates <saudrapsmann@gmail.com>
+* http://seaweedchan.github.io/4chan-x/
+* 4chan x Copyright © 2012-2013 ihavenoface
+* http://ihavenoface.github.io/4chan-x/
+* OneeChan Copyright © 2011-2013 Jordan Bates <saudrapsmann@gmail.com>
+* http://seaweedchan.github.io/oneechan/
+* 4chan SS Copyright © 2011-2013 Ahodesuka
+* https://github.com/ahodesuka/4chan-Style-Script/
+* Raphael Icons Copyright © 2013 Dmitry Baranovskiy
+* http://raphaeljs.com/icons/
+*
+* Permission is hereby granted, free of charge, to any person
+* obtaining a copy of this software and associated documentation
+* files (the "Software"), to deal in the Software without
+* restriction, including without limitation the rights to use,
+* copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the
+* Software is furnished to do so, subject to the following
+* conditions:
+*
+* The above copyright notice and this permission notice shall be
+* included in all copies or substantial portions of the Software.
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+* EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+* OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+* NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+* HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+* WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+* FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+* OTHER DEALINGS IN THE SOFTWARE.
+*
+* Contributors:
+* aeosynth
+* mayhemydg
+* noface
+* !K.WeEabo0o
+* blaise
+* that4chanwolf
+* desuwa
+* seaweed
+* e000
+* ahodesuka
+* Shou
+* ferongr
+* xat
+* Ongpot
+* thisisanon
+* Anonymous
+* Seiba
+* herpaderpderp
+* WakiMiko
+* btmcsweeney
+* AppleBloom
+*
+* All the people who've taken the time to write bug reports.
+*
+* Thank you.
+*/
 
-/* 4chan X - Version 3.2.0 - 2013-04-24
- * https://4chan-x.just-believe.in/
- *
- * Copyright (c) 2009-2011 James Campos <james.r.campos@gmail.com>
- * Copyright (c) 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
- * Licensed under the MIT license.
- * https://github.com/MayhemYDG/4chan-x/blob/master/LICENSE
- *
- * Contributors:
- * https://github.com/MayhemYDG/4chan-x/graphs/contributors
- * Non-GitHub contributors:
- * ferongr, xat-, Ongpot, thisisanon and Anonymous - favicon contributions
- * e000 - cooldown sanity check
- * Seiba - chrome quick reply focusing
- * herpaderpderp - recaptcha fixes
- * WakiMiko - recaptcha tab order http://userscripts.org/scripts/show/82657
- *
- * All the people who've taken the time to write bug reports.
- *
- * Thank you.
- */
-
+/*
+* Linkify based on:
+* http://downloads.mozdev.org/greasemonkey/linkify.user.js
+* https://github.com/MayhemYDG/LinkifyPlusFork
+*
+* Originally written by Anthony Lieuallen of http://arantius.com/
+* Licensed for unlimited modification and redistribution as long as
+* this notice is kept intact.
+*/
 (function() {
   var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
@@ -65,7 +124,7 @@
         'Thread Expansion': [true, 'Add buttons to expand threads.'],
         'Index Navigation': [false, 'Add buttons to navigate between threads.'],
         'Reply Navigation': [false, 'Add buttons to navigate to top / bottom of thread.'],
-        'Check for Updates': [true, 'Check for updated versions of 4chan X.']
+        'Check for Updates': [true, 'Check for updated versions of 4chan x.']
       },
       'Linkification': {
         'Linkify': [true, 'Convert text into links where applicable.'],
@@ -230,8 +289,8 @@
   doc = d.documentElement;
 
   g = {
-    VERSION: '3.2.0',
-    NAMESPACE: '4chan X.',
+    VERSION: '1.1.0',
+    NAMESPACE: '4chan x.',
     boards: {},
     threads: {},
     posts: {}
@@ -8693,9 +8752,9 @@
           }
           prev = previous.match(/\d+/g).map(Number);
           curr = g.VERSION.match(/\d+/g).map(Number);
-          changelog = 'https://github.com/MayhemYDG/4chan-x/blob/v3/CHANGELOG.md';
+          changelog = 'https://github.com/seaweedchan/4chan-x/blob/master/CHANGELOG.md';
           el = $.el('span', {
-            innerHTML: "4chan X has been updated to <a href='" + changelog + "' target=_blank>version " + g.VERSION + "</a>."
+            innerHTML: "4chan x has been updated to <a href='" + changelog + "' target=_blank>version " + g.VERSION + "</a>."
           });
           new Notification('info', el, 30);
         } else {
@@ -8730,7 +8789,7 @@
         return;
       }
       $.event('CloseMenu');
-      html = "<nav>\n  <div class=sections-list></div>\n  <p class='imp-exp-result warning'></p>\n  <div class=credits>\n      <a class=export>Export</a> |\n      <a class=import>Import</a> |\n      <input type=file style='display: none;'>\n    <a href='https://4chan-x.just-believe.in/' target=_blank>4chan X</a> |\n    <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n    <a href='https://github.com/MayhemYDG/4chan-x/blob/v3/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |\n    <a href=javascript:; class=close title=Close>×</a>\n  </div>\n</nav>\n<hr>\n<div class=section-container><section></section></div>";
+      html = "<nav>\n  <div class=sections-list></div>\n  <p class='imp-exp-result warning'></p>\n  <div class=credits>\n      <a class=export>Export</a> |\n      <a class=import>Import</a> |\n      <input type=file style='display: none;'>\n    <a href='http://seaweedchan.github.io/4chan-x/' target=_blank>4chan x</a> |\n    <a href='https://github.com/seaweedchan/4chan-x/blob/master/CHANGELOG.md' target=_blank>" + g.VERSION + "</a> |\n    <a href='https://github.com/seaweedchan/4chan-x/blob/master/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |\n    <a href=javascript:; class=close title=Close>×</a>\n  </div>\n</nav>\n<hr>\n<div class=section-container><section></section></div>";
       Settings.overlay = overlay = $.el('div', {
         id: 'overlay'
       });
@@ -8915,7 +8974,7 @@
       a = $.el('a', {
         className: 'warning',
         textContent: 'Save me!',
-        download: "4chan X v" + g.VERSION + "-" + now + ".json",
+        download: "4chan x v" + g.VERSION + "-" + now + ".json",
         href: "data:application/json;base64," + (btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))))),
         target: '_blank'
       });
@@ -9537,7 +9596,7 @@
         if (items.lastupdate > now - freq || items.lastchecked > now - $.DAY) {
           return;
         }
-        return $.ajax('https://4chan-x.just-believe.in/builds/version', {
+        return $.ajax('http://seaweedchan.github.io/4chan-x/version', {
           onload: function() {
             var el, version;
 
@@ -9554,7 +9613,7 @@
             }
             $.set('lastchecked', now);
             el = $.el('span', {
-              innerHTML: "Update: 4chan X v" + version + " is out, get it <a href=https://4chan-x.just-believe.in/ target=_blank>here</a>."
+              innerHTML: "Update: 4chan x v" + version + " is out, get it <a href=http://seaweedchan.github.io/4chan-x/ target=_blank>here</a>."
             });
             return new Notification('info', el, 120);
           }
@@ -9616,10 +9675,10 @@
       errors = Main.errors.map(function(d) {
         return d.message + ' ' + d.error.stack;
       });
-      return $.ajax('https://4chan-x.just-believe.in/errors', {}, {
+      return $.ajax('http://seaweedchan.github.io/4chan-x/errors', {}, {
         sync: true,
         form: $.formData({
-          n: "4chan X v" + g.VERSION,
+          n: "4chan x v" + g.VERSION,
           t: 'userjs',
           ua: window.navigator.userAgent,
           url: window.location.href,

@@ -1,19 +1,22 @@
 {
-  "name": "4chan-X",
-  "version": "3.2.0",
-  "description": "Cross-browser extension for productive lurking on 4chan.",
+  "name": "4chan-x",
+  "version": "1.1.0",
+  "description": "The most comprehensive 4chan userscript",
   "meta": {
-    "name": "4chan X",
-    "repo": "https://github.com/MayhemYDG/4chan-x/",
-    "page": "https://4chan-x.just-believe.in/",
-    "buildsPath": "builds/",
-    "mainBranch": "v3",
+    "name": "4chan x",
+    "repo": "https://github.com/seaweedchan/4chan-x/",
+    "page": "http://seaweedchan.github.io/4chan-x/",
+    "mainBranch": "master",
     "matches": [
       "*://api.4chan.org/*",
       "*://boards.4chan.org/*",
       "*://images.4chan.org/*",
       "*://sys.4chan.org/*"
-    ]
+    ],
+    "files": {
+      "metajs": "4chan_x.meta.js",
+      "userjs": "4chan_x.user.js"
+    }
   },
   "devDependencies": {
     "grunt": "~0.4.1",
@@ -29,10 +32,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/MayhemYDG/4chan-x.git"
+    "url": "https://github.com/seaweedchan/4chan-x.git"
   },
-  "author": "Nicolas Stepien <stepien.nicolas@gmail.com>",
+  "author": "seaweedchan <jtbates@asu.edu>",
   "contributors": [
+    "Zixaphir<zixaphirmoxphar@gmail.com>",
+    "Nicolas Stepien <stepien.nicolas@gmail.com>",
     "James Campos <james.r.campos@gmail.com>"
   ],
   "license": "MIT",
