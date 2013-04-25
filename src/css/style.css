@@ -406,8 +406,8 @@ a.hide-announcement {
 .new {
   color: limegreen;
 }
-#update-status, #update-timer, #post-count, #file-count {
-  pointer-events: none;
+#update-status:not(.null) {
+  margin-right: 5px;
 }
 
 /* Thread Watcher */

@@ -4,8 +4,7 @@ ThreadUpdater =
 
     checked = if Conf['Auto Update'] then 'checked' else ''
     @dialog = sc = $.el 'span',
-      innerHTML: "
-<input name='Auto Update This' type=checkbox #{checked}><span id=update-status></span> <span id=update-timer></span>"
+      innerHTML: "<span id=update-status></span><span id=update-timer></span>"
       id:        'updater'
 
     @timer  = $ '#update-timer',  sc
@@ -58,12 +57,6 @@ ThreadUpdater =
 
     ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
 
-    input = $ 'input', ThreadUpdater.dialog
-
-    $.on input, 'change', $.cb.checked
-    $.on input, 'change', ThreadUpdater.cb.autoUpdate
-    $.event     'change', null, input
-
     $.on window, 'online offline',   ThreadUpdater.cb.online
     $.on d,      'QRPostSuccessful', ThreadUpdater.cb.post
     $.on d,      'visibilitychange', ThreadUpdater.cb.visibility
@@ -81,14 +74,14 @@ ThreadUpdater =
       if ThreadUpdater.online = navigator.onLine
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
-        ThreadUpdater.update() if Conf['Auto Update This']
+        ThreadUpdater.update()
         ThreadUpdater.set 'status', null, null
       else
         ThreadUpdater.set 'timer', null
         ThreadUpdater.set 'status', 'Offline', 'warning'
       ThreadUpdater.cb.autoUpdate()
     post: (e) ->
-      return unless Conf['Auto Update This'] and e.detail.threadID is ThreadUpdater.thread.ID
+      return unless e.detail.threadID is ThreadUpdater.thread.ID
       ThreadUpdater.outdateCount = 0
       setTimeout ThreadUpdater.update, 1000 if ThreadUpdater.seconds > 2
     checkpost: ->
@@ -109,7 +102,7 @@ ThreadUpdater =
       else
         -> not d.hidden
     autoUpdate: ->
-      if Conf['Auto Update This'] and ThreadUpdater.online
+      if ThreadUpdater.online
         ThreadUpdater.timeoutID = setTimeout ThreadUpdater.timeout, 1000
       else
         clearTimeout ThreadUpdater.timeoutID
