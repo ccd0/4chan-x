@@ -496,7 +496,9 @@ a.hide-announcement {
 .qphl {
   outline: 2px solid rgba(216, 94, 49, .7);
 }
-
+.yourPost .reply {
+  border-left: 1px solid rgba(221,0,0,.5);
+}
 /* Quote Threading */
 .threadContainer {
   margin-left: 20px;
