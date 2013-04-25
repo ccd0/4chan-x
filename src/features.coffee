@@ -2306,10 +2306,6 @@ Build =
         isDeleted: !!data.filedeleted
     Build.post o
   post: (o, isArchived) ->
-    ###
-    This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
-    @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
-    ###
     {
       postID, threadID, boardID
       name, capcode, tripcode, uniqueID, email, subject, flagCode, flagName, date, dateUTC
