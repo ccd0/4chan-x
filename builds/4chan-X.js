@@ -165,7 +165,7 @@
       'Monitoring': {
         'Thread Updater': [true, 'Fetch and insert new replies. Has more options in its own dialog.'],
         'Unread Count': [true, 'Show the unread posts count in the tab title.'],
-        'Hide Unread Count at (0)': [false, 'Hide the unread posts count when it reaches 0.'],
+        'Hide Unread Count at (0)': [false, 'Hide the unread posts count in the tab title when it reaches 0.'],
         'Unread Favicon': [true, 'Show a different favicon when there are unread posts.'],
         'Unread Line': [true, 'Show a line to distinguish read posts from unread ones.'],
         'Scroll to Last Read Post': [true, 'Scroll back to the last read post when reopening a thread.'],

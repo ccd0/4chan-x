@@ -195,7 +195,7 @@ Config =
       ]
       'Hide Unread Count at (0)': [
         false
-        'Hide the unread posts count when it reaches 0.'
+        'Hide the unread posts count in the tab title when it reaches 0.'
       ]
       'Unread Favicon': [
         true
