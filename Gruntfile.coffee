@@ -26,6 +26,11 @@ module.exports = (grunt) ->
         ]
         dest: 'tmp-<%= pkg.type %>/script.coffee'
 
+      license:
+        options: concatOptions
+        files:
+          'LICENSE': 'src/meta/banner.js'
+
       crx:
         options: concatOptions
         files:
@@ -135,6 +140,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build', [
     'concurrent:build'
+    'concat:license'
   ]
 
   grunt.registerTask 'build-crx', [
