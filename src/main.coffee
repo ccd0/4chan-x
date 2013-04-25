@@ -228,7 +228,7 @@ Main =
       func = task[0]
       args = Array::slice.call task, 1
       func.apply func, args
-      setTimeout softTask, 20
+      setTimeout softTask, 0
 
     # get the nodes' length only once
     len    = nodes.length
@@ -247,12 +247,13 @@ Main =
             error: err
       # finish
       if i is len
-        cb()
         Main.handleErrors errors if errors
+        cb() if cb
 
-    for i in [0...len]
+    while i < len
       node = nodes[i]
-      queue.push [func, node, i]
+      queue.push [func, node, ++i]
+
     softTask()
 
   addCallback: (e) ->

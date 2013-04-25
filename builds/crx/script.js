@@ -9524,7 +9524,7 @@
       }
     },
     callbackNodesDB: function(klass, nodes, cb) {
-      var errors, func, i, len, node, queue, softTask, _i;
+      var errors, func, i, len, node, queue, softTask;
 
       queue = [];
       softTask = function() {
@@ -9537,7 +9537,7 @@
         func = task[0];
         args = Array.prototype.slice.call(task, 1);
         func.apply(func, args);
-        return setTimeout(softTask, 20);
+        return setTimeout(softTask, 0);
       };
       len = nodes.length;
       i = 0;
@@ -9562,15 +9562,17 @@
           }
         }
         if (i === len) {
-          cb();
           if (errors) {
-            return Main.handleErrors(errors);
+            Main.handleErrors(errors);
+          }
+          if (cb) {
+            return cb();
           }
         }
       };
-      for (i = _i = 0; 0 <= len ? _i < len : _i > len; i = 0 <= len ? ++_i : --_i) {
+      while (i < len) {
         node = nodes[i];
-        queue.push([func, node, i]);
+        queue.push([func, node, ++i]);
       }
       return softTask();
     },
