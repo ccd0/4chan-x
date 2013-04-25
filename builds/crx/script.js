@@ -6783,6 +6783,9 @@
         });
       }
       $.ready(this.initReady);
+      if (Conf['Persistent QR']) {
+        $.on(d, '4chanXInitFinished', this.persist);
+      }
       return Post.prototype.callbacks.push({
         name: 'Quick Reply',
         cb: this.node
@@ -6829,16 +6832,13 @@
       $.on(d, 'dragover', QR.dragOver);
       $.on(d, 'drop', QR.dropFile);
       $.on(d, 'dragstart dragend', QR.drag);
-      $.on(d, 'ThreadUpdate', function() {
+      return $.on(d, 'ThreadUpdate', function() {
         if (g.DEAD) {
           return QR.abort();
         } else {
           return QR.status();
         }
       });
-      if (Conf['Persistent QR']) {
-        return QR.persist();
-      }
     },
     node: function() {
       return $.on($('a[title="Quote this post"]', this.nodes.info), 'click', QR.quote);
