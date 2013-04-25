@@ -198,7 +198,7 @@ Main =
       Main.callbackNodesDB Post, posts, ->
         $.event '4chanXInitFinished'
         Main.checkUpdate()
-      
+
       return
 
     $.event '4chanXInitFinished'
@@ -225,11 +225,11 @@ Main =
   callbackNodesDB: (klass, nodes, cb) ->
     queue = []
     softTask =  ->
-      return unless queue.length
       task = queue.shift()
       func = task[0]
       args = Array::slice.call task, 1
       func.apply func, args
+      return unless queue.length
       if (queue.length % 7) is 0
         setTimeout softTask, 0
       else

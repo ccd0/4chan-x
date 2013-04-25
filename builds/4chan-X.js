@@ -6975,7 +6975,7 @@
           return $.addClass(doc, 'hide-original-post-form');
         });
       }
-      $.on(d, '4chanXInitFinished', this.initReady);
+      $.ready(this.initReady);
       return Post.prototype.callbacks.push({
         name: 'Quick Reply',
         cb: this.node
@@ -6984,7 +6984,6 @@
     initReady: function() {
       var link, title;
 
-      $.off(d, '4chanXInitFinished', QR.initReady);
       QR.postingIsEnabled = !!$.id('postForm');
       if (!QR.postingIsEnabled) {
         return;
@@ -9749,13 +9748,13 @@
       softTask = function() {
         var args, func, task;
 
-        if (!queue.length) {
-          return;
-        }
         task = queue.shift();
         func = task[0];
         args = Array.prototype.slice.call(task, 1);
         func.apply(func, args);
+        if (!queue.length) {
+          return;
+        }
         if ((queue.length % 7) === 0) {
           return setTimeout(softTask, 0);
         } else {
