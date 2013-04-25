@@ -307,6 +307,10 @@ Config =
         true
         'Add \'(You)\' to quotes linking to your posts.'
       ]
+      'Highlight Own Posts': [
+        false
+        'Highlights own posts if Mark Quotes of You is enabled.'
+      ]
       'Mark OP Quotes': [
         true
         'Add \'(OP)\' to OP quotes.'

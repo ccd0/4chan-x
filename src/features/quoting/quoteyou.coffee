@@ -14,6 +14,9 @@ QuoteYou =
     if @info.yours
       $.addClass @nodes.root, 'yourPost'
 
+    if Conf['Highlight Own Posts']
+      $.addClass doc, 'highlight-own'
+
     # Stop there if there's no quotes in that post.
     return unless (quotes = @quotes).length
     {quotelinks} = @nodes
