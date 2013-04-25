@@ -9671,7 +9671,11 @@
         func = task[0];
         args = Array.prototype.slice.call(task, 1);
         func.apply(func, args);
-        return setTimeout(softTask, 0);
+        if ((queue.length % 7) === 0) {
+          return setTimeout(softTask, 0);
+        } else {
+          return softTask();
+        }
       };
       len = nodes.length;
       i = 0;

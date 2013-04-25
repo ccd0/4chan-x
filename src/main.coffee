@@ -228,7 +228,10 @@ Main =
       func = task[0]
       args = Array::slice.call task, 1
       func.apply func, args
-      setTimeout softTask, 0
+      if (queue.length % 7) is 0
+        setTimeout softTask, 0
+      else
+        softTask()
 
     # get the nodes' length only once
     len    = nodes.length
