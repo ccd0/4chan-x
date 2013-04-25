@@ -302,20 +302,64 @@
     posts: {}
   };
 
+  String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+  };
+
+  String.prototype.contains = function(string) {
+    return this.indexOf(string) > -1;
+  };
+
+  Array.prototype.add = function(object, position) {
+    var keep;
+
+    keep = this.slice(position);
+    this.length = position;
+    this.push(object);
+    return this.pushArrays(keep);
+  };
+
+  Array.prototype.contains = function(object) {
+    return this.indexOf(object) > -1;
+  };
+
+  Array.prototype.indexOf = function(object) {
+    var i;
+
+    i = this.length;
+    while (i--) {
+      if (this[i] === object) {
+        break;
+      }
+    }
+    return i;
+  };
+
+  Array.prototype.pushArrays = function() {
+    var arg, args, _i, _len;
+
+    args = arguments;
+    for (_i = 0, _len = args.length; _i < _len; _i++) {
+      arg = args[_i];
+      this.push.apply(this, arg);
+    }
+  };
+
+  Array.prototype.remove = function(object) {
+    var index;
+
+    if ((index = this.indexOf(object)) > -1) {
+      return this.splice(index, 1);
+    } else {
+      return false;
+    }
+  };
+
   $ = function(selector, root) {
     if (root == null) {
       root = d.body;
     }
     return root.querySelector(selector);
-  };
-
-  $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)));
-
-  $$ = function(selector, root) {
-    if (root == null) {
-      root = d.body;
-    }
-    return __slice.call(root.querySelectorAll(selector));
   };
 
   $.extend = function(object, properties) {
@@ -330,461 +374,450 @@
     }
   };
 
-  $.extend(Array.prototype, {
-    add: function(object, position) {
-      var keep;
+  $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)));
 
-      keep = this.slice(position);
-      this.length = position;
-      this.push(object);
-      return this.pushArrays(keep);
-    },
-    contains: function(object) {
-      return this.indexOf(object) > -1;
-    },
-    indexOf: function(object) {
-      var i;
+  $.id = function(id) {
+    return d.getElementById(id);
+  };
 
-      i = this.length;
-      while (i--) {
-        if (this[i] === object) {
-          break;
-        }
+  $.ready = function(fc) {
+    var cb, _ref;
+
+    if ((_ref = d.readyState) === 'interactive' || _ref === 'complete') {
+      $.queueTask(fc);
+      return;
+    }
+    cb = function() {
+      $.off(d, 'DOMContentLoaded', cb);
+      return fc();
+    };
+    return $.on(d, 'DOMContentLoaded', cb);
+  };
+
+  $.formData = function(form) {
+    var fd, key, val;
+
+    if (form instanceof HTMLFormElement) {
+      return new FormData(form);
+    }
+    fd = new FormData();
+    for (key in form) {
+      val = form[key];
+      if (!val) {
+        continue;
       }
-      return i;
-    },
-    pushArrays: function() {
-      var arg, args, _i, _len;
-
-      args = arguments;
-      for (_i = 0, _len = args.length; _i < _len; _i++) {
-        arg = args[_i];
-        this.push.apply(this, arg);
-      }
-    },
-    remove: function(object) {
-      var index;
-
-      if ((index = this.indexOf(object)) > -1) {
-        return this.splice(index, 1);
+      if (val.size && val.name) {
+        fd.append(key, val, val.name);
       } else {
-        return false;
+        fd.append(key, val);
       }
     }
-  });
+    return fd;
+  };
 
-  $.extend(String.prototype, {
-    capitalize: function() {
-      return this.charAt(0).toUpperCase() + this.slice(1);
-    },
-    contains: function(string) {
-      return this.indexOf(string) > -1;
+  $.ajax = function(url, callbacks, opts) {
+    var cred, form, headers, key, r, sync, type, upCallbacks, val;
+
+    if (opts == null) {
+      opts = {};
     }
-  });
+    type = opts.type, cred = opts.cred, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form, sync = opts.sync;
+    r = new XMLHttpRequest();
+    r.overrideMimeType('text/html');
+    type || (type = form && 'post' || 'get');
+    r.open(type, url, !sync);
+    for (key in headers) {
+      val = headers[key];
+      r.setRequestHeader(key, val);
+    }
+    $.extend(r, callbacks);
+    $.extend(r.upload, upCallbacks);
+    r.withCredentials = cred;
+    r.send(form);
+    return r;
+  };
 
-  $.extend($, {
-    id: function(id) {
-      return d.getElementById(id);
-    },
-    ready: function(fc) {
-      var cb, _ref;
+  $.cache = (function() {
+    var reqs;
 
-      if ((_ref = d.readyState) === 'interactive' || _ref === 'complete') {
-        $.queueTask(fc);
+    reqs = {};
+    return function(url, cb) {
+      var req, rm;
+
+      if (req = reqs[url]) {
+        if (req.readyState === 4) {
+          cb.call(req);
+        } else {
+          req.callbacks.push(cb);
+        }
         return;
       }
-      cb = function() {
-        $.off(d, 'DOMContentLoaded', cb);
-        return fc();
+      rm = function() {
+        return delete reqs[url];
       };
-      return $.on(d, 'DOMContentLoaded', cb);
-    },
-    formData: function(form) {
-      var fd, key, val;
+      req = $.ajax(url, {
+        onload: function(e) {
+          var _i, _len, _ref;
 
-      if (form instanceof HTMLFormElement) {
-        return new FormData(form);
-      }
-      fd = new FormData();
-      for (key in form) {
-        val = form[key];
-        if (!val) {
-          continue;
-        }
-        if (val.size && val.name) {
-          fd.append(key, val, val.name);
-        } else {
-          fd.append(key, val);
-        }
-      }
-      return fd;
-    },
-    ajax: function(url, callbacks, opts) {
-      var cred, form, headers, key, r, sync, type, upCallbacks, val;
-
-      if (opts == null) {
-        opts = {};
-      }
-      type = opts.type, cred = opts.cred, headers = opts.headers, upCallbacks = opts.upCallbacks, form = opts.form, sync = opts.sync;
-      r = new XMLHttpRequest();
-      r.overrideMimeType('text/html');
-      type || (type = form && 'post' || 'get');
-      r.open(type, url, !sync);
-      for (key in headers) {
-        val = headers[key];
-        r.setRequestHeader(key, val);
-      }
-      $.extend(r, callbacks);
-      $.extend(r.upload, upCallbacks);
-      r.withCredentials = cred;
-      r.send(form);
-      return r;
-    },
-    cache: (function() {
-      var reqs;
-
-      reqs = {};
-      return function(url, cb) {
-        var req, rm;
-
-        if (req = reqs[url]) {
-          if (req.readyState === 4) {
-            cb.call(req);
-          } else {
-            req.callbacks.push(cb);
+          _ref = this.callbacks;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            cb = _ref[_i];
+            cb.call(this, e);
           }
-          return;
-        }
-        rm = function() {
-          return delete reqs[url];
-        };
-        req = $.ajax(url, {
-          onload: function(e) {
-            var _i, _len, _ref;
-
-            _ref = this.callbacks;
-            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-              cb = _ref[_i];
-              cb.call(this, e);
-            }
-            return delete this.callbacks;
-          },
-          onabort: rm,
-          onerror: rm
-        });
-        req.callbacks = [cb];
-        return reqs[url] = req;
-      };
-    })(),
-    cb: {
-      checked: function() {
-        $.set(this.name, this.checked);
-        return Conf[this.name] = this.checked;
-      },
-      value: function() {
-        $.set(this.name, this.value.trim());
-        return Conf[this.name] = this.value;
-      }
-    },
-    asap: function(test, cb) {
-      if (test()) {
-        return cb();
-      } else {
-        return setTimeout($.asap, 25, test, cb);
-      }
-    },
-    addStyle: function(css, id) {
-      var style;
-
-      style = $.el('style', {
-        id: id,
-        textContent: css
+          return delete this.callbacks;
+        },
+        onabort: rm,
+        onerror: rm
       });
-      $.asap((function() {
-        return d.head;
-      }), function() {
-        return $.add(d.head, style);
-      });
-      return style;
-    },
-    x: function(path, root) {
-      root || (root = d.body);
-      return d.evaluate(path, root, null, 8, null).singleNodeValue;
-    },
-    X: function(path, root) {
-      root || (root = d.body);
-      return d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
-    },
-    addClass: function(el, className) {
-      return el.classList.add(className);
-    },
-    rmClass: function(el, className) {
-      return el.classList.remove(className);
-    },
-    toggleClass: function(el, className) {
-      return el.classList.toggle(className);
-    },
-    hasClass: function(el, className) {
-      return el.classList.contains(className);
-    },
-    rm: (function() {
-      if ('remove' in Element.prototype) {
-        return function(el) {
-          return el.remove();
-        };
-      } else {
-        return function(el) {
-          var _ref;
+      req.callbacks = [cb];
+      return reqs[url] = req;
+    };
+  })();
 
-          return (_ref = el.parentNode) != null ? _ref.removeChild(el) : void 0;
-        };
-      }
-    })(),
-    rmAll: function(root) {
-      var node;
-
-      while (node = root.firstChild) {
-        root.removeChild(node);
-      }
+  $.cb = {
+    checked: function() {
+      $.set(this.name, this.checked);
+      return Conf[this.name] = this.checked;
     },
-    tn: function(s) {
-      return d.createTextNode(s);
-    },
-    frag: function() {
-      return d.createDocumentFragment();
-    },
-    nodes: function(nodes) {
-      var frag, node, _i, _len;
-
-      if (!(nodes instanceof Array)) {
-        return nodes;
-      }
-      frag = $.frag();
-      for (_i = 0, _len = nodes.length; _i < _len; _i++) {
-        node = nodes[_i];
-        frag.appendChild(node);
-      }
-      return frag;
-    },
-    add: function(parent, el) {
-      return parent.appendChild($.nodes(el));
-    },
-    prepend: function(parent, el) {
-      return parent.insertBefore($.nodes(el), parent.firstChild);
-    },
-    after: function(root, el) {
-      return root.parentNode.insertBefore($.nodes(el), root.nextSibling);
-    },
-    before: function(root, el) {
-      return root.parentNode.insertBefore($.nodes(el), root);
-    },
-    replace: function(root, el) {
-      return root.parentNode.replaceChild($.nodes(el), root);
-    },
-    el: function(tag, properties) {
-      var el;
-
-      el = d.createElement(tag);
-      if (properties) {
-        $.extend(el, properties);
-      }
-      return el;
-    },
-    on: function(el, events, handler) {
-      var event, _i, _len, _ref;
-
-      _ref = events.split(' ');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        event = _ref[_i];
-        el.addEventListener(event, handler, false);
-      }
-    },
-    off: function(el, events, handler) {
-      var event, _i, _len, _ref;
-
-      _ref = events.split(' ');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        event = _ref[_i];
-        el.removeEventListener(event, handler, false);
-      }
-    },
-    event: function(event, detail, root) {
-      if (root == null) {
-        root = d;
-      }
-      return root.dispatchEvent(new CustomEvent(event, {
-        bubbles: true,
-        detail: detail
-      }));
-    },
-    open: (function() {
-      if (typeof GM_openInTab !== "undefined" && GM_openInTab !== null) {
-        return function(URL) {
-          var a;
-
-          a = $.el('a', {
-            href: URL
-          });
-          return GM_openInTab(a.href);
-        };
-      } else {
-        return function(URL) {
-          return window.open(URL, '_blank');
-        };
-      }
-    })(),
-    debounce: function(wait, fn) {
-      var args, exec, that, timeout;
-
-      timeout = null;
-      that = null;
-      args = null;
-      exec = function() {
-        fn.apply(that, args);
-        return timeout = null;
-      };
-      return function() {
-        args = arguments;
-        that = this;
-        if (timeout) {
-          clearTimeout(timeout);
-        } else {
-          exec();
-        }
-        return timeout = setTimeout(exec, wait);
-      };
-    },
-    queueTask: (function() {
-      var execTask, taskChannel, taskQueue;
-
-      taskQueue = [];
-      execTask = function() {
-        var args, func, task;
-
-        task = taskQueue.shift();
-        func = task[0];
-        args = Array.prototype.slice.call(task, 1);
-        return func.apply(func, args);
-      };
-      if (window.MessageChannel) {
-        taskChannel = new MessageChannel();
-        taskChannel.port1.onmessage = execTask;
-        return function() {
-          taskQueue.push(arguments);
-          return taskChannel.port2.postMessage(null);
-        };
-      } else {
-        return function() {
-          taskQueue.push(arguments);
-          return setTimeout(execTask, 0);
-        };
-      }
-    })(),
-    globalEval: function(code) {
-      var script;
-
-      script = $.el('script', {
-        textContent: code
-      });
-      $.add(d.head || doc, script);
-      return $.rm(script);
-    },
-    bytesToString: function(size) {
-      var unit;
-
-      unit = 0;
-      while (size >= 1024) {
-        size /= 1024;
-        unit++;
-      }
-      size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
-      return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
-    },
-    minmax: function(value, min, max) {
-      return (value < min ? min : value > max ? max : value);
-    },
-    syncing: {},
-    sync: (function() {
-      window.addEventListener('storage', function(e) {
-        var cb;
-
-        if (cb = $.syncing[e.key]) {
-          return cb(JSON.parse(e.newValue));
-        }
-      }, false);
-      return function(key, cb) {
-        return $.syncing[g.NAMESPACE + key] = cb;
-      };
-    })(),
-    item: function(key, val) {
-      var item;
-
-      item = {};
-      item[key] = val;
-      return item;
+    value: function() {
+      $.set(this.name, this.value.trim());
+      return Conf[this.name] = this.value;
     }
-  });
+  };
+
+  $.asap = function(test, cb) {
+    if (test()) {
+      return cb();
+    } else {
+      return setTimeout($.asap, 25, test, cb);
+    }
+  };
+
+  $.addStyle = function(css, id) {
+    var style;
+
+    style = $.el('style', {
+      id: id,
+      textContent: css
+    });
+    $.asap((function() {
+      return d.head;
+    }), function() {
+      return $.add(d.head, style);
+    });
+    return style;
+  };
+
+  $.x = function(path, root) {
+    root || (root = d.body);
+    return d.evaluate(path, root, null, 8, null).singleNodeValue;
+  };
+
+  $.X = function(path, root) {
+    root || (root = d.body);
+    return d.evaluate(path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
+  };
+
+  $.addClass = function(el, className) {
+    return el.classList.add(className);
+  };
+
+  $.rmClass = function(el, className) {
+    return el.classList.remove(className);
+  };
+
+  $.toggleClass = function(el, className) {
+    return el.classList.toggle(className);
+  };
+
+  $.hasClass = function(el, className) {
+    return el.classList.contains(className);
+  };
+
+  $.rm = (function() {
+    if ('remove' in Element.prototype) {
+      return function(el) {
+        return el.remove();
+      };
+    } else {
+      return function(el) {
+        var _ref;
+
+        return (_ref = el.parentNode) != null ? _ref.removeChild(el) : void 0;
+      };
+    }
+  })();
+
+  $.rmAll = function(root) {
+    var node;
+
+    while (node = root.firstChild) {
+      root.removeChild(node);
+    }
+  };
+
+  $.tn = function(s) {
+    return d.createTextNode(s);
+  };
+
+  $.frag = function() {
+    return d.createDocumentFragment();
+  };
+
+  $.nodes = function(nodes) {
+    var frag, node, _i, _len;
+
+    if (!(nodes instanceof Array)) {
+      return nodes;
+    }
+    frag = $.frag();
+    for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+      node = nodes[_i];
+      frag.appendChild(node);
+    }
+    return frag;
+  };
+
+  $.add = function(parent, el) {
+    return parent.appendChild($.nodes(el));
+  };
+
+  $.prepend = function(parent, el) {
+    return parent.insertBefore($.nodes(el), parent.firstChild);
+  };
+
+  $.after = function(root, el) {
+    return root.parentNode.insertBefore($.nodes(el), root.nextSibling);
+  };
+
+  $.before = function(root, el) {
+    return root.parentNode.insertBefore($.nodes(el), root);
+  };
+
+  $.replace = function(root, el) {
+    return root.parentNode.replaceChild($.nodes(el), root);
+  };
+
+  $.el = function(tag, properties) {
+    var el;
+
+    el = d.createElement(tag);
+    if (properties) {
+      $.extend(el, properties);
+    }
+    return el;
+  };
+
+  $.on = function(el, events, handler) {
+    var event, _i, _len, _ref;
+
+    _ref = events.split(' ');
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      event = _ref[_i];
+      el.addEventListener(event, handler, false);
+    }
+  };
+
+  $.off = function(el, events, handler) {
+    var event, _i, _len, _ref;
+
+    _ref = events.split(' ');
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      event = _ref[_i];
+      el.removeEventListener(event, handler, false);
+    }
+  };
+
+  $.event = function(event, detail, root) {
+    if (root == null) {
+      root = d;
+    }
+    return root.dispatchEvent(new CustomEvent(event, {
+      bubbles: true,
+      detail: detail
+    }));
+  };
+
+  $.open = (function() {
+    if (typeof GM_openInTab !== "undefined" && GM_openInTab !== null) {
+      return function(URL) {
+        var a;
+
+        a = $.el('a', {
+          href: URL
+        });
+        return GM_openInTab(a.href);
+      };
+    } else {
+      return function(URL) {
+        return window.open(URL, '_blank');
+      };
+    }
+  })();
+
+  $.debounce = function(wait, fn) {
+    var args, exec, that, timeout;
+
+    timeout = null;
+    that = null;
+    args = null;
+    exec = function() {
+      fn.apply(that, args);
+      return timeout = null;
+    };
+    return function() {
+      args = arguments;
+      that = this;
+      if (timeout) {
+        clearTimeout(timeout);
+      } else {
+        exec();
+      }
+      return timeout = setTimeout(exec, wait);
+    };
+  };
+
+  $.queueTask = (function() {
+    var execTask, taskChannel, taskQueue;
+
+    taskQueue = [];
+    execTask = function() {
+      var args, func, task;
+
+      task = taskQueue.shift();
+      func = task[0];
+      args = Array.prototype.slice.call(task, 1);
+      return func.apply(func, args);
+    };
+    if (window.MessageChannel) {
+      taskChannel = new MessageChannel();
+      taskChannel.port1.onmessage = execTask;
+      return function() {
+        taskQueue.push(arguments);
+        return taskChannel.port2.postMessage(null);
+      };
+    } else {
+      return function() {
+        taskQueue.push(arguments);
+        return setTimeout(execTask, 0);
+      };
+    }
+  })();
+
+  $.globalEval = function(code) {
+    var script;
+
+    script = $.el('script', {
+      textContent: code
+    });
+    $.add(d.head || doc, script);
+    return $.rm(script);
+  };
+
+  $.bytesToString = function(size) {
+    var unit;
+
+    unit = 0;
+    while (size >= 1024) {
+      size /= 1024;
+      unit++;
+    }
+    size = unit > 1 ? Math.round(size * 100) / 100 : Math.round(size);
+    return "" + size + " " + ['B', 'KB', 'MB', 'GB'][unit];
+  };
+
+  $.minmax = function(value, min, max) {
+    return (value < min ? min : value > max ? max : value);
+  };
+
+  $.syncing = {};
+
+  $.sync = (function() {
+    window.addEventListener('storage', function(e) {
+      var cb;
+
+      if (cb = $.syncing[e.key]) {
+        return cb(JSON.parse(e.newValue));
+      }
+    }, false);
+    return function(key, cb) {
+      return $.syncing[g.NAMESPACE + key] = cb;
+    };
+  })();
+
+  $.item = function(key, val) {
+    var item;
+
+    item = {};
+    item[key] = val;
+    return item;
+  };
 
   (function() {
-    var scriptStorage;
+    var cb, items, key, keys, scriptStorage, _i, _len;
 
     scriptStorage = opera.scriptStorage;
-    $["delete"] = function(keys) {
-      var key, _i, _len;
+    $["delete"] = function(keys) {};
+    if (!(keys instanceof Array)) {
+      keys = [keys];
+    }
+    for (_i = 0, _len = keys.length; _i < _len; _i++) {
+      key = keys[_i];
+      key = g.NAMESPACE + key;
+      localStorage.removeItem(key);
+      delete scriptStorage[key];
+    }
+    return;
+    $.get = function(key, val, cb) {};
+    if (typeof cb === 'function') {
+      items = $.item(key, val);
+    } else {
+      items = key;
+      cb = val;
+    }
+    return $.queueTask(function() {
+      var val;
 
-      if (!(keys instanceof Array)) {
-        keys = [keys];
+      for (key in items) {
+        if (val = scriptStorage[g.NAMESPACE + key]) {
+          items[key] = JSON.parse(val);
+        }
       }
-      for (_i = 0, _len = keys.length; _i < _len; _i++) {
-        key = keys[_i];
-        key = g.NAMESPACE + key;
-        localStorage.removeItem(key);
-        delete scriptStorage[key];
-      }
-    };
-    $.get = function(key, val, cb) {
-      var items;
-
-      if (typeof cb === 'function') {
-        items = $.item(key, val);
-      } else {
-        items = key;
-        cb = val;
-      }
-      return $.queueTask(function() {
-        for (key in items) {
-          if (val = scriptStorage[g.NAMESPACE + key]) {
-            items[key] = JSON.parse(val);
-          }
-        }
-        return cb(items);
-      });
-    };
-    return $.set = (function() {
-      var set;
-
-      set = function(key, val) {
-        key = g.NAMESPACE + key;
-        val = JSON.stringify(val);
-        if (key in $.syncing) {
-          localStorage.setItem(key, val);
-        }
-        return scriptStorage[key] = val;
-      };
-      return function(keys, val) {
-        var key;
-
-        if (typeof keys === 'string') {
-          set(keys, val);
-          return;
-        }
-        for (key in keys) {
-          val = keys[key];
-          set(key, val);
-        }
-      };
-    })();
+      return cb(items);
+    });
   })();
+
+  $.set = (function() {
+    var set;
+
+    set = function(key, val) {
+      key = g.NAMESPACE + key;
+      val = JSON.stringify(val);
+      if (key in $.syncing) {
+        localStorage.setItem(key, val);
+      }
+      return scriptStorage[key] = val;
+    };
+    return function(keys, val) {
+      var key;
+
+      if (typeof keys === 'string') {
+        set(keys, val);
+        return;
+      }
+      for (key in keys) {
+        val = keys[key];
+        set(key, val);
+      }
+    };
+  })();
+
+  $$ = function(selector, root) {
+    if (root == null) {
+      root = d.body;
+    }
+    return __slice.call(root.querySelectorAll(selector));
+  };
 
   Build = {
     spoilerRange: {},
