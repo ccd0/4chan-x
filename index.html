@@ -34,7 +34,7 @@
     console.log('huh');
     switch (engine) {
       case 'webkit':
-        install.href = "https://chrome.google.com/webstore/detail/4chan-x/jpmgpmhijdpodideljadidfdikkppbfp"
+        install.href = "https://chrome.google.com/webstore/detail/4chan-x/poojninacjpckfopjogaokeegibhkidi"
         break;
       case 'gecko':
         install.href = "https://github.com/seaweedchan/4chan-x/raw/stable/builds/4chan-X.user.js"
@@ -214,15 +214,16 @@ code {
       </div></div>
     </nav>
     <section data-id=install>
-      <center><p class='authors'>A joint project of Zixaphir and Seaweed.</p><a class='refugees' href='https://github.com/seaweedchan/4chan-x/issues/17' target='_blank'>It's coming.</a>
-      <p>The latest stable releases of <b class=chrome>Chrome</b>, <b class=firefox>Firefox</b>, <b class=opera>Opera</b> and <b class=opera>Opera Mobile</b> are supported.</p></center>
+      <center><p class='authors'>A joint project of Zixaphir and Seaweed.</p><p class='refugees'>The new v3-based version is out!</p><span>Make sure you export your settings and disable your old userscript before installing.</span>
+      <p>The latest stable releases of <b class=chrome>Chrome</b>, <b class=firefox>Firefox</b>, and <b class=opera>Opera</b> are supported.</p></center>
 
       <h1><a class=install data-id=installLink href="https://raw.github.com/seaweedchan/4chan-x/stable/4chan_x.user.js">Install 4chan X</a></h1>
+      <center style=margin-top:-20px;><a class=chrome href=https://chrome.google.com/webstore/detail/4chan-x/poojninacjpckfopjogaokeegibhkidi></a><a href=https://github.com/seaweedchan/4chan-x/raw/stable/builds/4chan-X.user.js class=firefox></a><a href=https://github.com/seaweedchan/4chan-x/raw/stable/builds/4chan-X.js class=opera></a></center>
 
       <b class=chrome>Chrome</b>:
       <ol>
-        <li>Save the 4chan X file from the install button as <code>4chan_x.user.js</code>.</li>
-        <li>Drag and drop the file into the extensions page (<code>chrome://chrome/extensions/</code>).</li>
+        <li>Install 4chan X. That's it.</li>
+        <li>4chan X will be automatically updated by Chrome.</li>
       </ol>
 
       <b class=firefox>Firefox</b>:
@@ -233,6 +234,7 @@ code {
             <li>Restart Firefox.</li>
           </ol>
         </li>
+        <li>Set <code>layout.css.flexbox.enabled</code> to <code>true</code> in your <code>about:config</code>.
         <li>Install 4chan X.</li>
       </ol>
 
@@ -243,22 +245,10 @@ code {
             <li>Go to Preferences (<code>Ctrl + F12</code>) → Advanced → Content → JavaScript Options → User JavaScript Folder.</li>
             <li>Chose what will be your userscripts folder.</li>
             <li>Enable <code><a href=opera:config#UserPrefs|UserJavaScriptonHTTPS target=_blank>User JavaScript on HTTPS</a></code> and save your settings.</li>
+            <li>Set <code><a href=opera:config#PersistentStorage|UserJSStorageQuota target_blank>User JS Storage Quota</a></code> to a minimum of <code>5120</code>.
           </ol>
         </li>
-        <li>Save the 4chan X file as <code>4chan_x.js</code> into your userscripts folder.</li>
-      </ol>
-
-      <b class=opera>Opera Mobile</b>:
-      <ol>
-        <li>If you haven't set your userscripts folder:
-          <ol>
-            <li>Open <code><a target=opera:config#UserPrefs target=_blank>User Prefs</a></code>.</li>
-            <li>Enable <code>User JavaScript</code> and <code>User JavaScript on HTTPS</code>.</li>
-            <li>Set <code>User JavaScript File</code> to what will be your userscripts folder, <code>/sdcard/js</code> for example</li>
-            <li>Save your settings.</li>
-          </ol>
-        </li>
-        <li>Save the 4chan X file as <code>4chan_x.js</code> into your userscripts folder.</li>
+        <li>Save the 4chan X file into your userscripts folder.</li>
       </ol>
     </section>
     <section data-id=features>
