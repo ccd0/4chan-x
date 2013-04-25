@@ -14,7 +14,7 @@ Header =
     customNavToggler = $.el 'label',
       innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
     footerToggler = $.el 'label',
-      innerHTML: "<input type=checkbox #{unless Conf['Bottom Board List'] then 'checked' else ''}> Bottom original board list"
+      innerHTML: "<input type=checkbox #{unless Conf['Bottom Board List'] then 'checked' else ''}> Hide bottom board list"
     editCustomNav = $.el 'a',
       textContent: 'Edit custom board navigation'
       href: 'javascript:;'
@@ -77,8 +77,7 @@ Header =
       cs.textContent = 'Catalog Settings'
       @addShortcut cs if g.VIEW is 'catalog'
 
-      Header.setFooterVisibility Conf['Footer auto-hide']
-      $.sync 'Footer auto-hide', Header.setFooterVisibility
+      Header.setFooterVisibility Conf['Bottom Board List']
       $.sync 'Bottom Board List', Header.setFooterVisibility
 
   bar: $.el 'div',

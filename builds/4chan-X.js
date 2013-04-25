@@ -229,7 +229,7 @@
       'Header auto-hide': false,
       'Bottom Header': false,
       'Header catalog links': false,
-      'Bottom Board List': false,
+      'Bottom Board List': true,
       'Custom Board Navigation': true
     },
     boardnav: '[ toggle-all ] [current-title]',
@@ -4901,7 +4901,7 @@
         innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
       });
       footerToggler = $.el('label', {
-        innerHTML: "<input type=checkbox " + (!Conf['Bottom Board List'] ? 'checked' : '') + "> Bottom original board list"
+        innerHTML: "<input type=checkbox " + (!Conf['Bottom Board List'] ? 'checked' : '') + "> Hide bottom board list"
       });
       editCustomNav = $.el('a', {
         textContent: 'Edit custom board navigation',
@@ -4974,8 +4974,7 @@
         if (g.VIEW === 'catalog') {
           _this.addShortcut(cs);
         }
-        Header.setFooterVisibility(Conf['Footer auto-hide']);
-        $.sync('Footer auto-hide', Header.setFooterVisibility);
+        Header.setFooterVisibility(Conf['Bottom Board List']);
         return $.sync('Bottom Board List', Header.setFooterVisibility);
       });
     },

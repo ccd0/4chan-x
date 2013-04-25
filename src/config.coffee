@@ -412,7 +412,7 @@ http://iqdb.org/?url=%TURL
     'Header auto-hide':        false
     'Bottom Header':           false
     'Header catalog links':    false
-    'Bottom Board List':       false
+    'Bottom Board List':       true
     'Custom Board Navigation': true
 
   boardnav: '[ toggle-all ] [current-title]'
