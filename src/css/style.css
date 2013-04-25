@@ -409,6 +409,9 @@ a.hide-announcement {
 #update-status:not(.null) {
   margin-right: 5px;
 }
+#update-timer {
+  cursor: pointer;
+}
 
 /* Thread Watcher */
 #watcher {

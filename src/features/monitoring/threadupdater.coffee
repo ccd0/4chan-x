@@ -4,7 +4,7 @@ ThreadUpdater =
 
     checked = if Conf['Auto Update'] then 'checked' else ''
     @dialog = sc = $.el 'span',
-      innerHTML: "<span id=update-status></span><span id=update-timer></span>"
+      innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>"
       id:        'updater'
 
     @timer  = $ '#update-timer',  sc
