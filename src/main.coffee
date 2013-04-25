@@ -52,7 +52,7 @@ Main =
       for name, module of features
         # c.time "#{name} initialization"
         try
-          do module.init
+          module.init()
         catch err
           Main.handleErrors
             message: "\"#{name}\" initialization crashed."
@@ -195,7 +195,11 @@ Main =
       Main.handleErrors errors if errors
 
       Main.callbackNodes Thread, threads
-      Main.callbackNodes Post, posts
+      Main.callbackNodesDB Post, posts, ->
+        $.event '4chanXInitFinished'
+        Main.checkUpdate()
+      
+      return
 
     $.event '4chanXInitFinished'
     Main.checkUpdate()
@@ -217,6 +221,45 @@ Main =
             error: err
       # c.profileEnd callback.name
     Main.handleErrors errors if errors
+
+  callbackNodesDB: (klass, nodes, cb) ->
+    queue = []
+    softTask =  ->
+      return unless queue.length
+      task = queue.shift()
+      func = task[0]
+      args = Array::slice.call task, 1
+      func.apply func, args
+      if (queue.length % 7) is 0
+        setTimeout softTask, 0
+      else
+        softTask()
+
+    # get the nodes' length only once
+    len    = nodes.length
+    i      = 0
+    errors = null
+
+    func = (node, i) ->
+      for callback in klass::callbacks
+        try
+          callback.cb.call node
+        catch err
+          unless errors
+            errors = []
+          errors.push
+            message: "\"#{callback.name}\" crashed on #{klass.name} No.#{node} (/#{node.board}/)."
+            error: err
+      # finish
+      if i is len
+        Main.handleErrors errors if errors
+        cb() if cb
+
+    while i < len
+      node = nodes[i]
+      queue.push [func, node, ++i]
+
+    softTask()
 
   addCallback: (e) ->
     obj = e.detail

@@ -22,7 +22,7 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.1.0 - 2013-04-24
+* 4chan X - Version 1.1.0 - 2013-04-25
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -9729,7 +9729,11 @@
           Main.handleErrors(errors);
         }
         Main.callbackNodes(Thread, threads);
-        Main.callbackNodes(Post, posts);
+        Main.callbackNodesDB(Post, posts, function() {
+          $.event('4chanXInitFinished');
+          return Main.checkUpdate();
+        });
+        return;
       }
       $.event('4chanXInitFinished');
       return Main.checkUpdate();
@@ -9760,6 +9764,63 @@
       if (errors) {
         return Main.handleErrors(errors);
       }
+    },
+    callbackNodesDB: function(klass, nodes, cb) {
+      var errors, func, i, len, node, queue, softTask;
+
+      queue = [];
+      softTask = function() {
+        var args, func, task;
+
+        if (!queue.length) {
+          return;
+        }
+        task = queue.shift();
+        func = task[0];
+        args = Array.prototype.slice.call(task, 1);
+        func.apply(func, args);
+        if ((queue.length % 7) === 0) {
+          return setTimeout(softTask, 0);
+        } else {
+          return softTask();
+        }
+      };
+      len = nodes.length;
+      i = 0;
+      errors = null;
+      func = function(node, i) {
+        var callback, err, _i, _len, _ref;
+
+        _ref = klass.prototype.callbacks;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          callback = _ref[_i];
+          try {
+            callback.cb.call(node);
+          } catch (_error) {
+            err = _error;
+            if (!errors) {
+              errors = [];
+            }
+            errors.push({
+              message: "\"" + callback.name + "\" crashed on " + klass.name + " No." + node + " (/" + node.board + "/).",
+              error: err
+            });
+          }
+        }
+        if (i === len) {
+          if (errors) {
+            Main.handleErrors(errors);
+          }
+          if (cb) {
+            return cb();
+          }
+        }
+      };
+      while (i < len) {
+        node = nodes[i];
+        queue.push([func, node, ++i]);
+      }
+      return softTask();
     },
     addCallback: function(e) {
       var Klass, obj;
