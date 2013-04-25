@@ -6,6 +6,7 @@ ThreadUpdater =
     @dialog = sc = $.el 'span',
       innerHTML: "
 <input name='Auto Update This' type=checkbox #{checked}><span id=update-status></span> <span id=update-timer></span>"
+      id:        'updater'
 
     @timer  = $ '#update-timer',  sc
     @status = $ '#update-status', sc

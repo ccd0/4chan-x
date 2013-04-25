@@ -3,6 +3,7 @@ ThreadStats =
     return if g.VIEW isnt 'thread' or !Conf['Thread Stats']
     @dialog = sc = $.el 'span',
       innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span></div>"
+      id:        'thread-stats'
 
     @postCountEl = $ '#post-count', sc
     @fileCountEl = $ '#file-count', sc
