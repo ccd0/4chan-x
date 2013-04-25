@@ -25,6 +25,7 @@ QR =
       $.asap (-> doc), -> $.addClass doc, 'hide-original-post-form'
 
     $.ready @initReady
+    $.on d, '4chanXInitFinished', @persist if Conf['Persistent QR']
 
     Post::callbacks.push
       name: 'Quick Reply'
@@ -67,7 +68,6 @@ QR =
       else
         QR.status()
 
-    QR.persist() if Conf['Persistent QR']
 
   node: ->
     $.on $('a[title="Quote this post"]', @nodes.info), 'click', QR.quote
