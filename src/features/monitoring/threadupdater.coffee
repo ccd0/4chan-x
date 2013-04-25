@@ -2,24 +2,47 @@ ThreadUpdater =
   init: ->
     return if g.VIEW isnt 'thread' or !Conf['Thread Updater']
 
-    html = ''
+    checked = if Conf['Auto Update'] then 'checked' else ''
+    @dialog = sc = $.el 'span',
+      innerHTML: "
+<input name='Auto Update This' type=checkbox #{checked}><span id=update-status></span> <span id=update-timer></span>"
+
+    @timer  = $ '#update-timer',  sc
+    @status = $ '#update-status', sc
+
+    $.on @timer,  'click', ThreadUpdater.update
+    $.on @status, 'click', ThreadUpdater.update
+
+    @checkPostCount = 0
+
+    Header.addShortcut sc
+
+    subEntries = []
     for name, conf of Config.updater.checkbox
       checked = if Conf[name] then 'checked' else ''
-      html   += "<div><label title='#{conf[1]}'><input name='#{name}' type=checkbox #{checked}> #{name}</label></div>"
+      el = $.el 'label',
+        title:    "#{conf[1]}"
+        innerHTML: "<input name='#{name}' type=checkbox #{checked}> #{name}"
+      input = el.firstElementChild
+      $.on input, 'change', $.cb.checked
+      if input.name is 'Scroll BG'
+        $.on input, 'change', ThreadUpdater.cb.scrollBG
+        ThreadUpdater.cb.scrollBG()
+      subEntries.push el: el
 
-    checked = if Conf['Auto Update'] then 'checked' else ''
-    html = """
-      <div class=move><span id=update-status></span> <span id=update-timer></span></div>
-      #{html}
-      <div><label title='Controls whether *this* thread automatically updates or not'><input type=checkbox name='Auto Update This' #{checked}> Auto Update This</label></div>
-      <div><label><input type=number name=Interval class=field min=5 value=#{Conf['Interval']}> Refresh rate (s)</label></div>
-      <div><input value='Update' type=button name='Update'></div>
-      """
+    settings = $.el 'span',
+      innerHTML: '<a href=javascript:;>Interval</a>'
 
-    @dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
-    @timer  = $ '#update-timer',  @dialog
-    @status = $ '#update-status', @dialog
-    @checkPostCount = 0
+    $.on settings, 'click', @intervalShortcut
+
+    subEntries.push el: settings
+
+    $.event 'AddMenuEntry',
+      type: 'header'
+      el: $.el 'span',
+        textContent: 'Updater'
+      order: 110
+      subEntries: subEntries
 
     Thread::callbacks.push
       name: 'Thread Updater'
@@ -32,28 +55,19 @@ ThreadUpdater =
     ThreadUpdater.outdateCount = 0
     ThreadUpdater.lastModified = '0'
 
-    for input in $$ 'input', ThreadUpdater.dialog
-      if input.type is 'checkbox'
-        $.on input, 'change', $.cb.checked
-      switch input.name
-        when 'Scroll BG'
-          $.on input, 'change', ThreadUpdater.cb.scrollBG
-          ThreadUpdater.cb.scrollBG()
-        when 'Auto Update This'
-          $.on input, 'change', ThreadUpdater.cb.autoUpdate
-          $.event 'change', null, input
-        when 'Interval'
-          $.on input, 'change', ThreadUpdater.cb.interval
-          ThreadUpdater.cb.interval.call input
-        when 'Update'
-          $.on input, 'click', ThreadUpdater.update
+    ThreadUpdater.cb.interval.call $.el 'input', value: Conf['Interval']
+
+    input = $ 'input', ThreadUpdater.dialog
+
+    $.on input, 'change', $.cb.checked
+    $.on input, 'change', ThreadUpdater.cb.autoUpdate
+    $.event     'change', null, input
 
     $.on window, 'online offline',   ThreadUpdater.cb.online
     $.on d,      'QRPostSuccessful', ThreadUpdater.cb.post
     $.on d,      'visibilitychange', ThreadUpdater.cb.visibility
 
     ThreadUpdater.cb.online()
-    $.add d.body, ThreadUpdater.dialog
 
   ###
   http://freesound.org/people/pierrecartoons1979/sounds/90112/
@@ -150,6 +164,11 @@ ThreadUpdater =
         Math.max i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]
       else
         i
+
+  intervalShortcut: ->
+    Settings.open 'Advanced'
+    settings = $.id 'fourchanx-settings'
+    $('input[name=Interval]', settings).focus()
 
   set: (name, text, klass) ->
     el = ThreadUpdater[name]
@@ -270,7 +289,7 @@ ThreadUpdater =
 
       scroll = Conf['Auto Scroll'] and ThreadUpdater.scrollBG() and
         ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25
-      
+
       for key, post of posts
         continue unless posts.hasOwnProperty key
         if post.cb

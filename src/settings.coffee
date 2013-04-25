@@ -460,6 +460,13 @@ Settings =
       </fieldset>
 
       <fieldset>
+        <legend>Thread Updater <span class=warning #{if Conf['Thread Updater'] then 'hidden' else ''}>is disabled.</span></legend>
+        <div>
+          Intervale: <input name=Interval value=#{Conf['Interval']}
+        </div>
+      </fieldset>
+
+      <fieldset>
         <legend>
           <label><input type=checkbox name='Custom CSS' #{if Conf['Custom CSS'] then 'checked' else ''}> Custom CSS</label>
         </legend>
@@ -469,7 +476,7 @@ Settings =
     """
     items = {}
     inputs = {}
-    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'sageEmoji', 'emojiPos', 'usercss']
+    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'sageEmoji', 'emojiPos', 'usercss', 'Interval']
       input = $ "[name=#{name}]", section
       items[name]  = Conf[name]
       inputs[name] = input
@@ -497,11 +504,12 @@ Settings =
       for key, val of items
         input = inputs[key]
         input.value = val
-        unless ['usercss', 'emojiPos', 'archiver'].contains name
+        unless ['usercss', 'emojiPos', 'archiver', 'Interval'].contains key
           $.on input, event, Settings[key]
           Settings[key].call input
       return
 
+    $.on $('input[name=Interval]', section), 'input', ThreadUpdater.cb.interval
     $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
     $.on $.id('apply-css'), 'click', Settings.usercss
   boardnav: ->

@@ -46,7 +46,7 @@ Header =
       type: 'header'
       el: $.el 'span',
         textContent: 'Header'
-      order: 105
+      order: 107
       subEntries: [
         {el: barFixedToggler}
         {el: headerToggler}
