@@ -678,6 +678,8 @@ input.field.tripped:not(:hover):not(:focus) {
   display: block;
   padding: 0px 4px;
   margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 #qr-no-file {
   color: #AAA;
@@ -693,6 +695,7 @@ input.field.tripped:not(:hover):not(:focus) {
   margin-top: 1px;
   overflow: hidden;
   padding: 2px 1px 0;
+  height: 22px;
 }
 #qr-filename-container:hover {
   cursor: text;
