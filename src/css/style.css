@@ -380,6 +380,7 @@ a.hide-announcement {
 /* Unread */
 #unread-line {
   margin: 0;
+  border-color: rgb(255,0,0);
 }
 
 /* Thread Updater */
