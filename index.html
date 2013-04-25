@@ -194,13 +194,13 @@ code {
       <div><div>
         <a href=#install>Installation</a>
         <a href=#features>Features</a>
-        <a href=#bonus>Links &amp; Tips</a>
         <a href=https://raw.github.com/seaweedchan/4chan-x/4chanX/changelog>Changelog</a>
-        <a href=#bug-report>Bug Reports</a>
+        <a href=https://github.com/seaweedchan/4chan-x/blob/master/README.md#reporting-bugs-and-suggestions>Bug Reports</a>
+        <a href=http://twitter.com/seaweedPOMF>Twitter</a>
       </div></div>
     </nav>
     <section data-id=install>
-      <center><p class='authors'>A joint project of Zixaphir and Seaweed.</p><p class='refugees'>Welcoming ALL refugees from Mayhem's v3!</p>
+      <center><p class='authors'>A joint project of Zixaphir and Seaweed.</p><a class='refugees' href='https://github.com/seaweedchan/4chan-x/issues/17'>It's coming.</a>
       <p>The latest stable releases of <b class=chrome>Chrome</b>, <b class=firefox>Firefox</b>, <b class=opera>Opera</b> and <b class=opera>Opera Mobile</b> are supported.</p></center>
 
       <h1><a class=install href="https://raw.github.com/seaweedchan/4chan-x/stable/4chan_x.user.js">Install 4chan X</a></h1>
@@ -354,55 +354,6 @@ code {
           </ul>
         </li>
       </ul>
-    </section>
-    <section data-id=bug-report>
-      <p>Before making one,</p>
-      <ol>
-        <li>Make sure your browser &amp; 4chan X are up to date.</li>
-        <li>Disable your other extensions &amp; scripts.</li>
-        <li>If your issue persists, report precise steps to reproduce and console errors, if any. Open your console with:
-          <ul>
-            <li><code>Ctrl + Shift + J</code> on <b class=chrome>Chrome</b> &amp; <b class=firefox>Firefox</b></li>
-            <li><code>Ctrl + Shift + O</code> on <b class=opera>Opera</b>.</li>
-          </ul>
-        </li>
-      </ol>
-
-      <hr>
-
-      <b>Known issues:</b>
-      <ul>
-        <li>Clearing your 4chan cookies will erase your settings!</li>
-      </ul>
-
-      <b class=firefox>Firefox</b>:
-      <ul>
-        <li>If Scriptish refuses to auto-update 4chan X, disable <code>Require user scripts to update using HTTPS</code> in Scriptish's preferences under Advanced → Update Security.</li>
-        <li>If you get an error stating <code>localStorage is null</code>, go to <code>about:config</code> and enable <code>dom.storage.enabled</code>.</li>
-        <li>If you get a <code>Security error</code>, make sure cookies are enabled.</li>
-      </ul>
-
-      <hr>
-
-      <h1><a href=https://github.com/seaweedchan/4chan-x/issues>GitHub Issues Tracker</a></h1>
-    </section>
-    <section data-id=bonus>
-      <p>
-        <a href=http://zixaphir.github.com/appchan-x/>Appchan X</a>: An alternative to 4chan X with styling options, created by Zixaphir.<br>
-        <a href=http://userstyles.org/styles/browse/4chan>Userstyles.org</a>: For 4chan userstyles.
-      </p><p>
-        <a href=http://userscripts.org/scripts/show/83584>YouTube Link Title</a>: YouTube title and embedding if the built in solution isn't enough.<br>
-        <a href=http://hupotronic.github.com/ExLinks/>ExLinks</a>: E-Hentai & ExHentai link formatting. Includes ExSauce.
-      </p><p>
-        <a href=https://addons.mozilla.org/firefox/addon/downthemall/>DownThemAll</a> for <b class=firefox>Firefox</b>: download all images in a thread with this fast filter: <code>/^http://images.4chan.org/</code>.<br>
-        <b>*nix</b>: Download all images in a thread with this shell function (add it to your <code>.bashrc</code>):
-      </p>
-<pre>dta() {
-  wget -O - $1 |
-  grep -Eo 'images.4chan.org/[^"]+' |
-  uniq |
-  xargs wget
-}</pre>
     </section>
   </body>
 </html>
