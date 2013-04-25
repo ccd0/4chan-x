@@ -461,7 +461,7 @@ Settings =
       <fieldset>
         <legend>Thread Updater <span class=warning #{if Conf['Thread Updater'] then 'hidden' else ''}>is disabled.</span></legend>
         <div>
-          Intervale: <input name=Interval value=#{Conf['Interval']}
+          Interval: <input name=Interval value=#{Conf['Interval']}
         </div>
       </fieldset>
 
