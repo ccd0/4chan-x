@@ -4175,10 +4175,10 @@ ThreadUpdater =
         ThreadUpdater.timeoutID = setTimeout ThreadUpdater.timeout, 1000
       else
         clearTimeout ThreadUpdater.timeoutID
-    interval: ->
+    interval: (e) ->
       val = Math.max 5, parseInt @value, 10
       ThreadUpdater.interval = @value = val
-      $.cb.value.call @
+      $.cb.value.call @ if e
     load: ->
       {req} = ThreadUpdater
       switch req.status
