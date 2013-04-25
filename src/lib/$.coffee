@@ -234,7 +234,7 @@ $.debounce = (wait, fn) ->
 
     # after wait, let next invocation execute immediately
     timeout = setTimeout exec, wait
-    
+
 $.queueTask = do ->
   # inspired by https://www.w3.org/Bugs/Public/show_bug.cgi?id=15007
   taskQueue = []
