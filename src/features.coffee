@@ -4091,11 +4091,10 @@ ThreadUpdater =
       checked = if Conf[name] then 'checked' else ''
       html   += "<div><label title='#{conf[1]}'><input name='#{name}' type=checkbox #{checked}> #{name}</label></div>"
 
-    checked = if Conf['Auto Update'] then 'checked' else ''
     html = """
       <div class=move><span id=update-status></span> <span id=update-timer></span></div>
       #{html}
-      <div><label title='Controls whether *this* thread automatically updates or not'><input type=checkbox name='Auto Update This' #{checked}> Auto Update This</label></div>
+      <div><label title='Controls whether *this* thread automatically updates or not'><input type=checkbox name='Auto Update This' #{if Conf['Auto Update'] then 'checked' else ''}> Auto Update This</label></div>
       <div><label><input type=number name=Interval class=field min=5 value=#{Conf['Interval']}> Refresh rate (s)</label></div>
       <div><input value='Update' type=button name='Update'></div>
       """
@@ -4103,6 +4102,7 @@ ThreadUpdater =
     @dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
     @timer  = $ '#update-timer',  @dialog
     @status = $ '#update-status', @dialog
+    @isUpdating = Conf['Auto Update']
 
     Thread::callbacks.push
       name: 'Thread Updater'
@@ -4123,7 +4123,8 @@ ThreadUpdater =
           $.on input, 'change', ThreadUpdater.cb.scrollBG
           ThreadUpdater.cb.scrollBG()
         when 'Auto Update This'
-          $.on input, 'change', ThreadUpdater.cb.autoUpdate
+          $.off input, 'change', $.cb.checked
+          $.on  input, 'change', ThreadUpdater.cb.autoUpdate
           $.event 'change', null, input
         when 'Interval'
           $.on input, 'change', ThreadUpdater.cb.interval
@@ -4149,14 +4150,14 @@ ThreadUpdater =
       if ThreadUpdater.online = navigator.onLine
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
-        ThreadUpdater.update() if Conf['Auto Update This']
+        ThreadUpdater.update() if ThreadUpdater.isUpdating
         ThreadUpdater.set 'status', null, null
       else
         ThreadUpdater.set 'timer', null
         ThreadUpdater.set 'status', 'Offline', 'warning'
       ThreadUpdater.cb.autoUpdate()
     post: (e) ->
-      return unless Conf['Auto Update This'] and e.detail.threadID is ThreadUpdater.thread.ID
+      return unless ThreadUpdater.isUpdating and e.detail.threadID is ThreadUpdater.thread.ID
       ThreadUpdater.outdateCount = 0
       setTimeout ThreadUpdater.update, 1000 if ThreadUpdater.seconds > 2
     visibility: ->
@@ -4170,8 +4171,9 @@ ThreadUpdater =
         -> true
       else
         -> not d.hidden
-    autoUpdate: ->
-      if Conf['Auto Update This'] and ThreadUpdater.online
+    autoUpdate: (e) ->
+      ThreadUpdater.isUpdating = @checked if e
+      if ThreadUpdater.isUpdating and ThreadUpdater.online
         ThreadUpdater.timeoutID = setTimeout ThreadUpdater.timeout, 1000
       else
         clearTimeout ThreadUpdater.timeoutID
