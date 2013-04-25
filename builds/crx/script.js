@@ -8642,6 +8642,9 @@
       if (this.isClone) {
         return;
       }
+      if (this.info.yours) {
+        $.addClass(this.nodes.root, 'yourPost');
+      }
       if (!(quotes = this.quotes).length) {
         return;
       }
