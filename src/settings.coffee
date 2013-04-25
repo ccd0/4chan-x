@@ -60,7 +60,6 @@ Settings =
             <a href=javascript:; class=close title=Close>×</a>
           </div>
         </nav>
-        <hr>
         <div class=section-container><section></section></div>
     """
 
