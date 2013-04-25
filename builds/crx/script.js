@@ -6904,7 +6904,7 @@
     },
     persist: function() {
       QR.open();
-      if (Conf['Auto-Hide QR']) {
+      if (Conf['Auto Hide QR']) {
         return QR.hide();
       }
     },
@@ -7971,7 +7971,7 @@
       }
       QR.cleanNotifications();
       QR.cooldown.auto = QR.posts.length > 1;
-      if (Conf['Auto-Hide QR'] && !QR.cooldown.auto) {
+      if (Conf['Auto Hide QR'] && !QR.cooldown.auto) {
         QR.hide();
       }
       if (!QR.cooldown.auto && $.x('ancestor::div[@id="qr"]', d.activeElement)) {
