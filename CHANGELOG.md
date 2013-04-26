@@ -1,6 +1,7 @@
 seaweedchan:
 - Fix emoji and favicon previews not updating on change.
 - Fix issue with draggong thread watcher
+- Fix some settings not importing when coming from Mayhem's v3
 
 MayhemYDG:
 - Fix bug where a thread would freeze on load.

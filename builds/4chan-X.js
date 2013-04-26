@@ -9298,6 +9298,13 @@
           });
         }
         data.Conf.WatchedThreads = data.WatchedThreads;
+      } else if (version[0] === '3') {
+        data = Settings.convertSettings(data, {
+          'Reply Hiding': 'Reply Hiding Buttons',
+          'Thread Hiding': 'Thread Hiding Buttons',
+          'Bottom header': 'Bottom Header',
+          'Unread Tab Icon': 'Unread Favicon'
+        });
       }
       return $.set(data.Conf);
     },

@@ -282,6 +282,12 @@ Settings =
         data.Conf[key] = data.Conf[key].replace(/ctrl|alt|meta/g, (s) -> "#{s[0].toUpperCase()}#{s[1..]}").replace /(^|.+\+)[A-Z]$/g, (s) ->
           "Shift+#{s[0...-1]}#{s[-1..].toLowerCase()}"
       data.Conf.WatchedThreads = data.WatchedThreads
+    else if version[0] is '3'
+      data = Settings.convertSettings data,
+        'Reply Hiding': 'Reply Hiding Buttons'
+        'Thread Hiding': 'Thread Hiding Buttons'
+        'Bottom header': 'Bottom Header'
+        'Unread Tab Icon': 'Unread Favicon'
     $.set data.Conf
   convertSettings: (data, map) ->
     for prevKey, newKey of map
