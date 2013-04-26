@@ -222,6 +222,8 @@ UI = do ->
       dy:     e.clientY - rect.top
       height: screenHeight - rect.height
       width:  screenWidth  - rect.width
+      topBorder:    if Conf["Bottom Header"] then 0 else Header.bar.getBoundingClientRect().height
+      bottomBorder: if Conf["Bottom Header"] then Header.bar.getBoundingClientRect().height else 0
       screenHeight: screenHeight
       screenWidth:  screenWidth
       isTouching:   isTouching
@@ -254,9 +256,9 @@ UI = do ->
       left / @screenWidth * 100 + '%'
 
     top = clientY - @dy
-    top = if top < 10
-      0
-    else if @height - top < 10
+    top = if top < (10 + @topBorder)
+      @topBorder + 'px'
+    else if @height - top < (10 + @bottomBorder)
       null
     else
       top / @screenHeight * 100 + '%'
@@ -265,8 +267,9 @@ UI = do ->
       0
     else
       null
+
     bottom = if top is null
-      0
+      @bottomBorder + 'px'
     else
       null
 
