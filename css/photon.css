@@ -3,6 +3,9 @@
   background-color: #DDD;
   border-color: #CCC;
 }
+:root.photon .field {
+  font-family: arial, helvetica, sans-serif;
+}
 :root.photon .field:focus {
   border-color: #EA8;
 }

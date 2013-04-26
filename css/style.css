@@ -11,7 +11,7 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   color: #333;
-  font: 13px sans-serif;
+  font-size: 13px;
   margin: 0;
   padding: 2px 4px 3px;
   outline: none;

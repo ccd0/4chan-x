@@ -3,6 +3,9 @@
   background-color: #D6DAF0;
   border-color: #B7C5D9;
 }
+:root.yotsuba-b .field {
+  font-family: arial, helvetica, sans-serif;
+}
 :root.yotsuba-b .field:focus {
   border-color: #98E;
 }
