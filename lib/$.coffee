@@ -220,6 +220,23 @@ $.item = (key, val) ->
   item[key] = val
   item
 <% if (type === 'crx') { %>
+$.localKeys = [
+  # filters
+  'name',
+  'uniqueID',
+  'tripcode',
+  'capcode',
+  'email',
+  'subject',
+  'comment',
+  'flag',
+  'filename',
+  'dimensions',
+  'filesize',
+  'MD5',
+  # custom css
+  'usercss'
+]
 # https://developer.chrome.com/extensions/storage.html
 $.delete = (keys) ->
   chrome.storage.sync.remove keys
@@ -229,14 +246,41 @@ $.get = (key, val, cb) ->
   else
     items = key
     cb = val
-  chrome.storage.sync.get items, cb
+
+  localItems = null
+  syncItems  = null
+  for key, val of items
+    if key in $.localKeys
+      (localItems or= {})[key] = val
+    else
+      (syncItems  or= {})[key] = val
+
+  items = {}
+  count = 0
+  done  = (item) ->
+    $.extend items, item
+    cb items unless --count
+
+  if localItems
+    count++
+    chrome.storage.local.get localItems, done
+  if syncItems
+    count++
+    chrome.storage.sync.get  syncItems,  done
 $.set = do ->
   items = {}
+  localItems = {}
 
   set = $.debounce $.SECOND, ->
+    for key in $.localKeys
+      if key of items
+        (localItems or= {})[key] = items[key]
+        delete items[key]
     try
+      chrome.storage.local.set localItems
       chrome.storage.sync.set items
       items = {}
+      localItems = {}
     catch err
       c.error err
 

@@ -1,3 +1,6 @@
+- Minor fixes.
+- Chrome only: Due to technical limitations, Filter lists and Custom CSS will not by synchronized across devices anymore.
+
 ## 3.2.0 - *2013-04-23*
 
 - The top and bottom original board lists are now optional, disabled by default.
