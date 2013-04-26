@@ -3,11 +3,7 @@
 // @version      1.1.0
 // @namespace    4chan-X
 // @description  Cross-browser userscript for maximum lurking on 4chan.
-// @copyright 	 2013-2013 Zixaphir <zixaphirmoxphar@gmail.com>
-// @copyright 	 2013-2013 Jordan Bates <saudrapsmann@gmail.com>
-// @copyright 	 2009-2011 James Campos <james.r.campos@gmail.com>
-// @copyright 	 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
-// @license      MIT; http://en.wikipedia.org/wiki/Mit_license
+// @license      MIT; https://github.com/seaweedchan/4chan-x/blob/master/LICENSE 
 // @match        *://api.4chan.org/*
 // @match        *://boards.4chan.org/*
 // @match        *://images.4chan.org/*
@@ -22,13 +18,11 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.1.0 - 2013-04-25
+* 4chan X - Version 1.1.0 - 2013-04-26
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
 *
-* Appchan X Copyright © 2013-2013 Zixaphir <zixaphirmoxphar@gmail.com>
-* http://zixaphir.github.io/appchan-x/
 * 4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
 * https://github.com/aeosynth/4chan-x
 * 4chan x Copyright © 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
@@ -37,12 +31,6 @@
 * http://seaweedchan.github.io/4chan-x/
 * 4chan x Copyright © 2012-2013 ihavenoface
 * http://ihavenoface.github.io/4chan-x/
-* OneeChan Copyright © 2011-2013 Jordan Bates <saudrapsmann@gmail.com>
-* http://seaweedchan.github.io/oneechan/
-* 4chan SS Copyright © 2011-2013 Ahodesuka
-* https://github.com/ahodesuka/4chan-Style-Script/
-* Raphael Icons Copyright © 2013 Dmitry Baranovskiy
-* http://raphaeljs.com/icons/
 *
 * Permission is hereby granted, free of charge, to any person
 * obtaining a copy of this software and associated documentation
@@ -93,13 +81,26 @@
 */
 
 /*
-* Linkify based on:
-* http://downloads.mozdev.org/greasemonkey/linkify.user.js
-* https://github.com/MayhemYDG/LinkifyPlusFork
+* Contains data from external sources:
 *
-* Originally written by Anthony Lieuallen of http://arantius.com/
-* Licensed for unlimited modification and redistribution as long as
-* this notice is kept intact.
+* audio/beep.wav from http://freesound.org/people/pierrecartoons1979/sounds/90112/
+*   cc-by-nc-3.0
+*
+* 4chan/4chan-JS (https://github.com/4chan/4chan-JS)
+*   Copyright (c) 2012-2013, 4chan LLC
+*   All rights reserved.
+*
+*   license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
+*
+* Linkify: (http://userscripts.org/scripts/show/1352)
+*   Copyright (c) 2011, Anthony Lieuallen
+*   All rights reserved.
+*   Originally written by Anthony Lieuallen of http://arantius.com/
+*   Licensed for unlimited modification and redistribution as long as
+*   this notice is kept intact.
+*
+*   license: http://userscripts.org/scripts/review/1352
+*
 */
 (function() {
   var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
@@ -639,41 +640,28 @@
     }));
   };
 
-  $.open = (function() {
-    if (typeof GM_openInTab !== "undefined" && GM_openInTab !== null) {
-      return function(URL) {
-        var a;
-
-        a = $.el('a', {
-          href: URL
-        });
-        return GM_openInTab(a.href);
-      };
-    } else {
-      return function(URL) {
-        return window.open(URL, '_blank');
-      };
-    }
-  })();
+  $.open = function(URL) {
+    return window.open(URL, '_blank');
+  };
 
   $.debounce = function(wait, fn) {
-    var args, exec, that, timeout;
+    var args, exec, lastCall, that, timeout;
 
+    lastCall = 0;
     timeout = null;
     that = null;
     args = null;
     exec = function() {
-      fn.apply(that, args);
-      return timeout = null;
+      lastCall = Date.now();
+      return fn.apply(that, args);
     };
     return function() {
       args = arguments;
       that = this;
-      if (timeout) {
-        clearTimeout(timeout);
-      } else {
-        exec();
+      if (lastCall < Date.now() - wait) {
+        return exec();
       }
+      clearTimeout(timeout);
       return timeout = setTimeout(exec, wait);
     };
   };
@@ -755,62 +743,64 @@
   };
 
   (function() {
-    var cb, items, key, keys, scriptStorage, _i, _len;
+    var scriptStorage;
 
     scriptStorage = opera.scriptStorage;
-    $["delete"] = function(keys) {};
-    if (!(keys instanceof Array)) {
-      keys = [keys];
-    }
-    for (_i = 0, _len = keys.length; _i < _len; _i++) {
-      key = keys[_i];
-      key = g.NAMESPACE + key;
-      localStorage.removeItem(key);
-      delete scriptStorage[key];
-    }
-    return;
-    $.get = function(key, val, cb) {};
-    if (typeof cb === 'function') {
-      items = $.item(key, val);
-    } else {
-      items = key;
-      cb = val;
-    }
-    return $.queueTask(function() {
-      var val;
+    $["delete"] = function(keys) {
+      var key, _i, _len;
 
-      for (key in items) {
-        if (val = scriptStorage[g.NAMESPACE + key]) {
-          items[key] = JSON.parse(val);
+      if (!(keys instanceof Array)) {
+        keys = [keys];
+      }
+      for (_i = 0, _len = keys.length; _i < _len; _i++) {
+        key = keys[_i];
+        key = g.NAMESPACE + key;
+        localStorage.removeItem(key);
+        delete scriptStorage[key];
+      }
+    };
+    $.get = function(key, val, cb) {
+      var items;
+
+      if (typeof cb === 'function') {
+        items = $.item(key, val);
+      } else {
+        items = key;
+        cb = val;
+      }
+      return $.queueTask(function() {
+        for (key in items) {
+          if (val = scriptStorage[g.NAMESPACE + key]) {
+            items[key] = JSON.parse(val);
+          }
         }
-      }
-      return cb(items);
-    });
-  })();
-
-  $.set = (function() {
-    var set;
-
-    set = function(key, val) {
-      key = g.NAMESPACE + key;
-      val = JSON.stringify(val);
-      if (key in $.syncing) {
-        localStorage.setItem(key, val);
-      }
-      return scriptStorage[key] = val;
+        return cb(items);
+      });
     };
-    return function(keys, val) {
-      var key;
+    $.set = (function() {
+      var set;
 
-      if (typeof keys === 'string') {
-        set(keys, val);
-        return;
-      }
-      for (key in keys) {
-        val = keys[key];
-        set(key, val);
-      }
-    };
+      set = function(key, val) {
+        key = g.NAMESPACE + key;
+        val = JSON.stringify(val);
+        if (key in $.syncing) {
+          localStorage.setItem(key, val);
+        }
+        return scriptStorage[key] = val;
+      };
+      return function(keys, val) {
+        var key;
+
+        if (typeof keys === 'string') {
+          set(keys, val);
+          return;
+        }
+        for (key in keys) {
+          val = keys[key];
+          set(key, val);
+        }
+      };
+    })();
   })();
 
   $$ = function(selector, root) {
@@ -1457,7 +1447,7 @@
         });
       }
       now = Date.now();
-      if ((this.data.lastChecked || 0) < now - 12 * $.HOUR) {
+      if ((this.data.lastChecked || 0) < now - 2 * $.HOUR) {
         this.data.lastChecked = now;
         for (boardID in this.data.boards) {
           this.ajaxClean(boardID);
@@ -8152,7 +8142,7 @@
           QR.cooldown.auto = false;
           QR.status();
           return QR.error($.el('span', {
-            innerHTML: 'Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.'
+            innerHTML: "Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.\n[<a href=\"https://github.com/MayhemYDG/4chan-x/wiki/FAQ#what-does-connection-error-you-may-have-been-banned-mean\" target=_blank>FAQ</a>]"
           }));
         }
       };

@@ -47,7 +47,7 @@ $.DAY = 24 * ($.HOUR = 60 * ($.MINUTE = 60 * ($.SECOND = 1000)))
 
 $.id = (id) ->
   d.getElementById id
-  
+
 $.ready = (fc) ->
   if d.readyState in ['interactive', 'complete']
     $.queueTask fc
@@ -56,7 +56,7 @@ $.ready = (fc) ->
     $.off d, 'DOMContentLoaded', cb
     fc()
   $.on d, 'DOMContentLoaded', cb
-    
+
 $.formData = (form) ->
   if form instanceof HTMLFormElement
     return new FormData form
@@ -70,7 +70,7 @@ $.formData = (form) ->
     else
       fd.append key, val
   fd
-  
+
 $.ajax = (url, callbacks, opts={}) ->
   {type, cred, headers, upCallbacks, form, sync} = opts
   r = new XMLHttpRequest()
@@ -84,7 +84,7 @@ $.ajax = (url, callbacks, opts={}) ->
   r.withCredentials = cred
   r.send form
   r
-  
+
 $.cache = do ->
   reqs = {}
   (url, cb) ->
@@ -103,7 +103,7 @@ $.cache = do ->
       onerror: rm
     req.callbacks = [cb]
     reqs[url] = req
-    
+
 $.cb =
   checked: ->
     $.set @name, @checked
@@ -111,13 +111,13 @@ $.cb =
   value: ->
     $.set @name, @value.trim()
     Conf[@name] = @value
-    
+
 $.asap = (test, cb) ->
   if test()
     cb()
   else
     setTimeout $.asap, 25, test, cb
-    
+
 $.addStyle = (css, id) ->
   style = $.el 'style',
     id: id
@@ -125,47 +125,47 @@ $.addStyle = (css, id) ->
   $.asap (-> d.head), ->
     $.add d.head, style
   style
-  
+
 $.x = (path, root) ->
   root or= d.body
   # XPathResult.ANY_UNORDERED_NODE_TYPE === 8
   d.evaluate(path, root, null, 8, null).singleNodeValue
-  
+
 $.X = (path, root) ->
   root or= d.body
   d.evaluate path, root, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null
-  
+
 $.addClass = (el, className) ->
   el.classList.add className
-  
+
 $.rmClass = (el, className) ->
   el.classList.remove className
-  
+
 $.toggleClass = (el, className) ->
   el.classList.toggle className
-  
+
 $.hasClass = (el, className) ->
   el.classList.contains className
-  
+
 $.rm = do ->
   if 'remove' of Element.prototype
     (el) -> el.remove()
   else
     (el) -> el.parentNode?.removeChild el
-      
+
 $.rmAll = (root) ->
   # jsperf.com/emptify-element
   while node = root.firstChild
     # HTMLSelectElement.remove !== Element.remove
     root.removeChild node
   return
-  
+
 $.tn = (s) ->
   d.createTextNode s
-  
+
 $.frag = ->
   d.createDocumentFragment()
-  
+
 $.nodes = (nodes) ->
   unless nodes instanceof Array
     return nodes
@@ -173,65 +173,64 @@ $.nodes = (nodes) ->
   for node in nodes
     frag.appendChild node
   frag
-  
+
 $.add = (parent, el) ->
   parent.appendChild $.nodes el
-  
+
 $.prepend = (parent, el) ->
   parent.insertBefore $.nodes(el), parent.firstChild
-  
+
 $.after = (root, el) ->
   root.parentNode.insertBefore $.nodes(el), root.nextSibling
-  
+
 $.before = (root, el) ->
   root.parentNode.insertBefore $.nodes(el), root
-  
+
 $.replace = (root, el) ->
   root.parentNode.replaceChild $.nodes(el), root
-  
+
 $.el = (tag, properties) ->
   el = d.createElement tag
   $.extend el, properties if properties
   el
-  
+
 $.on = (el, events, handler) ->
   for event in events.split ' '
     el.addEventListener event, handler, false
   return
-  
+
 $.off = (el, events, handler) ->
   for event in events.split ' '
     el.removeEventListener event, handler, false
   return
-  
+
 $.event = (event, detail, root=d) ->
   root.dispatchEvent new CustomEvent event, {bubbles: true, detail}
-  
-$.open = do ->
-  if GM_openInTab?
-    (URL) ->
-      # XXX fix GM opening file://// for protocol-less URLs.
-      a = $.el 'a', href: URL
-      GM_openInTab a.href
-  else
-    (URL) -> window.open URL, '_blank'
-      
+
+$.open = (URL) ->
+<% if (type === 'userscript') { %>
+  # XXX fix GM opening file://// for protocol-less URLs.
+  # https://github.com/greasemonkey/greasemonkey/issues/1719
+  GM_openInTab ($.el 'a', href: URL).href
+<% } else { %>
+  window.open URL, '_blank'
+<% } %>
+
 $.debounce = (wait, fn) ->
-  timeout = null
-  that    = null
-  args    = null
-  exec    = ->
+  lastCall = 0
+  timeout  = null
+  that     = null
+  args     = null
+  exec = ->
+    lastCall = Date.now()
     fn.apply that, args
-    timeout = null
   ->
     args = arguments
     that = this
-    if timeout
-      # stop current reset
-      clearTimeout timeout
-    else
-      exec()
-
+    if lastCall < Date.now() - wait
+      return exec()
+    # stop current reset
+    clearTimeout timeout
     # after wait, let next invocation execute immediately
     timeout = setTimeout exec, wait
 
@@ -253,13 +252,13 @@ $.queueTask = do ->
     ->
       taskQueue.push arguments
       setTimeout execTask, 0
-      
+
 $.globalEval = (code) ->
   script = $.el 'script',
     textContent: code
   $.add (d.head or doc), script
   $.rm script
-    
+
 $.bytesToString = (size) ->
   unit = 0 # Bytes
   while size >= 1024
@@ -275,7 +274,7 @@ $.bytesToString = (size) ->
       # Round to an integer otherwise.
       Math.round size
   "#{size} #{['B', 'KB', 'MB', 'GB'][unit]}"
-    
+
 $.minmax = (value, min, max) ->
   return (
     if value < min
@@ -286,7 +285,7 @@ $.minmax = (value, min, max) ->
       else
         value
     )
-    
+
 $.syncing = {}
 
 $.sync = do ->
@@ -310,26 +309,79 @@ $.item = (key, val) ->
   item[key] = val
   item
 <% if (type === 'crx') { %>
-  # https://developer.chrome.com/extensions/storage.html
-  
+$.localKeys = [
+  # filters
+  'name',
+  'uniqueID',
+  'tripcode',
+  'capcode',
+  'email',
+  'subject',
+  'comment',
+  'flag',
+  'filename',
+  'dimensions',
+  'filesize',
+  'MD5',
+  # custom css
+  'usercss'
+]
+
+# https://developer.chrome.com/extensions/storage.html
+
 $.delete = (keys) ->
   chrome.storage.sync.remove keys
-  
+
 $.get = (key, val, cb) ->
   if typeof cb is 'function'
     items = $.item key, val
   else
     items = key
     cb = val
-  chrome.storage.sync.get items, cb
-  
-$.set = (key, val) ->
-  items = if typeof key is 'string'
-    $.item key, val
-  else
-    key
-  chrome.storage.sync.set items
-  
+  localItems = null
+  syncItems  = null
+  for key, val of items
+    if key in $.localKeys
+      (localItems or= {})[key] = val
+    else
+      (syncItems  or= {})[key] = val
+
+  items = {}
+  count = 0
+  done  = (item) ->
+    $.extend items, item
+    cb items unless --count
+
+  if localItems
+    count++
+    chrome.storage.local.get localItems, done
+  if syncItems
+    count++
+    chrome.storage.sync.get  syncItems,  done
+$.set = do ->
+  items = {}
+  localItems = {}
+
+  set = $.debounce $.SECOND, ->
+    for key in $.localKeys
+      if key of items
+        (localItems or= {})[key] = items[key]
+        delete items[key]
+    try
+      chrome.storage.local.set localItems
+      chrome.storage.sync.set items
+      items = {}
+      localItems = {}
+    catch err
+      c.error err
+
+  (key, val) ->
+    if typeof key is 'string'
+      items[key] = val
+    else
+      $.extend items, key
+    set()
+
 <% } else if (type === 'userjs') { %>
 do ->
   # http://www.opera.com/docs/userjs/specs/#scriptstorage
@@ -341,39 +393,40 @@ do ->
   # to the object.
   {scriptStorage} = opera
   $.delete = (keys) ->
-  unless keys instanceof Array
-    keys = [keys]
-  for key in keys
-    key = g.NAMESPACE + key
-    localStorage.removeItem key
-    delete scriptStorage[key]
-  return
-  $.get = (key, val, cb) ->
-  if typeof cb is 'function'
-    items = $.item key, val
-  else
-    items = key
-    cb = val
-  $.queueTask ->
-    for key of items
-      if val = scriptStorage[g.NAMESPACE + key]
-        items[key] = JSON.parse val
-    cb items
-$.set = do ->
-  set = (key, val) ->
-    key = g.NAMESPACE + key
-    val = JSON.stringify val
-    if key of $.syncing
-      # for `storage` events
-      localStorage.setItem key, val
-    scriptStorage[key] = val
-  (keys, val) ->
-    if typeof keys is 'string'
-      set keys, val
-      return
-    for key, val of keys
-      set key, val
+    unless keys instanceof Array
+      keys = [keys]
+    for key in keys
+      key = g.NAMESPACE + key
+      localStorage.removeItem key
+      delete scriptStorage[key]
     return
+  $.get = (key, val, cb) ->
+    if typeof cb is 'function'
+      items = $.item key, val
+    else
+      items = key
+      cb = val
+    $.queueTask ->
+      for key of items
+        if val = scriptStorage[g.NAMESPACE + key]
+          items[key] = JSON.parse val
+      cb items
+  $.set = do ->
+    set = (key, val) ->
+      key = g.NAMESPACE + key
+      val = JSON.stringify val
+      if key of $.syncing
+        # for `storage` events
+        localStorage.setItem key, val
+      scriptStorage[key] = val
+    (keys, val) ->
+      if typeof keys is 'string'
+        set keys, val
+        return
+      for key, val of keys
+        set key, val
+      return
+  return
 <% } else { %>
 
 # http://wiki.greasespot.net/Main_Page
@@ -385,7 +438,7 @@ $.delete = (keys) ->
     localStorage.removeItem key
     GM_deleteValue key
   return
-  
+
 $.get = (key, val, cb) ->
   if typeof cb is 'function'
     items = $.item key, val
@@ -397,7 +450,7 @@ $.get = (key, val, cb) ->
       if val = GM_getValue g.NAMESPACE + key
         items[key] = JSON.parse val
     cb items
-    
+
 $.set = do ->
   set = (key, val) ->
     key = g.NAMESPACE + key

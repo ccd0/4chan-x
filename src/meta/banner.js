@@ -4,8 +4,6 @@
 * Licensed under the MIT license.
 * <%= meta.repo %>blob/master/LICENSE
 *
-* Appchan X Copyright © 2013-<%= grunt.template.today('yyyy') %> Zixaphir <zixaphirmoxphar@gmail.com>
-* http://zixaphir.github.io/appchan-x/
 * 4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
 * https://github.com/aeosynth/4chan-x
 * 4chan x Copyright © 2012-<%= grunt.template.today('yyyy') %> Nicolas Stepien <stepien.nicolas@gmail.com>
@@ -14,12 +12,6 @@
 * http://seaweedchan.github.io/4chan-x/
 * 4chan x Copyright © 2012-<%= grunt.template.today('yyyy') %> ihavenoface
 * http://ihavenoface.github.io/4chan-x/
-* OneeChan Copyright © 2011-<%= grunt.template.today('yyyy') %> Jordan Bates <saudrapsmann@gmail.com>
-* http://seaweedchan.github.io/oneechan/
-* 4chan SS Copyright © 2011-<%= grunt.template.today('yyyy') %> Ahodesuka
-* https://github.com/ahodesuka/4chan-Style-Script/
-* Raphael Icons Copyright © <%= grunt.template.today('yyyy') %> Dmitry Baranovskiy
-* http://raphaeljs.com/icons/
 *
 * Permission is hereby granted, free of charge, to any person
 * obtaining a copy of this software and associated documentation
@@ -70,11 +62,24 @@
 */
 
 /*
-* Linkify based on:
-* http://downloads.mozdev.org/greasemonkey/linkify.user.js
-* https://github.com/MayhemYDG/LinkifyPlusFork
+* Contains data from external sources:
 *
-* Originally written by Anthony Lieuallen of http://arantius.com/
-* Licensed for unlimited modification and redistribution as long as
-* this notice is kept intact.
+* audio/beep.wav from http://freesound.org/people/pierrecartoons1979/sounds/90112/
+*   cc-by-nc-3.0
+*
+* 4chan/4chan-JS (https://github.com/4chan/4chan-JS)
+*   Copyright (c) 2012-2013, 4chan LLC
+*   All rights reserved.
+*
+*   license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
+*
+* Linkify: (http://userscripts.org/scripts/show/1352)
+*   Copyright (c) 2011, Anthony Lieuallen
+*   All rights reserved.
+*   Originally written by Anthony Lieuallen of http://arantius.com/
+*   Licensed for unlimited modification and redistribution as long as
+*   this notice is kept intact.
+*
+*   license: http://userscripts.org/scripts/review/1352
+*
 */
