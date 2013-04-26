@@ -61,7 +61,7 @@ PSAHiding =
       true 
     else
       false
-    if hr = $.x 'following-sibling::hr', psa
-      hr.hidden = psa.hidden 
+    if (hr = psa.nextElementSibling) and hr.nodeName is 'HR'
+      hr.hidden = psa.hidden
   trim: (psa) ->
     psa.textContent.replace(/\W+/g, '').toLowerCase()

@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 seaweedchan:
 - Fix emoji and favicon previews not updating on change.
+=======
+- Fix bug where a thread would freeze on load.
+
+### 3.2.1 - *2013-04-26*
+>>>>>>> mayhem/v3
 
 ### 1.1.1 - 2013-04-26
 zixaphir:

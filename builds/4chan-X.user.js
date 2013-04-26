@@ -189,7 +189,7 @@
         'Remember QR Size': [false, 'Remember the size of the Quick reply.'],
         'Remember Spoiler': [false, 'Remember the spoiler state, instead of resetting after posting.'],
         'Hide Original Post Form': [true, 'Hide the normal post form.'],
-        'Cooldown': [true, 'Prevent "flood detected" errors.'],
+        'Cooldown': [true, 'Indicate the remaining time before posting again.'],
         'Cooldown Prediction': [true, 'Decrease the cooldown time by taking into account upload speed. Disable it if it\'s inaccurate for you.']
       },
       'Quote Links': {
@@ -4299,7 +4299,7 @@
 
       psa = $.id('globalMessage');
       psa.hidden = PSAHiding.btn.hidden = (_ref = PSAHiding.trim(psa), __indexOf.call(hiddenPSAs, _ref) >= 0) ? true : false;
-      if (hr = $.x('following-sibling::hr', psa)) {
+      if ((hr = psa.nextElementSibling) && hr.nodeName === 'HR') {
         return hr.hidden = psa.hidden;
       }
     },
@@ -6752,24 +6752,14 @@
       });
     },
     node: function() {
-      var ID, post, posts, _ref;
-
       Unread.thread = this;
       Unread.title = d.title;
-      posts = [];
-      _ref = this.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
-        if (post.isReply) {
-          posts.push(post);
-        }
-      }
       Unread.lastReadPost = Unread.db.get({
         boardID: this.board.ID,
         threadID: this.ID,
         defaultValue: 0
       });
-      Unread.addPosts(posts);
+      $.on(d, '4chanXInitFinished', Unread.ready);
       $.on(d, 'ThreadUpdate', Unread.onUpdate);
       $.on(d, 'scroll visibilitychange', Unread.read);
       if (Conf['Unread Line']) {
@@ -6779,15 +6769,35 @@
         return $.on(window, 'load', Unread.scroll);
       }
     },
+    ready: function() {
+      var ID, post, posts, _ref;
+
+      $.off(d, '4chanXInitFinished', Unread.ready);
+      posts = [];
+      _ref = Unread.thread.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
+        if (post.isReply) {
+          posts.push(post);
+        }
+      }
+      return Unread.addPosts(posts);
+    },
     scroll: function() {
-      var hash, posts, root;
+      var hash, post, posts, prevID, root;
 
       if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
         return;
       }
       if (Unread.posts.length) {
+        prevID = 0;
         while (root = $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root)) {
-          if (!(Get.postFromRoot(root)).isHidden) {
+          post = Get.postFromRoot(root);
+          if (prevID === post.ID) {
+            break;
+          }
+          prevID = post.ID;
+          if (!post.isHidden) {
             break;
           }
         }

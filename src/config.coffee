@@ -267,7 +267,7 @@ Config =
       ]
       'Cooldown': [
         true
-        'Prevent "flood detected" errors.'
+        'Indicate the remaining time before posting again.'
       ]
       'Cooldown Prediction': [
         true
