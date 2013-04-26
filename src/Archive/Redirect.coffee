@@ -2,7 +2,7 @@ Redirect =
   image: (boardID, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch boardID
-      when 'a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg'
+      when 'a', 'gd', 'jp', 'm', 'q', 'tg', 'vp', 'vr', 'wsg'
         "//archive.foolz.us/#{boardID}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{boardID}/full_image/#{filename}"
@@ -22,7 +22,7 @@ Redirect =
     # XXX foolz had HSTS set for 120 days, which broke XHR+CORS+Redirection when on HTTP.
     # Remove necessary HTTPS procotol in September 2013.
     switch boardID
-      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'
+      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg'
         "https://archive.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'u'
         "https://nsfw.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
@@ -35,7 +35,7 @@ Redirect =
   to: (data) ->
     {boardID} = data
     switch boardID
-      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'
+      when 'a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg'
         Redirect.path '//archive.foolz.us', 'foolfuuka', data
       when 'u'
         Redirect.path '//nsfw.foolz.us', 'foolfuuka', data
