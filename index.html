@@ -32,8 +32,8 @@
     install = id('installLink');
     switch (engine) {
       case 'webkit':
-        install.href = ""
-        install.onClick = function() { chrome.webstore.install() }
+        install.href = "https://chrome.google.com/webstore/detail/4chan-x/poojninacjpckfopjogaokeegibhkidi"
+        install.addEventListener('click', function(event) {event.preventDefault(); chrome.webstore.install();})
         break;
       case 'gecko':
         install.href = "https://github.com/seaweedchan/4chan-x/raw/stable/builds/4chan-X.user.js"
