@@ -138,14 +138,13 @@ $.off = (el, events, handler) ->
   return
 $.event = (event, detail, root=d) ->
   root.dispatchEvent new CustomEvent event, {bubbles: true, detail}
-$.open = do ->
-  if GM_openInTab?
-    (URL) ->
-      # XXX fix GM opening file://// for protocol-less URLs.
-      a = $.el 'a', href: URL
-      GM_openInTab a.href
-  else
-    (URL) -> window.open URL, '_blank'
+<% if (type === 'userscript') { %>
+# XXX fix GM opening file://// for protocol-less URLs.
+# https://github.com/greasemonkey/greasemonkey/issues/1719
+$.open = (URL) -> GM_openInTab ($.el 'a', href: URL).href
+<% } else { %>
+$.open = (URL) -> window.open URL, '_blank'
+<% } %>
 $.debounce = (wait, fn) ->
   lastCall = 0
   timeout  = null
