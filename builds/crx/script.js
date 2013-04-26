@@ -190,7 +190,7 @@
   doc = d.documentElement;
 
   g = {
-    VERSION: '1.1.0',
+    VERSION: '1.1.1',
     NAMESPACE: '4chan X.',
     boards: {},
     threads: {},
