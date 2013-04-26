@@ -232,12 +232,22 @@ $.get = (key, val, cb) ->
     items = key
     cb = val
   chrome.storage.sync.get items, cb
-$.set = (key, val) ->
-  items = if typeof key is 'string'
-    $.item key, val
-  else
-    key
-  chrome.storage.sync.set items
+$.set = do ->
+  items = {}
+
+  set = $.debounce 500, ->
+    try
+      chrome.storage.sync.set items
+      items = {}
+    catch err
+      c.error err
+
+  (key, val) ->
+    if typeof key is 'string'
+      items[key] = val
+    else
+      $.extend items, key
+    set()
 <% } else if (type === 'userjs') { %>
 do ->
   # http://www.opera.com/docs/userjs/specs/#scriptstorage
