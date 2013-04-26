@@ -947,7 +947,10 @@ QR =
         QR.cooldown.auto = false
         QR.status()
         QR.error $.el 'span',
-          innerHTML: 'Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.'
+          innerHTML: """
+          Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.
+          [<a href="https://github.com/MayhemYDG/4chan-x/wiki/FAQ#what-does-connection-error-you-may-have-been-banned-mean" target=_blank>FAQ</a>]
+          """
     opts =
       cred: true
       form: $.formData postData
