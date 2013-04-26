@@ -1,3 +1,5 @@
+### 3.2.1 - *2013-04-26*
+
 - Minor fixes.
 - Chrome only: Due to technical limitations, Filter lists and Custom CSS will not by synchronized across devices anymore.
 
