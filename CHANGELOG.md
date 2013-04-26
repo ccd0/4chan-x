@@ -1,12 +1,15 @@
 seaweedchan:
 - Fix emoji and favicon previews not updating on change.
-- Fix issue with draggong thread watcher
+- Fix issue with dragging thread watcher
 
 MayhemYDG:
 - Fix bug where a thread would freeze on load.
 
 zixaphir:
 - Fix preview with favicons and emoji
+- Fix NaN error on Thread Updater Interval
+- Draggable UI can no longer overlap the Header.
+  -- Setting the header to Autohide also increases its z-index to overlap other UI
 
 ### 1.1.1 - 2013-04-26
 zixaphir:

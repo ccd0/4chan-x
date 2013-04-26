@@ -4092,7 +4092,7 @@
           a.setAttribute('data-postid', postID);
         }
       }
-      if (__indexOf.call(this.quotes, quoteID) < 0) {
+      if (!this.quotes.contains(quoteID)) {
         this.quotes.push(quoteID);
       }
       if (!a) {
@@ -7630,10 +7630,10 @@
       });
     },
     sync: function(hiddenPSAs) {
-      var hr, psa, _ref;
+      var hr, psa;
 
       psa = $.id('globalMessage');
-      psa.hidden = PSAHiding.btn.hidden = (_ref = PSAHiding.trim(psa), __indexOf.call(hiddenPSAs, _ref) >= 0) ? true : false;
+      psa.hidden = PSAHiding.btn.hidden = hiddenPSAs.contains(PSAHiding.trim(psa)) ? true : false;
       if ((hr = psa.nextElementSibling) && hr.nodeName === 'HR') {
         return hr.hidden = psa.hidden;
       }

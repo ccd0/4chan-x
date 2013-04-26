@@ -110,8 +110,7 @@
   var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   Config = {
     main: {
@@ -4090,7 +4089,7 @@
           a.setAttribute('data-postid', postID);
         }
       }
-      if (__indexOf.call(this.quotes, quoteID) < 0) {
+      if (!this.quotes.contains(quoteID)) {
         this.quotes.push(quoteID);
       }
       if (!a) {
@@ -7647,10 +7646,10 @@
       });
     },
     sync: function(hiddenPSAs) {
-      var hr, psa, _ref;
+      var hr, psa;
 
       psa = $.id('globalMessage');
-      psa.hidden = PSAHiding.btn.hidden = (_ref = PSAHiding.trim(psa), __indexOf.call(hiddenPSAs, _ref) >= 0) ? true : false;
+      psa.hidden = PSAHiding.btn.hidden = hiddenPSAs.contains(PSAHiding.trim(psa)) ? true : false;
       if ((hr = psa.nextElementSibling) && hr.nodeName === 'HR') {
         return hr.hidden = psa.hidden;
       }
