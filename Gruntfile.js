@@ -19,25 +19,40 @@ module.exports = function(grunt) {
       coffee: {
         options: concatOptions,
         src: [
-          'src/config.coffee',
-          'src/globals.coffee',
-          'lib/ui.coffee',
-          'lib/$.coffee',
-          'lib/polyfill.coffee',
-          'src/features.coffee',
-          'src/qr.coffee',
-          'src/report.coffee',
-          'src/databoard.coffee',
-          'src/main.coffee'
+          'src/General/Config.coffee',
+          'src/General/Globals.coffee',
+          'lib/**/*',
+          'src/General/UI.coffee',
+          'src/General/Header.coffee',
+          'src/General/Notification.coffee',
+          'src/General/Settings.coffee',
+          'src/General/Get.coffee',
+          'src/General/Build.coffee',
+          // Features -->
+          'src/Filtering/**/*',
+          'src/Quotelinks/**/*',
+          'src/Posting/**/*',
+          'src/Images/**/*',
+          'src/Menu/**/*',
+          'src/Monitoring/**/*',
+          'src/Archive/**/*',
+          'src/Miscellaneous/**/*',
+          // <--|
+          'src/General/Board.coffee',
+          'src/General/Thread.coffee',
+          'src/General/Post.coffee',
+          'src/General/Clone.coffee',
+          'src/General/DataBoard.coffee',
+          'src/General/Main.coffee'
         ],
         dest: 'tmp-<%= pkg.type %>/script.coffee'
       },
       crx: {
         options: concatOptions,
         files: {
-          'builds/crx/manifest.json': 'src/manifest.json',
+          'builds/crx/manifest.json': 'src/Meta/manifest.json',
           'builds/crx/script.js': [
-            'src/banner.js',
+            'src/Meta/banner.js',
             'tmp-<%= pkg.type %>/script.js'
           ]
         }
@@ -45,8 +60,8 @@ module.exports = function(grunt) {
       userjs: {
         options: concatOptions,
         src: [
-          'src/metadata.js',
-          'src/banner.js',
+          'src/Meta/metadata.js',
+          'src/Meta/banner.js',
           'tmp-<%= pkg.type %>/script.js'
         ],
         dest: 'builds/<%= pkg.name %>.js'
@@ -54,10 +69,10 @@ module.exports = function(grunt) {
       userscript: {
         options: concatOptions,
         files: {
-          'builds/<%= pkg.name %>.meta.js': 'src/metadata.js',
+          'builds/<%= pkg.name %>.meta.js': 'src/Meta/metadata.js',
           'builds/<%= pkg.name %>.user.js': [
-            'src/metadata.js',
-            'src/banner.js',
+            'src/Meta/metadata.js',
+            'src/Meta/banner.js',
             'tmp-<%= pkg.type %>/script.js'
           ]
         }
