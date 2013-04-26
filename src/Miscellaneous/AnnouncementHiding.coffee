@@ -57,7 +57,7 @@ PSAHiding =
 
   sync: (hiddenPSAs) ->
     psa = $.id 'globalMessage'
-    psa.hidden = PSAHiding.btn.hidden = if PSAHiding.trim(psa) in hiddenPSAs
+    psa.hidden = PSAHiding.btn.hidden = if hiddenPSAs.contains PSAHiding.trim(psa)
       true 
     else
       false

@@ -64,7 +64,7 @@ Quotify =
         a.setAttribute 'data-boardid', boardID
         a.setAttribute 'data-postid',  postID
 
-    unless quoteID in @quotes
+    unless @quotes.contains quoteID
       @quotes.push quoteID
 
     unless a

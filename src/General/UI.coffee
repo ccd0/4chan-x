@@ -54,7 +54,7 @@ UI = do ->
       menu = @makeMenu()
       currentMenu       = menu
       lastToggledButton = button
-      
+
       @entries.sort (first, second) ->
         first.order - second.order
 
@@ -222,12 +222,18 @@ UI = do ->
       dy:     e.clientY - rect.top
       height: screenHeight - rect.height
       width:  screenWidth  - rect.width
-      topBorder:    if Conf["Bottom Header"] then 0 else Header.bar.getBoundingClientRect().height
-      bottomBorder: if Conf["Bottom Header"] then Header.bar.getBoundingClientRect().height else 0
       screenHeight: screenHeight
       screenWidth:  screenWidth
       isTouching:   isTouching
     }
+
+    [o.topBorder, o.bottomBorder] = if Conf['Header auto-hide']
+      [0, 0]
+    else if Conf['Bottom Header']
+      [0, Header.bar.getBoundingClientRect().height]
+    else
+      [Header.bar.getBoundingClientRect().height, 0]
+
     if isTouching
       o.identifier = e.identifier
       o.move = touchmove.bind o
