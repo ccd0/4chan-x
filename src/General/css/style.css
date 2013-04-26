@@ -65,11 +65,9 @@ a[href="javascript:;"] {
 #fourchanx-settings,
 #qp, #ihover,
 #navlinks, .fixed #header-bar,
+#watcher,
 #qr {
   position: fixed;
-}
-#watcher {
-  position: absolute;
 }
 #fourchanx-settings {
   z-index: 999;
