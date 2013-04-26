@@ -17,24 +17,33 @@ module.exports = (grunt) ->
       coffee:
         options: concatOptions
         src: [
-          'src/config.coffee'
-          'src/globals.coffee'
-          'src/lib/*.coffee'
-          'src/features/*/*.coffee'
-          'src/settings.coffee'
-          'src/main.coffee'
+          'src/General/Config.coffee'
+          'src/General/Globals.coffee'
+          'src/General/lib/*.coffee'
+          'src/General/Get.coffee'
+          'src/General/Build.coffee'
+          'src/Filtering/**/*'
+          'src/Quotelinks/**/*'
+          'src/Posting/**/*'
+          'src/Images/**/*'
+          'src/Menu/**/*'
+          'src/Monitoring/**/*'
+          'src/Archive/**/*'
+          'src/Miscellaneous/**/*'
+          'src/General/Settings.coffee'
+          'src/General/Main.coffee'
         ]
         dest: 'tmp-<%= pkg.type %>/script.coffee'
 
       license:
         options: concatOptions
         files:
-          'LICENSE': 'src/meta/banner.js'
+          'LICENSE': 'src/General/meta/banner.js'
 
       crx:
         options: concatOptions
         files:
-          'builds/crx/manifest.json': 'src/meta/manifest.json'
+          'builds/crx/manifest.json': 'src/General/meta/manifest.json'
           'builds/crx/script.js': [
             'src/banner.js'
             'tmp-<%= pkg.type %>/script.js'
@@ -43,8 +52,8 @@ module.exports = (grunt) ->
       userjs:
         options: concatOptions
         src: [
-          'src/meta/metadata.js'
-          'src/meta/banner.js'
+          'src/General/meta/metadata.js'
+          'src/General/meta/banner.js'
           'tmp-<%= pkg.type %>/script.js'
         ]
         dest: 'builds/<%= pkg.name %>.js'
@@ -52,10 +61,10 @@ module.exports = (grunt) ->
       userscript:
         options: concatOptions
         files:
-          'builds/<%= pkg.name %>.meta.js': 'src/meta/metadata.js'
+          'builds/<%= pkg.name %>.meta.js': 'src/General/meta/metadata.js'
           'builds/<%= pkg.name %>.user.js': [
-            'src/meta/metadata.js'
-            'src/meta/banner.js'
+            'src/General/meta/metadata.js'
+            'src/General/meta/banner.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
 
