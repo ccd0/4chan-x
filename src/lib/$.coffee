@@ -341,39 +341,40 @@ do ->
   # to the object.
   {scriptStorage} = opera
   $.delete = (keys) ->
-  unless keys instanceof Array
-    keys = [keys]
-  for key in keys
-    key = g.NAMESPACE + key
-    localStorage.removeItem key
-    delete scriptStorage[key]
-  return
-  $.get = (key, val, cb) ->
-  if typeof cb is 'function'
-    items = $.item key, val
-  else
-    items = key
-    cb = val
-  $.queueTask ->
-    for key of items
-      if val = scriptStorage[g.NAMESPACE + key]
-        items[key] = JSON.parse val
-    cb items
-$.set = do ->
-  set = (key, val) ->
-    key = g.NAMESPACE + key
-    val = JSON.stringify val
-    if key of $.syncing
-      # for `storage` events
-      localStorage.setItem key, val
-    scriptStorage[key] = val
-  (keys, val) ->
-    if typeof keys is 'string'
-      set keys, val
-      return
-    for key, val of keys
-      set key, val
+    unless keys instanceof Array
+      keys = [keys]
+    for key in keys
+      key = g.NAMESPACE + key
+      localStorage.removeItem key
+      delete scriptStorage[key]
     return
+  $.get = (key, val, cb) ->
+    if typeof cb is 'function'
+      items = $.item key, val
+    else
+      items = key
+      cb = val
+    $.queueTask ->
+      for key of items
+        if val = scriptStorage[g.NAMESPACE + key]
+          items[key] = JSON.parse val
+      cb items
+  $.set = do ->
+    set = (key, val) ->
+      key = g.NAMESPACE + key
+      val = JSON.stringify val
+      if key of $.syncing
+        # for `storage` events
+        localStorage.setItem key, val
+      scriptStorage[key] = val
+    (keys, val) ->
+      if typeof keys is 'string'
+        set keys, val
+        return
+      for key, val of keys
+        set key, val
+      return
+  return
 <% } else { %>
 
 # http://wiki.greasespot.net/Main_Page

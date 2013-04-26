@@ -755,62 +755,64 @@
   };
 
   (function() {
-    var cb, items, key, keys, scriptStorage, _i, _len;
+    var scriptStorage;
 
     scriptStorage = opera.scriptStorage;
-    $["delete"] = function(keys) {};
-    if (!(keys instanceof Array)) {
-      keys = [keys];
-    }
-    for (_i = 0, _len = keys.length; _i < _len; _i++) {
-      key = keys[_i];
-      key = g.NAMESPACE + key;
-      localStorage.removeItem(key);
-      delete scriptStorage[key];
-    }
-    return;
-    $.get = function(key, val, cb) {};
-    if (typeof cb === 'function') {
-      items = $.item(key, val);
-    } else {
-      items = key;
-      cb = val;
-    }
-    return $.queueTask(function() {
-      var val;
+    $["delete"] = function(keys) {
+      var key, _i, _len;
 
-      for (key in items) {
-        if (val = scriptStorage[g.NAMESPACE + key]) {
-          items[key] = JSON.parse(val);
+      if (!(keys instanceof Array)) {
+        keys = [keys];
+      }
+      for (_i = 0, _len = keys.length; _i < _len; _i++) {
+        key = keys[_i];
+        key = g.NAMESPACE + key;
+        localStorage.removeItem(key);
+        delete scriptStorage[key];
+      }
+    };
+    $.get = function(key, val, cb) {
+      var items;
+
+      if (typeof cb === 'function') {
+        items = $.item(key, val);
+      } else {
+        items = key;
+        cb = val;
+      }
+      return $.queueTask(function() {
+        for (key in items) {
+          if (val = scriptStorage[g.NAMESPACE + key]) {
+            items[key] = JSON.parse(val);
+          }
         }
-      }
-      return cb(items);
-    });
-  })();
-
-  $.set = (function() {
-    var set;
-
-    set = function(key, val) {
-      key = g.NAMESPACE + key;
-      val = JSON.stringify(val);
-      if (key in $.syncing) {
-        localStorage.setItem(key, val);
-      }
-      return scriptStorage[key] = val;
+        return cb(items);
+      });
     };
-    return function(keys, val) {
-      var key;
+    $.set = (function() {
+      var set;
 
-      if (typeof keys === 'string') {
-        set(keys, val);
-        return;
-      }
-      for (key in keys) {
-        val = keys[key];
-        set(key, val);
-      }
-    };
+      set = function(key, val) {
+        key = g.NAMESPACE + key;
+        val = JSON.stringify(val);
+        if (key in $.syncing) {
+          localStorage.setItem(key, val);
+        }
+        return scriptStorage[key] = val;
+      };
+      return function(keys, val) {
+        var key;
+
+        if (typeof keys === 'string') {
+          set(keys, val);
+          return;
+        }
+        for (key in keys) {
+          val = keys[key];
+          set(key, val);
+        }
+      };
+    })();
   })();
 
   $$ = function(selector, root) {
