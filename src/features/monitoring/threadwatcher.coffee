@@ -1,6 +1,6 @@
 ThreadWatcher =
   init: ->
-    return if g.VIEW is 'catalog' or !Conf['Thread Watcher']
+    return unless Conf['Thread Watcher']
     @dialog = UI.dialog 'watcher', 'top: 50px; left: 0px;',
       '<div class=move>Thread Watcher</div>'
 

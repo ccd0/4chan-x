@@ -6606,7 +6606,7 @@
 
   ThreadWatcher = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Thread Watcher']) {
+      if (!Conf['Thread Watcher']) {
         return;
       }
       this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', '<div class=move>Thread Watcher</div>');

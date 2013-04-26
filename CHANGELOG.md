@@ -1,3 +1,6 @@
+seaweedchan:
+- Allow thread watcher to load on catalog
+
 ### 1.0.10:
 - Add message pertaining to rewrite
 
