@@ -60,7 +60,7 @@ class DataBoard
       @deleteIfEmpty {boardID}
 
     now = Date.now()
-    if (@data.lastChecked or 0) < now - 12 * $.HOUR
+    if (@data.lastChecked or 0) < now - 2 * $.HOUR
       @data.lastChecked = now
       for boardID of @data.boards
         @ajaxClean boardID
