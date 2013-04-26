@@ -2022,6 +2022,8 @@
         dy: e.clientY - rect.top,
         height: screenHeight - rect.height,
         width: screenWidth - rect.width,
+        topBorder: Conf["Bottom Header"] ? 0 : Header.bar.getBoundingClientRect().height,
+        bottomBorder: Conf["Bottom Header"] ? Header.bar.getBoundingClientRect().height : 0,
         screenHeight: screenHeight,
         screenWidth: screenWidth,
         isTouching: isTouching
@@ -2058,9 +2060,9 @@
       left = clientX - this.dx;
       left = left < 10 ? 0 : this.width - left < 10 ? null : left / this.screenWidth * 100 + '%';
       top = clientY - this.dy;
-      top = top < 10 ? 0 : this.height - top < 10 ? null : top / this.screenHeight * 100 + '%';
+      top = top < (10 + this.topBorder) ? this.topBorder + 'px' : this.height - top < (10 + this.bottomBorder) ? null : top / this.screenHeight * 100 + '%';
       right = left === null ? 0 : null;
-      bottom = top === null ? 0 : null;
+      bottom = top === null ? this.bottomBorder + 'px' : null;
       style = this.style;
       style.left = left;
       style.right = right;
