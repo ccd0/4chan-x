@@ -5115,7 +5115,8 @@
     setBarVisibility: function(hide) {
       Header.headerToggler.checked = hide;
       $.event('CloseMenu');
-      return (hide ? $.addClass : $.rmClass)(Header.bar, 'autohide');
+      (hide ? $.addClass : $.rmClass)(Header.bar, 'autohide');
+      return (hide ? $.addClass : $.rmClass)(doc, 'autohide');
     },
     toggleBarVisibility: function(e) {
       var hide, message;
