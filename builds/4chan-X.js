@@ -814,159 +814,6 @@
     return __slice.call(root.querySelectorAll(selector));
   };
 
-  Build = {
-    spoilerRange: {},
-    shortFilename: function(filename, isReply) {
-      var threshold;
-
-      threshold = isReply ? 30 : 40;
-      if (filename.length - 4 > threshold) {
-        return "" + filename.slice(0, threshold - 5) + "(...)." + filename.slice(-3);
-      } else {
-        return filename;
-      }
-    },
-    postFromObject: function(data, boardID) {
-      var o;
-
-      o = {
-        postID: data.no,
-        threadID: data.resto || data.no,
-        boardID: boardID,
-        name: data.name,
-        capcode: data.capcode,
-        tripcode: data.trip,
-        uniqueID: data.id,
-        email: data.email ? encodeURI(data.email.replace(/&quot;/g, '"')) : '',
-        subject: data.sub,
-        flagCode: data.country,
-        flagName: data.country_name,
-        date: data.now,
-        dateUTC: data.time,
-        comment: data.com,
-        isSticky: !!data.sticky,
-        isClosed: !!data.closed
-      };
-      if (data.ext || data.filedeleted) {
-        o.file = {
-          name: data.filename + data.ext,
-          timestamp: "" + data.tim + data.ext,
-          url: "//images.4chan.org/" + boardID + "/src/" + data.tim + data.ext,
-          height: data.h,
-          width: data.w,
-          MD5: data.md5,
-          size: data.fsize,
-          turl: "//thumbs.4chan.org/" + boardID + "/thumb/" + data.tim + "s.jpg",
-          theight: data.tn_h,
-          twidth: data.tn_w,
-          isSpoiler: !!data.spoiler,
-          isDeleted: !!data.filedeleted
-        };
-      }
-      return Build.post(o);
-    },
-    post: function(o, isArchived) {
-      /*
-      This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
-      @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
-      */
-
-      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
-
-      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
-      isOP = postID === threadID;
-      staticPath = '//static.4chan.org';
-      if (email) {
-        emailStart = '<a href="mailto:' + email + '" class="useremail">';
-        emailEnd = '</a>';
-      } else {
-        emailStart = '';
-        emailEnd = '';
-      }
-      subject = "<span class=subject>" + (subject || '') + "</span>";
-      userID = !capcode && uniqueID ? (" <span class='posteruid id_" + uniqueID + "'>(ID: ") + ("<span class=hand title='Highlight posts by this ID'>" + uniqueID + "</span>)</span> ") : '';
-      switch (capcode) {
-        case 'admin':
-        case 'admin_highlight':
-          capcodeClass = " capcodeAdmin";
-          capcodeStart = " <strong class='capcode hand id_admin'" + "title='Highlight posts by the Administrator'>## Admin</strong>";
-          capcode = (" <img src='" + staticPath + "/image/adminicon.gif' ") + "alt='This user is the 4chan Administrator.' " + "title='This user is the 4chan Administrator.' class=identityIcon>";
-          break;
-        case 'mod':
-          capcodeClass = " capcodeMod";
-          capcodeStart = " <strong class='capcode hand id_mod' " + "title='Highlight posts by Moderators'>## Mod</strong>";
-          capcode = (" <img src='" + staticPath + "/image/modicon.gif' ") + "alt='This user is a 4chan Moderator.' " + "title='This user is a 4chan Moderator.' class=identityIcon>";
-          break;
-        case 'developer':
-          capcodeClass = " capcodeDeveloper";
-          capcodeStart = " <strong class='capcode hand id_developer' " + "title='Highlight posts by Developers'>## Developer</strong>";
-          capcode = (" <img src='" + staticPath + "/image/developericon.gif' ") + "alt='This user is a 4chan Developer.' " + "title='This user is a 4chan Developer.' class=identityIcon>";
-          break;
-        default:
-          capcodeClass = '';
-          capcodeStart = '';
-          capcode = '';
-      }
-      flag = flagCode ? (" <img src='" + staticPath + "/image/country/" + (boardID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
-      if (file != null ? file.isDeleted : void 0) {
-        fileHTML = isOP ? ("<div id=f" + postID + " class=file><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted.gif' alt='File deleted.' class='fileDeleted retina'>") + "</span></div>" : ("<div id=f" + postID + " class=file><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted-res.gif' alt='File deleted.' class='fileDeletedRes retina'>") + "</span></div>";
-      } else if (file) {
-        ext = file.name.slice(-3);
-        if (!file.twidth && !file.theight && ext === 'gif') {
-          file.twidth = file.width;
-          file.theight = file.height;
-        }
-        fileSize = $.bytesToString(file.size);
-        fileThumb = file.turl;
-        if (file.isSpoiler) {
-          fileSize = "Spoiler Image, " + fileSize;
-          if (!isArchived) {
-            fileThumb = '//static.4chan.org/image/spoiler';
-            if (spoilerRange = Build.spoilerRange[boardID]) {
-              fileThumb += ("-" + boardID) + Math.floor(1 + spoilerRange * Math.random());
-            }
-            fileThumb += '.png';
-            file.twidth = file.theight = 100;
-          }
-        }
-        if (boardID.ID !== 'f') {
-          imgSrc = ("<a class='fileThumb" + (file.isSpoiler ? ' imgspoiler' : '') + "' href='" + file.url + "' target=_blank>") + ("<img src='" + fileThumb + "' alt='" + fileSize + "' data-md5=" + file.MD5 + " style='height: " + file.theight + "px; width: " + file.twidth + "px;'></a>");
-        }
-        a = $.el('a', {
-          innerHTML: file.name
-        });
-        filename = a.textContent.replace(/%22/g, '"');
-        a.textContent = Build.shortFilename(filename);
-        shortFilename = a.innerHTML;
-        a.textContent = filename;
-        filename = a.innerHTML.replace(/'/g, '&apos;');
-        fileDims = ext === 'pdf' ? 'PDF' : "" + file.width + "x" + file.height;
-        fileInfo = ("<span class=fileText id=fT" + postID + (file.isSpoiler ? " title='" + filename + "'" : '') + ">File: <a href='" + file.url + "' target=_blank>" + file.timestamp + "</a>") + ("-(" + fileSize + ", " + fileDims + (file.isSpoiler ? '' : ", <span title='" + filename + "'>" + shortFilename + "</span>")) + ")</span>";
-        fileHTML = "<div id=f" + postID + " class=file><div class=fileInfo>" + fileInfo + "</div>" + imgSrc + "</div>";
-      } else {
-        fileHTML = '';
-      }
-      tripcode = tripcode ? " <span class=postertrip>" + tripcode + "</span>" : '';
-      sticky = isSticky ? ' <img src=//static.4chan.org/image/sticky.gif alt=Sticky title=Sticky class=stickyIcon>' : '';
-      closed = isClosed ? ' <img src=//static.4chan.org/image/closed.gif alt=Closed title=Closed class=closedIcon>' : '';
-      container = $.el('div', {
-        id: "pc" + postID,
-        className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
-        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
-      });
-      _ref = $$('.quotelink', container);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        href = quote.getAttribute('href');
-        if (href[0] === '/') {
-          continue;
-        }
-        quote.href = "/" + boardID + "/res/" + href;
-      }
-      return container;
-    }
-  };
-
   Board = (function() {
     Board.prototype.toString = function() {
       return this.ID;
@@ -1548,6 +1395,517 @@
 
   })();
 
+  Polyfill = {
+    init: function() {
+      return Polyfill.visibility();
+    },
+    visibility: function() {
+      var event, prefix, property;
+
+      if ('visibilityState' in document || !(prefix = ('webkitVisibilityState' in document ? 'webkit' : 'mozVisibilityState' in document ? 'moz' : void 0))) {
+        return;
+      }
+      property = prefix + 'VisibilityState';
+      event = prefix + 'visibilitychange';
+      d.visibilityState = d[property];
+      d.hidden = d.visibilityState === 'hidden';
+      return $.on(d, event, function() {
+        d.visibilityState = d[property];
+        d.hidden = d.visibilityState === 'hidden';
+        return $.event('visibilitychange');
+      });
+    }
+  };
+
+  Header = {
+    init: function() {
+      var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, footerToggler, headerToggler,
+        _this = this;
+
+      this.menu = new UI.Menu('header');
+      this.menuButton = $.el('span', {
+        className: 'menu-button',
+        innerHTML: '<i></i>'
+      });
+      barFixedToggler = $.el('label', {
+        innerHTML: '<input type=checkbox name="Fixed Header"> Fixed Header'
+      });
+      headerToggler = $.el('label', {
+        innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
+      });
+      barPositionToggler = $.el('label', {
+        innerHTML: '<input type=checkbox name="Bottom header"> Bottom header'
+      });
+      customNavToggler = $.el('label', {
+        innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
+      });
+      footerToggler = $.el('label', {
+        innerHTML: "<input type=checkbox " + (!Conf['Bottom Board List'] ? 'checked' : '') + "> Hide bottom board list"
+      });
+      editCustomNav = $.el('a', {
+        textContent: 'Edit custom board navigation',
+        href: 'javascript:;'
+      });
+      this.barFixedToggler = barFixedToggler.firstElementChild;
+      this.barPositionToggler = barPositionToggler.firstElementChild;
+      this.headerToggler = headerToggler.firstElementChild;
+      this.footerToggler = footerToggler.firstElementChild;
+      this.customNavToggler = customNavToggler.firstElementChild;
+      $.on(this.menuButton, 'click', this.menuToggle);
+      $.on(this.barFixedToggler, 'change', this.toggleBarFixed);
+      $.on(this.barPositionToggler, 'change', this.toggleBarPosition);
+      $.on(this.headerToggler, 'change', this.toggleBarVisibility);
+      $.on(this.footerToggler, 'change', this.toggleFooterVisibility);
+      $.on(this.customNavToggler, 'change', this.toggleCustomNav);
+      $.on(editCustomNav, 'click', this.editCustomNav);
+      this.setBarFixed(Conf['Fixed Header']);
+      this.setBarVisibility(Conf['Header auto-hide']);
+      $.sync('Fixed Header', Header.setBarFixed);
+      $.sync('Bottom Header', Header.setBarPosition);
+      $.sync('Header auto-hide', Header.setBarVisibility);
+      this.addShortcut(Header.menuButton);
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: $.el('span', {
+          textContent: 'Header'
+        }),
+        order: 107,
+        subEntries: [
+          {
+            el: barFixedToggler
+          }, {
+            el: headerToggler
+          }, {
+            el: barPositionToggler
+          }, {
+            el: footerToggler
+          }, {
+            el: customNavToggler
+          }, {
+            el: editCustomNav
+          }
+        ]
+      });
+      $.on(window, 'load hashchange', Header.hashScroll);
+      $.on(d, 'CreateNotification', this.createNotification);
+      $.asap((function() {
+        return d.body;
+      }), function() {
+        if (!Main.isThisPageLegit()) {
+          return;
+        }
+        $.asap((function() {
+          return $.id('boardNavMobile') || d.readyState === 'complete';
+        }), Header.setBoardList);
+        $.prepend(d.body, _this.bar);
+        $.add(d.body, Header.hover);
+        return _this.setBarPosition(Conf['Bottom Header']);
+      });
+      return $.ready(function() {
+        var a, cs;
+
+        _this.footer = $.id('boardNavDesktopFoot');
+        if (a = $("a[href*='/" + g.BOARD + "/']", $.id('boardNavDesktopFoot'))) {
+          a.className = 'current';
+        }
+        cs = $.id('settingsWindowLink');
+        cs.textContent = 'Catalog Settings';
+        if (g.VIEW === 'catalog') {
+          _this.addShortcut(cs);
+        }
+        Header.setFooterVisibility(Conf['Bottom Board List']);
+        return $.sync('Bottom Board List', Header.setFooterVisibility);
+      });
+    },
+    bar: $.el('div', {
+      id: 'header-bar'
+    }),
+    notify: $.el('div', {
+      id: 'notifications'
+    }),
+    shortcuts: $.el('span', {
+      id: 'shortcuts'
+    }),
+    hover: $.el('div', {
+      id: 'hoverUI'
+    }),
+    toggle: $.el('div', {
+      id: 'scroll-marker'
+    }),
+    setBoardList: function() {
+      var a, boardList, btn, fourchannav, fullBoardList;
+
+      fourchannav = $.id('boardNavDesktop');
+      if (a = $("a[href*='/" + g.BOARD + "/']", fourchannav)) {
+        a.className = 'current';
+      }
+      boardList = $.el('span', {
+        id: 'board-list',
+        innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden>[<a href=javascript:; class='hide-board-list-button'> - </a>] " + fourchannav.innerHTML + "</span>"
+      });
+      fullBoardList = $('#full-board-list', boardList);
+      btn = $('.hide-board-list-button', fullBoardList);
+      $.on(btn, 'click', Header.toggleBoardList);
+      $.rm($('#navtopright', fullBoardList));
+      $.add(boardList, fullBoardList);
+      $.add(Header.bar, [boardList, Header.shortcuts, Header.notify, Header.toggle]);
+      Header.setCustomNav(Conf['Custom Board Navigation']);
+      Header.generateBoardList(Conf['boardnav']);
+      $.sync('Custom Board Navigation', Header.setCustomNav);
+      return $.sync('boardnav', Header.generateBoardList);
+    },
+    generateBoardList: function(text) {
+      var as, list, nodes;
+
+      list = $('#custom-board-list', Header.bar);
+      $.rmAll(list);
+      if (!text) {
+        return;
+      }
+      as = $$('#full-board-list a', Header.bar);
+      nodes = text.match(/[\w@]+(-(all|title|replace|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map(function(t) {
+        var a, board, m, _i, _len;
+
+        if (/^[^\w@]/.test(t)) {
+          return $.tn(t);
+        }
+        if (/^toggle-all/.test(t)) {
+          a = $.el('a', {
+            className: 'show-board-list-button',
+            textContent: (t.match(/-text:"(.+)"/) || [null, '+'])[1],
+            href: 'javascript:;'
+          });
+          $.on(a, 'click', Header.toggleBoardList);
+          return a;
+        }
+        board = /^current/.test(t) ? g.BOARD.ID : t.match(/^[^-]+/)[0];
+        for (_i = 0, _len = as.length; _i < _len; _i++) {
+          a = as[_i];
+          if (a.textContent === board) {
+            a = a.cloneNode(true);
+            if (/-title/.test(t)) {
+              a.textContent = a.title;
+            } else if (/-replace/.test(t)) {
+              if ($.hasClass(a, 'current')) {
+                a.textContent = a.title;
+              }
+            } else if (/-full/.test(t)) {
+              a.textContent = "/" + board + "/ - " + a.title;
+            } else if (/-(index|catalog|text)/.test(t)) {
+              if (m = t.match(/-(index|catalog)/)) {
+                a.setAttribute('data-only', m[1]);
+                a.href = "//boards.4chan.org/" + board + "/";
+                if (m[1] === 'catalog') {
+                  a.href += 'catalog';
+                }
+              }
+              if (m = t.match(/-text:"(.+)"/)) {
+                a.textContent = m[1];
+              }
+            } else if (board === '@') {
+              $.addClass(a, 'navSmall');
+            }
+            return a;
+          }
+        }
+        return $.tn(t);
+      });
+      return $.add(list, nodes);
+    },
+    toggleBoardList: function() {
+      var bar, custom, full, showBoardList;
+
+      bar = Header.bar;
+      custom = $('#custom-board-list', bar);
+      full = $('#full-board-list', bar);
+      showBoardList = !full.hidden;
+      custom.hidden = !showBoardList;
+      return full.hidden = showBoardList;
+    },
+    setBarPosition: function(bottom) {
+      Header.barPositionToggler.checked = bottom;
+      if (bottom) {
+        $.rmClass(doc, 'top');
+        $.addClass(doc, 'bottom');
+        return $.after(Header.bar, Header.notify);
+      } else {
+        $.rmClass(doc, 'bottom');
+        $.addClass(doc, 'top');
+        return $.add(Header.bar, Header.notify);
+      }
+    },
+    toggleBarPosition: function() {
+      $.event('CloseMenu');
+      Header.setBarPosition(this.checked);
+      Conf['Bottom Header'] = this.checked;
+      return $.set('Bottom Header', this.checked);
+    },
+    setBarFixed: function(fixed) {
+      Header.barFixedToggler.checked = fixed;
+      if (fixed) {
+        $.addClass(doc, 'fixed');
+        return $.addClass(Header.bar, 'dialog');
+      } else {
+        $.rmClass(doc, 'fixed');
+        return $.rmClass(Header.bar, 'dialog');
+      }
+    },
+    toggleBarFixed: function() {
+      $.event('CloseMenu');
+      Header.setBarFixed(this.checked);
+      Conf['Fixed Header'] = this.checked;
+      return $.set('Fixed Header', this.checked);
+    },
+    setBarVisibility: function(hide) {
+      Header.headerToggler.checked = hide;
+      $.event('CloseMenu');
+      (hide ? $.addClass : $.rmClass)(Header.bar, 'autohide');
+      return (hide ? $.addClass : $.rmClass)(doc, 'autohide');
+    },
+    toggleBarVisibility: function(e) {
+      var hide, message;
+
+      if (e.type === 'mousedown' && e.button !== 0) {
+        return;
+      }
+      hide = this.nodeName === 'INPUT' ? this.checked : !$.hasClass(Header.bar, 'autohide');
+      Conf['Header auto-hide'] = hide;
+      $.set('Header auto-hide', hide);
+      Header.setBarVisibility(hide);
+      message = hide ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
+      return new Notification('info', message, 2);
+    },
+    setFooterVisibility: function(hide) {
+      Header.footerToggler.checked = hide;
+      return Header.footer.hidden = hide;
+    },
+    toggleFooterVisibility: function() {
+      var hide, message;
+
+      $.event('CloseMenu');
+      hide = this.nodeName === 'INPUT' ? this.checked : !!Header.footer.hidden;
+      Header.setFooterVisibility(hide);
+      $.set('Bottom Board List', hide);
+      message = hide ? 'The bottom navigation will now be hidden.' : 'The bottom navigation will remain visible.';
+      return new Notification('info', message, 2);
+    },
+    setCustomNav: function(show) {
+      var btn, cust, full, _ref;
+
+      Header.customNavToggler.checked = show;
+      cust = $('#custom-board-list', Header.bar);
+      full = $('#full-board-list', Header.bar);
+      btn = $('.hide-board-list-button', full);
+      return _ref = show ? [false, true] : [true, false], cust.hidden = _ref[0], full.hidden = _ref[1], _ref;
+    },
+    toggleCustomNav: function() {
+      $.cb.checked.call(this);
+      return Header.setCustomNav(this.checked);
+    },
+    editCustomNav: function() {
+      var settings;
+
+      Settings.open('Advanced');
+      settings = $.id('fourchanx-settings');
+      return $('input[name=boardnav]', settings).focus();
+    },
+    hashScroll: function() {
+      var hash, post;
+
+      if (!((hash = this.location.hash) && (post = $.id(hash.slice(1))))) {
+        return;
+      }
+      if ((Get.postFromRoot(post)).isHidden) {
+        return;
+      }
+      return Header.scrollToPost(post);
+    },
+    scrollToPost: function(post) {
+      var headRect, top;
+
+      top = post.getBoundingClientRect().top;
+      if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
+        headRect = Header.bar.getBoundingClientRect();
+        top += -headRect.top - headRect.height;
+      }
+      return ($.engine === 'webkit' ? d.body : doc).scrollTop += top;
+    },
+    addShortcut: function(el) {
+      var shortcut;
+
+      shortcut = $.el('span', {
+        className: 'shortcut'
+      });
+      $.add(shortcut, [$.tn(' ['), el, $.tn(']')]);
+      return $.prepend(Header.shortcuts, shortcut);
+    },
+    menuToggle: function(e) {
+      return Header.menu.toggle(e, this, g);
+    },
+    createNotification: function(e) {
+      var cb, content, lifetime, notif, type, _ref;
+
+      _ref = e.detail, type = _ref.type, content = _ref.content, lifetime = _ref.lifetime, cb = _ref.cb;
+      notif = new Notification(type, content, lifetime);
+      if (cb) {
+        return cb(notif);
+      }
+    }
+  };
+
+  Build = {
+    spoilerRange: {},
+    shortFilename: function(filename, isReply) {
+      var threshold;
+
+      threshold = isReply ? 30 : 40;
+      if (filename.length - 4 > threshold) {
+        return "" + filename.slice(0, threshold - 5) + "(...)." + filename.slice(-3);
+      } else {
+        return filename;
+      }
+    },
+    postFromObject: function(data, boardID) {
+      var o;
+
+      o = {
+        postID: data.no,
+        threadID: data.resto || data.no,
+        boardID: boardID,
+        name: data.name,
+        capcode: data.capcode,
+        tripcode: data.trip,
+        uniqueID: data.id,
+        email: data.email ? encodeURI(data.email.replace(/&quot;/g, '"')) : '',
+        subject: data.sub,
+        flagCode: data.country,
+        flagName: data.country_name,
+        date: data.now,
+        dateUTC: data.time,
+        comment: data.com,
+        isSticky: !!data.sticky,
+        isClosed: !!data.closed
+      };
+      if (data.ext || data.filedeleted) {
+        o.file = {
+          name: data.filename + data.ext,
+          timestamp: "" + data.tim + data.ext,
+          url: "//images.4chan.org/" + boardID + "/src/" + data.tim + data.ext,
+          height: data.h,
+          width: data.w,
+          MD5: data.md5,
+          size: data.fsize,
+          turl: "//thumbs.4chan.org/" + boardID + "/thumb/" + data.tim + "s.jpg",
+          theight: data.tn_h,
+          twidth: data.tn_w,
+          isSpoiler: !!data.spoiler,
+          isDeleted: !!data.filedeleted
+        };
+      }
+      return Build.post(o);
+    },
+    post: function(o, isArchived) {
+      /*
+      This function contains code from 4chan-JS (https://github.com/4chan/4chan-JS).
+      @license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
+      */
+
+      var a, boardID, capcode, capcodeClass, capcodeStart, closed, comment, container, date, dateUTC, email, emailEnd, emailStart, ext, file, fileDims, fileHTML, fileInfo, fileSize, fileThumb, filename, flag, flagCode, flagName, href, imgSrc, isClosed, isOP, isSticky, name, postID, quote, shortFilename, spoilerRange, staticPath, sticky, subject, threadID, tripcode, uniqueID, userID, _i, _len, _ref;
+
+      postID = o.postID, threadID = o.threadID, boardID = o.boardID, name = o.name, capcode = o.capcode, tripcode = o.tripcode, uniqueID = o.uniqueID, email = o.email, subject = o.subject, flagCode = o.flagCode, flagName = o.flagName, date = o.date, dateUTC = o.dateUTC, isSticky = o.isSticky, isClosed = o.isClosed, comment = o.comment, file = o.file;
+      isOP = postID === threadID;
+      staticPath = '//static.4chan.org';
+      if (email) {
+        emailStart = '<a href="mailto:' + email + '" class="useremail">';
+        emailEnd = '</a>';
+      } else {
+        emailStart = '';
+        emailEnd = '';
+      }
+      subject = "<span class=subject>" + (subject || '') + "</span>";
+      userID = !capcode && uniqueID ? (" <span class='posteruid id_" + uniqueID + "'>(ID: ") + ("<span class=hand title='Highlight posts by this ID'>" + uniqueID + "</span>)</span> ") : '';
+      switch (capcode) {
+        case 'admin':
+        case 'admin_highlight':
+          capcodeClass = " capcodeAdmin";
+          capcodeStart = " <strong class='capcode hand id_admin'" + "title='Highlight posts by the Administrator'>## Admin</strong>";
+          capcode = (" <img src='" + staticPath + "/image/adminicon.gif' ") + "alt='This user is the 4chan Administrator.' " + "title='This user is the 4chan Administrator.' class=identityIcon>";
+          break;
+        case 'mod':
+          capcodeClass = " capcodeMod";
+          capcodeStart = " <strong class='capcode hand id_mod' " + "title='Highlight posts by Moderators'>## Mod</strong>";
+          capcode = (" <img src='" + staticPath + "/image/modicon.gif' ") + "alt='This user is a 4chan Moderator.' " + "title='This user is a 4chan Moderator.' class=identityIcon>";
+          break;
+        case 'developer':
+          capcodeClass = " capcodeDeveloper";
+          capcodeStart = " <strong class='capcode hand id_developer' " + "title='Highlight posts by Developers'>## Developer</strong>";
+          capcode = (" <img src='" + staticPath + "/image/developericon.gif' ") + "alt='This user is a 4chan Developer.' " + "title='This user is a 4chan Developer.' class=identityIcon>";
+          break;
+        default:
+          capcodeClass = '';
+          capcodeStart = '';
+          capcode = '';
+      }
+      flag = flagCode ? (" <img src='" + staticPath + "/image/country/" + (boardID === 'pol' ? 'troll/' : '')) + flagCode.toLowerCase() + (".gif' alt=" + flagCode + " title='" + flagName + "' class=countryFlag>") : '';
+      if (file != null ? file.isDeleted : void 0) {
+        fileHTML = isOP ? ("<div id=f" + postID + " class=file><div class=fileInfo></div><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted.gif' alt='File deleted.' class='fileDeleted retina'>") + "</span></div>" : ("<div id=f" + postID + " class=file><span class=fileThumb>") + ("<img src='" + staticPath + "/image/filedeleted-res.gif' alt='File deleted.' class='fileDeletedRes retina'>") + "</span></div>";
+      } else if (file) {
+        ext = file.name.slice(-3);
+        if (!file.twidth && !file.theight && ext === 'gif') {
+          file.twidth = file.width;
+          file.theight = file.height;
+        }
+        fileSize = $.bytesToString(file.size);
+        fileThumb = file.turl;
+        if (file.isSpoiler) {
+          fileSize = "Spoiler Image, " + fileSize;
+          if (!isArchived) {
+            fileThumb = '//static.4chan.org/image/spoiler';
+            if (spoilerRange = Build.spoilerRange[boardID]) {
+              fileThumb += ("-" + boardID) + Math.floor(1 + spoilerRange * Math.random());
+            }
+            fileThumb += '.png';
+            file.twidth = file.theight = 100;
+          }
+        }
+        if (boardID.ID !== 'f') {
+          imgSrc = ("<a class='fileThumb" + (file.isSpoiler ? ' imgspoiler' : '') + "' href='" + file.url + "' target=_blank>") + ("<img src='" + fileThumb + "' alt='" + fileSize + "' data-md5=" + file.MD5 + " style='height: " + file.theight + "px; width: " + file.twidth + "px;'></a>");
+        }
+        a = $.el('a', {
+          innerHTML: file.name
+        });
+        filename = a.textContent.replace(/%22/g, '"');
+        a.textContent = Build.shortFilename(filename);
+        shortFilename = a.innerHTML;
+        a.textContent = filename;
+        filename = a.innerHTML.replace(/'/g, '&apos;');
+        fileDims = ext === 'pdf' ? 'PDF' : "" + file.width + "x" + file.height;
+        fileInfo = ("<span class=fileText id=fT" + postID + (file.isSpoiler ? " title='" + filename + "'" : '') + ">File: <a href='" + file.url + "' target=_blank>" + file.timestamp + "</a>") + ("-(" + fileSize + ", " + fileDims + (file.isSpoiler ? '' : ", <span title='" + filename + "'>" + shortFilename + "</span>")) + ")</span>";
+        fileHTML = "<div id=f" + postID + " class=file><div class=fileInfo>" + fileInfo + "</div>" + imgSrc + "</div>";
+      } else {
+        fileHTML = '';
+      }
+      tripcode = tripcode ? " <span class=postertrip>" + tripcode + "</span>" : '';
+      sticky = isSticky ? ' <img src=//static.4chan.org/image/sticky.gif alt=Sticky title=Sticky class=stickyIcon>' : '';
+      closed = isClosed ? ' <img src=//static.4chan.org/image/closed.gif alt=Closed title=Closed class=closedIcon>' : '';
+      container = $.el('div', {
+        id: "pc" + postID,
+        className: "postContainer " + (isOP ? 'op' : 'reply') + "Container",
+        innerHTML: (isOP ? '' : "<div class=sideArrows id=sa" + postID + ">&gt;&gt;</div>") + ("<div id=p" + postID + " class='post " + (isOP ? 'op' : 'reply') + (capcode === 'admin_highlight' ? ' highlightPost' : '') + "'>") + ("<div class='postInfoM mobile' id=pim" + postID + ">") + ("<span class='nameBlock" + capcodeClass + "'>") + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + capcode + userID + flag + sticky + closed + ("<br>" + subject) + ("</span><span class='dateTime postNum' data-utc=" + dateUTC + ">" + date) + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + ">No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? fileHTML : '') + ("<div class='postInfo desktop' id=pi" + postID + ">") + ("<input type=checkbox name=" + postID + " value=delete> ") + ("" + subject + " ") + ("<span class='nameBlock" + capcodeClass + "'>") + emailStart + ("<span class=name>" + (name || '') + "</span>") + tripcode + capcodeStart + emailEnd + capcode + userID + flag + sticky + closed + ' </span> ' + ("<span class=dateTime data-utc=" + dateUTC + ">" + date + "</span> ") + "<span class='postNum desktop'>" + ("<a href=" + ("/" + boardID + "/res/" + threadID + "#p" + postID) + " title='Highlight this post'>No.</a>") + ("<a href='" + (g.VIEW === 'thread' && g.THREADID === +threadID ? "javascript:quote(" + postID + ")" : "/" + boardID + "/res/" + threadID + "#q" + postID) + "' title='Quote this post'>" + postID + "</a>") + '</span>' + '</div>' + (isOP ? '' : fileHTML) + ("<blockquote class=postMessage id=m" + postID + ">" + (comment || '') + "</blockquote> ") + '</div>'
+      });
+      _ref = $$('.quotelink', container);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        href = quote.getAttribute('href');
+        if (href[0] === '/') {
+          continue;
+        }
+        quote.href = "/" + boardID + "/res/" + href;
+      }
+      return container;
+    }
+  };
+
   Get = {
     threadExcerpt: function(thread) {
       var OP, excerpt, _ref;
@@ -1801,28 +2159,6 @@
       });
       Main.callbackNodes(Post, [post]);
       return Get.insert(post, root, context);
-    }
-  };
-
-  Polyfill = {
-    init: function() {
-      return Polyfill.visibility();
-    },
-    visibility: function() {
-      var event, prefix, property;
-
-      if ('visibilityState' in document || !(prefix = ('webkitVisibilityState' in document ? 'webkit' : 'mozVisibilityState' in document ? 'moz' : void 0))) {
-        return;
-      }
-      property = prefix + 'VisibilityState';
-      event = prefix + 'visibilitychange';
-      d.visibilityState = d[property];
-      d.hidden = d.visibilityState === 'hidden';
-      return $.on(d, event, function() {
-        d.visibilityState = d[property];
-        d.hidden = d.visibilityState === 'hidden';
-        return $.event('visibilitychange');
-      });
     }
   };
 
@@ -2555,76 +2891,6 @@
     }
   };
 
-  Recursive = {
-    recursives: {},
-    init: function() {
-      if (g.VIEW === 'catalog') {
-        return;
-      }
-      return Post.prototype.callbacks.push({
-        name: 'Recursive',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var i, obj, quote, recursive, _i, _j, _len, _len1, _ref, _ref1;
-
-      if (this.isClone) {
-        return;
-      }
-      _ref = this.quotes;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        if (obj = Recursive.recursives[quote]) {
-          _ref1 = obj.recursives;
-          for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
-            recursive = _ref1[i];
-            recursive.apply(null, [this].concat(__slice.call(obj.args[i])));
-          }
-        }
-      }
-    },
-    add: function() {
-      var args, obj, post, recursive, _base, _name;
-
-      recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
-      obj = (_base = Recursive.recursives)[_name = post.fullID] || (_base[_name] = {
-        recursives: [],
-        args: []
-      });
-      obj.recursives.push(recursive);
-      return obj.args.push(args);
-    },
-    rm: function(recursive, post) {
-      var i, obj, rec, _i, _len, _ref;
-
-      if (!(obj = Recursive.recursives[post.fullID])) {
-        return;
-      }
-      _ref = obj.recursives;
-      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
-        rec = _ref[i];
-        if (rec === recursive) {
-          obj.recursives.splice(i, 1);
-          obj.args.splice(i, 1);
-        }
-      }
-    },
-    apply: function() {
-      var ID, args, fullID, post, recursive, _ref;
-
-      recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
-      fullID = post.fullID;
-      _ref = g.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
-        if (post.quotes.contains(fullID)) {
-          recursive.apply(null, [post].concat(__slice.call(args)));
-        }
-      }
-    }
-  };
-
   PostHiding = {
     init: function() {
       if (g.VIEW === 'catalog' || !Conf['Reply Hiding Buttons'] && !Conf['Reply Hiding Link']) {
@@ -2903,28 +3169,71 @@
     }
   };
 
-  QuoteStrikeThrough = {
+  Recursive = {
+    recursives: {},
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Reply Hiding Buttons'] && !Conf['Reply Hiding Link'] && !Conf['Filter']) {
+      if (g.VIEW === 'catalog') {
         return;
       }
       return Post.prototype.callbacks.push({
-        name: 'Strike-through Quotes',
+        name: 'Recursive',
         cb: this.node
       });
     },
     node: function() {
-      var boardID, postID, quotelink, _i, _len, _ref, _ref1, _ref2;
+      var i, obj, quote, recursive, _i, _j, _len, _len1, _ref, _ref1;
 
       if (this.isClone) {
         return;
       }
-      _ref = this.nodes.quotelinks;
+      _ref = this.quotes;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quotelink = _ref[_i];
-        _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, postID = _ref1.postID;
-        if ((_ref2 = g.posts["" + boardID + "." + postID]) != null ? _ref2.isHidden : void 0) {
-          $.addClass(quotelink, 'filtered');
+        quote = _ref[_i];
+        if (obj = Recursive.recursives[quote]) {
+          _ref1 = obj.recursives;
+          for (i = _j = 0, _len1 = _ref1.length; _j < _len1; i = ++_j) {
+            recursive = _ref1[i];
+            recursive.apply(null, [this].concat(__slice.call(obj.args[i])));
+          }
+        }
+      }
+    },
+    add: function() {
+      var args, obj, post, recursive, _base, _name;
+
+      recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+      obj = (_base = Recursive.recursives)[_name = post.fullID] || (_base[_name] = {
+        recursives: [],
+        args: []
+      });
+      obj.recursives.push(recursive);
+      return obj.args.push(args);
+    },
+    rm: function(recursive, post) {
+      var i, obj, rec, _i, _len, _ref;
+
+      if (!(obj = Recursive.recursives[post.fullID])) {
+        return;
+      }
+      _ref = obj.recursives;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        rec = _ref[i];
+        if (rec === recursive) {
+          obj.recursives.splice(i, 1);
+          obj.args.splice(i, 1);
+        }
+      }
+    },
+    apply: function() {
+      var ID, args, fullID, post, recursive, _ref;
+
+      recursive = arguments[0], post = arguments[1], args = 3 <= arguments.length ? __slice.call(arguments, 2) : [];
+      fullID = post.fullID;
+      _ref = g.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
+        if (post.quotes.contains(fullID)) {
+          recursive.apply(null, [post].concat(__slice.call(args)));
         }
       }
     }
@@ -3157,455 +3466,646 @@
     }
   };
 
-  FappeTyme = {
+  QuoteBacklink = {
     init: function() {
-      var el, input;
+      var format;
 
-      if (!Conf['Fappe Tyme'] || g.VIEW === 'catalog' || g.BOARD === 'f') {
+      if (g.VIEW === 'catalog' || !Conf['Quote Backlinks']) {
         return;
       }
-      el = $.el('label', {
-        innerHTML: "<input type=checkbox name=fappe-tyme> Fappe Tyme",
-        title: 'Fappe Tyme'
-      });
-      FappeTyme.input = input = el.firstElementChild;
-      $.on(input, 'change', FappeTyme.toggle);
-      $.event('AddMenuEntry', {
-        type: 'header',
-        el: el,
-        order: 97
+      format = Conf['backlink'].replace(/%id/g, "' + id + '");
+      this.funk = Function('id', "return '" + format + "'");
+      this.containers = {};
+      Post.prototype.callbacks.push({
+        name: 'Quote Backlinking Part 1',
+        cb: this.firstNode
       });
       return Post.prototype.callbacks.push({
-        name: 'Fappe Tyme',
-        cb: this.node
+        name: 'Quote Backlinking Part 2',
+        cb: this.secondNode
       });
     },
-    node: function() {
-      if (this.file) {
+    firstNode: function() {
+      var a, clone, container, containers, link, post, quote, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+
+      if (this.isClone || !this.quotes.length) {
         return;
       }
-      return $.addClass(this.nodes.root, "noFile");
+      a = $.el('a', {
+        href: "/" + this.board + "/res/" + this.thread + "#p" + this,
+        className: this.isHidden ? 'filtered backlink' : 'backlink',
+        textContent: (QuoteBacklink.funk(this.ID)) + (Conf['Mark Quotes of You'] && this.info.yours ? QuoteYou.text : '')
+      });
+      _ref = this.quotes;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quote = _ref[_i];
+        containers = [QuoteBacklink.getContainer(quote)];
+        if ((post = g.posts[quote]) && post.nodes.backlinkContainer) {
+          _ref1 = post.clones;
+          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+            clone = _ref1[_j];
+            containers.push(clone.nodes.backlinkContainer);
+          }
+        }
+        for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
+          container = containers[_k];
+          link = a.cloneNode(true);
+          if (Conf['Quote Previewing']) {
+            $.on(link, 'mouseover', QuotePreview.mouseover);
+          }
+          if (Conf['Quote Inlining']) {
+            $.on(link, 'click', QuoteInline.toggle);
+          }
+          $.add(container, [$.tn(' '), link]);
+        }
+      }
     },
-    toggle: function() {
-      $.event('CloseMenu');
-      return (this.checked ? $.addClass : $.rmClass)(doc, 'fappeTyme');
+    secondNode: function() {
+      var container;
+
+      if (this.isClone && (this.origin.isReply || Conf['OP Backlinks'])) {
+        this.nodes.backlinkContainer = $('.container', this.nodes.info);
+        return;
+      }
+      if (!(this.isReply || Conf['OP Backlinks'])) {
+        return;
+      }
+      container = QuoteBacklink.getContainer(this.fullID);
+      this.nodes.backlinkContainer = container;
+      return $.add(this.nodes.info, container);
+    },
+    getContainer: function(id) {
+      var _base;
+
+      return (_base = this.containers)[id] || (_base[id] = $.el('span', {
+        className: 'container'
+      }));
     }
   };
 
-  ImageExpand = {
+  QuoteCT = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
+      if (g.VIEW === 'catalog' || !Conf['Mark Cross-thread Quotes']) {
         return;
       }
-      this.EAI = $.el('a', {
-        className: 'expand-all-shortcut',
-        textContent: 'EAI',
-        title: 'Expand All Images',
-        href: 'javascript:;'
-      });
-      $.on(this.EAI, 'click', ImageExpand.cb.toggleAll);
-      Header.addShortcut(this.EAI);
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
+      this.text = '\u00A0(Cross-thread)';
       return Post.prototype.callbacks.push({
-        name: 'Image Expansion',
+        name: 'Mark Cross-thread Quotes',
         cb: this.node
       });
     },
     node: function() {
-      var thumb, _ref;
+      var board, boardID, quotelink, quotelinks, quotes, thread, threadID, _i, _len, _ref, _ref1;
 
-      if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
+      if (this.isClone && this.thread === this.context.thread) {
         return;
       }
-      thumb = this.file.thumb;
-      $.on(thumb.parentNode, 'click', ImageExpand.cb.toggle);
-      if (this.isClone && $.hasClass(thumb, 'expanding')) {
-        ImageExpand.contract(this);
-        ImageExpand.expand(this);
+      if (!(quotes = this.quotes).length) {
         return;
       }
-      if (ImageExpand.on && !this.isHidden) {
-        return ImageExpand.expand(this);
-      }
-    },
-    cb: {
-      toggle: function(e) {
-        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
-          return;
+      quotelinks = this.nodes.quotelinks;
+      _ref = this.isClone ? this.context : this, board = _ref.board, thread = _ref.thread;
+      for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
+        quotelink = quotelinks[_i];
+        _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, threadID = _ref1.threadID;
+        if (!threadID) {
+          continue;
         }
-        e.preventDefault();
-        return ImageExpand.toggle(Get.postFromNode(this));
-      },
-      toggleAll: function() {
-        var ID, file, func, post, _i, _len, _ref, _ref1;
-
-        $.event('CloseMenu');
-        if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
-          ImageExpand.EAI.className = 'contract-all-shortcut';
-          ImageExpand.EAI.title = 'Contract All Images';
-          func = ImageExpand.expand;
-        } else {
-          ImageExpand.EAI.className = 'expand-all-shortcut';
-          ImageExpand.EAI.title = 'Expand All Images';
-          func = ImageExpand.contract;
+        if (this.isClone) {
+          quotelink.textContent = quotelink.textContent.replace(QuoteCT.text, '');
         }
-        _ref = g.posts;
-        for (ID in _ref) {
-          post = _ref[ID];
-          _ref1 = [post].concat(post.clones);
-          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-            post = _ref1[_i];
-            file = post.file;
-            if (!(file && file.isImage && doc.contains(post.nodes.root))) {
-              continue;
-            }
-            if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && file.thumb.getBoundingClientRect().top < 0)) {
-              continue;
-            }
-            $.queueTask(func, post);
-          }
-        }
-      },
-      setFitness: function() {
-        var checked;
-
-        checked = this.checked;
-        (checked ? $.addClass : $.rmClass)(doc, this.name.toLowerCase().replace(/\s+/g, '-'));
-        if (this.name !== 'Fit height') {
-          return;
-        }
-        if (checked) {
-          $.on(window, 'resize', ImageExpand.resize);
-          if (!ImageExpand.style) {
-            ImageExpand.style = $.addStyle(null);
-          }
-          return ImageExpand.resize();
-        } else {
-          return $.off(window, 'resize', ImageExpand.resize);
+        if (boardID === this.board.ID && threadID !== thread.ID) {
+          $.add(quotelink, $.tn(QuoteCT.text));
         }
       }
-    },
-    toggle: function(post) {
-      var headRect, rect, root, thumb, top;
-
-      thumb = post.file.thumb;
-      if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
-        ImageExpand.expand(post);
-        return;
-      }
-      ImageExpand.contract(post);
-      rect = post.nodes.root.getBoundingClientRect();
-      if (!(rect.top <= 0 || rect.left <= 0)) {
-        return;
-      }
-      top = rect.top;
-      if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
-        headRect = Header.bar.getBoundingClientRect();
-        top += -headRect.top - headRect.height;
-      }
-      root = doc;
-      if (rect.top < 0) {
-        root.scrollTop += top;
-      }
-      if (rect.left < 0) {
-        return root.scrollLeft = 0;
-      }
-    },
-    contract: function(post) {
-      $.rmClass(post.nodes.root, 'expanded-image');
-      $.rmClass(post.file.thumb, 'expanding');
-      return post.file.isExpanded = false;
-    },
-    expand: function(post, src) {
-      var img, thumb;
-
-      thumb = post.file.thumb;
-      if (post.isHidden || post.file.isExpanded || $.hasClass(thumb, 'expanding')) {
-        return;
-      }
-      $.addClass(thumb, 'expanding');
-      if (post.file.fullImage) {
-        $.asap((function() {
-          return post.file.fullImage.naturalHeight;
-        }), function() {
-          return ImageExpand.completeExpand(post);
-        });
-        return;
-      }
-      post.file.fullImage = img = $.el('img', {
-        className: 'full-image',
-        src: src || post.file.URL
-      });
-      $.on(img, 'error', ImageExpand.error);
-      $.asap((function() {
-        return post.file.fullImage.naturalHeight;
-      }), function() {
-        return ImageExpand.completeExpand(post);
-      });
-      return $.after(thumb, img);
-    },
-    completeExpand: function(post) {
-      var prev, thumb;
-
-      thumb = post.file.thumb;
-      if (!$.hasClass(thumb, 'expanding')) {
-        return;
-      }
-      post.file.isExpanded = true;
-      if (!post.nodes.root.parentNode) {
-        $.addClass(post.nodes.root, 'expanded-image');
-        $.rmClass(post.file.thumb, 'expanding');
-        return;
-      }
-      prev = post.nodes.root.getBoundingClientRect();
-      return $.queueTask(function() {
-        var curr, root;
-
-        $.addClass(post.nodes.root, 'expanded-image');
-        $.rmClass(post.file.thumb, 'expanding');
-        if (!(prev.top + prev.height <= 0)) {
-          return;
-        }
-        root = doc;
-        curr = post.nodes.root.getBoundingClientRect();
-        return root.scrollTop += curr.height - prev.height + curr.top - prev.top;
-      });
-    },
-    error: function() {
-      var URL, post, src, timeoutID;
-
-      post = Get.postFromNode(this);
-      $.rm(this);
-      delete post.file.fullImage;
-      if (!($.hasClass(post.file.thumb, 'expanding') || $.hasClass(post.nodes.root, 'expanded-image'))) {
-        return;
-      }
-      ImageExpand.contract(post);
-      src = this.src.split('/');
-      if (src[2] === 'images.4chan.org') {
-        if (URL = Redirect.image(src[3], src[5])) {
-          setTimeout(ImageExpand.expand, 10000, post, URL);
-          return;
-        }
-        if (g.DEAD || post.isDead || post.file.isDead) {
-          return;
-        }
-      }
-      timeoutID = setTimeout(ImageExpand.expand, 10000, post);
-      return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
-        onload: function() {
-          var postObj, _i, _len, _ref;
-
-          if (this.status !== 200) {
-            return;
-          }
-          _ref = JSON.parse(this.response).posts;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            postObj = _ref[_i];
-            if (postObj.no === post.ID) {
-              break;
-            }
-          }
-          if (postObj.no !== post.ID) {
-            clearTimeout(timeoutID);
-            return post.kill();
-          } else if (postObj.filedeleted) {
-            clearTimeout(timeoutID);
-            return post.kill(true);
-          }
-        }
-      });
-    },
-    menu: {
-      init: function() {
-        var conf, createSubEntry, el, key, subEntries, _ref;
-
-        if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
-          return;
-        }
-        el = $.el('span', {
-          textContent: 'Image Expansion',
-          className: 'image-expansion-link'
-        });
-        createSubEntry = ImageExpand.menu.createSubEntry;
-        subEntries = [];
-        _ref = Config.imageExpansion;
-        for (key in _ref) {
-          conf = _ref[key];
-          subEntries.push(createSubEntry(key, conf));
-        }
-        return $.event('AddMenuEntry', {
-          type: 'header',
-          el: el,
-          order: 105,
-          subEntries: subEntries
-        });
-      },
-      createSubEntry: function(type, config) {
-        var input, label;
-
-        label = $.el('label', {
-          innerHTML: "<input type=checkbox name='" + type + "'> " + type
-        });
-        input = label.firstElementChild;
-        if (type === 'Fit width' || type === 'Fit height') {
-          $.on(input, 'change', ImageExpand.cb.setFitness);
-        }
-        if (config) {
-          label.title = config[1];
-          input.checked = Conf[type];
-          $.event('change', null, input);
-          $.on(input, 'change', $.cb.checked);
-        }
-        return {
-          el: label
-        };
-      }
-    },
-    resize: function() {
-      return ImageExpand.style.textContent = ":root.fit-height .full-image {max-height:" + doc.clientHeight + "px}";
-    },
-    menuToggle: function(e) {
-      return ImageExpand.opmenu.toggle(e, this, g);
     }
   };
 
-  ImageHover = {
+  QuoteInline = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Image Hover']) {
+      if (g.VIEW === 'catalog' || !Conf['Quote Inlining']) {
         return;
       }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
       return Post.prototype.callbacks.push({
-        name: 'Image Hover',
+        name: 'Quote Inlining',
         cb: this.node
       });
     },
     node: function() {
-      var _ref;
+      var link, _i, _len, _ref;
 
-      if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
+      _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        $.on(link, 'click', QuoteInline.toggle);
+      }
+    },
+    toggle: function(e) {
+      var boardID, context, postID, threadID, _ref;
+
+      if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
         return;
       }
-      return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover);
+      e.preventDefault();
+      _ref = Get.postDataFromLink(this), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
+      context = Get.contextFromLink(this);
+      if ($.hasClass(this, 'inlined')) {
+        QuoteInline.rm(this, boardID, threadID, postID, context);
+      } else {
+        if ($.x("ancestor::div[@id='p" + postID + "']", this)) {
+          return;
+        }
+        QuoteInline.add(this, boardID, threadID, postID, context);
+      }
+      return this.classList.toggle('inlined');
+    },
+    findRoot: function(quotelink, isBacklink) {
+      if (isBacklink) {
+        return quotelink.parentNode.parentNode;
+      } else {
+        return $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
+      }
+    },
+    add: function(quotelink, boardID, threadID, postID, context) {
+      var inline, isBacklink, post;
+
+      isBacklink = $.hasClass(quotelink, 'backlink');
+      inline = $.el('div', {
+        id: "i" + postID,
+        className: 'inline'
+      });
+      $.after(QuoteInline.findRoot(quotelink, isBacklink), inline);
+      Get.postClone(boardID, threadID, postID, inline, context);
+      if (!((post = g.posts["" + boardID + "." + postID]) && context.thread === post.thread)) {
+        return;
+      }
+      if (isBacklink && Conf['Forward Hiding']) {
+        $.addClass(post.nodes.root, 'forwarded');
+        post.forwarded++ || (post.forwarded = 1);
+      }
+      if (!Unread.posts) {
+        return;
+      }
+      return Unread.readSinglePost(post);
+    },
+    rm: function(quotelink, boardID, threadID, postID, context) {
+      var el, inlined, isBacklink, post, root, _ref;
+
+      isBacklink = $.hasClass(quotelink, 'backlink');
+      root = QuoteInline.findRoot(quotelink, isBacklink);
+      root = $.x("following-sibling::div[@id='i" + postID + "'][1]", root);
+      $.rm(root);
+      if (!(el = root.firstElementChild)) {
+        return;
+      }
+      post = g.posts["" + boardID + "." + postID];
+      post.rmClone(el.dataset.clone);
+      if (Conf['Forward Hiding'] && isBacklink && context.thread === g.threads["" + boardID + "." + threadID] && !--post.forwarded) {
+        delete post.forwarded;
+        $.rmClass(post.nodes.root, 'forwarded');
+      }
+      while (inlined = $('.inlined', el)) {
+        _ref = Get.postDataFromLink(inlined), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
+        QuoteInline.rm(inlined, boardID, threadID, postID, context);
+        $.rmClass(inlined, 'inlined');
+      }
+    }
+  };
+
+  QuoteOP = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Mark OP Quotes']) {
+        return;
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
+      this.text = '\u00A0(OP)';
+      return Post.prototype.callbacks.push({
+        name: 'Mark OP Quotes',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var boardID, op, postID, quotelink, quotelinks, quotes, _i, _j, _len, _len1, _ref;
+
+      if (this.isClone && this.thread === this.context.thread) {
+        return;
+      }
+      if (!(quotes = this.quotes).length) {
+        return;
+      }
+      quotelinks = this.nodes.quotelinks;
+      if (this.isClone && quotes.contains(this.thread.fullID)) {
+        for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
+          quotelink = quotelinks[_i];
+          quotelink.textContent = quotelink.textContent.replace(QuoteOP.text, '');
+        }
+      }
+      op = (this.isClone ? this.context : this).thread.fullID;
+      if (!quotes.contains(op)) {
+        return;
+      }
+      for (_j = 0, _len1 = quotelinks.length; _j < _len1; _j++) {
+        quotelink = quotelinks[_j];
+        _ref = Get.postDataFromLink(quotelink), boardID = _ref.boardID, postID = _ref.postID;
+        if (("" + boardID + "." + postID) === op) {
+          $.add(quotelink, $.tn(QuoteOP.text));
+        }
+      }
+    }
+  };
+
+  QuotePreview = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Quote Previewing']) {
+        return;
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Quote Previewing',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var link, _i, _len, _ref;
+
+      _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        $.on(link, 'mouseover', QuotePreview.mouseover);
+      }
     },
     mouseover: function(e) {
-      var el, post;
+      var boardID, clone, origin, post, postID, posts, qp, quote, quoterID, threadID, _i, _j, _len, _len1, _ref, _ref1;
 
-      post = Get.postFromNode(this);
-      el = $.el('img', {
-        id: 'ihover',
-        src: post.file.URL
+      if ($.hasClass(this, 'inlined')) {
+        return;
+      }
+      _ref = Get.postDataFromLink(this), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
+      qp = $.el('div', {
+        id: 'qp',
+        className: 'dialog'
       });
-      el.setAttribute('data-fullid', post.fullID);
-      $.add(Header.hover, el);
+      $.add(Header.hover, qp);
+      Get.postClone(boardID, threadID, postID, qp, Get.contextFromLink(this));
       UI.hover({
         root: this,
-        el: el,
+        el: qp,
         latestEvent: e,
         endEvents: 'mouseout click',
+        cb: QuotePreview.mouseout,
         asapTest: function() {
-          return el.naturalHeight;
+          return qp.firstElementChild;
         }
       });
-      return $.on(el, 'error', ImageHover.error);
-    },
-    error: function() {
-      var URL, post, src, timeoutID,
-        _this = this;
-
-      if (!doc.contains(this)) {
+      if (!(origin = g.posts["" + boardID + "." + postID])) {
         return;
       }
-      post = g.posts[this.dataset.fullid];
-      src = this.src.split('/');
-      if (src[2] === 'images.4chan.org') {
-        if (URL = Redirect.image(src[3], src[5].replace(/\?.+$/, ''))) {
-          this.src = URL;
-          return;
-        }
-        if (g.DEAD || post.isDead || post.file.isDead) {
-          return;
+      if (Conf['Quote Highlighting']) {
+        posts = [origin].concat(origin.clones);
+        posts.pop();
+        for (_i = 0, _len = posts.length; _i < _len; _i++) {
+          post = posts[_i];
+          $.addClass(post.nodes.post, 'qphl');
         }
       }
-      timeoutID = setTimeout((function() {
-        return _this.src = post.file.URL + '?' + Date.now();
-      }), 3000);
-      return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
-        onload: function() {
-          var postObj, _i, _len, _ref;
-
-          if (this.status !== 200) {
-            return;
-          }
-          _ref = JSON.parse(this.response).posts;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            postObj = _ref[_i];
-            if (postObj.no === post.ID) {
-              break;
-            }
-          }
-          if (postObj.no !== post.ID) {
-            clearTimeout(timeoutID);
-            return post.kill();
-          } else if (postObj.filedeleted) {
-            clearTimeout(timeoutID);
-            return post.kill(true);
-          }
+      quoterID = $.x('ancestor::*[@id][1]', this).id.match(/\d+$/)[0];
+      clone = Get.postFromRoot(qp.firstChild);
+      _ref1 = clone.nodes.quotelinks.concat(__slice.call(clone.nodes.backlinks));
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        quote = _ref1[_j];
+        if (quote.hash.slice(2) === quoterID) {
+          $.addClass(quote, 'forwardlink');
         }
-      });
+      }
+    },
+    mouseout: function() {
+      var clone, post, root, _i, _len, _ref;
+
+      if (!(root = this.el.firstElementChild)) {
+        return;
+      }
+      clone = Get.postFromRoot(root);
+      post = clone.origin;
+      post.rmClone(root.dataset.clone);
+      if (!Conf['Quote Highlighting']) {
+        return;
+      }
+      _ref = [post].concat(post.clones);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        post = _ref[_i];
+        $.rmClass(post.nodes.post, 'qphl');
+      }
     }
   };
 
-  ImageReplace = {
+  QuoteStrikeThrough = {
     init: function() {
-      if (g.VIEW === 'catalog') {
+      if (g.VIEW === 'catalog' || !Conf['Reply Hiding Buttons'] && !Conf['Reply Hiding Link'] && !Conf['Filter']) {
         return;
       }
       return Post.prototype.callbacks.push({
-        name: 'Image Replace',
+        name: 'Strike-through Quotes',
         cb: this.node
       });
     },
     node: function() {
-      var URL, img, style, thumb, type, _ref, _ref1;
+      var boardID, postID, quotelink, _i, _len, _ref, _ref1, _ref2;
 
-      if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
+      if (this.isClone) {
         return;
       }
-      _ref1 = this.file, thumb = _ref1.thumb, URL = _ref1.URL;
-      if (!(Conf["Replace " + ((type = (URL.match(/\w{3}$/))[0].toUpperCase()) === 'PEG' ? 'JPG' : type)] && !/spoiler/.test(thumb.src))) {
-        return;
+      _ref = this.nodes.quotelinks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quotelink = _ref[_i];
+        _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, postID = _ref1.postID;
+        if ((_ref2 = g.posts["" + boardID + "." + postID]) != null ? _ref2.isHidden : void 0) {
+          $.addClass(quotelink, 'filtered');
+        }
       }
-      if (this.file.isSpoiler) {
-        style = thumb.style;
-        style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
-      }
-      img = $.el('img');
-      $.on(img, 'load', function() {
-        return thumb.src = URL;
-      });
-      return img.src = URL;
     }
   };
 
-  RevealSpoilers = {
+  /*
+    <3 aeosynth
+  */
+
+
+  QuoteThreading = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Reveal Spoilers']) {
+      var input;
+
+      if (!(Conf['Quote Threading'] && g.VIEW === 'thread')) {
         return;
       }
+      this.enabled = true;
+      this.controls = $.el('span', {
+        innerHTML: '<label><input id=threadingControl type=checkbox checked> Threading</label>'
+      });
+      input = $('input', this.controls);
+      $.on(input, 'change', QuoteThreading.toggle);
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: this.controls,
+        order: 98
+      });
+      $.on(d, '4chanXInitFinished', this.setup);
       return Post.prototype.callbacks.push({
-        name: 'Reveal Spoilers',
+        name: 'Quote Threading',
+        cb: this.node
+      });
+    },
+    setup: function() {
+      var ID, post, posts;
+
+      $.off(d, '4chanXInitFinished', QuoteThreading.setup);
+      posts = g.posts;
+      for (ID in posts) {
+        post = posts[ID];
+        if (post.cb) {
+          post.cb.call(post);
+        }
+      }
+      return QuoteThreading.hasRun = true;
+    },
+    node: function() {
+      var ID, fullID, keys, len, post, posts, qid, quote, quotes, uniq, _i, _len;
+
+      if (this.isClone || !QuoteThreading.enabled || this.thread.OP === this) {
+        return;
+      }
+      quotes = this.quotes, ID = this.ID, fullID = this.fullID;
+      posts = g.posts;
+      if (!(post = posts[fullID]) || post.isHidden) {
+        return;
+      }
+      uniq = {};
+      len = ("" + g.BOARD).length + 1;
+      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
+        quote = quotes[_i];
+        qid = quote;
+        if (!(qid.slice(len) < ID)) {
+          continue;
+        }
+        if (qid in posts) {
+          uniq[qid.slice(len)] = true;
+        }
+      }
+      keys = Object.keys(uniq);
+      if (keys.length !== 1) {
+        return;
+      }
+      this.threaded = "" + g.BOARD + "." + keys[0];
+      return this.cb = QuoteThreading.nodeinsert;
+    },
+    nodeinsert: function() {
+      var bottom, height, posts, qpost, qroot, threadContainer, top, _ref;
+
+      posts = g.posts;
+      qpost = posts[this.threaded];
+      delete this.threaded;
+      delete this.cb;
+      if (this.thread.OP === qpost) {
+        return false;
+      }
+      if (QuoteThreading.hasRun) {
+        height = doc.clientHeight;
+        _ref = qpost.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
+        if (!(Unread.posts.contains(qpost) || ((bottom < height) && (top > 0)))) {
+          return false;
+        }
+      }
+      qroot = qpost.nodes.root;
+      if (!$.hasClass(qroot, 'threadOP')) {
+        $.addClass(qroot, 'threadOP');
+        threadContainer = $.el('div', {
+          className: 'threadContainer'
+        });
+        $.after(qroot, threadContainer);
+      } else {
+        threadContainer = qroot.nextSibling;
+      }
+      $.add(threadContainer, this.nodes.root);
+      return true;
+    },
+    toggle: function() {
+      var container, containers, node, nodes, replies, reply, thread, _i, _j, _len, _len1;
+
+      thread = $('.thread');
+      replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
+      QuoteThreading.enabled = this.checked;
+      if (this.checked) {
+        nodes = (function() {
+          var _i, _len, _results;
+
+          _results = [];
+          for (_i = 0, _len = replies.length; _i < _len; _i++) {
+            reply = replies[_i];
+            _results.push(Get.postFromNode(reply));
+          }
+          return _results;
+        })();
+        for (_i = 0, _len = nodes.length; _i < _len; _i++) {
+          node = nodes[_i];
+          QuoteThreading.node(node);
+        }
+      } else {
+        replies.sort(function(a, b) {
+          var aID, bID;
+
+          aID = Number(a.id.slice(2));
+          bID = Number(b.id.slice(2));
+          return aID - bID;
+        });
+        $.add(thread, replies);
+        containers = $$('.threadContainer', thread);
+        for (_j = 0, _len1 = containers.length; _j < _len1; _j++) {
+          container = containers[_j];
+          $.rm(container);
+        }
+        Unread.update(true);
+      }
+    },
+    kb: function() {
+      var control;
+
+      control = $.id('threadingControl');
+      return control.click();
+    }
+  };
+
+  QuoteYou = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Mark Quotes of You'] || !Conf['Quick Reply']) {
+        return;
+      }
+      this.text = '\u00A0(You)';
+      return Post.prototype.callbacks.push({
+        name: 'Mark Quotes of You',
         cb: this.node
       });
     },
     node: function() {
-      var thumb, _ref;
+      var quotelink, quotelinks, quotes, _i, _len;
 
-      if (this.isClone || !((_ref = this.file) != null ? _ref.isSpoiler : void 0)) {
+      if (this.isClone) {
         return;
       }
-      thumb = this.file.thumb;
-      thumb.removeAttribute('style');
-      return thumb.src = this.file.thumbURL;
+      if (this.info.yours) {
+        $.addClass(this.nodes.root, 'yourPost');
+      }
+      if (Conf['Highlight Own Posts']) {
+        $.addClass(doc, 'highlight-own');
+      }
+      if (!(quotes = this.quotes).length) {
+        return;
+      }
+      quotelinks = this.nodes.quotelinks;
+      for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
+        quotelink = quotelinks[_i];
+        if (QR.db.get(Get.postDataFromLink(quotelink))) {
+          $.add(quotelink, $.tn(QuoteYou.text));
+        }
+      }
+    }
+  };
+
+  Quotify = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Resurrect Quotes']) {
+        return;
+      }
+      if (Conf['Comment Expansion']) {
+        ExpandComment.callbacks.push(this.node);
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Resurrect Quotes',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var deadlink, _i, _len, _ref;
+
+      _ref = $$('.deadlink', this.nodes.comment);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        deadlink = _ref[_i];
+        if (this.isClone) {
+          if ($.hasClass(deadlink, 'quotelink')) {
+            this.nodes.quotelinks.push(deadlink);
+          }
+        } else {
+          Quotify.parseDeadlink.call(this, deadlink);
+        }
+      }
+    },
+    parseDeadlink: function(deadlink) {
+      var a, boardID, m, post, postID, quote, quoteID, redirect, _ref;
+
+      if (deadlink.parentNode.className === 'prettyprint') {
+        $.replace(deadlink, __slice.call(deadlink.childNodes));
+        return;
+      }
+      quote = deadlink.textContent;
+      if (!(postID = (_ref = quote.match(/\d+$/)) != null ? _ref[0] : void 0)) {
+        return;
+      }
+      boardID = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : this.board.ID;
+      quoteID = "" + boardID + "." + postID;
+      if (post = g.posts[quoteID]) {
+        if (!post.isDead) {
+          a = $.el('a', {
+            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
+            className: 'quotelink',
+            textContent: quote
+          });
+        } else {
+          a = $.el('a', {
+            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
+            className: 'quotelink deadlink',
+            target: '_blank',
+            textContent: "" + quote + "\u00A0(Dead)"
+          });
+          a.setAttribute('data-boardid', boardID);
+          a.setAttribute('data-threadid', post.thread.ID);
+          a.setAttribute('data-postid', postID);
+        }
+      } else if (redirect = Redirect.to({
+        boardID: boardID,
+        threadID: 0,
+        postID: postID
+      })) {
+        a = $.el('a', {
+          href: redirect,
+          className: 'deadlink',
+          target: '_blank',
+          textContent: "" + quote + "\u00A0(Dead)"
+        });
+        if (Redirect.post(boardID, postID)) {
+          $.addClass(a, 'quotelink');
+          a.setAttribute('data-boardid', boardID);
+          a.setAttribute('data-postid', postID);
+        }
+      }
+      if (__indexOf.call(this.quotes, quoteID) < 0) {
+        this.quotes.push(quoteID);
+      }
+      if (!a) {
+        deadlink.textContent = "" + quote + "\u00A0(Dead)";
+        return;
+      }
+      $.replace(deadlink, a);
+      if ($.hasClass(a, 'quotelink')) {
+        return this.nodes.quotelinks.push(a);
+      }
     }
   };
 
@@ -3892,3081 +4392,6 @@
         return [a, $.tn(' '), embed];
       }
       return [a];
-    }
-  };
-
-  ArchiveLink = {
-    init: function() {
-      var div, entry, type, _i, _len, _ref;
-
-      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Archive Link']) {
-        return;
-      }
-      div = $.el('div', {
-        textContent: 'Archive'
-      });
-      entry = {
-        type: 'post',
-        el: div,
-        order: 90,
-        open: function(_arg) {
-          var ID, board, redirect, thread;
-
-          ID = _arg.ID, thread = _arg.thread, board = _arg.board;
-          redirect = Redirect.to({
-            postID: ID,
-            threadID: thread.ID,
-            boardID: board.ID
-          });
-          return redirect !== ("//boards.4chan.org/" + board + "/");
-        },
-        subEntries: []
-      };
-      _ref = [['Post', 'post'], ['Name', 'name'], ['Tripcode', 'tripcode'], ['E-mail', 'email'], ['Subject', 'subject'], ['Filename', 'filename'], ['Image MD5', 'MD5']];
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        type = _ref[_i];
-        entry.subEntries.push(this.createSubEntry(type[0], type[1]));
-      }
-      return $.event('AddMenuEntry', entry);
-    },
-    createSubEntry: function(text, type) {
-      var el, open;
-
-      el = $.el('a', {
-        textContent: text,
-        target: '_blank'
-      });
-      open = type === 'post' ? function(_arg) {
-        var ID, board, thread;
-
-        ID = _arg.ID, thread = _arg.thread, board = _arg.board;
-        el.href = Redirect.to({
-          postID: ID,
-          threadID: thread.ID,
-          boardID: board.ID
-        });
-        return true;
-      } : function(post) {
-        var value;
-
-        value = Filter[type](post);
-        if (!value) {
-          return false;
-        }
-        el.href = Redirect.to({
-          boardID: post.board.ID,
-          type: type,
-          value: value,
-          isSearch: true
-        });
-        return true;
-      };
-      return {
-        el: el,
-        open: open
-      };
-    }
-  };
-
-  DeleteLink = {
-    init: function() {
-      var div, fileEl, fileEntry, postEl, postEntry;
-
-      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Delete Link']) {
-        return;
-      }
-      div = $.el('div', {
-        className: 'delete-link',
-        textContent: 'Delete'
-      });
-      postEl = $.el('a', {
-        className: 'delete-post',
-        href: 'javascript:;'
-      });
-      fileEl = $.el('a', {
-        className: 'delete-file',
-        href: 'javascript:;'
-      });
-      postEntry = {
-        el: postEl,
-        open: function() {
-          postEl.textContent = 'Post';
-          $.on(postEl, 'click', DeleteLink["delete"]);
-          return true;
-        }
-      };
-      fileEntry = {
-        el: fileEl,
-        open: function(_arg) {
-          var file;
-
-          file = _arg.file;
-          if (!file || file.isDead) {
-            return false;
-          }
-          fileEl.textContent = 'File';
-          $.on(fileEl, 'click', DeleteLink["delete"]);
-          return true;
-        }
-      };
-      return $.event('AddMenuEntry', {
-        type: 'post',
-        el: div,
-        order: 40,
-        open: function(post) {
-          var node;
-
-          if (post.isDead) {
-            return false;
-          }
-          DeleteLink.post = post;
-          node = div.firstChild;
-          node.textContent = 'Delete';
-          DeleteLink.cooldown.start(post, node);
-          return true;
-        },
-        subEntries: [postEntry, fileEntry]
-      });
-    },
-    "delete": function() {
-      var fileOnly, form, link, m, post, pwd;
-
-      post = DeleteLink.post;
-      if (DeleteLink.cooldown.counting === post) {
-        return;
-      }
-      $.off(this, 'click', DeleteLink["delete"]);
-      this.textContent = "Deleting " + this.textContent + "...";
-      pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $.id('delPassword').value;
-      fileOnly = $.hasClass(this, 'delete-file');
-      form = {
-        mode: 'usrdel',
-        onlyimgdel: fileOnly,
-        pwd: pwd
-      };
-      form[post.ID] = 'delete';
-      link = this;
-      return $.ajax($.id('delform').action.replace("/" + g.BOARD + "/", "/" + post.board + "/"), {
-        onload: function() {
-          return DeleteLink.load(link, post, fileOnly, this.response);
-        },
-        onerror: function() {
-          return DeleteLink.error(link);
-        }
-      }, {
-        cred: true,
-        form: $.formData(form)
-      });
-    },
-    load: function(link, post, fileOnly, html) {
-      var msg, s, tmpDoc;
-
-      tmpDoc = d.implementation.createHTMLDocument('');
-      tmpDoc.documentElement.innerHTML = html;
-      if (tmpDoc.title === '4chan - Banned') {
-        s = 'Banned!';
-      } else if (msg = tmpDoc.getElementById('errmsg')) {
-        s = msg.textContent;
-        $.on(link, 'click', DeleteLink["delete"]);
-      } else {
-        if (tmpDoc.title === 'Updating index...') {
-          (post.origin || post).kill(fileOnly);
-        }
-        s = 'Deleted';
-      }
-      return link.textContent = s;
-    },
-    error: function(link) {
-      link.textContent = 'Connection error, please retry.';
-      return $.on(link, 'click', DeleteLink["delete"]);
-    },
-    cooldown: {
-      start: function(post, node) {
-        var length, seconds, _ref;
-
-        if (!((_ref = QR.db) != null ? _ref.get({
-          boardID: post.board.ID,
-          threadID: post.thread.ID,
-          postID: post.ID
-        }) : void 0)) {
-          delete DeleteLink.cooldown.counting;
-          return;
-        }
-        DeleteLink.cooldown.counting = post;
-        length = post.board.ID === 'q' ? 600 : 30;
-        seconds = Math.ceil((length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND);
-        return DeleteLink.cooldown.count(post, seconds, length, node);
-      },
-      count: function(post, seconds, length, node) {
-        if (DeleteLink.cooldown.counting !== post) {
-          return;
-        }
-        if (!((0 <= seconds && seconds <= length))) {
-          if (DeleteLink.cooldown.counting === post) {
-            node.textContent = 'Delete';
-            delete DeleteLink.cooldown.counting;
-          }
-          return;
-        }
-        setTimeout(DeleteLink.cooldown.count, 1000, post, seconds - 1, length, node);
-        return node.textContent = "Delete (" + seconds + ")";
-      }
-    }
-  };
-
-  DownloadLink = {
-    init: function() {
-      var a;
-
-      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Download Link']) {
-        return;
-      }
-      a = $.el('a', {
-        className: 'download-link',
-        textContent: 'Download file'
-      });
-      return $.event('AddMenuEntry', {
-        type: 'post',
-        el: a,
-        order: 70,
-        open: function(_arg) {
-          var file;
-
-          file = _arg.file;
-          if (!file) {
-            return false;
-          }
-          a.href = file.URL;
-          a.download = file.name;
-          return true;
-        }
-      });
-    }
-  };
-
-  Menu = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Menu']) {
-        return;
-      }
-      this.menu = new UI.Menu('post');
-      return Post.prototype.callbacks.push({
-        name: 'Menu',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var button;
-
-      button = Menu.makeButton(this);
-      if (this.isClone) {
-        $.replace($('.menu-button', this.nodes.info), button);
-        return;
-      }
-      return $.add(this.nodes.info, [$.tn('\u00A0'), button]);
-    },
-    makeButton: (function() {
-      var a;
-
-      a = null;
-      return function(post) {
-        var clone;
-
-        a || (a = $.el('a', {
-          className: 'menu-button',
-          innerHTML: '[<i></i>]',
-          href: 'javascript:;'
-        }));
-        clone = a.cloneNode(true);
-        clone.setAttribute('data-postid', post.fullID);
-        if (post.isClone) {
-          clone.setAttribute('data-clone', true);
-        }
-        $.on(clone, 'click', Menu.toggle);
-        return clone;
-      };
-    })(),
-    toggle: function(e) {
-      var post;
-
-      post = this.dataset.clone ? Get.postFromNode(this) : g.posts[this.dataset.postid];
-      return Menu.menu.toggle(e, this, post);
-    }
-  };
-
-  ReportLink = {
-    init: function() {
-      var a;
-
-      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Report Link']) {
-        return;
-      }
-      a = $.el('a', {
-        className: 'report-link',
-        href: 'javascript:;',
-        textContent: 'Report this post'
-      });
-      $.on(a, 'click', ReportLink.report);
-      return $.event('AddMenuEntry', {
-        type: 'post',
-        el: a,
-        order: 10,
-        open: function(post) {
-          ReportLink.post = post;
-          return !post.isDead;
-        }
-      });
-    },
-    report: function() {
-      var id, post, set, url;
-
-      post = ReportLink.post;
-      url = "//sys.4chan.org/" + post.board + "/imgboard.php?mode=report&no=" + post;
-      id = Date.now();
-      set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
-      return window.open(url, id, set);
-    }
-  };
-
-  PSAHiding = {
-    init: function() {
-      var entry;
-
-      if (!Conf['Announcement Hiding']) {
-        return;
-      }
-      entry = {
-        type: 'header',
-        el: $.el('a', {
-          textContent: 'Show announcement',
-          className: 'show-announcement',
-          href: 'javascript:;'
-        }),
-        order: 50,
-        open: function() {
-          var _ref;
-
-          if ((_ref = $.id('globalMessage')) != null ? _ref.hidden : void 0) {
-            return true;
-          }
-          return false;
-        }
-      };
-      $.event('AddMenuEntry', entry);
-      $.on(entry.el, 'click', PSAHiding.toggle);
-      $.addClass(doc, 'hide-announcement');
-      return $.on(d, '4chanXInitFinished', this.setup);
-    },
-    setup: function() {
-      var btn, psa;
-
-      $.off(d, '4chanXInitFinished', PSAHiding.setup);
-      if (!(psa = $.id('globalMessage'))) {
-        $.rmClass(doc, 'hide-announcement');
-        return;
-      }
-      PSAHiding.btn = btn = $.el('a', {
-        innerHTML: '<span>[&nbsp;-&nbsp;]</span>',
-        title: 'Hide announcement.',
-        className: 'hide-announcement',
-        href: 'javascript:;'
-      });
-      $.on(btn, 'click', PSAHiding.toggle);
-      $.get('hiddenPSAs', [], function(item) {
-        PSAHiding.sync(item['hiddenPSAs']);
-        $.before(psa, btn);
-        return $.rmClass(doc, 'hide-announcement');
-      });
-      return $.sync('hiddenPSAs', PSAHiding.sync);
-    },
-    toggle: function(e) {
-      var hide, text;
-
-      hide = $.hasClass(this, 'hide-announcement');
-      text = PSAHiding.trim($.id('globalMessage'));
-      return $.get('hiddenPSAs', [], function(_arg) {
-        var hiddenPSAs, i;
-
-        hiddenPSAs = _arg.hiddenPSAs;
-        if (hide) {
-          hiddenPSAs.push(text);
-          hiddenPSAs = hiddenPSAs.slice(-5);
-        } else {
-          $.event('CloseMenu');
-          i = hiddenPSAs.indexOf(text);
-          hiddenPSAs.splice(i, 1);
-        }
-        PSAHiding.sync(hiddenPSAs);
-        return $.set('hiddenPSAs', hiddenPSAs);
-      });
-    },
-    sync: function(hiddenPSAs) {
-      var hr, psa, _ref;
-
-      psa = $.id('globalMessage');
-      psa.hidden = PSAHiding.btn.hidden = (_ref = PSAHiding.trim(psa), __indexOf.call(hiddenPSAs, _ref) >= 0) ? true : false;
-      if ((hr = psa.nextElementSibling) && hr.nodeName === 'HR') {
-        return hr.hidden = psa.hidden;
-      }
-    },
-    trim: function(psa) {
-      return psa.textContent.replace(/\W+/g, '').toLowerCase();
-    }
-  };
-
-  CatalogLinks = {
-    init: function() {
-      var el, input;
-
-      if (!Conf['Catalog Links']) {
-        return;
-      }
-      el = $.el('label', {
-        id: 'toggleCatalog',
-        href: 'javascript:;',
-        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + ">Catalog Links",
-        title: "Turn catalog links " + (Conf['Header catalog links'] ? 'off' : 'on') + "."
-      });
-      input = $('input', el);
-      $.on(input, 'change', this.toggle);
-      $.sync('Header catalog links', CatalogLinks.set);
-      $.event('AddMenuEntry', {
-        type: 'header',
-        el: el,
-        order: 95
-      });
-      return $.on(d, '4chanXInitFinished', function() {
-        return CatalogLinks.set(Conf['Header catalog links']);
-      });
-    },
-    toggle: function() {
-      var useCatalog;
-
-      $.event('CloseMenu');
-      $.set('Header catalog links', useCatalog = this.checked);
-      return CatalogLinks.set(useCatalog);
-    },
-    set: function(useCatalog) {
-      var a, board, path, _i, _len, _ref;
-
-      path = useCatalog ? 'catalog' : '';
-      _ref = $$("#board-list a[href*=\"boards.4chan.org\"],\n#boardNavDesktop a[href*=\"boards.4chan.org\"],\n#boardNavDesktopFoot a[href*=\"boards.4chan.org\"]");
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        a = _ref[_i];
-        board = a.pathname.split('/')[1];
-        if (['f', 'status', '4chan'].contains(board) || !board) {
-          continue;
-        }
-        if (Conf['External Catalog']) {
-          a.href = useCatalog ? CatalogLinks.external(board) : "//boards.4chan.org/" + board + "/";
-        } else {
-          a.pathname = "/" + board + "/" + path;
-        }
-        a.title = useCatalog ? "" + a.title + " - Catalog" : a.title.replace(/\ -\ Catalog$/, '');
-      }
-      return this.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
-    },
-    external: function(board) {
-      return (['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'].contains(board) ? "http://catalog.neet.tv/" + board : ['d', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'].contains(board) ? "http://4index.gropes.us/" + board : "//boards.4chan.org/" + board + "/catalog");
-    }
-  };
-
-  IDColor = {
-    init: function() {
-      if (!Conf['Color User IDs']) {
-        return;
-      }
-      return Post.prototype.callbacks.push({
-        name: 'Reveal Spoilers',
-        cb: this.node
-      });
-    },
-    node: function(post) {
-      var str, uid;
-
-      if (!(uid = $('.hand', this.nodes.uniqueID))) {
-        return;
-      }
-      str = this.info.uniqueID;
-      if (uid.nodeName === 'SPAN') {
-        return uid.style.cssText = IDColor.apply.call(str);
-      }
-    },
-    ids: {},
-    compute: function(str) {
-      var hash, rgb;
-
-      hash = this.hash(str);
-      rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
-      rgb[3] = ((rgb[0] * 0.299) + (rgb[1] * 0.587) + (rgb[2] * 0.114)) > 125;
-      this.ids[str] = rgb;
-      return rgb;
-    },
-    apply: function() {
-      var rgb;
-
-      rgb = IDColor.ids[this] || IDColor.compute(this);
-      return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black;" : "white; border-radius: 3px; padding: 0px 2px;");
-    },
-    hash: function(str) {
-      var i, j, msg;
-
-      msg = 0;
-      i = 0;
-      j = str.length;
-      while (i < j) {
-        msg = ((msg << 5) - msg) + str.charCodeAt(i);
-        ++i;
-      }
-      return msg;
-    }
-  };
-
-  Emoji = {
-    init: function() {
-      var css, icon, name, pos, _ref;
-
-      if (!Conf['Emoji']) {
-        return;
-      }
-      pos = Conf['emojiPos'];
-      css = ["a.useremail[href]:last-of-type::" + pos + " {\n  vertical-align: top;\n  margin-" + (pos === "before" ? "right" : "left") + ": 5px;\n}\n"];
-      this.icons["PlanNine"] = Emoji.icons["Plan9"];
-      this.icons['Sage'] = Emoji.sage[Conf['sageEmoji']];
-      _ref = this.icons;
-      for (name in _ref) {
-        icon = _ref[name];
-        if (!this.icons.hasOwnProperty(name)) {
-          continue;
-        }
-        css.push("a.useremail[href*='" + name + "']:last-of-type::" + pos + ",\na.useremail[href*='" + (name.toLowerCase()) + "']:last-of-type::" + pos + ",\na.useremail[href*='" + (name.toUpperCase()) + "']:last-of-type::" + pos + " {\n  content: url('data:image/png;base64," + icon + "');\n}\n");
-      }
-      return $.addStyle(css.join(""), 'emoji');
-    },
-    sage: {
-      '4chan SS': 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAYAAACZ3F9/AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAa9JREFUKFOdkt0rg2EUwM95b2zlL0CRRLngksznXrJsNtYW1tjYhM3mY6+IXZAbikhTKJp8XZAp81UmWYhIRHHhUi60e7s6ntdCa2449es8PfU7z+k5B6AbyuE/wQlc4BcO2d06unAUBCgFE0hianOd3NHIcy8NPwrUf9NBPZcOEi7ayXZiea/1V7+ljaXeYAfOgg2So2TOwQWGnwQafOgi962TnMFmatozUeNu4yetASspVvgXiUvii5K5Nm6z56ol3Hdtpy+cwSYy+HRUt1nLsoEato0kXyh6wTac+24brThWv6MNOYNW9prlG/uxmbRrFaT0VrCspZoNPSUNJNyCBcoiLZuhLH0o9U6UrAfGKCz7RlLM81Q8XUwqr4oKPLIQmnA8IupBigacVy7yrya/2JouhryJHJJNykg+UxLGOtz6+SQNpEiMcduls4Wvoli9WklVKz+ol5SU4U6ngql8Qj2eRI+GyajBhSRH4r3cUxhSeRVhsYBmWUWiyM+UMDmDUI2nsfuSC1I27nLgYZJlP8jhjJ3PY8iE+L8tWx4kQC6MQA5b1D9HNiRCFhx8AF/e2qh92VnKAAAAAElFTkSuQmCC',
-      'appchan': 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII='
-    },
-    icons: {
-      'Plan9': 'iVBORw0KGgoAAAANSUhEUgAAAAwAAAAPCAYAAAGn5h7fAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoYAzE15J1s7QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAACAElEQVQoz3WSz4sSARTHvzMjygpqYg3+KIhkE83DKtKlf0C9SrTRuZNEx0VowU6CuSeJNlwwpEO2kJ6SQBiIUAzFjRDF4wrjKosnGx3HmdehFDfpe/2+z/s++D5gU7IsEwRByICIiAEAIiIAYAFAXsjYVr/fLxMRNVvN+prJ5/OA3+/XERFNf02JyeVyDx0OxyvLNQsnimLKfcf9KRQKXQAAnE6nlf5qMpnQycnbP/kAoKoqsSwLAJhOp+AAwOv1otvtpqxWq73dbt/r9XqvEQ6HUalUEvF4XLd5IpvNZqlerzd5nlf6/f6tTCZjBACk0+nb+XxeW4UrikLJZPImAGA0Gq0NIqJyuSyyANDr9Q5Wu1utFvR6/SULAI1G4+vK8Pv90DTtGwsAJpPpaGUYDAZ0Op3PHAAEg8H3tVqtbrtu21sqyxuRSOQJk0ql9IvF4r7b7f7pcrlejkaj57IsH58Pzp8dvjhc/lsBk0gkbLFYrFqtVvd27+4qOk733ePxPDCbzVBVFfP5fCiK4rvhxfDN/qP9wSasGwwGMv1HiqJQsVg8ZlfTHMepkiR1t05gGJBGmM/nMBqNj9nN9kql0lNN064ARISzH2cQBAGz2ewLu2na7XYLwzBbvxYIBBCNRrFj3BmsAZ/PZ+J5/kOhUIAkSVeA8XiMZqt5efrx9OA3GfcgvyVno9cAAAAASUVORK5CYII=',
-      'Neko': 'iVBORw0KGgoAAAANSUhEUgAAABMAAAARCAMAAAAIRmf1AAACoFBMVEUAAABnUFZoUVddU1T6+PvFwLzn4eFXVlT/+vZpZGCgm5dKU1Cfnpz//flbWljr5uLp5OCalpNZWFb//f3r6+n28ff9+PRaVVH59Pr//vr38vj57/Dp7eyjn5zq8O5aVVJbYV9nVFhjUFRiWFlZVlFgZGOboJzm5uZhamfz9/bt8fDw6+drb26bl5j/8/lkX1z06uldWFS5r61UT0tfWlbDwr3Ew76moqNRTU7Mx8P75OpeY19pWl1XW1qzr6x5eHaLiojv7+1UT0xIU0uzqadVS0nV0MxkZGT5+PPk497///ra29Xq5eFtY2H28e2hnJignJlUUE1dXV2vrqxkY2FkYF/m3d5vZmfDuruhl5aZlJHx8O75+PZWVVP29vT/9fTj3trv6ubh5eRdXFqTkpBOTUtqZmX88/RMQ0T78vPEvr7HwcHDwsDq6ef///3Gx8H++fXEv7tZWVedmZZXXVudnJp0c3FZU1f79fnb1dlXUVVjXWFrZmy8t7359/qLj455e3q4s69vamZjX1zy4+avpaReWFz/+f1NR0vu6Ozp4+f48/lnYmi8ur3Iw7/69fHz7+xbV1SZmJZVUk1ZV1zq5ez++f/c196uqbDn4uj9+P7z7vRVVVXt6ORiXl/OycXHw8CPi4ihoJ5aWF3/+v/k3+axrLOsp67LzMZYU1m2sq9dWF5WUU1WUk/Au7eYlJGqpqObmphYVV749f7p5Or38fPu6OpiXFz38fH79vLz7urv6+hhYF5cWWKal6D//f/Z09Xg29exraqbl5RqaW6kpKTq5uPv7Of/+PDj29D//vP18Ozs5+OloJymoZ1ZVVJZWVlkYF2hnpmblIyspJmVjYKQi4enop5STUlRTUpcWUhqY1BgWT9ZUjhcV1NiXVkkhke3AAAABHRSTlMA5vjapJ+a9wAAAP9JREFUGBk9wA1EAwEAhuHv3dTQAkLiUlJFJWF0QDLFYDRXIMkomBgxNIYxhOk4wwCqQhQjxgxSGIsALFA5BiYbMZHajz1oJlx51sBJpf6Gd3zONcrqm/r1W8ByK0r+XV1LXyOLLnjW6hMGpu0u1IzPSdO17DgrGC6AadrVodGcDQYbhguP6wAvAaC0BRZQalkUQ8UQDz5tAof0XbejOFcV5xiUoCfjj3O/nf0ZbqAMPYmzU18KSDaRQ08qnfw+B2JNdAEQt2O5vctUGjhoIBU4ygPsj2Vh5zYopDK73hsirdkPTwGCbSHpiYFwYVVC/17pCFSBeUmoqwYQuZtWxx+BVEz0LeVKIQAAAABJRU5ErkJggg==',
-      'Madotsuki': 'iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAMAAADTRh9nAAAALVBMVEUAAAC3iopWLTtWPkHnvqUcBxx5GCZyAAARERGbdXJrRUyGRUyYbY23coZFGDRFGEYfAAAAAXRSTlMAQObYZgAAAGhJREFUeF5Vy1kOQyEMQ1Fshzd12P9y61AixLX4yJFo1cvVUfT23GaflF0HPLln6bhnZVKCcrIWGqpCUcKYSP3JSIRySKTtULPNwMaD8/NC8tsyqsd1hR+6qeqIDHc3LD0B3KdtV1f2A+LJBBIHSgcEAAAAAElFTkSuQmCC',
-      'Sega': 'iVBORw0KGgoAAAANSUhEUgAAACwAAAALBAMAAAD2A3K8AAAAMFBMVEUAAACMjpOChImytLmdnqMrKzDIyM55dnkODQ94foQ7PkXm5Olsb3VUUVVhZmw8Sl6klHLxAAAAAXRSTlMAQObYZgAAANFJREFUGJVjYIACRiUlJUUGDHBk4syTkxQwhO3/rQ/4ZYsuymi3YEFUqAhC4LCJZJGIi1uimKKjk3KysbOxsaMnAwNLyqoopaXhttf2it1anrJqke1pr1DlBAZhicLnM5YXZ4RWlIYoezx0zrjYqG6czCDsYRzxIko6Q/qFaKy0690Ij0MxN8K2MIhJXF+hsfxJxuwdpYGVaUU3Mm5bqgKFOZOFit3Vp23J3pgsqLxFUXpLtlD5bgcGBs45794dn6mkOVFQUOjNmXPPz8ysOcAAANw6SHLtrqolAAAAAElFTkSuQmCC',
-      'Sakamoto': 'iVBORw0KGgoAAAANSUhEUgAAABEAAAAQCAYAAADwMZRfAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAxVJREFUOE+Nk19IU1EYwK+GQQTVQ39egh6ibKlzw91z7rn3bvfOmddNszl1bjKXc5rJJGmBUr7Yg9qTD0IalFgRBEYg6EDQQB+GovQyQgiaUZsoLcgHMcr069w7MgcGXfi453zn+37fv3MYZt/n99e76tzVj4JN/hP79fvXnV3hnNabwUBjoOHcgTYOu/JQspgTzsqKgn9BfD4vkWTzur287PqLVy+zM+yePB7KsRXLywTjnSpnZctBkPCdW8ccDuU55vBO8RXbkC/oP5ph19V5+7LIky0OY1BKbZEbLcFSt7u6pN7jLmltCVrr3DV5jY3+KovFEsccB1KJNVpefe10BqS2tqqO4/AuphBB4L/LkrRqNgtJs1lMypLls1kU38mytMLz/E8VIlutqVqX6/weZG52OttRXjbE0cP/FYLRlpVjDXuQ/r77x2XZPKkCHA4HBAIBkCQpAygIAvh8Pu2MZgO0Lz+QSa/sQfwN9RfpVN66XC6Ynp6GhYUFGBwczAC1t7fD0tISxONx6O7upgHILmsqvLcHodOggfiV/v5+SCaT4HQ6IRaLgdfr1bIRRREmJyfBZrNBNBqF+fl5sNsdgE2GiAbp6bmbdbXC7qWQbxMTE7C2tgY6nQ5SqRSEw2ENopaoZpCXlwdTU1NaoECgCbgiU6y8QH+ECYWaTymK7TWdys7MzIwGaWtrg42NDejo6AB1WjU1NZo+FArB2NgYrK6uQrAlCASxn2z6wkuMp87VIAhkE2MEAwMDkEgkYHx8HBYXF0HtkQpRy1BLiEQisLy8rPVNKSsFjEzrXH4+z1hlS4xDhKadNu7t7YPR0VHweDzAEVWfHru6HxkZgeHhYVAURYNjkylVWKArZjjMzqmdVi+QCsLUkQiEjvDvncEkvU7/qQ0Vgukeo48Go87IiCJnZNmipxiz7wXEbVDnbUxQOgM12h9n6qTq6NvapRdtkwaP0XK8RmPuYSbxYfaQ/sJJhjfknuFRURUi7AMOozcCwl94hLZp5F+EioDQVwqYI6jomZU1NFtM+rOSxZjVazcyvwHr/p/Kws1jegAAAABJRU5ErkJggg==',
-      'Baka': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA0pJREFUOE91k3tI01EUx39JOpA0H4jNx0pbD3XTalISWf8YFlEgldqDsBLLyqjEKBCiLLWiggh6/KEV1WZ7OaelLZvDdDafNW1JFraWe/32+01FrUZ9uy4ylLpw4Z5z7/nc77n3HIqaMRIjZJyEcNX+uFCFeGmI/GZciEIsCFJUTvoAzDz+1y7K76MSwhX5hXl6z+WSbrzU2KB8YEGDwgrTaxZ3b7xHcaHhR3xw7Z5/UviB1ReP5XSg3+TAqYJOxMzWISFIC0GQDomhTVA9skCnsaAwp/vnMq66dBokNuBR9uFd7T9Z1zCunjci0qcRJUVdoJ3DYOhRnC/qBZ+jQbfeCc+37yjY2UEg0iwvJE0k9l8Z+8xqHmTgot0QLdQgTaQFQ2AsOzlHvOu1S5pwOLsHHo8HjHMCq2MazNvTlByKHyrJLDvdR25jMWRxYx5HjeMH2r1BDOOeguRua4OI14jx8a8YH5tA+al3EHKlW6mYOapb2oZBOOwMbEMseAE12L+jjUh3w+VipyAZ65oxn1NP/GMYGR6Ftn4Qsf7qa9S82Y/l/X122G0uL2TbxmZEz1WhXW8mUol8moXu+SCi/OoQ6VsDh3UUwyQ1k9GOaI5MTkX4yWTGHutvgI1F28sviAlRgxeoRm62HvsyW8En9pZ1TYgi6TntoyQtFm86rVgUoJZRvDnKMmXVAGxWmkAYOBwudBqGcHCvHulrGpGT2Uy+z4yT+QYsCXtCUpp8GxbKhx8gDK0ro+KjJGvzdjfDZnN6VdisLD5/JjArQ2zW66PJOj2lEZtStaBphkwah7K6kMJ/GEulp1bMWhAmMbTozOQRaWRtfoZVgjo4iRra4SYgGi26TwjxVeDKhR7Y7U606ixICq9tr7hd7+OthRWL7yUnJ1WPmXotqLhpRICPHCePtuFV6xdUPTAhcWEtRHEqfHpPyto4hPXLXnzflSEJnFaN3OCKDcsFsrEntR9RUmxARLAUgT5iBPuJsXWDBj0dZjRU9yNV+PTbpjTp9OA/pOSk24nRkXf1J462oPxcJ65f6ULlHSMulepRerYDgvj7A0cKpNz/tyTZqbzXO4t0ZZGQJ34RH11lFHIlA8LIqreCCMUZRY3cd2bwL/5/RmjNSXqtAAAAAElFTkSuQmCC',
-      'Ponyo': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAuNJREFUOE+Nk3tI01EUx39BTytConQTt1am07m5abi5KT5S8z2dj1yOEMUC7aUgIoimlmUEWX9kBZGWaamEmE6U1BI1XNPNGTrnHs33IwuSXrL4NgcJ0mNdOHDh3PPhnPP9XoKwcroJYvMQiRSicHCQKCgUyZC9/T5rNet5KUFs0zCZbZMsFmZ9fTEjEEBDp4/KSSSb/4JoGIyWaTYbiykpWEhOxhSHAzWD0aqkUGhWAcVkW58xlvuPhfh4zItEmOHxYDR3MhcdDaNAsKJydAz5IySKRNjEUmy88vjOVaU8F0iPCqCNjEBHkC/UYaGYFwqxmJoKLYOhkxPElg0QsbNtTlmox9yjRD9UCbnoOR+J/lwRWtOCcdXfDc2BPpg0d7CQlIQZPh9KKlVkAQjJ2x2zmOSsQu7hpzUJfBhLjsNQmADjxcT10Bcl4rE4EHc5LjBEhEPn7f1WTqXSLQB/s1Tp7vslsoIkyPPiMJAbi86McBguiaHKjoEqR4jJy2K0nAxApzMN5iUGrclrKVaz2fUvuF4tRbxDKA90w5VjTFyLZKHpTBSq4/1QnxGB2qxoVIZx0JopRCPHFSNOThfWZzfrXDcZEowH4iA05ATg68hDtBaL0HAuCm3lJ9Bfcx2fFNUoi/DCjRgfNHHd1wCZA2TyXjNkE6F0cBDpPFiojeNi8EkJdFoN3vXch0nbBJOhDd907dANv8JITxNqziag3ZsJbUDAwLin50Q9QWwl1qSYoNOVvUcOoqOqAAa9Fu9H2/F9+B5WZLcwOyxFX18flLI+VASyMGVeoJHD+Tzq5BS1PoaKRrNT8127P74swsq4FCa9FKvqBqwaOiz3hdEuLKueYSyECT2LNW0eIfo3E/WmEbvnG1MUJnWdpWhDGDvxQXZHo+RR0uW2tnv+auPX+TvtJm7zKpaen/4y2yjBUlcxlvtvmvT16ZWDpQeoVv3/60F/NrHjTf4ugazIXtJ8ivjnz/sJ+yGQRjcqUdIAAAAASUVORK5CYII=',
-      'Rabite': 'iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAD/0lEQVR4Xl2MXUxbdQDFz/9+9Lb3tkBLCxTKhzgoOOZAsokbJmZxDFHnd+LL4hKVzBgfNCY++ODbjDEaZowvErOM6HRu6hKZY2rIAOkCY4OSDTpFaAsrlJa2t5+39+NvjT7tnJzknIfzI98Nf/C6TuXdguWBd1q9rcb8/CwsZiu2Ywm4nDVo3VWLZCKDaDwJq9mCg31PgjAMKKUwmcyYvTbek9iJRDm6M/XswEDjwNz6plWW6wdZhjUAintFCEEhn0N04zYskljaDLaj8ar49oUrsYR6mrFJNj322w46H8y+mitM/ZJKZmyE4XAvjJSsazpyuSzslVZIkgWKOvvRgQ6Xrdlhqmds7o7bFZoLkctreKxf7GtuCE7IyUQjBQcQ8j/lvxCGQJZz0IoCVpamTtzfIh9nwiaIrCQyjNg8mq11oDLUhNXRJfT1Ozr3tS/PqpnQ80qRgjAmKIqBfK4ItbSLKoOZqR/6neLkENlSUAIhlktvEf+sD2rkm8nWTHtvZCGMVON1ePuaoBER31/MXGly1wSqq9Uug6FluYyWXJiPqFXmjd4Dh9oF9ZKKimYXRtYCx8lmMIDIxlIPGz591av0mtanF7FcCEN6iMXeox2wOJ0QJAmUAoRQaIqCnWAQY1/ewKNGNeQuYXkm0d2NC2e+wvmRr/Hx+6+8PHayrbDyyQBNDb9As3PHKDWG6MTM23RoeJAWsqeoWvyUUv0UHf7pBB0fe4OeeXe3/vmHbx3+8dwIGJ4IsFpMMFe0fbtAn+nwZePr1u4MBK8XIALG/Rt479wYrs2vgeNNAMNgMbiNzybuoKVvn+Gs9kbr6qpBfJfGYHFIkJUCoGwfqcoMX/b27EGhwgOjoCADDlP+CA51ugFFRzoB8FYNaQ1oqKD44+eNL+wNj7zJGQSIhe8+jgQ9thk+27v/KRY6L4FSCkVOwtlQj6P73Qgt/o1ERoKt4iUkE7+jrZMHyzIoK9cOBFfT4LbWAk+0a7ZLnvqHcTNdACgFScfAcjxEdy00VQclHGo7dqGeYxHbvIo6hwhSghCehb3G5p6eW7VxXC5/xGWToMgrKKoaCnIalI9CIARasQAqloMI/x4BWrLLYwE1AEPTwCGHaGjz7pw/leZUNV8wNm9BLy6CxsvxZ1kMbaY4TKIIXlNBsynoVjvAC4CuAoYOVi+CMfLYCUfg95tPHuzZB0YtKzsb58RMucWE/fZmhCbdOP9rNnLnxko6GVoB8lFwyVVw8b/AyeulHoJyN4Rb19dTFyeqBlu6njvfsWcvOJvLs7DMmw/7bvpeE4pU2OIcgcqmp4fGAgt2Txwvqr7lTp5V7LquZxXC6+BqEvGcY5pyjaM1tffJbk89NE3FP5VQ6y7a+paZAAAAAElFTkSuQmCC',
-      'Arch': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABCFBMVEUAAAAA//8rqtVAqtUQj88tpdIYks46otwVldUbktEaldMjldM2qNcXk9IWktQZkdIYlc8mnNUXlNEZktEZlNIYktIWlNMXktE7o9klmdMXktFHqdkXk9EWk9EYk9IlmtQXlNEXktAWk9AWlNEYlNFDptkZldMYk9E4otg/p9kXktEXk9AXlNA4otclmdQXk9IYktEXlNEwn9YXk9IXk9FFp9o3otgXk9FPrdwXk9E2otdCptkXk9E/ptkcldIXk9Edl9IXk9EjmdUXk9EXk9EXk9EbldIcldIjmdMmmtQsndUvntYyn9YyoNYzoNc0odc1odc2odc6pNg7pNg9pdlDp9pJqttOrdzlYlFbAAAARXRSTlMAAQYMEBEVFhgcHR0mLS8zNTY3PT4/RU1kdXp6e3+Cg4WIiYqMjZGXl5mbnqSnrbS3zMzV3OPk7Ozv8fT29vf4+fz8/f7SyXIjAAAAmUlEQVR4XlXI1WLCUBQF0YM3SHB3a1B3l7Bx1///E6ANkDtva0jKbCW2XIH1z2hiZEZ4uUgxo7JedTQye/KN/Sb5tbJ+7V9OXd1n+O+38257TL+tah3mADAwSMM7wzQWF4Hff6ubQIZIAIb6vxEF4CZyATXhZa4HwEnEA+2QgoiyQDnIEWkjVSBBZBqXbCRlKYo8+Rwkyx54AOYfFe7HhFa7AAAAAElFTkSuQmCC',
-      'CentOS': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAB5lBMVEUAAADy8tng4Ovs9tnk5O3c7bX44LLduNO1tdDh7r/eutj43q2kocX23az07N+qqsvUqcmXl7331ZXJj7r40o/Pn8T42qP63KjNw9n21p3Y387Ml7732JzR55z05MSxtMLGn8TC4Hx8eqt8e62Af6/B4HnG4oPC4HzH44fBf7LCgbOkoMTcsrmtn8PWqcfFtKrj4Jvs2ZOz2FnMqLXT3KfY5p60Z6NUU5XRuqHzwWSywqDn3JaiiLWahrWhkry5zJjRmqm1Z6P1wmb1y319fK632mK5cKi5nH+73Gu73Gy73W283W+9eK17e6y1yZS3aqRZWJdcW5ldXJplXZppaKBwb6VwcKV5eKswL306OYNPTpGkfK+m0kGpUJWq1EnEqIuXK3+Xh7ahP4qhkryMfK6BgK+CdpGMaKKMa6O9ea2+eq6+oYW/eq+NbqWVlL2Wlr7AjanA4HnA4HrBkqbBlafB33rCgbLCmKjCxIzC1mSs1UytV5mtxIWt1lCuz2evWpuvXJywxYzHjrvH4oXIjrrN2HXO5pTO5pXUlYnUlYvVl5Hb0G7e0XTg03rhr5fpzHPpzXTp0Hvtz3/wrDHytknyt0zyuE3yuVHzvVr0wGP1x3T1yHf1yXe0ZaL2zYP30o730pD31ZeRIcF5AAAAQ3RSTlMAFBkbHEhJS0xMTk5UWWBsd4SEiIiPkJCVlZaam6CjpK29wMPDxMTFxcnK193e3+Dg4uTn5+fo6e/v8/P4+fn7/P7+J4XBAAAAAOBJREFUeF5Vj1OvAwEYBb/yGlu717atLW0b17Zt2/6nze42TTpvMw8nOZCAmwUpiIY6c5IiLi9tPX64GairqszHQ4X2VB64v1Cs6PxMPJSdHM777s6/jyaMRGiRLyyrb88OpjZ3CzAXrm1sqzSNNeN7kVBPNgB7cG51abE5l9cXDces7emQ1uadHhutFUg6gpPKkSIqQGavwz7r7O/+/3t/rSdjI9XDM3qz4fr3B/3iA0aJTG9x71+9oR/PLDwUe2wm19bly+fTIxHyEETatbPewGEw6Mk/tKZCEqSQQUlIHB/QNBEjjVN1AAAAAElFTkSuQmCC',
-      'Debian': 'iVBORw0KGgoAAAANSUhEUgAAAA0AAAAQCAYAAADNo/U5AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAZ5JREFUOE+Nkk0oBHEYxv8fu5GQj3JwcaDkIAc5IpR87M7MKnIVJVKclaIQ5Sy5OLkgR7n5OigcSNpmd2c2Vyfl4KT8/muWiVU79TTv+7zv837NCBF6PG1X+NpZyEYSD9mIc+tHnBPe23B9xKrCuTmbQA/JKfABrhBswa1hH4A38IwfOxPdX1qcjiCQxO5NyrjKV70TnSbeRPwJvGN3i4yyqnEucPY8ZZX9GSEgGK+RvFfyjk2VKZxzBNG8wJWWgh/xtDOeUXZ7Slr6TrSLYL9N4SMgYTTcwdc2ArvJcElhSVcM6mCNSV8n9hA59yTU5UWMG6HIbLhIWlglgWiC2L4Z79qTdo40D6ISuOWwKCWHyk9Fv8ldpUHOuGTuynwSBUynddPdlbEosVpP9Eu4FnOsRzUYNTsdmZN/d5LDiqM0w+2CMdAFFsFGWgfXxZnheqe/z+0puwEM0HHYV3Z9Sgz8TEz7GkQvpuJ/36ggj2AaHLrSlkULWV5x+h2E8xkZL16YVjGNaAUscfZ/f6c/k9ywLKI2MMcRWl0RLy007idmRbQJ7RIfDAAAAABJRU5ErkJggg==',
-      'Fedora': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABPlBMVEUAAAApQXIpQXIpQXIqQ3UpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIqQ3QpQXIpQXIqRHYpQXIpQXIqQ3QqRHYpQXI8brT///8uTYMpQnM5Zqg5ZqnS1+I4ZaY4ZactSn8uRnYrQ3MrRXgsRHUsR3s8bbM8brMtSX4wUosxVI01XZw2X50vUIguToQvR3c6X5o6aKs6aq08Un8qQnM9VIFDWINJXohKcKlXapEqQ3UvUIc2X55bhcBdcJVgcpdhfapmd5tuk8dxgqJ1hKR5jbB6iah/m8Shudq3v9C4wNG/x9bFy9nFzNnFzNrIz9zK0NzK0t/O2+3P1eA2YaDU2eTb3+jb4Oje4urj6fHm6e/s7/Tz9fj3+fz7/P38/f3+/v83YaEa/NNxAAAAHnRSTlMABAoVGyY1SVlpeIuQsLfDzdHW4+3y8/b39/n6+vr4+ns8AAAAyklEQVR4XiWN5XrDMAxF75KOknYdZJS0klNmHjMzMzO9/wvMcH7I37mSJShsJ+5NjMT6umDoHyXDcI/2qJadh++P3cle1de+9yPe3/bTY92wzfzr7wGtP3JrAI72BZGVtcAdQlwHy+JS1pDbBE9qamZF3BYrjQxPEXwKc6dC8bXFm0QIpmt8kn0Rn093q82UCtK8oXZckwFJzuulV8bHkajPyXdbnJnARfDHs0trz+JQ+5AFvzp/L0+cL2qPAINUPrq5OC6p/64F/AMnrST+Dq/r7QAAAABJRU5ErkJggg==',
-      'FreeBSD': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAABIAAAASABGyWs+AAAABmJLR0QA/wD/AP+gvaeTAAADXklEQVQYGQXBS2wUZQDA8f83j33M9rF9d7u4loaWklaDpkSo9KDGaIKUaGxshD2YSPRiuDVeTDyhBxosJCoa40ktpAkPDcUqAYVIpUSUPrAulEdD2bbb7e7ObGcfM/P5+4kwKDvq6yJ1FYYcvb+YAkqAHo/HQ7FYrFIoCiurq9ZXJ06YSOkA+kBzfX06bys3zHxS9EL0tXDVyZfefacqV+X/ZSJx5+qLbx98LhaL9RiGEZWlEsWC/Thd9q6Pf3vs2u6Orc83rFsvTwwfLf5obgywT1Vjh2Hh+rbNsnTssJdNLedK5aIrpSuldKVXKsnH4+Pyn6FDXn5tMef9O+3NvdkvP1V4+EYw2AoQ+KSx8dRYS6NXXnwovaItXduSrrkinWxGOmZWJi9OyOK9m1LmsjIz9IH8QUMOd3WfAQwNKCy2tJwbHB5+XasPaxIHmc4g7WWEZ1MquBiRFlJTf1E7+Tl/H/8asavPzTY1nWd2ZkMDRPeBeHPz5ojwsilEQCBvTSKunCF3M8FSNkBGVTHDYYrLj8jVNhDZ2SMa2zo3MTamaIC/u6Ojr3DtrOrvP0BpdATnyBeIhTxpR5ABUlKSUlXS1dWstbVxdz6hPL0l1quGqkLaKwNvVcjEXNRd/4mit4Z19DjefBEPyCKxgQJQcF28dBrHNDGTSZSezsjeff0hraa2Vs2vrvit81O4vj9xLJcC4ADrQA7YAGqBGsAql/EtLdFQE/L7dF1XZmdnSrbPMJfXoLDmolQK8gJyQBowgQhQDRQBD+hsraVhd4e5MH+/oExfvWLJ9q3/3S7qMpNH2hsS40kFS4EUUAMA2IANRIBXv4uzuO67c2PykqkA5YmZ6bN18YPi0Yoknxc4AsJPCMLVAk2BLKDosCWqs/PZaulkuxk9fekcUBAAQGDks5FT0W++3NuYuC0DVUL4DIEdlIQDAj0IRkigaMjArkFx0tf523sffrQHyKsAgHPhwoXLL+yP9/kePNhk5ExUTyKFkJVAUAiCFZrQup4Rv9ftuLV/6ONBYBVABQAArMvJ5MXW7duD6P62sD8UrPAFRU1TpeCpCnGvPZr7WW///v0jpw+VC9ZdAAABAAAAAMLo7drWrmQyPWG/r8tnaGIjaM05ujr16x/ZBFh5AACA/wGZnIuw4Z4A3AAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMi0wNy0wNFQxMDowOTo0OS0wNDowMOPVpFwAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTItMDctMDRUMTA6MDk6NDktMDQ6MDCSiBzgAAAAAElFTkSuQmCC',
-      'Gentoo': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAB9VBMVEUAAAD///+AgICqqv+AgIC/v9+Ojqqii9GAgKptYZKQkOmPj/ddUYBgW4eVjeCTgfiWjO5wbJaZkvPBvepkXomYkNldV4Bzbpl6dJ+Uj7ynoO6Vi+1qZI63se2mnudjXYjOy+GCfaqZjvWlm/Pc2e+Oh7NeWIOWjfeXjeW1sd+gl+diXIfp5/KHgKnn5/F2cZx6c6ZgWoXc2e6dltrAvNu0scrX1eTOyujCvup4c5qpovVpY43///+6uPPJyPXq6fvm5vrz8/z8/P7+/v/d3PixqvmxrPSyrfe0sPO0sfS3tMve2/3r6vy6ufPz8/3d3fi3tM63tPO4tsu5tsu5tvO6tfe6t/Vva5KRjKy7tvW7t/W9vPO/vM+/vvPCwfPEw/TFwvTFxOfGxfTGxvTHxvTIx/TJx/aTiOrNzPXNzfXQzfnRzuHS0fbS0vbT0uHU0e/U0uTU0/bW0+zW1ffX1vfY1/jZ2Pjb2/jc2uSTiemVkLSlnvbe3PTe3vng3fzg3f3g4Pnh4Pnh4fri4enj4/nk5Prl5Prm4/ymn/bn5vro5/rp6O/p6funoPWsqs3t7Pvt7fXv7vzv7v3w7/nx7/3y8f3y8v3z8vytqPWuqPX09P319P319P719f339v739/34+P35+f37+/+uqev9/f6vqvSwrPQAR0dcAAAAPHRSTlMAAQIDBAgJCwwVFyAsNUFHSVBneH+Bh4mVmZmanKCxsrK2tr3ExtDW19rb4ODl5u3t7u/w8/T6+/z9/f4MkNJ1AAAA8ElEQVR4XjXNw5aDURSE0YrRtm3b54+dtm3btm3bz9k3Wek9+2pSYFwT8ibzE93hwAtdJqK3nZo4J9hFXbP+vFHOthV6gnGzstZq94wdCs4UCCDymQ2v7X0LdYoSQ0MIENRYzJbRlPTTHu73ZNAL8vivmVui98PpzuqffX0mIPHJGtOQenukteJ+aS3b9htNpDnT9TeZH1bHAwBRMhGpd6e6uNrLoRgxBKmsX47nBlp678ojpEA40fejcmW4e/No0V8IIPfj6eKgbEJ3ZUnzgE1OqWp9Q3VeWRAsg51f1dZ8c31RmAsc+N5JGbG+zvj3BzDCPrzMDC9SAAAAAElFTkSuQmCC',
-      'Mint': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAACVVBMVEUAAADh4eEAAAAAAAAAAAAAAAAAAAAsLCyXl5dgYGCnp6eTk5N3d3fBwcGqqqq8vLzNzc3Ozs7Ozs7Pz8/Pz9DQ0NHR0dLS0tLS0tPT09Pf3t/Pz8/i4eLb29vZ2drZ2tna2dra2trf3t/u7O/u7e/u7O/r6+vt7O/w7/Lw8PDy8fTz8fXz8fbx8fHz8/P19fb49/j49/n6+vuPxlmWyGOx437h9NDr9eD6/fj////+/v75/vTA5Jv6/fb7/fnL5bDL5q+AxjeDxUCEzTyGxUaGzjyHxkiHzz6J0D+Kxk6K0kCLyE2M00WNy06P00mSz1OUyF+W2FGX1FiY0F6Z02CZ21ac0Wiez2yfz2+f2mOh4GCi4GOi4WKi4mOk12+k3Wul32um1Hin0nun4G6n5Gin5Wmo23Op2Huq1n+q43Cr526s4Hit23+v6XSw34Cw34Gw6nWx4IKy4IOy44Cy63ez146z34az4IWz4YW03Y217nu38H2625e645G74pK83pu98Iq984W+4ZjA4px0tzDA5ZrB8ZDC5p7D55/E947F6KHF+JHH4qvH6qTI46/K5LLL5LN1tzLL5bN1uTDL57DM5bPM6qzM66/N5rTP6LbP6bTR6rfS573T67vT7LrV7r3X68XX7MHX773Y77/Y9rvZ8cHa7cjd88bi88/j8tTk8djk9tHm8trn89vo89zo9N3p9N3p9d7p9tvq9d/s+93s/dzy+erz+O73+vT4/PX5/fT5/fX5/vN1uzB3vTD6/ff6/fh5uTj8/fv9/vr9/vx8wjV/xDmrMRH0AAAAOXRSTlMAAAECAwQJDzk/RUlNU3F0kpSVlpeYmpucnaKjpKWqqqqtu8LExMTEzdTU1NXY4evy8vP+/v7+/v6LaR1mAAABD0lEQVR4XiXI03bEABAA0KltW9kaW3eSZW3btm3btm3b/q4mp/fxgqKOtpamhrqaqoqykrQYABh+PVMU9fjE5Xp8o54kgPHN0EBHU2N5YXZykiua0HHd2759VF2Sk5IYE5GGsmCEWLV1kVWwt5O+3x/qpgsy8k4ja+cJl2/v5C22tlgCAHtw9TQSa4s+AzfPSm0BRNl9SydhWJzLC567KrNhgrNwHIJ5qTz/2f9w7Jw/DNqIjVr04exW0AEOXcN3Ab7enr9eDW2VTJgehONyc2Z8XP5YdD0Tcuhcc4/r45OjGX51TEjYPbh8THRPvbz+CHusgSZlT7rP8PkCwfQKaQUi9Igr6JsRBMFiWZgb/AHKElRzKopZJQAAAABJRU5ErkJggg==',
-      'Osx': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABrVBMVEUAAAD///////+qqqr///+ZmZn///+qqqqAgID///////+tra339/eAgICoqKjx8fGMjIzm5ubh4eGPj4/g4ODIyMiAgICSkpKLi4vS1tbPz8+Xl5eMjIypqanIyMjW1tZ2dnbR0dGamprFxcV3d3d+fn60tbV3d3dcXFx3d3epqal7fHxxcXF+foCnp6hYWFhyc3Ojo6SMjI5fX196enp+fn6Li4xERERqamqgoKFpaWmFhoeen6A/Pz9QUFCWlpeSk5SUlZWUlZaOjo+Tk5RHR0cuLi5YWFgwMDAeHh40NDQ3Nzc6OjpcXF1rbG0XFxdSU1NVVVVXV1dZWVlbW1tnZ2lwcHABAQEEBAQXFxchISI+P0BISUpaW1xHR0kNDg4qKyszNDU1NTY9Pj8NDQ1cXF4XFxhSU1QSEhIDAwMrKywtLS4uLi4wMDFHSElISEggISE0NDVJSktNTU1FRUVWVlhGRkYEBAVBQUE0NTZQUVJQUVMFBQUqKitWV1lXV1daWlpaWlw+Pj8bGxtcXV9dXV1fX19fYGFgYGBkZGRlZmhpaWlsbGxwcHB2dna844Y9AAAAV3RSTlMAAQIDAwUFBggMDhkeICMkKCgqMDIzPj9ERFBib4CCg4iMjZCcnp+jqamrw83W1tvb3ePl6Ojp6+vs7u7v8PHy9PT09PT3+vr7/f39/f39/v7+/v7+/v50ou7NAAAA30lEQVR4XkXIY3vDYABG4SepMdq2bRSz/capzdm2fvOuDO397Rw0Ly4tz2QAQPbcxuZ2E/STJwfxPhWgG355fRrVAIVb1zeP9UDLfiSwkAcADe8fn7tFxWuEXFRDoer/OgoMTRBCumj8yJwPBo8Zhpk14U856/HI8n0ZUtpZ1udrSzfVneA4roNKjdrwpcMRilb8d8G60+lKnrpWcn9bO+B23w2O8Tzfq4aiNSZJqzn5O4Kw16h06fPZ+VUlUHfo97+VAEb7rSh2UgDd4/U+TBlQY7FMj5gBIGvcarVVfQPVPTG94D0j9QAAAABJRU5ErkJggg==',
-      'Rhel': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABj1BMVEUAAAD///////8AAAD///////8AAAD///8AAAD///////8AAAD///8AAAD+/v4AAAAAAAAAAAArKysAAAD///////8AAAAAAAAAAAAAAAD///8AAAAAAAAAAAD///8AAAD///8AAAAAAAAAAAAAAAB5eXn+/v5JSUnKysrS0tJ5eXmqqqqxsrL+/v4ZCgknJyeHh4eIiIjo6OgZCAdOTk7t7e3///8GCwwPAAArKyv19fX29vb9/f0EAAD////+/v4AAAAGBgYHAAAJAAAMAAANAQAPAQAVAQFyCQV9fX2pIRzmEQjn5+cBAAAFAAAAAADnEQjvEgn////uEQjyEgnsEQjzEgnxEgljBwPaEAj9EwnwEglHBQJHBQNNBQIBAAB3CQR5CQSHCgWLCgWRCgWTCwadDAWmDAapDAa/DgfKDwjWEAgGAADh4eHiEQjmEQjmEQkKAADoEQgLAQDtEQgMAQDuEQnvEQjvEQkPAQAfAgEuAwEvAwE8BAL1Egn3Egn4Egn6Egk+BAL+/v5CBQJrB0muAAAAT3RSTlMAAAMEBAkYGhsbMTRLUmpvcHeIjLe6vcHCxM3P0NbW3Ojp6u/w9ff5+fn6+vr6+/v7+/v8/Pz9/f39/f39/f7+/v7+/v7+/v7+/v7+/v7+Q8UoNAAAAO5JREFUeF4tiwVPA0EYRL9SXIsWl+LuxfcOd2Z3764quLu788NZNrxkksmbDP2R7vH6GioLs+iffEzNXd4+TqPErUUpVqMOvwgdzMPn1rv5vPsVeufBTaBK/bH2FPvkEUuIG5jIIc+sHYn/HJ3dC/Hxuo4y8s44dzwBbFkisHN8bVIdXs6jb+H97aCwbHEIqgcml64CD7YllNkAVQC940MLYe5YzvIeQAXNrd19Roc5MdzfdQLUUKaUYyuG9I8y1g4gj6hIak4X5cBIT2MquZJrJdOqpY11ZpAiqVwbY/C7KY1cRCrZxX4pWXVuiuq/hs49kg4OyP4AAAAASUVORK5CYII=',
-      'Sabayon': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABvFBMVEUAAAAcUaYdVKwAAAAAAAUABAwWRY4YSZYhZtIhaNYHDx0KCgoFDBcKCgoRMmYSNm0fXL0fXb8AAAAYS5gaTp8fXLwgXsEGBgYFBQUZSpgZTZ4JFSgODg4IEiIOJkwOKVIkW7EnXbQLGzUTExMKGC8LHjwMIkITExMiIiIPEBEPJ00QEhMXOXAaPncOJEgoXbApXbEcHBwwMDAEAgAfHRgQDgo3NC8AAAAHBwcKCgoLCwsJCQkaGhofHx8lJSUwMDA0NDQ4ODiRkZEICQocHBweHh4GBgYHCg8mJiYnJycpKSkrKystLS0uLi4ICAgODg43NzcRERF1dXUUFBSjo6O1tbUbGxsEBAMLGS8MDA0iIiIjIyMkJCQNDQ0NHTYKCQkoKCgPDw8QEBArMDkKCgkRERIREhMxMTEyMjISIz00Njk1NTU2NjYCAgIVFRU5OTo5P0c8PD0+Pj4/QURAQEBHR0dKSkpMTExSUlJiYmJlZWVnZ2cWFhZ2dnZ4eHh8fHx9fX2FhYUXFxeVlZWXl5eYmJiZmZmcnJwZGRmlpaWrq6usrKyvr68KFiq/v7/FxcXY2Nji4uLn5+ft7e0yif9uAAAAN3RSTlMAAAApKSkqKioqg4OEhISEhoa1tra3t7y9vr7S09PT09TU+Pj5+fn5+/v7+/v7+/v7/v7+/v7+70RY/wAAAPpJREFUeF4dyWNjw2AUBeC7dfYyorM6rx1exKltzLZt2/rDa/J8OgBVVlFDX39jcTZoUqCse251a2dvu6ccUtWlanLQ4Vpel+ThlWq1l3wEz58tx4dOt1dMlAJk9A5gMjG75LHwo46hzkwosGOMbejumoRvubC9EOrMviT0E0Us9fvN9dA6zxJCNv6+ECGsb6oNWsgmpZT9/UTUZo3Em6AW34guTL4jiAudiCM1kLcw8/SmHERfT1/eueBiDqR1GK1n9w+K8nglxYxd6QAML4ztXoQuj8YFgWcgqdJp8qzty26vaboCNIxBCshyQDKov0aXr29v1ufq1PwPx5Q7bCoh6eoAAAAASUVORK5CYII=',
-      'Slackware': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AcEDi0qZWWDgAAAAx1JREFUOMt9kktoXHUchb/ffc1M7rySSdJMOknFPMRitLgoNKKI8ZHGKkgrjU8SitidimSh2UkXoQmoO1dGQSxJjdvOtqSaqlR0USEGSjVJGxuSmWR6M3fu4/93YX0g4rc9HA6cc4Q7DI+fpzz7PA8++2mxvZAeBZ4xhHtFcJRmXWsWvb36/OLcyxf5B/KHeYHy7DmGx1+YSDjmWTdlobTGMAStQGkNoLXS4tXDq7u7tUcWz49tA8jR8QUuzB5n5NTCV13F9JEo1JJwTLKuzU61QiOMcd0UDb+BncwQK3Rl15eNja3ui/Njq8aF2eMcO/XlBz0H8oO2ZUkum6A13WB99TtyzXlaCi24SaFa+ZFCzsG2DNnfkdbFjsI1APPhk+d6ujqznycdCxFozadYWvyMpx47wa+bPkGksKwUNnsk3TaCGASRXDZh5LpHXPPg4Rcni+3uYBxrtBbQghlscOVKmYHeEm0ZIZ9xyLffw41ND6VAa43SmjiMByzHYtjzwr9arfshxf5jOKlvKZfn8es77N2uks24PPfSFD/9Uvt7AtPKWmEU9d645eHYJo5tcKi/FX/zG+zmQxQH+rANk862DOW5N/hhaY64cJSa5xNFCgDDILZACMKYWAmh73HmzFsMlBQJ06LeiMinE1S3KzRCm5rXIIoUIoKIYCVM36urZFbEoiBLNMIhAE6/NsSB7h6SKZdL8xsUOnpx9j1KbTdARACIowArYe1ergfNT2i0mIbJys0GI6PT3N1/hJvrPxOFdRJNBQIy/FapI4Bpgohgcjuw+jq8jy8tV55MNBWI4ohS802CpizKv8q+FgALZAfYgSyAZtNro1oLaU1VvxCA029Oraxs7u/tKnXiNjn8HyKwur6lI++6vPK4V7IA7u+1Dyu1tr183ddNbkHuXP8/zEIYeFqiLRl6YO/p0bHJdflT/PD9qZa1W+ry99fcvlAlcZwUpuUAglIRYVgnDEIOlna4q0M/NPnuO1/PzMwg/045O/XeibUt5/Xangx6viSVFpK2jtMpvdyWCz+5ryf10clX3/amp6eZmJjgd441URWWJY8BAAAAAElFTkSuQmCC',
-      'Trisquel': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABjFBMVEX///8AAAAAAAAAAAAAADMAAGYAAAAAHFUAGWYAF10AImYAIGAAHloAHGMAKGsAGmYAJmYAJGEAKnUAJ1gAMXYAJnEAJGQAI2EAK28AK3cAGTEAMHgALXEALXgALG0AFUAAI2oAK3EAMngANoYALXMANIAAM4IANIIAL3gANIcANokANoQANYQAOY0ANIYANooAN4kAN40AOY0APZMANIUAOY0AO5AAPZUAPJAAP5MAPpQAQJUAOYsAPpYANoUAPpoAPpUAM4AAQJkAPZIAPJEAQpgAN4cAPpQAPZUAPJEAO4oAOosAOo8AQJoAOYsAO44AQpsAO48AQp0AP5UAQpoARJwAQ58ARaAAQZgAQ54AQ50AQpgARaIARqMARaMARaIAR6QARaIARaEASakARKEAR6MASqsARKEASKcAR6MARqYAR6UATbEATa8ARqUARKAAR6oARqMASKgATK8AR6QATbIATbAASq0AR6cASKgASqwAR6UASKcATa8ASqoASqwAS6wASKoAS60ATbHn4CTpAAAAhHRSTlMAAQIFBQUGCQoLDxAREhMUFBUYGhobHB0eHh8gIiIjJCQkJCYoLC0xMTE0NDo6Oz1BQUNHSUxOVFVVVldaWl5iY2RkZWZoamtsb3FycnR1ent9f4KDhIiJioyNkJGYm5+foqOkpqamqKmqrKytsLKzs7e4uLy8v8TFxcXGx8rO0NXY2eZc4XYcAAAA00lEQVR4XkWN1VoCUQAG/3NWtwh7CTsQJOyk7BaDxuxA6bbrxf32gt25m7kZqDRYxziooDV7+1AalMUavQh2AsEZoWvzigLun+T17/c8QiJZ7qu2QKiNmyZthdcR1/as353jIeU1GxMHo5XHdqPFeX8IaDMdHPYN6dRN7LR4qQewdTa35HWkyh+fbxERAMjwlAWJv3CPSKDQ+H7XvHdkV4Pua3Gtm4sPKIF/WV8dop4VKBw/NU33B3x1JbTt+XwhkJQoqRfWvHOy28uqH8JIdomR/R+s9yR3Cso77AAAAABJRU5ErkJggg==',
-      'Ubuntu': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABKVBMVEX////ojFzplGf1zbnqnHLvs5P10b3yuZv1xKrytZXvtJXys5LysI32waT0n3HxiVHwg0jxhk31kFn0h0zxf0P0hUrveTv2iU3yfkD1hEfyejv5eDLybSX0aR7zZxvyayH6ZxnxZBj4YhH7XAb5WALlUQLeTwHgUAHeTgHfTwD65NzdTQDdTQHdTgD31MfcTgLcTADcTQD////xt5/31Mf54dfmfE/dUAbeVQ/jcUDcTgHeWBnnflHohFvpjGbqkGztnX342Mz53dLgXiP65d399PHdUgrtoYLyu6Xzvaf76eLfXB/rkm/fWhvupojwrpTeVhTgYSfgYynzwa30xbL1ybnngFT31snngljhZS3539XhZzDiajbibDn77OX88Ovrl3X99vTjbz1fisGCAAAAMHRSTlMABgYGBwcHJiorMDA1NXGHjY2Nl5mZmZyfn6O5u8XHzc3X193j9fj4+vr6/f39/f08OUojAAAAx0lEQVR4Xi3HZVbDYBhGwQctWqzFPXiQ+36pu+LubvtfBKcN82/UEhld2vWXxyL6F92gbTPabse8hU/uHMx1SZoyyJWPTwq1Rs7GpYE9+Cg+OJcs1MHvU9y4fnrN31yUm18vMCIPjtw3QMndw4rs8ieVzAAcBlewpe1KM3uaBuD3Dda1BhWXAsi6AFY1a2SqifxZ+rnxWYcJDRkUS3fO1R5vwe+XZgw4D4L3RAJiknoXCVX3WeiUpJ5pIxTvVmg45pl5k4Ot/AGV2iqZBWgJJAAAAABJRU5ErkJggg==',
-      'Windows': 'iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA+pJREFUOE+F0n84FHYcB3CWSsL9ojo/6ik64c6PnTjmSS0limmrpBm2G002y++xzXRz6zE0R4nbw+RnTj/WD4sbanLkkAe55ccYlyNme4SrO9u9d13PI3/saZ+/vs/3831ez+f9eb5aWsuqy2mjRYeNUa7YmtjfTico7jNJ8z0eG24NB9vvnDrvufzpq89Npnr8VjMddNmuRh9rDfp36mFg91oM7qPIc5JdbDJq3An/JfCu7Hl53W2lpS220pP2OuniN299jAYbYizSENIoAgbCTdrTKtxOJVdvGo8psUwKy7Vxe4ez1YEVudGP8YEZzyveInFJ6mZRHHqYazDspw/pJwTIuERM5JIwmUdGdyo9K7/BszGzzg6fXzZHGJ8KvzQqXKOpoIeZLjofWR++BPWyCEnPY4xFGEKWQcLjMjKmr1MwfcMYwmz/Y4KOgNki0V5k1dkjUWCK93Kp2PMFFawos8cm1gZ2GqjLXktL4mbQPHLQ4B9ZDFE5+S356fQlyuJMqzH++HnTo6ui2OO1ko9Ul+4fxfd3d4F7k4YTReqpuFS88bGZUE2QNNDobuIq8Q5CduHb7lFJaTnvnym9ergjMWD/FG8zf+aKS3G9JO5C01Asah6wUXrvALKEDoitMMHhDKrKJdg8RU2s0EB2EWWur8dd7PDPFv6dUC0Gv3kAN36VPRGP/5k5NS6lljWxG0TDiSr1VKhoPwhevRMSqkwRxDObc/DavGtpP6zoi8XOyZfhnyNEvKANBU0P8VPfI/wyNCGXSn7wlEmyA9KrgmOKGth3eDVvPfyywq2dnUEv2R9qG2rLsH7xJXziKnWcI8tlTvEC7Mu8hROlImTU9aKqcwQ1vWOihWFu+sJknmph5CvxQh87c7bNh/NXo03hrMCosyvLmMNgMF7TQL6J1dsZIUVwjKqEO+cajp5vxPN439U/gKBt8PTcYHzL/BgHCyOf4unAISj6mFC2bYC82kB5Ls460NHRUVsDeYSXpGw7UgC7sAtwShDgzdM38W7BbURXtqpqhfmB8sEQuXwoCM/6faGQuGCxyxyKWhIm+PrSD495WL3cT0hhi8Whc3NbAs9KaOyCTvrJ8qkdX19XBeTUDU00+55USFzVU2yHstcaix0mUAjJkJeuRU868Ucmk0lcguiBnMAVxjbbdHV1yeq8+u4Hgo22huSG+iQXp83ftaxW3lsPZcs6KG5T8OwaAfJiPcxlrVRVRhvF02i0F/t5VbHZ7JWDfErKTLnhE3mFPuRFepg/uxqz6TqLv6euGj3ut87t/4ylvre3t3ZehOWWO1zjSFEqMVP4GfGb/DBykJcjmaZOoLsc+hcVY/LaAgcTQAAAAABJRU5ErkJggg==',
-      'OpenBSD': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoYAykIPu64pQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAADTklEQVQ4y32RXUxTdxjGn3N6eujoKT3SUkuk3VoBGfVjgFXAsZ7WkipyYXQbuu3CzUXZmGRbssnFEseFkWzgcGzGXky9MWL8TsC4IeFgtK4oAqOnG5vMVl1pCMVWQD7b/y5M6jLdflfvxfPked/nBQA0NDSChqnGVrLuGkES742NhJAdhAKAuk9yyUs5Gry7RQMZAARCWgivpQiPe71P5DUfH0xaqTL7m/iiLkJmphawa+e4SM2PvUyC4yUIBu8CnAQKAK53rCA5OUtQtStVpJ4Gw/FOBddZVKhCfq4MP4n6+at+DUsJm/e0G9JZzYEvI2tHwlEYjDxomkZ+3nG8WroRtHihZVOhVlorDQzh0okhcByDP4ZGcf+X9XAsvY5/RsBa7Kq5H/CqLctKyl/g08S2i6fq8W/MS3P34T9wNDVYSeDX1eTD9xhiLXbtB/Akwmmv6Kr+ICFkLpGhtNSM3qsSstS3oX8lSsmsxS6ZVn3j6PvVVqhUcvC8AtPxVPxwygVKvngN89WOjgVprggGA4eenjB4nsXsTASpC63I0wVTZYPR11FoKRB8Ax54PCFk6BhMTk5CPR3GSbHouGzknr/bYFq9EAvfc9Tu1sLjHcXNKxLuTOTgzOlOe7IHBc/beAXWpWmXlz8a84nhcLQ+ecVzsAEQrMWuMX+f9HZF2YPZ28FVSNfoPWqOzMUmqYMAJm7+/OOzXQFwHGpyEV+vi+yvtxBC9pDmpgJC4tvI3mo9GTitIxvW24nT7ug67HY/3eDs2bbyrVsrY2day70rV6kRfDAHk5lDLJqAmmeRiD9GJDKHvwb74R8G0mkTPjrQTTG122xkTTbwaV2b1H4u16JQKXGr7yG2b8/H1MQ09IsTSEmRwzf4CCwzD+dmE1re8CI7wwi5XNlFf9vaTXX4dWJg4LLl7h05fpNGwNAMWpp9CIVYNO/tRCzGwpDFQaVMQTS2CKY0BWr3GVGWNSXKACDDaA4Mh976pq9f5Sy09GgKlmeAMIBKzUKpU+BFoxJecRhUfAbMxDi4eADfHVmE79v7q575gvvYeVvjZ58LD5mwsKUyX0hnf0feslnQCWD4zxnc6reKisxsfH2oscqcmTmK/+Ow252cna7K52r+Bky6PqmoT5HBAAAAAElFTkSuQmCC',
-      'Gnu': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoYAywUV5gQrwAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAADcElEQVQ4y43Tb0jjBRzH8c9v+7nNMebcUW21Cc78g/wcuhByIScoMRwoTBmFlZCmIJ14axqkgoYIkXIqKIVBEuJNUBEUPRlpqDC3Q2Ex0nTezun2YOaPLXNIv7Vvj7zgiOj1+PPk/eADjuNEuHN6ekqMw+H4IzMz8xChUCjV1NT0JbO7uxtfXFy8NZvNr21tbd0AAEQikY6I0m1tbQbx2NjYZiqV+vn29jY+PDw8xhYWFj45PDzcb25uhlQqfSTief6X0dFRpqKigvF4PPPipaWlY7lcXhCLxXJnZmY+ZTY2NnzX19ePGxsbHw0MDLivrq5mc3Jy2pPJZLVWq/2cdbvdDSzLholoNJ1OMy6Xq0Ymk5HNZktOTU29qMgA8HYqlaKDgwNKp9M0PT09BgAM/iGuqqoimUx2yPP8U5/P9wEAMB0dHRUKheJHiUTyeGhoqAUAnE7nR0qlsjcQCLwjlsvlz+bm5mQWi0VSWlr6bXV1tU6hUMj6+/vfN5lMN0xxcfG1zWZ7SETTSqWSGhoamPHxcajV6s+8Xu9Xou7u7t9VKtW00+mkSCTC6PV6aDQa8Dw/Wl9fP8UAQCgUosvLSyovL2eWl5dRUFBw7Ha7v9vc3By5K3g1EAg8FQSBiIguLi4IgBwA2LtEjuPuJxKJ62AwKFpdXf0eQBIvYVmW/cLlchEAWK1WAADT09NzX6PR/OTz+eKVlZUzKpVqTyqVvsnzfLCkpGSrtrb2t97eXnFeXl5ZKpWyZ2RkPPP7/UUnJyefGI3GU+zt7aU4jotOTk7mAUBfX1+b1Wq9kcvlBIAcDgctLCyQxWKhoqIi6uzs/BoAVlZW3qqpqbllZmdnf1hfX//Q4/HEzWbzX+3t7fcMBgMFg0EYjUYmEolAEAREo1Hk5+fT+fk5Mzg4GD86OpJ0dXXJGQBoaWl5Ra/XP6yrq3tQVlam2N7ehslkAsuySCaTUKvVSCQS2NnZSXAcJxYEQTEyMvKeIAhLDADY7fZ7BoPhm6ysLFpbWzuan5//WKvVvsHzPEWjUSYSiSA3N5d0Oh0TjUaf+/1+S2Nj46/4FwYAr7e2tnbF4/E/iYjC4TCFw+F0LBaj/f19mpiYeID/IAagAyABYLXb7cLZ2Rml02nyer3POY6rwv8hEr34u0IkEk1mZ2cTgGMA7768/RtL5JKsGzrLIgAAAABJRU5ErkJggg==',
-      'CrunchBang': 'iVBORw0KGgoAAAANSUhEUgAAABYAAAAQCAQAAAC45EetAAAA8ElEQVR4XnWOsUpCYQBGz1TIHYu2Qix6g0DEtSeQu/UIISJtUS8gJq61F1wcdMohcBDxKUR8hsz1xA/y44/cs3znbB+RJ0Skl3pSkeFQbUs79VAPzrwPFRmN1Ja0Ug/16I93+1oi4lKte+zMXv32WuoAm43lXMrqzbFncgWw21lORf4+/PREKpAhYqZuPXZ+T/3yXbZEajV1JavUQ104sRcq0myqc5mnHurWqc/7yhExVwuPncl+C4Bu13L60ueAwcByOtLhgAIRCzU38fRGTmSxUBvSSD3Ui1NvQkXWa7Uq1dRD9R17HiqyRUSy1NP6B7e1Yu2GtlUKAAAAAElFTkSuQmCC',
-      'Yuno': 'iVBORw0KGgoAAAANSUhEUgAAABgAAAAPCAYAAAD+pA/bAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAABDtJREFUOE+FlHtMm1UYxrtsi8aEgCb+oTFmZur+WNS5RaPERU10C2qGaBgb6hgwLwMmHTIKlIKlQIHSQrmU24BSSmnpBVooUmihtEC5yKWDjVu5uOkcEca4lG5E93j6EQmELX7Jky/fOed9fu973vMdGu0xT3Cgz57yXMZLDdXcy821PFWLKmuA6HqLMqtLX5POl4iYb2ukWW8IOOFe/qfe3/M4n0eOjwyZD8//bldODOk37N1yDJgl+LVdjEGLFKO9KkzZm8hbje7mIrTXZ7sMtTydrJh15H8hHW11XvN/jGS7VudcD5w34ZZzeQYb67fwYO03LN4exo1+LWzNxbA05O5QuzbHqRYn+++CHDx4YK9WLfaedfQzV5em54g5Zbi8OIml+VFMDLWQ7GXoaSmFWZsDZVGCO2u0EbkhHTrhFqi9PmelSsQ8tAtSVch60dpUeGe4kxgZxegzVkBzlQ2NKBG2+iJIMqMok9r8OLRIMqApToSqmAWTmk9B2+o2YW79oshU7ABcuvAFrVGWXkVKpBYoSaBSxIS2mINpiwbjZiUMZRloVfJQyaXDKObBpimBScpHFe8KmmXpaKhK3arGrBVuVBclHN2CiPNin1OVs1tVJYlQlyZBxA6DviQVo6ZaOKd7sTplw53BVugruBBzfsRslw7rZPxaczWutSpQV/gzJPxo1JexyfaxKBBpuiEx+tw+CpKdEvGWTprGlhcwqbIzL5/DYKMYndpK3L1hxf3ZfkrzwybUZjPhnOqmvlcmutFF1jis9QSShOrcWNSXJ1MA0ou/NZWc8Ddfe4VGO3bk0JON1dyMMlK+gmxNrZCFhZF2Kng7YNO0awt4b7wLNp2EqtAsF6ImP56SG0B6siovTYpIjg15gapCVhAfJRUyIBFEo6k8AyuTtkcC/qvG/XbDexulWJvqgYH0o0nKhVHFJ40XwFQnWM5OCX+XMg86c3KvVMSMapCmPpSTIygTxGKZZOcOXhrr3Mp4uzkFuG6B3ajE3TELDDU8qEmsmvRATxquKkxAnSTFjwKEfv3JU9JC5unG6rQ1bTkbQ4Yq/DVgxOqwBWt2K9Yne3ZCZvrgHO2k5paHzOhSiVCZSkdNTgzy40JRlPgDhDHBCxUZdCs91G8fLeK87zOl6XSOICZYXMGNhDqX9fDP/mbK2DXVi/szm03eLpejl5pzOfqwOt4JBT8OeYwQt/4R/BR0OzXiLCM5LOCji/4nXt46rpywgG+zor5RxgSdupBzJdglSY+5ZZbl3XNY6mbn7W0Lcx06zBg1WBjtcC6OmG+OmRTrFrnIUZESZeVeCpwh8TpiPsQ47/tloM97T+/6m8mg55mT3tStyL54mhlwwtszNvjzD8/6HH8i7PvvPPRioZdRWuDBZUR6pEWG7I8P9Xs1Jsj36MfvvO5J/+rTw58dP7afJPfBgeef3XGz/gskFVpJc4HwGwAAAABJRU5ErkJggg=='
-    }
-  };
-
-  ExpandComment = {
-    init: function() {
-      if (g.VIEW !== 'index' || !Conf['Comment Expansion']) {
-        return;
-      }
-      if (g.BOARD.ID === 'g') {
-        this.callbacks.push(Fourchan.code);
-      }
-      if (g.BOARD.ID === 'sci') {
-        this.callbacks.push(Fourchan.math);
-      }
-      return Post.prototype.callbacks.push({
-        name: 'Comment Expansion',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var a;
-
-      if (a = $('.abbr > a', this.nodes.comment)) {
-        return $.on(a, 'click', ExpandComment.cb);
-      }
-    },
-    callbacks: [],
-    cb: function(e) {
-      var post;
-
-      e.preventDefault();
-      post = Get.postFromNode(this);
-      return ExpandComment.expand(post);
-    },
-    expand: function(post) {
-      var a;
-
-      if (post.nodes.longComment && !post.nodes.longComment.parentNode) {
-        $.replace(post.nodes.shortComment, post.nodes.longComment);
-        post.nodes.comment = post.nodes.longComment;
-        return;
-      }
-      if (!(a = $('.abbr > a', post.nodes.comment))) {
-        return;
-      }
-      a.textContent = "Post No." + post + " Loading...";
-      return $.cache("//api.4chan.org" + a.pathname + ".json", function() {
-        return ExpandComment.parse(this, a, post);
-      });
-    },
-    contract: function(post) {
-      var a;
-
-      if (!post.nodes.shortComment) {
-        return;
-      }
-      a = $('.abbr > a', post.nodes.shortComment);
-      a.textContent = 'here';
-      $.replace(post.nodes.longComment, post.nodes.shortComment);
-      return post.nodes.comment = post.nodes.shortComment;
-    },
-    parse: function(req, a, post) {
-      var callback, clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
-
-      status = req.status;
-      if (![200, 304].contains(status)) {
-        a.textContent = "Error " + req.statusText + " (" + status + ")";
-        return;
-      }
-      posts = JSON.parse(req.response).posts;
-      if (spoilerRange = posts[0].custom_spoiler) {
-        Build.spoilerRange[g.BOARD] = spoilerRange;
-      }
-      for (_i = 0, _len = posts.length; _i < _len; _i++) {
-        postObj = posts[_i];
-        if (postObj.no === post.ID) {
-          break;
-        }
-      }
-      if (postObj.no !== post.ID) {
-        a.textContent = "Post No." + post + " not found.";
-        return;
-      }
-      comment = post.nodes.comment;
-      clone = comment.cloneNode(false);
-      clone.innerHTML = postObj.com;
-      _ref = $$('.quotelink', clone);
-      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
-        quote = _ref[_j];
-        href = quote.getAttribute('href');
-        if (href[0] === '/') {
-          continue;
-        }
-        quote.href = "/" + post.board + "/res/" + href;
-      }
-      post.nodes.shortComment = comment;
-      $.replace(comment, clone);
-      post.nodes.comment = post.nodes.longComment = clone;
-      post.parseComment();
-      post.parseQuotes();
-      _ref1 = ExpandComment.callbacks;
-      for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-        callback = _ref1[_k];
-        callback.call(post);
-      }
-    }
-  };
-
-  ExpandThread = {
-    init: function() {
-      if (g.VIEW !== 'index' || !Conf['Thread Expansion']) {
-        return;
-      }
-      return Thread.prototype.callbacks.push({
-        name: 'Thread Expansion',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var a, span;
-
-      if (!(span = $('.summary', this.OP.nodes.root.parentNode))) {
-        return;
-      }
-      a = $.el('a', {
-        textContent: "+ " + span.textContent,
-        className: 'summary',
-        href: 'javascript:;'
-      });
-      $.on(a, 'click', ExpandThread.cbToggle);
-      return $.replace(span, a);
-    },
-    cbToggle: function() {
-      var op;
-
-      op = Get.postFromRoot(this.previousElementSibling);
-      return ExpandThread.toggle(op.thread);
-    },
-    toggle: function(thread) {
-      var a, inlined, num, post, replies, reply, threadRoot, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
-
-      threadRoot = thread.OP.nodes.root.parentNode;
-      a = $('.summary', threadRoot);
-      switch (thread.isExpanded) {
-        case false:
-        case void 0:
-          thread.isExpanded = 'loading';
-          _ref = $$('.thread > .postContainer', threadRoot);
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            post = _ref[_i];
-            ExpandComment.expand(Get.postFromRoot(post));
-          }
-          if (!a) {
-            thread.isExpanded = true;
-            return;
-          }
-          thread.isExpanded = 'loading';
-          a.textContent = a.textContent.replace('+', '× Loading...');
-          $.cache("//api.4chan.org/" + thread.board + "/res/" + thread + ".json", function() {
-            return ExpandThread.parse(this, thread, a);
-          });
-          break;
-        case 'loading':
-          thread.isExpanded = false;
-          if (!a) {
-            return;
-          }
-          a.textContent = a.textContent.replace('× Loading...', '+');
-          break;
-        case true:
-          thread.isExpanded = false;
-          if (a) {
-            a.textContent = a.textContent.replace('-', '+');
-            num = (function() {
-              if (thread.isSticky) {
-                return 1;
-              } else {
-                switch (g.BOARD.ID) {
-                  case 'b':
-                  case 'vg':
-                  case 'q':
-                    return 3;
-                  case 't':
-                    return 1;
-                  default:
-                    return 5;
-                }
-              }
-            })();
-            replies = $$('.thread > .replyContainer', threadRoot).slice(0, -num);
-            for (_j = 0, _len1 = replies.length; _j < _len1; _j++) {
-              reply = replies[_j];
-              if (Conf['Quote Inlining']) {
-                while (inlined = $('.inlined', reply)) {
-                  inlined.click();
-                }
-              }
-              $.rm(reply);
-            }
-          }
-          _ref1 = $$('.thread > .postContainer', threadRoot);
-          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
-            post = _ref1[_k];
-            ExpandComment.contract(Get.postFromRoot(post));
-          }
-      }
-    },
-    parse: function(req, thread, a) {
-      var link, node, nodes, post, posts, replies, reply, spoilerRange, status, _i, _len;
-
-      if (a.textContent[0] === '+') {
-        return;
-      }
-      status = req.status;
-      if (![200, 304].contains(status)) {
-        a.textContent = "Error " + req.statusText + " (" + status + ")";
-        $.off(a, 'click', ExpandThread.cb.toggle);
-        return;
-      }
-      thread.isExpanded = true;
-      a.textContent = a.textContent.replace('× Loading...', '-');
-      posts = JSON.parse(req.response).posts;
-      if (spoilerRange = posts[0].custom_spoiler) {
-        Build.spoilerRange[g.BOARD] = spoilerRange;
-      }
-      replies = posts.slice(1);
-      posts = [];
-      nodes = [];
-      for (_i = 0, _len = replies.length; _i < _len; _i++) {
-        reply = replies[_i];
-        if (post = thread.posts[reply.no]) {
-          nodes.push(post.nodes.root);
-          continue;
-        }
-        node = Build.postFromObject(reply, thread.board);
-        post = new Post(node, thread, thread.board);
-        link = $('a[title="Highlight this post"]', node);
-        link.href = "res/" + thread + "#p" + post;
-        link.nextSibling.href = "res/" + thread + "#q" + post;
-        posts.push(post);
-        nodes.push(node);
-      }
-      Main.callbackNodes(Post, posts);
-      $.after(a, nodes);
-      return Fourchan.parseThread(thread.ID, 1, nodes.length);
-    }
-  };
-
-  FileInfo = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['File Info Formatting']) {
-        return;
-      }
-      this.funk = this.createFunc(Conf['fileInfo']);
-      return Post.prototype.callbacks.push({
-        name: 'File Info Formatting',
-        cb: this.node
-      });
-    },
-    node: function() {
-      if (!this.file || this.isClone) {
-        return;
-      }
-      return this.file.text.innerHTML = FileInfo.funk(FileInfo, this);
-    },
-    createFunc: function(format) {
-      var code;
-
-      code = format.replace(/%(.)/g, function(s, c) {
-        if (c in FileInfo.formatters) {
-          return "' + FileInfo.formatters." + c + ".call(post) + '";
-        } else {
-          return s;
-        }
-      });
-      return Function('FileInfo', 'post', "return '" + code + "'");
-    },
-    convertUnit: function(size, unit) {
-      var i;
-
-      if (unit === 'B') {
-        return "" + (size.toFixed()) + " Bytes";
-      }
-      i = 1 + ['KB', 'MB'].indexOf(unit);
-      while (i--) {
-        size /= 1024;
-      }
-      size = unit === 'MB' ? Math.round(size * 100) / 100 : size.toFixed();
-      return "" + size + " " + unit;
-    },
-    escape: function(name) {
-      return name.replace(/<|>/g, function(c) {
-        return c === '<' && '&lt;' || '&gt;';
-      });
-    },
-    formatters: {
-      t: function() {
-        return this.file.URL.match(/\d+\..+$/)[0];
-      },
-      T: function() {
-        return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.t.call(this)) + "</a>";
-      },
-      l: function() {
-        return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.n.call(this)) + "</a>";
-      },
-      L: function() {
-        return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.N.call(this)) + "</a>";
-      },
-      n: function() {
-        var fullname, shortname;
-
-        fullname = this.file.name;
-        shortname = Build.shortFilename(this.file.name, this.isReply);
-        if (fullname === shortname) {
-          return FileInfo.escape(fullname);
-        } else {
-          return "<span class=fntrunc>" + (FileInfo.escape(shortname)) + "</span><span class=fnfull>" + (FileInfo.escape(fullname)) + "</span>";
-        }
-      },
-      N: function() {
-        return FileInfo.escape(this.file.name);
-      },
-      p: function() {
-        if (this.file.isSpoiler) {
-          return 'Spoiler, ';
-        } else {
-          return '';
-        }
-      },
-      s: function() {
-        return this.file.size;
-      },
-      B: function() {
-        return FileInfo.convertUnit(this.file.sizeInBytes, 'B');
-      },
-      K: function() {
-        return FileInfo.convertUnit(this.file.sizeInBytes, 'KB');
-      },
-      M: function() {
-        return FileInfo.convertUnit(this.file.sizeInBytes, 'MB');
-      },
-      r: function() {
-        if (this.file.isImage) {
-          return this.file.dimensions;
-        } else {
-          return 'PDF';
-        }
-      }
-    }
-  };
-
-  Fourchan = {
-    init: function() {
-      var board;
-
-      if (g.VIEW === 'catalog') {
-        return;
-      }
-      board = g.BOARD.ID;
-      if (board === 'g') {
-        $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML);\n}, false);");
-        Post.prototype.callbacks.push({
-          name: 'Parse /g/ code',
-          cb: this.code
-        });
-      }
-      if (board === 'sci') {
-        $.globalEval("window.addEventListener('jsmath', function(e) {\n  if (jsMath.loaded) {\n    // process one post\n    jsMath.ProcessBeforeShowing(e.detail);\n  } else {\n    // load jsMath and process whole document\n    jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);\n    jsMath.Autoload.LoadJsMath();\n  }\n}, false);");
-        return Post.prototype.callbacks.push({
-          name: 'Parse /sci/ math',
-          cb: this.math
-        });
-      }
-    },
-    code: function() {
-      var pre, _i, _len, _ref;
-
-      if (this.isClone) {
-        return;
-      }
-      _ref = $$('.prettyprint', this.nodes.comment);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        pre = _ref[_i];
-        $.event('prettyprint', pre, window);
-      }
-    },
-    math: function() {
-      if (this.isClone || !$('.math', this.nodes.comment)) {
-        return;
-      }
-      return $.event('jsmath', this.nodes.post, window);
-    },
-    parseThread: function(threadID, offset, limit) {
-      return $.event('4chanParsingDone', {
-        threadId: threadID,
-        offset: offset,
-        limit: limit
-      });
-    }
-  };
-
-  Header = {
-    init: function() {
-      var barFixedToggler, barPositionToggler, customNavToggler, editCustomNav, footerToggler, headerToggler,
-        _this = this;
-
-      this.menu = new UI.Menu('header');
-      this.menuButton = $.el('span', {
-        className: 'menu-button',
-        innerHTML: '<i></i>'
-      });
-      barFixedToggler = $.el('label', {
-        innerHTML: '<input type=checkbox name="Fixed Header"> Fixed Header'
-      });
-      headerToggler = $.el('label', {
-        innerHTML: '<input type=checkbox name="Header auto-hide"> Auto-hide header'
-      });
-      barPositionToggler = $.el('label', {
-        innerHTML: '<input type=checkbox name="Bottom header"> Bottom header'
-      });
-      customNavToggler = $.el('label', {
-        innerHTML: '<input type=checkbox name="Custom Board Navigation"> Custom board navigation'
-      });
-      footerToggler = $.el('label', {
-        innerHTML: "<input type=checkbox " + (!Conf['Bottom Board List'] ? 'checked' : '') + "> Hide bottom board list"
-      });
-      editCustomNav = $.el('a', {
-        textContent: 'Edit custom board navigation',
-        href: 'javascript:;'
-      });
-      this.barFixedToggler = barFixedToggler.firstElementChild;
-      this.barPositionToggler = barPositionToggler.firstElementChild;
-      this.headerToggler = headerToggler.firstElementChild;
-      this.footerToggler = footerToggler.firstElementChild;
-      this.customNavToggler = customNavToggler.firstElementChild;
-      $.on(this.menuButton, 'click', this.menuToggle);
-      $.on(this.barFixedToggler, 'change', this.toggleBarFixed);
-      $.on(this.barPositionToggler, 'change', this.toggleBarPosition);
-      $.on(this.headerToggler, 'change', this.toggleBarVisibility);
-      $.on(this.footerToggler, 'change', this.toggleFooterVisibility);
-      $.on(this.customNavToggler, 'change', this.toggleCustomNav);
-      $.on(editCustomNav, 'click', this.editCustomNav);
-      this.setBarFixed(Conf['Fixed Header']);
-      this.setBarVisibility(Conf['Header auto-hide']);
-      $.sync('Fixed Header', Header.setBarFixed);
-      $.sync('Bottom Header', Header.setBarPosition);
-      $.sync('Header auto-hide', Header.setBarVisibility);
-      this.addShortcut(Header.menuButton);
-      $.event('AddMenuEntry', {
-        type: 'header',
-        el: $.el('span', {
-          textContent: 'Header'
-        }),
-        order: 107,
-        subEntries: [
-          {
-            el: barFixedToggler
-          }, {
-            el: headerToggler
-          }, {
-            el: barPositionToggler
-          }, {
-            el: footerToggler
-          }, {
-            el: customNavToggler
-          }, {
-            el: editCustomNav
-          }
-        ]
-      });
-      $.on(window, 'load hashchange', Header.hashScroll);
-      $.on(d, 'CreateNotification', this.createNotification);
-      $.asap((function() {
-        return d.body;
-      }), function() {
-        if (!Main.isThisPageLegit()) {
-          return;
-        }
-        $.asap((function() {
-          return $.id('boardNavMobile') || d.readyState === 'complete';
-        }), Header.setBoardList);
-        $.prepend(d.body, _this.bar);
-        $.add(d.body, Header.hover);
-        return _this.setBarPosition(Conf['Bottom Header']);
-      });
-      return $.ready(function() {
-        var a, cs;
-
-        _this.footer = $.id('boardNavDesktopFoot');
-        if (a = $("a[href*='/" + g.BOARD + "/']", $.id('boardNavDesktopFoot'))) {
-          a.className = 'current';
-        }
-        cs = $.id('settingsWindowLink');
-        cs.textContent = 'Catalog Settings';
-        if (g.VIEW === 'catalog') {
-          _this.addShortcut(cs);
-        }
-        Header.setFooterVisibility(Conf['Bottom Board List']);
-        return $.sync('Bottom Board List', Header.setFooterVisibility);
-      });
-    },
-    bar: $.el('div', {
-      id: 'header-bar'
-    }),
-    notify: $.el('div', {
-      id: 'notifications'
-    }),
-    shortcuts: $.el('span', {
-      id: 'shortcuts'
-    }),
-    hover: $.el('div', {
-      id: 'hoverUI'
-    }),
-    toggle: $.el('div', {
-      id: 'scroll-marker'
-    }),
-    setBoardList: function() {
-      var a, boardList, btn, fourchannav, fullBoardList;
-
-      fourchannav = $.id('boardNavDesktop');
-      if (a = $("a[href*='/" + g.BOARD + "/']", fourchannav)) {
-        a.className = 'current';
-      }
-      boardList = $.el('span', {
-        id: 'board-list',
-        innerHTML: "<span id=custom-board-list></span><span id=full-board-list hidden>[<a href=javascript:; class='hide-board-list-button'> - </a>] " + fourchannav.innerHTML + "</span>"
-      });
-      fullBoardList = $('#full-board-list', boardList);
-      btn = $('.hide-board-list-button', fullBoardList);
-      $.on(btn, 'click', Header.toggleBoardList);
-      $.rm($('#navtopright', fullBoardList));
-      $.add(boardList, fullBoardList);
-      $.add(Header.bar, [boardList, Header.shortcuts, Header.notify, Header.toggle]);
-      Header.setCustomNav(Conf['Custom Board Navigation']);
-      Header.generateBoardList(Conf['boardnav']);
-      $.sync('Custom Board Navigation', Header.setCustomNav);
-      return $.sync('boardnav', Header.generateBoardList);
-    },
-    generateBoardList: function(text) {
-      var as, list, nodes;
-
-      list = $('#custom-board-list', Header.bar);
-      $.rmAll(list);
-      if (!text) {
-        return;
-      }
-      as = $$('#full-board-list a', Header.bar);
-      nodes = text.match(/[\w@]+(-(all|title|replace|full|index|catalog|text:"[^"]+"))*|[^\w@]+/g).map(function(t) {
-        var a, board, m, _i, _len;
-
-        if (/^[^\w@]/.test(t)) {
-          return $.tn(t);
-        }
-        if (/^toggle-all/.test(t)) {
-          a = $.el('a', {
-            className: 'show-board-list-button',
-            textContent: (t.match(/-text:"(.+)"/) || [null, '+'])[1],
-            href: 'javascript:;'
-          });
-          $.on(a, 'click', Header.toggleBoardList);
-          return a;
-        }
-        board = /^current/.test(t) ? g.BOARD.ID : t.match(/^[^-]+/)[0];
-        for (_i = 0, _len = as.length; _i < _len; _i++) {
-          a = as[_i];
-          if (a.textContent === board) {
-            a = a.cloneNode(true);
-            if (/-title/.test(t)) {
-              a.textContent = a.title;
-            } else if (/-replace/.test(t)) {
-              if ($.hasClass(a, 'current')) {
-                a.textContent = a.title;
-              }
-            } else if (/-full/.test(t)) {
-              a.textContent = "/" + board + "/ - " + a.title;
-            } else if (/-(index|catalog|text)/.test(t)) {
-              if (m = t.match(/-(index|catalog)/)) {
-                a.setAttribute('data-only', m[1]);
-                a.href = "//boards.4chan.org/" + board + "/";
-                if (m[1] === 'catalog') {
-                  a.href += 'catalog';
-                }
-              }
-              if (m = t.match(/-text:"(.+)"/)) {
-                a.textContent = m[1];
-              }
-            } else if (board === '@') {
-              $.addClass(a, 'navSmall');
-            }
-            return a;
-          }
-        }
-        return $.tn(t);
-      });
-      return $.add(list, nodes);
-    },
-    toggleBoardList: function() {
-      var bar, custom, full, showBoardList;
-
-      bar = Header.bar;
-      custom = $('#custom-board-list', bar);
-      full = $('#full-board-list', bar);
-      showBoardList = !full.hidden;
-      custom.hidden = !showBoardList;
-      return full.hidden = showBoardList;
-    },
-    setBarPosition: function(bottom) {
-      Header.barPositionToggler.checked = bottom;
-      if (bottom) {
-        $.rmClass(doc, 'top');
-        $.addClass(doc, 'bottom');
-        return $.after(Header.bar, Header.notify);
-      } else {
-        $.rmClass(doc, 'bottom');
-        $.addClass(doc, 'top');
-        return $.add(Header.bar, Header.notify);
-      }
-    },
-    toggleBarPosition: function() {
-      $.event('CloseMenu');
-      Header.setBarPosition(this.checked);
-      Conf['Bottom Header'] = this.checked;
-      return $.set('Bottom Header', this.checked);
-    },
-    setBarFixed: function(fixed) {
-      Header.barFixedToggler.checked = fixed;
-      if (fixed) {
-        $.addClass(doc, 'fixed');
-        return $.addClass(Header.bar, 'dialog');
-      } else {
-        $.rmClass(doc, 'fixed');
-        return $.rmClass(Header.bar, 'dialog');
-      }
-    },
-    toggleBarFixed: function() {
-      $.event('CloseMenu');
-      Header.setBarFixed(this.checked);
-      Conf['Fixed Header'] = this.checked;
-      return $.set('Fixed Header', this.checked);
-    },
-    setBarVisibility: function(hide) {
-      Header.headerToggler.checked = hide;
-      $.event('CloseMenu');
-      (hide ? $.addClass : $.rmClass)(Header.bar, 'autohide');
-      return (hide ? $.addClass : $.rmClass)(doc, 'autohide');
-    },
-    toggleBarVisibility: function(e) {
-      var hide, message;
-
-      if (e.type === 'mousedown' && e.button !== 0) {
-        return;
-      }
-      hide = this.nodeName === 'INPUT' ? this.checked : !$.hasClass(Header.bar, 'autohide');
-      Conf['Header auto-hide'] = hide;
-      $.set('Header auto-hide', hide);
-      Header.setBarVisibility(hide);
-      message = hide ? 'The header bar will automatically hide itself.' : 'The header bar will remain visible.';
-      return new Notification('info', message, 2);
-    },
-    setFooterVisibility: function(hide) {
-      Header.footerToggler.checked = hide;
-      return Header.footer.hidden = hide;
-    },
-    toggleFooterVisibility: function() {
-      var hide, message;
-
-      $.event('CloseMenu');
-      hide = this.nodeName === 'INPUT' ? this.checked : !!Header.footer.hidden;
-      Header.setFooterVisibility(hide);
-      $.set('Bottom Board List', hide);
-      message = hide ? 'The bottom navigation will now be hidden.' : 'The bottom navigation will remain visible.';
-      return new Notification('info', message, 2);
-    },
-    setCustomNav: function(show) {
-      var btn, cust, full, _ref;
-
-      Header.customNavToggler.checked = show;
-      cust = $('#custom-board-list', Header.bar);
-      full = $('#full-board-list', Header.bar);
-      btn = $('.hide-board-list-button', full);
-      return _ref = show ? [false, true] : [true, false], cust.hidden = _ref[0], full.hidden = _ref[1], _ref;
-    },
-    toggleCustomNav: function() {
-      $.cb.checked.call(this);
-      return Header.setCustomNav(this.checked);
-    },
-    editCustomNav: function() {
-      var settings;
-
-      Settings.open('Advanced');
-      settings = $.id('fourchanx-settings');
-      return $('input[name=boardnav]', settings).focus();
-    },
-    hashScroll: function() {
-      var hash, post;
-
-      if (!((hash = this.location.hash) && (post = $.id(hash.slice(1))))) {
-        return;
-      }
-      if ((Get.postFromRoot(post)).isHidden) {
-        return;
-      }
-      return Header.scrollToPost(post);
-    },
-    scrollToPost: function(post) {
-      var headRect, top;
-
-      top = post.getBoundingClientRect().top;
-      if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
-        headRect = Header.bar.getBoundingClientRect();
-        top += -headRect.top - headRect.height;
-      }
-      return ($.engine === 'webkit' ? d.body : doc).scrollTop += top;
-    },
-    addShortcut: function(el) {
-      var shortcut;
-
-      shortcut = $.el('span', {
-        className: 'shortcut'
-      });
-      $.add(shortcut, [$.tn(' ['), el, $.tn(']')]);
-      return $.prepend(Header.shortcuts, shortcut);
-    },
-    menuToggle: function(e) {
-      return Header.menu.toggle(e, this, g);
-    },
-    createNotification: function(e) {
-      var cb, content, lifetime, notif, type, _ref;
-
-      _ref = e.detail, type = _ref.type, content = _ref.content, lifetime = _ref.lifetime, cb = _ref.cb;
-      notif = new Notification(type, content, lifetime);
-      if (cb) {
-        return cb(notif);
-      }
-    }
-  };
-
-  Keybinds = {
-    init: function() {
-      var init;
-
-      if (g.VIEW === 'catalog' || !Conf['Keybinds']) {
-        return;
-      }
-      init = function() {
-        var node, _i, _len, _ref;
-
-        $.off(d, '4chanXInitFinished', init);
-        $.on(d, 'keydown', Keybinds.keydown);
-        _ref = $$('[accesskey]');
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          node = _ref[_i];
-          node.removeAttribute('accesskey');
-        }
-      };
-      return $.on(d, '4chanXInitFinished', init);
-    },
-    keydown: function(e) {
-      var form, key, notification, notifications, op, target, thread, threadRoot, _i, _len;
-
-      if (!(key = Keybinds.keyCode(e))) {
-        return;
-      }
-      target = e.target;
-      if (['INPUT', 'TEXTAREA'].contains(target.nodeName)) {
-        if (!/(Esc|Alt|Ctrl|Meta)/.test(key)) {
-          return;
-        }
-      }
-      threadRoot = Nav.getThread();
-      if (op = $('.op', threadRoot)) {
-        thread = Get.postFromNode(op).thread;
-      }
-      switch (key) {
-        case Conf['Toggle board list']:
-          if (Conf['Custom Board Navigation']) {
-            Header.toggleBoardList();
-          }
-          break;
-        case Conf['Open empty QR']:
-          Keybinds.qr(threadRoot);
-          break;
-        case Conf['Open QR']:
-          Keybinds.qr(threadRoot, true);
-          break;
-        case Conf['Open settings']:
-          Settings.open();
-          break;
-        case Conf['Close']:
-          if (Settings.dialog) {
-            Settings.close();
-          } else if ((notifications = $$('.notification')).length) {
-            for (_i = 0, _len = notifications.length; _i < _len; _i++) {
-              notification = notifications[_i];
-              $('.close', notification).click();
-            }
-          } else if (QR.nodes) {
-            QR.close();
-          }
-          break;
-        case Conf['Spoiler tags']:
-          if (target.nodeName !== 'TEXTAREA') {
-            return;
-          }
-          Keybinds.tags('spoiler', target);
-          break;
-        case Conf['Code tags']:
-          if (target.nodeName !== 'TEXTAREA') {
-            return;
-          }
-          Keybinds.tags('code', target);
-          break;
-        case Conf['Eqn tags']:
-          if (target.nodeName !== 'TEXTAREA') {
-            return;
-          }
-          Keybinds.tags('eqn', target);
-          break;
-        case Conf['Math tags']:
-          if (target.nodeName !== 'TEXTAREA') {
-            return;
-          }
-          Keybinds.tags('math', target);
-          break;
-        case Conf['Toggle sage']:
-          if (QR.nodes) {
-            Keybinds.sage();
-          }
-          break;
-        case Conf['Submit QR']:
-          if (QR.nodes && !QR.status()) {
-            QR.submit();
-          }
-          break;
-        case Conf['Watch']:
-          ThreadWatcher.toggle(thread);
-          break;
-        case Conf['Update']:
-          ThreadUpdater.update();
-          break;
-        case Conf['Expand image']:
-          Keybinds.img(threadRoot);
-          break;
-        case Conf['Expand images']:
-          Keybinds.img(threadRoot, true);
-          break;
-        case Conf['fappeTyme']:
-          if (!$('#menu.left')) {
-            Header.menuButton.click();
-          }
-          FappeTyme.input.click();
-          break;
-        case Conf['Front page']:
-          window.location = "/" + g.BOARD + "/0#delform";
-          break;
-        case Conf['Open front page']:
-          $.open("/" + g.BOARD + "/#delform");
-          break;
-        case Conf['Next page']:
-          if (form = $('.next form')) {
-            window.location = form.action;
-          }
-          break;
-        case Conf['Previous page']:
-          if (form = $('.prev form')) {
-            window.location = form.action;
-          }
-          break;
-        case Conf['Open catalog']:
-          if (Conf['External Catalog']) {
-            window.location = CatalogLinks.external(g.BOARD.ID);
-          } else {
-            window.location = "/" + g.BOARD + "/catalog";
-          }
-          break;
-        case Conf['Next thread']:
-          if (g.VIEW === 'thread') {
-            return;
-          }
-          Nav.scroll(+1);
-          break;
-        case Conf['Previous thread']:
-          if (g.VIEW === 'thread') {
-            return;
-          }
-          Nav.scroll(-1);
-          break;
-        case Conf['Expand thread']:
-          ExpandThread.toggle(thread);
-          break;
-        case Conf['Open thread']:
-          Keybinds.open(thread);
-          break;
-        case Conf['Open thread tab']:
-          Keybinds.open(thread, true);
-          break;
-        case Conf['Next reply']:
-          Keybinds.hl(+1, threadRoot);
-          break;
-        case Conf['Previous reply']:
-          Keybinds.hl(-1, threadRoot);
-          break;
-        case Conf['Hide']:
-          if (g.VIEW === 'index') {
-            ThreadHiding.toggle(thread);
-          }
-          break;
-        default:
-          return;
-      }
-      e.preventDefault();
-      return e.stopPropagation();
-    },
-    keyCode: function(e) {
-      var kc, key;
-
-      key = (function() {
-        switch (kc = e.keyCode) {
-          case 8:
-            return '';
-          case 13:
-            return 'Enter';
-          case 27:
-            return 'Esc';
-          case 37:
-            return 'Left';
-          case 38:
-            return 'Up';
-          case 39:
-            return 'Right';
-          case 40:
-            return 'Down';
-          default:
-            if ((48 <= kc && kc <= 57) || (65 <= kc && kc <= 90)) {
-              return String.fromCharCode(kc).toLowerCase();
-            } else {
-              return null;
-            }
-        }
-      })();
-      if (key) {
-        if (e.altKey) {
-          key = 'Alt+' + key;
-        }
-        if (e.ctrlKey) {
-          key = 'Ctrl+' + key;
-        }
-        if (e.metaKey) {
-          key = 'Meta+' + key;
-        }
-        if (e.shiftKey) {
-          key = 'Shift+' + key;
-        }
-      }
-      return key;
-    },
-    qr: function(thread, quote) {
-      if (!(Conf['Quick Reply'] && QR.postingIsEnabled)) {
-        return;
-      }
-      QR.open();
-      if (quote) {
-        QR.quote.call($('input', $('.post.highlight', thread) || thread));
-      }
-      QR.nodes.com.focus();
-      if (Conf['QR Shortcut']) {
-        return $.rmClass($('.qr-shortcut'), 'disabled');
-      }
-    },
-    tags: function(tag, ta) {
-      var range, selEnd, selStart, value;
-
-      value = ta.value;
-      selStart = ta.selectionStart;
-      selEnd = ta.selectionEnd;
-      ta.value = value.slice(0, selStart) + ("[" + tag + "]") + value.slice(selStart, selEnd) + ("[/" + tag + "]") + value.slice(selEnd);
-      range = ("[" + tag + "]").length + selEnd;
-      ta.setSelectionRange(range, range);
-      return $.event('input', null, ta);
-    },
-    sage: function() {
-      var isSage;
-
-      isSage = /sage/i.test(QR.nodes.email.value);
-      return QR.nodes.email.value = isSage ? "" : "sage";
-    },
-    img: function(thread, all) {
-      var post;
-
-      if (all) {
-        return ImageExpand.cb.toggleAll();
-      } else {
-        post = Get.postFromNode($('.post.highlight', thread) || $('.op', thread));
-        return ImageExpand.toggle(post);
-      }
-    },
-    open: function(thread, tab) {
-      var url;
-
-      if (g.VIEW !== 'index') {
-        return;
-      }
-      url = "/" + thread.board + "/res/" + thread;
-      if (tab) {
-        return $.open(url);
-      } else {
-        return location.href = url;
-      }
-    },
-    hl: function(delta, thread) {
-      var headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
-
-      if (Conf['Fixed Header'] && Conf['Bottom header']) {
-        topMargin = 0;
-      } else {
-        headRect = Header.bar.getBoundingClientRect();
-        topMargin = headRect.top + headRect.height;
-      }
-      if (postEl = $('.reply.highlight', thread)) {
-        $.rmClass(postEl, 'highlight');
-        rect = postEl.getBoundingClientRect();
-        if (rect.bottom >= topMargin && rect.top <= doc.clientHeight) {
-          root = postEl.parentNode;
-          next = $.x('child::div[contains(@class,"post reply")]', delta === +1 ? root.nextElementSibling : root.previousElementSibling);
-          if (!next) {
-            this.focus(postEl);
-            return;
-          }
-          if (!(g.VIEW === 'thread' || $.x('ancestor::div[parent::div[@class="board"]]', next) === thread)) {
-            return;
-          }
-          rect = next.getBoundingClientRect();
-          if (rect.top < 0 || rect.bottom > doc.clientHeight) {
-            if (delta === -1) {
-              window.scrollBy(0, rect.top - topMargin);
-            } else {
-              next.scrollIntoView(false);
-            }
-          }
-          this.focus(next);
-          return;
-        }
-      }
-      replies = $$('.reply', thread);
-      if (delta === -1) {
-        replies.reverse();
-      }
-      for (_i = 0, _len = replies.length; _i < _len; _i++) {
-        reply = replies[_i];
-        rect = reply.getBoundingClientRect();
-        if (delta === +1 && rect.top >= topMargin || delta === -1 && rect.bottom <= doc.clientHeight) {
-          this.focus(reply);
-          return;
-        }
-      }
-    },
-    focus: function(post) {
-      return $.addClass(post, 'highlight');
-    }
-  };
-
-  Redirect = {
-    init: function() {
-      return $.sync('archs', this.updateArchives);
-    },
-    updateArchives: function() {
-      return $.get('archivers', {}, function(_arg) {
-        var archivers;
-
-        archivers = _arg.archivers;
-        return Conf['archivers'] = archivers;
-      });
-    },
-    image: function(boardID, filename) {
-      switch (boardID) {
-        case 'a':
-        case 'gd':
-        case 'jp':
-        case 'm':
-        case 'q':
-        case 'tg':
-        case 'vg':
-        case 'vp':
-        case 'vr':
-        case 'wsg':
-          return "//archive.foolz.us/" + boardID + "/full_image/" + filename;
-        case 'u':
-          return "//nsfw.foolz.us/" + boardID + "/full_image/" + filename;
-        case 'po':
-          return "//archive.thedarkcave.org/" + boardID + "/full_image/" + filename;
-        case 'hr':
-        case 'tv':
-          return "http://archive.4plebs.org/" + boardID + "/full_image/" + filename;
-        case 'ck':
-        case 'fa':
-        case 'lit':
-        case 's4s':
-          return "//fuuka.warosu.org/" + boardID + "/full_image/" + filename;
-        case 'cgl':
-        case 'g':
-        case 'mu':
-        case 'w':
-          return "//rbt.asia/" + boardID + "/full_image/" + filename;
-        case 'an':
-        case 'k':
-        case 'toy':
-        case 'x':
-          return "http://archive.heinessen.com/" + boardID + "/full_image/" + filename;
-        case 'c':
-          return "//archive.nyafuu.org/" + boardID + "/full_image/" + filename;
-      }
-    },
-    post: function(boardID, postID) {
-      var archive, name, _base, _ref;
-
-      if (Redirect.post[boardID] == null) {
-        _ref = this.archiver;
-        for (name in _ref) {
-          archive = _ref[name];
-          if (archive.type === 'foolfuuka' && archive.boards.contains(boardID)) {
-            Redirect.post[boardID] = archive.base;
-            break;
-          }
-        }
-        (_base = Redirect.post)[boardID] || (_base[boardID] = false);
-      }
-      if (Redirect.post[boardID]) {
-        return "" + Redirect.post[boardID] + "/_/api/chan/post/?board=" + boardID + "&num=" + postID;
-      } else {
-        return null;
-      }
-    },
-    select: function(board) {
-      var archive, name, _ref, _results;
-
-      _ref = this.archiver;
-      _results = [];
-      for (name in _ref) {
-        archive = _ref[name];
-        if (!archive.boards.contains(board)) {
-          continue;
-        }
-        _results.push(name);
-      }
-      return _results;
-    },
-    to: function(data) {
-      var arch, archive, boardID;
-
-      boardID = data.boardID;
-      if ((arch = Conf.archivers[boardID]) == null) {
-        Conf.archivers[boardID] = arch = this.select(boardID)[0];
-        $.set('archivers', Conf.archivers);
-      }
-      return (arch && (archive = this.archiver[arch]) ? Redirect.path(archive.base, archive.type, data) : data.threadID ? "//boards.4chan.org/" + boardID + "/" : null);
-    },
-    archiver: {
-      'Foolz': {
-        base: 'https://archive.foolz.us',
-        boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'],
-        type: 'foolfuuka'
-      },
-      'NSFWFoolz': {
-        base: 'https://nsfw.foolz.us',
-        boards: ['u'],
-        type: 'foolfuuka'
-      },
-      'TheDarkCave': {
-        base: 'http://archive.thedarkcave.org',
-        boards: ['c', 'int', 'out', 'po'],
-        type: 'foolfuuka'
-      },
-      '4plebs': {
-        base: 'http://archive.4plebs.org',
-        boards: ['hr', 'tg', 'tv', 'x'],
-        base: 'foolfuuka'
-      },
-      'Warosu': {
-        base: '//fuuka.warosu.org',
-        boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg'],
-        type: 'fuuka'
-      },
-      'InstallGentoo': {
-        base: '//archive.installgentoo.net',
-        boards: ['diy', 'g', 'sci'],
-        type: 'fuuka'
-      },
-      'RebeccaBlackTech': {
-        base: '//rbt.asia',
-        boards: ['an', 'cgl', 'g', 'mu', 'w'],
-        type: 'fuuka_mail'
-      },
-      'Heinessen': {
-        base: 'http://archive.heinessen.com',
-        boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'],
-        type: 'fuuka'
-      },
-      'Cliche': {
-        base: '//www.cliché.net/4chan/cgi-board.pl',
-        boards: ['e'],
-        type: 'fuuka'
-      },
-      'NyaFuu': {
-        base: '//archive.nyafuu.org',
-        boards: ['c', 'w'],
-        type: 'fuuka'
-      }
-    },
-    path: function(base, archiver, data) {
-      var boardID, path, postID, threadID, type, value;
-
-      if (data.isSearch) {
-        boardID = data.boardID, type = data.type, value = data.value;
-        type = type === 'name' ? 'username' : type === 'MD5' ? 'image' : type;
-        value = encodeURIComponent(value);
-        if (archiver === 'foolfuuka') {
-          return "" + base + "/" + boardID + "/search/" + type + "/" + value;
-        } else if (type === 'image') {
-          return "" + base + "/" + boardID + "/?task=search2&search_media_hash=" + value;
-        } else {
-          return "" + base + "/" + boardID + "/?task=search2&search_" + type + "=" + value;
-        }
-      }
-      boardID = data.boardID, threadID = data.threadID, postID = data.postID;
-      path = threadID ? "" + boardID + "/thread/" + threadID : "" + boardID + "/post/" + postID;
-      if (archiver === 'foolfuuka') {
-        path += '/';
-      }
-      if (threadID && postID) {
-        path += archiver === 'foolfuuka' ? "#" + postID : "#p" + postID;
-      }
-      return "" + base + "/" + path;
-    }
-  };
-
-  RelativeDates = {
-    INTERVAL: $.MINUTE / 2,
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Relative Post Dates']) {
-        return;
-      }
-      $.on(d, 'visibilitychange ThreadUpdate', this.flush);
-      this.flush();
-      return Post.prototype.callbacks.push({
-        name: 'Relative Post Dates',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var dateEl;
-
-      if (this.isClone) {
-        return;
-      }
-      dateEl = this.nodes.date;
-      dateEl.title = dateEl.textContent;
-      return RelativeDates.setUpdate(this);
-    },
-    relative: function(diff, now, date) {
-      var days, months, number, rounded, unit, years;
-
-      unit = (number = diff / $.DAY) >= 1 ? (years = now.getYear() - date.getYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = (months + 12) % 12) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
-      rounded = Math.round(number);
-      if (rounded !== 1) {
-        unit += 's';
-      }
-      return "" + rounded + " " + unit + " ago";
-    },
-    stale: [],
-    flush: function() {
-      var now, update, _i, _len, _ref;
-
-      if (d.hidden) {
-        return;
-      }
-      now = new Date();
-      _ref = RelativeDates.stale;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        update = _ref[_i];
-        update(now);
-      }
-      RelativeDates.stale = [];
-      clearTimeout(RelativeDates.timeout);
-      return RelativeDates.timeout = setTimeout(RelativeDates.flush, RelativeDates.INTERVAL);
-    },
-    setUpdate: function(post) {
-      var markStale, setOwnTimeout, update;
-
-      setOwnTimeout = function(diff) {
-        var delay;
-
-        delay = diff < $.MINUTE ? $.SECOND - (diff + $.SECOND / 2) % $.SECOND : diff < $.HOUR ? $.MINUTE - (diff + $.MINUTE / 2) % $.MINUTE : diff < $.DAY ? $.HOUR - (diff + $.HOUR / 2) % $.HOUR : $.DAY - (diff + $.DAY / 2) % $.DAY;
-        return setTimeout(markStale, delay);
-      };
-      update = function(now) {
-        var date, diff, relative, singlePost, _i, _len, _ref;
-
-        date = post.info.date;
-        diff = now - date;
-        relative = RelativeDates.relative(diff, now, date);
-        _ref = [post].concat(post.clones);
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          singlePost = _ref[_i];
-          singlePost.nodes.date.firstChild.textContent = relative;
-        }
-        return setOwnTimeout(diff);
-      };
-      markStale = function() {
-        return RelativeDates.stale.push(update);
-      };
-      return update(new Date());
-    }
-  };
-
-  RemoveSpoilers = {
-    init: function() {
-      if (!Conf['Remove Spoilers']) {
-        return;
-      }
-      if (Conf['Indicate Spoilers']) {
-        this.wrapper = function(text) {
-          return "[spoiler]" + text + "[/spoiler]";
-        };
-      }
-      return Post.prototype.callbacks.push({
-        name: 'Reveal Spoilers',
-        cb: this.node
-      });
-    },
-    wrapper: function(text) {
-      return text;
-    },
-    node: function(post) {
-      var spoiler, spoilers, _i, _len;
-
-      spoilers = $$('s', this.nodes.comment);
-      for (_i = 0, _len = spoilers.length; _i < _len; _i++) {
-        spoiler = spoilers[_i];
-        $.replace(spoiler, $.tn(RemoveSpoilers.wrapper(spoiler.textContent)));
-      }
-    }
-  };
-
-  Report = {
-    init: function() {
-      if (!/report/.test(location.search)) {
-        return;
-      }
-      return $.ready(this.ready);
-    },
-    ready: function() {
-      var field, form;
-
-      form = $('form');
-      field = $.id('recaptcha_response_field');
-      $.on(field, 'keydown', function(e) {
-        if (e.keyCode === 8 && !field.value) {
-          return $.globalEval('Recaptcha.reload("t")');
-        }
-      });
-      return $.on(form, 'submit', function(e) {
-        var response;
-
-        e.preventDefault();
-        response = field.value.trim();
-        if (!/\s/.test(response)) {
-          field.value = "" + response + " " + response;
-        }
-        return form.submit();
-      });
-    }
-  };
-
-  Nav = {
-    init: function() {
-      var append, next, prev, span;
-
-      switch (g.VIEW) {
-        case 'index':
-          if (!Conf['Index Navigation']) {
-            return;
-          }
-          break;
-        case 'thread':
-          if (!Conf['Reply Navigation']) {
-            return;
-          }
-          break;
-        default:
-          return;
-      }
-      span = $.el('span', {
-        id: 'navlinks'
-      });
-      prev = $.el('a', {
-        textContent: '▲',
-        href: 'javascript:;'
-      });
-      next = $.el('a', {
-        textContent: '▼',
-        href: 'javascript:;'
-      });
-      $.on(prev, 'click', this.prev);
-      $.on(next, 'click', this.next);
-      $.add(span, [prev, $.tn(' '), next]);
-      append = function() {
-        $.off(d, '4chanXInitFinished', append);
-        return $.add(d.body, span);
-      };
-      return $.on(d, '4chanXInitFinished', append);
-    },
-    prev: function() {
-      if (g.VIEW === 'thread') {
-        return window.scrollTo(0, 0);
-      } else {
-        return Nav.scroll(-1);
-      }
-    },
-    next: function() {
-      if (g.VIEW === 'thread') {
-        return window.scrollTo(0, d.body.scrollHeight);
-      } else {
-        return Nav.scroll(+1);
-      }
-    },
-    getThread: function(full) {
-      var headRect, i, rect, thread, threads, topMargin, _i, _len;
-
-      if (Conf['Bottom header']) {
-        topMargin = 0;
-      } else {
-        headRect = Header.bar.getBoundingClientRect();
-        topMargin = headRect.top + headRect.height;
-      }
-      threads = $$('.thread:not([hidden])');
-      for (i = _i = 0, _len = threads.length; _i < _len; i = ++_i) {
-        thread = threads[i];
-        rect = thread.getBoundingClientRect();
-        if (rect.bottom > topMargin) {
-          if (full) {
-            return [threads, thread, i, rect, topMargin];
-          } else {
-            return thread;
-          }
-        }
-      }
-      return $('.board');
-    },
-    scroll: function(delta) {
-      var i, rect, thread, threads, top, topMargin, _ref, _ref1;
-
-      _ref = Nav.getThread(true), threads = _ref[0], thread = _ref[1], i = _ref[2], rect = _ref[3], topMargin = _ref[4];
-      top = rect.top - topMargin;
-      if (!((delta === -1 && Math.ceil(top) < 0) || (delta === +1 && top > 1))) {
-        i += delta;
-      }
-      top = ((_ref1 = threads[i]) != null ? _ref1.getBoundingClientRect().top : void 0) - topMargin;
-      return window.scrollBy(0, top);
-    }
-  };
-
-  Sauce = {
-    init: function() {
-      var link, links, _i, _len, _ref;
-
-      if (g.VIEW === 'catalog' || !Conf['Sauce']) {
-        return;
-      }
-      links = [];
-      _ref = Conf['sauces'].split('\n');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        if (link[0] === '#') {
-          continue;
-        }
-        links.push(this.createSauceLink(link.trim()));
-      }
-      if (!links.length) {
-        return;
-      }
-      this.links = links;
-      this.link = $.el('a', {
-        target: '_blank'
-      });
-      return Post.prototype.callbacks.push({
-        name: 'Sauce',
-        cb: this.node
-      });
-    },
-    createSauceLink: function(link) {
-      var m, text;
-
-      link = link.replace(/%(T?URL|MD5|board)/ig, function(parameter) {
-        switch (parameter) {
-          case '%TURL':
-            return "' + encodeURIComponent(post.file.thumbURL) + '";
-          case '%URL':
-            return "' + encodeURIComponent(post.file.URL) + '";
-          case '%MD5':
-            return "' + encodeURIComponent(post.file.MD5) + '";
-          case '%board':
-            return "' + encodeURIComponent(post.board) + '";
-          default:
-            return parameter;
-        }
-      });
-      text = (m = link.match(/;text:(.+)$/)) ? m[1] : link.match(/(\w+)\.\w+\//)[1];
-      link = link.replace(/;text:.+$/, '');
-      return Function('post', 'a', "a.href = '" + link + "';\na.textContent = '" + text + "';\nreturn a;");
-    },
-    node: function() {
-      var link, nodes, _i, _len, _ref;
-
-      if (this.isClone || !this.file) {
-        return;
-      }
-      nodes = [];
-      _ref = Sauce.links;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        nodes.push($.tn('\u00A0'), link(this, Sauce.link.cloneNode(true)));
-      }
-      return $.add(this.file.info, nodes);
-    }
-  };
-
-  Time = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Time Formatting']) {
-        return;
-      }
-      this.funk = this.createFunc(Conf['time']);
-      return Post.prototype.callbacks.push({
-        name: 'Time Formatting',
-        cb: this.node
-      });
-    },
-    node: function() {
-      if (this.isClone) {
-        return;
-      }
-      return this.nodes.date.textContent = Time.funk(Time, this.info.date);
-    },
-    createFunc: function(format) {
-      var code;
-
-      code = format.replace(/%([A-Za-z])/g, function(s, c) {
-        if (c in Time.formatters) {
-          return "' + Time.formatters." + c + ".call(date) + '";
-        } else {
-          return s;
-        }
-      });
-      return Function('Time', 'date', "return '" + code + "'");
-    },
-    day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-    month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-    zeroPad: function(n) {
-      if (n < 10) {
-        return "0" + n;
-      } else {
-        return n;
-      }
-    },
-    formatters: {
-      a: function() {
-        return Time.day[this.getDay()].slice(0, 3);
-      },
-      A: function() {
-        return Time.day[this.getDay()];
-      },
-      b: function() {
-        return Time.month[this.getMonth()].slice(0, 3);
-      },
-      B: function() {
-        return Time.month[this.getMonth()];
-      },
-      d: function() {
-        return Time.zeroPad(this.getDate());
-      },
-      e: function() {
-        return this.getDate();
-      },
-      H: function() {
-        return Time.zeroPad(this.getHours());
-      },
-      I: function() {
-        return Time.zeroPad(this.getHours() % 12 || 12);
-      },
-      k: function() {
-        return this.getHours();
-      },
-      l: function() {
-        return this.getHours() % 12 || 12;
-      },
-      m: function() {
-        return Time.zeroPad(this.getMonth() + 1);
-      },
-      M: function() {
-        return Time.zeroPad(this.getMinutes());
-      },
-      p: function() {
-        if (this.getHours() < 12) {
-          return 'AM';
-        } else {
-          return 'PM';
-        }
-      },
-      P: function() {
-        if (this.getHours() < 12) {
-          return 'am';
-        } else {
-          return 'pm';
-        }
-      },
-      S: function() {
-        return Time.zeroPad(this.getSeconds());
-      },
-      y: function() {
-        return this.getFullYear() - 2000;
-      }
-    }
-  };
-
-  Favicon = {
-    init: function() {
-      return $.ready(function() {
-        var href;
-
-        Favicon.el = $('link[rel="shortcut icon"]', d.head);
-        Favicon.el.type = 'image/x-icon';
-        href = Favicon.el.href;
-        Favicon.SFW = /ws\.ico$/.test(href);
-        Favicon["default"] = href;
-        return Favicon["switch"]();
-      });
-    },
-    "switch": function() {
-      switch (Conf['favicon']) {
-        case 'ferongr':
-          Favicon.unreadDead = 'data:image/gif;base64,R0lGODlhEAAQAOMHAOgLAnMFAL8AAOgLAukMA/+AgP+rq////////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==';
-          Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAS1BMVEUAAAAAAAAAAAAJAAASAAAZAQAaAQAiAQAkAQAoFBQyAgAzAgA1AgA4AABBAgBXAwBzBQCEBgGvCAG/AADoCwLpDAP/gID/q6v///9zILr8AAAAA3RSTlMAx9dmesIgAAAAc0lEQVQY02WPgQ6DIBBDmTqnbE70Cvb/v3TAnW5OSKB9ybXg3HUBOAmEEH4FQtrSn4gxi+xjVC9SVOEiSvbZI8zSV+/Xo7icnryZ15GObMxvtWUkB/VJW57kHU7fUcHStm8FkncGE/mwP6CGzq/eauHwvT7sWQt3gZLW+AAAAABJRU5ErkJggg==';
-          Favicon.unreadSFW = 'data:image/gif;base64,R0lGODlhEAAQAOMHAADX8QBwfgC2zADX8QDY8nnl8qLp8v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==';
-          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAASFBMVEUAAAAAAAAAAAAACAkAERMAGBsAGR0AISUALzQALzUAMTcANjwAP0cAVF8AcH4AeokAorYAtswA1/EA2PISIyV55fKi6fL////l+pZqAAAAA3RSTlMAx9dmesIgAAAAcklEQVQY02VPARLCIAxjsjnUWdcg6/9/ukIr00nvIMldEhrC/wHwA0BE3wBUtnICOStQnrNx5oqqzmzKx9vDPH1Nae3F9U4ig3OzjCIX51treYvMxou13EQmBPtHE14xLiawjgoPtfgOaKHP+9VrEXA8O1v7CmSPE3u0AAAAAElFTkSuQmCC';
-          Favicon.unreadNSFW = 'data:image/gif;base64,R0lGODlhEAAQAOMHAFT+ACh5AEncAFT+AFX/Acz/su7/5v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==';
-          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAS1BMVEUAAAAAAAAAAAADCgAGEgAIGgAJGwALJAANJwASNwASOAATOgAVQQAWRAAeWwAgKBsoeQAwkQA/wABJ3ABU/gBV/wHM/7Lu/+b////r+K2AAAAAA3RSTlMAx9dmesIgAAAAc0lEQVQY02WPgQ6DIBBDmTonbk70Cvb/v3TAnW5OSKB9ybXg3HUBOAmEEH4FQtrSn4gxi+xjVC9SVOEiSvbZI8zSV+/Xo7icnryZ15GObMxvtWUmB/VJW0byDqfvqGBp20mB5J3Bi3zYH1BD38/eauHwvT7sEAt1Fb320QAAAABJRU5ErkJggg==';
-          break;
-        case 'xat-':
-          Favicon.unreadDead = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA2ElEQVQ4y61TQQrCMBDMQ8WDIEV6LbT2A4og2Hq0veo7fIAH04dY9N4xmyYlpGmI2MCQTWYy3Wy2DAD7B2wWAzWgcTgVeZKlZRxHNYFi2jM18oBh0IcKtC6ixf22WT4IFLs0owxswXu9egm0Ls6bwfCFfNsJYJKfqoEkd3vgUgFVLWObtzNgVKyruC+ljSzr5OEnBzjvjcQecaQhbZgBb4CmGQw+PoMkTUtdbd8VSEPakcGxPOcsoIgUKy0LecY29BmdBrqRfjIwZ93KLs5loHvBnL3cLH/jF+C/+z5dgUysAAAAAElFTkSuQmCC';
-          Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAdVBMVEUAAAAAAACKkJGNkpN0d3d0eHdra2dGRkORZ1wAAACmaV6naV4PDw8LCwsLCwvyZWLyZWIeExEyFBTAWlr/eHj/enkAAAAKAAAoAAA4AAA4GhpMAACRAAD/AAD/enn/h4j/m5z/nJ3/0dL/0tL/0tP/09P///9VK8WFAAAAFnRSTlMAPnp6kpKdtcHEzc3p6u7v8PT7/v7++jx7+QAAAIFJREFUGNONj90OgjAMhStKmU5k/h1UmAzUvv8jSrYBIeGC9qLtl/a0JVphAJKUOU36xNfWWiitlU9GUphZbXF/hxg10Li2QdQgPhQ3133c9XLOJvD9uZfI0YOdiiMiJw+2CKIPkZzGtcbgKYIJaI26LAfQOzOqoYNA4Z49Nguv/gEEhw2/C5BUZgAAAABJRU5ErkJggg==';
-          Favicon.unreadSFW = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA30lEQVQ4y2P4//8/AyWYgSoGQMF/GJ7Y11VVUVoyKTM9ey4Ig9ggMWQ1YA1IBvzXm34YjkH8mPyJB+Nqlp8FYRAbmxoMF6ArSNrw6T0Qf8Amh9cFMEWVR/7/A+L/uORxhgEIt5/+/3/2lf//5wAxiI0uj+4CBlBgxVUvOwtydgXQZpDmi2/+/7/0GmIQSAwkB1IDUkuUAZeABlx+g2zAZ9wGlAOjChba+LwAUgNSi2HA5Am9VciBhSsQQWyoWgZiovEDsdGI1QBYQiLJAGQalpSxyWEzAJYWkGm8clTJjQCZ1hkoVG0CygAAAABJRU5ErkJggg==';
-          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAdVBMVEUAAAAAAACRjoqTkI13dXR4dXRpZ2tFQ0Zcb5EAAABee6ZefKcPDw8LCwsLCwtisPJisPIRFh4UJDJalMB4xP95xP8AAAABBQcHFx4KISoNLToaKzgaVW4ul8N5xP+Hy/+b1P+c1P/R7P/S6//S7P/T7P////9P0rk0AAAAFnRSTlMAPnp6kpKdtcHEzc3p6u7v8PT7/v7++jx7+QAAAIFJREFUGNONj90OgjAMhStKmU5k/h1UmAzUvv8jSrYBIeGC9qLtl/a0JVphAJKUOU36xNfWWiitlU9GUphZbXF/hxg10Li2QdQgPhQ3133c9XLOJvD9uUrk6MFOxRGRkwdbBNGHSE7jWmPwFMEEtEZdlgPonRmvoYNA4Z49Nguv/gEE3A2/sQ7iRgAAAABJRU5ErkJggg==';
-          Favicon.unreadNSFW = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA4ElEQVQ4y2P4//8/AyWYgSoGQMF/GJ7YNbGqrKRiUnp21lwQBrFBYshqwBqQDPifdsYYjkH8mInxB+OWx58FYRAbmxoMF6ArKPmU9B6IP2CTw+sCmKKe/5X/gPg/LnmcYQDCs/63/1/9fzYQzwGz0eXRXcAACqy4ZfFnQc7u+V/xD6T55v+LQHwJbBBIDCQHUgNSS5QBt4Cab/2/jDDgMx4DykrKJ8FCG58XQGpAajEMmNw7uQo5sHAFIogNVctATDR+IDYasRoAS0gkGYBMw5IyNjlsBsDSAjKNV44quREAx58Mr9vt5wQAAAAASUVORK5CYII=';
-          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAdVBMVEUAAAAAAACRipGTjZN2dHd2dHhna2pDRkVckV8AAABepl9ep18PDw8LCwsLCwt08mJ08mIRHhEYMhRpwFqM/3iM/3kAAAAECAIQIAgWLAseOBoePA86dB1mzDOM/3ma/4er/5ur/5zZ/9HZ/9La/9La/9P///85Jx7jAAAAFnRSTlMAPnp6kpKdtcHEzc3p6u7v8PT7/v7++jx7+QAAAIFJREFUGNONj90OgjAMhStKmU5k/h1UmAzUvv8jSrYBIeGC9qLtl/a0JVphAJKUOU36xNfWWiitlU9GUphZbXF/hxg10Li2QdQgPhQ3133c9XLOJvD9uZfI0YOdiiMiJw+2CKIPkZzGtcbgKYIJaI26LAfQOzOqoYNA4Z49Nguv/gEEhw2/C5BUZgAAAABJRU5ErkJggg==';
-          break;
-        case 'Mayhem':
-          Favicon.unreadDead = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABIUlEQVQ4jZ2ScWuDMBDFgw4pIkU0WsoQkWAYIkXZH4N9/+/V3dmfXSrKYIFHwt17j8vdGWNMIkgFuaDgzgQnwRs4EQs5KdolUQtagRN0givEDBTEOjgtGs0Zq8F7cKqqusVxrMQLaDUWcjBSrXkn8gs51tpJSWLk9b3HUa0aNIL5gPBR1/V4kJvR7lTwl8GmAm1Gf9+c3S+89qBHa8502AsmSrtBaEBPbIbj0ah2madlNAPEccdgJDfAtWifBjqWKShRBT6KoiH8QlEUn/qt0CCjnNdmPUwmFWzj9Oe6LpKuZXcwqq88z78Pch3aZU3dPwwc2sWlfZKCW5tWluV8kGvXClLm6dYN4/aUqfCbnEOzNDGhGZbNargvxCzvMGfRJD8UaDVvgkzo6QAAAABJRU5ErkJggg==';
-          Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABj0lEQVQ4y42TQUorQRCGv+oekpj43pOhOyIiKoHBxTMkuAnEtWcwx/AY3sUbBIRcwCw8gCfIMkaTOOUiNdgGRRuKoav+v2qq/i4BakBmXweUwDoxLF5ZhVkC64rYBHYMUAIvwKuBMEwdaFiCNbAAngEC0NHkxBi73vsOsG92HGPsphigY1wOzfNhqhpC6AEd730RQuh9hQEOAY6A/jeAs3a7/f+bWB84ckCpqg+I8Osjgqo+AKUDViJS8LkGMcY+sJrNZssYY387LiIFsBLgL9AC/pgaArzZlF+sZgO4BG7sfgvcA3MxUtOStBIpX7cS3Klqd9OBTIEr4DlLOsuAmqpODXQOiHMuy/O8FkLoJth/6Uh2gQPg87Q3k+7leX6hqnpmPvM/GWfXWeWGqj5+oUS9LMs6wF7iHAwGJ9ZW5uxpup+UGwEtEVoijEYjKl66PJujmvIW3vsFwBiYqzJXZTweY5wSU6Bd7UP1KoECODUrJpOJAtPhcKjAtXGaYptWs57qWyv9Zn/it1a5knj5Dm3v4q8APeACAAAAAElFTkSuQmCC';
-          Favicon.unreadSFW = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABCElEQVQ4jZ2S4crCMAxF+0OGDJEPKYrIGKOsiJSx/fJRfSAfTJNyKqXfiuDg0C25N2RJjTGmEVrhTzhw7oStsIEtsVzT4o2Jo9ALThiEM8IdHIgNaHo8mjNWg6/ske8bohPo+63QOLzmooHp8fyAICBSQkVz0QKdsFQEV6WSW/D+7+BbgbIDHcb4Kp61XyjyI16zZ8JemGltQtDBSGxB4/GoN+7TpkkjDCsFArm0IYv3U0BbnYtf8BCy+JytsE0X6VyuKhPPK/GAJ14kvZZDZVV3pZIb8MZr6n4o4PDGKn0S5SdDmyq5PnXQsk+Xbhinp03FFzmHJw6xYRiWm9VxnohZ3vOcxdO8ARmXRvbWdtzQAAAAAElFTkSuQmCC';
-          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAkFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBQcHFx4KISoNLToaVW4oKCgul8M4ODg7OztMTEyRkZHBwcH///9dzWZ0AAAAI3RSTlMEBggKDA4QEhQWFxkbHR8hIyUmKCosLjAxN1hbYc7P0dLc3mzWzBUAAAC+SURBVBjTNY3pcsIwEIM3ePERx/bG5IIe0NIrhVbv/3Y4Ydj9Ic030ogqpY3mDdGGi1EVsYuSvGE2Pkl0TFYAdLGuY1eMWGowzzN6kX41DYVpNbvdKlO4Jx5gSbi2VO+Vcq2jrc/jNLQhtM+n05PfkrKxG/oFHIEXqwqQsVRy7n+AtwLYL3sYR3wA755Jp3Vvv8cn8Js0GXmA7/P5TwzpiLn8MOALuEZNygkm5JTy/+vl4BRVbJvQ1NbWRSxXN64PGOBlhG0qAAAAAElFTkSuQmCC';
-          Favicon.unreadNSFW = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABCklEQVQ4jZ2S0WrDMAxF/TBCCKWMYhZKCSGYmFJMSNjD/mhf239qJXNcjBdTWODgRLpXKJKNMaYROuFTOHEehFb4gJZYrunwxsSXMApOmIQzwgOciE1oRjyaM1aDj+yR7xuiHvT9VmgcXnPRwO/9+wWCgEgJFc1FCwzCVhFclUpuw/u3g3cFyg50GPOjePZ+ocjPeM2RCXthpbUFwQAzsQ2Nx6PeuE+bJo0w7BQI5NKGLN5XAW11LX7BQ8jia7bCLl2kc7mqTLzuxAOeeJH0Wk6VVf0oldyEN15T948CDm+sMiZRfjK0pZIbUwcd+3TphnF62lR8kXN44hAbhmG5WQNnT8zynucsnuYJhFpBfkMzqD4AAAAASUVORK5CYII=';
-          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAkFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAIQIAgWLAsePA8oKCg4ODg6dB07OztMTExmzDORkZHBwcH///92I3mvAAAAI3RSTlMEBggKDA4QEhQWFxkbHR8hIyUmKCosLjAxN1hbYc7P0dLc3mzWzBUAAAC+SURBVBjTNY3pcsIwEIM3ePERx/bG5IIe0NIT0ur93w4nDLs/pPlGGlGltNG8IdpwMaoidlGSN8zGJ4mOyQqALtZ17IoRSw3meUYv0q+moTCtZrdbZQr3xAMsCdeW6r1SrnW09XmchjaE9vl0evJbUjZ2Q7+AI/BiVQEylkrO/TfwVgD7ZQ/jiA/g3TPptO7t9/gEfpImIw/wez7/iSEdMZcfBnwB16hJOcGEnFL+f70cnKKKbROa2tq6iOXqBuMXGTe4CAUbAAAAAElFTkSuQmCC';
-          break;
-        case 'Original':
-          Favicon.unreadDead = 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
-          Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAAKAAAoAAAoKCg4AAA4ODg7OztMAACRAADBwcH/AAD///+WCcPSAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQmAUAxEb4Isk0rwp3EPR3ECcRQrh7C3/nAasPwzmCgYuPBy5AH/NALSImqAK+H1oJRqyJVHNAnZqDITVhj7/PrAciJ9il0BHs/jjU+fnB9sQ0IxX6OBO6Xr0xKAxANLZzUanCWzZQAAAABJRU5ErkJggg==';
-          Favicon.unreadSFW = 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAC6Xw////////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
-          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAABBQcHFx4KISoNLToaVW4oKCgul8M4ODg7OzvBwcH///8uS/CdAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQ2AUAhEbwKWoftRGvdwBEewchM7d9BFbE6pbP4Mgj+R5MjjwgP+qQSkRtQAV8K3lVI2Q648oknIRpWZsMI4988HjgvpU+wO8HgeHzR9cjZYhoRiPkcDd0rXpyUAiRd5YjKC7MvNRgAAAABJRU5ErkJggg==';
-          Favicon.unreadNSFW = 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
-          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAAECAIQIAgWLAsePA8oKCg4ODg6dB07OztmzDPBwcH///+rsf3XAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQ2AUAhEbwKWofRL4x6O4AhuopWb2P4F7E5prP4MgiaSHHlceMA/jYC0iBrgSnjdKaUacuURTUI2qsyEFcaxvD6wnkifYleAx/N449Mn5wfbkFDM52jgTun6tAQg8QAEvjQg42KY2AAAAABJRU5ErkJggg==';
-      }
-      if (Favicon.SFW) {
-        Favicon.unread = Favicon.unreadSFW;
-        return Favicon.unreadY = Favicon.unreadSFWY;
-      } else {
-        Favicon.unread = Favicon.unreadNSFW;
-        return Favicon.unreadY = Favicon.unreadNSFWY;
-      }
-    },
-    empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
-    dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
-  };
-
-  ThreadExcerpt = {
-    init: function() {
-      if (g.VIEW !== 'thread' || !Conf['Thread Excerpt']) {
-        return;
-      }
-      return Thread.prototype.callbacks.push({
-        name: 'Thread Excerpt',
-        cb: this.node
-      });
-    },
-    node: function() {
-      return d.title = Get.threadExcerpt(this);
-    }
-  };
-
-  ThreadStats = {
-    init: function() {
-      var sc;
-
-      if (g.VIEW !== 'thread' || !Conf['Thread Stats']) {
-        return;
-      }
-      this.dialog = sc = $.el('span', {
-        innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span></div>",
-        id: 'thread-stats'
-      });
-      this.postCountEl = $('#post-count', sc);
-      this.fileCountEl = $('#file-count', sc);
-      Header.addShortcut(sc);
-      return Thread.prototype.callbacks.push({
-        name: 'Thread Stats',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var ID, fileCount, post, postCount, _ref;
-
-      postCount = 0;
-      fileCount = 0;
-      _ref = this.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
-        postCount++;
-        if (post.file) {
-          fileCount++;
-        }
-      }
-      ThreadStats.thread = this;
-      ThreadStats.update(postCount, fileCount);
-      return $.on(d, 'ThreadUpdate', ThreadStats.onUpdate);
-    },
-    onUpdate: function(e) {
-      var fileCount, postCount, _ref;
-
-      if (e.detail[404]) {
-        return;
-      }
-      _ref = e.detail, postCount = _ref.postCount, fileCount = _ref.fileCount;
-      return ThreadStats.update(postCount, fileCount);
-    },
-    update: function(postCount, fileCount) {
-      var fileCountEl, postCountEl, thread;
-
-      thread = ThreadStats.thread, postCountEl = ThreadStats.postCountEl, fileCountEl = ThreadStats.fileCountEl;
-      postCountEl.textContent = postCount;
-      fileCountEl.textContent = fileCount;
-      (thread.postLimit && !thread.isSticky ? $.addClass : $.rmClass)(postCountEl, 'warning');
-      return (thread.fileLimit && !thread.isSticky ? $.addClass : $.rmClass)(fileCountEl, 'warning');
-    }
-  };
-
-  ThreadUpdater = {
-    init: function() {
-      var checked, conf, el, input, name, sc, settings, subEntries, _ref;
-
-      if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
-        return;
-      }
-      checked = Conf['Auto Update'] ? 'checked' : '';
-      this.dialog = sc = $.el('span', {
-        innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>",
-        id: 'updater'
-      });
-      this.timer = $('#update-timer', sc);
-      this.status = $('#update-status', sc);
-      $.on(this.timer, 'click', ThreadUpdater.update);
-      $.on(this.status, 'click', ThreadUpdater.update);
-      this.checkPostCount = 0;
-      Header.addShortcut(sc);
-      subEntries = [];
-      _ref = Config.updater.checkbox;
-      for (name in _ref) {
-        conf = _ref[name];
-        checked = Conf[name] ? 'checked' : '';
-        el = $.el('label', {
-          title: "" + conf[1],
-          innerHTML: "<input name='" + name + "' type=checkbox " + checked + "> " + name
-        });
-        input = el.firstElementChild;
-        $.on(input, 'change', $.cb.checked);
-        if (input.name === 'Scroll BG') {
-          $.on(input, 'change', ThreadUpdater.cb.scrollBG);
-          ThreadUpdater.cb.scrollBG();
-        }
-        subEntries.push({
-          el: el
-        });
-      }
-      settings = $.el('span', {
-        innerHTML: '<a href=javascript:;>Interval</a>'
-      });
-      $.on(settings, 'click', this.intervalShortcut);
-      subEntries.push({
-        el: settings
-      });
-      $.event('AddMenuEntry', {
-        type: 'header',
-        el: $.el('span', {
-          textContent: 'Updater'
-        }),
-        order: 110,
-        subEntries: subEntries
-      });
-      return Thread.prototype.callbacks.push({
-        name: 'Thread Updater',
-        cb: this.node
-      });
-    },
-    node: function() {
-      ThreadUpdater.thread = this;
-      ThreadUpdater.root = this.OP.nodes.root.parentNode;
-      ThreadUpdater.lastPost = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0];
-      ThreadUpdater.outdateCount = 0;
-      ThreadUpdater.lastModified = '0';
-      ThreadUpdater.cb.interval.call($.el('input', {
-        value: Conf['Interval']
-      }));
-      $.on(window, 'online offline', ThreadUpdater.cb.online);
-      $.on(d, 'QRPostSuccessful', ThreadUpdater.cb.post);
-      $.on(d, 'visibilitychange', ThreadUpdater.cb.visibility);
-      return ThreadUpdater.cb.online();
-    },
-    /*
-    http://freesound.org/people/pierrecartoons1979/sounds/90112/
-    cc-by-nc-3.0
-    */
-
-    beep: 'data:audio/wav;base64,UklGRjQDAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAc21wbDwAAABBAAADAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkYXRhzAIAAGMms8em0tleMV4zIpLVo8nhfSlcPR102Ki+5JspVEkdVtKzs+K1NEhUIT7DwKrcy0g6WygsrM2k1NpiLl0zIY/WpMrjgCdbPhxw2Kq+5Z4qUkkdU9K1s+K5NkVTITzBwqnczko3WikrqM+l1NxlLF0zIIvXpsnjgydZPhxs2ay95aIrUEkdUdC3suK8N0NUIjq+xKrcz002WioppdGm091pK1w0IIjYp8jkhydXPxxq2K295aUrTkoeTs65suK+OUFUIzi7xqrb0VA0WSoootKm0t5tKlo1H4TYqMfkiydWQBxm16+85actTEseS8y7seHAPD9TIza5yKra01QyWSson9On0d5wKVk2H4DYqcfkjidUQB1j1rG75KsvSkseScu8seDCPz1TJDW2yara1FYxWSwnm9Sn0N9zKVg2H33ZqsXkkihSQR1g1bK65K0wSEsfR8i+seDEQTxUJTOzy6rY1VowWC0mmNWoz993KVc3H3rYq8TklSlRQh1d1LS647AyR0wgRMbAsN/GRDpTJTKwzKrX1l4vVy4lldWpzt97KVY4IXbUr8LZljVPRCxhw7W3z6ZISkw1VK+4sMWvXEhSPk6buay9sm5JVkZNiLWqtrJ+TldNTnquqbCwilZXU1BwpKirrpNgWFhTaZmnpquZbFlbVmWOpaOonHZcXlljhaGhpZ1+YWBdYn2cn6GdhmdhYGN3lp2enIttY2Jjco+bnJuOdGZlZXCImJqakHpoZ2Zug5WYmZJ/bGlobX6RlpeSg3BqaW16jZSVkoZ0bGtteImSk5KIeG5tbnaFkJKRinxxbm91gY2QkIt/c3BwdH6Kj4+LgnZxcXR8iI2OjIR5c3J0e4WLjYuFe3VzdHmCioyLhn52dHR5gIiKioeAeHV1eH+GiYqHgXp2dnh9hIiJh4J8eHd4fIKHiIeDfXl4eHyBhoeHhH96eHmA',
-    cb: {
-      online: function() {
-        if (ThreadUpdater.online = navigator.onLine) {
-          ThreadUpdater.outdateCount = 0;
-          ThreadUpdater.set('timer', ThreadUpdater.getInterval());
-          ThreadUpdater.update();
-          ThreadUpdater.set('status', null, null);
-        } else {
-          ThreadUpdater.set('timer', null);
-          ThreadUpdater.set('status', 'Offline', 'warning');
-        }
-        return ThreadUpdater.cb.autoUpdate();
-      },
-      post: function(e) {
-        if (e.detail.threadID !== ThreadUpdater.thread.ID) {
-          return;
-        }
-        ThreadUpdater.outdateCount = 0;
-        if (ThreadUpdater.seconds > 2) {
-          return setTimeout(ThreadUpdater.update, 1000);
-        }
-      },
-      checkpost: function() {
-        if (!(g.DEAD || ThreadUpdater.foundPost || ThreadUpdater.checkPostCount >= 10)) {
-          return setTimeout(ThreadUpdater.update, ++ThreadUpdater.checkPostCount * 500);
-        }
-        ThreadUpdater.checkPostCount = 0;
-        delete ThreadUpdater.foundPost;
-        return delete ThreadUpdater.postID;
-      },
-      visibility: function() {
-        if (d.hidden) {
-          return;
-        }
-        ThreadUpdater.outdateCount = 0;
-        if (ThreadUpdater.seconds > ThreadUpdater.interval) {
-          return ThreadUpdater.set('timer', ThreadUpdater.getInterval());
-        }
-      },
-      scrollBG: function() {
-        return ThreadUpdater.scrollBG = Conf['Scroll BG'] ? function() {
-          return true;
-        } : function() {
-          return !d.hidden;
-        };
-      },
-      autoUpdate: function() {
-        if (ThreadUpdater.online) {
-          return ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
-        } else {
-          return clearTimeout(ThreadUpdater.timeoutID);
-        }
-      },
-      interval: function() {
-        var val;
-
-        val = +this.value;
-        if (val < 1) {
-          val = 1;
-        }
-        ThreadUpdater.interval = this.value = val;
-        return $.cb.value.call(this);
-      },
-      load: function() {
-        var klass, req, text, _ref;
-
-        req = ThreadUpdater.req;
-        switch (req.status) {
-          case 200:
-            g.DEAD = false;
-            ThreadUpdater.parse(JSON.parse(req.response).posts);
-            ThreadUpdater.lastModified = req.getResponseHeader('Last-Modified');
-            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
-            break;
-          case 404:
-            g.DEAD = true;
-            ThreadUpdater.set('timer', null);
-            ThreadUpdater.set('status', '404', 'warning');
-            clearTimeout(ThreadUpdater.timeoutID);
-            ThreadUpdater.thread.kill();
-            $.event('ThreadUpdate', {
-              404: true,
-              thread: ThreadUpdater.thread
-            });
-            break;
-          default:
-            ThreadUpdater.outdateCount++;
-            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
-            /*
-            Status Code 304: Not modified
-            By sending the `If-Modified-Since` header we get a proper status code, and no response.
-            This saves bandwidth for both the user and the servers and avoid unnecessary computation.
-            */
-
-            _ref = [0, 304].contains(req.status) ? [null, null] : ["" + req.statusText + " (" + req.status + ")", 'warning'], text = _ref[0], klass = _ref[1];
-            ThreadUpdater.set('status', text, klass);
-        }
-        if (ThreadUpdater.postID) {
-          ThreadUpdater.cb.checkpost(this.status);
-        }
-        return delete ThreadUpdater.req;
-      }
-    },
-    getInterval: function() {
-      var i, j;
-
-      i = ThreadUpdater.interval;
-      j = Math.min(ThreadUpdater.outdateCount, 10);
-      if (!d.hidden) {
-        j = Math.min(j, 7);
-      }
-      return ThreadUpdater.seconds = Conf['Optional Increase'] ? Math.max(i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]) : i;
-    },
-    intervalShortcut: function() {
-      var settings;
-
-      Settings.open('Advanced');
-      settings = $.id('fourchanx-settings');
-      return $('input[name=Interval]', settings).focus();
-    },
-    set: function(name, text, klass) {
-      var el, node;
-
-      el = ThreadUpdater[name];
-      if (node = el.firstChild) {
-        node.data = text;
-      } else {
-        el.textContent = text;
-      }
-      if (klass !== void 0) {
-        return el.className = klass;
-      }
-    },
-    timeout: function() {
-      var n;
-
-      ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
-      if (!(n = --ThreadUpdater.seconds)) {
-        return ThreadUpdater.update();
-      } else if (n <= -60) {
-        ThreadUpdater.set('status', 'Retrying', null);
-        return ThreadUpdater.update();
-      } else if (n > 0) {
-        return ThreadUpdater.set('timer', n);
-      }
-    },
-    update: function() {
-      var url;
-
-      if (!ThreadUpdater.online) {
-        return;
-      }
-      ThreadUpdater.seconds = 0;
-      ThreadUpdater.set('timer', '...');
-      if (ThreadUpdater.req) {
-        ThreadUpdater.req.onloadend = null;
-        ThreadUpdater.req.abort();
-      }
-      url = "//api.4chan.org/" + ThreadUpdater.thread.board + "/res/" + ThreadUpdater.thread + ".json";
-      return ThreadUpdater.req = $.ajax(url, {
-        onloadend: ThreadUpdater.cb.load
-      }, {
-        headers: {
-          'If-Modified-Since': ThreadUpdater.lastModified
-        }
-      });
-    },
-    updateThreadStatus: function(title, OP) {
-      var icon, message, root, titleLC;
-
-      titleLC = title.toLowerCase();
-      if (ThreadUpdater.thread["is" + title] === !!OP[titleLC]) {
-        return;
-      }
-      if (!(ThreadUpdater.thread["is" + title] = !!OP[titleLC])) {
-        message = title === 'Sticky' ? 'The thread is not a sticky anymore.' : 'The thread is not closed anymore.';
-        new Notification('info', message, 30);
-        $.rm($("." + titleLC + "Icon", ThreadUpdater.thread.OP.nodes.info));
-        return;
-      }
-      message = title === 'Sticky' ? 'The thread is now a sticky.' : 'The thread is now closed.';
-      new Notification('info', message, 30);
-      icon = $.el('img', {
-        src: "//static.4chan.org/image/" + titleLC + ".gif",
-        alt: title,
-        title: title,
-        className: "" + titleLC + "Icon"
-      });
-      root = $('[title="Quote this post"]', ThreadUpdater.thread.OP.nodes.info);
-      if (title === 'Closed') {
-        root = $('.stickyIcon', ThreadUpdater.thread.OP.nodes.info) || root;
-      }
-      return $.after(root, [$.tn(' '), icon]);
-    },
-    parse: function(postObjects) {
-      var ID, OP, count, deletedFiles, deletedPosts, files, index, key, node, num, post, postObject, posts, scroll, _i, _len, _ref;
-
-      OP = postObjects[0];
-      Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
-      ThreadUpdater.updateThreadStatus('Sticky', OP);
-      ThreadUpdater.updateThreadStatus('Closed', OP);
-      ThreadUpdater.thread.postLimit = !!OP.bumplimit;
-      ThreadUpdater.thread.fileLimit = !!OP.imagelimit;
-      posts = [];
-      index = [];
-      files = [];
-      count = 0;
-      for (_i = 0, _len = postObjects.length; _i < _len; _i++) {
-        postObject = postObjects[_i];
-        num = postObject.no;
-        index.push(num);
-        if (postObject.fsize) {
-          files.push(num);
-        }
-        if (num <= ThreadUpdater.lastPost) {
-          continue;
-        }
-        count++;
-        node = Build.postFromObject(postObject, ThreadUpdater.thread.board);
-        posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board));
-      }
-      deletedPosts = [];
-      deletedFiles = [];
-      _ref = ThreadUpdater.thread.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
-        ID = +ID;
-        if (post.isDead && index.contains(ID)) {
-          post.resurrect();
-        } else if (!index.contains(ID)) {
-          post.kill();
-          deletedPosts.push(post);
-        } else if (post.file && !post.file.isDead && !files.contains(ID)) {
-          post.kill(true);
-          deletedFiles.push(post);
-        }
-        if (ThreadUpdater.postID) {
-          if (ID === ThreadUpdater.postID) {
-            ThreadUpdater.foundPost = true;
-          }
-        }
-      }
-      if (!count) {
-        ThreadUpdater.set('status', null, null);
-        ThreadUpdater.outdateCount++;
-      } else {
-        ThreadUpdater.set('status', "+" + count, 'new');
-        ThreadUpdater.outdateCount = 0;
-        if (Conf['Beep'] && d.hidden && Unread.posts && !Unread.posts.length) {
-          if (!ThreadUpdater.audio) {
-            ThreadUpdater.audio = $.el('audio', {
-              src: ThreadUpdater.beep
-            });
-          }
-          ThreadUpdater.audio.play();
-        }
-        ThreadUpdater.lastPost = posts[count - 1].ID;
-        Main.callbackNodes(Post, posts);
-        scroll = Conf['Auto Scroll'] && ThreadUpdater.scrollBG() && ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25;
-        for (key in posts) {
-          post = posts[key];
-          if (!posts.hasOwnProperty(key)) {
-            continue;
-          }
-          if (post.cb) {
-            if (!post.cb.call(post)) {
-              $.add(ThreadUpdater.root, post.nodes.root);
-            }
-          } else {
-            $.add(ThreadUpdater.root, post.nodes.root);
-          }
-        }
-        if (scroll) {
-          if (Conf['Bottom Scroll']) {
-            doc.scrollTop = d.body.clientHeight;
-          } else {
-            Header.scrollToPost(nodes[0]);
-          }
-        }
-        $.queueTask(function() {
-          var length, threadID;
-
-          threadID = ThreadUpdater.thread.ID;
-          length = $$('.thread > .postContainer', ThreadUpdater.root).length;
-          return Fourchan.parseThread(threadID, length - count, length);
-        });
-      }
-      return $.event('ThreadUpdate', {
-        404: false,
-        thread: ThreadUpdater.thread,
-        newPosts: posts,
-        deletedPosts: deletedPosts,
-        deletedFiles: deletedFiles,
-        postCount: OP.replies + 1,
-        fileCount: OP.images + (!!ThreadUpdater.thread.OP.file && !ThreadUpdater.thread.OP.file.isDead)
-      });
-    }
-  };
-
-  ThreadWatcher = {
-    init: function() {
-      if (!Conf['Thread Watcher']) {
-        return;
-      }
-      this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', '<div class=move>Thread Watcher</div>');
-      $.on(d, 'QRPostSuccessful', this.cb.post);
-      $.on(d, '4chanXInitFinished', this.ready);
-      $.sync('WatchedThreads', this.refresh);
-      return Thread.prototype.callbacks.push({
-        name: 'Thread Watcher',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var favicon,
-        _this = this;
-
-      favicon = $.el('img', {
-        className: 'favicon'
-      });
-      $.on(favicon, 'click', ThreadWatcher.cb.toggle);
-      $.before($('input', this.OP.nodes.post), favicon);
-      if (g.VIEW !== 'thread') {
-        return;
-      }
-      return $.get('AutoWatch', 0, function(item) {
-        if (item['AutoWatch'] !== _this.ID) {
-          return;
-        }
-        ThreadWatcher.watch(_this);
-        return $["delete"]('AutoWatch');
-      });
-    },
-    ready: function() {
-      $.off(d, '4chanXInitFinished', ThreadWatcher.ready);
-      if (!Main.isThisPageLegit()) {
-        return;
-      }
-      ThreadWatcher.refresh();
-      return $.add(d.body, ThreadWatcher.dialog);
-    },
-    refresh: function(watched) {
-      var ID, board, div, favicon, id, link, nodes, props, thread, x, _ref, _ref1;
-
-      if (!watched) {
-        $.get('WatchedThreads', {}, function(item) {
-          return ThreadWatcher.refresh(item['WatchedThreads']);
-        });
-        return;
-      }
-      nodes = [$('.move', ThreadWatcher.dialog)];
-      for (board in watched) {
-        _ref = watched[board];
-        for (id in _ref) {
-          props = _ref[id];
-          x = $.el('a', {
-            textContent: '×',
-            href: 'javascript:;'
-          });
-          $.on(x, 'click', ThreadWatcher.cb.x);
-          link = $.el('a', props);
-          link.title = link.textContent;
-          div = $.el('div');
-          $.add(div, [x, $.tn(' '), link]);
-          nodes.push(div);
-        }
-      }
-      $.rmAll(ThreadWatcher.dialog);
-      $.add(ThreadWatcher.dialog, nodes);
-      watched = watched[g.BOARD] || {};
-      _ref1 = g.BOARD.threads;
-      for (ID in _ref1) {
-        thread = _ref1[ID];
-        favicon = $('.favicon', thread.OP.nodes.post);
-        favicon.src = ID in watched ? Favicon["default"] : Favicon.empty;
-      }
-    },
-    cb: {
-      toggle: function() {
-        return ThreadWatcher.toggle(Get.postFromNode(this).thread);
-      },
-      x: function() {
-        var thread;
-
-        thread = this.nextElementSibling.pathname.split('/');
-        return ThreadWatcher.unwatch(thread[1], thread[3]);
-      },
-      post: function(e) {
-        var board, postID, threadID, _ref;
-
-        _ref = e.detail, board = _ref.board, postID = _ref.postID, threadID = _ref.threadID;
-        if (postID === threadID) {
-          if (Conf['Auto Watch']) {
-            return $.set('AutoWatch', threadID);
-          }
-        } else if (Conf['Auto Watch Reply']) {
-          return ThreadWatcher.watch(board.threads[threadID]);
-        }
-      }
-    },
-    toggle: function(thread) {
-      if ($('.favicon', thread.OP.nodes.post).src === Favicon.empty) {
-        return ThreadWatcher.watch(thread);
-      } else {
-        return ThreadWatcher.unwatch(thread.board, thread.ID);
-      }
-    },
-    unwatch: function(board, threadID) {
-      return $.get('WatchedThreads', {}, function(item) {
-        var watched;
-
-        watched = item['WatchedThreads'];
-        delete watched[board][threadID];
-        if (!Object.keys(watched[board]).length) {
-          delete watched[board];
-        }
-        ThreadWatcher.refresh(watched);
-        return $.set('WatchedThreads', watched);
-      });
-    },
-    watch: function(thread) {
-      return $.get('WatchedThreads', {}, function(item) {
-        var watched, _name;
-
-        watched = item['WatchedThreads'];
-        watched[_name = thread.board] || (watched[_name] = {});
-        watched[thread.board][thread] = {
-          href: "/" + thread.board + "/res/" + thread,
-          textContent: Get.threadExcerpt(thread)
-        };
-        ThreadWatcher.refresh(watched);
-        return $.set('WatchedThreads', watched);
-      });
-    }
-  };
-
-  Unread = {
-    init: function() {
-      if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Favicon']) {
-        return;
-      }
-      this.db = new DataBoard('lastReadPosts', this.sync);
-      this.hr = $.el('hr', {
-        id: 'unread-line'
-      });
-      this.posts = [];
-      this.postsQuotingYou = [];
-      return Thread.prototype.callbacks.push({
-        name: 'Unread',
-        cb: this.node
-      });
-    },
-    node: function() {
-      Unread.thread = this;
-      Unread.title = d.title;
-      Unread.lastReadPost = Unread.db.get({
-        boardID: this.board.ID,
-        threadID: this.ID,
-        defaultValue: 0
-      });
-      $.on(d, '4chanXInitFinished', Unread.ready);
-      $.on(d, 'ThreadUpdate', Unread.onUpdate);
-      $.on(d, 'scroll visibilitychange', Unread.read);
-      if (Conf['Unread Line']) {
-        $.on(d, 'visibilitychange', Unread.setLine);
-      }
-      if (Conf['Scroll to Last Read Post']) {
-        return $.on(window, 'load', Unread.scroll);
-      }
-    },
-    ready: function() {
-      var ID, post, posts, _ref;
-
-      $.off(d, '4chanXInitFinished', Unread.ready);
-      posts = [];
-      _ref = Unread.thread.posts;
-      for (ID in _ref) {
-        post = _ref[ID];
-        if (post.isReply) {
-          posts.push(post);
-        }
-      }
-      return Unread.addPosts(posts);
-    },
-    scroll: function() {
-      var hash, post, posts, prevID, root;
-
-      if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
-        return;
-      }
-      if (Unread.posts.length) {
-        prevID = 0;
-        while (root = $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root)) {
-          post = Get.postFromRoot(root);
-          if (prevID === post.ID) {
-            break;
-          }
-          prevID = post.ID;
-          if (!post.isHidden) {
-            break;
-          }
-        }
-        root.scrollIntoView(false);
-        return;
-      }
-      posts = Object.keys(Unread.thread.posts);
-      return Header.scrollToPost(Unread.thread.posts[posts[posts.length - 1]].nodes.root);
-    },
-    sync: function() {
-      var lastReadPost;
-
-      lastReadPost = Unread.db.get({
-        boardID: Unread.thread.board.ID,
-        threadID: Unread.thread.ID,
-        defaultValue: 0
-      });
-      if (!(Unread.lastReadPost < lastReadPost)) {
-        return;
-      }
-      Unread.lastReadPost = lastReadPost;
-      Unread.readArray(Unread.posts);
-      Unread.readArray(Unread.postsQuotingYou);
-      Unread.setLine();
-      return Unread.update();
-    },
-    addPosts: function(newPosts) {
-      var ID, data, post, _i, _len;
-
-      for (_i = 0, _len = newPosts.length; _i < _len; _i++) {
-        post = newPosts[_i];
-        ID = post.ID;
-        if (ID <= Unread.lastReadPost || post.isHidden) {
-          continue;
-        }
-        if (QR.db) {
-          data = {
-            boardID: post.board.ID,
-            threadID: post.thread.ID,
-            postID: post.ID
-          };
-          if (QR.db.get(data)) {
-            continue;
-          }
-        }
-        Unread.posts.push(post);
-        Unread.addPostQuotingYou(post);
-      }
-      if (Conf['Unread Line']) {
-        Unread.setLine(newPosts.contains(Unread.posts[0]));
-      }
-      Unread.read();
-      return Unread.update();
-    },
-    addPostQuotingYou: function(post) {
-      var quotelink, _i, _len, _ref;
-
-      if (!QR.db) {
-        return;
-      }
-      _ref = post.nodes.quotelinks;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quotelink = _ref[_i];
-        if (QR.db.get(Get.postDataFromLink(quotelink))) {
-          Unread.postsQuotingYou.push(post);
-        }
-      }
-    },
-    onUpdate: function(e) {
-      if (e.detail[404]) {
-        return Unread.update();
-      } else {
-        return Unread.addPosts(e.detail.newPosts);
-      }
-    },
-    readSinglePost: function(post) {
-      var i;
-
-      if ((i = Unread.posts.indexOf(post)) === -1) {
-        return;
-      }
-      Unread.posts.splice(i, 1);
-      if (i === 0) {
-        Unread.lastReadPost = post.ID;
-        Unread.saveLastReadPost();
-      }
-      if ((i = Unread.postsQuotingYou.indexOf(post)) !== -1) {
-        Unread.postsQuotingYou.splice(i, 1);
-      }
-      return Unread.update();
-    },
-    readArray: function(arr) {
-      var i, post, _i, _len;
-
-      for (i = _i = 0, _len = arr.length; _i < _len; i = ++_i) {
-        post = arr[i];
-        if (post.ID > Unread.lastReadPost) {
-          break;
-        }
-      }
-      return arr.splice(0, i);
-    },
-    read: $.debounce(50, function(e) {
-      var ID, bottom, height, i, post, posts, read;
-
-      if (d.hidden || !Unread.posts.length) {
-        return;
-      }
-      height = doc.clientHeight;
-      posts = Unread.posts;
-      read = [];
-      i = posts.length;
-      while (post = posts[--i]) {
-        bottom = post.nodes.root.getBoundingClientRect().bottom;
-        if (bottom < height) {
-          ID = post.ID;
-          posts.remove(post);
-        }
-      }
-      if (!ID) {
-        return;
-      }
-      Unread.lastReadPost = ID;
-      Unread.saveLastReadPost();
-      Unread.readArray(Unread.postsQuotingYou);
-      if (e) {
-        return Unread.update();
-      }
-    }),
-    saveLastReadPost: $.debounce(2 * $.SECOND, function() {
-      return Unread.db.set({
-        boardID: Unread.thread.board.ID,
-        threadID: Unread.thread.ID,
-        val: Unread.lastReadPost
-      });
-    }),
-    setLine: function(force) {
-      var post, root;
-
-      if (!(d.hidden || force === true)) {
-        return;
-      }
-      if (post = Unread.posts[0]) {
-        root = post.nodes.root;
-        if (root !== $('.thread > .replyContainer', root.parentNode)) {
-          return $.before(root, Unread.hr);
-        }
-      } else {
-        return $.rm(Unread.hr);
-      }
-    },
-    update: function() {
-      var count;
-
-      count = Unread.posts.length;
-      if (Conf['Unread Count']) {
-        d.title = "" + (count || !Conf['Hide Unread Count at (0)'] ? "(" + count + ") " : '') + (g.DEAD ? "/" + g.BOARD + "/ - 404" : "" + Unread.title);
-      }
-      if (!Conf['Unread Favicon']) {
-        return;
-      }
-      Favicon.el.href = g.DEAD ? Unread.postsQuotingYou.length ? Favicon.unreadDeadY : count ? Favicon.unreadDead : Favicon.dead : count ? Unread.postsQuotingYou.length ? Favicon.unreadY : Favicon.unread : Favicon["default"];
-      return $.add(d.head, Favicon.el);
     }
   };
 
@@ -8298,619 +5723,2028 @@
     }
   };
 
-  QuoteBacklink = {
+  FappeTyme = {
     init: function() {
-      var format;
+      var el, input;
 
-      if (g.VIEW === 'catalog' || !Conf['Quote Backlinks']) {
+      if (!Conf['Fappe Tyme'] || g.VIEW === 'catalog' || g.BOARD === 'f') {
         return;
       }
-      format = Conf['backlink'].replace(/%id/g, "' + id + '");
-      this.funk = Function('id', "return '" + format + "'");
-      this.containers = {};
-      Post.prototype.callbacks.push({
-        name: 'Quote Backlinking Part 1',
-        cb: this.firstNode
+      el = $.el('label', {
+        innerHTML: "<input type=checkbox name=fappe-tyme> Fappe Tyme",
+        title: 'Fappe Tyme'
+      });
+      FappeTyme.input = input = el.firstElementChild;
+      $.on(input, 'change', FappeTyme.toggle);
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: el,
+        order: 97
       });
       return Post.prototype.callbacks.push({
-        name: 'Quote Backlinking Part 2',
-        cb: this.secondNode
+        name: 'Fappe Tyme',
+        cb: this.node
       });
     },
-    firstNode: function() {
-      var a, clone, container, containers, link, post, quote, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+    node: function() {
+      if (this.file) {
+        return;
+      }
+      return $.addClass(this.nodes.root, "noFile");
+    },
+    toggle: function() {
+      $.event('CloseMenu');
+      return (this.checked ? $.addClass : $.rmClass)(doc, 'fappeTyme');
+    }
+  };
 
-      if (this.isClone || !this.quotes.length) {
+  ImageExpand = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
+        return;
+      }
+      this.EAI = $.el('a', {
+        className: 'expand-all-shortcut',
+        textContent: 'EAI',
+        title: 'Expand All Images',
+        href: 'javascript:;'
+      });
+      $.on(this.EAI, 'click', ImageExpand.cb.toggleAll);
+      Header.addShortcut(this.EAI);
+      return Post.prototype.callbacks.push({
+        name: 'Image Expansion',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var thumb, _ref;
+
+      if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
+        return;
+      }
+      thumb = this.file.thumb;
+      $.on(thumb.parentNode, 'click', ImageExpand.cb.toggle);
+      if (this.isClone && $.hasClass(thumb, 'expanding')) {
+        ImageExpand.contract(this);
+        ImageExpand.expand(this);
+        return;
+      }
+      if (ImageExpand.on && !this.isHidden) {
+        return ImageExpand.expand(this);
+      }
+    },
+    cb: {
+      toggle: function(e) {
+        if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
+          return;
+        }
+        e.preventDefault();
+        return ImageExpand.toggle(Get.postFromNode(this));
+      },
+      toggleAll: function() {
+        var ID, file, func, post, _i, _len, _ref, _ref1;
+
+        $.event('CloseMenu');
+        if (ImageExpand.on = $.hasClass(ImageExpand.EAI, 'expand-all-shortcut')) {
+          ImageExpand.EAI.className = 'contract-all-shortcut';
+          ImageExpand.EAI.title = 'Contract All Images';
+          func = ImageExpand.expand;
+        } else {
+          ImageExpand.EAI.className = 'expand-all-shortcut';
+          ImageExpand.EAI.title = 'Expand All Images';
+          func = ImageExpand.contract;
+        }
+        _ref = g.posts;
+        for (ID in _ref) {
+          post = _ref[ID];
+          _ref1 = [post].concat(post.clones);
+          for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
+            post = _ref1[_i];
+            file = post.file;
+            if (!(file && file.isImage && doc.contains(post.nodes.root))) {
+              continue;
+            }
+            if (ImageExpand.on && (!Conf['Expand spoilers'] && file.isSpoiler || Conf['Expand from here'] && file.thumb.getBoundingClientRect().top < 0)) {
+              continue;
+            }
+            $.queueTask(func, post);
+          }
+        }
+      },
+      setFitness: function() {
+        var checked;
+
+        checked = this.checked;
+        (checked ? $.addClass : $.rmClass)(doc, this.name.toLowerCase().replace(/\s+/g, '-'));
+        if (this.name !== 'Fit height') {
+          return;
+        }
+        if (checked) {
+          $.on(window, 'resize', ImageExpand.resize);
+          if (!ImageExpand.style) {
+            ImageExpand.style = $.addStyle(null);
+          }
+          return ImageExpand.resize();
+        } else {
+          return $.off(window, 'resize', ImageExpand.resize);
+        }
+      }
+    },
+    toggle: function(post) {
+      var headRect, rect, root, thumb, top;
+
+      thumb = post.file.thumb;
+      if (!(post.file.isExpanded || $.hasClass(thumb, 'expanding'))) {
+        ImageExpand.expand(post);
+        return;
+      }
+      ImageExpand.contract(post);
+      rect = post.nodes.root.getBoundingClientRect();
+      if (!(rect.top <= 0 || rect.left <= 0)) {
+        return;
+      }
+      top = rect.top;
+      if (Conf['Fixed Header'] && !Conf['Bottom Header']) {
+        headRect = Header.bar.getBoundingClientRect();
+        top += -headRect.top - headRect.height;
+      }
+      root = doc;
+      if (rect.top < 0) {
+        root.scrollTop += top;
+      }
+      if (rect.left < 0) {
+        return root.scrollLeft = 0;
+      }
+    },
+    contract: function(post) {
+      $.rmClass(post.nodes.root, 'expanded-image');
+      $.rmClass(post.file.thumb, 'expanding');
+      return post.file.isExpanded = false;
+    },
+    expand: function(post, src) {
+      var img, thumb;
+
+      thumb = post.file.thumb;
+      if (post.isHidden || post.file.isExpanded || $.hasClass(thumb, 'expanding')) {
+        return;
+      }
+      $.addClass(thumb, 'expanding');
+      if (post.file.fullImage) {
+        $.asap((function() {
+          return post.file.fullImage.naturalHeight;
+        }), function() {
+          return ImageExpand.completeExpand(post);
+        });
+        return;
+      }
+      post.file.fullImage = img = $.el('img', {
+        className: 'full-image',
+        src: src || post.file.URL
+      });
+      $.on(img, 'error', ImageExpand.error);
+      $.asap((function() {
+        return post.file.fullImage.naturalHeight;
+      }), function() {
+        return ImageExpand.completeExpand(post);
+      });
+      return $.after(thumb, img);
+    },
+    completeExpand: function(post) {
+      var prev, thumb;
+
+      thumb = post.file.thumb;
+      if (!$.hasClass(thumb, 'expanding')) {
+        return;
+      }
+      post.file.isExpanded = true;
+      if (!post.nodes.root.parentNode) {
+        $.addClass(post.nodes.root, 'expanded-image');
+        $.rmClass(post.file.thumb, 'expanding');
+        return;
+      }
+      prev = post.nodes.root.getBoundingClientRect();
+      return $.queueTask(function() {
+        var curr, root;
+
+        $.addClass(post.nodes.root, 'expanded-image');
+        $.rmClass(post.file.thumb, 'expanding');
+        if (!(prev.top + prev.height <= 0)) {
+          return;
+        }
+        root = doc;
+        curr = post.nodes.root.getBoundingClientRect();
+        return root.scrollTop += curr.height - prev.height + curr.top - prev.top;
+      });
+    },
+    error: function() {
+      var URL, post, src, timeoutID;
+
+      post = Get.postFromNode(this);
+      $.rm(this);
+      delete post.file.fullImage;
+      if (!($.hasClass(post.file.thumb, 'expanding') || $.hasClass(post.nodes.root, 'expanded-image'))) {
+        return;
+      }
+      ImageExpand.contract(post);
+      src = this.src.split('/');
+      if (src[2] === 'images.4chan.org') {
+        if (URL = Redirect.image(src[3], src[5])) {
+          setTimeout(ImageExpand.expand, 10000, post, URL);
+          return;
+        }
+        if (g.DEAD || post.isDead || post.file.isDead) {
+          return;
+        }
+      }
+      timeoutID = setTimeout(ImageExpand.expand, 10000, post);
+      return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
+        onload: function() {
+          var postObj, _i, _len, _ref;
+
+          if (this.status !== 200) {
+            return;
+          }
+          _ref = JSON.parse(this.response).posts;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            postObj = _ref[_i];
+            if (postObj.no === post.ID) {
+              break;
+            }
+          }
+          if (postObj.no !== post.ID) {
+            clearTimeout(timeoutID);
+            return post.kill();
+          } else if (postObj.filedeleted) {
+            clearTimeout(timeoutID);
+            return post.kill(true);
+          }
+        }
+      });
+    },
+    menu: {
+      init: function() {
+        var conf, createSubEntry, el, key, subEntries, _ref;
+
+        if (g.VIEW === 'catalog' || !Conf['Image Expansion']) {
+          return;
+        }
+        el = $.el('span', {
+          textContent: 'Image Expansion',
+          className: 'image-expansion-link'
+        });
+        createSubEntry = ImageExpand.menu.createSubEntry;
+        subEntries = [];
+        _ref = Config.imageExpansion;
+        for (key in _ref) {
+          conf = _ref[key];
+          subEntries.push(createSubEntry(key, conf));
+        }
+        return $.event('AddMenuEntry', {
+          type: 'header',
+          el: el,
+          order: 105,
+          subEntries: subEntries
+        });
+      },
+      createSubEntry: function(type, config) {
+        var input, label;
+
+        label = $.el('label', {
+          innerHTML: "<input type=checkbox name='" + type + "'> " + type
+        });
+        input = label.firstElementChild;
+        if (type === 'Fit width' || type === 'Fit height') {
+          $.on(input, 'change', ImageExpand.cb.setFitness);
+        }
+        if (config) {
+          label.title = config[1];
+          input.checked = Conf[type];
+          $.event('change', null, input);
+          $.on(input, 'change', $.cb.checked);
+        }
+        return {
+          el: label
+        };
+      }
+    },
+    resize: function() {
+      return ImageExpand.style.textContent = ":root.fit-height .full-image {max-height:" + doc.clientHeight + "px}";
+    },
+    menuToggle: function(e) {
+      return ImageExpand.opmenu.toggle(e, this, g);
+    }
+  };
+
+  ImageHover = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Image Hover']) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Image Hover',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var _ref;
+
+      if (!((_ref = this.file) != null ? _ref.isImage : void 0)) {
+        return;
+      }
+      return $.on(this.file.thumb, 'mouseover', ImageHover.mouseover);
+    },
+    mouseover: function(e) {
+      var el, post;
+
+      post = Get.postFromNode(this);
+      el = $.el('img', {
+        id: 'ihover',
+        src: post.file.URL
+      });
+      el.setAttribute('data-fullid', post.fullID);
+      $.add(Header.hover, el);
+      UI.hover({
+        root: this,
+        el: el,
+        latestEvent: e,
+        endEvents: 'mouseout click',
+        asapTest: function() {
+          return el.naturalHeight;
+        }
+      });
+      return $.on(el, 'error', ImageHover.error);
+    },
+    error: function() {
+      var URL, post, src, timeoutID,
+        _this = this;
+
+      if (!doc.contains(this)) {
+        return;
+      }
+      post = g.posts[this.dataset.fullid];
+      src = this.src.split('/');
+      if (src[2] === 'images.4chan.org') {
+        if (URL = Redirect.image(src[3], src[5].replace(/\?.+$/, ''))) {
+          this.src = URL;
+          return;
+        }
+        if (g.DEAD || post.isDead || post.file.isDead) {
+          return;
+        }
+      }
+      timeoutID = setTimeout((function() {
+        return _this.src = post.file.URL + '?' + Date.now();
+      }), 3000);
+      return $.ajax("//api.4chan.org/" + post.board + "/res/" + post.thread + ".json", {
+        onload: function() {
+          var postObj, _i, _len, _ref;
+
+          if (this.status !== 200) {
+            return;
+          }
+          _ref = JSON.parse(this.response).posts;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            postObj = _ref[_i];
+            if (postObj.no === post.ID) {
+              break;
+            }
+          }
+          if (postObj.no !== post.ID) {
+            clearTimeout(timeoutID);
+            return post.kill();
+          } else if (postObj.filedeleted) {
+            clearTimeout(timeoutID);
+            return post.kill(true);
+          }
+        }
+      });
+    }
+  };
+
+  ImageReplace = {
+    init: function() {
+      if (g.VIEW === 'catalog') {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Image Replace',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var URL, img, style, thumb, type, _ref, _ref1;
+
+      if (this.isClone || this.isHidden || this.thread.isHidden || !((_ref = this.file) != null ? _ref.isImage : void 0)) {
+        return;
+      }
+      _ref1 = this.file, thumb = _ref1.thumb, URL = _ref1.URL;
+      if (!(Conf["Replace " + ((type = (URL.match(/\w{3}$/))[0].toUpperCase()) === 'PEG' ? 'JPG' : type)] && !/spoiler/.test(thumb.src))) {
+        return;
+      }
+      if (this.file.isSpoiler) {
+        style = thumb.style;
+        style.maxHeight = style.maxWidth = this.isReply ? '125px' : '250px';
+      }
+      img = $.el('img');
+      $.on(img, 'load', function() {
+        return thumb.src = URL;
+      });
+      return img.src = URL;
+    }
+  };
+
+  RevealSpoilers = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Reveal Spoilers']) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Reveal Spoilers',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var thumb, _ref;
+
+      if (this.isClone || !((_ref = this.file) != null ? _ref.isSpoiler : void 0)) {
+        return;
+      }
+      thumb = this.file.thumb;
+      thumb.removeAttribute('style');
+      return thumb.src = this.file.thumbURL;
+    }
+  };
+
+  ArchiveLink = {
+    init: function() {
+      var div, entry, type, _i, _len, _ref;
+
+      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Archive Link']) {
+        return;
+      }
+      div = $.el('div', {
+        textContent: 'Archive'
+      });
+      entry = {
+        type: 'post',
+        el: div,
+        order: 90,
+        open: function(_arg) {
+          var ID, board, redirect, thread;
+
+          ID = _arg.ID, thread = _arg.thread, board = _arg.board;
+          redirect = Redirect.to({
+            postID: ID,
+            threadID: thread.ID,
+            boardID: board.ID
+          });
+          return redirect !== ("//boards.4chan.org/" + board + "/");
+        },
+        subEntries: []
+      };
+      _ref = [['Post', 'post'], ['Name', 'name'], ['Tripcode', 'tripcode'], ['E-mail', 'email'], ['Subject', 'subject'], ['Filename', 'filename'], ['Image MD5', 'MD5']];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        type = _ref[_i];
+        entry.subEntries.push(this.createSubEntry(type[0], type[1]));
+      }
+      return $.event('AddMenuEntry', entry);
+    },
+    createSubEntry: function(text, type) {
+      var el, open;
+
+      el = $.el('a', {
+        textContent: text,
+        target: '_blank'
+      });
+      open = type === 'post' ? function(_arg) {
+        var ID, board, thread;
+
+        ID = _arg.ID, thread = _arg.thread, board = _arg.board;
+        el.href = Redirect.to({
+          postID: ID,
+          threadID: thread.ID,
+          boardID: board.ID
+        });
+        return true;
+      } : function(post) {
+        var value;
+
+        value = Filter[type](post);
+        if (!value) {
+          return false;
+        }
+        el.href = Redirect.to({
+          boardID: post.board.ID,
+          type: type,
+          value: value,
+          isSearch: true
+        });
+        return true;
+      };
+      return {
+        el: el,
+        open: open
+      };
+    }
+  };
+
+  DeleteLink = {
+    init: function() {
+      var div, fileEl, fileEntry, postEl, postEntry;
+
+      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Delete Link']) {
+        return;
+      }
+      div = $.el('div', {
+        className: 'delete-link',
+        textContent: 'Delete'
+      });
+      postEl = $.el('a', {
+        className: 'delete-post',
+        href: 'javascript:;'
+      });
+      fileEl = $.el('a', {
+        className: 'delete-file',
+        href: 'javascript:;'
+      });
+      postEntry = {
+        el: postEl,
+        open: function() {
+          postEl.textContent = 'Post';
+          $.on(postEl, 'click', DeleteLink["delete"]);
+          return true;
+        }
+      };
+      fileEntry = {
+        el: fileEl,
+        open: function(_arg) {
+          var file;
+
+          file = _arg.file;
+          if (!file || file.isDead) {
+            return false;
+          }
+          fileEl.textContent = 'File';
+          $.on(fileEl, 'click', DeleteLink["delete"]);
+          return true;
+        }
+      };
+      return $.event('AddMenuEntry', {
+        type: 'post',
+        el: div,
+        order: 40,
+        open: function(post) {
+          var node;
+
+          if (post.isDead) {
+            return false;
+          }
+          DeleteLink.post = post;
+          node = div.firstChild;
+          node.textContent = 'Delete';
+          DeleteLink.cooldown.start(post, node);
+          return true;
+        },
+        subEntries: [postEntry, fileEntry]
+      });
+    },
+    "delete": function() {
+      var fileOnly, form, link, m, post, pwd;
+
+      post = DeleteLink.post;
+      if (DeleteLink.cooldown.counting === post) {
+        return;
+      }
+      $.off(this, 'click', DeleteLink["delete"]);
+      this.textContent = "Deleting " + this.textContent + "...";
+      pwd = (m = d.cookie.match(/4chan_pass=([^;]+)/)) ? decodeURIComponent(m[1]) : $.id('delPassword').value;
+      fileOnly = $.hasClass(this, 'delete-file');
+      form = {
+        mode: 'usrdel',
+        onlyimgdel: fileOnly,
+        pwd: pwd
+      };
+      form[post.ID] = 'delete';
+      link = this;
+      return $.ajax($.id('delform').action.replace("/" + g.BOARD + "/", "/" + post.board + "/"), {
+        onload: function() {
+          return DeleteLink.load(link, post, fileOnly, this.response);
+        },
+        onerror: function() {
+          return DeleteLink.error(link);
+        }
+      }, {
+        cred: true,
+        form: $.formData(form)
+      });
+    },
+    load: function(link, post, fileOnly, html) {
+      var msg, s, tmpDoc;
+
+      tmpDoc = d.implementation.createHTMLDocument('');
+      tmpDoc.documentElement.innerHTML = html;
+      if (tmpDoc.title === '4chan - Banned') {
+        s = 'Banned!';
+      } else if (msg = tmpDoc.getElementById('errmsg')) {
+        s = msg.textContent;
+        $.on(link, 'click', DeleteLink["delete"]);
+      } else {
+        if (tmpDoc.title === 'Updating index...') {
+          (post.origin || post).kill(fileOnly);
+        }
+        s = 'Deleted';
+      }
+      return link.textContent = s;
+    },
+    error: function(link) {
+      link.textContent = 'Connection error, please retry.';
+      return $.on(link, 'click', DeleteLink["delete"]);
+    },
+    cooldown: {
+      start: function(post, node) {
+        var length, seconds, _ref;
+
+        if (!((_ref = QR.db) != null ? _ref.get({
+          boardID: post.board.ID,
+          threadID: post.thread.ID,
+          postID: post.ID
+        }) : void 0)) {
+          delete DeleteLink.cooldown.counting;
+          return;
+        }
+        DeleteLink.cooldown.counting = post;
+        length = post.board.ID === 'q' ? 600 : 30;
+        seconds = Math.ceil((length * $.SECOND - (Date.now() - post.info.date)) / $.SECOND);
+        return DeleteLink.cooldown.count(post, seconds, length, node);
+      },
+      count: function(post, seconds, length, node) {
+        if (DeleteLink.cooldown.counting !== post) {
+          return;
+        }
+        if (!((0 <= seconds && seconds <= length))) {
+          if (DeleteLink.cooldown.counting === post) {
+            node.textContent = 'Delete';
+            delete DeleteLink.cooldown.counting;
+          }
+          return;
+        }
+        setTimeout(DeleteLink.cooldown.count, 1000, post, seconds - 1, length, node);
+        return node.textContent = "Delete (" + seconds + ")";
+      }
+    }
+  };
+
+  DownloadLink = {
+    init: function() {
+      var a;
+
+      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Download Link']) {
         return;
       }
       a = $.el('a', {
-        href: "/" + this.board + "/res/" + this.thread + "#p" + this,
-        className: this.isHidden ? 'filtered backlink' : 'backlink',
-        textContent: (QuoteBacklink.funk(this.ID)) + (Conf['Mark Quotes of You'] && this.info.yours ? QuoteYou.text : '')
+        className: 'download-link',
+        textContent: 'Download file'
       });
-      _ref = this.quotes;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        quote = _ref[_i];
-        containers = [QuoteBacklink.getContainer(quote)];
-        if ((post = g.posts[quote]) && post.nodes.backlinkContainer) {
-          _ref1 = post.clones;
-          for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-            clone = _ref1[_j];
-            containers.push(clone.nodes.backlinkContainer);
-          }
-        }
-        for (_k = 0, _len2 = containers.length; _k < _len2; _k++) {
-          container = containers[_k];
-          link = a.cloneNode(true);
-          if (Conf['Quote Previewing']) {
-            $.on(link, 'mouseover', QuotePreview.mouseover);
-          }
-          if (Conf['Quote Inlining']) {
-            $.on(link, 'click', QuoteInline.toggle);
-          }
-          $.add(container, [$.tn(' '), link]);
-        }
-      }
-    },
-    secondNode: function() {
-      var container;
+      return $.event('AddMenuEntry', {
+        type: 'post',
+        el: a,
+        order: 70,
+        open: function(_arg) {
+          var file;
 
-      if (this.isClone && (this.origin.isReply || Conf['OP Backlinks'])) {
-        this.nodes.backlinkContainer = $('.container', this.nodes.info);
-        return;
-      }
-      if (!(this.isReply || Conf['OP Backlinks'])) {
-        return;
-      }
-      container = QuoteBacklink.getContainer(this.fullID);
-      this.nodes.backlinkContainer = container;
-      return $.add(this.nodes.info, container);
-    },
-    getContainer: function(id) {
-      var _base;
-
-      return (_base = this.containers)[id] || (_base[id] = $.el('span', {
-        className: 'container'
-      }));
+          file = _arg.file;
+          if (!file) {
+            return false;
+          }
+          a.href = file.URL;
+          a.download = file.name;
+          return true;
+        }
+      });
     }
   };
 
-  QuoteCT = {
+  Menu = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Mark Cross-thread Quotes']) {
+      if (g.VIEW === 'catalog' || !Conf['Menu']) {
         return;
       }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
-      }
-      this.text = '\u00A0(Cross-thread)';
+      this.menu = new UI.Menu('post');
       return Post.prototype.callbacks.push({
-        name: 'Mark Cross-thread Quotes',
+        name: 'Menu',
         cb: this.node
       });
     },
     node: function() {
-      var board, boardID, quotelink, quotelinks, quotes, thread, threadID, _i, _len, _ref, _ref1;
+      var button;
 
-      if (this.isClone && this.thread === this.context.thread) {
+      button = Menu.makeButton(this);
+      if (this.isClone) {
+        $.replace($('.menu-button', this.nodes.info), button);
         return;
       }
-      if (!(quotes = this.quotes).length) {
-        return;
-      }
-      quotelinks = this.nodes.quotelinks;
-      _ref = this.isClone ? this.context : this, board = _ref.board, thread = _ref.thread;
-      for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
-        quotelink = quotelinks[_i];
-        _ref1 = Get.postDataFromLink(quotelink), boardID = _ref1.boardID, threadID = _ref1.threadID;
-        if (!threadID) {
-          continue;
-        }
-        if (this.isClone) {
-          quotelink.textContent = quotelink.textContent.replace(QuoteCT.text, '');
-        }
-        if (boardID === this.board.ID && threadID !== thread.ID) {
-          $.add(quotelink, $.tn(QuoteCT.text));
-        }
-      }
-    }
-  };
-
-  QuoteInline = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Quote Inlining']) {
-        return;
-      }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
-      }
-      return Post.prototype.callbacks.push({
-        name: 'Quote Inlining',
-        cb: this.node
-      });
+      return $.add(this.nodes.info, [$.tn('\u00A0'), button]);
     },
-    node: function() {
-      var link, _i, _len, _ref;
+    makeButton: (function() {
+      var a;
 
-      _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        $.on(link, 'click', QuoteInline.toggle);
-      }
-    },
+      a = null;
+      return function(post) {
+        var clone;
+
+        a || (a = $.el('a', {
+          className: 'menu-button',
+          innerHTML: '[<i></i>]',
+          href: 'javascript:;'
+        }));
+        clone = a.cloneNode(true);
+        clone.setAttribute('data-postid', post.fullID);
+        if (post.isClone) {
+          clone.setAttribute('data-clone', true);
+        }
+        $.on(clone, 'click', Menu.toggle);
+        return clone;
+      };
+    })(),
     toggle: function(e) {
-      var boardID, context, postID, threadID, _ref;
+      var post;
 
-      if (e.shiftKey || e.altKey || e.ctrlKey || e.metaKey || e.button !== 0) {
-        return;
-      }
-      e.preventDefault();
-      _ref = Get.postDataFromLink(this), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
-      context = Get.contextFromLink(this);
-      if ($.hasClass(this, 'inlined')) {
-        QuoteInline.rm(this, boardID, threadID, postID, context);
-      } else {
-        if ($.x("ancestor::div[@id='p" + postID + "']", this)) {
-          return;
-        }
-        QuoteInline.add(this, boardID, threadID, postID, context);
-      }
-      return this.classList.toggle('inlined');
-    },
-    findRoot: function(quotelink, isBacklink) {
-      if (isBacklink) {
-        return quotelink.parentNode.parentNode;
-      } else {
-        return $.x('ancestor-or-self::*[parent::blockquote][1]', quotelink);
-      }
-    },
-    add: function(quotelink, boardID, threadID, postID, context) {
-      var inline, isBacklink, post;
-
-      isBacklink = $.hasClass(quotelink, 'backlink');
-      inline = $.el('div', {
-        id: "i" + postID,
-        className: 'inline'
-      });
-      $.after(QuoteInline.findRoot(quotelink, isBacklink), inline);
-      Get.postClone(boardID, threadID, postID, inline, context);
-      if (!((post = g.posts["" + boardID + "." + postID]) && context.thread === post.thread)) {
-        return;
-      }
-      if (isBacklink && Conf['Forward Hiding']) {
-        $.addClass(post.nodes.root, 'forwarded');
-        post.forwarded++ || (post.forwarded = 1);
-      }
-      if (!Unread.posts) {
-        return;
-      }
-      return Unread.readSinglePost(post);
-    },
-    rm: function(quotelink, boardID, threadID, postID, context) {
-      var el, inlined, isBacklink, post, root, _ref;
-
-      isBacklink = $.hasClass(quotelink, 'backlink');
-      root = QuoteInline.findRoot(quotelink, isBacklink);
-      root = $.x("following-sibling::div[@id='i" + postID + "'][1]", root);
-      $.rm(root);
-      if (!(el = root.firstElementChild)) {
-        return;
-      }
-      post = g.posts["" + boardID + "." + postID];
-      post.rmClone(el.dataset.clone);
-      if (Conf['Forward Hiding'] && isBacklink && context.thread === g.threads["" + boardID + "." + threadID] && !--post.forwarded) {
-        delete post.forwarded;
-        $.rmClass(post.nodes.root, 'forwarded');
-      }
-      while (inlined = $('.inlined', el)) {
-        _ref = Get.postDataFromLink(inlined), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
-        QuoteInline.rm(inlined, boardID, threadID, postID, context);
-        $.rmClass(inlined, 'inlined');
-      }
+      post = this.dataset.clone ? Get.postFromNode(this) : g.posts[this.dataset.postid];
+      return Menu.menu.toggle(e, this, post);
     }
   };
 
-  QuoteOP = {
+  ReportLink = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Mark OP Quotes']) {
+      var a;
+
+      if (g.VIEW === 'catalog' || !Conf['Menu'] || !Conf['Report Link']) {
         return;
       }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
+      a = $.el('a', {
+        className: 'report-link',
+        href: 'javascript:;',
+        textContent: 'Report this post'
+      });
+      $.on(a, 'click', ReportLink.report);
+      return $.event('AddMenuEntry', {
+        type: 'post',
+        el: a,
+        order: 10,
+        open: function(post) {
+          ReportLink.post = post;
+          return !post.isDead;
+        }
+      });
+    },
+    report: function() {
+      var id, post, set, url;
+
+      post = ReportLink.post;
+      url = "//sys.4chan.org/" + post.board + "/imgboard.php?mode=report&no=" + post;
+      id = Date.now();
+      set = "toolbar=0,scrollbars=0,location=0,status=1,menubar=0,resizable=1,width=685,height=200";
+      return window.open(url, id, set);
+    }
+  };
+
+  Favicon = {
+    init: function() {
+      return $.ready(function() {
+        var href;
+
+        Favicon.el = $('link[rel="shortcut icon"]', d.head);
+        Favicon.el.type = 'image/x-icon';
+        href = Favicon.el.href;
+        Favicon.SFW = /ws\.ico$/.test(href);
+        Favicon["default"] = href;
+        return Favicon["switch"]();
+      });
+    },
+    "switch": function() {
+      switch (Conf['favicon']) {
+        case 'ferongr':
+          Favicon.unreadDead = 'data:image/gif;base64,R0lGODlhEAAQAOMHAOgLAnMFAL8AAOgLAukMA/+AgP+rq////////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==';
+          Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAS1BMVEUAAAAAAAAAAAAJAAASAAAZAQAaAQAiAQAkAQAoFBQyAgAzAgA1AgA4AABBAgBXAwBzBQCEBgGvCAG/AADoCwLpDAP/gID/q6v///9zILr8AAAAA3RSTlMAx9dmesIgAAAAc0lEQVQY02WPgQ6DIBBDmTqnbE70Cvb/v3TAnW5OSKB9ybXg3HUBOAmEEH4FQtrSn4gxi+xjVC9SVOEiSvbZI8zSV+/Xo7icnryZ15GObMxvtWUkB/VJW57kHU7fUcHStm8FkncGE/mwP6CGzq/eauHwvT7sWQt3gZLW+AAAAABJRU5ErkJggg==';
+          Favicon.unreadSFW = 'data:image/gif;base64,R0lGODlhEAAQAOMHAADX8QBwfgC2zADX8QDY8nnl8qLp8v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==';
+          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAASFBMVEUAAAAAAAAAAAAACAkAERMAGBsAGR0AISUALzQALzUAMTcANjwAP0cAVF8AcH4AeokAorYAtswA1/EA2PISIyV55fKi6fL////l+pZqAAAAA3RSTlMAx9dmesIgAAAAcklEQVQY02VPARLCIAxjsjnUWdcg6/9/ukIr00nvIMldEhrC/wHwA0BE3wBUtnICOStQnrNx5oqqzmzKx9vDPH1Nae3F9U4ig3OzjCIX51treYvMxou13EQmBPtHE14xLiawjgoPtfgOaKHP+9VrEXA8O1v7CmSPE3u0AAAAAElFTkSuQmCC';
+          Favicon.unreadNSFW = 'data:image/gif;base64,R0lGODlhEAAQAOMHAFT+ACh5AEncAFT+AFX/Acz/su7/5v///////////////////////////////////yH5BAEKAAcALAAAAAAQABAAAARZ8MhJ6xwDWIBv+AM1fEEIBIVRlNKYrtpIECuGzuwpCLg974EYiXUYkUItjGbC6VQ4omXFiKROA6qSy0A8nAo9GS3YCswIWnOvLAi0be23Z1QtdSUaqXcviQAAOw==';
+          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAS1BMVEUAAAAAAAAAAAADCgAGEgAIGgAJGwALJAANJwASNwASOAATOgAVQQAWRAAeWwAgKBsoeQAwkQA/wABJ3ABU/gBV/wHM/7Lu/+b////r+K2AAAAAA3RSTlMAx9dmesIgAAAAc0lEQVQY02WPgQ6DIBBDmTonbk70Cvb/v3TAnW5OSKB9ybXg3HUBOAmEEH4FQtrSn4gxi+xjVC9SVOEiSvbZI8zSV+/Xo7icnryZ15GObMxvtWUmB/VJW0byDqfvqGBp20mB5J3Bi3zYH1BD38/eauHwvT7sEAt1Fb320QAAAABJRU5ErkJggg==';
+          break;
+        case 'xat-':
+          Favicon.unreadDead = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA2ElEQVQ4y61TQQrCMBDMQ8WDIEV6LbT2A4og2Hq0veo7fIAH04dY9N4xmyYlpGmI2MCQTWYy3Wy2DAD7B2wWAzWgcTgVeZKlZRxHNYFi2jM18oBh0IcKtC6ixf22WT4IFLs0owxswXu9egm0Ls6bwfCFfNsJYJKfqoEkd3vgUgFVLWObtzNgVKyruC+ljSzr5OEnBzjvjcQecaQhbZgBb4CmGQw+PoMkTUtdbd8VSEPakcGxPOcsoIgUKy0LecY29BmdBrqRfjIwZ93KLs5loHvBnL3cLH/jF+C/+z5dgUysAAAAAElFTkSuQmCC';
+          Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAdVBMVEUAAAAAAACKkJGNkpN0d3d0eHdra2dGRkORZ1wAAACmaV6naV4PDw8LCwsLCwvyZWLyZWIeExEyFBTAWlr/eHj/enkAAAAKAAAoAAA4AAA4GhpMAACRAAD/AAD/enn/h4j/m5z/nJ3/0dL/0tL/0tP/09P///9VK8WFAAAAFnRSTlMAPnp6kpKdtcHEzc3p6u7v8PT7/v7++jx7+QAAAIFJREFUGNONj90OgjAMhStKmU5k/h1UmAzUvv8jSrYBIeGC9qLtl/a0JVphAJKUOU36xNfWWiitlU9GUphZbXF/hxg10Li2QdQgPhQ3133c9XLOJvD9uZfI0YOdiiMiJw+2CKIPkZzGtcbgKYIJaI26LAfQOzOqoYNA4Z49Nguv/gEEhw2/C5BUZgAAAABJRU5ErkJggg==';
+          Favicon.unreadSFW = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA30lEQVQ4y2P4//8/AyWYgSoGQMF/GJ7Y11VVUVoyKTM9ey4Ig9ggMWQ1YA1IBvzXm34YjkH8mPyJB+Nqlp8FYRAbmxoMF6ArSNrw6T0Qf8Amh9cFMEWVR/7/A+L/uORxhgEIt5/+/3/2lf//5wAxiI0uj+4CBlBgxVUvOwtydgXQZpDmi2/+/7/0GmIQSAwkB1IDUkuUAZeABlx+g2zAZ9wGlAOjChba+LwAUgNSi2HA5Am9VciBhSsQQWyoWgZiovEDsdGI1QBYQiLJAGQalpSxyWEzAJYWkGm8clTJjQCZ1hkoVG0CygAAAABJRU5ErkJggg==';
+          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAdVBMVEUAAAAAAACRjoqTkI13dXR4dXRpZ2tFQ0Zcb5EAAABee6ZefKcPDw8LCwsLCwtisPJisPIRFh4UJDJalMB4xP95xP8AAAABBQcHFx4KISoNLToaKzgaVW4ul8N5xP+Hy/+b1P+c1P/R7P/S6//S7P/T7P////9P0rk0AAAAFnRSTlMAPnp6kpKdtcHEzc3p6u7v8PT7/v7++jx7+QAAAIFJREFUGNONj90OgjAMhStKmU5k/h1UmAzUvv8jSrYBIeGC9qLtl/a0JVphAJKUOU36xNfWWiitlU9GUphZbXF/hxg10Li2QdQgPhQ3133c9XLOJvD9uUrk6MFOxRGRkwdbBNGHSE7jWmPwFMEEtEZdlgPonRmvoYNA4Z49Nguv/gEE3A2/sQ7iRgAAAABJRU5ErkJggg==';
+          Favicon.unreadNSFW = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAA4ElEQVQ4y2P4//8/AyWYgSoGQMF/GJ7YNbGqrKRiUnp21lwQBrFBYshqwBqQDPifdsYYjkH8mInxB+OWx58FYRAbmxoMF6ArKPmU9B6IP2CTw+sCmKKe/5X/gPg/LnmcYQDCs/63/1/9fzYQzwGz0eXRXcAACqy4ZfFnQc7u+V/xD6T55v+LQHwJbBBIDCQHUgNSS5QBt4Cab/2/jDDgMx4DykrKJ8FCG58XQGpAajEMmNw7uQo5sHAFIogNVctATDR+IDYasRoAS0gkGYBMw5IyNjlsBsDSAjKNV44quREAx58Mr9vt5wQAAAAASUVORK5CYII=';
+          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAdVBMVEUAAAAAAACRipGTjZN2dHd2dHhna2pDRkVckV8AAABepl9ep18PDw8LCwsLCwt08mJ08mIRHhEYMhRpwFqM/3iM/3kAAAAECAIQIAgWLAseOBoePA86dB1mzDOM/3ma/4er/5ur/5zZ/9HZ/9La/9La/9P///85Jx7jAAAAFnRSTlMAPnp6kpKdtcHEzc3p6u7v8PT7/v7++jx7+QAAAIFJREFUGNONj90OgjAMhStKmU5k/h1UmAzUvv8jSrYBIeGC9qLtl/a0JVphAJKUOU36xNfWWiitlU9GUphZbXF/hxg10Li2QdQgPhQ3133c9XLOJvD9uZfI0YOdiiMiJw+2CKIPkZzGtcbgKYIJaI26LAfQOzOqoYNA4Z49Nguv/gEEhw2/C5BUZgAAAABJRU5ErkJggg==';
+          break;
+        case 'Mayhem':
+          Favicon.unreadDead = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABIUlEQVQ4jZ2ScWuDMBDFgw4pIkU0WsoQkWAYIkXZH4N9/+/V3dmfXSrKYIFHwt17j8vdGWNMIkgFuaDgzgQnwRs4EQs5KdolUQtagRN0givEDBTEOjgtGs0Zq8F7cKqqusVxrMQLaDUWcjBSrXkn8gs51tpJSWLk9b3HUa0aNIL5gPBR1/V4kJvR7lTwl8GmAm1Gf9+c3S+89qBHa8502AsmSrtBaEBPbIbj0ah2madlNAPEccdgJDfAtWifBjqWKShRBT6KoiH8QlEUn/qt0CCjnNdmPUwmFWzj9Oe6LpKuZXcwqq88z78Pch3aZU3dPwwc2sWlfZKCW5tWluV8kGvXClLm6dYN4/aUqfCbnEOzNDGhGZbNargvxCzvMGfRJD8UaDVvgkzo6QAAAABJRU5ErkJggg==';
+          Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABj0lEQVQ4y42TQUorQRCGv+oekpj43pOhOyIiKoHBxTMkuAnEtWcwx/AY3sUbBIRcwCw8gCfIMkaTOOUiNdgGRRuKoav+v2qq/i4BakBmXweUwDoxLF5ZhVkC64rYBHYMUAIvwKuBMEwdaFiCNbAAngEC0NHkxBi73vsOsG92HGPsphigY1wOzfNhqhpC6AEd730RQuh9hQEOAY6A/jeAs3a7/f+bWB84ckCpqg+I8Osjgqo+AKUDViJS8LkGMcY+sJrNZssYY387LiIFsBLgL9AC/pgaArzZlF+sZgO4BG7sfgvcA3MxUtOStBIpX7cS3Klqd9OBTIEr4DlLOsuAmqpODXQOiHMuy/O8FkLoJth/6Uh2gQPg87Q3k+7leX6hqnpmPvM/GWfXWeWGqj5+oUS9LMs6wF7iHAwGJ9ZW5uxpup+UGwEtEVoijEYjKl66PJujmvIW3vsFwBiYqzJXZTweY5wSU6Bd7UP1KoECODUrJpOJAtPhcKjAtXGaYptWs57qWyv9Zn/it1a5knj5Dm3v4q8APeACAAAAAElFTkSuQmCC';
+          Favicon.unreadSFW = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABCElEQVQ4jZ2S4crCMAxF+0OGDJEPKYrIGKOsiJSx/fJRfSAfTJNyKqXfiuDg0C25N2RJjTGmEVrhTzhw7oStsIEtsVzT4o2Jo9ALThiEM8IdHIgNaHo8mjNWg6/ske8bohPo+63QOLzmooHp8fyAICBSQkVz0QKdsFQEV6WSW/D+7+BbgbIDHcb4Kp61XyjyI16zZ8JemGltQtDBSGxB4/GoN+7TpkkjDCsFArm0IYv3U0BbnYtf8BCy+JytsE0X6VyuKhPPK/GAJ14kvZZDZVV3pZIb8MZr6n4o4PDGKn0S5SdDmyq5PnXQsk+Xbhinp03FFzmHJw6xYRiWm9VxnohZ3vOcxdO8ARmXRvbWdtzQAAAAAElFTkSuQmCC';
+          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAkFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABBQcHFx4KISoNLToaVW4oKCgul8M4ODg7OztMTEyRkZHBwcH///9dzWZ0AAAAI3RSTlMEBggKDA4QEhQWFxkbHR8hIyUmKCosLjAxN1hbYc7P0dLc3mzWzBUAAAC+SURBVBjTNY3pcsIwEIM3ePERx/bG5IIe0NIrhVbv/3Y4Ydj9Ic030ogqpY3mDdGGi1EVsYuSvGE2Pkl0TFYAdLGuY1eMWGowzzN6kX41DYVpNbvdKlO4Jx5gSbi2VO+Vcq2jrc/jNLQhtM+n05PfkrKxG/oFHIEXqwqQsVRy7n+AtwLYL3sYR3wA755Jp3Vvv8cn8Js0GXmA7/P5TwzpiLn8MOALuEZNygkm5JTy/+vl4BRVbJvQ1NbWRSxXN64PGOBlhG0qAAAAAElFTkSuQmCC';
+          Favicon.unreadNSFW = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABCklEQVQ4jZ2S0WrDMAxF/TBCCKWMYhZKCSGYmFJMSNjD/mhf239qJXNcjBdTWODgRLpXKJKNMaYROuFTOHEehFb4gJZYrunwxsSXMApOmIQzwgOciE1oRjyaM1aDj+yR7xuiHvT9VmgcXnPRwO/9+wWCgEgJFc1FCwzCVhFclUpuw/u3g3cFyg50GPOjePZ+ocjPeM2RCXthpbUFwQAzsQ2Nx6PeuE+bJo0w7BQI5NKGLN5XAW11LX7BQ8jia7bCLl2kc7mqTLzuxAOeeJH0Wk6VVf0oldyEN15T948CDm+sMiZRfjK0pZIbUwcd+3TphnF62lR8kXN44hAbhmG5WQNnT8zynucsnuYJhFpBfkMzqD4AAAAASUVORK5CYII=';
+          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAkFBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAECAIQIAgWLAsePA8oKCg4ODg6dB07OztMTExmzDORkZHBwcH///92I3mvAAAAI3RSTlMEBggKDA4QEhQWFxkbHR8hIyUmKCosLjAxN1hbYc7P0dLc3mzWzBUAAAC+SURBVBjTNY3pcsIwEIM3ePERx/bG5IIe0NIT0ur93w4nDLs/pPlGGlGltNG8IdpwMaoidlGSN8zGJ4mOyQqALtZ17IoRSw3meUYv0q+moTCtZrdbZQr3xAMsCdeW6r1SrnW09XmchjaE9vl0evJbUjZ2Q7+AI/BiVQEylkrO/TfwVgD7ZQ/jiA/g3TPptO7t9/gEfpImIw/wez7/iSEdMZcfBnwB16hJOcGEnFL+f70cnKKKbROa2tq6iOXqBuMXGTe4CAUbAAAAAElFTkSuQmCC';
+          break;
+        case 'Original':
+          Favicon.unreadDead = 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
+          Favicon.unreadDeadY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAAKAAAoAAAoKCg4AAA4ODg7OztMAACRAADBwcH/AAD///+WCcPSAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQmAUAxEb4Isk0rwp3EPR3ECcRQrh7C3/nAasPwzmCgYuPBy5AH/NALSImqAK+H1oJRqyJVHNAnZqDITVhj7/PrAciJ9il0BHs/jjU+fnB9sQ0IxX6OBO6Xr0xKAxANLZzUanCWzZQAAAABJRU5ErkJggg==';
+          Favicon.unreadSFW = 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAC6Xw////////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
+          Favicon.unreadSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAABBQcHFx4KISoNLToaVW4oKCgul8M4ODg7OzvBwcH///8uS/CdAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQ2AUAhEbwKWoftRGvdwBEewchM7d9BFbE6pbP4Mgj+R5MjjwgP+qQSkRtQAV8K3lVI2Q648oknIRpWZsMI4988HjgvpU+wO8HgeHzR9cjZYhoRiPkcDd0rXpyUAiRd5YjKC7MvNRgAAAABJRU5ErkJggg==';
+          Favicon.unreadNSFW = 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAGbMM////////yH5BAEKAAMALAAAAAAQABAAAAI/nI95wsqygIRxDgGCBhTrwF3Zxowg5H1cSopS6FrGQ82PU1951ckRmYKJVCXizLRC9kAnT0aIiR6lCFT1cigAADs=';
+          Favicon.unreadNSFWY = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAALVBMVEUAAAAAAAAAAAAAAAAECAIQIAgWLAsePA8oKCg4ODg6dB07OztmzDPBwcH///+rsf3XAAAAA3RSTlMAx9dmesIgAAAAZ0lEQVQI1z2LsQ2AUAhEbwKWofRL4x6O4AhuopWb2P4F7E5prP4MgiaSHHlceMA/jYC0iBrgSnjdKaUacuURTUI2qsyEFcaxvD6wnkifYleAx/N449Mn5wfbkFDM52jgTun6tAQg8QAEvjQg42KY2AAAAABJRU5ErkJggg==';
       }
-      this.text = '\u00A0(OP)';
-      return Post.prototype.callbacks.push({
-        name: 'Mark OP Quotes',
+      if (Favicon.SFW) {
+        Favicon.unread = Favicon.unreadSFW;
+        return Favicon.unreadY = Favicon.unreadSFWY;
+      } else {
+        Favicon.unread = Favicon.unreadNSFW;
+        return Favicon.unreadY = Favicon.unreadNSFWY;
+      }
+    },
+    empty: 'data:image/gif;base64,R0lGODlhEAAQAJEAAAAAAP///9vb2////yH5BAEAAAMALAAAAAAQABAAAAIvnI+pq+D9DBAUoFkPFnbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw==',
+    dead: 'data:image/gif;base64,R0lGODlhEAAQAKECAAAAAP8AAP///////yH5BAEKAAIALAAAAAAQABAAAAIvlI+pq+D9DAgUoFkPDlbs7lFZKIJOJJ3MyraoB14jFpOcVMpzrnF3OKlZYsMWowAAOw=='
+  };
+
+  ThreadExcerpt = {
+    init: function() {
+      if (g.VIEW !== 'thread' || !Conf['Thread Excerpt']) {
+        return;
+      }
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Excerpt',
         cb: this.node
       });
     },
     node: function() {
-      var boardID, op, postID, quotelink, quotelinks, quotes, _i, _j, _len, _len1, _ref;
-
-      if (this.isClone && this.thread === this.context.thread) {
-        return;
-      }
-      if (!(quotes = this.quotes).length) {
-        return;
-      }
-      quotelinks = this.nodes.quotelinks;
-      if (this.isClone && quotes.contains(this.thread.fullID)) {
-        for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
-          quotelink = quotelinks[_i];
-          quotelink.textContent = quotelink.textContent.replace(QuoteOP.text, '');
-        }
-      }
-      op = (this.isClone ? this.context : this).thread.fullID;
-      if (!quotes.contains(op)) {
-        return;
-      }
-      for (_j = 0, _len1 = quotelinks.length; _j < _len1; _j++) {
-        quotelink = quotelinks[_j];
-        _ref = Get.postDataFromLink(quotelink), boardID = _ref.boardID, postID = _ref.postID;
-        if (("" + boardID + "." + postID) === op) {
-          $.add(quotelink, $.tn(QuoteOP.text));
-        }
-      }
+      return d.title = Get.threadExcerpt(this);
     }
   };
 
-  QuotePreview = {
+  ThreadStats = {
     init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Quote Previewing']) {
+      var sc;
+
+      if (g.VIEW !== 'thread' || !Conf['Thread Stats']) {
         return;
       }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
-      }
-      return Post.prototype.callbacks.push({
-        name: 'Quote Previewing',
+      this.dialog = sc = $.el('span', {
+        innerHTML: "<span id=post-count>0</span> / <span id=file-count>0</span></div>",
+        id: 'thread-stats'
+      });
+      this.postCountEl = $('#post-count', sc);
+      this.fileCountEl = $('#file-count', sc);
+      Header.addShortcut(sc);
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Stats',
         cb: this.node
       });
     },
     node: function() {
-      var link, _i, _len, _ref;
+      var ID, fileCount, post, postCount, _ref;
 
-      _ref = this.nodes.quotelinks.concat(__slice.call(this.nodes.backlinks));
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        link = _ref[_i];
-        $.on(link, 'mouseover', QuotePreview.mouseover);
+      postCount = 0;
+      fileCount = 0;
+      _ref = this.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
+        postCount++;
+        if (post.file) {
+          fileCount++;
+        }
       }
+      ThreadStats.thread = this;
+      ThreadStats.update(postCount, fileCount);
+      return $.on(d, 'ThreadUpdate', ThreadStats.onUpdate);
     },
-    mouseover: function(e) {
-      var boardID, clone, origin, post, postID, posts, qp, quote, quoterID, threadID, _i, _j, _len, _len1, _ref, _ref1;
+    onUpdate: function(e) {
+      var fileCount, postCount, _ref;
 
-      if ($.hasClass(this, 'inlined')) {
+      if (e.detail[404]) {
         return;
       }
-      _ref = Get.postDataFromLink(this), boardID = _ref.boardID, threadID = _ref.threadID, postID = _ref.postID;
-      qp = $.el('div', {
-        id: 'qp',
-        className: 'dialog'
-      });
-      $.add(Header.hover, qp);
-      Get.postClone(boardID, threadID, postID, qp, Get.contextFromLink(this));
-      UI.hover({
-        root: this,
-        el: qp,
-        latestEvent: e,
-        endEvents: 'mouseout click',
-        cb: QuotePreview.mouseout,
-        asapTest: function() {
-          return qp.firstElementChild;
-        }
-      });
-      if (!(origin = g.posts["" + boardID + "." + postID])) {
-        return;
-      }
-      if (Conf['Quote Highlighting']) {
-        posts = [origin].concat(origin.clones);
-        posts.pop();
-        for (_i = 0, _len = posts.length; _i < _len; _i++) {
-          post = posts[_i];
-          $.addClass(post.nodes.post, 'qphl');
-        }
-      }
-      quoterID = $.x('ancestor::*[@id][1]', this).id.match(/\d+$/)[0];
-      clone = Get.postFromRoot(qp.firstChild);
-      _ref1 = clone.nodes.quotelinks.concat(__slice.call(clone.nodes.backlinks));
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        quote = _ref1[_j];
-        if (quote.hash.slice(2) === quoterID) {
-          $.addClass(quote, 'forwardlink');
-        }
-      }
+      _ref = e.detail, postCount = _ref.postCount, fileCount = _ref.fileCount;
+      return ThreadStats.update(postCount, fileCount);
     },
-    mouseout: function() {
-      var clone, post, root, _i, _len, _ref;
+    update: function(postCount, fileCount) {
+      var fileCountEl, postCountEl, thread;
 
-      if (!(root = this.el.firstElementChild)) {
-        return;
-      }
-      clone = Get.postFromRoot(root);
-      post = clone.origin;
-      post.rmClone(root.dataset.clone);
-      if (!Conf['Quote Highlighting']) {
-        return;
-      }
-      _ref = [post].concat(post.clones);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        post = _ref[_i];
-        $.rmClass(post.nodes.post, 'qphl');
-      }
+      thread = ThreadStats.thread, postCountEl = ThreadStats.postCountEl, fileCountEl = ThreadStats.fileCountEl;
+      postCountEl.textContent = postCount;
+      fileCountEl.textContent = fileCount;
+      (thread.postLimit && !thread.isSticky ? $.addClass : $.rmClass)(postCountEl, 'warning');
+      return (thread.fileLimit && !thread.isSticky ? $.addClass : $.rmClass)(fileCountEl, 'warning');
     }
   };
 
-  /*
-    <3 aeosynth
-  */
-
-
-  QuoteThreading = {
+  ThreadUpdater = {
     init: function() {
-      var input;
+      var checked, conf, el, input, name, sc, settings, subEntries, _ref;
 
-      if (!(Conf['Quote Threading'] && g.VIEW === 'thread')) {
+      if (g.VIEW !== 'thread' || !Conf['Thread Updater']) {
         return;
       }
-      this.enabled = true;
-      this.controls = $.el('span', {
-        innerHTML: '<label><input id=threadingControl type=checkbox checked> Threading</label>'
+      checked = Conf['Auto Update'] ? 'checked' : '';
+      this.dialog = sc = $.el('span', {
+        innerHTML: "<span id=update-status></span><span id=update-timer title='Update now'></span>",
+        id: 'updater'
       });
-      input = $('input', this.controls);
-      $.on(input, 'change', QuoteThreading.toggle);
+      this.timer = $('#update-timer', sc);
+      this.status = $('#update-status', sc);
+      $.on(this.timer, 'click', ThreadUpdater.update);
+      $.on(this.status, 'click', ThreadUpdater.update);
+      this.checkPostCount = 0;
+      Header.addShortcut(sc);
+      subEntries = [];
+      _ref = Config.updater.checkbox;
+      for (name in _ref) {
+        conf = _ref[name];
+        checked = Conf[name] ? 'checked' : '';
+        el = $.el('label', {
+          title: "" + conf[1],
+          innerHTML: "<input name='" + name + "' type=checkbox " + checked + "> " + name
+        });
+        input = el.firstElementChild;
+        $.on(input, 'change', $.cb.checked);
+        if (input.name === 'Scroll BG') {
+          $.on(input, 'change', ThreadUpdater.cb.scrollBG);
+          ThreadUpdater.cb.scrollBG();
+        }
+        subEntries.push({
+          el: el
+        });
+      }
+      settings = $.el('span', {
+        innerHTML: '<a href=javascript:;>Interval</a>'
+      });
+      $.on(settings, 'click', this.intervalShortcut);
+      subEntries.push({
+        el: settings
+      });
       $.event('AddMenuEntry', {
         type: 'header',
-        el: this.controls,
-        order: 98
+        el: $.el('span', {
+          textContent: 'Updater'
+        }),
+        order: 110,
+        subEntries: subEntries
       });
-      $.on(d, '4chanXInitFinished', this.setup);
-      return Post.prototype.callbacks.push({
-        name: 'Quote Threading',
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Updater',
         cb: this.node
       });
     },
-    setup: function() {
-      var ID, post, posts;
-
-      $.off(d, '4chanXInitFinished', QuoteThreading.setup);
-      posts = g.posts;
-      for (ID in posts) {
-        post = posts[ID];
-        if (post.cb) {
-          post.cb.call(post);
-        }
-      }
-      return QuoteThreading.hasRun = true;
-    },
     node: function() {
-      var ID, fullID, keys, len, post, posts, qid, quote, quotes, uniq, _i, _len;
+      ThreadUpdater.thread = this;
+      ThreadUpdater.root = this.OP.nodes.root.parentNode;
+      ThreadUpdater.lastPost = +ThreadUpdater.root.lastElementChild.id.match(/\d+/)[0];
+      ThreadUpdater.outdateCount = 0;
+      ThreadUpdater.lastModified = '0';
+      ThreadUpdater.cb.interval.call($.el('input', {
+        value: Conf['Interval']
+      }));
+      $.on(window, 'online offline', ThreadUpdater.cb.online);
+      $.on(d, 'QRPostSuccessful', ThreadUpdater.cb.post);
+      $.on(d, 'visibilitychange', ThreadUpdater.cb.visibility);
+      return ThreadUpdater.cb.online();
+    },
+    /*
+    http://freesound.org/people/pierrecartoons1979/sounds/90112/
+    cc-by-nc-3.0
+    */
 
-      if (this.isClone || !QuoteThreading.enabled || this.thread.OP === this) {
+    beep: 'data:audio/wav;base64,UklGRjQDAABXQVZFZm10IBAAAAABAAEAgD4AAIA+AAABAAgAc21wbDwAAABBAAADAAAAAAAAAAA8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABkYXRhzAIAAGMms8em0tleMV4zIpLVo8nhfSlcPR102Ki+5JspVEkdVtKzs+K1NEhUIT7DwKrcy0g6WygsrM2k1NpiLl0zIY/WpMrjgCdbPhxw2Kq+5Z4qUkkdU9K1s+K5NkVTITzBwqnczko3WikrqM+l1NxlLF0zIIvXpsnjgydZPhxs2ay95aIrUEkdUdC3suK8N0NUIjq+xKrcz002WioppdGm091pK1w0IIjYp8jkhydXPxxq2K295aUrTkoeTs65suK+OUFUIzi7xqrb0VA0WSoootKm0t5tKlo1H4TYqMfkiydWQBxm16+85actTEseS8y7seHAPD9TIza5yKra01QyWSson9On0d5wKVk2H4DYqcfkjidUQB1j1rG75KsvSkseScu8seDCPz1TJDW2yara1FYxWSwnm9Sn0N9zKVg2H33ZqsXkkihSQR1g1bK65K0wSEsfR8i+seDEQTxUJTOzy6rY1VowWC0mmNWoz993KVc3H3rYq8TklSlRQh1d1LS647AyR0wgRMbAsN/GRDpTJTKwzKrX1l4vVy4lldWpzt97KVY4IXbUr8LZljVPRCxhw7W3z6ZISkw1VK+4sMWvXEhSPk6buay9sm5JVkZNiLWqtrJ+TldNTnquqbCwilZXU1BwpKirrpNgWFhTaZmnpquZbFlbVmWOpaOonHZcXlljhaGhpZ1+YWBdYn2cn6GdhmdhYGN3lp2enIttY2Jjco+bnJuOdGZlZXCImJqakHpoZ2Zug5WYmZJ/bGlobX6RlpeSg3BqaW16jZSVkoZ0bGtteImSk5KIeG5tbnaFkJKRinxxbm91gY2QkIt/c3BwdH6Kj4+LgnZxcXR8iI2OjIR5c3J0e4WLjYuFe3VzdHmCioyLhn52dHR5gIiKioeAeHV1eH+GiYqHgXp2dnh9hIiJh4J8eHd4fIKHiIeDfXl4eHyBhoeHhH96eHmA',
+    cb: {
+      online: function() {
+        if (ThreadUpdater.online = navigator.onLine) {
+          ThreadUpdater.outdateCount = 0;
+          ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+          ThreadUpdater.update();
+          ThreadUpdater.set('status', null, null);
+        } else {
+          ThreadUpdater.set('timer', null);
+          ThreadUpdater.set('status', 'Offline', 'warning');
+        }
+        return ThreadUpdater.cb.autoUpdate();
+      },
+      post: function(e) {
+        if (e.detail.threadID !== ThreadUpdater.thread.ID) {
+          return;
+        }
+        ThreadUpdater.outdateCount = 0;
+        if (ThreadUpdater.seconds > 2) {
+          return setTimeout(ThreadUpdater.update, 1000);
+        }
+      },
+      checkpost: function() {
+        if (!(g.DEAD || ThreadUpdater.foundPost || ThreadUpdater.checkPostCount >= 10)) {
+          return setTimeout(ThreadUpdater.update, ++ThreadUpdater.checkPostCount * 500);
+        }
+        ThreadUpdater.checkPostCount = 0;
+        delete ThreadUpdater.foundPost;
+        return delete ThreadUpdater.postID;
+      },
+      visibility: function() {
+        if (d.hidden) {
+          return;
+        }
+        ThreadUpdater.outdateCount = 0;
+        if (ThreadUpdater.seconds > ThreadUpdater.interval) {
+          return ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+        }
+      },
+      scrollBG: function() {
+        return ThreadUpdater.scrollBG = Conf['Scroll BG'] ? function() {
+          return true;
+        } : function() {
+          return !d.hidden;
+        };
+      },
+      autoUpdate: function() {
+        if (ThreadUpdater.online) {
+          return ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
+        } else {
+          return clearTimeout(ThreadUpdater.timeoutID);
+        }
+      },
+      interval: function() {
+        var val;
+
+        val = +this.value;
+        if (val < 1) {
+          val = 1;
+        }
+        ThreadUpdater.interval = this.value = val;
+        return $.cb.value.call(this);
+      },
+      load: function() {
+        var klass, req, text, _ref;
+
+        req = ThreadUpdater.req;
+        switch (req.status) {
+          case 200:
+            g.DEAD = false;
+            ThreadUpdater.parse(JSON.parse(req.response).posts);
+            ThreadUpdater.lastModified = req.getResponseHeader('Last-Modified');
+            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            break;
+          case 404:
+            g.DEAD = true;
+            ThreadUpdater.set('timer', null);
+            ThreadUpdater.set('status', '404', 'warning');
+            clearTimeout(ThreadUpdater.timeoutID);
+            ThreadUpdater.thread.kill();
+            $.event('ThreadUpdate', {
+              404: true,
+              thread: ThreadUpdater.thread
+            });
+            break;
+          default:
+            ThreadUpdater.outdateCount++;
+            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            /*
+            Status Code 304: Not modified
+            By sending the `If-Modified-Since` header we get a proper status code, and no response.
+            This saves bandwidth for both the user and the servers and avoid unnecessary computation.
+            */
+
+            _ref = [0, 304].contains(req.status) ? [null, null] : ["" + req.statusText + " (" + req.status + ")", 'warning'], text = _ref[0], klass = _ref[1];
+            ThreadUpdater.set('status', text, klass);
+        }
+        if (ThreadUpdater.postID) {
+          ThreadUpdater.cb.checkpost(this.status);
+        }
+        return delete ThreadUpdater.req;
+      }
+    },
+    getInterval: function() {
+      var i, j;
+
+      i = ThreadUpdater.interval;
+      j = Math.min(ThreadUpdater.outdateCount, 10);
+      if (!d.hidden) {
+        j = Math.min(j, 7);
+      }
+      return ThreadUpdater.seconds = Conf['Optional Increase'] ? Math.max(i, [0, 5, 10, 15, 20, 30, 60, 90, 120, 240, 300][j]) : i;
+    },
+    intervalShortcut: function() {
+      var settings;
+
+      Settings.open('Advanced');
+      settings = $.id('fourchanx-settings');
+      return $('input[name=Interval]', settings).focus();
+    },
+    set: function(name, text, klass) {
+      var el, node;
+
+      el = ThreadUpdater[name];
+      if (node = el.firstChild) {
+        node.data = text;
+      } else {
+        el.textContent = text;
+      }
+      if (klass !== void 0) {
+        return el.className = klass;
+      }
+    },
+    timeout: function() {
+      var n;
+
+      ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
+      if (!(n = --ThreadUpdater.seconds)) {
+        return ThreadUpdater.update();
+      } else if (n <= -60) {
+        ThreadUpdater.set('status', 'Retrying', null);
+        return ThreadUpdater.update();
+      } else if (n > 0) {
+        return ThreadUpdater.set('timer', n);
+      }
+    },
+    update: function() {
+      var url;
+
+      if (!ThreadUpdater.online) {
         return;
       }
-      quotes = this.quotes, ID = this.ID, fullID = this.fullID;
-      posts = g.posts;
-      if (!(post = posts[fullID]) || post.isHidden) {
+      ThreadUpdater.seconds = 0;
+      ThreadUpdater.set('timer', '...');
+      if (ThreadUpdater.req) {
+        ThreadUpdater.req.onloadend = null;
+        ThreadUpdater.req.abort();
+      }
+      url = "//api.4chan.org/" + ThreadUpdater.thread.board + "/res/" + ThreadUpdater.thread + ".json";
+      return ThreadUpdater.req = $.ajax(url, {
+        onloadend: ThreadUpdater.cb.load
+      }, {
+        headers: {
+          'If-Modified-Since': ThreadUpdater.lastModified
+        }
+      });
+    },
+    updateThreadStatus: function(title, OP) {
+      var icon, message, root, titleLC;
+
+      titleLC = title.toLowerCase();
+      if (ThreadUpdater.thread["is" + title] === !!OP[titleLC]) {
         return;
       }
-      uniq = {};
-      len = ("" + g.BOARD).length + 1;
-      for (_i = 0, _len = quotes.length; _i < _len; _i++) {
-        quote = quotes[_i];
-        qid = quote;
-        if (!(qid.slice(len) < ID)) {
+      if (!(ThreadUpdater.thread["is" + title] = !!OP[titleLC])) {
+        message = title === 'Sticky' ? 'The thread is not a sticky anymore.' : 'The thread is not closed anymore.';
+        new Notification('info', message, 30);
+        $.rm($("." + titleLC + "Icon", ThreadUpdater.thread.OP.nodes.info));
+        return;
+      }
+      message = title === 'Sticky' ? 'The thread is now a sticky.' : 'The thread is now closed.';
+      new Notification('info', message, 30);
+      icon = $.el('img', {
+        src: "//static.4chan.org/image/" + titleLC + ".gif",
+        alt: title,
+        title: title,
+        className: "" + titleLC + "Icon"
+      });
+      root = $('[title="Quote this post"]', ThreadUpdater.thread.OP.nodes.info);
+      if (title === 'Closed') {
+        root = $('.stickyIcon', ThreadUpdater.thread.OP.nodes.info) || root;
+      }
+      return $.after(root, [$.tn(' '), icon]);
+    },
+    parse: function(postObjects) {
+      var ID, OP, count, deletedFiles, deletedPosts, files, index, key, node, num, post, postObject, posts, scroll, _i, _len, _ref;
+
+      OP = postObjects[0];
+      Build.spoilerRange[ThreadUpdater.thread.board] = OP.custom_spoiler;
+      ThreadUpdater.updateThreadStatus('Sticky', OP);
+      ThreadUpdater.updateThreadStatus('Closed', OP);
+      ThreadUpdater.thread.postLimit = !!OP.bumplimit;
+      ThreadUpdater.thread.fileLimit = !!OP.imagelimit;
+      posts = [];
+      index = [];
+      files = [];
+      count = 0;
+      for (_i = 0, _len = postObjects.length; _i < _len; _i++) {
+        postObject = postObjects[_i];
+        num = postObject.no;
+        index.push(num);
+        if (postObject.fsize) {
+          files.push(num);
+        }
+        if (num <= ThreadUpdater.lastPost) {
           continue;
         }
-        if (qid in posts) {
-          uniq[qid.slice(len)] = true;
+        count++;
+        node = Build.postFromObject(postObject, ThreadUpdater.thread.board);
+        posts.push(new Post(node, ThreadUpdater.thread, ThreadUpdater.thread.board));
+      }
+      deletedPosts = [];
+      deletedFiles = [];
+      _ref = ThreadUpdater.thread.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
+        ID = +ID;
+        if (post.isDead && index.contains(ID)) {
+          post.resurrect();
+        } else if (!index.contains(ID)) {
+          post.kill();
+          deletedPosts.push(post);
+        } else if (post.file && !post.file.isDead && !files.contains(ID)) {
+          post.kill(true);
+          deletedFiles.push(post);
+        }
+        if (ThreadUpdater.postID) {
+          if (ID === ThreadUpdater.postID) {
+            ThreadUpdater.foundPost = true;
+          }
         }
       }
-      keys = Object.keys(uniq);
-      if (keys.length !== 1) {
+      if (!count) {
+        ThreadUpdater.set('status', null, null);
+        ThreadUpdater.outdateCount++;
+      } else {
+        ThreadUpdater.set('status', "+" + count, 'new');
+        ThreadUpdater.outdateCount = 0;
+        if (Conf['Beep'] && d.hidden && Unread.posts && !Unread.posts.length) {
+          if (!ThreadUpdater.audio) {
+            ThreadUpdater.audio = $.el('audio', {
+              src: ThreadUpdater.beep
+            });
+          }
+          ThreadUpdater.audio.play();
+        }
+        ThreadUpdater.lastPost = posts[count - 1].ID;
+        Main.callbackNodes(Post, posts);
+        scroll = Conf['Auto Scroll'] && ThreadUpdater.scrollBG() && ThreadUpdater.root.getBoundingClientRect().bottom - doc.clientHeight < 25;
+        for (key in posts) {
+          post = posts[key];
+          if (!posts.hasOwnProperty(key)) {
+            continue;
+          }
+          if (post.cb) {
+            if (!post.cb.call(post)) {
+              $.add(ThreadUpdater.root, post.nodes.root);
+            }
+          } else {
+            $.add(ThreadUpdater.root, post.nodes.root);
+          }
+        }
+        if (scroll) {
+          if (Conf['Bottom Scroll']) {
+            doc.scrollTop = d.body.clientHeight;
+          } else {
+            Header.scrollToPost(nodes[0]);
+          }
+        }
+        $.queueTask(function() {
+          var length, threadID;
+
+          threadID = ThreadUpdater.thread.ID;
+          length = $$('.thread > .postContainer', ThreadUpdater.root).length;
+          return Fourchan.parseThread(threadID, length - count, length);
+        });
+      }
+      return $.event('ThreadUpdate', {
+        404: false,
+        thread: ThreadUpdater.thread,
+        newPosts: posts,
+        deletedPosts: deletedPosts,
+        deletedFiles: deletedFiles,
+        postCount: OP.replies + 1,
+        fileCount: OP.images + (!!ThreadUpdater.thread.OP.file && !ThreadUpdater.thread.OP.file.isDead)
+      });
+    }
+  };
+
+  ThreadWatcher = {
+    init: function() {
+      if (!Conf['Thread Watcher']) {
         return;
       }
-      this.threaded = "" + g.BOARD + "." + keys[0];
-      return this.cb = QuoteThreading.nodeinsert;
+      this.dialog = UI.dialog('watcher', 'top: 50px; left: 0px;', '<div class=move>Thread Watcher</div>');
+      $.on(d, 'QRPostSuccessful', this.cb.post);
+      $.on(d, '4chanXInitFinished', this.ready);
+      $.sync('WatchedThreads', this.refresh);
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Watcher',
+        cb: this.node
+      });
     },
-    nodeinsert: function() {
-      var bottom, height, posts, qpost, qroot, threadContainer, top, _ref;
+    node: function() {
+      var favicon,
+        _this = this;
 
-      posts = g.posts;
-      qpost = posts[this.threaded];
-      delete this.threaded;
-      delete this.cb;
-      if (this.thread.OP === qpost) {
-        return false;
+      favicon = $.el('img', {
+        className: 'favicon'
+      });
+      $.on(favicon, 'click', ThreadWatcher.cb.toggle);
+      $.before($('input', this.OP.nodes.post), favicon);
+      if (g.VIEW !== 'thread') {
+        return;
       }
-      if (QuoteThreading.hasRun) {
-        height = doc.clientHeight;
-        _ref = qpost.nodes.root.getBoundingClientRect(), bottom = _ref.bottom, top = _ref.top;
-        if (!(Unread.posts.contains(qpost) || ((bottom < height) && (top > 0)))) {
+      return $.get('AutoWatch', 0, function(item) {
+        if (item['AutoWatch'] !== _this.ID) {
+          return;
+        }
+        ThreadWatcher.watch(_this);
+        return $["delete"]('AutoWatch');
+      });
+    },
+    ready: function() {
+      $.off(d, '4chanXInitFinished', ThreadWatcher.ready);
+      if (!Main.isThisPageLegit()) {
+        return;
+      }
+      ThreadWatcher.refresh();
+      return $.add(d.body, ThreadWatcher.dialog);
+    },
+    refresh: function(watched) {
+      var ID, board, div, favicon, id, link, nodes, props, thread, x, _ref, _ref1;
+
+      if (!watched) {
+        $.get('WatchedThreads', {}, function(item) {
+          return ThreadWatcher.refresh(item['WatchedThreads']);
+        });
+        return;
+      }
+      nodes = [$('.move', ThreadWatcher.dialog)];
+      for (board in watched) {
+        _ref = watched[board];
+        for (id in _ref) {
+          props = _ref[id];
+          x = $.el('a', {
+            textContent: '×',
+            href: 'javascript:;'
+          });
+          $.on(x, 'click', ThreadWatcher.cb.x);
+          link = $.el('a', props);
+          link.title = link.textContent;
+          div = $.el('div');
+          $.add(div, [x, $.tn(' '), link]);
+          nodes.push(div);
+        }
+      }
+      $.rmAll(ThreadWatcher.dialog);
+      $.add(ThreadWatcher.dialog, nodes);
+      watched = watched[g.BOARD] || {};
+      _ref1 = g.BOARD.threads;
+      for (ID in _ref1) {
+        thread = _ref1[ID];
+        favicon = $('.favicon', thread.OP.nodes.post);
+        favicon.src = ID in watched ? Favicon["default"] : Favicon.empty;
+      }
+    },
+    cb: {
+      toggle: function() {
+        return ThreadWatcher.toggle(Get.postFromNode(this).thread);
+      },
+      x: function() {
+        var thread;
+
+        thread = this.nextElementSibling.pathname.split('/');
+        return ThreadWatcher.unwatch(thread[1], thread[3]);
+      },
+      post: function(e) {
+        var board, postID, threadID, _ref;
+
+        _ref = e.detail, board = _ref.board, postID = _ref.postID, threadID = _ref.threadID;
+        if (postID === threadID) {
+          if (Conf['Auto Watch']) {
+            return $.set('AutoWatch', threadID);
+          }
+        } else if (Conf['Auto Watch Reply']) {
+          return ThreadWatcher.watch(board.threads[threadID]);
+        }
+      }
+    },
+    toggle: function(thread) {
+      if ($('.favicon', thread.OP.nodes.post).src === Favicon.empty) {
+        return ThreadWatcher.watch(thread);
+      } else {
+        return ThreadWatcher.unwatch(thread.board, thread.ID);
+      }
+    },
+    unwatch: function(board, threadID) {
+      return $.get('WatchedThreads', {}, function(item) {
+        var watched;
+
+        watched = item['WatchedThreads'];
+        delete watched[board][threadID];
+        if (!Object.keys(watched[board]).length) {
+          delete watched[board];
+        }
+        ThreadWatcher.refresh(watched);
+        return $.set('WatchedThreads', watched);
+      });
+    },
+    watch: function(thread) {
+      return $.get('WatchedThreads', {}, function(item) {
+        var watched, _name;
+
+        watched = item['WatchedThreads'];
+        watched[_name = thread.board] || (watched[_name] = {});
+        watched[thread.board][thread] = {
+          href: "/" + thread.board + "/res/" + thread,
+          textContent: Get.threadExcerpt(thread)
+        };
+        ThreadWatcher.refresh(watched);
+        return $.set('WatchedThreads', watched);
+      });
+    }
+  };
+
+  Unread = {
+    init: function() {
+      if (g.VIEW !== 'thread' || !Conf['Unread Count'] && !Conf['Unread Favicon']) {
+        return;
+      }
+      this.db = new DataBoard('lastReadPosts', this.sync);
+      this.hr = $.el('hr', {
+        id: 'unread-line'
+      });
+      this.posts = [];
+      this.postsQuotingYou = [];
+      return Thread.prototype.callbacks.push({
+        name: 'Unread',
+        cb: this.node
+      });
+    },
+    node: function() {
+      Unread.thread = this;
+      Unread.title = d.title;
+      Unread.lastReadPost = Unread.db.get({
+        boardID: this.board.ID,
+        threadID: this.ID,
+        defaultValue: 0
+      });
+      $.on(d, '4chanXInitFinished', Unread.ready);
+      $.on(d, 'ThreadUpdate', Unread.onUpdate);
+      $.on(d, 'scroll visibilitychange', Unread.read);
+      if (Conf['Unread Line']) {
+        $.on(d, 'visibilitychange', Unread.setLine);
+      }
+      if (Conf['Scroll to Last Read Post']) {
+        return $.on(window, 'load', Unread.scroll);
+      }
+    },
+    ready: function() {
+      var ID, post, posts, _ref;
+
+      $.off(d, '4chanXInitFinished', Unread.ready);
+      posts = [];
+      _ref = Unread.thread.posts;
+      for (ID in _ref) {
+        post = _ref[ID];
+        if (post.isReply) {
+          posts.push(post);
+        }
+      }
+      return Unread.addPosts(posts);
+    },
+    scroll: function() {
+      var hash, post, posts, prevID, root;
+
+      if ((hash = location.hash.match(/\d+/)) && hash[0] in Unread.thread.posts) {
+        return;
+      }
+      if (Unread.posts.length) {
+        prevID = 0;
+        while (root = $.x('preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root)) {
+          post = Get.postFromRoot(root);
+          if (prevID === post.ID) {
+            break;
+          }
+          prevID = post.ID;
+          if (!post.isHidden) {
+            break;
+          }
+        }
+        root.scrollIntoView(false);
+        return;
+      }
+      posts = Object.keys(Unread.thread.posts);
+      return Header.scrollToPost(Unread.thread.posts[posts[posts.length - 1]].nodes.root);
+    },
+    sync: function() {
+      var lastReadPost;
+
+      lastReadPost = Unread.db.get({
+        boardID: Unread.thread.board.ID,
+        threadID: Unread.thread.ID,
+        defaultValue: 0
+      });
+      if (!(Unread.lastReadPost < lastReadPost)) {
+        return;
+      }
+      Unread.lastReadPost = lastReadPost;
+      Unread.readArray(Unread.posts);
+      Unread.readArray(Unread.postsQuotingYou);
+      Unread.setLine();
+      return Unread.update();
+    },
+    addPosts: function(newPosts) {
+      var ID, data, post, _i, _len;
+
+      for (_i = 0, _len = newPosts.length; _i < _len; _i++) {
+        post = newPosts[_i];
+        ID = post.ID;
+        if (ID <= Unread.lastReadPost || post.isHidden) {
+          continue;
+        }
+        if (QR.db) {
+          data = {
+            boardID: post.board.ID,
+            threadID: post.thread.ID,
+            postID: post.ID
+          };
+          if (QR.db.get(data)) {
+            continue;
+          }
+        }
+        Unread.posts.push(post);
+        Unread.addPostQuotingYou(post);
+      }
+      if (Conf['Unread Line']) {
+        Unread.setLine(newPosts.contains(Unread.posts[0]));
+      }
+      Unread.read();
+      return Unread.update();
+    },
+    addPostQuotingYou: function(post) {
+      var quotelink, _i, _len, _ref;
+
+      if (!QR.db) {
+        return;
+      }
+      _ref = post.nodes.quotelinks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        quotelink = _ref[_i];
+        if (QR.db.get(Get.postDataFromLink(quotelink))) {
+          Unread.postsQuotingYou.push(post);
+        }
+      }
+    },
+    onUpdate: function(e) {
+      if (e.detail[404]) {
+        return Unread.update();
+      } else {
+        return Unread.addPosts(e.detail.newPosts);
+      }
+    },
+    readSinglePost: function(post) {
+      var i;
+
+      if ((i = Unread.posts.indexOf(post)) === -1) {
+        return;
+      }
+      Unread.posts.splice(i, 1);
+      if (i === 0) {
+        Unread.lastReadPost = post.ID;
+        Unread.saveLastReadPost();
+      }
+      if ((i = Unread.postsQuotingYou.indexOf(post)) !== -1) {
+        Unread.postsQuotingYou.splice(i, 1);
+      }
+      return Unread.update();
+    },
+    readArray: function(arr) {
+      var i, post, _i, _len;
+
+      for (i = _i = 0, _len = arr.length; _i < _len; i = ++_i) {
+        post = arr[i];
+        if (post.ID > Unread.lastReadPost) {
+          break;
+        }
+      }
+      return arr.splice(0, i);
+    },
+    read: $.debounce(50, function(e) {
+      var ID, bottom, height, i, post, posts, read;
+
+      if (d.hidden || !Unread.posts.length) {
+        return;
+      }
+      height = doc.clientHeight;
+      posts = Unread.posts;
+      read = [];
+      i = posts.length;
+      while (post = posts[--i]) {
+        bottom = post.nodes.root.getBoundingClientRect().bottom;
+        if (bottom < height) {
+          ID = post.ID;
+          posts.remove(post);
+        }
+      }
+      if (!ID) {
+        return;
+      }
+      Unread.lastReadPost = ID;
+      Unread.saveLastReadPost();
+      Unread.readArray(Unread.postsQuotingYou);
+      if (e) {
+        return Unread.update();
+      }
+    }),
+    saveLastReadPost: $.debounce(2 * $.SECOND, function() {
+      return Unread.db.set({
+        boardID: Unread.thread.board.ID,
+        threadID: Unread.thread.ID,
+        val: Unread.lastReadPost
+      });
+    }),
+    setLine: function(force) {
+      var post, root;
+
+      if (!(d.hidden || force === true)) {
+        return;
+      }
+      if (post = Unread.posts[0]) {
+        root = post.nodes.root;
+        if (root !== $('.thread > .replyContainer', root.parentNode)) {
+          return $.before(root, Unread.hr);
+        }
+      } else {
+        return $.rm(Unread.hr);
+      }
+    },
+    update: function() {
+      var count;
+
+      count = Unread.posts.length;
+      if (Conf['Unread Count']) {
+        d.title = "" + (count || !Conf['Hide Unread Count at (0)'] ? "(" + count + ") " : '') + (g.DEAD ? "/" + g.BOARD + "/ - 404" : "" + Unread.title);
+      }
+      if (!Conf['Unread Favicon']) {
+        return;
+      }
+      Favicon.el.href = g.DEAD ? Unread.postsQuotingYou.length ? Favicon.unreadDeadY : count ? Favicon.unreadDead : Favicon.dead : count ? Unread.postsQuotingYou.length ? Favicon.unreadY : Favicon.unread : Favicon["default"];
+      return $.add(d.head, Favicon.el);
+    }
+  };
+
+  Redirect = {
+    init: function() {
+      return $.sync('archs', this.updateArchives);
+    },
+    updateArchives: function() {
+      return $.get('archivers', {}, function(_arg) {
+        var archivers;
+
+        archivers = _arg.archivers;
+        return Conf['archivers'] = archivers;
+      });
+    },
+    image: function(boardID, filename) {
+      switch (boardID) {
+        case 'a':
+        case 'gd':
+        case 'jp':
+        case 'm':
+        case 'q':
+        case 'tg':
+        case 'vg':
+        case 'vp':
+        case 'vr':
+        case 'wsg':
+          return "//archive.foolz.us/" + boardID + "/full_image/" + filename;
+        case 'u':
+          return "//nsfw.foolz.us/" + boardID + "/full_image/" + filename;
+        case 'po':
+          return "//archive.thedarkcave.org/" + boardID + "/full_image/" + filename;
+        case 'hr':
+        case 'tv':
+          return "http://archive.4plebs.org/" + boardID + "/full_image/" + filename;
+        case 'ck':
+        case 'fa':
+        case 'lit':
+        case 's4s':
+          return "//fuuka.warosu.org/" + boardID + "/full_image/" + filename;
+        case 'cgl':
+        case 'g':
+        case 'mu':
+        case 'w':
+          return "//rbt.asia/" + boardID + "/full_image/" + filename;
+        case 'an':
+        case 'k':
+        case 'toy':
+        case 'x':
+          return "http://archive.heinessen.com/" + boardID + "/full_image/" + filename;
+        case 'c':
+          return "//archive.nyafuu.org/" + boardID + "/full_image/" + filename;
+      }
+    },
+    post: function(boardID, postID) {
+      var archive, name, _base, _ref;
+
+      if (Redirect.post[boardID] == null) {
+        _ref = this.archiver;
+        for (name in _ref) {
+          archive = _ref[name];
+          if (archive.type === 'foolfuuka' && archive.boards.contains(boardID)) {
+            Redirect.post[boardID] = archive.base;
+            break;
+          }
+        }
+        (_base = Redirect.post)[boardID] || (_base[boardID] = false);
+      }
+      if (Redirect.post[boardID]) {
+        return "" + Redirect.post[boardID] + "/_/api/chan/post/?board=" + boardID + "&num=" + postID;
+      } else {
+        return null;
+      }
+    },
+    select: function(board) {
+      var archive, name, _ref, _results;
+
+      _ref = this.archiver;
+      _results = [];
+      for (name in _ref) {
+        archive = _ref[name];
+        if (!archive.boards.contains(board)) {
+          continue;
+        }
+        _results.push(name);
+      }
+      return _results;
+    },
+    to: function(data) {
+      var arch, archive, boardID;
+
+      boardID = data.boardID;
+      if ((arch = Conf.archivers[boardID]) == null) {
+        Conf.archivers[boardID] = arch = this.select(boardID)[0];
+        $.set('archivers', Conf.archivers);
+      }
+      return (arch && (archive = this.archiver[arch]) ? Redirect.path(archive.base, archive.type, data) : data.threadID ? "//boards.4chan.org/" + boardID + "/" : null);
+    },
+    archiver: {
+      'Foolz': {
+        base: 'https://archive.foolz.us',
+        boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg'],
+        type: 'foolfuuka'
+      },
+      'NSFWFoolz': {
+        base: 'https://nsfw.foolz.us',
+        boards: ['u'],
+        type: 'foolfuuka'
+      },
+      'TheDarkCave': {
+        base: 'http://archive.thedarkcave.org',
+        boards: ['c', 'int', 'out', 'po'],
+        type: 'foolfuuka'
+      },
+      '4plebs': {
+        base: 'http://archive.4plebs.org',
+        boards: ['hr', 'tg', 'tv', 'x'],
+        base: 'foolfuuka'
+      },
+      'Warosu': {
+        base: '//fuuka.warosu.org',
+        boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg'],
+        type: 'fuuka'
+      },
+      'InstallGentoo': {
+        base: '//archive.installgentoo.net',
+        boards: ['diy', 'g', 'sci'],
+        type: 'fuuka'
+      },
+      'RebeccaBlackTech': {
+        base: '//rbt.asia',
+        boards: ['an', 'cgl', 'g', 'mu', 'w'],
+        type: 'fuuka_mail'
+      },
+      'Heinessen': {
+        base: 'http://archive.heinessen.com',
+        boards: ['an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'],
+        type: 'fuuka'
+      },
+      'Cliche': {
+        base: '//www.cliché.net/4chan/cgi-board.pl',
+        boards: ['e'],
+        type: 'fuuka'
+      },
+      'NyaFuu': {
+        base: '//archive.nyafuu.org',
+        boards: ['c', 'w'],
+        type: 'fuuka'
+      }
+    },
+    path: function(base, archiver, data) {
+      var boardID, path, postID, threadID, type, value;
+
+      if (data.isSearch) {
+        boardID = data.boardID, type = data.type, value = data.value;
+        type = type === 'name' ? 'username' : type === 'MD5' ? 'image' : type;
+        value = encodeURIComponent(value);
+        if (archiver === 'foolfuuka') {
+          return "" + base + "/" + boardID + "/search/" + type + "/" + value;
+        } else if (type === 'image') {
+          return "" + base + "/" + boardID + "/?task=search2&search_media_hash=" + value;
+        } else {
+          return "" + base + "/" + boardID + "/?task=search2&search_" + type + "=" + value;
+        }
+      }
+      boardID = data.boardID, threadID = data.threadID, postID = data.postID;
+      path = threadID ? "" + boardID + "/thread/" + threadID : "" + boardID + "/post/" + postID;
+      if (archiver === 'foolfuuka') {
+        path += '/';
+      }
+      if (threadID && postID) {
+        path += archiver === 'foolfuuka' ? "#" + postID : "#p" + postID;
+      }
+      return "" + base + "/" + path;
+    }
+  };
+
+  PSAHiding = {
+    init: function() {
+      var entry;
+
+      if (!Conf['Announcement Hiding']) {
+        return;
+      }
+      entry = {
+        type: 'header',
+        el: $.el('a', {
+          textContent: 'Show announcement',
+          className: 'show-announcement',
+          href: 'javascript:;'
+        }),
+        order: 50,
+        open: function() {
+          var _ref;
+
+          if ((_ref = $.id('globalMessage')) != null ? _ref.hidden : void 0) {
+            return true;
+          }
           return false;
         }
+      };
+      $.event('AddMenuEntry', entry);
+      $.on(entry.el, 'click', PSAHiding.toggle);
+      $.addClass(doc, 'hide-announcement');
+      return $.on(d, '4chanXInitFinished', this.setup);
+    },
+    setup: function() {
+      var btn, psa;
+
+      $.off(d, '4chanXInitFinished', PSAHiding.setup);
+      if (!(psa = $.id('globalMessage'))) {
+        $.rmClass(doc, 'hide-announcement');
+        return;
       }
-      qroot = qpost.nodes.root;
-      if (!$.hasClass(qroot, 'threadOP')) {
-        $.addClass(qroot, 'threadOP');
-        threadContainer = $.el('div', {
-          className: 'threadContainer'
-        });
-        $.after(qroot, threadContainer);
-      } else {
-        threadContainer = qroot.nextSibling;
+      PSAHiding.btn = btn = $.el('a', {
+        innerHTML: '<span>[&nbsp;-&nbsp;]</span>',
+        title: 'Hide announcement.',
+        className: 'hide-announcement',
+        href: 'javascript:;'
+      });
+      $.on(btn, 'click', PSAHiding.toggle);
+      $.get('hiddenPSAs', [], function(item) {
+        PSAHiding.sync(item['hiddenPSAs']);
+        $.before(psa, btn);
+        return $.rmClass(doc, 'hide-announcement');
+      });
+      return $.sync('hiddenPSAs', PSAHiding.sync);
+    },
+    toggle: function(e) {
+      var hide, text;
+
+      hide = $.hasClass(this, 'hide-announcement');
+      text = PSAHiding.trim($.id('globalMessage'));
+      return $.get('hiddenPSAs', [], function(_arg) {
+        var hiddenPSAs, i;
+
+        hiddenPSAs = _arg.hiddenPSAs;
+        if (hide) {
+          hiddenPSAs.push(text);
+          hiddenPSAs = hiddenPSAs.slice(-5);
+        } else {
+          $.event('CloseMenu');
+          i = hiddenPSAs.indexOf(text);
+          hiddenPSAs.splice(i, 1);
+        }
+        PSAHiding.sync(hiddenPSAs);
+        return $.set('hiddenPSAs', hiddenPSAs);
+      });
+    },
+    sync: function(hiddenPSAs) {
+      var hr, psa, _ref;
+
+      psa = $.id('globalMessage');
+      psa.hidden = PSAHiding.btn.hidden = (_ref = PSAHiding.trim(psa), __indexOf.call(hiddenPSAs, _ref) >= 0) ? true : false;
+      if ((hr = psa.nextElementSibling) && hr.nodeName === 'HR') {
+        return hr.hidden = psa.hidden;
       }
-      $.add(threadContainer, this.nodes.root);
-      return true;
+    },
+    trim: function(psa) {
+      return psa.textContent.replace(/\W+/g, '').toLowerCase();
+    }
+  };
+
+  CatalogLinks = {
+    init: function() {
+      var el, input;
+
+      if (!Conf['Catalog Links']) {
+        return;
+      }
+      el = $.el('label', {
+        id: 'toggleCatalog',
+        href: 'javascript:;',
+        innerHTML: "<input type=checkbox " + (Conf['Header catalog links'] ? 'checked' : '') + ">Catalog Links",
+        title: "Turn catalog links " + (Conf['Header catalog links'] ? 'off' : 'on') + "."
+      });
+      input = $('input', el);
+      $.on(input, 'change', this.toggle);
+      $.sync('Header catalog links', CatalogLinks.set);
+      $.event('AddMenuEntry', {
+        type: 'header',
+        el: el,
+        order: 95
+      });
+      return $.on(d, '4chanXInitFinished', function() {
+        return CatalogLinks.set(Conf['Header catalog links']);
+      });
     },
     toggle: function() {
-      var container, containers, node, nodes, replies, reply, thread, _i, _j, _len, _len1;
+      var useCatalog;
 
-      thread = $('.thread');
-      replies = $$('.thread > .replyContainer, .threadContainer > .replyContainer', thread);
-      QuoteThreading.enabled = this.checked;
-      if (this.checked) {
-        nodes = (function() {
-          var _i, _len, _results;
-
-          _results = [];
-          for (_i = 0, _len = replies.length; _i < _len; _i++) {
-            reply = replies[_i];
-            _results.push(Get.postFromNode(reply));
-          }
-          return _results;
-        })();
-        for (_i = 0, _len = nodes.length; _i < _len; _i++) {
-          node = nodes[_i];
-          QuoteThreading.node(node);
-        }
-      } else {
-        replies.sort(function(a, b) {
-          var aID, bID;
-
-          aID = Number(a.id.slice(2));
-          bID = Number(b.id.slice(2));
-          return aID - bID;
-        });
-        $.add(thread, replies);
-        containers = $$('.threadContainer', thread);
-        for (_j = 0, _len1 = containers.length; _j < _len1; _j++) {
-          container = containers[_j];
-          $.rm(container);
-        }
-        Unread.update(true);
-      }
+      $.event('CloseMenu');
+      $.set('Header catalog links', useCatalog = this.checked);
+      return CatalogLinks.set(useCatalog);
     },
-    kb: function() {
-      var control;
+    set: function(useCatalog) {
+      var a, board, path, _i, _len, _ref;
 
-      control = $.id('threadingControl');
-      return control.click();
-    }
-  };
-
-  QuoteYou = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Mark Quotes of You'] || !Conf['Quick Reply']) {
-        return;
-      }
-      this.text = '\u00A0(You)';
-      return Post.prototype.callbacks.push({
-        name: 'Mark Quotes of You',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var quotelink, quotelinks, quotes, _i, _len;
-
-      if (this.isClone) {
-        return;
-      }
-      if (this.info.yours) {
-        $.addClass(this.nodes.root, 'yourPost');
-      }
-      if (Conf['Highlight Own Posts']) {
-        $.addClass(doc, 'highlight-own');
-      }
-      if (!(quotes = this.quotes).length) {
-        return;
-      }
-      quotelinks = this.nodes.quotelinks;
-      for (_i = 0, _len = quotelinks.length; _i < _len; _i++) {
-        quotelink = quotelinks[_i];
-        if (QR.db.get(Get.postDataFromLink(quotelink))) {
-          $.add(quotelink, $.tn(QuoteYou.text));
-        }
-      }
-    }
-  };
-
-  Quotify = {
-    init: function() {
-      if (g.VIEW === 'catalog' || !Conf['Resurrect Quotes']) {
-        return;
-      }
-      if (Conf['Comment Expansion']) {
-        ExpandComment.callbacks.push(this.node);
-      }
-      return Post.prototype.callbacks.push({
-        name: 'Resurrect Quotes',
-        cb: this.node
-      });
-    },
-    node: function() {
-      var deadlink, _i, _len, _ref;
-
-      _ref = $$('.deadlink', this.nodes.comment);
+      path = useCatalog ? 'catalog' : '';
+      _ref = $$("#board-list a[href*=\"boards.4chan.org\"],\n#boardNavDesktop a[href*=\"boards.4chan.org\"],\n#boardNavDesktopFoot a[href*=\"boards.4chan.org\"]");
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        deadlink = _ref[_i];
-        if (this.isClone) {
-          if ($.hasClass(deadlink, 'quotelink')) {
-            this.nodes.quotelinks.push(deadlink);
-          }
-        } else {
-          Quotify.parseDeadlink.call(this, deadlink);
+        a = _ref[_i];
+        board = a.pathname.split('/')[1];
+        if (['f', 'status', '4chan'].contains(board) || !board) {
+          continue;
         }
+        if (Conf['External Catalog']) {
+          a.href = useCatalog ? CatalogLinks.external(board) : "//boards.4chan.org/" + board + "/";
+        } else {
+          a.pathname = "/" + board + "/" + path;
+        }
+        a.title = useCatalog ? "" + a.title + " - Catalog" : a.title.replace(/\ -\ Catalog$/, '');
+      }
+      return this.title = "Turn catalog links " + (useCatalog ? 'off' : 'on') + ".";
+    },
+    external: function(board) {
+      return (['a', 'c', 'g', 'co', 'k', 'm', 'o', 'p', 'v', 'vg', 'w', 'cm', '3', 'adv', 'an', 'cgl', 'ck', 'diy', 'fa', 'fit', 'int', 'jp', 'mlp', 'lit', 'mu', 'n', 'po', 'sci', 'toy', 'trv', 'tv', 'vp', 'x', 'q'].contains(board) ? "http://catalog.neet.tv/" + board : ['d', 'e', 'gif', 'h', 'hr', 'hc', 'r9k', 's', 'pol', 'soc', 'u', 'i', 'ic', 'hm', 'r', 'w', 'wg', 'wsg', 't', 'y'].contains(board) ? "http://4index.gropes.us/" + board : "//boards.4chan.org/" + board + "/catalog");
+    }
+  };
+
+  IDColor = {
+    init: function() {
+      if (!Conf['Color User IDs']) {
+        return;
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Reveal Spoilers',
+        cb: this.node
+      });
+    },
+    node: function(post) {
+      var str, uid;
+
+      if (!(uid = $('.hand', this.nodes.uniqueID))) {
+        return;
+      }
+      str = this.info.uniqueID;
+      if (uid.nodeName === 'SPAN') {
+        return uid.style.cssText = IDColor.apply.call(str);
       }
     },
-    parseDeadlink: function(deadlink) {
-      var a, boardID, m, post, postID, quote, quoteID, redirect, _ref;
+    ids: {},
+    compute: function(str) {
+      var hash, rgb;
 
-      if (deadlink.parentNode.className === 'prettyprint') {
-        $.replace(deadlink, __slice.call(deadlink.childNodes));
-        return;
+      hash = this.hash(str);
+      rgb = [(hash >> 24) & 0xFF, (hash >> 16) & 0xFF, (hash >> 8) & 0xFF];
+      rgb[3] = ((rgb[0] * 0.299) + (rgb[1] * 0.587) + (rgb[2] * 0.114)) > 125;
+      this.ids[str] = rgb;
+      return rgb;
+    },
+    apply: function() {
+      var rgb;
+
+      rgb = IDColor.ids[this] || IDColor.compute(this);
+      return ("background-color: rgb(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + "); color: ") + (rgb[3] ? "black;" : "white; border-radius: 3px; padding: 0px 2px;");
+    },
+    hash: function(str) {
+      var i, j, msg;
+
+      msg = 0;
+      i = 0;
+      j = str.length;
+      while (i < j) {
+        msg = ((msg << 5) - msg) + str.charCodeAt(i);
+        ++i;
       }
-      quote = deadlink.textContent;
-      if (!(postID = (_ref = quote.match(/\d+$/)) != null ? _ref[0] : void 0)) {
-        return;
-      }
-      boardID = (m = quote.match(/^>>>\/([a-z\d]+)/)) ? m[1] : this.board.ID;
-      quoteID = "" + boardID + "." + postID;
-      if (post = g.posts[quoteID]) {
-        if (!post.isDead) {
-          a = $.el('a', {
-            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
-            className: 'quotelink',
-            textContent: quote
-          });
-        } else {
-          a = $.el('a', {
-            href: "/" + boardID + "/" + post.thread + "/res/#p" + postID,
-            className: 'quotelink deadlink',
-            target: '_blank',
-            textContent: "" + quote + "\u00A0(Dead)"
-          });
-          a.setAttribute('data-boardid', boardID);
-          a.setAttribute('data-threadid', post.thread.ID);
-          a.setAttribute('data-postid', postID);
-        }
-      } else if (redirect = Redirect.to({
-        boardID: boardID,
-        threadID: 0,
-        postID: postID
-      })) {
-        a = $.el('a', {
-          href: redirect,
-          className: 'deadlink',
-          target: '_blank',
-          textContent: "" + quote + "\u00A0(Dead)"
-        });
-        if (Redirect.post(boardID, postID)) {
-          $.addClass(a, 'quotelink');
-          a.setAttribute('data-boardid', boardID);
-          a.setAttribute('data-postid', postID);
-        }
-      }
-      if (__indexOf.call(this.quotes, quoteID) < 0) {
-        this.quotes.push(quoteID);
-      }
-      if (!a) {
-        deadlink.textContent = "" + quote + "\u00A0(Dead)";
-        return;
-      }
-      $.replace(deadlink, a);
-      if ($.hasClass(a, 'quotelink')) {
-        return this.nodes.quotelinks.push(a);
-      }
+      return msg;
     }
   };
 
@@ -8935,6 +7769,1172 @@
         this.addStyle();
       }
       return this.style.textContent = Conf['usercss'];
+    }
+  };
+
+  Emoji = {
+    init: function() {
+      var css, icon, name, pos, _ref;
+
+      if (!Conf['Emoji']) {
+        return;
+      }
+      pos = Conf['emojiPos'];
+      css = ["a.useremail[href]:last-of-type::" + pos + " {\n  vertical-align: top;\n  margin-" + (pos === "before" ? "right" : "left") + ": 5px;\n}\n"];
+      this.icons["PlanNine"] = Emoji.icons["Plan9"];
+      this.icons['Sage'] = Emoji.sage[Conf['sageEmoji']];
+      _ref = this.icons;
+      for (name in _ref) {
+        icon = _ref[name];
+        if (!this.icons.hasOwnProperty(name)) {
+          continue;
+        }
+        css.push("a.useremail[href*='" + name + "']:last-of-type::" + pos + ",\na.useremail[href*='" + (name.toLowerCase()) + "']:last-of-type::" + pos + ",\na.useremail[href*='" + (name.toUpperCase()) + "']:last-of-type::" + pos + " {\n  content: url('data:image/png;base64," + icon + "');\n}\n");
+      }
+      return $.addStyle(css.join(""), 'emoji');
+    },
+    sage: {
+      '4chan SS': 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAYAAACZ3F9/AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAa9JREFUKFOdkt0rg2EUwM95b2zlL0CRRLngksznXrJsNtYW1tjYhM3mY6+IXZAbikhTKJp8XZAp81UmWYhIRHHhUi60e7s6ntdCa2449es8PfU7z+k5B6AbyuE/wQlc4BcO2d06unAUBCgFE0hianOd3NHIcy8NPwrUf9NBPZcOEi7ayXZiea/1V7+ljaXeYAfOgg2So2TOwQWGnwQafOgi962TnMFmatozUeNu4yetASspVvgXiUvii5K5Nm6z56ol3Hdtpy+cwSYy+HRUt1nLsoEato0kXyh6wTac+24brThWv6MNOYNW9prlG/uxmbRrFaT0VrCspZoNPSUNJNyCBcoiLZuhLH0o9U6UrAfGKCz7RlLM81Q8XUwqr4oKPLIQmnA8IupBigacVy7yrya/2JouhryJHJJNykg+UxLGOtz6+SQNpEiMcduls4Wvoli9WklVKz+ol5SU4U6ngql8Qj2eRI+GyajBhSRH4r3cUxhSeRVhsYBmWUWiyM+UMDmDUI2nsfuSC1I27nLgYZJlP8jhjJ3PY8iE+L8tWx4kQC6MQA5b1D9HNiRCFhx8AF/e2qh92VnKAAAAAElFTkSuQmCC',
+      'appchan': 'iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAMAAAAolt3jAAABa1BMVEUAAACqrKiCgYIAAAAAAAAAAACHmX5pgl5NUEx/hnx4hXRSUVMiIyKwrbFzn19SbkZ1d3OvtqtpaWhcX1ooMyRsd2aWkZddkEV8vWGcpZl+kHd7jHNdYFuRmI4bHRthaV5WhUFsfGZReUBFZjdJazpGVUBnamYfHB9TeUMzSSpHgS1cY1k1NDUyOC8yWiFywVBoh1lDSEAZHBpucW0ICQgUHhBjfFhCRUA+QTtEQUUBAQFyo1praWspKigWFRZHU0F6j3E9Oz5VWFN0j2hncWONk4sAAABASDxJWkJKTUgAAAAvNC0fJR0DAwMAAAA9QzoWGhQAAAA8YytvrFOJsnlqyT9oqExqtkdrsExpsUsqQx9rpVJDbzBBbi5utk9jiFRuk11iqUR64k5Wf0JIZTpadk5om1BkyjmF1GRNY0FheFdXpjVXhz86XSp2yFJwslR3w1NbxitbtDWW5nNnilhFXTtYqDRwp1dSijiJ7H99AAAAUnRSTlMAJTgNGQml71ypu3cPEN/RDh8HBbOwQN7wVg4CAQZ28vs9EDluXjo58Ge8xwMy0P3+rV8cT73sawEdTv63NAa3rQwo4cUdAl3hWQSWvS8qqYsjEDiCzAAAAIVJREFUeNpFx7GKAQAYAOD/A7GbZVAWZTBZFGQw6LyCF/MIkiTdcOmWSzYbJVE2u1KX0J1v+8QDv/EkyS0yXF/NgeEILiHfyc74mICTQltqYXBeAWU9HGxU09YqqEvAElGjyZYjPyLqitjzHSEiGkrsfMWr0VLe+oy/djGP//YwfbeP8bN3Or0bkqEVblAAAAAASUVORK5CYII='
+    },
+    icons: {
+      'Plan9': 'iVBORw0KGgoAAAANSUhEUgAAAAwAAAAPCAYAAAGn5h7fAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoYAzE15J1s7QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAACAElEQVQoz3WSz4sSARTHvzMjygpqYg3+KIhkE83DKtKlf0C9SrTRuZNEx0VowU6CuSeJNlwwpEO2kJ6SQBiIUAzFjRDF4wrjKosnGx3HmdehFDfpe/2+z/s++D5gU7IsEwRByICIiAEAIiIAYAFAXsjYVr/fLxMRNVvN+prJ5/OA3+/XERFNf02JyeVyDx0OxyvLNQsnimLKfcf9KRQKXQAAnE6nlf5qMpnQycnbP/kAoKoqsSwLAJhOp+AAwOv1otvtpqxWq73dbt/r9XqvEQ6HUalUEvF4XLd5IpvNZqlerzd5nlf6/f6tTCZjBACk0+nb+XxeW4UrikLJZPImAGA0Gq0NIqJyuSyyANDr9Q5Wu1utFvR6/SULAI1G4+vK8Pv90DTtGwsAJpPpaGUYDAZ0Op3PHAAEg8H3tVqtbrtu21sqyxuRSOQJk0ql9IvF4r7b7f7pcrlejkaj57IsH58Pzp8dvjhc/lsBk0gkbLFYrFqtVvd27+4qOk733ePxPDCbzVBVFfP5fCiK4rvhxfDN/qP9wSasGwwGMv1HiqJQsVg8ZlfTHMepkiR1t05gGJBGmM/nMBqNj9nN9kql0lNN064ARISzH2cQBAGz2ewLu2na7XYLwzBbvxYIBBCNRrFj3BmsAZ/PZ+J5/kOhUIAkSVeA8XiMZqt5efrx9OA3GfcgvyVno9cAAAAASUVORK5CYII=',
+      'Neko': 'iVBORw0KGgoAAAANSUhEUgAAABMAAAARCAMAAAAIRmf1AAACoFBMVEUAAABnUFZoUVddU1T6+PvFwLzn4eFXVlT/+vZpZGCgm5dKU1Cfnpz//flbWljr5uLp5OCalpNZWFb//f3r6+n28ff9+PRaVVH59Pr//vr38vj57/Dp7eyjn5zq8O5aVVJbYV9nVFhjUFRiWFlZVlFgZGOboJzm5uZhamfz9/bt8fDw6+drb26bl5j/8/lkX1z06uldWFS5r61UT0tfWlbDwr3Ew76moqNRTU7Mx8P75OpeY19pWl1XW1qzr6x5eHaLiojv7+1UT0xIU0uzqadVS0nV0MxkZGT5+PPk497///ra29Xq5eFtY2H28e2hnJignJlUUE1dXV2vrqxkY2FkYF/m3d5vZmfDuruhl5aZlJHx8O75+PZWVVP29vT/9fTj3trv6ubh5eRdXFqTkpBOTUtqZmX88/RMQ0T78vPEvr7HwcHDwsDq6ef///3Gx8H++fXEv7tZWVedmZZXXVudnJp0c3FZU1f79fnb1dlXUVVjXWFrZmy8t7359/qLj455e3q4s69vamZjX1zy4+avpaReWFz/+f1NR0vu6Ozp4+f48/lnYmi8ur3Iw7/69fHz7+xbV1SZmJZVUk1ZV1zq5ez++f/c196uqbDn4uj9+P7z7vRVVVXt6ORiXl/OycXHw8CPi4ihoJ5aWF3/+v/k3+axrLOsp67LzMZYU1m2sq9dWF5WUU1WUk/Au7eYlJGqpqObmphYVV749f7p5Or38fPu6OpiXFz38fH79vLz7urv6+hhYF5cWWKal6D//f/Z09Xg29exraqbl5RqaW6kpKTq5uPv7Of/+PDj29D//vP18Ozs5+OloJymoZ1ZVVJZWVlkYF2hnpmblIyspJmVjYKQi4enop5STUlRTUpcWUhqY1BgWT9ZUjhcV1NiXVkkhke3AAAABHRSTlMA5vjapJ+a9wAAAP9JREFUGBk9wA1EAwEAhuHv3dTQAkLiUlJFJWF0QDLFYDRXIMkomBgxNIYxhOk4wwCqQhQjxgxSGIsALFA5BiYbMZHajz1oJlx51sBJpf6Gd3zONcrqm/r1W8ByK0r+XV1LXyOLLnjW6hMGpu0u1IzPSdO17DgrGC6AadrVodGcDQYbhguP6wAvAaC0BRZQalkUQ8UQDz5tAof0XbejOFcV5xiUoCfjj3O/nf0ZbqAMPYmzU18KSDaRQ08qnfw+B2JNdAEQt2O5vctUGjhoIBU4ygPsj2Vh5zYopDK73hsirdkPTwGCbSHpiYFwYVVC/17pCFSBeUmoqwYQuZtWxx+BVEz0LeVKIQAAAABJRU5ErkJggg==',
+      'Madotsuki': 'iVBORw0KGgoAAAANSUhEUgAAABQAAAAPCAMAAADTRh9nAAAALVBMVEUAAAC3iopWLTtWPkHnvqUcBxx5GCZyAAARERGbdXJrRUyGRUyYbY23coZFGDRFGEYfAAAAAXRSTlMAQObYZgAAAGhJREFUeF5Vy1kOQyEMQ1Fshzd12P9y61AixLX4yJFo1cvVUfT23GaflF0HPLln6bhnZVKCcrIWGqpCUcKYSP3JSIRySKTtULPNwMaD8/NC8tsyqsd1hR+6qeqIDHc3LD0B3KdtV1f2A+LJBBIHSgcEAAAAAElFTkSuQmCC',
+      'Sega': 'iVBORw0KGgoAAAANSUhEUgAAACwAAAALBAMAAAD2A3K8AAAAMFBMVEUAAACMjpOChImytLmdnqMrKzDIyM55dnkODQ94foQ7PkXm5Olsb3VUUVVhZmw8Sl6klHLxAAAAAXRSTlMAQObYZgAAANFJREFUGJVjYIACRiUlJUUGDHBk4syTkxQwhO3/rQ/4ZYsuymi3YEFUqAhC4LCJZJGIi1uimKKjk3KysbOxsaMnAwNLyqoopaXhttf2it1anrJqke1pr1DlBAZhicLnM5YXZ4RWlIYoezx0zrjYqG6czCDsYRzxIko6Q/qFaKy0690Ij0MxN8K2MIhJXF+hsfxJxuwdpYGVaUU3Mm5bqgKFOZOFit3Vp23J3pgsqLxFUXpLtlD5bgcGBs45794dn6mkOVFQUOjNmXPPz8ysOcAAANw6SHLtrqolAAAAAElFTkSuQmCC',
+      'Sakamoto': 'iVBORw0KGgoAAAANSUhEUgAAABEAAAAQCAYAAADwMZRfAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAxVJREFUOE+Nk19IU1EYwK+GQQTVQ39egh6ibKlzw91z7rn3bvfOmddNszl1bjKXc5rJJGmBUr7Yg9qTD0IalFgRBEYg6EDQQB+GovQyQgiaUZsoLcgHMcr069w7MgcGXfi453zn+37fv3MYZt/n99e76tzVj4JN/hP79fvXnV3hnNabwUBjoOHcgTYOu/JQspgTzsqKgn9BfD4vkWTzur287PqLVy+zM+yePB7KsRXLywTjnSpnZctBkPCdW8ccDuU55vBO8RXbkC/oP5ph19V5+7LIky0OY1BKbZEbLcFSt7u6pN7jLmltCVrr3DV5jY3+KovFEsccB1KJNVpefe10BqS2tqqO4/AuphBB4L/LkrRqNgtJs1lMypLls1kU38mytMLz/E8VIlutqVqX6/weZG52OttRXjbE0cP/FYLRlpVjDXuQ/r77x2XZPKkCHA4HBAIBkCQpAygIAvh8Pu2MZgO0Lz+QSa/sQfwN9RfpVN66XC6Ynp6GhYUFGBwczAC1t7fD0tISxONx6O7upgHILmsqvLcHodOggfiV/v5+SCaT4HQ6IRaLgdfr1bIRRREmJyfBZrNBNBqF+fl5sNsdgE2GiAbp6bmbdbXC7qWQbxMTE7C2tgY6nQ5SqRSEw2ENopaoZpCXlwdTU1NaoECgCbgiU6y8QH+ECYWaTymK7TWdys7MzIwGaWtrg42NDejo6AB1WjU1NZo+FArB2NgYrK6uQrAlCASxn2z6wkuMp87VIAhkE2MEAwMDkEgkYHx8HBYXF0HtkQpRy1BLiEQisLy8rPVNKSsFjEzrXH4+z1hlS4xDhKadNu7t7YPR0VHweDzAEVWfHru6HxkZgeHhYVAURYNjkylVWKArZjjMzqmdVi+QCsLUkQiEjvDvncEkvU7/qQ0Vgukeo48Go87IiCJnZNmipxiz7wXEbVDnbUxQOgM12h9n6qTq6NvapRdtkwaP0XK8RmPuYSbxYfaQ/sJJhjfknuFRURUi7AMOozcCwl94hLZp5F+EioDQVwqYI6jomZU1NFtM+rOSxZjVazcyvwHr/p/Kws1jegAAAABJRU5ErkJggg==',
+      'Baka': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA0pJREFUOE91k3tI01EUx39JOpA0H4jNx0pbD3XTalISWf8YFlEgldqDsBLLyqjEKBCiLLWiggh6/KEV1WZ7OaelLZvDdDafNW1JFraWe/32+01FrUZ9uy4ylLpw4Z5z7/nc77n3HIqaMRIjZJyEcNX+uFCFeGmI/GZciEIsCFJUTvoAzDz+1y7K76MSwhX5hXl6z+WSbrzU2KB8YEGDwgrTaxZ3b7xHcaHhR3xw7Z5/UviB1ReP5XSg3+TAqYJOxMzWISFIC0GQDomhTVA9skCnsaAwp/vnMq66dBokNuBR9uFd7T9Z1zCunjci0qcRJUVdoJ3DYOhRnC/qBZ+jQbfeCc+37yjY2UEg0iwvJE0k9l8Z+8xqHmTgot0QLdQgTaQFQ2AsOzlHvOu1S5pwOLsHHo8HjHMCq2MazNvTlByKHyrJLDvdR25jMWRxYx5HjeMH2r1BDOOeguRua4OI14jx8a8YH5tA+al3EHKlW6mYOapb2oZBOOwMbEMseAE12L+jjUh3w+VipyAZ65oxn1NP/GMYGR6Ftn4Qsf7qa9S82Y/l/X122G0uL2TbxmZEz1WhXW8mUol8moXu+SCi/OoQ6VsDh3UUwyQ1k9GOaI5MTkX4yWTGHutvgI1F28sviAlRgxeoRm62HvsyW8En9pZ1TYgi6TntoyQtFm86rVgUoJZRvDnKMmXVAGxWmkAYOBwudBqGcHCvHulrGpGT2Uy+z4yT+QYsCXtCUpp8GxbKhx8gDK0ro+KjJGvzdjfDZnN6VdisLD5/JjArQ2zW66PJOj2lEZtStaBphkwah7K6kMJ/GEulp1bMWhAmMbTozOQRaWRtfoZVgjo4iRra4SYgGi26TwjxVeDKhR7Y7U606ixICq9tr7hd7+OthRWL7yUnJ1WPmXotqLhpRICPHCePtuFV6xdUPTAhcWEtRHEqfHpPyto4hPXLXnzflSEJnFaN3OCKDcsFsrEntR9RUmxARLAUgT5iBPuJsXWDBj0dZjRU9yNV+PTbpjTp9OA/pOSk24nRkXf1J462oPxcJ65f6ULlHSMulepRerYDgvj7A0cKpNz/tyTZqbzXO4t0ZZGQJ34RH11lFHIlA8LIqreCCMUZRY3cd2bwL/5/RmjNSXqtAAAAAElFTkSuQmCC',
+      'Ponyo': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAuNJREFUOE+Nk3tI01EUx39BTytConQTt1am07m5abi5KT5S8z2dj1yOEMUC7aUgIoimlmUEWX9kBZGWaamEmE6U1BI1XNPNGTrnHs33IwuSXrL4NgcJ0mNdOHDh3PPhnPP9XoKwcroJYvMQiRSicHCQKCgUyZC9/T5rNet5KUFs0zCZbZMsFmZ9fTEjEEBDp4/KSSSb/4JoGIyWaTYbiykpWEhOxhSHAzWD0aqkUGhWAcVkW58xlvuPhfh4zItEmOHxYDR3MhcdDaNAsKJydAz5IySKRNjEUmy88vjOVaU8F0iPCqCNjEBHkC/UYaGYFwqxmJoKLYOhkxPElg0QsbNtTlmox9yjRD9UCbnoOR+J/lwRWtOCcdXfDc2BPpg0d7CQlIQZPh9KKlVkAQjJ2x2zmOSsQu7hpzUJfBhLjsNQmADjxcT10Bcl4rE4EHc5LjBEhEPn7f1WTqXSLQB/s1Tp7vslsoIkyPPiMJAbi86McBguiaHKjoEqR4jJy2K0nAxApzMN5iUGrclrKVaz2fUvuF4tRbxDKA90w5VjTFyLZKHpTBSq4/1QnxGB2qxoVIZx0JopRCPHFSNOThfWZzfrXDcZEowH4iA05ATg68hDtBaL0HAuCm3lJ9Bfcx2fFNUoi/DCjRgfNHHd1wCZA2TyXjNkE6F0cBDpPFiojeNi8EkJdFoN3vXch0nbBJOhDd907dANv8JITxNqziag3ZsJbUDAwLin50Q9QWwl1qSYoNOVvUcOoqOqAAa9Fu9H2/F9+B5WZLcwOyxFX18flLI+VASyMGVeoJHD+Tzq5BS1PoaKRrNT8127P74swsq4FCa9FKvqBqwaOiz3hdEuLKueYSyECT2LNW0eIfo3E/WmEbvnG1MUJnWdpWhDGDvxQXZHo+RR0uW2tnv+auPX+TvtJm7zKpaen/4y2yjBUlcxlvtvmvT16ZWDpQeoVv3/60F/NrHjTf4ugazIXtJ8ivjnz/sJ+yGQRjcqUdIAAAAASUVORK5CYII=',
+      'Rabite': 'iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAD/0lEQVR4Xl2MXUxbdQDFz/9+9Lb3tkBLCxTKhzgoOOZAsokbJmZxDFHnd+LL4hKVzBgfNCY++ODbjDEaZowvErOM6HRu6hKZY2rIAOkCY4OSDTpFaAsrlJa2t5+39+NvjT7tnJzknIfzI98Nf/C6TuXdguWBd1q9rcb8/CwsZiu2Ywm4nDVo3VWLZCKDaDwJq9mCg31PgjAMKKUwmcyYvTbek9iJRDm6M/XswEDjwNz6plWW6wdZhjUAintFCEEhn0N04zYskljaDLaj8ar49oUrsYR6mrFJNj322w46H8y+mitM/ZJKZmyE4XAvjJSsazpyuSzslVZIkgWKOvvRgQ6Xrdlhqmds7o7bFZoLkctreKxf7GtuCE7IyUQjBQcQ8j/lvxCGQJZz0IoCVpamTtzfIh9nwiaIrCQyjNg8mq11oDLUhNXRJfT1Ozr3tS/PqpnQ80qRgjAmKIqBfK4ItbSLKoOZqR/6neLkENlSUAIhlktvEf+sD2rkm8nWTHtvZCGMVON1ePuaoBER31/MXGly1wSqq9Uug6FluYyWXJiPqFXmjd4Dh9oF9ZKKimYXRtYCx8lmMIDIxlIPGz591av0mtanF7FcCEN6iMXeox2wOJ0QJAmUAoRQaIqCnWAQY1/ewKNGNeQuYXkm0d2NC2e+wvmRr/Hx+6+8PHayrbDyyQBNDb9As3PHKDWG6MTM23RoeJAWsqeoWvyUUv0UHf7pBB0fe4OeeXe3/vmHbx3+8dwIGJ4IsFpMMFe0fbtAn+nwZePr1u4MBK8XIALG/Rt479wYrs2vgeNNAMNgMbiNzybuoKVvn+Gs9kbr6qpBfJfGYHFIkJUCoGwfqcoMX/b27EGhwgOjoCADDlP+CA51ugFFRzoB8FYNaQ1oqKD44+eNL+wNj7zJGQSIhe8+jgQ9thk+27v/KRY6L4FSCkVOwtlQj6P73Qgt/o1ERoKt4iUkE7+jrZMHyzIoK9cOBFfT4LbWAk+0a7ZLnvqHcTNdACgFScfAcjxEdy00VQclHGo7dqGeYxHbvIo6hwhSghCehb3G5p6eW7VxXC5/xGWToMgrKKoaCnIalI9CIARasQAqloMI/x4BWrLLYwE1AEPTwCGHaGjz7pw/leZUNV8wNm9BLy6CxsvxZ1kMbaY4TKIIXlNBsynoVjvAC4CuAoYOVi+CMfLYCUfg95tPHuzZB0YtKzsb58RMucWE/fZmhCbdOP9rNnLnxko6GVoB8lFwyVVw8b/AyeulHoJyN4Rb19dTFyeqBlu6njvfsWcvOJvLs7DMmw/7bvpeE4pU2OIcgcqmp4fGAgt2Txwvqr7lTp5V7LquZxXC6+BqEvGcY5pyjaM1tffJbk89NE3FP5VQ6y7a+paZAAAAAElFTkSuQmCC',
+      'Arch': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABCFBMVEUAAAAA//8rqtVAqtUQj88tpdIYks46otwVldUbktEaldMjldM2qNcXk9IWktQZkdIYlc8mnNUXlNEZktEZlNIYktIWlNMXktE7o9klmdMXktFHqdkXk9EWk9EYk9IlmtQXlNEXktAWk9AWlNEYlNFDptkZldMYk9E4otg/p9kXktEXk9AXlNA4otclmdQXk9IYktEXlNEwn9YXk9IXk9FFp9o3otgXk9FPrdwXk9E2otdCptkXk9E/ptkcldIXk9Edl9IXk9EjmdUXk9EXk9EXk9EbldIcldIjmdMmmtQsndUvntYyn9YyoNYzoNc0odc1odc2odc6pNg7pNg9pdlDp9pJqttOrdzlYlFbAAAARXRSTlMAAQYMEBEVFhgcHR0mLS8zNTY3PT4/RU1kdXp6e3+Cg4WIiYqMjZGXl5mbnqSnrbS3zMzV3OPk7Ozv8fT29vf4+fz8/f7SyXIjAAAAmUlEQVR4XlXI1WLCUBQF0YM3SHB3a1B3l7Bx1///E6ANkDtva0jKbCW2XIH1z2hiZEZ4uUgxo7JedTQye/KN/Sb5tbJ+7V9OXd1n+O+38257TL+tah3mADAwSMM7wzQWF4Hff6ubQIZIAIb6vxEF4CZyATXhZa4HwEnEA+2QgoiyQDnIEWkjVSBBZBqXbCRlKYo8+Rwkyx54AOYfFe7HhFa7AAAAAElFTkSuQmCC',
+      'CentOS': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAB5lBMVEUAAADy8tng4Ovs9tnk5O3c7bX44LLduNO1tdDh7r/eutj43q2kocX23az07N+qqsvUqcmXl7331ZXJj7r40o/Pn8T42qP63KjNw9n21p3Y387Ml7732JzR55z05MSxtMLGn8TC4Hx8eqt8e62Af6/B4HnG4oPC4HzH44fBf7LCgbOkoMTcsrmtn8PWqcfFtKrj4Jvs2ZOz2FnMqLXT3KfY5p60Z6NUU5XRuqHzwWSywqDn3JaiiLWahrWhkry5zJjRmqm1Z6P1wmb1y319fK632mK5cKi5nH+73Gu73Gy73W283W+9eK17e6y1yZS3aqRZWJdcW5ldXJplXZppaKBwb6VwcKV5eKswL306OYNPTpGkfK+m0kGpUJWq1EnEqIuXK3+Xh7ahP4qhkryMfK6BgK+CdpGMaKKMa6O9ea2+eq6+oYW/eq+NbqWVlL2Wlr7AjanA4HnA4HrBkqbBlafB33rCgbLCmKjCxIzC1mSs1UytV5mtxIWt1lCuz2evWpuvXJywxYzHjrvH4oXIjrrN2HXO5pTO5pXUlYnUlYvVl5Hb0G7e0XTg03rhr5fpzHPpzXTp0Hvtz3/wrDHytknyt0zyuE3yuVHzvVr0wGP1x3T1yHf1yXe0ZaL2zYP30o730pD31ZeRIcF5AAAAQ3RSTlMAFBkbHEhJS0xMTk5UWWBsd4SEiIiPkJCVlZaam6CjpK29wMPDxMTFxcnK193e3+Dg4uTn5+fo6e/v8/P4+fn7/P7+J4XBAAAAAOBJREFUeF5Vj1OvAwEYBb/yGlu717atLW0b17Zt2/6nze42TTpvMw8nOZCAmwUpiIY6c5IiLi9tPX64GairqszHQ4X2VB64v1Cs6PxMPJSdHM777s6/jyaMRGiRLyyrb88OpjZ3CzAXrm1sqzSNNeN7kVBPNgB7cG51abE5l9cXDces7emQ1uadHhutFUg6gpPKkSIqQGavwz7r7O/+/3t/rSdjI9XDM3qz4fr3B/3iA0aJTG9x71+9oR/PLDwUe2wm19bly+fTIxHyEETatbPewGEw6Mk/tKZCEqSQQUlIHB/QNBEjjVN1AAAAAElFTkSuQmCC',
+      'Debian': 'iVBORw0KGgoAAAANSUhEUgAAAA0AAAAQCAYAAADNo/U5AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAAZ5JREFUOE+Nkk0oBHEYxv8fu5GQj3JwcaDkIAc5IpR87M7MKnIVJVKclaIQ5Sy5OLkgR7n5OigcSNpmd2c2Vyfl4KT8/muWiVU79TTv+7zv837NCBF6PG1X+NpZyEYSD9mIc+tHnBPe23B9xKrCuTmbQA/JKfABrhBswa1hH4A38IwfOxPdX1qcjiCQxO5NyrjKV70TnSbeRPwJvGN3i4yyqnEucPY8ZZX9GSEgGK+RvFfyjk2VKZxzBNG8wJWWgh/xtDOeUXZ7Slr6TrSLYL9N4SMgYTTcwdc2ArvJcElhSVcM6mCNSV8n9hA59yTU5UWMG6HIbLhIWlglgWiC2L4Z79qTdo40D6ISuOWwKCWHyk9Fv8ldpUHOuGTuynwSBUynddPdlbEosVpP9Eu4FnOsRzUYNTsdmZN/d5LDiqM0w+2CMdAFFsFGWgfXxZnheqe/z+0puwEM0HHYV3Z9Sgz8TEz7GkQvpuJ/36ggj2AaHLrSlkULWV5x+h2E8xkZL16YVjGNaAUscfZ/f6c/k9ywLKI2MMcRWl0RLy007idmRbQJ7RIfDAAAAABJRU5ErkJggg==',
+      'Fedora': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABPlBMVEUAAAApQXIpQXIpQXIqQ3UpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIpQXIqQ3QpQXIpQXIqRHYpQXIpQXIqQ3QqRHYpQXI8brT///8uTYMpQnM5Zqg5ZqnS1+I4ZaY4ZactSn8uRnYrQ3MrRXgsRHUsR3s8bbM8brMtSX4wUosxVI01XZw2X50vUIguToQvR3c6X5o6aKs6aq08Un8qQnM9VIFDWINJXohKcKlXapEqQ3UvUIc2X55bhcBdcJVgcpdhfapmd5tuk8dxgqJ1hKR5jbB6iah/m8Shudq3v9C4wNG/x9bFy9nFzNnFzNrIz9zK0NzK0t/O2+3P1eA2YaDU2eTb3+jb4Oje4urj6fHm6e/s7/Tz9fj3+fz7/P38/f3+/v83YaEa/NNxAAAAHnRSTlMABAoVGyY1SVlpeIuQsLfDzdHW4+3y8/b39/n6+vr4+ns8AAAAyklEQVR4XiWN5XrDMAxF75KOknYdZJS0klNmHjMzMzO9/wvMcH7I37mSJShsJ+5NjMT6umDoHyXDcI/2qJadh++P3cle1de+9yPe3/bTY92wzfzr7wGtP3JrAI72BZGVtcAdQlwHy+JS1pDbBE9qamZF3BYrjQxPEXwKc6dC8bXFm0QIpmt8kn0Rn093q82UCtK8oXZckwFJzuulV8bHkajPyXdbnJnARfDHs0trz+JQ+5AFvzp/L0+cL2qPAINUPrq5OC6p/64F/AMnrST+Dq/r7QAAAABJRU5ErkJggg==',
+      'FreeBSD': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAABIAAAASABGyWs+AAAABmJLR0QA/wD/AP+gvaeTAAADXklEQVQYGQXBS2wUZQDA8f83j33M9rF9d7u4loaWklaDpkSo9KDGaIKUaGxshD2YSPRiuDVeTDyhBxosJCoa40ktpAkPDcUqAYVIpUSUPrAulEdD2bbb7e7ObGcfM/P5+4kwKDvq6yJ1FYYcvb+YAkqAHo/HQ7FYrFIoCiurq9ZXJ06YSOkA+kBzfX06bys3zHxS9EL0tXDVyZfefacqV+X/ZSJx5+qLbx98LhaL9RiGEZWlEsWC/Thd9q6Pf3vs2u6Orc83rFsvTwwfLf5obgywT1Vjh2Hh+rbNsnTssJdNLedK5aIrpSuldKVXKsnH4+Pyn6FDXn5tMef9O+3NvdkvP1V4+EYw2AoQ+KSx8dRYS6NXXnwovaItXduSrrkinWxGOmZWJi9OyOK9m1LmsjIz9IH8QUMOd3WfAQwNKCy2tJwbHB5+XasPaxIHmc4g7WWEZ1MquBiRFlJTf1E7+Tl/H/8asavPzTY1nWd2ZkMDRPeBeHPz5ojwsilEQCBvTSKunCF3M8FSNkBGVTHDYYrLj8jVNhDZ2SMa2zo3MTamaIC/u6Ojr3DtrOrvP0BpdATnyBeIhTxpR5ABUlKSUlXS1dWstbVxdz6hPL0l1quGqkLaKwNvVcjEXNRd/4mit4Z19DjefBEPyCKxgQJQcF28dBrHNDGTSZSezsjeff0hraa2Vs2vrvit81O4vj9xLJcC4ADrQA7YAGqBGsAql/EtLdFQE/L7dF1XZmdnSrbPMJfXoLDmolQK8gJyQBowgQhQDRQBD+hsraVhd4e5MH+/oExfvWLJ9q3/3S7qMpNH2hsS40kFS4EUUAMA2IANRIBXv4uzuO67c2PykqkA5YmZ6bN18YPi0Yoknxc4AsJPCMLVAk2BLKDosCWqs/PZaulkuxk9fekcUBAAQGDks5FT0W++3NuYuC0DVUL4DIEdlIQDAj0IRkigaMjArkFx0tf523sffrQHyKsAgHPhwoXLL+yP9/kePNhk5ExUTyKFkJVAUAiCFZrQup4Rv9ftuLV/6ONBYBVABQAArMvJ5MXW7duD6P62sD8UrPAFRU1TpeCpCnGvPZr7WW///v0jpw+VC9ZdAAABAAAAAMLo7drWrmQyPWG/r8tnaGIjaM05ujr16x/ZBFh5AACA/wGZnIuw4Z4A3AAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMi0wNy0wNFQxMDowOTo0OS0wNDowMOPVpFwAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTItMDctMDRUMTA6MDk6NDktMDQ6MDCSiBzgAAAAAElFTkSuQmCC',
+      'Gentoo': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAB9VBMVEUAAAD///+AgICqqv+AgIC/v9+Ojqqii9GAgKptYZKQkOmPj/ddUYBgW4eVjeCTgfiWjO5wbJaZkvPBvepkXomYkNldV4Bzbpl6dJ+Uj7ynoO6Vi+1qZI63se2mnudjXYjOy+GCfaqZjvWlm/Pc2e+Oh7NeWIOWjfeXjeW1sd+gl+diXIfp5/KHgKnn5/F2cZx6c6ZgWoXc2e6dltrAvNu0scrX1eTOyujCvup4c5qpovVpY43///+6uPPJyPXq6fvm5vrz8/z8/P7+/v/d3PixqvmxrPSyrfe0sPO0sfS3tMve2/3r6vy6ufPz8/3d3fi3tM63tPO4tsu5tsu5tvO6tfe6t/Vva5KRjKy7tvW7t/W9vPO/vM+/vvPCwfPEw/TFwvTFxOfGxfTGxvTHxvTIx/TJx/aTiOrNzPXNzfXQzfnRzuHS0fbS0vbT0uHU0e/U0uTU0/bW0+zW1ffX1vfY1/jZ2Pjb2/jc2uSTiemVkLSlnvbe3PTe3vng3fzg3f3g4Pnh4Pnh4fri4enj4/nk5Prl5Prm4/ymn/bn5vro5/rp6O/p6funoPWsqs3t7Pvt7fXv7vzv7v3w7/nx7/3y8f3y8v3z8vytqPWuqPX09P319P319P719f339v739/34+P35+f37+/+uqev9/f6vqvSwrPQAR0dcAAAAPHRSTlMAAQIDBAgJCwwVFyAsNUFHSVBneH+Bh4mVmZmanKCxsrK2tr3ExtDW19rb4ODl5u3t7u/w8/T6+/z9/f4MkNJ1AAAA8ElEQVR4XjXNw5aDURSE0YrRtm3b54+dtm3btm3bz9k3Wek9+2pSYFwT8ibzE93hwAtdJqK3nZo4J9hFXbP+vFHOthV6gnGzstZq94wdCs4UCCDymQ2v7X0LdYoSQ0MIENRYzJbRlPTTHu73ZNAL8vivmVui98PpzuqffX0mIPHJGtOQenukteJ+aS3b9htNpDnT9TeZH1bHAwBRMhGpd6e6uNrLoRgxBKmsX47nBlp678ojpEA40fejcmW4e/No0V8IIPfj6eKgbEJ3ZUnzgE1OqWp9Q3VeWRAsg51f1dZ8c31RmAsc+N5JGbG+zvj3BzDCPrzMDC9SAAAAAElFTkSuQmCC',
+      'Mint': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAACVVBMVEUAAADh4eEAAAAAAAAAAAAAAAAAAAAsLCyXl5dgYGCnp6eTk5N3d3fBwcGqqqq8vLzNzc3Ozs7Ozs7Pz8/Pz9DQ0NHR0dLS0tLS0tPT09Pf3t/Pz8/i4eLb29vZ2drZ2tna2dra2trf3t/u7O/u7e/u7O/r6+vt7O/w7/Lw8PDy8fTz8fXz8fbx8fHz8/P19fb49/j49/n6+vuPxlmWyGOx437h9NDr9eD6/fj////+/v75/vTA5Jv6/fb7/fnL5bDL5q+AxjeDxUCEzTyGxUaGzjyHxkiHzz6J0D+Kxk6K0kCLyE2M00WNy06P00mSz1OUyF+W2FGX1FiY0F6Z02CZ21ac0Wiez2yfz2+f2mOh4GCi4GOi4WKi4mOk12+k3Wul32um1Hin0nun4G6n5Gin5Wmo23Op2Huq1n+q43Cr526s4Hit23+v6XSw34Cw34Gw6nWx4IKy4IOy44Cy63ez146z34az4IWz4YW03Y217nu38H2625e645G74pK83pu98Iq984W+4ZjA4px0tzDA5ZrB8ZDC5p7D55/E947F6KHF+JHH4qvH6qTI46/K5LLL5LN1tzLL5bN1uTDL57DM5bPM6qzM66/N5rTP6LbP6bTR6rfS573T67vT7LrV7r3X68XX7MHX773Y77/Y9rvZ8cHa7cjd88bi88/j8tTk8djk9tHm8trn89vo89zo9N3p9N3p9d7p9tvq9d/s+93s/dzy+erz+O73+vT4/PX5/fT5/fX5/vN1uzB3vTD6/ff6/fh5uTj8/fv9/vr9/vx8wjV/xDmrMRH0AAAAOXRSTlMAAAECAwQJDzk/RUlNU3F0kpSVlpeYmpucnaKjpKWqqqqtu8LExMTEzdTU1NXY4evy8vP+/v7+/v6LaR1mAAABD0lEQVR4XiXI03bEABAA0KltW9kaW3eSZW3btm3btm3b/q4mp/fxgqKOtpamhrqaqoqykrQYABh+PVMU9fjE5Xp8o54kgPHN0EBHU2N5YXZykiua0HHd2759VF2Sk5IYE5GGsmCEWLV1kVWwt5O+3x/qpgsy8k4ja+cJl2/v5C22tlgCAHtw9TQSa4s+AzfPSm0BRNl9SydhWJzLC567KrNhgrNwHIJ5qTz/2f9w7Jw/DNqIjVr04exW0AEOXcN3Ab7enr9eDW2VTJgehONyc2Z8XP5YdD0Tcuhcc4/r45OjGX51TEjYPbh8THRPvbz+CHusgSZlT7rP8PkCwfQKaQUi9Igr6JsRBMFiWZgb/AHKElRzKopZJQAAAABJRU5ErkJggg==',
+      'Osx': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABrVBMVEUAAAD///////+qqqr///+ZmZn///+qqqqAgID///////+tra339/eAgICoqKjx8fGMjIzm5ubh4eGPj4/g4ODIyMiAgICSkpKLi4vS1tbPz8+Xl5eMjIypqanIyMjW1tZ2dnbR0dGamprFxcV3d3d+fn60tbV3d3dcXFx3d3epqal7fHxxcXF+foCnp6hYWFhyc3Ojo6SMjI5fX196enp+fn6Li4xERERqamqgoKFpaWmFhoeen6A/Pz9QUFCWlpeSk5SUlZWUlZaOjo+Tk5RHR0cuLi5YWFgwMDAeHh40NDQ3Nzc6OjpcXF1rbG0XFxdSU1NVVVVXV1dZWVlbW1tnZ2lwcHABAQEEBAQXFxchISI+P0BISUpaW1xHR0kNDg4qKyszNDU1NTY9Pj8NDQ1cXF4XFxhSU1QSEhIDAwMrKywtLS4uLi4wMDFHSElISEggISE0NDVJSktNTU1FRUVWVlhGRkYEBAVBQUE0NTZQUVJQUVMFBQUqKitWV1lXV1daWlpaWlw+Pj8bGxtcXV9dXV1fX19fYGFgYGBkZGRlZmhpaWlsbGxwcHB2dna844Y9AAAAV3RSTlMAAQIDAwUFBggMDhkeICMkKCgqMDIzPj9ERFBib4CCg4iMjZCcnp+jqamrw83W1tvb3ePl6Ojp6+vs7u7v8PHy9PT09PT3+vr7/f39/f39/v7+/v7+/v50ou7NAAAA30lEQVR4XkXIY3vDYABG4SepMdq2bRSz/capzdm2fvOuDO397Rw0Ly4tz2QAQPbcxuZ2E/STJwfxPhWgG355fRrVAIVb1zeP9UDLfiSwkAcADe8fn7tFxWuEXFRDoer/OgoMTRBCumj8yJwPBo8Zhpk14U856/HI8n0ZUtpZ1udrSzfVneA4roNKjdrwpcMRilb8d8G60+lKnrpWcn9bO+B23w2O8Tzfq4aiNSZJqzn5O4Kw16h06fPZ+VUlUHfo97+VAEb7rSh2UgDd4/U+TBlQY7FMj5gBIGvcarVVfQPVPTG94D0j9QAAAABJRU5ErkJggg==',
+      'Rhel': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABj1BMVEUAAAD///////8AAAD///////8AAAD///8AAAD///////8AAAD///8AAAD+/v4AAAAAAAAAAAArKysAAAD///////8AAAAAAAAAAAAAAAD///8AAAAAAAAAAAD///8AAAD///8AAAAAAAAAAAAAAAB5eXn+/v5JSUnKysrS0tJ5eXmqqqqxsrL+/v4ZCgknJyeHh4eIiIjo6OgZCAdOTk7t7e3///8GCwwPAAArKyv19fX29vb9/f0EAAD////+/v4AAAAGBgYHAAAJAAAMAAANAQAPAQAVAQFyCQV9fX2pIRzmEQjn5+cBAAAFAAAAAADnEQjvEgn////uEQjyEgnsEQjzEgnxEgljBwPaEAj9EwnwEglHBQJHBQNNBQIBAAB3CQR5CQSHCgWLCgWRCgWTCwadDAWmDAapDAa/DgfKDwjWEAgGAADh4eHiEQjmEQjmEQkKAADoEQgLAQDtEQgMAQDuEQnvEQjvEQkPAQAfAgEuAwEvAwE8BAL1Egn3Egn4Egn6Egk+BAL+/v5CBQJrB0muAAAAT3RSTlMAAAMEBAkYGhsbMTRLUmpvcHeIjLe6vcHCxM3P0NbW3Ojp6u/w9ff5+fn6+vr6+/v7+/v8/Pz9/f39/f39/f7+/v7+/v7+/v7+/v7+/v7+Q8UoNAAAAO5JREFUeF4tiwVPA0EYRL9SXIsWl+LuxfcOd2Z3764quLu788NZNrxkksmbDP2R7vH6GioLs+iffEzNXd4+TqPErUUpVqMOvwgdzMPn1rv5vPsVeufBTaBK/bH2FPvkEUuIG5jIIc+sHYn/HJ3dC/Hxuo4y8s44dzwBbFkisHN8bVIdXs6jb+H97aCwbHEIqgcml64CD7YllNkAVQC940MLYe5YzvIeQAXNrd19Roc5MdzfdQLUUKaUYyuG9I8y1g4gj6hIak4X5cBIT2MquZJrJdOqpY11ZpAiqVwbY/C7KY1cRCrZxX4pWXVuiuq/hs49kg4OyP4AAAAASUVORK5CYII=',
+      'Sabayon': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABvFBMVEUAAAAcUaYdVKwAAAAAAAUABAwWRY4YSZYhZtIhaNYHDx0KCgoFDBcKCgoRMmYSNm0fXL0fXb8AAAAYS5gaTp8fXLwgXsEGBgYFBQUZSpgZTZ4JFSgODg4IEiIOJkwOKVIkW7EnXbQLGzUTExMKGC8LHjwMIkITExMiIiIPEBEPJ00QEhMXOXAaPncOJEgoXbApXbEcHBwwMDAEAgAfHRgQDgo3NC8AAAAHBwcKCgoLCwsJCQkaGhofHx8lJSUwMDA0NDQ4ODiRkZEICQocHBweHh4GBgYHCg8mJiYnJycpKSkrKystLS0uLi4ICAgODg43NzcRERF1dXUUFBSjo6O1tbUbGxsEBAMLGS8MDA0iIiIjIyMkJCQNDQ0NHTYKCQkoKCgPDw8QEBArMDkKCgkRERIREhMxMTEyMjISIz00Njk1NTU2NjYCAgIVFRU5OTo5P0c8PD0+Pj4/QURAQEBHR0dKSkpMTExSUlJiYmJlZWVnZ2cWFhZ2dnZ4eHh8fHx9fX2FhYUXFxeVlZWXl5eYmJiZmZmcnJwZGRmlpaWrq6usrKyvr68KFiq/v7/FxcXY2Nji4uLn5+ft7e0yif9uAAAAN3RSTlMAAAApKSkqKioqg4OEhISEhoa1tra3t7y9vr7S09PT09TU+Pj5+fn5+/v7+/v7+/v7/v7+/v7+70RY/wAAAPpJREFUeF4dyWNjw2AUBeC7dfYyorM6rx1exKltzLZt2/rDa/J8OgBVVlFDX39jcTZoUqCse251a2dvu6ccUtWlanLQ4Vpel+ThlWq1l3wEz58tx4dOt1dMlAJk9A5gMjG75LHwo46hzkwosGOMbejumoRvubC9EOrMviT0E0Us9fvN9dA6zxJCNv6+ECGsb6oNWsgmpZT9/UTUZo3Em6AW34guTL4jiAudiCM1kLcw8/SmHERfT1/eueBiDqR1GK1n9w+K8nglxYxd6QAML4ztXoQuj8YFgWcgqdJp8qzty26vaboCNIxBCshyQDKov0aXr29v1ufq1PwPx5Q7bCoh6eoAAAAASUVORK5CYII=',
+      'Slackware': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AcEDi0qZWWDgAAAAx1JREFUOMt9kktoXHUchb/ffc1M7rySSdJMOknFPMRitLgoNKKI8ZHGKkgrjU8SitidimSh2UkXoQmoO1dGQSxJjdvOtqSaqlR0USEGSjVJGxuSmWR6M3fu4/93YX0g4rc9HA6cc4Q7DI+fpzz7PA8++2mxvZAeBZ4xhHtFcJRmXWsWvb36/OLcyxf5B/KHeYHy7DmGx1+YSDjmWTdlobTGMAStQGkNoLXS4tXDq7u7tUcWz49tA8jR8QUuzB5n5NTCV13F9JEo1JJwTLKuzU61QiOMcd0UDb+BncwQK3Rl15eNja3ui/Njq8aF2eMcO/XlBz0H8oO2ZUkum6A13WB99TtyzXlaCi24SaFa+ZFCzsG2DNnfkdbFjsI1APPhk+d6ujqznycdCxFozadYWvyMpx47wa+bPkGksKwUNnsk3TaCGASRXDZh5LpHXPPg4Rcni+3uYBxrtBbQghlscOVKmYHeEm0ZIZ9xyLffw41ND6VAa43SmjiMByzHYtjzwr9arfshxf5jOKlvKZfn8es77N2uks24PPfSFD/9Uvt7AtPKWmEU9d645eHYJo5tcKi/FX/zG+zmQxQH+rANk862DOW5N/hhaY64cJSa5xNFCgDDILZACMKYWAmh73HmzFsMlBQJ06LeiMinE1S3KzRCm5rXIIoUIoKIYCVM36urZFbEoiBLNMIhAE6/NsSB7h6SKZdL8xsUOnpx9j1KbTdARACIowArYe1ergfNT2i0mIbJys0GI6PT3N1/hJvrPxOFdRJNBQIy/FapI4Bpgohgcjuw+jq8jy8tV55MNBWI4ohS802CpizKv8q+FgALZAfYgSyAZtNro1oLaU1VvxCA029Oraxs7u/tKnXiNjn8HyKwur6lI++6vPK4V7IA7u+1Dyu1tr183ddNbkHuXP8/zEIYeFqiLRl6YO/p0bHJdflT/PD9qZa1W+ry99fcvlAlcZwUpuUAglIRYVgnDEIOlna4q0M/NPnuO1/PzMwg/045O/XeibUt5/Xangx6viSVFpK2jtMpvdyWCz+5ryf10clX3/amp6eZmJjgd441URWWJY8BAAAAAElFTkSuQmCC',
+      'Trisquel': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABjFBMVEX///8AAAAAAAAAAAAAADMAAGYAAAAAHFUAGWYAF10AImYAIGAAHloAHGMAKGsAGmYAJmYAJGEAKnUAJ1gAMXYAJnEAJGQAI2EAK28AK3cAGTEAMHgALXEALXgALG0AFUAAI2oAK3EAMngANoYALXMANIAAM4IANIIAL3gANIcANokANoQANYQAOY0ANIYANooAN4kAN40AOY0APZMANIUAOY0AO5AAPZUAPJAAP5MAPpQAQJUAOYsAPpYANoUAPpoAPpUAM4AAQJkAPZIAPJEAQpgAN4cAPpQAPZUAPJEAO4oAOosAOo8AQJoAOYsAO44AQpsAO48AQp0AP5UAQpoARJwAQ58ARaAAQZgAQ54AQ50AQpgARaIARqMARaMARaIAR6QARaIARaEASakARKEAR6MASqsARKEASKcAR6MARqYAR6UATbEATa8ARqUARKAAR6oARqMASKgATK8AR6QATbIATbAASq0AR6cASKgASqwAR6UASKcATa8ASqoASqwAS6wASKoAS60ATbHn4CTpAAAAhHRSTlMAAQIFBQUGCQoLDxAREhMUFBUYGhobHB0eHh8gIiIjJCQkJCYoLC0xMTE0NDo6Oz1BQUNHSUxOVFVVVldaWl5iY2RkZWZoamtsb3FycnR1ent9f4KDhIiJioyNkJGYm5+foqOkpqamqKmqrKytsLKzs7e4uLy8v8TFxcXGx8rO0NXY2eZc4XYcAAAA00lEQVR4XkWN1VoCUQAG/3NWtwh7CTsQJOyk7BaDxuxA6bbrxf32gt25m7kZqDRYxziooDV7+1AalMUavQh2AsEZoWvzigLun+T17/c8QiJZ7qu2QKiNmyZthdcR1/as353jIeU1GxMHo5XHdqPFeX8IaDMdHPYN6dRN7LR4qQewdTa35HWkyh+fbxERAMjwlAWJv3CPSKDQ+H7XvHdkV4Pua3Gtm4sPKIF/WV8dop4VKBw/NU33B3x1JbTt+XwhkJQoqRfWvHOy28uqH8JIdomR/R+s9yR3Cso77AAAAABJRU5ErkJggg==',
+      'Ubuntu': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABKVBMVEX////ojFzplGf1zbnqnHLvs5P10b3yuZv1xKrytZXvtJXys5LysI32waT0n3HxiVHwg0jxhk31kFn0h0zxf0P0hUrveTv2iU3yfkD1hEfyejv5eDLybSX0aR7zZxvyayH6ZxnxZBj4YhH7XAb5WALlUQLeTwHgUAHeTgHfTwD65NzdTQDdTQHdTgD31MfcTgLcTADcTQD////xt5/31Mf54dfmfE/dUAbeVQ/jcUDcTgHeWBnnflHohFvpjGbqkGztnX342Mz53dLgXiP65d399PHdUgrtoYLyu6Xzvaf76eLfXB/rkm/fWhvupojwrpTeVhTgYSfgYynzwa30xbL1ybnngFT31snngljhZS3539XhZzDiajbibDn77OX88Ovrl3X99vTjbz1fisGCAAAAMHRSTlMABgYGBwcHJiorMDA1NXGHjY2Nl5mZmZyfn6O5u8XHzc3X193j9fj4+vr6/f39/f08OUojAAAAx0lEQVR4Xi3HZVbDYBhGwQctWqzFPXiQ+36pu+LubvtfBKcN82/UEhld2vWXxyL6F92gbTPabse8hU/uHMx1SZoyyJWPTwq1Rs7GpYE9+Cg+OJcs1MHvU9y4fnrN31yUm18vMCIPjtw3QMndw4rs8ieVzAAcBlewpe1KM3uaBuD3Dda1BhWXAsi6AFY1a2SqifxZ+rnxWYcJDRkUS3fO1R5vwe+XZgw4D4L3RAJiknoXCVX3WeiUpJ5pIxTvVmg45pl5k4Ot/AGV2iqZBWgJJAAAAABJRU5ErkJggg==',
+      'Windows': 'iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAAA+pJREFUOE+F0n84FHYcB3CWSsL9ojo/6ik64c6PnTjmSS0limmrpBm2G002y++xzXRz6zE0R4nbw+RnTj/WD4sbanLkkAe55ccYlyNme4SrO9u9d13PI3/saZ+/vs/3831ez+f9eb5aWsuqy2mjRYeNUa7YmtjfTico7jNJ8z0eG24NB9vvnDrvufzpq89Npnr8VjMddNmuRh9rDfp36mFg91oM7qPIc5JdbDJq3An/JfCu7Hl53W2lpS220pP2OuniN299jAYbYizSENIoAgbCTdrTKtxOJVdvGo8psUwKy7Vxe4ez1YEVudGP8YEZzyveInFJ6mZRHHqYazDspw/pJwTIuERM5JIwmUdGdyo9K7/BszGzzg6fXzZHGJ8KvzQqXKOpoIeZLjofWR++BPWyCEnPY4xFGEKWQcLjMjKmr1MwfcMYwmz/Y4KOgNki0V5k1dkjUWCK93Kp2PMFFawos8cm1gZ2GqjLXktL4mbQPHLQ4B9ZDFE5+S356fQlyuJMqzH++HnTo6ui2OO1ko9Ul+4fxfd3d4F7k4YTReqpuFS88bGZUE2QNNDobuIq8Q5CduHb7lFJaTnvnym9ergjMWD/FG8zf+aKS3G9JO5C01Asah6wUXrvALKEDoitMMHhDKrKJdg8RU2s0EB2EWWur8dd7PDPFv6dUC0Gv3kAN36VPRGP/5k5NS6lljWxG0TDiSr1VKhoPwhevRMSqkwRxDObc/DavGtpP6zoi8XOyZfhnyNEvKANBU0P8VPfI/wyNCGXSn7wlEmyA9KrgmOKGth3eDVvPfyywq2dnUEv2R9qG2rLsH7xJXziKnWcI8tlTvEC7Mu8hROlImTU9aKqcwQ1vWOihWFu+sJknmph5CvxQh87c7bNh/NXo03hrMCosyvLmMNgMF7TQL6J1dsZIUVwjKqEO+cajp5vxPN439U/gKBt8PTcYHzL/BgHCyOf4unAISj6mFC2bYC82kB5Ls460NHRUVsDeYSXpGw7UgC7sAtwShDgzdM38W7BbURXtqpqhfmB8sEQuXwoCM/6faGQuGCxyxyKWhIm+PrSD495WL3cT0hhi8Whc3NbAs9KaOyCTvrJ8qkdX19XBeTUDU00+55USFzVU2yHstcaix0mUAjJkJeuRU868Ucmk0lcguiBnMAVxjbbdHV1yeq8+u4Hgo22huSG+iQXp83ftaxW3lsPZcs6KG5T8OwaAfJiPcxlrVRVRhvF02i0F/t5VbHZ7JWDfErKTLnhE3mFPuRFepg/uxqz6TqLv6euGj3ut87t/4ylvre3t3ZehOWWO1zjSFEqMVP4GfGb/DBykJcjmaZOoLsc+hcVY/LaAgcTQAAAAABJRU5ErkJggg==',
+      'OpenBSD': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoYAykIPu64pQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAADTklEQVQ4y32RXUxTdxjGn3N6eujoKT3SUkuk3VoBGfVjgFXAsZ7WkipyYXQbuu3CzUXZmGRbssnFEseFkWzgcGzGXky9MWL8TsC4IeFgtK4oAqOnG5vMVl1pCMVWQD7b/y5M6jLdflfvxfPked/nBQA0NDSChqnGVrLuGkES742NhJAdhAKAuk9yyUs5Gry7RQMZAARCWgivpQiPe71P5DUfH0xaqTL7m/iiLkJmphawa+e4SM2PvUyC4yUIBu8CnAQKAK53rCA5OUtQtStVpJ4Gw/FOBddZVKhCfq4MP4n6+at+DUsJm/e0G9JZzYEvI2tHwlEYjDxomkZ+3nG8WroRtHihZVOhVlorDQzh0okhcByDP4ZGcf+X9XAsvY5/RsBa7Kq5H/CqLctKyl/g08S2i6fq8W/MS3P34T9wNDVYSeDX1eTD9xhiLXbtB/Akwmmv6Kr+ICFkLpGhtNSM3qsSstS3oX8lSsmsxS6ZVn3j6PvVVqhUcvC8AtPxVPxwygVKvngN89WOjgVprggGA4eenjB4nsXsTASpC63I0wVTZYPR11FoKRB8Ax54PCFk6BhMTk5CPR3GSbHouGzknr/bYFq9EAvfc9Tu1sLjHcXNKxLuTOTgzOlOe7IHBc/beAXWpWmXlz8a84nhcLQ+ecVzsAEQrMWuMX+f9HZF2YPZ28FVSNfoPWqOzMUmqYMAJm7+/OOzXQFwHGpyEV+vi+yvtxBC9pDmpgJC4tvI3mo9GTitIxvW24nT7ug67HY/3eDs2bbyrVsrY2day70rV6kRfDAHk5lDLJqAmmeRiD9GJDKHvwb74R8G0mkTPjrQTTG122xkTTbwaV2b1H4u16JQKXGr7yG2b8/H1MQ09IsTSEmRwzf4CCwzD+dmE1re8CI7wwi5XNlFf9vaTXX4dWJg4LLl7h05fpNGwNAMWpp9CIVYNO/tRCzGwpDFQaVMQTS2CKY0BWr3GVGWNSXKACDDaA4Mh976pq9f5Sy09GgKlmeAMIBKzUKpU+BFoxJecRhUfAbMxDi4eADfHVmE79v7q575gvvYeVvjZ58LD5mwsKUyX0hnf0feslnQCWD4zxnc6reKisxsfH2oscqcmTmK/+Ow252cna7K52r+Bky6PqmoT5HBAAAAAElFTkSuQmCC',
+      'Gnu': 'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAFo9M/3AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AoYAywUV5gQrwAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAADcElEQVQ4y43Tb0jjBRzH8c9v+7nNMebcUW21Cc78g/wcuhByIScoMRwoTBmFlZCmIJ14axqkgoYIkXIqKIVBEuJNUBEUPRlpqDC3Q2Ex0nTezun2YOaPLXNIv7Vvj7zgiOj1+PPk/eADjuNEuHN6ekqMw+H4IzMz8xChUCjV1NT0JbO7uxtfXFy8NZvNr21tbd0AAEQikY6I0m1tbQbx2NjYZiqV+vn29jY+PDw8xhYWFj45PDzcb25uhlQqfSTief6X0dFRpqKigvF4PPPipaWlY7lcXhCLxXJnZmY+ZTY2NnzX19ePGxsbHw0MDLivrq5mc3Jy2pPJZLVWq/2cdbvdDSzLholoNJ1OMy6Xq0Ymk5HNZktOTU29qMgA8HYqlaKDgwNKp9M0PT09BgAM/iGuqqoimUx2yPP8U5/P9wEAMB0dHRUKheJHiUTyeGhoqAUAnE7nR0qlsjcQCLwjlsvlz+bm5mQWi0VSWlr6bXV1tU6hUMj6+/vfN5lMN0xxcfG1zWZ7SETTSqWSGhoamPHxcajV6s+8Xu9Xou7u7t9VKtW00+mkSCTC6PV6aDQa8Dw/Wl9fP8UAQCgUosvLSyovL2eWl5dRUFBw7Ha7v9vc3By5K3g1EAg8FQSBiIguLi4IgBwA2LtEjuPuJxKJ62AwKFpdXf0eQBIvYVmW/cLlchEAWK1WAADT09NzX6PR/OTz+eKVlZUzKpVqTyqVvsnzfLCkpGSrtrb2t97eXnFeXl5ZKpWyZ2RkPPP7/UUnJyefGI3GU+zt7aU4jotOTk7mAUBfX1+b1Wq9kcvlBIAcDgctLCyQxWKhoqIi6uzs/BoAVlZW3qqpqbllZmdnf1hfX//Q4/HEzWbzX+3t7fcMBgMFg0EYjUYmEolAEAREo1Hk5+fT+fk5Mzg4GD86OpJ0dXXJGQBoaWl5Ra/XP6yrq3tQVlam2N7ehslkAsuySCaTUKvVSCQS2NnZSXAcJxYEQTEyMvKeIAhLDADY7fZ7BoPhm6ysLFpbWzuan5//WKvVvsHzPEWjUSYSiSA3N5d0Oh0TjUaf+/1+S2Nj46/4FwYAr7e2tnbF4/E/iYjC4TCFw+F0LBaj/f19mpiYeID/IAagAyABYLXb7cLZ2Rml02nyer3POY6rwv8hEr34u0IkEk1mZ2cTgGMA7768/RtL5JKsGzrLIgAAAABJRU5ErkJggg==',
+      'CrunchBang': 'iVBORw0KGgoAAAANSUhEUgAAABYAAAAQCAQAAAC45EetAAAA8ElEQVR4XnWOsUpCYQBGz1TIHYu2Qix6g0DEtSeQu/UIISJtUS8gJq61F1wcdMohcBDxKUR8hsz1xA/y44/cs3znbB+RJ0Skl3pSkeFQbUs79VAPzrwPFRmN1Ja0Ug/16I93+1oi4lKte+zMXv32WuoAm43lXMrqzbFncgWw21lORf4+/PREKpAhYqZuPXZ+T/3yXbZEajV1JavUQ104sRcq0myqc5mnHurWqc/7yhExVwuPncl+C4Bu13L60ueAwcByOtLhgAIRCzU38fRGTmSxUBvSSD3Ui1NvQkXWa7Uq1dRD9R17HiqyRUSy1NP6B7e1Yu2GtlUKAAAAAElFTkSuQmCC',
+      'Yuno': 'iVBORw0KGgoAAAANSUhEUgAAABgAAAAPCAYAAAD+pA/bAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAadEVYdFNvZnR3YXJlAFBhaW50Lk5FVCB2My41LjEwMPRyoQAABDtJREFUOE+FlHtMm1UYxrtsi8aEgCb+oTFmZur+WNS5RaPERU10C2qGaBgb6hgwLwMmHTIKlIKlQIHSQrmU24BSSmnpBVooUmihtEC5yKWDjVu5uOkcEca4lG5E93j6EQmELX7Jky/fOed9fu973vMdGu0xT3Cgz57yXMZLDdXcy821PFWLKmuA6HqLMqtLX5POl4iYb2ukWW8IOOFe/qfe3/M4n0eOjwyZD8//bldODOk37N1yDJgl+LVdjEGLFKO9KkzZm8hbje7mIrTXZ7sMtTydrJh15H8hHW11XvN/jGS7VudcD5w34ZZzeQYb67fwYO03LN4exo1+LWzNxbA05O5QuzbHqRYn+++CHDx4YK9WLfaedfQzV5em54g5Zbi8OIml+VFMDLWQ7GXoaSmFWZsDZVGCO2u0EbkhHTrhFqi9PmelSsQ8tAtSVch60dpUeGe4kxgZxegzVkBzlQ2NKBG2+iJIMqMok9r8OLRIMqApToSqmAWTmk9B2+o2YW79oshU7ABcuvAFrVGWXkVKpBYoSaBSxIS2mINpiwbjZiUMZRloVfJQyaXDKObBpimBScpHFe8KmmXpaKhK3arGrBVuVBclHN2CiPNin1OVs1tVJYlQlyZBxA6DviQVo6ZaOKd7sTplw53BVugruBBzfsRslw7rZPxaczWutSpQV/gzJPxo1JexyfaxKBBpuiEx+tw+CpKdEvGWTprGlhcwqbIzL5/DYKMYndpK3L1hxf3ZfkrzwybUZjPhnOqmvlcmutFF1jis9QSShOrcWNSXJ1MA0ou/NZWc8Ddfe4VGO3bk0JON1dyMMlK+gmxNrZCFhZF2Kng7YNO0awt4b7wLNp2EqtAsF6ImP56SG0B6siovTYpIjg15gapCVhAfJRUyIBFEo6k8AyuTtkcC/qvG/XbDexulWJvqgYH0o0nKhVHFJ40XwFQnWM5OCX+XMg86c3KvVMSMapCmPpSTIygTxGKZZOcOXhrr3Mp4uzkFuG6B3ajE3TELDDU8qEmsmvRATxquKkxAnSTFjwKEfv3JU9JC5unG6rQ1bTkbQ4Yq/DVgxOqwBWt2K9Yne3ZCZvrgHO2k5paHzOhSiVCZSkdNTgzy40JRlPgDhDHBCxUZdCs91G8fLeK87zOl6XSOICZYXMGNhDqX9fDP/mbK2DXVi/szm03eLpejl5pzOfqwOt4JBT8OeYwQt/4R/BR0OzXiLCM5LOCji/4nXt46rpywgG+zor5RxgSdupBzJdglSY+5ZZbl3XNY6mbn7W0Lcx06zBg1WBjtcC6OmG+OmRTrFrnIUZESZeVeCpwh8TpiPsQ47/tloM97T+/6m8mg55mT3tStyL54mhlwwtszNvjzD8/6HH8i7PvvPPRioZdRWuDBZUR6pEWG7I8P9Xs1Jsj36MfvvO5J/+rTw58dP7afJPfBgeef3XGz/gskFVpJc4HwGwAAAABJRU5ErkJggg=='
+    }
+  };
+
+  ExpandComment = {
+    init: function() {
+      if (g.VIEW !== 'index' || !Conf['Comment Expansion']) {
+        return;
+      }
+      if (g.BOARD.ID === 'g') {
+        this.callbacks.push(Fourchan.code);
+      }
+      if (g.BOARD.ID === 'sci') {
+        this.callbacks.push(Fourchan.math);
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Comment Expansion',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var a;
+
+      if (a = $('.abbr > a', this.nodes.comment)) {
+        return $.on(a, 'click', ExpandComment.cb);
+      }
+    },
+    callbacks: [],
+    cb: function(e) {
+      var post;
+
+      e.preventDefault();
+      post = Get.postFromNode(this);
+      return ExpandComment.expand(post);
+    },
+    expand: function(post) {
+      var a;
+
+      if (post.nodes.longComment && !post.nodes.longComment.parentNode) {
+        $.replace(post.nodes.shortComment, post.nodes.longComment);
+        post.nodes.comment = post.nodes.longComment;
+        return;
+      }
+      if (!(a = $('.abbr > a', post.nodes.comment))) {
+        return;
+      }
+      a.textContent = "Post No." + post + " Loading...";
+      return $.cache("//api.4chan.org" + a.pathname + ".json", function() {
+        return ExpandComment.parse(this, a, post);
+      });
+    },
+    contract: function(post) {
+      var a;
+
+      if (!post.nodes.shortComment) {
+        return;
+      }
+      a = $('.abbr > a', post.nodes.shortComment);
+      a.textContent = 'here';
+      $.replace(post.nodes.longComment, post.nodes.shortComment);
+      return post.nodes.comment = post.nodes.shortComment;
+    },
+    parse: function(req, a, post) {
+      var callback, clone, comment, href, postObj, posts, quote, spoilerRange, status, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+
+      status = req.status;
+      if (![200, 304].contains(status)) {
+        a.textContent = "Error " + req.statusText + " (" + status + ")";
+        return;
+      }
+      posts = JSON.parse(req.response).posts;
+      if (spoilerRange = posts[0].custom_spoiler) {
+        Build.spoilerRange[g.BOARD] = spoilerRange;
+      }
+      for (_i = 0, _len = posts.length; _i < _len; _i++) {
+        postObj = posts[_i];
+        if (postObj.no === post.ID) {
+          break;
+        }
+      }
+      if (postObj.no !== post.ID) {
+        a.textContent = "Post No." + post + " not found.";
+        return;
+      }
+      comment = post.nodes.comment;
+      clone = comment.cloneNode(false);
+      clone.innerHTML = postObj.com;
+      _ref = $$('.quotelink', clone);
+      for (_j = 0, _len1 = _ref.length; _j < _len1; _j++) {
+        quote = _ref[_j];
+        href = quote.getAttribute('href');
+        if (href[0] === '/') {
+          continue;
+        }
+        quote.href = "/" + post.board + "/res/" + href;
+      }
+      post.nodes.shortComment = comment;
+      $.replace(comment, clone);
+      post.nodes.comment = post.nodes.longComment = clone;
+      post.parseComment();
+      post.parseQuotes();
+      _ref1 = ExpandComment.callbacks;
+      for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+        callback = _ref1[_k];
+        callback.call(post);
+      }
+    }
+  };
+
+  ExpandThread = {
+    init: function() {
+      if (g.VIEW !== 'index' || !Conf['Thread Expansion']) {
+        return;
+      }
+      return Thread.prototype.callbacks.push({
+        name: 'Thread Expansion',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var a, span;
+
+      if (!(span = $('.summary', this.OP.nodes.root.parentNode))) {
+        return;
+      }
+      a = $.el('a', {
+        textContent: "+ " + span.textContent,
+        className: 'summary',
+        href: 'javascript:;'
+      });
+      $.on(a, 'click', ExpandThread.cbToggle);
+      return $.replace(span, a);
+    },
+    cbToggle: function() {
+      var op;
+
+      op = Get.postFromRoot(this.previousElementSibling);
+      return ExpandThread.toggle(op.thread);
+    },
+    toggle: function(thread) {
+      var a, inlined, num, post, replies, reply, threadRoot, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
+
+      threadRoot = thread.OP.nodes.root.parentNode;
+      a = $('.summary', threadRoot);
+      switch (thread.isExpanded) {
+        case false:
+        case void 0:
+          thread.isExpanded = 'loading';
+          _ref = $$('.thread > .postContainer', threadRoot);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            post = _ref[_i];
+            ExpandComment.expand(Get.postFromRoot(post));
+          }
+          if (!a) {
+            thread.isExpanded = true;
+            return;
+          }
+          thread.isExpanded = 'loading';
+          a.textContent = a.textContent.replace('+', '× Loading...');
+          $.cache("//api.4chan.org/" + thread.board + "/res/" + thread + ".json", function() {
+            return ExpandThread.parse(this, thread, a);
+          });
+          break;
+        case 'loading':
+          thread.isExpanded = false;
+          if (!a) {
+            return;
+          }
+          a.textContent = a.textContent.replace('× Loading...', '+');
+          break;
+        case true:
+          thread.isExpanded = false;
+          if (a) {
+            a.textContent = a.textContent.replace('-', '+');
+            num = (function() {
+              if (thread.isSticky) {
+                return 1;
+              } else {
+                switch (g.BOARD.ID) {
+                  case 'b':
+                  case 'vg':
+                  case 'q':
+                    return 3;
+                  case 't':
+                    return 1;
+                  default:
+                    return 5;
+                }
+              }
+            })();
+            replies = $$('.thread > .replyContainer', threadRoot).slice(0, -num);
+            for (_j = 0, _len1 = replies.length; _j < _len1; _j++) {
+              reply = replies[_j];
+              if (Conf['Quote Inlining']) {
+                while (inlined = $('.inlined', reply)) {
+                  inlined.click();
+                }
+              }
+              $.rm(reply);
+            }
+          }
+          _ref1 = $$('.thread > .postContainer', threadRoot);
+          for (_k = 0, _len2 = _ref1.length; _k < _len2; _k++) {
+            post = _ref1[_k];
+            ExpandComment.contract(Get.postFromRoot(post));
+          }
+      }
+    },
+    parse: function(req, thread, a) {
+      var link, node, nodes, post, posts, replies, reply, spoilerRange, status, _i, _len;
+
+      if (a.textContent[0] === '+') {
+        return;
+      }
+      status = req.status;
+      if (![200, 304].contains(status)) {
+        a.textContent = "Error " + req.statusText + " (" + status + ")";
+        $.off(a, 'click', ExpandThread.cb.toggle);
+        return;
+      }
+      thread.isExpanded = true;
+      a.textContent = a.textContent.replace('× Loading...', '-');
+      posts = JSON.parse(req.response).posts;
+      if (spoilerRange = posts[0].custom_spoiler) {
+        Build.spoilerRange[g.BOARD] = spoilerRange;
+      }
+      replies = posts.slice(1);
+      posts = [];
+      nodes = [];
+      for (_i = 0, _len = replies.length; _i < _len; _i++) {
+        reply = replies[_i];
+        if (post = thread.posts[reply.no]) {
+          nodes.push(post.nodes.root);
+          continue;
+        }
+        node = Build.postFromObject(reply, thread.board);
+        post = new Post(node, thread, thread.board);
+        link = $('a[title="Highlight this post"]', node);
+        link.href = "res/" + thread + "#p" + post;
+        link.nextSibling.href = "res/" + thread + "#q" + post;
+        posts.push(post);
+        nodes.push(node);
+      }
+      Main.callbackNodes(Post, posts);
+      $.after(a, nodes);
+      return Fourchan.parseThread(thread.ID, 1, nodes.length);
+    }
+  };
+
+  FileInfo = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['File Info Formatting']) {
+        return;
+      }
+      this.funk = this.createFunc(Conf['fileInfo']);
+      return Post.prototype.callbacks.push({
+        name: 'File Info Formatting',
+        cb: this.node
+      });
+    },
+    node: function() {
+      if (!this.file || this.isClone) {
+        return;
+      }
+      return this.file.text.innerHTML = FileInfo.funk(FileInfo, this);
+    },
+    createFunc: function(format) {
+      var code;
+
+      code = format.replace(/%(.)/g, function(s, c) {
+        if (c in FileInfo.formatters) {
+          return "' + FileInfo.formatters." + c + ".call(post) + '";
+        } else {
+          return s;
+        }
+      });
+      return Function('FileInfo', 'post', "return '" + code + "'");
+    },
+    convertUnit: function(size, unit) {
+      var i;
+
+      if (unit === 'B') {
+        return "" + (size.toFixed()) + " Bytes";
+      }
+      i = 1 + ['KB', 'MB'].indexOf(unit);
+      while (i--) {
+        size /= 1024;
+      }
+      size = unit === 'MB' ? Math.round(size * 100) / 100 : size.toFixed();
+      return "" + size + " " + unit;
+    },
+    escape: function(name) {
+      return name.replace(/<|>/g, function(c) {
+        return c === '<' && '&lt;' || '&gt;';
+      });
+    },
+    formatters: {
+      t: function() {
+        return this.file.URL.match(/\d+\..+$/)[0];
+      },
+      T: function() {
+        return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.t.call(this)) + "</a>";
+      },
+      l: function() {
+        return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.n.call(this)) + "</a>";
+      },
+      L: function() {
+        return "<a href=" + this.file.URL + " target=_blank>" + (FileInfo.formatters.N.call(this)) + "</a>";
+      },
+      n: function() {
+        var fullname, shortname;
+
+        fullname = this.file.name;
+        shortname = Build.shortFilename(this.file.name, this.isReply);
+        if (fullname === shortname) {
+          return FileInfo.escape(fullname);
+        } else {
+          return "<span class=fntrunc>" + (FileInfo.escape(shortname)) + "</span><span class=fnfull>" + (FileInfo.escape(fullname)) + "</span>";
+        }
+      },
+      N: function() {
+        return FileInfo.escape(this.file.name);
+      },
+      p: function() {
+        if (this.file.isSpoiler) {
+          return 'Spoiler, ';
+        } else {
+          return '';
+        }
+      },
+      s: function() {
+        return this.file.size;
+      },
+      B: function() {
+        return FileInfo.convertUnit(this.file.sizeInBytes, 'B');
+      },
+      K: function() {
+        return FileInfo.convertUnit(this.file.sizeInBytes, 'KB');
+      },
+      M: function() {
+        return FileInfo.convertUnit(this.file.sizeInBytes, 'MB');
+      },
+      r: function() {
+        if (this.file.isImage) {
+          return this.file.dimensions;
+        } else {
+          return 'PDF';
+        }
+      }
+    }
+  };
+
+  Fourchan = {
+    init: function() {
+      var board;
+
+      if (g.VIEW === 'catalog') {
+        return;
+      }
+      board = g.BOARD.ID;
+      if (board === 'g') {
+        $.globalEval("window.addEventListener('prettyprint', function(e) {\n  var pre = e.detail;\n  pre.innerHTML = prettyPrintOne(pre.innerHTML);\n}, false);");
+        Post.prototype.callbacks.push({
+          name: 'Parse /g/ code',
+          cb: this.code
+        });
+      }
+      if (board === 'sci') {
+        $.globalEval("window.addEventListener('jsmath', function(e) {\n  if (jsMath.loaded) {\n    // process one post\n    jsMath.ProcessBeforeShowing(e.detail);\n  } else {\n    // load jsMath and process whole document\n    jsMath.Autoload.Script.Push('ProcessBeforeShowing', [null]);\n    jsMath.Autoload.LoadJsMath();\n  }\n}, false);");
+        return Post.prototype.callbacks.push({
+          name: 'Parse /sci/ math',
+          cb: this.math
+        });
+      }
+    },
+    code: function() {
+      var pre, _i, _len, _ref;
+
+      if (this.isClone) {
+        return;
+      }
+      _ref = $$('.prettyprint', this.nodes.comment);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        pre = _ref[_i];
+        $.event('prettyprint', pre, window);
+      }
+    },
+    math: function() {
+      if (this.isClone || !$('.math', this.nodes.comment)) {
+        return;
+      }
+      return $.event('jsmath', this.nodes.post, window);
+    },
+    parseThread: function(threadID, offset, limit) {
+      return $.event('4chanParsingDone', {
+        threadId: threadID,
+        offset: offset,
+        limit: limit
+      });
+    }
+  };
+
+  Keybinds = {
+    init: function() {
+      var init;
+
+      if (g.VIEW === 'catalog' || !Conf['Keybinds']) {
+        return;
+      }
+      init = function() {
+        var node, _i, _len, _ref;
+
+        $.off(d, '4chanXInitFinished', init);
+        $.on(d, 'keydown', Keybinds.keydown);
+        _ref = $$('[accesskey]');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          node = _ref[_i];
+          node.removeAttribute('accesskey');
+        }
+      };
+      return $.on(d, '4chanXInitFinished', init);
+    },
+    keydown: function(e) {
+      var form, key, notification, notifications, op, target, thread, threadRoot, _i, _len;
+
+      if (!(key = Keybinds.keyCode(e))) {
+        return;
+      }
+      target = e.target;
+      if (['INPUT', 'TEXTAREA'].contains(target.nodeName)) {
+        if (!/(Esc|Alt|Ctrl|Meta)/.test(key)) {
+          return;
+        }
+      }
+      threadRoot = Nav.getThread();
+      if (op = $('.op', threadRoot)) {
+        thread = Get.postFromNode(op).thread;
+      }
+      switch (key) {
+        case Conf['Toggle board list']:
+          if (Conf['Custom Board Navigation']) {
+            Header.toggleBoardList();
+          }
+          break;
+        case Conf['Open empty QR']:
+          Keybinds.qr(threadRoot);
+          break;
+        case Conf['Open QR']:
+          Keybinds.qr(threadRoot, true);
+          break;
+        case Conf['Open settings']:
+          Settings.open();
+          break;
+        case Conf['Close']:
+          if (Settings.dialog) {
+            Settings.close();
+          } else if ((notifications = $$('.notification')).length) {
+            for (_i = 0, _len = notifications.length; _i < _len; _i++) {
+              notification = notifications[_i];
+              $('.close', notification).click();
+            }
+          } else if (QR.nodes) {
+            QR.close();
+          }
+          break;
+        case Conf['Spoiler tags']:
+          if (target.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          Keybinds.tags('spoiler', target);
+          break;
+        case Conf['Code tags']:
+          if (target.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          Keybinds.tags('code', target);
+          break;
+        case Conf['Eqn tags']:
+          if (target.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          Keybinds.tags('eqn', target);
+          break;
+        case Conf['Math tags']:
+          if (target.nodeName !== 'TEXTAREA') {
+            return;
+          }
+          Keybinds.tags('math', target);
+          break;
+        case Conf['Toggle sage']:
+          if (QR.nodes) {
+            Keybinds.sage();
+          }
+          break;
+        case Conf['Submit QR']:
+          if (QR.nodes && !QR.status()) {
+            QR.submit();
+          }
+          break;
+        case Conf['Watch']:
+          ThreadWatcher.toggle(thread);
+          break;
+        case Conf['Update']:
+          ThreadUpdater.update();
+          break;
+        case Conf['Expand image']:
+          Keybinds.img(threadRoot);
+          break;
+        case Conf['Expand images']:
+          Keybinds.img(threadRoot, true);
+          break;
+        case Conf['fappeTyme']:
+          if (!$('#menu.left')) {
+            Header.menuButton.click();
+          }
+          FappeTyme.input.click();
+          break;
+        case Conf['Front page']:
+          window.location = "/" + g.BOARD + "/0#delform";
+          break;
+        case Conf['Open front page']:
+          $.open("/" + g.BOARD + "/#delform");
+          break;
+        case Conf['Next page']:
+          if (form = $('.next form')) {
+            window.location = form.action;
+          }
+          break;
+        case Conf['Previous page']:
+          if (form = $('.prev form')) {
+            window.location = form.action;
+          }
+          break;
+        case Conf['Open catalog']:
+          if (Conf['External Catalog']) {
+            window.location = CatalogLinks.external(g.BOARD.ID);
+          } else {
+            window.location = "/" + g.BOARD + "/catalog";
+          }
+          break;
+        case Conf['Next thread']:
+          if (g.VIEW === 'thread') {
+            return;
+          }
+          Nav.scroll(+1);
+          break;
+        case Conf['Previous thread']:
+          if (g.VIEW === 'thread') {
+            return;
+          }
+          Nav.scroll(-1);
+          break;
+        case Conf['Expand thread']:
+          ExpandThread.toggle(thread);
+          break;
+        case Conf['Open thread']:
+          Keybinds.open(thread);
+          break;
+        case Conf['Open thread tab']:
+          Keybinds.open(thread, true);
+          break;
+        case Conf['Next reply']:
+          Keybinds.hl(+1, threadRoot);
+          break;
+        case Conf['Previous reply']:
+          Keybinds.hl(-1, threadRoot);
+          break;
+        case Conf['Hide']:
+          if (g.VIEW === 'index') {
+            ThreadHiding.toggle(thread);
+          }
+          break;
+        default:
+          return;
+      }
+      e.preventDefault();
+      return e.stopPropagation();
+    },
+    keyCode: function(e) {
+      var kc, key;
+
+      key = (function() {
+        switch (kc = e.keyCode) {
+          case 8:
+            return '';
+          case 13:
+            return 'Enter';
+          case 27:
+            return 'Esc';
+          case 37:
+            return 'Left';
+          case 38:
+            return 'Up';
+          case 39:
+            return 'Right';
+          case 40:
+            return 'Down';
+          default:
+            if ((48 <= kc && kc <= 57) || (65 <= kc && kc <= 90)) {
+              return String.fromCharCode(kc).toLowerCase();
+            } else {
+              return null;
+            }
+        }
+      })();
+      if (key) {
+        if (e.altKey) {
+          key = 'Alt+' + key;
+        }
+        if (e.ctrlKey) {
+          key = 'Ctrl+' + key;
+        }
+        if (e.metaKey) {
+          key = 'Meta+' + key;
+        }
+        if (e.shiftKey) {
+          key = 'Shift+' + key;
+        }
+      }
+      return key;
+    },
+    qr: function(thread, quote) {
+      if (!(Conf['Quick Reply'] && QR.postingIsEnabled)) {
+        return;
+      }
+      QR.open();
+      if (quote) {
+        QR.quote.call($('input', $('.post.highlight', thread) || thread));
+      }
+      QR.nodes.com.focus();
+      if (Conf['QR Shortcut']) {
+        return $.rmClass($('.qr-shortcut'), 'disabled');
+      }
+    },
+    tags: function(tag, ta) {
+      var range, selEnd, selStart, value;
+
+      value = ta.value;
+      selStart = ta.selectionStart;
+      selEnd = ta.selectionEnd;
+      ta.value = value.slice(0, selStart) + ("[" + tag + "]") + value.slice(selStart, selEnd) + ("[/" + tag + "]") + value.slice(selEnd);
+      range = ("[" + tag + "]").length + selEnd;
+      ta.setSelectionRange(range, range);
+      return $.event('input', null, ta);
+    },
+    sage: function() {
+      var isSage;
+
+      isSage = /sage/i.test(QR.nodes.email.value);
+      return QR.nodes.email.value = isSage ? "" : "sage";
+    },
+    img: function(thread, all) {
+      var post;
+
+      if (all) {
+        return ImageExpand.cb.toggleAll();
+      } else {
+        post = Get.postFromNode($('.post.highlight', thread) || $('.op', thread));
+        return ImageExpand.toggle(post);
+      }
+    },
+    open: function(thread, tab) {
+      var url;
+
+      if (g.VIEW !== 'index') {
+        return;
+      }
+      url = "/" + thread.board + "/res/" + thread;
+      if (tab) {
+        return $.open(url);
+      } else {
+        return location.href = url;
+      }
+    },
+    hl: function(delta, thread) {
+      var headRect, next, postEl, rect, replies, reply, root, topMargin, _i, _len;
+
+      if (Conf['Fixed Header'] && Conf['Bottom header']) {
+        topMargin = 0;
+      } else {
+        headRect = Header.bar.getBoundingClientRect();
+        topMargin = headRect.top + headRect.height;
+      }
+      if (postEl = $('.reply.highlight', thread)) {
+        $.rmClass(postEl, 'highlight');
+        rect = postEl.getBoundingClientRect();
+        if (rect.bottom >= topMargin && rect.top <= doc.clientHeight) {
+          root = postEl.parentNode;
+          next = $.x('child::div[contains(@class,"post reply")]', delta === +1 ? root.nextElementSibling : root.previousElementSibling);
+          if (!next) {
+            this.focus(postEl);
+            return;
+          }
+          if (!(g.VIEW === 'thread' || $.x('ancestor::div[parent::div[@class="board"]]', next) === thread)) {
+            return;
+          }
+          rect = next.getBoundingClientRect();
+          if (rect.top < 0 || rect.bottom > doc.clientHeight) {
+            if (delta === -1) {
+              window.scrollBy(0, rect.top - topMargin);
+            } else {
+              next.scrollIntoView(false);
+            }
+          }
+          this.focus(next);
+          return;
+        }
+      }
+      replies = $$('.reply', thread);
+      if (delta === -1) {
+        replies.reverse();
+      }
+      for (_i = 0, _len = replies.length; _i < _len; _i++) {
+        reply = replies[_i];
+        rect = reply.getBoundingClientRect();
+        if (delta === +1 && rect.top >= topMargin || delta === -1 && rect.bottom <= doc.clientHeight) {
+          this.focus(reply);
+          return;
+        }
+      }
+    },
+    focus: function(post) {
+      return $.addClass(post, 'highlight');
+    }
+  };
+
+  Nav = {
+    init: function() {
+      var append, next, prev, span;
+
+      switch (g.VIEW) {
+        case 'index':
+          if (!Conf['Index Navigation']) {
+            return;
+          }
+          break;
+        case 'thread':
+          if (!Conf['Reply Navigation']) {
+            return;
+          }
+          break;
+        default:
+          return;
+      }
+      span = $.el('span', {
+        id: 'navlinks'
+      });
+      prev = $.el('a', {
+        textContent: '▲',
+        href: 'javascript:;'
+      });
+      next = $.el('a', {
+        textContent: '▼',
+        href: 'javascript:;'
+      });
+      $.on(prev, 'click', this.prev);
+      $.on(next, 'click', this.next);
+      $.add(span, [prev, $.tn(' '), next]);
+      append = function() {
+        $.off(d, '4chanXInitFinished', append);
+        return $.add(d.body, span);
+      };
+      return $.on(d, '4chanXInitFinished', append);
+    },
+    prev: function() {
+      if (g.VIEW === 'thread') {
+        return window.scrollTo(0, 0);
+      } else {
+        return Nav.scroll(-1);
+      }
+    },
+    next: function() {
+      if (g.VIEW === 'thread') {
+        return window.scrollTo(0, d.body.scrollHeight);
+      } else {
+        return Nav.scroll(+1);
+      }
+    },
+    getThread: function(full) {
+      var headRect, i, rect, thread, threads, topMargin, _i, _len;
+
+      if (Conf['Bottom header']) {
+        topMargin = 0;
+      } else {
+        headRect = Header.bar.getBoundingClientRect();
+        topMargin = headRect.top + headRect.height;
+      }
+      threads = $$('.thread:not([hidden])');
+      for (i = _i = 0, _len = threads.length; _i < _len; i = ++_i) {
+        thread = threads[i];
+        rect = thread.getBoundingClientRect();
+        if (rect.bottom > topMargin) {
+          if (full) {
+            return [threads, thread, i, rect, topMargin];
+          } else {
+            return thread;
+          }
+        }
+      }
+      return $('.board');
+    },
+    scroll: function(delta) {
+      var i, rect, thread, threads, top, topMargin, _ref, _ref1;
+
+      _ref = Nav.getThread(true), threads = _ref[0], thread = _ref[1], i = _ref[2], rect = _ref[3], topMargin = _ref[4];
+      top = rect.top - topMargin;
+      if (!((delta === -1 && Math.ceil(top) < 0) || (delta === +1 && top > 1))) {
+        i += delta;
+      }
+      top = ((_ref1 = threads[i]) != null ? _ref1.getBoundingClientRect().top : void 0) - topMargin;
+      return window.scrollBy(0, top);
+    }
+  };
+
+  RelativeDates = {
+    INTERVAL: $.MINUTE / 2,
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Relative Post Dates']) {
+        return;
+      }
+      $.on(d, 'visibilitychange ThreadUpdate', this.flush);
+      this.flush();
+      return Post.prototype.callbacks.push({
+        name: 'Relative Post Dates',
+        cb: this.node
+      });
+    },
+    node: function() {
+      var dateEl;
+
+      if (this.isClone) {
+        return;
+      }
+      dateEl = this.nodes.date;
+      dateEl.title = dateEl.textContent;
+      return RelativeDates.setUpdate(this);
+    },
+    relative: function(diff, now, date) {
+      var days, months, number, rounded, unit, years;
+
+      unit = (number = diff / $.DAY) >= 1 ? (years = now.getYear() - date.getYear(), months = now.getMonth() - date.getMonth(), days = now.getDate() - date.getDate(), years > 1 ? (number = years - (months < 0 || months === 0 && days < 0), 'year') : years === 1 && (months > 0 || months === 0 && days >= 0) ? (number = years, 'year') : (months = (months + 12) % 12) > 1 ? (number = months - (days < 0), 'month') : months === 1 && days >= 0 ? (number = months, 'month') : 'day') : (number = diff / $.HOUR) >= 1 ? 'hour' : (number = diff / $.MINUTE) >= 1 ? 'minute' : (number = Math.max(0, diff) / $.SECOND, 'second');
+      rounded = Math.round(number);
+      if (rounded !== 1) {
+        unit += 's';
+      }
+      return "" + rounded + " " + unit + " ago";
+    },
+    stale: [],
+    flush: function() {
+      var now, update, _i, _len, _ref;
+
+      if (d.hidden) {
+        return;
+      }
+      now = new Date();
+      _ref = RelativeDates.stale;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        update = _ref[_i];
+        update(now);
+      }
+      RelativeDates.stale = [];
+      clearTimeout(RelativeDates.timeout);
+      return RelativeDates.timeout = setTimeout(RelativeDates.flush, RelativeDates.INTERVAL);
+    },
+    setUpdate: function(post) {
+      var markStale, setOwnTimeout, update;
+
+      setOwnTimeout = function(diff) {
+        var delay;
+
+        delay = diff < $.MINUTE ? $.SECOND - (diff + $.SECOND / 2) % $.SECOND : diff < $.HOUR ? $.MINUTE - (diff + $.MINUTE / 2) % $.MINUTE : diff < $.DAY ? $.HOUR - (diff + $.HOUR / 2) % $.HOUR : $.DAY - (diff + $.DAY / 2) % $.DAY;
+        return setTimeout(markStale, delay);
+      };
+      update = function(now) {
+        var date, diff, relative, singlePost, _i, _len, _ref;
+
+        date = post.info.date;
+        diff = now - date;
+        relative = RelativeDates.relative(diff, now, date);
+        _ref = [post].concat(post.clones);
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          singlePost = _ref[_i];
+          singlePost.nodes.date.firstChild.textContent = relative;
+        }
+        return setOwnTimeout(diff);
+      };
+      markStale = function() {
+        return RelativeDates.stale.push(update);
+      };
+      return update(new Date());
+    }
+  };
+
+  RemoveSpoilers = {
+    init: function() {
+      if (!Conf['Remove Spoilers']) {
+        return;
+      }
+      if (Conf['Indicate Spoilers']) {
+        this.wrapper = function(text) {
+          return "[spoiler]" + text + "[/spoiler]";
+        };
+      }
+      return Post.prototype.callbacks.push({
+        name: 'Reveal Spoilers',
+        cb: this.node
+      });
+    },
+    wrapper: function(text) {
+      return text;
+    },
+    node: function(post) {
+      var spoiler, spoilers, _i, _len;
+
+      spoilers = $$('s', this.nodes.comment);
+      for (_i = 0, _len = spoilers.length; _i < _len; _i++) {
+        spoiler = spoilers[_i];
+        $.replace(spoiler, $.tn(RemoveSpoilers.wrapper(spoiler.textContent)));
+      }
+    }
+  };
+
+  Report = {
+    init: function() {
+      if (!/report/.test(location.search)) {
+        return;
+      }
+      return $.ready(this.ready);
+    },
+    ready: function() {
+      var field, form;
+
+      form = $('form');
+      field = $.id('recaptcha_response_field');
+      $.on(field, 'keydown', function(e) {
+        if (e.keyCode === 8 && !field.value) {
+          return $.globalEval('Recaptcha.reload("t")');
+        }
+      });
+      return $.on(form, 'submit', function(e) {
+        var response;
+
+        e.preventDefault();
+        response = field.value.trim();
+        if (!/\s/.test(response)) {
+          field.value = "" + response + " " + response;
+        }
+        return form.submit();
+      });
+    }
+  };
+
+  Sauce = {
+    init: function() {
+      var link, links, _i, _len, _ref;
+
+      if (g.VIEW === 'catalog' || !Conf['Sauce']) {
+        return;
+      }
+      links = [];
+      _ref = Conf['sauces'].split('\n');
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        if (link[0] === '#') {
+          continue;
+        }
+        links.push(this.createSauceLink(link.trim()));
+      }
+      if (!links.length) {
+        return;
+      }
+      this.links = links;
+      this.link = $.el('a', {
+        target: '_blank'
+      });
+      return Post.prototype.callbacks.push({
+        name: 'Sauce',
+        cb: this.node
+      });
+    },
+    createSauceLink: function(link) {
+      var m, text;
+
+      link = link.replace(/%(T?URL|MD5|board)/ig, function(parameter) {
+        switch (parameter) {
+          case '%TURL':
+            return "' + encodeURIComponent(post.file.thumbURL) + '";
+          case '%URL':
+            return "' + encodeURIComponent(post.file.URL) + '";
+          case '%MD5':
+            return "' + encodeURIComponent(post.file.MD5) + '";
+          case '%board':
+            return "' + encodeURIComponent(post.board) + '";
+          default:
+            return parameter;
+        }
+      });
+      text = (m = link.match(/;text:(.+)$/)) ? m[1] : link.match(/(\w+)\.\w+\//)[1];
+      link = link.replace(/;text:.+$/, '');
+      return Function('post', 'a', "a.href = '" + link + "';\na.textContent = '" + text + "';\nreturn a;");
+    },
+    node: function() {
+      var link, nodes, _i, _len, _ref;
+
+      if (this.isClone || !this.file) {
+        return;
+      }
+      nodes = [];
+      _ref = Sauce.links;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        link = _ref[_i];
+        nodes.push($.tn('\u00A0'), link(this, Sauce.link.cloneNode(true)));
+      }
+      return $.add(this.file.info, nodes);
+    }
+  };
+
+  Time = {
+    init: function() {
+      if (g.VIEW === 'catalog' || !Conf['Time Formatting']) {
+        return;
+      }
+      this.funk = this.createFunc(Conf['time']);
+      return Post.prototype.callbacks.push({
+        name: 'Time Formatting',
+        cb: this.node
+      });
+    },
+    node: function() {
+      if (this.isClone) {
+        return;
+      }
+      return this.nodes.date.textContent = Time.funk(Time, this.info.date);
+    },
+    createFunc: function(format) {
+      var code;
+
+      code = format.replace(/%([A-Za-z])/g, function(s, c) {
+        if (c in Time.formatters) {
+          return "' + Time.formatters." + c + ".call(date) + '";
+        } else {
+          return s;
+        }
+      });
+      return Function('Time', 'date', "return '" + code + "'");
+    },
+    day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    month: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    zeroPad: function(n) {
+      if (n < 10) {
+        return "0" + n;
+      } else {
+        return n;
+      }
+    },
+    formatters: {
+      a: function() {
+        return Time.day[this.getDay()].slice(0, 3);
+      },
+      A: function() {
+        return Time.day[this.getDay()];
+      },
+      b: function() {
+        return Time.month[this.getMonth()].slice(0, 3);
+      },
+      B: function() {
+        return Time.month[this.getMonth()];
+      },
+      d: function() {
+        return Time.zeroPad(this.getDate());
+      },
+      e: function() {
+        return this.getDate();
+      },
+      H: function() {
+        return Time.zeroPad(this.getHours());
+      },
+      I: function() {
+        return Time.zeroPad(this.getHours() % 12 || 12);
+      },
+      k: function() {
+        return this.getHours();
+      },
+      l: function() {
+        return this.getHours() % 12 || 12;
+      },
+      m: function() {
+        return Time.zeroPad(this.getMonth() + 1);
+      },
+      M: function() {
+        return Time.zeroPad(this.getMinutes());
+      },
+      p: function() {
+        if (this.getHours() < 12) {
+          return 'AM';
+        } else {
+          return 'PM';
+        }
+      },
+      P: function() {
+        if (this.getHours() < 12) {
+          return 'am';
+        } else {
+          return 'pm';
+        }
+      },
+      S: function() {
+        return Time.zeroPad(this.getSeconds());
+      },
+      y: function() {
+        return this.getFullYear() - 2000;
+      }
     }
   };
 

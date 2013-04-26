@@ -20,10 +20,13 @@ module.exports = (grunt) ->
           'src/General/Config.coffee'
           'src/General/Globals.coffee'
           'src/General/lib/*.coffee'
-          'src/General/Get.coffee'
+          'src/General/Header.coffee'
           'src/General/Build.coffee'
+          'src/General/Get.coffee'
+          'src/General/UI.coffee'
           'src/Filtering/**/*'
           'src/Quotelinks/**/*'
+          'src/Linkification/**/*'
           'src/Posting/**/*'
           'src/Images/**/*'
           'src/Menu/**/*'
@@ -45,7 +48,7 @@ module.exports = (grunt) ->
         files:
           'builds/crx/manifest.json': 'src/General/meta/manifest.json'
           'builds/crx/script.js': [
-            'src/banner.js'
+            'src/General/meta/banner.js'
             'tmp-<%= pkg.type %>/script.js'
           ]
 
@@ -70,7 +73,7 @@ module.exports = (grunt) ->
 
     copy:
       crx:
-        src:    'src/img/*.png'
+        src:    'src/General/img/*.png'
         dest:   'builds/crx/'
         expand:  true
         flatten: true

@@ -361,13 +361,13 @@ Main =
     Main.thisPageIsLegit
 
   css: """
-  <%= grunt.file.read('src/css/style.css') %>
-  <%= grunt.file.read('src/css/yotsuba.css') %>
-  <%= grunt.file.read('src/css/yotsuba-b.css') %>
-  <%= grunt.file.read('src/css/futaba.css') %>
-  <%= grunt.file.read('src/css/burichan.css') %>
-  <%= grunt.file.read('src/css/tomorrow.css') %>
-  <%= grunt.file.read('src/css/photon.css') %>
+  <%= grunt.file.read('src/General/css/style.css') %>
+  <%= grunt.file.read('src/General/css/yotsuba.css') %>
+  <%= grunt.file.read('src/General/css/yotsuba-b.css') %>
+  <%= grunt.file.read('src/General/css/futaba.css') %>
+  <%= grunt.file.read('src/General/css/burichan.css') %>
+  <%= grunt.file.read('src/General/css/tomorrow.css') %>
+  <%= grunt.file.read('src/General/css/photon.css') %>
   """
 
 Main.init()
