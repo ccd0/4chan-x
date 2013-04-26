@@ -1291,6 +1291,9 @@ ThreadHiding =
       # Was cleaned just now.
       ThreadHiding.cleanCatalog hiddenThreadsOnCatalog
 
+    unless Object.keys(hiddenThreads).length
+      ThreadHiding.db.delete boardID: g.BOARD.ID
+      return
     ThreadHiding.db.set
       boardID: g.BOARD.ID
       val: hiddenThreads
