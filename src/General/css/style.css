@@ -89,6 +89,9 @@ a[href="javascript:;"] {
 #navlinks, #updater, #thread-stats {
   z-index: 40;
 }
+.fixed #header-bar.autohide {
+  z-index: 35;
+}
 #qr {
   z-index: 30;
 }
