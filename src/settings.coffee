@@ -508,7 +508,7 @@ Settings =
         Settings[key].call input
       return
 
-    $.on $('input[name=Interval]', section), 'input', ThreadUpdater.cb.interval
+    $.on $('input[name=Interval]', section), 'change', ThreadUpdater.cb.interval
     $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
     $.on $.id('apply-css'), 'click', Settings.usercss
   boardnav: ->

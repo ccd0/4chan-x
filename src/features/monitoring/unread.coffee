@@ -15,26 +15,34 @@ Unread =
   node: ->
     Unread.thread = @
     Unread.title  = d.title
-    posts = []
-    for ID, post of @posts
-      posts.push post if post.isReply
     Unread.lastReadPost = Unread.db.get
       boardID: @board.ID
       threadID: @ID
       defaultValue: 0
-    Unread.addPosts posts
+    $.on d, '4chanXInitFinished',      Unread.ready
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
     $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
     $.on window, 'load',               Unread.scroll  if Conf['Scroll to Last Read Post']
+
+  ready: ->
+    $.off d, '4chanXInitFinished', Unread.ready
+    posts = []
+    for ID, post of Unread.thread.posts
+      posts.push post if post.isReply
+    Unread.addPosts posts
 
   scroll: ->
     # Let the header's onload callback handle it.
     return if (hash = location.hash.match /\d+/) and hash[0] of Unread.thread.posts
     if Unread.posts.length
       # Scroll to before the first unread post.
+      prevID = 0
       while root = $.x 'preceding-sibling::div[contains(@class,"postContainer")][1]', Unread.posts[0].nodes.root
-        break unless (Get.postFromRoot root).isHidden
+        post = Get.postFromRoot root
+        break if prevID is post.ID
+        prevID = post.ID
+        break unless post.isHidden
       root.scrollIntoView false
       return
     # Scroll to the last read post.
