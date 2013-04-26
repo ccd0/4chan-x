@@ -475,7 +475,7 @@ Settings =
     """
     items = {}
     inputs = {}
-    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'sageEmoji', 'emojiPos', 'usercss', 'Interval']
+    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'sageEmoji', 'emojiPos', 'usercss']
       input = $ "[name=#{name}]", section
       items[name]  = Conf[name]
       inputs[name] = input
@@ -484,6 +484,14 @@ Settings =
       else
         'input'
       $.on input, event, $.cb.value
+
+    intervalItems = {}
+    intervalInputs = {}
+    for name in ['Interval']
+      intervalInput = $ "[name=#{name}]", section
+      intervalItems[name]  = Conf[name]
+      intervalInputs[name] = input
+      $.on intervalInput, 'input', $.cb.value
 
     # Archiver
     archiver = $ 'select[name=archiver]', section

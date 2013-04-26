@@ -9360,12 +9360,12 @@
       return $.on(sauce, 'change', $.cb.value);
     },
     advanced: function(section) {
-      var archiver, event, input, inputs, items, name, toSelect, _i, _j, _len, _len1, _ref;
+      var archiver, event, input, inputs, intervalInput, intervalInputs, intervalItems, items, name, toSelect, _i, _j, _k, _len, _len1, _len2, _ref, _ref1;
 
       section.innerHTML = "<fieldset>\n  <legend>Archiver</legend>\n  Select an Archiver for this board:\n  <select name=archiver></select>\n</fieldset>\n<fieldset>\n  <legend>Custom Board Navigation</span></legend>\n  <div><input name=boardnav class=field spellcheck=false></div>\n  <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>\n  <div>\n    For example:<br>\n    <code>[ toggle-all ] [current-title] [g-title / a-title / jp-title] [x / wsg / h] [t-text:\"Piracy\"]</code><br>\n    will give you<br>\n    <code>[ + ] [Technology] [Technology / Anime & Manga / Otaku Culture] [x / wsg / h] [Piracy]</code><br>\n    if you are on /g/.\n  </div>\n  <div>Board link: <code>board</code></div>\n  <div>Title link: <code>board-title</code></div>\n  <div>Board link (Replace with title when on that board): <code>board-replace</code></div>\n  <div>Full text link: <code>board-full</code></div>\n  <div>Custom text link: <code>board-text:\"VIP Board\"</code></div>\n  <div>Index-only link: <code>board-index</code></div>\n  <div>Catalog-only link: <code>board-catalog</code></div>\n  <div>Combinations are possible: <code>board-index-text:\"VIP Index\"</code></div>\n  <div>Full board list toggle: <code>toggle-all</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Time Formatting <span class=warning " + (Conf['Time Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>\n  <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>\n  <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>\n  <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>\n  <div>Year: <code>%y</code></div>\n  <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>\n  <div>Minute: <code>%M</code></div>\n  <div>Second: <code>%S</code></div>\n</fieldset>\n\n<fieldset>\n  <legend>Quote Backlinks formatting <span class=warning " + (Conf['Quote Backlinks'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>\n</fieldset>\n\n<fieldset>\n  <legend>File Info Formatting <span class=warning " + (Conf['File Info Formatting'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>\n  <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>\n  <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>\n  <div>Spoiler indicator: <code>%p</code></div>\n  <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>\n  <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>\n</fieldset>\n\n<fieldset>\n  <legend>Unread Favicon <span class=warning " + (Conf['Unread Favicon'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <select name=favicon>\n    <option value=ferongr>ferongr</option>\n    <option value=xat->xat-</option>\n    <option value=Mayhem>Mayhem</option>\n    <option value=Original>Original</option>\n  </select>\n  <span class=favicon-preview></span>\n</fieldset>\n\n<fieldset>\n  <legend>Emoji <span class=warning " + (Conf['Emoji'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div>\n    Sage Icon: <select name=sageEmoji>\n      <option value=\"4chan SS\">4chan SS</option>\n      <option value=\"appchan\">appchan</option>\n    </select>\n    <span class=sage-icon-preview></span>\n  </div>\n  <div>\n    Position: <select name=emojiPos>\n      <option value=\"before\">Before</option>\n      <option value=\"after\">After</option>\n    </select>\n  </div>\n</fieldset>\n\n<fieldset>\n  <legend>Thread Updater <span class=warning " + (Conf['Thread Updater'] ? 'hidden' : '') + ">is disabled.</span></legend>\n  <div>\n    Interval: <input name=Interval value=" + Conf['Interval'] + "\n  </div>\n</fieldset>\n\n<fieldset>\n  <legend>\n    <label><input type=checkbox name='Custom CSS' " + (Conf['Custom CSS'] ? 'checked' : '') + "> Custom CSS</label>\n  </legend>\n  <button id=apply-css>Apply CSS</button>\n  <textarea name=usercss class=field spellcheck=false " + (Conf['Custom CSS'] ? '' : 'disabled') + "></textarea>\n</fieldset>";
       items = {};
       inputs = {};
-      _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'sageEmoji', 'emojiPos', 'usercss', 'Interval'];
+      _ref = ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'sageEmoji', 'emojiPos', 'usercss'];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         name = _ref[_i];
         input = $("[name=" + name + "]", section);
@@ -9374,13 +9374,23 @@
         event = ['favicon', 'usercss', 'sageEmoji', 'emojiPos'].contains(name) ? 'change' : 'input';
         $.on(input, event, $.cb.value);
       }
+      intervalItems = {};
+      intervalInputs = {};
+      _ref1 = ['Interval'];
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        name = _ref1[_j];
+        intervalInput = $("[name=" + name + "]", section);
+        intervalItems[name] = Conf[name];
+        intervalInputs[name] = input;
+        $.on(intervalInput, 'input', $.cb.value);
+      }
       archiver = $('select[name=archiver]', section);
       toSelect = Redirect.select(g.BOARD.ID);
       if (!toSelect[0]) {
         toSelect = ['No Archive Available'];
       }
-      for (_j = 0, _len1 = toSelect.length; _j < _len1; _j++) {
-        name = toSelect[_j];
+      for (_k = 0, _len2 = toSelect.length; _k < _len2; _k++) {
+        name = toSelect[_k];
         $.add(archiver, $.el('option', {
           textContent: name
         }));
