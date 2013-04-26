@@ -207,6 +207,7 @@ Header =
     Header.headerToggler.checked = hide
     $.event 'CloseMenu'
     (if hide then $.addClass else $.rmClass) Header.bar, 'autohide'
+    (if hide then $.addClass else $.rmClass) doc, 'autohide'
 
   toggleBarVisibility: (e) ->
     return if e.type is 'mousedown' and e.button isnt 0 # not LMB

@@ -202,6 +202,6 @@ module.exports = (grunt) ->
     # i is the number of #s for markdown.
     version = []
     version.length = +i + 1
-    version = version.join('#') + ' ' + pkg.version + ' *(' + grunt.template.today('yyyy-mm-dd') + ')*'
+    version = version.join('#') + ' ' + pkg.version + ' - ' + grunt.template.today('yyyy-mm-dd')
     grunt.file.write 'CHANGELOG.md', version + '\n' + grunt.file.read('CHANGELOG.md')
     grunt.log.ok     'Changelog updated for v' + pkg.version + '.'

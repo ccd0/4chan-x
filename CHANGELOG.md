@@ -1,4 +1,11 @@
-mayhemydg:
+seaweedchan:
+- Fix emoji and favicon previews not updating on change.
+
+### 1.1.1 - 2013-04-26
+zixaphir:
+- Fix script on Opera
+
+MayhemYDG:
 - Minor fixes.
 - Chrome only: Due to technical limitations, Filter lists and Custom CSS will not by synchronized across devices anymore.
 

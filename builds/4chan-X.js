@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         4chan X
-// @version      1.1.0
+// @version      1.1.1
 // @namespace    4chan-X
 // @description  Cross-browser userscript for maximum lurking on 4chan.
 // @license      MIT; https://github.com/seaweedchan/4chan-x/blob/master/LICENSE 
@@ -18,11 +18,13 @@
 // @icon         data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAACVBMVEUAAGcAAABmzDNZt9VtAAAAAXRSTlMAQObYZgAAAHFJREFUKFOt0LENACEIBdBv4Qju4wgWanEj3D6OcIVMKaitYHEU/jwTCQj8W75kiVCSBvdQ5/AvfVHBin11BgdRq3ysBgfwBDRrj3MCIA+oAQaku/Q1cNctrAmyDl577tOThYt/Y1RBM4DgOHzM0HFTAyLukH/cmRnqAAAAAElFTkSuQmCC
 // ==/UserScript==
 /*
-* 4chan X - Version 1.1.0 - 2013-04-26
+* 4chan X - Version 1.1.1 - 2013-04-26
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
 *
+* Appchan X Copyright © 2013-2013 Zixaphir <zixaphirmoxphar@gmail.com>
+* http://zixaphir.github.io/appchan-x/ 
 * 4chan x Copyright © 2009-2011 James Campos <james.r.campos@gmail.com>
 * https://github.com/aeosynth/4chan-x
 * 4chan x Copyright © 2012-2013 Nicolas Stepien <stepien.nicolas@gmail.com>
@@ -31,6 +33,8 @@
 * http://seaweedchan.github.io/4chan-x/
 * 4chan x Copyright © 2012-2013 ihavenoface
 * http://ihavenoface.github.io/4chan-x/
+* 4chan SS Copyright © 2011-2013 Ahodesuka
+* https://github.com/ahodesuka/4chan-Style-Script/ 
 *
 * Permission is hereby granted, free of charge, to any person
 * obtaining a copy of this software and associated documentation
@@ -297,7 +301,7 @@
   doc = d.documentElement;
 
   g = {
-    VERSION: '1.1.0',
+    VERSION: '1.1.1',
     NAMESPACE: '4chan X.',
     boards: {},
     threads: {},
@@ -5111,7 +5115,8 @@
     setBarVisibility: function(hide) {
       Header.headerToggler.checked = hide;
       $.event('CloseMenu');
-      return (hide ? $.addClass : $.rmClass)(Header.bar, 'autohide');
+      (hide ? $.addClass : $.rmClass)(Header.bar, 'autohide');
+      return (hide ? $.addClass : $.rmClass)(doc, 'autohide');
     },
     toggleBarVisibility: function(e) {
       var hide, message;
