@@ -1,3 +1,6 @@
+seaweedchan:
+- Fix emoji and favicon previews not updating on change.
+
 ### 1.1.1 - 2013-04-26
 zixaphir:
 - Fix script on Opera
