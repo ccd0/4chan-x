@@ -4142,10 +4142,6 @@ ThreadUpdater =
     ThreadUpdater.cb.online()
     $.add d.body, ThreadUpdater.dialog
 
-  ###
-  http://freesound.org/people/pierrecartoons1979/sounds/90112/
-  cc-by-nc-3.0
-  ###
   beep: 'data:audio/wav;base64,<%= grunt.file.read("audio/beep.wav", {encoding: "base64"}) %>'
 
   cb:

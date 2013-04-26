@@ -23,7 +23,10 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ---
 
-Contains code from the following repositories:
+Contains data from external sources:
+
+audio/beep.wav from http://freesound.org/people/pierrecartoons1979/sounds/90112/
+  cc-by-nc-3.0
 
 4chan/4chan-JS (https://github.com/4chan/4chan-JS)
   license: https://github.com/4chan/4chan-JS/blob/master/LICENSE
