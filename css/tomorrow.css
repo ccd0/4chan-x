@@ -3,9 +3,6 @@
   background-color: #282A2E;
   border-color: #111;
 }
-:root.tomorrow .field {
-  font-family: arial, helvetica, sans-serif;
-}
 :root.tomorrow .field:focus {
   border-color: #000;
 }
