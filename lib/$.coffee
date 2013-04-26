@@ -147,21 +147,20 @@ $.open = do ->
   else
     (URL) -> window.open URL, '_blank'
 $.debounce = (wait, fn) ->
-  timeout = null
-  that    = null
-  args    = null
-  exec    = ->
+  lastCall = 0
+  timeout  = null
+  that     = null
+  args     = null
+  exec = ->
+    lastCall = Date.now()
     fn.apply that, args
-    timeout = null
   ->
     args = arguments
     that = this
-    if timeout
-      # stop current reset
-      clearTimeout timeout
-    else
-      exec()
-
+    if lastCall < Date.now() - wait
+      return exec()
+    # stop current reset
+    clearTimeout timeout
     # after wait, let next invocation execute immediately
     timeout = setTimeout exec, wait
 $.queueTask = do ->
@@ -235,7 +234,7 @@ $.get = (key, val, cb) ->
 $.set = do ->
   items = {}
 
-  set = $.debounce 500, ->
+  set = $.debounce $.SECOND, ->
     try
       chrome.storage.sync.set items
       items = {}

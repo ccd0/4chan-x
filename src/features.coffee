@@ -3942,9 +3942,9 @@ Unread =
     Unread.readArray Unread.postsQuotingYou
     Unread.update() if e
 
-  saveLastReadPost: $.debounce 2 * $.SECOND, ->
+  saveLastReadPost: ->
     Unread.db.set
-      boardID: Unread.thread.board.ID
+      boardID:  Unread.thread.board.ID
       threadID: Unread.thread.ID
       val: Unread.lastReadPost
 
