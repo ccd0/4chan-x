@@ -182,6 +182,7 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'release', [
     'default'
+    'compress:crx'
     'shell:commit'
     'shell:push'
   ]
