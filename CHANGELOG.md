@@ -1,8 +1,12 @@
 seaweedchan:
 - Fix emoji and favicon previews not updating on change.
+- Fix issue with draggong thread watcher
 
 MayhemYDG:
 - Fix bug where a thread would freeze on load.
+
+zixaphir:
+- Fix preview with favicons and emoji
 
 ### 1.1.1 - 2013-04-26
 zixaphir:
