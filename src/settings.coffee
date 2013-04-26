@@ -461,7 +461,7 @@ Settings =
       <fieldset>
         <legend>Thread Updater <span class=warning #{if Conf['Thread Updater'] then 'hidden' else ''}>is disabled.</span></legend>
         <div>
-          Interval: <input name=Interval value=#{Conf['Interval']}
+          Interval: <input type=number name=Interval class=field min=1 value=#{Conf['Interval']}>
         </div>
       </fieldset>
 
@@ -475,7 +475,7 @@ Settings =
     """
     items = {}
     inputs = {}
-    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'sageEmoji', 'emojiPos', 'usercss', 'Interval']
+    for name in ['boardnav', 'time', 'backlink', 'fileInfo', 'favicon', 'sageEmoji', 'emojiPos', 'usercss']
       input = $ "[name=#{name}]", section
       items[name]  = Conf[name]
       inputs[name] = input
@@ -501,11 +501,11 @@ Settings =
 
     $.get items, (items) ->
       for key, val of items
+        continue if ['usercss', 'emojiPos', 'archiver'].contains key
         input = inputs[key]
         input.value = val
-        unless ['usercss', 'emojiPos', 'archiver', 'Interval'].contains key
-          $.on input, event, Settings[key]
-          Settings[key].call input
+        $.on input, event, Settings[key]
+        Settings[key].call input
       return
 
     $.on $('input[name=Interval]', section), 'input', ThreadUpdater.cb.interval

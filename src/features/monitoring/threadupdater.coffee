@@ -107,7 +107,8 @@ ThreadUpdater =
       else
         clearTimeout ThreadUpdater.timeoutID
     interval: ->
-      val = parseInt @value, 10
+      val = +@value
+      if val < 1 then val = 1
       ThreadUpdater.interval = @value = val
       $.cb.value.call @
     load: ->
