@@ -1,0 +1,52 @@
+/* General */
+:root.yotsuba-b .dialog {
+  background-color: #D6DAF0;
+  border-color: #B7C5D9;
+}
+:root.yotsuba-b .field:focus {
+  border-color: #98E;
+}
+
+/* Header */
+:root.yotsuba-b #header-bar, :root.yotsuba-b #notifications {
+  font-size: 9pt;
+  color: #89A;
+}
+:root.yotsuba-b #header-bar a, :root.yotsuba-b #notifications a {
+  color: #34345C;
+}
+
+/* Settings */
+:root.yotsuba-b #fourchanx-settings fieldset {
+  border-color: #B7C5D9;
+}
+
+/* Quote */
+:root.yotsuba-b .backlink.deadlink {
+  color: #34345C !important;
+}
+:root.yotsuba-b .inline {
+  border-color: #B7C5D9;
+  background-color: rgba(255, 255, 255, .14);
+}
+
+/* QR */
+.yotsuba-b #dump-list::-webkit-scrollbar-thumb {
+  background-color: #D6DAF0;
+  border-color: #B7C5D9;
+}
+:root.yotsuba-b .qr-preview {
+  background-color: rgba(0, 0, 0, .15);
+}
+
+/* Menu */
+:root.yotsuba-b #menu {
+  color: #000;
+}
+:root.yotsuba-b .entry {
+  border-bottom: 1px solid #B7C5D9;
+  font-size: 10pt;
+}
+:root.yotsuba-b .focused.entry {
+  background: rgba(255, 255, 255, .33);
+}
