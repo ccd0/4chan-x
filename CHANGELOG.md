@@ -1,3 +1,7 @@
+mayhemydg:
+- Minor fixes.
+- Chrome only: Due to technical limitations, Filter lists and Custom CSS will not by synchronized across devices anymore.
+
 seaweedchan:
 - Allow thread watcher to load on catalog
 

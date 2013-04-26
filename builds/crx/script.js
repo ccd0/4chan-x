@@ -1,9 +1,9 @@
 (function() {
   var $, $$, Anonymize, ArchiveLink, Board, Build, CatalogLinks, Clone, Conf, Config, CustomCSS, DataBoard, DataBoards, DeleteLink, DownloadLink, Emoji, ExpandComment, ExpandThread, FappeTyme, Favicon, FileInfo, Filter, Fourchan, Get, Header, IDColor, ImageExpand, ImageHover, ImageReplace, Keybinds, Linkify, Main, Menu, Nav, Notification, PSAHiding, Polyfill, Post, PostHiding, QR, QuoteBacklink, QuoteCT, QuoteInline, QuoteOP, QuotePreview, QuoteStrikeThrough, QuoteThreading, QuoteYou, Quotify, Recursive, Redirect, RelativeDates, RemoveSpoilers, Report, ReportLink, RevealSpoilers, Sauce, Settings, Thread, ThreadExcerpt, ThreadHiding, ThreadStats, ThreadUpdater, ThreadWatcher, Time, UI, Unread, c, d, doc, g,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
     __slice = [].slice,
     __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   Config = {
     main: {
@@ -533,41 +533,28 @@
     }));
   };
 
-  $.open = (function() {
-    if (typeof GM_openInTab !== "undefined" && GM_openInTab !== null) {
-      return function(URL) {
-        var a;
-
-        a = $.el('a', {
-          href: URL
-        });
-        return GM_openInTab(a.href);
-      };
-    } else {
-      return function(URL) {
-        return window.open(URL, '_blank');
-      };
-    }
-  })();
+  $.open = function(URL) {
+    return window.open(URL, '_blank');
+  };
 
   $.debounce = function(wait, fn) {
-    var args, exec, that, timeout;
+    var args, exec, lastCall, that, timeout;
 
+    lastCall = 0;
     timeout = null;
     that = null;
     args = null;
     exec = function() {
-      fn.apply(that, args);
-      return timeout = null;
+      lastCall = Date.now();
+      return fn.apply(that, args);
     };
     return function() {
       args = arguments;
       that = this;
-      if (timeout) {
-        clearTimeout(timeout);
-      } else {
-        exec();
+      if (lastCall < Date.now() - wait) {
+        return exec();
       }
+      clearTimeout(timeout);
       return timeout = setTimeout(exec, wait);
     };
   };
@@ -650,12 +637,14 @@
     return item;
   };
 
+  $.localKeys = ['name', 'uniqueID', 'tripcode', 'capcode', 'email', 'subject', 'comment', 'flag', 'filename', 'dimensions', 'filesize', 'MD5', 'usercss'];
+
   $["delete"] = function(keys) {
     return chrome.storage.sync.remove(keys);
   };
 
   $.get = function(key, val, cb) {
-    var items;
+    var count, done, items, localItems, syncItems;
 
     if (typeof cb === 'function') {
       items = $.item(key, val);
@@ -663,15 +652,69 @@
       items = key;
       cb = val;
     }
-    return chrome.storage.sync.get(items, cb);
+    localItems = null;
+    syncItems = null;
+    for (key in items) {
+      val = items[key];
+      if (__indexOf.call($.localKeys, key) >= 0) {
+        (localItems || (localItems = {}))[key] = val;
+      } else {
+        (syncItems || (syncItems = {}))[key] = val;
+      }
+    }
+    items = {};
+    count = 0;
+    done = function(item) {
+      $.extend(items, item);
+      if (!--count) {
+        return cb(items);
+      }
+    };
+    if (localItems) {
+      count++;
+      chrome.storage.local.get(localItems, done);
+    }
+    if (syncItems) {
+      count++;
+      return chrome.storage.sync.get(syncItems, done);
+    }
   };
 
-  $.set = function(key, val) {
-    var items;
+  $.set = (function() {
+    var items, localItems, set;
 
-    items = typeof key === 'string' ? $.item(key, val) : key;
-    return chrome.storage.sync.set(items);
-  };
+    items = {};
+    localItems = {};
+    set = $.debounce($.SECOND, function() {
+      var err, key, _i, _len, _ref;
+
+      _ref = $.localKeys;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        key = _ref[_i];
+        if (key in items) {
+          (localItems || (localItems = {}))[key] = items[key];
+          delete items[key];
+        }
+      }
+      try {
+        chrome.storage.local.set(localItems);
+        chrome.storage.sync.set(items);
+        items = {};
+        return localItems = {};
+      } catch (_error) {
+        err = _error;
+        return c.error(err);
+      }
+    });
+    return function(key, val) {
+      if (typeof key === 'string') {
+        items[key] = val;
+      } else {
+        $.extend(items, key);
+      }
+      return set();
+    };
+  })();
 
   $$ = function(selector, root) {
     if (root == null) {
@@ -1317,7 +1360,7 @@
         });
       }
       now = Date.now();
-      if ((this.data.lastChecked || 0) < now - 12 * $.HOUR) {
+      if ((this.data.lastChecked || 0) < now - 2 * $.HOUR) {
         this.data.lastChecked = now;
         for (boardID in this.data.boards) {
           this.ajaxClean(boardID);
@@ -8019,7 +8062,7 @@
           QR.cooldown.auto = false;
           QR.status();
           return QR.error($.el('span', {
-            innerHTML: 'Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.'
+            innerHTML: "Connection error. You may have been <a href=//www.4chan.org/banned target=_blank>banned</a>.\n[<a href=\"https://github.com/MayhemYDG/4chan-x/wiki/FAQ#what-does-connection-error-you-may-have-been-banned-mean\" target=_blank>FAQ</a>]"
           }));
         }
       };
