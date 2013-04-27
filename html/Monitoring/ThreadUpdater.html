@@ -1,0 +1,17 @@
+<div class="move">
+  <span id="update-status"></span>&nbsp;<span id="update-timer"></span>
+</div>
+#{html}
+<div>
+  <label title="Controls whether *this* thread automatically updates or not">
+    <input type="checkbox" name="Auto Update This" #{if Conf['Auto Update'] then "checked" else ""}> Auto Update This
+  </label>
+</div>
+<div>
+  <label>
+    <input type="number" name="Interval" class="field" min="5" value="#{Conf['Interval']}"> Refresh rate (s)
+  </label>
+</div>
+<div>
+  <input value="Update" type="button" name="Update">
+</div>

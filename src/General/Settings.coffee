@@ -60,19 +60,7 @@ Settings =
     $.event 'CloseMenu'
 
     html = """
-      <div id=fourchanx-settings class=dialog>
-        <nav>
-          <div class=sections-list></div>
-          <div class=credits>
-            <a href='<%= meta.page %>' target=_blank><%= meta.name %></a> |
-            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CHANGELOG.md' target=_blank>#{g.VERSION}</a> |
-            <a href='<%= meta.repo %>blob/<%= meta.mainBranch %>/CONTRIBUTING.md#reporting-bugs-and-suggestions' target=_blank>Issues</a> |
-            <a href=javascript:; class=close title=Close>×</a>
-          </div>
-        </nav>
-        <hr>
-        <div class=section-container><section></section></div>
-      </div>
+    <%= grunt.file.read('html/General/Settings.html').replace(/>\s+</g, '><').trim() %>
     """
 
     Settings.dialog = overlay = $.el 'div',
@@ -124,12 +112,7 @@ Settings =
 
   main: (section) ->
     section.innerHTML = """
-      <div class=imp-exp>
-        <button class=export>Export Settings</button>
-        <button class=import>Import Settings</button>
-        <input type=file style='visibility:hidden'>
-      </div>
-      <p class=imp-exp-result></p>
+    <%= grunt.file.read('html/General/Settings-section-Main.html').replace(/>\s+</g, '><').trim() %>
     """
     $.on $('.export', section), 'click',  Settings.export
     $.on $('.import', section), 'click',  Settings.import
@@ -315,22 +298,7 @@ Settings =
 
   filter: (section) ->
     section.innerHTML = """
-      <select name=filter>
-        <option value=guide>Guide</option>
-        <option value=name>Name</option>
-        <option value=uniqueID>Unique ID</option>
-        <option value=tripcode>Tripcode</option>
-        <option value=capcode>Capcode</option>
-        <option value=email>E-mail</option>
-        <option value=subject>Subject</option>
-        <option value=comment>Comment</option>
-        <option value=flag>Flag</option>
-        <option value=filename>Filename</option>
-        <option value=dimensions>Image dimensions</option>
-        <option value=filesize>Filesize</option>
-        <option value=MD5>Image MD5</option>
-      </select>
-      <div></div>
+    <%= grunt.file.read('html/General/Settings-section-Filter.html').replace(/>\s+</g, '><').trim() %>
     """
     select = $ 'select', section
     $.on select, 'change', Settings.selectFilter
@@ -349,49 +317,12 @@ Settings =
       $.add div, ta
       return
     div.innerHTML = """
-      <div class=warning #{if Conf['Filter'] then 'hidden' else ''}><code>Filter</code> is disabled.</div>
-      <p>
-        Use <a href=https://developer.mozilla.org/en/JavaScript/Guide/Regular_Expressions>regular expressions</a>, one per line.<br>
-        Lines starting with a <code>#</code> will be ignored.<br>
-        For example, <code>/weeaboo/i</code> will filter posts containing the string `<code>weeaboo</code>`, case-insensitive.<br>
-        MD5 filtering uses exact string matching, not regular expressions.
-      </p>
-      <ul>You can use these settings with each regular expression, separate them with semicolons:
-        <li>
-          Per boards, separate them with commas. It is global if not specified.<br>
-          For example: <code>boards:a,jp;</code>.
-        </li>
-        <li>
-          Filter OPs only along with their threads (`only`), replies only (`no`), or both (`yes`, this is default).<br>
-          For example: <code>op:only;</code>, <code>op:no;</code> or <code>op:yes;</code>.
-        </li>
-        <li>
-          Overrule the `Show Stubs` setting if specified: create a stub (`yes`) or not (`no`).<br>
-          For example: <code>stub:yes;</code> or <code>stub:no;</code>.
-        </li>
-        <li>
-          Highlight instead of hiding. You can specify a class name to use with a userstyle.<br>
-          For example: <code>highlight;</code> or <code>highlight:wallpaper;</code>.
-        </li>
-        <li>
-          Highlighted OPs will have their threads put on top of board pages by default.<br>
-          For example: <code>top:yes;</code> or <code>top:no;</code>.
-        </li>
-      </ul>
+    <%= grunt.file.read('html/General/Settings-section-Filter-guide.html').replace(/>\s+</g, '><').trim() %>
     """
 
   sauce: (section) ->
     section.innerHTML = """
-      <div class=warning #{if Conf['Sauce'] then 'hidden' else ''}><code>Sauce</code> is disabled.</div>
-      <div>Lines starting with a <code>#</code> will be ignored.</div>
-      <div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div>
-      <ul>These parameters will be replaced by their corresponding values:
-        <li><code>%TURL</code>: Thumbnail URL.</li>
-        <li><code>%URL</code>: Full image URL.</li>
-        <li><code>%MD5</code>: MD5 hash.</li>
-        <li><code>%board</code>: Current board.</li>
-      </ul>
-      <textarea name=sauces class=field spellcheck=false></textarea>
+    <%= grunt.file.read('html/General/Settings-section-Sauce.html').replace(/>\s+</g, '><').trim() %>
     """
     sauce = $ 'textarea', section
     $.get 'sauces', Conf['sauces'], (item) ->
@@ -400,66 +331,7 @@ Settings =
 
   rice: (section) ->
     section.innerHTML = """
-      <fieldset>
-        <legend>Custom Board Navigation <span class=warning #{if Conf['Custom Board Navigation'] then 'hidden' else ''}>is disabled.</span></legend>
-        <div><input name=boardnav class=field spellcheck=false></div>
-        <div>In the following, <code>board</code> can translate to a board ID (<code>a</code>, <code>b</code>, etc...), the current board (<code>current</code>), or the Status/Twitter link (<code>status</code>, <code>@</code>).</div>
-        <div>Board link: <code>board</code></div>
-        <div>Title link: <code>board-title</code></div>
-        <div>Board link (Replace with title when on that board): <code>board-replace</code></div>
-        <div>Full text link: <code>board-full</code></div>
-        <div>Custom text link: <code>board-text:"VIP Board"</code></div>
-        <div>Index-only link: <code>board-index</code></div>
-        <div>Catalog-only link: <code>board-catalog</code></div>
-        <div>Combinations are possible: <code>board-index-text:"VIP Index"</code></div>
-        <div>Full board list toggle: <code>toggle-all</code></div>
-      </fieldset>
-
-      <fieldset>
-        <legend>Time Formatting <span class=warning #{if Conf['Time Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
-        <div><input name=time class=field spellcheck=false>: <span class=time-preview></span></div>
-        <div>Supported <a href=//en.wikipedia.org/wiki/Date_%28Unix%29#Formatting>format specifiers</a>:</div>
-        <div>Day: <code>%a</code>, <code>%A</code>, <code>%d</code>, <code>%e</code></div>
-        <div>Month: <code>%m</code>, <code>%b</code>, <code>%B</code></div>
-        <div>Year: <code>%y</code></div>
-        <div>Hour: <code>%k</code>, <code>%H</code>, <code>%l</code>, <code>%I</code>, <code>%p</code>, <code>%P</code></div>
-        <div>Minute: <code>%M</code></div>
-        <div>Second: <code>%S</code></div>
-      </fieldset>
-
-      <fieldset>
-        <legend>Quote Backlinks formatting <span class=warning #{if Conf['Quote Backlinks'] then 'hidden' else ''}>is disabled.</span></legend>
-        <div><input name=backlink class=field spellcheck=false>: <span class=backlink-preview></span></div>
-      </fieldset>
-
-      <fieldset>
-        <legend>File Info Formatting <span class=warning #{if Conf['File Info Formatting'] then 'hidden' else ''}>is disabled.</span></legend>
-        <div><input name=fileInfo class=field spellcheck=false>: <span class='fileText file-info-preview'></span></div>
-        <div>Link: <code>%l</code> (truncated), <code>%L</code> (untruncated), <code>%T</code> (Unix timestamp)</div>
-        <div>Original file name: <code>%n</code> (truncated), <code>%N</code> (untruncated), <code>%t</code> (Unix timestamp)</div>
-        <div>Spoiler indicator: <code>%p</code></div>
-        <div>Size: <code>%B</code> (Bytes), <code>%K</code> (KB), <code>%M</code> (MB), <code>%s</code> (4chan default)</div>
-        <div>Resolution: <code>%r</code> (Displays 'PDF' for PDF files)</div>
-      </fieldset>
-
-      <fieldset>
-        <legend>Unread Tab Icon <span class=warning #{if Conf['Unread Tab Icon'] then 'hidden' else ''}>is disabled.</span></legend>
-        <select name=favicon>
-          <option value=ferongr>ferongr</option>
-          <option value=xat->xat-</option>
-          <option value=Mayhem>Mayhem</option>
-          <option value=Original>Original</option>
-        </select>
-        <span class=favicon-preview></span>
-      </fieldset>
-
-      <fieldset>
-        <legend>
-          <label><input type=checkbox name='Custom CSS' #{if Conf['Custom CSS'] then 'checked' else ''}> Custom CSS</label>
-        </legend>
-        <button id=apply-css>Apply CSS</button>
-        <textarea name=usercss class=field spellcheck=false #{if Conf['Custom CSS'] then '' else 'disabled'}></textarea>
-      </fieldset>
+    <%= grunt.file.read('html/General/Settings-section-Rice.html').replace(/>\s+</g, '><').trim() %>
     """
     items = {}
     inputs = {}
@@ -522,12 +394,7 @@ Settings =
 
   keybinds: (section) ->
     section.innerHTML = """
-      <div class=warning #{if Conf['Keybinds'] then 'hidden' else ''}><code>Keybinds</code> are disabled.</div>
-      <div>Allowed keys: <kbd>a-z</kbd>, <kbd>0-9</kbd>, <kbd>Ctrl</kbd>, <kbd>Shift</kbd>, <kbd>Alt</kbd>, <kbd>Meta</kbd>, <kbd>Enter</kbd>, <kbd>Esc</kbd>, <kbd>Up</kbd>, <kbd>Down</kbd>, <kbd>Right</kbd>, <kbd>Left</kbd>.</div>
-      <div>Press <kbd>Backspace</kbd> to disable a keybind.</div>
-      <table><tbody>
-        <tr><th>Actions</th><th>Keybinds</th></tr>
-      </tbody></table>
+    <%= grunt.file.read('html/General/Settings-section-Keybinds.html').replace(/>\s+</g, '><').trim() %>
     """
     tbody  = $ 'tbody', section
     items  = {}

@@ -717,42 +717,8 @@ QR =
 
   dialog: ->
     dialog = UI.dialog 'qr', 'top:0;right:0;', """
-    <div>
-      <input type=checkbox id=autohide title=Auto-hide>
-      <select data-name=thread title='Create a new thread / Reply'>
-        <option value=new>New thread</option>
-      </select>
-      <span class=move></span>
-      <a href=javascript:; class=close title=Close>×</a>
-    </div>
-    <form>
-      <div class=persona>
-        <input id=dump-button type=button title='Dump list' value=+>
-        <input name=name  data-name=name  title=Name    placeholder=Name    class=field size=1>
-        <input name=email data-name=email title=E-mail  placeholder=E-mail  class=field size=1>
-        <input name=sub   data-name=sub   title=Subject placeholder=Subject class=field size=1>
-      </div>
-      <div id=dump-list-container>
-        <div id=dump-list></div>
-        <a id=add-post href=javascript:; title="Add a post">+</a>
-      </div>
-      <div class=textarea>
-        <textarea data-name=com title=Comment placeholder=Comment class=field></textarea>
-        <span id=char-count></span>
-      </div>
-      <div id=file-n-submit>
-        <input type=submit>
-        <input id=qr-file-button type=button value='Choose files'>
-        <span id=qr-filename-container>
-          <span id=qr-no-file>No selected file</span>
-          <span id=qr-filename></span>
-        </span>
-        <a id=qr-filerm href=javascript:; title='Remove file'>×</a>
-        <input type=checkbox id=qr-file-spoiler title='Spoiler image'>
-      </div>
-      <input type=file multiple>
-    </form>
-    """.replace />\s+</g, '><' # get rid of spaces between elements
+    <%= grunt.file.read('html/Posting/QR.html').replace(/>\s+</g, '><').trim() %>
+    """
 
     QR.nodes = nodes =
       el:         dialog

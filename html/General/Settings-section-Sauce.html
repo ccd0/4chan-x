@@ -1,0 +1,10 @@
+<div class="warning" #{if Conf['Sauce'] then 'hidden' else ''}><code>Sauce</code> is disabled.</div>
+<div>Lines starting with a <code>#</code> will be ignored.</div>
+<div>You can specify a display text by appending <code>;text:[text]</code> to the URL.</div>
+<ul>These parameters will be replaced by their corresponding values:
+  <li><code>%TURL</code>: Thumbnail URL.</li>
+  <li><code>%URL</code>: Full image URL.</li>
+  <li><code>%MD5</code>: MD5 hash.</li>
+  <li><code>%board</code>: Current board.</li>
+</ul>
+<textarea name="sauces" class="field" spellcheck="false"></textarea>

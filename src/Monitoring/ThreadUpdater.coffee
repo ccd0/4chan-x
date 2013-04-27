@@ -8,12 +8,8 @@ ThreadUpdater =
       html   += "<div><label title='#{conf[1]}'><input name='#{name}' type=checkbox #{checked}> #{name}</label></div>"
 
     html = """
-      <div class=move><span id=update-status></span> <span id=update-timer></span></div>
-      #{html}
-      <div><label title='Controls whether *this* thread automatically updates or not'><input type=checkbox name='Auto Update This' #{if Conf['Auto Update'] then 'checked' else ''}> Auto Update This</label></div>
-      <div><label><input type=number name=Interval class=field min=5 value=#{Conf['Interval']}> Refresh rate (s)</label></div>
-      <div><input value='Update' type=button name='Update'></div>
-      """
+    <%= grunt.file.read('html/Monitoring/ThreadUpdater.html').replace(/>\s+</g, '><').trim() %>
+    """
 
     @dialog = UI.dialog 'updater', 'bottom: 0; right: 0;', html
     @timer  = $ '#update-timer',  @dialog

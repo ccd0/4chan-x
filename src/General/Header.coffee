@@ -3,17 +3,8 @@ Header =
     headerEl = $.el 'div',
       id: 'header'
       innerHTML: """
-        <div id=header-bar class=dialog>
-          <span class='menu-button brackets-wrap'><a href=javascript:;><i></i></a></span>
-          <span id=shortcuts class=brackets-wrap></span>
-          <span id=board-list>
-            <span id=custom-board-list></span>
-            <span id=full-board-list hidden></span>
-          </span>
-          <div id=toggle-header-bar title="Toggle the header auto-hiding."></div>
-        </div>
-        <div id=notifications></div>
-      """.replace />\s+</g, '><' # get rid of spaces between elements
+      <%= grunt.file.read('html/General/Header.html').replace(/>\s+</g, '><').trim() %>
+      """
 
     @bar    = $ '#header-bar', headerEl
     @toggle = $ '#toggle-header-bar', @bar
