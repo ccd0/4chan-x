@@ -1,3 +1,4 @@
+- Fix Unread Count taking into account hidden posts.
 - Fix bug where a thread would freeze on load.
 
 ### 3.2.1 - *2013-04-26*

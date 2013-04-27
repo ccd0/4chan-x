@@ -339,18 +339,18 @@ Settings =
       input = $ "[name=#{name}]", section
       items[name]  = Conf[name]
       inputs[name] = input
-      event = if name in ['favicon', 'usercss']
-        'change'
-      else
-        'input'
-      $.on input, event, $.cb.value
+      $.on input, 'change', $.cb.value
     $.get items, (items) ->
       for key, val of items
         input = inputs[key]
         input.value = val
-        unless key in ['usercss']
-          $.on input, event, Settings[key]
-          Settings[key].call input
+        continue if key is 'usercss'
+        event = if key in ['favicon', 'usercss']
+          'change'
+        else
+          'input'
+        $.on input, event, Settings[key]
+        Settings[key].call input
       return
     $.on $('input[name="Custom CSS"]', section), 'change', Settings.togglecss
     $.on $.id('apply-css'), 'click', Settings.usercss
@@ -360,7 +360,7 @@ Settings =
     funk = Time.createFunc @value
     @nextElementSibling.textContent = funk Time, new Date()
   backlink: ->
-    @nextElementSibling.textContent = Conf['backlink'].replace /%id/, '123456789'
+    @nextElementSibling.textContent = @value.replace /%id/, '123456789'
   fileInfo: ->
     data =
       isReply: true
