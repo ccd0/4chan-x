@@ -1,3 +1,4 @@
+### 1.1.2 - 2013-04-26
 seaweedchan:
 - Fix emoji and favicon previews not updating on change.
 - Fix issue with dragging thread watcher
