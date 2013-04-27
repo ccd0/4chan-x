@@ -1,3 +1,6 @@
+seaweedchan:
+- Chrome doesn't get .null, so don't style it
+
 ### 1.1.2 - 2013-04-26
 seaweedchan:
 - Fix emoji and favicon previews not updating on change.

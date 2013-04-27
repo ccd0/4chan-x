@@ -408,7 +408,7 @@ a.hide-announcement {
 .new {
   color: limegreen;
 }
-#update-status:not(.null) {
+#update-status.warning, #update-status.new {
   margin-right: 5px;
 }
 #update-timer {
