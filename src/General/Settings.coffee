@@ -284,7 +284,7 @@ Settings =
 
   filter: (section) ->
     section.innerHTML = """
-    <%= grunt.file.read('src/General/html/Settings/Filter-guide.html').replace(/>\s+</g, '><').trim() %>
+    <%= grunt.file.read('src/General/html/Settings/Filter-select.html').replace(/>\s+</g, '><').trim() %>
     """
     select = $ 'select', section
     $.on select, 'change', Settings.selectFilter
@@ -303,7 +303,7 @@ Settings =
       $.add div, ta
       return
     div.innerHTML = """
-    <%= grunt.file.read('src/General/html/Settings/Filter-select.html').replace(/>\s+</g, '><').trim() %>
+    <%= grunt.file.read('src/General/html/Settings/Filter-guide.html').replace(/>\s+</g, '><').trim() %>
     """
 
   sauce: (section) ->
