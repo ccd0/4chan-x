@@ -28,6 +28,8 @@ ThreadUpdater =
       if input.name is 'Scroll BG'
         $.on input, 'change', ThreadUpdater.cb.scrollBG
         ThreadUpdater.cb.scrollBG()
+      else if input.name is 'Auto Update'
+        $.on input, 'change', ThreadUpdater.update
       subEntries.push el: el
 
     settings = $.el 'span',
@@ -74,7 +76,9 @@ ThreadUpdater =
       if ThreadUpdater.online = navigator.onLine
         ThreadUpdater.outdateCount = 0
         ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
+        
         ThreadUpdater.update()
+
         ThreadUpdater.set 'status', null, null
       else
         ThreadUpdater.set 'timer', null
@@ -106,6 +110,7 @@ ThreadUpdater =
         ThreadUpdater.timeoutID = setTimeout ThreadUpdater.timeout, 1000
       else
         clearTimeout ThreadUpdater.timeoutID
+        ThreadUpdater.set 'timer', 'Update'
     interval: ->
       val = +@value
       if val < 1 then val = 1
@@ -118,7 +123,8 @@ ThreadUpdater =
           g.DEAD = false
           ThreadUpdater.parse JSON.parse(req.response).posts
           ThreadUpdater.lastModified = req.getResponseHeader 'Last-Modified'
-          ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
+          if Conf['Auto Update']
+            ThreadUpdater.set 'timer', ThreadUpdater.getInterval()
         when 404
           g.DEAD = true
           ThreadUpdater.set 'timer', null
@@ -129,8 +135,9 @@ ThreadUpdater =
             404: true
             thread: ThreadUpdater.thread
         else
-          ThreadUpdater.outdateCount++
-          ThreadUpdater.set 'timer',  ThreadUpdater.getInterval()
+          if Conf['Auto Update']
+            ThreadUpdater.outdateCount++
+            ThreadUpdater.set 'timer',  ThreadUpdater.getInterval()
           ###
           Status Code 304: Not modified
           By sending the `If-Modified-Since` header we get a proper status code, and no response.
@@ -188,7 +195,10 @@ ThreadUpdater =
   update: ->
     return unless ThreadUpdater.online
     ThreadUpdater.seconds = 0
-    ThreadUpdater.set 'timer', '...'
+    if Conf['Auto Update']
+      ThreadUpdater.set 'timer', '...'
+    else
+      ThreadUpdater.set 'timer', 'Update'
     if ThreadUpdater.req
       # abort() triggers onloadend, we don't want that.
       ThreadUpdater.req.onloadend = null

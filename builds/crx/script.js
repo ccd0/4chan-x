@@ -1,5 +1,5 @@
 /*
-* 4chan X - Version 1.1.2 - 2013-04-27
+* 4chan X - Version 1.1.2 - 2013-04-28
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -6668,6 +6668,8 @@
         if (input.name === 'Scroll BG') {
           $.on(input, 'change', ThreadUpdater.cb.scrollBG);
           ThreadUpdater.cb.scrollBG();
+        } else if (input.name === 'Auto Update') {
+          $.on(input, 'change', ThreadUpdater.update);
         }
         subEntries.push({
           el: el
@@ -6763,7 +6765,8 @@
         if (ThreadUpdater.online) {
           return ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
         } else {
-          return clearTimeout(ThreadUpdater.timeoutID);
+          clearTimeout(ThreadUpdater.timeoutID);
+          return ThreadUpdater.set('timer', 'Update');
         }
       },
       interval: function() {
@@ -6785,7 +6788,9 @@
             g.DEAD = false;
             ThreadUpdater.parse(JSON.parse(req.response).posts);
             ThreadUpdater.lastModified = req.getResponseHeader('Last-Modified');
-            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            if (Conf['Auto Update']) {
+              ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            }
             break;
           case 404:
             g.DEAD = true;
@@ -6799,8 +6804,10 @@
             });
             break;
           default:
-            ThreadUpdater.outdateCount++;
-            ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            if (Conf['Auto Update']) {
+              ThreadUpdater.outdateCount++;
+              ThreadUpdater.set('timer', ThreadUpdater.getInterval());
+            }
             /*
             Status Code 304: Not modified
             By sending the `If-Modified-Since` header we get a proper status code, and no response.
@@ -6866,7 +6873,11 @@
         return;
       }
       ThreadUpdater.seconds = 0;
-      ThreadUpdater.set('timer', '...');
+      if (Conf['Auto Update']) {
+        ThreadUpdater.set('timer', '...');
+      } else {
+        ThreadUpdater.set('timer', 'Update');
+      }
       if (ThreadUpdater.req) {
         ThreadUpdater.req.onloadend = null;
         ThreadUpdater.req.abort();

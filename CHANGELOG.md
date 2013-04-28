@@ -1,5 +1,6 @@
 seaweedchan:
 - Chrome doesn't get .null, so don't style it
+- Fix count when auto update is disabled and set updater text to "Update"
 
 ### 1.1.2 - 2013-04-26
 seaweedchan:
