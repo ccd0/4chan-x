@@ -1,6 +1,10 @@
 seaweedchan:
 - Chrome doesn't get .null, so don't style it
 - Fix count when auto update is disabled and set updater text to "Update"
+- Remove /v/ and /vg/ redirection. See https://archive.foolz.us/foolz/thread/509388/ for news and how you can donate to bring /v/ and /vg/ archiving back.
+
+MayhemYDG:
+- Fix Unread Count taking into account hidden posts.
 
 ### 1.1.2 - 2013-04-26
 seaweedchan:

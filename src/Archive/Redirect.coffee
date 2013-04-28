@@ -9,7 +9,7 @@ Redirect =
   image: (boardID, filename) ->
     # Do not use g.BOARD, the image url can originate from a cross-quote.
     switch boardID
-      when 'a', 'gd', 'jp', 'm', 'q', 'tg', 'vg', 'vp', 'vr', 'wsg'
+      when 'a', 'gd', 'jp', 'm', 'q', 'tg', 'vp', 'vr', 'wsg'
         "//archive.foolz.us/#{boardID}/full_image/#{filename}"
       when 'u'
         "//nsfw.foolz.us/#{boardID}/full_image/#{filename}"
@@ -61,7 +61,7 @@ Redirect =
   archiver:
     'Foolz':
       base:   'https://archive.foolz.us'
-      boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'v', 'vg', 'vp', 'vr', 'wsg']
+      boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg']
       type:   'foolfuuka'
     'NSFWFoolz':
       base:   'https://nsfw.foolz.us'
