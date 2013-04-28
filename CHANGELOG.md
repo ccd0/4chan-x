@@ -1,3 +1,4 @@
+### 1.1.3 - 2013-04-28
 seaweedchan:
 - Chrome doesn't get .null, so don't style it
 - Fix count when auto update is disabled and set updater text to "Update"

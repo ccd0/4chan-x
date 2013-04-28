@@ -1,5 +1,5 @@
 /*
-* 4chan X - Version 1.1.2 - 2013-04-28
+* 4chan X - Version 1.1.3 - 2013-04-28
 *
 * Licensed under the MIT license.
 * https://github.com/seaweedchan/4chan-x/blob/master/LICENSE
@@ -280,7 +280,7 @@
   doc = d.documentElement;
 
   g = {
-    VERSION: '1.1.2',
+    VERSION: '1.1.3',
     NAMESPACE: '4chan X.',
     boards: {},
     threads: {},
