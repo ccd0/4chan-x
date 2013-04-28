@@ -24,6 +24,10 @@ Keybinds =
       when Conf['Toggle board list']
         if Conf['Custom Board Navigation']
           Header.toggleBoardList()
+      when Conf['Toggle header']
+        unless $('#menu.left')
+          Header.menuButton.click()
+        Header.headerToggler.click()
       when Conf['Open empty QR']
         Keybinds.qr threadRoot
       when Conf['Open QR']

@@ -228,6 +228,7 @@
     usercss: '',
     hotkeys: {
       'Toggle board list': ['Ctrl+b', 'Toggle the full board list.'],
+      'Toggle header': ['Shift+h', 'Toggle the auto-hide option of the header.'],
       'Open empty QR': ['i', 'Open QR without post number inserted.'],
       'Open QR': ['Shift+i', 'Open QR with post number inserted.'],
       'Open settings': ['Alt+o', 'Open Settings.'],
@@ -8278,6 +8279,12 @@
           if (Conf['Custom Board Navigation']) {
             Header.toggleBoardList();
           }
+          break;
+        case Conf['Toggle header']:
+          if (!$('#menu.left')) {
+            Header.menuButton.click();
+          }
+          Header.headerToggler.click();
           break;
         case Conf['Open empty QR']:
           Keybinds.qr(threadRoot);

@@ -437,6 +437,10 @@ http://iqdb.org/?url=%TURL
       'Ctrl+b'
       'Toggle the full board list.'
     ]
+    'Toggle header': [
+      'Shift+h'
+      'Toggle the auto-hide option of the header.'
+    ]
     'Open empty QR': [
       'i'
       'Open QR without post number inserted.'
