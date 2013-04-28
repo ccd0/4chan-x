@@ -6765,8 +6765,7 @@
         if (ThreadUpdater.online) {
           return ThreadUpdater.timeoutID = setTimeout(ThreadUpdater.timeout, 1000);
         } else {
-          clearTimeout(ThreadUpdater.timeoutID);
-          return ThreadUpdater.set('timer', 'Update');
+          return clearTimeout(ThreadUpdater.timeoutID);
         }
       },
       interval: function() {

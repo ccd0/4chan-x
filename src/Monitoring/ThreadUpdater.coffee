@@ -110,7 +110,6 @@ ThreadUpdater =
         ThreadUpdater.timeoutID = setTimeout ThreadUpdater.timeout, 1000
       else
         clearTimeout ThreadUpdater.timeoutID
-        ThreadUpdater.set 'timer', 'Update'
     interval: ->
       val = +@value
       if val < 1 then val = 1
