@@ -321,10 +321,10 @@ body {
 """
 
     if Style.padding.pages? and ["sticky top", "top", "sticky bottom"].contains _conf["Pagination"]
-      css += "  padding-#{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight}px;\n"
+      css += "  padding-#{Style.padding.pages.property}: #{Style.padding.pages.offsetHeight + 1}px;\n"
 
     unless _conf['Header auto-hide'] or _conf['Hide Header']
-      css += "  padding-#{Style.padding.nav.property}: #{Style.padding.nav.offsetHeight}px;\n"
+      css += "  padding-#{Style.padding.nav.property}: #{Style.padding.nav.offsetHeight + 1}px;\n"
 
     css += "}"
 
