@@ -125,22 +125,22 @@ Header =
       for a in as
         if a.textContent is board
           a = a.cloneNode true
-          if /-title/.test t
-            a.textContent = a.title
-          else if /-replace/.test t
-            if $.hasClass a, 'current'
-              a.textContent = a.title
+
+          a.textContent = if /-title/.test(t) or /-replace/.test(t) and $.hasClass a, 'current'
+            a.title
           else if /-full/.test t
-            a.textContent = "/#{board}/ - #{a.title}"
-          else if /-(index|catalog|text)/.test t
-            if m = t.match /-(index|catalog)/
-              a.setAttribute 'data-only', m[1]
-              a.href = "//boards.4chan.org/#{board}/"
-              a.href += 'catalog' if m[1] is 'catalog'
-            if m = t.match /-text:"(.+)"/
-              a.textContent = m[1]
-          else if board is '@'
-            $.addClass a, 'navSmall'
+            "/#{board}/ - #{a.title}"
+          else if m = t.match /-text:"(.+)"/
+            m[1]
+          else
+            a.textContent
+
+          if m = t.match /-(index|catalog)/
+            a.setAttribute 'data-only', m[1]
+            a.href = "//boards.4chan.org/#{board}/"
+            a.href += 'catalog' if m[1] is 'catalog'
+
+          $.addClass a, 'navSmall' if board is '@'
           return a
       $.tn t
     $.add list, nodes
