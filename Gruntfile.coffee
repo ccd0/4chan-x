@@ -85,6 +85,7 @@ module.exports = (grunt) ->
 
     concurrent:
       build: [
+        'concat:license'
         'build-crx'
         'build-userjs'
         'build-userscript'
@@ -152,7 +153,6 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'build', [
     'concurrent:build'
-    'concat:license'
   ]
 
   grunt.registerTask 'build-crx', [

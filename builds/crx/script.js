@@ -793,7 +793,7 @@
         return localItems = {};
       } catch (_error) {
         err = _error;
-        return c.error(err);
+        return c.error(err.stack);
       }
     });
     return function(key, val) {
@@ -1582,26 +1582,15 @@
           a = as[_i];
           if (a.textContent === board) {
             a = a.cloneNode(true);
-            if (/-title/.test(t)) {
-              a.textContent = a.title;
-            } else if (/-replace/.test(t)) {
-              if ($.hasClass(a, 'current')) {
-                a.textContent = a.title;
+            a.textContent = /-title/.test(t) || /-replace/.test(t) && $.hasClass(a, 'current') ? a.title : /-full/.test(t) ? "/" + board + "/ - " + a.title : (m = t.match(/-text:"(.+)"/)) ? m[1] : a.textContent;
+            if (m = t.match(/-(index|catalog)/)) {
+              a.setAttribute('data-only', m[1]);
+              a.href = "//boards.4chan.org/" + board + "/";
+              if (m[1] === 'catalog') {
+                a.href += 'catalog';
               }
-            } else if (/-full/.test(t)) {
-              a.textContent = "/" + board + "/ - " + a.title;
-            } else if (/-(index|catalog|text)/.test(t)) {
-              if (m = t.match(/-(index|catalog)/)) {
-                a.setAttribute('data-only', m[1]);
-                a.href = "//boards.4chan.org/" + board + "/";
-                if (m[1] === 'catalog') {
-                  a.href += 'catalog';
-                }
-              }
-              if (m = t.match(/-text:"(.+)"/)) {
-                a.textContent = m[1];
-              }
-            } else if (board === '@') {
+            }
+            if (board === '@') {
               $.addClass(a, 'navSmall');
             }
             return a;
@@ -7425,6 +7414,10 @@
         case 'hr':
         case 'tv':
           return "http://archive.4plebs.org/" + boardID + "/full_image/" + filename;
+        case 'c':
+        case 'w':
+        case 'wg':
+          return "//archive.nyafuu.org/" + boardID + "/full_image/" + filename;
         case 'ck':
         case 'fa':
         case 'lit':
@@ -7433,7 +7426,6 @@
         case 'cgl':
         case 'g':
         case 'mu':
-        case 'w':
           return "//rbt.asia/" + boardID + "/full_image/" + filename;
         case 'an':
         case 'k':
@@ -7509,6 +7501,11 @@
         boards: ['hr', 'tg', 'tv', 'x'],
         base: 'foolfuuka'
       },
+      'NyaFuu': {
+        base: '//archive.nyafuu.org',
+        boards: ['c', 'w', 'wg'],
+        type: 'foolfuuka'
+      },
       'Warosu': {
         base: '//fuuka.warosu.org',
         boards: ['cgl', 'ck', 'fa', 'jp', 'lit', 's4s', 'q', 'tg'],
@@ -7532,11 +7529,6 @@
       'Cliche': {
         base: '//www.cliché.net/4chan/cgi-board.pl',
         boards: ['e'],
-        type: 'fuuka'
-      },
-      'NyaFuu': {
-        base: '//archive.nyafuu.org',
-        boards: ['c', 'w'],
         type: 'fuuka'
       }
     },
