@@ -22,8 +22,6 @@ Unread =
     $.on d, '4chanXInitFinished',      Unread.ready
     $.on d, 'ThreadUpdate',            Unread.onUpdate
     $.on d, 'scroll visibilitychange', Unread.read
-    $.on d, 'visibilitychange',        Unread.setLine if Conf['Unread Line']
-    $.on window, 'load',               Unread.scroll  if Conf['Scroll to Last Read Post']
 
   ready: ->
     $.off d, '4chanXInitFinished', Unread.ready
@@ -31,6 +29,8 @@ Unread =
     for ID, post of Unread.thread.posts
       posts.push post if post.isReply
     Unread.addPosts posts
+    Unread.setLine() if Conf['Unread Line']
+    Unread.scroll()  if Conf['Scroll to Last Read Post']
 
   scroll: ->
     # Let the header's onload callback handle it.

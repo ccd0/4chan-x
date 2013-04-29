@@ -7186,13 +7186,7 @@
       });
       $.on(d, '4chanXInitFinished', Unread.ready);
       $.on(d, 'ThreadUpdate', Unread.onUpdate);
-      $.on(d, 'scroll visibilitychange', Unread.read);
-      if (Conf['Unread Line']) {
-        $.on(d, 'visibilitychange', Unread.setLine);
-      }
-      if (Conf['Scroll to Last Read Post']) {
-        return $.on(window, 'load', Unread.scroll);
-      }
+      return $.on(d, 'scroll visibilitychange', Unread.read);
     },
     ready: function() {
       var ID, post, posts, _ref;
@@ -7206,7 +7200,13 @@
           posts.push(post);
         }
       }
-      return Unread.addPosts(posts);
+      Unread.addPosts(posts);
+      if (Conf['Unread Line']) {
+        Unread.setLine();
+      }
+      if (Conf['Scroll to Last Read Post']) {
+        return Unread.scroll();
+      }
     },
     scroll: function() {
       var hash, post, posts, prevID, root;
