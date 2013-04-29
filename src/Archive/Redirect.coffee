@@ -10,14 +10,14 @@ Redirect =
         "//archive.thedarkcave.org/#{boardID}/full_image/#{filename}"
       when 'hr', 'tv'
         "http://archive.4plebs.org/#{boardID}/full_image/#{filename}"
+      when 'c', 'w', 'wg'
+        "//archive.nyafuu.org/#{boardID}/full_image/#{filename}"
       when 'ck', 'fa', 'lit', 's4s'
         "//fuuka.warosu.org/#{boardID}/full_image/#{filename}"
-      when 'cgl', 'g', 'mu', 'w'
+      when 'cgl', 'g', 'mu'
         "//rbt.asia/#{boardID}/full_image/#{filename}"
       when 'an', 'k', 'toy', 'x'
         "http://archive.heinessen.com/#{boardID}/full_image/#{filename}"
-      when 'c'
-        "//archive.nyafuu.org/#{boardID}/full_image/#{filename}"
   post: (boardID, postID) ->
     # XXX foolz had HSTS set for 120 days, which broke XHR+CORS+Redirection when on HTTP.
     # Remove necessary HTTPS procotol in September 2013.
@@ -26,10 +26,12 @@ Redirect =
         "https://archive.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'u'
         "https://nsfw.foolz.us/_/api/chan/post/?board=#{boardID}&num=#{postID}"
-      when 'c', 'int', 'out', 'po'
+      when 'int', 'out', 'po'
         "//archive.thedarkcave.org/_/api/chan/post/?board=#{boardID}&num=#{postID}"
       when 'hr', 'x'
         "http://archive.4plebs.org/_/api/chan/post/?board=#{boardID}&num=#{postID}"
+      when 'c', 'w', 'wg'
+        "//archive.nyafuu.org/_/api/chan/post/?board=#{boardID}&num=#{postID}"
     # for fuuka-based archives:
     # https://github.com/eksopl/fuuka/issues/27
   to: (data) ->
@@ -43,16 +45,16 @@ Redirect =
         Redirect.path '//archive.thedarkcave.org', 'foolfuuka', data
       when 'hr'
         Redirect.path 'http://archive.4plebs.org', 'foolfuuka', data
+      when 'c', 'w', 'wg'
+        Redirect.path '//archive.nyafuu.org', 'foolfuuka', data
       when 'ck', 'fa', 'lit', 's4s'
         Redirect.path '//fuuka.warosu.org', 'fuuka', data
       when 'diy', 'g', 'sci'
         Redirect.path '//archive.installgentoo.net', 'fuuka', data
-      when 'cgl', 'mu', 'w'
+      when 'cgl', 'mu'
         Redirect.path '//rbt.asia', 'fuuka', data
       when 'an', 'fit', 'k', 'mlp', 'r9k', 'toy', 'x'
         Redirect.path 'http://archive.heinessen.com', 'fuuka', data
-      when 'c'
-        Redirect.path '//archive.nyafuu.org', 'fuuka', data
       else
         if data.threadID then "//boards.4chan.org/#{boardID}/" else ''
   path: (base, archiver, data) ->
