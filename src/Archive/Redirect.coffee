@@ -66,13 +66,13 @@ Redirect =
       Conf['archivers'] = archive
 
   archiver:
-    'NihilAdRem':
-      base:   '//archive.nihil-ad-rem.net'
-      boards: ['v', 'vg']
-      type:   'foolfuuka'
     'Foolz':
       base:   'https://archive.foolz.us'
       boards: ['a', 'co', 'gd', 'jp', 'm', 'q', 'sp', 'tg', 'tv', 'vp', 'vr', 'wsg']
+      type:   'foolfuuka'
+    'NihilAdRem':
+      base:   '//archive.nihil-ad-rem.net'
+      boards: ['v', 'vg']
       type:   'foolfuuka'
     'NSFWFoolz':
       base:   'https://nsfw.foolz.us'
